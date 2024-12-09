@@ -1648,6 +1648,16 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
     return;
   }
 
+  // If the consent disclaimer is visible, let it handle key events.
+  if (disclaimer_) {
+    // The action button may still have a focus ring when we switch focus to the
+    // disclaimer, so clear it first.
+    if (focus_cycler_->HasFocus()) {
+      focus_cycler_->ClearFocus();
+    }
+    return;
+  }
+
   if (event->type() != ui::EventType::kKeyPressed) {
     return;
   }

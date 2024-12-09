@@ -2927,4 +2927,50 @@ TEST_F(ScannerTest, DisclaimerDeclinedGoesBackToScreenshotMode) {
                   .GetDisclaimerWidget());
 }
 
+// Tests that the consent disclaimer can be properly navigated using the
+// keyboard.
+TEST_F(ScannerTest, KeyboardNavigationDisclaimer) {
+  base::HistogramTester histogram_tester;
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      kSunfishConsentDisclaimerAccepted, false);
+
+  ActionButtonView* smart_actions_button = GetSmartActionsButton();
+  ASSERT_TRUE(smart_actions_button);
+  auto* controller = CaptureModeController::Get();
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  ASSERT_EQ(session_test_api.GetActionButtons().size(), 2u);
+
+  // Use tab to navigate to the smart actions button.
+  auto* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_SHIFT_DOWN, /*count=*/4);
+  ASSERT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kActionButtons,
+            session_test_api.GetCurrentFocusGroup());
+  ASSERT_EQ(0u, session_test_api.GetCurrentFocusIndex());
+  ASSERT_EQ(session_test_api.GetActionButtons()[0], smart_actions_button);
+
+  // Press enter to open the consent disclaimer.
+  SendKey(ui::VKEY_RETURN, event_generator);
+  auto* disclaimer = session_test_api.GetDisclaimerWidget();
+  ASSERT_TRUE(disclaimer);
+
+  // Press tab once. The focus should shift to the decline button in the consent
+  // disclaimer.
+  SendKey(ui::VKEY_TAB, event_generator);
+  views::View* decline_button = disclaimer->GetContentsView()->GetViewByID(
+      kDisclaimerViewDeclineButtonId);
+  EXPECT_TRUE(decline_button->HasFocus());
+
+  // Press tab again. The accept button should now be focused.
+  SendKey(ui::VKEY_TAB, event_generator);
+  views::View* accept_button =
+      disclaimer->GetContentsView()->GetViewByID(kDisclaimerViewAcceptButtonId);
+  EXPECT_TRUE(accept_button->HasFocus());
+
+  // Press tab one more time. The focus should stay inside the disclaimer, and
+  // loop back around to the decline button.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_TRUE(decline_button->HasFocus());
+}
+
 }  // namespace ash
