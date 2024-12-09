@@ -3057,8 +3057,7 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   // WritePixels (called by PutByteArray) requires that the source and
   // destination pixel formats have the same bytes per pixel.
   if (auto* host = GetCanvasRenderingContextHost()) {
-    SkColorType dest_color_type =
-        host->GetRenderingContextSkColorInfo().colorType();
+    SkColorType dest_color_type = host->GetRenderingContextSkColorType();
     if (SkColorTypeBytesPerPixel(dest_color_type) !=
         SkColorTypeBytesPerPixel(data_pixmap.colorType())) {
       SkImageInfo converted_info =
@@ -3843,8 +3842,7 @@ V8GPUTextureFormat BaseRenderingContext2D::getTextureFormat() const {
   std::optional<V8GPUTextureFormat> format;
   if (const CanvasRenderingContextHost* host =
           GetCanvasRenderingContextHost()) {
-    format = FromDawnEnum(
-        AsDawnType(host->GetRenderingContextSkColorInfo().colorType()));
+    format = FromDawnEnum(AsDawnType(host->GetRenderingContextSkColorType()));
   }
 
   // If that did not work (e.g., the canvas host does not yet exist), we can

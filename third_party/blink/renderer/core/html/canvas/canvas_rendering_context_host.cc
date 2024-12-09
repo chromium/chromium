@@ -58,8 +58,8 @@ CanvasRenderingContextHost::CreateTransparentImage(
   if (!IsValidImageSize(size))
     return nullptr;
   SkImageInfo info = SkImageInfo::Make(
-      gfx::SizeToSkISize(size),
-      GetRenderingContextSkColorInfo().makeAlphaType(kPremul_SkAlphaType));
+      gfx::SizeToSkISize(size), GetRenderingContextSkColorType(),
+      kPremul_SkAlphaType, GetRenderingContextSkColorSpace());
   sk_sp<SkSurface> surface =
       SkSurfaces::Raster(info, info.minRowBytes(), nullptr);
   if (!surface)
@@ -130,12 +130,11 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderImpl(
 }
 
 void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGPU() {
-  const SkColorInfo color_info = GetRenderingContextSkColorInfo();
   std::unique_ptr<CanvasResourceProvider> provider;
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
     provider = CanvasResourceProvider::CreateWebGPUImageProvider(
         Size(), GetRenderingContextSkColorType(),
-        GetRenderingContextAlphaType(), color_info.refColorSpace(),
+        GetRenderingContextAlphaType(), GetRenderingContextSkColorSpace(),
         gpu::SharedImageUsageSet(), this);
   }
   ReplaceResourceProvider(std::move(provider));
