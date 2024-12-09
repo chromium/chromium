@@ -49,6 +49,24 @@ void LogResponseHasRepeats(ModelBasedCapabilityKey feature, bool has_repeats) {
       has_repeats);
 }
 
+void LogResponseCompleteTime(ModelBasedCapabilityKey feature,
+                             base::TimeDelta time_to_completion) {
+  base::UmaHistogramMediumTimes(
+      base::StrCat(
+          {"OptimizationGuide.ModelExecution.OnDeviceResponseCompleteTime.",
+           GetStringNameForModelExecutionFeature(feature)}),
+      time_to_completion);
+}
+
+void LogResponseCompleteTokens(ModelBasedCapabilityKey feature,
+                               uint32_t tokens) {
+  base::UmaHistogramCounts10000(
+      base::StrCat(
+          {"OptimizationGuide.ModelExecution.OnDeviceResponseCompleteTokens.",
+           GetStringNameForModelExecutionFeature(feature)}),
+      tokens);
+}
+
 std::string GenerateExecutionId() {
   return "on-device:" + base::Uuid::GenerateRandomV4().AsLowercaseString();
 }
@@ -527,16 +545,13 @@ void SessionImpl::OnComplete(
   proto::OnDeviceModelServiceResponse* logged_response =
       on_device_state_->MutableLoggedResponse();
   LogResponseHasRepeats(feature_, logged_response->has_repeats());
-
+  LogResponseCompleteTokens(feature_, on_device_state_->num_response_tokens);
   base::TimeDelta time_to_completion =
       base::TimeTicks::Now() - on_device_state_->start;
-  base::UmaHistogramMediumTimes(
-      base::StrCat(
-          {"OptimizationGuide.ModelExecution.OnDeviceResponseCompleteTime.",
-           GetStringNameForModelExecutionFeature(feature_)}),
-      time_to_completion);
+  LogResponseCompleteTime(feature_, time_to_completion);
   logged_response->set_time_to_completion_millis(
       time_to_completion.InMilliseconds());
+
   on_device_state_->opts.model_client->OnResponseCompleted();
 
   on_device_state_->model_response_complete = true;

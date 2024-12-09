@@ -905,13 +905,25 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.OnDeviceResponseCompleteTime.{ModelExecutionFeature}"
-    units="ms" expires_after="2025-03-02">
+    units="ms" expires_after="2025-06-05">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
     Records time until the response is completed after an execute call to the on
     device model. Recorded for every execute call to the on device model that
     completes.
+  </summary>
+  <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.ModelExecution.OnDeviceResponseCompleteTokens.{ModelExecutionFeature}"
+    units="tokens" expires_after="2025-06-05">
+  <owner>cduvall@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the number of output tokens when the execution finishes. Recorded on
+    successful completion of for each execution of the on device model.
   </summary>
   <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
 </histogram>
