@@ -45,7 +45,6 @@ source_set("unit_tests") {
     "channel_util_unittest.cc",
     "lacros_availability_unittest.cc",
     "lacros_selection_unittest.cc",
-    "test_util_unittest.cc",
   ]
 
   deps = [
@@ -66,11 +65,7 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
 
-  sources = [
-    "feature_refs.cc",
-    "test_util.cc",
-    "test_util.h",
-  ]
+  sources = [ "feature_refs.cc" ]
 
   deps = [
     ":standalone_browser",
