@@ -61,6 +61,10 @@ constexpr CommandLine::StringViewType kSwitchPrefixes[] = {"--", "-"};
 #endif
 size_t switch_prefix_count = std::size(kSwitchPrefixes);
 
+bool IsSwitchNameValid(std::string_view switch_name) {
+  return ToLowerASCII(switch_name) == switch_name;
+}
+
 #if BUILDFLAG(IS_WIN)
 // Switch string that specifies the single argument to the command line.
 // If present, everything after this switch is interpreted as a single
@@ -338,7 +342,7 @@ void CommandLine::SetProgram(const FilePath& program) {
 }
 
 bool CommandLine::HasSwitch(std::string_view switch_string) const {
-  DCHECK_EQ(ToLowerASCII(switch_string), switch_string);
+  CHECK(IsSwitchNameValid(switch_string), base::NotFatalUntil::M134);
   return Contains(switches_, switch_string);
 }
 
@@ -370,7 +374,8 @@ FilePath CommandLine::GetSwitchValuePath(std::string_view switch_string) const {
 
 CommandLine::StringType CommandLine::GetSwitchValueNative(
     std::string_view switch_string) const {
-  DCHECK_EQ(ToLowerASCII(switch_string), switch_string);
+  CHECK(IsSwitchNameValid(switch_string), base::NotFatalUntil::M134);
+
   auto result = switches_.find(switch_string);
   return result == switches_.end() ? StringType() : result->second;
 }
@@ -432,13 +437,15 @@ void CommandLine::RemoveSwitch(std::string_view switch_key_without_prefix) {
 #if BUILDFLAG(ENABLE_COMMANDLINE_SEQUENCE_CHECKS)
   sequence_checker_.Check();
 #endif
+  CHECK(IsSwitchNameValid(switch_key_without_prefix),
+        base::NotFatalUntil::M134);
+
 #if BUILDFLAG(IS_WIN)
   StringType switch_key_native = UTF8ToWide(switch_key_without_prefix);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   StringType switch_key_native(switch_key_without_prefix);
 #endif
 
-  DCHECK_EQ(ToLowerASCII(switch_key_without_prefix), switch_key_without_prefix);
   DCHECK_EQ(0u, GetSwitchPrefixLength(switch_key_native));
   auto it = switches_.find(switch_key_without_prefix);
   if (it == switches_.end())
