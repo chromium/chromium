@@ -354,7 +354,7 @@ const base::flat_map<PackSpecPair, std::string>& GetAllLanguagePackDlcIds() {
           {{kTtsFeatureId, "el"}, "tts-el-gr-c"},
           {{kTtsFeatureId, "en-au"}, "tts-en-au-c"},
           {{kTtsFeatureId, "en-gb"}, "tts-en-gb-c"},
-          {{kTtsFeatureId, "en-us"}, "tts-en-us-c"},
+          {{kTtsFeatureId, "en-us"}, "tts-en-us-d"},
           {{kTtsFeatureId, "es-es"}, "tts-es-es-c"},
           {{kTtsFeatureId, "es-us"}, "tts-es-us-c"},
           {{kTtsFeatureId, "fi"}, "tts-fi-fi-c"},
