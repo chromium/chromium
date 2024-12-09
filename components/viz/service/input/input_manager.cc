@@ -507,7 +507,7 @@ void InputManager::CreateOrReuseAndroidInputReceiver(
       std::move(receiver), std::move(viz_input_token));
 }
 
-bool InputManager::OnMotionEvent(AInputEvent* input_event,
+bool InputManager::OnMotionEvent(base::android::ScopedInputEvent input_event,
                                  const FrameSinkId& root_frame_sink_id) {
   // TODO(370506271): Implement once we do the state transfer from Browser on
   // touch down.

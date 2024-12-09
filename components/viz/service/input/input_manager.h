@@ -96,7 +96,7 @@ class VIZ_SERVICE_EXPORT InputManager
 
 #if BUILDFLAG(IS_ANDROID)
   // AndroidInputCallbackClient implementation.
-  bool OnMotionEvent(AInputEvent*,
+  bool OnMotionEvent(base::android::ScopedInputEvent input_event,
                      const FrameSinkId& root_frame_sink_id) override;
 #endif
 

@@ -1187,6 +1187,8 @@ component("base") {
       "android/scoped_hardware_buffer_fence_sync.h",
       "android/scoped_hardware_buffer_handle.cc",
       "android/scoped_hardware_buffer_handle.h",
+      "android/scoped_input_event.cc",
+      "android/scoped_input_event.h",
       "android/shared_preferences/shared_preferences_manager.cc",
       "android/shared_preferences/shared_preferences_manager.h",
       "android/statistics_recorder_android.cc",

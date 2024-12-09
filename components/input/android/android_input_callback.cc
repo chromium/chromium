@@ -21,11 +21,12 @@ bool AndroidInputCallback::OnMotionEventThunk(void* context,
   CHECK(context != nullptr);
   AndroidInputCallback* listener =
       reinterpret_cast<AndroidInputCallback*>(context);
-  return listener->OnMotionEvent(input_event);
+  return listener->OnMotionEvent(base::android::ScopedInputEvent(input_event));
 }
 
-bool AndroidInputCallback::OnMotionEvent(AInputEvent* input_event) {
-  return client_->OnMotionEvent(input_event, root_frame_sink_id_);
+bool AndroidInputCallback::OnMotionEvent(
+    base::android::ScopedInputEvent input_event) {
+  return client_->OnMotionEvent(std::move(input_event), root_frame_sink_id_);
 }
 
 }  // namespace input
