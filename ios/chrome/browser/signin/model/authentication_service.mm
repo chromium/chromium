@@ -510,6 +510,10 @@ void AuthenticationService::SignOut(
   crash_keys::SetCurrentlySignedIn(false);
   cached_mdm_errors_.clear();
 
+  // ClearPrimaryAccount() removed all the accounts from IdentityManager.
+  // Populate them again.
+  ReloadCredentialsFromIdentities();
+
   base::OnceClosure callback_closure =
       completion ? base::BindOnce(completion) : base::DoNothing();
 
