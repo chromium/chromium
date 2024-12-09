@@ -7,12 +7,14 @@
 #import "base/check_op.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/user_action_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -99,8 +101,16 @@ UIImage* kPrimaryAccountAvatar = [[UIImage alloc] init];
 
 @end
 
-class AccountMenuViewControllerTest : public PlatformTest {
+// The test param determines whether `kSeparateProfilesForManagedAccounts` is
+// enabled.
+class AccountMenuViewControllerTest : public PlatformTest,
+                                      public testing::WithParamInterface<bool> {
  public:
+  AccountMenuViewControllerTest() {
+    feature_list_.InitWithFeatureState(kSeparateProfilesForManagedAccounts,
+                                       GetParam());
+  }
+
   void SetUp() override {
     PlatformTest::SetUp();
     TestProfileIOS::Builder builder;
@@ -136,6 +146,8 @@ class AccountMenuViewControllerTest : public PlatformTest {
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
+
   // The navigation controller that displays the view_controller_.
   // It is not used in test. However, it’s accessed by the view controller, so
   // we must not let it be deallocated until tests are done.
@@ -204,7 +216,7 @@ class AccountMenuViewControllerTest : public PlatformTest {
 };
 
 // Test the view controller when it starts.
-TEST_F(AccountMenuViewControllerTest, TestDefaultSetting) {
+TEST_P(AccountMenuViewControllerTest, TestDefaultSetting) {
   EXPECT_EQ(2, TableView().numberOfSections);
   // The secondary account and Add Account...
   EXPECT_EQ(2, [TableView() numberOfRowsInSection:0]);
@@ -233,7 +245,7 @@ TEST_F(AccountMenuViewControllerTest, TestDefaultSetting) {
 #pragma mark - Test tapping on the views.
 
 // Tests tapping on the secondary account cell.
-TEST_F(AccountMenuViewControllerTest, TestTapSecondaryAccount) {
+TEST_P(AccountMenuViewControllerTest, TestTapSecondaryAccount) {
   OCMExpect([mutator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                                    targetRect:CGRect()])
       .ignoringNonObjectArgs();
@@ -243,14 +255,14 @@ TEST_F(AccountMenuViewControllerTest, TestTapSecondaryAccount) {
 }
 
 // Tests tapping on the add account cell.
-TEST_F(AccountMenuViewControllerTest, TestTapAddAccount) {
+TEST_P(AccountMenuViewControllerTest, TestTapAddAccount) {
   OCMExpect([mutator_ didTapAddAccount]);
   SelectCell(path_for_add_account_);
   EXPECT_EQ(1, user_actions_.GetActionCount("Signin_AccountMenu_AddAccount"));
 }
 
 // Tests tapping on the sign-out cell.
-TEST_F(AccountMenuViewControllerTest, TestTapSignOut) {
+TEST_P(AccountMenuViewControllerTest, TestTapSignOut) {
   OCMExpect([mutator_ signOutFromTargetRect:CGRect()]).ignoringNonObjectArgs();
   SelectCell(path_for_sign_out_);
   EXPECT_EQ(1, user_actions_.GetActionCount("Signin_AccountMenu_Signout"));
@@ -259,7 +271,7 @@ TEST_F(AccountMenuViewControllerTest, TestTapSignOut) {
 #pragma mark - AccountMenuConsumer
 
 // Tests tapping on error action button.
-TEST_F(AccountMenuViewControllerTest, TestSetError) {
+TEST_P(AccountMenuViewControllerTest, TestSetError) {
   AccountErrorUIInfo* errorInfo = [[AccountErrorUIInfo alloc]
        initWithErrorType:syncer::SyncService::UserActionableError::
                              kNeedsPassphrase
@@ -298,7 +310,7 @@ TEST_F(AccountMenuViewControllerTest, TestSetError) {
 
 // Tests that adding an account adds an extra row in the secondary account
 // section.
-TEST_F(AccountMenuViewControllerTest, TestAddAccount) {
+TEST_P(AccountMenuViewControllerTest, TestAddAccount) {
   fake_system_identity_manager_->AddIdentity(kSecondaryIdentity2);
   [view_controller_
       updateAccountListWithGaiaIDsToAdd:@[ kSecondaryIdentity2.gaiaID ]
@@ -313,7 +325,7 @@ TEST_F(AccountMenuViewControllerTest, TestAddAccount) {
 
 // Test that removing a secondary account remove a row in the secondary account
 // section.
-TEST_F(AccountMenuViewControllerTest, TestRemoveAccount) {
+TEST_P(AccountMenuViewControllerTest, TestRemoveAccount) {
   [view_controller_
       updateAccountListWithGaiaIDsToAdd:@[]
                         gaiaIDsToRemove:@[ kSecondaryIdentity.gaiaID ]
@@ -327,7 +339,7 @@ TEST_F(AccountMenuViewControllerTest, TestRemoveAccount) {
 
 // Test that updating the primary account has no discernable impact on the view
 // controller.
-TEST_F(AccountMenuViewControllerTest, TestUpdatePrimaryAccount) {
+TEST_P(AccountMenuViewControllerTest, TestUpdatePrimaryAccount) {
   [view_controller_ updatePrimaryAccount];
   EXPECT_EQ(2, TableView().numberOfSections);
   // The secondary account and Add Account...
@@ -336,3 +348,10 @@ TEST_F(AccountMenuViewControllerTest, TestUpdatePrimaryAccount) {
   EXPECT_EQ(1, [TableView() numberOfRowsInSection:1]);
 }
 
+INSTANTIATE_TEST_SUITE_P(,
+                         AccountMenuViewControllerTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WithSeparateProfiles"
+                                             : "WithoutSeparateProfiles";
+                         });

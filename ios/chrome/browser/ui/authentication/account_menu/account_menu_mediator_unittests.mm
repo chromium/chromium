@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/user_action_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
@@ -13,6 +14,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -46,8 +48,16 @@ const FakeSystemIdentity* kSecondaryIdentity2 =
     [FakeSystemIdentity fakeIdentity3];
 }  // namespace
 
-class AccountMenuMediatorTest : public PlatformTest {
+// The test param determines whether `kSeparateProfilesForManagedAccounts` is
+// enabled.
+class AccountMenuMediatorTest : public PlatformTest,
+                                public testing::WithParamInterface<bool> {
  public:
+  AccountMenuMediatorTest() {
+    feature_list_.InitWithFeatureState(kSeparateProfilesForManagedAccounts,
+                                       GetParam());
+  }
+
   void SetUp() override {
     PlatformTest::SetUp();
 
@@ -134,6 +144,8 @@ class AccountMenuMediatorTest : public PlatformTest {
     run_loop.Run();
   }
 
+  base::test::ScopedFeatureList feature_list_;
+
   id<AccountMenuMediatorDelegate> delegate_;
   id<AccountMenuConsumer> consumer_;
   AccountMenuMediator* mediator_;
@@ -167,7 +179,7 @@ class AccountMenuMediatorTest : public PlatformTest {
 
 // Checks that adding a secondary identity lead to updating the
 // consumer.
-TEST_F(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
+TEST_P(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
   const FakeSystemIdentity* thirdIdentity = [FakeSystemIdentity fakeIdentity3];
   OCMExpect([consumer_
       updateAccountListWithGaiaIDsToAdd:@[ thirdIdentity.gaiaID ]
@@ -178,17 +190,23 @@ TEST_F(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
 
 // Checks that removing a secondary identity lead to updating the
 // consumer.
-TEST_F(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
+TEST_P(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
   // Expectations due to ChromeAccountManagerServiceObserver updates.
-  OCMExpect([consumer_
-      updateAccountListWithGaiaIDsToAdd:@[]
-                        gaiaIDsToRemove:@[]
-                          gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]]);
+  // If AreSeparateProfilesForManagedAccountsEnabled() is true, the updates come
+  // from IdentityManager instead, which doesn't send no-op updates.
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    OCMExpect([consumer_
+        updateAccountListWithGaiaIDsToAdd:@[]
+                          gaiaIDsToRemove:@[]
+                            gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]]);
+  }
   OCMExpect([consumer_ updatePrimaryAccount]);
-  OCMExpect([consumer_
-      updateAccountListWithGaiaIDsToAdd:@[]
-                        gaiaIDsToRemove:@[]
-                          gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]]);
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    OCMExpect([consumer_
+        updateAccountListWithGaiaIDsToAdd:@[]
+                          gaiaIDsToRemove:@[]
+                            gaiaIDsToKeep:@[ kSecondaryIdentity.gaiaID ]]);
+  }
 
   OCMExpect([consumer_
       updateAccountListWithGaiaIDsToAdd:@[]
@@ -210,7 +228,7 @@ TEST_F(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
 
 // Checks that removing the primary identity lead to updating the
 // consumer.
-TEST_F(AccountMenuMediatorTest, TestRemovePrimaryIdentity) {
+TEST_P(AccountMenuMediatorTest, TestRemovePrimaryIdentity) {
   OCMExpect([delegate_ mediatorWantsToBeDismissed:mediator_]);
   OCMExpect([consumer_ setUserInteractionsEnabled:NO]);
   authentication_service_->SignOut(signin_metrics::ProfileSignout::kTest,
@@ -222,7 +240,7 @@ TEST_F(AccountMenuMediatorTest, TestRemovePrimaryIdentity) {
 #pragma mark - AccountMenuDataSource
 
 // Tests the result of secondaryAccountsGaiaIDs.
-TEST_F(AccountMenuMediatorTest, TestSecondaryAccountsGaiaID) {
+TEST_P(AccountMenuMediatorTest, TestSecondaryAccountsGaiaID) {
   EXPECT_NSEQ([mediator_ secondaryAccountsGaiaIDs],
               @[ kSecondaryIdentity.gaiaID ]);
 }
@@ -230,19 +248,19 @@ TEST_F(AccountMenuMediatorTest, TestSecondaryAccountsGaiaID) {
 #pragma mark - AccountMenuDataSource and SyncObserverModelBridge
 
 // Tests the result of nameForGaiaID.
-TEST_F(AccountMenuMediatorTest, nameForGaiaID) {
+TEST_P(AccountMenuMediatorTest, nameForGaiaID) {
   EXPECT_NSEQ([mediator_ nameForGaiaID:kSecondaryIdentity.gaiaID],
               kSecondaryIdentity.userFullName);
 }
 
 // Tests the result of emailForGaiaID.
-TEST_F(AccountMenuMediatorTest, emailForGaiaID) {
+TEST_P(AccountMenuMediatorTest, emailForGaiaID) {
   EXPECT_NSEQ([mediator_ emailForGaiaID:kSecondaryIdentity.gaiaID],
               kSecondaryIdentity.userEmail);
 }
 
 // Tests the result of imageForGaiaID.
-TEST_F(AccountMenuMediatorTest, imageForGaiaID) {
+TEST_P(AccountMenuMediatorTest, imageForGaiaID) {
   EXPECT_NSEQ([mediator_ imageForGaiaID:kSecondaryIdentity.gaiaID],
               account_manager_service_ -> GetIdentityAvatarWithIdentity(
                                            kSecondaryIdentity,
@@ -250,18 +268,18 @@ TEST_F(AccountMenuMediatorTest, imageForGaiaID) {
 }
 
 // Tests the result of primaryAccountEmail.
-TEST_F(AccountMenuMediatorTest, TestPrimaryAccountEmail) {
+TEST_P(AccountMenuMediatorTest, TestPrimaryAccountEmail) {
   EXPECT_NSEQ([mediator_ primaryAccountEmail], kPrimaryIdentity.userEmail);
 }
 
 // Tests the result of primaryAccountUserFullName.
-TEST_F(AccountMenuMediatorTest, TestPrimaryAccountUserFullName) {
+TEST_P(AccountMenuMediatorTest, TestPrimaryAccountUserFullName) {
   EXPECT_NSEQ([mediator_ primaryAccountUserFullName],
               kPrimaryIdentity.userFullName);
 }
 
 // Tests the result of primaryAccountAvatar.
-TEST_F(AccountMenuMediatorTest, TestPrimaryAccountAvatar) {
+TEST_P(AccountMenuMediatorTest, TestPrimaryAccountAvatar) {
   EXPECT_NSEQ([mediator_ primaryAccountAvatar],
               account_manager_service_ -> GetIdentityAvatarWithIdentity(
                                            kPrimaryIdentity,
@@ -269,12 +287,12 @@ TEST_F(AccountMenuMediatorTest, TestPrimaryAccountAvatar) {
 }
 
 // Tests the result of TestError when there is no error.
-TEST_F(AccountMenuMediatorTest, TestNoError) {
+TEST_P(AccountMenuMediatorTest, TestNoError) {
   EXPECT_THAT([mediator_ accountErrorUIInfo], testing::IsNull());
 }
 
 // Tests the result of TestError when passphrase is required.
-TEST_F(AccountMenuMediatorTest, TestError) {
+TEST_P(AccountMenuMediatorTest, TestError) {
   // In order to simulate requiring a passphrase, test sync service requires
   // us to explicitly set that the setup is not complete, and fire the state
   // change to its observer.
@@ -296,7 +314,7 @@ TEST_F(AccountMenuMediatorTest, TestError) {
 
 // Tests the result of accountTappedWithGaiaID:targetRect:
 // when sign-out fail.
-TEST_F(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
+TEST_P(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
   // Given that the method  `triggerSignoutWithTargetRect:completion` creates a
   // callback in a callback, this tests has three parts.  One part by callback,
   // and one part for the initial part of the run.
@@ -333,7 +351,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
 
 // Tests the result of accountTappedWithGaiaID:targetRect:
 // when sign-in fail.
-TEST_F(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
+TEST_P(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
   // Given that the method  `signOutFromTargetRect:forSwitch:completion` create
   // a callback in a callback, this tests has three parts.  One part by
   // callback, and one part for the initial part of the run.
@@ -393,7 +411,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
 
 // Tests the result of accountTappedWithGaiaID:targetRect:
 // when switch is succesful.
-TEST_F(AccountMenuMediatorTest, TestAccountTapedWithSuccesfulSwitch) {
+TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccesfulSwitch) {
   // Given that the method  `signOutFromTargetRect:forSwitch:callback` create a
   // callback in a callback, this tests has three parts.  One part by callback,
   // and one part for the initial part of the run.
@@ -446,7 +464,7 @@ TEST_F(AccountMenuMediatorTest, TestAccountTapedWithSuccesfulSwitch) {
 }
 
 // Tests the result of didTapErrorButton when a passphrase is required.
-TEST_F(AccountMenuMediatorTest, TestTapErrorButtonPassphrase) {
+TEST_P(AccountMenuMediatorTest, TestTapErrorButtonPassphrase) {
   // While many errors can be displayed by the account menu, this test suite
   // only consider the error where the passphrase is needed. This is because,
   // when the suite was written, `TestSyncService::GetUserActionableError` could
@@ -461,19 +479,19 @@ TEST_F(AccountMenuMediatorTest, TestTapErrorButtonPassphrase) {
 }
 
 // Tests the effect of didTapManageYourGoogleAccount.
-TEST_F(AccountMenuMediatorTest, TestDidTapManageYourGoogleAccount) {
+TEST_P(AccountMenuMediatorTest, TestDidTapManageYourGoogleAccount) {
   OCMExpect([delegate_ didTapManageYourGoogleAccount]);
   [mediator_ didTapManageYourGoogleAccount];
 }
 
 // Tests the effect of didTapManageAccounts.
-TEST_F(AccountMenuMediatorTest, TestDidTapEditAccountList) {
+TEST_P(AccountMenuMediatorTest, TestDidTapEditAccountList) {
   OCMExpect([delegate_ didTapManageAccounts]);
   [mediator_ didTapManageAccounts];
 }
 
 // Tests the effect of didTapAddAccount.
-TEST_F(AccountMenuMediatorTest, TestDidTapAddAccount) {
+TEST_P(AccountMenuMediatorTest, TestDidTapAddAccount) {
   __block SigninCoordinatorCompletionCallback completion = nil;
   OCMExpect([delegate_
       didTapAddAccountWithCompletion:[OCMArg checkWithBlock:^BOOL(id value) {
@@ -492,7 +510,7 @@ TEST_F(AccountMenuMediatorTest, TestDidTapAddAccount) {
 }
 
 // Tests the effect of signOutFromTargetRect.
-TEST_F(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
+TEST_P(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
   CGRect rect = CGRectMake(0, 0, 40, 24);
 
   __block void (^completion)(BOOL) = nil;
@@ -513,7 +531,7 @@ TEST_F(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
 
 // Tests tapping on the close button just after the sign-out button.
 // This is a regression test for crbug.com/371046656.
-TEST_F(AccountMenuMediatorTest, TestSignoutAndClose) {
+TEST_P(AccountMenuMediatorTest, TestSignoutAndClose) {
   CGRect rect = CGRectMake(0, 0, 40, 24);
   __block void (^completion)(BOOL) = nil;
   OCMExpect([delegate_
@@ -534,9 +552,17 @@ TEST_F(AccountMenuMediatorTest, TestSignoutAndClose) {
 
 // Tests tapping on the close button just after the sign-out button.
 // This is a regression test for crbug.com/371046656.
-TEST_F(AccountMenuMediatorTest, TestViewControllerWantToBeClosed) {
+TEST_P(AccountMenuMediatorTest, TestViewControllerWantToBeClosed) {
   OCMExpect([delegate_ mediatorWantsToBeDismissed:mediator_]);
   OCMExpect([consumer_ setUserInteractionsEnabled:NO]);
   [mediator_
       viewControllerWantsToBeClosed:(AccountMenuViewController*)consumer_];
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         AccountMenuMediatorTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WithSeparateProfiles"
+                                             : "WithoutSeparateProfiles";
+                         });
