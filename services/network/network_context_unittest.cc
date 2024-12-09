@@ -98,6 +98,11 @@
 #include "net/cookies/cookie_store_test_callbacks.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "net/device_bound_sessions/session_service.h"
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
 #include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/memory/mem_backend_impl.h"
@@ -1128,10 +1133,19 @@ TEST_F(NetworkContextTest, DeviceBoundSessionsEnableWithStore) {
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(std::move(context_params));
-  EXPECT_TRUE(
-      network_context->url_request_context()->device_bound_session_service());
+  net::device_bound_sessions::SessionService* service =
+      network_context->url_request_context()->device_bound_session_service();
+  EXPECT_TRUE(service);
   EXPECT_TRUE(
       network_context->url_request_context()->device_bound_session_store());
+
+  // Wait for the service to finish initial session load from the session store
+  // file.
+  base::test::TestFuture<
+      const std::vector<net::device_bound_sessions::SessionKey>&>
+      future;
+  service->GetAllSessionsAsync(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
 }
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
