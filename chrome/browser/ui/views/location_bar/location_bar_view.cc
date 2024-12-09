@@ -28,6 +28,7 @@
 #include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/page_info/merchant_trust_service_factory.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -282,7 +283,8 @@ void LocationBarView::Init() {
     merchant_trust_chip_ = AddChildView(std::make_unique<OmniboxChipButton>());
     merchant_trust_chip_controller_ =
         std::make_unique<MerchantTrustChipButtonController>(
-            merchant_trust_chip_, location_icon_view_);
+            merchant_trust_chip_, location_icon_view_,
+            MerchantTrustServiceFactory::GetForProfile(profile_));
   }
 
   // Initialize the Omnibox view.
@@ -814,16 +816,31 @@ void LocationBarView::Layout(PassKey) {
     leading_decorations.AddDecoration(vertical_padding, location_height, false,
                                       0, /*intra_item_padding=*/0, icon_left,
                                       location_icon_view_);
-    if (merchant_trust_chip_controller_ && merchant_trust_chip_->GetVisible()) {
+  } else {
+    location_icon_view_->SetVisible(false);
+  }
+
+  if (merchant_trust_chip_controller_) {
+    // The merchant chip is shown when:
+    // 1. there is data to be shown
+    // 2. no permission chips are shown
+    // 3. the omnibox is not in editing mode
+    // 4. location bar icon doesn't have extra text
+    const bool should_show_merchant_chip =
+        merchant_trust_chip_controller_->ShouldBeVisible() &&
+        !show_overriding_permission_chip && !IsEditingOrEmpty() &&
+        !location_icon_view_->GetShowText();
+
+    if (should_show_merchant_chip) {
       // TODO(crbug.com/378854462): Use constant.
       const int padding_before_chip = 2;
       merchant_trust_chip_controller_->Show();
       leading_decorations.AddDecoration(vertical_padding, location_height,
                                         false, 0, padding_before_chip,
                                         icon_left, merchant_trust_chip_);
+    } else {
+      merchant_trust_chip_controller_->Hide();
     }
-  } else {
-    location_icon_view_->SetVisible(false);
   }
 
   auto add_trailing_decoration = [&](View* view, int intra_item_padding) {
@@ -996,11 +1013,8 @@ void LocationBarView::Update(WebContents* contents) {
   else
     omnibox_view_->Update();
 
-  // TODO(crbug.com/378854462): Fetch the data from the service and show when
-  // there is data available.
-  if (merchant_trust_chip_controller_ && contents) {
+  if (merchant_trust_chip_controller_) {
     merchant_trust_chip_controller_->UpdateWebContents(contents);
-    merchant_trust_chip_controller_->Show();
   }
 
   OnChanged();  // NOTE: Triggers layout.
@@ -1712,10 +1726,6 @@ void LocationBarView::UpdateChipVisibility() {
     if (permission_dashboard_view_->GetVisible()) {
       permission_dashboard_view_->SetVisible(false);
     }
-  }
-
-  if (merchant_trust_chip_controller_) {
-    merchant_trust_chip_controller_->Hide();
   }
 }
 

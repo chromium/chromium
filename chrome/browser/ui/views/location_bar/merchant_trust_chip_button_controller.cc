@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
+#include "components/page_info/core/merchant_trust_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_entry.h"
@@ -25,8 +26,11 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MerchantTrustChipButtonController,
 
 MerchantTrustChipButtonController::MerchantTrustChipButtonController(
     OmniboxChipButton* chip_button,
-    LocationIconView* location_icon_view)
-    : chip_button_(chip_button), location_icon_view_(location_icon_view) {
+    LocationIconView* location_icon_view,
+    page_info::MerchantTrustService* service)
+    : chip_button_(chip_button),
+      location_icon_view_(location_icon_view),
+      service_(service) {
   // TODO(crbug.com/378854462): Revisit icons, strings and theme.
   chip_button_->SetIcon(vector_icons::kStorefrontIcon);
   chip_button_->SetText(
@@ -42,10 +46,38 @@ MerchantTrustChipButtonController::~MerchantTrustChipButtonController() =
     default;
 
 void MerchantTrustChipButtonController::UpdateWebContents(
-    content::WebContents* web_contents) {
-  web_contents_ = web_contents->GetWeakPtr();
+    content::WebContents* contents) {
+  if (contents) {
+    Observe(contents);
+  }
 
-  // TODO(crbug.com/378854906): Fetch the data.
+  if (!service_ || !web_contents()) {
+    return;
+  }
+
+  service_->GetMerchantTrustInfo(
+      web_contents()->GetVisibleURL(),
+      base::BindOnce(
+          &MerchantTrustChipButtonController::OnMerchantTrustDataFetched,
+          base::Unretained(this)));
+}
+
+void MerchantTrustChipButtonController::OnMerchantTrustDataFetched(
+    const GURL& url,
+    std::optional<page_info::MerchantData> merchant_data) {
+  merchant_data_ = merchant_data;
+
+  if (ShouldBeVisible()) {
+    // TODO(crbug.com/378854906): Animate expand when needed.
+    Show();
+  } else {
+    // TODO(crbug.com/378854906): Animate collapse when needed.
+    Hide();
+  }
+}
+
+bool MerchantTrustChipButtonController::ShouldBeVisible() {
+  return merchant_data_.has_value();
 }
 
 void MerchantTrustChipButtonController::Show() {
@@ -54,25 +86,21 @@ void MerchantTrustChipButtonController::Show() {
       gfx::RoundedCornersF(radius, 0, 0, radius));
   chip_button_->SetCornerRadii(gfx::RoundedCornersF(0, radius, radius, 0));
   chip_button_->SetVisible(true);
-
-  // TODO(crbug.com/378854906): Animate expand.
 }
 
 void MerchantTrustChipButtonController::Hide() {
   location_icon_view_->SetCornerRadii(gfx::RoundedCornersF(
       location_icon_view_->GetPreferredSize().height() / 2));
   chip_button_->SetVisible(false);
-
-  // TODO(crbug.com/378854906): Animate collapse.
 }
 
 void MerchantTrustChipButtonController::OpenPageInfoSubpage() {
-  if (!web_contents_) {
+  if (!web_contents()) {
     return;
   }
 
   content::NavigationEntry* entry =
-      web_contents_->GetController().GetVisibleEntry();
+      web_contents()->GetController().GetVisibleEntry();
   if (entry->IsInitialEntry()) {
     return;
   }
@@ -88,7 +116,7 @@ void MerchantTrustChipButtonController::OpenPageInfoSubpage() {
   views::BubbleDialogDelegateView* bubble =
       PageInfoBubbleView::CreatePageInfoBubble(
           location_icon_view_, gfx::Rect(),
-          chip_button_->GetWidget()->GetNativeWindow(), web_contents_.get(),
+          chip_button_->GetWidget()->GetNativeWindow(), web_contents(),
           entry->GetVirtualURL(), std::move(initialized_callback),
           base::DoNothing(),
           /*allow_about_this_site=*/true, std::nullopt, true);

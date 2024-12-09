@@ -79,9 +79,11 @@ void MerchantTrustService::OnCanApplyOptimizationComplete(
     // the proto.
     std::optional<commerce::MerchantTrustSignalsV2> merchant_trust_metadata =
         metadata.ParsedMetadata<commerce::MerchantTrustSignalsV2>();
-    std::move(callback).Run(url,
-                            GetMerchantDataFromProto(merchant_trust_metadata));
-    return;
+    if (merchant_trust_metadata.has_value()) {
+      std::move(callback).Run(
+          url, GetMerchantDataFromProto(merchant_trust_metadata));
+      return;
+    }
   }
 
   if (kMerchantTrustEnabledWithSampleData.Get()) {
