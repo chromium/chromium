@@ -6262,13 +6262,11 @@
                 {
                     "name": "Enabled_Teamfood",
                     "params": {
-                        "enable-cluster-info-optimization": "true",
                         "file-upload-limit-bytes": "200000000",
                         "use-pdfs-as-context": "true"
                     },
                     "enable_features": [
-                        "LensOverlayContextualSearchbox",
-                        "LensOverlayLatencyOptimizations"
+                        "LensOverlayContextualSearchbox"
                     ]
                 }
             ]
