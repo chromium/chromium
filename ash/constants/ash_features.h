@@ -1052,8 +1052,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeEducationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCaptureModeEducationBypassLimitsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsChangePasswordFactorSetupEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryLongpressEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryUrlTitlesEnabled();

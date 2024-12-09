@@ -330,9 +330,6 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "lockScreenHideSensitiveNotificationsSupported",
       ash::features::IsLockScreenHideSensitiveNotificationsSupported());
-  html_source->AddBoolean("changePasswordFactorSetupEnabled",
-                          ash::features::IsChangePasswordFactorSetupEnabled());
-
   html_source->AddString(
       "lockScreenSwitchLocalPasswordDescription",
       l10n_util::GetStringFUTF16(

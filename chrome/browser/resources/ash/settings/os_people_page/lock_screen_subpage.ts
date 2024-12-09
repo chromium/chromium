@@ -166,18 +166,6 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       },
 
       /**
-       * Whether switch from Gaia password factor to local password factor are
-       * allowed by the feature flag.
-       */
-      changePasswordFactorSetupEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('changePasswordFactorSetupEnabled');
-        },
-        readOnly: true,
-      },
-
-      /**
        * Whether the device account is managed.
        */
       deviceAccountManaged_: {
@@ -203,7 +191,6 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   private showPasswordSettings_: boolean;
   private showDisableRecoveryDialog_: boolean;
   private fingerprintBrowserProxy_: FingerprintBrowserProxy;
-  private changePasswordFactorSetupEnabled_: boolean;
   private deviceAccountManaged_: boolean;
 
   static get observers() {
@@ -477,7 +464,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       this.showPasswordSettings_ = true;
     } else if (!this.deviceAccountManaged_) {
       // Onto scenarios for non managed accounts now.
-      if (this.changePasswordFactorSetupEnabled_ && hasGaiaPassword) {
+      if (hasGaiaPassword) {
         // If the gaia password is setup, for non managed users, we will allow
         // them to switch to local password.
         this.showPasswordSettings_ = true;

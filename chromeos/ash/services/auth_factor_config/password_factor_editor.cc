@@ -197,15 +197,6 @@ void PasswordFactorEditor::UpdatePasswordWithContext(
       is_new_password_local != is_old_password_local;
 
   if (is_label_update_required) {
-    if (!features::IsChangePasswordFactorSetupEnabled()) {
-      LOG(ERROR)
-          << "Switching between online and local password is not supported";
-      auth_factor_config_->NotifyFactorObserversAfterFailure(
-          auth_token, std::move(user_context),
-          base::BindOnce(std::move(callback),
-                         mojom::ConfigureResult::kFatalError));
-      return;
-    }
     if (!is_new_password_local) {
       LOG(ERROR) << "Switching from local to online password is not supported";
       auth_factor_config_->NotifyFactorObserversAfterFailure(

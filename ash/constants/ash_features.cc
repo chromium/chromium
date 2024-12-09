@@ -3401,10 +3401,6 @@ bool IsCaptureModeEducationBypassLimitsEnabled() {
   return base::FeatureList::IsEnabled(kCaptureModeEducationBypassLimits);
 }
 
-bool IsChangePasswordFactorSetupEnabled() {
-  return base::FeatureList::IsEnabled(kChangePasswordFactorSetup);
-}
-
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {
   return base::FeatureList::IsEnabled(kCheckPasswordsAgainstCryptohomeHelper);
 }

@@ -52,6 +52,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsAuthFactorSetupTestWithGaiaPassword,
   mojom::PasswordSettingsApiAsyncWaiter password_settings =
       GoToPasswordSettings(lock_screen_settings);
   password_settings.AssertCanRemovePassword(false);
+  password_settings.AssertCanSwitchToLocalPassword(true);
   password_settings.AssertCanOpenLocalPasswordDialog();
   password_settings.AssertSubmitButtonDisabledForInvalidPasswordInput();
   password_settings.AssertSubmitButtonEnabledForValidPasswordInput();
@@ -72,6 +73,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsAuthFactorSetupTestWithLocalPassword, Shown) {
   mojom::PasswordSettingsApiAsyncWaiter password_settings =
       GoToPasswordSettings(lock_screen_settings);
   password_settings.AssertCanRemovePassword(false);
+  password_settings.AssertCanSwitchToLocalPassword(false);
 }
 
 class OSSettingsAuthFactorSetupTestWithManagedUser

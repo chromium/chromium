@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {PasswordSettingsApiInterface, PasswordSettingsApiReceiver, PasswordSettingsApiRemote} from '../password_settings_api.test-mojom-webui.js';
@@ -128,5 +128,13 @@ export class PasswordSettingsApi implements PasswordSettingsApiInterface {
   async assertCanRemovePassword(canRemove: boolean): Promise<void> {
     const buttons = this.getRemoveMenuItems();
     await assertAsync(() => canRemove === (buttons.length > 0));
+  }
+
+  async assertCanSwitchToLocalPassword(canSwitch: boolean): Promise<void> {
+    const button = this.switchLocalPasswordButton();
+    if (button == null) {
+      assertFalse(canSwitch)
+    }
+    await assertAsync(() => canSwitch === isVisible(button));
   }
 }
