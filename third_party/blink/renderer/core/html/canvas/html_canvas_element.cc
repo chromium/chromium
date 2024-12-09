@@ -1906,7 +1906,7 @@ void HTMLCanvasElement::ReplaceExistingResourceProviderFor2DContext(
   scoped_refptr<StaticBitmapImage> image =
       context_->GetImage(FlushReason::kReplaceLayerBridge);
   // image can be null if allocation failed in which case we should just
-  // abort the surface switch to retain the old surface which is still
+  // abort the provider switch to retain the old provider, which is still
   // functional.
   if (!image) {
     return;
@@ -1923,8 +1923,7 @@ void HTMLCanvasElement::ReplaceExistingResourceProviderFor2DContext(
     ReplaceResourceProvider(std::move(new_provider_for_testing));
   }
 
-  // If PaintCanvas cannot be get from the new layer bridge, revert the
-  // replacement.
+  // Bail out if it's not possible to create a new provider.
   CanvasResourceProvider* new_provider =
       GetOrCreateCanvasResourceProviderFor2DContext(
           canvas2d_bridge_->GetHibernationHandler());
@@ -1937,10 +1936,10 @@ void HTMLCanvasElement::ReplaceExistingResourceProviderFor2DContext(
     auto paint_image = image->PaintImageForCurrentFrame();
     if ((GetRasterMode() == RasterMode::kCPU) &&
         paint_image.IsTextureBacked()) {
-      // If new bridge is unaccelerated we must read back |paint_image| here.
-      // DrawFullImage will record the image and potentially raster on a worker
-      // thread, but texture backed PaintImages can't be used on a different
-      // thread.
+      // If the new provider is unaccelerated we must read back |paint_image|
+      // here. DrawFullImage will record the image and potentially raster on a
+      // worker thread, but texture backed PaintImages can't be used on a
+      // different thread.
       auto sk_image = paint_image.GetSwSkImage();
       auto content_id = paint_image.GetContentIdForFrame(0);
       auto builder =
