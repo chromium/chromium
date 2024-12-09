@@ -169,31 +169,26 @@ Suggestion::PlusAddressPayload& Suggestion::PlusAddressPayload::operator=(
 
 Suggestion::PlusAddressPayload::~PlusAddressPayload() = default;
 
-Suggestion::PredictionImprovementsPayload::PredictionImprovementsPayload() =
-    default;
+Suggestion::AutofillAiPayload::AutofillAiPayload() = default;
 
-Suggestion::PredictionImprovementsPayload::PredictionImprovementsPayload(
+Suggestion::AutofillAiPayload::AutofillAiPayload(
     const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill,
     const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons)
     : values_to_fill(std::move(values_to_fill)),
       ignorable_skip_reasons(std::move(ignorable_skip_reasons)) {}
 
-Suggestion::PredictionImprovementsPayload::PredictionImprovementsPayload(
-    const PredictionImprovementsPayload&) = default;
-
-Suggestion::PredictionImprovementsPayload::PredictionImprovementsPayload(
-    PredictionImprovementsPayload&&) = default;
-
-Suggestion::PredictionImprovementsPayload&
-Suggestion::PredictionImprovementsPayload::operator=(
-    const PredictionImprovementsPayload&) = default;
-
-Suggestion::PredictionImprovementsPayload&
-Suggestion::PredictionImprovementsPayload::operator=(
-    PredictionImprovementsPayload&&) = default;
-
-Suggestion::PredictionImprovementsPayload::~PredictionImprovementsPayload() =
+Suggestion::AutofillAiPayload::AutofillAiPayload(const AutofillAiPayload&) =
     default;
+
+Suggestion::AutofillAiPayload::AutofillAiPayload(AutofillAiPayload&&) = default;
+
+Suggestion::AutofillAiPayload& Suggestion::AutofillAiPayload::operator=(
+    const AutofillAiPayload&) = default;
+
+Suggestion::AutofillAiPayload& Suggestion::AutofillAiPayload::operator=(
+    AutofillAiPayload&&) = default;
+
+Suggestion::AutofillAiPayload::~AutofillAiPayload() = default;
 
 Suggestion::AutofillProfilePayload::AutofillProfilePayload() = default;
 Suggestion::AutofillProfilePayload::AutofillProfilePayload(Guid guid)

@@ -1265,7 +1265,7 @@ TEST_F(AutofillExternalDelegateTest,
 }
 
 // Tests that on acceptance of a `kFillPredictionImprovements` suggestion with
-// `Suggestion::PredictionImprovementsPayload` payload, the full form is filled
+// `Suggestion::AutofillAiPayload` payload, the full form is filled
 // accordingly.
 TEST_F(AutofillExternalDelegateTest,
        DidAcceptFillPredictionImprovementsFillsFullForm) {
@@ -1284,7 +1284,7 @@ TEST_F(AutofillExternalDelegateTest,
       /*update_datalist=*/false);
   Suggestion fill_suggestion =
       Suggestion(u"Autocomplete", SuggestionType::kFillAutofillAi);
-  fill_suggestion.payload = Suggestion::PredictionImprovementsPayload(
+  fill_suggestion.payload = Suggestion::AutofillAiPayload(
       {{field_to_fill->global_id(), value_to_fill}}, {});
 
   std::vector<FormFieldData> filled_fields;

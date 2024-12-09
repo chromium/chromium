@@ -82,7 +82,7 @@ base::flat_map<autofill::FieldGlobalId, std::u16string> GetValuesToFill(
 // Creates a full form filling suggestion that will be displayed first in the
 // sub popup.
 autofill::Suggestion CreateFillAllSuggestion(
-    const autofill::Suggestion::PredictionImprovementsPayload& payload) {
+    const autofill::Suggestion::AutofillAiPayload& payload) {
   autofill::Suggestion fill_all_suggestion(
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_ALL_MAIN_TEXT),
@@ -270,8 +270,8 @@ std::vector<autofill::Suggestion> CreateFillingSuggestions(
       cache.at(field.global_id());
   autofill::Suggestion suggestion(prediction.value,
                                   autofill::SuggestionType::kFillAutofillAi);
-  auto payload = autofill::Suggestion::PredictionImprovementsPayload(
-      GetValuesToFill(cache), kIgnorableSkipReasons);
+  auto payload = autofill::Suggestion::AutofillAiPayload(GetValuesToFill(cache),
+                                                         kIgnorableSkipReasons);
   suggestion.payload = payload;
   suggestion.icon = autofill::Suggestion::Icon::kAutofillPredictionImprovements;
 

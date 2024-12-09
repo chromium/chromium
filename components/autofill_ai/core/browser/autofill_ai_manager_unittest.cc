@@ -39,7 +39,7 @@ namespace {
 using ::autofill::Suggestion;
 using ::autofill::SuggestionType;
 using enum SuggestionType;
-using PredictionImprovementsPayload = Suggestion::PredictionImprovementsPayload;
+using AutofillAiPayload = Suggestion::AutofillAiPayload;
 using PredictionsByGlobalId = AutofillAiModelExecutor::PredictionsByGlobalId;
 using ::base::test::RunOnceCallback;
 using ::testing::_;
@@ -69,9 +69,9 @@ auto HasType(SuggestionType expected_type) {
   return Field("Suggestion::type", &Suggestion::type, Eq(expected_type));
 }
 
-auto HasPredictionImprovementsPayload(auto expected_payload) {
+auto HasAutofillAiPayload(auto expected_payload) {
   return Field("Suggestion::payload", &Suggestion::payload,
-               VariantWith<PredictionImprovementsPayload>(expected_payload));
+               VariantWith<AutofillAiPayload>(expected_payload));
 }
 
 auto HasValueToFill(const std::u16string& expected_value_to_fill) {
@@ -322,8 +322,8 @@ TEST_F(AutofillAiManagerTest, EndToEnd) {
         update_suggestions_callback,
         Run(AllOf(ElementsAre(HasType(kFillAutofillAi), HasType(kSeparator),
                               HasType(kAutofillAiFeedback)),
-                  FirstElementIs(HasPredictionImprovementsPayload(
-                      Field(&PredictionImprovementsPayload::values_to_fill,
+                  FirstElementIs(HasAutofillAiPayload(
+                      Field(&AutofillAiPayload::values_to_fill,
                             ElementsAre(Pair(filled_field.global_id(),
                                              filled_field.value()))))),
                   FirstElementIs(Field(
@@ -673,29 +673,29 @@ TEST_F(AutofillAiManagerTest,
       ElementsAre(
           AllOf(
               HasType(kFillAutofillAi),
-              HasPredictionImprovementsPayload(Field(
-                  "PredictionImprovementsPayload::values_to_fill",
-                  &PredictionImprovementsPayload::values_to_fill,
+              HasAutofillAiPayload(Field(
+                  "AutofillAiPayload::values_to_fill",
+                  &AutofillAiPayload::values_to_fill,
                   ElementsAre(
                       Pair(form.fields()[0].global_id(), trigger_field_value),
                       Pair(form.fields()[1].global_id(), select_field_value)))),
-              Field("Suggestion::children", &Suggestion::children,
-                    ElementsAre(AllOf(HasType(kFillAutofillAi),
-                                      HasPredictionImprovementsPayload(_)),
-                                HasType(kSeparator),
-                                AllOf(HasType(kFillAutofillAi),
-                                      HasValueToFill(trigger_field_value),
-                                      HasMainText(trigger_field_value),
-                                      HasLabel(trigger_field_label)),
-                                AllOf(HasType(kFillAutofillAi),
-                                      // For <select> elements expect both value
-                                      // to fill and main text to be set to the
-                                      // option text, not the value.
-                                      HasValueToFill(select_field_option_text),
-                                      HasMainText(select_field_option_text),
-                                      HasLabel(select_field_label)),
-                                HasType(kSeparator),
-                                HasType(kEditAutofillAiData)))),
+              Field(
+                  "Suggestion::children", &Suggestion::children,
+                  ElementsAre(
+                      AllOf(HasType(kFillAutofillAi), HasAutofillAiPayload(_)),
+                      HasType(kSeparator),
+                      AllOf(HasType(kFillAutofillAi),
+                            HasValueToFill(trigger_field_value),
+                            HasMainText(trigger_field_value),
+                            HasLabel(trigger_field_label)),
+                      AllOf(HasType(kFillAutofillAi),
+                            // For <select> elements expect both value
+                            // to fill and main text to be set to the
+                            // option text, not the value.
+                            HasValueToFill(select_field_option_text),
+                            HasMainText(select_field_option_text),
+                            HasLabel(select_field_label)),
+                      HasType(kSeparator), HasType(kEditAutofillAiData)))),
           HasType(kSeparator), HasType(kAutofillAiFeedback)));
 }
 

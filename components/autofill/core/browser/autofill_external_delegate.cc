@@ -1203,8 +1203,8 @@ void AutofillExternalDelegate::FillPredictionImprovements(
                                  /*field_type_used=*/std::nullopt);
   } else {
     // Full form filling.
-    Suggestion::PredictionImprovementsPayload payload =
-        suggestion.GetPayload<Suggestion::PredictionImprovementsPayload>();
+    Suggestion::AutofillAiPayload payload =
+        suggestion.GetPayload<Suggestion::AutofillAiPayload>();
     manager_->FillOrPreviewFormWithPredictionImprovements(
         mojom::ActionPersistence::kFill, payload.ignorable_skip_reasons,
         query_form_, query_field_, payload.values_to_fill);
