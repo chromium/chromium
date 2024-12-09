@@ -20,6 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/task_manager/providers/browser_process_task_provider.h"
 #include "chrome/browser/task_manager/providers/child_process_task_provider.h"
 #include "chrome/browser/task_manager/providers/fallback_task_provider.h"
@@ -125,7 +126,10 @@ TaskManagerImpl* TaskManagerImpl::GetInstance() {
 }
 
 bool TaskManagerImpl::IsCreated() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // In minimal mode, BrowserThread doesn't exist.
+  if (g_browser_process) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  }
   return lazy_task_manager_instance.IsCreated();
 }
 

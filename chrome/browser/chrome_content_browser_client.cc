@@ -172,6 +172,7 @@
 #include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
 #include "chrome/browser/task_manager/sampling/task_manager_impl.h"
+#include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/tracing/chrome_tracing_delegate.h"
@@ -582,7 +583,6 @@
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/serial/chrome_serial_delegate.h"
-#include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -6788,12 +6788,10 @@ void ChromeContentBrowserClient::OnNetworkServiceCreated(
   SystemNetworkContextManager::GetInstance()->OnNetworkServiceCreated(
       network_service);
 
-#if !BUILDFLAG(IS_ANDROID)
   if (task_manager::TaskManagerImpl::IsCreated() &&
       task_manager::TaskManagerImpl::GetInstance()->is_running()) {
     network_service->EnableDataUseUpdates(true);
   }
-#endif
 }
 
 void ChromeContentBrowserClient::ConfigureNetworkContextParams(
@@ -7365,10 +7363,8 @@ void ChromeContentBrowserClient::OnNetworkServiceDataUseUpdate(
     int32_t network_traffic_annotation_id_hash,
     int64_t recv_bytes,
     int64_t sent_bytes) {
-#if !BUILDFLAG(IS_ANDROID)
   task_manager::TaskManagerInterface::UpdateAccumulatedStatsNetworkForRoute(
       render_frame_host_id, recv_bytes, sent_bytes);
-#endif
 }
 
 base::FilePath

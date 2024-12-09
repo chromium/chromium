@@ -49,6 +49,10 @@ public class TaskManagerServiceBridge {
         return TaskManagerServiceBridgeJni.get().getPlatformIndependentCpuUsage(taskId);
     }
 
+    public long getNetworkUsage(long taskId) {
+        return TaskManagerServiceBridgeJni.get().getNetworkUsage(taskId);
+    }
+
     public long getProcessId(long taskId) {
         return TaskManagerServiceBridgeJni.get().getProcessId(taskId);
     }
@@ -85,6 +89,8 @@ public class TaskManagerServiceBridge {
         long getMemoryFootprintUsage(long taskId);
 
         double getPlatformIndependentCpuUsage(long taskId);
+
+        long getNetworkUsage(long taskId);
 
         long getProcessId(long taskId);
 

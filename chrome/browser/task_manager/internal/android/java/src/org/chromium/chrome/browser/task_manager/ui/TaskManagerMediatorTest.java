@@ -64,11 +64,15 @@ public class TaskManagerMediatorTest {
 
         ArgumentCaptor<TaskManagerObserver> observerCaptor =
                 ArgumentCaptor.forClass(TaskManagerObserver.class);
+        ArgumentCaptor<Integer> refreshTypeCaptor = ArgumentCaptor.forClass(Integer.class);
+
         verify(mBridge)
-                .addObserver(
-                        observerCaptor.capture(),
-                        eq(1000),
-                        eq(RefreshType.MEMORY_FOOTPRINT | RefreshType.CPU));
+                .addObserver(observerCaptor.capture(), eq(1000), refreshTypeCaptor.capture());
+
+        assertEquals(
+                RefreshType.MEMORY_FOOTPRINT,
+                refreshTypeCaptor.getValue() & RefreshType.MEMORY_FOOTPRINT);
+        assertEquals(RefreshType.CPU, refreshTypeCaptor.getValue() & RefreshType.CPU);
 
         mObserver = observerCaptor.getValue();
     }

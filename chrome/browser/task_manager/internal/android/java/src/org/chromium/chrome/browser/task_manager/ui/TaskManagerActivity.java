@@ -29,6 +29,7 @@ public class TaskManagerActivity extends AppCompatActivity {
                     TaskManagerProperties.TASK_NAME,
                     TaskManagerProperties.MEMORY_FOOTPRINT,
                     TaskManagerProperties.CPU,
+                    TaskManagerProperties.NETWORK_USAGE,
                     TaskManagerProperties.PROCESS_ID);
     private TaskManagerCoordinator mCoordinator;
 

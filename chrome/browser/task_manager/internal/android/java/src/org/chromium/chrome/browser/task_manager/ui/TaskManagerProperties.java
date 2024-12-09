@@ -74,6 +74,9 @@ class TaskManagerProperties {
     /** Property key for cpu. */
     static final WritableFloatPropertyKey CPU = new WritableFloatPropertyKey();
 
+    /** Property key for network usage */
+    static final WritableLongPropertyKey NETWORK_USAGE = new WritableLongPropertyKey();
+
     /** Property key for process id. */
     static final WritableLongPropertyKey PROCESS_ID = new WritableLongPropertyKey();
 
@@ -88,7 +91,7 @@ class TaskManagerProperties {
      * menu and the header.
      */
     static final PropertyKey[] ALL_COLUMN_KEYS =
-            new PropertyKey[] {TASK_NAME, MEMORY_FOOTPRINT, CPU, PROCESS_ID};
+            new PropertyKey[] {TASK_NAME, MEMORY_FOOTPRINT, CPU, NETWORK_USAGE, PROCESS_ID};
 
     /**
      * Returns whether the initial sort ordering of this column should be ascending or not. Keep the
@@ -100,6 +103,8 @@ class TaskManagerProperties {
         } else if (columnKey == MEMORY_FOOTPRINT) {
             return false;
         } else if (columnKey == CPU) {
+            return false;
+        } else if (columnKey == NETWORK_USAGE) {
             return false;
         } else if (columnKey == PROCESS_ID) {
             return true;

@@ -50,6 +50,13 @@ static jdouble JNI_TaskManagerServiceBridge_GetPlatformIndependentCpuUsage(
       ->GetPlatformIndependentCPUUsage(task_id);
 }
 
+static jlong JNI_TaskManagerServiceBridge_GetNetworkUsage(
+    JNIEnv* env,
+    task_manager::TaskId task_id) {
+  return task_manager::TaskManagerInterface::GetTaskManager()->GetNetworkUsage(
+      task_id);
+}
+
 static jlong JNI_TaskManagerServiceBridge_GetProcessId(
     JNIEnv* env,
     task_manager::TaskId task_id) {

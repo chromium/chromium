@@ -16,6 +16,7 @@ import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.HEADER_PROPERTY_KEYS;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.IS_SELECTED;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.MEMORY_FOOTPRINT;
+import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.NETWORK_USAGE;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.PROCESS_ID;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.SORT_DESCRIPTOR;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_ID;
@@ -88,7 +89,8 @@ public class TaskManagerCoordinatorTest {
         assertTrue(mHeaderView.isShown());
         assertTrue(mRecyclerView.isShown());
 
-        PropertyKey[] columnKeys = new PropertyKey[] {TASK_NAME, MEMORY_FOOTPRINT, CPU, PROCESS_ID};
+        PropertyKey[] columnKeys =
+                new PropertyKey[] {TASK_NAME, MEMORY_FOOTPRINT, CPU, NETWORK_USAGE, PROCESS_ID};
         mTaskModelKeys =
                 PropertyModel.concatKeys(columnKeys, new PropertyKey[] {TASK_ID, IS_SELECTED});
 
@@ -104,6 +106,7 @@ public class TaskManagerCoordinatorTest {
                         .with(TASK_NAME, "foo")
                         .with(MEMORY_FOOTPRINT, 1024_000)
                         .with(CPU, 0.5F)
+                        .with(NETWORK_USAGE, 0)
                         .with(PROCESS_ID, 1234)
                         .with(IS_SELECTED, false)
                         .build();
@@ -118,11 +121,13 @@ public class TaskManagerCoordinatorTest {
         TextView taskName = taskView.findViewById(R.id.task_name);
         TextView memoryFootprint = taskView.findViewById(R.id.memory_footprint);
         TextView cpu = taskView.findViewById(R.id.cpu);
+        TextView networkUsage = taskView.findViewById(R.id.network_usage);
         TextView processId = taskView.findViewById(R.id.process_id);
 
         assertEquals("foo", taskName.getText().toString());
         assertEquals("1,000K", memoryFootprint.getText().toString());
         assertEquals("0.5", cpu.getText().toString());
+        assertEquals("0", networkUsage.getText().toString());
         assertEquals("1234", processId.getText().toString());
 
         task.set(MEMORY_FOOTPRINT, -1);

@@ -4862,7 +4862,7 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_TASK_MANAGER_NACL_DEBUG_STUB_PORT_COLUMN" desc="The text of the NativeClient debug stub port column">
           NaCl debug port
         </message>
-        <message name="IDS_TASK_MANAGER_NET_COLUMN" desc="The text of the network usage column">
+        <message name="IDS_TASK_MANAGER_NET_COLUMN" desc="The text of the network usage column" formatter_data="android_java">
           Network
         </message>
         <message name="IDS_TASK_MANAGER_CPU_COLUMN" desc="The text of the CPU usage column" formatter_data="android_java">
@@ -4936,7 +4936,7 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_TASK_MANAGER_TASK_COLUMN" desc="The text of the task column" formatter_data="android_java">
           Task
         </message>
-        <message name="IDS_TASK_MANAGER_NET_COLUMN" desc="The text of the network usage column">
+        <message name="IDS_TASK_MANAGER_NET_COLUMN" desc="The text of the network usage column" formatter_data="android_java">
           Network
         </message>
         <message name="IDS_TASK_MANAGER_CPU_COLUMN" desc="The text of the CPU usage column" formatter_data="android_java">
