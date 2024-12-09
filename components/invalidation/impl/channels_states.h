@@ -26,10 +26,6 @@ enum class SubscriptionChannelState {
   kMaxValue = SUBSCRIPTION_FAILURE,
 };
 
-const char* FcmChannelStateToString(FcmChannelState state);
-
-const char* SubscriptionChannelStateToString(SubscriptionChannelState state);
-
 }  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_IMPL_CHANNELS_STATES_H_

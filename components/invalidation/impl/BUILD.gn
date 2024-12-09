@@ -17,7 +17,6 @@ static_library("feature_list") {
 
 static_library("impl") {
   sources = [
-    "channels_states.cc",
     "channels_states.h",
     "fcm_invalidation_listener.cc",
     "fcm_invalidation_listener.h",
