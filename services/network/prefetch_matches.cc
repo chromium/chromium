@@ -12,6 +12,7 @@
 #include <ostream>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <unordered_map>
 #include <utility>
 
@@ -20,6 +21,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/stack_allocated.h"
