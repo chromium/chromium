@@ -257,7 +257,7 @@ TEST(StringViewTest, ConstructionAtomicString16) {
 }
 
 TEST(StringViewTest, ConstructionStringView8) {
-  StringView view8_bit = StringView(kChars8, 5u);
+  StringView view8_bit = StringView(base::byte_span_from_cstring(kChars));
 
   // StringView(StringView&);
   ASSERT_TRUE(StringView(view8_bit).Is8Bit());
@@ -346,13 +346,6 @@ TEST(StringViewTest, ConstructionLiteral8) {
   EXPECT_EQ(5u, StringView(kChars).length());
   EXPECT_EQ(kChars, StringView(kChars));
 
-  // StringView(const LChar* chars, unsigned length);
-  ASSERT_TRUE(StringView(kChars8, 2u).Is8Bit());
-  EXPECT_FALSE(StringView(kChars8, 2u).IsNull());
-  EXPECT_EQ(2u, StringView(kChars8, 2u).length());
-  EXPECT_EQ(StringView("12"), StringView(kChars8, 2u));
-  EXPECT_EQ("12", StringView(kChars8, 2u));
-
   // StringView(base::span<const LChar> chars);
   StringView view2(base::as_byte_span(kChars).first(2u));
   ASSERT_TRUE(view2.Is8Bit());
@@ -432,7 +425,8 @@ TEST(StringViewTest, ToString) {
 TEST(StringViewTest, ToAtomicString) {
   EXPECT_EQ(g_null_atom.Impl(), StringView().ToAtomicString());
   EXPECT_EQ(g_empty_atom.Impl(), StringView("").ToAtomicString());
-  EXPECT_EQ(AtomicString("12"), StringView(kChars8, 2u).ToAtomicString());
+  EXPECT_EQ(AtomicString("12"),
+            StringView(base::as_byte_span(kChars).first(2u)).ToAtomicString());
   // AtomicString will convert to 8bit if possible when creating the string.
   EXPECT_EQ(AtomicString("12").Impl(),
             StringView(base::span_from_cstring(kCharsU).first(2u))

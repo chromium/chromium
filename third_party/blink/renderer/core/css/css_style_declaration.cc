@@ -224,9 +224,10 @@ NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
     if (length <= 128 && string->IsOneByte()) {
       LChar buffer[128];
       string->WriteOneByteV2(script_state->GetIsolate(), 0, length, buffer);
-      SetPropertyInternal(
-          unresolved_property, String(), StringView(buffer, length), false,
-          execution_context->GetSecureContextMode(), exception_state);
+      SetPropertyInternal(unresolved_property, String(),
+                          StringView(base::span(buffer).first(length)), false,
+                          execution_context->GetSecureContextMode(),
+                          exception_state);
       if (exception_state.HadException()) {
         return NamedPropertySetterResult::kIntercepted;
       }
