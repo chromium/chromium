@@ -2009,12 +2009,7 @@ TEST_P(ServiceWorkerVersionTest, SetResources) {
 
 class ServiceWorkerVersionStaticRouterTest : public ServiceWorkerVersionTest {
  public:
-  ServiceWorkerVersionStaticRouterTest() {
-    feature_list_.InitWithFeatures({features::kServiceWorkerStaticRouter}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
+  ServiceWorkerVersionStaticRouterTest() = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(

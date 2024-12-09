@@ -1078,7 +1078,7 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
           base::MakeRefCounted<PolicyContainerHost>(
               PolicyContainerPolicies(*data.policy_container_policies)));
     }
-    if (data.router_rules && version->IsStaticRouterEnabled()) {
+    if (data.router_rules) {
       auto error = version->SetupRouterEvaluator(*data.router_rules);
       DCHECK_EQ(error, ServiceWorkerRouterEvaluatorErrorEnums::kNoError)
           << "Failed to setup RouterEvaluator from the provided "

@@ -323,8 +323,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableWebXRSpecParity,
            raw_ref(device::features::kWebXrIncubations)},
 #endif
-          {wf::EnableServiceWorkerStaticRouter,
-           raw_ref(features::kServiceWorkerStaticRouter)},
           {wf::EnablePermissions, raw_ref(features::kWebPermissionsApi),
            kSetOnlyIfOverridden},
       };

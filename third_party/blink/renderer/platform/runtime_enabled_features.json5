@@ -3845,12 +3845,6 @@
       status: "experimental",
     },
     {
-      name: "ServiceWorkerStaticRouter",
-      base_feature: "none",
-      origin_trial_feature_name: "ServiceWorkerStaticRouter",
-      public: true,
-    },
-    {
       name: "ServiceWorkerStaticRouterTimingInfo",
       origin_trial_feature_name: "ServiceWorkerStaticRouterTimingInfo",
     },

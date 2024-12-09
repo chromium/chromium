@@ -700,9 +700,6 @@ public final class ProductionSupportedFlagList {
                         + "targeting a cross-origin iframe which has moved within its "
                         + "embedding page recently."),
         Flag.baseFeature(
-                ContentFeatures.SERVICE_WORKER_STATIC_ROUTER,
-                "Enables Service Worker static routing API."),
-        Flag.baseFeature(
                 ContentFeatures.BACK_FORWARD_CACHE_MEDIA_SESSION_SERVICE,
                 "Enables media session usage when bfcache is enabled"),
         Flag.baseFeature(
