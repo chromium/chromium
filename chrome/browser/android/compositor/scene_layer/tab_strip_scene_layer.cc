@@ -452,7 +452,8 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
     jfloat y,
     jfloat width,
     jfloat height,
-    jfloat title_text_padding,
+    jfloat title_start_padding,
+    jfloat title_end_padding,
     jfloat corner_radius,
     jfloat bottom_indicator_width,
     jfloat bottom_indicator_height,
@@ -484,8 +485,10 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
 
     float title_y = (height - title_layer->size().height()) / 2.f;
     title_layer->setOpacity(1.0f);
-    title_layer->setBounds(gfx::Size(width - (title_text_padding * 2), height));
-    title_layer->layer()->SetPosition(gfx::PointF(title_text_padding, title_y));
+    title_layer->setBounds(
+        gfx::Size(width - title_start_padding - title_end_padding, height));
+    title_layer->layer()->SetPosition(
+        gfx::PointF(title_start_padding, title_y));
     if (title_indicator_layer->children().size() == 0) {
       title_indicator_layer->AddChild(title_layer->layer());
     } else {

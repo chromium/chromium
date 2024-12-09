@@ -70,14 +70,15 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     private static final int MAX_VISUAL_WIDTH_DP = 156;
 
     private static final int MARGIN_TOP_DP = 7;
-    private static final int MARGIN_BOTTOM_DP = 7;
+    private static final int MARGIN_BOTTOM_DP = 9;
     private static final int MARGIN_START_DP = 13;
-
-    // TODO(crbug.com/381161875): Update the end margin to align with the top margin.
     private static final int MARGIN_END_DP = 9;
-
     private static final int TEXT_PADDING_DP = 8;
-    private static final int CORNER_RADIUS_DP = 7;
+
+    // The padding between the start of the indicator and the avatar when the group is shared. If no
+    // avatar is present, the start padding should match the end padding, using `TEXT_PADDING_DP`.
+    private static final int AVATAR_START_PADDING_DP = 4;
+    private static final int CORNER_RADIUS_DP = 6;
     private static final float BOTTOM_INDICATOR_HEIGHT_DP = 2.f;
 
     private static final int WIDTH_MARGINS_DP = MARGIN_START_DP + MARGIN_END_DP;
@@ -228,7 +229,8 @@ public class StripLayoutGroupTitle extends StripLayoutView {
         float viewWidth =
                 getAvatarWidthWithPadding()
                         + textWidth
-                        + (TEXT_PADDING_DP * 2)
+                        + getTitleStartPadding()
+                        + getTitleEndPadding()
                         + WIDTH_MARGINS_DP
                         + 1;
         setWidth(MathUtils.clamp(viewWidth, EFFECTIVE_MIN_WIDTH, EFFECTIVE_MAX_WIDTH));
@@ -257,9 +259,16 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     }
 
     /**
-     * @return The padding for the title text.
+     * @return The start padding for the title.
      */
-    public int getTitleTextPadding() {
+    public int getTitleStartPadding() {
+        return mAvatarWidthWithPadding > 0 ? AVATAR_START_PADDING_DP : TEXT_PADDING_DP;
+    }
+
+    /**
+     * @return The end padding for the title.
+     */
+    public int getTitleEndPadding() {
         return TEXT_PADDING_DP;
     }
 
