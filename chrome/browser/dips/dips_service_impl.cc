@@ -190,9 +190,9 @@ class StateClearer : public content::BrowsingDataRemover::Observer {
     // StateClearer manages its own lifetime and deletes itself when finished.
     StateClearer* clearer =
         new StateClearer(remover, /*callback_count=*/2, std::move(callback));
-    if (base::FeatureList::IsEnabled(features::kDIPSPreservePSData)) {
-      remove_mask &= ~content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX;
-    }
+
+    // Don't delete Privacy Sandbox data - see crbug.com/41488981.
+    remove_mask &= ~content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX;
     remover->RemoveWithFilterAndReply(
         base::Time::Min(), base::Time::Max(),
         remove_mask |

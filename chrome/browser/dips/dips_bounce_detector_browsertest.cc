@@ -3707,24 +3707,19 @@ IN_PROC_BROWSER_TEST_F(DIPSPrivacySandboxApiInteractionTest,
 }
 
 class DIPSPrivacySandboxDataPreservationTest
-    : public DIPSPrivacySandboxApiInteractionTest,
-      public testing::WithParamInterface<bool> {
+    : public DIPSPrivacySandboxApiInteractionTest {
  public:
   DIPSPrivacySandboxDataPreservationTest() {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
     enabled_features.emplace_back(features::kPrivacySandboxAdsAPIsOverride);
-    (ShouldPreservePSData() ? enabled_features : disabled_features)
-        .emplace_back(features::kDIPSPreservePSData);
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
-
-  bool ShouldPreservePSData() const { return GetParam(); }
 };
 
-IN_PROC_BROWSER_TEST_P(DIPSPrivacySandboxDataPreservationTest,
+IN_PROC_BROWSER_TEST_F(DIPSPrivacySandboxDataPreservationTest,
                        DontClearAttributionReportingApiData) {
   WebContents* web_contents = GetActiveWebContents();
   // Enable Privacy Sandbox APIs in the current profile.
@@ -3773,19 +3768,11 @@ IN_PROC_BROWSER_TEST_P(DIPSPrivacySandboxDataPreservationTest,
       ->GetDefaultStoragePartition()
       ->GetAttributionDataModel()
       ->GetAllDataKeys(post_deletion_data.GetCallback());
-  if (ShouldPreservePSData()) {
-    // Confirm the attribution data was not deleted.
-    EXPECT_THAT(GetOrigins(post_deletion_data.Get()),
-                ElementsAre(url::Origin::Create(attribution_url)));
-  } else {
-    // Confirm the attribution data was deleted.
-    EXPECT_THAT(post_deletion_data.Get(), IsEmpty());
-  }
-}
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         DIPSPrivacySandboxDataPreservationTest,
-                         ::testing::Bool());
+  // Confirm the attribution data was not deleted.
+  EXPECT_THAT(GetOrigins(post_deletion_data.Get()),
+              ElementsAre(url::Origin::Create(attribution_url)));
+}
 
 namespace {
 
