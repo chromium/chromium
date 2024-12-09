@@ -273,8 +273,7 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
   self.lastFocusedElementPasswordField = params.field_type == "password";
   DCHECK(frame);
   self.lastFocusedElementFrameIdentifier = frame->GetFrameId();
-  const GURL frameSecureOrigin = frame->GetSecurityOriginDeprecated();
-  if (!frameSecureOrigin.SchemeIsCryptographic()) {
+  if (!GURL::SchemeIsCryptographic(frame->GetSecurityOrigin().scheme())) {
     self.lastFocusedElementSecure = NO;
   }
 }

@@ -95,6 +95,8 @@ TEST_F(WebFramesManagerImplTest, MainWebFrame) {
   EXPECT_EQ(main_frame, main_frame_by_id);
   EXPECT_EQ(main_frame_ptr, main_frame_by_id);
   EXPECT_TRUE(main_frame->IsMainFrame());
+  EXPECT_EQ(main_frame_ptr->GetSecurityOrigin(),
+            main_frame->GetSecurityOrigin());
   EXPECT_EQ(main_frame_ptr->GetSecurityOriginDeprecated(),
             main_frame->GetSecurityOriginDeprecated());
 
@@ -139,6 +141,8 @@ TEST_F(WebFramesManagerImplTest, DuplicateMainWebFrame) {
   EXPECT_EQ(main_frame, main_frame_by_id);
   EXPECT_EQ(main_frame_ptr, main_frame_by_id);
   EXPECT_TRUE(main_frame->IsMainFrame());
+  EXPECT_EQ(main_frame_ptr->GetSecurityOrigin(),
+            main_frame->GetSecurityOrigin());
   EXPECT_EQ(main_frame_ptr->GetSecurityOriginDeprecated(),
             main_frame->GetSecurityOriginDeprecated());
 
@@ -209,6 +213,8 @@ TEST_F(WebFramesManagerImplTest, RemoveNonexistantFrame) {
   EXPECT_EQ(main_frame, main_frame_by_id);
   EXPECT_EQ(main_frame_ptr, main_frame_by_id);
   EXPECT_TRUE(main_frame->IsMainFrame());
+  EXPECT_EQ(main_frame_ptr->GetSecurityOrigin(),
+            main_frame->GetSecurityOrigin());
   EXPECT_EQ(main_frame_ptr->GetSecurityOriginDeprecated(),
             main_frame->GetSecurityOriginDeprecated());
 

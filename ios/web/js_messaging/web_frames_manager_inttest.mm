@@ -78,6 +78,7 @@ TEST_F(WebFramesManagerTest, SingleWebFrame) {
   ASSERT_TRUE(main_web_frame);
   EXPECT_TRUE(main_web_frame->IsMainFrame());
   EXPECT_FALSE(main_web_frame->GetFrameId().empty());
+  EXPECT_TRUE(main_web_frame->GetSecurityOrigin().IsSameOriginWith(url));
   EXPECT_EQ(url.DeprecatedGetOriginAsURL(),
             main_web_frame->GetSecurityOriginDeprecated());
 }
@@ -107,6 +108,8 @@ TEST_F(WebFramesManagerTest, SingleWebFrameBack) {
   WebFrame* pony_main_web_frame = frames_manager->GetMainWebFrame();
   ASSERT_TRUE(pony_main_web_frame);
   EXPECT_TRUE(pony_main_web_frame->IsMainFrame());
+  EXPECT_TRUE(
+      pony_main_web_frame->GetSecurityOrigin().IsSameOriginWith(pony_url));
   EXPECT_EQ(pony_url.DeprecatedGetOriginAsURL(),
             pony_main_web_frame->GetSecurityOriginDeprecated());
 
@@ -153,6 +156,8 @@ TEST_F(WebFramesManagerTest, SingleWebFrameLinkNavigationBackForward) {
   WebFrame* pony_main_web_frame = frames_manager->GetMainWebFrame();
   ASSERT_TRUE(pony_main_web_frame);
   EXPECT_TRUE(pony_main_web_frame->IsMainFrame());
+  EXPECT_TRUE(
+      pony_main_web_frame->GetSecurityOrigin().IsSameOriginWith(pony_url));
   EXPECT_EQ(pony_url.DeprecatedGetOriginAsURL(),
             pony_main_web_frame->GetSecurityOriginDeprecated());
 

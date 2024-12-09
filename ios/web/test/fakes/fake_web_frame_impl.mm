@@ -37,8 +37,9 @@ std::unique_ptr<FakeWebFrame> FakeWebFrame::Create(
 std::unique_ptr<FakeWebFrame> FakeWebFrame::Create(const std::string& frame_id,
                                                    bool is_main_frame,
                                                    GURL security_origin) {
-  return std::make_unique<FakeWebFrameImpl>(frame_id, is_main_frame,
-                                            url::Origin(), security_origin);
+  return std::make_unique<FakeWebFrameImpl>(
+      frame_id, is_main_frame, url::Origin::Create(security_origin),
+      security_origin);
 }
 
 // static
@@ -58,7 +59,8 @@ std::unique_ptr<FakeWebFrame> FakeWebFrame::CreateMainWebFrame(
 std::unique_ptr<FakeWebFrame> FakeWebFrame::CreateMainWebFrame(
     GURL security_origin) {
   return std::make_unique<FakeWebFrameImpl>(
-      kMainFakeFrameId, /*is_main_frame=*/true, url::Origin(), security_origin);
+      kMainFakeFrameId, /*is_main_frame=*/true,
+      url::Origin::Create(security_origin), security_origin);
 }
 
 // static
@@ -77,9 +79,10 @@ std::unique_ptr<FakeWebFrame> FakeWebFrame::CreateChildWebFrame(
 // static
 std::unique_ptr<FakeWebFrame> FakeWebFrame::CreateChildWebFrame(
     GURL security_origin) {
-  return std::make_unique<FakeWebFrameImpl>(kChildFakeFrameId,
-                                            /*is_main_frame=*/false,
-                                            url::Origin(), security_origin);
+  return std::make_unique<FakeWebFrameImpl>(
+      kChildFakeFrameId,
+      /*is_main_frame=*/false, url::Origin::Create(security_origin),
+      security_origin);
 }
 
 FakeWebFrameImpl::FakeWebFrameImpl(const std::string& frame_id,
