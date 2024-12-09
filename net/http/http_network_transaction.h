@@ -350,6 +350,8 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
 
   void ResumeAfterConnected(int result);
 
+  void RecordStreamRequestResult(int result);
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class QuicProtocolErrorRetryStatus {
@@ -378,6 +380,8 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   raw_ptr<HttpNetworkSession> session_;
 
   NetLogWithSource net_log_;
+
+  base::TimeTicks start_timeticks_;
 
   // Reset to null at the start of the Read state machine.
   raw_ptr<const HttpRequestInfo> request_ = nullptr;
@@ -423,7 +427,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   std::string request_referrer_;
   std::string request_user_agent_;
   int request_reporting_upload_depth_ = 0;
-  base::TimeTicks start_timeticks_;
 #endif
 
   // The size in bytes of the buffer we use to drain the response body that
@@ -489,6 +492,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   IPEndPoint remote_endpoint_;
   // Network error details for this transaction.
   NetErrorDetails net_error_details_;
+  NextProto negotiated_protocol_ = NextProto::kProtoUnknown;
 
   // Number of retries made for network errors like ERR_HTTP2_PING_FAILED,
   // ERR_HTTP2_SERVER_REFUSED_STREAM, ERR_QUIC_HANDSHAKE_FAILED and

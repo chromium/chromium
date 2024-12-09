@@ -2600,6 +2600,51 @@ chromium-metrics-reviews@google.com.
   <token key="Protocol" variants="NetworkTransactionBlockedProtocol"/>
 </histogram>
 
+<histogram name="Net.NetworkTransaction.NegotiatedProtocol{HostType}"
+    enum="SSLNegotiatedAlpnProtocol" expires_after="2025-02-27">
+  <owner>bashi@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Negotiated protocol of an HttpStream. Recorded in HttpNetworkTransaction
+    when an HttpStreamRequest succeeded.
+  </summary>
+  <token key="HostType" variants="HostType"/>
+</histogram>
+
+<histogram name="Net.NetworkTransaction.StreamAddressFamily"
+    enum="AddressFamily" expires_after="2025-02-27">
+  <owner>bashi@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Address family of a remote endpoint of an HttpStream. Recorded in
+    HttpNetworkTransaction when an HttpStreamRequest succeeded and getting the
+    remote endpoint IP address succeeded.
+  </summary>
+</histogram>
+
+<histogram
+    name="Net.NetworkTransaction.StreamRequestCompleteTime{HostType}.{SuccessOrFailure}"
+    units="ms" expires_after="2025-02-27">
+  <owner>bashi@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    The time taken by an HttpStreamRequest to complete. Recorded only when an
+    HttpStreamRequest succeeded without retries in HttpNetworkTransaction.
+  </summary>
+  <token key="HostType" variants="HostType"/>
+  <token key="SuccessOrFailure" variants="SuccessOrFailure"/>
+</histogram>
+
+<histogram name="Net.NetworkTransaction.StreamRequestErrorCode"
+    enum="NetErrorCodes" expires_after="2025-02-27">
+  <owner>bashi@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    The net error for an HttpStreamRequest. Recorded in HttpNetworkTransaction
+    when an HttpStreamRequest failed.
+  </summary>
+</histogram>
+
 <histogram name="Net.NetworkTransaction{HostType}.RetryReason"
     enum="HttpNetworkTransactionRetryReason" expires_after="2025-04-20">
   <owner>horo@chromium.org</owner>
