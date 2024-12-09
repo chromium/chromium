@@ -102,8 +102,8 @@ public class HomeModulesMediatorUnitTest {
     @After
     public void tearDown() {
         for (int i = 0; i < ModuleType.NUM_ENTRIES; i++) {
-            mHomeModulesConfigManager.resetFreshnessCount(i);
-            mHomeModulesConfigManager.resetFreshnessTimeStampForTesting(i);
+            HomeModulesUtils.resetFreshnessCount(i);
+            HomeModulesUtils.resetFreshnessTimeStampForTesting(i);
         }
         mHomeModulesConfigManager.cleanupForTesting();
     }
@@ -701,8 +701,8 @@ public class HomeModulesMediatorUnitTest {
 
         // Verifies that createInputContext() returns an empty one with invalid score value if the
         // freshness score is invalid or not added.
-        mHomeModulesConfigManager.setFreshnessCountForTesting(
-                moduleType, HomeModulesConfigManager.INVALID_FRESHNESS_SCORE);
+        HomeModulesUtils.setFreshnessCountForTesting(
+                moduleType, HomeModulesUtils.INVALID_FRESHNESS_SCORE);
         InputContext inputContext = mMediator.createInputContext();
         verifyEmptyInputContext(inputContext);
     }
@@ -724,23 +724,23 @@ public class HomeModulesMediatorUnitTest {
         int expectedScore = 100;
         long scoreLoggedTime =
                 SystemClock.elapsedRealtime() - HomeModulesMediator.FRESHNESS_THRESHOLD_MS - 10;
-        mHomeModulesConfigManager.setFreshnessScoreTimeStamp(moduleType, scoreLoggedTime);
-        mHomeModulesConfigManager.setFreshnessCountForTesting(moduleType, expectedScore);
+        HomeModulesUtils.setFreshnessScoreTimeStamp(moduleType, scoreLoggedTime);
+        HomeModulesUtils.setFreshnessCountForTesting(moduleType, expectedScore);
         InputContext inputContext = mMediator.createInputContext();
         verifyEmptyInputContext(inputContext);
 
         // Verifies that the freshness score will be used if the logging time is less than the
         // threshold.
         scoreLoggedTime = SystemClock.elapsedRealtime() - 10;
-        mHomeModulesConfigManager.setFreshnessScoreTimeStamp(moduleType, scoreLoggedTime);
-        mHomeModulesConfigManager.setFreshnessCountForTesting(moduleType, expectedScore);
+        HomeModulesUtils.setFreshnessScoreTimeStamp(moduleType, scoreLoggedTime);
+        HomeModulesUtils.setFreshnessCountForTesting(moduleType, expectedScore);
         int[] scores = new int[] {-1, expectedScore, -1, -1, -1};
         inputContext = mMediator.createInputContext();
         verifyInputContext(inputContext, scores);
 
         // Verifies that if the freshness score becomes invalid or removed, there isn't any entry
         // added to the InputContext.
-        mHomeModulesConfigManager.setFreshnessCountForTesting(moduleType, INVALID_FRESHNESS_SCORE);
+        HomeModulesUtils.setFreshnessCountForTesting(moduleType, INVALID_FRESHNESS_SCORE);
         inputContext = mMediator.createInputContext();
         verifyEmptyInputContext(inputContext);
     }

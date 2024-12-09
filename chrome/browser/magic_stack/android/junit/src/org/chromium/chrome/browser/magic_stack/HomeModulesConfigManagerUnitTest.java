@@ -15,12 +15,13 @@ import android.text.TextUtils;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager.HomeModulesStateListener;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -34,12 +35,13 @@ import java.util.Set;
 /** Unit tests for {@link HomeModulesConfigManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class HomeModulesConfigManagerUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private List<ModuleConfigChecker> mModuleConfigCheckerList = new ArrayList<>();
     private HomeModulesConfigManager mHomeModulesConfigManager;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mHomeModulesConfigManager = HomeModulesConfigManager.getInstance();
     }
 
@@ -140,38 +142,6 @@ public class HomeModulesConfigManagerUnitTest {
         assertEquals(
                 priceChangePreferenceKey,
                 mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.PRICE_CHANGE));
-    }
-
-    @Test
-    public void testFreshnessCount() {
-        @ModuleType int moduleType = ModuleType.PRICE_CHANGE;
-        String moduleFreshnessCountPreferenceKey =
-                ChromePreferenceKeys.HOME_MODULES_FRESHNESS_COUNT.createKey(
-                        String.valueOf(moduleType));
-        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
-
-        assertFalse(sharedPreferencesManager.contains(moduleFreshnessCountPreferenceKey));
-        assertEquals(
-                HomeModulesMediator.INVALID_FRESHNESS_SCORE,
-                sharedPreferencesManager.readInt(
-                        moduleFreshnessCountPreferenceKey,
-                        HomeModulesMediator.INVALID_FRESHNESS_SCORE));
-
-        int count = 5;
-        mHomeModulesConfigManager.increaseFreshnessCount(moduleType, count);
-        assertEquals(
-                count,
-                sharedPreferencesManager.readInt(
-                        moduleFreshnessCountPreferenceKey,
-                        HomeModulesMediator.INVALID_FRESHNESS_SCORE));
-
-        mHomeModulesConfigManager.resetFreshnessCount(moduleType);
-        assertTrue(sharedPreferencesManager.contains(moduleFreshnessCountPreferenceKey));
-        assertEquals(
-                HomeModulesMediator.INVALID_FRESHNESS_SCORE,
-                sharedPreferencesManager.readInt(
-                        moduleFreshnessCountPreferenceKey,
-                        HomeModulesMediator.INVALID_FRESHNESS_SCORE));
     }
 
     private void registerModuleConfigChecker(int size) {

@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 
-/** The utility class for magic stack. */
+/** The utility class for logging the magic stack's metrics. */
 public class HomeModulesMetricsUtils {
     @VisibleForTesting static final String HISTOGRAM_PREFIX = "MagicStack.Clank.NewTabPage";
     @VisibleForTesting static final String HISTOGRAM_OS_PREFIX = "MagicStack.Clank.";

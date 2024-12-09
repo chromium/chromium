@@ -698,14 +698,14 @@ public class HomeModulesMediator {
     private int getFreshnessScore(boolean useFreshnessScore, @ModuleType int moduleType) {
         if (!useFreshnessScore) return INVALID_FRESHNESS_SCORE;
 
-        long timeStamp = mHomeModulesConfigManager.getFreshnessScoreTimeStamp(moduleType);
-        if (timeStamp == HomeModulesConfigManager.INVALID_TIMESTAMP
+        long timeStamp = HomeModulesUtils.getFreshnessScoreTimeStamp(moduleType);
+        if (timeStamp == HomeModulesUtils.INVALID_TIMESTAMP
                 || SystemClock.elapsedRealtime() - timeStamp
                         >= HomeModulesMediator.FRESHNESS_THRESHOLD_MS) {
             return INVALID_FRESHNESS_SCORE;
         }
 
-        return mHomeModulesConfigManager.getFreshnessCount(moduleType);
+        return HomeModulesUtils.getFreshnessCount(moduleType);
     }
 
     @VisibleForTesting

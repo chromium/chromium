@@ -14,6 +14,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/magic_stack/HomeModulesMediator.java",
     "java/src/org/chromium/chrome/browser/magic_stack/HomeModulesMetricsUtils.java",
     "java/src/org/chromium/chrome/browser/magic_stack/HomeModulesRecyclerView.java",
+    "java/src/org/chromium/chrome/browser/magic_stack/HomeModulesUtils.java",
     "java/src/org/chromium/chrome/browser/magic_stack/ModuleConfigChecker.java",
     "java/src/org/chromium/chrome/browser/magic_stack/ModuleDelegate.java",
     "java/src/org/chromium/chrome/browser/magic_stack/ModuleDelegateHost.java",
@@ -75,6 +76,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/magic_stack/HomeModulesMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/magic_stack/HomeModulesMetricsUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/magic_stack/HomeModulesRecyclerViewUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/magic_stack/HomeModulesUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/magic_stack/ModuleRegistryUnitTest.java",
   ]
 
