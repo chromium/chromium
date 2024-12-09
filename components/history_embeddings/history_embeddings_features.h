@@ -11,26 +11,16 @@
 
 namespace history_embeddings {
 
-// This is the main feature switch for history embeddings search, and when it is
-// disabled, answering functionality will not be available either.
+// Please use `IsHistoryEmbeddingsFeatureEnabled()` instead of using any of
+// these features directly.
+// See chrome/browser/history_embeddings/history_embeddings_utils.h
+BASE_DECLARE_FEATURE(kLaunchedHistoryEmbeddings);
+BASE_DECLARE_FEATURE(kLaunchedHistoryEmbeddingsAnswers);
 BASE_DECLARE_FEATURE(kHistoryEmbeddings);
-
-// This feature specifies whether to answer queries using an answerer; it can be
-// considered a toggle for v2 answering functionality. Parameters are all kept
-// under the primary kHistoryEmbeddings feature. The kHistoryEmbeddingsAnswers
-// feature state is not applicable if kHistoryEmbeddings is disabled.
 BASE_DECLARE_FEATURE(kHistoryEmbeddingsAnswers);
 
-// Whether the history embeddings feature is enabled. This only checks if the
-// feature flags are enabled and does not check the user's opt-in preference.
-// See chrome/browser/history_embeddings/history_embeddings_utils.h.
-bool IsHistoryEmbeddingsEnabled();
-
-// Whether the history answers feature is enabled.
-bool IsHistoryEmbeddingsAnswersEnabled();
-
 // Contains feature configuration state. Can be set using Finch or overridden
-// for testing. Prefer to use this struct instead of above feature parameters
+// for testing. Prefer to use this struct instead of feature parameters
 // directly so as to reduce dependency on Finch.
 struct FeatureParameters {
   explicit FeatureParameters(bool load_finch);
@@ -96,7 +86,7 @@ struct FeatureParameters {
   int mock_intent_classifier_delay_ms = 0;
 
   // Specifies whether to use the ML Answerer (if false, the mock is used).
-  bool use_ml_answerer = false;
+  bool use_ml_answerer = true;
 
   // Specifies the min score for generated answer from the ML answerer.
   double ml_answerer_min_score = 0.5;
@@ -128,15 +118,15 @@ struct FeatureParameters {
 
   // Whether history embedding answers should be shown in the omnibox when in
   // the '@history' scope. No-op if `kOmniboxScoped` is false.
-  bool answers_in_omnibox_scoped = false;
+  bool answers_in_omnibox_scoped = true;
 
   // The maximum number of embeddings to submit to the primary (ML) embedder
   // in a single batch via the scheduling embedder.
   int scheduled_embeddings_max = 1;
 
   // Whether quality logging data should be sent.
-  bool send_quality_log = false;
-  bool send_quality_log_v2 = false;
+  bool send_quality_log = true;
+  bool send_quality_log_v2 = true;
 
   // The max number of passages that can be extracted from a page. Passages over
   // this limit will be dropped by passage extraction.
@@ -163,23 +153,23 @@ struct FeatureParameters {
 
   // Specifies whether the history clusters side panel UI also searches and
   // shows history embeddings.
-  bool enable_side_panel = false;
+  bool enable_side_panel = true;
 
   // Specifies whether history embedding results should show just the hostname
   // of the result's URL.
-  bool trim_after_host_in_results = false;
+  bool trim_after_host_in_results = true;
 
   // The maximum number of URLs to use when building context for answerer.
   int max_answerer_context_url_count = 1;
 
   // These control score boosting from passage text word matching.
   // See comments for `SearchParams` struct for more details about each value.
-  double word_match_min_embedding_score = 1.0;
-  int word_match_min_term_length = 3;
+  double word_match_min_embedding_score = 0.7;
+  int word_match_min_term_length = 0;
   double word_match_score_boost_factor = 0.2;
   int word_match_limit = 5;
-  int word_match_smoothing_factor = 1;
-  int word_match_max_term_count = 3;
+  int word_match_smoothing_factor = 0;
+  int word_match_max_term_count = 10;
   double word_match_required_term_ratio = 1.0;
 
   // Whether to include scroll to text fragment directives with answer

@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -43,6 +44,13 @@ class HistoryEmbeddingsSqlDatabaseTest : public testing::Test {
 
   void TearDown() override {
     CHECK(history_dir_.Delete());
+  }
+
+  std::unique_ptr<SqlDatabase> MakeDatabase() {
+    return std::make_unique<SqlDatabase>(
+        history_dir_.GetPath(),
+        GetFeatureParameters().erase_non_ascii_characters,
+        GetFeatureParameters().delete_embeddings);
   }
 
   // Adds mock data for url_id = 1 tied to visit_id = 10, and url_id = 2 tied to
@@ -100,7 +108,7 @@ class HistoryEmbeddingsSqlDatabaseTest : public testing::Test {
 };
 
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, WriteCloseAndThenReadPassages) {
-  auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  auto sql_database = MakeDatabase();
   sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
                                     GetEncryptorInstance());
 
@@ -114,7 +122,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, WriteCloseAndThenReadPassages) {
 
   // Reset and reload.
   sql_database.reset();
-  sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  sql_database = MakeDatabase();
   sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
                                     GetEncryptorInstance());
 
@@ -132,7 +140,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, WriteCloseAndThenReadPassages) {
 }
 
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, WriteCloseAndThenReadUrlData) {
-  auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  auto sql_database = MakeDatabase();
   sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
                                     GetEncryptorInstance());
 
@@ -152,7 +160,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, WriteCloseAndThenReadUrlData) {
 
   // Reset and reload.
   sql_database.reset();
-  sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  sql_database = MakeDatabase();
   sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
                                     GetEncryptorInstance());
 
@@ -177,7 +185,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, WriteCloseAndThenReadUrlData) {
 }
 
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, TimeRangeNarrowsSearchResult) {
-  auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  auto sql_database = MakeDatabase();
   sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
                                     GetEncryptorInstance());
 
@@ -248,7 +256,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, TimeRangeNarrowsSearchResult) {
 }
 
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, InsertOrReplacePassages) {
-  auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  auto sql_database = MakeDatabase();
   sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
                                     GetEncryptorInstance());
 
@@ -275,7 +283,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, InsertOrReplacePassages) {
 }
 
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, IteratorMaySafelyOutliveDatabase) {
-  auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  auto sql_database = MakeDatabase();
   sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
                                     GetEncryptorInstance());
   AddBasicMockData(sql_database.get());
@@ -303,7 +311,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, IteratorMaySafelyOutliveDatabase) {
 }
 
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteDataForUrlId) {
-  auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  auto sql_database = MakeDatabase();
   sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
                                     GetEncryptorInstance());
   AddBasicMockData(sql_database.get());
@@ -323,7 +331,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteDataForUrlId) {
 }
 
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteDataForVisitId) {
-  auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  auto sql_database = MakeDatabase();
   sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
                                     GetEncryptorInstance());
   AddBasicMockData(sql_database.get());
@@ -343,7 +351,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteDataForVisitId) {
 }
 
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteAllData) {
-  auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  auto sql_database = MakeDatabase();
   sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
                                     GetEncryptorInstance());
   AddBasicMockData(sql_database.get());
@@ -360,7 +368,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteDataWithoutEmbedderMetadata) {
   url_data.embeddings.emplace_back(std::vector<float>(kEmbeddingsSize, 1.0f));
 
   {
-    auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+    auto sql_database = MakeDatabase();
 
     // Adding data is expected to fail because the database can't initialize
     // fully without embedder metadata.
@@ -377,7 +385,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteDataWithoutEmbedderMetadata) {
   {
     // Initialize database again, to see that we can still get it only when
     // metadata is provided.
-    auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+    auto sql_database = MakeDatabase();
     EXPECT_FALSE(sql_database->GetPassages(1));
     sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
                                       GetEncryptorInstance());
@@ -387,7 +395,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteDataWithoutEmbedderMetadata) {
   }
   {
     // Initialize database again, with no embedder metadata.
-    auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+    auto sql_database = MakeDatabase();
     EXPECT_FALSE(sql_database->GetPassages(1));
 
     // Deletion succeeds even with no metadata provided.
@@ -402,7 +410,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteDataWithoutEmbedderMetadata) {
 }
 
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, GetUrlData) {
-  auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  auto sql_database = MakeDatabase();
   sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
                                     GetEncryptorInstance());
   {
@@ -446,7 +454,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, GetUrlData) {
 }
 
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, IterationSkipsAndReportsMismatches) {
-  auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  auto sql_database = MakeDatabase();
   sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
                                     GetEncryptorInstance());
 
@@ -485,7 +493,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, IterationSkipsAndReportsMismatches) {
 }
 
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, OldVisitsAreExpired) {
-  auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  auto sql_database = MakeDatabase();
   sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
                                     GetEncryptorInstance());
 
@@ -504,7 +512,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, OldVisitsAreExpired) {
 
   // Reset and reload.
   sql_database.reset();
-  sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  sql_database = MakeDatabase();
   sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
                                     GetEncryptorInstance());
 

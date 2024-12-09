@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
+#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -119,7 +120,7 @@ void HistoryEmbeddingsHandler::PublishResultToPage(
   mojom_search_result->query = native_search_result.query;
 
   bool has_answer = false;
-  if (history_embeddings::IsHistoryEmbeddingsAnswersEnabled()) {
+  if (history_embeddings::IsHistoryEmbeddingsAnswersFeatureEnabled()) {
     mojom_search_result->answer_status = AnswererAnswerStatusToMojoAnswerStatus(
         native_search_result.answerer_result.status);
     if (!native_search_result.AnswerText().empty()) {

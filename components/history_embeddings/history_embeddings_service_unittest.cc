@@ -38,10 +38,6 @@
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/constants/chromeos_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 namespace history_embeddings {
 
 using passage_embeddings::ComputeEmbeddingsStatus;
@@ -100,9 +96,6 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
     feature_list_.InitWithFeaturesAndParameters(
         {{kHistoryEmbeddings, {}},
          {kHistoryEmbeddingsAnswers, {}},
-#if BUILDFLAG(IS_CHROMEOS)
-         {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
-#endif  // BUILDFLAG(IS_CHROMEOS)
         },
         /*disabled_features=*/{});
 
@@ -718,10 +711,13 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchDoesNotWordMatchBoostLongQueries) {
     EXPECT_LT(std::ranges::max(row.scores), row.scored_url.score);
   }
   {
+    // Default configuration allows ten terms in query before switching off
+    // word match boosting.
     base::test::TestFuture<SearchResult> future;
-    service_->Search(/*previous_search_result=*/nullptr,
-                     "this very long test query isn't boosted", {}, 1,
-                     future.GetRepeatingCallback());
+    service_->Search(
+        /*previous_search_result=*/nullptr,
+        "this very very very very very long test query isn't boosted", {}, 1,
+        future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_EQ(result.scored_url_rows.size(), 1u);
     const ScoredUrlRow& row = result.scored_url_rows[0];

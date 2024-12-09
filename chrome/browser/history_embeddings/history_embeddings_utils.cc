@@ -4,6 +4,7 @@
 
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -13,12 +14,29 @@
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_ui_data_source.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
 
 namespace history_embeddings {
 
+namespace {
+bool IsEnabledForCountryAndLocale(const base::Feature& launch_feature) {
+  // Launch in the US via client-side code, leaving a Finch hook available just
+  // in case. Note, the variations service may be nullptr in unit tests.
+  return g_browser_process && g_browser_process->variations_service() &&
+         g_browser_process->variations_service()->GetStoredPermanentCountry() ==
+             "US" &&
+         g_browser_process->GetApplicationLocale() == "en-US" &&
+         base::FeatureList::IsEnabled(launch_feature);
+}
+}  // namespace
+
 bool IsHistoryEmbeddingsEnabledForProfile(Profile* profile) {
-  if (!IsHistoryEmbeddingsEnabled()) {
+  if (!IsHistoryEmbeddingsFeatureEnabled()) {
     return false;
   }
 
@@ -31,7 +49,7 @@ bool IsHistoryEmbeddingsEnabledForProfile(Profile* profile) {
 }
 
 bool IsHistoryEmbeddingsSettingVisible(Profile* profile) {
-  if (!IsHistoryEmbeddingsEnabled()) {
+  if (!IsHistoryEmbeddingsFeatureEnabled()) {
     return false;
   }
 
@@ -46,10 +64,11 @@ void PopulateSourceForWebUI(content::WebUIDataSource* source,
                             Profile* profile) {
   auto* history_embeddings_service =
       HistoryEmbeddingsServiceFactory::GetForProfile(profile);
-  source->AddBoolean("enableHistoryEmbeddingsAnswers",
-                     history_embeddings::IsHistoryEmbeddingsAnswersEnabled() &&
-                         history_embeddings_service &&
-                         history_embeddings_service->IsAnswererUseAllowed());
+  source->AddBoolean(
+      "enableHistoryEmbeddingsAnswers",
+      history_embeddings::IsHistoryEmbeddingsAnswersFeatureEnabled() &&
+          history_embeddings_service &&
+          history_embeddings_service->IsAnswererUseAllowed());
   source->AddBoolean(
       "enableHistoryEmbeddingsImages",
       history_embeddings::GetFeatureParameters().enable_images_for_results);
@@ -86,6 +105,34 @@ void PopulateSourceForWebUI(content::WebUIDataSource* source,
       optimization_guide::features::IsAiSettingsPageRefreshEnabled()
           ? chrome::kHistorySearchV2SettingURL
           : chrome::kHistorySearchSettingURL);
+}
+
+bool IsHistoryEmbeddingsFeatureEnabled() {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!chromeos::features::IsFeatureManagementHistoryEmbeddingEnabled()) {
+    return false;
+  }
+#endif
+
+  if (IsEnabledForCountryAndLocale(kLaunchedHistoryEmbeddings)) {
+    return true;
+  }
+
+  // Gate on server-side Finch config for all other countries/locales.
+  return base::FeatureList::IsEnabled(kHistoryEmbeddings);
+}
+
+bool IsHistoryEmbeddingsAnswersFeatureEnabled() {
+  if (!IsHistoryEmbeddingsFeatureEnabled()) {
+    return false;
+  }
+
+  if (IsEnabledForCountryAndLocale(kLaunchedHistoryEmbeddingsAnswers)) {
+    return true;
+  }
+
+  // Gate on server-side Finch config for all other countries/locales.
+  return base::FeatureList::IsEnabled(kHistoryEmbeddingsAnswers);
 }
 
 }  // namespace history_embeddings

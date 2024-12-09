@@ -22,6 +22,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
+#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -76,7 +77,6 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/google/core/common/google_util.h"
 #include "components/history/core/common/pref_names.h"
-#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -1751,7 +1751,7 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   html_source->AddBoolean(
       "historyEmbeddingsAnswersFeatureEnabled",
-      history_embeddings::IsHistoryEmbeddingsAnswersEnabled() &&
+      history_embeddings::IsHistoryEmbeddingsAnswersFeatureEnabled() &&
           optimization_guide_keyed_service &&
           optimization_guide_keyed_service
               ->ShouldModelExecutionBeAllowedForUser());

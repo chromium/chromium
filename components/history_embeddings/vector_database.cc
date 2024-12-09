@@ -441,6 +441,9 @@ std::vector<std::string> SplitQueryToTerms(
     const std::unordered_set<uint32_t>& stop_words_hashes,
     std::string_view raw_query,
     size_t min_term_length) {
+  // Configuration may permit zero-length terms, but empty strings
+  // are never useful in search so the effective minimum then is one.
+  min_term_length = min_term_length > 0 ? min_term_length : 1;
   std::string query = base::ToLowerASCII(raw_query);
   std::string_view query_view(query);
   std::vector<std::string> query_terms;

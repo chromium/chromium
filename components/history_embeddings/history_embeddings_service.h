@@ -244,7 +244,9 @@ class HistoryEmbeddingsService : public KeyedService,
   // A utility container to wrap anything that should be accessed on
   // the separate storage worker sequence.
   struct Storage {
-    explicit Storage(const base::FilePath& storage_dir);
+    Storage(const base::FilePath& storage_dir,
+            bool erase_non_ascii_characters,
+            bool delete_embeddings);
 
     // Associate the given metadata with this Storage instance. The storage is
     // not considered initialized until this metadata is supplied.
