@@ -994,7 +994,7 @@ TEST(CrabbyStaticAVIFTests, NoCrashWhenCheckingForMultipleSubImages) {
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
   constexpr char kHeader[] = {0x00, 0x00, 0x00, 0x20, 0x66, 0x74, 0x79, 0x70};
   auto buffer = SharedBuffer::Create();
-  buffer->Append(kHeader, std::size(kHeader));
+  buffer->Append(kHeader);
   decoder->SetData(std::move(buffer), false);
   EXPECT_FALSE(decoder->ImageHasBothStillAndAnimatedSubImages());
 }
@@ -1259,8 +1259,8 @@ TEST(CrabbyStaticAVIFTests, GetGainmapInfoAndDataWithTruncatedData) {
   const std::string image = "small-with-gainmap-iso.avif";
   const Vector<char> data_vector =
       ReadFile("web_tests/images/resources/avif", image.c_str());
-  scoped_refptr<SharedBuffer> half_data =
-      SharedBuffer::Create(data_vector.data(), data_vector.size() / 2);
+  scoped_refptr<SharedBuffer> half_data = SharedBuffer::Create(
+      base::span(data_vector).first(data_vector.size() / 2));
 
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
   decoder->SetData(half_data, true);
@@ -1347,7 +1347,7 @@ TEST(CrabbyStaticAVIFTests, SizeAvailableBeforeAllDataReceived) {
 
   Vector<char> data =
       ReadFile("/images/resources/avif/red-limited-range-420-8bpc.avif");
-  stream_buffer->Append(data.data(), data.size());
+  stream_buffer->Append(data);
   EXPECT_EQ(stream_buffer->size(), 318u);
   decoder->SetData(stream_buffer, /*all_data_received=*/false);
   // All bytes are appended so we should have size, even though we pass
@@ -1376,7 +1376,7 @@ TEST(CrabbyStaticAVIFTests, ProgressiveDecoding) {
   // This image has three layers. The first layer is 8299 bytes. Because of
   // image headers and other overhead, if we pass exactly 8299 bytes to the
   // decoder, the decoder does not have enough data to decode the first layer.
-  stream_buffer->Append(data.data(), 8299u);
+  stream_buffer->Append(base::span(data).first(8299u));
   decoder->SetData(stream_buffer, /*all_data_received=*/false);
   EXPECT_TRUE(decoder->IsSizeAvailable());
   EXPECT_FALSE(decoder->Failed());
@@ -1391,7 +1391,7 @@ TEST(CrabbyStaticAVIFTests, ProgressiveDecoding) {
   // An additional 301 bytes are enough data for the decoder to decode the first
   // layer. With progressive decoding, the frame buffer status will transition
   // to ImageFrame::kFramePartial.
-  stream_buffer->Append(data.data() + 8299u, 301u);
+  stream_buffer->Append(base::span(data).subspan(8299u, 301u));
   decoder->SetData(stream_buffer, /*all_data_received=*/false);
   EXPECT_FALSE(decoder->Failed());
   frame = decoder->DecodeFrameBufferAtIndex(0);
@@ -1405,7 +1405,7 @@ TEST(CrabbyStaticAVIFTests, ProgressiveDecoding) {
               testing::ContainerEq(expected_counts));
 
   // Now send the rest of the data.
-  stream_buffer->Append(data.data() + 8299u + 301u, 62344u);
+  stream_buffer->Append(base::span(data).subspan(8299u + 301u, 62344u));
   decoder->SetData(stream_buffer, /*all_data_received=*/true);
   EXPECT_FALSE(decoder->Failed());
   frame = decoder->DecodeFrameBufferAtIndex(0);
@@ -1463,8 +1463,8 @@ TEST(CrabbyStaticAVIFTests, IncrementalDecoding) {
       {data.size(), ImageFrame::kFrameComplete, 13 * 64}};
   size_t previous_size = 0;
   for (const Step& step : steps) {
-    stream_buffer->Append(data.data() + previous_size,
-                          step.size - previous_size);
+    stream_buffer->Append(
+        base::span(data).subspan(previous_size, step.size - previous_size));
     decoder->SetData(stream_buffer, step.status == ImageFrame::kFrameComplete);
 
     EXPECT_EQ(decoder->FrameCount(), 1u);

@@ -22,7 +22,7 @@ TEST(SharedBufferBytesConsumerTest, Read) {
   std::string flatten_expected_data;
   auto shared_buffer = SharedBuffer::Create();
   for (const auto& chunk : kData) {
-    shared_buffer->Append(chunk.data(), chunk.size());
+    shared_buffer->Append(chunk);
     flatten_expected_data += chunk;
   }
 
@@ -45,7 +45,7 @@ TEST(SharedBufferBytesConsumerTest, Cancel) {
                                   "This is another data!"};
   auto shared_buffer = SharedBuffer::Create();
   for (const auto& chunk : kData) {
-    shared_buffer->Append(chunk.data(), chunk.size());
+    shared_buffer->Append(chunk);
   }
 
   auto* bytes_consumer =

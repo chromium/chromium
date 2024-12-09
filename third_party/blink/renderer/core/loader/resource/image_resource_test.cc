@@ -148,7 +148,8 @@ TEST_F(ImageResourceTest, DimensionsDecodableFromPartialTestImage) {
   EXPECT_EQ(
       Image::kSizeAvailable,
       image->SetData(SharedBuffer::Create(
-                         kJpegImage, kJpegImageSubrangeWithDimensionsLength),
+                         base::span(kJpegImage)
+                             .first(kJpegImageSubrangeWithDimensionsLength)),
                      true));
   EXPECT_TRUE(IsA<BitmapImage>(image.get()));
   EXPECT_EQ(1, image->width());

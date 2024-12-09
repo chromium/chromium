@@ -261,7 +261,7 @@ TEST(AnimatedWebPTests, truncatedInBetweenFrame) {
   const Vector<char> full_data =
       ReadFile("/images/resources/invalid-animated-webp4.webp");
   scoped_refptr<SharedBuffer> data =
-      SharedBuffer::Create(full_data.data(), full_data.size() - 1);
+      SharedBuffer::Create(base::span(full_data).first(full_data.size() - 1));
   decoder->SetData(data.get(), false);
 
   ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(1);
@@ -287,7 +287,7 @@ TEST(AnimatedWebPTests, reproCrash) {
   const size_t kPartialSize = 32768;
   ASSERT_GT(full_data.size(), kPartialSize);
   scoped_refptr<SharedBuffer> data =
-      SharedBuffer::Create(full_data.data(), kPartialSize);
+      SharedBuffer::Create(base::span(full_data).first(kPartialSize));
   decoder->SetData(data.get(), false);
   EXPECT_EQ(1u, decoder->FrameCount());
   ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
@@ -318,7 +318,7 @@ TEST(AnimatedWebPTests, frameIsCompleteAndDuration) {
 
   ASSERT_GE(data.size(), 10u);
   scoped_refptr<SharedBuffer> temp_data =
-      SharedBuffer::Create(data.data(), data.size() - 10);
+      SharedBuffer::Create(base::span(data).first(data.size() - 10));
   decoder->SetData(temp_data.get(), false);
 
   EXPECT_EQ(2u, decoder->FrameCount());

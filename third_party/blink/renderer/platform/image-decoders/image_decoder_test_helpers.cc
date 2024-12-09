@@ -93,12 +93,14 @@ void TestByteByByteDecode(DecoderCreator create_decoder,
   // Pass data to decoder byte by byte.
   scoped_refptr<SharedBuffer> source_data[2] = {SharedBuffer::Create(),
                                                 SharedBuffer::Create()};
-  const char* source = data.data();
+  base::span<const char> source(data);
 
   for (size_t length = 1; length <= data.size() && !decoder->Failed();
        ++length) {
-    source_data[0]->Append(source, 1u);
-    source_data[1]->Append(source++, 1u);
+    auto [single_byte, rest] = source.split_at(1u);
+    source = rest;
+    source_data[0]->Append(single_byte);
+    source_data[1]->Append(single_byte);
     // Alternate the buffers to cover the JPEGImageDecoder::OnSetData restart
     // code.
     decoder->SetData(source_data[length & 1].get(), length == data.size());
@@ -222,9 +224,11 @@ static void TestByteByByteSizeAvailable(DecoderCreator create_decoder,
   // offset is reached. Also check other decoder state.
   scoped_refptr<SharedBuffer> temp_data = SharedBuffer::Create();
   const Vector<char> source_buffer = data->CopyAs<Vector<char>>();
-  const char* source = source_buffer.data();
+  base::span<const char> source(source_buffer);
   for (size_t length = 1; length <= frame_offset; ++length) {
-    temp_data->Append(source++, 1u);
+    auto [single_byte, rest] = source.split_at(1u);
+    source = rest;
+    temp_data->Append(single_byte);
     decoder->SetData(temp_data.get(), false);
 
     if (length < frame_offset) {
@@ -259,10 +263,12 @@ static void TestProgressiveDecoding(DecoderCreator create_decoder,
 
   // Compute hashes when the file is truncated.
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
-  const char* source = full_data.data();
+  base::span<const char> source(full_data);
   for (size_t i = 1; i <= full_length; i += increment) {
     decoder = create_decoder();
-    data->Append(source++, 1u);
+    auto [single_byte, rest] = source.split_at(1u);
+    source = rest;
+    data->Append(single_byte);
     decoder->SetData(data.get(), i == full_length);
     ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
     if (!frame) {
@@ -275,9 +281,12 @@ static void TestProgressiveDecoding(DecoderCreator create_decoder,
   // Compute hashes when the file is progressively decoded.
   decoder = create_decoder();
   data = SharedBuffer::Create();
-  source = full_data.data();
+  source = base::span(full_data);
+
   for (size_t i = 1; i <= full_length; i += increment) {
-    data->Append(source++, 1u);
+    auto [single_byte, rest] = source.split_at(1u);
+    source = rest;
+    data->Append(single_byte);
     decoder->SetData(data.get(), i == full_length);
     ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
     if (!frame) {
@@ -301,9 +310,11 @@ void TestUpdateRequiredPreviousFrameAfterFirstDecode(
   // Give it data that is enough to parse but not decode in order to check the
   // status of RequiredPreviousFrameIndex before decoding.
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
-  const char* source = full_data.data();
+  base::span<const char> source(full_data);
   do {
-    data->Append(source++, 1u);
+    auto [single_byte, rest] = source.split_at(1u);
+    source = rest;
+    data->Append(single_byte);
     decoder->SetData(data.get(), false);
   } while (!decoder->FrameCount() ||
            decoder->DecodeFrameBufferAtIndex(0)->GetStatus() ==

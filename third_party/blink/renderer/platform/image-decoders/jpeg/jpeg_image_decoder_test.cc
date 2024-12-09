@@ -528,7 +528,7 @@ TEST(JPEGImageDecoderTest, PartialDataWithoutSize) {
   constexpr size_t kDataLengthWithoutSize = 4;
   ASSERT_LT(kDataLengthWithoutSize, full_data.size());
   scoped_refptr<SharedBuffer> partial_data =
-      SharedBuffer::Create(full_data.data(), kDataLengthWithoutSize);
+      SharedBuffer::Create(base::span(full_data).first(kDataLengthWithoutSize));
 
   std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
   decoder->SetData(partial_data.get(), false);
@@ -552,8 +552,8 @@ TEST(JPEGImageDecoderTest, PartialRgbDecodeBlocksYuvDecoding) {
   }
 
   const size_t kJustEnoughDataToStartHeaderParsing = (full_data.size() + 1) / 2;
-  auto partial_data = SharedBuffer::Create(full_data.data(),
-                                           kJustEnoughDataToStartHeaderParsing);
+  auto partial_data = SharedBuffer::Create(
+      base::span(full_data).first(kJustEnoughDataToStartHeaderParsing));
   ASSERT_TRUE(partial_data);
 
   auto decoder = CreateJPEGDecoder();

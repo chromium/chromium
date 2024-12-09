@@ -323,7 +323,7 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
       "<default xmlns='http://example.org/default'/>"
       "</body></html>";
   SegmentedBuffer data;
-  data.Append(markup.Utf8().data(), markup.length());
+  data.Append(markup.Utf8());
   GetFrame().ForceSynchronousDocumentInstall(AtomicString("text/xml"),
                                              std::move(data));
 

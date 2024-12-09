@@ -737,8 +737,7 @@ SegmentStream CreatePopulatedSegmentStream() {
 scoped_refptr<SegmentReader> CreateSegmentReader() {
   Vector<char> raw_buffer(kBufferAllocationSize);
 
-  scoped_refptr<SharedBuffer> shared_buffer =
-      SharedBuffer::Create(raw_buffer.data(), kBufferAllocationSize);
+  scoped_refptr<SharedBuffer> shared_buffer = SharedBuffer::Create(raw_buffer);
 
   scoped_refptr<SegmentReader> segment_reader =
       SegmentReader::CreateFromSharedBuffer(std::move(shared_buffer));

@@ -107,7 +107,7 @@ class ImageFrameGeneratorTest : public testing::Test,
         MockImageDecoderFactory::Create(this, FullSize()));
   }
 
-  void AddNewData() { data_->Append("g", 1u); }
+  void AddNewData() { data_->Append(base::span_from_cstring("g")); }
 
   void SetFrameStatus(ImageFrame::Status status) {
     status_ = next_frame_status_ = status;

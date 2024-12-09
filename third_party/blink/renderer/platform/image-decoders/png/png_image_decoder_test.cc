@@ -92,10 +92,12 @@ void TestSizeByteByByte(const char* png_file,
   ASSERT_FALSE(data.empty());
   ASSERT_LT(bytes_needed_to_decode_size, data.size());
 
-  const char* source = data.data();
+  base::span<const char> source(data);
   scoped_refptr<SharedBuffer> partial_data = SharedBuffer::Create();
   for (size_t length = 1; length <= bytes_needed_to_decode_size; length++) {
-    partial_data->Append(source++, 1u);
+    auto [single_byte, rest] = source.split_at(1u);
+    source = rest;
+    partial_data->Append(single_byte);
     decoder->SetData(partial_data.get(), false);
 
     if (length < bytes_needed_to_decode_size) {
@@ -177,10 +179,10 @@ void TestMissingDataBreaksDecoding(const char* png_file,
   Vector<char> data = ReadFile(png_file);
   ASSERT_FALSE(data.empty());
 
-  scoped_refptr<SharedBuffer> invalid_data =
-      SharedBuffer::Create(data.data(), offset);
-  invalid_data->Append(data.data() + offset + length,
-                       data.size() - offset - length);
+  auto [before, rest] = base::span(data).split_at(offset);
+  auto after = rest.subspan(length);
+  scoped_refptr<SharedBuffer> invalid_data = SharedBuffer::Create(before);
+  invalid_data->Append(after);
   ASSERT_EQ(data.size() - length, invalid_data->size());
 
   decoder->SetData(invalid_data, true);
@@ -211,7 +213,7 @@ void TestInvalidFctlSize(const char* png_file,
 
   auto decoder = CreatePNGDecoder();
   scoped_refptr<SharedBuffer> invalid_data =
-      SharedBuffer::Create(data.data(), offset_fctl);
+      SharedBuffer::Create(base::span(data).first(offset_fctl));
 
   // Test if this gives the correct frame count, before the fcTL is parsed.
   decoder->SetData(invalid_data, false);
@@ -221,15 +223,14 @@ void TestInvalidFctlSize(const char* png_file,
   // Append the wrong size to the data stream
   png_byte size_chunk[4];
   WriteUint32(20, size_chunk);
-  invalid_data->Append(reinterpret_cast<char*>(size_chunk), 4u);
+  invalid_data->Append(size_chunk);
 
   // Skip the size in the original data, but provide a truncated fcTL,
   // which is 4B of tag, 20B of data and 4B of CRC, totalling 28B.
-  invalid_data->Append(data.data() + offset_fctl + 4, 28u);
+  invalid_data->Append(base::span(data).subspan(offset_fctl + 4, 28u));
   // Append the rest of the data
   const size_t offset_post_fctl = offset_fctl + 38;
-  invalid_data->Append(data.data() + offset_post_fctl,
-                       data.size() - offset_post_fctl);
+  invalid_data->Append(base::span(data).subspan(offset_post_fctl));
 
   decoder->SetData(invalid_data, false);
   if (should_fail) {
@@ -270,7 +271,7 @@ void TestProgressiveDecodingContinuesAfterFullData(
 
   auto decoder = CreatePNGDecoder();
   scoped_refptr<SharedBuffer> partial_data =
-      SharedBuffer::Create(full_data.data(), offset_mid_first_frame);
+      SharedBuffer::Create(base::span(full_data).first(offset_mid_first_frame));
   decoder->SetData(partial_data, false);
 
   EXPECT_EQ(1u, decoder->FrameCount());
@@ -408,11 +409,13 @@ TEST_P(AnimatedPNGTests, ByteByByteMetaData) {
   ASSERT_FALSE(data.empty());
   size_t frames_parsed = 0;
 
-  const char* source = data.data();
+  base::span<const char> source(data);
   scoped_refptr<SharedBuffer> partial_data = SharedBuffer::Create();
   for (size_t length = 1; length <= frame_offsets[kExpectedFrameCount - 1];
        length++) {
-    partial_data->Append(source++, 1u);
+    auto [single_byte, rest] = source.split_at(1u);
+    source = rest;
+    partial_data->Append(single_byte);
     decoder->SetData(partial_data.get(), false);
     EXPECT_FALSE(decoder->Failed());
     if (length < frame_offsets[frames_parsed]) {
@@ -503,9 +506,8 @@ TEST_P(AnimatedPNGTests, ActlErrors) {
   {
     // Remove the acTL chunk from the stream. This results in a static image.
     scoped_refptr<SharedBuffer> no_actl_data =
-        SharedBuffer::Create(data.data(), kOffsetActl);
-    no_actl_data->Append(data.data() + kOffsetActl + kAcTLSize,
-                         data.size() - kOffsetActl - kAcTLSize);
+        SharedBuffer::Create(base::span(data).first(kOffsetActl));
+    no_actl_data->Append(base::span(data).subspan(kOffsetActl + kAcTLSize));
 
     auto decoder = CreatePNGDecoder();
     decoder->SetData(no_actl_data, true);
@@ -544,9 +546,9 @@ TEST_P(AnimatedPNGTests, ActlErrors) {
   for (const auto& rec : kGRecs) {
     const size_t offset = rec.offset;
     scoped_refptr<SharedBuffer> extra_actl_data =
-        SharedBuffer::Create(data.data(), offset);
-    extra_actl_data->Append(ac_tl, kAcTLSize);
-    extra_actl_data->Append(data.data() + offset, data.size() - offset);
+        SharedBuffer::Create(base::span(data).first(offset));
+    extra_actl_data->Append(ac_tl);
+    extra_actl_data->Append(base::span(data).subspan(offset));
     auto decoder = CreatePNGDecoder();
     decoder->SetData(extra_actl_data, true);
 
@@ -575,12 +577,11 @@ TEST_P(AnimatedPNGTests, ActlErrors) {
     const size_t kPostIDATOffset = 30971u;
     for (size_t times = 0; times < 2; times++) {
       scoped_refptr<SharedBuffer> extra_actl_data =
-          SharedBuffer::Create(data2.data(), kPostIDATOffset);
+          SharedBuffer::Create(base::span(data2).first(kPostIDATOffset));
       for (size_t i = 0; i < times; i++) {
-        extra_actl_data->Append(ac_tl, kAcTLSize);
+        extra_actl_data->Append(ac_tl);
       }
-      extra_actl_data->Append(data2.data() + kPostIDATOffset,
-                              data2.size() - kPostIDATOffset);
+      extra_actl_data->Append(base::span(data2).subspan(kPostIDATOffset));
 
       auto decoder = CreatePNGDecoder();
       decoder->SetData(extra_actl_data, true);
@@ -603,14 +604,15 @@ TEST_P(AnimatedPNGTests, fdatBeforeIdat) {
   // Insert fcTL and fdAT prior to the IDAT
   const size_t kIdatOffset = 71u;
   scoped_refptr<SharedBuffer> modified_data_buffer =
-      SharedBuffer::Create(data.data(), kIdatOffset);
+      SharedBuffer::Create(base::span(data).first(kIdatOffset));
   // Copy fcTL and fdAT
   const size_t kFctlPlusFdatSize = 38u + 1566u;
-  modified_data_buffer->Append(data.data() + 2519u, kFctlPlusFdatSize);
+  modified_data_buffer->Append(
+      base::span(data).subspan(2519u, kFctlPlusFdatSize));
   // Copy IDAT
-  modified_data_buffer->Append(data.data() + kIdatOffset, 2448u);
+  modified_data_buffer->Append(base::span(data).subspan(kIdatOffset, 2448u));
   // Copy the remaining
-  modified_data_buffer->Append(data.data() + 4123u, 39u + 12u);
+  modified_data_buffer->Append(base::span(data).subspan(4123u, 39u + 12u));
   // Data has just been rearranged.
   ASSERT_EQ(data.size(), modified_data_buffer->size());
 
@@ -629,10 +631,9 @@ TEST_P(AnimatedPNGTests, fdatBeforeIdat) {
     const size_t kOffsetActl = 33u;
     const size_t kAcTLSize = 20u;
     scoped_refptr<SharedBuffer> modified_data_buffer2 =
-        SharedBuffer::Create(modified_data.data(), kOffsetActl);
+        SharedBuffer::Create(base::span(modified_data).first(kOffsetActl));
     modified_data_buffer2->Append(
-        modified_data.data() + kOffsetActl + kAcTLSize,
-        modified_data.size() - kOffsetActl - kAcTLSize);
+        base::span(modified_data).subspan(kOffsetActl + kAcTLSize));
     auto decoder = CreatePNGDecoder();
     decoder->SetData(modified_data_buffer2.get(), true);
     ExpectStatic(decoder.get());
@@ -640,11 +641,11 @@ TEST_P(AnimatedPNGTests, fdatBeforeIdat) {
     Vector<char> modified_data2 = modified_data_buffer2->CopyAs<Vector<char>>();
     // Likewise, if an acTL follows the fdAT, it is ignored.
     const size_t kInsertionOffset = kIdatOffset + kFctlPlusFdatSize - kAcTLSize;
-    scoped_refptr<SharedBuffer> modified_data3 =
-        SharedBuffer::Create(modified_data2.data(), kInsertionOffset);
-    modified_data3->Append(data.data() + kOffsetActl, kAcTLSize);
-    modified_data3->Append(modified_data2.data() + kInsertionOffset,
-                           modified_data2.size() - kInsertionOffset);
+    scoped_refptr<SharedBuffer> modified_data3 = SharedBuffer::Create(
+        base::span(modified_data2).first(kInsertionOffset));
+    modified_data3->Append(base::span(data).subspan(kOffsetActl, kAcTLSize));
+    modified_data3->Append(
+        base::span(modified_data2).subspan(kInsertionOffset));
     decoder = CreatePNGDecoder();
     decoder->SetData(modified_data3.get(), true);
     ExpectStatic(decoder.get());
@@ -661,7 +662,7 @@ TEST_P(AnimatedPNGTests, FrameOverflowX) {
   // Change the x_offset for frame 1
   const size_t kFctlOffset = 172u;
   scoped_refptr<SharedBuffer> modified_data =
-      SharedBuffer::Create(data.data(), kFctlOffset);
+      SharedBuffer::Create(base::span(data).first(kFctlOffset));
   const size_t kFctlSize = 38u;
   png_byte fctl[kFctlSize];
   memcpy(fctl, data.data() + kFctlOffset, kFctlSize);
@@ -670,9 +671,9 @@ TEST_P(AnimatedPNGTests, FrameOverflowX) {
   WriteUint32(4294967295, fctl + 20);
   // Correct the crc
   WriteUint32(689600712, fctl + 34);
-  modified_data->Append((const char*)fctl, kFctlSize);
+  modified_data->Append(base::span(fctl).first(kFctlSize));
   const size_t kAfterFctl = kFctlOffset + kFctlSize;
-  modified_data->Append(data.data() + kAfterFctl, data.size() - kAfterFctl);
+  modified_data->Append(base::span(data).subspan(kAfterFctl));
 
   auto decoder = CreatePNGDecoder();
   decoder->SetData(modified_data.get(), true);
@@ -702,7 +703,7 @@ TEST_P(AnimatedPNGTests, FrameOverflowY) {
   // Change the y_offset for frame 1
   const size_t kFctlOffset = 172u;
   scoped_refptr<SharedBuffer> modified_data =
-      SharedBuffer::Create(data.data(), kFctlOffset);
+      SharedBuffer::Create(base::span(data).first(kFctlOffset));
   const size_t kFctlSize = 38u;
   png_byte fctl[kFctlSize];
   memcpy(fctl, data.data() + kFctlOffset, kFctlSize);
@@ -711,9 +712,9 @@ TEST_P(AnimatedPNGTests, FrameOverflowY) {
   WriteUint32(4294967295, fctl + 24);
   // Correct the crc
   WriteUint32(2094185741, fctl + 34);
-  modified_data->Append((const char*)fctl, kFctlSize);
+  modified_data->Append(base::span(fctl).first(kFctlSize));
   const size_t kAfterFctl = kFctlOffset + kFctlSize;
-  modified_data->Append(data.data() + kAfterFctl, data.size() - kAfterFctl);
+  modified_data->Append(base::span(data).subspan(kAfterFctl));
 
   auto decoder = CreatePNGDecoder();
   decoder->SetData(modified_data.get(), true);
@@ -742,7 +743,7 @@ TEST_P(AnimatedPNGTests, IdatSizeMismatch) {
 
   const size_t kFctlOffset = 95u;
   scoped_refptr<SharedBuffer> modified_data =
-      SharedBuffer::Create(data.data(), kFctlOffset);
+      SharedBuffer::Create(base::span(data).first(kFctlOffset));
   const size_t kFctlSize = 38u;
   png_byte fctl[kFctlSize];
   memcpy(fctl, data.data() + kFctlOffset, kFctlSize);
@@ -750,9 +751,9 @@ TEST_P(AnimatedPNGTests, IdatSizeMismatch) {
   WriteUint32(3, fctl + 16);
   // Correct the crc
   WriteUint32(3210324191, fctl + 34);
-  modified_data->Append((const char*)fctl, kFctlSize);
+  modified_data->Append(base::span(fctl).first(kFctlSize));
   const size_t kAfterFctl = kFctlOffset + kFctlSize;
-  modified_data->Append(data.data() + kAfterFctl, data.size() - kAfterFctl);
+  modified_data->Append(base::span(data).subspan(kAfterFctl));
 
   auto decoder = CreatePNGDecoder();
   decoder->SetData(modified_data.get(), true);
@@ -779,21 +780,21 @@ TEST_P(AnimatedPNGTests, EmptyFdatFails) {
   // Modify the third fdAT to be empty.
   constexpr size_t kOffsetThirdFdat = 352;
   scoped_refptr<SharedBuffer> modified_data =
-      SharedBuffer::Create(data.data(), kOffsetThirdFdat);
+      SharedBuffer::Create(base::span(data).first(kOffsetThirdFdat));
   png_byte four_bytes[4u];
   WriteUint32(0, four_bytes);
-  modified_data->Append(reinterpret_cast<char*>(four_bytes), 4u);
+  modified_data->Append(four_bytes);
 
   // fdAT tag
-  modified_data->Append(data.data() + kOffsetThirdFdat + 4u, 4u);
+  modified_data->Append(base::span(data).subspan(kOffsetThirdFdat + 4u, 4u));
 
   // crc computed from modified fdAT chunk
   WriteUint32(4122214294, four_bytes);
-  modified_data->Append(reinterpret_cast<char*>(four_bytes), 4u);
+  modified_data->Append(four_bytes);
 
   // IEND
   constexpr size_t kIENDOffset = 422u;
-  modified_data->Append(data.data() + kIENDOffset, 12u);
+  modified_data->Append(base::span(data).subspan(kIENDOffset, 12u));
 
   auto decoder = CreatePNGDecoder();
   decoder->SetData(std::move(modified_data), true);
@@ -825,7 +826,7 @@ TEST_P(AnimatedPNGTests, VerifyFrameOutsideImageSizeFails) {
 
   const size_t kOffsetThirdFctl = 241;
   scoped_refptr<SharedBuffer> modified_data =
-      SharedBuffer::Create(data.data(), kOffsetThirdFctl);
+      SharedBuffer::Create(base::span(data).first(kOffsetThirdFctl));
   const size_t kFctlSize = 38u;
   png_byte fctl[kFctlSize];
   memcpy(fctl, data.data() + kOffsetThirdFctl, kFctlSize);
@@ -834,10 +835,8 @@ TEST_P(AnimatedPNGTests, VerifyFrameOutsideImageSizeFails) {
   WriteUint32(4, fctl + 24u);
   WriteUint32(3700322018, fctl + 34u);
 
-  modified_data->Append(const_cast<const char*>(reinterpret_cast<char*>(fctl)),
-                        kFctlSize);
-  modified_data->Append(data.data() + kOffsetThirdFctl + kFctlSize,
-                        data.size() - kOffsetThirdFctl - kFctlSize);
+  modified_data->Append(fctl);
+  modified_data->Append(base::span(data).subspan(kOffsetThirdFctl + kFctlSize));
 
   decoder->SetData(modified_data, true);
 
@@ -903,13 +902,14 @@ TEST_P(AnimatedPNGTests, FailureMissingIendChunk) {
   const size_t kOffsetTwoFrames = 249;
   const size_t kExpectedFramesAfter249Bytes = 2;
   scoped_refptr<SharedBuffer> temp_data =
-      SharedBuffer::Create(full_data.data(), kOffsetTwoFrames);
+      SharedBuffer::Create(base::span(full_data).first(kOffsetTwoFrames));
   decoder->SetData(temp_data.get(), false);
   EXPECT_EQ(kExpectedFramesAfter249Bytes, decoder->FrameCount());
   EXPECT_FALSE(decoder->Failed());
 
   // Provide the rest of the data except for the last IEND chunk.
-  temp_data = SharedBuffer::Create(full_data.data(), full_data.size() - 12);
+  temp_data =
+      SharedBuffer::Create(base::span(full_data).first(full_data.size() - 12));
   decoder->SetData(temp_data.get(), true);
 
   for (size_t i = 0; i < decoder->FrameCount(); i++) {
@@ -940,9 +940,9 @@ TEST_P(AnimatedPNGTests, VerifyIENDBeforeIDATInvalidatesDecoder) {
 
   const size_t kOffsetIDAT = 133;
   scoped_refptr<SharedBuffer> data =
-      SharedBuffer::Create(full_data.data(), kOffsetIDAT);
-  data->Append(full_data.data() + full_data.size() - 12u, 12u);
-  data->Append(full_data.data() + kOffsetIDAT, full_data.size() - kOffsetIDAT);
+      SharedBuffer::Create(base::span(full_data).first(kOffsetIDAT));
+  data->Append(base::span(full_data).last(12u));
+  data->Append(base::span(full_data).subspan(kOffsetIDAT));
   decoder->SetData(data.get(), true);
 
   const size_t kExpectedFrameCount = 0u;
@@ -961,16 +961,16 @@ TEST_P(AnimatedPNGTests, MixedDataChunks) {
   // Add an extra fdAT after the first IDAT, skipping fcTL.
   const size_t kPostIDAT = 172u;
   scoped_refptr<SharedBuffer> data =
-      SharedBuffer::Create(full_data.data(), kPostIDAT);
+      SharedBuffer::Create(base::span(full_data).first(kPostIDAT));
   const size_t kFcTLSize = 38u;
   const size_t kFdATSize = 31u;
   png_byte fdat[kFdATSize];
   memcpy(fdat, full_data.data() + kPostIDAT + kFcTLSize, kFdATSize);
   // Modify the sequence number
   WriteUint32(1u, fdat + 8);
-  data->Append((const char*)fdat, kFdATSize);
+  data->Append(fdat);
   const size_t kIENDOffset = 422u;
-  data->Append(full_data.data() + kIENDOffset, full_data.size() - kIENDOffset);
+  data->Append(base::span(full_data).subspan(kIENDOffset));
   auto decoder = CreatePNGDecoder();
   decoder->SetData(data.get(), true);
   decoder->FrameCount();
@@ -987,11 +987,11 @@ TEST_P(AnimatedPNGTests, MixedDataChunks) {
 
   // Insert an IDAT after an fdAT.
   const size_t kPostfdAT = kPostIDAT + kFcTLSize + kFdATSize;
-  data = SharedBuffer::Create(full_data.data(), kPostfdAT);
+  data = SharedBuffer::Create(base::span(full_data).first(kPostfdAT));
   const size_t kIDATOffset = 133u;
-  data->Append(full_data.data() + kIDATOffset, kPostIDAT - kIDATOffset);
+  data->Append(base::span(full_data).first(kPostIDAT).subspan(kIDATOffset));
   // Append the rest.
-  data->Append(full_data.data() + kPostIDAT, full_data.size() - kPostIDAT);
+  data->Append(base::span(full_data).subspan(kPostIDAT));
   decoder = CreatePNGDecoder();
   decoder->SetData(data.get(), true);
   decoder->FrameCount();
@@ -1026,14 +1026,13 @@ TEST_P(AnimatedPNGTests, VerifyInvalidDisposalAndBlending) {
   // crc and append the rest of the buffer.
   const size_t kOffsetDisposalOp = 241 + 8 + 24;
   scoped_refptr<SharedBuffer> data =
-      SharedBuffer::Create(full_data.data(), kOffsetDisposalOp);
+      SharedBuffer::Create(base::span(full_data).first(kOffsetDisposalOp));
   png_byte disposal_and_blending[6u];
   disposal_and_blending[0] = 7;
   disposal_and_blending[1] = 9;
   WriteUint32(2408835439u, disposal_and_blending + 2u);
-  data->Append(reinterpret_cast<char*>(disposal_and_blending), 6u);
-  data->Append(full_data.data() + kOffsetDisposalOp + 6u,
-               full_data.size() - kOffsetDisposalOp - 6u);
+  data->Append(disposal_and_blending);
+  data->Append(base::span(full_data).subspan(kOffsetDisposalOp + 6u));
 
   decoder->SetData(data.get(), true);
   decoder->FrameCount();
@@ -1070,7 +1069,7 @@ TEST_P(AnimatedPNGTests, VerifySuccessfulFirstFrameDecodeAfterLaterFrame) {
   // 160u is a randomly chosen offset in the IDAT chunk of the first frame.
   const size_t kMiddleFirstFrame = 160u;
   scoped_refptr<SharedBuffer> data =
-      SharedBuffer::Create(full_data.data(), kMiddleFirstFrame);
+      SharedBuffer::Create(base::span(full_data).first(kMiddleFirstFrame));
   decoder->SetData(data.get(), false);
 
   ASSERT_EQ(1u, decoder->FrameCount());
@@ -1112,18 +1111,18 @@ TEST_P(AnimatedPNGTests, DecodeFromIndependentFrame) {
   // This file almost fits the bill. Modify it to dispose frame 0, making
   // frame 1 independent.
   const size_t kDisposeOffset = 127u;
-  auto data = SharedBuffer::Create(original_data.data(), kDisposeOffset);
+  auto data =
+      SharedBuffer::Create(base::span(original_data).first(kDisposeOffset));
   // 1 Corresponds to APNG_DISPOSE_OP_BACKGROUND
   const char kOne = '\001';
-  data->Append(&kOne, 1u);
+  data->Append(base::span_from_ref(kOne));
   // No need to modify the blend op
-  data->Append(original_data.data() + kDisposeOffset + 1, 1u);
+  data->Append(base::span(original_data).subspan(kDisposeOffset + 1, 1u));
   // Modify the CRC
   png_byte crc[4];
   WriteUint32(2226670956, crc);
-  data->Append(reinterpret_cast<const char*>(crc), 4u);
-  data->Append(original_data.data() + data->size(),
-               original_data.size() - data->size());
+  data->Append(crc);
+  data->Append(base::span(original_data).subspan(data->size()));
   ASSERT_EQ(original_data.size(), data->size());
 
   auto decoder = CreatePNGDecoder();
@@ -1164,7 +1163,8 @@ TEST_P(AnimatedPNGTests, SubsetFromIHDR) {
   ASSERT_FALSE(original_data.empty());
 
   const size_t kFcTLOffset = 2519u;
-  auto data = SharedBuffer::Create(original_data.data(), kFcTLOffset);
+  auto data =
+      SharedBuffer::Create(base::span(original_data).first(kFcTLOffset));
 
   const size_t kFcTLSize = 38u;
   png_byte fc_tl[kFcTLSize];
@@ -1173,13 +1173,14 @@ TEST_P(AnimatedPNGTests, SubsetFromIHDR) {
   WriteUint32(34, fc_tl + 16u);
   WriteUint32(1, fc_tl + 24u);
   WriteUint32(3972842751, fc_tl + 34u);
-  data->Append(reinterpret_cast<const char*>(fc_tl), kFcTLSize);
+  data->Append(fc_tl);
 
   // Append the rest of the data.
   // Note: If PNGImageDecoder changes to reject an image with too many
   // rows, the fdAT data will need to be modified as well.
-  data->Append(original_data.data() + kFcTLOffset + kFcTLSize,
-               original_data.size() - data->size());
+  data->Append(base::span(original_data)
+                   .subspan(kFcTLOffset + kFcTLSize,
+                            original_data.size() - data->size()));
   ASSERT_EQ(original_data.size(), data->size());
 
   // This will test both byte by byte and using the full data, and compare.
@@ -1202,7 +1203,7 @@ TEST_P(AnimatedPNGTests, Offset) {
   constexpr size_t kOffset = 37;
   char buffer[kOffset] = {};
 
-  auto data = SharedBuffer::Create(buffer, kOffset);
+  auto data = SharedBuffer::Create(buffer);
   data->Append(original_data);
 
   // Use the same defaults as CreatePNGDecoder, except use the (arbitrary)
@@ -1234,17 +1235,17 @@ TEST_P(AnimatedPNGTests, ExtraChunksBeforeIHDR) {
   ASSERT_EQ(kExpectedFrameCount, baseline_hashes.size());
 
   constexpr size_t kPngSignatureSize = 8;
-  auto data = SharedBuffer::Create(original_data.data(), kPngSignatureSize);
+  auto data =
+      SharedBuffer::Create(base::span(original_data).first(kPngSignatureSize));
 
   // Arbitrary chunk of data.
   constexpr size_t kExtraChunkSize = 13;
   constexpr png_byte kExtraChunk[kExtraChunkSize] = {
       0, 0, 0, 1, 't', 'R', 'c', 'N', 68, 82, 0, 87, 10};
-  data->Append(reinterpret_cast<const char*>(kExtraChunk), kExtraChunkSize);
+  data->Append(kExtraChunk);
 
   // Append the rest of the data from the original.
-  data->Append(original_data.data() + kPngSignatureSize,
-               original_data.size() - kPngSignatureSize);
+  data->Append(base::span(original_data).subspan(kPngSignatureSize));
   ASSERT_EQ(original_data.size() + kExtraChunkSize, data->size());
 
   auto decoder = CreatePNGDecoder();
@@ -1623,8 +1624,8 @@ TEST_P(PNGTests, VerifyFrameCompleteBehavior) {
 
     // Create with enough data for part of the first frame.
     auto decoder = CreatePNGDecoder();
-    auto data =
-        SharedBuffer::Create(full_data.data(), rec.offset_in_first_frame);
+    auto data = SharedBuffer::Create(
+        base::span(full_data).first(rec.offset_in_first_frame));
     decoder->SetData(data.get(), false);
 
     EXPECT_FALSE(decoder->FrameIsReceivedAtIndex(0));
