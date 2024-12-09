@@ -710,10 +710,11 @@ void HTMLCanvasElement::DisableAcceleration(
     std::unique_ptr<CanvasResourceProvider> new_provider_for_testing) {
   DisabledAccelerationCounterSupplement::From(GetDocument())
       .IncrementDisabledCount();
-  // Create and configure an unaccelerated Canvas2DLayerBridge.
+  // Create and configure an unaccelerated CanvasResourceProvider.
   SetPreferred2DRasterMode(RasterModeHint::kPreferCPU);
 
-  ReplaceExisting2dLayerBridge(std::move(new_provider_for_testing));
+  ReplaceExistingResourceProviderFor2DContext(
+      std::move(new_provider_for_testing));
 
   // We must force a paint invalidation on the canvas even if it's
   // content did not change because it layer was destroyed.
@@ -1652,7 +1653,7 @@ bool HTMLCanvasElement::RecreateCanvasInGPURasterMode() {
     return false;
   }
   SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  ReplaceExisting2dLayerBridge();
+  ReplaceExistingResourceProviderFor2DContext();
   return true;
 }
 
@@ -1895,7 +1896,7 @@ size_t HTMLCanvasElement::GetMemoryUsage() const {
   return base::saturated_cast<size_t>(externally_allocated_memory_);
 }
 
-void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
+void HTMLCanvasElement::ReplaceExistingResourceProviderFor2DContext(
     std::unique_ptr<CanvasResourceProvider> new_provider_for_testing) {
   CanvasResourceProvider* old_provider = ResourceProvider();
   if (old_provider == nullptr) {
