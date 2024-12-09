@@ -62,6 +62,10 @@ class FakeDelegate : public ClientSideDetectionService::Delegate {
   }
   void StartListeningToOnDeviceModelUpdate() override { return; }
   void StopListeningToOnDeviceModelUpdate() override { return; }
+  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+  GetModelExecutorSession() override {
+    return nullptr;
+  }
 };
 
 class FakeClientSideDetectionService : public ClientSideDetectionService {

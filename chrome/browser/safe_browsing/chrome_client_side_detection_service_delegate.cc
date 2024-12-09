@@ -28,6 +28,11 @@ static constexpr auto kWaitableReasons =
     });
 }  // namespace
 
+void LogOnDeviceModelDownloadSuccess(bool success) {
+  base::UmaHistogramBoolean("SBClientPhishing.OnDeviceModelDownloadSuccess",
+                            success);
+}
+
 namespace safe_browsing {
 
 ChromeClientSideDetectionServiceDelegate::
@@ -78,17 +83,17 @@ void ChromeClientSideDetectionServiceDelegate::
     return;
   }
 
-  optimization_guide::OnDeviceModelEligibilityReason reason;
-  bool can_create = opt_guide->CanCreateOnDeviceSession(
-      optimization_guide::ModelBasedCapabilityKey::kScamDetection, &reason);
+  using ::optimization_guide::SessionConfigParams;
+  SessionConfigParams config_params = SessionConfigParams{
+      .execution_mode = SessionConfigParams::ExecutionMode::kOnDeviceOnly,
+  };
 
-  if (!kWaitableReasons.contains(reason)) {
-    base::UmaHistogramBoolean("SBClientPhishing.OnDeviceModelDownloadSuccess",
-                              false);
-    return;
-  }
+  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+      session = opt_guide->StartSession(
+          optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+          config_params);
 
-  if (can_create) {
+  if (session) {
     NotifyServiceOnDeviceModelAvailable();
   } else {
     observing_on_device_model_availability_ = true;
@@ -134,21 +139,43 @@ void ChromeClientSideDetectionServiceDelegate::OnDeviceModelAvailabilityChanged(
         base::TimeTicks::Now() - on_device_fetch_time_);
     NotifyServiceOnDeviceModelAvailable();
   } else {
-    base::UmaHistogramBoolean("SBClientPhishing.OnDeviceModelDownloadSuccess",
-                              false);
+    LogOnDeviceModelDownloadSuccess(false);
   }
 }
 
 void ChromeClientSideDetectionServiceDelegate::
     NotifyServiceOnDeviceModelAvailable() {
-  base::UmaHistogramBoolean("SBClientPhishing.OnDeviceModelDownloadSuccess",
-                            true);
+  LogOnDeviceModelDownloadSuccess(true);
   ClientSideDetectionService* csd_service =
       ClientSideDetectionServiceFactory::GetForProfile(profile_);
   // This can be null in unit tests.
   if (csd_service) {
     csd_service->NotifyOnDeviceModelAvailable();
   }
+}
+
+std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+ChromeClientSideDetectionServiceDelegate::GetModelExecutorSession() {
+  if (!observing_on_device_model_availability_) {
+    return nullptr;
+  }
+
+  auto* opt_guide =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
+
+  if (!opt_guide) {
+    return nullptr;
+  }
+
+  using ::optimization_guide::SessionConfigParams;
+  SessionConfigParams config_params = SessionConfigParams{
+      .execution_mode = SessionConfigParams::ExecutionMode::kOnDeviceOnly,
+      .logging_mode = SessionConfigParams::LoggingMode::kDefault,
+  };
+
+  return opt_guide->StartSession(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      config_params);
 }
 
 }  // namespace safe_browsing

@@ -787,6 +787,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.OnDeviceModelExecutionDuration" units="ms"
+    expires_after="2025-12-02">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the duration it took to execute the on-device model. This happens
+    for Enhanced Safe Browsing enabled users when a keyboard lock occurs on the
+    page they are on and the on-device model session creation is available.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.OnDeviceModelExecutionSuccess"
+    enum="BooleanSuccess" expires_after="2025-12-02">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the on-device model execution is successful or not. This
+    happens for Enhanced Safe Browsing enabled users who called to execute the
+    on-device model when inquiring for scam detection.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.OnDeviceModelFetchTime" units="ms"
     expires_after="2025-11-25">
   <owner>andysjlim@chromium.org</owner>
@@ -794,6 +816,29 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the duration it took to fetch the on-device model after
     subscription. This is only logged if the update is successful.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.OnDeviceModelResponseParseSuccess"
+    enum="BooleanSuccess" expires_after="2025-12-02">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the on-device model execution result's response parsing is
+    successful or not. This is only logged when the model execution is
+    successful.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.OnDeviceModelSessionCreationTime" units="ms"
+    expires_after="2025-12-02">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the duration it took to create an on-device model session. This
+    happens for Enhanced Safe Browsing enabled users when a keyboard lock occurs
+    on the page they are on and the on-device model session creation is
+    available.
   </summary>
 </histogram>
 

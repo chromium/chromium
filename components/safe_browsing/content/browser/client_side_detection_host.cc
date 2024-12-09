@@ -888,6 +888,11 @@ void ClientSideDetectionHost::PhishingDetectionDone(
   }
 }
 
+// To keep the flow consistent, we want to append additional information to the
+// ClientPhishingRequest message based on feature availability in the following
+// order: image embedding, on-device model output, then token fetch. If one
+// feature is not available, we will move on to the next in the order until we
+// ultimately send the request.
 void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
     std::unique_ptr<ClientPhishingRequest> verdict,
     std::optional<bool> did_match_high_confidence_allowlist) {
@@ -1035,19 +1040,12 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
                          weak_factory_.GetWeakPtr(), std::move(verdict),
                          did_match_high_confidence_allowlist));
     }
-  } else {
-    if (CanGetAccessToken()) {
-      token_fetcher_->Start(
-          base::BindOnce(&ClientSideDetectionHost::OnGotAccessToken,
-                         weak_factory_.GetWeakPtr(), std::move(verdict),
-                         did_match_high_confidence_allowlist));
-      return;
-    }
 
-    std::string empty_access_token;
-    SendRequest(std::move(verdict), empty_access_token,
-                did_match_high_confidence_allowlist);
+    return;
   }
+
+  MaybeInquireOnDeviceForScamDetection(std::move(verdict),
+                                       did_match_high_confidence_allowlist);
 }
 
 void ClientSideDetectionHost::PhishingImageEmbeddingDone(
@@ -1070,6 +1068,51 @@ void ClientSideDetectionHost::PhishingImageEmbeddingDone(
     }
   }
 
+  MaybeInquireOnDeviceForScamDetection(std::move(verdict),
+                                       did_match_high_confidence_allowlist);
+}
+
+void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
+    std::unique_ptr<ClientPhishingRequest> verdict,
+    std::optional<bool> did_match_high_confidence_allowlist) {
+  if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
+      base::FeatureList::IsEnabled(
+          kClientSideDetectionBrandAndIntentForScamDetection) &&
+      verdict->client_side_detection_type() ==
+          ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED) {
+    delegate_->GetInnerText(
+        base::BindOnce(&ClientSideDetectionHost::OnInnerTextComplete,
+                       weak_factory_.GetWeakPtr(), std::move(verdict),
+                       did_match_high_confidence_allowlist));
+    return;
+  }
+
+  MaybeGetAccessToken(std::move(verdict), did_match_high_confidence_allowlist);
+}
+
+void ClientSideDetectionHost::OnInnerTextComplete(
+    std::unique_ptr<ClientPhishingRequest> verdict,
+    std::optional<bool> did_match_high_confidence_allowlist,
+    std::string inner_text) {
+  csd_service_->InquireOnDeviceModel(
+      verdict.get(), inner_text,
+      base::BindOnce(&ClientSideDetectionHost::OnInquireOnDeviceModelDone,
+                     weak_factory_.GetWeakPtr(), std::move(verdict),
+                     did_match_high_confidence_allowlist));
+}
+
+void ClientSideDetectionHost::OnInquireOnDeviceModelDone(
+    std::unique_ptr<ClientPhishingRequest> verdict,
+    std::optional<bool> did_match_high_confidence_allowlist,
+    std::optional<optimization_guide::proto::ScamDetectionResponse> response) {
+  // Pass the response to the ping proto.
+
+  MaybeGetAccessToken(std::move(verdict), did_match_high_confidence_allowlist);
+}
+
+void ClientSideDetectionHost::MaybeGetAccessToken(
+    std::unique_ptr<ClientPhishingRequest> verdict,
+    std::optional<bool> did_match_high_confidence_allowlist) {
   if (CanGetAccessToken()) {
     token_fetcher_->Start(base::BindOnce(
         &ClientSideDetectionHost::OnGotAccessToken, weak_factory_.GetWeakPtr(),

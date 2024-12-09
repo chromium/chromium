@@ -43,6 +43,8 @@ class ChromeClientSideDetectionServiceDelegate
       content::BrowserContext* context) override;
   void StartListeningToOnDeviceModelUpdate() override;
   void StopListeningToOnDeviceModelUpdate() override;
+  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+  GetModelExecutorSession() override;
 
  private:
   // optimization_guide::OnDeviceModelAvailabilityObserver

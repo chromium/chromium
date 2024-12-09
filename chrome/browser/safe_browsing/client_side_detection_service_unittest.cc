@@ -25,6 +25,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -32,8 +33,12 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/optimization_guide/proto/features/scam_detection.pb.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -55,9 +60,15 @@
 #endif
 
 using content::BrowserThread;
+using ::optimization_guide::AnyWrapProto;
+using ::optimization_guide::MockSession;
+using ::optimization_guide::OptimizationGuideModelExecutionError;
+using ::optimization_guide::OptimizationGuideModelStreamingExecutionResult;
+using ::optimization_guide::proto::ScamDetectionResponse;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Mock;
+using ::testing::NiceMock;
 using ::testing::StrictMock;
 
 namespace safe_browsing {
@@ -297,6 +308,17 @@ class ClientSideDetectionServiceTest
                     })));
   }
 
+  optimization_guide::StreamingResponse CreateScamDetectionResponse(
+      const std::string& brand,
+      const std::string& intent,
+      bool is_complete) {
+    ScamDetectionResponse response;
+    response.set_brand(brand);
+    response.set_intent(intent);
+    return optimization_guide::StreamingResponse{
+        .response = AnyWrapProto(response), .is_complete = is_complete};
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
@@ -311,6 +333,7 @@ class ClientSideDetectionServiceTest
       model_observer_tracker_;
   raw_ptr<MockOptimizationGuideKeyedService>
       mock_optimization_guide_keyed_service_;
+  testing::NiceMock<MockSession> session_;
 
  private:
   void SendRequestDone(base::OnceClosure continuation_callback,
@@ -717,18 +740,11 @@ TEST_P(ClientSideDetectionServiceTest, TestOnDeviceModelFetchSuccessCall) {
 
   // When the Enhanced Safe Browsing protection setting is enabled, the next to
   // functions will call from the delegate.
-  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              CanCreateOnDeviceSession(_, _))
-      .WillOnce(testing::Invoke(
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              raw_ptr<optimization_guide::OnDeviceModelEligibilityReason>
-                  debug_reason) {
-            // Setting kConfigNotAvailableForFeature should trigger a retry and
-            // allow the delegate to start waiting.
-            *debug_reason = optimization_guide::OnDeviceModelEligibilityReason::
-                kConfigNotAvailableForFeature;
-            return false;
-          }));
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) { return nullptr; });
 
   optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
       nullptr;
@@ -784,17 +800,23 @@ TEST_P(ClientSideDetectionServiceTest, TestOnDeviceModelFetchFailureCall) {
 
   SetupMockOptimizationGuideKeyedService();
 
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) { return nullptr; });
+
+  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
+      nullptr;
+
+  base::RunLoop run_loop_for_add_observer;
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              CanCreateOnDeviceSession(_, _))
+              AddOnDeviceModelAvailabilityChangeObserver(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
-              raw_ptr<optimization_guide::OnDeviceModelEligibilityReason>
-                  debug_reason) {
-            // Setting kTooManyRecentCrashes will not trigger a retry and the
-            // delegate will not wait as a result.
-            *debug_reason = optimization_guide::OnDeviceModelEligibilityReason::
-                kTooManyRecentCrashes;
-            return false;
+              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+            availability_observer = observer;
+            run_loop_for_add_observer.Quit();
           }));
 
   histogram_tester.ExpectUniqueSample(
@@ -802,8 +824,558 @@ TEST_P(ClientSideDetectionServiceTest, TestOnDeviceModelFetchFailureCall) {
 
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
 
+  // Now that the delegate is observing, send `kTooManyRecentCrashes`
+  // to the observer, which is not a waitable reason.
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::
+          kTooManyRecentCrashes);
+
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelDownloadSuccess", false, 1);
+}
+
+TEST_P(ClientSideDetectionServiceTest, TestSessionCreationFailure) {
+  if (!base::FeatureList::IsEnabled(
+          kClientSideDetectionBrandAndIntentForScamDetection)) {
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
+      model_observer_tracker_.get());
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+
+  SetupMockOptimizationGuideKeyedService();
+
+  // When the Enhanced Safe Browsing protection setting is enabled, the next to
+  // functions will call from the delegate.
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) { return nullptr; });
+
+  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
+      nullptr;
+  base::RunLoop run_loop_for_add_observer;
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              AddOnDeviceModelAvailabilityChangeObserver(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+            availability_observer = observer;
+            run_loop_for_add_observer.Quit();
+          }));
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+
+  run_loop_for_add_observer.Run();
+  CHECK(availability_observer);
+
+  // Now that the delegate is observing, send `kConfigNotAvailableForFeature`
+  // first to the observer, which will not stop the observing.
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::
+          kConfigNotAvailableForFeature);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 0);
+
+  // And then send `kSuccess` to the observer, which will log the histogram.
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 1);
+  histogram_tester.ExpectTotalCount("SBClientPhishing.OnDeviceModelFetchTime",
+                                    1);
+
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) { return nullptr; });
+
+  csd_service_->SetOnDeviceAvailabilityForTesting(true);
+
+  ClientPhishingRequest verdict;
+  base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
+  csd_service_->InquireOnDeviceModel(&verdict, "", future.GetCallback());
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelSessionCreationTime", 0);
+}
+
+TEST_P(ClientSideDetectionServiceTest, TestSessionCreationSuccess) {
+  if (!base::FeatureList::IsEnabled(
+          kClientSideDetectionBrandAndIntentForScamDetection)) {
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
+      model_observer_tracker_.get());
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+
+  SetupMockOptimizationGuideKeyedService();
+
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) { return nullptr; });
+
+  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
+      nullptr;
+  base::RunLoop run_loop_for_add_observer;
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              AddOnDeviceModelAvailabilityChangeObserver(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+            availability_observer = observer;
+            run_loop_for_add_observer.Quit();
+          }));
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+
+  run_loop_for_add_observer.Run();
+  CHECK(availability_observer);
+
+  // Now that the delegate is observing, send `kConfigNotAvailableForFeature`
+  // first to the observer, which will not stop the observing.
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::
+          kConfigNotAvailableForFeature);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 0);
+
+  // And then send `kSuccess` to the observer, which will log the histogram.
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 1);
+  histogram_tester.ExpectTotalCount("SBClientPhishing.OnDeviceModelFetchTime",
+                                    1);
+
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            return std::make_unique<NiceMock<MockSession>>(&session_);
+          }));
+
+  csd_service_->SetOnDeviceAvailabilityForTesting(true);
+
+  ClientPhishingRequest verdict;
+  base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
+  csd_service_->InquireOnDeviceModel(&verdict, "", future.GetCallback());
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
+}
+
+TEST_P(ClientSideDetectionServiceTest, TestSessionExecutionFailure) {
+  if (!base::FeatureList::IsEnabled(
+          kClientSideDetectionBrandAndIntentForScamDetection)) {
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
+      model_observer_tracker_.get());
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+
+  SetupMockOptimizationGuideKeyedService();
+
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) { return nullptr; });
+
+  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
+      nullptr;
+  base::RunLoop run_loop_for_add_observer;
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              AddOnDeviceModelAvailabilityChangeObserver(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+            availability_observer = observer;
+            run_loop_for_add_observer.Quit();
+          }));
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+
+  run_loop_for_add_observer.Run();
+  CHECK(availability_observer);
+
+  // Now that the delegate is observing, send `kConfigNotAvailableForFeature`
+  // first to the observer, which will not stop the observing.
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::
+          kConfigNotAvailableForFeature);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 0);
+
+  // And then send `kSuccess` to the observer, which will log the histogram.
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 1);
+  histogram_tester.ExpectTotalCount("SBClientPhishing.OnDeviceModelFetchTime",
+                                    1);
+
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            return std::make_unique<NiceMock<MockSession>>(&session_);
+          }));
+
+  EXPECT_CALL(session_, ExecuteModel(_, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            callback.Run(OptimizationGuideModelStreamingExecutionResult(
+                base::unexpected(
+                    OptimizationGuideModelExecutionError::
+                        FromModelExecutionError(
+                            OptimizationGuideModelExecutionError::
+                                ModelExecutionError::kGenericFailure)),
+                /*provided_by_on_device=*/true, nullptr));
+          })));
+
+  csd_service_->SetOnDeviceAvailabilityForTesting(true);
+
+  ClientPhishingRequest verdict;
+  base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
+  csd_service_->InquireOnDeviceModel(&verdict, "", future.GetCallback());
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelExecutionDuration", 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelExecutionSuccess", false, 1);
+}
+
+TEST_P(ClientSideDetectionServiceTest,
+       TestSessionExecutionSuccessButNotComplete) {
+  if (!base::FeatureList::IsEnabled(
+          kClientSideDetectionBrandAndIntentForScamDetection)) {
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
+      model_observer_tracker_.get());
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+
+  SetupMockOptimizationGuideKeyedService();
+
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) { return nullptr; });
+
+  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
+      nullptr;
+  base::RunLoop run_loop_for_add_observer;
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              AddOnDeviceModelAvailabilityChangeObserver(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+            availability_observer = observer;
+            run_loop_for_add_observer.Quit();
+          }));
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+
+  run_loop_for_add_observer.Run();
+  CHECK(availability_observer);
+
+  // Now that the delegate is observing, send `kConfigNotAvailableForFeature`
+  // first to the observer, which will not stop the observing.
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::
+          kConfigNotAvailableForFeature);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 0);
+
+  // And then send `kSuccess` to the observer, which will log the histogram.
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 1);
+  histogram_tester.ExpectTotalCount("SBClientPhishing.OnDeviceModelFetchTime",
+                                    1);
+
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            return std::make_unique<NiceMock<MockSession>>(&session_);
+          }));
+
+  EXPECT_CALL(session_, ExecuteModel(_, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            callback.Run(OptimizationGuideModelStreamingExecutionResult(
+                base::ok(CreateScamDetectionResponse("Google", "Search Engine",
+                                                     /*is_complete=*/false)),
+                /*provided_by_on_device=*/false));
+          })));
+
+  csd_service_->SetOnDeviceAvailabilityForTesting(true);
+
+  ClientPhishingRequest verdict;
+  base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
+  csd_service_->InquireOnDeviceModel(&verdict, "", future.GetCallback());
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
+
+  // Because the execution result isn't complete yet, we do not intend on
+  // tracking the duration or success since we're still waiting. For the purpose
+  // of the test, we do not complete the execution result to make sure that
+  // they're not logged.
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelExecutionDuration", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelExecutionSuccess", 0);
+}
+
+TEST_P(ClientSideDetectionServiceTest,
+       TestSessionExecutionSuccessButFailedParsing) {
+  if (!base::FeatureList::IsEnabled(
+          kClientSideDetectionBrandAndIntentForScamDetection)) {
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
+      model_observer_tracker_.get());
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+
+  SetupMockOptimizationGuideKeyedService();
+
+  // When the Enhanced Safe Browsing protection setting is enabled, the next to
+  // functions will call from the delegate.
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) { return nullptr; });
+
+  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
+      nullptr;
+  base::RunLoop run_loop_for_add_observer;
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              AddOnDeviceModelAvailabilityChangeObserver(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+            availability_observer = observer;
+            run_loop_for_add_observer.Quit();
+          }));
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+
+  run_loop_for_add_observer.Run();
+  CHECK(availability_observer);
+
+  // Now that the delegate is observing, send `kConfigNotAvailableForFeature`
+  // first to the observer, which will not stop the observing.
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::
+          kConfigNotAvailableForFeature);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 0);
+
+  // And then send `kSuccess` to the observer, which will log the histogram.
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 1);
+  histogram_tester.ExpectTotalCount("SBClientPhishing.OnDeviceModelFetchTime",
+                                    1);
+
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            return std::make_unique<NiceMock<MockSession>>(&session_);
+          }));
+
+  optimization_guide::proto::DefaultResponse default_response;
+  optimization_guide::StreamingResponse default_streaming_response{
+      .response = AnyWrapProto(default_response), .is_complete = true};
+
+  EXPECT_CALL(session_, ExecuteModel(_, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            callback.Run(OptimizationGuideModelStreamingExecutionResult(
+                base::ok(default_streaming_response),
+                /*provided_by_on_device=*/true));
+          })));
+
+  csd_service_->SetOnDeviceAvailabilityForTesting(true);
+
+  ClientPhishingRequest verdict;
+  base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
+  csd_service_->InquireOnDeviceModel(&verdict, "", future.GetCallback());
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelExecutionDuration", 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelExecutionSuccess", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelResponseParseSuccess", false, 1);
+}
+
+TEST_P(ClientSideDetectionServiceTest,
+       TestSessionExecutionAndResponseParseSuccess) {
+  if (!base::FeatureList::IsEnabled(
+          kClientSideDetectionBrandAndIntentForScamDetection)) {
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
+      model_observer_tracker_.get());
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+
+  SetupMockOptimizationGuideKeyedService();
+
+  // When the Enhanced Safe Browsing protection setting is enabled, the next to
+  // functions will call from the delegate.
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) { return nullptr; });
+
+  optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
+      nullptr;
+  base::RunLoop run_loop_for_add_observer;
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              AddOnDeviceModelAvailabilityChangeObserver(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
+            availability_observer = observer;
+            run_loop_for_add_observer.Quit();
+          }));
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+
+  run_loop_for_add_observer.Run();
+  CHECK(availability_observer);
+
+  // Now that the delegate is observing, send `kConfigNotAvailableForFeature`
+  // first to the observer, which will not stop the observing.
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::
+          kConfigNotAvailableForFeature);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 0);
+
+  // And then send `kSuccess` to the observer, which will log the histogram.
+  availability_observer->OnDeviceModelAvailabilityChanged(
+      optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+      optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 1);
+  histogram_tester.ExpectTotalCount("SBClientPhishing.OnDeviceModelFetchTime",
+                                    1);
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            return std::make_unique<NiceMock<MockSession>>(&session_);
+          }));
+
+  EXPECT_CALL(session_, ExecuteModel(_, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            callback.Run(OptimizationGuideModelStreamingExecutionResult(
+                base::ok(CreateScamDetectionResponse("Google", "Search Engine",
+                                                     /*is_complete=*/true)),
+                /*provided_by_on_device=*/false));
+          })));
+
+  csd_service_->SetOnDeviceAvailabilityForTesting(true);
+
+  ClientPhishingRequest verdict;
+  base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
+  csd_service_->InquireOnDeviceModel(&verdict, "", future.GetCallback());
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.OnDeviceModelExecutionDuration", 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelExecutionSuccess", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelResponseParseSuccess", true, 1);
 }
 
 }  // namespace safe_browsing

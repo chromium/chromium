@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/content_extraction/inner_text.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "content/public/browser/global_routing_id.h"
@@ -44,6 +45,7 @@ class ChromeClientSideDetectionHostDelegate
                             current_outermost_main_frame_id) override;
   VerdictCacheManager* GetCacheManager() override;
   ChromeUserPopulation GetUserPopulation() override;
+  void GetInnerText(HostInnerTextCallback callback) override;
 
   void SetNavigationObserverManagerForTesting(
       SafeBrowsingNavigationObserverManager* navigation_observer_manager) {
@@ -57,9 +59,14 @@ class ChromeClientSideDetectionHostDelegate
       SafeBrowsingNavigationObserverManager::AttributionResult result);
 
  private:
+  void OnInnerTextResult(
+      HostInnerTextCallback callback,
+      std::unique_ptr<content_extraction::InnerTextResult> result);
   raw_ptr<content::WebContents> web_contents_;
   raw_ptr<SafeBrowsingNavigationObserverManager> observer_manager_for_testing_ =
       nullptr;
+  base::WeakPtrFactory<ChromeClientSideDetectionHostDelegate> weak_factory_{
+      this};
 };
 
 }  // namespace safe_browsing

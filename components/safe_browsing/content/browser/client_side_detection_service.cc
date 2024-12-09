@@ -26,6 +26,8 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
@@ -75,6 +77,21 @@ struct ClientSideDetectionService::ClientPhishingReportInfo {
   ClientReportPhishingRequestCallback callback;
   GURL phishing_url;
 };
+
+void LogOnDeviceModelExecutionSuccessAndTime(
+    bool success,
+    base::TimeTicks session_execution_start_time) {
+  base::UmaHistogramBoolean("SBClientPhishing.OnDeviceModelExecutionSuccess",
+                            success);
+  base::UmaHistogramMediumTimes(
+      "SBClientPhishing.OnDeviceModelExecutionDuration",
+      base::TimeTicks::Now() - session_execution_start_time);
+}
+
+void LogOnDeviceModelExecutionParse(bool success) {
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.OnDeviceModelResponseParseSuccess", success);
+}
 
 ClientSideDetectionService::CacheState::CacheState(bool phish, base::Time time)
     : is_phishing(phish), timestamp(time) {}
@@ -127,6 +144,9 @@ void ClientSideDetectionService::Shutdown() {
   enabled_ = false;
   client_side_phishing_model_.reset();
   on_device_model_available_ = false;
+  if (session_) {
+    session_.reset();
+  }
 }
 
 void ClientSideDetectionService::OnPrefsUpdated() {
@@ -776,12 +796,99 @@ ClientSideDetectionService::RegisterCallbackForModelUpdates(
   return client_side_phishing_model_->RegisterCallback(callback);
 }
 
+void ClientSideDetectionService::InquireOnDeviceModel(
+    ClientPhishingRequest* verdict,
+    std::string rendered_texts,
+    base::OnceCallback<
+        void(std::optional<optimization_guide::proto::ScamDetectionResponse>)>
+        callback) {
+  if (!IsOnDeviceModelAvailable()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  // Close off the previous session if session's model execution from a previous
+  // call into InquireOnDeviceModel is still happening.
+  if (session_) {
+    session_.reset();
+  }
+
+  base::TimeTicks session_creation_start_time = base::TimeTicks::Now();
+
+  session_ = delegate_->GetModelExecutorSession();
+
+  if (!session_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  base::UmaHistogramMediumTimes(
+      "SBClientPhishing.OnDeviceModelSessionCreationTime",
+      base::TimeTicks::Now() - session_creation_start_time);
+
+  ScamDetectionRequest request;
+  request.set_rendered_text(rendered_texts);
+
+  inquire_on_device_model_callback_ = std::move(callback);
+  session_execution_start_time_ = base::TimeTicks::Now();
+  session_->ExecuteModel(
+      *std::make_unique<ScamDetectionRequest>(request),
+      base::BindRepeating(&ClientSideDetectionService::ModelExecutionCallback,
+                          weak_factory_.GetWeakPtr(), verdict));
+}
+
+void ClientSideDetectionService::ModelExecutionCallback(
+    ClientPhishingRequest* verdict,
+    optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
+  if (!result.response.has_value()) {
+    LogOnDeviceModelExecutionSuccessAndTime(/*success=*/false,
+                                            session_execution_start_time_);
+    if (inquire_on_device_model_callback_) {
+      std::move(inquire_on_device_model_callback_).Run(std::nullopt);
+    }
+    return;
+  }
+
+  // This is a non-error response, but it's not completed, yet so we wait till
+  // it's complete.
+  if (!result.response->is_complete) {
+    return;
+  }
+
+  LogOnDeviceModelExecutionSuccessAndTime(/*success=*/true,
+                                          session_execution_start_time_);
+
+  auto scam_detection_response = optimization_guide::ParsedAnyMetadata<
+      optimization_guide::proto::ScamDetectionResponse>(
+      result.response->response);
+
+  if (!scam_detection_response) {
+    LogOnDeviceModelExecutionParse(false);
+    return;
+  }
+
+  LogOnDeviceModelExecutionParse(true);
+
+  CHECK(session_);
+  session_.reset();
+
+  if (inquire_on_device_model_callback_) {
+    std::move(inquire_on_device_model_callback_).Run(scam_detection_response);
+  }
+}
+
 // IN-TEST
 void ClientSideDetectionService::SetModelAndVisualTfLiteForTesting(
     const base::FilePath& model,
     const base::FilePath& visual_tf_lite) {
   client_side_phishing_model_->SetModelAndVisualTfLiteForTesting(  // IN-TEST
       model, visual_tf_lite);
+}
+
+// IN-TEST
+void ClientSideDetectionService::SetOnDeviceAvailabilityForTesting(
+    bool available) {
+  on_device_model_available_ = available;
 }
 
 }  // namespace safe_browsing

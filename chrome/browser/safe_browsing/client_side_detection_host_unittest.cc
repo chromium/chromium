@@ -163,6 +163,13 @@ class MockClientSideDetectionService : public ClientSideDetectionService {
   MOCK_METHOD0(GetModelSharedMemoryRegion, base::ReadOnlySharedMemoryRegion());
   MOCK_METHOD0(GetModelType, CSDModelType());
   MOCK_METHOD0(IsModelAvailable, bool());
+  MOCK_METHOD(
+      void,
+      InquireOnDeviceModel,
+      (ClientPhishingRequest*,
+       std::string,
+       base::OnceCallback<void(
+           std::optional<optimization_guide::proto::ScamDetectionResponse>)>));
 };
 
 class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
@@ -2174,6 +2181,119 @@ TEST_F(ClientSideDetectionHostDebugFeaturesTest,
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
   fake_phishing_detector_.CheckMessage(&url);
+}
+
+class ClientSideDetectionHostScamDetectionTest
+    : public ClientSideDetectionHostTest {
+ public:
+  ClientSideDetectionHostScamDetectionTest() = default;
+
+  void SetUp() override {
+    ClientSideDetectionHostTest::SetUp();
+
+    SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+    SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
+  }
+
+  void PhishingDetectionDone(mojo_base::ProtoWrapper verdict,
+                             ClientSideDetectionType type) {
+    csd_host_->PhishingDetectionDone(
+        type,
+        /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false,
+        mojom::PhishingDetectorResult::SUCCESS, std::move(verdict));
+  }
+};
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       KeyboardLockRequestTriggersOnDeviceLLM) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+
+  // Although the score is not phishy at all, we will still inquire the
+  // on-device model.
+  ClientPhishingRequest verdict;
+  verdict.set_url("http://example.com/");
+  verdict.set_client_score(0.0f);
+  verdict.set_is_phishing(false);
+
+  base::RunLoop run_loop_for_inquire_on_device_model;
+
+  // Because the client side detection type is KEYBOARD_LOCK_REQUESTED, we will
+  // call to inquire the on-device model.
+  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _, _))
+      .WillOnce(testing::Invoke(
+          [&](ClientPhishingRequest* verdict, std::string rendered_text,
+              base::OnceCallback<void(
+                  std::optional<
+                      optimization_guide::proto::ScamDetectionResponse>)>
+                  callback) {
+            run_loop_for_inquire_on_device_model.Quit();
+            std::move(callback).Run(std::nullopt);
+          }));
+
+  // We can expect the token fetcher to occur as usual because the ESB
+  // preference is enabled.
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 PartiallyEqualVerdict(verdict), _,
+                                 "fake_access_token_keyboard_lock"));
+
+  SafeBrowsingTokenFetcher::Callback cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_)).WillOnce(MoveArg<0>(&cb));
+
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict),
+                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
+
+  // First run the inquire on device function.
+  run_loop_for_inquire_on_device_model.Run();
+  // Token fetcher will run afterwards.
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+
+  ASSERT_FALSE(cb.is_null());
+  std::move(cb).Run("fake_access_token_keyboard_lock");
+
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       NonKeyboardLockRequestDoesNotTriggersOnDeviceLLM) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+
+  ClientPhishingRequest verdict;
+  verdict.set_url("http://example.com/");
+  verdict.set_client_score(0.0f);
+  verdict.set_is_phishing(false);
+
+  // Because the client side detection type is POINTER_LOCK_REQUESTED, we will
+  // NOT inquire the on-device model.
+  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _, _)).Times(0);
+
+  // We can expect the token fetcher to occur as usual because ESB preference is
+  // enabled.
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 PartiallyEqualVerdict(verdict), _,
+                                 "fake_access_token_pointer_lock"));
+
+  SafeBrowsingTokenFetcher::Callback cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_)).WillOnce(MoveArg<0>(&cb));
+
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict),
+                        ClientSideDetectionType::POINTER_LOCK_REQUESTED);
+
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+
+  ASSERT_FALSE(cb.is_null());
+  std::move(cb).Run("fake_access_token_pointer_lock");
+
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
 }
 
 }  // namespace safe_browsing
