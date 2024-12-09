@@ -27,6 +27,7 @@ source_set("model") {
     "//components/favicon/ios",
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",
+    "//components/keyed_service/ios",
     "//components/resources",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/sessions/model:restoration_observer",
@@ -49,8 +50,6 @@ source_set("model") {
   public_deps = [
     "//base",
     "//components/favicon_base",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
   ]
 }
 

@@ -36,6 +36,7 @@ source_set("model") {
     "//components/favicon/ios",
     "//components/google/core/common",
     "//components/keyed_service/core",
+    "//components/keyed_service/ios",
     "//components/pref_registry",
     "//components/prefs",
     "//components/reading_list/core",

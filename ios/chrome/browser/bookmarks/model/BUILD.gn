@@ -33,6 +33,7 @@ source_set("model") {
     "//components/favicon_base",
     "//components/history/core/browser",
     "//components/keyed_service/core",
+    "//components/keyed_service/ios",
     "//components/power_bookmarks/core",
     "//components/prefs",
     "//components/sync_bookmarks",
