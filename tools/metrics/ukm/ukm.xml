@@ -9053,7 +9053,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GoogleDocsOfflineExtension">
-  <owner>rhalavati@chromium.org</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>arabm@google.com</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>
     Logged when a website requests a shared resource from Google Docs Offline
