@@ -136,6 +136,46 @@ std::optional<mojom::blink::AIPageContentAttributeType> GetAttributeType(
     return mojom::blink::AIPageContentAttributeType::kTableCell;
   }
 
+  if (element->HasTagName(html_names::kHeaderTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "banner") {
+    return mojom::blink::AIPageContentAttributeType::kHeader;
+  }
+
+  if (element->HasTagName(html_names::kNavTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "navigation") {
+    return mojom::blink::AIPageContentAttributeType::kNav;
+  }
+
+  if (element->HasTagName(html_names::kSearchTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "search") {
+    return mojom::blink::AIPageContentAttributeType::kSearch;
+  }
+
+  if (element->HasTagName(html_names::kMainTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "main") {
+    return mojom::blink::AIPageContentAttributeType::kMain;
+  }
+
+  if (element->HasTagName(html_names::kArticleTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "article") {
+    return mojom::blink::AIPageContentAttributeType::kArticle;
+  }
+
+  if (element->HasTagName(html_names::kSectionTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "region") {
+    return mojom::blink::AIPageContentAttributeType::kSection;
+  }
+
+  if (element->HasTagName(html_names::kAsideTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "complementary") {
+    return mojom::blink::AIPageContentAttributeType::kAside;
+  }
+
+  if (element->HasTagName(html_names::kFooterTag) ||
+      element->FastGetAttribute(html_names::kRoleAttr) == "contentinfo") {
+    return mojom::blink::AIPageContentAttributeType::kFooter;
+  }
+
   // TODO: Add FormData for attribute_type = FORM.
   return std::nullopt;
 }

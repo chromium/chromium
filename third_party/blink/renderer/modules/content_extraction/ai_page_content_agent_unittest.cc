@@ -674,5 +674,153 @@ TEST_F(AIPageContentAgentTest, TableMadeWithCss) {
             "987-654-3210");
 }
 
+TEST_F(AIPageContentAgentTest, LandmarkSections) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <header>Header</header>"
+      "  <nav>Navigation</nav>"
+      "  <search>Search</search>"
+      "  <main>Main content</main>"
+      "  <article>Article</article>"
+      "  <section>Section</section>"
+      "  <aside>Aside</aside>"
+      "  <footer>Footer</footer>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto content = agent->GetAIPageContentSync();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  ASSERT_EQ(root.children_nodes.size(), 8u);
+
+  const auto& header = *root.children_nodes[0]->content_attributes;
+  EXPECT_EQ(header.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kHeader);
+  ASSERT_EQ(header.text_info.size(), 1u);
+  EXPECT_EQ(header.text_info[0]->text_content, "Header");
+
+  const auto& nav = *root.children_nodes[1]->content_attributes;
+  EXPECT_EQ(nav.attribute_type, mojom::blink::AIPageContentAttributeType::kNav);
+  ASSERT_EQ(nav.text_info.size(), 1u);
+  EXPECT_EQ(nav.text_info[0]->text_content, "Navigation");
+
+  const auto& search = *root.children_nodes[2]->content_attributes;
+  EXPECT_EQ(search.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kSearch);
+  ASSERT_EQ(search.text_info.size(), 1u);
+  EXPECT_EQ(search.text_info[0]->text_content, "Search");
+
+  const auto& main = *root.children_nodes[3]->content_attributes;
+  EXPECT_EQ(main.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kMain);
+  ASSERT_EQ(main.text_info.size(), 1u);
+  EXPECT_EQ(main.text_info[0]->text_content, "Main content");
+
+  const auto& article = *root.children_nodes[4]->content_attributes;
+  EXPECT_EQ(article.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kArticle);
+  ASSERT_EQ(article.text_info.size(), 1u);
+  EXPECT_EQ(article.text_info[0]->text_content, "Article");
+
+  const auto& section = *root.children_nodes[5]->content_attributes;
+  EXPECT_EQ(section.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kSection);
+  ASSERT_EQ(section.text_info.size(), 1u);
+  EXPECT_EQ(section.text_info[0]->text_content, "Section");
+
+  const auto& aside = *root.children_nodes[6]->content_attributes;
+  EXPECT_EQ(aside.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kAside);
+  ASSERT_EQ(aside.text_info.size(), 1u);
+  EXPECT_EQ(aside.text_info[0]->text_content, "Aside");
+
+  const auto& footer = *root.children_nodes[7]->content_attributes;
+  EXPECT_EQ(footer.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kFooter);
+  ASSERT_EQ(footer.text_info.size(), 1u);
+  EXPECT_EQ(footer.text_info[0]->text_content, "Footer");
+}
+
+TEST_F(AIPageContentAgentTest, LandmarkSectionsWithAriaRoles) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div role='banner'>Header</div>"
+      "  <div role='navigation'>Navigation</div>"
+      "  <div role='search'>Search</div>"
+      "  <div role='main'>Main content</div>"
+      "  <div role='article'>Article</div>"
+      "  <div role='region'>Section</div>"
+      "  <div role='complementary'>Aside</div>"
+      "  <div role='contentinfo'>Footer</div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+ auto content = agent->GetAIPageContentSync();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  ASSERT_EQ(root.children_nodes.size(), 8u);
+
+  const auto& header = *root.children_nodes[0]->content_attributes;
+  EXPECT_EQ(header.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kHeader);
+  ASSERT_EQ(header.text_info.size(), 1u);
+  EXPECT_EQ(header.text_info[0]->text_content, "Header");
+
+  const auto& nav = *root.children_nodes[1]->content_attributes;
+  EXPECT_EQ(nav.attribute_type, mojom::blink::AIPageContentAttributeType::kNav);
+  ASSERT_EQ(nav.text_info.size(), 1u);
+  EXPECT_EQ(nav.text_info[0]->text_content, "Navigation");
+
+  const auto& search = *root.children_nodes[2]->content_attributes;
+  EXPECT_EQ(search.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kSearch);
+  ASSERT_EQ(search.text_info.size(), 1u);
+  EXPECT_EQ(search.text_info[0]->text_content, "Search");
+
+  const auto& main = *root.children_nodes[3]->content_attributes;
+  EXPECT_EQ(main.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kMain);
+  ASSERT_EQ(main.text_info.size(), 1u);
+  EXPECT_EQ(main.text_info[0]->text_content, "Main content");
+
+  const auto& article = *root.children_nodes[4]->content_attributes;
+  EXPECT_EQ(article.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kArticle);
+  ASSERT_EQ(article.text_info.size(), 1u);
+  EXPECT_EQ(article.text_info[0]->text_content, "Article");
+
+  const auto& section = *root.children_nodes[5]->content_attributes;
+  EXPECT_EQ(section.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kSection);
+  ASSERT_EQ(section.text_info.size(), 1u);
+  EXPECT_EQ(section.text_info[0]->text_content, "Section");
+
+  const auto& aside = *root.children_nodes[6]->content_attributes;
+  EXPECT_EQ(aside.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kAside);
+  ASSERT_EQ(aside.text_info.size(), 1u);
+  EXPECT_EQ(aside.text_info[0]->text_content, "Aside");
+
+  const auto& footer = *root.children_nodes[7]->content_attributes;
+  EXPECT_EQ(footer.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kFooter);
+  ASSERT_EQ(footer.text_info.size(), 1u);
+  EXPECT_EQ(footer.text_info[0]->text_content, "Footer");
+}
+
 }  // namespace
 }  // namespace blink

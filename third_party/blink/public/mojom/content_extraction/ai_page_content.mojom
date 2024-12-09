@@ -32,6 +32,16 @@ enum AIPageContentAttributeType {
   kFigure,
   kTable,
   kTableCell,
+
+  // Landmark/section chunks.
+  kHeader,
+  kNav,
+  kSearch,
+  kMain,
+  kArticle,
+  kSection,
+  kAside,
+  kFooter,
 };
 
 struct AIPageContentGeometry {
