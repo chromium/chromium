@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -151,6 +152,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     CHECK(tab.GetBrowserWindowInterface()->GetActions());
     page_action_controller_->Initialize(std::vector<actions::ActionId>(
         page_actions::kActionIds.begin(), page_actions::kActionIds.end()));
+
+    if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
+      collaboration_messaging_tab_data_ =
+          std::make_unique<tab_groups::CollaborationMessagingTabData>();
+    }
   }
 
   customize_chrome_side_panel_controller_ =
