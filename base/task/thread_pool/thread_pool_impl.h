@@ -176,7 +176,6 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
 
   const std::string histogram_label_;
   const std::unique_ptr<TaskTrackerImpl> task_tracker_;
-  const bool use_background_threads_;
   ServiceThread service_thread_;
   DelayedTaskManager delayed_task_manager_;
   PooledSingleThreadTaskRunnerManager single_thread_task_runner_manager_;

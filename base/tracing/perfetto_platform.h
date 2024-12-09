@@ -46,7 +46,6 @@ class BASE_EXPORT PerfettoPlatform : public perfetto::Platform {
   perfetto::base::PlatformThreadId GetCurrentThreadId() override;
 
  private:
-  const TaskRunnerType task_runner_type_ = TaskRunnerType::kThreadPool;
   raw_ptr<PerfettoTaskRunner> task_runner_;
   ThreadLocalStorage::Slot thread_local_object_;
 };

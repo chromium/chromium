@@ -81,7 +81,6 @@ class GPU_EXPORT Scheduler {
    private:
     const raw_ptr<Scheduler> scheduler_;
     const SequenceId sequence_id_;
-    const SchedulingPriority priority_;
   };
 
   explicit Scheduler(SyncPointManager* sync_point_manager);

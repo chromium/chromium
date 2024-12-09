@@ -100,8 +100,6 @@ class PLATFORM_EXPORT FontCustomPlatformData
   sk_sp<SkTypeface> base_typeface_;
   size_t data_size_;
 
-  mutable bool may_be_icon_font_computed_ = false;
-  mutable bool may_be_icon_font_ = false;
   NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
 };
 

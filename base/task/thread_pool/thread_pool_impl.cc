@@ -76,7 +76,6 @@ ThreadPoolImpl::ThreadPoolImpl(std::string_view histogram_label,
                                bool use_background_threads)
     : histogram_label_(histogram_label),
       task_tracker_(std::move(task_tracker)),
-      use_background_threads_(use_background_threads),
       single_thread_task_runner_manager_(task_tracker_->GetTrackedRef(),
                                          &delayed_task_manager_),
       has_disable_best_effort_switch_(HasDisableBestEffortTasksSwitch()),
