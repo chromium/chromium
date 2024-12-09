@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/safe_browsing/model/hash_realtime_service_factory.h"
 
 #import "base/feature_list.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #import "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #import "ios/chrome/browser/safe_browsing/model/ohttp_key_service_factory.h"
@@ -25,8 +24,9 @@ network::mojom::NetworkContext* GetNetworkContext() {
 // static
 safe_browsing::HashRealTimeService* HashRealTimeServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<safe_browsing::HashRealTimeService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()
+      ->GetServiceForProfileAs<safe_browsing::HashRealTimeService>(
+          profile, /*create=*/true);
 }
 
 // static
@@ -36,9 +36,7 @@ HashRealTimeServiceFactory* HashRealTimeServiceFactory::GetInstance() {
 }
 
 HashRealTimeServiceFactory::HashRealTimeServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "HashRealTimeService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("HashRealTimeService") {
   DependsOn(VerdictCacheManagerFactory::GetInstance());
   DependsOn(OhttpKeyServiceFactory::GetInstance());
 }
