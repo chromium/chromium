@@ -42,19 +42,19 @@ void ProductSpecificationsUIHandlerDelegate::
     ShowProductSpecificationsSetForUuid(const base::Uuid& uuid,
                                         bool in_new_tab) {
   const GURL product_spec_url = commerce::GetProductSpecsTabUrlForID(uuid);
+  auto* browser =
+      chrome::FindLastActiveWithProfile(Profile::FromWebUI(web_ui_));
+  if (!browser) {
+    return;
+  }
   if (in_new_tab) {
-    auto* browser =
-        chrome::FindLastActiveWithProfile(Profile::FromWebUI(web_ui_));
-    if (!browser) {
-      return;
-    }
-
     content::OpenURLParams params(product_spec_url, content::Referrer(),
                                   WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                   ui::PAGE_TRANSITION_LINK, false);
     browser->OpenURL(params, /*navigation_handle_callback=*/{});
   } else {
-    content::WebContents* web_contents = web_ui_->GetWebContents();
+    content::WebContents* web_contents =
+        browser->tab_strip_model()->GetActiveWebContents();
     if (!web_contents) {
       return;
     }
