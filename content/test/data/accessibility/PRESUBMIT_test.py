@@ -294,14 +294,15 @@ class CheckAccessibilityTestExpectationFilenamesTest(unittest.TestCase):
             mock_input_api, MockOutputApi())
         self.assertEqual(0, len(results))
 
-    # Test that newly added files with incorrect naming are flagged,
-    # but only text files.
+    # Test that newly added or modified files with incorrect naming are flagged,
+    # but only text files, and not deletions.
     def testInvalidFilenames(self):
         mock_input_api = MockInputApi()
         mock_input_api.files = [
             MockFile("content/test/data/accessibility/aria/foo-expected-android-foo.txt", [], action='A'),
             MockFile("content/test/data/accessibility/event/bar-expected-ios.txt", [], action='A'),
-            MockFile("content/test/data/accessibility/html/baz-actual-android.txt", [], action='A'),
+            MockFile("content/test/data/accessibility/html/baz-actual-android.txt", [], action='M'),
+            MockFile("content/test/data/accessibility/html/baz-actual-android.txt", [], action='D'),
             MockFile("content/test/data/accessibility/event/invalid.txt", [], action='A'),
             MockFile("content/test/data/accessibility/event/invalid-expected-win.html", [], action='A'),
             MockFile("content/test/data/accessibility/event/invalid-actual-win.html", [], action='A'),
@@ -324,6 +325,50 @@ class CheckAccessibilityTestExpectationFilenamesTest(unittest.TestCase):
             MockFile("foo/bar.txt", []),
         ]
         results = PRESUBMIT.CheckAccessibilityTestExpectationFilenames(
+            mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+
+class CheckAccessibilityTestExpectationFilenamesMacWinTest(unittest.TestCase):
+
+    # Test that files with the correct naming are not flagged,
+    # nor are modified files.
+    def testValidFilenames(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile("content/test/data/accessibility/mac/foo-expected.txt", []),
+            MockFile("content/test/data/accessibility/win/bar-expected.txt", []),
+        ]
+        results = PRESUBMIT.CheckAccessibilityTestExpectationFilenamesMacWin(
+            mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    # Test that newly added or modified files with incorrect naming are flagged,
+    # but only text files, and not deletions.
+    def testInvalidFilenames(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile("content/test/data/accessibility/mac/foo-expected-mac.txt", [], action='A'),
+            MockFile("content/test/data/accessibility/win/bar-expected-win.txt", [], action='M'),
+            MockFile("content/test/data/accessibility/win/bar-expected-win.txt", [], action='D'),
+            MockFile("content/test/data/accessibility/mac/foo-expected-mac.html", [], action='A'),
+            MockFile("content/test/data/accessibility/win/bar-expected-win.html", [], action='A'),
+        ]
+        results = PRESUBMIT.CheckAccessibilityTestExpectationFilenamesMacWin(
+            mock_input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual(2, len(results[0].items))
+        self.assertIn("foo-expected-mac.txt", results[0].items[0])
+        self.assertIn("bar-expected-win.txt", results[0].items[1])
+
+    # Test files outside the /mac/ or /win/ sub-directories are not relevant.
+    def testNonMatchingFiles(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile("content/test/data/foo.txt", []),
+            MockFile("foo/mac/bar.txt", []),
+        ]
+        results = PRESUBMIT.CheckAccessibilityTestExpectationFilenamesMacWin(
             mock_input_api, MockOutputApi())
         self.assertEqual(0, len(results))
 
