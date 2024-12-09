@@ -84,6 +84,11 @@ class ChromeAuthenticatorRequestDelegate
     virtual void OnPreTransportAvailabilityEnumerated(
         ChromeAuthenticatorRequestDelegate* delegate) {}
 
+    // Called when ShowUI() is first invoked. The UI might not yet actually show
+    // at this point, depending on which step the model is at; see UIShown().
+    virtual void UIReady(ChromeAuthenticatorRequestDelegate* delegate) {}
+
+    // Called when the UI dialog is shown.
     virtual void UIShown(ChromeAuthenticatorRequestDelegate* delegate) {}
 
     virtual void CableV2ExtensionSeen(
@@ -220,6 +225,7 @@ class ChromeAuthenticatorRequestDelegate
   content::RenderFrameHost* GetRenderFrameHost() const;
 
   content::BrowserContext* GetBrowserContext() const;
+  Profile* profile() const;
 
   bool webauthn_ui_enabled() const;
 

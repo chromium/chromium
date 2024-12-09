@@ -1156,6 +1156,7 @@ void AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck(
       &absl::get<device::MakeCredentialOptions>(req_state_->request_options);
   make_credential_options->json =
       base::MakeRefCounted<device::JSONRequest>(webauthn::ToValue(options));
+  make_credential_options->is_passkey_upgrade_request = options->is_conditional;
   const bool might_create_resident_key =
       make_credential_options->resident_key !=
       device::ResidentKeyRequirement::kDiscouraged;
