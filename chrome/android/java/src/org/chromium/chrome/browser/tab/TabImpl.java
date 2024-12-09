@@ -1348,6 +1348,8 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
     }
 
     void handleBackForwardTransitionUiChanged() {
+        if (isDestroyed()) return;
+
         for (TabObserver observer : mObservers) {
             observer.didBackForwardTransitionAnimationChange(this);
         }
