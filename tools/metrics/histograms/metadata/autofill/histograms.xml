@@ -105,6 +105,8 @@ chromium-metrics-reviews@google.com.
       summary="User chose to fill a form or field with an address profile."/>
   <variant name="Autocomplete"
       summary="User chose to fill a field with autocomplete."/>
+  <variant name="AutofillAi"
+      summary="User chose to fill a field with Autofill AI."/>
   <variant name="Compose"
       summary="User chose to fill a field with a compose suggestion."/>
   <variant name="CreditCard"
@@ -116,8 +118,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Password"
       summary="User chose to fill a form or field with password credentials."/>
   <variant name="PlusAddresses"
-      summary="User chose to fill a field with a prediction improvement."/>
-  <variant name="PredictionImprovements"
       summary="User chose to fill a field with a plus addresses suggestion."/>
   <variant name="StandaloneCvc"
       summary="User chose to fill a form or field with a CVC."/>

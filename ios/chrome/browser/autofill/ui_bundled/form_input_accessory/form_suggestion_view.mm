@@ -70,7 +70,7 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
       filling_product_bucket = FillingProductToString(filling_product);
       break;
     case FillingProduct::kCompose:
-    case FillingProduct::kPredictionImprovements:
+    case FillingProduct::kAutofillAi:
     case FillingProduct::kMerchantPromoCode:
       // These cases are currently not available on iOS.
       NOTREACHED();

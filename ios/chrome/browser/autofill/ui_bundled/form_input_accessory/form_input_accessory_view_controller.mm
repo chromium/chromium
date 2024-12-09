@@ -506,7 +506,7 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
         break;
       case FillingProduct::kMerchantPromoCode:
       case FillingProduct::kCompose:
-      case FillingProduct::kPredictionImprovements:
+      case FillingProduct::kAutofillAi:
       case FillingProduct::kNone:
         // `kMerchantPromoCode` and `kCompose` cases are currently not available
         // on iOS. Also, there shouldn't be suggestions of type `kNone`.

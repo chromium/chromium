@@ -71,7 +71,7 @@ std::optional<FieldTypeSet> GetFieldTypesToFillFromFillingProduct(
         }
       }
       return field_types;
-    case FillingProduct::kPredictionImprovements:
+    case FillingProduct::kAutofillAi:
       for (FieldType field_type : kAllFieldTypes) {
         if (IsAddressType(field_type)) {
           field_types.insert(field_type);
@@ -200,7 +200,7 @@ bool ShouldRecordFillingHistory(FillingProduct filling_product) {
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
     case FillingProduct::kStandaloneCvc:
-    case FillingProduct::kPredictionImprovements:
+    case FillingProduct::kAutofillAi:
       return false;
   }
   NOTREACHED();
@@ -511,7 +511,7 @@ void FormFiller::FillOrPreviewFormWithPredictionImprovements(
           GetFieldFillingSkipReasons(
               result_fields, form_structure, autofill_trigger_field,
               /*type_groups_originally_filled=*/std::nullopt,
-              FillingProduct::kPredictionImprovements,
+              FillingProduct::kAutofillAi,
               /*is_refill=*/false),
           {},
           [&ignorable_skip_reasons](
@@ -542,8 +542,7 @@ void FormFiller::FillOrPreviewFormWithPredictionImprovements(
       // TODO(crbug.com/40227496): Set also `AutofillField::value_` here.
       AutofillField& autofill_field = *form_structure.field(i);
       autofill_field.set_is_autofilled(true);
-      autofill_field.set_filling_product(
-          FillingProduct::kPredictionImprovements);
+      autofill_field.set_filling_product(FillingProduct::kAutofillAi);
     }
 
     const bool autofilled_value_did_not_change =

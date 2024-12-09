@@ -527,7 +527,7 @@ void AutofillExternalDelegate::OnSuggestionsShown(
   if (base::ranges::any_of(shown_suggestion_types,
                            [](const SuggestionType& type) {
                              return GetFillingProductFromSuggestionType(type) ==
-                                    FillingProduct::kPredictionImprovements;
+                                    FillingProduct::kAutofillAi;
                            })) {
     if (auto* prediction_improvements_delegate =
             manager_->client().GetAutofillAiDelegate()) {

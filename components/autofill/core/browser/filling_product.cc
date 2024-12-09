@@ -34,8 +34,8 @@ std::string FillingProductToString(FillingProduct filling_product) {
       return "PlusAddresses";
     case FillingProduct::kStandaloneCvc:
       return "StandaloneCvc";
-    case FillingProduct::kPredictionImprovements:
-      return "PredictionImprovements";
+    case FillingProduct::kAutofillAi:
+      return "AutofillAi";
   };
   NOTREACHED();
 }
@@ -94,7 +94,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kPlusAddressError:
       return FillingProduct::kPlusAddresses;
     case SuggestionType::kAutofillAiFeedback:
-      return FillingProduct::kPredictionImprovements;
+      return FillingProduct::kAutofillAi;
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:
@@ -108,7 +108,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kAutofillAiError:
     case SuggestionType::kEditAutofillAiData:
-      return FillingProduct::kPredictionImprovements;
+      return FillingProduct::kAutofillAi;
   }
   NOTREACHED();
 }
@@ -137,7 +137,7 @@ FillingProduct GetFillingProductFromFieldTypeGroup(
     case kIban:
       return FillingProduct::kIban;
     case kPredictionImprovements:
-      return FillingProduct::kPredictionImprovements;
+      return FillingProduct::kAutofillAi;
   }
   NOTREACHED();
 }

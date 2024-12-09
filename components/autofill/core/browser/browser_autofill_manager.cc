@@ -204,7 +204,7 @@ bool IsSingleFieldFillerFillingProduct(FillingProduct filling_product) {
     case FillingProduct::kStandaloneCvc:
       return true;
     case FillingProduct::kPlusAddresses:
-    case FillingProduct::kPredictionImprovements:
+    case FillingProduct::kAutofillAi:
     case FillingProduct::kCompose:
     case FillingProduct::kPassword:
     case FillingProduct::kCreditCard:
@@ -1035,8 +1035,8 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
       logger->OnEditedAutofilledField();
     }
     if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
-        delegate && autofill_field->filling_product() ==
-                        FillingProduct::kPredictionImprovements) {
+        delegate &&
+        autofill_field->filling_product() == FillingProduct::kAutofillAi) {
       delegate->OnEditedAutofilledField(form.global_id());
     }
   }

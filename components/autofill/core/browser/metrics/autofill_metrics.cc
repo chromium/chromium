@@ -557,7 +557,7 @@ void AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
                                        editing_metric));
 
   // Record the metric for FormsAI specific fields.
-  if (field.filling_product() == FillingProduct::kPredictionImprovements) {
+  if (field.filling_product() == FillingProduct::kAutofillAi) {
     base::UmaHistogramEnumeration(
         "Autofill.FormsAI.EditedAutofilledFieldAtSubmission", editing_metric);
   }
