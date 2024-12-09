@@ -31,25 +31,17 @@ public class EducationalTipCardProviderTriggerStateUnitTest {
     @Test
     @SmallTest
     public void testShouldNotifyCardShownPerSession() {
-        assertTrue(
-                mEducationalTipCardProviderTriggerState.shouldNotifyCardShownPerSession(
-                        EducationalTipCardType.TAB_GROUP));
-        assertFalse(
-                mEducationalTipCardProviderTriggerState.shouldNotifyCardShownPerSession(
-                        EducationalTipCardType.TAB_GROUP));
+        for (int cardType = 1; cardType < EducationalTipCardType.NUM_ENTRIES; cardType++) {
+            assertTrue(
+                    mEducationalTipCardProviderTriggerState.shouldNotifyCardShownPerSession(
+                            cardType));
 
-        assertTrue(
-                mEducationalTipCardProviderTriggerState.shouldNotifyCardShownPerSession(
-                        EducationalTipCardType.TAB_GROUP_SYNC));
-        assertFalse(
-                mEducationalTipCardProviderTriggerState.shouldNotifyCardShownPerSession(
-                        EducationalTipCardType.TAB_GROUP_SYNC));
-
-        assertTrue(
-                mEducationalTipCardProviderTriggerState.shouldNotifyCardShownPerSession(
-                        EducationalTipCardType.QUICK_DELETE));
-        assertFalse(
-                mEducationalTipCardProviderTriggerState.shouldNotifyCardShownPerSession(
-                        EducationalTipCardType.QUICK_DELETE));
+            assertFalse(
+                    mEducationalTipCardProviderTriggerState.shouldNotifyCardShownPerSession(
+                            cardType));
+            assertFalse(
+                    mEducationalTipCardProviderTriggerState.shouldNotifyCardShownPerSession(
+                            cardType));
+        }
     }
 }

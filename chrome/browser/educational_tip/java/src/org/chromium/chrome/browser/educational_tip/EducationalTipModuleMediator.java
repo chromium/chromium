@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.educational_tip;
 
+import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_MAGIC_STACK_MODULE;
+import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION_WITH_POSITION;
+import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_PREFIX;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -12,10 +16,12 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.CallbackController;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.EducationalTipCardType;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -89,6 +95,16 @@ public class EducationalTipModuleMediator {
     /** Called when the educational tip module is visible to users on the magic stack. */
     void onViewCreated() {
         @EducationalTipCardType int cardType = mEducationalTipCardProvider.getCardType();
+
+        // TODO(crbug.com/382803396): The sample here is a temporary workaround and will need to be
+        // fully replaced with the module type after the refactor.
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_PREFIX
+                        + HISTOGRAM_MAGIC_STACK_MODULE
+                        + HomeModulesMetricsUtils.getModuleName(mModuleType)
+                        + HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION_WITH_POSITION,
+                cardType + ModuleType.NUM_ENTRIES,
+                EducationalTipCardType.NUM_ENTRIES + ModuleType.NUM_ENTRIES);
 
         if (cardType == EducationalTipCardType.DEFAULT_BROWSER_PROMO) {
             EducationalTipModuleMediatorJni.get().notifyCardShown(mProfile, cardType);

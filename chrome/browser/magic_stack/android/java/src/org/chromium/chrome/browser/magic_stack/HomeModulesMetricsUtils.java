@@ -21,10 +21,15 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 
 /** The utility class for logging the magic stack's metrics. */
 public class HomeModulesMetricsUtils {
-    @VisibleForTesting static final String HISTOGRAM_PREFIX = "MagicStack.Clank.NewTabPage";
+    @VisibleForTesting public static final String HISTOGRAM_PREFIX = "MagicStack.Clank.NewTabPage";
+    @VisibleForTesting public static final String HISTOGRAM_MAGIC_STACK_MODULE = ".Module.";
+
+    @VisibleForTesting
+    public static final String HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION_WITH_POSITION =
+            ".Impression";
+
     @VisibleForTesting static final String HISTOGRAM_OS_PREFIX = "MagicStack.Clank.";
     @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_MODULE_CLICK = ".Module.Click";
-    @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_MODULE = ".Module.";
     @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_HOST_SURFACE_REGULAR = ".Regular";
     @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_HOST_SURFACE_STARTUP = ".Startup";
 
@@ -32,7 +37,6 @@ public class HomeModulesMetricsUtils {
     static final String HISTOGRAM_MAGIC_STACK_MODULE_CLICK_WITH_POSITION = ".Click";
 
     @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_MODULE_BUILD = ".Build";
-    static final String HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION_WITH_POSITION = ".Impression";
 
     @VisibleForTesting
     static final String HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION = ".Module.TopImpressionV2";

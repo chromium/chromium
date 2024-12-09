@@ -17,6 +17,17 @@ namespace {
 // users.
 const int kTabCountLimit = 10;
 
+// The number of times the tab group promo card can be shown to the user in a
+// single day.
+const int kShownCountLimit = 3;
+
+const char kTabGroupPromoHistogramName[] =
+    "MagicStack.Clank.NewTabPage.Module.EducationalTip.Impression";
+
+// TODO(crbug.com/382803396): The enum id of the tab group promo card. Could be
+// referenced after refactor.
+const int kTabGroupPromoId = 7;
+
 }  // namespace
 
 namespace segmentation_platform::home_modules {
@@ -26,17 +37,23 @@ TabGroupPromo::TabGroupPromo(PrefService* profile_prefs)
 
 std::map<SignalKey, FeatureQuery> TabGroupPromo::GetInputs() {
   std::map<SignalKey, FeatureQuery> map = {
-      {kTabGroupExists,
-       FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
-           .tensor_length = 1,
-           .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
-           .name = kTabGroupExists})},
       {kNumberOfTabs,
        FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
            .tensor_length = 1,
            .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
            .name = kNumberOfTabs})},
+      {kTabGroupExists,
+       FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
+           .tensor_length = 1,
+           .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
+           .name = kTabGroupExists})},
   };
+
+  DEFINE_UMA_FEATURE_ENUM_COUNT(count, kTabGroupPromoHistogramName,
+                                &kTabGroupPromoId, /* enum_size= */ 1,
+                                /* days= */ 1);
+  map.emplace(kTabGroupPromoShownCount, std::move(count));
+
   return map;
 }
 
@@ -55,15 +72,19 @@ CardSelectionInfo::ShowResult TabGroupPromo::ComputeCardResult(
   std::optional<float> resultForTabGroupExists =
       signals.GetSignal(kTabGroupExists);
   std::optional<float> resultForNumberOfTabs = signals.GetSignal(kNumberOfTabs);
+  std::optional<float> resultForTabGroupPromoShownCount =
+      signals.GetSignal(kTabGroupPromoShownCount);
 
   if (!resultForTabGroupExists.has_value() ||
-      !resultForNumberOfTabs.has_value()) {
+      !resultForNumberOfTabs.has_value() ||
+      !resultForTabGroupPromoShownCount.has_value()) {
     result.position = EphemeralHomeModuleRank::kNotShown;
     return result;
   }
 
   if (!*resultForTabGroupExists &&
-      resultForNumberOfTabs.value() > kTabCountLimit) {
+      resultForNumberOfTabs.value() > kTabCountLimit &&
+      resultForTabGroupPromoShownCount.value() < kShownCountLimit) {
     result.position = EphemeralHomeModuleRank::kTop;
     return result;
   }

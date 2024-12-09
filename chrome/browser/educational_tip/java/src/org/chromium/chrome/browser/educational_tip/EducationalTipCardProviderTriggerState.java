@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.educational_tip;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.EducationalTipCardType;
 
 import java.util.HashSet;
@@ -37,7 +36,7 @@ public class EducationalTipCardProviderTriggerState {
         mVisibleCardList = new HashSet<>();
     }
 
-    boolean shouldNotifyCardShownPerSession(@NonNull @EducationalTipCardType Integer cardType) {
+    boolean shouldNotifyCardShownPerSession(@EducationalTipCardType int cardType) {
         // Ensure that the default browser promo card does not trigger this function.
         assert cardType < EducationalTipCardType.NUM_ENTRIES && cardType > 0;
 
@@ -46,5 +45,12 @@ public class EducationalTipCardProviderTriggerState {
         }
 
         return mVisibleCardList.add(cardType);
+    }
+
+    static void setInstanceForTesting(EducationalTipCardProviderTriggerState testInstance) {
+        var oldInstance = EducationalTipCardProviderTriggerState.LazyHolder.sInstance;
+        EducationalTipCardProviderTriggerState.LazyHolder.sInstance = testInstance;
+        ResettersForTesting.register(
+                () -> EducationalTipCardProviderTriggerState.LazyHolder.sInstance = oldInstance);
     }
 }
