@@ -284,6 +284,17 @@ class PLATFORM_EXPORT ShapeResultView final
                             float run_advance,
                             gfx::RectF* ink_bounds) const;
 
+  template <bool is_horizontal_run, bool has_glyph_offsets>
+  void ComputePartInkBoundsScalar(const ShapeResultView::RunInfoPart&,
+                                  float run_advance,
+                                  gfx::RectF* ink_bounds) const;
+#if defined(USE_SIMD_FOR_COMPUTING_GLYPH_BOUNDS)
+  template <bool is_horizontal_run, bool has_non_zero_glyph_offsets>
+  void ComputePartInkBoundsVectorized(const ShapeResultView::RunInfoPart&,
+                                      float run_advance,
+                                      gfx::RectF* ink_bounds) const;
+#endif  // defined(USE_SIMD_FOR_COMPUTING_GLYPH_BOUNDS)
+
   // Common signatures with ShapeResult, to templatize algorithms.
   base::span<const RunInfoPart> RunsOrParts() const { return parts_; }
 

@@ -2288,9 +2288,26 @@ float ShapeResult::IndividualCharacterRanges(Vector<CharacterRange>* ranges,
 }
 
 template <bool is_horizontal_run, bool has_non_zero_glyph_offsets>
-void ShapeResult::ComputeRunInkBounds(const ShapeResult::RunInfo& run,
+void ShapeResult::ComputeRunInkBounds(const ShapeResult::RunInfo& part,
                                       float run_advance,
                                       gfx::RectF* ink_bounds) const {
+#if defined(USE_SIMD_FOR_COMPUTING_GLYPH_BOUNDS)
+  constexpr size_t kVectorizationThreshold = 16;
+  if (part.NumGlyphs() >= kVectorizationThreshold) {
+    return ComputeRunInkBoundsVectorized<is_horizontal_run,
+                                         has_non_zero_glyph_offsets>(
+        part, run_advance, ink_bounds);
+  }
+#endif
+  return ComputeRunInkBoundsScalar<is_horizontal_run,
+                                   has_non_zero_glyph_offsets>(
+      part, run_advance, ink_bounds);
+}
+
+template <bool is_horizontal_run, bool has_non_zero_glyph_offsets>
+void ShapeResult::ComputeRunInkBoundsScalar(const ShapeResult::RunInfo& run,
+                                            float run_advance,
+                                            gfx::RectF* ink_bounds) const {
   // Get glyph bounds from Skia. It's a lot faster if we give it list of glyph
   // IDs rather than calling it for each glyph.
   // TODO(kojii): MacOS does not benefit from batching the Skia request due to
@@ -2303,8 +2320,9 @@ void ShapeResult::ComputeRunInkBounds(const ShapeResult::RunInfo& run,
 #if !BUILDFLAG(IS_APPLE)
   Vector<Glyph, 256> glyphs(num_glyphs);
   unsigned i = 0;
-  for (const auto& glyph_data : run.glyph_data_)
+  for (const auto& glyph_data : run.glyph_data_) {
     glyphs[i++] = glyph_data.glyph;
+  }
   Vector<SkRect, 256> bounds_list(num_glyphs);
   current_font_data.BoundsForGlyphs(glyphs, &bounds_list);
 #endif
@@ -2324,10 +2342,87 @@ void ShapeResult::ComputeRunInkBounds(const ShapeResult::RunInfo& run,
     origin += glyph_data.advance;
   }
 
-  if (!is_horizontal_run)
-    bounds.ConvertVerticalRunToLogical(current_font_data.GetFontMetrics());
-  ink_bounds->Union(bounds.Bounds());
+  ink_bounds->Union(
+      std::move(bounds).BuildBounds(current_font_data.GetFontMetrics()));
 }
+
+#if defined(USE_SIMD_FOR_COMPUTING_GLYPH_BOUNDS)
+template <bool is_horizontal_run, bool has_non_zero_glyph_offsets>
+void ShapeResult::ComputeRunInkBoundsVectorized(const ShapeResult::RunInfo& run,
+                                                float run_advance,
+                                                gfx::RectF* ink_bounds) const {
+  using AccuType = VectorizedGlyphBoundsAccumulator<is_horizontal_run>;
+  // Get glyph bounds from Skia. It's a lot faster if we give it list of glyph
+  // IDs rather than calling it for each glyph.
+  // TODO(kojii): MacOS does not benefit from batching the Skia request due to
+  // https://bugs.chromium.org/p/skia/issues/detail?id=5328, and the cost to
+  // prepare batching, which is normally much less than the benefit of
+  // batching, is not ignorable unfortunately.
+  auto glyph_offsets = run.glyph_data_.GetOffsets<has_non_zero_glyph_offsets>();
+  const SimpleFontData& current_font_data = *run.font_data_;
+  unsigned num_glyphs = run.glyph_data_.size();
+  DCHECK_GE(num_glyphs, 4u);
+#if !BUILDFLAG(IS_APPLE)
+  Vector<Glyph, 256> glyphs(num_glyphs);
+  unsigned i = 0;
+  for (const auto& glyph_data : run.glyph_data_) {
+    glyphs[i++] = glyph_data.glyph;
+  }
+  Vector<SkRect, 256> bounds_list(num_glyphs);
+  current_font_data.BoundsForGlyphs(glyphs, &bounds_list);
+#endif
+
+  AccuType bounds_accu;
+  InlineLayoutUnit origin1 = InlineLayoutUnit::FromFloatCeil(run_advance);
+  unsigned j = 0;
+  for (; j < num_glyphs - (AccuType::kStride - 1); j += AccuType::kStride) {
+    static_assert(AccuType::kStride == 4);
+    const HarfBuzzRunGlyphData& glyph_data1 = run.glyph_data_[j];
+    const HarfBuzzRunGlyphData& glyph_data2 = run.glyph_data_[j + 1];
+    const HarfBuzzRunGlyphData& glyph_data3 = run.glyph_data_[j + 2];
+    const HarfBuzzRunGlyphData& glyph_data4 = run.glyph_data_[j + 3];
+#if BUILDFLAG(IS_APPLE)
+    gfx::RectF glyph_bounds1 =
+        current_font_data.BoundsForGlyph(glyph_data1.glyph);
+    gfx::RectF glyph_bounds2 =
+        current_font_data.BoundsForGlyph(glyph_data2.glyph);
+    gfx::RectF glyph_bounds3 =
+        current_font_data.BoundsForGlyph(glyph_data3.glyph);
+    gfx::RectF glyph_bounds4 =
+        current_font_data.BoundsForGlyph(glyph_data4.glyph);
+#else
+    gfx::RectF glyph_bounds1 = gfx::SkRectToRectF(bounds_list[j]);
+    gfx::RectF glyph_bounds2 = gfx::SkRectToRectF(bounds_list[j + 1]);
+    gfx::RectF glyph_bounds3 = gfx::SkRectToRectF(bounds_list[j + 2]);
+    gfx::RectF glyph_bounds4 = gfx::SkRectToRectF(bounds_list[j + 3]);
+#endif
+    InlineLayoutUnit origin2 = origin1 + glyph_data1.advance;
+    InlineLayoutUnit origin3 = origin2 + glyph_data2.advance;
+    InlineLayoutUnit origin4 = origin3 + glyph_data3.advance;
+    bounds_accu.Unite4(glyph_bounds1, glyph_bounds2, glyph_bounds3,
+                       glyph_bounds4, origin1, origin2, origin3, origin4,
+                       glyph_offsets[0], glyph_offsets[1], glyph_offsets[2],
+                       glyph_offsets[3]);
+    glyph_offsets += AccuType::kStride;
+    origin1 = origin4 + glyph_data4.advance;
+  }
+  for (; j < num_glyphs; ++j) {
+    const HarfBuzzRunGlyphData& glyph_data = run.glyph_data_[j];
+#if BUILDFLAG(IS_APPLE)
+    gfx::RectF glyph_bounds =
+        current_font_data.BoundsForGlyph(glyph_data.glyph);
+#else
+    gfx::RectF glyph_bounds = gfx::SkRectToRectF(bounds_list[j]);
+#endif
+    bounds_accu.Unite1(glyph_bounds, origin1, *glyph_offsets);
+    ++glyph_offsets;
+    origin1 += glyph_data.advance;
+  }
+
+  ink_bounds->Union(
+      std::move(bounds_accu).BuildBounds(current_font_data.GetFontMetrics()));
+}
+#endif  //  defined(USE_SIMD_FOR_COMPUTING_GLYPH_BOUNDS)
 
 gfx::RectF ShapeResult::ComputeInkBounds() const {
   gfx::RectF ink_bounds;
