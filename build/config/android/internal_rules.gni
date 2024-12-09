@@ -1352,21 +1352,6 @@ if (enable_java_templates) {
     }
     _outputs += [ _mapping_path ]
 
-    if (defined(invoker.input_art_profile)) {
-      _inputs += [ invoker.input_art_profile ]
-      _args += [ "--input-art-profile=" +
-                 rebase_path(invoker.input_art_profile, root_build_dir) ]
-      if (defined(invoker.output_art_profile)) {
-        _outputs += [ invoker.output_art_profile ]
-        _args += [ "--output-art-profile=" +
-                   rebase_path(invoker.output_art_profile, root_build_dir) ]
-      }
-      if (defined(invoker.enable_startup_profile) &&
-          invoker.enable_startup_profile) {
-        _args += [ "--apply-startup-profile" ]
-      }
-    }
-
     if (defined(invoker.enable_proguard_checks) &&
         !invoker.enable_proguard_checks) {
       _args += [ "--disable-checks" ]
@@ -1590,9 +1575,6 @@ if (enable_java_templates) {
                                TESTONLY_AND_VISIBILITY + [
                                      "add_view_trace_events",
                                      "apply_mapping",
-                                     "input_art_profile",
-                                     "output_art_profile",
-                                     "enable_startup_profile",
                                      "build_config",
                                      "custom_assertion_handler",
                                      "data",
@@ -2758,48 +2740,6 @@ if (enable_java_templates) {
           "--assets=@FileArg($_rebased_build_config:deps_info:assets)",
           "--uncompressed-assets=@FileArg($_rebased_build_config:deps_info:uncompressed_assets)",
         ]
-      }
-    }
-  }
-
-  template("create_binary_profile") {
-    action_with_pydeps(target_name) {
-      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-      forward_variables_from(invoker, [ "deps" ])
-      script = "//build/android/gyp/binary_baseline_profile.py"
-      depfile = "$target_gen_dir/$target_name.d"
-      outputs = [
-        invoker.binary_baseline_profile_path,
-        invoker.binary_baseline_profile_metadata_path,
-      ]
-      _profgen_path =
-          "$public_android_sdk_root/cmdline-tools/latest/bin/profgen"
-      _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
-      inputs = [
-        invoker.build_config,
-        invoker.input_profile_path,
-        _profgen_path,
-      ]
-      args = [
-        "--profgen",
-        rebase_path(_profgen_path, root_build_dir),
-        "--output-profile",
-        rebase_path(invoker.binary_baseline_profile_path, root_build_dir),
-        "--output-metadata",
-        rebase_path(invoker.binary_baseline_profile_metadata_path,
-                    root_build_dir),
-        "--dex=@FileArg($_rebased_build_config:final_dex:path)",
-        "--input-profile-path",
-        rebase_path(invoker.input_profile_path, root_build_dir),
-        "--depfile",
-        rebase_path(depfile, root_build_dir),
-      ]
-      if (defined(invoker.proguard_mapping_path)) {
-        args += [
-          "--proguard-mapping",
-          rebase_path(invoker.proguard_mapping_path, root_build_dir),
-        ]
-        inputs += [ invoker.proguard_mapping_path ]
       }
     }
   }

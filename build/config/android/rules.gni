@@ -2855,25 +2855,6 @@ if (!is_robolectric && enable_java_templates) {
       }
     }
 
-    # Old name for variable, mark as not_needed while it is being renamed
-    # downstream. Remove after all references to baseline_profile_path have been
-    # changed.
-    not_needed(invoker, [ "baseline_profile_path" ])
-
-    _enable_art_profile_optimizations =
-        defined(invoker.art_profile_path) && _proguard_enabled
-
-    if (_enable_art_profile_optimizations) {
-      _include_baseline_profile = enable_baseline_profiles
-      _enable_startup_profile = enable_startup_profiles
-      if (_include_baseline_profile) {
-        _obfuscated_art_profile =
-            "$target_out_dir/${target_name}.obfuscated.hrf"
-      }
-    } else {
-      not_needed(invoker, [ "art_profile_path" ])
-    }
-
     if (_is_bundle_module || _omit_dex) {
       # Dex generation for app bundle modules take place in the
       # android_app_bundle template.
@@ -2907,14 +2888,6 @@ if (!is_robolectric && enable_java_templates) {
           deps += [ ":$_compile_resources_target" ]
           proguard_mapping_path = _proguard_mapping_path
           has_apk_under_test = defined(invoker.apk_under_test)
-
-          if (_enable_art_profile_optimizations) {
-            input_art_profile = invoker.art_profile_path
-            if (_include_baseline_profile) {
-              output_art_profile = _obfuscated_art_profile
-            }
-            enable_startup_profile = _enable_startup_profile
-          }
 
           # Must not be set via write_build_config, because that will cause it
           # to be picked up by test apks that use apk_under_test.
@@ -2952,26 +2925,6 @@ if (!is_robolectric && enable_java_templates) {
       }
 
       _final_dex_target_dep = ":$_final_dex_target_name"
-
-      if (_enable_art_profile_optimizations && _include_baseline_profile) {
-        _binary_profile_target = "${_template_name}__binary_baseline_profile"
-        _binary_baseline_profile_path =
-            "$target_out_dir/$_template_name.baseline.prof"
-        _binary_baseline_profile_metadata_path =
-            _binary_baseline_profile_path + "m"
-        create_binary_profile(_binary_profile_target) {
-          forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-          binary_baseline_profile_path = _binary_baseline_profile_path
-          binary_baseline_profile_metadata_path =
-              _binary_baseline_profile_metadata_path
-          build_config = _build_config
-          input_profile_path = _obfuscated_art_profile
-          deps = [
-            ":$_build_config_target",
-            _final_dex_target_dep,
-          ]
-        }
-      }
 
       # Unused resources target for bundles handled in android_app_bundle
       # template.
@@ -3113,17 +3066,6 @@ if (!is_robolectric && enable_java_templates) {
           if (defined(_final_dex_path)) {
             dex_path = _final_dex_path
             deps += [ _final_dex_target_dep ]
-            if (_enable_art_profile_optimizations &&
-                _include_baseline_profile) {
-              # extra_assets is a list of ["{src_path}:{dst_path}"]
-              extra_assets = [
-                rebase_path(_binary_baseline_profile_path, root_build_dir) +
-                    ":dexopt/baseline.prof",
-                rebase_path(_binary_baseline_profile_metadata_path,
-                            root_build_dir) + ":dexopt/baseline.profm",
-              ]
-              deps += [ ":$_binary_profile_target" ]
-            }
           }
 
           output_apk_path = _final_apk_path
@@ -3367,11 +3309,9 @@ if (!is_robolectric && enable_java_templates) {
             "annotation_processor_deps",
             "apk_under_test",
             "app_as_shared_lib",
-            "art_profile_path",
             "assert_no_deps",
             "assert_no_native_deps",
             "asset_deps",
-            "baseline_profile_path",
             "build_config_include_product_version_resource",
             "bundles_supported",
             "chromium_code",
@@ -4774,25 +4714,6 @@ if (!is_robolectric && enable_java_templates) {
       }
     }
 
-    # Old name for variable, mark as not_needed while it is being renamed
-    # downstream. Remove after all references to baseline_profile_path have been
-    # changed.
-    not_needed(invoker, [ "baseline_profile_path" ])
-
-    _enable_art_profile_optimizations =
-        defined(invoker.art_profile_path) && _proguard_enabled
-
-    if (_enable_art_profile_optimizations) {
-      _include_baseline_profile = enable_baseline_profiles
-      _enable_startup_profile = enable_startup_profiles
-      if (_include_baseline_profile) {
-        _obfuscated_art_profile =
-            "$target_out_dir/${target_name}.obfuscated.hrf"
-      }
-    } else {
-      not_needed(invoker, [ "art_profile_path" ])
-    }
-
     if (_proguard_enabled) {
       if (_add_view_trace_events) {
         _trace_event_rewriter_target =
@@ -4846,13 +4767,6 @@ if (!is_robolectric && enable_java_templates) {
         proguard_enabled = true
         proguard_mapping_path = _proguard_mapping_path
         build_config = _build_config
-        if (_enable_art_profile_optimizations) {
-          input_art_profile = invoker.art_profile_path
-          if (_include_baseline_profile) {
-            output_art_profile = _obfuscated_art_profile
-          }
-          enable_startup_profile = _enable_startup_profile
-        }
 
         deps = _module_java_targets + [ ":$_build_config_target" ]
         if (_add_view_trace_events) {
@@ -4907,27 +4821,6 @@ if (!is_robolectric && enable_java_templates) {
       }
       _dex_target_for_module = ":$_dex_target"
 
-      if (_enable_art_profile_optimizations && _include_baseline_profile) {
-        _module_target_name = get_label_info(_module_target, "name")
-        _binary_profile_target =
-            "${_module_target_name}__binary_baseline_profile"
-        _binary_baseline_profile_path = "$target_out_dir/$_module_target_name/$_module_target_name.baseline.prof"
-        _binary_baseline_profile_metadata_path =
-            _binary_baseline_profile_path + "m"
-        create_binary_profile(_binary_profile_target) {
-          forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-          binary_baseline_profile_path = _binary_baseline_profile_path
-          binary_baseline_profile_metadata_path =
-              _binary_baseline_profile_metadata_path
-          build_config = _module_build_config
-          input_profile_path = _obfuscated_art_profile
-          deps = [
-            _dex_target_for_module,
-            _module_build_config_target,
-          ]
-        }
-      }
-
       # Generate one module .zip file per bundle module.
       #
       # Important: the bundle tool uses the module's zip filename as
@@ -4966,17 +4859,6 @@ if (!is_robolectric && enable_java_templates) {
           _module_build_config_target,
           _module_target,
         ]
-
-        if (_enable_art_profile_optimizations && _include_baseline_profile) {
-          # extra_assets is a list of ["{src_path}:{dst_path}"]
-          extra_assets = [
-            rebase_path(_binary_baseline_profile_path, root_build_dir) +
-                ":dexopt/baseline.prof",
-            rebase_path(_binary_baseline_profile_metadata_path,
-                        root_build_dir) + ":dexopt/baseline.profm",
-          ]
-          deps += [ ":$_binary_profile_target" ]
-        }
       }
 
       _all_create_module_targets += [

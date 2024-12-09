@@ -119,7 +119,6 @@ if (current_toolchain == default_toolchain) {
       forward_variables_from(invoker,
                              [
                                "add_view_trace_events",
-                               "art_profile_path",
                                "bundle_name",
                                "include_32_bit_webview",
                                "include_64_bit_webview",
@@ -2667,7 +2666,6 @@ if (current_toolchain == default_toolchain) {
   chrome_public_apk_or_module_tmpl("chrome_public_apk") {
     target_type = "android_apk"
     apk_name = "ChromePublic"
-    art_profile_path = "//chrome/android/baseline_profiles/profile.txt"
     if (android_64bit_target_cpu) {
       # Ensure 64-bit chrome does not depend on 32-bit things.
       assert_no_deps =
@@ -3447,7 +3445,6 @@ if (current_toolchain == default_toolchain) {
       bundle_name = "TrichromeChrome"
       static_library_provider = ":$_main_trichrome_library_apk_target"
       add_view_trace_events = true
-      art_profile_path = "//chrome/android/baseline_profiles/profile.txt"
       if (android_64bit_target_cpu) {
         is_64_bit_browser = false
         include_64_bit_webview = true
