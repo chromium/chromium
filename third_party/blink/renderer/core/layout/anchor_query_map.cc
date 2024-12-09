@@ -285,7 +285,7 @@ struct StitchedAnchorQueries {
           fragmentainer.converter.ToLogical(
               offset_from_fragmentainer + child.offset, child->Size()) +
           fragmentainer.offset;
-      children.push_back(LogicalFragmentLink{child.fragment, child_offset});
+      children.push_back(LogicalFragmentLink(*child.fragment, child_offset));
     }
     AddFragmentainerChildren(children,
                              fragmentainer.converter.GetWritingDirection());

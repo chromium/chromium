@@ -904,7 +904,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
       for (wtf_size_t i = 0; i < new_columns.size(); i++) {
         auto& new_column = new_columns[i];
         columns.push_back(
-            LogicalFragmentLink{&new_column.Fragment(), new_column.offset});
+            LogicalFragmentLink(new_column.Fragment(), new_column.offset));
 
         // Because the current set of columns haven't been added to the builder
         // yet, any OOF descendants won't have been propagated up yet. Instead,
