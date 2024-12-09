@@ -21393,15 +21393,19 @@
             ],
             "experiments": [
                 {
-                    "//0": "This experiment group might not be included in the",
-                    "//1": " same finch config, but it's important for now to ",
-                    "//2": "have tests ran with all relevant flags and params ",
-                    "//3": " enabled.",
-                    "//4": "Note that SensitiveContentWhileSwitchingTabs ",
-                    "//5": "depends on SensitiveContent being enabed, too.",
-                    "name": "Enabled_WithPwmHeuristicsAndTabSwitching",
+                    "name": "Enabled_WithTabSwitchingAndPwmHeuristics",
                     "params": {
                         "sensitive_content_use_pwm_heuristics": "true"
+                    },
+                    "enable_features": [
+                        "SensitiveContent",
+                        "SensitiveContentWhileSwitchingTabs"
+                    ]
+                },
+                {
+                    "name": "Enabled_WithTabSwitching",
+                    "params": {
+                        "sensitive_content_use_pwm_heuristics": "false"
                     },
                     "enable_features": [
                         "SensitiveContent",
@@ -21415,6 +21419,9 @@
                     },
                     "enable_features": [
                         "SensitiveContent"
+                    ],
+                    "disable_features": [
+                        "SensitiveContentWhileSwitchingTabs"
                     ]
                 },
                 {
@@ -21424,6 +21431,9 @@
                     },
                     "enable_features": [
                         "SensitiveContent"
+                    ],
+                    "disable_features": [
+                        "SensitiveContentWhileSwitchingTabs"
                     ]
                 }
             ]
