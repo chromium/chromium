@@ -16615,7 +16615,6 @@
                         "EstablishGpuChannelAsync",
                         "ExpandedPrefetchRange",
                         "FledgeEnableWALForInterestGroupStorage",
-                        "GpuInfoCollectionSeparatePrefetch",
                         "LevelDBProtoAsyncWrite",
                         "MojoBindingsInlineSLS",
                         "ReduceCpuUtilization2",

@@ -1255,9 +1255,7 @@ bool GpuProcessHost::LaunchGpuProcess() {
   cmd_line->AppendSwitchASCII(switches::kProcessType, switches::kGpuProcess);
 
 #if BUILDFLAG(IS_WIN)
-  if (kind_ == GPU_PROCESS_KIND_INFO_COLLECTION &&
-      base::FeatureList::IsEnabled(
-          features::kGpuInfoCollectionSeparatePrefetch)) {
+  if (kind_ == GPU_PROCESS_KIND_INFO_COLLECTION) {
     cmd_line->AppendArgNative(app_launch_prefetch::GetPrefetchSwitch(
         app_launch_prefetch::SubprocessType::kGPUInfo));
   } else {

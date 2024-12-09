@@ -267,15 +267,6 @@ BASE_FEATURE(kFrameRoutingCache,
 const base::FeatureParam<int> kFrameRoutingCacheResponseSize{
     &kFrameRoutingCache, "responseSize", 4};
 
-// Adds "/prefetch:8" (which is the "other" category of process - i.e. not
-// browser, gpu, crashpad, etc.) to the info collection GPU process' command
-// line, in order to keep from polluting the GPU prefetch history.
-#if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kGpuInfoCollectionSeparatePrefetch,
-             "GpuInfoCollectionSeparatePrefetch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // Group network isolation key(NIK) by storage interest group joining origin to
 // improve privacy and performance -- IGs of the same joining origin can reuse
 // sockets, so we don't need to renegotiate those connections.
