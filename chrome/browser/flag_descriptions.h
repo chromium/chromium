@@ -3648,9 +3648,6 @@ extern const char kFastPairDebugMetadataDescription[];
 extern const char kFastPairHandshakeLongTermRefactorName[];
 extern const char kFastPairHandshakeLongTermRefactorDescription[];
 
-extern const char kFastPairHIDName[];
-extern const char kFastPairHIDDescription[];
-
 extern const char kFastPairKeyboardsName[];
 extern const char kFastPairKeyboardsDescription[];
 

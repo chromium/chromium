@@ -379,9 +379,6 @@ TEST_F(FastPairDiscoverableScannerImplTest, WrongInteractionType) {
 
 TEST_F(FastPairDiscoverableScannerImplTest, MouseDisallowedWhenHIDDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairHID});
   nearby::fastpair::Device metadata;
   nearby::fastpair::Status* status = metadata.mutable_status();
   status->set_status_type(nearby::fastpair::StatusType::PUBLISHED);
@@ -398,8 +395,7 @@ TEST_F(FastPairDiscoverableScannerImplTest, MouseDisallowedWhenHIDDisabled) {
 TEST_F(FastPairDiscoverableScannerImplTest, MouseAllowedWhenHIDEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairHID,
-                            floss::features::kFlossEnabled},
+      /*enabled_features=*/{floss::features::kFlossEnabled},
       /*disabled_features=*/{});
   nearby::fastpair::Device metadata;
   nearby::fastpair::Status* status = metadata.mutable_status();

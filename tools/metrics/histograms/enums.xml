@@ -15611,7 +15611,6 @@ from previous Chrome versions.
       label="AutofillReplaceCachedWebElementsByRendererIds:enabled"/>
   <int value="-1911153473" label="enable-easy-signin"/>
   <int value="-1910984835" label="CCTPreventTouches:enabled"/>
-  <int value="-1910725149" label="kFastPairHID:enabled"/>
   <int value="-1910438159" label="ShowNtpAtStartupAndroid:enabled"/>
   <int value="-1910427915" label="HttpsOnlyMode:enabled"/>
   <int value="-1910305102" label="EnhancedDeskAnimations:enabled"/>
@@ -24791,7 +24790,6 @@ from previous Chrome versions.
       label="WebAuthenticationFilterGooglePasskeys:disabled"/>
   <int value="1774991770" label="SafetyCheckPermissions:enabled"/>
   <int value="1775264688" label="SystemShortcutBehavior:disabled"/>
-  <int value="1775397180" label="kFastPairHID:disabled"/>
   <int value="1775475563" label="malware-interstitial-v3"/>
   <int value="1775652804" label="OmniboxBookmarkPaths:disabled"/>
   <int value="1775730290" label="OmniboxKeywordSearchButton:enabled"/>
