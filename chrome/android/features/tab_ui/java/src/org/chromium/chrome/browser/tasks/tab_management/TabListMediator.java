@@ -589,6 +589,8 @@ class TabListMediator implements TabListNotificationHandler {
                         // Changing URL will result in a thumbnail invalidation if the on-disk
                         // thumbnail doesn't match.
                         updateThumbnailFetcher(model, tab.getId());
+                        // Changing URL should also invalidate the favicon.
+                        updateFaviconForTab(model, tab, null, null);
                     }
                 }
             };
