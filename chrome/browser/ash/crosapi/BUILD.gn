@@ -625,7 +625,6 @@ source_set("unit_tests") {
     "document_scan_ash_type_converters_unittest.cc",
     "document_scan_ash_unittest.cc",
     "download_controller_ash_unittest.cc",
-    "drive_integration_service_ash_unittest.cc",
     "field_trial_service_ash_unittest.cc",
     "fullscreen_controller_ash_unittest.cc",
     "geolocation_service_ash_unittest.cc",

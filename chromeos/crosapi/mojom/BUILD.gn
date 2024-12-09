@@ -129,7 +129,6 @@ mojom("mojom") {
   public_deps = [
     ":structured_metrics_service",
     ":video_capture",
-    "//chromeos/components/drivefs/mojom",
     "//chromeos/components/in_session_auth/mojom",
     "//chromeos/components/payments/mojom",
     "//chromeos/components/remote_apps/mojom",
