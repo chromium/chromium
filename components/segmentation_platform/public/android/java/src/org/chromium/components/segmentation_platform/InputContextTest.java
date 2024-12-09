@@ -18,7 +18,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
@@ -32,13 +33,14 @@ import java.util.HashSet;
 @RunWith(BaseRobolectricTestRunner.class)
 public class InputContextTest {
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Mock InputContext.Natives mNativeMock;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         InputContextJni.setInstanceForTesting(mNativeMock);
     }
 
@@ -161,5 +163,33 @@ public class InputContextTest {
         assertTrue(keyValuePairs.contains(new Pair<>("negative_int_param", -4)));
         assertTrue(keyValuePairs.contains(new Pair<>("zero_int_param", 0)));
         assertTrue(keyValuePairs.contains(new Pair<>("large_int_param", Integer.MAX_VALUE)));
+    }
+
+    @Test
+    public void mergeInputContext() {
+        InputContext inputContext = new InputContext();
+
+        inputContext.addEntry("int_param", ProcessedValue.fromInt(1));
+        inputContext.addEntry("negative_float_param", ProcessedValue.fromFloat(-4.0f));
+        inputContext.addEntry("string_param", ProcessedValue.fromString("StringValue"));
+
+        InputContext another = new InputContext();
+
+        another.addEntry("second_float_param", ProcessedValue.fromFloat(2));
+        another.addEntry("second_int_param", ProcessedValue.fromInt(21));
+        another.addEntry("time_param", ProcessedValue.fromTimeMillis(100));
+        another.addEntry("third_float_param", ProcessedValue.fromFloat(100));
+
+        inputContext.mergeFrom(another);
+
+        assertEquals(4, another.getSizeForTesting());
+
+        assertEquals(7, inputContext.getSizeForTesting());
+        assertEquals(1, inputContext.getEntryForTesting("int_param").intValue);
+        assertEquals(21, inputContext.getEntryForTesting("second_int_param").intValue);
+        assertEquals(-4, inputContext.getEntryForTesting("negative_float_param").floatValue, 0.01);
+        assertEquals(2, inputContext.getEntryForTesting("second_float_param").floatValue, 0.01);
+        assertEquals(100, inputContext.getEntryForTesting("third_float_param").floatValue, 0.01);
+        assertEquals("StringValue", inputContext.getEntryForTesting("string_param").stringValue);
     }
 }
