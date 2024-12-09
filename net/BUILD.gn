@@ -167,6 +167,8 @@ component("net") {
     "base/completion_repeating_callback.h",
     "base/connection_endpoint_metadata.cc",
     "base/connection_endpoint_metadata.h",
+    "base/connection_migration_information.cc",
+    "base/connection_migration_information.h",
     "base/data_url.cc",
     "base/data_url.h",
     "base/datagram_buffer.cc",

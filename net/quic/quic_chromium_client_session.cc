@@ -24,6 +24,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/no_destructor.h"
+#include "base/numerics/checked_math.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -2549,6 +2550,9 @@ void QuicChromiumClientSession::OnProbeFailed(
 
 void QuicChromiumClientSession::OnNetworkConnected(
     handles::NetworkHandle network) {
+  migration_info_.event_count.network_connected_num =
+      base::CheckAdd(migration_info_.event_count.network_connected_num, 1)
+          .ValueOrDefault(std::numeric_limits<uint32_t>::max());
   if (connection()->IsPathDegrading()) {
     base::TimeDelta duration =
         tick_clock_->NowTicks() - most_recent_path_degrading_timestamp_;
@@ -2597,6 +2601,9 @@ void QuicChromiumClientSession::OnNetworkConnected(
 
 void QuicChromiumClientSession::OnNetworkDisconnectedV2(
     handles::NetworkHandle disconnected_network) {
+  migration_info_.event_count.network_disconnected_num =
+      base::CheckAdd(migration_info_.event_count.network_disconnected_num, 1)
+          .ValueOrDefault(std::numeric_limits<uint32_t>::max());
   LogMetricsOnNetworkDisconnected();
   net_log_.AddEventWithInt64Params(
       NetLogEventType::QUIC_SESSION_NETWORK_DISCONNECTED,
@@ -2665,6 +2672,10 @@ void QuicChromiumClientSession::OnNetworkDisconnectedV2(
 
 void QuicChromiumClientSession::OnNetworkMadeDefault(
     handles::NetworkHandle new_network) {
+  migration_info_.event_count.default_network_changed_num++;
+  migration_info_.event_count.default_network_changed_num =
+      base::CheckAdd(migration_info_.event_count.default_network_changed_num, 1)
+          .ValueOrDefault(std::numeric_limits<uint32_t>::max());
   LogMetricsOnNetworkMadeDefault();
   net_log_.AddEventWithInt64Params(
       NetLogEventType::QUIC_SESSION_NETWORK_MADE_DEFAULT, "new_default_network",
@@ -2815,6 +2826,9 @@ void QuicChromiumClientSession::OnWriteUnblocked() {
 }
 
 void QuicChromiumClientSession::OnPathDegrading() {
+  migration_info_.event_count.path_degrading_num =
+      base::CheckAdd(migration_info_.event_count.path_degrading_num, 1)
+          .ValueOrDefault(std::numeric_limits<uint32_t>::max());
   if (most_recent_path_degrading_timestamp_ == base::TimeTicks()) {
     most_recent_path_degrading_timestamp_ = tick_clock_->NowTicks();
   }

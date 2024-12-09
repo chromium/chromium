@@ -30,6 +30,7 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/connection_migration_information.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
@@ -1165,6 +1166,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   bool attempted_zero_rtt_ = false;
 
   size_t num_migrations_ = 0;
+
+  // Connection migration information for the session.
+  ConnectionMigrationInformation migration_info_;
 
   // The reason for the last 1-RTT key update on the connection. Will be
   // kInvalid if no key updates have occurred.
