@@ -469,7 +469,7 @@ class ManifestUpdateManagerBrowserTest : public WebAppBrowserTestBase {
     return http_server_.GetURL("/banners/no_manifest_test_page.html");
   }
 
-  // Mimics the Create Shortcut flow from the three dot overflow menu.
+  // Mimics the `DIY` app install flow from the three dot overflow menu.
   webapps::AppId InstallWebAppWithoutManifest() {
     GURL app_url = GetAppURLWithoutManifest();
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
@@ -478,11 +478,11 @@ class ManifestUpdateManagerBrowserTest : public WebAppBrowserTestBase {
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
         install_future;
     GetProvider().scheduler().FetchManifestAndInstall(
-        webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
+        webapps::WebappInstallSource::MENU_BROWSER_TAB,
         browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
         base::BindOnce(test::TestAcceptDialogCallback),
         install_future.GetCallback(),
-        FallbackBehavior::kAllowFallbackDataAlways);
+        FallbackBehavior::kUseFallbackInfoWhenNotInstallable);
     EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
               webapps::InstallResultCode::kSuccessNewInstall);
     return install_future.Get<webapps::AppId>();
@@ -849,6 +849,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   EXPECT_TRUE(load_observer.AwaitCorrectPageLoaded());
   EXPECT_TRUE(GetManifestUpdateManager(browser()->profile())
                   .IsAppPendingPageAndManifestUrlLoadForTesting(app_id));
+  EXPECT_TRUE(GetProvider().registrar_unsafe().IsDiyApp(app_id));
 
   // Inject new manifest into the page once DidFinishLoad() is triggered. This
   // should start the manifest checking command without the need for a refresh.
@@ -861,6 +862,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
             std::move(result_awaiter).AwaitNextResult());
   EXPECT_EQ(GetProvider().registrar_unsafe().GetAppManifestUrl(app_id),
             newly_loaded_manifest_url);
+  EXPECT_FALSE(GetProvider().registrar_unsafe().IsDiyApp(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
