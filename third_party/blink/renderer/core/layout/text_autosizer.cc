@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
@@ -875,7 +876,8 @@ TextAutosizer::Fingerprint TextAutosizer::ComputeFingerprint(
 
     // TODO(kojii): The width can be computed from style only when it's fixed.
     // consider for adding: writing mode, padding.
-    data.width_ = width.IsFixed() ? width.GetFloatValue() : .0f;
+    data.width_ =
+        width.IsFixed() ? WTF::NormalizeSign(width.GetFloatValue()) : 0.0f;
   }
 
   // Use nodeIndex as a rough approximation of column number
