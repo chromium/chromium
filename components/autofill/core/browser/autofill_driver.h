@@ -69,12 +69,16 @@ class AutofillDriver {
   //
   // The possible transitions are:
   //
-  //   ╭───────────────────────────╮
-  //   │                           ▼
-  // kInactive ◄──► kActive ──► kPendingDeletion
-  //   ▲                ▲
-  //   │                ╰─────► kPendingReset
-  //   ╰──────────────────────► kPendingReset
+  // LINT.IfChange(LifecycleStateChanges)
+  //
+  //     ╭───────────────────────────╮
+  //     │                           ▼
+  //   kInactive ◄──► kActive ──► kPendingDeletion
+  //     ▲                ▲
+  //     │                ╰─────► kPendingReset
+  //     ╰──────────────────────► kPendingReset
+  //
+  // LINT.ThenChange(autofill_driver.cc:LifecycleStateChanges)
   //
   // The initial state is kInactive.
   //
@@ -121,10 +125,7 @@ class AutofillDriver {
   // - notify observers,
   // - destruct the driver.
   void SetLifecycleState(LifecycleState new_state,
-                         base::PassKey<AutofillDriverFactory> pass_key) {
-    DCHECK_NE(lifecycle_state_, new_state);
-    lifecycle_state_ = new_state;
-  }
+                         base::PassKey<AutofillDriverFactory> pass_key);
 
   // Returns the uniquely identifying frame token.
   virtual LocalFrameToken GetFrameToken() const = 0;
@@ -334,6 +335,10 @@ class AutofillDriver {
   friend class AutofillDriverTestApi;
 
   LifecycleState lifecycle_state_ = LifecycleState::kInactive;
+
+#if DCHECK_IS_ON()
+  LifecycleState previous_lifecycle_state_ = LifecycleState::kInactive;
+#endif
 };
 
 }  // namespace autofill
