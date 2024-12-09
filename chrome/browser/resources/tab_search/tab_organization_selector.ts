@@ -4,8 +4,10 @@
 
 import './auto_tab_groups/auto_tab_groups_page.js';
 import './declutter/declutter_page.js';
+import '/strings.m.js';
 import './tab_organization_selector_button.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -47,6 +49,7 @@ export class TabOrganizationSelectorElement extends CrLitElement {
       disableDeclutter_: {type: Boolean},
       selectedState_: {type: Number},
       prevSelectedState_: {type: Number},
+      dedupeEnabled_: {type: Boolean},
     };
   }
 
@@ -61,6 +64,7 @@ export class TabOrganizationSelectorElement extends CrLitElement {
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
   private visibilityChangedListener_: () => void;
+  private dedupeEnabled_: boolean = loadTimeData.getBoolean('dedupeEnabled');
 
   constructor() {
     super();
@@ -180,7 +184,9 @@ export class TabOrganizationSelectorElement extends CrLitElement {
     this.disableDeclutter_ = declutterTabCount === 0;
     this.declutterHeading_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'declutterSelectorHeading', declutterTabCount);
+            this.dedupeEnabled_ ? 'declutterSelectorHeading' :
+                                  'declutterSelectorHeadingNoDedupe',
+            declutterTabCount);
   }
 
   private updateSelectedFeature_(feature: TabOrganizationFeature) {

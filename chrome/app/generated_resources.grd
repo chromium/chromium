@@ -9668,11 +9668,17 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Strings for tab declutter -->
-      <message name="IDS_DECLUTTER_SELECTOR_HEADING" desc="Heading for the declutter button in the tab organization selector.">
+      <message name="IDS_DECLUTTER_SELECTOR_HEADING_NO_DEDUPE" desc="Heading for the declutter button in the tab organization selector when dedupe is disabled.">
         {NUM_TABS, plural,
           =0 {No inactive tabs}
           =1 {Review 1 inactive tab}
           other {Review # inactive tabs}}
+      </message>
+      <message name="IDS_DECLUTTER_SELECTOR_HEADING" desc="Heading for the declutter button in the tab organization selector.">
+        {NUM_TABS, plural,
+          =0 {No unused tabs}
+          =1 {Review 1 unused tab}
+          other {Review # unused tabs}}
       </message>
       <message name="IDS_DECLUTTER_SELECTOR_SUBHEADING" desc="Subheading for the declutter button in the tab organization selector.">
         Keep your tabs clutter-free
@@ -9698,8 +9704,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_DECLUTTER_EMPTY_TITLE" desc="The header text for the declutter empty state UI">
         Things look neat!
       </message>
-      <message name="IDS_DECLUTTER_EMPTY_BODY" desc="The body text for the declutter empty state UI">
+      <message name="IDS_DECLUTTER_EMPTY_BODY_NO_DEDUPE" desc="The body text for the declutter empty state UI when dedupe is disabled">
         No inactive tabs right now
+      </message>
+      <message name="IDS_DECLUTTER_EMPTY_BODY" desc="The body text for the declutter empty state UI">
+        No unused tabs right now
       </message>
       <message name="IDS_DUPLICATE_ITEM_TITLE_SINGLE" desc="The title for an item in the duplicate tabs list with 1 duplicate">
         <ph name="URL">$1<ex>google.com</ex></ph> • 1 duplicate
@@ -9707,22 +9716,22 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_DUPLICATE_ITEM_TITLE_MULTI" desc="The title for an item in the duplicate tabs list with multiple duplicates">
         <ph name="URL">$1<ex>google.com</ex></ph> • <ph name="DUPLICATE_COUNT">$2<ex>2</ex></ph> duplicates
       </message>
-      <message name="IDS_TOOLTIP_TAB_DECLUTTER" desc="The tooltip for the Tab Declutter button.">
+      <message name="IDS_TOOLTIP_TAB_DECLUTTER_NO_DEDUPE" desc="The tooltip for the Tab Declutter button when dedupe is disabled.">
         Review inactive tabs?
       </message>
-      <message name="IDS_TAB_DECLUTTER" desc="The text label of the Tab Declutter button.">
+      <message name="IDS_TAB_DECLUTTER_NO_DEDUPE" desc="The text label of the Tab Declutter button when dedupe is disabled.">
         Review inactive tabs?
       </message>
-      <message name="IDS_ACCNAME_TAB_DECLUTTER" desc="The accessible name for the Tab Declutter button." is_accessibility_with_no_ui="true">
+      <message name="IDS_ACCNAME_TAB_DECLUTTER_NO_DEDUPE" desc="The accessible name for the Tab Declutter button when dedupe is disabled." is_accessibility_with_no_ui="true">
         Review inactive tabs
       </message>
-      <message name="IDS_TOOLTIP_TAB_DECLUTTER_WITH_DEDUPE" desc="The tooltip for the Tab Declutter button.">
+      <message name="IDS_TOOLTIP_TAB_DECLUTTER" desc="The tooltip for the Tab Declutter button.">
         Clean up unused tabs?
       </message>
-      <message name="IDS_TAB_DECLUTTER_WITH_DEDUPE" desc="The text label of the Tab Declutter button.">
+      <message name="IDS_TAB_DECLUTTER" desc="The text label of the Tab Declutter button.">
         Clean up unused tabs?
       </message>
-      <message name="IDS_ACCNAME_TAB_DECLUTTER_WITH_DEDUPE" desc="The accessible name for the Tab Declutter button." is_accessibility_with_no_ui="true">
+      <message name="IDS_ACCNAME_TAB_DECLUTTER" desc="The accessible name for the Tab Declutter button." is_accessibility_with_no_ui="true">
         Clean up unused tabs
       </message>
       <message name="IDS_DECLUTTER_TIMESTAMP" desc="The description of when a tab was last accessed, for use in a declutter row.">
@@ -9733,13 +9742,19 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <if expr="use_titlecase">
         <then>
-          <message name="IDS_DECLUTTER_MENU" desc="In Title Case: The text label for the declutter app menu item.">
+          <message name="IDS_DECLUTTER_MENU_NO_DEDUPE" desc="In Title Case: The text label for the declutter app menu item when dedupe is disabled.">
             Review Inactive Tabs
+          </message>
+          <message name="IDS_DECLUTTER_MENU" desc="In Title Case: The text label for the declutter app menu item.">
+            Clean Up Unused Tabs
           </message>
         </then>
         <else>
-          <message name="IDS_DECLUTTER_MENU" desc="The text label for the declutter app menu item.">
+          <message name="IDS_DECLUTTER_MENU_NO_DEDUPE" desc="The text label for the declutter app menu item when dedupe is disabled.">
             Review inactive tabs
+          </message>
+          <message name="IDS_DECLUTTER_MENU" desc="The text label for the declutter app menu item.">
+            Clean up unused tabs
           </message>
         </else>
       </if>

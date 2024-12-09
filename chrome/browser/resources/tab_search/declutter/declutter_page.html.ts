@@ -44,7 +44,10 @@ export function getHtml(this: DeclutterPageElement) {
           html`
       <div class="empty-content">
         <div class="empty-title">$i18n{declutterEmptyTitle}</div>
-        <div class="empty-subheading">$i18n{declutterEmptyBody}</div>
+        <div class="empty-subheading">${
+              this.dedupeEnabled ?
+                  html`$i18n{declutterEmptyBody}` :
+                  html`$i18n{declutterEmptyBodyNoDedupe}`}</div>
       </div>
     ` :
           html`

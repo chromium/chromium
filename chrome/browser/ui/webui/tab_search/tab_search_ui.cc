@@ -156,6 +156,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"declutterDuplicateBody", IDS_DECLUTTER_DUPLICATE_BODY},
       {"declutterDuplicateTitle", IDS_DECLUTTER_DUPLICATE_TITLE},
       {"declutterEmptyBody", IDS_DECLUTTER_EMPTY_BODY},
+      {"declutterEmptyBodyNoDedupe", IDS_DECLUTTER_EMPTY_BODY_NO_DEDUPE},
       {"declutterEmptyTitle", IDS_DECLUTTER_EMPTY_TITLE},
       {"declutterInactiveTitle", IDS_DECLUTTER_INACTIVE_TITLE},
       {"declutterInactiveTitleNoDedupe",
@@ -227,6 +228,9 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 
   auto plural_string_handler = std::make_unique<PluralStringHandler>();
+  plural_string_handler->AddLocalizedString(
+      "declutterSelectorHeadingNoDedupe",
+      IDS_DECLUTTER_SELECTOR_HEADING_NO_DEDUPE);
   plural_string_handler->AddLocalizedString("declutterSelectorHeading",
                                             IDS_DECLUTTER_SELECTOR_HEADING);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
