@@ -99,6 +99,9 @@ public class OmniboxFeatures {
     public static final CachedFlag sAndroidHubSearch =
             newFlag(OmniboxFeatureList.ANDROID_HUB_SEARCH, /* defaultValue= */ false);
 
+    public static final CachedFlag sPostDelayedTaskFocusTab =
+            newFlag(OmniboxFeatureList.POST_DELAYED_TASK_FOCUS_TAB, /* defaultValue= */ true);
+
     public static final BooleanCachedFieldTrialParameter sAnswerActionsShowAboveKeyboard =
             newBooleanParam(sOmniboxAnswerActions, "AnswerActionsShowAboveKeyboard", false);
 
@@ -137,6 +140,9 @@ public class OmniboxFeatures {
 
     public static final IntCachedFieldTrialParameter sJumpStartOmniboxMaxAwayTimeMinutes =
             newIntParam(sJumpStartOmnibox, "jump_start_max_away_time_minutes", 8 * 60);
+
+    public static final IntCachedFieldTrialParameter sPostDelayedTaskFocusTabTimeMillis =
+            newIntParam(sPostDelayedTaskFocusTab, "post_delayed_task_focus_tab_time_millis", 0);
 
     // This parameter permits JSO to include additional page classifications when caching/serving
     // suggestions on SearchActivity.

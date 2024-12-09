@@ -17007,6 +17007,26 @@
             ]
         }
     ],
+    "PostDelayedTaskFocusTab": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "post_delayed_task_focus_tab_time_millis": "10"
+                    },
+                    "enable_features": [
+                        "PostDelayedTaskFocusTab"
+                    ]
+                }
+            ]
+        }
+    ],
     "PowerBookmarkBackend": [
         {
             "platforms": [
