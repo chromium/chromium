@@ -5,6 +5,9 @@
 #ifndef BASE_FILES_DRIVE_INFO_H_
 #define BASE_FILES_DRIVE_INFO_H_
 
+#include <stdint.h>
+#include <time.h>
+
 #include <optional>
 #include <string>
 #include <string_view>

@@ -12,14 +12,15 @@
 #include "partition_alloc/pointers/raw_ref.h"
 
 #ifdef USE_SYMBOLIZE
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
 #include <algorithm>
 #include <charconv>
 #include <cstdint>
 #include <limits>
-
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
+#include <system_error>
 
 #include "base/debug/buffered_dwarf_reader.h"
 #include "base/third_party/symbolize/symbolize.h"

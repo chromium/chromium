@@ -17,8 +17,11 @@
 #endif
 
 #if USE_LOCAL_TLS_EMULATION()
+#include <pthread.h>
+
 #include <algorithm>
 #include <atomic>
+#include <functional>
 #include <memory>
 #include <mutex>
 
@@ -26,8 +29,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_constants.h"
-
-#include <pthread.h>
 
 #if HAS_FEATURE(thread_sanitizer)
 #define DISABLE_TSAN_INSTRUMENTATION __attribute__((no_sanitize("thread")))

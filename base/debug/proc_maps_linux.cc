@@ -12,6 +12,8 @@
 #include <fcntl.h>
 #include <stddef.h>
 
+#include <unordered_map>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/format_macros.h"

@@ -13,6 +13,7 @@
 #include <concepts>
 #include <limits>
 #include <type_traits>
+#include <utility>
 
 #include "base/numerics/integral_constant_like.h"
 
