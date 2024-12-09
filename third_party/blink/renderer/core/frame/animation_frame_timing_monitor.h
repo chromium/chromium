@@ -52,7 +52,8 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
 
   void Shutdown();
 
-  void BeginMainFrame(LocalDOMWindow& local_root_window);
+  void BeginMainFrame(LocalDOMWindow& local_root_window,
+                      viz::BeginFrameId frame_id);
   void WillPerformStyleAndLayoutCalculation();
   AnimationFrameTimingInfo* RecordRenderingUpdateEndTime(
       LocalDOMWindow& local_root_window,

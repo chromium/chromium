@@ -666,7 +666,13 @@ void WindowPerformance::EventTimingProcessingEnd(
         *DomWindow()->GetFrame(),
         WTF::BindOnce(&WindowPerformance::OnPresentationPromiseResolved,
                       WrapWeakPersistent(this),
-                      ++event_presentation_promise_count_));
+                      ++event_presentation_promise_count_,
+                      // TODO(crbug.com/378647854): Current implementation uses
+                      // source id from previous BeginMainFrame as an
+                      // approximate. And this can be further improved to the
+                      // current BeginMainFrame if we could defer presentation
+                      // promise registering to align with each BeginMainFrame.
+                      begin_main_frame_source_id_));
     need_new_promise_for_event_presentation_time_ = false;
   }
 
@@ -709,8 +715,14 @@ void WindowPerformance::SetRenderStartTimeForPendingEvents(
   }
 }
 
+// Important details:
+// 1. presentation_index and expected_frame_source_id are "captured" at the
+// time the presentation is requested, and might have changed by the time
+// presentation time arrives.
+// 2. presentation time might be "fake" when broken swap promise.
 void WindowPerformance::OnPresentationPromiseResolved(
     uint64_t presentation_index,
+    uint64_t expected_frame_source_id,
     const viz::FrameTimingDetails& presentation_details) {
   if (!DomWindow() || !DomWindow()->document()) {
     return;
@@ -730,12 +742,17 @@ void WindowPerformance::OnPresentationPromiseResolved(
     return;
   }
 
+  uint64_t actual_frame_source_id = presentation_details.frame_id.source_id;
+
+  // We assume the presentation is for the expected source unless it's proven to
+  // be wrong.
+  bool is_presentation_for_expected_source =
+      !expected_frame_source_id || !actual_frame_source_id ||
+      expected_frame_source_id == actual_frame_source_id;
+
   for (auto entry : event_timing_entries_) {
     if (entry->GetEventTimingReportingInfo()->presentation_index ==
         presentation_index) {
-      entry->GetEventTimingReportingInfo()->presentation_time =
-          presentation_details.presentation_feedback.timestamp;
-
       // If page visibility was changed, add a fallback_time to the entry's
       // processingEnd. Because we already flush events in
       // `ReportAllPendingEventTimingsOnPageHidden`, this should only happen if
@@ -752,9 +769,17 @@ void WindowPerformance::OnPresentationPromiseResolved(
               entry->GetEventTimingReportingInfo()->creation_time &&
           last_hidden_timestamp_ <
               entry->GetEventTimingReportingInfo()->presentation_time;
-      if (was_page_visibility_changed) {
+
+      if ((base::FeatureList::IsEnabled(
+               features::
+                   kEventTimingIgnorePresentationTimeFromUnexpectedFrameSource) &&
+           !is_presentation_for_expected_source) ||
+          was_page_visibility_changed) {
         entry->UpdateFallbackTime(
             entry->GetEventTimingReportingInfo()->processing_end_time);
+      } else {
+        entry->GetEventTimingReportingInfo()->presentation_time =
+            presentation_details.presentation_feedback.timestamp;
       }
 
       // A javascript synchronous modal dialog might show before the event frame
@@ -1421,6 +1446,13 @@ void WindowPerformance::OnPaintFinished() {
   // than previous ones, so we need to register a new presentation promise for
   // it.
   need_new_promise_for_event_presentation_time_ = true;
+}
+
+void WindowPerformance::OnBeginMainFrame(viz::BeginFrameId frame_id) {
+  const uint64_t source_id = frame_id.source_id;
+  if (source_id) {
+    begin_main_frame_source_id_ = source_id;
+  }
 }
 
 void WindowPerformance::NotifyPotentialDrag(PointerId pointer_id) {

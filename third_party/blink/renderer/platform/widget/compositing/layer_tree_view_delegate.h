@@ -37,7 +37,7 @@ class LayerTreeViewDelegate {
       const cc::CompositorCommitData& commit_data) = 0;
 
   // Notifies that the compositor has issued a BeginMainFrame.
-  virtual void BeginMainFrame(base::TimeTicks frame_time) = 0;
+  virtual void BeginMainFrame(const viz::BeginFrameArgs& args) = 0;
 
   virtual void OnDeferMainFrameUpdatesChanged(bool) = 0;
   virtual void OnDeferCommitsChanged(

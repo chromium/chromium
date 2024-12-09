@@ -430,6 +430,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     EnableLazyLoadImageForInvisiblePageType,
     kEnableLazyLoadImageForInvisiblePageTypeParam);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kEventTimingIgnorePresentationTimeFromUnexpectedFrameSource);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExcludeLowEntropyImagesFromLCP);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(double, kMinimumEntropyForLCP);
 

@@ -47,7 +47,7 @@ class WidgetBaseClient {
 
   // Called to update the document lifecycle, advance the state of animations
   // and dispatch rAF.
-  virtual void BeginMainFrame(base::TimeTicks frame_time) = 0;
+  virtual void BeginMainFrame(const viz::BeginFrameArgs& args) = 0;
 
   // Requests that the lifecycle of the widget be updated.
   virtual void UpdateLifecycle(WebLifecycleUpdate requested_update,

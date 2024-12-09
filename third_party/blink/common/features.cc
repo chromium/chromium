@@ -779,6 +779,10 @@ BASE_FEATURE(kEnforceNoopenerOnBlobURLNavigation,
              "EnforceNoopenerOnBlobURLNavigation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEventTimingIgnorePresentationTimeFromUnexpectedFrameSource,
+             "EventTimingIgnorePresentationTimeFromUnexpectedFrameSource",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether LCP calculations should exclude low-entropy images. If
 // enabled, then the associated parameter sets the cutoff, expressed as the
 // minimum number of bits of encoded image data used to encode each rendered

@@ -114,6 +114,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   void SetRenderStartTimeForPendingEvents(base::TimeTicks render_start_time);
 
   void OnPaintFinished();
+  void OnBeginMainFrame(viz::BeginFrameId frame_id);
 
   void AddElementTiming(const AtomicString& name,
                         const String& url,
@@ -199,6 +200,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   void OnPresentationPromiseResolved(
       uint64_t presentation_index,
+      uint64_t expected_frame_source_id,
       const viz::FrameTimingDetails& presentation_details);
   // Report buffered events with presentation time following their registered
   // order; stop as soon as seeing an event with pending presentation promise.
@@ -231,6 +233,10 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // timestamps right before start showing each dialog.
   Deque<base::TimeTicks> show_modal_dialog_timestamps_;
 
+  // Frame source id from BeginMainFrame args. Event Timing compares it with
+  // frame source id from presentation feedback to identify GPU crashes.
+  // crbug.com/324877581
+  uint64_t begin_main_frame_source_id_ = 0;
   // Controls if we register a new presentation promise upon events arrival.
   bool need_new_promise_for_event_presentation_time_ = true;
   // Counts the total number of presentation promises we've registered for

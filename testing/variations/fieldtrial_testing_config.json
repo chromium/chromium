@@ -9321,6 +9321,28 @@
             ]
         }
     ],
+    "EventTimingIgnorePresentationTimeFromUnexpectedFrameSource": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EventTimingIgnorePresentationTimeFromUnexpectedFrameSource"
+                    ]
+                }
+            ]
+        }
+    ],
     "EventTimingSelectionAutoScrollNoInteractionId": [
         {
             "platforms": [
