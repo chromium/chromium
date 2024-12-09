@@ -27,16 +27,19 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/message_center.h"
 #include "url/gurl.h"
 
 namespace ash {
 
 namespace {
 
+using ::base::test::InvokeFuture;
 using ::base::test::RunOnceCallback;
 using ::testing::IsEmpty;
 using ::testing::Return;
 using ::testing::SizeIs;
+using ::testing::WithArg;
 
 FakeScannerProfileScopedDelegate* GetFakeScannerProfileScopedDelegate(
     ScannerController& scanner_controller) {
@@ -121,6 +124,46 @@ TEST_F(ScannerControllerTest, ResetsScannerSessionWhenActiveUserChanges) {
   SimulateUserLogin("user2@gmail.com");
 
   EXPECT_FALSE(scanner_controller->HasActiveSessionForTesting());
+}
+
+TEST_F(ScannerControllerTest, ShowsNotificationWhileExecutingAction) {
+  base::test::TestFuture<std::vector<ScannerActionViewModel>> actions_future;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_TRUE(scanner_controller->StartNewSession());
+  manta::proto::ScannerOutput output;
+  output.add_objects()->add_actions()->mutable_new_event()->set_title(
+      "Event 1");
+  FakeScannerProfileScopedDelegate& fake_profile_scoped_delegate =
+      *GetFakeScannerProfileScopedDelegate(*scanner_controller);
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::make_unique<manta::proto::ScannerOutput>(output),
+          manta::MantaStatus()));
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_action_details_future;
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionDetailsForImage)
+      .WillOnce(WithArg<2>(InvokeFuture(fetch_action_details_future)));
+
+  // Fetch an action and execute it.
+  scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
+                                           actions_future.GetCallback());
+  std::vector<ScannerActionViewModel> actions = actions_future.Take();
+  ASSERT_THAT(actions, SizeIs(1));
+  actions[0].ExecuteAction(/*action_finished_callback=*/base::DoNothing());
+
+  // Notification should be shown while action is executing.
+  EXPECT_THAT(message_center::MessageCenter::Get()->GetVisibleNotifications(),
+              SizeIs(1));
+
+  // Finish executing the action.
+  fetch_action_details_future.Take().Run(
+      std::make_unique<manta::proto::ScannerOutput>(output),
+      manta::MantaStatus());
+
+  // Notification should be hidden.
+  EXPECT_THAT(message_center::MessageCenter::Get()->GetVisibleNotifications(),
+              IsEmpty());
 }
 
 }  // namespace

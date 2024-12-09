@@ -27720,6 +27720,7 @@ Called by update_net_error_codes.py.-->
   <int value="190" label="OnTask session end"/>
   <int value="191" label="OnTask content added to bundle"/>
   <int value="192" label="OnTask content removed from bundle"/>
+  <int value="193" label="Scanner action executing"/>
 </enum>
 
 <enum name="NQEObservationSource">

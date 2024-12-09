@@ -9,18 +9,26 @@
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/public/cpp/scanner/scanner_enums.h"
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scanner/scanner_command_delegate_impl.h"
 #include "ash/scanner/scanner_session.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/account_id/account_id.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 
 namespace ash {
 
 namespace {
+
+constexpr char kScannerActionNotificationId[] = "scanner_action_notification";
+constexpr char kScannerNotifierId[] = "ash.scanner";
 
 }  // namespace
 
@@ -84,6 +92,36 @@ void ScannerController::FetchActionsForImage(
 
 void ScannerController::OnSessionUIClosed() {
   scanner_session_ = nullptr;
+}
+
+void ScannerController::OnActionStarted() {
+  message_center::RichNotificationData optional_fields;
+  // Show an infinite loading progress bar.
+  optional_fields.progress = -1;
+  optional_fields.never_timeout = true;
+
+  auto* message_center = message_center::MessageCenter::Get();
+  message_center->RemoveNotification(kScannerActionNotificationId,
+                                     /*by_user=*/false);
+  // TODO: crbug.com/375967525 - Finalize the action notification strings and
+  // icon.
+  constexpr char16_t kPlaceholderActionProgressTitle[] = u"Creating...";
+  message_center->AddNotification(CreateSystemNotificationPtr(
+      message_center::NOTIFICATION_TYPE_PROGRESS, kScannerActionNotificationId,
+      kPlaceholderActionProgressTitle,
+      /*message=*/u"",
+      /*display_source=*/u"", GURL(),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kScannerNotifierId,
+                                 NotificationCatalogName::kScannerAction),
+      optional_fields, /*delegate=*/nullptr, kCaptureModeIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL));
+}
+
+void ScannerController::OnActionFinished() {
+  message_center::MessageCenter::Get()->RemoveNotification(
+      kScannerActionNotificationId,
+      /*by_user=*/false);
 }
 
 bool ScannerController::HasActiveSessionForTesting() const {
