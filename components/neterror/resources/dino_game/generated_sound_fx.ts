@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.js';
+
 import {IS_IOS} from './constants.js';
 
 /**
  * Generated sound FX class for audio cues.
  */
 export class GeneratedSoundFx {
-  constructor() {
-    this.audioCues = false;
-    this.context = null;
-    this.panner = null;
-  }
+  private audioCues: boolean = false;
+  private context: AudioContext|null = null;
+  private panner: StereoPannerNode|null = null;
+  private bgSoundIntervalId: number|null = null;
 
   init() {
     this.audioCues = true;
     if (!this.context) {
-      // iOS only supports the webkit version.
-      this.context = window.webkitAudioContext ? new webkitAudioContext() :
-                                                 new AudioContext();
+      this.context = new AudioContext();
       if (IS_IOS) {
         this.context.onstatechange = () => {
+          assert(this.context);
           if (this.context.state !== 'running') {
             this.context.resume();
           }
@@ -40,13 +40,12 @@ export class GeneratedSoundFx {
 
   /**
    * Play oscillators at certain frequency and for a certain time.
-   * @param {number} frequency
-   * @param {number} startTime
-   * @param {number} duration
-   * @param {?number=} opt_vol
-   * @param {number=} opt_pan
    */
-  playNote(frequency, startTime, duration, opt_vol, opt_pan) {
+  playNote(
+      frequency: number, startTime: number, duration: number,
+      vol: number = 0.01, pan: number = 0) {
+    assert(this.context);
+
     const osc1 = this.context.createOscillator();
     const osc2 = this.context.createOscillator();
     const volume = this.context.createGain();
@@ -58,7 +57,7 @@ export class GeneratedSoundFx {
 
     // Set up node routing
     if (this.panner) {
-      this.panner.pan.value = opt_pan || 0;
+      this.panner.pan.value = pan;
       osc1.connect(volume).connect(this.panner);
       osc2.connect(volume).connect(this.panner);
       this.panner.connect(this.context.destination);
@@ -73,7 +72,7 @@ export class GeneratedSoundFx {
     osc2.frequency.value = frequency - 2;
 
     // Fade out
-    volume.gain.setValueAtTime(opt_vol || 0.01, startTime + duration - 0.05);
+    volume.gain.setValueAtTime(vol, startTime + duration - 0.05);
     volume.gain.linearRampToValueAtTime(0.00001, startTime + duration);
 
     // Start oscillators
@@ -85,6 +84,8 @@ export class GeneratedSoundFx {
   }
 
   background() {
+    assert(this.context);
+
     if (this.audioCues) {
       const now = this.context.currentTime;
       this.playNote(493.883, now, 0.116);
@@ -95,15 +96,17 @@ export class GeneratedSoundFx {
 
   loopFootSteps() {
     if (this.audioCues && !this.bgSoundIntervalId) {
-      this.bgSoundIntervalId = setInterval(function() {
+      this.bgSoundIntervalId = setInterval(() => {
+        assert(this.context);
         this.playNote(73.42, this.context.currentTime, 0.05, 0.16);
         this.playNote(69.30, this.context.currentTime + 0.116, 0.116, 0.16);
-      }.bind(this), 280);
+      }, 280);
     }
   }
 
   cancelFootSteps() {
     if (this.audioCues && this.bgSoundIntervalId) {
+      assert(this.context);
       clearInterval(this.bgSoundIntervalId);
       this.bgSoundIntervalId = null;
       this.playNote(103.83, this.context.currentTime, 0.232, 0.02);
@@ -113,6 +116,7 @@ export class GeneratedSoundFx {
 
   collect() {
     if (this.audioCues) {
+      assert(this.context);
       this.cancelFootSteps();
       const now = this.context.currentTime;
       this.playNote(830.61, now, 0.116);
@@ -122,6 +126,7 @@ export class GeneratedSoundFx {
 
   jump() {
     if (this.audioCues) {
+      assert(this.context);
       const now = this.context.currentTime;
       this.playNote(659.25, now, 0.116, 0.3, -0.6);
       this.playNote(880, now + 0.116, 0.232, 0.3, -0.6);
