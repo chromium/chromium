@@ -98,7 +98,9 @@ export class SettingsPinSettingsElement extends SettingsPinSettingsElementBase {
 
   onFactorChanged(factor: AuthFactor): void {
     switch (factor) {
-      case AuthFactor.kPin:
+      case AuthFactor.kPrefBasedPin:
+      case AuthFactor.kCryptohomePin:
+      case AuthFactor.kCryptohomePinV2:
       case AuthFactor.kGaiaPassword:
       case AuthFactor.kLocalPassword:
         this.updatePinState_();
@@ -159,19 +161,19 @@ export class SettingsPinSettingsElement extends SettingsPinSettingsElementBase {
 
     const authToken = this.authToken;
 
-    const pfe = AuthFactorConfig.getRemote();
-    const [
-      { configured: hasGaiaPassword },
-      { configured: hasLocalPassword },
-      { configured: hasPin },
-    ] =
+    const afc = AuthFactorConfig.getRemote();
+    const pfe = PinFactorEditor.getRemote();
+    // clang-format off
+    const [{configured: hasGaiaPassword},
+      {configured: hasLocalPassword},
+      {pinFactor}] =
         await Promise.all([
-          pfe.isConfigured(authToken, AuthFactor.kGaiaPassword),
-          pfe.isConfigured(authToken, AuthFactor.kLocalPassword),
-          pfe.isConfigured(authToken, AuthFactor.kPin),
+          afc.isConfigured(authToken, AuthFactor.kGaiaPassword),
+          afc.isConfigured(authToken, AuthFactor.kLocalPassword),
+          pfe.getConfiguredPinFactor(authToken),
         ]);
-
-    this.hasPin_ = hasPin;
+    // clang-format off
+    this.hasPin_ = pinFactor !== null;
     this.hasPassword_ = hasGaiaPassword || hasLocalPassword;
   }
 

@@ -34,7 +34,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {AuthFactor, ConfigureResult, FactorObserverReceiver, ManagementType} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
+import {AuthFactor, ConfigureResult, FactorObserverReceiver, ManagementType, PinFactorEditor} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
@@ -462,14 +462,13 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     const [
       { configured: hasGaiaPassword },
       { configured: hasLocalPassword },
-      { configured: hasPin },
+      { pinFactor },
     ] = await Promise.all([
       this.authFactorConfig.isConfigured(
         this.authToken, AuthFactor.kGaiaPassword),
       this.authFactorConfig.isConfigured(
         this.authToken, AuthFactor.kLocalPassword),
-      this.authFactorConfig.isConfigured(
-        this.authToken, AuthFactor.kPin),
+      PinFactorEditor.getRemote().getConfiguredPinFactor(this.authToken),
     ]);
 
     if (hasLocalPassword) {
@@ -482,7 +481,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
         // If the gaia password is setup, for non managed users, we will allow
         // them to switch to local password.
         this.showPasswordSettings_ = true;
-      } else if (!hasGaiaPassword && hasPin) {
+      } else if (!hasGaiaPassword && pinFactor !== null) {
         // At this point we know the user does not have a password
         // and has a pin. We can allow them to set password.
         this.showPasswordSettings_ = true;
