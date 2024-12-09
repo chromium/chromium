@@ -24,11 +24,6 @@ def __step_config(ctx, step_config):
                 "*.cc",
                 # "*_pb2.py",
             ],
-            # TODO(https://crrev.com/c/6057248): remove this after
-            # proto_library.gni change.
-            "inputs": [
-                "third_party/protobuf/src/google/protobuf/descriptor.proto",
-            ],
             "remote": remote_run,
             # chromeos generates default.profraw?
             "ignore_extra_output_pattern": ".*default.profraw",
