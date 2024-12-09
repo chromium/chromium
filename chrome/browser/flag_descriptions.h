@@ -3330,9 +3330,6 @@ extern const char kAllowCrossDeviceFeatureSuiteDescription[];
 extern const char kLinkCrossDeviceInternalsName[];
 extern const char kLinkCrossDeviceInternalsDescription[];
 
-extern const char kAllowFpmcuBetaFirmwareName[];
-extern const char kAllowFpmcuBetaFirmwareDescription[];
-
 extern const char kAllowScrollSettingsName[];
 extern const char kAllowScrollSettingsDescription[];
 

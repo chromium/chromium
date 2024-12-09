@@ -5753,11 +5753,6 @@ const char kLinkCrossDeviceInternalsDescription[] =
     "Improves debugging of Cross-Device features by recording more verbose "
     "logs and attaching these logs to filed Feedback reports.";
 
-const char kAllowFpmcuBetaFirmwareName[] =
-    "Allow using beta firmware for the FPMCU";
-const char kAllowFpmcuBetaFirmwareDescription[] =
-    "Allow using beta firmware for the Fingerprint MCU if available";
-
 const char kAllowScrollSettingsName[] =
     "Allow changes to scroll acceleration/sensitivity for mice.";
 const char kAllowScrollSettingsDescription[] =

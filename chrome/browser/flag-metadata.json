@@ -123,11 +123,6 @@
     "expiry_milestone": 128
   },
   {
-    "name": "allow-fpmcu-beta-firmware",
-    "owners": [ "patrykd@google.com", "chromeos-fingerprint@google.com" ],
-    "expiry_milestone": 131
-  },
-  {
     "name": "allow-insecure-localhost",
     "owners": [ "cthomp@chromium.org", "security-dev@chromium.org" ],
     "expiry_milestone": 130
