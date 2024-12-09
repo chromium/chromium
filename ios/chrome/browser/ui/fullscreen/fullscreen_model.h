@@ -17,6 +17,9 @@
 
 class FullscreenModelObserver;
 
+// Represents the direction the user is scrolling.
+enum class FullscreenModelScrollDirection { kUp, kDown };
+
 // Model object used to calculate fullscreen state.
 class FullscreenModel : public ChromeBroadcastObserverInterface {
  public:
@@ -199,6 +202,13 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   void SetInsetsUpdateEnabled(bool enabled);
   bool IsInsetsUpdateEnabled() const;
 
+  // Returns the direction of the last scroll event.
+  FullscreenModelScrollDirection LastDirection() const {
+    return initial_y_offset_ - y_content_offset_ > 0
+               ? FullscreenModelScrollDirection::kUp
+               : FullscreenModelScrollDirection::kDown;
+  }
+
  private:
   // Returns how a scroll to the current `y_content_offset_` from `from_offset`
   // should be handled.
@@ -254,6 +264,8 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   CGFloat collapsed_bottom_toolbar_height_ = 0.0;
   // The current vertical content offset of the main content.
   CGFloat y_content_offset_ = 0.0;
+  // The vertical content offset at the start of a scroll event.
+  CGFloat initial_y_offset_ = 0.0;
   // The height of the scroll view displaying the current page.
   CGFloat scroll_view_height_ = 0.0;
   // The height of the current page's rendered content.

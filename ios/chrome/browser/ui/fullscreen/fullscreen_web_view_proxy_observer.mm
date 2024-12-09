@@ -71,6 +71,7 @@
 - (void)webViewScrollViewWillBeginDragging:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
   if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    self.model->SetYContentOffset(webViewScrollViewProxy.contentOffset.y);
     self.model->SetScrollViewIsScrolling(true);
     self.model->SetScrollViewIsDragging(true);
   }

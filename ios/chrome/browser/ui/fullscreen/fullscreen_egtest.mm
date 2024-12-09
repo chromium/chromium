@@ -143,11 +143,6 @@ void WaitforPDFExtensionView() {
   [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
       performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
-
-  // Test that the toolbar is still visible even after attempting to hide it
-  // on swipe up.
-  HideToolbarUsingUI();
-  [ChromeEarlGreyUI waitForToolbarVisible:YES];
 }
 
 // Verifies that the toolbar properly appears/disappears when scrolling up/down

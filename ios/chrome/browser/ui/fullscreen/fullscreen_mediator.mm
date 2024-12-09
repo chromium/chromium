@@ -161,29 +161,21 @@ void FullscreenMediator::FullscreenModelScrollEventEnded(
     FullscreenModel* model) {
   DCHECK_EQ(model_, model);
   should_record_metrics_ = true;
-  FullscreenAnimatorStyle animatorStyle;
   if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
     AnimateWithStyle(model_->progress() >= 0.5
                          ? FullscreenAnimatorStyle::EXIT_FULLSCREEN
                          : FullscreenAnimatorStyle::ENTER_FULLSCREEN);
   } else {
-    // Compute the direction to ensure to not enter fullscreen when the website
-    // is not long enough to have more than 0.5 progress and do not enter
-    // fullscreen when we scroll up.
-    float direction = model_->progress() - start_progress_;
-    animatorStyle = animator_.style;
     if (model_->enabled() && model_->is_scrolled_to_bottom() &&
         AreCGFloatsEqual(model_->progress(), 0.0) &&
         model_->can_collapse_toolbar()) {
-      animatorStyle = FullscreenAnimatorStyle::EXIT_FULLSCREEN;
+      AnimateWithStyle(FullscreenAnimatorStyle::EXIT_FULLSCREEN);
       base::RecordAction(
           base::UserMetricsAction("MobileFullscreenExitedBottomReached"));
-    } else if (model_->progress() >= 0.5) {
-      animatorStyle = FullscreenAnimatorStyle::EXIT_FULLSCREEN;
-    } else if (direction < 0) {
-      animatorStyle = FullscreenAnimatorStyle::ENTER_FULLSCREEN;
+    } else {
+      AnimateWithStyle(
+          AnimatorStyleFromScrollDirection(model->LastDirection()));
     }
-    AnimateWithStyle(animatorStyle);
   }
 }
 
@@ -266,5 +258,15 @@ void FullscreenMediator::StopAnimating(bool update_model) {
 void FullscreenMediator::ResizeHorizontalInsets() {
   for (auto& observer : observers_) {
     observer.ResizeHorizontalInsets(controller_);
+  }
+}
+
+FullscreenAnimatorStyle FullscreenMediator::AnimatorStyleFromScrollDirection(
+    FullscreenModelScrollDirection direction) {
+  switch (direction) {
+    case FullscreenModelScrollDirection::kUp:
+      return FullscreenAnimatorStyle::EXIT_FULLSCREEN;
+    case FullscreenModelScrollDirection::kDown:
+      return FullscreenAnimatorStyle::ENTER_FULLSCREEN;
   }
 }

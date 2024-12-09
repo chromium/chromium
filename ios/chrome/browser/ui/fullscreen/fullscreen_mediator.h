@@ -15,6 +15,7 @@
 
 class FullscreenController;
 class FullscreenControllerObserver;
+enum class FullscreenModelScrollDirection;
 @class FullscreenResetAnimator;
 @class FullscreenScrollEndAnimator;
 @class FullscreenScrollToTopAnimator;
@@ -87,6 +88,10 @@ class FullscreenMediator : public FullscreenModelObserver {
   // `update_model` is true, the FullscreenModel will be updated with the active
   // animator's current progress value.
   void StopAnimating(bool update_model);
+
+  // Returns the animator style given a scroll direction.
+  FullscreenAnimatorStyle AnimatorStyleFromScrollDirection(
+      FullscreenModelScrollDirection direction);
 
   // Progress value when scroll event started.
   float start_progress_;
