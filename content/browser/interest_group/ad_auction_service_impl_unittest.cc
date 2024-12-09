@@ -12158,8 +12158,6 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
 }
 
 TEST_F(AdAuctionServiceImplBAndATest, JoinInterestGroupPrefetchesKeys) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kFledgePrefetchBandAKeys);
   RegisterDeferredKeys();
   blink::InterestGroup interest_group = CreateInterestGroup();
 

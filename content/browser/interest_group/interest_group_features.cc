@@ -61,11 +61,6 @@ BASE_FEATURE(kFledgeFacilitatedTestingSignalsHeaders,
              "FledgeFacilitatedTestingSignalsHeaders",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable prefetching B&A keys on the first joinAdInterestGroup call.
-BASE_FEATURE(kFledgePrefetchBandAKeys,
-             "FledgePrefetchBandAKeys",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables starting worklet processes at auction start time in anticipation
 // of needing them for future worklets.
 BASE_FEATURE(kFledgeStartAnticipatoryProcesses,

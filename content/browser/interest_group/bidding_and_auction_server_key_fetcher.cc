@@ -142,13 +142,6 @@ BiddingAndAuctionServerKeyFetcher::~BiddingAndAuctionServerKeyFetcher() =
     default;
 
 void BiddingAndAuctionServerKeyFetcher::MaybePrefetchKeys() {
-  // We only prefetch keys if the prefetching is enabled and if
-  // kFledgeBiddingAndAuctionServer is enabled. We don't need to check
-  // kFledgeBiddingAndAuctionServer because if it's not enabled
-  // fetcher_state_map_ would have no keys.
-  if (!base::FeatureList::IsEnabled(features::kFledgePrefetchBandAKeys)) {
-    return;
-  }
   // We only want to prefetch once.
   if (did_prefetch_keys_) {
     return;
