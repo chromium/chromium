@@ -48,7 +48,6 @@ static_library("crosapi") {
     "browser_loader.h",
     "browser_manager.cc",
     "browser_manager.h",
-    "browser_manager_feature.h",
     "browser_manager_observer.h",
     "cec_private_ash.cc",
     "cec_private_ash.h",

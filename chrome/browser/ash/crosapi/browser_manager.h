@@ -19,7 +19,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/crosapi/browser_manager_feature.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
@@ -85,11 +84,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   void AddObserver(BrowserManagerObserver* observer);
   void RemoveObserver(BrowserManagerObserver* observer);
-
-  // Set the data of device account policy. It is the serialized blob of
-  // PolicyFetchResponse received from the server, or parsed from the file after
-  // is was validated by Ash.
-  void SetDeviceAccountPolicy(const std::string& policy_blob);
 
   // Notifies the BrowserManager that it should prepare for shutdown. This is
   // called in the early stages of ash shutdown to give Lacros sufficient time

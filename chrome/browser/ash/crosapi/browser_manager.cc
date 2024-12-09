@@ -345,8 +345,6 @@ void BrowserManager::OnRefreshSchedulerDestruction(
   scheduler->RemoveObserver(this);
 }
 
-void BrowserManager::SetDeviceAccountPolicy(const std::string& policy_blob) {}
-
 void BrowserManager::SetLacrosLaunchMode() {
   LacrosLaunchMode lacros_mode;
   LacrosLaunchModeAndSource lacros_mode_and_source;
