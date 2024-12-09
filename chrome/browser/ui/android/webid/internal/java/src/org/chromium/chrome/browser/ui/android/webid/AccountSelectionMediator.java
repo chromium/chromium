@@ -130,6 +130,37 @@ class AccountSelectionMediator {
         int NUM_ENTRIES = 7;
     }
 
+    /**
+     * The following integers are used for histograms. Do not remove or modify existing values, but
+     * you may add new values at the end and increase NUM_ENTRIES. This enum should be kept in sync
+     * with LoadingDialogResult in
+     * chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h as well as with
+     * FedCmLoadingDialogResult in tools/metrics/histograms/enums.xml.
+     */
+    @IntDef({
+        LoadingDialogResult.PROCEED,
+        LoadingDialogResult.CANCEL,
+        LoadingDialogResult.PROCEED_THROUGH_POPUP,
+        LoadingDialogResult.DESTROY,
+        LoadingDialogResult.SWIPE,
+        LoadingDialogResult.BACK_PRESS,
+        LoadingDialogResult.TAP_SCRIM,
+        LoadingDialogResult.NUM_ENTRIES
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @VisibleForTesting
+    @interface LoadingDialogResult {
+        int PROCEED = 0;
+        int CANCEL = 1;
+        int PROCEED_THROUGH_POPUP = 2;
+        int DESTROY = 3;
+        int SWIPE = 4;
+        int BACK_PRESS = 5;
+        int TAP_SCRIM = 6;
+
+        int NUM_ENTRIES = 7;
+    }
+
     private boolean mRegisteredObservers;
     private boolean mWasDismissed;
     // Keeps track of the last bottom sheet seen by the BottomSheetObserver. Used to know whether a
@@ -166,6 +197,7 @@ class AccountSelectionMediator {
     private IdentityCredentialTokenError mError;
     private @IdentityRequestDialogDisclosureField int[] mDisclosureFields;
     private ImageFetcher mImageFetcher;
+    private UkmRecorder mUkmRecorder;
 
     // All of the user's accounts.
     private List<Account> mAccounts;
@@ -187,6 +219,14 @@ class AccountSelectionMediator {
     // The current state of the account chooser if opened for metrics purposes. Histogram is only
     // recorded for active mode.
     private @Nullable Integer mAccountChooserState;
+
+    // The current state of the loading dialog if opened for metrics purposes. Histogram is only
+    // recorded for active mode.
+    private @Nullable Integer mLoadingDialogState;
+
+    // Whether there was a login to IDP CCT that was closed while the loading dialog is open. This
+    // could mean that the user successfully completed the login to IDP flow.
+    private boolean mIsLoadingDialogLoginToIdpClosed;
 
     private KeyboardVisibilityListener mKeyboardVisibilityListener =
             new KeyboardVisibilityListener() {
@@ -226,6 +266,9 @@ class AccountSelectionMediator {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mLastSheetSeen = mBottomSheetContent;
+        if (mTab != null && mTab.getWebContents() != null) {
+            mUkmRecorder = new UkmRecorder(mTab.getWebContents(), "Blink.FedCm");
+        }
 
         mBottomSheetObserver =
                 new EmptyBottomSheetObserver() {
@@ -281,6 +324,10 @@ class AccountSelectionMediator {
                                             mAccountChooserState != null
                                                     ? AccountChooserResult.SWIPE
                                                     : null;
+                                    mLoadingDialogState =
+                                            mHeaderType == HeaderType.LOADING
+                                                    ? LoadingDialogResult.SWIPE
+                                                    : null;
                                 } else if (reason
                                         == BottomSheetController.StateChangeReason.BACK_PRESS) {
                                     dismissReason = IdentityRequestDialogDismissReason.BACK_PRESS;
@@ -291,6 +338,10 @@ class AccountSelectionMediator {
                                             mAccountChooserState != null
                                                     ? AccountChooserResult.BACK_PRESS
                                                     : null;
+                                    mLoadingDialogState =
+                                            mHeaderType == HeaderType.LOADING
+                                                    ? LoadingDialogResult.BACK_PRESS
+                                                    : null;
                                 } else if (reason
                                         == BottomSheetController.StateChangeReason.TAP_SCRIM) {
                                     dismissReason = IdentityRequestDialogDismissReason.TAP_SCRIM;
@@ -300,6 +351,10 @@ class AccountSelectionMediator {
                                     mAccountChooserState =
                                             mAccountChooserState != null
                                                     ? AccountChooserResult.TAP_SCRIM
+                                                    : null;
+                                    mLoadingDialogState =
+                                            mHeaderType == HeaderType.LOADING
+                                                    ? LoadingDialogResult.TAP_SCRIM
                                                     : null;
                                 }
                                 onDismissed(dismissReason);
@@ -525,12 +580,34 @@ class AccountSelectionMediator {
 
         RecordHistogram.recordEnumeratedHistogram(
                 "Blink.FedCm.Button.AccountChooserResult", result, SheetType.NUM_ENTRIES);
-        if (mTab != null && mTab.getWebContents() != null) {
-            new UkmRecorder(mTab.getWebContents(), "Blink.FedCm")
-                    .addMetric("Button.AccountChooserResult", result)
-                    .record();
+        if (mUkmRecorder != null) {
+            mUkmRecorder.addMetric("Button.AccountChooserResult", result).record();
         }
         mAccountChooserState = null;
+    }
+
+    private void maybeRecordLoadingDialogResult() {
+        if (mRpMode != RpMode.ACTIVE) return;
+
+        // mLoadingDialogState is set on dismissal e.g. tap scrim, back press or if the loading
+        // dialog gets updated into an account chooser. If it hasn't been set but onDismiss has
+        // called this while showing the loading dialog, it means the user has closed the tab or
+        // navigated away.
+        if (mLoadingDialogState == null && mHeaderType == HeaderType.LOADING) {
+            mLoadingDialogState = LoadingDialogResult.DESTROY;
+        }
+
+        // Can be null in tests that do not show the loading dialog before the dialog being tested.
+        if (mLoadingDialogState == null) return;
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "Blink.FedCm.Button.LoadingDialogResult",
+                mLoadingDialogState,
+                SheetType.NUM_ENTRIES);
+        if (mUkmRecorder != null) {
+            mUkmRecorder.addMetric("Button.LoadingDialogResult", mLoadingDialogState).record();
+        }
+        mLoadingDialogState = null;
     }
 
     void showVerifySheet(Account account) {
@@ -577,6 +654,11 @@ class AccountSelectionMediator {
         mRpContext = idpData.getRpContext();
         mDisclosureFields = idpData.getDisclosureFields();
         mSelectedAccount = null;
+        mLoadingDialogState =
+                mIsLoadingDialogLoginToIdpClosed
+                        ? LoadingDialogResult.PROCEED_THROUGH_POPUP
+                        : LoadingDialogResult.PROCEED;
+        maybeRecordLoadingDialogResult();
 
         if (accounts.size() == 1
                 && (isAutoReauthn || !mIdpMetadata.showUseDifferentAccountButton())) {
@@ -1073,6 +1155,7 @@ class AccountSelectionMediator {
         if (mAccountChooserState != null) {
             maybeRecordAccountChooserResult(mAccountChooserState);
         }
+        maybeRecordLoadingDialogResult();
         dismissContent();
         mDelegate.onDismissed(dismissReason);
     }
@@ -1178,5 +1261,8 @@ class AccountSelectionMediator {
 
     void onModalDialogClosed() {
         mIsModalDialogOpen = false;
+        if (!mIsLoadingDialogLoginToIdpClosed && mHeaderType == HeaderType.LOADING) {
+            mIsLoadingDialogLoginToIdpClosed = true;
+        }
     }
 }

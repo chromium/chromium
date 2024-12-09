@@ -49,6 +49,7 @@ import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionMediator.AccountChooserResult;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionMediator.LoadingDialogResult;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -934,6 +935,148 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
 
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         verify(mMockBridge, never()).onAccountSelected(any(), any());
+    }
+
+    @Test
+    @MediumTest
+    public void testProceedRecordsLoadingDialogResultHistogram() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Blink.FedCm.Button.LoadingDialogResult", LoadingDialogResult.PROCEED);
+
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(RETURNING_ANA),
+                            mIdpDataWithAddAccount,
+                            /* isAutoReauthn= */ false,
+                            /* newAccounts= */ Collections.EMPTY_LIST);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testProceedThroughPopupRecordsLoadingDialogResultHistogram() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Blink.FedCm.Button.LoadingDialogResult",
+                        LoadingDialogResult.PROCEED_THROUGH_POPUP);
+
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showLoadingDialog(
+                            EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_2, RpContext.SIGN_IN);
+                    mAccountSelection.getMediator().onModalDialogClosed();
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(RETURNING_ANA),
+                            mIdpDataWithAddAccount,
+                            /* isAutoReauthn= */ false,
+                            /* newAccounts= */ Collections.EMPTY_LIST);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testSwipeRecordsLoadingDialogResultHistogram() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showLoadingDialog(
+                            EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_2, RpContext.SIGN_IN);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Blink.FedCm.Button.LoadingDialogResult", LoadingDialogResult.SWIPE);
+
+        BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
+        runOnUiThreadBlocking(
+                () -> {
+                    sheetSupport.suppressSheet(BottomSheetController.StateChangeReason.SWIPE);
+                });
+        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.SWIPE);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testPressBackLoadingDialogResultHistogram() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showLoadingDialog(
+                            EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_2, RpContext.SIGN_IN);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Blink.FedCm.Button.LoadingDialogResult", LoadingDialogResult.BACK_PRESS);
+
+        Espresso.pressBack();
+        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.BACK_PRESS);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testTapScrimLoadingDialogResultHistogram() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showLoadingDialog(
+                            EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_2, RpContext.SIGN_IN);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Blink.FedCm.Button.LoadingDialogResult", LoadingDialogResult.TAP_SCRIM);
+
+        BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
+        runOnUiThreadBlocking(
+                () -> {
+                    sheetSupport.forceClickOutsideTheSheet();
+                });
+
+        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.TAP_SCRIM);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testDestroyLoadingDialogResultHistogram() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showLoadingDialog(
+                            EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_2, RpContext.SIGN_IN);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Blink.FedCm.Button.LoadingDialogResult", LoadingDialogResult.DESTROY);
+
+        BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
+        runOnUiThreadBlocking(
+                () -> {
+                    sheetSupport.suppressSheet(BottomSheetController.StateChangeReason.NAVIGATION);
+                });
+
+        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+
+        histogramWatcher.assertExpected();
     }
 
     private void clickFirstAccountInAccountsList() {

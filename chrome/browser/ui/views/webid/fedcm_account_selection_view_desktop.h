@@ -370,14 +370,22 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // This enum describes the outcome of the loading dialog and is used for
   // histograms. Do not remove or modify existing values, but you may add new
   // values at the end. This enum should be kept in sync with
+  // LoadingDialogResult in
+  // chrome/browser/ui/android/webid/AccountSelectionMediator.java as well as
   // FedCmLoadingDialogResult in tools/metrics/histograms/enums.xml.
   enum class LoadingDialogResult {
     kProceed,
     kCancel,
     kProceedThroughPopup,
     kDestroy,
+    // Android-specific
+    kSwipe,
+    // Android-specific
+    kBackPress,
+    // Android-specific
+    kTapScrim,
 
-    kMaxValue = kDestroy
+    kMaxValue = kTapScrim
   };
 
   // This enum describes the outcome of the disclosure dialog and is used for
