@@ -7223,9 +7223,10 @@ TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
   update_client->AddObserver(&observer);
   const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
   update_client->CheckForUpdate(
-      "",
+      id,
       base::BindOnce(
-          [](const std::vector<std::string>&, /*ids*/ base::OnceCallback<void(
+          [](const std::vector<std::string>& /*ids*/,
+             base::OnceCallback<void(
                  const std::vector<std::optional<CrxComponent>>&)> callback) {
             std::move(callback).Run({});
           }),

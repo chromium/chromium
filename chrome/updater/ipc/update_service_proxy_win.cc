@@ -16,9 +16,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/check.h"
-#include "base/debug/alias.h"
-#include "base/debug/dump_without_crashing.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -201,13 +199,8 @@ class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
           base::WideToUTF8(installer_cmd_line.Get());
     }
 
-    // TODO(crbug.com/345250525) - understand why the check fails.
-    base::debug::Alias(&update_service_state);
-    if (update_service_state.state ==
-        UpdateService::UpdateState::State::kUnknown) {
-      VLOG(2) << update_service_state;
-      base::debug::DumpWithoutCrashing();
-    }
+    CHECK_NE(update_service_state.state,
+             UpdateService::UpdateState::State::kUnknown);
     return update_service_state;
   }
 

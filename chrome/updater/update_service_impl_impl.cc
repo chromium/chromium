@@ -13,12 +13,10 @@
 
 #include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
-#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
-#include "base/debug/alias.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -591,12 +589,9 @@ MakeUpdateClientCrxStateChangeCallback(
           config->GetPrefService()->CommitPendingWrite();
         }
 
-        // TODO(crbug.com/345250525): remove dump instrumentation when fixed.
-        base::debug::Alias(&update_state);
-        if (update_state.app_id.empty() ||
-            update_state.state == UpdateService::UpdateState::State::kUnknown) {
-          base::debug::DumpWithoutCrashing();
-        }
+        CHECK(!update_state.app_id.empty());
+        CHECK_NE(update_state.state,
+                 UpdateService::UpdateState::State::kUnknown);
         callback.Run(update_state);
       },
       config, persisted_data, new_install, callback);
