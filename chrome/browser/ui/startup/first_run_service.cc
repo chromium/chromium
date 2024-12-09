@@ -53,14 +53,6 @@ bool IsFirstRunEligibleProfile(Profile* profile) {
 }
 
 bool IsFirstRunEligibleProcess() {
-  // On Lacros we want to run the FRE beyond the strict first run as defined by
-  // `IsChromeFirstRun()` for a few reasons:
-  // - Migrated profiles will have their first run sentinel imported from the
-  //   ash data dir, but we need to run the FRE in silent mode to re-enable sync
-  //   on the Lacros primary profile.
-  // - If the user exits the FRE without advancing beyond the first step, we
-  //   need to show the FRE again next time they open Chrome, this is definitely
-  //   not the "first run" anymore.
   if (!first_run::IsChromeFirstRun()) {
     return false;
   }
@@ -92,8 +84,6 @@ PolicyEffect ComputeDevicePolicyEffect(Profile& profile) {
     // Corresponding policy: SyncDisabled=true
     return PolicyEffect::kDisabled;
   }
-
-  // The BrowserSignin policy is not supported on Lacros
 
   if (signin_util::IsForceSigninEnabled()) {
     // Corresponding policy: BrowserSignin=2

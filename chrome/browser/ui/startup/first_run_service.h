@@ -32,10 +32,8 @@ class IdentityManager;
 // should be aborted or resumed.
 using ResumeTaskCallback = base::OnceCallback<void(bool proceed)>;
 
-// TODO(crbug.com/382086296): Remove this lacros-only class.
-//
-// Service handling the First Run Experience for the primary profile on Lacros.
-// It is not available on the other profiles.
+// Service handling the First Run Experience for the primary profile on Dice
+// platforms. It is not available on the other profiles.
 class FirstRunService : public KeyedService {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
@@ -79,9 +77,9 @@ class FirstRunService : public KeyedService {
 
   // This function takes the user through the browser FRE.
   // 1) First, it checks whether the FRE flow can be skipped in the first place.
-  //    This is the case when sync consent is already given (true for existing
-  //    users that migrated to lacros) or when enterprise policies forbid the
-  //    FRE. If so, the call directly 'finishes' the flow (see below).
+  //    This is the case when sync consent is already given or when enterprise
+  //    policies forbid the FRE. If so, the call directly 'finishes' the flow
+  //    (see below).
   // 2) Then, it opens the FRE UI (in the profile picker window) and
   //    asynchronously 'finishes' the flow (sets a flag in the local prefs) once
   //    the user chooses any action on the sync consent screen. If the user
@@ -108,8 +106,7 @@ class FirstRunService : public KeyedService {
   // Asynchronously attempts to complete the first run silently.
   // By the time `callback` is run (if non-null), either:
   // - the first run has been marked finished because it can't be run for this
-  //   profile (e.g. policies) or because we want to enable Sync silently (on
-  //   Lacros only)
+  //   profile (e.g. policies) or because we want to enable Sync silently
   // - the first run is ready to be opened.
   // The finished state can be checked by calling `ShouldOpenFirstRun()`.
   void TryMarkFirstRunAlreadyFinished(base::OnceClosure callback);
