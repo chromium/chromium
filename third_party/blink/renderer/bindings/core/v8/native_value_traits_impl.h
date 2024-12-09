@@ -866,54 +866,60 @@ struct NativeValueTraits<
 template <>
 struct CORE_EXPORT NativeValueTraits<IDLObject>
     : public NativeValueTraitsBase<IDLObject> {
-  static ScriptValue NativeValue(v8::Isolate* isolate,
-                                 v8::Local<v8::Value> value,
-                                 ExceptionState& exception_state) {
-    if (value->IsObject())
-      return ScriptValue(isolate, value);
+  static ScriptObject NativeValue(v8::Isolate* isolate,
+                                  v8::Local<v8::Value> value,
+                                  ExceptionState& exception_state) {
+    if (value->IsObject()) [[likely]] {
+      return ScriptObject(isolate, value);
+    }
     exception_state.ThrowTypeError(
         ExceptionMessages::FailedToConvertJSValue("object"));
-    return ScriptValue();
+    return ScriptObject();
   }
 
-  static ScriptValue ArgumentValue(v8::Isolate* isolate,
-                                   int argument_index,
-                                   v8::Local<v8::Value> value,
-                                   ExceptionState& exception_state) {
-    if (value->IsObject())
-      return ScriptValue(isolate, value);
+  static ScriptObject ArgumentValue(v8::Isolate* isolate,
+                                    int argument_index,
+                                    v8::Local<v8::Value> value,
+                                    ExceptionState& exception_state) {
+    if (value->IsObject()) [[likely]] {
+      return ScriptObject(isolate, value);
+    }
     exception_state.ThrowTypeError(
         ExceptionMessages::ArgumentNotOfType(argument_index, "object"));
-    return ScriptValue();
+    return ScriptObject();
   }
 };
 
 template <>
 struct CORE_EXPORT NativeValueTraits<IDLNullable<IDLObject>>
     : public NativeValueTraitsBase<IDLNullable<IDLObject>> {
-  static ScriptValue NativeValue(v8::Isolate* isolate,
-                                 v8::Local<v8::Value> value,
-                                 ExceptionState& exception_state) {
-    if (value->IsObject())
-      return ScriptValue(isolate, value);
-    if (value->IsNullOrUndefined())
-      return ScriptValue(isolate, v8::Null(isolate));
+  static ScriptObject NativeValue(v8::Isolate* isolate,
+                                  v8::Local<v8::Value> value,
+                                  ExceptionState& exception_state) {
+    if (value->IsObject()) {
+      return ScriptObject(isolate, value);
+    }
+    if (value->IsNullOrUndefined()) {
+      return ScriptObject::CreateNull(isolate);
+    }
     exception_state.ThrowTypeError(
         ExceptionMessages::FailedToConvertJSValue("object"));
-    return ScriptValue();
+    return ScriptObject();
   }
 
-  static ScriptValue ArgumentValue(v8::Isolate* isolate,
-                                   int argument_index,
-                                   v8::Local<v8::Value> value,
-                                   ExceptionState& exception_state) {
-    if (value->IsObject())
-      return ScriptValue(isolate, value);
-    if (value->IsNullOrUndefined())
-      return ScriptValue(isolate, v8::Null(isolate));
+  static ScriptObject ArgumentValue(v8::Isolate* isolate,
+                                    int argument_index,
+                                    v8::Local<v8::Value> value,
+                                    ExceptionState& exception_state) {
+    if (value->IsObject()) {
+      return ScriptObject(isolate, value);
+    }
+    if (value->IsNullOrUndefined()) {
+      return ScriptObject::CreateNull(isolate);
+    }
     exception_state.ThrowTypeError(
         ExceptionMessages::ArgumentNotOfType(argument_index, "object"));
-    return ScriptValue();
+    return ScriptObject();
   }
 };
 
@@ -1736,12 +1742,12 @@ struct CORE_EXPORT NativeValueTraits<IDLDate>
 template <>
 struct CORE_EXPORT NativeValueTraits<IDLNullable<IDLDate>>
     : public NativeValueTraitsBase<IDLNullable<IDLDate>> {
+  // IDLNullable<IDLDate> is never used by the generated bindings - use
+  // ToCoreNullableDate() directly.
   static std::optional<base::Time> NativeValue(
       v8::Isolate* isolate,
       v8::Local<v8::Value> value,
-      ExceptionState& exception_state) {
-    return ToCoreNullableDate(isolate, value, exception_state);
-  }
+      ExceptionState& exception_state) = delete;
 };
 
 // EventHandler

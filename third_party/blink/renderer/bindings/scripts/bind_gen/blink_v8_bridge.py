@@ -271,8 +271,15 @@ def blink_type_info(idl_type):
     if real_type.is_symbol:
         assert False, "Blink does not support/accept IDL symbol type."
 
-    if real_type.is_any or real_type.is_object:
+    if real_type.is_any:
         return TypeInfo("ScriptValue",
+                        ref_fmt="{}&",
+                        const_ref_fmt="const {}&",
+                        has_null_value=True,
+                        is_traceable=True)
+
+    if real_type.is_object:
+        return TypeInfo("ScriptObject",
                         ref_fmt="{}&",
                         const_ref_fmt="const {}&",
                         has_null_value=True,
@@ -700,6 +707,11 @@ def make_default_value_expr(idl_type, default_value):
             initializer_expr = "${isolate}, v8::Null(${isolate})"
             initializer_deps = ["isolate"]
             assignment_value = "ScriptValue::CreateNull(${isolate})"
+            assignment_deps = ["isolate"]
+        elif type_info.typename == "ScriptObject":
+            initializer_expr = "${isolate}, v8::Null(${isolate})"
+            initializer_deps = ["isolate"]
+            assignment_value = "ScriptObject::CreateNull(${isolate})"
             assignment_deps = ["isolate"]
         elif idl_type.unwrap().is_union:
             initializer_expr = "nullptr"

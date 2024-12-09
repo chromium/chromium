@@ -507,23 +507,22 @@ bool SerializedScriptValue::HasPackedContents() const {
 
 bool SerializedScriptValue::ExtractTransferables(
     v8::Isolate* isolate,
-    const HeapVector<ScriptValue>& object_sequence,
+    const HeapVector<ScriptObject>& object_sequence,
     Transferables& transferables,
     ExceptionState& exception_state) {
   auto& factory = SerializedScriptValueFactory::Instance();
   wtf_size_t i = 0;
-  for (const auto& script_value : object_sequence) {
-    v8::Local<v8::Value> value = script_value.V8Value();
+  for (const auto& script_object : object_sequence) {
     // Validation of non-null objects, per HTML5 spec 10.3.3.
-    if (IsUndefinedOrNull(value)) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataCloneError,
-          "Value at index " + String::Number(i) + " is an untransferable " +
-              (value->IsUndefined() ? "'undefined'" : "'null'") + " value.");
+    if (script_object.IsNull()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
+                                        "Value at index " + String::Number(i) +
+                                            " is an untransferable " +
+                                            "'null' value.");
       return false;
     }
-    if (!factory.ExtractTransferable(isolate, value, i, transferables,
-                                     exception_state)) {
+    if (!factory.ExtractTransferable(isolate, script_object.V8Object(), i,
+                                     transferables, exception_state)) {
       if (!exception_state.HadException()) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kDataCloneError,

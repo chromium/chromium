@@ -219,11 +219,8 @@ struct ToV8Traits<IDLObject> {
 
   [[nodiscard]] static v8::Local<v8::Value> ToV8(
       ScriptState* script_state,
-      const ScriptValue& script_value) {
-    DCHECK(!script_value.IsEmpty());
-    v8::Local<v8::Value> v8_value = script_value.V8ValueFor(script_state);
-    DCHECK(v8_value->IsObject());
-    return v8_value;
+      const ScriptObject& script_object) {
+    return script_object.V8ObjectFor(script_state);
   }
 };
 
@@ -318,7 +315,7 @@ namespace bindings {
 
 // Helper function for IDLSequence
 template <typename ElementIDLType, typename ContainerType>
-[[nodiscard]] inline v8::Local<v8::Value> ToV8HelperSequence(
+[[nodiscard]] inline v8::Local<v8::Object> ToV8HelperSequence(
     ScriptState* script_state,
     const ContainerType& sequence) {
   auto current_it = sequence.begin();
@@ -335,7 +332,7 @@ template <typename ElementIDLType, typename ContainerType>
   };
   return v8::Array::New(script_state->GetContext(),
                         base::checked_cast<size_t>(sequence.size()), callback)
-      .template As<v8::Value>()
+      .template As<v8::Object>()
       .ToLocalChecked();
 }
 
@@ -348,7 +345,7 @@ template <typename ElementIDLType, typename ContainerType>
 //
 // This hack reduces the APK size by 4 Kbytes as of 2021 March.
 template <typename BaseClassOfT, typename T>
-[[nodiscard]] inline v8::Local<v8::Value> ToV8HelperSequenceWithMemberUpcast(
+[[nodiscard]] inline v8::Local<v8::Object> ToV8HelperSequenceWithMemberUpcast(
     ScriptState* script_state,
     const HeapVector<Member<T>>& sequence) {
   static_assert(std::is_base_of_v<BaseClassOfT, T>);
@@ -358,7 +355,7 @@ template <typename BaseClassOfT, typename T>
 }
 
 template <typename BaseClassOfT, typename T>
-[[nodiscard]] inline v8::Local<v8::Value> ToV8HelperSequenceWithMemberUpcast(
+[[nodiscard]] inline v8::Local<v8::Object> ToV8HelperSequenceWithMemberUpcast(
     ScriptState* script_state,
     const HeapDeque<Member<T>>& sequence) {
   static_assert(std::is_base_of_v<BaseClassOfT, T>);
@@ -405,14 +402,14 @@ template <typename T>
 struct ToV8Traits<
     IDLSequence<T>,
     std::enable_if_t<std::is_base_of<bindings::DictionaryBase, T>::value>> {
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
+  [[nodiscard]] static v8::Local<v8::Object> ToV8(
       ScriptState* script_state,
       const HeapVector<Member<T>>& value) {
     return bindings::ToV8HelperSequenceWithMemberUpcast<
         bindings::DictionaryBase>(script_state, value);
   }
 
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
+  [[nodiscard]] static v8::Local<v8::Object> ToV8(
       ScriptState* script_state,
       const HeapVector<Member<const T>>& value) {
     return bindings::ToV8HelperSequenceWithMemberUpcast<
@@ -420,7 +417,7 @@ struct ToV8Traits<
   }
 
   // TODO(crbug.com/1185046): Remove this overload.
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
+  [[nodiscard]] static v8::Local<v8::Object> ToV8(
       ScriptState* script_state,
       const v8::LocalVector<v8::Value>& value) {
     return bindings::ToV8HelperSequence<IDLAny>(script_state, value);
@@ -431,21 +428,21 @@ template <typename T>
 struct ToV8Traits<
     IDLSequence<T>,
     std::enable_if_t<std::is_base_of<ScriptWrappable, T>::value>> {
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
+  [[nodiscard]] static v8::Local<v8::Object> ToV8(
       ScriptState* script_state,
       const HeapVector<Member<T>>& value) {
     return bindings::ToV8HelperSequenceWithMemberUpcast<ScriptWrappable>(
         script_state, value);
   }
 
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
+  [[nodiscard]] static v8::Local<v8::Object> ToV8(
       ScriptState* script_state,
       const HeapVector<Member<const T>>& value) {
     return bindings::ToV8HelperSequenceWithMemberUpcast<ScriptWrappable>(
         script_state, value);
   }
 
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
+  [[nodiscard]] static v8::Local<v8::Object> ToV8(
       ScriptState* script_state,
       const HeapDeque<Member<T>>& value) {
     return bindings::ToV8HelperSequenceWithMemberUpcast<ScriptWrappable>(
@@ -459,8 +456,8 @@ struct ToV8Traits<
     std::enable_if_t<!std::is_base_of<bindings::DictionaryBase, T>::value &&
                      !std::is_base_of<ScriptWrappable, T>::value>> {
   template <typename ContainerType>
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
-                                                 const ContainerType& value) {
+  [[nodiscard]] static v8::Local<v8::Object> ToV8(ScriptState* script_state,
+                                                  const ContainerType& value) {
     return bindings::ToV8HelperSequence<T>(script_state, value);
   }
 };
@@ -478,22 +475,22 @@ struct ToV8Traits<IDLArray<T>> {
   template <typename ContainerType>
   [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
                                                  const ContainerType& value) {
-    v8::Local<v8::Value> v8_value =
+    v8::Local<v8::Object> v8_object =
         ToV8Traits<IDLSequence<T>>::ToV8(script_state, value);
-    v8_value.As<v8::Object>()->SetIntegrityLevel(script_state->GetContext(),
-                                                 v8::IntegrityLevel::kFrozen);
-    return v8_value;
+    v8_object->SetIntegrityLevel(script_state->GetContext(),
+                                 v8::IntegrityLevel::kFrozen);
+    return v8_object;
   }
 
   // TODO(crbug.com/1185046): Remove this overload.
   [[nodiscard]] static v8::Local<v8::Value> ToV8(
       ScriptState* script_state,
       const v8::LocalVector<v8::Value>& value) {
-    v8::Local<v8::Value> v8_value =
+    v8::Local<v8::Object> v8_object =
         ToV8Traits<IDLSequence<IDLAny>>::ToV8(script_state, value);
-    v8_value.As<v8::Object>()->SetIntegrityLevel(script_state->GetContext(),
-                                                 v8::IntegrityLevel::kFrozen);
-    return v8_value;
+    v8_object->SetIntegrityLevel(script_state->GetContext(),
+                                 v8::IntegrityLevel::kFrozen);
+    return v8_object;
   }
 };
 
@@ -592,11 +589,11 @@ template <>
 struct ToV8Traits<IDLNullable<IDLObject>> {
   [[nodiscard]] static v8::Local<v8::Value> ToV8(
       ScriptState* script_state,
-      const ScriptValue& script_value) {
-    DCHECK(!script_value.IsEmpty());
-    v8::Local<v8::Value> v8_value = script_value.V8ValueFor(script_state);
-    DCHECK(v8_value->IsNull() || v8_value->IsObject());
-    return v8_value;
+      const ScriptObject& script_object) {
+    if (script_object.IsNull()) {
+      return v8::Null(script_state->GetIsolate());
+    }
+    return script_object.V8ObjectFor(script_state);
   }
 };
 

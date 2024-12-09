@@ -1347,27 +1347,26 @@ void HTMLInputElement::UpdateView() {
   input_type_view_->UpdateView();
 }
 
-ScriptValue HTMLInputElement::valueAsDate(ScriptState* script_state) const {
+ScriptObject HTMLInputElement::valueAsDate(ScriptState* script_state) const {
   UseCounter::Count(GetDocument(), WebFeature::kInputElementValueAsDateGetter);
   // TODO(crbug.com/988343): InputType::ValueAsDate() should return
   // std::optional<base::Time>.
   double date = input_type_->ValueAsDate();
   v8::Isolate* isolate = script_state->GetIsolate();
-  if (!std::isfinite(date))
-    return ScriptValue::CreateNull(isolate);
-  return ScriptValue(
+  if (!std::isfinite(date)) {
+    return ScriptObject::CreateNull(isolate);
+  }
+  return ScriptObject(
       isolate,
       ToV8Traits<IDLNullable<IDLDate>>::ToV8(
           script_state, base::Time::FromMillisecondsSinceUnixEpoch(date)));
 }
 
 void HTMLInputElement::setValueAsDate(ScriptState* script_state,
-                                      const ScriptValue& value,
+                                      const ScriptObject& value,
                                       ExceptionState& exception_state) {
   UseCounter::Count(GetDocument(), WebFeature::kInputElementValueAsDateSetter);
-  std::optional<base::Time> date =
-      NativeValueTraits<IDLNullable<IDLDate>>::NativeValue(
-          script_state->GetIsolate(), value.V8Value(), exception_state);
+  std::optional<base::Time> date = ToCoreNullableDate(value, exception_state);
   if (exception_state.HadException())
     return;
   input_type_->SetValueAsDate(date, exception_state);

@@ -52,8 +52,7 @@ void PaymentRequestRespondWithObserver::OnResponseFulfilled(
   DCHECK(GetExecutionContext());
   // Check payment response validity.
   if (!response->hasMethodName() || response->methodName().empty() ||
-      !response->hasDetails() || response->details().IsNull() ||
-      !response->details().IsObject()) {
+      !response->hasDetails()) {
     GetExecutionContext()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kJavaScript,
@@ -73,16 +72,9 @@ void PaymentRequestRespondWithObserver::OnResponseFulfilled(
     return;
   }
 
-  if (response->details().IsNull() || !response->details().IsObject() ||
-      response->details().IsEmpty()) {
-    BlankResponseWithError(
-        PaymentEventResponseType::PAYMENT_DETAILS_NOT_OBJECT);
-    return;
-  }
-
   v8::Local<v8::String> details_value;
   if (!v8::JSON::Stringify(script_state->GetContext(),
-                           response->details().V8Value().As<v8::Object>())
+                           response->details().V8Object())
            .ToLocal(&details_value)) {
     GetExecutionContext()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(

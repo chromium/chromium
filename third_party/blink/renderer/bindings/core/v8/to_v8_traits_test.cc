@@ -270,12 +270,12 @@ TEST(ToV8TraitsTest, Object) {
   Vector<String> string_vector;
   string_vector.push_back("hello");
   string_vector.push_back("world");
-  ScriptValue value(scope.GetIsolate(),
-                    ToV8Traits<IDLSequence<IDLString>>::ToV8(
-                        scope.GetScriptState(), string_vector));
-  TEST_TOV8_TRAITS(scope, IDLObject, "hello,world", value);
+  ScriptObject object(scope.GetIsolate(),
+                      ToV8Traits<IDLSequence<IDLString>>::ToV8(
+                          scope.GetScriptState(), string_vector));
+  TEST_TOV8_TRAITS(scope, IDLObject, "hello,world", object);
   v8::Local<v8::Value> actual =
-      ToV8Traits<IDLObject>::ToV8(scope.GetScriptState(), value);
+      ToV8Traits<IDLObject>::ToV8(scope.GetScriptState(), object);
   EXPECT_TRUE(actual->IsObject());
 }
 
@@ -569,17 +569,17 @@ TEST(ToV8TraitsTest, NullableObject) {
   const V8TestingScope scope;
   TEST_TOV8_TRAITS(
       scope, IDLNullable<IDLObject>, "null",
-      ScriptValue(scope.GetIsolate(), v8::Null(scope.GetIsolate())));
+      ScriptObject(scope.GetIsolate(), v8::Null(scope.GetIsolate())));
 
   Vector<uint8_t> uint8_vector;
   uint8_vector.push_back(static_cast<uint8_t>(0));
   uint8_vector.push_back(static_cast<uint8_t>(255));
-  ScriptValue value(scope.GetIsolate(),
-                    ToV8Traits<IDLNullable<IDLSequence<IDLOctet>>>::ToV8(
-                        scope.GetScriptState(), uint8_vector));
-  TEST_TOV8_TRAITS(scope, IDLNullable<IDLObject>, "0,255", value);
+  ScriptObject object(scope.GetIsolate(),
+                      ToV8Traits<IDLNullable<IDLSequence<IDLOctet>>>::ToV8(
+                          scope.GetScriptState(), uint8_vector));
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLObject>, "0,255", object);
   v8::Local<v8::Value> actual =
-      ToV8Traits<IDLNullable<IDLObject>>::ToV8(scope.GetScriptState(), value);
+      ToV8Traits<IDLNullable<IDLObject>>::ToV8(scope.GetScriptState(), object);
   EXPECT_TRUE(actual->IsObject());
 }
 

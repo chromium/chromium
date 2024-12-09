@@ -64,7 +64,7 @@ using FilterTest = TestWithParam<FilterTestParams>;
 TEST_P(FilterTest, CreatesFilterOperationsFromObject) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  HeapVector<ScriptValue> filters = {
+  HeapVector<ScriptObject> filters = {
       CHECK_DEREF(ParseFilter(scope, GetParam().filter)).GetAsObject()};
   EXPECT_THAT(CanvasFilterOperationResolver::CreateFilterOperationsFromList(
                   filters, CHECK_DEREF(scope.GetExecutionContext()),
@@ -200,7 +200,7 @@ TEST_P(FilterArrayTest, CreatesFilterOperationsFromObjectArray) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   CHECK(scope.GetExecutionContext());
-  HeapVector<ScriptValue> filters =
+  HeapVector<ScriptObject> filters =
       CHECK_DEREF(ParseFilter(scope, GetParam().filter)).GetAsObjectArray();
   EXPECT_THAT(CanvasFilterOperationResolver::CreateFilterOperationsFromList(
                   filters, CHECK_DEREF(scope.GetExecutionContext()),
@@ -369,7 +369,7 @@ TEST_P(FilterApiTest, RaisesExceptionForInvalidType) {
   V8TestingScope scope;
   const auto& [filter_name, param_key, param_value, expected_error] =
       GetParam();
-  HeapVector<ScriptValue> filters = {
+  HeapVector<ScriptObject> filters = {
       CHECK_DEREF(
           ParseFilter(scope, base::StringPrintf(
                                  "({name: '%s', %s: %s})", filter_name.c_str(),

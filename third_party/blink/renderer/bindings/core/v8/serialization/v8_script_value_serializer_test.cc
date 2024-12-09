@@ -2090,7 +2090,8 @@ TEST(V8ScriptValueSerializerTest, RoundTripReadableStream) {
   auto* rs = ReadableStream::Create(script_state, ASSERT_NO_EXCEPTION);
   v8::Local<v8::Value> wrapper =
       ToV8Traits<ReadableStream>::ToV8(scope.GetScriptState(), rs);
-  HeapVector<ScriptValue> transferable_array = {ScriptValue(isolate, wrapper)};
+  HeapVector<ScriptObject> transferable_array = {
+      ScriptObject(isolate, wrapper)};
   Transferables transferables;
   ASSERT_TRUE(SerializedScriptValue::ExtractTransferables(
       isolate, transferable_array, transferables, ASSERT_NO_EXCEPTION));
@@ -2115,7 +2116,8 @@ TEST(V8ScriptValueSerializerTest, TransformStreamIntegerOverflow) {
   auto* ts = TransformStream::Create(script_state, ASSERT_NO_EXCEPTION);
   v8::Local<v8::Value> wrapper =
       ToV8Traits<TransformStream>::ToV8(scope.GetScriptState(), ts);
-  HeapVector<ScriptValue> transferable_array = {ScriptValue(isolate, wrapper)};
+  HeapVector<ScriptObject> transferable_array = {
+      ScriptObject(isolate, wrapper)};
   Transferables transferables;
   ASSERT_TRUE(SerializedScriptValue::ExtractTransferables(
       isolate, transferable_array, transferables, ASSERT_NO_EXCEPTION));

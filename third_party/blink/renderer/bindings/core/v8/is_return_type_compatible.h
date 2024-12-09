@@ -16,7 +16,6 @@
 namespace blink {
 
 class KURL;
-class ScriptObject;
 
 namespace bindings {
 
@@ -177,16 +176,6 @@ inline constexpr bool IsReturnTypeCompatible<
 template <>
 inline constexpr bool IsReturnTypeCompatible<IDLObject, v8::Local<v8::Object>> =
     true;
-
-// TODO(japhet): This will be unnecessary once IDLObject's ImplType switches to
-// ScriptObject.
-template <>
-inline constexpr bool IsReturnTypeCompatible<IDLObject, ScriptObject> = true;
-
-// TODO(caseq): this shouldn't really be allowed, as ScriptValue may carry
-// values that are not objects, but keep it for now.
-template <>
-inline constexpr bool IsReturnTypeCompatible<IDLObject, ScriptValue> = true;
 
 // TODO(caseq): this shouldn't really be allowed, as v8::Value may carry
 // values that are not objects, but keep it for now.

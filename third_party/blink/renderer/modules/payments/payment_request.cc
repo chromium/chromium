@@ -517,7 +517,7 @@ void ValidateAndConvertPaymentDetailsModifiers(
         payments::mojom::blink::PaymentMethodData::New();
     output.back()->method_data->supported_method = modifier->supportedMethod();
 
-    if (modifier->hasData() && !modifier->data().IsEmpty()) {
+    if (modifier->hasData()) {
       StringifyAndParseMethodSpecificData(
           execution_context, modifier->supportedMethod(), modifier->data(),
           output.back()->method_data, exception_state);
@@ -760,8 +760,7 @@ void ValidateAndConvertPaymentMethodData(
     output.push_back(payments::mojom::blink::PaymentMethodData::New());
     output.back()->supported_method = payment_method_data->supportedMethod();
 
-    if (payment_method_data->hasData() &&
-        !payment_method_data->data().IsEmpty()) {
+    if (payment_method_data->hasData()) {
       StringifyAndParseMethodSpecificData(
           execution_context, payment_method_data->supportedMethod(),
           payment_method_data->data(), output.back(), exception_state);
@@ -1403,8 +1402,9 @@ void PaymentRequest::OnPaymentMethodChange(const String& method_name,
       ClearResolversAndCloseMojoConnection();
       return;
     }
+    CHECK(parsed_value->IsObject());
     init->setMethodDetails(
-        ScriptValue(script_state->GetIsolate(), parsed_value));
+        ScriptObject(script_state->GetIsolate(), parsed_value));
   }
 
   PaymentRequestUpdateEvent* event = PaymentMethodChangeEvent::Create(

@@ -400,7 +400,7 @@ const String DedicatedWorkerGlobalScope::name() const {
 
 void DedicatedWorkerGlobalScope::postMessage(ScriptState* script_state,
                                              const ScriptValue& message,
-                                             HeapVector<ScriptValue> transfer,
+                                             HeapVector<ScriptObject> transfer,
                                              ExceptionState& exception_state) {
   PostMessageOptions* options = PostMessageOptions::Create();
   if (!transfer.empty())

@@ -124,8 +124,9 @@ void PackAndPostMessage(ScriptState* script_state,
     // Here we set a non-empty transfer list: This is a non-standardized and
     // non-default behavior, and the one who set `allow_per_chunk_transferring`
     // to true must guarantee the validity.
-    HeapVector<ScriptValue> transfer;
-    transfer.push_back(ScriptValue(isolate, value));
+    CHECK(value->IsObject());
+    HeapVector<ScriptObject> transfer;
+    transfer.push_back(ScriptObject(isolate, value.As<v8::Object>()));
     options->setTransfer(transfer);
   }
 
