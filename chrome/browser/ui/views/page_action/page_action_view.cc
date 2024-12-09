@@ -52,6 +52,10 @@ PageActionView::GetActionViewInterface() {
                                                    observation_.GetSource());
 }
 
+actions::ActionId PageActionView::GetActionId() const {
+  return action_item_->GetActionId().value();
+}
+
 BEGIN_METADATA(PageActionView)
 END_METADATA
 

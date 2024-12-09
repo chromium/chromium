@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_open_group_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
@@ -138,14 +139,23 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
     send_tab_to_self_toolbar_bubble_controller_ = std::make_unique<
         send_tab_to_self::SendTabToSelfToolbarBubbleController>(browser);
 
-    // TODO(b/350508658): Ideally, we don't pass in a reference to browser as
-    // per the guidance in the comment above. However, currently, we need
-    // browser to properly determine if the lens overlay is enabled.
+    // TODO(crbug.com/350508658): Ideally, we don't pass in a reference to
+    // browser as per the guidance in the comment above. However, currently,
+    // we need browser to properly determine if the lens overlay is enabled.
     // Cannot be in Init since needs to listen to the fullscreen controller
-    // which is initialized after Init.
+    // and location bar view which are initialized after Init.
     if (lens::features::IsLensOverlayEnabled()) {
+      views::View* location_bar = nullptr;
+      // TODO(crbug.com/360163254): We should really be using
+      // Browser::GetBrowserView, which always returns a non-null BrowserView
+      // in production, but this crashes during unittests using
+      // BrowserWithTestWindowTest; these should eventually be refactored.
+      if (BrowserView* browser_view =
+              BrowserView::GetBrowserViewForBrowser(browser)) {
+        location_bar = browser_view->GetLocationBarView();
+      }
       lens_overlay_entry_point_controller_->Initialize(
-          browser, browser->command_controller());
+          browser, browser->command_controller(), location_bar);
     }
 
     auto* experiment_manager =
@@ -212,6 +222,7 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
 
 void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
   memory_saver_opt_in_iph_controller_.reset();
+  lens_overlay_entry_point_controller_.reset();
 
   // TODO(crbug.com/346148093): This logic should not be gated behind a
   // conditional.

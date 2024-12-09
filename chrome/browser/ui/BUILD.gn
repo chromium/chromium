@@ -1891,6 +1891,9 @@ static_library("ui") {
       # //c/b/ui.
       "//chrome/browser/ui/tabs:tab_strip_model_observer_impl",
 
+      # TODO(crbug.com/382237520): Remove this once NTP code is modularized.
+      "//chrome/browser/ui/lens:impl",
+
       "//chrome/browser/ui/signin:impl",
       "//chrome/browser/ui/webui/commerce:impl",
       "//chrome/browser/ui/webui/signin:signin_impl",
@@ -2989,6 +2992,7 @@ static_library("ui") {
       "//chrome/browser/themes",
       "//chrome/browser/ui/autofill/payments",
       "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/lens:impl",
       "//components/lens/proto/server:proto",
       "//third_party/lens_server_proto:lens_overlay_proto",
       "//third_party/omnibox_proto",

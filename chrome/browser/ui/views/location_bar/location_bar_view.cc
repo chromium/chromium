@@ -592,6 +592,9 @@ void LocationBarView::OnWillChangeFocus(views::View* before, views::View* now) {
 }
 
 void LocationBarView::OnDidChangeFocus(views::View* before, views::View* now) {
+  // TODO(crbug.com/376283383): Remove this once Lens Overlay is migrated to the
+  // new page actions design.
+
   // This is very blunt. There's a page action (LensOverlayPageActionView) whose
   // visibility state depends on whether focus is within the location bar or
   // not. Maybe that dependency should be better understood rather than "refresh

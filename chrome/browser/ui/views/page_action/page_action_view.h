@@ -37,6 +37,8 @@ class PageActionView : public IconLabelBubbleView,
   void OnPageActionModelChanged(PageActionModel* model) override;
   void OnPageActionModelWillBeDeleted(PageActionModel* model) override;
 
+  actions::ActionId GetActionId() const;
+
  private:
   base::WeakPtr<actions::ActionItem> action_item_ = nullptr;
   base::ScopedObservation<PageActionModel, PageActionModelObserver>
