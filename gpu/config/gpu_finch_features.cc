@@ -377,7 +377,7 @@ BASE_FEATURE(kConditionallySkipGpuChannelFlush,
 
 // Whether the Dawn "skip_validation" toggle is enabled for Skia Graphite.
 const base::FeatureParam<bool> kSkiaGraphiteDawnSkipValidation{
-    &kSkiaGraphite, "dawn_skip_validation", true};
+    &kSkiaGraphite, "dawn_skip_validation", !DCHECK_IS_ON()};
 
 // Whether Dawn backend validation is enabled for Skia Graphite.
 const base::FeatureParam<bool> kSkiaGraphiteDawnBackendValidation{

@@ -109,11 +109,10 @@ std::vector<const char*> GetEnabledToggles(
   enabled_toggles.push_back("use_user_defined_labels_in_backend");
 #endif
 
-#if !DCHECK_IS_ON()
   if (features::kSkiaGraphiteDawnSkipValidation.Get()) {
     enabled_toggles.push_back("skip_validation");
   }
-#endif
+
   enabled_toggles.push_back("disable_robustness");
   enabled_toggles.push_back("disable_lazy_clear_for_mapped_at_creation_buffer");
 

@@ -4155,6 +4155,17 @@ const FeatureEntry::FeatureVariation
          std::size(kSecurePaymentConfirmationNetworkAndIssuerIcons_Rows),
          nullptr}};
 
+const FeatureEntry::FeatureParam kSkiaGraphite_ValidationEnabled[] = {
+    {"dawn_skip_validation", "false"}};
+const FeatureEntry::FeatureParam kSkiaGraphite_ValidationDisabled[] = {
+    {"dawn_skip_validation", "true"}};
+
+const FeatureEntry::FeatureVariation kSkiaGraphiteVariations[] = {
+    {"dawn frontend validation enabled", kSkiaGraphite_ValidationEnabled,
+     std::size(kSkiaGraphite_ValidationEnabled), nullptr},
+    {"dawn frontend validation disabled", kSkiaGraphite_ValidationDisabled,
+     std::size(kSkiaGraphite_ValidationDisabled), nullptr}};
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 const FeatureEntry::FeatureParam kTranslationAPI_SkipLanguagePackLimit[] = {
     {"TranslationAPIAcceptLanguagesCheck", "false"},
@@ -9265,7 +9276,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"skia-graphite", flag_descriptions::kSkiaGraphiteName,
      flag_descriptions::kSkiaGraphiteDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kSkiaGraphite)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kSkiaGraphite,
+                                    kSkiaGraphiteVariations,
+                                    "SkiaGraphite")},
 
     {"skia-graphite-precompilation",
      flag_descriptions::kSkiaGraphitePrecompilationName,
