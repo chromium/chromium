@@ -5951,6 +5951,12 @@ targets.bundle(
     ],
     per_test_modifications = {
         "updater_tests_system": [
+            targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                    hard_timeout_sec = 7200,
+                ),
+            ),
             "integrity_high",
             "updater-win-uac-pool",
         ],
