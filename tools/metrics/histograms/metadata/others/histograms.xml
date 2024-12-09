@@ -6964,6 +6964,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OSCrypt.Mac.FindGenericPasswordError"
+    enum="SecurityFrameworkOSStatus" expires_after="2025-12-01">
+  <owner>markrowe@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    The error code returned by SecKeychainFindGenericPassword.
+    errSecItemNotFound is handled and will not be emitted. This is emitted every
+    time OSCrypt fails to retrieve the safe storage password from the keychain.
+  </summary>
+</histogram>
+
 <histogram name="OSCrypt.SecretPortalKeyProvider.GotToken" enum="Boolean"
     expires_after="2025-07-28">
   <owner>thomasanderson@chromium.org</owner>
