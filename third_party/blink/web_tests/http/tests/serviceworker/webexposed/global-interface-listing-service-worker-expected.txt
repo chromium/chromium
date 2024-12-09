@@ -2037,9 +2037,9 @@ interface TextMetrics
     getter hangingBaseline
     getter ideographicBaseline
     getter width
-    method caretPositionFromPoint
     method constructor
     method getActualBoundingBox
+    method getIndexFromOffset
     method getSelectionRects
     method getTextClusters
 interface TimestampTrigger

@@ -1946,9 +1946,9 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter hangingBaseline
 [Worker]     getter ideographicBaseline
 [Worker]     getter width
-[Worker]     method caretPositionFromPoint
 [Worker]     method constructor
 [Worker]     method getActualBoundingBox
+[Worker]     method getIndexFromOffset
 [Worker]     method getSelectionRects
 [Worker]     method getTextClusters
 [Worker] interface TimestampTrigger
