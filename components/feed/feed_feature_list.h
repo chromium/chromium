@@ -32,13 +32,6 @@ BASE_DECLARE_FEATURE(kInterestFeedV2Hearts);
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kInterestFeedV2Scrolling);
 
-// Feature that allows the client to automatically dismiss the notice card based
-// on the clicks and views on the notice card.
-#if BUILDFLAG(IS_IOS)
-COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
-BASE_DECLARE_FEATURE(kInterestFeedNoticeCardAutoDismiss);
-#endif
-
 // Use the new DiscoFeed endpoint.
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kDiscoFeedEndpoint);

@@ -10,30 +10,23 @@
 
 namespace ios_feed {
 
-constexpr char kNoticeCardViewsCountThresholdParamName[] =
-    "notice-card-views-count-threshold";
-constexpr char kNoticeCardClicksCountThresholdParamName[] =
-    "notice-card-clicks-count-threshold";
+namespace {
+
+// The number of views of the notice card to consider it acknowledged by the
+// user.
+const int kViewsCountThreshold = 3;
+
+// The number of clicks/taps of the notice card to consider it acknowledged by
+// the user.
+const int kClicksCountThreshold = 1;
+
+}  // namespace
 
 NoticeCardTracker::NoticeCardTracker(PrefService* profile_prefs)
     : profile_prefs_(profile_prefs) {
   DCHECK(profile_prefs_);
   views_count_ = feed::prefs::GetNoticeCardViewsCount(*profile_prefs_);
   clicks_count_ = feed::prefs::GetNoticeCardClicksCount(*profile_prefs_);
-
-  views_count_threshold_ = base::GetFieldTrialParamByFeatureAsInt(
-      feed::kInterestFeedNoticeCardAutoDismiss,
-      kNoticeCardViewsCountThresholdParamName, 3);
-  DCHECK(views_count_threshold_ >= 0);
-
-  clicks_count_threshold_ = base::GetFieldTrialParamByFeatureAsInt(
-      feed::kInterestFeedNoticeCardAutoDismiss,
-      kNoticeCardClicksCountThresholdParamName, 1);
-  DCHECK(clicks_count_threshold_ >= 0);
-
-  DCHECK(views_count_threshold_ > 0 || clicks_count_threshold_ > 0)
-      << "all notice card auto-dismiss thresholds are set to 0 when there "
-         "should be at least one threshold above 0";
 }
 
 void NoticeCardTracker::OnSliceViewed(int index) {
@@ -45,16 +38,13 @@ void NoticeCardTracker::OnOpenAction(int index) {
 }
 
 bool NoticeCardTracker::HasAcknowledgedNoticeCard() const {
-  if (!base::FeatureList::IsEnabled(feed::kInterestFeedNoticeCardAutoDismiss))
-    return false;
-
   base::AutoLock auto_lock_views(views_count_lock_);
-  if (views_count_threshold_ > 0 && views_count_ >= views_count_threshold_) {
+  if (views_count_ >= kViewsCountThreshold) {
     return true;
   }
 
   base::AutoLock auto_lock_clicks(clicks_count_lock_);
-  if (clicks_count_threshold_ > 0 && clicks_count_ >= clicks_count_threshold_) {
+  if (clicks_count_ >= kClicksCountThreshold) {
     return true;
   }
 
@@ -62,10 +52,6 @@ bool NoticeCardTracker::HasAcknowledgedNoticeCard() const {
 }
 
 bool NoticeCardTracker::HasNoticeCardActionsCountPrerequisites(int index) {
-  if (!base::FeatureList::IsEnabled(feed::kInterestFeedNoticeCardAutoDismiss)) {
-    return false;
-  }
-
   if (!feed::prefs::GetLastFetchHadNoticeCard(*profile_prefs_)) {
     return false;
   }
