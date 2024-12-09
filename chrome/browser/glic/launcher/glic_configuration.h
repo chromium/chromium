@@ -24,6 +24,9 @@ class GlicConfiguration {
     virtual void OnGlobalHotkeyChanged(ui::Accelerator hotkey) {}
   };
 
+  static constexpr char kHotkeyKeyCode[] = "keycode";
+  static constexpr char kHotkeyModifiers[] = "modifiers";
+
   explicit GlicConfiguration(Observer* manager);
   ~GlicConfiguration();
 
@@ -31,8 +34,11 @@ class GlicConfiguration {
 
   bool IsEnabled();
 
+  ui::Accelerator GetGlobalHotkey();
+
  private:
   void OnEnabledPrefChanged();
+  void OnGlobalHotkeyPrefChanged();
 
   PrefChangeRegistrar pref_registrar_;
 

@@ -3250,6 +3250,9 @@ inline constexpr char kGlicMicrophoneEnabled[] = "glic.microphone_enabled";
 inline constexpr char kGlicGeolocationEnabled[] = "glic.geolocation_enabled";
 // Boolean pref that enables or disables tab context for Glic.
 inline constexpr char kGlicTabContextEnabled[] = "glic.tab_context_enabled";
+// Dictionary pref that keeps track of the registered hotkey for Glic.
+inline constexpr char kGlicLauncherGlobalHotkey[] =
+    "glic.launcher_global_hotkey";
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 // *************** SERVICE PREFS ***************

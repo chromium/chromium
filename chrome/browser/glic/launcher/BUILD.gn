@@ -5,9 +5,13 @@ source_set("launcher") {
     "glic_controller.h",
   ]
 
+  # TODO(crbug.com/378487333): Replace extensions build target to use the
+  # updated version in ui/base
   deps = [
     "//base",
+    "//chrome/browser/extensions:extensions",
     "//components/prefs",
+    "//extensions/common:common",
     "//ui/base",
   ]
 }
@@ -22,11 +26,15 @@ source_set("impl") {
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  # TODO(crbug.com/378487333): Replace extensions build target to use the
+  # updated version in ui/base/
   deps = [
     ":launcher",
     "//chrome/app:command_ids",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser/extensions:extensions",
     "//chrome/browser/glic",
     "//chrome/browser/ui",
     "//chrome/common:constants",
@@ -48,6 +56,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chrome/test:test_support_ui",
