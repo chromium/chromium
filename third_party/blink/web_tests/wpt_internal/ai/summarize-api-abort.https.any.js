@@ -1,4 +1,3 @@
-// META: script=resources/workaround-for-362676838.js
 // META: script=resources/utils.js
 
 promise_test(async (t) => {
