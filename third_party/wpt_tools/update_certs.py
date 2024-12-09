@@ -46,7 +46,7 @@ def main():
         key_basename = os.path.basename(key_path)
         pem_basename = os.path.basename(pem_path)
         config_path = os.path.join(_THIS_DIR, os.pardir, 'blink', 'web_tests',
-                                   'external', 'wpt', 'config.json')
+                                   'external', 'wpt', '.config.json')
         if subprocess.call(['sed', '-i', '-E',
                             's%/[^/]+[.]key%/{key}%g;s%/[^/]+[.]pem%/{pem}%g'.format(
                                 key=key_basename, pem=pem_basename),

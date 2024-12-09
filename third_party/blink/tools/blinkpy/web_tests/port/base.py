@@ -121,7 +121,7 @@ FONT_FILES = [
 # This is the fingerprint of wpt's certificate found in
 # `//third_party/wpt_tools/certs/127.0.0.1.pem`. The following line is updated
 # by `//third_party/wpt_tools/update_certs.py`.
-WPT_FINGERPRINT = 'Nxvaj3+bY3oVrTc+Jp7m3E3sB1n3lXtnMDCyBsqEXiY='
+WPT_FINGERPRINT = 'GHzeRS4aLf+NeadKdUm+tUlmntyCJI4XyqCVWkDCnoc='
 # One for `//third_party/wpt_tools/certs/127.0.0.1.sxg.pem` used by non-WPT
 # tests under `web_tests/http/`.
 SXG_FINGERPRINT = '55qC1nKu2A88ESbFmk5sTPQS/ScG+8DD7P+2bgFA9iM='

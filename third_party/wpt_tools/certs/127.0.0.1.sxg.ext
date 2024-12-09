@@ -1,7 +1,0 @@
-basicConstraints = CA:FALSE
-# OID required for sxg since d54c469
-1.3.6.1.4.1.11129.2.1.22 = ASN1:NULL
-keyUsage = nonRepudiation, digitalSignature, keyEncipherment
-subjectKeyIdentifier = hash
-authorityKeyIdentifier = keyid,issuer
-subjectAltName='DNS:127.0.0.1,DNS:www.127.0.0.1,DNS:www2.127.0.0.1'
