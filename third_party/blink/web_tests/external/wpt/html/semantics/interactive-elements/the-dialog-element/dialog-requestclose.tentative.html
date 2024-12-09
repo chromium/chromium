@@ -62,13 +62,8 @@ async function setup(t,closedby) {
     promise_test(async (t) => {
       await setup(t,closedby);
       openDialog(modal);
-      if (dialog.closedBy != "none") {
-        dialog.requestClose();
-        assert_false(dialog.open);
-      } else {
-        assert_throws_dom('InvalidStateError',() => dialog.requestClose());
-        assert_true(dialog.open);
-      }
+      dialog.requestClose();
+      assert_false(dialog.open);
     },`requestClose basic behavior ${testDescription}`);
 
     promise_test(async (t) => {
@@ -78,15 +73,11 @@ async function setup(t,closedby) {
       dialog.addEventListener('close',() => events.push('close'),{signal});
       openDialog(modal);
       assert_array_equals(events,[]);
-      if (dialog.closedBy != "none") {
-        dialog.requestClose();
-        assert_false(dialog.open);
-        assert_array_equals(events,['cancel'],'close is scheduled');
-        await new Promise(resolve => requestAnimationFrame(resolve));
-        assert_array_equals(events,['cancel','close']);
-      } else {
-        assert_throws_dom('InvalidStateError',() => dialog.requestClose());
-      }
+      dialog.requestClose();
+      assert_false(dialog.open);
+      assert_array_equals(events,['cancel'],'close is scheduled');
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      assert_array_equals(events,['cancel','close']);
     },`requestClose fires both cancel and close ${testDescription}`);
 
     promise_test(async (t) => {
@@ -97,12 +88,8 @@ async function setup(t,closedby) {
       openDialog(modal);
       dialog.setAttribute('closedby',closedby);
       assert_array_equals(events,[]);
-      if (dialog.closedBy != "none") {
-        dialog.requestClose();
-        assert_false(dialog.open);
-      } else {
-        assert_throws_dom('InvalidStateError',() => dialog.requestClose());
-      }
+      dialog.requestClose();
+      assert_false(dialog.open);
     },`changing closedby from 'none' to '${closedby}' for ${modal ? "modal" : "modeless"} dialog`);
 
     promise_test(async (t) => {
@@ -113,12 +100,8 @@ async function setup(t,closedby) {
       openDialog(modal);
       dialog.removeAttribute('closedby');
       assert_array_equals(events,[]);
-      if (dialog.closedBy != "none") {
-        dialog.requestClose();
-        assert_false(dialog.open);
-      } else {
-        assert_throws_dom('InvalidStateError',() => dialog.requestClose());
-      }
+      dialog.requestClose();
+      assert_false(dialog.open);
     },`Removing closedby when closedby='${closedby}' for ${modal ? "modal" : "modeless"} dialog`);
 
     if (dialog.closedBy != "none") {
