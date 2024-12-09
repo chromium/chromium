@@ -2422,7 +2422,14 @@ deps = {
         'size_bytes': 18887098,
         'generation': 1730148514067154,
         'output_file': 'scroll_m132_with_atrace.pftrace'
-      }
+      },
+      {
+        'object_name': 'test_data/scroll_with_input_not_forwarded_to_renderer.pftrace-ceb2ff3cb64c99ddb28a29867bc82f1491c4b413bfacd8638551b80936240faf',
+        'sha256sum': 'ceb2ff3cb64c99ddb28a29867bc82f1491c4b413bfacd8638551b80936240faf',
+        'size_bytes': 729606,
+        'generation': 1732902685002882,
+        'output_file': 'scroll_with_input_not_forwarded_to_renderer.pftrace'
+      },
     ],
     'dep_type': 'gcs'
   },

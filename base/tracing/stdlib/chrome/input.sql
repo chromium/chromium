@@ -109,24 +109,60 @@ JOIN args USING (arg_set_id)
 WHERE step.step = 'STEP_RESAMPLE_SCROLL_EVENTS'
   AND args.flat_key = 'chrome_latency_info.coalesced_trace_ids';
 
--- Slices with information about non-blocking touch move inputs
--- that were converted into gesture scroll updates.
+
+-- Each scroll update event (except flings) in Chrome starts its life as a touch
+-- move event, which is then eventually converted to a scroll update itself.
+-- Each of these events is represented by its own LatencyInfo. This table
+-- contains a mapping between touch move events and scroll update events they
+-- were converted into.
 CREATE PERFETTO TABLE chrome_touch_move_to_scroll_update(
   -- Latency id of the touch move input (LatencyInfo).
   touch_move_latency_id LONG,
   -- Latency id of the corresponding scroll update input (LatencyInfo).
   scroll_update_latency_id LONG
 ) AS
+WITH
+scroll_update_steps AS (
+  SELECT *
+  FROM chrome_input_pipeline_steps
+  WHERE step = 'STEP_SEND_INPUT_EVENT_UI'
+  AND input_type = 'GESTURE_SCROLL_UPDATE_EVENT'
+),
+-- By default, we map a scroll update event to an ancestor touch move event with
+-- STEP_TOUCH_EVENT_HANDLED.
+default_mapping AS (
+  SELECT
+    touch_move_step.latency_id AS touch_move_latency_id,
+    scroll_update_steps.latency_id AS scroll_update_latency_id
+  FROM scroll_update_steps
+  JOIN ancestor_slice(scroll_update_steps.slice_id) AS ancestor
+  JOIN chrome_input_pipeline_steps AS touch_move_step
+    ON ancestor.id = touch_move_step.slice_id
+  WHERE touch_move_step.step = 'STEP_TOUCH_EVENT_HANDLED'
+),
+-- In the rare case where there are no touch handlers in the renderer, there's
+-- no ancestor touch move event with STEP_TOUCH_EVENT_HANDLED. In that case, we
+-- try to fall back to an ancestor touch move event with
+-- STEP_SEND_INPUT_EVENT_UI instead.
+fallback_mapping AS (
+  SELECT
+    touch_move_step.latency_id AS touch_move_latency_id,
+    scroll_update_steps.latency_id AS scroll_update_latency_id
+  FROM scroll_update_steps
+  JOIN ancestor_slice(scroll_update_steps.slice_id) AS ancestor
+  JOIN chrome_input_pipeline_steps AS touch_move_step
+    ON ancestor.id = touch_move_step.slice_id
+  WHERE touch_move_step.step = 'STEP_SEND_INPUT_EVENT_UI'
+  AND touch_move_step.input_type = 'TOUCH_MOVE_EVENT'
+)
 SELECT
-  scroll_update_step.latency_id AS scroll_update_latency_id,
-  touch_move_step.latency_id AS touch_move_latency_id
-FROM chrome_input_pipeline_steps scroll_update_step
-JOIN ancestor_slice(scroll_update_step.slice_id) AS ancestor
-JOIN chrome_input_pipeline_steps touch_move_step
-  ON ancestor.id = touch_move_step.slice_id
-WHERE scroll_update_step.step = 'STEP_SEND_INPUT_EVENT_UI'
-AND scroll_update_step.input_type = 'GESTURE_SCROLL_UPDATE_EVENT'
-AND touch_move_step.step = 'STEP_TOUCH_EVENT_HANDLED';
+  COALESCE(
+    default_mapping.touch_move_latency_id,
+    fallback_mapping.touch_move_latency_id
+  ) AS touch_move_latency_id,
+  scroll_update_latency_id
+FROM default_mapping
+FULL OUTER JOIN fallback_mapping USING (scroll_update_latency_id);
 
 -- Matches Android input id to the corresponding touch move event.
 CREATE PERFETTO TABLE chrome_dispatch_android_input_event_to_touch_move(

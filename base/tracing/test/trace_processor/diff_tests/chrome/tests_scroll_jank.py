@@ -529,6 +529,33 @@ class ChromeScrollJankStdlib(TestSuite):
         -2143831735395280142,-2143831735395280132
         """))
 
+  def test_chrome_touch_move_to_scroll_update_not_forwarded_to_renderer(self):
+        return DiffTestBlueprint(
+        trace=DataPath('scroll_with_input_not_forwarded_to_renderer.pftrace'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.input;
+
+        SELECT
+          touch_move_latency_id,
+          scroll_update_latency_id
+        FROM chrome_touch_move_to_scroll_update
+        ORDER BY touch_move_latency_id
+        LIMIT 10
+        """,
+        out=Csv("""
+        "touch_move_latency_id","scroll_update_latency_id"
+        8456911910253096960,8456911910253096967
+        8456911910253096963,8456911910253096962
+        8456911910253096965,8456911910253096964
+        8456911910253096970,8456911910253096969
+        8456911910253096978,8456911910253096977
+        8456911910253096980,8456911910253096987
+        8456911910253096983,8456911910253096982
+        8456911910253096985,8456911910253096984
+        8456911910253096990,8456911910253096989
+        8456911910253096993,8456911910253096992
+        """))
+
   def test_chrome_scroll_update_info(self):
         return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),
