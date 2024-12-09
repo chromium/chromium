@@ -246,6 +246,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // and ordered by frecency with the expired cards put at the end of the
   // vector. `should_use_legacy_algorithm` indicates if we should rank credit
   // cards using the legacy ranking algorithm.
+  // TODO(crbug.com/326408802): Move to payments_suggestion_generator.
   std::vector<const CreditCard*> GetCreditCardsToSuggest(
       bool should_use_legacy_algorithm = false) const;
 
@@ -328,13 +329,6 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Called to indicate `iban` was used (to fill in a form). Updates the
   // database accordingly.
   virtual void RecordUseOfIban(Iban& iban);
-
-  // De-dupe credit card to suggest. Full server cards are preferred over their
-  // local duplicates, and local cards are preferred over their masked server
-  // card duplicate.
-  // TODO(crbug.com/326408802): Move to suggestion generator?
-  static void DedupeCreditCardToSuggest(
-      std::list<CreditCard*>* cards_to_suggest);
 
   // Returns the cached card art image for the |card_art_url| if it was synced
   // locally to the client. This function is called within
