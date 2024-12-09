@@ -2,17 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/scoped_chromeos_version_info.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/test_kiosk_extension_builder.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
@@ -30,8 +34,8 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
-#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/test/result_catcher.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
@@ -229,9 +233,10 @@ class KioskUpdateTest : public KioskBaseTest {
       waiter.Wait();
     }
     EXPECT_TRUE(waiter.loaded());
-    std::string cached_version;
-    base::FilePath file_path;
-    EXPECT_TRUE(manager->GetCachedCrx(app_id, &file_path, &cached_version));
+
+    auto crx_info = manager->GetCachedCrx(app_id);
+    ASSERT_TRUE(crx_info.has_value());
+    auto& [_, cached_version] = crx_info.value();
     EXPECT_EQ(version, cached_version);
   }
 
@@ -245,10 +250,10 @@ class KioskUpdateTest : public KioskBaseTest {
     KioskChromeAppManager::Get()->UpdateExternalCache();
     waiter.Wait();
     EXPECT_TRUE(waiter.loaded());
-    std::string cached_version;
-    base::FilePath file_path;
-    EXPECT_TRUE(
-        manager->GetCachedCrx(test_app_id(), &file_path, &cached_version));
+
+    auto crx_info = manager->GetCachedCrx(test_app_id());
+    ASSERT_TRUE(crx_info.has_value());
+    auto& [_, cached_version] = crx_info.value();
     EXPECT_EQ(version, cached_version);
   }
 
@@ -589,10 +594,10 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_UsbStickUpdateAppNoNetwork) {
 
   // The v2 kiosk app is loaded into external cache, but won't be installed
   // until next time the device is started.
-  base::FilePath crx_path;
-  std::string cached_version;
-  EXPECT_TRUE(KioskChromeAppManager::Get()->GetCachedCrx(
-      test_app_id(), &crx_path, &cached_version));
+  auto crx_info = KioskChromeAppManager::Get()->GetCachedCrx(test_app_id());
+  ASSERT_TRUE(crx_info.has_value());
+  auto& [_, cached_version] = crx_info.value();
+
   EXPECT_EQ("2.0.0", cached_version);
   EXPECT_EQ("1.0.0", GetInstalledAppVersion().GetString());
 }
@@ -622,10 +627,9 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, UsbStickUpdateAppNoManifest) {
   EXPECT_FALSE(update_success);
 
   // Kiosk app is not updated.
-  base::FilePath crx_path;
-  std::string cached_version;
-  EXPECT_TRUE(KioskChromeAppManager::Get()->GetCachedCrx(
-      test_app_id(), &crx_path, &cached_version));
+  auto crx_info = KioskChromeAppManager::Get()->GetCachedCrx(test_app_id());
+  ASSERT_TRUE(crx_info.has_value());
+  auto& [_, cached_version] = crx_info.value();
   EXPECT_EQ("1.0.0", cached_version);
 }
 
@@ -643,10 +647,9 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, UsbStickUpdateAppBadManifest) {
   EXPECT_FALSE(update_success);
 
   // Kiosk app is not updated.
-  base::FilePath crx_path;
-  std::string cached_version;
-  EXPECT_TRUE(KioskChromeAppManager::Get()->GetCachedCrx(
-      test_app_id(), &crx_path, &cached_version));
+  auto crx_info = KioskChromeAppManager::Get()->GetCachedCrx(test_app_id());
+  ASSERT_TRUE(crx_info.has_value());
+  auto& [_, cached_version] = crx_info.value();
   EXPECT_EQ("1.0.0", cached_version);
 }
 
@@ -666,10 +669,9 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, UsbStickUpdateAppLowerAppVersion) {
   EXPECT_FALSE(update_success);
 
   // Kiosk app is NOT updated to the lower version.
-  base::FilePath crx_path;
-  std::string cached_version;
-  EXPECT_TRUE(KioskChromeAppManager::Get()->GetCachedCrx(
-      test_app_id(), &crx_path, &cached_version));
+  auto crx_info = KioskChromeAppManager::Get()->GetCachedCrx(test_app_id());
+  ASSERT_TRUE(crx_info.has_value());
+  auto& [_, cached_version] = crx_info.value();
   EXPECT_EQ("2.0.0", cached_version);
 }
 
@@ -689,10 +691,9 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, UsbStickUpdateAppLowerCrxVersion) {
   EXPECT_FALSE(update_success);
 
   // Kiosk app is NOT updated to the lower version.
-  base::FilePath crx_path;
-  std::string cached_version;
-  EXPECT_TRUE(KioskChromeAppManager::Get()->GetCachedCrx(
-      test_app_id(), &crx_path, &cached_version));
+  auto crx_info = KioskChromeAppManager::Get()->GetCachedCrx(test_app_id());
+  ASSERT_TRUE(crx_info.has_value());
+  auto& [_, cached_version] = crx_info.value();
   EXPECT_EQ("2.0.0", cached_version);
 }
 
@@ -711,10 +712,9 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, UsbStickUpdateAppBadCrx) {
   EXPECT_FALSE(update_success);
 
   // Kiosk app is NOT updated.
-  base::FilePath crx_path;
-  std::string cached_version;
-  EXPECT_TRUE(KioskChromeAppManager::Get()->GetCachedCrx(
-      test_app_id(), &crx_path, &cached_version));
+  auto crx_info = KioskChromeAppManager::Get()->GetCachedCrx(test_app_id());
+  ASSERT_TRUE(crx_info.has_value());
+  auto& [_, cached_version] = crx_info.value();
   EXPECT_EQ("1.0.0", cached_version);
 }
 
