@@ -7,6 +7,7 @@
 
 #import <WebKit/WebKit.h>
 
+@protocol CRWEditMenuBuilder;
 @protocol CRWInputViewProvider;
 
 // Subclass of WKWebView which supports custom input views.
@@ -14,6 +15,9 @@
 
 // Provider for custom input views and their respective view controllers.
 @property(nonatomic, weak) id<CRWInputViewProvider> inputViewProvider;
+
+// Customizer for the edit menu.
+@property(nonatomic, weak) id<CRWEditMenuBuilder> editMenuBuilder;
 
 @end
 

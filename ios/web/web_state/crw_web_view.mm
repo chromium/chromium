@@ -4,11 +4,22 @@
 
 #import "ios/web/web_state/crw_web_view.h"
 
+#import "base/feature_list.h"
+#import "ios/web/common/crw_edit_menu_builder.h"
 #import "ios/web/common/crw_input_view_provider.h"
+#import "ios/web/common/features.h"
 
 @implementation CRWWebView
 
 #pragma mark - UIResponder
+
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
+  [super buildMenuWithBuilder:builder];
+  if (!base::FeatureList::IsEnabled(
+          web::features::kRestoreWKWebViewEditMenuHandler)) {
+    [self.editMenuBuilder buildMenuWithBuilder:builder];
+  }
+}
 
 - (UIView*)inputView {
   id<CRWResponderInputView> responderInputView =

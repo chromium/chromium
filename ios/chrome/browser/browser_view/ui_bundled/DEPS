@@ -6,6 +6,7 @@ include_rules = [
   "+ios/chrome/browser/autofill/ui_bundled",
   "+ios/chrome/browser/bookmarks/model/bookmark_model_factory.h",
   "+ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h",
+  "+ios/chrome/browser/browser_container",
   "+ios/chrome/browser/browser_view/ui_bundled",
   "+ios/chrome/browser/bubble/ui_bundled",
   "+ios/chrome/browser/commerce/model",

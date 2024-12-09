@@ -22,6 +22,7 @@ class WebStateList;
 @protocol NetExportTabHelperDelegate;
 @protocol NewTabPageTabHelperDelegate;
 @protocol OverscrollActionsControllerDelegate;
+@protocol EditMenuBuilder;
 
 // Mediator that handles the setup of tab helpers that require UI-layer
 // dependencies not available when AttachTabHelpers() is called.
@@ -49,6 +50,7 @@ class WebStateList;
     snapshotGeneratorDelegate;
 @property(nonatomic, weak) id<AppLauncherTabHelperBrowserPresentationProvider>
     appLauncherBrowserPresentationProvider;
+@property(nonatomic, weak) id<EditMenuBuilder> editMenuBuilder;
 
 // Creates an instance of the mediator. Delegates will be installed into all
 // existing web states in `webStateList`. While the mediator is alive,

@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 
 @class BrowserContainerViewController;
+@protocol EditMenuBuilder;
 
 // A coordinator that creates a container UIViewController that displays the
 // web contents of the browser view.
@@ -18,6 +19,9 @@
 // The view controller managing the container view.
 @property(nonatomic, strong, readonly)
     BrowserContainerViewController* viewController;
+
+// The builder for the edit menu.
+- (id<EditMenuBuilder>)editMenuBuilder;
 
 @end
 

@@ -61,6 +61,7 @@ source_set("ui") {
   deps = [
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browser_container",
     "//ios/chrome/browser/link_to_text/ui_bundled",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -68,6 +69,7 @@ source_set("ui") {
     "//ios/chrome/browser/ui/partial_translate",
     "//ios/chrome/browser/ui/search_with",
     "//ios/chrome/common/ui/util",
+    "//ios/web/common:features",
     "//ui/base",
   ]
 }

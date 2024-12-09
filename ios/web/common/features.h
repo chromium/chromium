@@ -96,6 +96,9 @@ BASE_DECLARE_FEATURE(kUserAgentBugFixVersion);
 // Enables logging JavaScript errors.
 BASE_DECLARE_FEATURE(kLogJavaScriptErrors);
 
+// Feature flag to restore the WKWebView edit menu customization.
+BASE_DECLARE_FEATURE(kRestoreWKWebViewEditMenuHandler);
+
 }  // namespace features
 }  // namespace web
 

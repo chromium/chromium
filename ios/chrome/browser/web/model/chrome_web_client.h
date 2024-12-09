@@ -65,6 +65,8 @@ class ChromeWebClient : public web::WebClient {
   void SetOSLockdownModeEnabled(bool enabled) override;
   bool IsInsecureFormWarningEnabled(
       web::BrowserState* browser_state) const override;
+  void BuildEditMenu(web::WebState* web_state,
+                     id<UIMenuBuilder>) const override;
 
  private:
   // Reference to a view that is attached to a window.
