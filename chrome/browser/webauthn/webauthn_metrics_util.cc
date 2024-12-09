@@ -18,3 +18,7 @@ void ReportConditionalUiPasskeyCount(int passkey_count) {
   base::UmaHistogramExactLinear("WebAuthentication.ConditionalUiPasskeyCount",
                                 passkey_count, kPasskeyCountMax);
 }
+
+void RecordOnboardingEvent(webauthn::metrics::OnboardingEvents event) {
+  base::UmaHistogramEnumeration("WebAuthentication.OnboardingEvents", event);
+}

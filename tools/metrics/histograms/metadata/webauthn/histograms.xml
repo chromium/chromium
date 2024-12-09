@@ -357,6 +357,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.OnboardingEvents" enum="OnboardingEvents"
+    expires_after="2024-12-31">
+  <owner>natiahlyi@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Recorded when the user interacts with modals in the GPM onboarding flow.
+  </summary>
+</histogram>
+
 <histogram
     name="WebAuthentication.SignalAllAcceptedCredentialsRemovedGPMPasskey"
     enum="SignalAllAcceptedCredentialsResult" expires_after="2025-09-17">

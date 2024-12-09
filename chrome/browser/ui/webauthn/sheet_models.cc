@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/ui/webauthn/webauthn_ui_helpers.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -1376,6 +1377,9 @@ AuthenticatorGPMErrorSheetModel::AuthenticatorGPMErrorSheetModel(
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kHidden) {
   vector_illustrations_.emplace(kPasskeyErrorIcon, kPasskeyErrorDarkIcon);
+  if (dialog_model->in_onboarding_flow) {
+    RecordOnboardingEvent(webauthn::metrics::OnboardingEvents::kFailure);
+  }
   webauthn::user_actions::RecordGpmFailureShown();
 }
 
@@ -1669,6 +1673,14 @@ void AuthenticatorGpmPinSheetModelBase::OnAccept() {
   dialog_model()->OnGPMPinEntered(pin_);
 }
 
+void AuthenticatorGpmPinSheetModelBase::OnCancel() {
+  if (dialog_model()->in_onboarding_flow) {
+    RecordOnboardingEvent(webauthn::metrics::OnboardingEvents::
+                              kAuthenticatorGpmPinSheetCancelled);
+  }
+  AuthenticatorSheetModelBase::OnCancel();
+}
+
 void AuthenticatorGpmPinSheetModelBase::OnForgotGPMPin() const {
   webauthn::user_actions::RecordGpmForgotPinClick();
   dialog_model()->OnForgotGPMPinPressed();
@@ -1953,6 +1965,22 @@ std::u16string AuthenticatorCreateGpmPasskeySheetModel::GetAcceptButtonLabel()
 void AuthenticatorCreateGpmPasskeySheetModel::OnAccept() {
   webauthn::user_actions::RecordAcceptClick();
   dialog_model()->OnGPMCreatePasskey();
+}
+
+void AuthenticatorCreateGpmPasskeySheetModel::OnCancel() {
+  if (dialog_model()->in_onboarding_flow) {
+    RecordOnboardingEvent(
+        webauthn::metrics::OnboardingEvents::kCreateGpmPasskeySheetCancelled);
+  }
+  AuthenticatorSheetModelBase::OnCancel();
+}
+
+void AuthenticatorCreateGpmPasskeySheetModel::OnBack() {
+  if (dialog_model()->in_onboarding_flow) {
+    RecordOnboardingEvent(webauthn::metrics::OnboardingEvents::
+                              kCreateGpmPasskeySheetSaveAnotherWaySelected);
+  }
+  AuthenticatorSheetModelBase::OnBack();
 }
 
 // AuthenticatorGpmIncognitoCreateSheetModel ---------------------------------

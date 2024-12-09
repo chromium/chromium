@@ -51,6 +51,7 @@
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
+#include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/common/pref_names.h"
@@ -507,6 +508,9 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
   }
 #endif  // BUILDFLAG(IS_MAC)
   if (authenticator_type == device::AuthenticatorType::kEnclave) {
+    if (dialog_model_->in_onboarding_flow) {
+      RecordOnboardingEvent(webauthn::metrics::OnboardingEvents::kSucceeded);
+    }
     webauthn::user_actions::RecordGpmSuccess();
   }
 }

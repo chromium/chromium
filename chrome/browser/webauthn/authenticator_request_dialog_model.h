@@ -453,6 +453,12 @@ struct AuthenticatorRequestDialogModel
   bool show_security_key_on_qr_sheet = false;
   bool is_off_the_record = false;
 
+  // Tracks whether the model is in the GPM onboarding state.
+  // This value is set/reset only in GPMEnclaveController::OnGPMSelected and
+  // read only to record metrics (WebAuthentication.OnboardingEvents) during the
+  // onboarding flow.
+  bool in_onboarding_flow = false;
+
   std::optional<int> max_bio_samples;
   std::optional<int> bio_samples_remaining;
   uint32_t min_pin_length = device::kMinPinLength;

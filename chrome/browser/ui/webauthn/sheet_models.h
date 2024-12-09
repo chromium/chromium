@@ -701,6 +701,7 @@ class AuthenticatorGpmPinSheetModelBase : public AuthenticatorSheetModelBase {
   bool IsForgotGPMPinButtonVisible() const override;
   bool IsGPMPinOptionsButtonVisible() const override;
   void OnAccept() override;
+  void OnCancel() override;
   void OnForgotGPMPin() const override;
   void OnGPMPinOptionChosen(bool is_arbitrary) const override;
 };
@@ -800,6 +801,9 @@ class AuthenticatorCreateGpmPasskeySheetModel
   bool IsAcceptButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
+  // "Save another way" button handler.
+  void OnBack() override;
+  void OnCancel() override;
 };
 
 // The sheet shown for warning a user about creating a Google Password Manager
