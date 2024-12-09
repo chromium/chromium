@@ -219,23 +219,6 @@ public class BundleUtils {
     }
 
     /**
-     * Constructs a new instance of the given class name. If the application context class loader
-     * can load the class, that class loader will be used, otherwise the class loader from the
-     * passed in context will be used.
-     */
-    public static Object newInstance(Context context, String className) {
-        Context appContext = ContextUtils.getApplicationContext();
-        if (appContext != null && canLoadClass(appContext.getClassLoader(), className)) {
-            context = appContext;
-        }
-        try {
-            return context.getClassLoader().loadClass(className).newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw JavaUtils.throwUnchecked(e);
-        }
-    }
-
-    /**
      * Constructs a new instance of the given class name. We create the classloader (or use a cached
      * copy) of the split with the name passed in.
      */
