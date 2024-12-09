@@ -165,12 +165,8 @@ void SubFeatureOptInView::InitLayout() {
   // Set up layout row for the text label.
   text_label_ = AddChildView(std::make_unique<views::Label>());
   text_label_->SetProperty(views::kCrossAxisAlignmentKey,
-                           views::LayoutAlignment::kCenter);
+                           views::LayoutAlignment::kStart);
   text_label_->SetProperty(views::kMarginsKey, kTextLabelBorderInsets);
-  text_label_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                               views::MaximumFlexSizeRule::kUnbounded, true));
   auto text_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
   text_label_->SetEnabledColor(text_color);
