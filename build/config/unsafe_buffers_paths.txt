@@ -100,8 +100,6 @@
 -components/segmentation_platform/
 -components/sharing_message/
 -components/system_cpu/
--components/url_formatter/
--components/url_pattern_index/
 -components/webrtc_logging/
 -components/zucchini/
 -fuchsia_web/
