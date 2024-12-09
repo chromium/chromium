@@ -33,7 +33,7 @@ class AutofillVCNEnrollBottomSheetBridgeTest
         static_cast<VirtualCardEnrollBubbleControllerImpl*>(
             VirtualCardEnrollBubbleControllerImpl::GetOrCreate(web_contents()));
     VirtualCardEnrollmentFields virtual_card_enrollment_fields;
-    virtual_card_enrollment_fields.credit_card = test::GetFullServerCard();
+    virtual_card_enrollment_fields.credit_card = test::GetCreditCard();
     virtual_card_enrollment_fields.card_art_image = &card_art_image_;
     virtual_card_enrollment_fields.google_legal_message = {
         TestLegalMessageLine("google_test_legal_message")};

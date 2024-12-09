@@ -64,7 +64,7 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
   }
 
   void CreateVirtualCardEnrollmentFields() {
-    CreditCard credit_card = test::GetFullServerCard();
+    CreditCard credit_card = test::GetCreditCard();
     LegalMessageLines google_legal_message = {
         TestLegalMessageLine("google_test_legal_message")};
     LegalMessageLines issuer_legal_message = {
