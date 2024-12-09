@@ -223,11 +223,7 @@ TEST_F(WebAppRegistrarTest, EmptyRegistrar) {
   EXPECT_TRUE(registrar().is_empty());
   EXPECT_TRUE(registrar().IsNotInRegistrar(webapps::AppId()));
   EXPECT_EQ(std::nullopt, registrar().GetInstallState(webapps::AppId()));
-  EXPECT_FALSE(registrar().IsInstallState(
-      webapps::AppId(),
-      {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
+  EXPECT_TRUE(registrar().IsNotInRegistrar(webapps::AppId()));
   EXPECT_EQ(nullptr, registrar().GetAppById(webapps::AppId()));
   EXPECT_EQ(std::string(), registrar().GetAppShortName(webapps::AppId()));
   EXPECT_EQ(GURL(), registrar().GetAppStartUrl(webapps::AppId()));

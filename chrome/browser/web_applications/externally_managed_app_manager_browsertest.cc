@@ -1068,11 +1068,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Wait for the placeholder removal task to be done.
   ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
-    return !registrar().IsInstallState(
-        placeholder_app_id,
-        {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-         proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-         proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
+    return registrar().IsNotInRegistrar(placeholder_app_id);
   }));
 
   // Check that the new app is launched.
@@ -1082,10 +1078,8 @@ IN_PROC_BROWSER_TEST_F(
   WaitUntilDisplayNotificationCount(/*display_count=*/0u);
 
   EXPECT_NE(final_app_id, placeholder_app_id);
-  EXPECT_TRUE(registrar().IsInstallState(
-      final_app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                     proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                     proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(registrar().GetInstallState(final_app_id),
+            proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   EXPECT_FALSE(
       registrar().IsPlaceholderApp(final_app_id, WebAppManagement::kPolicy));
   EXPECT_EQ(0, registrar().CountUserInstalledApps());

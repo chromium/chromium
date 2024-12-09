@@ -241,9 +241,8 @@ IN_PROC_BROWSER_TEST_P(LaunchWebAppWithFirstRunServiceBrowserTest,
     ASSERT_FALSE(first_run_service);
   }
 
-  ASSERT_TRUE(GetProvider().registrar_unsafe().IsInstallState(
-      app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::INSTALLED_WITH_OS_INTEGRATION}));
+  ASSERT_EQ(GetProvider().registrar_unsafe().GetInstallState(app_id),
+            proto::INSTALLED_WITH_OS_INTEGRATION);
 
   Browser* browser = LaunchWebAppBrowser(app_id);
   ASSERT_EQ(browser == nullptr, GetParam());
@@ -266,9 +265,8 @@ IN_PROC_BROWSER_TEST_P(LaunchWebAppWithFirstRunServiceBrowserTest,
     ASSERT_FALSE(first_run_service);
   }
 
-  ASSERT_TRUE(GetProvider().registrar_unsafe().IsInstallState(
-      app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::INSTALLED_WITH_OS_INTEGRATION}));
+  ASSERT_EQ(GetProvider().registrar_unsafe().GetInstallState(
+      app_id), proto::INSTALLED_WITH_OS_INTEGRATION));
 
   Browser* browser = LaunchBrowserForWebAppInTab(app_id);
   ASSERT_TRUE(browser);
@@ -447,8 +445,6 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, AppLaunchNoIntegration) {
                   .registrar_unsafe()
                   .GetAppCurrentOsIntegrationState(app_id)
                   ->has_shortcut());
-  // TODO(crbug.com/340952100): Evaluate call sites of IsInstallState for
-  // correctness.
   EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
             provider().registrar_unsafe().GetInstallState(app_id));
 }

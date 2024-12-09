@@ -211,10 +211,10 @@ TEST_F(InstallFromSyncTest, SuccessWithManifest) {
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result.install_code);
   EXPECT_EQ(result.installed_app_id, app_id);
-  EXPECT_TRUE(registrar().IsInstallState(
-      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(registrar().GetInstallState(app_id),
+            AreAppsLocallyInstalledBySync()
+                ? proto::InstallState::INSTALLED_WITH_OS_INTEGRATION
+                : proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE);
 
   // Check that the manifest info was installed.
   EXPECT_THAT(GetAppName(app_id), Eq(kManifestName));
@@ -248,10 +248,12 @@ TEST_F(InstallFromSyncTest, SuccessWithoutManifest) {
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result.install_code);
   EXPECT_EQ(result.installed_app_id, app_id);
-  EXPECT_TRUE(registrar().IsInstallState(
-      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(registrar().GetInstallState(app_id),
+            AreAppsLocallyInstalledBySync()
+                ? proto::InstallState::INSTALLED_WITH_OS_INTEGRATION
+                : proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE
+
+  );
 
   // Check that the document & fallback info was installed.
   EXPECT_THAT(registrar().GetAppShortName(app_id), Eq(kFallbackTitle));
@@ -287,10 +289,12 @@ TEST_F(InstallFromSyncTest, SuccessManifestNoIcons) {
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result.install_code);
   EXPECT_EQ(result.installed_app_id, app_id);
-  EXPECT_TRUE(registrar().IsInstallState(
-      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(registrar().GetInstallState(app_id),
+            AreAppsLocallyInstalledBySync()
+                ? proto::InstallState::INSTALLED_WITH_OS_INTEGRATION
+                : proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE
+
+  );
 
   // Check that the manifest was used & document icons were used.
   EXPECT_THAT(GetAppName(app_id), Eq(kManifestName));
@@ -325,10 +329,12 @@ TEST_F(InstallFromSyncTest, UrlRedirectUseFallback) {
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result.install_code);
   EXPECT_EQ(result.installed_app_id, app_id);
-  EXPECT_TRUE(registrar().IsInstallState(
-      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(registrar().GetInstallState(app_id),
+            AreAppsLocallyInstalledBySync()
+                ? proto::InstallState::INSTALLED_WITH_OS_INTEGRATION
+                : proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE
+
+  );
 
   // Check that the fallback info was installed.
   EXPECT_THAT(registrar().GetAppShortName(app_id), Eq(kFallbackTitle));
@@ -363,10 +369,12 @@ TEST_F(InstallFromSyncTest, FallbackWebAppInstallInfo) {
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result.install_code);
   EXPECT_EQ(result.installed_app_id, app_id);
-  EXPECT_TRUE(registrar().IsInstallState(
-      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(registrar().GetInstallState(app_id),
+            AreAppsLocallyInstalledBySync()
+                ? proto::InstallState::INSTALLED_WITH_OS_INTEGRATION
+                : proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE
+
+  );
 
   // Check that the fallback info was installed.
   EXPECT_THAT(registrar().GetAppShortName(app_id), Eq(kFallbackTitle));
@@ -407,10 +415,12 @@ TEST_F(InstallFromSyncTest, FallbackManifestIdMismatch) {
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result.install_code);
   EXPECT_EQ(result.installed_app_id, app_id);
-  EXPECT_TRUE(registrar().IsInstallState(
-      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(registrar().GetInstallState(app_id),
+            AreAppsLocallyInstalledBySync()
+                ? proto::InstallState::INSTALLED_WITH_OS_INTEGRATION
+                : proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE
+
+  );
 
   // Check that the fallback info was installed.
   EXPECT_THAT(registrar().GetAppShortName(app_id), Eq(kFallbackTitle));
@@ -492,14 +502,18 @@ TEST_F(InstallFromSyncTest, TwoInstalls) {
   content::WebContentsDestroyedWatcher web_contents_obserser(web_contents);
   web_contents_obserser.Wait();
   EXPECT_FALSE(command_manager().web_contents_for_testing());
-  EXPECT_TRUE(registrar().IsInstallState(
-      app_id1, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
-  EXPECT_TRUE(registrar().IsInstallState(
-      app_id2, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(registrar().GetInstallState(app_id1),
+            AreAppsLocallyInstalledBySync()
+                ? proto::InstallState::INSTALLED_WITH_OS_INTEGRATION
+                : proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE
+
+  );
+  EXPECT_EQ(registrar().GetInstallState(app_id2),
+            AreAppsLocallyInstalledBySync()
+                ? proto::InstallState::INSTALLED_WITH_OS_INTEGRATION
+                : proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE
+
+  );
   std::vector<Event> expected;
   if (AreAppsLocallyInstalledBySync()) {
     expected = {
@@ -550,10 +564,7 @@ TEST_F(InstallFromSyncTest, Shutdown) {
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(future.Get<webapps::InstallResultCode>(),
             webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
-  EXPECT_FALSE(registrar().IsInstallState(
-      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_TRUE(registrar().IsNotInRegistrar(app_id));
 }
 
 }  // namespace
