@@ -101,6 +101,8 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
     return observation_groups_.HasObserver(observation_group);
   }
 
+  scoped_refptr<FileSystemAccessObserverQuotaManager>
+  GetOrCreateQuotaManagerForTesting(const blink::StorageKey& storage_key);
   FileSystemAccessObserverQuotaManager* GetQuotaManagerForTesting(
       const blink::StorageKey& storage_key);
 

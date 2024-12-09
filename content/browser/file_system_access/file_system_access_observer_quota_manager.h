@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_OBSERVER_QUOTA_MANAGER_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_OBSERVER_QUOTA_MANAGER_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "content/browser/file_system_access/file_system_access_change_source.h"
 #include "content/common/content_export.h"
@@ -27,7 +28,7 @@ class CONTENT_EXPORT FileSystemAccessObserverQuotaManager
 
   explicit FileSystemAccessObserverQuotaManager(
       const blink::StorageKey& storage_key,
-      FileSystemAccessWatcherManager* watcher_manager);
+      FileSystemAccessWatcherManager& watcher_manager);
 
   // Updates the total usage if the quota is available.
   // Otherwise, returns `UsageChangeResult::kQuotaUnavailable`.
@@ -52,9 +53,7 @@ class CONTENT_EXPORT FileSystemAccessObserverQuotaManager
 
   const blink::StorageKey storage_key_;
 
-  // TODO(crbug.com/338457523): Update to raw_ref once connected to watcher
-  // manager.
-  const raw_ptr<FileSystemAccessWatcherManager> watcher_manager_;
+  const raw_ref<FileSystemAccessWatcherManager> watcher_manager_;
   // OS-specific quota limit. Must be greater than 0.
   size_t quota_limit_ = FileSystemAccessChangeSource::quota_limit();
   size_t total_usage_ = 0;

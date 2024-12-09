@@ -11,7 +11,7 @@ namespace content {
 
 FileSystemAccessObserverQuotaManager::FileSystemAccessObserverQuotaManager(
     const blink::StorageKey& storage_key,
-    FileSystemAccessWatcherManager* watcher_manager)
+    FileSystemAccessWatcherManager& watcher_manager)
     : base::RefCountedDeleteOnSequence<FileSystemAccessObserverQuotaManager>(
           base::SequencedTaskRunner::GetCurrentDefault()),
       storage_key_(storage_key),
@@ -29,11 +29,7 @@ FileSystemAccessObserverQuotaManager::~FileSystemAccessObserverQuotaManager() {
       "Storage.FileSystemAccess.ObserverUsageQuotaExceeded",
       reached_quota_limit_);
 
-  // TODO(crbug.com/338457523): Make this unconditional once `watcher_manager_`
-  // is raw_ref.
-  if (watcher_manager_) {
-    watcher_manager_->RemoveQuotaManager(storage_key_);
-  }
+  watcher_manager_->RemoveQuotaManager(storage_key_);
 }
 
 FileSystemAccessObserverQuotaManager::UsageChangeResult

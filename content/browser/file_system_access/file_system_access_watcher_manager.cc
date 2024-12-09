@@ -418,6 +418,14 @@ void FileSystemAccessWatcherManager::DidInitializeSource(
 }
 
 scoped_refptr<FileSystemAccessObserverQuotaManager>
+FileSystemAccessWatcherManager::GetOrCreateQuotaManagerForTesting(
+    const blink::StorageKey& storage_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return GetOrCreateQuotaManager(storage_key);
+}
+
+scoped_refptr<FileSystemAccessObserverQuotaManager>
 FileSystemAccessWatcherManager::GetOrCreateQuotaManager(
     blink::StorageKey storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -430,7 +438,7 @@ FileSystemAccessWatcherManager::GetOrCreateQuotaManager(
 
   scoped_refptr<FileSystemAccessObserverQuotaManager> quota_manager =
       base::MakeRefCounted<FileSystemAccessObserverQuotaManager>(storage_key,
-                                                                 this);
+                                                                 *this);
   quota_managers_.emplace(std::piecewise_construct,
                           std::forward_as_tuple(std::move(storage_key)),
                           std::forward_as_tuple(*quota_manager.get()));
