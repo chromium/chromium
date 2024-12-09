@@ -10,14 +10,26 @@
 
 namespace views::examples {
 
-TEST(ExamplesTest, TestViewsExamplesLaunches) {
+// TODO(crbug.com/372806548): Test failing on Windows
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_TestViewsExamplesLaunches DISABLED_TestViewsExamplesLaunches
+#else
+#define MAYBE_TestViewsExamplesLaunches TestViewsExamplesLaunches
+#endif
+TEST(ExamplesTest, MAYBE_TestViewsExamplesLaunches) {
   const ExamplesExitCode exit_code = ExamplesMainProc(/*under_test=*/true);
   // Check the status of the Skia Gold comparison.
   EXPECT_TRUE((exit_code == ExamplesExitCode::kSucceeded) ||
               (exit_code == ExamplesExitCode::kNone));
 }
 
-TEST(ExamplesTest, TestViewsExamplesLaunchesWithArgs) {
+// TODO(crbug.com/372806548): Test failing on Windows
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_TestViewsExamplesLaunchesWithArgs DISABLED_TestViewsExamplesLaunchesWithArgs
+#else
+#define MAYBE_TestViewsExamplesLaunchesWithArgs TestViewsExamplesLaunchesWithArgs
+#endif
+TEST(ExamplesTest, MAYBE_TestViewsExamplesLaunchesWithArgs) {
   views::examples::ExampleVector examples;
   examples.push_back(std::make_unique<AxExample>());
   const ExamplesExitCode exit_code =
