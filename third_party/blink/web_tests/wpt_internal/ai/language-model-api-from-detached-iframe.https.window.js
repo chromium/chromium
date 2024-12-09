@@ -1,3 +1,5 @@
+// META: script=resources/workaround-for-382640509.js
+
 promise_test(async t => {
   // Make sure the prompt api is enabled.
   assert_true(!!ai);

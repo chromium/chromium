@@ -1,4 +1,5 @@
 // META: script=resources/utils.js
+// META: script=resources/workaround-for-382640509.js
 
 promise_test(async (t) => {
   testAbort(t, (signal) => {
