@@ -30,10 +30,6 @@ struct ProfileValueDifference {
   bool operator==(const ProfileValueDifference& right) const = default;
 };
 
-// The values corresponding to those types are visible in the settings.
-// TODO(crbug.com/40275657): This should depend on the country.
-FieldTypeSet GetUserVisibleTypes();
-
 // A utility class to assist in the comparison of AutofillProfile data.
 class AutofillProfileComparator {
  public:

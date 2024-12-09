@@ -26,6 +26,7 @@ namespace autofill {
 namespace {
 
 using i18n_model_definition::kLegacyHierarchyCountryCode;
+using ::testing::IsEmpty;
 
 const char kLocale[] = "en-US";
 
@@ -91,8 +92,9 @@ class AutofillProfileComparatorTest : public testing::Test {
     AutofillProfile profile(kLegacyHierarchyCountryCode);
     test::SetProfileInfo(&profile, first, middle, last, "", "", "", "", "", "",
                          "", "", "");
-    if (finalize)
+    if (finalize) {
       profile.FinalizeAfterImport();
+    }
     return profile;
   }
 
@@ -120,8 +122,9 @@ class AutofillProfileComparatorTest : public testing::Test {
     profile.SetRawInfoWithVerificationStatus(
         ALTERNATIVE_FAMILY_NAME, name.GetRawInfo(ALTERNATIVE_FAMILY_NAME),
         name.GetVerificationStatus(ALTERNATIVE_FAMILY_NAME));
-    if (finalize)
+    if (finalize) {
       profile.FinalizeAfterImport();
+    }
 
     return profile;
   }
@@ -1214,7 +1217,6 @@ TEST_F(AutofillProfileComparatorTest,
                        "mail@mail.com", "company", "line1", "line2", "city",
                        "state", "zip", "US", "phone");
 
-
   // A profile compared with itself cannot have different settings visible
   // values.
   EXPECT_FALSE(
@@ -1276,6 +1278,40 @@ TEST_F(AutofillProfileComparatorTest, GetProfileDifference) {
                 existing_profile, second_existing_profile, {ADDRESS_HOME_ZIP},
                 kLocale),
             expected_difference);
+}
+
+TEST_F(AutofillProfileComparatorTest, GetDifferentCountriesProfileDifference) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillSupportPhoneticNameForJP};
+  AutofillProfile existing_profile(AddressCountryCode("US"));
+  test::SetProfileInfo(&existing_profile, "firstName", "middleName", "lastName",
+                       "mail@mail.com", "company", "line1", "line2", "city",
+                       "state", "zip", "US", "phone");
+
+  AutofillProfile second_existing_profile(AddressCountryCode("JP"));
+  test::SetProfileInfo(&second_existing_profile, "firstName", "middleName",
+                       "lastName", "mail@mail.com", "company", "line1", "line2",
+                       "city", "state", "zip", "JP", "phone");
+  second_existing_profile.SetRawInfo(ALTERNATIVE_GIVEN_NAME,
+                                     u"alternativeGivenName");
+  second_existing_profile.SetRawInfo(ALTERNATIVE_FAMILY_NAME,
+                                     u"alternativeFamilyName");
+  second_existing_profile.FinalizeAfterImport();
+
+  // There should be no difference in NAME_FULL type.
+  EXPECT_THAT(
+      AutofillProfileComparator::GetProfileDifference(
+          existing_profile, second_existing_profile, {NAME_FULL}, kLocale),
+      IsEmpty());
+
+  // But there should be a difference in the ADDRESS_HOME_ZIP type.
+  std::vector<ProfileValueDifference> expected_difference = {
+      {ALTERNATIVE_FULL_NAME, u"",
+       u"alternativeGivenName alternativeFamilyName"}};
+
+  EXPECT_EQ(AutofillProfileComparator::GetProfileDifference(
+                existing_profile, second_existing_profile,
+                {ALTERNATIVE_FULL_NAME}, kLocale), expected_difference);
 }
 
 TEST_F(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifference) {
@@ -1407,7 +1443,7 @@ TEST_P(NonMergeableSettingVisibleTypesTest, DifferingTypes) {
     b.SetRawInfo(t, u"b");
   }
   // Initialize all other setting-visible types with the same value.
-  for (FieldType t : GetUserVisibleTypes()) {
+  for (FieldType t : a.GetUserVisibleTypes()) {
     // If a type of the same `FieldTypeGroup` was already set, ignore it, to
     // avoid constructing conflicting substructures.
     if (!base::Contains(test.differing_types, GroupTypeOfFieldType(t),

@@ -88,7 +88,9 @@ bool NameInfo::FinalizeAfterImport() {
   name_->MigrateLegacyStructure();
   if (base::FeatureList::IsEnabled(
           features::kAutofillSupportPhoneticNameForJP)) {
-    return name_->CompleteFullTree() && alternative_name_->CompleteFullTree();
+    bool result = name_->CompleteFullTree();
+    result &= alternative_name_->CompleteFullTree();
+    return result;
   }
   return name_->CompleteFullTree();
 }

@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/browser/profile_token_quality_test_api.h"
@@ -59,8 +60,9 @@ void SetupTestProfile(AutofillProfile& profile) {
 std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
 ToRawPointerVector(const std::vector<std::unique_ptr<AutofillProfile>>& list) {
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>> result;
-  for (const auto& item : list)
+  for (const auto& item : list) {
     result.push_back(item.get());
+  }
   return result;
 }
 
@@ -1682,6 +1684,50 @@ TEST_F(AutofillProfileTest, GetStorableTypeOf) {
   EXPECT_EQ(profile.GetStorableTypeOf(ADDRESS_HOME_STATE), ADDRESS_HOME_STATE);
   EXPECT_EQ(profile.GetStorableTypeOf(COMPANY_NAME), COMPANY_NAME);
 }
+
+struct GetUserVisibleTypesTestCase {
+  const FieldTypeSet expected_types;
+  const AddressCountryCode country_code;
+};
+
+class GetUserVisibleTypesTest
+    : public AutofillProfileTest,
+      public testing::WithParamInterface<GetUserVisibleTypesTestCase> {};
+
+TEST_P(GetUserVisibleTypesTest, GetUserVisibleTypes) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillSupportPhoneticNameForJP};
+  const GetUserVisibleTypesTestCase& test = GetParam();
+
+  AutofillProfile profile(test.country_code);
+  EXPECT_EQ(profile.GetUserVisibleTypes(), test.expected_types);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillProfileTest,
+    GetUserVisibleTypesTest,
+    testing::Values(GetUserVisibleTypesTestCase(
+                        FieldTypeSet({NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
+                                      ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
+                                      ADDRESS_HOME_ZIP, EMAIL_ADDRESS,
+                                      PHONE_HOME_WHOLE_NUMBER, COMPANY_NAME}),
+                        AddressCountryCode("US")),
+                    GetUserVisibleTypesTestCase(
+                        FieldTypeSet({NAME_FULL, ALTERNATIVE_FULL_NAME,
+                                      ADDRESS_HOME_STREET_ADDRESS,
+                                      ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP,
+                                      EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER,
+                                      COMPANY_NAME}),
+                        AddressCountryCode("JP")),
+                   GetUserVisibleTypesTestCase(
+                        FieldTypeSet({NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
+                                      ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
+                                      ADDRESS_HOME_ZIP, EMAIL_ADDRESS,
+                                      PHONE_HOME_WHOLE_NUMBER, COMPANY_NAME}),
+                        AddressCountryCode("GB"))),
+    [](const testing::TestParamInfo<GetUserVisibleTypesTestCase>& info) {
+      return info.param.country_code.value();
+    });
 
 // Tests that `AutofillProfile::RecordUseAndLog()` logs days until first usage.
 TEST_F(AutofillProfileTest, EmitsDaysUntilFirstUsageProfile) {

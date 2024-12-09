@@ -345,7 +345,7 @@ void ProfileImportProcess::SetUserDecision(
 
       // Make sure the verification status of all settings-visible non-empty
       // fields in the edited profile are set to kUserVerified.
-      for (auto type : GetUserVisibleTypes()) {
+      for (auto type : edited_profile->GetUserVisibleTypes()) {
         std::u16string value = confirmed_import_candidate_->GetRawInfo(type);
         if (!value.empty() &&
             confirmed_import_candidate_->GetVerificationStatus(type) ==

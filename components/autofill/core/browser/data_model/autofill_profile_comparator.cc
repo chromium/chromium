@@ -186,22 +186,6 @@ int32_t NormalizingIterator::GetNextChar() {
 
 }  // namespace
 
-FieldTypeSet GetUserVisibleTypes() {
-  static const FieldTypeSet user_visible_type = {
-      NAME_FULL,
-      ADDRESS_HOME_STREET_ADDRESS,
-      ADDRESS_HOME_CITY,
-      ADDRESS_HOME_DEPENDENT_LOCALITY,
-      ADDRESS_HOME_STATE,
-      ADDRESS_HOME_ZIP,
-      ADDRESS_HOME_COUNTRY,
-      ADDRESS_HOME_ADMIN_LEVEL2,
-      EMAIL_ADDRESS,
-      PHONE_HOME_WHOLE_NUMBER,
-      COMPANY_NAME};
-  return user_visible_type;
-}
-
 AutofillProfileComparator::AutofillProfileComparator(
     std::string_view app_locale)
     : app_locale_(app_locale.data(), app_locale.size()) {}
@@ -234,8 +218,10 @@ AutofillProfileComparator::GetSettingsVisibleProfileDifference(
     const AutofillProfile& first_profile,
     const AutofillProfile& second_profile,
     const std::string& app_locale) {
+  FieldTypeSet types = first_profile.GetUserVisibleTypes();
+  types.insert_all(second_profile.GetUserVisibleTypes());
   return GetProfileDifference(first_profile, second_profile,
-                              GetUserVisibleTypes(), app_locale);
+                              types, app_locale);
 }
 
 bool AutofillProfileComparator::Compare(std::u16string_view text1,
@@ -614,7 +600,7 @@ AutofillProfileComparator::NonMergeableSettingVisibleTypes(
   if (a.GetAddressCountryCode() != b.GetAddressCountryCode()) {
     return std::nullopt;
   }
-  FieldTypeSet setting_visible_types = GetUserVisibleTypes();
+  FieldTypeSet setting_visible_types = a.GetUserVisibleTypes();
   FieldTypeSet non_mergeable_types;
   // If one the fields have too long value, do not merge this profile.
   if (base::FeatureList::IsEnabled(
@@ -664,9 +650,12 @@ bool AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
     const AutofillProfile& p1,
     const AutofillProfile& p2,
     const std::string& app_locale) {
+  if (p1.GetUserVisibleTypes() != p2.GetUserVisibleTypes()) {
+    return false;
+  }
   // Return true if at least one value corresponding to the settings visible
   // types is different between the two profiles.
-  return std::ranges::any_of(GetUserVisibleTypes(), [&](const auto type) {
+  return std::ranges::any_of(p1.GetUserVisibleTypes(), [&](FieldType type) {
     return p1.GetInfo(type, app_locale) != p2.GetInfo(type, app_locale);
   });
 }

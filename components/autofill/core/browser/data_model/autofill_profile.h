@@ -142,6 +142,12 @@ class AutofillProfile : public AutofillDataModel {
   // This function returns the storable type of the given `type`.
   FieldType GetStorableTypeOf(FieldType type) const;
 
+  // The values corresponding to those types are visible in the address editor
+  // UI. The fields come from the addressinput library, with addition of the
+  // autofill extensions. The exact set of fields depends on the profile's
+  // country code. If data for it is missing it will default to the US.
+  FieldTypeSet GetUserVisibleTypes() const;
+
   // Returns true if there are no values (field types) set.
   bool IsEmpty(const std::string& app_locale) const;
 

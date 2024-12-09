@@ -75,6 +75,8 @@ namespace autofill {
 
 namespace {
 
+constexpr char kAddressComponentsDefaultLocality[] = "en-US";
+
 // Stores the data types that are relevant for the structured address/name.
 constexpr DenseSet kStructuredDataTypes = {NAME_FIRST,
                                            NAME_MIDDLE,
@@ -460,6 +462,21 @@ FieldType AutofillProfile::GetStorableTypeOf(FieldType type) const {
     // The other FieldTypeGroups only support storable types.
     return type;
   }
+}
+
+FieldTypeSet AutofillProfile::GetUserVisibleTypes() const {
+  FieldTypeSet visible_types{PHONE_HOME_WHOLE_NUMBER, EMAIL_ADDRESS};
+  std::string components_language_code;
+  for (const AutofillAddressUIComponent& component :
+       GetAddressComponents(GetAddressCountryCode().value(),
+                            kAddressComponentsDefaultLocality,
+                            /*enable_field_labels_localization=*/false,
+                            /*include_literals=*/false,
+                            components_language_code)) {
+    visible_types.insert(component.field);
+  }
+
+  return visible_types;
 }
 
 bool AutofillProfile::IsEmpty(const std::string& app_locale) const {

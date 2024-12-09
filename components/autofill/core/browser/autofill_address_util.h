@@ -78,6 +78,26 @@ void GetAddressComponents(
     std::vector<std::vector<AutofillAddressUIComponent>>* address_components,
     std::string* components_language_code);
 
+// Returns a vector of `AutofillAddressUIComponent` for the CLDR `country_code`.
+// The components can be in default or Latin order,
+// depending on the BCP 47 `ui_language_code`.
+//
+// Sets the `components_language_code` to the BCP 47 language tag that should
+// be saved with this address. This language could be used  to format the
+// address that the user entered, but autofill currently doesn't support this.
+// If `enable_field_labels_localization` is false, the
+// AutofillAddressUIComponents won't have their label translated to
+// `ui_language_code`. It is useful for the `AutofillProfileComparator` which
+// only cares about the field fypes. `include_literals` controls whether
+// formatting literals such as
+// ", " and "-" should be returned.
+std::vector<AutofillAddressUIComponent> GetAddressComponents(
+    const std::string& country_code,
+    const std::string& ui_language_code,
+    bool enable_field_labels_localization,
+    bool include_literals,
+    std::string& components_language_code);
+
 // Returns the address stored in `profile` when UI BCP 47 language code is
 // `ui_language_code`. If the format of the country in `profile` isn't known,
 // the US address format is used instead. If `ui_language_code` is not valid,
