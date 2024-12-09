@@ -336,13 +336,13 @@ void EncodeString(const std::u16string& value, std::string* into) {
 
 void EncodeBinary(const std::string& value, std::string* into) {
   EncodeVarInt(value.length(), into);
-  into->append(value.begin(), value.end());
+  into->append(value);
   DCHECK_GE(into->size(), value.size());
 }
 
 void EncodeBinary(base::span<const uint8_t> value, std::string* into) {
   EncodeVarInt(value.size(), into);
-  into->append(value.begin(), value.end());
+  into->append(base::as_string_view(value));
   DCHECK_GE(into->size(), value.size());
 }
 
@@ -353,8 +353,7 @@ void EncodeStringWithLength(const std::u16string& value, std::string* into) {
 
 void EncodeDouble(double value, std::string* into) {
   // This always has host endianness.
-  const char* p = reinterpret_cast<char*>(&value);
-  into->insert(into->end(), p, p + sizeof(value));
+  into->append(base::as_string_view(base::byte_span_from_ref(value)));
 }
 
 // Return value is true iff successful.
