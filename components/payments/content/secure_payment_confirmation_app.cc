@@ -4,7 +4,10 @@
 
 #include "components/payments/content/secure_payment_confirmation_app.h"
 
+#include <cstdint>
+#include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/base64url.h"
@@ -121,6 +124,7 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
   options->allow_credentials = std::move(credentials);
 
   options->challenge = request_->challenge;
+  std::optional<std::vector<uint8_t>> maybe_browser_bound_key = std::nullopt;
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
@@ -130,12 +134,9 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
     browser_bound_key_ =
         browser_bound_key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
             credential_id_);
-    // TOOD(crbug.com/377278827): Add the browser bound public key to the
-    // clientDataJson via a new parameter on
-    // InternalAuthenticator::SetPaymentOptions.
+    maybe_browser_bound_key = browser_bound_key_->GetPublicKeyAsCoseKey();
   }
 #endif
-
   // TODO(crbug.com/40225659): The 'showOptOut' flag status must also be signed
   // in the assertion, so that the verifier can check that the caller offered
   // the experience if desired.
@@ -145,7 +146,8 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
   authenticator_->SetPaymentOptions(blink::mojom::PaymentOptions::New(
       spec_->GetTotal(/*selected_app=*/this)->amount.Clone(),
       request_->instrument.Clone(), request_->payee_name,
-      request_->payee_origin));
+      request_->payee_origin, maybe_browser_bound_key));
+
   authenticator_->GetAssertion(
       std::move(options),
       base::BindOnce(&SecurePaymentConfirmationApp::OnGetAssertion,

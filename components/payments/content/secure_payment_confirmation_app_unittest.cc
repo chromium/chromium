@@ -4,8 +4,12 @@
 
 #include "components/payments/content/secure_payment_confirmation_app.h"
 
+#include <cstdint>
+#include <map>
 #include <memory>
+#include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/memory/raw_ptr.h"
@@ -37,6 +41,7 @@ using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::Optional;
 using ::testing::Property;
 
 static constexpr char kChallengeBase64[] = "aaaa";
@@ -45,18 +50,18 @@ static constexpr char kCredentialIdBase64[] = "cccc";
 class FakeBrowserBoundKey : public BrowserBoundKey {
  public:
   FakeBrowserBoundKey() = default;
-  FakeBrowserBoundKey(std::vector<uint8_t> cose_key,
+  FakeBrowserBoundKey(std::vector<uint8_t> public_key_as_cose_key,
                       std::vector<uint8_t> signature,
                       std::vector<uint8_t> expected_client_data)
-      : cose_key_(cose_key),
+      : public_key_as_cose_key_(public_key_as_cose_key),
         signature_(signature),
         expected_client_data_(expected_client_data) {}
   FakeBrowserBoundKey(const FakeBrowserBoundKey& other)
-      : cose_key_(other.cose_key_),
+      : public_key_as_cose_key_(other.public_key_as_cose_key_),
         signature_(other.signature_),
         expected_client_data_(other.expected_client_data_) {}
   FakeBrowserBoundKey& operator=(const FakeBrowserBoundKey& other) {
-    cose_key_ = other.cose_key_;
+    public_key_as_cose_key_ = other.public_key_as_cose_key_;
     signature_ = other.signature_;
     expected_client_data_ = other.expected_client_data_;
     return *this;
@@ -69,10 +74,12 @@ class FakeBrowserBoundKey : public BrowserBoundKey {
     }
     return {};
   }
-  std::vector<uint8_t> GetPublicKeyAsCoseKey() override { return cose_key_; }
+  std::vector<uint8_t> GetPublicKeyAsCoseKey() override {
+    return public_key_as_cose_key_;
+  }
 
  private:
-  std::vector<uint8_t> cose_key_;
+  std::vector<uint8_t> public_key_as_cose_key_;
   std::vector<uint8_t> signature_;
   std::vector<uint8_t> expected_client_data_;
 };
@@ -223,7 +230,7 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(SecurePaymentConfirmationAppTest, AddsBrowserBoundSignature) {
+TEST_F(SecurePaymentConfirmationAppTest, AddsBrowserBoundKeyAndSignature) {
   base::test::ScopedFeatureList features(
       blink::features::kSecurePaymentConfirmationBrowserBoundKeys);
   auto authenticator =
@@ -232,8 +239,9 @@ TEST_F(SecurePaymentConfirmationAppTest, AddsBrowserBoundSignature) {
   std::vector<uint8_t> credential_id(credential_id_bytes_.begin(),
                                      credential_id_bytes_.end());
   const std::vector<uint8_t> client_data_json({0x01, 0x02, 0x03, 0x04});
-  const std::vector<uint8_t> signature({0x05, 0x06, 0x07, 0x08});
-  FakeBrowserBoundKey browser_bound_key(/*cose_key=*/{}, signature,
+  const std::vector<uint8_t> public_key_as_cose_key({0x05, 0x06, 0x07, 0x08});
+  const std::vector<uint8_t> signature({0x09, 0x0a, 0x0b, 0x0c});
+  FakeBrowserBoundKey browser_bound_key(public_key_as_cose_key, signature,
                                         client_data_json);
   SecurePaymentConfirmationApp app(
       web_contents_, "effective_rp.example", payment_instrument_label_,
@@ -245,6 +253,11 @@ TEST_F(SecurePaymentConfirmationAppTest, AddsBrowserBoundSignature) {
   app.SetBrowserBoundKeyStoreForTesting(MakeFakeBrowserBoundKeyStore());
   browser_bound_key_store_->PutFakeKey(credential_id, browser_bound_key);
 
+  EXPECT_CALL(*mock_authenticator,
+              SetPaymentOptions(Pointee(
+                  Field("browser_bound_public_key",
+                        &blink::mojom::PaymentOptions::browser_bound_public_key,
+                        Optional(ElementsAreArray(public_key_as_cose_key))))));
   EXPECT_CALL(*mock_authenticator, GetAssertion(_, _))
       .WillOnce(
           [client_data_json](

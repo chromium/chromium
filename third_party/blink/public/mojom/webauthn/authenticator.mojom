@@ -330,6 +330,7 @@ struct PaymentOptions {
   PaymentCredentialInstrument instrument;
   string? payee_name;
   url.mojom.Origin? payee_origin;
+  array<uint8>? browser_bound_public_key;
 };
 
 // TODO(https://crbug.com/1239249): Move to payment_request.mojom after this
