@@ -180,8 +180,6 @@ AutoselectFirstSuggestion ShouldAutofillPopupAutoselectFirstSuggestion(
 #if !BUILDFLAG(IS_ANDROID)
 const base::Feature& GetFeature(AutofillClient::IphFeature iph_feature) {
   switch (iph_feature) {
-    case AutofillClient::IphFeature::kManualFallback:
-      return feature_engagement::kIPHAutofillManualFallbackFeature;
     case AutofillClient::IphFeature::kPredictionImprovements:
       return feature_engagement::kIPHAutofillPredictionImprovementsFeature;
   }
@@ -190,8 +188,6 @@ const base::Feature& GetFeature(AutofillClient::IphFeature iph_feature) {
 
 ui::ElementIdentifier GetElementId(AutofillClient::IphFeature iph_feature) {
   switch (iph_feature) {
-    case AutofillClient::IphFeature::kManualFallback:
-      return kAutofillManualFallbackElementId;
     case AutofillClient::IphFeature::kPredictionImprovements:
       return kAutofillPredictionImprovementsIphElementId;
   }

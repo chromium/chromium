@@ -663,9 +663,6 @@ BASE_FEATURE(kIPHAutofillDisabledVirtualCardSuggestionFeature,
 BASE_FEATURE(kIPHAutofillExternalAccountProfileSuggestionFeature,
              "IPH_AutofillExternalAccountProfileSuggestion",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHAutofillManualFallbackFeature,
-             "IPH_AutofillManualFallback",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAutofillPredictionImprovementsFeature,
              "IPH_AutofillPredictionImprovements",
              base::FEATURE_ENABLED_BY_DEFAULT);

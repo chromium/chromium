@@ -46820,8 +46820,6 @@ should be able to be added at any place in this file.
       label="For AutofillDisabledVirtualCardSuggestion feature."/>
   <suffix name="AutofillExternalAccountProfileSuggestion"
       label="For AutofillExternalAccountProfileSuggestion feature."/>
-  <suffix name="AutofillManualFallback"
-      label="For AutofillManualFallback feature."/>
   <suffix name="AutofillPredictionImprovements"
       label="For AutofillPredictionImprovements feature."/>
   <suffix name="AutofillPredictionImprovementsBootstrapping"

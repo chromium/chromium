@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/test/mock_feature_promo_controller.h"
@@ -60,7 +61,8 @@ class AutofillFieldPromoControllerWrapper
       : content::WebContentsUserData<AutofillFieldPromoControllerWrapper>(
             *web_contents) {
     promo_controller_ = std::make_unique<AutofillFieldPromoControllerImpl>(
-        web_contents, feature_engagement::kIPHAutofillManualFallbackFeature,
+        web_contents,
+        feature_engagement::kIPHAutofillPredictionImprovementsFeature,
         kAutofillStandaloneCvcSuggestionElementId);
   }
   WEB_CONTENTS_USER_DATA_KEY_DECL();

@@ -41,6 +41,7 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -435,19 +436,20 @@ TEST_F(ChromeAutofillClientTest,
       /*on_confirmation_closed_callback=*/std::nullopt);
 }
 
-TEST_F(ChromeAutofillClientTest,
-       AutofillManualFallbackIPH_NotShownByPromoController) {
-  SetUpIphForTesting(feature_engagement::kIPHAutofillManualFallbackFeature);
+TEST_F(ChromeAutofillClientTest, AutofillFieldIPH_NotShownByPromoController) {
+  SetUpIphForTesting(
+      feature_engagement::kIPHAutofillPredictionImprovementsFeature);
 
   EXPECT_CALL(*autofill_field_promo_controller(), IsMaybeShowing)
       .WillRepeatedly(Return(false));
 
   EXPECT_FALSE(client()->ShowAutofillFieldIphForFeature(
-      FormFieldData{}, AutofillClient::IphFeature::kManualFallback));
+      FormFieldData{}, AutofillClient::IphFeature::kPredictionImprovements));
 }
 
-TEST_F(ChromeAutofillClientTest, AutofillManualFallbackIPH_IsShown) {
-  SetUpIphForTesting(feature_engagement::kIPHAutofillManualFallbackFeature);
+TEST_F(ChromeAutofillClientTest, AutofillFieldIPH_IsShown) {
+  SetUpIphForTesting(
+      feature_engagement::kIPHAutofillPredictionImprovementsFeature);
 
   InSequence sequence;
   EXPECT_CALL(*autofill_field_promo_controller(), IsMaybeShowing)
@@ -457,7 +459,7 @@ TEST_F(ChromeAutofillClientTest, AutofillManualFallbackIPH_IsShown) {
       .WillOnce(Return(true));
 
   EXPECT_TRUE(client()->ShowAutofillFieldIphForFeature(
-      FormFieldData{}, AutofillClient::IphFeature::kManualFallback));
+      FormFieldData{}, AutofillClient::IphFeature::kPredictionImprovements));
 }
 
 TEST_F(ChromeAutofillClientTest, AutofillImprovedPredictionsIPH_IsShown) {
@@ -476,7 +478,7 @@ TEST_F(ChromeAutofillClientTest, AutofillImprovedPredictionsIPH_IsShown) {
 }
 
 TEST_F(ChromeAutofillClientTest,
-       AutofillManualFallbackIPH_HideOnShowAutofillSuggestions) {
+       AutofillFieldIPH_HideOnShowAutofillSuggestions) {
   SetUpIphForTesting(
       feature_engagement::kIPHAutofillPredictionImprovementsFeature);
   auto delegate = std::make_unique<MockAutofillSuggestionDelegate>();
@@ -521,13 +523,14 @@ class ChromeAutofillClientTestWithWindow : public BrowserWithTestWindowTest {
       test_autofill_client_injector_;
 };
 
-TEST_F(ChromeAutofillClientTestWithWindow,
-       AutofillManualFallbackIPH_NotifyFeatureUsed) {
+TEST_F(ChromeAutofillClientTestWithWindow, AutofillFieldIPH_NotifyFeatureUsed) {
   EXPECT_CALL(
       *feature_promo_controller(),
-      EndPromo(Ref(feature_engagement::kIPHAutofillManualFallbackFeature),
-               user_education::EndFeaturePromoReason::kFeatureEngaged));
-  client()->NotifyIphFeatureUsed(AutofillClient::IphFeature::kManualFallback);
+      EndPromo(
+          Ref(feature_engagement::kIPHAutofillPredictionImprovementsFeature),
+          user_education::EndFeaturePromoReason::kFeatureEngaged));
+  client()->NotifyIphFeatureUsed(
+      AutofillClient::IphFeature::kPredictionImprovements);
 }
 #endif
 }  // namespace

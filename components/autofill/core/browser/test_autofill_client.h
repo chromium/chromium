@@ -319,8 +319,9 @@ class TestAutofillClientTemplate : public T {
 
   void HideAutofillFieldIph() override { autofill_iph_showing_ = std::nullopt; }
 
-  bool IsShowingManualFallbackIph() {
-    return autofill_iph_showing_ == AutofillClient::IphFeature::kManualFallback;
+  bool IsShowingPredictionImprovementsIph() {
+    return autofill_iph_showing_ ==
+           AutofillClient::IphFeature::kPredictionImprovements;
   }
 
   void NotifyIphFeatureUsed(AutofillClient::IphFeature feature) override {

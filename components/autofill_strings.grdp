@@ -232,12 +232,6 @@
   <message name="IDS_AUTOFILL_IPH_EXTERNAL_ACCOUNT_PROFILE_SUGGESTION" desc="IPH bubble for a suggestion item with an account profile that was created somewhere outside Chrome (e.g. Google Pay)." formatter_data="android_java">
     You can now use addresses from your Google Account
   </message>
-  <message name="IDS_AUTOFILL_IPH_MANUAL_FALLBACK" desc="IPH bubble for triggering autofill from the context menu.">
-    Right click to autofill saved info, like your name or address, on any form
-  </message>
-  <message name="IDS_AUTOFILL_IPH_MANUAL_FALLBACK_SCREENREADER" is_accessibility_with_no_ui="true" desc="Screenreader text for the IPH bubble for triggering autofill from the context menu.">
-    Right click to autofill saved info, like your name or address, on any form
-  </message>
 
   <!-- Autofill suggestion label separator -->
   <message name="IDS_AUTOFILL_SUGGESTION_LABEL_SEPARATOR" desc="A separator to place between different elements of a suggestion's label. Labels sometimes have more than one type of information, such as a phone number and an email address or a street address, a phone number, and an email address. A symbol, in this case a bullet •, with a white space before it and a white space after it, is used to separate the parts of the label that appear on the same line, e.g. (877) 733-7699 • fanfeedback@redsox.com or 465 Huntington Ave • (617) 267-9300 • matthewt@mfa.org. A bullet • is preferred for separating the label parts; however, if the bullet • resembles another symbol in the language, please translate the bullet • as a symbol (A) that is not easily mistaken for a number or letter in the language and (B) that is typically used to separate elements.">

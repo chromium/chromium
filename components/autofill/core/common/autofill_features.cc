@@ -99,15 +99,6 @@ BASE_FEATURE(kAutofillEnableAddressFieldParserNG,
              "AutofillEnableAddressFieldParserNG",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, autofill displays an IPH informing users about using autofill
-// from the context menu. The IPH will be attached to address fields with
-// autocomplete="garbage".
-// TODO(crbug.com/313587343) Remove once manual fallback IPH feature is
-// launched.
-BASE_FEATURE(kAutofillEnableManualFallbackIPH,
-             "AutofillEnableManualFallbackIPH",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls if the heuristic field parsing utilizes shared labels.
 // TODO(crbug.com/40741721): Remove once shared labels are launched.
 BASE_FEATURE(kAutofillEnableSupportForParsingWithSharedLabels,

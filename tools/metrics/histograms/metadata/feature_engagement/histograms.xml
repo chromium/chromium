@@ -71,9 +71,6 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_AutofillExternalAccountProfileSuggestion"
       summary="message shown along with the externally created (e.g. in
                Google Pay) profile suggestion option in the Autofill dropdown"/>
-  <variant name="IPH_AutofillManualFallback"
-      summary="message educating users about the possibility of triggering
-               autofill on any field from the context menu"/>
   <variant name="IPH_AutofillPredictionImprovements"
       summary="snooze educating users about the possibility of turning on the
                prediction improvements feature from the settings page"/>

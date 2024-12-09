@@ -561,14 +561,6 @@ class BrowserAutofillManager : public AutofillManager {
       OnGenerateSuggestionsCallback callback,
       std::vector<std::vector<Suggestion>> suggestion_lists);
 
-  // Displays IPH for manual fallbacks if the form can be autofilled and the
-  // user has profiles which can fill the current field.
-  void MaybeShowIphForManualFallback(
-      const FormFieldData& field,
-      const AutofillField* autofill_field,
-      AutofillSuggestionTriggerSource trigger_source,
-      SuppressReason suppress_reason);
-
   // Triggered when the user undoes the filling of an address profile using an
   // email override.
   void OnEmailOverrideUndone(const std::u16string& original_email,

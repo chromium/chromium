@@ -676,17 +676,17 @@ TEST(PasswordManagerUtil, AvoidOverlappingAutofillMenuAndManualGeneration) {
       autofill::AutofillClient::PopupOpenArgs(), /*delegate=*/nullptr);
   test_autofill_client.ShowAutofillFieldIphForFeature(
       autofill::FormFieldData(),
-      autofill::AutofillClient::IphFeature::kManualFallback);
+      autofill::AutofillClient::IphFeature::kPredictionImprovements);
 
   ASSERT_TRUE(test_autofill_client.IsShowingAutofillPopup());
-  ASSERT_TRUE(test_autofill_client.IsShowingManualFallbackIph());
+  ASSERT_TRUE(test_autofill_client.IsShowingPredictionImprovementsIph());
 
   UserTriggeredManualGenerationFromContextMenu(&stub_password_client,
                                                &test_autofill_client);
   EXPECT_EQ(test_autofill_client.popup_hiding_reason(),
             autofill::SuggestionHidingReason::
                 kOverlappingWithPasswordGenerationPopup);
-  EXPECT_FALSE(test_autofill_client.IsShowingManualFallbackIph());
+  EXPECT_FALSE(test_autofill_client.IsShowingPredictionImprovementsIph());
 }
 
 TEST(PasswordManagerUtil, StripAuthAndParams) {

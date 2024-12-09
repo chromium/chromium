@@ -262,6 +262,7 @@ source_set("unit_tests") {
     "//components/autofill/content/browser:test_support",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common:test_support",
+    "//components/feature_engagement/public:feature_constants",
     "//components/input",
     "//components/keyed_service/content",
     "//components/keyed_service/core",

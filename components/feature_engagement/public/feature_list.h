@@ -401,8 +401,6 @@ DEFINE_VARIATION_PARAM(kIPHAutofillDisabledVirtualCardSuggestionFeature,
                        "IPH_AutofillDisabledVirtualCardSuggestion");
 DEFINE_VARIATION_PARAM(kIPHAutofillExternalAccountProfileSuggestionFeature,
                        "IPH_AutofillExternalAccountProfileSuggestion");
-DEFINE_VARIATION_PARAM(kIPHAutofillManualFallbackFeature,
-                       "IPH_AutofillManualFallback");
 DEFINE_VARIATION_PARAM(kIPHAutofillPredictionImprovementsFeature,
                        "IPH_AutofillPredictionImprovements");
 DEFINE_VARIATION_PARAM(kIPHAutofillVirtualCardCVCSuggestionFeature,
@@ -713,7 +711,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHAutofillCardInfoRetrievalSuggestionFeature),
         VARIATION_ENTRY(kIPHAutofillDisabledVirtualCardSuggestionFeature),
         VARIATION_ENTRY(kIPHAutofillExternalAccountProfileSuggestionFeature),
-        VARIATION_ENTRY(kIPHAutofillManualFallbackFeature),
         VARIATION_ENTRY(kIPHAutofillPredictionImprovementsFeature),
         VARIATION_ENTRY(kIPHAutofillVirtualCardCVCSuggestionFeature),
         VARIATION_ENTRY(kIPHAutofillVirtualCardSuggestionFeature),

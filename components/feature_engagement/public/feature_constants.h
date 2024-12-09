@@ -295,7 +295,6 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(
     kIPHAutofillDisabledVirtualCardSuggestionFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(
     kIPHAutofillExternalAccountProfileSuggestionFeature);
-FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHAutofillManualFallbackFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHAutofillPredictionImprovementsFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(
     kIPHAutofillPredictionImprovementsBootstrappingFeature);

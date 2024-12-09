@@ -1179,13 +1179,6 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     autofill_field->set_was_focused(true);
   }
 
-  // Once the user triggers autofill from the context menu, this event is
-  // recorded, because the IPH configuration limits how many times the IPH can
-  // be shown.
-  if (IsAutofillManuallyTriggered(trigger_source)) {
-    client().NotifyIphFeatureUsed(AutofillClient::IphFeature::kManualFallback);
-  }
-
   const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
   external_delegate_->OnQuery(form, field, caret_bounds, trigger_source,
                               /*update_datalist=*/true);
@@ -1428,11 +1421,6 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     return;
   }
 
-  if (should_offer_other_suggestions) {
-    MaybeShowIphForManualFallback(field, autofill_field, trigger_source,
-                                  context.suppress_reason);
-  }
-
   // Whether or not to request single field form fill suggestions.
   const bool should_offer_single_field_form_fill =
       should_offer_other_suggestions &&
@@ -1569,45 +1557,6 @@ void BrowserAutofillManager::
   // and/or plus address suggestions.
   std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions),
                           std::nullopt);
-}
-
-void BrowserAutofillManager::MaybeShowIphForManualFallback(
-    const FormFieldData& field,
-    const AutofillField* autofill_field,
-    AutofillSuggestionTriggerSource trigger_source,
-    SuppressReason suppress_reason) {
-  if (trigger_source ==
-      AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick) {
-    return;
-  }
-  if (suppress_reason != SuppressReason::kAutocompleteUnrecognized) {
-    return;
-  }
-  if (!autofill_field) {
-    return;
-  }
-  if (FieldTypeGroupToFormType(autofill_field->Type().group()) !=
-      FormType::kAddressForm) {
-    return;
-  }
-  if (std::ranges::none_of(client()
-                               .GetPersonalDataManager()
-                               .address_data_manager()
-                               .GetProfiles(),
-                           [type = autofill_field->Type().GetStorableType()](
-                               const AutofillProfile* profile) {
-                             return profile->HasInfo(type);
-                           })) {
-    return;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableManualFallbackIPH)) {
-    return;
-  }
-
-  client().ShowAutofillFieldIphForFeature(
-      field, AutofillClient::IphFeature::kManualFallback);
 }
 
 void BrowserAutofillManager::OnGenerateSuggestionsComplete(

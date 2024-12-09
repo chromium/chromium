@@ -1978,25 +1978,6 @@
             ]
         }
     ],
-    "AutofillForUnclassifiedFieldsAvailable": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_AutofillForUnclassifiedFieldsAndManualFallbackIPH",
-                    "enable_features": [
-                        "AutofillEnableManualFallbackIPH",
-                        "AutofillForUnclassifiedFieldsAvailable"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillGivePrecedenceToEmailOverUsername": [
         {
             "platforms": [
