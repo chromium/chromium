@@ -952,9 +952,7 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
   EXPECT_TRUE(found_noise_cancellation_buttion);
 }
 
-// TODO(crbug.com/40071631): re-enable once the bug is fixed.
-IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
-                       DISABLED_StopAllScreenShare) {
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest, StopAllScreenShare) {
   // Open a tab.
   content::WebContents* web_contents_1 =
       NavigateTo("/video_conference_demo.html");
