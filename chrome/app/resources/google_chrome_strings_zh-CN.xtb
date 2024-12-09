@@ -60,7 +60,7 @@
 <translation id="1722488837206509557">这样，您就可以从可用设备中选择并在这些设备上显示内容。</translation>
 <translation id="1734234790201236882">Chrome 会将此密码保存在您的 Google 账号中，因此您不必记住它。</translation>
 <translation id="1786003790898721085">请确保您已在“<ph name="TARGET_DEVICE_NAME" />”上登录 Chrome，然后再次尝试发送。</translation>
-<translation id="1786044937610313874">在 Chrome 中打开快捷方式</translation>
+<translation id="1786044937610313874">快捷方式会在 Chrome 中打开</translation>
 <translation id="178701303897325119">此扩展程序已不再受支持。Chrome 建议您移除它。</translation>
 <translation id="1812689907177901597">关闭此设置后，您无需登录 Chrome 即可登录 Gmail 等 Google 网站</translation>
 <translation id="1860536484129686729">Chrome 需要获得相应权限，才能允许此网站使用您的摄像头</translation>
@@ -495,7 +495,7 @@
 <translation id="7099479769133613710">重新启动以更新 Chrome 操作系统(&amp;C)</translation>
 <translation id="7100085796996987445">若要共享屏幕，请在“系统偏好设置”中为 Chrome 启用屏幕录制功能</translation>
 <translation id="7106741999175697885">任务管理器 - Google Chrome</translation>
-<translation id="7113423803153683764">Chrome 会释放闲置标签页占用的内存。这可让使用中的标签页和其他应用获得更多计算机资源，并让 Chrome 保持快速运行。当您返回到闲置标签页时，它们会自动重新变为活动状态。</translation>
+<translation id="7113423803153683764">Chrome 会释放闲置标签页占用的内存。这可让使用中的标签页和其他应用获得更多计算机资源，并让 Chrome 保持快速运行。当您返回到闲置标签页时，它们会自动重新变为活跃状态。</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。}=1{Chrome 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。您的无痕式窗口不会重新打开。}other{Chrome 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
 <translation id="7155997830309522122">如果是的话，请修改您在 Chrome 中保存的密码，使它与您的新密码保持一致。</translation>
 <translation id="7161904924553537242">欢迎使用 Google Chrome</translation>

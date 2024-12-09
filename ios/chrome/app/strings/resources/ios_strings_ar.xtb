@@ -463,7 +463,7 @@
 
 
 اطّلِع على تعليمات محرك البحث بشأن حذف سجلّ البحث، إن أمكن.</translation>
-<translation id="3080525922482950719">يمكنك حفظ صفحات لقرائتها لاحقًا أو بلا إنترنت.</translation>
+<translation id="3080525922482950719">يمكنك حفظ صفحات لقراءتها لاحقًا أو بلا إنترنت</translation>
 <translation id="3081338492074632642">يُرجى التأكّد من أنّ كلمة المرور التي تريد حفظها تطابِق كلمة مرور <ph name="WEBSITE" />.</translation>
 <translation id="3087734570205094154">أسفل</translation>
 <translation id="309710370695886264">لديك كلمة مرور واحدة مستخدَمة لحساب آخر. عليك تغييرها الآن للحفاظ على أمانك.</translation>
@@ -1104,7 +1104,7 @@
 <translation id="6100617279104942061">تم تسجيل الدخول بحساب "<ph name="USER_EMAIL" />". يفتح هذا الزر صفحة الإعدادات.</translation>
 <translation id="6103540626693881831">التشفير على الجهاز فقط</translation>
 <translation id="6122191549521593678">متصل</translation>
-<translation id="6122831415929794347">هل تريد إيقاف "التصفُّح الآمن"؟</translation>
+<translation id="6122831415929794347">هل المطلوب إيقاف "التصفُّح الآمن"؟</translation>
 <translation id="6123514585040403489">سيتم إغلاق علامات التبويب</translation>
 <translation id="6127379762771434464">أُزيلَ عنصر</translation>
 <translation id="6136914049981179737">قبل ثانية</translation>
@@ -1513,7 +1513,7 @@
 <translation id="7911190106180361398">لا تسمح لك مؤسستك بمزامنة كل البيانات.</translation>
 <translation id="7920949005883349320">الخصوصية والأمان</translation>
 <translation id="792357691529995513">لم يتم رصد أي مشاكل.</translation>
-<translation id="7925108652071887026">ملء البيانات تلقائيًا</translation>
+<translation id="7925108652071887026">بيانات الملء التلقائي</translation>
 <translation id="7926975587469166629">لقب البطاقة</translation>
 <translation id="7927711904086083099">غير محدد</translation>
 <translation id="7930998711684428189">التحذير في حال الكشف عن كلمات المرور في عملية اختراق بيانات</translation>
@@ -1538,7 +1538,7 @@
 <translation id="7993619969781047893">قد تتوقف الميزات عن العمل في بعض المواقع الإلكترونية.</translation>
 <translation id="7996239959906074962">إعداد…</translation>
 <translation id="800361585186029508">‏فتح عناوين URL التي تم إدخالها في Google Chrome</translation>
-<translation id="8005666035647241369">‏حفظ كلمة المرور في "مدير كلمات المرور" من Google على هذا الجهاز</translation>
+<translation id="8005666035647241369">‏في "مدير كلمات المرور في Google" على هذا الجهاز</translation>
 <translation id="8011489434346330032">‏أداة فحص الويب (Web Inspector) </translation>
 <translation id="802154636333426148">تعذّر التنزيل</translation>
 <translation id="8023878949384262191">توسيع القسم.</translation>
