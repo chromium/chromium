@@ -2263,6 +2263,12 @@
       name: "HTMLEmbedElementNotForceLayout",
       status: "stable",
     },
+    // The width attribute on the hr element, previously converted 0 values to 1px.
+    // This will ship in M133, so should be safe to remove in M135.
+    {
+      name: "HTMLHRWidthAllowZero",
+      status: "stable"
+    },
     // Adds support for the experimental `interesttarget`
     // attributes, as specified in the open-ui "Interest Invokers" explainer.
     // https://open-ui.org/components/interest-invokers.explainer/
