@@ -11,7 +11,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/caption_style.h"
 
@@ -170,9 +169,6 @@ std::string GetMAWindowRadiusAsCSSNumberInPixels() {
 
 // static
 std::optional<CaptionStyle> CaptionStyle::FromSystemSettings() {
-  if (!base::FeatureList::IsEnabled(features::kSystemCaptionStyle))
-    return std::nullopt;
-
   CaptionStyle style;
 
   style.text_color = GetMAForegroundColorAndOpacityAsCSSColor();

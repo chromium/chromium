@@ -165,11 +165,6 @@ BASE_FEATURE(kStylusSpecificTapSlop,
              "StylusSpecificTapSlop",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Allows system caption style for WebVTT Captions.
-BASE_FEATURE(kSystemCaptionStyle,
-             "SystemCaptionStyle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, the feature will query the OS for a default cursor size,
 // to be used in determining the concrete object size of a custom cursor in
 // blink. Currently enabled by default on Windows only.

@@ -167,7 +167,6 @@ std::string GetCssColorWithAlpha(CC::ClosedCaptionColor caption_color,
 
 std::optional<CaptionStyle> InitializeFromSystemSettings() {
   TRACE_EVENT0("ui", "InitializeFromSystemSettings");
-  DCHECK(base::FeatureList::IsEnabled(features::kSystemCaptionStyle));
 
   base::win::ScopedHString closed_caption_properties_string =
       base::win::ScopedHString::Create(
@@ -265,11 +264,7 @@ std::optional<CaptionStyle> InitializeFromSystemSettings() {
 }  // namespace
 
 std::optional<CaptionStyle> CaptionStyle::FromSystemSettings() {
-  if (base::FeatureList::IsEnabled(features::kSystemCaptionStyle)) {
-    return InitializeFromSystemSettings();
-  }
-  // Return default CaptionStyle if kSystemCaptionStyle is not enabled.
-  return std::nullopt;
+  return InitializeFromSystemSettings();
 }
 
 }  // namespace ui
