@@ -294,8 +294,7 @@ IOSChromePasswordManagerClient::GetURLLoaderFactory() {
 
 password_manager::PasswordRequirementsService*
 IOSChromePasswordManagerClient::GetPasswordRequirementsService() {
-  return IOSPasswordRequirementsServiceFactory::GetForProfile(
-      bridge_.profile, ServiceAccessType::EXPLICIT_ACCESS);
+  return IOSPasswordRequirementsServiceFactory::GetForProfile(bridge_.profile);
 }
 
 void IOSChromePasswordManagerClient::UpdateFormManagers() {

@@ -57,7 +57,6 @@ source_set("model") {
     "//components/browser_sync",
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",
-    "//components/keyed_service/ios",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/affiliation:affiliation_fetching",
     "//components/password_manager/core/browser/features:password_features",
@@ -90,7 +89,6 @@ source_set("model") {
     "//ios/chrome/browser/safe_browsing/model:features",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/public/commands",
@@ -231,7 +229,6 @@ source_set("sharing_factory") {
   ]
   deps = [
     ":store_factory",
-    "//components/keyed_service/ios",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/sharing",
@@ -358,7 +355,6 @@ source_set("eg_app_support+eg2") {
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/common",
-    "//components/keyed_service/core",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common",
     "//components/prefs",
