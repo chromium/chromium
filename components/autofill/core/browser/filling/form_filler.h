@@ -54,7 +54,7 @@ enum class RefillTriggerReason {
 // It holds any state that is only relevant for [re]filling.
 class FormFiller {
  public:
-  FormFiller(BrowserAutofillManager& manager, LogManager* log_manager);
+  explicit FormFiller(BrowserAutofillManager& manager);
 
   FormFiller(const FormFiller&) = delete;
   FormFiller& operator=(const FormFiller&) = delete;
@@ -264,6 +264,8 @@ class FormFiller {
       mojom::ActionPersistence action_persistence,
       std::string* failure_to_fill);
 
+  LogManager* log_manager();
+
   // Container holding the history of Autofill filling operations. Used to undo
   // some of the filling operations.
   FormAutofillHistory form_autofill_history_;
@@ -277,7 +279,6 @@ class FormFiller {
   // where time cannot be mocked, to avoid flakiness.
   base::TimeDelta limit_before_refill_ = kLimitBeforeRefill;
 
-  const raw_ptr<LogManager> log_manager_;
   const raw_ref<BrowserAutofillManager> manager_;
 
   base::WeakPtrFactory<FormFiller> weak_ptr_factory_{this};

@@ -179,10 +179,7 @@ class AutofillCrowdsourcingManagerWithCustomPayloadSize
   AutofillCrowdsourcingManagerWithCustomPayloadSize(AutofillClient* client,
                                                     const std::string& api_key,
                                                     size_t length)
-      : AutofillCrowdsourcingManager(client,
-                                     api_key,
-                                     /*log_manager=*/nullptr),
-        length_(length) {}
+      : AutofillCrowdsourcingManager(client, api_key), length_(length) {}
   ~AutofillCrowdsourcingManagerWithCustomPayloadSize() override = default;
 
  protected:
@@ -1159,7 +1156,7 @@ class AutofillServerCommunicationTest
 
     ScopedActiveAutofillExperiments scoped_active_autofill_experiments;
     AutofillCrowdsourcingManager crowdsourcing_manager(
-        &client(), version_info::Channel::UNKNOWN, nullptr);
+        &client(), version_info::Channel::UNKNOWN);
     bool succeeded = crowdsourcing_manager.StartQueryRequest(
         ToRawPointerVector(form_structures), driver_.GetIsolationInfo(),
         base::BindOnce(
@@ -1182,7 +1179,7 @@ class AutofillServerCommunicationTest
 
     ScopedActiveAutofillExperiments scoped_active_autofill_experiments;
     AutofillCrowdsourcingManager crowdsourcing_manager(
-        &client(), version_info::Channel::UNKNOWN, nullptr);
+        &client(), version_info::Channel::UNKNOWN);
 
     std::vector<AutofillUploadContents> upload_contents = EncodeUploadRequest(
         form, available_field_types, login_form_signature, observed_submission);
@@ -1229,7 +1226,7 @@ class AutofillServerCommunicationTest
 
 TEST_P(AutofillServerCommunicationTest, IsEnabled) {
   AutofillCrowdsourcingManager crowdsourcing_manager(
-      &client(), version_info::Channel::UNKNOWN, nullptr);
+      &client(), version_info::Channel::UNKNOWN);
   EXPECT_EQ(crowdsourcing_manager.IsEnabled(), GetParam() != DISABLED);
 }
 
@@ -1243,7 +1240,7 @@ TEST_P(AutofillServerCommunicationTest, Query) {
 
 TEST_P(AutofillServerCommunicationTest, Upload) {
   AutofillCrowdsourcingManager crowdsourcing_manager(
-      &client(), version_info::Channel::UNKNOWN, nullptr);
+      &client(), version_info::Channel::UNKNOWN);
   EXPECT_EQ(GetParam() != DISABLED,
             SendUploadRequest(
                 FormStructure(
@@ -1465,7 +1462,7 @@ TEST_P(AutofillQueryTest, Metadata) {
 
   // Setup the form structures to query.
   AutofillCrowdsourcingManager crowdsourcing_manager(
-      &client(), version_info::Channel::UNKNOWN, nullptr);
+      &client(), version_info::Channel::UNKNOWN);
   std::vector<std::unique_ptr<FormStructure>> form_structures;
   form_structures.push_back(std::make_unique<FormStructure>(form));
 
@@ -1549,7 +1546,7 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   test_api(form).Append(field);
 
   AutofillCrowdsourcingManager crowdsourcing_manager(
-      &client(), version_info::Channel::UNKNOWN, nullptr);
+      &client(), version_info::Channel::UNKNOWN);
   FormStructure form_structure(form);
   form_structure.set_current_page_language(LanguageCode("fr"));
   SetCorrectFieldHostFormSignatures(form_structure);
@@ -1627,7 +1624,7 @@ TEST_P(AutofillUploadTest, Throttling) {
   ASSERT_NE(DISABLED, GetParam());
 
   AutofillCrowdsourcingManager crowdsourcing_manager(
-      &client(), version_info::Channel::UNKNOWN, nullptr);
+      &client(), version_info::Channel::UNKNOWN);
   FormStructure form_structure(
       test::GetFormData({.fields = {{.role = NAME_FIRST},
                                     {.role = NAME_LAST},
@@ -1744,7 +1741,7 @@ TEST_P(AutofillUploadTest, PeriodicReset) {
       {{switches::kAutofillUploadThrottlingPeriodInDays, "16"}});
 
   AutofillCrowdsourcingManager crowdsourcing_manager(
-      &client(), version_info::Channel::UNKNOWN, nullptr);
+      &client(), version_info::Channel::UNKNOWN);
   SubmissionSource submission_source = SubmissionSource::FORM_SUBMISSION;
 
   FormStructure form_structure(
@@ -1797,7 +1794,7 @@ TEST_P(AutofillUploadTest, ResetOnClearUploadHistory) {
   ASSERT_NE(DISABLED, GetParam());
 
   AutofillCrowdsourcingManager crowdsourcing_manager(
-      &client(), version_info::Channel::UNKNOWN, nullptr);
+      &client(), version_info::Channel::UNKNOWN);
   SubmissionSource submission_source = SubmissionSource::FORM_SUBMISSION;
 
   FormStructure form_structure(

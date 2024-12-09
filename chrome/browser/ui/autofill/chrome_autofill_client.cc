@@ -329,8 +329,8 @@ ChromeAutofillClient::GetURLLoaderFactory() {
 AutofillCrowdsourcingManager& ChromeAutofillClient::GetCrowdsourcingManager() {
   if (!crowdsourcing_manager_) {
     // Lazy initialization to avoid virtual function calls in the constructor.
-    crowdsourcing_manager_ = std::make_unique<AutofillCrowdsourcingManager>(
-        this, GetChannel(), GetLogManager());
+    crowdsourcing_manager_ =
+        std::make_unique<AutofillCrowdsourcingManager>(this, GetChannel());
   }
   return *crowdsourcing_manager_;
 }

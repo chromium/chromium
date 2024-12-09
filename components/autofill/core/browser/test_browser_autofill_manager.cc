@@ -27,8 +27,7 @@ namespace autofill {
 
 TestBrowserAutofillManager::TestBrowserAutofillManager(AutofillDriver* driver)
     : BrowserAutofillManager(driver) {
-  test_api(*this).set_form_filler(
-      std::make_unique<TestFormFiller>(*this, log_manager()));
+  test_api(*this).set_form_filler(std::make_unique<TestFormFiller>(*this));
 }
 
 TestBrowserAutofillManager::~TestBrowserAutofillManager() = default;

@@ -693,7 +693,7 @@ class BrowserAutofillManager : public AutofillManager {
   // Helper class to autofill forms and fields. Do not use directly, use
   // form_filler() instead, because tests inject test objects.
   std::unique_ptr<FormFiller> form_filler_ =
-      std::make_unique<FormFiller>(*this, log_manager());
+      std::make_unique<FormFiller>(*this);
 
   // Contains a list of four digit combinations that were found in the webpage
   // DOM. Populated after a standalone cvc field is processed on a form. Used to

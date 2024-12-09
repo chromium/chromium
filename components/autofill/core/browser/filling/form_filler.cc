@@ -317,10 +317,13 @@ FormFiller::FillingContext::FillingContext(
 
 FormFiller::FillingContext::~FillingContext() = default;
 
-FormFiller::FormFiller(BrowserAutofillManager& manager, LogManager* log_manager)
-    : log_manager_(log_manager), manager_(manager) {}
+FormFiller::FormFiller(BrowserAutofillManager& manager) : manager_(manager) {}
 
 FormFiller::~FormFiller() = default;
+
+LogManager* FormFiller::log_manager() {
+  return manager_->client().GetLogManager();
+}
 
 void FormFiller::Reset() {
   filling_context_.clear();
@@ -378,7 +381,7 @@ FillingProduct FormFiller::UndoAutofill(
     FormStructure& form_structure,
     const FormFieldData& trigger_field) {
   if (!form_autofill_history_.HasHistory(trigger_field.global_id())) {
-    LOG_AF(log_manager_)
+    LOG_AF(log_manager())
         << "Could not undo the filling operation on field "
         << trigger_field.global_id()
         << " because history was dropped upon reaching history limit of "
@@ -580,7 +583,7 @@ void FormFiller::FillOrPreviewForm(
   DCHECK(form_structure);
   DCHECK(autofill_trigger_field);
 
-  LogBuffer buffer(IsLoggingActive(log_manager_));
+  LogBuffer buffer(IsLoggingActive(log_manager()));
   LOG_AF(buffer) << "action_persistence: "
                  << ActionPersistenceToString(action_persistence) << Br{};
   LOG_AF(buffer) << "filling product: "
@@ -603,9 +606,9 @@ void FormFiller::FillOrPreviewForm(
            "filled differs from the number of fields registered in the form "
            "cache."
         << CTag{"table"};
-    LOG_AF(log_manager_) << LoggingScope::kFilling
-                         << LogMessage::kSendFillingData << Br{}
-                         << std::move(buffer);
+    LOG_AF(log_manager()) << LoggingScope::kFilling
+                          << LogMessage::kSendFillingData << Br{}
+                          << std::move(buffer);
     return;
   }
 
@@ -783,8 +786,9 @@ void FormFiller::FillOrPreviewForm(
   }
 
   LOG_AF(buffer) << CTag{"table"};
-  LOG_AF(log_manager_) << LoggingScope::kFilling << LogMessage::kSendFillingData
-                       << Br{} << std::move(buffer);
+  LOG_AF(log_manager()) << LoggingScope::kFilling
+                        << LogMessage::kSendFillingData << Br{}
+                        << std::move(buffer);
 
   if (filling_context) {
     // When a new preview/fill starts, previously forced_fill_values should be
