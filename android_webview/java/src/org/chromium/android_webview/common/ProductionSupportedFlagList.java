@@ -736,6 +736,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("UseRustJsonParser"),
         Flag.baseFeature("V8BaselineBatchCompilation"),
         Flag.baseFeature("V8ConcurrentSparkplug"),
+        Flag.baseFeature("V8Flag_minor_gc_task_with_lower_priority"),
         Flag.baseFeature("V8FlushCodeBasedOnTabVisibility"),
         Flag.baseFeature("V8FlushCodeBasedOnTime"),
         Flag.baseFeature("V8MemoryReducer"),
