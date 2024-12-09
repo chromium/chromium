@@ -148,6 +148,15 @@ public class QuickDeleteControllerTest {
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
         // Click on quick delete menu item.
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
+                                QuickDeleteMetricsDelegate.QuickDeleteAction.MENU_ITEM_CLICKED,
+                                QuickDeleteMetricsDelegate.QuickDeleteAction
+                                        .LAST_15_MINUTES_SELECTED)
+                        .build();
+
         runOnUiThreadBlocking(
                 () -> {
                     AppMenuTestSupport.callOnItemClick(
@@ -155,6 +164,8 @@ public class QuickDeleteControllerTest {
                 });
         onViewWaiting(withId(R.id.quick_delete_spinner), true)
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+
+        histogramWatcher.assertExpected();
     }
 
     private void assertDataTypesCleared(@TimePeriod int timePeriod, int... types) {

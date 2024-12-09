@@ -34,7 +34,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -46,7 +45,6 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.quick_delete.QuickDeleteMetricsDelegate;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -59,7 +57,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -389,49 +386,6 @@ public class TabbedAppMenuTest {
                         .getChildAt(
                                 requestDesktopSiteIndex - getListView().getFirstVisiblePosition()),
                 "request_mobile_site_check");
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"Browser", "Main", "QuickDelete", "RenderTest"})
-    public void testQuickDeleteMenu_Shown() throws IOException {
-        showAppMenuAndAssertMenuShown();
-        int quickDeletePosition =
-                AppMenuTestSupport.findIndexOfMenuItemById(
-                        mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id);
-        mRenderTestRule.render(getListView().getChildAt(quickDeletePosition), "quick_delete");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Browser", "Main", "QuickDelete"})
-    public void testQuickDeleteMenu_entryFromMenuItemHistogram() throws IOException {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
-                        QuickDeleteMetricsDelegate.QuickDeleteAction.MENU_ITEM_CLICKED);
-
-        MenuUtils.invokeCustomMenuActionSync(
-                InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(),
-                R.id.quick_delete_menu_id);
-
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"Browser", "Main", "QuickDelete"})
-    public void testQuickDeleteMenu_NotShownInIncognito() {
-        // Hide first any shown app menu as it can interfere with this test.
-        hitEnterAndAssertAppMenuDismissed();
-
-        mActivityTestRule.newIncognitoTabFromMenu();
-        showAppMenuAndAssertMenuShown();
-        assertEquals(
-                -1,
-                AppMenuTestSupport.findIndexOfMenuItemById(
-                        mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id));
     }
 
     @Test

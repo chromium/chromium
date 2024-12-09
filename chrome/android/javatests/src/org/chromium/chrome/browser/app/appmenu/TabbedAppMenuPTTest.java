@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
 
+import android.view.View;
+
 import androidx.test.filters.LargeTest;
 
 import org.junit.ClassRule;
@@ -19,6 +21,7 @@ import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.ScrollableFacility.Item.Presence;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -34,6 +37,9 @@ import org.chromium.chrome.test.transit.page.RegularWebPageAppMenuFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.settings.SettingsStation;
 import org.chromium.chrome.test.transit.testhtmls.NavigatePageStations;
+import org.chromium.chrome.test.util.ChromeRenderTestRule;
+
+import java.io.IOException;
 
 /** Public Transit tests for the app menu. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -47,6 +53,14 @@ public class TabbedAppMenuPTTest {
     @Rule
     public BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
             new BlankCTATabInitialStatePublicTransitRule(sActivityTestRule);
+
+    @Rule
+    public final ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(0)
+                    .setDescription("App menu")
+                    .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_APP_MENU)
+                    .build();
 
     /** Tests that "New tab" opens a new tab with the NTP. */
     @Test
@@ -89,6 +103,18 @@ public class TabbedAppMenuPTTest {
                         .withIsOpeningTabs(0)
                         .withTabAlreadySelected(tab)
                         .build());
+    }
+
+    /** Render test for the "Delete browsing data" item, including the icon. */
+    @Test
+    @LargeTest
+    @Feature({"QuickDelete", "RenderTest"})
+    public void testRenderQuickDeleteItem() throws IOException {
+        RegularWebPageAppMenuFacility menu =
+                mInitialStateRule.startOnBlankPage().openRegularTabAppMenu();
+        View quickDeleteItemView = menu.mQuickDelete.scrollTo().getView();
+        mRenderTestRule.render(quickDeleteItemView, "quick_delete_item");
+        menu.clickOutsideToClose();
     }
 
     /**
