@@ -10863,6 +10863,87 @@ class BidderWorkletSharedStorageAPIEnabledTest : public BidderWorkletTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+TEST_F(BidderWorkletSharedStorageAPIEnabledTest, ModifierMethodTypeHierarchy) {
+  auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host;
+  mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
+      &test_shared_storage_host);
+  shared_storage_hosts_[0] = receiver.BindNewPipeAndPassRemote();
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          R"({ad: "ad", bid:1, render:"https://response.test/" })",
+          /*extra_code=*/R"(
+            function getTypeHierarchy(obj) {
+              let prototype = Object.getPrototypeOf(obj);
+              const hierarchy = [];
+
+              while (prototype) {
+                hierarchy.push(prototype.constructor.name);
+                prototype = Object.getPrototypeOf(prototype);
+              }
+
+              return hierarchy.join('->');
+            }
+
+            let set_method_hierarchy =
+                getTypeHierarchy(new SharedStorageSetMethod('a', 'b'));
+
+            if (set_method_hierarchy !==
+                'SharedStorageSetMethod->SharedStorageModifierMethod->Object') {
+              throw 'Invalid set_method_hierarchy: ' + set_method_hierarchy;
+            }
+
+            let append_method_hierarchy =
+                getTypeHierarchy(new SharedStorageAppendMethod('a', 'b'));
+
+            if (append_method_hierarchy !==
+                'SharedStorageAppendMethod->SharedStorageModifierMethod->Object') {
+              throw 'Invalid append_method_hierarchy: ' + append_method_hierarchy;
+            }
+
+            let delete_method_hierarchy =
+                getTypeHierarchy(new SharedStorageDeleteMethod('a'));
+
+            if (delete_method_hierarchy !==
+                'SharedStorageDeleteMethod->SharedStorageModifierMethod->Object') {
+              throw 'Invalid delete_method_hierarchy: ' + delete_method_hierarchy;
+            }
+
+            let clear_method_hierarchy =
+                getTypeHierarchy(new SharedStorageClearMethod());
+
+            if (clear_method_hierarchy !==
+                'SharedStorageClearMethod->SharedStorageModifierMethod->Object') {
+              throw 'Invalid clear_method_hierarchy: ' + clear_method_hierarchy;
+            }
+      )"),
+      /*expected_bids=*/
+      mojom::BidderWorkletBid::New(
+          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
+          /*bid_currency=*/std::nullopt,
+          /*ad_cost=*/std::nullopt,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
+          /*ad_component_descriptors=*/std::nullopt,
+          /*modeling_signals=*/std::nullopt, base::TimeDelta()),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/{},
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
+      /*expected_set_priority=*/std::nullopt,
+      /*expected_update_priority_signals_overrides=*/{},
+      /*expected_pa_requests=*/{});
+
+  v8_helpers_[0]->v8_runner()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](scoped_refptr<AuctionV8Helper> v8_helper) {
+                       v8_helper->isolate()->RequestGarbageCollectionForTesting(
+                           v8::Isolate::kFullGarbageCollection);
+                     },
+                     v8_helpers_[0]));
+  task_environment_.RunUntilIdle();
+}
+
 TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
        CreateSharedStorageModifierMethod_IDLError) {
   std::vector<std::pair<std::string, std::string>> methods_and_errors = {
