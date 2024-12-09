@@ -26,18 +26,12 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
-import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoTriggerStateListener;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.segmentation_platform.ClassificationResult;
-import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.PredictionOptions;
-import org.chromium.components.segmentation_platform.ProcessedValue;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
 import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -51,7 +45,6 @@ public class EducationalTipModuleMediator {
 
     private final EducationTipModuleActionDelegate mActionDelegate;
     private final Profile mProfile;
-    private final TabModelSelector mTabModelSelector;
     private final @ModuleType int mModuleType;
     private final PropertyModel mModel;
     private final ModuleDelegate mModuleDelegate;
@@ -70,7 +63,6 @@ public class EducationalTipModuleMediator {
         mModuleDelegate = moduleDelegate;
         mActionDelegate = actionDelegate;
         mProfile = getRegularProfile(mActionDelegate.getProfileSupplier());
-        mTabModelSelector = mActionDelegate.getTabModelSelector();
         mTracker = TrackerFactory.getTrackerForProfile(mProfile);
         mDefaultBrowserPromoTriggerStateListener = this::removeModule;
 
@@ -127,9 +119,9 @@ public class EducationalTipModuleMediator {
             return;
         }
 
-        EducationalTipCardProviderTriggerState educationalTipCardProviderTriggerState =
-                EducationalTipCardProviderTriggerState.getInstance();
-        if (educationalTipCardProviderTriggerState.shouldNotifyCardShownPerSession(cardType)) {
+        EducationalTipCardProviderSignalHandler educationalTipCardProviderSignalHandler =
+                EducationalTipCardProviderSignalHandler.getInstance();
+        if (educationalTipCardProviderSignalHandler.shouldNotifyCardShownPerSession(cardType)) {
             EducationalTipModuleMediatorJni.get().notifyCardShown(mProfile, cardType);
         }
     }
@@ -193,25 +185,11 @@ public class EducationalTipModuleMediator {
         segmentationPlatformService.getClassificationResult(
                 "ephemeral_home_module_backend",
                 /* prediction_options= */ createPredictionOptions(),
-                /* inputContext= */ createInputContext(),
+                /* inputContext= */ EducationalTipCardProviderSignalHandler.getInstance()
+                        .createInputContext(mActionDelegate, mTracker),
                 result -> {
                     showModuleWithCardInfo(onGetClassificationResult(result));
                 });
-    }
-
-    /** Creates an instance of InputContext. */
-    @VisibleForTesting
-    InputContext createInputContext() {
-        InputContext inputContext = new InputContext();
-        inputContext.addEntry(
-                "should_show_non_role_manager_default_browser_promo",
-                ProcessedValue.fromFloat(shouldShowNonRoleManagerDefaultBrowserPromo()));
-        inputContext.addEntry(
-                "has_default_browser_promo_shown_in_other_surface",
-                ProcessedValue.fromFloat(hasDefaultBrowserPromoShownInOtherSurface()));
-        inputContext.addEntry("tab_group_exists", ProcessedValue.fromFloat(tabGroupExists()));
-        inputContext.addEntry("number_of_tabs", ProcessedValue.fromFloat(getCurrentTabCount()));
-        return inputContext;
     }
 
     /** Creates an instance of PredictionOptions. */
@@ -231,51 +209,6 @@ public class EducationalTipModuleMediator {
                     EducationalTipCardProvider.convertLabelToCardType(result.orderedLabels.get(0));
             return cardType;
         }
-    }
-
-    /**
-     * @see DefaultBrowserPromoUtils#shouldShowNonRoleManagerPromo(Context), returns a value of 1.0f
-     *     to indicate that a default browser promo, other than the Role Manager Promo, should be
-     *     displayed. If not, it returns 0.0f.
-     */
-    private float shouldShowNonRoleManagerDefaultBrowserPromo() {
-        return DefaultBrowserPromoUtils.getInstance()
-                        .shouldShowNonRoleManagerPromo(mActionDelegate.getContext())
-                ? 1.0f
-                : 0.0f;
-    }
-
-    /**
-     * Returns a value of 1.0f to signify that the default browser promotion has been displayed
-     * within the past 7 days on a platform other than the current one, such as through settings,
-     * messages, or alternative NTPs. If the promotion has not been shown within this timeframe, the
-     * function returns 0.0f.
-     */
-    private float hasDefaultBrowserPromoShownInOtherSurface() {
-        return mTracker.wouldTriggerHelpUi(FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK)
-                ? 0.0f
-                : 1.0f;
-    }
-
-    /**
-     * Returns a value of 1.0f if a tab group exists within either the normal or incognito TabModel.
-     * Otherwise, it returns 0.0f.
-     */
-    private float tabGroupExists() {
-        TabGroupModelFilterProvider provider = mTabModelSelector.getTabGroupModelFilterProvider();
-        TabGroupModelFilter normalFilter =
-                provider.getTabGroupModelFilter(/* isIncognito= */ false);
-        TabGroupModelFilter incognitoFilter =
-                provider.getTabGroupModelFilter(/* isIncognito= */ true);
-        int groupCount = normalFilter.getTabGroupCount() + incognitoFilter.getTabGroupCount();
-        return groupCount > 0 ? 1.0f : 0.0f;
-    }
-
-    /** Returns the total number of tabs across both regular and incognito browsing modes. */
-    private float getCurrentTabCount() {
-        TabModel normalModel = mTabModelSelector.getModel(/* incognito= */ false);
-        TabModel incognitoModel = mTabModelSelector.getModel(/* incognito= */ true);
-        return normalModel.getCount() + incognitoModel.getCount();
     }
 
     @ModuleType

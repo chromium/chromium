@@ -44,16 +44,11 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
-import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoTriggerStateListener;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.segmentation_platform.ClassificationResult;
-import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.PredictionOptions;
 import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -75,15 +70,9 @@ public class EducationalTipModuleMediatorUnitTest {
     @Mock EducationalTipModuleMediator.Natives mEducationalTipModuleMediatorJniMock;
     @Mock private Tracker mTracker;
     @Mock private DefaultBrowserPromoUtils mMockDefaultBrowserPromoUtils;
-    @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabGroupModelFilterProvider mProvider;
-    @Mock private TabGroupModelFilter mNormalFilter;
-    @Mock private TabGroupModelFilter mIncognitoFilter;
-    @Mock private TabModel mNormalModel;
-    @Mock private TabModel mIncognitoModel;
 
     @Mock
-    private EducationalTipCardProviderTriggerState mMockEducationalTipCardProviderTriggerState;
+    private EducationalTipCardProviderSignalHandler mMockEducationalTipCardProviderSignalHandler;
 
     @Captor
     private ArgumentCaptor<DefaultBrowserPromoTriggerStateListener>
@@ -100,22 +89,15 @@ public class EducationalTipModuleMediatorUnitTest {
         mContext = ApplicationProvider.getApplicationContext();
         when(mActionDelegate.getContext()).thenReturn(mContext);
         when(mActionDelegate.getProfileSupplier()).thenReturn(mProfileSupplier);
-        when(mActionDelegate.getTabModelSelector()).thenReturn(mTabModelSelector);
         when(mProfileSupplier.hasValue()).thenReturn(true);
         when(mProfileSupplier.get()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        when(mTabModelSelector.getTabGroupModelFilterProvider()).thenReturn(mProvider);
-        when(mProvider.getTabGroupModelFilter(/* isIncognito= */ false)).thenReturn(mNormalFilter);
-        when(mProvider.getTabGroupModelFilter(/* isIncognito= */ true))
-                .thenReturn(mIncognitoFilter);
-        when(mTabModelSelector.getModel(/* incognito= */ false)).thenReturn(mNormalModel);
-        when(mTabModelSelector.getModel(/* incognito= */ true)).thenReturn(mIncognitoModel);
         EducationalTipModuleMediatorJni.setInstanceForTesting(mEducationalTipModuleMediatorJniMock);
         mExpectedModuleType = ModuleType.EDUCATIONAL_TIP;
         TrackerFactory.setTrackerForTests(mTracker);
         DefaultBrowserPromoUtils.setInstanceForTesting(mMockDefaultBrowserPromoUtils);
-        EducationalTipCardProviderTriggerState.setInstanceForTesting(
-                mMockEducationalTipCardProviderTriggerState);
+        EducationalTipCardProviderSignalHandler.setInstanceForTesting(
+                mMockEducationalTipCardProviderSignalHandler);
 
         mEducationalTipModuleMediator =
                 new EducationalTipModuleMediator(mModel, mModuleDelegate, mActionDelegate);
@@ -158,88 +140,6 @@ public class EducationalTipModuleMediatorUnitTest {
                 R.string.educational_tip_quick_delete_description,
                 R.drawable.quick_delete_promo_logo,
                 /* timesOfCall= */ 4);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
-    public void testCreateInputContext() {
-        assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
-
-        InputContext inputContext = mEducationalTipModuleMediator.createInputContext();
-        assertEquals(4, inputContext.getSizeForTesting());
-
-        // Test signal "should_show_non_role_manager_default_browser_promo".
-        when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(mContext))
-                .thenReturn(true);
-        inputContext = mEducationalTipModuleMediator.createInputContext();
-        assertEquals(
-                1,
-                inputContext.getEntryForTesting(
-                                "should_show_non_role_manager_default_browser_promo")
-                        .floatValue,
-                0.01);
-
-        when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(mContext))
-                .thenReturn(false);
-        inputContext = mEducationalTipModuleMediator.createInputContext();
-        assertEquals(
-                0,
-                inputContext.getEntryForTesting(
-                                "should_show_non_role_manager_default_browser_promo")
-                        .floatValue,
-                0.01);
-
-        // Test signal "has_default_browser_promo_shown_in_other_surface".
-        when(mTracker.wouldTriggerHelpUi(FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK))
-                .thenReturn(true);
-        inputContext = mEducationalTipModuleMediator.createInputContext();
-        assertEquals(
-                0,
-                inputContext.getEntryForTesting("has_default_browser_promo_shown_in_other_surface")
-                        .floatValue,
-                0.01);
-
-        when(mTracker.wouldTriggerHelpUi(FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK))
-                .thenReturn(false);
-        inputContext = mEducationalTipModuleMediator.createInputContext();
-        assertEquals(
-                1,
-                inputContext.getEntryForTesting("has_default_browser_promo_shown_in_other_surface")
-                        .floatValue,
-                0.01);
-
-        // Test signal "tab_group_exists".
-        when(mNormalFilter.getTabGroupCount()).thenReturn(0);
-        when(mIncognitoFilter.getTabGroupCount()).thenReturn(0);
-        inputContext = mEducationalTipModuleMediator.createInputContext();
-        assertEquals(0, inputContext.getEntryForTesting("tab_group_exists").floatValue, 0.01);
-
-        when(mNormalFilter.getTabGroupCount()).thenReturn(5);
-        when(mIncognitoFilter.getTabGroupCount()).thenReturn(6);
-        inputContext = mEducationalTipModuleMediator.createInputContext();
-        assertEquals(1, inputContext.getEntryForTesting("tab_group_exists").floatValue, 0.01);
-
-        // Test signal "number_of_tabs".
-        when(mNormalModel.getCount()).thenReturn(0);
-        when(mIncognitoModel.getCount()).thenReturn(0);
-        inputContext = mEducationalTipModuleMediator.createInputContext();
-        assertEquals(0, inputContext.getEntryForTesting("number_of_tabs").floatValue, 0.01);
-
-        when(mNormalModel.getCount()).thenReturn(5);
-        when(mIncognitoModel.getCount()).thenReturn(0);
-        inputContext = mEducationalTipModuleMediator.createInputContext();
-        assertEquals(5, inputContext.getEntryForTesting("number_of_tabs").floatValue, 0.01);
-
-        when(mNormalModel.getCount()).thenReturn(0);
-        when(mIncognitoModel.getCount()).thenReturn(10);
-        inputContext = mEducationalTipModuleMediator.createInputContext();
-        assertEquals(10, inputContext.getEntryForTesting("number_of_tabs").floatValue, 0.01);
-
-        when(mNormalModel.getCount()).thenReturn(10);
-        when(mIncognitoModel.getCount()).thenReturn(10);
-        inputContext = mEducationalTipModuleMediator.createInputContext();
-        assertEquals(20, inputContext.getEntryForTesting("number_of_tabs").floatValue, 0.01);
     }
 
     @Test
@@ -364,7 +264,7 @@ public class EducationalTipModuleMediatorUnitTest {
                                 2)
                         .build();
 
-        when(mMockEducationalTipCardProviderTriggerState.shouldNotifyCardShownPerSession(
+        when(mMockEducationalTipCardProviderSignalHandler.shouldNotifyCardShownPerSession(
                         EducationalTipCardType.TAB_GROUP))
                 .thenReturn(true);
         mEducationalTipModuleMediator.showModuleWithCardInfo(EducationalTipCardType.TAB_GROUP);
@@ -372,7 +272,7 @@ public class EducationalTipModuleMediatorUnitTest {
         verify(mEducationalTipModuleMediatorJniMock)
                 .notifyCardShown(mProfile, EducationalTipCardType.TAB_GROUP);
 
-        when(mMockEducationalTipCardProviderTriggerState.shouldNotifyCardShownPerSession(
+        when(mMockEducationalTipCardProviderSignalHandler.shouldNotifyCardShownPerSession(
                         EducationalTipCardType.TAB_GROUP))
                 .thenReturn(false);
         mEducationalTipModuleMediator.showModuleWithCardInfo(EducationalTipCardType.TAB_GROUP);
