@@ -9,7 +9,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
-#include "components/autofill/core/browser/profile_requirement_utils.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
 #include "components/autofill/core/browser/test_address_data_manager.h"
 #include "components/sync/service/local_data_description.h"
 #include "testing/gmock/include/gmock/gmock.h"

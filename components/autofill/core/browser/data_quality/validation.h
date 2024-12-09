@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_VALIDATION_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_VALIDATION_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_QUALITY_VALIDATION_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_QUALITY_VALIDATION_H_
 
 #include <string>
 #include <string_view>
@@ -82,4 +82,4 @@ bool IsPlausible4DigitExpirationYear(std::u16string_view value);
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_VALIDATION_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_QUALITY_VALIDATION_H_

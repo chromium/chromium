@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/autofill_data_util.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 
 #include <array>
 #include <iterator>
@@ -133,8 +133,9 @@ constexpr auto kKoreanMultiCharSurnames = std::to_array<std::u16string_view>(
 // Returns true if `set` contains `element`, modulo a final period.
 bool ContainsString(base::span<const std::string_view> set,
                     std::u16string_view element) {
-  if (!base::IsStringASCII(element))
+  if (!base::IsStringASCII(element)) {
     return false;
+  }
 
   std::u16string_view trimmed_element =
       base::TrimString(element, u".", base::TRIM_ALL);
@@ -424,8 +425,9 @@ NameParts SplitName(std::u16string_view name) {
   }
 
   // Don't assume "Ma" is a suffix in John Ma.
-  if (name_tokens.size() > 2)
+  if (name_tokens.size() > 2) {
     StripSuffixes(&name_tokens);
+  }
 
   if (name_tokens.empty()) {
     // Bad things have happened; just assume the whole thing is a given name.
@@ -472,14 +474,17 @@ std::u16string JoinNameParts(std::u16string_view given,
                              std::u16string_view family) {
   // First Middle Last
   std::vector<std::u16string_view> full_name;
-  if (!given.empty())
+  if (!given.empty()) {
     full_name.push_back(given);
+  }
 
-  if (!middle.empty())
+  if (!middle.empty()) {
     full_name.push_back(middle);
+  }
 
-  if (!family.empty())
+  if (!family.empty()) {
     full_name.push_back(family);
+  }
 
   const char* separator = " ";
   if (IsCJKName(given) && IsCJKName(family) && middle.empty()) {
@@ -499,8 +504,9 @@ const PaymentRequestData& GetPaymentRequestData(
   for (const PaymentRequestData& data :
        use_new_data ? kPaymentRequestDataForNewNetworkImages
                     : kPaymentRequestData) {
-    if (issuer_network == data.issuer_network)
+    if (issuer_network == data.issuer_network) {
       return data;
+    }
   }
   return use_new_data ? kGenericPaymentRequestDataForNewNetworkImages
                       : kGenericPaymentRequestData;
@@ -535,8 +541,9 @@ bool IsValidBasicCardIssuerNetwork(
 }
 
 bool IsValidCountryCode(const std::string& country_code) {
-  if (country_code.size() != 2)
+  if (country_code.size() != 2) {
     return false;
+  }
 
   static const base::NoDestructor<re2::RE2> country_code_regex("^[A-Z]{2}$");
   return re2::RE2::FullMatch(country_code, *country_code_regex.get());
@@ -550,8 +557,9 @@ std::string GetCountryCodeWithFallback(const autofill::AutofillProfile& profile,
                                        const std::string& app_locale) {
   std::string country_code =
       base::UTF16ToUTF8(profile.GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
-  if (!IsValidCountryCode(country_code))
+  if (!IsValidCountryCode(country_code)) {
     country_code = AutofillCountry::CountryCodeForLocale(app_locale);
+  }
   return country_code;
 }
 

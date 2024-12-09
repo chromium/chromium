@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PROFILE_TOKEN_QUALITY_TEST_API_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_PROFILE_TOKEN_QUALITY_TEST_API_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_QUALITY_ADDRESSES_PROFILE_TOKEN_QUALITY_TEST_API_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_QUALITY_ADDRESSES_PROFILE_TOKEN_QUALITY_TEST_API_H_
 
 #include <vector>
 
 #include "base/memory/raw_ref.h"
-#include "components/autofill/core/browser/profile_token_quality.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 
 namespace autofill {
 
@@ -42,4 +42,4 @@ inline ProfileTokenQualityTestApi test_api(ProfileTokenQuality& quality) {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PROFILE_TOKEN_QUALITY_TEST_API_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_QUALITY_ADDRESSES_PROFILE_TOKEN_QUALITY_TEST_API_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/profile_token_quality.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 
 #include <algorithm>
 #include <set>

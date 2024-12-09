@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/address_normalizer_impl.h"
+#include "components/autofill/core/browser/data_quality/addresses/address_normalizer_impl.h"
 
 #include <stddef.h>
 
@@ -19,8 +19,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "third_party/libaddressinput/chromium/chrome_address_validator.h"
@@ -54,8 +54,9 @@ bool NormalizeProfileWithValidator(AutofillProfile* profile,
       *i18n::CreateAddressDataFromAutofillProfile(*profile, app_locale);
 
   // Normalize the address.
-  if (!address_validator->NormalizeAddress(&address_data))
+  if (!address_validator->NormalizeAddress(&address_data)) {
     return false;
+  }
 
   profile->SetRawInfo(ADDRESS_HOME_STATE,
                       base::UTF8ToUTF16(address_data.administrative_area));
@@ -133,8 +134,9 @@ class AddressNormalizerImpl::NormalizationRequest {
 
   void OnRulesLoaded(bool success, AddressValidator* address_validator) {
     // Check if the timeout happened before the rules were loaded.
-    if (has_responded_)
+    if (has_responded_) {
       return;
+    }
     has_responded_ = true;
 
     // The phone number formatting doesn't require the rules to have been
@@ -200,8 +202,9 @@ void AddressNormalizerImpl::LoadRulesForRegion(const std::string& region_code) {
 
   // The |address_validator_| is initialized in a background task. It may not
   // be available yet.
-  if (!address_validator_)
+  if (!address_validator_) {
     return;
+  }
 
   address_validator_->LoadRules(region_code);
 }
@@ -341,8 +344,9 @@ void AddressNormalizerImpl::OnAddressValidatorCreated(
       pending_normalization_, [](const auto& entry) { return entry.first; });
 
   // Load rules for regions with pending normalization requests.
-  for (const std::string& region : region_keys)
+  for (const std::string& region : region_keys) {
     LoadRulesForRegion(region);
+  }
 }
 
 void AddressNormalizerImpl::AddNormalizationRequestForRegion(

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/profile_token_quality_test_api.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_token_quality_test_api.h"
 
 #include <vector>
 
 #include "base/check.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/profile_token_quality.h"
 
 namespace autofill {
 

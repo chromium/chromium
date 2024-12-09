@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/address_normalization_manager.h"
+#include "components/autofill/core/browser/data_quality/addresses/address_normalization_manager.h"
 
 #include <utility>
 
@@ -10,9 +10,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/address_normalizer.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_quality/addresses/address_normalizer.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
@@ -80,12 +80,14 @@ void AddressNormalizationManager::FinalizeWithCompletionCallback(
 }
 
 void AddressNormalizationManager::MaybeRunCompletionCallback() {
-  if (accepting_requests_ || !completion_callback_)
+  if (accepting_requests_ || !completion_callback_) {
     return;
+  }
 
   for (const auto& delegate : delegates_) {
-    if (!delegate->has_completed())
+    if (!delegate->has_completed()) {
       return;
+    }
   }
 
   // We're no longer accepting requests, and all the delegates have completed.

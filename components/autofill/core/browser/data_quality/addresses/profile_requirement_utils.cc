@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/profile_requirement_utils.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
 
 #include <string_view>
 #include <vector>
@@ -42,32 +42,32 @@ ValidateProfileImportRequirements(const AutofillProfile& profile,
   // Validates the `profile` by testing that it has information for at least one
   // of the `types`. If `required` is false, it is considered trivially valid.
   // Logs the profile's validity to UMA and autofill-internals.
-  auto ValidateAndLog =
-      [&](bool required, const std::vector<FieldType>& types,
-          AddressImportRequirement valid, AddressImportRequirement invalid) {
-        const bool is_valid =
-            !required || std::ranges::any_of(types, [&](FieldType type) {
-              return profile.HasRawInfo(type);
-            });
-        if (is_valid) {
-          address_import_requirements.push_back(valid);
-        } else {
-          address_import_requirements.push_back(invalid);
-          LOG_AF(import_log_buffer)
-              << LogMessage::kImportAddressProfileFromFormFailed
-              << "Missing required " <<
-              [&] {
-                std::vector<std::string_view> type_names;
-                for (FieldType type : types) {
-                  type_names.push_back(FieldTypeToStringView(type));
-                }
-                return base::JoinString(type_names, " or ");
-              }()
-              << "." << CTag{};
-        }
+  auto ValidateAndLog = [&](bool required, const std::vector<FieldType>& types,
+                            AddressImportRequirement valid,
+                            AddressImportRequirement invalid) {
+    const bool is_valid =
+        !required || std::ranges::any_of(types, [&](FieldType type) {
+          return profile.HasRawInfo(type);
+        });
+    if (is_valid) {
+      address_import_requirements.push_back(valid);
+    } else {
+      address_import_requirements.push_back(invalid);
+      LOG_AF(import_log_buffer)
+          << LogMessage::kImportAddressProfileFromFormFailed
+          << "Missing required " <<
+          [&] {
+            std::vector<std::string_view> type_names;
+            for (FieldType type : types) {
+              type_names.push_back(FieldTypeToStringView(type));
+            }
+            return base::JoinString(type_names, " or ");
+          }()
+          << "." << CTag{};
+    }
 
-        return is_valid;
-      };
+    return is_valid;
+  };
 
   AutofillCountry country(
       base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY)));

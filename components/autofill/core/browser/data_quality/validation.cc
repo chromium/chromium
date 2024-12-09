@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/validation.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
 
 #include <stddef.h>
 
@@ -25,8 +25,9 @@
 namespace autofill {
 
 bool IsValidCreditCardExpirationDate(int year, int month, base::Time now) {
-  if (month < 1 || month > 12)
+  if (month < 1 || month > 12) {
     return false;
+  }
 
   base::Time::Exploded now_exploded;
   now.LocalExplode(&now_exploded);
@@ -97,8 +98,9 @@ bool IsSSN(std::u16string_view text) {
   //   http://www.socialsecurity.gov/employer/stateweb.htm
   //   http://www.socialsecurity.gov/employer/ssnvhighgroup.htm
 
-  if (number_string.length() != 9 || !base::IsStringASCII(number_string))
+  if (number_string.length() != 9 || !base::IsStringASCII(number_string)) {
     return false;
+  }
 
   int area;
   if (!base::StringToInt(base::MakeStringPiece16(number_string.begin(),

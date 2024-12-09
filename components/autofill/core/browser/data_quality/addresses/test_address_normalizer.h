@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_ADDRESS_NORMALIZER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_ADDRESS_NORMALIZER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_QUALITY_ADDRESSES_TEST_ADDRESS_NORMALIZER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_QUALITY_ADDRESSES_TEST_ADDRESS_NORMALIZER_H_
 
 #include <string>
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/address_normalizer.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_quality/addresses/address_normalizer.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -52,4 +52,4 @@ class TestAddressNormalizer : public AddressNormalizer {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_ADDRESS_NORMALIZER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_QUALITY_ADDRESSES_TEST_ADDRESS_NORMALIZER_H_

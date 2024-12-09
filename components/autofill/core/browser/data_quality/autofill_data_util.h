@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_DATA_UTIL_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_DATA_UTIL_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_QUALITY_AUTOFILL_DATA_UTIL_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_QUALITY_AUTOFILL_DATA_UTIL_H_
 
 #include <string>
 #include <string_view>
@@ -127,4 +127,4 @@ std::string GetCountryCodeWithFallback(const AutofillProfile& profile,
 }  // namespace data_util
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_DATA_UTIL_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_QUALITY_AUTOFILL_DATA_UTIL_H_

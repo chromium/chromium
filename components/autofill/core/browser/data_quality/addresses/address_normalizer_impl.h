@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_NORMALIZER_IMPL_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_NORMALIZER_IMPL_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_QUALITY_ADDRESSES_ADDRESS_NORMALIZER_IMPL_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_QUALITY_ADDRESSES_ADDRESS_NORMALIZER_IMPL_H_
 
 #include <map>
 #include <memory>
@@ -12,7 +12,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "components/autofill/core/browser/address_normalizer.h"
+#include "components/autofill/core/browser/data_quality/addresses/address_normalizer.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -98,4 +98,4 @@ class AddressNormalizerImpl : public AddressNormalizer {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_NORMALIZER_IMPL_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_QUALITY_ADDRESSES_ADDRESS_NORMALIZER_IMPL_H_

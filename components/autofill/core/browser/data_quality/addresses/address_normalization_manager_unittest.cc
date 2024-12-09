@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/address_normalization_manager.h"
+#include "components/autofill/core/browser/data_quality/addresses/address_normalization_manager.h"
 
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "components/autofill/core/browser/test_address_normalizer.h"
+#include "components/autofill/core/browser/data_quality/addresses/test_address_normalizer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
