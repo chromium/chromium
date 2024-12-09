@@ -69,9 +69,13 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
   void ReturnAILanguageModelCreationResult(
       mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
           client_remote);
-  void DoMockDownloadingAndReturn(
-      mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
+  void ReturnAISummarizerCreationResult(
+      mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient>
           client_remote);
+
+  void DoMockDownloadingAndReturn(base::OnceClosure callback);
+
+  bool summarizer_downloaded_ = false;
 
   mojo::RemoteSet<blink::mojom::ModelDownloadProgressObserver>
       download_progress_observers_;

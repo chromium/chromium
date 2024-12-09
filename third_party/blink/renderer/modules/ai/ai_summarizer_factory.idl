@@ -25,6 +25,7 @@ enum AISummarizerLength { "short", "medium", "long" };
 
 dictionary AISummarizerCreateOptions {
   AbortSignal signal;
+  AICreateMonitorCallback monitor;
   DOMString sharedContext;
   AISummarizerType type = "key-points";
   AISummarizerFormat format = "markdown";

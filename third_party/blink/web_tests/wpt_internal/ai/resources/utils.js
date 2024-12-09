@@ -105,6 +105,26 @@ const testPromptAPI = async () => {
   }
 };
 
+// The createSummarizerMaybeDownload function creates
+// a summarizer object and the download progress monitor
+// on the first download. The test cases shall always
+// call this function to create the summarizer.
+const createSummarizerMaybeDownload = async (options) => {
+  const capabilities = await ai.summarizer.capabilities();
+  if (capabilities.available == "after-download") {
+    isDownloadProgressEventTriggered = false;
+    options.monitor = (m) => {
+      m.addEventListener("downloadprogress", e => {
+        isDownloadProgressEventTriggered = true;
+      });
+    }
+    const summarizer = await ai.summarizer.create(options);
+    assert_true(isDownloadProgressEventTriggered);
+    return summarizer;
+  }
+  return await ai.summarizer.create(options);
+};
+
 // The method should take the AbortSignal as an option and return a promise.
 const testAbort = async (t, method) => {
   // Test abort signal without custom error.

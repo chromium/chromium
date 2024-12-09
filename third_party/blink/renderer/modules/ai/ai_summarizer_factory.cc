@@ -6,9 +6,11 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/web/web_console_message.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
 #include "third_party/blink/renderer/modules/ai/ai_capability_availability.h"
+#include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
 #include "third_party/blink/renderer/modules/ai/ai_summarizer.h"
@@ -59,18 +61,28 @@ class CreateSummarizerClient
       public AIMojoClient<AISummarizer>,
       public mojom::blink::AIManagerCreateSummarizerClient {
  public:
-  explicit CreateSummarizerClient(ScriptState* script_state,
-                                  AI* ai,
-                                  ScriptPromiseResolver<AISummarizer>* resolver,
-                                  AbortSignal* signal,
-                                  const AISummarizerCreateOptions* options)
+  explicit CreateSummarizerClient(
+      ScriptState* script_state,
+      AI* ai,
+      ScriptPromiseResolver<AISummarizer>* resolver,
+      AbortSignal* signal,
+      const AISummarizerCreateOptions* options,
+      scoped_refptr<base::SequencedTaskRunner> task_runner)
       : AIMojoClient(script_state, ai, resolver, signal),
         ai_(ai),
         receiver_(this, ai->GetExecutionContext()),
         type_(options->type()),
         format_(options->format()),
         length_(options->length()),
-        shared_context_(options->getSharedContextOr(WTF::String())) {}
+        shared_context_(options->getSharedContextOr(WTF::String())) {
+    if (options->hasMonitor()) {
+      monitor_ = MakeGarbageCollected<AICreateMonitor>(
+          ai->GetExecutionContext(), task_runner);
+      std::ignore = options->monitor()->Invoke(nullptr, monitor_);
+      ai_->GetAIRemote()->AddModelDownloadProgressObserver(
+          monitor_->BindRemote());
+    }
+  }
 
   ~CreateSummarizerClient() override = default;
 
@@ -90,6 +102,7 @@ class CreateSummarizerClient
     AIMojoClient::Trace(visitor);
     visitor->Trace(ai_);
     visitor->Trace(receiver_);
+    visitor->Trace(monitor_);
   }
 
   void OnResult(mojo::PendingRemote<mojom::blink::AISummarizer>
@@ -120,6 +133,7 @@ class CreateSummarizerClient
                    CreateSummarizerClient>
       receiver_;
 
+  Member<AICreateMonitor> monitor_;
   V8AISummarizerType type_;
   V8AISummarizerFormat format_;
   V8AISummarizerLength length_;
@@ -199,8 +213,8 @@ ScriptPromise<AISummarizer> AISummarizerFactory::create(
     return promise;
   }
 
-  MakeGarbageCollected<CreateSummarizerClient>(script_state, ai_.Get(),
-                                               resolver, signal, options)
+  MakeGarbageCollected<CreateSummarizerClient>(
+      script_state, ai_.Get(), resolver, signal, options, task_runner_)
       ->CreateSummarizer();
   return promise;
 }

@@ -2,7 +2,8 @@
 // META: timeout=long
 
 promise_test(async () => {
-  const capabilities = await ai.summarizer.capabilities();
+  await createSummarizerMaybeDownload({});
+  capabilities = await ai.summarizer.capabilities();
   assert_true(capabilities.available == "readily");
   assert_true(capabilities.supportsType("tl;dr") == "readily");
   assert_true(capabilities.supportsFormat("plain-text") == "readily");
@@ -12,7 +13,7 @@ promise_test(async () => {
 });
 
 promise_test(async () => {
-  const summarizer = await ai.summarizer.create();
+  const summarizer = await createSummarizerMaybeDownload({});
   const response = await summarizer.summarize(
     "The web-platform-tests Project is a cross-browser test suite for the Web-platform stack. Writing tests in a way that allows them to be run in all browsers gives browser projects confidence that they are shipping software that is compatible with other implementations, and that later implementations will be compatible with their implementations. This in turn gives Web authors/developers confidence that they can actually rely on the Web platform to deliver on the promise of working across browsers and devices without needing extra layers of abstraction to paper over the gaps left by specification editors and implementors.");
   assert_true(typeof response === "string");
@@ -21,21 +22,21 @@ promise_test(async () => {
 
 promise_test(async () => {
   const sharedContext = 'This is a shared context string';
-  const summarizer = await ai.summarizer.create({sharedContext: sharedContext});
+  const summarizer = await createSummarizerMaybeDownload({sharedContext: sharedContext});
   assert_equals(summarizer.sharedContext, sharedContext);
 }, 'AISummarizer.sharedContext');
 
 promise_test(async () => {
-  const summarizer = await ai.summarizer.create({type: 'headline'});
+  const summarizer = await createSummarizerMaybeDownload({type: 'headline'});
   assert_equals(summarizer.type, 'headline');
 }, 'AISummarizer.type');
 
 promise_test(async () => {
-  const summarizer = await ai.summarizer.create({format: 'markdown'});
+  const summarizer = await createSummarizerMaybeDownload({format: 'markdown'});
   assert_equals(summarizer.format, 'markdown');
 }, 'AISummarizer.format');
 
 promise_test(async () => {
-  const summarizer = await ai.summarizer.create({length: 'medium'});
+  const summarizer = await createSummarizerMaybeDownload({length: 'medium'});
   assert_equals(summarizer.length, 'medium');
 }, 'AISummarizer.length');
