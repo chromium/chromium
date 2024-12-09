@@ -15,6 +15,7 @@ import * as localDev from './local_dev.js';
 import {getCameraDirectory, getObjectURL} from './models/file_system.js';
 import {ChromeHelper, getInstanceImpl} from './mojo/chrome_helper.js';
 import {
+  AspectRatio,
   EventsSenderRemote,
   LidState,
   OcrResult,
@@ -184,6 +185,14 @@ export class ChromeHelperFake extends ChromeHelper {
 
   override createPdfBuilder(): PdfBuilderRemote {
     assertNotReached();
+  }
+
+  override async getAspectRatioOrder(): Promise<AspectRatio[]> {
+    return [
+      AspectRatio.k4To3,
+      AspectRatio.k16To9,
+      AspectRatio.kOthers,
+    ];
   }
   /* eslint-enable @typescript-eslint/require-await */
 }
