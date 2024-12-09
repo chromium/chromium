@@ -939,13 +939,13 @@
   "components/headless/command_handler/headless_command.grd": {
     "includes": [7120],
   },
-  # metrics/internal/url_constants.grd and metrics/url_constants.grd must
-  # share the same id because they define the same strings, but only one of them
-  # is built depending on whether src_internal is available.
-  "components/metrics/internal/url_constants.grd": {
+  # metrics/internal/server_urls.grd and metrics/server_urls.grd must share the
+  # same id because they define the same strings, but only one of them is built
+  # depending on whether src_internal is available.
+  "components/metrics/internal/server_urls.grd": {
     "messages": [7130],
   },
-  "components/metrics/url_constants.grd": {
+  "components/metrics/server_urls.grd": {
     "messages": [7130],
   },
   "components/omnibox/resources/omnibox_pedal_synonyms.grd": {

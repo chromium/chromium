@@ -249,7 +249,7 @@ if (!is_cronet_build || is_ios) {
 
     deps = [
       ":library_support",
-      ":url_constants",
+      ":server_urls_grd",
       "//base",
       "//base:base_static",
       "//base:i18n",
@@ -705,14 +705,14 @@ if (!is_cronet_build) {
   }
 }
 
-grit("url_constants") {
+grit("server_urls_grd") {
   if (is_chrome_branded) {
-    source = "internal/url_constants.grd"
+    source = "internal/server_urls.grd"
   } else {
-    source = "url_constants.grd"
+    source = "server_urls.grd"
   }
   outputs = [
-    "grit/metrics_url_constants.h",
-    "metrics_url_constants.pak",
+    "grit/metrics_server_urls.h",
+    "metrics_server_urls.pak",
   ]
 }

@@ -543,7 +543,7 @@ if (!is_fuchsia) {
     sources = [
       "$root_gen_dir/chromecast/app/shell_resources.pak",
       "$root_gen_dir/components/cast/named_message_port_connector/named_message_port_connector_resources.pak",
-      "$root_gen_dir/components/metrics/metrics_url_constants.pak",
+      "$root_gen_dir/components/metrics/metrics_server_urls.pak",
       "$root_gen_dir/content/content_resources.pak",
       "$root_gen_dir/content/gpu_resources.pak",
       "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
@@ -563,7 +563,7 @@ if (!is_fuchsia) {
     deps = [
       "//chromecast/app:resources",
       "//components/cast/named_message_port_connector:resources",
-      "//components/metrics:url_constants",
+      "//components/metrics:server_urls_grd",
       "//content:content_resources",
       "//content/browser/resources/gpu:resources",
       "//mojo/public/js:resources",

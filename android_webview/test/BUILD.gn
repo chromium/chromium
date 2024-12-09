@@ -743,9 +743,9 @@ source_set("webview_instrumentation_test_native_jni_impl") {
 }
 
 repack("android_webview_unittests_pak") {
-  sources = [ "$root_gen_dir/components/metrics/metrics_url_constants.pak" ]
+  sources = [ "$root_gen_dir/components/metrics/metrics_server_urls.pak" ]
 
-  deps = [ "//components/metrics:url_constants" ]
+  deps = [ "//components/metrics:server_urls_grd" ]
 
   output = "$root_out_dir/android_webview_unittests_resources.pak"
 }
