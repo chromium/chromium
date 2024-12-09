@@ -1352,14 +1352,11 @@ ScriptObject HTMLInputElement::valueAsDate(ScriptState* script_state) const {
   // TODO(crbug.com/988343): InputType::ValueAsDate() should return
   // std::optional<base::Time>.
   double date = input_type_->ValueAsDate();
-  v8::Isolate* isolate = script_state->GetIsolate();
   if (!std::isfinite(date)) {
-    return ScriptObject::CreateNull(isolate);
+    return ScriptObject::CreateNull(script_state->GetIsolate());
   }
-  return ScriptObject(
-      isolate,
-      ToV8Traits<IDLNullable<IDLDate>>::ToV8(
-          script_state, base::Time::FromMillisecondsSinceUnixEpoch(date)));
+  return ToV8FromDate(script_state,
+                      base::Time::FromMillisecondsSinceUnixEpoch(date));
 }
 
 void HTMLInputElement::setValueAsDate(ScriptState* script_state,

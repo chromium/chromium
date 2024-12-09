@@ -1728,28 +1728,6 @@ struct NativeValueTraits<IDLOptional<T>>
   }
 };
 
-// Date
-template <>
-struct CORE_EXPORT NativeValueTraits<IDLDate>
-    : public NativeValueTraitsBase<IDLDate> {
-  // IDLDate must be always used as IDLNullable<IDLDate>.
-  static std::optional<base::Time> NativeValue(
-      v8::Isolate* isolate,
-      v8::Local<v8::Value> value,
-      ExceptionState& exception_state) = delete;
-};
-
-template <>
-struct CORE_EXPORT NativeValueTraits<IDLNullable<IDLDate>>
-    : public NativeValueTraitsBase<IDLNullable<IDLDate>> {
-  // IDLNullable<IDLDate> is never used by the generated bindings - use
-  // ToCoreNullableDate() directly.
-  static std::optional<base::Time> NativeValue(
-      v8::Isolate* isolate,
-      v8::Local<v8::Value> value,
-      ExceptionState& exception_state) = delete;
-};
-
 // EventHandler
 template <>
 struct CORE_EXPORT NativeValueTraits<IDLEventHandler>

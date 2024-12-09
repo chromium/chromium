@@ -353,6 +353,18 @@ inline std::optional<base::Time> ToCoreNullableDate(
   return base::Time::FromMillisecondsSinceUnixEpoch(time_value);
 }
 
+inline ScriptObject ToV8FromDate(ScriptState* script_state,
+                                 const std::optional<base::Time>& date) {
+  if (!date) {
+    return ScriptObject::CreateNull(script_state->GetIsolate());
+  }
+  return ScriptObject(
+      script_state->GetIsolate(),
+      v8::Date::New(script_state->GetContext(),
+                    date->InMillisecondsFSinceUnixEpochIgnoringNull())
+          .ToLocalChecked());
+}
+
 // USVString conversion helper.
 CORE_EXPORT String ReplaceUnmatchedSurrogates(String);
 

@@ -772,21 +772,6 @@ struct ToV8Traits<IDLNullable<IDLRecord<K, V>>> {
   }
 };
 
-// Nullable Date
-// IDLDate must be used as IDLNullable<IDLDate>.
-template <>
-struct ToV8Traits<IDLNullable<IDLDate>> {
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
-      ScriptState* script_state,
-      const std::optional<base::Time> date) {
-    if (!date)
-      return v8::Null(script_state->GetIsolate());
-    return v8::Date::New(script_state->GetContext(),
-                         date->InMillisecondsFSinceUnixEpochIgnoringNull())
-        .ToLocalChecked();
-  }
-};
-
 // Union types
 
 template <typename T>

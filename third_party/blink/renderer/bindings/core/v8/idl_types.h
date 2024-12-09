@@ -270,9 +270,6 @@ struct IDLNullable final : public IDLBase {
       std::optional<typename NativeValueTraits<T>::ImplType>>;
 };
 
-// Date
-struct IDLDate final : public IDLBaseHelper<base::Time> {};
-
 // EventHandler types
 struct IDLEventHandler final : public IDLBaseHelper<EventListener*> {};
 struct IDLOnBeforeUnloadEventHandler final

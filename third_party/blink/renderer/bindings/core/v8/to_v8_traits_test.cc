@@ -649,25 +649,6 @@ TEST(ToV8TraitsTest, NullableArray) {
                    "[object Object],[object Object]", dom_point_init_vector);
 }
 
-TEST(ToV8TraitsTest, NullableDate) {
-  test::TaskEnvironment task_environment;
-  const V8TestingScope scope;
-  TEST_TOV8_TRAITS(scope, IDLNullable<IDLDate>, "null", std::nullopt);
-
-  base::Time expected_date;
-  EXPECT_TRUE(
-      base::Time::FromString("Fri, 01 Jan 2021 00:00:00 GMT", &expected_date));
-  v8::Local<v8::Value> result = ToV8Traits<IDLNullable<IDLDate>>::ToV8(
-      scope.GetScriptState(), std::optional<base::Time>(expected_date));
-  String actual_string =
-      ToCoreString(scope.GetIsolate(),
-                   result->ToString(scope.GetContext()).ToLocalChecked());
-  base::Time actual_date;
-  EXPECT_TRUE(
-      base::Time::FromString(actual_string.Ascii().c_str(), &actual_date));
-  EXPECT_EQ(expected_date, actual_date);
-}
-
 TEST(ToV8TraitsTest, Union) {
   test::TaskEnvironment task_environment;
   const V8TestingScope scope;
