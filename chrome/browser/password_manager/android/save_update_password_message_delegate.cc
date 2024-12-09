@@ -340,9 +340,6 @@ int SaveUpdatePasswordMessageDelegate::GetPrimaryButtonTextId(
 unsigned int SaveUpdatePasswordMessageDelegate::GetDisplayUsernames(
     std::vector<std::u16string>* usernames) {
   unsigned int selected_username_index = 0;
-  // TODO(crbug.com/40675711): Fix the update logic to use all best matches,
-  // rather than current_forms which is best_matches without PSL-matched
-  // credentials.
   const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
       password_forms = passwords_state_.GetCurrentForms();
   const std::u16string& default_username =
@@ -460,9 +457,6 @@ void SaveUpdatePasswordMessageDelegate::HandleMessageDismissed(
 }
 
 bool SaveUpdatePasswordMessageDelegate::HasMultipleCredentialsStored() {
-  // TODO(crbug.com/40675711): Fix the update logic to use all best matches,
-  // rather than current_forms which is best_matches without PSL-matched
-  // credentials.
   const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
       password_forms = passwords_state_.GetCurrentForms();
   return password_forms.size() > 1;

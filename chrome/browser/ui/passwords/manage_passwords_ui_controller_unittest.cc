@@ -1160,7 +1160,7 @@ TEST_F(ManagePasswordsUIControllerTest, AutofillDuringAutoSignin) {
   ExpectIconAndControllerStateIs(password_manager::ui::AUTO_SIGNIN_STATE);
 }
 
-TEST_F(ManagePasswordsUIControllerTest, InactiveOnPSLMatched) {
+TEST_F(ManagePasswordsUIControllerTest, ActiveOnPSLMatched) {
   std::u16string kTestUsername = u"test_username";
   std::vector<PasswordForm> forms;
   PasswordForm psl_matched_test_form(test_local_form());
@@ -1170,7 +1170,7 @@ TEST_F(ManagePasswordsUIControllerTest, InactiveOnPSLMatched) {
   controller()->OnPasswordAutofilled(
       forms, url::Origin::Create(forms.front().url), {});
 
-  EXPECT_EQ(password_manager::ui::INACTIVE_STATE, controller()->GetState());
+  ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
 }
 
 TEST_F(ManagePasswordsUIControllerTest, UpdatePasswordSubmitted) {

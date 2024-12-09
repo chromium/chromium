@@ -267,7 +267,7 @@ TEST_F(ManagePasswordsStateTest, PasswordSubmitted) {
   passwords_data().OnPendingPassword(std::move(test_form_manager));
 
   EXPECT_THAT(passwords_data().GetCurrentForms(),
-              ElementsAre(Pointee(saved_match())));
+              ElementsAre(Pointee(saved_match()), Pointee(psl_match())));
   EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
             passwords_data().state());
   EXPECT_EQ(url::Origin::Create(GURL(kTestOrigin)), passwords_data().origin());
@@ -358,7 +358,7 @@ TEST_F(ManagePasswordsStateTest, AutomaticPasswordSave) {
 
   passwords_data().TransitionToState(password_manager::ui::MANAGE_STATE);
   EXPECT_THAT(passwords_data().GetCurrentForms(),
-              ElementsAre(Pointee(saved_match())));
+              ElementsAre(Pointee(saved_match()), Pointee(psl_match())));
   EXPECT_EQ(password_manager::ui::MANAGE_STATE, passwords_data().state());
   EXPECT_EQ(url::Origin::Create(GURL(kTestOrigin)), passwords_data().origin());
   TestAllUpdates();
@@ -420,22 +420,24 @@ TEST_F(ManagePasswordsStateTest, ActiveOnMixedPSLAndNonPSLMatched) {
   passwords_data().OnPasswordAutofilled(password_forms, origin, {});
 
   EXPECT_THAT(passwords_data().GetCurrentForms(),
-              ElementsAre(Pointee(saved_match())));
+              ElementsAre(Pointee(saved_match()), Pointee(psl_match())));
   EXPECT_EQ(password_manager::ui::MANAGE_STATE, passwords_data().state());
   EXPECT_EQ(origin, passwords_data().origin());
 
   TestAllUpdates();
 }
 
-TEST_F(ManagePasswordsStateTest, InactiveOnPSLMatched) {
-  std::vector<PasswordForm> password_forms = {psl_match()};
-  passwords_data().OnPasswordAutofilled(
-      password_forms, url::Origin::Create(GURL(kTestOrigin)), {});
+TEST_F(ManagePasswordsStateTest, ActiveOnPSLMatched) {
+  std::vector<PasswordForm> password_form = {psl_match()};
+  const url::Origin origin = url::Origin::Create(GURL(kTestOrigin));
+  passwords_data().OnPasswordAutofilled(password_form, origin, {});
 
-  EXPECT_THAT(passwords_data().GetCurrentForms(), IsEmpty());
-  EXPECT_EQ(password_manager::ui::INACTIVE_STATE, passwords_data().state());
-  EXPECT_TRUE(passwords_data().origin().opaque());
-  EXPECT_FALSE(passwords_data().form_manager());
+  EXPECT_THAT(passwords_data().GetCurrentForms(),
+              ElementsAre(Pointee(psl_match())));
+  EXPECT_EQ(password_manager::ui::MANAGE_STATE, passwords_data().state());
+  EXPECT_EQ(passwords_data().origin(), origin);
+
+  TestAllUpdates();
 }
 
 TEST_F(ManagePasswordsStateTest, OnInactive) {
@@ -470,7 +472,7 @@ TEST_F(ManagePasswordsStateTest, DefaultStoreChanged) {
   passwords_data().OnDefaultStoreChanged(std::move(test_form_manager));
 
   EXPECT_THAT(passwords_data().GetCurrentForms(),
-              ElementsAre(Pointee(saved_match())));
+              ElementsAre(Pointee(saved_match()), Pointee(psl_match())));
   EXPECT_EQ(password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE,
             passwords_data().state());
   EXPECT_EQ(url::Origin::Create(GURL(kTestOrigin)), passwords_data().origin());
@@ -538,7 +540,7 @@ TEST_F(ManagePasswordsStateTest, PasswordUpdateSubmitted) {
   passwords_data().OnUpdatePassword(std::move(test_form_manager));
 
   EXPECT_THAT(passwords_data().GetCurrentForms(),
-              ElementsAre(Pointee(saved_match())));
+              ElementsAre(Pointee(saved_match()), Pointee(psl_match())));
   EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_UPDATE_STATE,
             passwords_data().state());
   EXPECT_EQ(url::Origin::Create(GURL(kTestOrigin)), passwords_data().origin());
