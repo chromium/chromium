@@ -2519,6 +2519,8 @@ TEST_F(AutofillExternalDelegateTest,
 
   histogram_tester.ExpectUniqueSample("Autofill.Suggestions.AcceptedType",
                                       SuggestionType::kAddressEntryOnTyping, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AddressSuggestionOnTyping.AddressFieldTypeUsed", NAME_FULL, 1);
 }
 
 TEST_F(AutofillExternalDelegateTest,

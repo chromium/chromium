@@ -849,6 +849,16 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autofill.AddressSuggestionOnTyping.AddressFieldTypeUsed"
+    enum="AutofillFieldType" expires_after="2025-06-12">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logged when the users accepts an Autofill on typing suggestion, records the
+    field type used in the suggestion generation.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.AddressSuggestionOnTypingAcceptance"
     enum="BooleanAutofillAddressSuggestionOnTypingAcceptance"
     expires_after="2025-06-13">

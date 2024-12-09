@@ -894,6 +894,10 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                                     suggestion.payload)) {
         FillAddressFieldByFieldFillingSuggestion(*profile, suggestion,
                                                  metadata);
+        base::UmaHistogramEnumeration(
+            "Autofill.AddressSuggestionOnTyping.AddressFieldTypeUsed",
+            suggestion.field_by_field_filling_type_used.value(),
+            FieldType::MAX_VALID_FIELD_TYPE);
       }
       break;
     case SuggestionType::kTitle:
