@@ -10,7 +10,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/guest_view/browser/bad_message.h"
 #include "components/guest_view/browser/guest_view_base.h"
@@ -78,7 +77,7 @@ GuestViewManager::GuestViewManager(
 GuestViewManager::~GuestViewManager() {
   // It seems that ChromeOS OTR profiles may still have RenderProcessHosts at
   // this point. See https://crbug.com/828479
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   DCHECK(view_destruction_callback_map_.empty());
 #endif
 }

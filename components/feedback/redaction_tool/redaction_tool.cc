@@ -23,7 +23,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
-#include "build/chromeos_buildflags.h"
 #include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/feedback/redaction_tool/ip_address.h"
 #include "components/feedback/redaction_tool/pii_types.h"
@@ -812,7 +811,7 @@ std::string RedactionTool::RedactAndroidAppStoragePaths(
   // We only use this on Chrome OS and there's differences in the API for
   // FilePath on Windows which prevents this from compiling, so only enable this
   // code for Chrome OS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::string result;
   result.reserve(input.size());
 
@@ -874,7 +873,7 @@ std::string RedactionTool::RedactAndroidAppStoragePaths(
   return result;
 #else
   return input;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 std::string RedactionTool::RedactCreditCardNumbers(

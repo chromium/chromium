@@ -9,7 +9,6 @@
 #include "base/i18n/rtl.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_util.h"
