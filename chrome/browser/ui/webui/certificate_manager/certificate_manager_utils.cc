@@ -29,15 +29,14 @@ void ShowCertificateDialog(
     bssl::UniquePtr<CRYPTO_BUFFER> cert,
     chrome_browser_server_certificate_database::CertificateMetadata
         cert_metadata,
-    base::RepeatingCallback<
-        void(net::ServerCertificateDatabase::CertInformation,
-             base::OnceCallback<void(bool)>)>) {
+    CertMetadataModificationsCallback modifications_callback) {
   if (!web_contents) {
     return;
   }
 
   CertificateViewerDialog::ShowConstrainedWithMetadata(
-      std::move(cert), std::move(cert_metadata), web_contents.get(),
+      std::move(cert), std::move(cert_metadata),
+      std::move(modifications_callback), web_contents.get(),
       web_contents->GetTopLevelNativeWindow());
 }
 

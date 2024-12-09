@@ -9,8 +9,10 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/net/server_certificate_database.h"
 #include "chrome/browser/net/server_certificate_database.pb.h"
 #include "chrome/common/net/x509_certificate_model.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -26,6 +28,13 @@
 namespace content {
 class WebContents;
 }
+
+using chrome_browser_server_certificate_database::CertificateTrust;
+
+typedef base::RepeatingCallback<void(
+    net::ServerCertificateDatabase::CertInformation,
+    base::OnceCallback<void(bool)>)>
+    CertMetadataModificationsCallback;
 
 class ConstrainedWebDialogDelegate;
 
@@ -57,6 +66,7 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
       bssl::UniquePtr<CRYPTO_BUFFER> cert,
       chrome_browser_server_certificate_database::CertificateMetadata
           cert_metadata,
+      CertMetadataModificationsCallback modifications_callback,
       content::WebContents* web_contents,
       gfx::NativeWindow parent);
 
@@ -71,12 +81,14 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
   friend class CertificateViewerUITest;
 
   // If |cert_metadata| is present, exactly one cert should be in |certs|.
+  // If |modifications_callback| is not null, |cert_metadata| must be present.
   static CertificateViewerDialog* ShowConstrained(
       std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
       std::vector<std::string> cert_nicknames,
       std::optional<
           chrome_browser_server_certificate_database::CertificateMetadata>
           cert_metadata,
+      CertMetadataModificationsCallback modifications_callback,
       content::WebContents* web_contents,
       gfx::NativeWindow parent);
 
@@ -88,7 +100,8 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
       std::vector<std::string> cert_nicknames,
       std::optional<
           chrome_browser_server_certificate_database::CertificateMetadata>
-          cert_metadata);
+          cert_metadata,
+      CertMetadataModificationsCallback modifications_callback);
 
   raw_ptr<ConstrainedWebDialogDelegate, DanglingUntriaged> delegate_ = nullptr;
 };
@@ -102,7 +115,8 @@ class CertificateViewerDialogHandler : public content::WebUIMessageHandler {
       std::vector<x509_certificate_model::X509CertificateModel> certs,
       std::optional<
           chrome_browser_server_certificate_database::CertificateMetadata>
-          cert_metadata);
+          cert_metadata,
+      CertMetadataModificationsCallback modifications_callback);
 
   CertificateViewerDialogHandler(const CertificateViewerDialogHandler&) =
       delete;
@@ -128,6 +142,12 @@ class CertificateViewerDialogHandler : public content::WebUIMessageHandler {
   // The input is an integer index to the certificate in the chain to view.
   void HandleRequestCertificateFields(const base::Value::List& args);
 
+  // Update the trust state of the certificate.
+  void HandleUpdateTrustState(const base::Value::List& args);
+  void UpdateTrustStateDone(const base::Value& callback_id,
+                            CertificateTrust::CertificateTrustType new_trust,
+                            bool success);
+
   // Helper function to get the certificate index. Returns -1 if the index is
   // out of range.
   int GetCertificateIndex(int requested_index) const;
@@ -138,6 +158,10 @@ class CertificateViewerDialogHandler : public content::WebUIMessageHandler {
   std::vector<x509_certificate_model::X509CertificateModel> certs_;
   std::optional<chrome_browser_server_certificate_database::CertificateMetadata>
       cert_metadata_;
+  // Cert Metadata modifications callback. If null, then no modifications are
+  // allowed for this certificate.
+  CertMetadataModificationsCallback modifications_callback_;
+  base::WeakPtrFactory<CertificateViewerDialogHandler> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CERTIFICATE_VIEWER_CERTIFICATE_VIEWER_WEBUI_H_

@@ -72,6 +72,10 @@ void UpdateCertificateAsync(
           profile.get());
   std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
   cert_infos.push_back(std::move(cert_info));
+  // TODO(crbug.com/40928765): When the cert is modified we need to refresh the
+  // list of all of the user cert sources. This is complicated by the fact that
+  // this callback is specific to just one user cert source, whereas the refresh
+  // needs to accommodate all user cert sources.
   server_cert_service->AddOrUpdateUserCertificates(std::move(cert_infos),
                                                    std::move(update_callback));
 }

@@ -97,11 +97,6 @@ source_set("browser_tests") {
     sources += [ "print_preview/print_preview_browsertest.cc" ]
   }
 
-  if (enable_webui_certificate_viewer) {
-    sources +=
-        [ "certificate_viewer_dialog/certificate_viewer_dialog_browsertest.cc" ]
-  }
-
   if (chrome_root_store_cert_management_ui) {
     sources += [ "certificate_manager/certificate_manager_browsertest.cc" ]
   }
@@ -249,6 +244,12 @@ source_set("browser_tests") {
   if (enable_compose) {
     sources += [ "compose/compose_browsertest.cc" ]
     deps += [ "//components/compose/core/browser:features" ]
+  }
+
+  if (enable_webui_certificate_viewer) {
+    sources +=
+        [ "certificate_viewer_dialog/certificate_viewer_dialog_browsertest.cc" ]
+    deps += [ "//chrome/browser/net:server_certificate_database_test_support" ]
   }
 }
 

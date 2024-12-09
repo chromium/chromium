@@ -3,11 +3,15 @@
 // found in the LICENSE file.
 
 import type {CrTreeBaseElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree_base.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
+import {CertViewerBrowserProxyImpl} from 'chrome://view-cert/browser_proxy.js';
+import type {CertMetadataChangeResult, CertViewerBrowserProxy} from 'chrome://view-cert/browser_proxy.js';
 import type {TreeItemDetail} from 'chrome://view-cert/certificate_viewer.js';
 import {CertificateTrust} from 'chrome://view-cert/certificate_viewer.js';
 import type {ConstraintListElement} from 'chrome://view-cert/constraint_list.js';
 import {assertEquals, assertFalse, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 /**
@@ -29,6 +33,22 @@ function getElementWithValue(tree: CrTreeBaseElement): CrTreeBaseElement|null {
   }
   return null;
 }
+
+
+export class TestCertViewerBrowserProxy extends TestBrowserProxy implements
+    CertViewerBrowserProxy {
+  constructor() {
+    super([
+      'updateTrustState',
+    ]);
+  }
+
+  updateTrustState(newTrust: number): Promise<CertMetadataChangeResult> {
+    this.methodCalled('updateTrustState', newTrust);
+    return sendWithPromise('updateTrustState', newTrust);
+  }
+}
+
 
 suite('CertificateViewer', function() {
   // Tests that the dialog opened to the correct URL.
@@ -105,6 +125,7 @@ suite('CertificateViewer', function() {
     assertEquals(
         CertificateTrust.CERTIFICATE_TRUST_UNSPECIFIED,
         Number(trustStateSelector.value) as CertificateTrust);
+    assertTrue(trustStateSelector.disabled);
 
     const constraintList =
         (getRequiredElement('constraints') as ConstraintListElement);
@@ -112,5 +133,75 @@ suite('CertificateViewer', function() {
     assertTrue(constraintList.constraints.includes('*.example.com'));
     assertTrue(constraintList.constraints.includes('*.domainname.com'));
     assertTrue(constraintList.constraints.includes('127.0.0.1/24'));
+  });
+
+  test('EditTrustState', async function() {
+    const testBrowserProxy = new TestCertViewerBrowserProxy();
+    CertViewerBrowserProxyImpl.setInstance(testBrowserProxy);
+
+    const modificationsTab = getRequiredElement('modifications-tab');
+    assertFalse(modificationsTab.hidden);
+
+    const trustStateSelector =
+        (getRequiredElement('trust-state-select') as HTMLSelectElement);
+    assertEquals(
+        CertificateTrust.CERTIFICATE_TRUST_UNSPECIFIED,
+        Number(trustStateSelector.value) as CertificateTrust);
+    assertFalse(trustStateSelector.disabled);
+    const trustStateErrorMessage =
+        (getRequiredElement('trust-state-select-error') as HTMLElement);
+    assertTrue(trustStateErrorMessage.classList.contains('hide-error'));
+
+    trustStateSelector.value =
+        (CertificateTrust.CERTIFICATE_TRUST_TRUSTED as number).toString();
+    // Changing the value with javascript doesn't trigger the change event;
+    // trigger the event manually.
+    trustStateSelector.dispatchEvent(new Event('change'));
+    await testBrowserProxy.whenCalled('updateTrustState');
+
+    const changeFinished = trustStateSelector.disabled ?
+        eventToPromise(
+            'trust-state-change-finished-for-testing', document.body) :
+        Promise.resolve();
+    await changeFinished;
+
+    assertTrue(trustStateErrorMessage.classList.contains('hide-error'));
+  });
+
+
+  test('EditTrustStateError', async function() {
+    const testBrowserProxy = new TestCertViewerBrowserProxy();
+    CertViewerBrowserProxyImpl.setInstance(testBrowserProxy);
+
+    const modificationsTab = getRequiredElement('modifications-tab');
+    assertFalse(modificationsTab.hidden);
+
+    const trustStateSelector =
+        (getRequiredElement('trust-state-select') as HTMLSelectElement);
+    assertEquals(
+        CertificateTrust.CERTIFICATE_TRUST_UNSPECIFIED,
+        Number(trustStateSelector.value) as CertificateTrust);
+    assertFalse(trustStateSelector.disabled);
+    const trustStateErrorMessage =
+        (getRequiredElement('trust-state-select-error') as HTMLElement);
+    assertTrue(trustStateErrorMessage.classList.contains('hide-error'));
+
+    trustStateSelector.value =
+        (CertificateTrust.CERTIFICATE_TRUST_TRUSTED as number).toString();
+    // Changing the value with javascript doesn't trigger the change event;
+    // trigger the event manually.
+    trustStateSelector.dispatchEvent(new Event('change'));
+    await testBrowserProxy.whenCalled('updateTrustState');
+
+    const changeFinished = trustStateSelector.disabled ?
+        eventToPromise(
+            'trust-state-change-finished-for-testing', document.body) :
+        Promise.resolve();
+    await changeFinished;
+
+    assertFalse(trustStateErrorMessage.classList.contains('hide-error'));
+    assertEquals(
+        trustStateErrorMessage.innerText,
+        'There was an error saving the trust state change');
   });
 });

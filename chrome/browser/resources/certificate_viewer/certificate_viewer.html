@@ -120,17 +120,21 @@
       </div>
 
       <!-- Modifications -->
-      <!-- TODO(crbug.com/40928765): hook up to allow for modifications. -->
       <div slot="panel" id="modifications" role="tabpanel">
         <div class="vertical-box">
           <h3 role="heading">$i18n{trust}</h3>
           <div class="horizontal-row">
             <label class="modifications-row-label">$i18n{trustState}</label>
-            <select id="trust-state-select" class="md-select" disabled>
-              <option value="0">$i18n{trustStateDistrusted}</option>
-              <option value="1">$i18n{trustStateHint}</option>
-              <option value="2">$i18n{trustStateTrusted}</option>
-            </select>
+            <div class="input-with-error">
+              <select id="trust-state-select" class="md-select" disabled>
+                <option value="0">$i18n{trustStateDistrusted}</option>
+                <option value="1">$i18n{trustStateHint}</option>
+                <option value="2">$i18n{trustStateTrusted}</option>
+              </select>
+              <div id="trust-state-select-error" class="error hide-error">
+                Error
+              </div>
+            </div>
 
           </div>
           <div class="horizontal-row">

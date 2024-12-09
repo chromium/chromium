@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
@@ -45,12 +46,26 @@
 using content::WebContents;
 using content::WebUIMessageHandler;
 
+using chrome_browser_server_certificate_database::CertificateTrust;
+
 namespace {
 
-int ConvertTrustToInt(chrome_browser_server_certificate_database::
-                          CertificateTrust::CertificateTrustType trust) {
-  using chrome_browser_server_certificate_database::CertificateTrust;
-  // LINT.IfChange(CertificateTrustType)
+// LINT.IfChange(CertificateTrustType)
+std::optional<CertificateTrust::CertificateTrustType> ConvertIntToTrust(
+    int trust) {
+  switch (trust) {
+    case 0:
+      return CertificateTrust::CERTIFICATE_TRUST_TYPE_DISTRUSTED;
+    case 1:
+      return CertificateTrust::CERTIFICATE_TRUST_TYPE_UNSPECIFIED;
+    case 2:
+      return CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED;
+    default:
+      return std::nullopt;
+  }
+}
+
+int ConvertTrustToInt(CertificateTrust::CertificateTrustType trust) {
   switch (trust) {
     case CertificateTrust::CERTIFICATE_TRUST_TYPE_DISTRUSTED:
       return 0;
@@ -62,8 +77,8 @@ int ConvertTrustToInt(chrome_browser_server_certificate_database::
     default:
       NOTREACHED();
   }
-  // LINT.ThenChange(//chrome/browser/resources/certificate_viewer/certificate_viewer.ts:CertificateTrustType)
 }
+// LINT.ThenChange(//chrome/browser/resources/certificate_viewer/certificate_viewer.ts:CertificateTrustType)
 
 // Helper class for building a Value representation of a certificate. The class
 // gathers data for a single node of the representation tree and builds a
@@ -154,7 +169,8 @@ std::string DialogArgsForCertList(
     const std::vector<x509_certificate_model::X509CertificateModel>& certs,
     const std::optional<
         chrome_browser_server_certificate_database::CertificateMetadata>&
-        cert_metadata) {
+        cert_metadata,
+    CertMetadataModificationsCallback modifications_callback) {
   std::string data;
 
   // Certificate information. The keys in this dictionary's general key
@@ -239,6 +255,7 @@ std::string DialogArgsForCertList(
     dict.Set(
         "trust",
         base::Value(ConvertTrustToInt(cert_metadata->trust().trust_type())));
+    dict.Set("isEditable", base::Value(!modifications_callback.is_null()));
     if (cert_metadata->has_constraints()) {
       base::Value::List constraints;
       for (const auto& dns_constraint :
@@ -328,7 +345,8 @@ CertificateViewerDialog* CertificateViewerDialog::ShowConstrained(
     content::WebContents* web_contents,
     gfx::NativeWindow parent) {
   return ShowConstrained(std::move(certs), std::move(cert_nicknames),
-                         std::nullopt, web_contents, parent);
+                         std::nullopt, base::NullCallback(), web_contents,
+                         parent);
 }
 
 // static
@@ -339,8 +357,8 @@ CertificateViewerDialog* CertificateViewerDialog::ShowConstrained(
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs;
   certs.push_back(std::move(cert));
   return ShowConstrained(std::move(certs),
-                         /*cert_nicknames=*/{}, std::nullopt, web_contents,
-                         parent);
+                         /*cert_nicknames=*/{}, std::nullopt,
+                         base::NullCallback(), web_contents, parent);
 }
 
 // static
@@ -348,6 +366,7 @@ CertificateViewerDialog* CertificateViewerDialog::ShowConstrainedWithMetadata(
     bssl::UniquePtr<CRYPTO_BUFFER> cert,
     chrome_browser_server_certificate_database::CertificateMetadata
         cert_metadata,
+    CertMetadataModificationsCallback modifications_callback,
     content::WebContents* web_contents,
     gfx::NativeWindow parent) {
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs;
@@ -355,7 +374,7 @@ CertificateViewerDialog* CertificateViewerDialog::ShowConstrainedWithMetadata(
 
   return CertificateViewerDialog::ShowConstrained(
       std::move(certs), /*cert_nicknames=*/{}, std::move(cert_metadata),
-      web_contents, parent);
+      std::move(modifications_callback), web_contents, parent);
 }
 
 // static
@@ -365,10 +384,12 @@ CertificateViewerDialog* CertificateViewerDialog::ShowConstrained(
     std::optional<
         chrome_browser_server_certificate_database::CertificateMetadata>
         cert_metadata,
+    CertMetadataModificationsCallback modifications_callback,
     content::WebContents* web_contents,
     gfx::NativeWindow parent) {
   CertificateViewerDialog* dialog_ptr = new CertificateViewerDialog(
-      std::move(certs), std::move(cert_nicknames), std::move(cert_metadata));
+      std::move(certs), std::move(cert_nicknames), std::move(cert_metadata),
+      std::move(modifications_callback));
 
   auto dialog = base::WrapUnique(dialog_ptr);
 
@@ -396,7 +417,8 @@ CertificateViewerDialog::CertificateViewerDialog(
     std::vector<std::string> cert_nicknames,
     std::optional<
         chrome_browser_server_certificate_database::CertificateMetadata>
-        cert_metadata) {
+        cert_metadata,
+    CertMetadataModificationsCallback modifications_callback) {
   CHECK(!in_certs.empty());
   if (cert_metadata) {
     CHECK(in_certs.size() == 1);
@@ -414,7 +436,8 @@ CertificateViewerDialog::CertificateViewerDialog(
   constexpr gfx::Size kDefaultSize{544, 628};
   set_can_close(true);
   set_delete_on_close(false);
-  set_dialog_args(DialogArgsForCertList(certs, cert_metadata));
+  set_dialog_args(
+      DialogArgsForCertList(certs, cert_metadata, modifications_callback));
   set_dialog_modal_type(ui::mojom::ModalType::kNone);
   set_dialog_content_url(GURL(chrome::kChromeUICertificateViewerURL));
   set_dialog_size(kDefaultSize);
@@ -423,7 +446,8 @@ CertificateViewerDialog::CertificateViewerDialog(
   set_show_dialog_title(true);
 
   AddWebUIMessageHandler(std::make_unique<CertificateViewerDialogHandler>(
-      this, std::move(certs), std::move(cert_metadata)));
+      this, std::move(certs), std::move(cert_metadata),
+      std::move(modifications_callback)));
 }
 
 CertificateViewerDialog::~CertificateViewerDialog() = default;
@@ -436,10 +460,12 @@ CertificateViewerDialogHandler::CertificateViewerDialogHandler(
     std::vector<x509_certificate_model::X509CertificateModel> certs,
     std::optional<
         chrome_browser_server_certificate_database::CertificateMetadata>
-        cert_metadata)
+        cert_metadata,
+    CertMetadataModificationsCallback modifications_callback)
     : dialog_(dialog),
       certs_(std::move(certs)),
-      cert_metadata_(std::move(cert_metadata)) {}
+      cert_metadata_(std::move(cert_metadata)),
+      modifications_callback_(std::move(modifications_callback)) {}
 
 CertificateViewerDialogHandler::~CertificateViewerDialogHandler() {}
 
@@ -453,6 +479,11 @@ void CertificateViewerDialogHandler::RegisterMessages() {
       "requestCertificateFields",
       base::BindRepeating(
           &CertificateViewerDialogHandler::HandleRequestCertificateFields,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "updateTrustState",
+      base::BindRepeating(
+          &CertificateViewerDialogHandler::HandleUpdateTrustState,
           base::Unretained(this)));
 }
 
@@ -474,6 +505,64 @@ void CertificateViewerDialogHandler::HandleExportCertificate(
   }
   ShowCertExportDialog(web_ui()->GetWebContents(), window,
                        std::move(export_certs), certs_[cert_index].GetTitle());
+}
+
+void CertificateViewerDialogHandler::HandleUpdateTrustState(
+    const base::Value::List& args) {
+  AllowJavascript();
+  const base::Value& callback_id = args[0];
+  std::optional<CertificateTrust::CertificateTrustType> trust_opt =
+      ConvertIntToTrust(args[1].GetInt());
+  // Trust type is invalid for some reason. Should only happen if a user is
+  // messing with the HTML/JS.
+  if (!trust_opt) {
+    base::Value::Dict dict;
+    dict.Set("success", base::Value(false));
+    dict.Set("error", base::Value("An error occured updating the trust state"));
+    ResolveJavascriptCallback(callback_id, dict);
+    return;
+  }
+
+  // Run a bunch of sanity checks. We need:
+  //   - non-null modifications_callback_
+  //   - exactly one cert
+  //   - cert metadata
+  //
+  // This shouldn't trigger an error unless the user is messing with the
+  // HTML/JS.
+  if (!modifications_callback_ || certs_.size() != 1 || !cert_metadata_) {
+    base::Value::Dict dict;
+    dict.Set("success", base::Value(false));
+    dict.Set("error",
+             base::Value("Modification of this certificate is not allowed"));
+    ResolveJavascriptCallback(callback_id, dict);
+    return;
+  }
+
+  net::ServerCertificateDatabase::CertInformation cert_info;
+  cert_info.sha256hash_hex = certs_[0].HashCertSHA256();
+  // Copy current cert metadata, then update with new trust.
+  cert_info.cert_metadata.MergeFrom(*cert_metadata_);
+  cert_info.cert_metadata.mutable_trust()->set_trust_type(*trust_opt);
+  cert_info.der_cert = base::ToVector(
+      net::x509_util::CryptoBufferAsSpan(certs_[0].cert_buffer()));
+
+  modifications_callback_.Run(
+      std::move(cert_info),
+      base::BindOnce(&CertificateViewerDialogHandler::UpdateTrustStateDone,
+                     weak_ptr_factory_.GetWeakPtr(), callback_id.Clone(),
+                     *trust_opt));
+}
+
+void CertificateViewerDialogHandler::UpdateTrustStateDone(
+    const base::Value& callback_id,
+    CertificateTrust::CertificateTrustType new_trust,
+    bool success) {
+  base::Value::Dict dict;
+  dict.Set("success", base::Value(success));
+  cert_metadata_->mutable_trust()->set_trust_type(new_trust);
+  // No error message set, use the default message.
+  ResolveJavascriptCallback(callback_id, dict);
 }
 
 void CertificateViewerDialogHandler::HandleRequestCertificateFields(

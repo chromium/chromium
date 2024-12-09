@@ -16,6 +16,7 @@ build_webui("build") {
   ]
 
   non_web_component_files = [
+    "browser_proxy.ts",
     "certificate_viewer.ts",
     "constraint_list.ts",
     "constraint_list.html.ts",

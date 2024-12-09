@@ -4,10 +4,17 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/certificate_viewer.h"
-#include "chrome/browser/net/server_certificate_database.pb.h"
+#include "chrome/browser/net/server_certificate_database.h"
+#include "chrome/browser/net/server_certificate_database_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -25,6 +32,7 @@
 #include "net/base/ip_address.h"
 #include "net/cert/x509_util.h"
 #include "net/test/test_certificate_data.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 // Test framework for
 // chrome/test/data/webui/certificate_viewer_dialog_browsertest.js.
@@ -45,6 +53,10 @@ class CertificateViewerUITest : public WebUIMochaBrowserTest {
       chrome_browser_server_certificate_database::CertificateMetadata>
   GetCertMetadata() {
     return std::nullopt;
+  }
+
+  virtual CertMetadataModificationsCallback GetModificationsCallback() {
+    return base::NullCallback();
   }
 
   void RunTestCase(const std::string& testCase) {
@@ -79,6 +91,7 @@ class CertificateViewerUITest : public WebUIMochaBrowserTest {
     if (cert_metadata) {
       dialog = CertificateViewerDialog::ShowConstrainedWithMetadata(
           std::move(cert), std::move(*cert_metadata),
+          GetModificationsCallback(),
           browser()->tab_strip_model()->GetActiveWebContents(),
           browser()->window()->GetNativeWindow());
     } else {
@@ -142,4 +155,72 @@ class CertificateViewerUIWithMetadataCertTest : public CertificateViewerUITest {
 
 IN_PROC_BROWSER_TEST_F(CertificateViewerUIWithMetadataCertTest, CheckMetadata) {
   RunTestCase("CheckMetadata");
+}
+
+class CertificateViewerUIWithMetadataCertEditTest
+    : public CertificateViewerUIWithMetadataCertTest {
+ public:
+  void ModifyCallback(net::ServerCertificateDatabase::CertInformation cert_info,
+                      base::OnceCallback<void(bool)> callback) {
+    written_cert_info_ = std::move(cert_info);
+    std::move(callback).Run(true);
+  }
+
+ protected:
+  CertMetadataModificationsCallback GetModificationsCallback() override {
+    return base::BindRepeating(
+        &CertificateViewerUIWithMetadataCertEditTest::ModifyCallback,
+        base::Unretained(this));
+  }
+
+  net::ServerCertificateDatabase::CertInformation written_cert_info_;
+};
+
+IN_PROC_BROWSER_TEST_F(CertificateViewerUIWithMetadataCertEditTest,
+                       EditTrustState) {
+  RunTestCase("EditTrustState");
+
+  // Set up expected CertInformation
+  bssl::UniquePtr<CRYPTO_BUFFER> cert = GetCerts();
+  ASSERT_TRUE(cert);
+  net::ServerCertificateDatabase::CertInformation cert_info;
+  cert_info.der_cert =
+      base::ToVector(net::x509_util::CryptoBufferAsSpan(cert.get()));
+  cert_info.sha256hash_hex = base::ToLowerASCII(base::HexEncode(
+      net::X509Certificate::CalculateFingerprint256(cert.get()).data));
+
+  cert_info.cert_metadata.mutable_trust()->set_trust_type(
+      chrome_browser_server_certificate_database::CertificateTrust::
+          CERTIFICATE_TRUST_TYPE_TRUSTED);
+  cert_info.cert_metadata.mutable_constraints()->add_dns_names("*.example.com");
+  cert_info.cert_metadata.mutable_constraints()->add_dns_names(
+      "*.domainname.com");
+  chrome_browser_server_certificate_database::CIDR* cidr =
+      cert_info.cert_metadata.mutable_constraints()->add_cidrs();
+  cidr->set_ip(std::string(
+      base::as_string_view(net::IPAddress::IPv4Localhost().bytes())));
+  cidr->set_prefix_length(24);
+
+  EXPECT_THAT(written_cert_info_, CertInfoEquals(std::ref(cert_info)));
+}
+
+class CertificateViewerUIWithMetadataCertEditErrorTest
+    : public CertificateViewerUIWithMetadataCertTest {
+ public:
+  void ModifyCallback(net::ServerCertificateDatabase::CertInformation cert_info,
+                      base::OnceCallback<void(bool)> callback) {
+    std::move(callback).Run(false);
+  }
+
+ protected:
+  CertMetadataModificationsCallback GetModificationsCallback() override {
+    return base::BindRepeating(
+        &CertificateViewerUIWithMetadataCertEditErrorTest::ModifyCallback,
+        base::Unretained(this));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CertificateViewerUIWithMetadataCertEditErrorTest,
+                       EditTrustStateError) {
+  RunTestCase("EditTrustStateError");
 }

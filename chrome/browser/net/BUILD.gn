@@ -28,3 +28,21 @@ if (is_android) {
     sources = [ "secure_dns_config.h" ]
   }
 }
+
+static_library("server_certificate_database_test_support") {
+  testonly = true
+
+  sources = [
+    "server_certificate_database_test_util.cc",
+    "server_certificate_database_test_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//crypto",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

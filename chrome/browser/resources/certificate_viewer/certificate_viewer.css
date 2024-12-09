@@ -90,6 +90,20 @@ div[slot='panel'] {
   padding-bottom: 10px;
 }
 
+.input-with-error {
+  display: flex;
+  flex-direction: column;
+}
+
+.error {
+  margin: 4px 10px;
+  color: rgb(179, 38, 30);
+}
+
+.hide-error {
+  display: none;
+}
+
 .modifications-row-label {
   width: 150px;
 }
