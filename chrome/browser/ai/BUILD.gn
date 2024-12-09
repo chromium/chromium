@@ -59,6 +59,7 @@ source_set("impl") {
   ]
   deps = [
     ":ai",
+    "//chrome/browser/ui/tabs:tabs_public",
     "//components/optimization_guide/content/browser",
     "//components/site_engagement/content:content",
     "//pdf:buildflags",

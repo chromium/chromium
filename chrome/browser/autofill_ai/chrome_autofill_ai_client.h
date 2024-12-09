@@ -57,6 +57,11 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
       user_annotations::PromptAcceptanceCallback prompt_acceptance_callback)
       override;
 
+  void SetModelExecutorForTesting(
+      std::unique_ptr<autofill_ai::AutofillAiModelExecutor> model_executor) {
+    filling_engine_ = std::move(model_executor);
+  }
+
  private:
   explicit ChromeAutofillAiClient(content::WebContents* web_contents,
                                   Profile* profile);
@@ -68,6 +73,7 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
   // improvements should currently be allowed to report feedback.
   bool CanShowFeedbackPage();
 
+  // TODO(crbug.com/371534239): Rename to `model_executor_`.
   std::unique_ptr<autofill_ai::AutofillAiModelExecutor> filling_engine_;
 
   autofill_ai::AutofillAiManager prediction_improvements_manager_;
