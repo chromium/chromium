@@ -430,7 +430,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*max_input=*/kFloat16To32AndInt32To64,
        /*min_input=*/kFloat16To32AndInt32To64,
        /*pow_input=*/kFloat16To32AndInt32,
-       /*equal_input=*/kFloat16To32AndInt32To64AndUint8,
+       /*equal_input=*/kFloat16To32AndInt32To64,
        /*greater_input=*/kFloat16To32AndInt32To64,
        /*greater_or_equal_input=*/kFloat16To32AndInt32To64,
        /*lesser_input=*/kFloat16To32AndInt32To64,
