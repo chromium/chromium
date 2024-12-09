@@ -29,6 +29,7 @@
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
+#include "components/subresource_filter/core/mojom/subresource_filter.mojom-shared.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
@@ -1576,7 +1577,8 @@ TEST_F(CookieControlsUserBypassTest, SubresourceBlocked) {
   NavigateAndCommit(GURL("https://example.com"));
   fingerprinting_protection_filter::FingerprintingProtectionWebContentsHelper::
       FromWebContents(web_contents())
-          ->NotifyOnBlockedSubresource();
+          ->NotifyOnBlockedSubresource(
+              subresource_filter::mojom::ActivationLevel::kEnabled);
 
   EXPECT_CALL(*mock(),
               OnStatusChanged(
@@ -1606,7 +1608,8 @@ TEST_F(CookieControlsUserBypassTest, SubresourceBlockedInIncognito) {
   NavigateAndCommit(GURL("https://example.com"));
   fingerprinting_protection_filter::FingerprintingProtectionWebContentsHelper::
       FromWebContents(web_contents())
-          ->NotifyOnBlockedSubresource();
+          ->NotifyOnBlockedSubresource(
+              subresource_filter::mojom::ActivationLevel::kEnabled);
 
   EXPECT_CALL(*mock(),
               OnStatusChanged(

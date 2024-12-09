@@ -8,6 +8,7 @@
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/subresource_filter/content/browser/test_ruleset_publisher.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -141,6 +142,38 @@ FingerprintingProtectionFilterDisabledBrowserTest::
 void FingerprintingProtectionFilterDisabledBrowserTest::SetUpOnMainThread() {
   FingerprintingProtectionFilterBrowserTest::SetUpOnMainThread();
   ASSERT_TRUE(embedded_test_server()->Start());
+}
+
+// ==== FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest ====
+
+FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest::
+    FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest() {
+  // Enable refresh heuristic after 2 refreshes in both regular and incognito.
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{features::kEnableFingerprintingProtectionFilter,
+        {{features::kRefreshHeuristicExceptionThresholdParam, "2"}}},
+       {features::kEnableFingerprintingProtectionFilterInIncognito,
+        {{features::kRefreshHeuristicExceptionThresholdParam, "2"}}}},
+      /*disabled_features=*/{});
+}
+
+FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest::
+    ~FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest() =
+        default;
+
+void FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest::
+    SetUpOnMainThread() {
+  FingerprintingProtectionFilterBrowserTest::SetUpOnMainThread();
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // These tests depend on eTLD+1, so we need the browser to navigate to
+  // a URL with domain name, not an IP address - it breaks if the URL is
+  // 127.0.0.1 as it is by default in these tests.
+  // Resolve "google.test" to 127.0.0.1 so that these tests can navigate to
+  // "google.test" and work as desired.
+  host_resolver()->AddRule("google.test",
+                           embedded_test_server()->base_url().host_piece());
 }
 
 }  // namespace fingerprinting_protection_filter

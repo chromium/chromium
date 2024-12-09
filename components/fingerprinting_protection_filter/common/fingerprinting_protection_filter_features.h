@@ -17,6 +17,8 @@ namespace fingerprinting_protection_filter::features {
 
 const char kPerformanceMeasurementRateParam[] = "performance_measurement_rate";
 const char kEnableConsoleLoggingParam[] = "enable_console_logging";
+const char kRefreshHeuristicExceptionThresholdParam[] =
+    "refresh_heuristic_exception_threshold";
 
 // The primary toggle to enable/disable the Fingerprinting Protection Filter.
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
@@ -41,6 +43,16 @@ bool IsFingerprintingProtectionEnabledForIncognitoState(bool is_incognito);
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 bool IsFingerprintingProtectionConsoleLoggingEnabled();
 
+// Returns true if exceptions should be added/respected for sites based on the
+// refresh heuristic exception.
+COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
+bool IsFingerprintingProtectionRefreshHeuristicExceptionEnabled(
+    bool is_incognito);
+
+// Returns the value of the refresh heuristic exception threshold.
+COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
+int GetFingerprintingProtectionRefreshHeuristicThreshold(bool is_incognito);
+
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 extern const base::FeatureParam<subresource_filter::mojom::ActivationLevel>
     kActivationLevel;
@@ -56,6 +68,23 @@ COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 extern const base::FeatureParam<bool> kEnableConsoleLoggingNonIncognito;
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 extern const base::FeatureParam<bool> kEnableConsoleLoggingIncognito;
+
+// Serves as both a toggle for the refresh heuristic exception and as the
+// threshold for it. If set to 0, no exceptions are saved or applied for
+// the refresh heuristic. Otherwise, this is the number of refreshes for the
+// same eTLD+1 in a single WebContents before an exception should be added. See
+// FingerprintingProtectionWebContentsHelper for usage.
+//
+// Context: We want to improve user experience on broken sites by heuristically
+// detecting breakage and adding an exception in that case.
+//
+// Default value 0 (i.e. no exceptions added).
+COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
+extern const base::FeatureParam<int>
+    kRefreshHeuristicExceptionThresholdNonIncognito;
+COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
+extern const base::FeatureParam<int>
+    kRefreshHeuristicExceptionThresholdIncognito;
 
 // A number in the range [0, 1], indicating the fraction of page loads that
 // should have extended performance measurements enabled for timing-based

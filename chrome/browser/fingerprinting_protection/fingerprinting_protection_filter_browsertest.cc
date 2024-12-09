@@ -23,6 +23,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -455,6 +456,100 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectTotalCount(kSubresourceLoadsDisallowedForPage, 1);
   histogram_tester.ExpectTotalCount(kEvaluationTotalWallDurationForPage, 1);
   histogram_tester.ExpectTotalCount(kEvaluationTotalCPUDurationForPage, 1);
+}
+
+// TODO(https://crbug.com/382055410): Adjust
+// `FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest` tests so
+// they can also run on android.
+IN_PROC_BROWSER_TEST_F(
+    FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest,
+    ExceptionIsAddedInNonIncognito) {
+  // Refresh exception code depends on eTLD+1, so we need to navigate to a
+  // host with a domain name.
+  GURL url(embedded_test_server()->GetURL("google.test", kTestFrameSetPath));
+
+  // Disallow child frame documents.
+  ASSERT_NO_FATAL_FAILURE(
+      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Expect initially only second subframe loads due to blocking.
+  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
+  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // Reload
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  ASSERT_TRUE(content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+  // Blocking still has effect
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // Reload again
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  ASSERT_TRUE(content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+  // An exception will have been added.
+
+  // TODO(https://crbug.com/372669423): When acting on exceptions is
+  // implemented, change this test to expect no blocking.
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    FingerprintingProtectionFilterRefreshHeuristicExceptionBrowserTest,
+    ExceptionIsAddedInIncognito) {
+  // Close normal browser and switch the test's browser instance to an incognito
+  // instance.
+  Browser* incognito = CreateIncognitoBrowser(browser()->profile());
+  CloseBrowserSynchronously(browser());
+  SelectFirstBrowser();
+  ASSERT_EQ(browser(), incognito);
+
+  // Refresh exception code depends on eTLD+1, so we need to navigate to a
+  // host with a domain name.
+  GURL url(embedded_test_server()->GetURL("google.test", kTestFrameSetPath));
+
+  // Disallow child frame documents.
+  ASSERT_NO_FATAL_FAILURE(
+      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Expect initially only second subframe loads due to blocking.
+  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
+  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // Reload
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  ASSERT_TRUE(content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+  // Blocking still has effect
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // Reload again
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  ASSERT_TRUE(content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+  // An exception will have been added.
+
+  // TODO(https://crbug.com/372669423): When acting on exceptions is
+  // implemented, change this test to expect no blocking.
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

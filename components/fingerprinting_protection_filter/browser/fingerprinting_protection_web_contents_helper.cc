@@ -13,12 +13,14 @@
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_breakage_exception.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
+#include "components/fingerprinting_protection_filter/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/subresource_filter/content/shared/browser/utils.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/load_policy.h"
+#include "components/subresource_filter/core/mojom/subresource_filter.mojom-shared.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/web_contents.h"
@@ -44,6 +46,7 @@ namespace {
 using ::subresource_filter::GetSubresourceFilterRootPage;
 using ::subresource_filter::IsInSubresourceFilterRoot;
 using ::subresource_filter::VerifiedRulesetDealer;
+using ::subresource_filter::mojom::ActivationLevel;
 
 bool IsRootNavigationToNewDocument(content::NavigationHandle& handle) {
   return IsInSubresourceFilterRoot(&handle) && !handle.IsSameDocument() &&
@@ -96,15 +99,17 @@ ukm::SourceId RefreshMetricsManager::GetUkmSourceId(
   return web_contents.GetPrimaryMainFrame()->GetPageUkmSourceId();
 }
 
-void RefreshMetricsManager::IncrementRefreshCount(
+int RefreshMetricsManager::IncrementAndGetRefreshCount(
     const GURL& url,
     content::WebContents& web_contents) {
   std::string etld_plus_one = GetEtldPlusOne(url);
   if (!etld_plus_one.empty()) {
-    refresh_count_by_etld_plus_one_[etld_plus_one].refresh_count++;
     refresh_count_by_etld_plus_one_[etld_plus_one].last_visited_source_id =
         GetUkmSourceId(web_contents);
+    return ++refresh_count_by_etld_plus_one_[etld_plus_one].refresh_count;
   }
+  // Invalid URL.
+  return -1;
 }
 
 void RefreshMetricsManager::LogMetrics() const {
@@ -261,6 +266,29 @@ void FingerprintingProtectionWebContentsHelper::DidStartNavigation(
   if (IsRootNavigationToNewDocument(*navigation_handle)) {
     CreateThrottleManagerForNavigation(navigation_handle);
   }
+
+  // Record refresh count, and possibly add exception, if there was a
+  // subresource blocked in this page.
+  // We do this in DidStartNavigation so that we can react to an attempted
+  // refresh even if the navigation is cancelled (e.g. due to tab closing).
+  if (subresource_blocked_in_current_primary_page() &&
+      navigation_handle->GetReloadType() != content::ReloadType::NONE) {
+    // Collect metrics regardless of whether the heuristic exception is enabled.
+    int refresh_count = GetRefreshMetricsManager().IncrementAndGetRefreshCount(
+        navigation_handle->GetURL(), *web_contents());
+
+    if (features::IsFingerprintingProtectionRefreshHeuristicExceptionEnabled(
+            is_incognito_) &&
+        refresh_count >=
+            features::GetFingerprintingProtectionRefreshHeuristicThreshold(
+                is_incognito_)) {
+      // Heuristic: If we blocked a subresource and the user refreshes enough
+      // times on the same site within this WebContents, we suspect there's been
+      // breakage on this site and add an exception.
+      CHECK(pref_service_ != nullptr);
+      AddBreakageException(navigation_handle->GetURL(), *pref_service_);
+    }
+  }
 }
 
 void FingerprintingProtectionWebContentsHelper::
@@ -298,10 +326,6 @@ void FingerprintingProtectionWebContentsHelper::DidFinishNavigation(
     subresource_blocked_in_current_primary_page_ = false;
   }
 
-  if (navigation_handle->GetReloadType() != content::ReloadType::NONE) {
-    GetRefreshMetricsManager().IncrementRefreshCount(
-        navigation_handle->GetURL(), *web_contents());
-  }
   if (navigation_handle->IsPrerenderedPageActivation() ||
       navigation_handle->IsServedFromBackForwardCache()) {
     if (!navigation_handle->HasCommitted()) {
@@ -400,10 +424,16 @@ void FingerprintingProtectionWebContentsHelper::DidFinishLoad(
   }
 }
 
-void FingerprintingProtectionWebContentsHelper::NotifyOnBlockedSubresource() {
+void FingerprintingProtectionWebContentsHelper::NotifyOnBlockedSubresource(
+    ActivationLevel activation_level) {
+  // Set this bit in both Enabled and DryRun so we can collect metrics.
   subresource_blocked_in_current_primary_page_ = true;
-  for (auto& observer : observer_list_) {
-    observer.OnSubresourceBlocked();
+
+  // Only notify observers in Enabled, not DryRun.
+  if (activation_level == ActivationLevel::kEnabled) {
+    for (auto& observer : observer_list_) {
+      observer.OnSubresourceBlocked();
+    }
   }
 }
 
