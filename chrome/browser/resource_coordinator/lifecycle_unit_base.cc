@@ -68,10 +68,6 @@ void LifecycleUnitBase::RemoveObserver(LifecycleUnitObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-ukm::SourceId LifecycleUnitBase::GetUkmSourceId() const {
-  return ukm::kInvalidSourceId;
-}
-
 void LifecycleUnitBase::SetDiscardCountForTesting(size_t discard_count) {
   discard_count_ = discard_count;
 }

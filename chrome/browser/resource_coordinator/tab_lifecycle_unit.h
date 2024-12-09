@@ -100,7 +100,6 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   LifecycleUnitDiscardReason GetDiscardReason() const override;
   bool Discard(LifecycleUnitDiscardReason discard_reason,
                uint64_t memory_footprint_estimate) override;
-  ukm::SourceId GetUkmSourceId() const override;
 
   // TabLifecycleUnitExternal:
   content::WebContents* GetWebContents() const override;

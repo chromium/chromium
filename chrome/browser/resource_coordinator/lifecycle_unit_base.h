@@ -44,7 +44,6 @@ class LifecycleUnitBase : public LifecycleUnit {
   size_t GetDiscardCount() const override;
   void AddObserver(LifecycleUnitObserver* observer) override;
   void RemoveObserver(LifecycleUnitObserver* observer) override;
-  ukm::SourceId GetUkmSourceId() const override;
 
   void SetDiscardCountForTesting(size_t discard_count);
 
