@@ -481,6 +481,7 @@ mojom::XRDepthDataPtr OpenXrDepthSensorAndroid::GetDepthDataForEye(
   switch (depth_config_->depth_data_format) {
     case mojom::XRDepthDataFormat::kFloat32:
       // Results are already in meters.
+      result->raw_value_to_meters = 1;
       CHECK(GetByteSize(data_format) == sizeof(float));
       CopyDepthData<float>(depth_image_span, pixels, image_size, depth_view,
                            view, [](float val) { return val; });

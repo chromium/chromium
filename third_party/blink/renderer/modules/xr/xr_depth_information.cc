@@ -33,6 +33,7 @@ XRDepthInformation::XRDepthInformation(
       size_(size),
       norm_depth_buffer_from_norm_view_(norm_depth_buffer_from_norm_view),
       raw_value_to_meters_(raw_value_to_meters) {
+  CHECK_NE(raw_value_to_meters_, 0);
   DVLOG(3) << __func__ << ": size_=" << size_.ToString()
            << ", norm_depth_buffer_from_norm_view_="
            << norm_depth_buffer_from_norm_view_.ToString()
