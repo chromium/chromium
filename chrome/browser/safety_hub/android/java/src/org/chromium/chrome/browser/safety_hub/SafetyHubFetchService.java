@@ -253,7 +253,7 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
      */
     private void fetchReusedCredentialsCount(Callback<Boolean> onFinishedCallback) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)) {
-            mWeakCredentialsCountFetched = true;
+            mReusedCredentialsCountFetched = true;
             onFetchCredentialsFinished(onFinishedCallback);
             return;
         }
