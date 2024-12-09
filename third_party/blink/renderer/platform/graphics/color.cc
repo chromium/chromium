@@ -871,21 +871,12 @@ void Color::UnpremultiplyColor() {
   }
 }
 
-// This converts -0.0 to 0.0, so that they have the same hash value. This
-// ensures that equal FontDescription have the same hash value.
-float NormalizeSign(float number) {
-  if (number == 0.0) [[unlikely]] {
-    return 0.0;
-  }
-  return number;
-}
-
 unsigned Color::GetHash() const {
   unsigned result = WTF::HashInt(static_cast<uint8_t>(color_space_));
-  WTF::AddFloatToHash(result, NormalizeSign(param0_));
-  WTF::AddFloatToHash(result, NormalizeSign(param1_));
-  WTF::AddFloatToHash(result, NormalizeSign(param2_));
-  WTF::AddFloatToHash(result, NormalizeSign(alpha_));
+  WTF::AddFloatToHash(result, param0_);
+  WTF::AddFloatToHash(result, param1_);
+  WTF::AddFloatToHash(result, param2_);
+  WTF::AddFloatToHash(result, alpha_);
   WTF::AddIntToHash(result, param0_is_none_);
   WTF::AddIntToHash(result, param1_is_none_);
   WTF::AddIntToHash(result, param2_is_none_);

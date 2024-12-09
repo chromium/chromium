@@ -90,37 +90,6 @@ TEST(HashMapTest, Iteration) {
   EXPECT_EQ((1 << 10) - 1, encountered_keys);
 }
 
-struct TestDoubleHashTraits : HashTraits<double> {
-  static const unsigned kMinimumTableSize = 8;
-};
-
-using DoubleHashMap = HashMap<double, int64_t, TestDoubleHashTraits>;
-
-int BucketForKey(double key) {
-  return WTF::GetHash(key) & (TestDoubleHashTraits::kMinimumTableSize - 1);
-}
-
-TEST(HashMapTest, DoubleHashCollisions) {
-  // The "clobber" key here is one that ends up stealing the bucket that the -0
-  // key originally wants to be in. This makes the 0 and -0 keys collide and
-  // the test then fails unless the FloatHash::equals() implementation can
-  // distinguish them.
-  const double kClobberKey = 6;
-  const double kZeroKey = 0;
-  const double kNegativeZeroKey = -kZeroKey;
-
-  DoubleHashMap map;
-
-  map.insert(kClobberKey, 1);
-  map.insert(kZeroKey, 2);
-  map.insert(kNegativeZeroKey, 3);
-
-  EXPECT_EQ(BucketForKey(kClobberKey), BucketForKey(kNegativeZeroKey));
-  EXPECT_EQ(1, map.at(kClobberKey));
-  EXPECT_EQ(2, map.at(kZeroKey));
-  EXPECT_EQ(3, map.at(kNegativeZeroKey));
-}
-
 using OwnPtrHashMap = HashMap<int, std::unique_ptr<DestructCounter>>;
 
 TEST(HashMapTest, OwnPtrAsValue) {
