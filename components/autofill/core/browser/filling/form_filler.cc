@@ -571,8 +571,8 @@ void FormFiller::FillOrPreviewForm(
     const FormData& form,
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
-    FormStructure* form_structure,
-    AutofillField* autofill_trigger_field,
+    FormStructure& form_structure,
+    AutofillField& autofill_trigger_field,
     AutofillTriggerSource trigger_source,
     bool is_refill) {
   FillingProduct filling_product =
@@ -580,16 +580,13 @@ void FormFiller::FillOrPreviewForm(
           ? FillingProduct::kCreditCard
           : FillingProduct::kAddress;
 
-  DCHECK(form_structure);
-  DCHECK(autofill_trigger_field);
-
   LogBuffer buffer(IsLoggingActive(log_manager()));
   LOG_AF(buffer) << "action_persistence: "
                  << ActionPersistenceToString(action_persistence) << Br{};
   LOG_AF(buffer) << "filling product: "
                  << FillingProductToString(filling_product) << Br{};
   LOG_AF(buffer) << "is refill: " << is_refill << Br{};
-  LOG_AF(buffer) << *form_structure << Br{};
+  LOG_AF(buffer) << form_structure << Br{};
   LOG_AF(buffer) << Tag{"table"};
 
   // TODO(crbug/1203667#c9): Skip if the form has changed in the meantime, which
@@ -597,9 +594,9 @@ void FormFiller::FillOrPreviewForm(
   if (action_persistence == mojom::ActionPersistence::kFill) {
     base::UmaHistogramBoolean(
         "Autofill.SkippingFormFillDueToChangedFieldCount",
-        form_structure->field_count() != form.fields().size());
+        form_structure.field_count() != form.fields().size());
   }
-  if (form_structure->field_count() != form.fields().size()) {
+  if (form_structure.field_count() != form.fields().size()) {
     LOG_AF(buffer)
         << Tr{} << "*"
         << "Skipped filling of form because the number of fields to be "
@@ -613,9 +610,9 @@ void FormFiller::FillOrPreviewForm(
   }
 
   if (action_persistence == mojom::ActionPersistence::kFill && !is_refill) {
-    form_structure->set_last_filling_timestamp(base::TimeTicks::Now());
-    SetFillingContext(form_structure->global_id(),
-                      std::make_unique<FillingContext>(*autofill_trigger_field,
+    form_structure.set_last_filling_timestamp(base::TimeTicks::Now());
+    SetFillingContext(form_structure.global_id(),
+                      std::make_unique<FillingContext>(autofill_trigger_field,
                                                        profile_or_credit_card));
   }
 
@@ -625,20 +622,21 @@ void FormFiller::FillOrPreviewForm(
   //  A refill has not been attempted for that form yet.
   //  This fill is not a refill attempt.
   FillingContext* filling_context =
-      GetFillingContext(form_structure->global_id());
+      GetFillingContext(form_structure.global_id());
   bool could_attempt_refill = filling_context != nullptr &&
                               !filling_context->attempted_refill && !is_refill;
 
   std::vector<FormFieldData> result_fields = form.fields();
-  CHECK_EQ(result_fields.size(), form_structure->field_count());
-  for (size_t i = 0; i < form_structure->field_count(); ++i) {
+  CHECK_EQ(result_fields.size(), form_structure.field_count());
+  // TODO(crbug.com/40266549): Remove when Undo launches on iOS.
+  for (size_t i = 0; i < form_structure.field_count(); ++i) {
     // On the renderer, the section is used regardless of the autofill status.
-    result_fields[i].set_section(form_structure->field(i)->section());
+    result_fields[i].set_section(form_structure.field(i)->section());
   }
 
   base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>> skip_reasons =
       GetFieldFillingSkipReasons(
-          result_fields, *form_structure, *autofill_trigger_field,
+          result_fields, form_structure, autofill_trigger_field,
           filling_context ? filling_context->type_groups_originally_filled
                           : std::optional<DenseSet<FieldTypeGroup>>(),
           filling_product, is_refill);
@@ -648,23 +646,23 @@ void FormFiller::FillOrPreviewForm(
   // `form_structure->fields()` remains in the browser process.
   // The fill value is determined by FillForm().
   for (size_t i = 0; i < result_fields.size(); ++i) {
-    AutofillField* autofill_field = form_structure->field(i);
+    AutofillField& autofill_field = CHECK_DEREF(form_structure.field(i));
     constexpr DenseSet<FieldFillingSkipReason> kPreUkmLoggingSkips{
         FieldFillingSkipReason::kNotInFilledSection,
         FieldFillingSkipReason::kFormChanged,
         FieldFillingSkipReason::kNotFocused};
     if (!kPreUkmLoggingSkips.contains_any(
-            skip_reasons[autofill_field->global_id()]) &&
-        !autofill_field->IsFocusable()) {
+            skip_reasons[autofill_field.global_id()]) &&
+        !autofill_field.IsFocusable()) {
       manager_->client()
           .GetFormInteractionsUkmLogger()
           .LogHiddenRepresentationalFieldSkipDecision(
-              manager_->driver().GetPageUkmSourceId(), *form_structure,
-              *autofill_field, !autofill_field->IsSelectElement());
+              manager_->driver().GetPageUkmSourceId(), form_structure,
+              autofill_field, !autofill_field.IsSelectElement());
     }
-    if (!skip_reasons[autofill_field->global_id()].empty()) {
+    if (!skip_reasons[autofill_field.global_id()].empty()) {
       const FieldFillingSkipReason skip_reason =
-          *skip_reasons[autofill_field->global_id()].begin();
+          *skip_reasons[autofill_field.global_id()].begin();
       LOG_AF(buffer) << Tr{} << base::StringPrintf("Field %zu", i)
                      << GetSkipFieldFillLogMessage(skip_reason);
       continue;
@@ -672,7 +670,7 @@ void FormFiller::FillOrPreviewForm(
 
     if (could_attempt_refill) {
       filling_context->type_groups_originally_filled.insert(
-          autofill_field->Type().group());
+          autofill_field.Type().group());
     }
     std::string failure_to_fill;  // Reason for failing to fill.
     const std::map<FieldGlobalId, std::u16string>& forced_fill_values =
@@ -685,7 +683,7 @@ void FormFiller::FillOrPreviewForm(
     // filled before, and also returns true in such a case; however, such fields
     // don't reach this code.
     const bool is_newly_autofilled =
-        FillField(*autofill_field, profile_or_credit_card, forced_fill_values,
+        FillField(autofill_field, profile_or_credit_card, forced_fill_values,
                   result_fields[i], action_persistence, &failure_to_fill);
     const bool autofilled_value_did_not_change =
         form.fields()[i].is_autofilled() && result_fields[i].is_autofilled() &&
@@ -693,7 +691,7 @@ void FormFiller::FillOrPreviewForm(
     if (is_newly_autofilled && !autofilled_value_did_not_change) {
       // For credit card fields, override the autofilled field value if the
       // field is autofilled.
-      if (AllowPaymentSwapping(*autofill_trigger_field, *autofill_field,
+      if (AllowPaymentSwapping(autofill_trigger_field, autofill_field,
                                is_refill) &&
           form.fields()[i].is_autofilled() &&
           result_fields[i].is_autofilled() &&
@@ -725,7 +723,7 @@ void FormFiller::FillOrPreviewForm(
     filling_context->filled_form->set_fields(result_fields);
   }
   auto field_types = base::MakeFlatMap<FieldGlobalId, FieldType>(
-      *form_structure, {}, [](const auto& field) {
+      form_structure, {}, [](const auto& field) {
         return std::make_pair(field->global_id(),
                               field->Type().GetStorableType());
       });
@@ -736,12 +734,12 @@ void FormFiller::FillOrPreviewForm(
   std::erase_if(result_fields,
                 [&skip_reasons, &form_structure](const FormFieldData& field) {
                   return !skip_reasons[field.global_id()].empty() ||
-                         !form_structure->GetFieldById(field.global_id());
+                         !form_structure.GetFieldById(field.global_id());
                 });
   base::flat_set<FieldGlobalId> safe_filled_field_ids =
       manager_->driver().ApplyFormAction(
           mojom::FormActionType::kFill, action_persistence, result_fields,
-          autofill_trigger_field->origin(), field_types);
+          autofill_trigger_field.origin(), field_types);
 
   // This will hold the subset of fields of `result_fields` whose ids are in
   // `safe_filled_field_ids`
@@ -765,7 +763,7 @@ void FormFiller::FillOrPreviewForm(
         return fields_it != result_fields.end() ? &*fields_it : nullptr;
       }());
       safe_filled_fields.cached.push_back(
-          form_structure->GetFieldById(field_id));
+          form_structure.GetFieldById(field_id));
     } else {
       auto it = base::ranges::find(form.fields(), field_id,
                                    &FormFieldData::global_id);
@@ -797,7 +795,7 @@ void FormFiller::FillOrPreviewForm(
   }
 
   manager_->OnDidFillOrPreviewForm(
-      action_persistence, form, *form_structure, *autofill_trigger_field,
+      action_persistence, form, form_structure, autofill_trigger_field,
       safe_filled_fields.new_values, safe_filled_fields.cached,
       base::MakeFlatSet<FieldGlobalId>(result_fields, {},
                                        &FormFieldData::global_id),
@@ -908,8 +906,8 @@ void FormFiller::TriggerRefill(const FormData& form,
   absl::visit(
       [&](const auto& profile_or_credit_card) {
         FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
-                          &profile_or_credit_card, form_structure,
-                          autofill_field, trigger_source,
+                          &profile_or_credit_card, *form_structure,
+                          *autofill_field, trigger_source,
                           /*is_refill=*/true);
       },
       filling_context->profile_or_credit_card);

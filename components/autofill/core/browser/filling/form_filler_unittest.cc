@@ -199,7 +199,7 @@ class FormFillerTest : public testing::Test {
             DoAll(SaveArgElementsTo<2>(&filled_fields), Return(global_ids)));
     form_filler().FillOrPreviewForm(
         mojom::ActionPersistence::kFill, form, profile_or_credit_card,
-        GetFormStructure(form), GetAutofillField(form, trigger_field),
+        *GetFormStructure(form), *GetAutofillField(form, trigger_field),
         trigger_source,
         /*is_refill=*/false);
     // Copy the filled data into the form.
@@ -223,7 +223,7 @@ class FormFillerTest : public testing::Test {
                          Return(std::vector<FieldGlobalId>{}))));
     form_filler().FillOrPreviewForm(
         mojom::ActionPersistence::kPreview, form, &virtual_card,
-        GetFormStructure(form), GetAutofillField(form, field),
+        *GetFormStructure(form), *GetAutofillField(form, field),
         AutofillTriggerSource::kPopup, /*is_refill=*/false);
     return filled_fields;
   }
@@ -294,11 +294,11 @@ TEST_F(FormFillerTest, DoNotFillIfFormChanged) {
 
   EXPECT_CALL(autofill_driver_, ApplyFormAction).Times(0);
   AutofillProfile profile = test::GetFullProfile();
-  form_filler().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
-                                  &profile, GetFormStructure(form),
-                                  GetAutofillField(form, form.fields().front()),
-                                  AutofillTriggerSource::kPopup,
-                                  /*is_refill=*/false);
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, &profile, *GetFormStructure(form),
+      *GetAutofillField(form, form.fields().front()),
+      AutofillTriggerSource::kPopup,
+      /*is_refill=*/false);
 }
 
 TEST_F(FormFillerTest, SkipFillIfFieldIsMeaningfullyPreFilled) {
@@ -400,11 +400,11 @@ TEST_F(FormFillerTest, UndoSavesFormFillingData) {
       .WillRepeatedly(Return(safe_fields));
 
   AutofillProfile profile = test::GetFullProfile();
-  form_filler().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
-                                  &profile, GetFormStructure(form),
-                                  GetAutofillField(form, form.fields().front()),
-                                  AutofillTriggerSource::kPopup,
-                                  /*is_refill=*/false);
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, &profile, *GetFormStructure(form),
+      *GetAutofillField(form, form.fields().front()),
+      AutofillTriggerSource::kPopup,
+      /*is_refill=*/false);
   // Undo early returns if it has no filling history for the trigger field,
   // which is initially empty, therefore calling the driver is proof that data
   // was successfully stored.

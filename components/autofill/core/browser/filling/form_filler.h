@@ -145,8 +145,8 @@ class FormFiller {
       const FormData& form,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
-      FormStructure* form_structure,
-      AutofillField* autofill_field,
+      FormStructure& form_structure,
+      AutofillField& autofill_field,
       AutofillTriggerSource trigger_source,
       bool is_refill = false);
 

@@ -1633,8 +1633,8 @@ void BrowserAutofillManager::FillOrPreviewProfileForm(
     return;
   }
   form_filler_->FillOrPreviewForm(action_persistence, form, &profile,
-                                  form_structure, autofill_field,
-                                  trigger_source);
+                                  CHECK_DEREF(form_structure),
+                                  CHECK_DEREF(autofill_field), trigger_source);
 }
 
 void BrowserAutofillManager::FillOrPreviewFormWithPredictionImprovements(
@@ -1795,9 +1795,9 @@ void BrowserAutofillManager::FillOrPreviewCreditCardFormImpl(
                                &autofill_field)) {
       return;
     }
-    form_filler_->FillOrPreviewForm(action_persistence, form, &credit_card,
-                                    form_structure, autofill_field,
-                                    trigger_source, /*is_refill=*/false);
+    form_filler_->FillOrPreviewForm(
+        action_persistence, form, &credit_card, CHECK_DEREF(form_structure),
+        CHECK_DEREF(autofill_field), trigger_source, /*is_refill=*/false);
   }
 }
 
