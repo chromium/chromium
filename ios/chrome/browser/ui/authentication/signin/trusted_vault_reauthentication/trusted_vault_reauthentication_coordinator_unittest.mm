@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/trusted_vault_client_backend_factory.h"
+#import "ios/chrome/browser/ui/authentication/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -175,10 +176,17 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestInterruptWithDismiss) {
                  EXPECT_TRUE(signin_completion_called);
                  interrupt_completion_called = true;
                }];
-  // The sign-in and interrupt completion blocks should be called
-  // asynchronously, after the UI is dismissed.
-  EXPECT_FALSE(signin_completion_called);
-  EXPECT_FALSE(interrupt_completion_called);
+  if (base::FeatureList::IsEnabled(
+          kIOSInterruptibleChromeStoppedSynchronously)) {
+    // Sign-in and interrupt completion blocks should be called synchronously.
+    EXPECT_TRUE(signin_completion_called);
+    EXPECT_TRUE(interrupt_completion_called);
+  } else {
+    // The sign-in and interrupt completion blocks should be called
+    // asynchronously, after the UI is dismissed.
+    EXPECT_FALSE(signin_completion_called);
+    EXPECT_FALSE(interrupt_completion_called);
+  };
   // Test the completion block.
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool() {

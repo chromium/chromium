@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_navigation_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_presentation_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_slide_transition_animator.h"
+#import "ios/chrome/browser/ui/authentication/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
@@ -209,9 +210,19 @@
     case SigninCoordinatorInterrupt::DismissWithAnimation: {
       BOOL animated =
           action == SigninCoordinatorInterrupt::DismissWithAnimation;
-      [self.navigationController.presentingViewController
-          dismissViewControllerAnimated:animated
-                             completion:finishCompletionBlock];
+      if (base::FeatureList::IsEnabled(
+              kIOSInterruptibleChromeStoppedSynchronously)) {
+        [self.navigationController.presentingViewController
+            dismissViewControllerAnimated:animated
+                               completion:nil];
+        finishCompletionBlock();
+      } else {
+        {
+          [self.navigationController.presentingViewController
+              dismissViewControllerAnimated:animated
+                                 completion:finishCompletionBlock];
+        }
+      }
     }
   }
 }

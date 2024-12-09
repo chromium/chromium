@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
@@ -442,8 +443,14 @@
       completion();
     }
   };
-  [self stopChildrenAndViewControllerWithAction:action
-                                     completion:childrenCompletion];
+  if (base::FeatureList::IsEnabled(
+          kIOSInterruptibleChromeStoppedSynchronously)) {
+    [self stopChildrenAndViewControllerWithAction:action completion:nil];
+    childrenCompletion();
+  } else {
+    [self stopChildrenAndViewControllerWithAction:action
+                                       completion:childrenCompletion];
+  }
 }
 
 #pragma mark - ManageAccountsCoordinatorDelegate
@@ -539,9 +546,8 @@
   _signoutActionSheetCoordinator = nil;
 }
 
-// Stops all children, then dismiss the view controller, then execute
-// `completion`. If `dismiss` is YES, dismiss the add account coordinator if it
-// is present.
+// Stops all children, then dismiss the view controller. Executes
+// `completion` synchronously.
 - (void)stopChildrenAndViewControllerWithAction:
             (SigninCoordinatorInterrupt)action
                                      completion:(ProceduralBlock)completion {

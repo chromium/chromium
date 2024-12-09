@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/logging/upgrade_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/ui/authentication/signin/uno_signin_screen_provider.h"
@@ -242,21 +243,30 @@ using base::UserMetricsAction;
     }
   }
 
+  ProceduralBlock signinCompletion = ^{
+    UIViewController* presentingViewController =
+        weakNavigationController.presentingViewController;
+    if (presentingViewController) {
+      if (base::FeatureList::IsEnabled(
+              kIOSInterruptibleChromeStoppedSynchronously)) {
+        [presentingViewController dismissViewControllerAnimated:animated
+                                                     completion:nil];
+        finishCompletion();
+      } else {
+        [presentingViewController
+            dismissViewControllerAnimated:animated
+                               completion:finishCompletion];
+      }
+    } else {
+      finishCompletion();
+    }
+  };
+
   // Interrupt the child coordinator UI first before dismissing the new
   // sign-in navigation controller.
   [_childCoordinator
       interruptWithAction:SigninCoordinatorInterrupt::DismissWithoutAnimation
-               completion:^{
-                 UIViewController* presentingViewController =
-                     weakNavigationController.presentingViewController;
-                 if (presentingViewController) {
-                   [presentingViewController
-                       dismissViewControllerAnimated:animated
-                                          completion:finishCompletion];
-                 } else {
-                   finishCompletion();
-                 }
-               }];
+               completion:signinCompletion];
 }
 
 #pragma mark - HistorySyncCoordinatorDelegate

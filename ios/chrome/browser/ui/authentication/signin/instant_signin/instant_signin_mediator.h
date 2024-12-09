@@ -42,7 +42,8 @@ enum class AccessPoint;
 - (void)disconnect;
 
 // Stops the sign-in flow. This method can only be called once, and only after
-// `startSignInOnlyFlowWithAuthenticationFlow:` has ben called.
+// `startSignInOnlyFlowWithAuthenticationFlow:` has ben called. `completion` is
+// run synchronously iff kIOSInterruptibleChromeStoppedSynchronously is enabled.
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion;
 

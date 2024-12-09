@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 
 @interface ForcedSigninCoordinator () <FirstRunScreenDelegate>
@@ -180,15 +181,26 @@
     }
   }
 
+  ProceduralBlock childCompletion = ^{
+    if (base::FeatureList::IsEnabled(
+            kIOSInterruptibleChromeStoppedSynchronously)) {
+      [weakSelf.navigationController.presentingViewController
+          dismissViewControllerAnimated:animated
+                             completion:nil];
+      finishCompletion();
+
+    } else {
+      [weakSelf.navigationController.presentingViewController
+          dismissViewControllerAnimated:animated
+                             completion:finishCompletion];
+    }
+  };
+
   // Interrupt the child coordinator UI first before dismissing the forced
   // sign-in navigation controller.
   [self.childCoordinator
       interruptWithAction:SigninCoordinatorInterrupt::DismissWithoutAnimation
-               completion:^{
-                 [weakSelf.navigationController.presentingViewController
-                     dismissViewControllerAnimated:animated
-                                        completion:finishCompletion];
-               }];
+               completion:childCompletion];
 }
 
 #pragma mark - NSObject

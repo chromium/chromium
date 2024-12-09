@@ -33,7 +33,7 @@ using OnProfileSwitchCompletion = base::OnceCallback<void(bool success)>;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Cancels any outstanding work and dismisses an alert view (if shown) using
-// animation if `animated` is true.
+// animation if `animated` is true. Calls `completion` synchronously.
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion;
 

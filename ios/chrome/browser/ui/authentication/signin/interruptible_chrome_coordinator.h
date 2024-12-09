@@ -21,8 +21,10 @@ BASE_DECLARE_FEATURE(kIOSInterruptibleChromeStoppedSynchronously);
 // Dependending on `action`, the interruption may be done asynchronously
 // with/without an animation, or without dismissing the views when the
 // interruption is for shutdown (e.g., tearing down the scene). `completion` is
-// called when the interruption is done. Simply calls `completion` if the
+// called synchronously. Simply calls `completion` if the
 // method is not overridden.
+// TODO(crbug.com/381444097): Remove the completion parameter when the flag
+// IOSInterruptibleChromeStoppedSynchronously is removed.
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion;
 
