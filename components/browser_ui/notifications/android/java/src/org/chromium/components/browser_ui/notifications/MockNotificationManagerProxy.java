@@ -179,6 +179,11 @@ public class MockNotificationManagerProxy implements NotificationManagerProxy {
     }
 
     @Override
+    public void getNotificationChannel(String channelId, Callback<NotificationChannel> callback) {
+        callback.onResult(mChannels.get(channelId));
+    }
+
+    @Override
     public void deleteNotificationChannelGroup(String groupId) {}
 
     @Override

@@ -42,7 +42,7 @@ import org.chromium.chrome.browser.notifications.NotificationIntentInterceptor;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
-import org.chromium.components.browser_ui.notifications.AsyncNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -58,7 +58,7 @@ public class DataSharingNotificationManagerUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private AsyncNotificationManagerProxy mNotificationManagerProxy;
+    @Mock private BaseNotificationManagerProxy mNotificationManagerProxy;
 
     @Captor ArgumentCaptor<NotificationWrapper> mNotifyCaptor;
     @Captor ArgumentCaptor<Intent> mIntentCaptor;

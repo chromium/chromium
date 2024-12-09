@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.notifications;
 
 import android.app.Notification;
-import android.app.NotificationChannel;
 import android.os.Build;
 import android.text.format.DateUtils;
 
@@ -14,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationManagerCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -21,8 +21,8 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 
 import java.lang.annotation.Retention;
@@ -343,7 +343,7 @@ public class NotificationUmaTracker {
 
     // Cached objects.
     private final SharedPreferencesManager mSharedPreferences;
-    private final NotificationManagerProxy mNotificationManager;
+    private final BaseNotificationManagerProxy mNotificationManager;
 
     public static NotificationUmaTracker getInstance() {
         return LazyHolder.INSTANCE;
@@ -351,7 +351,7 @@ public class NotificationUmaTracker {
 
     private NotificationUmaTracker() {
         mSharedPreferences = ChromeSharedPreferences.getInstance();
-        mNotificationManager = NotificationManagerProxyImpl.getInstance();
+        mNotificationManager = BaseNotificationManagerProxyFactory.create();
     }
 
     /**
@@ -656,21 +656,35 @@ public class NotificationUmaTracker {
             recordHistogram("Mobile.SystemNotification.Blocked", type);
             return;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && channelId != null
-                && isChannelBlocked(channelId)) {
-            recordHistogram("Mobile.SystemNotification.ChannelBlocked", type);
+        if (channelId == null) {
+            saveLastShownNotification(type);
+            recordHistogram("Mobile.SystemNotification.Shown", type);
             return;
         }
-        saveLastShownNotification(type);
-        recordHistogram("Mobile.SystemNotification.Shown", type);
+
+        isChannelBlocked(
+                channelId,
+                (blocked) -> {
+                    if (blocked) {
+                        recordHistogram("Mobile.SystemNotification.ChannelBlocked", type);
+                    } else {
+                        saveLastShownNotification(type);
+                        recordHistogram("Mobile.SystemNotification.Shown", type);
+                    }
+                });
     }
 
     @RequiresApi(26)
-    private boolean isChannelBlocked(@ChromeChannelDefinitions.ChannelId String channelId) {
-        NotificationChannel channel = mNotificationManager.getNotificationChannel(channelId);
-        return channel != null
-                && channel.getImportance() == NotificationManagerCompat.IMPORTANCE_NONE;
+    private void isChannelBlocked(
+            @ChromeChannelDefinitions.ChannelId String channelId, Callback<Boolean> callback) {
+        mNotificationManager.getNotificationChannel(
+                channelId,
+                (channel) -> {
+                    callback.onResult(
+                            channel != null
+                                    && channel.getImportance()
+                                            == NotificationManagerCompat.IMPORTANCE_NONE);
+                });
     }
 
     private void saveLastShownNotification(@SystemNotificationType int type) {
