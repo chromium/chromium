@@ -2405,6 +2405,10 @@
       depends_on: ["SelectParserRelaxation"],
     },
     {
+      name: "InputEventConstructorThrows",
+      status: "stable",
+    },
+    {
       name: "InputMultipleFieldsUI",
       // No plan to support complex UI for date/time INPUT types on Android and
       // iOS.

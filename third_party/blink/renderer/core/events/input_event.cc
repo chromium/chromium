@@ -108,8 +108,27 @@ bool InputTypeIsCancelable(InputEvent::InputType input_type) {
 
 }  // anonymous namespace
 
+/* static */ InputEvent* InputEvent::Create(const AtomicString& type,
+                                            const InputEventInit* initializer,
+                                            ExceptionState& exception_state) {
+  InputEvent* result;
+  if (RuntimeEnabledFeatures::InputEventConstructorThrowsEnabled()) {
+    CHECK(!exception_state.HadException());
+    result =
+        MakeGarbageCollected<InputEvent>(type, initializer, exception_state);
+    if (exception_state.HadException()) {
+      return nullptr;
+    }
+  } else {
+    result =
+        MakeGarbageCollected<InputEvent>(type, initializer, IGNORE_EXCEPTION);
+  }
+  return result;
+}
+
 InputEvent::InputEvent(const AtomicString& type,
-                       const InputEventInit* initializer)
+                       const InputEventInit* initializer,
+                       ExceptionState& exception_state)
     : UIEvent(type, initializer) {
   // TODO(ojan): We should find a way to prevent conversion like
   // String->enum->String just in order to use initializer.
@@ -125,7 +144,7 @@ InputEvent::InputEvent(const AtomicString& type,
   if (!initializer->hasTargetRanges())
     return;
   for (const auto& range : initializer->targetRanges())
-    ranges_.push_back(range->toRange());
+    ranges_.push_back(range->toRange(exception_state));
 }
 
 InputEvent::InputEvent(const AtomicString& type,
@@ -142,7 +161,7 @@ InputEvent::InputEvent(const AtomicString& type,
       is_composing_(is_composing == kIsComposing) {
   if (ranges) {
     for (const auto& range : *ranges) {
-      ranges_.push_back(range->toRange());
+      ranges_.push_back(range->toRange(ASSERT_NO_EXCEPTION));
     }
   }
 }
