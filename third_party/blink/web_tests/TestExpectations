@@ -8876,9 +8876,6 @@ crbug.com/381457334 [ Linux ] external/wpt/event-timing/modal-dialog-interrupt-p
 crbug.com/381457334 [ Mac ] external/wpt/event-timing/modal-dialog-interrupt-paint.html [ Failure Pass ]
 crbug.com/381444317 [ Linux ] external/wpt/html/semantics/popovers/popover-target-action-hover.tentative.html [ Failure Pass ]
 
-# Temporarily disabled, waiting for a V8 change to land - see https://chromium-review.googlesource.com/c/v8/v8/+/6040773.
-crbug.com/381999814 http/tests/inspector-protocol/debugger/debugger-script-parsed-generated-module-scripts.js [ Failure Skip ]
-
 # Gardener 2024-12-05
 crbug.com/382519579 [ Linux ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-script-window-attribution.html [ Failure Pass ]
 crbug.com/382506777 [ Linux ] external/wpt/scroll-animations/css/animation-inactive-outside-range-test.html [ Failure Pass ]
