@@ -2202,8 +2202,7 @@ TEST_F(ScannerTest, ActionButtonsEndSessionOnActionSuccess) {
       session_test_api.GetActionButtons();
   ASSERT_THAT(
       action_buttons,
-      ElementsAre(Property(&ActionButtonView::label_for_testing,
-                           Property(&views::Label::GetText, u"New event"))));
+      ElementsAre(ActionButtonIdIs(ActionButtonViewID::kScannerButton)));
   LeftClickOn(action_buttons[0]);
   fetch_action_details_future.Take().Run(
       std::make_unique<manta::proto::ScannerOutput>(output),
@@ -2241,8 +2240,7 @@ TEST_F(ScannerTest, ActionButtonsEndSessionOnActionSuccessAfterFailure) {
       session_test_api.GetActionButtons();
   ASSERT_THAT(
       action_buttons,
-      ElementsAre(Property(&ActionButtonView::label_for_testing,
-                           Property(&views::Label::GetText, u"New event"))));
+      ElementsAre(ActionButtonIdIs(ActionButtonViewID::kScannerButton)));
   LeftClickOn(action_buttons[0]);
   fetch_action_details_future.Take().Run(nullptr, manta::MantaStatus());
   LeftClickOn(action_buttons[0]);
@@ -2279,8 +2277,7 @@ TEST_F(ScannerTest, ActionButtonsDoNotEndSessionOnActionFailure) {
       session_test_api.GetActionButtons();
   ASSERT_THAT(
       action_buttons,
-      ElementsAre(Property(&ActionButtonView::label_for_testing,
-                           Property(&views::Label::GetText, u"New event"))));
+      ElementsAre(ActionButtonIdIs(ActionButtonViewID::kScannerButton)));
   LeftClickOn(action_buttons[0]);
   fetch_action_details_future.Take().Run(nullptr, manta::MantaStatus());
 

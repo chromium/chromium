@@ -6783,6 +6783,24 @@ Here are some things you can try to get started.
         Use the screen capture tool in quick settings to take screenshots
       </message>
 
+      <!-- Scanner -->
+      <!-- TODO: crbug.com/375967525 - Finalize these strings and mark them as translateable -->
+      <message name="IDS_ASH_SCANNER_ACTION_CREATE_EVENT_LABEL" desc="The label on a button that can be clicked to create a new calendar event from the contents of a screenshot." translateable="false">
+        Add to Calendar
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_CREATE_CONTACT_LABEL" desc="The label on a button that can be clicked to create a new contact from the contents of a screenshot." translateable="false">
+        Create contact
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_CREATE_SHEET" desc="The label on a button that can be clicked to create a new Google Sheet from the contents of a screenshot." translateable="false">
+        Create Google Sheets
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_CREATE_DOC" desc="The label on a button that can be clicked to create a new Google Doc from the contents of a screenshot." translateable="false">
+        Create Google Docs
+      </message>
+      <message name="IDS_ASH_SCANNER_ACTION_COPY_TEXT_AND_FORMAT" desc="The label on a button that can be clicked to copy text with formatting from the contents of a screenshot." translateable="false">
+        Copy text and format
+      </message>
+
       <!-- Snap Group -->
       <message name="IDS_ASH_SNAP_GROUP_CLICK_TO_LOCK_WINDOWS" desc="Click to lock the windows.">
         Lock the windows
