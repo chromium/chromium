@@ -25,12 +25,6 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "components/component_updater/component_updater_service.h"
-#include "components/policy/core/common/cloud/cloud_policy_core.h"
-#include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler_observer.h"
-#include "components/policy/core/common/cloud/cloud_policy_store.h"
-#include "components/policy/core/common/cloud/component_cloud_policy_service_observer.h"
-#include "components/policy/core/common/policy_namespace.h"
-#include "components/policy/core/common/values_util.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -41,10 +35,6 @@ namespace component_updater {
 class ComponentManagerAsh;
 }  // namespace component_updater
 
-namespace policy {
-class CloudPolicyCore;
-}
-
 namespace crosapi {
 
 class BrowserLoader;
@@ -54,10 +44,7 @@ using component_updater::ComponentUpdateService;
 
 // Manages the lifetime of lacros-chrome, and its loading status. Observes the
 // component updater for future updates. This class is a part of ash-chrome.
-class BrowserManager : public session_manager::SessionManagerObserver,
-                       public policy::CloudPolicyCore::Observer,
-                       public policy::ComponentCloudPolicyServiceObserver,
-                       public policy::CloudPolicyRefreshSchedulerObserver {
+class BrowserManager : public session_manager::SessionManagerObserver {
  public:
   // Static getter of BrowserManager instance. In real use cases,
   // BrowserManager instance should be unique in the process.
@@ -153,26 +140,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
-
-  // CloudPolicyCore::Observer:
-  void OnCoreConnected(policy::CloudPolicyCore* core) override;
-  void OnRefreshSchedulerStarted(policy::CloudPolicyCore* core) override;
-  void OnCoreDisconnecting(policy::CloudPolicyCore* core) override;
-  void OnCoreDestruction(policy::CloudPolicyCore* core) override;
-
-  // policy::ComponentCloudPolicyService::Observer:
-  // Updates the component policy for given namespace. The policy blob is JSON
-  // value received from the server, or parsed from the file after is was
-  // validated.
-  void OnComponentPolicyUpdated(
-      const policy::ComponentPolicyMap& component_policy) override;
-  void OnComponentPolicyServiceDestruction(
-      policy::ComponentCloudPolicyService* service) override;
-
-  // policy::CloudPolicyRefreshScheduler::Observer:
-  void OnFetchAttempt(policy::CloudPolicyRefreshScheduler* scheduler) override;
-  void OnRefreshSchedulerDestruction(
-      policy::CloudPolicyRefreshScheduler* scheduler) override;
 
   // Sending the LaunchMode state at least once a day.
   // multiple events will get de-duped on the server side.

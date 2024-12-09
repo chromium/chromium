@@ -62,9 +62,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/crosapi/files_app_launcher.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
@@ -86,12 +83,6 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/nacl/common/buildflags.h"
-#include "components/policy/core/common/cloud/cloud_policy_core.h"
-#include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
-#include "components/policy/core/common/cloud/cloud_policy_store.h"
-#include "components/policy/core/common/cloud/component_cloud_policy_service.h"
-#include "components/policy/core/common/values_util.h"
-#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/device_ownership_waiter.h"
@@ -133,34 +124,6 @@ bool RemoveLacrosUserDataDir() {
 
   return base::PathExists(lacros_data_dir) &&
          base::DeletePathRecursively(lacros_data_dir);
-}
-
-void PrepareLacrosPolicies(BrowserManager* manager) {
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!user) {
-    LOG(ERROR) << "No primary user.";
-    return;
-  }
-
-  // The lifetime of `BrowserManager` is longer than lifetime of various
-  // classes, for which we register as an observer below. The RemoveObserver
-  // function is therefore called in various handlers invoked by those classes
-  // and not in the destructor.
-  policy::CloudPolicyCore* core =
-      browser_util::GetCloudPolicyCoreForUser(*user);
-  if (core) {
-    core->AddObserver(manager);
-    if (core->refresh_scheduler()) {
-      core->refresh_scheduler()->AddObserver(manager);
-    }
-  }
-
-  policy::ComponentCloudPolicyService* component_policy_service =
-      browser_util::GetComponentCloudPolicyServiceForUser(*user);
-  if (component_policy_service) {
-    component_policy_service->AddObserver(manager);
-  }
 }
 
 }  // namespace
@@ -210,8 +173,6 @@ void BrowserManager::InitializeAndStartIfNeeded() {
 
   // Ensure this isn't run multiple times.
   session_manager::SessionManager::Get()->RemoveObserver(this);
-
-  PrepareLacrosPolicies(this);
 
   // Perform the UMA recording for the current Lacros launch mode.
   RecordLacrosLaunchMode();
@@ -288,18 +249,6 @@ void BrowserManager::OnLacrosUserDataDirRemoved(bool cleared) {
   web_app::UserUninstalledPreinstalledWebAppPrefs(pref_service).ClearAllApps();
 }
 
-void BrowserManager::OnCoreConnected(policy::CloudPolicyCore* core) {}
-
-void BrowserManager::OnRefreshSchedulerStarted(policy::CloudPolicyCore* core) {
-  core->refresh_scheduler()->AddObserver(this);
-}
-
-void BrowserManager::OnCoreDisconnecting(policy::CloudPolicyCore* core) {}
-
-void BrowserManager::OnCoreDestruction(policy::CloudPolicyCore* core) {
-  core->RemoveObserver(this);
-}
-
 void BrowserManager::OnSessionStateChanged() {
   TRACE_EVENT0("login", "BrowserManager::OnSessionStateChanged");
 
@@ -313,24 +262,6 @@ void BrowserManager::OnSessionStateChanged() {
   if (state_ == State::NOT_INITIALIZED) {
     InitializeAndStartIfNeeded();
   }
-}
-
-void BrowserManager::OnComponentPolicyUpdated(
-    const policy::ComponentPolicyMap& component_policy) {
-}
-
-void BrowserManager::OnComponentPolicyServiceDestruction(
-    policy::ComponentCloudPolicyService* service) {
-  service->RemoveObserver(this);
-}
-
-void BrowserManager::OnFetchAttempt(
-    policy::CloudPolicyRefreshScheduler* scheduler) {
-}
-
-void BrowserManager::OnRefreshSchedulerDestruction(
-    policy::CloudPolicyRefreshScheduler* scheduler) {
-  scheduler->RemoveObserver(this);
 }
 
 void BrowserManager::SetLacrosLaunchMode() {
