@@ -540,7 +540,12 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
                        const std::u16string expected_description,
                        const std::string& error_code,
                        const GURL& error_url) {
-    CreateAccountSelectionModal();
+    IdentityRequestAccountPtr account = CreateTestIdentityRequestAccount(
+        /*account_suffix=*/"account", idp_data_,
+        content::IdentityRequestAccount::LoginState::kSignUp);
+    CreateAndShowSingleAccountPicker(/*show_back_button=*/false, *account);
+    dialog_->ShowVerifyingSheet(account, kTitleSignIn);
+    account_selection_view_->UpdateDialogPosition();
     dialog_->ShowErrorDialog(
         kIdpETLDPlusOne, idp_data_->idp_metadata,
         content::IdentityCredentialTokenError(error_code, error_url));
