@@ -258,7 +258,9 @@ void PaintTiming::MarkPaintTimingInternal() {
   // (RecordRenderingUpdateEndTime resets the |current frame timing info| inside
   // AnimationFrameTimingMonitor, so it reads a bit different from the spec).
   AnimationFrameTimingInfo* frame_timing_info =
-      widget->RecordRenderingUpdateEndTime(last_rendering_update_end_time_);
+      GetFrame()->IsLocalRoot() ? widget->RecordRenderingUpdateEndTime(
+                                      last_rendering_update_end_time_)
+                                : nullptr;
 
   if (paint_timing_record.paint_events.empty() && !frame_timing_info) {
     return;
