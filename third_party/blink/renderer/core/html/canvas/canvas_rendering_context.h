@@ -178,7 +178,7 @@ class CORE_EXPORT CanvasRenderingContext
     return nullptr;
   }
 
-  virtual SkColorInfo CanvasRenderingContextSkColorInfo() const;
+  virtual SkColorInfo CanvasRenderingContextSkColorInfo() const = 0;
 
   virtual scoped_refptr<StaticBitmapImage> GetImage(FlushReason) = 0;
   virtual bool IsComposited() const = 0;

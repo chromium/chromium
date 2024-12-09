@@ -57,11 +57,6 @@ CanvasRenderingContext::CanvasRenderingContext(
   CHECK(host_);
 }
 
-SkColorInfo CanvasRenderingContext::CanvasRenderingContextSkColorInfo() const {
-  return SkColorInfo(kN32_SkColorType, kPremul_SkAlphaType,
-                     SkColorSpace::MakeSRGB());
-}
-
 void CanvasRenderingContext::Dispose() {
   RenderTaskEnded();
 
