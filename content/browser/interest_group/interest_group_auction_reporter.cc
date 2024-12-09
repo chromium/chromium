@@ -180,17 +180,6 @@ bool ValidateReportingPrivateAggregationRequests(
 
 }  // namespace
 
-BASE_FEATURE(kFledgeRounding,
-             "FledgeRounding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// For now default bid and score to full resolution.
-const base::FeatureParam<int> kFledgeBidReportingBits{
-    &kFledgeRounding, "fledge_bid_reporting_bits", 8};
-const base::FeatureParam<int> kFledgeScoreReportingBits{
-    &kFledgeRounding, "fledge_score_reporting_bits", 8};
-const base::FeatureParam<int> kFledgeAdCostReportingBits{
-    &kFledgeRounding, "fledge_ad_cost_reporting_bits", 8};
-
 InterestGroupAuctionReporter::SellerWinningBidInfo::SellerWinningBidInfo() =
     default;
 InterestGroupAuctionReporter::SellerWinningBidInfo::SellerWinningBidInfo(
@@ -408,7 +397,7 @@ void InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
 
 /* static */
 double InterestGroupAuctionReporter::RoundBidStochastically(double bid) {
-  return RoundStochasticallyToKBits(bid, kFledgeBidReportingBits.Get());
+  return RoundStochasticallyToKBits(bid, kFledgeBidReportingBits);
 }
 
 /* static */
@@ -627,10 +616,9 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
       /*browser_signal_selected_buyer_and_seller_reporting_id=*/
       browser_signal_selected_buyer_and_seller_reporting_id,
       winning_bid_info_.render_url, seller_info->rounded_bid, bid_currency,
-      RoundStochasticallyToKBits(seller_info->score,
-                                 kFledgeScoreReportingBits.Get()),
+      RoundStochasticallyToKBits(seller_info->score, kFledgeScoreReportingBits),
       RoundStochasticallyToKBits(highest_scoring_other_bid,
-                                 kFledgeBidReportingBits.Get()),
+                                 kFledgeBidReportingBits),
       highest_scoring_other_bid_currency,
       std::move(browser_signals_component_auction_report_result_params),
       seller_info->scoring_signals_data_version, seller_info->trace_id,
@@ -869,7 +857,7 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
   std::optional<double> rounded_ad_cost;
   if (winning_bid_info_.ad_cost.has_value()) {
     rounded_ad_cost = RoundStochasticallyToKBits(
-        winning_bid_info_.ad_cost.value(), kFledgeAdCostReportingBits.Get());
+        winning_bid_info_.ad_cost.value(), kFledgeAdCostReportingBits);
   }
   std::optional<uint16_t> noised_and_masked_modeling_signals;
   if (winning_bid_info_.modeling_signals) {
@@ -919,7 +907,7 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
       winning_bid_info_.bid_currency,
       /*browser_signal_highest_scoring_other_bid=*/
       RoundStochasticallyToKBits(highest_scoring_other_bid,
-                                 kFledgeBidReportingBits.Get()),
+                                 kFledgeBidReportingBits),
       highest_scoring_other_bid_currency, made_highest_scoring_other_bid,
       rounded_ad_cost, noised_and_masked_modeling_signals,
       NoiseAndBucketJoinCount(
