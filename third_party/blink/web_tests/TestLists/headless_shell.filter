@@ -940,6 +940,7 @@
 -external/wpt/shadow-dom/accesskey.tentative.html
 -external/wpt/shadow-dom/crashtests/move-to-new-tree-1343016.html
 -external/wpt/shadow-dom/Document-caretPositionFromPoint.tentative.html
+-external/wpt/shadow-dom/focus/focus-pseudo-on-shadow-host-1.html
 -external/wpt/shadow-dom/focus/focus-pseudo-on-shadow-host-2.html
 -external/wpt/shadow-dom/focus-navigation/delegatesFocus-highlight-sibling.html
 -external/wpt/shadow-dom/focus-navigation/focus-navigation-slot-fallback-default-tabindex.html
