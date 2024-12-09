@@ -372,6 +372,13 @@ bool ValidateSRIMessageSignaturesOverHeaders(
   // Loop through the signatures, validating each. Validation fails if any
   // given signature fails to validate.
   for (const auto& message_signature : message_signatures) {
+    // Ensure the signature hasn't expired.
+    if (message_signature->expires.has_value() &&
+        message_signature->expires.value() <
+            base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000) {
+      return false;
+    }
+
     // Generate the signature base:
     std::optional<std::string> signature_base =
         ConstructSignatureBase(message_signature, headers).value_or("");

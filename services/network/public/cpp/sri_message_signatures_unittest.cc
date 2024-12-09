@@ -4,10 +4,13 @@
 
 #include "services/network/public/cpp/sri_message_signatures.h"
 
+#include <stdint.h>
+
 #include "base/base64.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/sri_message_signature.mojom.h"
@@ -48,17 +51,32 @@ const char* kSignature =
     "H7AqWWgo1DJ7VdyF9DKotG/4hvatKDfRTq2mpuY/hvJupSn+EYzus"
     "5p24qPK7DtVQcxJFhzSYDj4RBq9grZTAQ==";
 
+const char* kValidDigestHeader =
+    "sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:";
+const char* kValidDigestHeader512 =
+    "sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNN"
+    "yealdVLvRwEmTHWXvJwew==:";
+
+// A basic signature header set with no expiration.
 const char* kValidSignatureInputHeader =
     "signature=(\"identity-digest\";sf);alg=\"ed25519\";keyid=\"JrQLj5P/"
     "89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"sri\"";
 const char* kValidSignatureHeader =
     "signature=:H7AqWWgo1DJ7VdyF9DKotG/4hvatKDfRTq2mpuY/hvJupSn+EYzus5p24qPK7Dt"
     "VQcxJFhzSYDj4RBq9grZTAQ==:";
-const char* kValidDigestHeader =
-    "sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:";
-const char* kValidDigestHeader512 =
-    "sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNN"
-    "yealdVLvRwEmTHWXvJwew==:";
+
+// The following signature was generated using test-key-ed25519 from RFC 9421
+// (https://datatracker.ietf.org/doc/html/rfc9421#appendix-B.1.4),
+// the same key used for generating the constants above.
+//
+// A valid signature header set with expiration in the future (2142-12-30).
+const char* kValidExpiringSignatureInputHeader =
+    "signature=(\"identity-digest\";sf);alg=\"ed25519\";expires=5459212800;"
+    "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"sri\"";
+const char* kValidExpiringSignatureHeader =
+    "signature=:oVJa+A12xhF1hJz1IMLY6e8fap3uFVJbnhNi6vSYSVnYpZtUUGjtYtNZpqm"
+    "VnflfJAbkqCV7Llh842pv8SBIAg==:";
+const int64_t kValidExpiringSignatureExpiresAt = 5459212800;
 
 }  // namespace
 
@@ -741,6 +759,9 @@ class SRIMessageSignatureValidationTest : public testing::Test {
   std::string SignatureHeader(std::string name, std::string_view sig) {
     return base::StrCat({name, "=:", sig, ":"});
   }
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(SRIMessageSignatureValidationTest, NoSignatures) {
@@ -792,6 +813,25 @@ TEST_F(SRIMessageSignatureValidationTest, MultipleValidSignatures) {
   ASSERT_EQ(2u, signatures.size());
 
   EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(signatures, *headers));
+}
+
+TEST_F(SRIMessageSignatureValidationTest, ValidSignatureExpires) {
+  auto headers = Headers(kValidDigestHeader, kValidExpiringSignatureHeader,
+                         kValidExpiringSignatureInputHeader);
+  auto signatures = ParseSRIMessageSignaturesFromHeaders(*headers);
+  ASSERT_EQ(1u, signatures.size());
+
+  // Signature should validate at the moment before and of expiration.
+  auto diff = kValidExpiringSignatureExpiresAt -
+              base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000 - 1;
+  task_environment_.AdvanceClock(base::Seconds(diff));
+  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(signatures, *headers));
+  task_environment_.AdvanceClock(base::Seconds(1));
+  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(signatures, *headers));
+
+  // ...but not after expiration.
+  task_environment_.AdvanceClock(base::Seconds(1));
+  EXPECT_FALSE(ValidateSRIMessageSignaturesOverHeaders(signatures, *headers));
 }
 
 TEST_F(SRIMessageSignatureValidationTest, ValidSignatureDigestHeaderMismatch) {
