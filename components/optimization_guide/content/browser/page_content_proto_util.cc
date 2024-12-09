@@ -34,6 +34,11 @@ optimization_guide::proto::ContentAttributeType ConvertAttributeType(
     case blink::mojom::AIPageContentAttributeType::kFigure:
       // TODO(khushalsagar): Add this type to the proto.
       return optimization_guide::proto::CONTENT_ATTRIBUTE_UNKNOWN;
+    case blink::mojom::AIPageContentAttributeType::kTable:
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE;
+    case blink::mojom::AIPageContentAttributeType::kTableCell:
+      // TODO(abigailbklein): Add this type to the proto.
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_UNKNOWN;
   }
 
   NOTREACHED();

@@ -30,6 +30,8 @@ enum AIPageContentAttributeType {
   kUnorderedList,
   kForm,
   kFigure,
+  kTable,
+  kTableCell,
 };
 
 struct AIPageContentGeometry {
@@ -79,6 +81,19 @@ struct AIPageContentIframeData {
   bool likely_ad_frame;
 };
 
+struct AIPageContentTableRow {
+  array<AIPageContentNode> cells;
+};
+
+struct AIPageContentTableData {
+  // The name of the table, coming from the caption.
+  string? table_name;
+
+  array<AIPageContentTableRow> header_rows;
+  array<AIPageContentTableRow> body_rows;
+  array<AIPageContentTableRow> footer_rows;
+};
+
 struct AIPageContentAttributes {
   // The IDs of the DOM nodes whose content is represented by this ContentNode.
   array<int32> dom_node_ids;
@@ -102,6 +117,9 @@ struct AIPageContentAttributes {
   AIPageContentIframeData? iframe_data;
 
   // TODO(crbug.com/380493777): Add FormData if attribute_type is FORM.
+
+  // Only set if attribute_type is TABLE.
+  AIPageContentTableData? table_data;
 };
 
 // A semantic chunk of information on a page. It can represent text, structured

@@ -488,5 +488,191 @@ TEST_F(AIPageContentAgentTest, TextEmphasis) {
   EXPECT_TRUE(text.text_info[7]->text_style->has_emphasis);
 }
 
+TEST_F(AIPageContentAgentTest, Table) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <table>"
+      "    <caption>Table caption</caption>"
+      "    <thead>"
+      "      <th colspan='2'>Header</th>"
+      "    </thead>"
+      "    <tr>"
+      "      <td>Row 1 Column 1</td>"
+      "      <td>Row 1 Column 2</td>"
+      "    </tr>"
+      "    <tr>"
+      "      <td>Row 2 Column 1</td>"
+      "      <td>Row 2 Column 2</td>"
+      "    </tr>"
+      "    <tfoot>"
+      "      <td>Footer 1</td>"
+      "      <td>Footer 2</td>"
+      "    </tfoot>"
+      "  </table>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto content = agent->GetAIPageContentSync();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& table = *root.children_nodes[0]->content_attributes;
+  EXPECT_EQ(table.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kTable);
+  ASSERT_TRUE(table.table_data);
+
+  EXPECT_EQ(table.table_data->table_name, "Table caption");
+
+  const auto& header_rows = table.table_data->header_rows;
+  EXPECT_EQ(header_rows.size(), 1u);
+
+  const auto& header_row = header_rows[0]->cells;
+  EXPECT_EQ(header_row.size(), 1u);
+  EXPECT_EQ(header_row[0]->content_attributes->text_info[0]->text_content,
+            "Header");
+
+  const auto& body_rows = table.table_data->body_rows;
+  EXPECT_EQ(body_rows.size(), 2u);
+
+  const auto& row_1 = body_rows[0]->cells;
+  EXPECT_EQ(row_1.size(), 2u);
+  EXPECT_EQ(row_1[0]->content_attributes->text_info[0]->text_content,
+            "Row 1 Column 1");
+  EXPECT_EQ(row_1[1]->content_attributes->text_info[0]->text_content,
+            "Row 1 Column 2");
+
+  const auto& row_2 = body_rows[1]->cells;
+  EXPECT_EQ(row_2.size(), 2u);
+  EXPECT_EQ(row_2[0]->content_attributes->text_info[0]->text_content,
+            "Row 2 Column 1");
+  EXPECT_EQ(row_2[1]->content_attributes->text_info[0]->text_content,
+            "Row 2 Column 2");
+
+  const auto& footer_rows = table.table_data->footer_rows;
+  EXPECT_EQ(footer_rows.size(), 1u);
+
+  const auto& footer_row = footer_rows[0]->cells;
+  EXPECT_EQ(footer_row.size(), 2u);
+  EXPECT_EQ(footer_row[0]->content_attributes->text_info[0]->text_content,
+            "Footer 1");
+  EXPECT_EQ(footer_row[1]->content_attributes->text_info[0]->text_content,
+            "Footer 2");
+}
+
+TEST_F(AIPageContentAgentTest, TableMadeWithCss) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "    <style>"
+      "        .table {"
+      "            display: table;"
+      "            border-collapse: collapse;"
+      "            width: 100%;"
+      "        }"
+      "        .row {"
+      "            display: table-row;"
+      "        }"
+      "        .cell {"
+      "            display: table-cell;"
+      "            border: 1px solid #000;"
+      "            padding: 8px;"
+      "            text-align: center;"
+      "        }"
+      "        .header {"
+      "            background-color: #f4f4f4;"
+      "            font-weight: bold;"
+      "        }"
+      "    </style>"
+      "    <div class='table'>"
+      //       Header Rows
+      "        <div class='row header'>"
+      "            <div class='cell' colspan='2'>Personal Info</div>"
+      "            <div class='cell' colspan='2'>Contact Info</div>"
+      "        </div>"
+      "        <div class='row header'>"
+      "            <div class='cell'>Name</div>"
+      "            <div class='cell'>Age</div>"
+      "            <div class='cell'>Email</div>"
+      "            <div class='cell'>Phone</div>"
+      "        </div>"
+      //       Body Rows
+      "        <div class='row'>"
+      "            <div class='cell'>John Doe</div>"
+      "            <div class='cell'>30</div>"
+      "            <div class='cell'>john.doe@example.com</div>"
+      "            <div class='cell'>123-456-7890</div>"
+      "        </div>"
+      "        <div class='row'>"
+      "            <div class='cell'>Jane Smith</div>"
+      "            <div class='cell'>28</div>"
+      "            <div class='cell'>jane.smith@example.com</div>"
+      "            <div class='cell'>987-654-3210</div>"
+      "        </div>"
+      "    </div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto content = agent->GetAIPageContentSync();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& table = *root.children_nodes[0]->content_attributes;
+  EXPECT_EQ(table.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kTable);
+  ASSERT_TRUE(table.table_data);
+
+  const auto& body_rows = table.table_data->body_rows;
+  EXPECT_EQ(body_rows.size(), 4u);
+
+  const auto& row_1 = body_rows[0]->cells;
+  EXPECT_EQ(row_1.size(), 2u);
+  EXPECT_EQ(row_1[0]->content_attributes->text_info[0]->text_content,
+            "Personal Info");
+  EXPECT_EQ(row_1[1]->content_attributes->text_info[0]->text_content,
+            "Contact Info");
+
+  const auto& row_2 = body_rows[1]->cells;
+  EXPECT_EQ(row_2.size(), 4u);
+  EXPECT_EQ(row_2[0]->content_attributes->text_info[0]->text_content, "Name");
+  EXPECT_EQ(row_2[1]->content_attributes->text_info[0]->text_content, "Age");
+  EXPECT_EQ(row_2[2]->content_attributes->text_info[0]->text_content, "Email");
+  EXPECT_EQ(row_2[3]->content_attributes->text_info[0]->text_content, "Phone");
+
+  const auto& row_3 = body_rows[2]->cells;
+  EXPECT_EQ(row_3.size(), 4u);
+  EXPECT_EQ(row_3[0]->content_attributes->text_info[0]->text_content,
+            "John Doe");
+  EXPECT_EQ(row_3[1]->content_attributes->text_info[0]->text_content, "30");
+  EXPECT_EQ(row_3[2]->content_attributes->text_info[0]->text_content,
+            "john.doe@example.com");
+  EXPECT_EQ(row_3[3]->content_attributes->text_info[0]->text_content,
+            "123-456-7890");
+
+  const auto& row_4 = body_rows[3]->cells;
+  EXPECT_EQ(row_4.size(), 4u);
+  EXPECT_EQ(row_4[0]->content_attributes->text_info[0]->text_content,
+            "Jane Smith");
+  EXPECT_EQ(row_4[1]->content_attributes->text_info[0]->text_content, "28");
+  EXPECT_EQ(row_4[2]->content_attributes->text_info[0]->text_content,
+            "jane.smith@example.com");
+  EXPECT_EQ(row_4[3]->content_attributes->text_info[0]->text_content,
+            "987-654-3210");
+}
+
 }  // namespace
 }  // namespace blink
