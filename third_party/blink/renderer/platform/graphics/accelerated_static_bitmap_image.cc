@@ -72,15 +72,12 @@ AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
     viz::ReleaseCallback release_callback,
     bool supports_display_compositing,
     bool is_overlay_candidate) {
-  const bool is_origin_top_left =
-      shared_image->surface_origin() == kTopLeft_GrSurfaceOrigin;
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
       std::move(shared_image), sync_token, shared_image_texture_id,
-      sk_image_info, texture_target, is_origin_top_left,
-      supports_display_compositing, is_overlay_candidate,
-      ImageOrientationEnum::kDefault, std::move(context_provider_wrapper),
-      context_thread_ref, std::move(context_task_runner),
-      std::move(release_callback)));
+      sk_image_info, texture_target, supports_display_compositing,
+      is_overlay_candidate, ImageOrientationEnum::kDefault,
+      std::move(context_provider_wrapper), context_thread_ref,
+      std::move(context_task_runner), std::move(release_callback)));
 }
 
 // static
@@ -89,7 +86,6 @@ AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
     const gpu::ExportedSharedImage& exported_shared_image,
     const gpu::SyncToken& sync_token,
     const SkImageInfo& sk_image_info,
-    bool is_origin_top_left,
     bool supports_display_compositing,
     bool is_overlay_candidate,
     base::OnceCallback<void(const gpu::SyncToken&)> external_callback) {
@@ -124,7 +120,7 @@ AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
 
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
       std::move(shared_image), sync_token, 0u, sk_image_info, texture_target,
-      is_origin_top_left, supports_display_compositing, is_overlay_candidate,
+      supports_display_compositing, is_overlay_candidate,
       ImageOrientationEnum::kDefault, shared_gpu_context,
       base::PlatformThreadRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
@@ -137,7 +133,6 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
     GLuint shared_image_texture_id,
     const SkImageInfo& sk_image_info,
     GLenum texture_target,
-    bool is_origin_top_left,
     bool supports_display_compositing,
     bool is_overlay_candidate,
     const ImageOrientation& orientation,
@@ -149,7 +144,6 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
       shared_image_(std::move(shared_image)),
       sk_image_info_(sk_image_info),
       texture_target_(texture_target),
-      is_origin_top_left_(is_origin_top_left),
       supports_display_compositing_(supports_display_compositing),
       is_overlay_candidate_(is_overlay_candidate),
       context_provider_wrapper_(std::move(context_provider_wrapper)),

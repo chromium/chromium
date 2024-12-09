@@ -79,7 +79,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       const gpu::ExportedSharedImage& exported_shared_image,
       const gpu::SyncToken& sync_token,
       const SkImageInfo& sk_image_info,
-      bool is_origin_top_left,
       bool supports_display_compositing,
       bool is_overlay_candidate,
       base::OnceCallback<void(const gpu::SyncToken&)> release_callback);
@@ -130,7 +129,9 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   gpu::MailboxHolder GetMailboxHolder() const final;
   scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const final;
   gpu::SyncToken GetSyncToken() const final;
-  bool IsOriginTopLeft() const final { return is_origin_top_left_; }
+  bool IsOriginTopLeft() const final {
+    return shared_image_->surface_origin() == kTopLeft_GrSurfaceOrigin;
+  }
   bool SupportsDisplayCompositing() const final {
     return supports_display_compositing_;
   }
@@ -157,7 +158,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       GLuint shared_image_texture_id,
       const SkImageInfo& sk_image_info,
       GLenum texture_target,
-      bool is_origin_top_left,
       bool supports_display_compositing,
       bool is_overlay_candidate,
       const ImageOrientation& orientation,
@@ -172,7 +172,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
   const SkImageInfo sk_image_info_;
   const GLenum texture_target_;
-  const bool is_origin_top_left_ : 1;
   const bool supports_display_compositing_ : 1;
   const bool is_overlay_candidate_ : 1;
 

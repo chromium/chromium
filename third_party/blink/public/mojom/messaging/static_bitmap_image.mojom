@@ -41,8 +41,6 @@ struct AcceleratedStaticBitmapImage {
   gpu.mojom.SyncToken sync_token;
   // Common image metadata.
   skia.mojom.ImageInfo image_info;
-  // Indicates the orientation of the image.
-  bool is_origin_top_left;
   // Indicates if the display compositing may be used with this image.
   bool supports_display_compositing;
   // Indicates if the image is an overlay candidate.

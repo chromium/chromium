@@ -65,7 +65,6 @@ bool StructTraits<blink::mojom::AcceleratedStaticBitmapImage::DataView,
     return false;
   }
 
-  out->is_origin_top_left = data.is_origin_top_left();
   out->supports_display_compositing = data.supports_display_compositing();
   out->is_overlay_candidate = data.is_overlay_candidate();
 

@@ -23,7 +23,6 @@ struct BLINK_COMMON_EXPORT AcceleratedImageInfo {
   gpu::ExportedSharedImage shared_image;
   gpu::SyncToken sync_token;
   SkImageInfo image_info;
-  bool is_origin_top_left;
   bool supports_display_compositing;
   bool is_overlay_candidate;
   base::OnceCallback<void(const gpu::SyncToken& sync_token)> release_callback;
