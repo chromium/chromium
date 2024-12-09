@@ -734,6 +734,27 @@ class COMPONENT_EXPORT(SQL) Database {
   FRIEND_TEST_ALL_PREFIXES(SQLiteFeaturesTest, WALNoClose);
   FRIEND_TEST_ALL_PREFIXES(SQLEmptyPathDatabaseTest, EmptyPathTest);
 
+  // A scoped utility to setup error reporting during the `Open()` operation
+  class ScopedOpenErrorReporter {
+   public:
+    // db: the database to instrument. Must outlive `this`
+    // histogram: the histogram to record the error code into. Will
+    // automatically be suffixed with `Database::histogram_tag()` if it's
+    // specified, "NoTag" otherwise.
+    ScopedOpenErrorReporter(Database* db, std::string_view histogram);
+    ~ScopedOpenErrorReporter();
+
+   private:
+    // The callback that will be invoked by the database in case of an error.
+    void OnErrorDuringOpen(SqliteResultCode code);
+
+    raw_ptr<Database> db_;
+    std::string_view histogram_;
+  };
+
+  // Invoke `open_error_reporting_callback_` if it's set.
+  void MaybeReportErrorDuringOpen(SqliteResultCode code);
+
   // Implements Open(), OpenInMemory().
   //
   // `db_file_path` is a UTF-8 path to the file storing the database pages. If
@@ -1020,6 +1041,11 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // Stores the dump provider object when db is open.
   std::unique_ptr<DatabaseMemoryDumpProvider> memory_dump_provider_;
+
+  // If set, this callback will be invoked when an sqlite error is triggered
+  // during `OpenInternal` or `Execute`s triggered from `Open`.
+  base::RepeatingCallback<void(SqliteResultCode)>
+      open_error_reporting_callback_;
 
   // Vends WeakPtr<Database> for internal scoping helpers.
   base::WeakPtrFactory<Database> weak_factory_{this};
