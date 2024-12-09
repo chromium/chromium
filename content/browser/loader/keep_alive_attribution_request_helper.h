@@ -47,7 +47,7 @@ class CONTENT_EXPORT KeepAliveAttributionRequestHelper {
       const GURL& request_url,
       const std::optional<base::UnguessableToken>& attribution_src_token,
       const std::optional<std::string>& devtools_request_id,
-      const AttributionSuitableContext&);
+      const std::optional<AttributionSuitableContext>&);
 
   ~KeepAliveAttributionRequestHelper();
 
