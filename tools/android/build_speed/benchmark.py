@@ -27,14 +27,13 @@ import dataclasses
 import functools
 import logging
 import pathlib
-import re
 import statistics
 import subprocess
 import sys
 import time
 import shutil
 
-from typing import Dict, Callable, Iterator, List, Tuple, Optional
+from typing import Dict, Callable, Iterator, List, Optional
 
 USE_PYTHON_3 = f'{__file__} will only run under python3.'
 
@@ -62,22 +61,37 @@ _SUPPORTED_EMULATORS = {
     'generic_android24.textpb': 'x86',
     'generic_android25.textpb': 'x86',
     'generic_android26.textpb': 'x86',
+    'generic_android26_local.textpb': 'x86',
     'generic_android27.textpb': 'x86',
+    'generic_android27_local.textpb': 'x86',
     'android_28_google_apis_x86.textpb': 'x86',
+    'android_28_google_apis_x86_local.textpb': 'x86',
     'android_29_google_apis_x86.textpb': 'x86',
+    'android_29_google_apis_x86_local.textpb': 'x86',
     'android_30_google_apis_x86.textpb': 'x86',
+    'android_30_google_apis_x86_local.textpb': 'x86',
     'android_31_google_apis_x64.textpb': 'x64',
+    'android_31_google_apis_x64_local.textpb': 'x64',
     'android_32_google_apis_x64_foldable.textpb': 'x64',
-    'android_33_google_apis_x64': 'x64',
-    'android_34_google_apis_x64': 'x64',
-    'android_35_google_apis_x64': 'x64',
+    'android_32_google_apis_x64_foldable_local.textpb': 'x64',
+    'android_33_google_apis_x64.textpb': 'x64',
+    'android_33_google_apis_x64_local.textpb': 'x64',
+    'android_34_google_apis_x64.textpb': 'x64',
+    'android_34_google_apis_x64_local.textpb': 'x64',
+    'android_35_google_apis_x64.textpb': 'x64',
+    'android_35_google_apis_x64_local.textpb': 'x64',
+    'android_b_google_apis_x64.textpb': 'x64',
+    'android_b_google_apis_x64_local.textpb': 'x64',
 }
 
 _GN_ARGS = [
     'target_os="android"',
-    'incremental_install=true',
     'use_remoteexec=true',
     'use_siso=true',
+]
+
+_INCREMENTAL_INSTALL = [
+    'incremental_install=true',
 ]
 
 _TARGETS = {
@@ -457,6 +471,9 @@ def main():
                         action='store_true',
                         help='Do not start a faster local dev server before '
                         'running the test.')
+    parser.add_argument('--no-incremental-install',
+                        action='store_true',
+                        help='Do not use incremental install.')
     parser.add_argument('-r',
                         '--repeat',
                         type=int,
@@ -495,7 +512,10 @@ def main():
     logging.basicConfig(
         level=level, format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
-    gn_args = _GN_ARGS
+    if args.no_incremental_install:
+        gn_args = _GN_ARGS
+    else:
+        gn_args = _GN_ARGS + _INCREMENTAL_INSTALL
 
     if args.emulator:
         devil_chromium.Initialize()
