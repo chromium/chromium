@@ -159,7 +159,6 @@ source_set("store_factory") {
     "//components/sync",
     "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model:signin_util",
