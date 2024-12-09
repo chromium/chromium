@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_interface_binders.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -59,15 +58,13 @@
 #elif BUILDFLAG(IS_WIN)
 #include "chrome/browser/win/conflicts/module_database.h"
 #include "chrome/browser/win/conflicts/module_event_sink_impl.h"
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/mojo_service_manager/utility_process_bridge.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_ash.h"
 #include "components/performance_manager/public/performance_manager.h"
 #if defined(ARCH_CPU_X86_64)
 #include "chrome/browser/performance_manager/mechanisms/userspace_swap_chromeos.h"
 #endif  // defined(ARCH_CPU_X86_64)
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_lacros.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -271,8 +268,7 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
       ui_task_runner);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#if defined(ARCH_CPU_X86_64)
+#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
   if (performance_manager::mechanism::userspace_swap::
           UserspaceSwapInitializationImpl::UserspaceSwapSupportedAndEnabled()) {
     registry
@@ -283,8 +279,7 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
                 render_process_host->GetID()),
             performance_manager::PerformanceManager::GetTaskRunner());
   }
-#endif  // defined(ARCH_CPU_X86_64)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
 
   for (auto& ep : extra_parts_) {
     ep->ExposeInterfacesToRenderer(registry, associated_registry,
@@ -637,12 +632,9 @@ void ChromeContentBrowserClient::BindGpuHostReceiver(
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (auto r = receiver.As<chromeos::cdm::mojom::BrowserCdmFactory>())
     chromeos::CdmFactoryDaemonProxyAsh::Create(std::move(r));
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (auto r = receiver.As<chromeos::cdm::mojom::BrowserCdmFactory>())
-    chromeos::CdmFactoryDaemonProxyLacros::Create(std::move(r));
 #endif
 }
 
@@ -652,7 +644,7 @@ void ChromeContentBrowserClient::BindUtilityHostReceiver(
     metrics::CallStackProfileCollector::Create(std::move(r));
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (auto service_manager_receiver =
           receiver
               .As<chromeos::mojo_service_manager::mojom::ServiceManager>()) {
