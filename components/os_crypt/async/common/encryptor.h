@@ -116,7 +116,7 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
   // Mojo uses this public constructor for serialization.
   explicit Encryptor(mojo::DefaultConstruct::Tag);
 
-  ~Encryptor();
+  virtual ~Encryptor();
 
   // Moveable, not copyable.
   Encryptor(Encryptor&& other);
@@ -153,19 +153,28 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
   // Returns true if there is at least one key contained within the encryptor
   // that could be used for encryption, otherwise, it will return the value of
   // OSCrypt::IsEncryptionAvailable.
-  bool IsEncryptionAvailable() const;
+  virtual bool IsEncryptionAvailable() const;
 
   // Returns true if there is at least one key contained within the encryptor
   // that might be able to decrypt data, otherwise it will return the value of
   // OSCrypt::IsEncryptionAvailable. Note that if this function returns true
   // then there is no guarantee that arbitrary data can be decrypted, as the
   // correct key to decrypt the data might not be available.
-  bool IsDecryptionAvailable() const;
+  virtual bool IsDecryptionAvailable() const;
+
+ protected:
+  // Create an encryptor with a set of `keys`. The `provider_for_encryption`
+  // specifies which provider is used for encryption, and must have a
+  // corresponding key in `keys`.
+  Encryptor(KeyRing keys, const std::string& provider_for_encryption);
+
+  // Clone is used internally by the factory to vend instances.
+  Encryptor Clone(Option option) const;
 
  private:
-  friend class TestOSCryptAsync;
   friend class EncryptorTestBase;
   friend class OSCryptAsync;
+  friend class TestEncryptor;
   friend struct mojo::StructTraits<os_crypt_async::mojom::EncryptorDataView,
                                    os_crypt_async::Encryptor>;
 
@@ -175,14 +184,6 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
   // Create an encryptor with no keys or encryption provider. In this case, all
   // encryption operations will be delegated to OSCrypt.
   Encryptor();
-
-  // Create an encryptor with a set of `keys`. The `provider_for_encryption`
-  // specifies which provider is used for encryption, and must have a
-  // corresponding key in `keys`.
-  Encryptor(KeyRing keys, const std::string& provider_for_encryption);
-
-  // Clone is used internally by the factory to vend instances.
-  Encryptor Clone(Option option) const;
 
   // A KeyRing consists of a set of provider names and Key values. Encrypted
   // data is always tagged with the provider name and this is used to look up

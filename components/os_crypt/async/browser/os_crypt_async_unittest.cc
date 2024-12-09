@@ -459,6 +459,24 @@ TEST_F(OSCryptAsyncTest, TestEncryptorInterface) {
   EXPECT_EQ(*decrypted, "testsecrets");
 }
 
+TEST_F(OSCryptAsyncTest, TestEncryptorIsEncryptionAvailable) {
+  auto encryptor = GetTestEncryptorForTesting();
+
+  EXPECT_TRUE(encryptor.IsDecryptionAvailable());
+  encryptor.set_decryption_available_for_testing(false);
+  EXPECT_FALSE(encryptor.IsDecryptionAvailable());
+
+  encryptor.set_decryption_available_for_testing(std::nullopt);
+  EXPECT_TRUE(encryptor.IsDecryptionAvailable());
+
+  EXPECT_TRUE(encryptor.IsEncryptionAvailable());
+  encryptor.set_encryption_available_for_testing(false);
+  EXPECT_FALSE(encryptor.IsEncryptionAvailable());
+
+  encryptor.set_encryption_available_for_testing(std::nullopt);
+  EXPECT_TRUE(encryptor.IsEncryptionAvailable());
+}
+
 class FailingKeyProvider : public TestKeyProvider {
  private:
   void GetKey(KeyCallback callback) override {

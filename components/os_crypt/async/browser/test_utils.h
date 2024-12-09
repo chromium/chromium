@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/common/test_encryptor.h"
 
 namespace os_crypt_async {
 
@@ -27,7 +28,7 @@ std::unique_ptr<OSCryptAsync> GetTestOSCryptAsyncForTesting(
 // is called, and different from the ones vended from the test OSCryptAsync
 // above. An `option` can be specified in the same way as calling `GetInstance`
 // on `OSCryptAsync`.
-Encryptor GetTestEncryptorForTesting(
+TestEncryptor GetTestEncryptorForTesting(
     Encryptor::Option option = Encryptor::Option::kNone);
 
 }  // namespace os_crypt_async
