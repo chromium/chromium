@@ -355,8 +355,6 @@ void VotesUploader::UploadVote(std::unique_ptr<FormStructure> submitted_form,
   if (!submitted_form->ShouldBeUploaded()) {
     return;
   }
-  // TODO(crbug.com/40100455): Remove the CHECK in M134.
-  CHECK(submitted_form->ShouldBeUploaded(), base::NotFatalUntil::M134);
   if (autofill_metrics::ShouldRecordUkm() &&
       submitted_form->ShouldUploadUkm(
           /*require_classified_field=*/true)) {
