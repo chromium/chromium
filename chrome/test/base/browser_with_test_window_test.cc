@@ -81,6 +81,12 @@ void BrowserWithTestWindowTest::SetUp() {
     ash::AshTestHelper::InitParams ash_init;
     ash_init.local_state = g_browser_process->local_state();
     ash_test_helper_.SetUp(std::move(ash_init));
+
+    // Do not auto create user pref service because it will be provided
+    // in `CreateProfile`.
+    ash_test_helper()
+        ->test_session_controller_client()
+        ->set_default_provide_pref_service(false);
   }
 #endif
 
@@ -330,6 +336,9 @@ void BrowserWithTestWindowTest::OnUserProfileCreated(const std::string& email,
   // may be injected.
   auto* user_manager = user_manager::UserManager::Get();
   user_manager->OnUserProfileCreated(account_id, profile->GetPrefs());
+  ash_test_helper()
+      ->test_session_controller_client()
+      ->SetUnownedUserPrefService(account_id, profile->GetPrefs());
   auto observation =
       std::make_unique<base::ScopedObservation<Profile, ProfileObserver>>(this);
   observation->Observe(profile);

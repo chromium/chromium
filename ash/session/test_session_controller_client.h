@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/session/session_controller_client.h"
@@ -97,7 +98,7 @@ class TestSessionControllerClient : public SessionControllerClient {
   void AddUserSession(
       const std::string& display_email,
       user_manager::UserType user_type = user_manager::UserType::kRegular,
-      bool provide_pref_service = true,
+      std::optional<bool> provide_pref_service = std::nullopt,
       bool is_new_profile = false,
       const std::string& given_name = std::string(),
       bool is_account_managed = false);
@@ -107,7 +108,7 @@ class TestSessionControllerClient : public SessionControllerClient {
       const AccountId& account_id,
       const std::string& display_email,
       user_manager::UserType user_type = user_manager::UserType::kRegular,
-      bool provide_pref_service = true,
+      std::optional<bool> provide_pref_service = std::nullopt,
       bool is_new_profile = false,
       const std::string& given_name = std::string(),
       bool is_account_managed = false);
@@ -133,6 +134,8 @@ class TestSessionControllerClient : public SessionControllerClient {
   // Use |pref_service| for the user identified by |account_id|.
   void SetUserPrefService(const AccountId& account_id,
                           std::unique_ptr<PrefService> pref_service);
+  void SetUnownedUserPrefService(const AccountId& account_id,
+                                 raw_ptr<PrefService> unowned_pref_service);
 
   // ash::SessionControllerClient:
   void RequestLockScreen() override;
@@ -167,6 +170,10 @@ class TestSessionControllerClient : public SessionControllerClient {
     existing_users_count_ = existing_users_count;
   }
 
+  void set_default_provide_pref_service(bool default_provide_pref_service) {
+    default_provide_pref_service_ = default_provide_pref_service;
+  }
+
  private:
   void DoSwitchUser(const AccountId& account_id, bool switch_user);
 
@@ -174,12 +181,19 @@ class TestSessionControllerClient : public SessionControllerClient {
   // is at least one user session created, and session state is ACTIVE.
   void MaybeNotifyFirstSessionReady();
 
+  // Notify user prefs initialized if user session has started.
+  void MaybeNotifyUserPrefServiceInitialized(const AccountId& account_id);
+
   const raw_ptr<SessionControllerImpl, DanglingUntriaged> controller_;
   const raw_ptr<TestPrefServiceProvider> prefs_provider_;
 
   int fake_session_id_ = 0;
   SessionInfo session_info_;
   bool first_session_ready_fired_ = false;
+
+  // Whether to auto create user prefs for `AddSession` if
+  // `provide_pref_service` is not specified.
+  bool default_provide_pref_service_ = true;
 
   bool use_lower_case_user_id_ = true;
   int request_hide_lock_screen_count_ = 0;

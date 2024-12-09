@@ -882,8 +882,6 @@ TEST_F(NoteTakingHelperTest, AddProfileWithPlayStoreEnabled) {
   EXPECT_TRUE(helper()->play_store_enabled());
   EXPECT_TRUE(helper()->android_apps_received());
   EXPECT_EQ(2, observer.num_updates());
-
-  profile_manager()->DeleteTestingProfile(kSecondProfileName);
 }
 
 TEST_F(NoteTakingHelperTest, ListAndroidApps) {
@@ -1105,7 +1103,6 @@ TEST_F(NoteTakingHelperTest, NotifyObserverAboutChromeApps) {
   EXPECT_EQ(1, observer.num_updates());
   UninstallExtension(second_keep_extension.get(), second_profile);
   EXPECT_EQ(2, observer.num_updates());
-  profile_manager()->DeleteTestingProfile(kSecondProfileName);
 }
 
 TEST_F(NoteTakingHelperTest, NotifyObserverAboutPreferredAppChanges) {
@@ -1169,8 +1166,6 @@ TEST_F(NoteTakingHelperTest, NotifyObserverAboutPreferredAppChanges) {
   EXPECT_EQ(std::vector<raw_ptr<Profile>>{second_profile},
             observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
-
-  profile_manager()->DeleteTestingProfile(kSecondProfileName);
 }
 
 TEST_F(NoteTakingHelperTest, NoteTakingControllerClient) {
@@ -1231,8 +1226,6 @@ TEST_F(NoteTakingHelperTest, NoteTakingControllerClient) {
 
     UninstallExtension(extension2.get(), second_profile);
     EXPECT_TRUE(has_note_taking_apps());
-
-    profile_manager()->DeleteTestingProfile(kSecondProfileName);
   }
 }
 
