@@ -8,7 +8,29 @@
 #include "third_party/blink/renderer/modules/ai/on_device_translation/ai_language_detector.h"
 
 namespace blink {
-AILanguageDetectorFactory::AILanguageDetectorFactory() = default;
+AILanguageDetectorFactory::AILanguageDetectorFactory(ExecutionContext* context)
+    : ExecutionContextClient(context) {}
+
+void AILanguageDetectorFactory::Trace(Visitor* visitor) const {
+  ScriptWrappable::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
+}
+
+namespace {
+void HandleCreateDetectorCallback(
+    ScriptPromiseResolver<blink::AILanguageDetector>* resolver,
+    base::expected<LanguageDetectionModel*, DetectLanguageError> maybe_model) {
+  if (maybe_model.has_value()) {
+    resolver->Resolve(
+        MakeGarbageCollected<AILanguageDetector>(maybe_model.value()));
+  } else {
+    switch (maybe_model.error()) {
+      case DetectLanguageError::kUnavailable:
+        resolver->Reject("Model not available");
+    }
+  }
+}
+}  // namespace
 
 ScriptPromise<AILanguageDetector> AILanguageDetectorFactory::create(
     ScriptState* script_state,
@@ -24,7 +46,10 @@ ScriptPromise<AILanguageDetector> AILanguageDetectorFactory::create(
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<AILanguageDetector>>(
           script_state);
-  resolver->Resolve(MakeGarbageCollected<AILanguageDetector>());
+  LanguageDetectionModel::Create(
+      GetExecutionContext()->GetBrowserInterfaceBroker(),
+      WTF::BindOnce(&HandleCreateDetectorCallback, WrapPersistent(resolver)));
+
   return resolver->Promise();
 }
 

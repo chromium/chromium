@@ -1827,10 +1827,16 @@ GetContentLanguageDetectionDriver() {
 
   static base::NoDestructor<language_detection::LanguageDetectionModelProvider>
       provider(background_task_runner);
-  provider->ReplaceModelFile(
-      base::FilePath(base::FilePath::kCurrentDirectory)
-          .AppendASCII(kLanguageDetectionLocalFileModelPath.Get())
-          .NormalizePathSeparators());
+  const std::string model_file_path =
+      kLanguageDetectionLocalFileModelPath.Get();
+  if (model_file_path.length()) {
+    provider->ReplaceModelFile(base::FilePath::FromASCII(model_file_path));
+  } else {
+    // There is no model and there's not going to be one. If we don't call this
+    // the provider will queue requests, expecting that some time in the future
+    // a model will become available.
+    provider->UnloadModelFile();
+  }
 
   static base::NoDestructor<language_detection::ContentLanguageDetectionDriver>
       driver(provider.get());

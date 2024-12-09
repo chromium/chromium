@@ -20,7 +20,10 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/language_detection/language_detection_model.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 namespace {
@@ -278,6 +281,22 @@ ScriptPromise<V8TranslationAvailability> Translation::canDetect(
   return promise;
 }
 
+namespace {
+void HandleCreateDetectorCallback(
+    ScriptPromiseResolver<blink::LanguageDetector>* resolver,
+    base::expected<LanguageDetectionModel*, DetectLanguageError> maybe_model) {
+  if (maybe_model.has_value()) {
+    resolver->Resolve(
+        MakeGarbageCollected<LanguageDetector>(maybe_model.value()));
+  } else {
+    switch (maybe_model.error()) {
+      case DetectLanguageError::kUnavailable:
+        resolver->Reject("Model not available");
+    }
+  }
+}
+}  // namespace
+
 // TODO(crbug.com/349927087): The new version is
 // AILanguageDetectorFactory::create(). Delete this old version.
 ScriptPromise<LanguageDetector> Translation::createDetector(
@@ -292,7 +311,10 @@ ScriptPromise<LanguageDetector> Translation::createDetector(
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<LanguageDetector>>(
           script_state);
-  resolver->Resolve(MakeGarbageCollected<LanguageDetector>());
+  LanguageDetectionModel::Create(
+      GetExecutionContext()->GetBrowserInterfaceBroker(),
+      WTF::BindOnce(&HandleCreateDetectorCallback, WrapPersistent(resolver)));
+
   return resolver->Promise();
 }
 }  // namespace blink

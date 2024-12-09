@@ -5,8 +5,6 @@
 #include "third_party/blink/renderer/modules/on_device_translation/language_detector.h"
 
 #include "base/memory/scoped_refptr.h"
-#include "base/task/sequenced_task_runner.h"
-#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_detection_result.h"
@@ -16,14 +14,16 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/language_detection/detect.h"
+#include "third_party/blink/renderer/platform/language_detection/language_detection_model.h"
 
 namespace blink {
 
-LanguageDetector::LanguageDetector() = default;
+LanguageDetector::LanguageDetector(
+    LanguageDetectionModel* language_detection_model)
+    : language_detection_model_(language_detection_model) {}
 
 void LanguageDetector::Trace(Visitor* visitor) const {
+  visitor->Trace(language_detection_model_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -43,8 +43,9 @@ ScriptPromise<IDLSequence<LanguageDetectionResult>> LanguageDetector::detect(
       ScriptPromiseResolver<IDLSequence<LanguageDetectionResult>>>(
       script_state);
 
-  DetectLanguage(input, WTF::BindOnce(AILanguageDetector::OnDetectComplete,
-                                      WrapPersistent(resolver)));
+  language_detection_model_->DetectLanguage(
+      input, WTF::BindOnce(AILanguageDetector::OnDetectComplete,
+                           WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
