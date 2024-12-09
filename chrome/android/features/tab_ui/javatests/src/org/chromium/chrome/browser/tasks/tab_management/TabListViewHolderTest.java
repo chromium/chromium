@@ -742,6 +742,37 @@ public class TabListViewHolderTest {
     @MediumTest
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testTabCardLabel() {
+        TabCardLabelData data =
+                new TabCardLabelData(
+                        TabCardLabelType.ACTIVITY_UPDATE,
+                        context -> "Test label",
+                        /* asyncImageFactory= */ null,
+                        /* contentDescriptionResolver= */ null);
+        mGridModel.set(TabProperties.TAB_CARD_LABEL_DATA, data);
+
+        TabCardLabelView gridLabel = mTabGridView.findViewById(R.id.tab_card_label);
+        assertNotNull(gridLabel);
+        assertEquals(gridLabel.getVisibility(), View.VISIBLE);
+        FrameLayout listContainer = mTabListView.findViewById(R.id.before_description_container);
+        assertEquals(listContainer.getChildCount(), 1);
+        TabCardLabelView listLabel = (TabCardLabelView) listContainer.getChildAt(0);
+        assertNotNull(listLabel);
+        assertEquals(listLabel.getVisibility(), View.VISIBLE);
+
+        mGridModel.set(TabProperties.TAB_CARD_LABEL_DATA, null);
+
+        assertEquals(gridLabel.getVisibility(), View.GONE);
+        assertEquals(listLabel.getVisibility(), View.GONE);
+
+        TabListViewBinder.onViewRecycled(mGridModel, mTabListView);
+        assertNull(listLabel.getParent());
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testPriceStringPriceDrop_TabCardLabel() {
         Tab tab = MockTab.createAndInitialize(1, mProfile);
         MockShoppingPersistedTabDataFetcher fetcher = new MockShoppingPersistedTabDataFetcher(tab);
