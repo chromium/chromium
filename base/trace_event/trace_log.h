@@ -99,17 +99,22 @@ class BASE_EXPORT TraceLog :
   void SetDisabled();
   void SetDisabled(uint8_t modes_to_disable);
 
-  // Returns true if TraceLog is enabled on recording mode.
-  // Note: Returns false even if FILTERING_MODE is enabled.
+  // Returns true if TraceLog is enabled (i.e. there's an active tracing
+  // session).
   bool IsEnabled() {
-    // In SDK build we return true as soon as the datasource has been set up and
-    // we know the config. This doesn't necessarily mean that the tracing has
-    // already started.
-    // Note that TrackEvent::IsEnabled() can be true even earlier, before the
-    // OnSetup call, so we can't guarantee that we know the config by the time
-    // TrackEvent::IsEnabled() is true.
+    // We don't rely on TrackEvent::IsEnabled() because it can be true before
+    // TraceLog has processed its TrackEventSessionObserver callbacks.
+    // For example, the code
+    // if (TrackEvent::IsEnabled()) {
+    //   auto config = TraceLog::GetCurrentTrackEventDataSourceConfig();
+    //   ...
+    // }
+    // can fail in a situation when TrackEvent::IsEnabled() is already true, but
+    // TraceLog::OnSetup() hasn't been called yet, so we don't know the config.
+    // Instead, we make sure that both OnSetup() and OnStart() have been called
+    // by tracking the number of active sessions that TraceLog has seen.
     AutoLock lock(track_event_lock_);
-    return track_event_sessions_.size() > 0;
+    return active_track_event_sessions_ > 0;
   }
 
   // The number of times we have begun recording traces. If tracing is off,

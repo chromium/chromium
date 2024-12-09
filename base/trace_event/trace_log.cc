@@ -1990,11 +1990,14 @@ void TraceLog::OnSetup(const perfetto::DataSourceBase::SetupArgs& args) {
 }
 
 void TraceLog::OnStart(const perfetto::DataSourceBase::StartArgs&) {
-  ++active_track_event_sessions_;
-  // Legacy observers don't support multiple tracing sessions. So we only
-  // notify them about the first one.
-  if (active_track_event_sessions_ > 1) {
-    return;
+  {
+    AutoLock lock(track_event_lock_);
+    ++active_track_event_sessions_;
+    // Legacy observers don't support multiple tracing sessions. So we only
+    // notify them about the first one.
+    if (active_track_event_sessions_ > 1) {
+      return;
+    }
   }
 
   AutoLock lock(observers_lock_);
@@ -2020,11 +2023,14 @@ void TraceLog::OnStop(const perfetto::DataSourceBase::StopArgs& args) {
     });
   }
 
-  --active_track_event_sessions_;
-  // Legacy observers don't support multiple tracing sessions. So we only
-  // notify them when the last one stopped.
-  if (active_track_event_sessions_ > 0) {
-    return;
+  {
+    AutoLock lock(track_event_lock_);
+    --active_track_event_sessions_;
+    // Legacy observers don't support multiple tracing sessions. So we only
+    // notify them when the last one stopped.
+    if (active_track_event_sessions_ > 0) {
+      return;
+    }
   }
 
   AutoLock lock(observers_lock_);
