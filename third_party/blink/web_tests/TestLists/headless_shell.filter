@@ -1145,6 +1145,7 @@
 -virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html
 -virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html
 -virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html
+-virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/reset-algorithm-rendering.html
 -virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/popovers/popover-minimum-role.html
 -virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/popovers/popover-open-overflow-display.tentative.html
 -virtual/popover-hint-disabled/external/wpt/html/semantics/popovers/popover-focus.html
