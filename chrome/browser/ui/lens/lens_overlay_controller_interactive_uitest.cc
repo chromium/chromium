@@ -508,7 +508,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
 //  (4) User presses the escape key to close lens overlay.
 // TODO(crbug.com/340343342): Reenable on Windows, Mac, and Linux Tests (dbg).
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || defined(MEMORY_SANITIZER) || \
-    (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
+    BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
 #define MAYBE_EscapeKeyCloseWithResultsPanel \
   DISABLED_EscapeKeyCloseWithResultsPanel
 #else
