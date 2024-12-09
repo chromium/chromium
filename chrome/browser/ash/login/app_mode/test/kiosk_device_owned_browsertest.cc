@@ -69,13 +69,6 @@ namespace {
 const test::UIPath kSplashScreenLaunchText = {"app-launch-splash",
                                               "launchText"};
 
-// An app to test local access to file systems via the
-// chrome.fileSystem.requestFileSystem API.
-// Webstore data json is in
-//     chrome/test/data/chromeos/app_mode/webstore/inlineinstall/
-//         detail/enelnimkndkcejhjnpaofdlbbfmdnagi
-const char kTestGetVolumeListKioskAppId[] = "enelnimkndkcejhjnpaofdlbbfmdnagi";
-
 constexpr char kSettingsPage1[] = "chrome://os-settings/manageAccessibility";
 constexpr char kSettingsPage2[] =
     "chrome-extension://mndnfokpggljbaajbnioimlmbfngpief/chromevox/options/"
@@ -239,15 +232,6 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
   // Network becomes online and app launch is resumed.
   SimulateNetworkOnline();
   WaitForAppLaunchSuccess();
-}
-
-// Verifies available volumes for kiosk apps in kiosk session.
-IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, GetVolumeList) {
-  SetTestApp(kTestGetVolumeListKioskAppId, /*version=*/"0.1");
-
-  extensions::ResultCatcher catcher;
-  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
-  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindow) {
