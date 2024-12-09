@@ -29,7 +29,6 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
@@ -42,6 +41,7 @@ namespace blink {
 class GraphicsContext;
 class ScrollableArea;
 class WebMouseEvent;
+class WebViewImpl;
 
 class CORE_EXPORT ScrollbarTheme {
   USING_FAST_MALLOC(ScrollbarTheme);
