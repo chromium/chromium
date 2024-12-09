@@ -204,11 +204,6 @@ BASE_FEATURE(kFledgeLimitNumAuctions,
 const base::FeatureParam<int> kFledgeLimitNumAuctionsParam{
     &kFledgeLimitNumAuctions, "max_auctions_per_page", 8};
 
-// Enables caching when loading interest groups for a bidder in an auction.
-BASE_FEATURE(kFledgeUseInterestGroupCache,
-             "FledgeUseInterestGroupCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables a delay for the post-auction interest group update to avoid
 // immediately invalidating cached values.
 BASE_FEATURE(kFledgeDelayPostAuctionInterestGroupUpdate,

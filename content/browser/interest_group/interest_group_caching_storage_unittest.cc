@@ -45,12 +45,7 @@ blink::InterestGroup MakeInterestGroup(url::Origin owner, std::string name) {
 
 class InterestGroupCachingStorageTest : public testing::Test {
  public:
-  void SetUp() override {
-    ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kFledgeUseInterestGroupCache},
-        /*disabled_features=*/{});
-  }
+  void SetUp() override { ASSERT_TRUE(temp_directory_.CreateUniqueTempDir()); }
 
   std::optional<scoped_refptr<StorageInterestGroups>> GetInterestGroupsForOwner(
       InterestGroupCachingStorage* caching_storage,
@@ -209,7 +204,6 @@ class InterestGroupCachingStorageTest : public testing::Test {
   base::ScopedTempDir temp_directory_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(InterestGroupCachingStorageTest, DBUpdatesShouldModifyCache) {
@@ -762,40 +756,6 @@ TEST_F(InterestGroupCachingStorageTest,
   // The fifth result should reflect the state after LeaveInterestGroup.
   ASSERT_NE(loaded_igs4->get(), loaded_igs5->get());
   ASSERT_EQ(loaded_igs5->get()->size(), 0u);
-}
-
-TEST_F(InterestGroupCachingStorageTest, NoCachingWhenFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFledgeUseInterestGroupCache});
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<content::InterestGroupCachingStorage> caching_storage =
-      CreateCachingStorage();
-  url::Origin owner = url::Origin::Create(GURL("https://www.example.test/"));
-  auto ig = MakeInterestGroup(owner, "name");
-
-  JoinInterestGroup(caching_storage.get(), ig, GURL("https://www.test.com"));
-
-  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
-      GetInterestGroupsForOwner(caching_storage.get(), owner);
-  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs_again =
-      GetInterestGroupsForOwner(caching_storage.get(), owner);
-  ASSERT_NE(loaded_igs->get(), loaded_igs_again->get());
-
-  std::optional<SingleStorageInterestGroup> single_loaded_group =
-      GetInterestGroup(caching_storage.get(),
-                       blink::InterestGroupKey(ig.owner, ig.name));
-  ASSERT_TRUE(single_loaded_group.has_value());
-  ASSERT_NE(&(loaded_igs->get()->GetInterestGroups()[0]->interest_group),
-            &(single_loaded_group.value()->interest_group));
-
-  ASSERT_TRUE(histogram_tester
-                  .GetAllSamples("Ads.InterestGroup.Auction.LoadGroupsCacheHit")
-                  .empty());
-  ASSERT_TRUE(histogram_tester
-                  .GetAllSamples("Ads.InterestGroup.GetInterestGroupCacheHit")
-                  .empty());
 }
 
 TEST_F(InterestGroupCachingStorageTest, LoadGroupsCacheHitHistogram) {

@@ -851,7 +851,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     True if there is a cache hit when loading an owner's interest groups for a
     FLEDGE auction. Recorded whenever an owner's interest groups are loaded for
-    an auction and the cache is enabled via FledgeUseInterestGroupCache.
+    an auction.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
@@ -879,8 +879,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     True if when loading interest groups for an owner, an existing call to the
     database was used. Recorded whenever an owner's interest groups are loaded
-    for an auction, the cache is enabled via FledgeUseInterestGroupCache, and
-    there was no cache hit.
+    for an auction and there was no cache hit.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
@@ -1471,8 +1470,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     True if there is a cache hit when loading one interest group via
     InterestGroupCachingStorage::GetInterestGroup. Recorded when
-    GetInterestGroup is called and the cache is enabled via
-    FledgeUseInterestGroupCache.
+    GetInterestGroup is called.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.

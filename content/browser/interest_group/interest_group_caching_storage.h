@@ -339,14 +339,6 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
       uint32_t version,
       std::vector<StorageInterestGroup> interest_groups);
 
-  // This callback is used once interest groups are loaded if
-  // kFledgeUseInterestGroupCache is disabled. Information may still be cached
-  // if kFledgeUsePreconnectCache is enabled.
-  void OnLoadInterestGroupsForOwnerNoCachingIGs(
-      const url::Origin& owner,
-      base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)> callback,
-      std::vector<StorageInterestGroup> interest_groups);
-
   void InvalidateCachedInterestGroupsForOwner(const url::Origin& owner);
   void InvalidateAllCachedInterestGroups();
 

@@ -135,19 +135,6 @@ InterestGroupCachingStorage::~InterestGroupCachingStorage() = default;
 void InterestGroupCachingStorage::GetInterestGroupsForOwner(
     const url::Origin& owner,
     base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)> callback) {
-  // If the cache is disabled, simply call
-  // InterestGroupStorage::GetInterestGroupsForOwner on each request.
-  if (!base::FeatureList::IsEnabled(features::kFledgeUseInterestGroupCache)) {
-    interest_group_storage_
-        .AsyncCall(&InterestGroupStorage::GetInterestGroupsForOwner)
-        .WithArgs(owner)
-        .Then(base::BindOnce(&InterestGroupCachingStorage::
-                                 OnLoadInterestGroupsForOwnerNoCachingIGs,
-                             weak_factory_.GetWeakPtr(), owner,
-                             std::move(callback)));
-    return;
-  }
-
   // If there is a cache hit, use the in-memory object.
   auto cached_groups_it = cached_interest_groups_.find(owner);
   if (cached_groups_it != cached_interest_groups_.end()) {
@@ -385,28 +372,26 @@ void InterestGroupCachingStorage::GetInterestGroup(
     const blink::InterestGroupKey& group_key,
     base::OnceCallback<void(std::optional<SingleStorageInterestGroup>)>
         callback) {
-  if (base::FeatureList::IsEnabled(features::kFledgeUseInterestGroupCache)) {
-    auto cached_groups_it = cached_interest_groups_.find(group_key.owner);
-    if (cached_groups_it != cached_interest_groups_.end()) {
-      scoped_refptr<StorageInterestGroups> groups =
-          cached_groups_it->second.get();
-      if (groups) {
-        std::optional<SingleStorageInterestGroup> output =
-            groups->FindGroup(group_key.name);
-        if (output &&
-            output.value()->interest_group.expiry < base::Time::Now()) {
-          output.reset();
-        }
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback), std::move(output)));
-        base::UmaHistogramBoolean("Ads.InterestGroup.GetInterestGroupCacheHit",
-                                  true);
-        return;
+  auto cached_groups_it = cached_interest_groups_.find(group_key.owner);
+  if (cached_groups_it != cached_interest_groups_.end()) {
+    scoped_refptr<StorageInterestGroups> groups =
+        cached_groups_it->second.get();
+    if (groups) {
+      std::optional<SingleStorageInterestGroup> output =
+          groups->FindGroup(group_key.name);
+      if (output && output.value()->interest_group.expiry < base::Time::Now()) {
+        output.reset();
       }
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), std::move(output)));
+      base::UmaHistogramBoolean("Ads.InterestGroup.GetInterestGroupCacheHit",
+                                true);
+      return;
     }
-    base::UmaHistogramBoolean("Ads.InterestGroup.GetInterestGroupCacheHit",
-                              false);
   }
+  base::UmaHistogramBoolean("Ads.InterestGroup.GetInterestGroupCacheHit",
+                            false);
+
   interest_group_storage_.AsyncCall(&InterestGroupStorage::GetInterestGroup)
       .WithArgs(group_key)
       .Then(base::BindOnce(&ConvertOptionalGroupToSingleStorageInterestGroup)
@@ -538,16 +523,6 @@ void InterestGroupCachingStorage::GetLastMaintenanceTimeForTesting(
   interest_group_storage_
       .AsyncCall(&InterestGroupStorage::GetLastMaintenanceTimeForTesting)
       .Then(std::move(callback));
-}
-
-void InterestGroupCachingStorage::OnLoadInterestGroupsForOwnerNoCachingIGs(
-    const url::Origin& owner,
-    base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)> callback,
-    std::vector<StorageInterestGroup> interest_groups) {
-  UpdateCachedOriginsIfEnabled(owner, interest_groups);
-  scoped_refptr<StorageInterestGroups> interest_groups_ptr =
-      base::MakeRefCounted<StorageInterestGroups>(std::move(interest_groups));
-  std::move(callback).Run(std::move(interest_groups_ptr));
 }
 
 void InterestGroupCachingStorage::OnJoinInterestGroup(

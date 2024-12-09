@@ -740,7 +740,6 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          {blink::features::kBiddingAndScoringDebugReportingAPI, {}},
          {blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot, {}},
          {features::kBackForwardCache, {}},
-         {features::kFledgeUseInterestGroupCache, {}},
          {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}},
          {blink::features::kFledgeSampleDebugReports, {}},
          // These are in field trial config, but we want this consistent among
@@ -752,7 +751,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          {blink::features::kFledgeAuctionDealSupport, {}},
          {blink::features::kFledgeDeprecatedRenderURLReplacements, {}},
          {blink::features::kFledgeSellerNonce, {}},
-         {blink::features::kFledgeTrustedSignalsKVv2Support,{}}},
+         {blink::features::kFledgeTrustedSignalsKVv2Support, {}}},
         /*disabled_features=*/
         {blink::features::kFencedFrames,
          blink::features::kFledgeEnforceKAnonymity,
