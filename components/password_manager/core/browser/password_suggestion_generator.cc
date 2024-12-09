@@ -354,9 +354,7 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
 #if !BUILDFLAG(IS_IOS)
     const bool passkey_from_another_device_in_autofill =
         !(base::FeatureList::IsEnabled(
-              features::kPasswordManualFallbackAvailable) &&
-          base::FeatureList::IsEnabled(
-              features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu));
+            features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu));
 #else
     const bool passkey_from_another_device_in_autofill = true;
 #endif  //! BUILDFLAG(IS_IOS)
