@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_metrics_refresh_waiter.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_interactive_test_mixin.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/fade_footer_view.h"
@@ -38,6 +39,8 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/collaboration/public/messaging/message.h"
+#include "components/data_sharing/public/group_data.h"
 #include "components/lookalikes/core/safety_tip_test_utils.h"
 #include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -79,6 +82,25 @@ TabRendererData MakeTabRendererData() {
   new_tab_data.last_committed_url = GURL(kTabUrl);
   new_tab_data.alert_state = {TabAlertState::AUDIO_PLAYING};
   return new_tab_data;
+}
+
+collaboration::messaging::PersistentMessage CreateMessage(
+    std::string given_name,
+    std::string avatar_url,
+    collaboration::messaging::CollaborationEvent event) {
+  data_sharing::GroupMember member;
+  member.given_name = given_name;
+  member.avatar_url = GURL(avatar_url);
+
+  collaboration::messaging::MessageAttribution attribution;
+  attribution.triggering_user = member;
+
+  collaboration::messaging::PersistentMessage message;
+  message.type = collaboration::messaging::PersistentNotificationType::CHIP;
+  message.attribution = attribution;
+  message.collaboration_event = event;
+
+  return message;
 }
 
 }  // namespace
@@ -461,10 +483,11 @@ class TabHoverCardFadeFooterInteractiveUiTest
         ->GetPrimaryViewForTesting();
   }
 
-  FadeRecentActivityFooterRow* GetPrimaryRecentActivityRowFromHoverCard(
+  FadeCollaborationMessagingFooterRow*
+  GetPrimaryCollaborationMessagingRowFromHoverCard(
       TabHoverCardBubbleView* bubble) {
     return bubble->GetFooterViewForTesting()
-        ->GetRecentActivityRowForTesting()
+        ->GetCollaborationMessagingRowForTesting()
         ->GetPrimaryViewForTesting();
   }
 
@@ -783,10 +806,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(hover_card_size.height(), total_children_height);
 }
 
-// Mocks that a tab has recent activity and verifies that the correct string
-// is displayed on the hover card.
+// Mocks that a tab has collaboration messaging and verifies that the correct
+// string is displayed on the hover card.
 IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
-                       HoverCardFooterShowsRecentActivity) {
+                       HoverCardFooterShowsCollaborationMessaging) {
   TabStrip* const tab_strip = GetTabStrip(browser());
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
@@ -794,52 +817,52 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
 
   // Clear alert state. Alerts take precedence over all other footers.
   tab_renderer_data.alert_state = {};
+  tab_groups::CollaborationMessagingTabData data;
+  tab_renderer_data.collaboration_messaging = data.GetWeakPtr();
 
   // Create a mock PersistentMessage
-  // Show recent activity status with TAB_ADDED event.
-  std::string username = std::string("User");
-  collaboration::messaging::PersistentMessage msg;
-  data_sharing::GroupMember triggering_user;
-  triggering_user.display_name = username;
-  msg.attribution.triggering_user = triggering_user;
-  msg.collaboration_event =
-      collaboration::messaging::CollaborationEvent::TAB_ADDED;
-  tab_renderer_data.recent_activity = msg;
+  // Show collaboration messaging status with TAB_ADDED event.
+  std::string given_name = "User";
+  std::string avatar_url = "URL";
+  data.SetMessage(
+      CreateMessage(given_name, avatar_url,
+                    collaboration::messaging::CollaborationEvent::TAB_ADDED));
 
   tab_strip->SetTabData(1, tab_renderer_data);
-  FadeRecentActivityFooterRow* const recent_activity_row =
-      GetPrimaryRecentActivityRowFromHoverCard(SimulateHoverTab(browser(), 1));
+  FadeCollaborationMessagingFooterRow* const collaboration_messaging_row =
+      GetPrimaryCollaborationMessagingRowFromHoverCard(
+          SimulateHoverTab(browser(), 1));
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_THIS_TAB,
-                base::UTF8ToUTF16(username)),
-            recent_activity_row->footer_label()->GetText());
-  EXPECT_FALSE(recent_activity_row->icon()->GetImageModel().IsEmpty());
+                base::UTF8ToUTF16(given_name)),
+            collaboration_messaging_row->footer_label()->GetText());
+  EXPECT_FALSE(collaboration_messaging_row->icon()->GetImageModel().IsEmpty());
 
   // Hover card footer should update when we hover over another tab that is
   // not discarded
   SimulateHoverTab(browser(), 0);
-  EXPECT_TRUE(recent_activity_row->footer_label()->GetText().empty());
-  EXPECT_TRUE(recent_activity_row->icon()->GetImageModel().IsEmpty());
+  EXPECT_TRUE(collaboration_messaging_row->footer_label()->GetText().empty());
+  EXPECT_TRUE(collaboration_messaging_row->icon()->GetImageModel().IsEmpty());
 
   // Reset tab data by setting intermediate object. Without this, the new
   // tab_data is ignored because it is the same object.
   tab_strip->SetTabData(1, MakeTabRendererData());
 
-  // Change username and action to show recent activity with TAB_UPDATED event.
-  std::string username2 = std::string("Another User");
-  triggering_user.display_name = username2;
-  msg.attribution.triggering_user = triggering_user;
-  msg.collaboration_event =
-      collaboration::messaging::CollaborationEvent::TAB_UPDATED;
-  tab_renderer_data.recent_activity = msg;
+  // Change username and action to show collaboration messaging with TAB_UPDATED
+  // event.
+  std::string given_name2 = "Another User";
+  std::string avatar_url2 = "URL2";
+  data.SetMessage(
+      CreateMessage(given_name2, avatar_url2,
+                    collaboration::messaging::CollaborationEvent::TAB_UPDATED));
 
   tab_strip->SetTabData(1, tab_renderer_data);
   SimulateHoverTab(browser(), 1);
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_THIS_TAB,
-                base::UTF8ToUTF16(username2)),
-            recent_activity_row->footer_label()->GetText());
-  EXPECT_FALSE(recent_activity_row->icon()->GetImageModel().IsEmpty());
+                base::UTF8ToUTF16(given_name2)),
+            collaboration_messaging_row->footer_label()->GetText());
+  EXPECT_FALSE(collaboration_messaging_row->icon()->GetImageModel().IsEmpty());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

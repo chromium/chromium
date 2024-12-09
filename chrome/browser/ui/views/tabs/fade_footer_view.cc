@@ -111,13 +111,14 @@ using FooterRow_PerformanceRowData = FooterRow<PerformanceRowData>;
 BEGIN_TEMPLATE_METADATA(FooterRow_PerformanceRowData, FooterRow)
 END_METADATA
 
-using FooterRow_RecentActivityRowData = FooterRow<RecentActivityRowData>;
-BEGIN_TEMPLATE_METADATA(FooterRow_RecentActivityRowData, FooterRow)
+using FooterRow_CollaborationMessagingRowData =
+    FooterRow<CollaborationMessagingRowData>;
+BEGIN_TEMPLATE_METADATA(FooterRow_CollaborationMessagingRowData, FooterRow)
 END_METADATA
 
 template class FooterRow<AlertFooterRowData>;
 template class FooterRow<PerformanceRowData>;
-template class FooterRow<RecentActivityRowData>;
+template class FooterRow<CollaborationMessagingRowData>;
 
 // FadeAlertFooterRow
 // -----------------------------------------------------------------------
@@ -178,14 +179,15 @@ void FadePerformanceFooterRow::SetData(const PerformanceRowData& data) {
 BEGIN_METADATA(FadePerformanceFooterRow)
 END_METADATA
 
-// FadeRecentActivityFooterRow
+// FadeCollaborationMessagingFooterRow
 // -----------------------------------------------------------------------
 
-void FadeRecentActivityFooterRow::SetData(const RecentActivityRowData& data) {
+void FadeCollaborationMessagingFooterRow::SetData(
+    const CollaborationMessagingRowData& data) {
   data_ = data;
 
-  if (!data_.should_show_recent_activity) {
-    // Empty section if recent activity should be hidden.
+  if (!data_.should_show_collaboration_messaging) {
+    // Empty section if collaboration messaging should be hidden.
     SetContent(ui::ImageModel(), std::u16string());
     return;
   }
@@ -204,14 +206,14 @@ void FadeRecentActivityFooterRow::SetData(const RecentActivityRowData& data) {
              data_.text);
 }
 
-RecentActivityRowData::RecentActivityRowData() = default;
-RecentActivityRowData::~RecentActivityRowData() = default;
-RecentActivityRowData::RecentActivityRowData(
-    const RecentActivityRowData& other) = default;
-RecentActivityRowData& RecentActivityRowData::operator=(
-    const RecentActivityRowData& other) = default;
+CollaborationMessagingRowData::CollaborationMessagingRowData() = default;
+CollaborationMessagingRowData::~CollaborationMessagingRowData() = default;
+CollaborationMessagingRowData::CollaborationMessagingRowData(
+    const CollaborationMessagingRowData& other) = default;
+CollaborationMessagingRowData& CollaborationMessagingRowData::operator=(
+    const CollaborationMessagingRowData& other) = default;
 
-BEGIN_METADATA(FadeRecentActivityFooterRow)
+BEGIN_METADATA(FadeCollaborationMessagingFooterRow)
 END_METADATA
 
 // FooterView
@@ -236,11 +238,12 @@ FooterView::FooterView() {
       std::make_unique<FadePerformanceFooterRow>(/* is_fade_out_view =*/false),
       std::make_unique<FadePerformanceFooterRow>(/* is_fade_out_view =*/true)));
 
-  recent_activity_row_ = AddChildView(std::make_unique<RecentActivityFadeView>(
-      std::make_unique<FadeRecentActivityFooterRow>(
-          /* is_fade_out_view =*/false),
-      std::make_unique<FadeRecentActivityFooterRow>(
-          /* is_fade_out_view =*/true)));
+  collaboration_messaging_row_ =
+      AddChildView(std::make_unique<CollaborationMessagingFadeView>(
+          std::make_unique<FadeCollaborationMessagingFooterRow>(
+              /* is_fade_out_view =*/false),
+          std::make_unique<FadeCollaborationMessagingFooterRow>(
+              /* is_fade_out_view =*/true)));
 
   alert_row_->SetProperty(
       views::kFlexBehaviorKey,
@@ -254,7 +257,7 @@ FooterView::FooterView() {
                                views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kUnbounded, true));
 
-  recent_activity_row_->SetProperty(
+  collaboration_messaging_row_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kScaleToMinimum,
@@ -274,21 +277,23 @@ void FooterView::SetPerformanceData(const PerformanceRowData& data) {
   UpdateVisibility();
 }
 
-void FooterView::SetRecentActivityData(const RecentActivityRowData& data) {
-  recent_activity_row_->SetData(data);
+void FooterView::SetCollaborationMessagingData(
+    const CollaborationMessagingRowData& data) {
+  collaboration_messaging_row_->SetData(data);
   UpdateVisibility();
 }
 
 void FooterView::SetFade(double percent) {
   alert_row_->SetFade(percent);
   performance_row_->SetFade(percent);
-  recent_activity_row_->SetFade(percent);
+  collaboration_messaging_row_->SetFade(percent);
 }
 
 void FooterView::UpdateVisibility() {
   SetVisible(performance_row_->CalculatePreferredSize({}).height() > 0 ||
              alert_row_->CalculatePreferredSize({}).height() > 0 ||
-             recent_activity_row_->CalculatePreferredSize({}).height() > 0);
+             collaboration_messaging_row_->CalculatePreferredSize({}).height() >
+                 0);
 }
 
 using FadeWrapper_View_PerformanceRowData =
@@ -303,10 +308,11 @@ using FadeWrapper_View_AlertFooterRowData =
 BEGIN_TEMPLATE_METADATA(FadeWrapper_View_AlertFooterRowData, FadeWrapper)
 END_METADATA
 
-using FadeWrapper_View_RecentActivityRowData =
-    FadeWrapper<views::View, RecentActivityRowData>;
+using FadeWrapper_View_CollaborationMessagingRowData =
+    FadeWrapper<views::View, CollaborationMessagingRowData>;
 
-BEGIN_TEMPLATE_METADATA(FadeWrapper_View_RecentActivityRowData, FadeWrapper)
+BEGIN_TEMPLATE_METADATA(FadeWrapper_View_CollaborationMessagingRowData,
+                        FadeWrapper)
 END_METADATA
 
 using FadeView_FadeAlertFooterRow_FadeAlertFooterRow_AlertFooterRowData =
@@ -327,13 +333,13 @@ BEGIN_TEMPLATE_METADATA(
     FadeView)
 END_METADATA
 
-using FadeView_FadeRecentActivityFooterRow_FadeRecentActivityFooterRow_RecentActivityRowData =
-    FadeView<FadeRecentActivityFooterRow,
-             FadeRecentActivityFooterRow,
-             RecentActivityRowData>;
+using FadeView_FadeCollaborationMessagingFooterRow_FadeCollaborationMessagingFooterRow_CollaborationMessagingRowData =
+    FadeView<FadeCollaborationMessagingFooterRow,
+             FadeCollaborationMessagingFooterRow,
+             CollaborationMessagingRowData>;
 
 BEGIN_TEMPLATE_METADATA(
-    FadeView_FadeRecentActivityFooterRow_FadeRecentActivityFooterRow_RecentActivityRowData,
+    FadeView_FadeCollaborationMessagingFooterRow_FadeCollaborationMessagingFooterRow_CollaborationMessagingRowData,
     FadeView)
 END_METADATA
 

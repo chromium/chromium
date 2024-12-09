@@ -63,8 +63,9 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   TabHoverCardBubbleView& operator=(const TabHoverCardBubbleView&) = delete;
   ~TabHoverCardBubbleView() override;
 
-  // Create the RecentActivityRowData from TabRendererData.
-  RecentActivityRowData GetRecentActivityData(const TabRendererData& tab_data);
+  // Create the CollaborationMessagingRowData from TabRendererData.
+  CollaborationMessagingRowData GetCollaborationMessagingData(
+      const TabRendererData& tab_data);
 
   // Updates and formats title, alert state, domain, and preview image.
   void UpdateCardContent(const Tab* tab);

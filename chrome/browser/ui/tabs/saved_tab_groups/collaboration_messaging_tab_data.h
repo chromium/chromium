@@ -53,8 +53,15 @@ class CollaborationMessagingTabData {
     return message_->collaboration_event;
   }
 
+  base::WeakPtr<CollaborationMessagingTabData> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   std::optional<PersistentMessage> message_ = std::nullopt;
+
+  // Must be the last member.
+  base::WeakPtrFactory<CollaborationMessagingTabData> weak_factory_{this};
 };
 
 }  // namespace tab_groups

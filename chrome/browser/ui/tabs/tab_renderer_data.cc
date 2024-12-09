@@ -16,7 +16,9 @@
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -44,44 +46,27 @@ using collaboration::messaging::MessagingBackendService;
 using collaboration::messaging::MessagingBackendServiceFactory;
 using collaboration::messaging::PersistentMessage;
 
-std::optional<PersistentMessage> GetSavedTabGroupRecentActivity(
-    const tabs::TabInterface* tab,
-    Profile* profile) {
+base::WeakPtr<tab_groups::CollaborationMessagingTabData>
+GetCollaborationMessage(tabs::TabInterface* tab) {
+  if (!tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
+    return nullptr;
+  }
+
   if (!tab) {
-    return std::nullopt;
+    return nullptr;
   }
 
-  const auto group = tab->GetGroup();
-  if (!group) {
-    return std::nullopt;
+  auto* tab_features = tab->GetTabFeatures();
+  if (!tab_features) {
+    return nullptr;
   }
 
-  const auto* tab_group_sync_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
-  if (!tab_group_sync_service) {
-    return std::nullopt;
+  auto* data = tab_features->collaboration_messaging_tab_data();
+  if (!data) {
+    return nullptr;
   }
 
-  std::optional<tab_groups::SavedTabGroup> saved_group =
-      tab_group_sync_service->GetGroup(*group);
-  if (!saved_group || !saved_group->is_shared_tab_group()) {
-    return std::nullopt;
-  }
-
-  MessagingBackendService* service =
-      MessagingBackendServiceFactory::GetForProfile(profile);
-  if (!service || !service->IsInitialized()) {
-    return std::nullopt;
-  }
-
-  auto messages = service->GetMessagesForTab(
-      tab->GetHandle().raw_value(),
-      collaboration::messaging::PersistentNotificationType::CHIP);
-  if (messages.empty()) {
-    return std::nullopt;
-  }
-
-  return messages.front();
+  return data->GetWeakPtr();
 }
 
 }  // namespace
@@ -132,10 +117,8 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
   }
   data.is_tab_discarded = contents->WasDiscarded();
 
-  if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
-    data.recent_activity = GetSavedTabGroupRecentActivity(
-        model->GetTabAtIndex(index), model->profile());
-  }
+  data.collaboration_messaging =
+      GetCollaborationMessage(model->GetTabAtIndex(index));
   data.network_state = TabNetworkStateForWebContents(contents);
   data.title = tab_ui_helper->GetTitle();
   data.visible_url = contents->GetVisibleURL();
