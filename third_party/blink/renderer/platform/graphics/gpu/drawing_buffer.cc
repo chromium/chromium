@@ -532,17 +532,10 @@ bool DrawingBuffer::FinishPrepareTransferableResourceSoftware(
   ReadFramebufferIntoBitmapPixels(
       static_cast<uint8_t*>(registered.bitmap->memory()));
 
-  if (registered.shared_image) {
-    *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
-        registered.shared_image, registered.sync_token, size_,
-        viz::SinglePlaneFormat::kBGRA_8888,
-        viz::TransferableResource::ResourceSource::kImageLayerBridge);
-  } else {
-    *out_resource = viz::TransferableResource::MakeSoftwareSharedBitmap(
-        registered.bitmap->id(), gpu::SyncToken(), size_,
-        viz::SinglePlaneFormat::kRGBA_8888,
-        viz::TransferableResource::ResourceSource::kDrawingBuffer);
-  }
+  *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
+      registered.shared_image, registered.sync_token, size_,
+      viz::SinglePlaneFormat::kBGRA_8888,
+      viz::TransferableResource::ResourceSource::kImageLayerBridge);
   out_resource->color_space = back_color_buffer_->color_space;
   out_resource->hdr_metadata = hdr_metadata_;
 
