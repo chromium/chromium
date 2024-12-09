@@ -3953,14 +3953,18 @@ const FeatureEntry::FeatureParam kLocationProviderManagerModePlatformOnly[] = {
     {"LocationProviderManagerMode", "PlatformOnly"}};
 const FeatureEntry::FeatureParam kLocationProviderManagerModeHybridPlatform[] =
     {{"LocationProviderManagerMode", "HybridPlatform"}};
+const FeatureEntry::FeatureParam kLocationProviderManagerModeHybridPlatform2[] =
+    {{"LocationProviderManagerMode", "HybridPlatform2"}};
 
 const FeatureEntry::FeatureVariation kLocationProviderManagerVariations[] = {
-    {"NetworkOnly", kLocationProviderManagerModeNetworkOnly,
+    {"Network only", kLocationProviderManagerModeNetworkOnly,
      std::size(kLocationProviderManagerModeNetworkOnly), nullptr},
-    {"PlatformOnly", kLocationProviderManagerModePlatformOnly,
+    {"Platform only", kLocationProviderManagerModePlatformOnly,
      std::size(kLocationProviderManagerModePlatformOnly), nullptr},
-    {"HybridPlatform", kLocationProviderManagerModeHybridPlatform,
-     std::size(kLocationProviderManagerModeHybridPlatform), nullptr}};
+    {"Wi-Fi fallback", kLocationProviderManagerModeHybridPlatform,
+     std::size(kLocationProviderManagerModeHybridPlatform), nullptr},
+    {"Fallback on error", kLocationProviderManagerModeHybridPlatform2,
+     std::size(kLocationProviderManagerModeHybridPlatform2), nullptr}};
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_ANDROID)

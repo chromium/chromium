@@ -83,6 +83,8 @@ const base::FeatureParam<device::mojom::LocationProviderManagerMode>::Option
          "PlatformOnly"},
         {device::mojom::LocationProviderManagerMode::kHybridPlatform,
          "HybridPlatform"},
+        {device::mojom::LocationProviderManagerMode::kHybridPlatform2,
+         "HybridPlatform2"},
 };
 
 const base::FeatureParam<device::mojom::LocationProviderManagerMode>
