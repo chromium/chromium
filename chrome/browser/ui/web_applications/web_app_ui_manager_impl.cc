@@ -45,6 +45,7 @@
 #include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -778,6 +779,26 @@ void WebAppUiManagerImpl::ShowIPHPromoForAppsLaunchedViaLinkCapturing(
       });
 
   browser->window()->MaybeShowFeaturePromo(std::move(promo_params));
+
+  // This is only needed for IPH bubbles that are anchored to a tab in a
+  // browser. App browsers don't require this logic since tab switching and
+  // navigating to another page isn't something to worry about in an app
+  // window.
+  if (browser->window()->IsFeaturePromoActive(
+          feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab)) {
+    base::OnceCallback iph_deletion_callback = base::BindOnce(
+        [](const Browser* browser) {
+          CHECK(browser);
+          browser->window()->NotifyFeaturePromoFeatureUsed(
+              feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
+              FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+        },
+        browser);
+    WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(
+        browser->tab_strip_model()->GetActiveWebContents());
+    CHECK(tab_helper);
+    tab_helper->SetCallbackToRunOnTabChanges(std::move(iph_deletion_callback));
+  }
 }
 
 void WebAppUiManagerImpl::OnIPHPromoResponseForLinkCapturing(
@@ -807,6 +828,9 @@ void WebAppUiManagerImpl::OnIPHPromoResponseForLinkCapturing(
       break;
     case user_education::FeaturePromoClosedReason::kDismiss:
     case user_education::FeaturePromoClosedReason::kCancel:
+    // This is needed if the promo is cancelled automatically by the
+    // `WebAppTabHelper`.
+    case user_education::FeaturePromoClosedReason::kFeatureEngaged:
       base::RecordAction(
           base::UserMetricsAction("LinkCapturingIPHAppBubbleNotAccepted"));
       WebAppPrefGuardrails::GetForNavigationCapturingIph(

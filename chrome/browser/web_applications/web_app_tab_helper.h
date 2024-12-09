@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -72,6 +73,17 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   // window instead of in a browser tab.
   bool is_in_app_window() const { return is_in_app_window_; }
 
+  void SetCallbackToRunOnTabChanges(base::OnceClosure callback);
+
+  // Used to listen to the tab entering the background via the `TabInterface`.
+  void OnTabBackgrounded(tabs::TabInterface* tab_interface);
+
+  // Used to listen to the tab being detached from the tab strip via the
+  // `TabInterface`. The tab will either be destroyed, or is in the middle of
+  // being put in a different window.
+  void OnTabDetached(tabs::TabInterface* tab_interface,
+                     tabs::TabInterface::DetachReason detach_reason);
+
   const base::UnguessableToken& GetAudioFocusGroupIdForTesting() const;
 
   // Returns the installed web app that 'controls' the last committed url of
@@ -126,9 +138,17 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   // Triggers a reinstall of a placeholder app for |url|.
   void ReinstallPlaceholderAppIfNecessary(const GURL& url);
 
+  // WebApp associated with this tab.
   std::optional<webapps::AppId> FindAppWithUrlInScope(const GURL& url) const;
 
-  // WebApp associated with this tab.
+  // When a `TabInterface` is updated on being detached and attached to a new
+  // window, update the subscriptions as needed.
+  void SubscribeToTabState(tabs::TabInterface* tab_interface);
+
+  // Asynchronously run `on_tab_details_changed_callback_` after tab states have
+  // changed.
+  void MaybeNotifyTabChanged();
+
   std::optional<webapps::AppId> app_id_;
 
   bool is_in_app_window_ = false;
@@ -143,6 +163,14 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   // Use unique_ptr for lazy instantiation as most browser tabs have no need to
   // incur this memory overhead.
   std::unique_ptr<WebAppLaunchQueue> launch_queue_;
+
+  // A callback that runs whenever the `tab` is destroyed, navigates or goes to
+  // the background.
+  base::OnceClosure on_tab_details_changed_callback_;
+
+  // Used to subscribe to various changes happening in the current tab from the
+  // `TabInterface`.
+  std::vector<base::CallbackListSubscription> tab_subscriptions_;
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       observation_{this};

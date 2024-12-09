@@ -52,6 +52,7 @@ constexpr char kToSiteBTargetBlankNoOpener[] = "id-LINK-A_TO_B-BLANK-NO_OPENER";
 constexpr char kToSiteBTargetBlankWithOpener[] = "id-LINK-A_TO_B-BLANK-OPENER";
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kStartPageId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewPageId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAppPageId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDestinationPageId);
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(LatestDomMessageObserver,
@@ -362,6 +363,31 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
                               ui_controls::kNoAccelerator),
       InSameContext(WaitForPromo(
           feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab)));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIphUiTest,
+                       IPHForAppInTabDisappearsOnNewTabOpen) {
+  webapps::AppId app_id = test::InstallWebApp(
+      browser()->profile(),
+      WebAppInstallInfo::CreateForTesting(
+          GetDestinationUrl(), blink::mojom::DisplayMode::kBrowser,
+          mojom::UserDisplayMode::kBrowser,
+          blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateExisting));
+  RunTestSequence(
+      OpenStartPage(),
+      TriggerAppLaunch(kToSiteBTargetBlankNoOpener, ui_controls::LEFT,
+                       ui_controls::kNoAccelerator,
+                       /* expect_new_browser= */ false),
+      TriggerNavigateExisting(kToSiteBTargetBlankNoOpener, ui_controls::LEFT,
+                              ui_controls::kNoAccelerator),
+      WaitForWebContentsReady(kDestinationPageId),
+      InSameContext(WaitForPromo(
+          feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab)),
+      AddInstrumentedTab(kNewPageId, GURL("https://www.example.com")),
+      WaitForWebContentsReady(kNewPageId),
+      InSameContext(CheckPromoIsActive(
+          feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
+          false)));
 }
 
 }  // namespace
