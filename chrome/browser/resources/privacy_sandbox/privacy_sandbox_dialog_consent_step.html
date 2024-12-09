@@ -10,7 +10,7 @@
       <img class="logo" alt="">
       <h1>$i18n{m1ConsentTitle}</h1>
     </div>
-    <template is="dom-if" if="[[!shouldShowV2_]]">
+    <template is="dom-if" if="[[!shouldShowV2()]]">
       <div id="consentContent">
         <div class="section cr-secondary-text">
           $i18n{m1ConsentDescription1}
@@ -46,7 +46,7 @@
         </div>
       </div>
     </template>
-    <template is="dom-if" if="[[shouldShowV2_]]">
+    <template is="dom-if" if="[[shouldShowV2()]]">
       <div id="consentContentV2">
         <div class="section cr-secondary-text">
           $i18n{m1ConsentDescription2V2}
@@ -82,11 +82,11 @@
       </div>
     </template>
     <div class="buttons-container">
-      <cr-button id="declineButton" class$="[[getButtonsClass_(shouldShowV2_)]]"
+      <cr-button id="declineButton" class$="[[getButtonsClass_()]]"
           on-click="onConsentDeclined_">
         $i18n{m1ConsentDeclineButton}
       </cr-button>
-      <cr-button id="confirmButton" class$="[[getButtonsClass_(shouldShowV2_)]]"
+      <cr-button id="confirmButton" class$="[[getButtonsClass_()]]"
           on-click="onConsentAccepted_">
         $i18n{m1ConsentAcceptButton}
       </cr-button>
