@@ -93,10 +93,8 @@ class VotesUploader : public AutofillDriverFactory::Observer {
       bool observed_submission,
       LanguageCode current_page_language,
       base::TimeTicks initial_interaction_timestamp,
+      const std::u16string& last_unlocked_credit_card_cvc,
       ukm::SourceId ukm_source_id);
-
-  // TODO(crbug.com/374086145): Remove public member.
-  std::u16string last_unlocked_credit_card_cvc_;
 
  protected:
   // Logs quality metrics, perhaps displays an Autofill survey, and uploads the
@@ -113,6 +111,7 @@ class VotesUploader : public AutofillDriverFactory::Observer {
                           base::TimeTicks initial_interaction_timestamp,
                           base::TimeTicks submission_timestamp,
                           bool observed_submission,
+                          const std::u16string& last_unlocked_credit_card_cvc,
                           ukm::SourceId ukm_source_id);
 
  private:
@@ -122,11 +121,13 @@ class VotesUploader : public AutofillDriverFactory::Observer {
 
   // The reply of DeterminePossibleFieldTypesForUpload().
   // Either calls UploadVote() or stores a PendingVote.
-  void OnFieldTypesDetermined(base::TimeTicks initial_interaction_timestamp,
-                              base::TimeTicks submission_timestamp,
-                              bool observed_submission,
-                              ukm::SourceId ukm_source_id,
-                              std::unique_ptr<FormStructure> submitted_form);
+  void OnFieldTypesDetermined(
+      base::TimeTicks initial_interaction_timestamp,
+      base::TimeTicks submission_timestamp,
+      bool observed_submission,
+      const std::u16string& last_unlocked_credit_card_cvc,
+      ukm::SourceId ukm_source_id,
+      std::unique_ptr<FormStructure> submitted_form);
 
   // Uploads all pending votes for forms from `frame`.
   void FlushPendingVotesForFrame(const LocalFrameToken& frame);

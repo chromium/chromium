@@ -191,6 +191,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
     bool observed_submission,
     LanguageCode current_page_language,
     base::TimeTicks initial_interaction_timestamp,
+    const std::u16string& last_unlocked_credit_card_cvc,
     ukm::SourceId ukm_source_id) {
   // Only upload server statistics and UMA metrics if at least some local data
   // is available to use as a baseline.
@@ -250,12 +251,13 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
             return form;
           },
           std::move(copied_profiles), std::move(copied_credit_cards),
-          last_unlocked_credit_card_cvc_, client_->GetAppLocale(),
+          last_unlocked_credit_card_cvc, client_->GetAppLocale(),
           std::move(form)),
       base::BindOnce(&VotesUploader::OnFieldTypesDetermined,
                      weak_ptr_factory_.GetWeakPtr(),
                      initial_interaction_timestamp, base::TimeTicks::Now(),
-                     observed_submission, ukm_source_id));
+                     observed_submission, last_unlocked_credit_card_cvc,
+                     ukm_source_id));
   return true;
 }
 
@@ -263,13 +265,15 @@ void VotesUploader::OnFieldTypesDetermined(
     base::TimeTicks initial_interaction_timestamp,
     base::TimeTicks submission_timestamp,
     bool observed_submission,
+    const std::u16string& last_unlocked_credit_card_cvc,
     ukm::SourceId ukm_source_id,
     std::unique_ptr<FormStructure> form) {
   LocalFrameToken frame = form->global_id().frame_token;
   WipePendingVotesForForm(form->form_signature());
   if (observed_submission) {
     UploadVote(std::move(form), initial_interaction_timestamp,
-               submission_timestamp, observed_submission, ukm_source_id);
+               submission_timestamp, observed_submission,
+               last_unlocked_credit_card_cvc, ukm_source_id);
     FlushPendingVotesForFrame(frame);
   } else {
     FlushOldestPendingVotesIfNecessary();
@@ -279,7 +283,8 @@ void VotesUploader::OnFieldTypesDetermined(
          .upload_vote = base::BindOnce(
              &VotesUploader::UploadVote, weak_ptr_factory_.GetWeakPtr(),
              std::move(form), initial_interaction_timestamp,
-             submission_timestamp, observed_submission, ukm_source_id)});
+             submission_timestamp, observed_submission,
+             last_unlocked_credit_card_cvc, ukm_source_id)});
   }
 }
 
@@ -297,11 +302,13 @@ void VotesUploader::FlushOldestPendingVotesIfNecessary() {
   }
 }
 
-void VotesUploader::UploadVote(std::unique_ptr<FormStructure> submitted_form,
-                               base::TimeTicks initial_interaction_timestamp,
-                               base::TimeTicks submission_timestamp,
-                               bool observed_submission,
-                               ukm::SourceId ukm_source_id) {
+void VotesUploader::UploadVote(
+    std::unique_ptr<FormStructure> submitted_form,
+    base::TimeTicks initial_interaction_timestamp,
+    base::TimeTicks submission_timestamp,
+    bool observed_submission,
+    const std::u16string& last_unlocked_credit_card_cvc,
+    ukm::SourceId ukm_source_id) {
   auto count_types = [&submitted_form](FormType type) {
     return base::ranges::count_if(
         submitted_form->fields(),
@@ -372,7 +379,7 @@ void VotesUploader::UploadVote(std::unique_ptr<FormStructure> submitted_form,
     card->GetNonEmptyTypes(client_->GetAppLocale(), &non_empty_types);
   }
   // As CVC is not stored, treat it separately.
-  if (!last_unlocked_credit_card_cvc_.empty() ||
+  if (!last_unlocked_credit_card_cvc.empty() ||
       non_empty_types.contains(CREDIT_CARD_NUMBER)) {
     non_empty_types.insert(CREDIT_CARD_VERIFICATION_CODE);
   }

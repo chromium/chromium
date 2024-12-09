@@ -20,6 +20,7 @@ void TestVotesUploader::UploadVote(
     base::TimeTicks initial_interaction_timestamp,
     base::TimeTicks submission_timestamp,
     bool observed_submission,
+    const std::u16string& last_unlocked_credit_card_cvc,
     const ukm::SourceId source_id) {
   submitted_form_signature_ = submitted_form->FormSignatureAsStr();
 
@@ -50,7 +51,8 @@ void TestVotesUploader::UploadVote(
 
   VotesUploader::UploadVote(std::move(submitted_form),
                             initial_interaction_timestamp, submission_timestamp,
-                            observed_submission, source_id);
+                            observed_submission, last_unlocked_credit_card_cvc,
+                            source_id);
 }
 
 bool TestVotesUploader::MaybeStartVoteUploadProcess(
@@ -58,10 +60,12 @@ bool TestVotesUploader::MaybeStartVoteUploadProcess(
     bool observed_submission,
     LanguageCode current_page_language,
     base::TimeTicks initial_interaction_timestamp,
+    const std::u16string& last_unlocked_credit_card_cvc,
     ukm::SourceId ukm_source_id) {
   if (VotesUploader::MaybeStartVoteUploadProcess(
           std::move(form), observed_submission, current_page_language,
-          initial_interaction_timestamp, ukm_source_id)) {
+          initial_interaction_timestamp, last_unlocked_credit_card_cvc,
+          ukm_source_id)) {
     // The purpose of this runloop is to ensure that the field type
     // determination finishes.
     base::RunLoop run_loop;

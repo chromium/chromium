@@ -701,6 +701,8 @@ class BrowserAutofillManager : public AutofillManager {
   // on file case.
   std::vector<std::string> four_digit_combinations_in_dom_;
 
+  std::u16string last_unlocked_credit_card_cvc_;
+
   base::WeakPtrFactory<BrowserAutofillManager> weak_ptr_factory_{this};
 };
 

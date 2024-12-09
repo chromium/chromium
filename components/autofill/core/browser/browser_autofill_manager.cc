@@ -842,8 +842,8 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
 
     DeterminePossibleFieldTypesForUpload(
         std::move(copied_profiles), std::move(copied_credit_cards),
-        client().GetVotesUploader().last_unlocked_credit_card_cvc_,
-        client().GetAppLocale(), submitted_form.get());
+        last_unlocked_credit_card_cvc_, client().GetAppLocale(),
+        submitted_form.get());
 
     delegate->MaybeImportForm(
         std::move(submitted_form),
@@ -909,7 +909,8 @@ void BrowserAutofillManager::OnFormSubmittedAfterImport(
   client().GetVotesUploader().MaybeStartVoteUploadProcess(
       std::move(submitted_form),
       /*observed_submission=*/true, GetCurrentPageLanguage(),
-      metrics_->initial_interaction_timestamp, driver().GetPageUkmSourceId());
+      metrics_->initial_interaction_timestamp, last_unlocked_credit_card_cvc_,
+      driver().GetPageUkmSourceId());
 }
 
 void BrowserAutofillManager::UpdatePendingForm(const FormData& form) {
@@ -944,7 +945,8 @@ void BrowserAutofillManager::ProcessPendingFormForUpload() {
   client().GetVotesUploader().MaybeStartVoteUploadProcess(
       std::move(upload_form),
       /*observed_submission=*/false, GetCurrentPageLanguage(),
-      metrics_->initial_interaction_timestamp, driver().GetPageUkmSourceId());
+      metrics_->initial_interaction_timestamp, last_unlocked_credit_card_cvc_,
+      driver().GetPageUkmSourceId());
 }
 
 void BrowserAutofillManager::LogSubmissionMetrics(
@@ -2216,7 +2218,7 @@ void BrowserAutofillManager::Reset() {
   DCHECK(!pending_form_data_);
 
   four_digit_combinations_in_dom_.clear();
-  client().GetVotesUploader().last_unlocked_credit_card_cvc_.clear();
+  last_unlocked_credit_card_cvc_.clear();
   if (touch_to_fill_delegate_) {
     touch_to_fill_delegate_->Reset();
   }
@@ -2536,8 +2538,7 @@ AutofillField* BrowserAutofillManager::GetAutofillField(
 
 void BrowserAutofillManager::OnCreditCardFetchedSuccessfully(
     const CreditCard& credit_card) {
-  client().GetVotesUploader().last_unlocked_credit_card_cvc_ =
-      credit_card.cvc();
+  last_unlocked_credit_card_cvc_ = credit_card.cvc();
   // If the synced down card is a virtual card or a server card enrolled in
   // runtime retrieval, let the client know so that it can show the UI to help
   // user to manually fill the form, if needed.
