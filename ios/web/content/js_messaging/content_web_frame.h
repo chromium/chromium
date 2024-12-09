@@ -15,6 +15,7 @@
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/web_state_observer.h"
 #import "url/gurl.h"
+#import "url/origin.h"
 
 namespace content {
 class RenderFrameHost;
@@ -43,6 +44,7 @@ class ContentWebFrame : public WebFrame,
   std::string GetFrameId() const override;
   bool IsMainFrame() const override;
   GURL GetSecurityOriginDeprecated() const override;
+  url::Origin GetSecurityOrigin() const override;
   BrowserState* GetBrowserState() override;
   base::WeakPtr<WebFrame> AsWeakPtr() override;
 

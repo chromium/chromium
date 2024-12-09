@@ -73,6 +73,10 @@ GURL ContentWebFrame::GetSecurityOriginDeprecated() const {
   return render_frame_host_->GetLastCommittedURL().DeprecatedGetOriginAsURL();
 }
 
+url::Origin ContentWebFrame::GetSecurityOrigin() const {
+  return render_frame_host_->GetLastCommittedOrigin();
+}
+
 BrowserState* ContentWebFrame::GetBrowserState() {
   return content_web_state_->GetBrowserState();
   ;
