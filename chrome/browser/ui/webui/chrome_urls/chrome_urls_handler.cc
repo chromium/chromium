@@ -104,13 +104,19 @@ void ChromeUrlsHandler::GetUrls(GetUrlsCallback callback) {
     result->command_urls.push_back(GURL(url));
   }
 
-  // Note: |local_state| may be null in unit tests.
   PrefService* local_state = g_browser_process->local_state();
   result->internal_debugging_uis_enabled =
-      !!local_state &&
       local_state->FindPreference(prefs::kInternalOnlyUisEnabled) &&
       local_state->GetBoolean(prefs::kInternalOnlyUisEnabled);
   std::move(callback).Run(std::move(result));
+}
+
+void ChromeUrlsHandler::SetDebugPagesEnabled(
+    bool enabled,
+    SetDebugPagesEnabledCallback callback) {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetBoolean(prefs::kInternalOnlyUisEnabled, enabled);
+  std::move(callback).Run();
 }
 
 }  // namespace chrome_urls

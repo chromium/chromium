@@ -19,10 +19,14 @@ export function getHtml(this: ChromeUrlsAppElement) {
 </ul>
 ${this.internalUrlInfos_.length ? html`
   <h2>Internal Debugging Page URLs</h2>
-  <p>
+  <p id="debug-pages-description">
     <span>Internal debugging pages are currently </span>
     <span class="bold">${this.getDebugPagesEnabledText_()}</span><span>.</span>
   </p>
+  <cr-button @click="${this.onToggleDebugPagesClick_}"
+      ?disabled="${this.debugPagesButtonDisabled_}">
+    ${this.getDebugPagesToggleButtonLabel_()}
+  </cr-button>
   <ul>
     ${this.internalUrlInfos_.map(info => html`
       ${this.isInternalUiEnabled_(info) ?

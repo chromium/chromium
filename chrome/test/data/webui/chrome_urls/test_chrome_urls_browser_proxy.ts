@@ -20,12 +20,17 @@ export class TestPageHandler extends TestBrowserProxy implements
   };
 
   constructor() {
-    super(['getUrls']);
+    super(['getUrls', 'setDebugPagesEnabled']);
   }
 
   getUrls(): Promise<{urlsData: ChromeUrlsData}> {
     this.methodCalled('getUrls');
     return Promise.resolve({urlsData: structuredClone(this.testData_)});
+  }
+
+  setDebugPagesEnabled(enabled: boolean): Promise<void> {
+    this.methodCalled('setDebugPagesEnabled', enabled);
+    return Promise.resolve();
   }
 
   setTestData(data: ChromeUrlsData) {

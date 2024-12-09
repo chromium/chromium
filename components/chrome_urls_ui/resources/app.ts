@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
@@ -25,6 +27,7 @@ export class ChromeUrlsAppElement extends CrLitElement {
 
   static override get properties() {
     return {
+      debugPagesButtonDisabled_: {type: Boolean},
       internalUrlInfos_: {type: Array},
       webuiUrlInfos_: {type: Array},
       commandUrls_: {type: Array},
@@ -32,6 +35,7 @@ export class ChromeUrlsAppElement extends CrLitElement {
     };
   }
 
+  protected debugPagesButtonDisabled_: boolean = false;
   protected webuiUrlInfos_: WebuiUrlInfo[] = [];
   protected internalUrlInfos_: WebuiUrlInfo[] = [];
   protected commandUrls_: Url[] = [];
@@ -58,6 +62,19 @@ export class ChromeUrlsAppElement extends CrLitElement {
 
   protected getDebugPagesEnabledText_(): string {
     return this.internalUisEnabled_ ? 'enabled' : 'disabled';
+  }
+
+  protected getDebugPagesToggleButtonLabel_(): string {
+    return this.internalUisEnabled_ ? 'Disable internal debugging pages' :
+                                      'Enable internal debugging pages';
+  }
+
+  protected async onToggleDebugPagesClick_() {
+    this.debugPagesButtonDisabled_ = true;
+    const enabled = !this.internalUisEnabled_;
+    await BrowserProxyImpl.getInstance().handler.setDebugPagesEnabled(enabled);
+    this.internalUisEnabled_ = enabled;
+    this.debugPagesButtonDisabled_ = false;
   }
 
   protected isInternalUiEnabled_(info: WebuiUrlInfo): boolean {

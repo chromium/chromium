@@ -102,7 +102,7 @@ suite('ChromeUrlsAppTest', function() {
     assertEquals('chrome://webui-gallery', internalItems[0]!.textContent);
     assertFalse(!!internalItems[0]!.querySelector('a'));
 
-    const message = lists[1]!.previousElementSibling;
+    const message = app.shadowRoot!.querySelector('#debug-pages-description');
     assertTrue(!!message);
     const status = message.querySelector('span.bold');
     assertTrue(!!status);
@@ -131,12 +131,65 @@ suite('ChromeUrlsAppTest', function() {
     assertEquals('chrome://webui-gallery/', link.href);
     assertEquals('chrome://webui-gallery', link.textContent);
 
-    const message = lists[1]!.previousElementSibling;
+    const message = app.shadowRoot!.querySelector('#debug-pages-description');
     assertTrue(!!message);
     const status = message.querySelector('span.bold');
     assertTrue(!!status);
     assertEquals('enabled', status.textContent);
 
     assertHeadings(true);
+  });
+
+  test('Toggle debug UIs enabled', async () => {
+    const webuiUrls: WebuiUrlInfo[] = [
+      {url: {url: 'chrome://settings/'}, enabled: true, internal: false},
+      {url: {url: 'chrome://bookmarks/'}, enabled: false, internal: false},
+      {url: {url: 'chrome://webui-gallery/'}, enabled: true, internal: true},
+    ];
+    await finishSetup(webuiUrls);
+
+    const lists = app.shadowRoot!.querySelectorAll('ul');
+    assertEquals(3, lists.length);
+
+    // No links since debug pages are disabled.
+    let internalItems = lists[1]!.querySelectorAll('li');
+    assertEquals(1, internalItems.length);
+    assertEquals('chrome://webui-gallery', internalItems[0]!.textContent);
+    assertFalse(!!internalItems[0]!.querySelector('a'));
+
+    // Message is set to 'disabled' and button is to enable the pages.
+    const message = app.shadowRoot!.querySelector('#debug-pages-description');
+    assertTrue(!!message);
+    const status = message.querySelector('span.bold');
+    assertTrue(!!status);
+    assertEquals('disabled', status.textContent);
+    const button = app.shadowRoot!.querySelector('cr-button');
+    assertTrue(!!button);
+    assertEquals('Enable internal debugging pages', button.textContent!.trim());
+
+    // Test case of enabling debug pages.
+    button.click();
+    let enabled = await browserProxy.handler.whenCalled('setDebugPagesEnabled');
+    assertTrue(enabled);
+    await microtasksFinished();
+    // Status is enabled, button is to disable, and page is linked.
+    assertEquals('enabled', status.textContent);
+    assertEquals(
+        'Disable internal debugging pages', button.textContent!.trim());
+    internalItems = lists[1]!.querySelectorAll('li');
+    assertEquals(1, internalItems.length);
+    assertTrue(!!internalItems[0]!.querySelector('a'));
+
+    // Test case of disabling debug pages.
+    browserProxy.handler.resetResolver('setDebugPagesEnabled');
+    button.click();
+    enabled = await browserProxy.handler.whenCalled('setDebugPagesEnabled');
+    assertFalse(enabled);
+    await microtasksFinished();
+    assertEquals('disabled', status.textContent);
+    assertEquals('Enable internal debugging pages', button.textContent!.trim());
+    internalItems = lists[1]!.querySelectorAll('li');
+    assertEquals(1, internalItems.length);
+    assertFalse(!!internalItems[0]!.querySelector('a'));
   });
 });
