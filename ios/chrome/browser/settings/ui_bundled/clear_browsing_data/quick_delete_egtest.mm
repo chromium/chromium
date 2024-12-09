@@ -241,7 +241,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   [ChromeEarlGrey setBoolValue:false
                    forUserPref:browsing_data::prefs::kCloseTabs];
 
-  if (![self isRunningTest:@selector(DISABLED_testInactiveTabsForDeletion)]) {
+  if (![self isRunningTest:@selector(testInactiveTabsForDeletion)]) {
     GREYAssertNil([MetricsAppInterface setupHistogramTester],
                   @"Cannot setup histogram tester.");
     [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
@@ -266,7 +266,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   [ChromeEarlGrey setBoolValue:true
                    forUserPref:browsing_data::prefs::kCloseTabs];
 
-  if (![self isRunningTest:@selector(DISABLED_testInactiveTabsForDeletion)]) {
+  if (![self isRunningTest:@selector(testInactiveTabsForDeletion)]) {
     [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
     GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                   @"Cannot reset histogram tester.");
@@ -296,6 +296,8 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.features_enabled.push_back(kIOSQuickDelete);
   config.features_enabled.push_back(kInactiveTabsIPadFeature);
+  config.additional_args.push_back("-InactiveTabsTestMode");
+  config.additional_args.push_back("true");
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
@@ -964,12 +966,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 // browsing data row when tabs are selected as a data type for deletion. It also
 // tests that the inactive tabs get closed when the deletion of tabs is
 // selected.
-// TODO(crbug.com/374048360): Re-enable test.
-- (void)DISABLED_testInactiveTabsForDeletion {
-  // Set pref to close tabs.
-  [ChromeEarlGrey setBoolValue:true
-                   forUserPref:browsing_data::prefs::kCloseTabs];
-
+- (void)testInactiveTabsForDeletion {
   // Load page in tab.
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
@@ -980,6 +977,20 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   // Relaunch the app to create the inactive tab. Relaunces also creates a new
   // NTP tab.
   [self relaunchAppWithInactiveTabsEnabled];
+
+  // Set to close tabs, but nothing else.
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteBrowsingHistory];
+  [ChromeEarlGrey setBoolValue:true
+                   forUserPref:browsing_data::prefs::kCloseTabs];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteCookies];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteCache];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeletePasswords];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteFormData];
 
   // Load a url in the NTP tab.
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];

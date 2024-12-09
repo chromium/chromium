@@ -270,6 +270,10 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
 #pragma mark - QuickDeleteMutator
 
 - (void)timeRangeSelected:(browsing_data::TimePeriod)timeRange {
+  if (_deletionTriggered) {
+    return;
+  }
+
   if (_selectedTimeRange == timeRange) {
     return;
   }
@@ -506,6 +510,10 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (_deletionTriggered) {
+    return;
+  }
+
   if (preferenceName == browsing_data::prefs::kDeleteTimePeriod) {
     _selectedTimeRange = static_cast<browsing_data::TimePeriod>(
         _prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod));
@@ -576,6 +584,10 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
 // Restarting the counters results on the browsing data summary being updated in
 // the ViewController.
 - (void)restartCounters {
+  if (_deletionTriggered) {
+    return;
+  }
+
   _browsingHistorySummary = nil;
   _tabsSummary = nil;
   _passwordsSummary = nil;
