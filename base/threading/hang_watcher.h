@@ -11,7 +11,6 @@
 #include <type_traits>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/bits.h"

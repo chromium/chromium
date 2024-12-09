@@ -4,12 +4,12 @@
 
 #include "base/no_destructor.h"
 
+#include <atomic>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -115,10 +115,11 @@ class BlockingConstructor {
  public:
   BlockingConstructor() {
     EXPECT_FALSE(WasConstructorCalled());
-    subtle::NoBarrier_Store(&constructor_called_, 1);
+    constructor_called_.store(true, std::memory_order_relaxed);
     EXPECT_TRUE(WasConstructorCalled());
-    while (!subtle::NoBarrier_Load(&complete_construction_))
+    while (!complete_construction_.load(std::memory_order_relaxed)) {
       PlatformThread::YieldCurrentThread();
+    }
     done_construction_ = true;
   }
   BlockingConstructor(const BlockingConstructor&) = delete;
@@ -127,28 +128,27 @@ class BlockingConstructor {
 
   // Returns true if BlockingConstructor() was entered.
   static bool WasConstructorCalled() {
-    return subtle::NoBarrier_Load(&constructor_called_);
+    return constructor_called_.load(std::memory_order_relaxed);
   }
 
   // Instructs BlockingConstructor() that it may now unblock its construction.
   static void CompleteConstructionNow() {
-    subtle::NoBarrier_Store(&complete_construction_, 1);
+    complete_construction_.store(true, std::memory_order_relaxed);
   }
 
   bool done_construction() const { return done_construction_; }
 
  private:
-  // Use Atomic32 instead of AtomicFlag for them to be trivially initialized.
-  static subtle::Atomic32 constructor_called_;
-  static subtle::Atomic32 complete_construction_;
+  static std::atomic<bool> constructor_called_;
+  static std::atomic<bool> complete_construction_;
 
   bool done_construction_ = false;
 };
 
 // static
-subtle::Atomic32 BlockingConstructor::constructor_called_ = 0;
+std::atomic<bool> BlockingConstructor::constructor_called_ = false;
 // static
-subtle::Atomic32 BlockingConstructor::complete_construction_ = 0;
+std::atomic<bool> BlockingConstructor::complete_construction_ = false;
 
 // A SimpleThread running at |thread_type| which invokes |before_get| (optional)
 // and then invokes thread-safe scoped-static-initializationconstruction on its

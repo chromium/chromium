@@ -14,7 +14,6 @@
 #include <string>
 
 #include "base/atomic_sequence_num.h"
-#include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback_forward.h"

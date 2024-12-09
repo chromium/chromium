@@ -5,12 +5,14 @@
 #ifndef BASE_THREADING_THREAD_COLLISION_WARNER_H_
 #define BASE_THREADING_THREAD_COLLISION_WARNER_H_
 
-#include "base/atomicops.h"
+#include <atomic>
+
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/macros/uniquify.h"
 #include "base/memory/raw_ptr.h"
+#include "base/threading/platform_thread.h"
 
 // A helper class alongside macros to be used to verify assumptions about thread
 // safety of a class.
@@ -231,11 +233,12 @@ class BASE_EXPORT ThreadCollisionWarner {
 
   // This stores the thread id that is inside the critical section, if the
   // value is 0 then no thread is inside.
-  volatile subtle::Atomic32 valid_thread_id_;
+  std::atomic<PlatformThreadId> valid_thread_id_;
+  static_assert(std::atomic<PlatformThreadId>::is_always_lock_free, "");
 
   // Counter to trace how many time a critical section was "pinned"
   // (when allowed) in order to unpin it when counter_ reaches 0.
-  volatile subtle::Atomic32 counter_;
+  std::atomic<uint32_t> counter_;
 
   // Here only for class unit tests purpose, during the test I need to not
   // DCHECK but notify the collision with something else.

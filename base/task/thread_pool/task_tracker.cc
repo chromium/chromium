@@ -146,28 +146,25 @@ class TaskTracker::State {
   // Sets a flag indicating that shutdown has started. Returns true if there are
   // items blocking shutdown. Can only be called once.
   bool StartShutdown() {
-    const auto new_value =
-        subtle::NoBarrier_AtomicIncrement(&bits_, kShutdownHasStartedMask);
-
-    // Check that the "shutdown has started" bit isn't zero. This would happen
-    // if it was incremented twice.
-    DCHECK(new_value & kShutdownHasStartedMask);
+    const uint32_t old_value =
+        bits_.fetch_or(kShutdownHasStartedMask, std::memory_order_relaxed);
+    DCHECK((old_value & kShutdownHasStartedMask) == 0);
 
     const auto num_items_blocking_shutdown =
-        new_value >> kNumItemsBlockingShutdownBitOffset;
+        old_value >> kNumItemsBlockingShutdownBitOffset;
     return num_items_blocking_shutdown != 0;
   }
 
   // Returns true if shutdown has started.
   bool HasShutdownStarted() const {
-    return subtle::NoBarrier_Load(&bits_) & kShutdownHasStartedMask;
+    return bits_.load(std::memory_order_relaxed) & kShutdownHasStartedMask;
   }
 
   // Returns true if there are items blocking shutdown.
   bool AreItemsBlockingShutdown() const {
     const auto num_items_blocking_shutdown =
-        subtle::NoBarrier_Load(&bits_) >> kNumItemsBlockingShutdownBitOffset;
-    DCHECK_GE(num_items_blocking_shutdown, 0);
+        bits_.load(std::memory_order_relaxed) >>
+        kNumItemsBlockingShutdownBitOffset;
     return num_items_blocking_shutdown != 0;
   }
 
@@ -177,33 +174,34 @@ class TaskTracker::State {
 #if DCHECK_IS_ON()
     // Verify that no overflow will occur.
     const auto num_items_blocking_shutdown =
-        subtle::NoBarrier_Load(&bits_) >> kNumItemsBlockingShutdownBitOffset;
+        bits_.load(std::memory_order_relaxed) >>
+        kNumItemsBlockingShutdownBitOffset;
     DCHECK_LT(num_items_blocking_shutdown,
-              std::numeric_limits<subtle::Atomic32>::max() -
+              std::numeric_limits<uint32_t>::max() -
                   kNumItemsBlockingShutdownIncrement);
 #endif
 
-    const auto new_bits = subtle::NoBarrier_AtomicIncrement(
-        &bits_, kNumItemsBlockingShutdownIncrement);
-    return new_bits & kShutdownHasStartedMask;
+    const uint32_t old_bits = bits_.fetch_add(
+        kNumItemsBlockingShutdownIncrement, std::memory_order_relaxed);
+    return old_bits & kShutdownHasStartedMask;
   }
 
   // Decrements the number of items blocking shutdown. Returns true if shutdown
   // has started and the number of tasks blocking shutdown becomes zero.
   bool DecrementNumItemsBlockingShutdown() {
-    const auto new_bits = subtle::NoBarrier_AtomicIncrement(
-        &bits_, -kNumItemsBlockingShutdownIncrement);
-    const bool shutdown_has_started = new_bits & kShutdownHasStartedMask;
-    const auto num_items_blocking_shutdown =
-        new_bits >> kNumItemsBlockingShutdownBitOffset;
-    DCHECK_GE(num_items_blocking_shutdown, 0);
-    return shutdown_has_started && num_items_blocking_shutdown == 0;
+    const uint32_t old_bits = bits_.fetch_sub(
+        kNumItemsBlockingShutdownIncrement, std::memory_order_relaxed);
+    const bool shutdown_has_started = old_bits & kShutdownHasStartedMask;
+    const auto old_num_items_blocking_shutdown =
+        old_bits >> kNumItemsBlockingShutdownBitOffset;
+    DCHECK_GT(old_num_items_blocking_shutdown, 0u);
+    return shutdown_has_started && old_num_items_blocking_shutdown == 1;
   }
 
  private:
-  static constexpr subtle::Atomic32 kShutdownHasStartedMask = 1;
-  static constexpr subtle::Atomic32 kNumItemsBlockingShutdownBitOffset = 1;
-  static constexpr subtle::Atomic32 kNumItemsBlockingShutdownIncrement =
+  static constexpr uint32_t kShutdownHasStartedMask = 1;
+  static constexpr uint32_t kNumItemsBlockingShutdownBitOffset = 1;
+  static constexpr uint32_t kNumItemsBlockingShutdownIncrement =
       1 << kNumItemsBlockingShutdownBitOffset;
 
   // The LSB indicates whether shutdown has started. The other bits count the
@@ -211,13 +209,13 @@ class TaskTracker::State {
   // No barriers are required to read/write |bits_| as this class is only used
   // as an atomic state checker, it doesn't provide sequential consistency
   // guarantees w.r.t. external state. Sequencing of the TaskTracker::State
-  // operations themselves is guaranteed by the AtomicIncrement RMW (read-
+  // operations themselves is guaranteed by the fetch_add() RMW (read-
   // modify-write) semantics however. For example, if two threads are racing to
   // call IncrementNumItemsBlockingShutdown() and StartShutdown() respectively,
   // either the first thread will win and the StartShutdown() call will see the
   // blocking task or the second thread will win and
   // IncrementNumItemsBlockingShutdown() will know that shutdown has started.
-  subtle::Atomic32 bits_ = 0;
+  std::atomic<uint32_t> bits_ = 0;
 };
 
 TaskTracker::TaskTracker()

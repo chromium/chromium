@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/lazy_instance.h"
+
 #include <stddef.h>
 
+#include <atomic>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/at_exit.h"
 #include "base/atomic_sequence_num.h"
-#include "base/atomicops.h"
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/lazy_instance.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
 #include "base/system/sys_info.h"
@@ -208,36 +209,37 @@ class BlockingConstructor {
  public:
   BlockingConstructor() {
     EXPECT_FALSE(WasConstructorCalled());
-    base::subtle::NoBarrier_Store(&constructor_called_, 1);
+    constructor_called_.store(true, std::memory_order_relaxed);
     EXPECT_TRUE(WasConstructorCalled());
-    while (!base::subtle::NoBarrier_Load(&complete_construction_))
+    while (!complete_construction_.load(std::memory_order_relaxed)) {
       base::PlatformThread::YieldCurrentThread();
+    }
     done_construction_ = true;
   }
   BlockingConstructor(const BlockingConstructor&) = delete;
   BlockingConstructor& operator=(const BlockingConstructor&) = delete;
   ~BlockingConstructor() {
     // Restore static state for the next test.
-    base::subtle::NoBarrier_Store(&constructor_called_, 0);
-    base::subtle::NoBarrier_Store(&complete_construction_, 0);
+    constructor_called_.store(false, std::memory_order_relaxed);
+    complete_construction_.store(false, std::memory_order_relaxed);
   }
 
   // Returns true if BlockingConstructor() was entered.
   static bool WasConstructorCalled() {
-    return base::subtle::NoBarrier_Load(&constructor_called_);
+    return constructor_called_.load(std::memory_order_relaxed);
   }
 
   // Instructs BlockingConstructor() that it may now unblock its construction.
   static void CompleteConstructionNow() {
-    base::subtle::NoBarrier_Store(&complete_construction_, 1);
+    complete_construction_.store(true, std::memory_order_relaxed);
   }
 
   bool done_construction() const { return done_construction_; }
 
  private:
   // Use Atomic32 instead of AtomicFlag for them to be trivially initialized.
-  static base::subtle::Atomic32 constructor_called_;
-  static base::subtle::Atomic32 complete_construction_;
+  static std::atomic<bool> constructor_called_;
+  static std::atomic<bool> complete_construction_;
 
   bool done_construction_ = false;
 };
@@ -269,9 +271,9 @@ class BlockingConstructorThread : public base::SimpleThread {
 };
 
 // static
-base::subtle::Atomic32 BlockingConstructor::constructor_called_ = 0;
+std::atomic<bool> BlockingConstructor::constructor_called_ = false;
 // static
-base::subtle::Atomic32 BlockingConstructor::complete_construction_ = 0;
+std::atomic<bool> BlockingConstructor::complete_construction_ = false;
 
 base::LazyInstance<BlockingConstructor>::DestructorAtExit lazy_blocking =
     LAZY_INSTANCE_INITIALIZER;

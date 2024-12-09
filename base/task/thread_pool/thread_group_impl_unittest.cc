@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
