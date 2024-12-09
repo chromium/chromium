@@ -31,6 +31,7 @@ import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
@@ -164,8 +165,8 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
     }
 
     /** Default behavior for "Settings". */
-    protected SettingsStation createSettingsStation() {
-        return new SettingsStation();
+    protected SettingsStation<MainSettings> createSettingsStation() {
+        return new SettingsStation<>(MainSettings.class);
     }
 
     protected static Matcher<View> itemViewMatcher(@IdRes int id) {
