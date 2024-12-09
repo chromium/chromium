@@ -1038,7 +1038,6 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   crosapi_manager_ = std::make_unique<crosapi::CrosapiManager>();
   browser_manager_ = std::make_unique<crosapi::BrowserManager>(
       g_browser_process->platform_part()->component_manager_ash());
-  browser_manager_->AddObserver(SessionControllerClientImpl::Get());
 
   chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
 
@@ -1514,11 +1513,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   if (base::FeatureList::IsEnabled(features::kEnableHostnameSetting)) {
     DeviceNameStore::Shutdown();
   }
-
-  // This needs to be called before the
-  // ChromeBrowserMainPartsLinux::PostMainMessageLoopRun, because the
-  // SessionControllerClientImpl is destroyed there.
-  browser_manager_->RemoveObserver(SessionControllerClientImpl::Get());
 
   // This must be shut down before |arc_service_launcher_|.
   if (pre_profile_init_called_) {

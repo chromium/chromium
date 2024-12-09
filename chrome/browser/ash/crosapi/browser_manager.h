@@ -19,7 +19,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/crosapi/browser_manager_observer.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -82,9 +81,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // directory.
   virtual void InitializeAndStartIfNeeded();
 
-  void AddObserver(BrowserManagerObserver* observer);
-  void RemoveObserver(BrowserManagerObserver* observer);
-
   // Notifies the BrowserManager that it should prepare for shutdown. This is
   // called in the early stages of ash shutdown to give Lacros sufficient time
   // for a graceful exit.
@@ -136,7 +132,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     // or disabled.
     UNAVAILABLE,
   };
-  // Changes |state| value and potentially notify observers of the change.
+  // Changes |state| value.
   void SetState(State state);
 
  private:
@@ -191,8 +187,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Called as a callback to `RemoveLacrosUserDataDir()`. `cleared` is set to
   // true if the directory existed and was removed successfully.
   void OnLacrosUserDataDirRemoved(bool cleared);
-
-  base::ObserverList<BrowserManagerObserver> observers_;
 
   // NOTE: The state is exposed to tests via autotest_private.
   State state_ = State::NOT_INITIALIZED;

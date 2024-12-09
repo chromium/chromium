@@ -222,14 +222,6 @@ void BrowserManager::InitializeAndStartIfNeeded() {
   ClearLacrosData();
 }
 
-void BrowserManager::AddObserver(BrowserManagerObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void BrowserManager::RemoveObserver(BrowserManagerObserver* observer) {
-  observers_.RemoveObserver(observer);
-}
-
 void BrowserManager::Shutdown() {
   shutdown_requested_ = true;
 }
@@ -239,10 +231,6 @@ void BrowserManager::SetState(State state) {
     return;
   }
   state_ = state;
-
-  for (auto& observer : observers_) {
-    observer.OnStateChanged();
-  }
 }
 
 void BrowserManager::ClearLacrosData() {
