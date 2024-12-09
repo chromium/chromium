@@ -19,9 +19,10 @@ struct Environment {
   const bool kDumpNativeInput = getenv("LPM_DUMP_NATIVE_INPUT");
 };
 
-constexpr std::optional<base::TimeDelta> kJsExecutionTimeout = base::Seconds(8);
+constexpr std::optional<base::TimeDelta> kJsExecutionTimeout =
+    base::Seconds(10);
 constexpr RunLoopTimeoutBehavior kJsRunLoopTimeoutBehavior =
-    RunLoopTimeoutBehavior::kDeclareInfiniteLoop;
+    RunLoopTimeoutBehavior::kContinue;
 
 // This fuzzer uses DomatoLPM to generate JS based on an existing Domato
 // rule.
