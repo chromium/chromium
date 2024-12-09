@@ -121,8 +121,7 @@ class ContentSettingImageModelTest : public BrowserWithTestWindowTest {
 #endif
          // Enable all sensors just to avoid hardcoding the expected messages
          // to the motion sensor-specific ones.
-         features::kGenericSensorExtraClasses},
-        {permissions::features::kBlockRepeatedNotificationPermissionPrompts});
+         features::kGenericSensorExtraClasses}, {});
   }
 
   ContentSettingImageModelTest(const ContentSettingImageModelTest&) = delete;

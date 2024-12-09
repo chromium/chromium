@@ -102,8 +102,7 @@ class PermissionRequestManagerBrowserTest : public InProcessBrowserTest {
  public:
   PermissionRequestManagerBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {permissions::features::kBlockRepeatedNotificationPermissionPrompts},
-        {permissions::features::kBackForwardCacheUnblockPermissionRequest});
+        {}, {permissions::features::kBackForwardCacheUnblockPermissionRequest});
   }
 
   PermissionRequestManagerBrowserTest(

@@ -667,9 +667,7 @@ void PermissionRequestManager::Deny() {
   // trapped in request loops where the website automatically navigates
   // cross-origin (e.g. to another subdomain) to be able to prompt again after
   // a rejection.
-  if (base::FeatureList::IsEnabled(
-          features::kBlockRepeatedNotificationPermissionPrompts) &&
-      base::Contains(requests_, ContentSettingsType::NOTIFICATIONS,
+  if (base::Contains(requests_, ContentSettingsType::NOTIFICATIONS,
                      &PermissionRequest::GetContentSettingsType)) {
     is_notification_prompt_cooldown_active_ = true;
   }
