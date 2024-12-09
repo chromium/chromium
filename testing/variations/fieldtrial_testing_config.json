@@ -20309,6 +20309,7 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "background-password-check-interval-in-days": "1",
                         "probability": "0.5",
                         "trigger_id": "BqU7h7abt0tK1KeaPYj0WkmwAz4h"
                     },

@@ -133,7 +133,12 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
 
     /** Schedules the next fetch job to run after a delay. */
     private void scheduleNextFetchJob() {
-        long nextFetchDelayMs = TimeUnit.DAYS.toMillis(SAFETY_HUB_JOB_INTERVAL_IN_DAYS);
+        int nextFetchDelayInDays =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.SAFETY_HUB,
+                        "background-password-check-interval-in-days",
+                        SAFETY_HUB_JOB_INTERVAL_IN_DAYS);
+        long nextFetchDelayMs = TimeUnit.DAYS.toMillis(nextFetchDelayInDays);
 
         // Cancel existing job if it wasn't already stopped.
         cancelFetchJob();
