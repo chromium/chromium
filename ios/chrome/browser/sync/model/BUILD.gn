@@ -198,8 +198,6 @@ source_set("test_support") {
     ":model",
     "//base",
     "//components/consent_auditor:test_support",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/sync",
     "//components/sync:test_support",
     "//ios/chrome/common",
