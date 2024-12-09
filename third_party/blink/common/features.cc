@@ -1210,6 +1210,10 @@ BASE_FEATURE(kIntensiveWakeUpThrottling,
 const char kIntensiveWakeUpThrottling_GracePeriodSeconds_Name[] =
     "grace_period_seconds";
 
+BASE_FEATURE(kInteractiveDetectorIgnoreFcp,
+             "InteractiveDetectorIgnoreFcp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch for the Interest Group API, i.e. if disabled, the
 // API exposure will be disabled regardless of the OT config.
 BASE_FEATURE(kInterestGroupStorage,
@@ -1835,10 +1839,6 @@ BASE_FEATURE(kMixedContentAutoupgrade,
              "AutoupgradeMixedContent",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kResourceFetcherStoresStrongReferences,
-             "ResourceFetcherStoresStrongReferences",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMemoryCacheStrongReference,
              "MemoryCacheStrongReference",
 // Finch study showed no improvement on Android for strong memory cache.
@@ -2251,13 +2251,20 @@ BASE_FEATURE_PARAM(bool,
                    "all_except_legacy_windows_platform",
                    true);
 
+// Whether `blink::MemoryCache` and `blink::ResourceFetcher` release their
+// strong references to resources on memory pressure.
+BASE_FEATURE(kReleaseResourceStrongReferencesOnMemoryPressure,
+             "ReleaseResourceStrongReferencesOnMemoryPressure",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Whether `blink::Resource` deletes its decoded data on memory pressure.
+BASE_FEATURE(kReleaseResourceDecodedDataOnMemoryPressure,
+             "ReleaseResourceDecodedDataOnMemoryPressure",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kRemoveAuthroizationOnCrossOriginRedirect,
              "RemoveAutorizationOnCrossOriginRedirect",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kInteractiveDetectorIgnoreFcp,
-             "InteractiveDetectorIgnoreFcp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRenderBlockingFonts,
              "RenderBlockingFonts",
@@ -2290,6 +2297,10 @@ BASE_FEATURE(kResamplingInputEvents,
 BASE_FEATURE(kResamplingScrollEvents,
              "ResamplingScrollEvents",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kResourceFetcherStoresStrongReferences,
+             "ResourceFetcherStoresStrongReferences",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRunTextInputUpdatePostLifecycle,
              "RunTextInputUpdatePostLifecycle",
@@ -2836,17 +2847,6 @@ BASE_FEATURE(kWebUSBTransferSizeLimit,
 BASE_FEATURE(kWebviewAccelerateSmallCanvases,
              "WebviewAccelerateSmallCanvases",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Whether `blink::MemoryCache` and `blink::ResourceFetcher` release their
-// strong references to resources on memory pressure.
-BASE_FEATURE(kReleaseResourceStrongReferencesOnMemoryPressure,
-             "ReleaseResourceStrongReferencesOnMemoryPressure",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Whether `blink::Resource` deletes its decoded data on memory pressure.
-BASE_FEATURE(kReleaseResourceDecodedDataOnMemoryPressure,
-             "ReleaseResourceDecodedDataOnMemoryPressure",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When adding new features or constants for features, please keep the features
 // sorted by identifier name (e.g. `kAwesomeFeature`), and the constants for

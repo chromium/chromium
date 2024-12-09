@@ -1177,9 +1177,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     int,
     kMemoryCacheStrongReferenceResourceSizeThresholdParam);
-// Whether the ResourceFetcher should store strong references too.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kResourceFetcherStoresStrongReferences);
 
 // Improvements to MHTML for more accurate snapshots.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMHTML_Improvements);
@@ -1450,6 +1447,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReducedReferrerGranularity);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kReleaseResourceDecodedDataOnMemoryPressure);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kReleaseResourceStrongReferencesOnMemoryPressure);
+
 // Kill-switch for removing Authorization header upon cross origin redirects.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kRemoveAuthroizationOnCrossOriginRedirect);
@@ -1480,6 +1482,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResamplingInputEvents);
 // Uses the kPredictorName* values in ui_base_features.h as the 'predictor'
 // feature param.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResamplingScrollEvents);
+
+// Whether the ResourceFetcher should store strong references too.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kResourceFetcherStoresStrongReferences);
 
 // If enabled, IME updates are computed at the end of a lifecycle update rather
 // than the beginning.
@@ -1805,11 +1811,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebSQLAccess);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebUSBTransferSizeLimit);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebviewAccelerateSmallCanvases);
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kReleaseResourceStrongReferencesOnMemoryPressure);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kReleaseResourceDecodedDataOnMemoryPressure);
 
 // When adding new features or constants for features, please keep the features
 // sorted by identifier name (e.g. `kAwesomeFeature`), and the constants for
