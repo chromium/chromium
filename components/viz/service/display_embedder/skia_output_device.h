@@ -169,8 +169,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
   // This should be called when the GPU thread decides to skip a swap that was
   // invoked by the viz thread to ensure that we still run the relevant metrics
   // bookkeeping.
-  virtual void SwapBuffersSkipped(BufferPresentedCallback feedback,
-                                  OutputSurfaceFrame frame);
+  void SwapBuffersSkipped(BufferPresentedCallback feedback,
+                          OutputSurfaceFrame frame);
 
   bool is_emulated_rgbx() const { return is_emulated_rgbx_; }
 
