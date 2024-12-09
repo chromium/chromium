@@ -1502,6 +1502,7 @@
 <translation id="202352106777823113">ডাউনল’ডৰ বাবে অতি বেছি সময় লাগিছে আৰু নেটৱর্ক সম্পর্কীয় সমস্যাৰ বাবে ই বাধাপ্ৰাপ্ত হৈছে।</translation>
 <translation id="2024195579772565064">সন্ধানৰ ইঞ্জিন মচক</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">সঠিকতাৰ ক্লিক</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> ক্রেশ্ব হ'ল। এক্সটেনশ্বনটো পুনৰ ল'ড কৰিবলৈ এই বেলুনটোত ক্লিক কৰক।</translation>
 <translation id="2026377162111110983">অঞ্চলৰ কণ্ঠধ্বনি</translation>
 <translation id="2028449514182362831">ম'শ্বন ছেন্সৰ আৱশ্যক হোৱা সুবিধাসমূহে কাম নকৰিব</translation>
@@ -4760,6 +4761,7 @@
 <translation id="4324577459193912240">ফাইলটো অসম্পূৰ্ণ</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> আনইনষ্টল কৰি থকা হৈছে...</translation>
 <translation id="4325433082696797523">ষ্ট’ৰেজ আৰু পাৱাৰ</translation>
+<translation id="4325515113816851466">আপুনি ছাইন আউট কৰাৰ পাছত আপোনাৰ অভিভাৱকৰ পচন্দসমূহ প্ৰয়োগ নহ’ব</translation>
 <translation id="4326146840124313313">Chromeৰ আটাইতকৈ বৰ্ধিত সুৰক্ষাৰ সুবিধাটোৱে আপোনাক বিপজ্জনক ৱেবছাইট, ডাউনল’ড আৰু এক্সটেনশ্বনসমূহৰ পৰা সুৰক্ষিত কৰিবলৈ অধিক কাৰ্য কৰে</translation>
 <translation id="4327380114687339519">এক্সটেনশ্বনৰ মেনু</translation>
 <translation id="4330191372652740264">বৰফৰ সৈতে পানী</translation>
@@ -4882,6 +4884,7 @@
 <translation id="4412992751769744546">তৃতীয় পক্ষৰ কুকিৰ অনুমতি দিয়ক</translation>
 <translation id="4413087696295876280">ChromeOS Flex ডিভাইচৰ তথ্য আৰু ডেটা পঢ়া</translation>
 <translation id="44137799675104237">স্বাভাৱিক কণ্ঠস্বৰৰে পাঠ বাৰ্তাটো শুনক</translation>
+<translation id="4414051792721275732">আপুনি ক্লিক কৰিবলৈ কোনো নিৰ্দেশ সম্পাদন কৰিলে অধিক নিয়ন্ত্ৰণ প্ৰদান কৰিবলৈ মাউছৰ গতিবেগ হ্ৰাস পাব। ক্লিকটো সম্পূৰ্ণ কৰিবলৈ নিৰ্দেশটো সম্পাদন কৰক।</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">"<ph name="APP_NAME" />"ক আপোনাৰ সংলগ্ন হৈ থকা ইউএছবি ডিভাইচৰ তালিকাখন এক্সেছ কৰিব দিবনে?</translation>
 <translation id="4414232939543644979">নতুন &amp;ইনক'গনিট' ৱিণ্ড'</translation>
@@ -6210,6 +6213,7 @@
 <translation id="5389224261615877010">ৰামধেনু</translation>
 <translation id="5389626883706033615">ছাইটসমূহে আপোনাৰ বিষয়ে ছেভ কৰা তথ্য ব্যৱহাৰ কৰিবলৈ অনুমতি বিচৰাৰ পৰা অৱৰোধ কৰা হৈছে</translation>
 <translation id="5389794555912875905">অসুৰক্ষিত ছাইটসমূহলৈ যোৱাৰ পূৰ্বে সকীয়নি চাওক (চুপাৰিছ কৰা)</translation>
+<translation id="5389943529251318913">মাউছৰ গতিবেগ হ্ৰাস কৰক</translation>
 <translation id="5390112241331447203">মতামতৰ ৰিপ’ৰ্টত পঠিওৱা system_logs.txt ফাইলটো অন্তৰ্ভুক্ত কৰক।</translation>
 <translation id="5390677308841849479">গাঢ় ৰঙা আৰু কমলা</translation>
 <translation id="5392192690789334093">জাননী পঠিওৱাৰ অনুমতি আছে</translation>

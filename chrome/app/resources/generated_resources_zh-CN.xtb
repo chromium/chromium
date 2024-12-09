@@ -889,7 +889,7 @@
 <translation id="1611432201750675208">您的设备已锁定</translation>
 <translation id="1611649489706141841">前进</translation>
 <translation id="1612019740169791082">您的容器配置不支持调整磁盘空间大小。若要调整预留给 Linux 的空间，请先备份旧容器中的内容，然后再将这些内容恢复到新容器中。</translation>
-<translation id="1612179176000108678">仅在电池电量不高于 <ph name="PERCENT" />% 时开启</translation>
+<translation id="1612179176000108678">仅在电池电量为 <ph name="PERCENT" />% 或以下时开启</translation>
 <translation id="1613019471223620622">显示 <ph name="USERNAME" /> 在 <ph name="DOMAIN" /> 上的密码</translation>
 <translation id="1613149688105334014">2022 年 12 月之后，多款旧版 Chrome 应用将无法开启。您可查看是否有可用的新版本。</translation>
 <translation id="1614511179807650956">您的移动数据流量配额可能已经用完。若想购买更多流量，请前往“<ph name="NAME" />”激活门户网站</translation>
@@ -1399,7 +1399,7 @@
     <ph name="BEGIN_PARAGRAPH2" />您随时可在 ChromeOS 设备的设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />如果您已为自己的 Google 账号开启“网络与应用活动记录”设置，您的 Android 数据可能会保存到您的 Google 账号中。您可在 account.google.com 上查看和删除您的数据以及更改您的账号设置。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1971694696800660479">所有数据都将被删除。此操作无法撤消</translation>
-<translation id="1972313920920745320">您添加的网站将始终保持活跃状态，且系统不会从它们中释放内存。<ph name="BEGIN_LINK" />详细了解如何让特定网站保持活跃状态<ph name="END_LINK" /></translation>
+<translation id="1972313920920745320">您添加的网站将始终保持活跃状态，且系统不会释放它们占用的内存。<ph name="BEGIN_LINK" />详细了解如何让特定网站保持活跃状态<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">您的浏览速度会更快，因为系统会根据您当前访问的网页主动加载内容</translation>
 <translation id="197288927597451399">保留</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
@@ -3302,7 +3302,7 @@
 <translation id="3319306431415395200">使用 <ph name="VISUAL_SEARCH_PROVIDER" /> 翻译图片中的文字</translation>
 <translation id="3319863571062685443">您的地址已保存</translation>
 <translation id="3320271870899888245">无法连接到 OneDrive。请重试。</translation>
-<translation id="3320630259304269485">安全浏览（保护您免受危险网站的侵害）和其他安全设置</translation>
+<translation id="3320630259304269485">安全浏览（防范危险网站）和其他安全设置</translation>
 <translation id="3320957378743864387">不得提供写作帮助</translation>
 <translation id="3321460131042519426">启用自动换行</translation>
 <translation id="3321494112580110651">找不到您的打印机？</translation>
@@ -3414,7 +3414,7 @@
 <translation id="3406290648907941085">允许使用虚拟现实设备和数据</translation>
 <translation id="3406396172897554194">按语言或输入法名称搜索</translation>
 <translation id="3406605057700382950">显示书签栏(&amp;S)</translation>
-<translation id="3407392651057365886">预加载更多网页。被其他网站请求的网页可能会通过 Google 服务器预加载。</translation>
+<translation id="3407392651057365886">预加载更多网页。其他网站请求访问的网页可能会通过 Google 服务器预加载。</translation>
 <translation id="3407967630066378878">若要设置指纹，请让您的孩子轻触此 <ph name="DEVICE_TYPE" /> 左侧的指纹传感器。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="3408555740610481810">正在使用摄像头和麦克风</translation>
 <translation id="3409513286451883969">将所选内容翻译为<ph name="LANGUAGE" />(&amp;T)</translation>
@@ -4132,7 +4132,7 @@
 <translation id="3877209288227498506">选择在标签页悬停预览卡片中显示内存用量和图片</translation>
 <translation id="3878445208930547646">不允许从该网站复制</translation>
 <translation id="3879748587602334249">下载管理器</translation>
-<translation id="3880513902716032002">在您访问的网页中，有一些是预加载的网页</translation>
+<translation id="3880513902716032002">预加载您访问的部分网页</translation>
 <translation id="3884152383786131369">能以多种语言显示的网页内容将会使用此列表中第一项受支持的语言。这些偏好设置会与您的浏览器设置同步。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">更新是由您的管理员管理</translation>
 <translation id="3887022758415973389">显示设备列表</translation>
@@ -4868,7 +4868,7 @@
 <translation id="4415213869328311284">您现在可以开始使用 <ph name="DEVICE_TYPE" /> 了。</translation>
 <translation id="4415276339145661267">管理您的 Google 账号</translation>
 <translation id="4415748029120993980">SECG 椭圆曲线 secp384r1（又称 NIST P-384）</translation>
-<translation id="4415815425191869676">始终让这些网站保持活动状态</translation>
+<translation id="4415815425191869676">始终让以下网站保持活跃状态</translation>
 <translation id="4416582610654027550">请输入一个有效网址</translation>
 <translation id="4421932782753506458">猫咪</translation>
 <translation id="4423376891418188461">还原设置</translation>
@@ -4893,7 +4893,7 @@
 <translation id="4432621511648257259">密码不正确</translation>
 <translation id="4434611816075088065">目前没有任何其他需要您注意的事项</translation>
 <translation id="443475966875174318">更新或卸载不兼容的应用</translation>
-<translation id="443503224864902151">将您从大多数网站中退出账号。您的 Google 账号仍会保持登录状态，以便删除您的已同步数据。</translation>
+<translation id="443503224864902151">您会从大多数网站中退出账号。您的 Google 账号仍会保持登录状态，以便删除已同步的数据。</translation>
 <translation id="4437879751057074691">提示保存密码和通行密钥</translation>
 <translation id="4437947179446780764">添加自定义 DNS 服务提供商</translation>
 <translation id="4438043733494739848">透明</translation>
@@ -5384,7 +5384,7 @@
 <translation id="4807098396393229769">持卡人姓名</translation>
 <translation id="4807122856660838973">开启安全浏览</translation>
 <translation id="4807514039636325497">DBus 详情</translation>
-<translation id="4808525520374557629">针对检测到的性能问题获取改进建议通知。<ph name="BEGIN_LINK" />详细了解性能问题提醒<ph name="END_LINK" /></translation>
+<translation id="4808525520374557629">系统检测到性能问题时显示改进建议通知。<ph name="BEGIN_LINK" />详细了解性能问题提醒<ph name="END_LINK" /></translation>
 <translation id="4808667324955055115">已拦截弹出式窗口：</translation>
 <translation id="4809079943450490359">您的设备管理员温馨提示：</translation>
 <translation id="4809447465126035330">删除</translation>
@@ -6386,7 +6386,7 @@
 <translation id="5521078259930077036">这是您想要的主页吗？</translation>
 <translation id="5522156646677899028">该扩展程序存在严重的安全漏洞。</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{您的管理员已安装了 1 个扩展程序}other{您的管理员已安装了 # 个扩展程序}}</translation>
-<translation id="5523532775593636291">您添加的网站将始终保持活跃状态，且系统不会从它们中释放内存</translation>
+<translation id="5523532775593636291">您添加的网站将始终保持活跃状态，且系统不会释放它们占用的内存</translation>
 <translation id="5523558474028191231">名称可以使用字母、数字和特殊字符，并且不得超过 <ph name="MAX_CHARACTER_COUNT" /> 个字符</translation>
 <translation id="5526745900034778153">需重新登录才能继续同步</translation>
 <translation id="5527463195266282916">已尝试对扩展程序降级。</translation>

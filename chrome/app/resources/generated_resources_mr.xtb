@@ -1503,6 +1503,7 @@
 <translation id="202352106777823113">डाउनलोडला खूप वेळ लागत होता आणि नेटवर्कद्वारे थांबविले.</translation>
 <translation id="2024195579772565064">शोध इंजीन हटवा</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">अचूक क्लिक</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> क्रॅश झाला. एक्स्टेंशन रीलोड करण्यासाठी या फुग्यावर क्लिक करा.</translation>
 <translation id="2026377162111110983">भागातील आवाज</translation>
 <translation id="2028449514182362831">मोशन सेन्सरची आवश्यकता असलेली वैशिष्ट्ये काम करणार नाहीत</translation>
@@ -4760,6 +4761,7 @@
 <translation id="4324577459193912240">फाइल अपूर्ण आहे</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> अनइंस्टॉल करत आहे...</translation>
 <translation id="4325433082696797523">स्टोरेज आणि पॉवर</translation>
+<translation id="4325515113816851466">तुम्ही साइन आउट केल्यानंतर तुमच्या पालकांच्या निवडी लागू होणार नाहीत</translation>
 <translation id="4326146840124313313">Chrome ची सर्वात मजबूत सुरक्षा धोकादायक वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून तुमचे संरक्षण करण्यासाठी बरेच काही करते</translation>
 <translation id="4327380114687339519">एक्स्टेंशन मेनू</translation>
 <translation id="4330191372652740264">बर्फाचे पाणी</translation>
@@ -4882,6 +4884,7 @@
 <translation id="4412992751769744546">तृतीय-पक्ष कुकीजना अनुमती द्या</translation>
 <translation id="4413087696295876280">ChromeOS Flex डिव्हाइसची माहिती आणि डेटा रीड करा</translation>
 <translation id="44137799675104237">नैसर्गिक आवाजामध्ये मजकूर ऐका</translation>
+<translation id="4414051792721275732">तुम्ही क्लिक करण्यासाठी जेश्चर करता, तेव्हा अधिक नियंत्रण पुरवण्यासाठी माउसचा वेग कमी होईल. क्लिक पूर्ण करण्यासाठी जेश्चर पुन्हा करा.</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">"<ph name="APP_NAME" />" ला संलग्न केलेल्या USB डिव्हाइसची सूची मिळवण्याची अनुमती द्यायची?</translation>
 <translation id="4414232939543644979">नवीन &amp;गुप्त विंडो</translation>
@@ -6210,6 +6213,7 @@
 <translation id="5389224261615877010">इंद्रधनुष्य</translation>
 <translation id="5389626883706033615">तुमच्याविषयी सेव्ह केलेली माहिती वापरण्याची परवानगी मागण्यापासून साइटना ब्लॉक केले आहे</translation>
 <translation id="5389794555912875905">असुरक्षित साइटवर जाण्यापूर्वी चेतावणी पहा (शिफारस केलेले)</translation>
+<translation id="5389943529251318913">इतका माउसचा वेग कमी करा</translation>
 <translation id="5390112241331447203">फीडबॅक अहवालामध्ये पाठवलेल्या system_logs.txt फाइलचा समावेश करा.</translation>
 <translation id="5390677308841849479">गडद लाल आणि नारिंगी</translation>
 <translation id="5392192690789334093">सूचना पाठवण्याची अनुमती आहे</translation>

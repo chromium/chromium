@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">սյունակ</translation>
 <translation id="6387719785439924554">aside</translation>
 <translation id="6393014464788431702">Անջատել իրադարձությունների բոլոր զտիչները</translation>
+<translation id="6406989068857078334">Մկնիկի արագությունը նվազեցվել է, սեղմելու համար նորից <ph name="GESTURE" /></translation>
 <translation id="6411569524720229058">Աշուն</translation>
 <translation id="6417265370957905582">Google Օգնական</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{միջակետ}one{# միջակետ}other{# միջակետ}}</translation>
@@ -1099,6 +1100,7 @@
 <translation id="8205922869661890178">Բացել մշակողի մատյանի էջը</translation>
 <translation id="8212109599554677485">Դարձնել էկրանի ոճը կողք կողքի</translation>
 <translation id="8215202828671303819">Բազմակի ընտրարկում</translation>
+<translation id="822316432305106615">Սկսեք ճշգրտիչ սեղմումը</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% թափանցիկություն</translation>
 <translation id="8261506727792406068">Ջնջել</translation>
 <translation id="826825447994856889">Ներածություն</translation>

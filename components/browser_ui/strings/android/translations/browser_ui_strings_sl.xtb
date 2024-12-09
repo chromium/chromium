@@ -30,7 +30,7 @@
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> spletnem mestu}one{<ph name="SITE_COUNT" /> spletnem mestu}two{<ph name="SITE_COUNT" /> spletnih mestih}few{<ph name="SITE_COUNT" /> spletnih mestih}other{<ph name="SITE_COUNT" /> spletnih mestih}}</translation>
 <translation id="1500473259453106018">Skrij kartico z znižanji cen na zavihkih</translation>
 <translation id="1510341833810331442">Spletna mesta ne smejo shranjevati podatkov v napravi.</translation>
-<translation id="1547123415014299762">Piškotki drugih spletnih mest so dovoljeni.</translation>
+<translation id="1547123415014299762">Piškotki tretjih oseb so dovoljeni.</translation>
 <translation id="1568470248891039841">Spletna mesta, ki jih obiščete, lahko vdelajo vsebino z drugih spletnih mest, na primer slike, oglase in besedilo. Ta druga spletna mesta lahko zahtevajo dovoljenje za uporabo podatkov, ki so jih shranila o vas med brskanjem po spletnem mestu. <ph name="BEGIN_LINK" />Preberite več o vdelani vsebini<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">Nova dejanja so na voljo pri vrhu zaslona.</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -72,7 +72,7 @@
 <translation id="2194856509914051091">Kaj morate upoštevati</translation>
 <translation id="2215727959747642672">Urejanje datotek</translation>
 <translation id="2228071138934252756">Če želite aplikaciji <ph name="APP_NAME" /> omogočiti dostop do fotoaparata, fotoaparat vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
-<translation id="2235344399760031203">Piškotki drugih spletnih mest so blokirani</translation>
+<translation id="2235344399760031203">Piškotki tretjih oseb so blokirani</translation>
 <translation id="2238944249568001759">Predlagana iskanja na podlagi zadnjega zavihka</translation>
 <translation id="2241587408274973373">Kartice strani s povezavami</translation>
 <translation id="2241634353105152135">Samo enkrat</translation>
@@ -221,7 +221,7 @@
 <translation id="4336566011000459927">Chrome bo danes znova omejil piškotke</translation>
 <translation id="4338831206024587507">Vsa spletna mesta v domeni <ph name="DOMAIN" />.</translation>
 <translation id="4402755511846832236">Preprečevanje, da bi spletna mesta vedela, kdaj aktivno uporabljate to napravo.</translation>
-<translation id="4412992751769744546">Omogočanje piškotkov drugih spletnih mest</translation>
+<translation id="4412992751769744546">Omogočanje piškotkov tretjih oseb</translation>
 <translation id="4419929467120297501">Chrome spletnim mestom onemogoči uporabo piškotkov tretjih oseb, da bi vam sledila med brskanjem. Obiščite nastavitve, če želite <ph name="BEGIN_LINK" />upravljati dostop do piškotkov tretjih oseb<ph name="END_LINK" />.</translation>
 <translation id="4434045419905280838">Pojavna okna in preusmeritve</translation>
 <translation id="443552056913301231">To dejanje bo izbrisalo vse lokalne podatke, vključno s piškotki, in ponastavilo vsa dovoljenja za <ph name="ORIGIN" /></translation>
@@ -314,7 +314,7 @@
 <translation id="5691080386278724773"><ph name="SITE" /> lahko med brskanjem uporablja vaše podatke</translation>
 <translation id="5700761515355162635">Piškotki tretjih oseb so dovoljeni</translation>
 <translation id="5706552988683188916">S tem izbrišete piškotke in druge podatke spletnega mesta za <ph name="WEBSITE" />.</translation>
-<translation id="5723967018671998714">Piškotki drugih spletnih mest so blokirani v anonimnem načinu</translation>
+<translation id="5723967018671998714">Piškotki tretjih oseb so blokirani v anonimnem načinu</translation>
 <translation id="5740126560802162366">Spletna mesta lahko shranjujejo podatke v napravi.</translation>
 <translation id="5750869797196646528">Sledenje potezam dlani</translation>
 <translation id="5771720122942595109">Blokirano: <ph name="PERMISSION_1" /></translation>
@@ -351,7 +351,7 @@
 <translation id="6192792657125177640">Izjeme</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome bo znova blokiral piškotke jutri}one{Še # dan in piškotki bodo znova blokirani}two{Še # dneva in piškotki bodo znova blokirani}few{Še # dni in piškotki bodo znova blokirani}other{Še # dni in piškotki bodo znova blokirani}}</translation>
 <translation id="6195163219142236913">Piškotki tretjih oseb so omejeni</translation>
-<translation id="6196640612572343990">Blokiraj piškotke drugih spletnih mest</translation>
+<translation id="6196640612572343990">Blokiraj piškotke tretjih oseb</translation>
 <translation id="6205314730813004066">Zasebnost pri oglaševanju</translation>
 <translation id="6207207788774442484">Izbriši podatke in ponastavi dovoljenja</translation>
 <translation id="6231752747840485235">Želite odmestiti aplikacijo »<ph name="APP_NAME" />«?</translation>

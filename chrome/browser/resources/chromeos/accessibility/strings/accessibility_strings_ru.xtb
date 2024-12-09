@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">стлбц</translation>
 <translation id="6387719785439924554">aside</translation>
 <translation id="6393014464788431702">Отключить все фильтры событий</translation>
+<translation id="6406989068857078334">Скорость указателя для мыши снижена. Чтобы выполнить клик, сделайте жест "<ph name="GESTURE" />".</translation>
 <translation id="6411569524720229058">Осень</translation>
 <translation id="6417265370957905582">Google Ассистент</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{двоеточие}one{# двоеточие}few{# двоеточия}many{# двоеточий}other{# colons}}</translation>
@@ -1098,6 +1099,7 @@
 <translation id="8205922869661890178">Открыть страницу с журналом разработчика.</translation>
 <translation id="8212109599554677485">Изменить стиль дисплея на параллельный</translation>
 <translation id="8215202828671303819">Множественный выбор</translation>
+<translation id="822316432305106615">Выполнить точный клик</translation>
 <translation id="8249864170673238087">Цвет <ph name="COLOR" />, прозрачность <ph name="OPACITY_PERCENTAGE" /> %.</translation>
 <translation id="8261506727792406068">Удалить</translation>
 <translation id="826825447994856889">Введение</translation>

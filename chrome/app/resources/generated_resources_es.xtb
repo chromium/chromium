@@ -972,7 +972,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1654580009054503925">No tiene permiso para mostrar solicitudes</translation>
 <translation id="1654713139320245449">No se han encontrado destinos de envío. ¿Necesitas ayuda?</translation>
 <translation id="1656528038316521561">Opacidad del fondo</translation>
-<translation id="1657406563541664238">Ayúdanos a mejorar <ph name="PRODUCT_NAME" /> enviando estadísticas de uso e informes sobre fallos.</translation>
+<translation id="1657406563541664238">Ayudar a mejorar <ph name="PRODUCT_NAME" /> enviando estadísticas de uso e informes sobre fallos a Google</translation>
 <translation id="1657937299377480641">Para iniciar sesión de nuevo para acceder a recursos educativos, pídele permiso a tu padre o madre</translation>
 <translation id="1658424621194652532">Esta página está accediendo al micrófono</translation>
 <translation id="1660763353352708040">Problema con el adaptador de corriente</translation>
@@ -3432,7 +3432,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3412265149091626468">Ir a la selección</translation>
 <translation id="3413122095806433232">Entidades emisoras de certificados: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Tamaño:</translation>
-<translation id="3414966631182382431"><ph name="MANAGER" /> <ph name="BEGIN_LINK" />gestiona el navegador<ph name="END_LINK" /></translation>
+<translation id="3414966631182382431"><ph name="MANAGER" /> <ph name="BEGIN_LINK" />gestiona tu navegador<ph name="END_LINK" /></translation>
 <translation id="3414974735818878791">Clic central</translation>
 <translation id="3415580428903497523">Usa certificados locales importados desde tu sistema operativo</translation>
 <translation id="341589277604221596">Subtítulos automáticos: <ph name="LANGUAGE" /></translation>
@@ -7987,7 +7987,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6709357832553498500">Conectar con <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710172959248731469">Configuración de los servicios de Google</translation>
 <translation id="6710213216561001401">Anterior</translation>
-<translation id="6710394144992407503">Comprobar si hay errores ortográficos cuando escribas texto en páginas web</translation>
+<translation id="6710394144992407503">Comprueba si hay errores ortográficos cuando escribas texto en páginas web</translation>
 <translation id="6712943853047024245">Ya has guardado una contraseña con este nombre de usuario para <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Añadir perfil de trabajo</translation>
 <translation id="6713441551032149301">Mantén pulsada la tecla del menú de aplicaciones para cambiar entre las teclas de función y las teclas del sistema de la fila superior</translation>

@@ -1494,6 +1494,7 @@
 <translation id="202352106777823113">ჩამოტვირთვას დიდი დრო დასჭირდა და იგი შეწყვეტილ იქნა ქსელის მიერ.</translation>
 <translation id="2024195579772565064">საძიებო სისტემის წაშლა</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">ზუსტი დაწკაპუნება</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> უკვე გაითიშა. დააწკაპუნეთ ამ ბურთზე გაფართოების ხელახლა ჩასატვირთად.</translation>
 <translation id="2026377162111110983">გარემოს ხმა</translation>
 <translation id="2028449514182362831">ფუნქციები, რომლებიც მოძრაობის სენსორებს საჭიროებს, არ იმუშავებს</translation>
@@ -4750,6 +4751,7 @@
 <translation id="4324577459193912240">ფაილი არასრულია</translation>
 <translation id="4325237902968425115">მიმდინარეობს <ph name="LINUX_APP_NAME" />-ის დეინსტალაცია…</translation>
 <translation id="4325433082696797523">მეხსიერება და ელკვება</translation>
+<translation id="4325515113816851466">თქვენი მშობლის არჩევანი არ იმოქმედებს სისტემიდან გასვლის შემდეგ</translation>
 <translation id="4326146840124313313">Chrome-ის ყველაზე ძლიერი დაცვა უკეთ გიცავთ სახიფათო ვებსაიტებისგან, ჩამოტვირთვებისა და გაფართოებებისგან.</translation>
 <translation id="4327380114687339519">გაფართოებების მენიუ</translation>
 <translation id="4330191372652740264">გაყინული წყალი</translation>
@@ -4872,6 +4874,7 @@
 <translation id="4412992751769744546">მეს. მხარის ქ. ფაილების დაშვება</translation>
 <translation id="4413087696295876280">ChromeOS Flex მოწყობილობის ინფორმაციისა და მონაცემების წაკითხვა</translation>
 <translation id="44137799675104237">მოუსმინეთ ბუნებრივი ხმით წარმოთქმულ ტექსტს</translation>
+<translation id="4414051792721275732">დასაწკაპუნებლად ჟესტის შესრულებისას მაუსის სიჩქარე შემცირდება, რათა უკეთ მართოთ ის. დაწკაპუნების დასასრულებლად შეასრულეთ ჟესტი ხელახლა.</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">გსურთ, „<ph name="APP_NAME" />“-მა შეძლოს დაკავშირებული USB მოწყობილობების სიაზე წვდომა?</translation>
 <translation id="4414232939543644979">ახალი &amp;ინკოგნიტო ფანჯარა</translation>
@@ -5108,6 +5111,7 @@
 <translation id="4586275095964870617"><ph name="URL" /> ვერ გაიხსნა ალტერნატიულ ბრაუზერში. გთხოვთ, დაუკავშირდეთ თქვენი სიტემის ადმინისტრატორს.</translation>
 <translation id="4587589328781138893">საიტები</translation>
 <translation id="4588749726511456218">გადაადგილების აჩქარება. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> და <ph name="DOMAIN" />, როგორც ჩანს, დაკავშირებულია ერთმანეთთან. დარწმუნდით, რომ <ph name="DOMAIN" /> სანდოა, სანამ თქვენს პაროლს გამოიყენებთ.</translation>
 <translation id="4589713469967853491">ჟურნალები წარმატებით ჩაიწერა „ჩამოტვირთვების“ კატალოგში.</translation>
 <translation id="4590785647529325123">თქვენი მოწყობილობიდან ინკოგნიტო რეჟიმში დათვალიერების ისტორია რომ წაშალოთ, დახურეთ ყველა ინკოგნიტო ჩანართი</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />-ში შენახული მოწყობილობები არ არის</translation>
@@ -5614,6 +5618,7 @@
 <translation id="4946998421534856407">launcher + ზემოთ მიმართული ისარი</translation>
 <translation id="4947376546135294974">მონაცემები თქვენ მიერ მონახულებული საიტიდან</translation>
 <translation id="4950100687509657457">პროფილის შექმნა</translation>
+<translation id="4950360215042327246">[ჩანაცვლების ველის ფრაზა]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ფაილი}other{# ფაილი}}</translation>
 <translation id="495170559598752135">ქმედებები</translation>
 <translation id="4951966678293618079">არასოდეს შეინახოს პაროლები ამ საიტისთვის</translation>
@@ -5752,6 +5757,7 @@
 <translation id="5061531353537614467">ტუნდრა</translation>
 <translation id="5062930723426326933">შესვლა ვერ განხორციელდა. დაუკავშირდით ინტერნეტს და ხელახლა სცადეთ.</translation>
 <translation id="5063480226653192405">გამოყენება</translation>
+<translation id="5064921774605267982"><ph name="PROFILE_NAME" />-ის პროფილის გახსნა. ამ პროფილს მართავს თქვენი ორგანიზაცია.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">მართეთ დაცული DNS ChromeOS-ის პარამეტრებიდან</translation>
 <translation id="5066534201484101197">საზღვრის მიღმა გადაადგილდით გვერდებს შორის ნავიგაციისთვის</translation>
@@ -6200,6 +6206,7 @@
 <translation id="5389224261615877010">ცისარტყელისფერი</translation>
 <translation id="5389626883706033615">საიტებისთვის დაბლოკილია მათ მიერ თქვენ შესახებ შენახული ინფორმაციის გამოყენების თხოვნის შესაძლებლობა</translation>
 <translation id="5389794555912875905">გაფრთხილებების ნახვა დაუცველ საიტებზე გადასვლამდე (რეკომენდებული)</translation>
+<translation id="5389943529251318913">მაუსის სიჩქარის შემცირება:</translation>
 <translation id="5390112241331447203">გამოხმაურების ანგარიშებში გაგზავნილი system_logs.txt ფაილის დართვა.</translation>
 <translation id="5390677308841849479">მუქი წითელი და ნარინჯისფერი</translation>
 <translation id="5392192690789334093">შეტყობინებების გამოგზავნა დაშვებულია</translation>
@@ -7408,6 +7415,7 @@
 <translation id="6266984048393265562">პროფილის მორგება</translation>
 <translation id="6267166720438879315">თქვენი ვინაობის ავთენტიფიკაციისათვის, აირჩიეთ სერთიფიკატი <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">გახსნა <ph name="APP" />-ით</translation>
+<translation id="6269050081341530851">დუბლიკატების დახურვისას შეინახება უძველესი ასლი</translation>
 <translation id="6270309713620950855">შეხსენების დადუმება</translation>
 <translation id="6270391203985052864">საიტებს შეუძლიათ შეტყობინებების გამოგზავნის თხოვნა</translation>
 <translation id="6270486800167535228">გაფართოება ჩამაგრებულია. აირჩიეთ მეტი ვარიანტის სანახავად</translation>
@@ -7949,6 +7957,7 @@
 <translation id="6679947539429331601">12 საათით დამალვა</translation>
 <translation id="6680442031740878064">ხელმისაწვდომია: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">სიხშირე</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> — [ჩანაცვლების ველის ფრაზა]</translation>
 <translation id="6683022854667115063">ყურსასმენები</translation>
 <translation id="6683087162435654533">ყველა ჩანართის &amp;აღდგენა</translation>
 <translation id="6683433919380522900">ნებართვად განსაზღვრულია „<ph name="PERMISSION_STATE" />“</translation>
@@ -8842,6 +8851,7 @@
 <translation id="7330533963640151632">ფუნქციის „<ph name="FEATURE_NAME" />“ პარამეტრები <ph name="USER_NAME" />-ის მოწყობილობისთვის, გაზიარება ხორციელდება <ph name="USER_EMAIL" />-ის ანგარიშით.</translation>
 <translation id="7331646370422660166">alt + ქვემოთ მიმართული ისარი</translation>
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">დუბლირებული ჩანართები</translation>
 <translation id="7333388112938984914">ფაილები ვერ აიტვირთება, სანამ ლიმიტირებულ კავშირს იყენებთ.</translation>
 <translation id="7333669215417470379">თქვენი აპებისა და პარამეტრების სარეზერვო ასლების შექმნა და აღდგენა</translation>
 <translation id="7335974957018254119">მართლწერის შემოწმების გამოყენება შემდეგისთვის:</translation>

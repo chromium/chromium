@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">欄</translation>
 <translation id="6387719785439924554">獨立元素</translation>
 <translation id="6393014464788431702">停用所有活動篩選器</translation>
+<translation id="6406989068857078334">滑鼠速度已減慢，再次<ph name="GESTURE" />即可執行點擊的動作</translation>
 <translation id="6411569524720229058">秋季</translation>
 <translation id="6417265370957905582">Google 助理</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{1 個冒號}other{# 個冒號}}</translation>
@@ -1098,6 +1099,7 @@
 <translation id="8205922869661890178">開啟開發人員記錄頁面</translation>
 <translation id="8212109599554677485">將顯示樣式變更為並排。</translation>
 <translation id="8215202828671303819">多重選取</translation>
+<translation id="822316432305106615">開始精準點擊</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />，<ph name="OPACITY_PERCENTAGE" />% 透明度。</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="826825447994856889">簡介</translation>

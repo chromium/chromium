@@ -1504,6 +1504,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="202352106777823113">Muat turun mengambil masa terlalu lama dan telah diberhentikan oleh rangkaian.</translation>
 <translation id="2024195579772565064">Padamkan enjin carian</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">Klik tepat</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> telah mengalami nahas. Klik belon ini untuk memuatkan semula sambungan.</translation>
 <translation id="2026377162111110983">Suara kawasan</translation>
 <translation id="2028449514182362831">Ciri yang memerlukan penderia gerakan tidak akan berfungsi</translation>
@@ -4763,6 +4764,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4324577459193912240">Fail tidak lengkap</translation>
 <translation id="4325237902968425115">Menyahpasang <ph name="LINUX_APP_NAME" />...</translation>
 <translation id="4325433082696797523">Storan dan kuasa</translation>
+<translation id="4325515113816851466">Pilihan ibu/bapa anda tidak akan digunakan selepas anda log keluar</translation>
 <translation id="4326146840124313313">Ciri keselamatan Chrome yang paling kukuh melakukan lebih banyak lagi untuk melindungi anda daripada laman web, muat turun dan sambungan yang berbahaya</translation>
 <translation id="4327380114687339519">Menu sambungan</translation>
 <translation id="4330191372652740264">Air ais</translation>
@@ -4885,6 +4887,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4412992751769744546">Benarkan kuki pihak ketiga</translation>
 <translation id="4413087696295876280">Baca maklumat dan data peranti ChromeOS Flex</translation>
 <translation id="44137799675104237">Dengar teks dengan suara semula jadi</translation>
+<translation id="4414051792721275732">Apabila anda melakukan gerak isyarat untuk mengklik, kelajuan tetikus akan berkurangan untuk memberikan lebih kawalan. Lakukan gerak isyarat sekali lagi untuk melengkapkan klik.</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">Benarkan "<ph name="APP_NAME" />" mendapatkan senarai peranti anda yang ada USB?</translation>
 <translation id="4414232939543644979">Tetingkap &amp;Inkognito Baharu</translation>
@@ -6213,6 +6216,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5389224261615877010">Pelangi</translation>
 <translation id="5389626883706033615">Laman disekat daripada meminta anda menggunakan maklumat yang disimpan tentang anda</translation>
 <translation id="5389794555912875905">Berikan amaran sebelum mengakses laman yang tidak selamat (disyorkan)</translation>
+<translation id="5389943529251318913">Kurangkan kelajuan tetikus sebanyak</translation>
 <translation id="5390112241331447203">Sertakan fail system_logs.txt yang dihantar dalam laporan maklum balas.</translation>
 <translation id="5390677308841849479">Merah gelap dan jingga</translation>
 <translation id="5392192690789334093">Dibenarkan untuk menghantar pemberitahuan</translation>

@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">columna</translation>
 <translation id="6387719785439924554">complement</translation>
 <translation id="6393014464788431702">Desactiva tots els filtres de l'esdeveniment</translation>
+<translation id="6406989068857078334">La velocitat del ratolí s'ha reduït. <ph name="GESTURE" /> de nou per fer clic.</translation>
 <translation id="6411569524720229058">Tardor</translation>
 <translation id="6417265370957905582">Assistent de Google</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{dos punts}other{# dos punts}}</translation>
@@ -1099,6 +1100,7 @@
 <translation id="8205922869661890178">Obre la pàgina de registres per a desenvolupadors</translation>
 <translation id="8212109599554677485">Canvia l'estil de pantalla a paral·lel</translation>
 <translation id="8215202828671303819">Selecció múltiple</translation>
+<translation id="822316432305106615">Inicia el clic de precisió</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% d'opacitat.</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="826825447994856889">Introducció</translation>

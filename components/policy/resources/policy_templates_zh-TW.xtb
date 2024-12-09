@@ -266,6 +266,7 @@
 <translation id="117080706484659953">允許 <ph name="MAC_OS_NAME" /> 上的政策範圍偵測</translation>
 <translation id="1171106901454883937">啟用裝置版本資訊回報功能</translation>
 <translation id="1173493742686115032">在所有網頁上啟用 <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /></translation>
+<translation id="1176740714945046981">啟用隔離網頁應用程式 (IWA) 降級功能。根據預設，系統只會安裝較新版本的 IWA。如果設為 <ph name="TRUE" />，則使用者也能安裝較舊版本的 IWA。如要啟用降級功能，必須使用「pinned_version」欄位指定所需的版本值。如果未提供「allow_downgrades」或已設為 <ph name="FALSE" />，則系統會停用該 IWA 的降級功能。</translation>
 <translation id="1177624681620856105"> 這項政策可控管系統是否要在外部通訊協定的啟動確認提示中顯示「一律開啟」核取方塊。
 
       如果將這項政策設為 True 或不予設定，當系統顯示外部通訊協定的確認訊息時，使用者可以選取「一律允許」，這樣日後會略過這個網站上的所有通訊協定確認提示。
@@ -3152,6 +3153,16 @@
 <translation id="3387211681524224831">如果將這項政策設為啟用，系統不會儲存瀏覽記錄，並會停用分頁同步功能，且使用者無法變更這項設定。
 
       如果將這項政策設為停用或不設定，系統會儲存瀏覽記錄。</translation>
+<translation id="3387875422525138489">如果設定這項政策，就能指定以無訊息方式安裝的隔離網頁應用程式 (IWA) 清單。
+      相較於一般網頁，IWA 這類應用程式有實用的安全屬性，而且是透過已簽署網頁套件的形式包裝。已簽署網頁套件的公開金鑰會用於建立可辨識 IWA 的網頁軟體包 ID。
+      這項政策目前僅適用於受管理的訪客工作階段。
+
+      這項政策中的每個清單項目都是一個物件，當中有兩個必填欄位：更新資訊清單 (<ph name="URL_LABEL" />) 和隔離網頁應用程式的網頁軟體包 ID。
+
+      每個項目還含有下列選用欄位：
+
+        * <ph name="UPDATE_CHANNEL_OPTION" />：IWA 發布版本/更新版本名稱。如果未設定，系統會使用「default」。* <ph name="PINNED_VERSION_OPTION" />：要安裝的特定版本。如果指定的更新版本可用，系統就會嘗試安裝這個版本。根據預設，如果將 IWA 固定在特定版本，該應用程式就不會再繼續更新。如要取消固定，請移除這個欄位。
+        * <ph name="ALLOW_DOWNGRADES_OPTION" />：可安裝較舊版本的 IWA。如要這麼做，必須先設定「pinned_version」欄位。如果未提供或設為 <ph name="FALSE" />，系統就會停用該 IWA 的降級功能。</translation>
 <translation id="3387999258705169775">setTimeout() 巢狀函式的預設行為出現延遲。</translation>
 <translation id="3388628790024977864">不允許 <ph name="GOOGLE_DRIVE_NAME" />和 <ph name="GOOGLE_WORKSPACE_NAME" /> 的<ph name="CLOUD_UPLOAD_NAME" />資料流</translation>
 <translation id="3389088527709746815">針對遠端存取主機啟用 gnubby 驗證機制</translation>

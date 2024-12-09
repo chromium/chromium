@@ -1504,6 +1504,7 @@
 <translation id="202352106777823113">下載時間太長，已被網絡停止。</translation>
 <translation id="2024195579772565064">刪除搜尋引擎</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">精確點擊</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> 當機了，請按一下這個提示框來重新載入擴充功能。</translation>
 <translation id="2026377162111110983">區域語音</translation>
 <translation id="2028449514182362831">需要動作感應器的功能將無法運作</translation>
@@ -4753,6 +4754,7 @@
 <translation id="4324577459193912240">檔案未完成下載</translation>
 <translation id="4325237902968425115">正在解除安裝 <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4325433082696797523">儲存空間和電源</translation>
+<translation id="4325515113816851466">你登出後，系統就不會套用家長的選擇</translation>
 <translation id="4326146840124313313">Chrome 最強大的安全功能可進一步保護您免受危險網站、下載檔案和擴充程式威脅</translation>
 <translation id="4327380114687339519">擴充程式選單</translation>
 <translation id="4330191372652740264">冰水</translation>
@@ -4875,6 +4877,7 @@
 <translation id="4412992751769744546">允許第三方 Cookie</translation>
 <translation id="4413087696295876280">讀取 ChromeOS Flex 裝置資訊和資料</translation>
 <translation id="44137799675104237">聽下用自然語音朗讀嘅文字</translation>
+<translation id="4414051792721275732">使用手勢點選時，滑鼠速度會降低，讓你更容易控制。請再次做出手勢來完成點擊動作。</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /> 鍵</translation>
 <translation id="44141919652824029">允許「<ph name="APP_NAME" />」取得已連結 USB 裝置的清單嗎？</translation>
 <translation id="4414232939543644979">新增無痕式視窗(&amp;I)</translation>
@@ -5111,6 +5114,7 @@
 <translation id="4586275095964870617"><ph name="URL" /> 無法在替代瀏覽器中開啟。請聯絡您的系統管理員。</translation>
 <translation id="4587589328781138893">網站</translation>
 <translation id="4588749726511456218">捲動加速功能 <ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> 和 <ph name="DOMAIN" /> 似乎有關聯。請確認你信任 <ph name="DOMAIN" />，再使用這個密碼。</translation>
 <translation id="4589713469967853491">記錄已成功寫入「下載」目錄。</translation>
 <translation id="4590785647529325123">如要刪除裝置上的無痕瀏覽記錄，請關閉所有無痕式分頁</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> 中未儲存任何裝置</translation>
@@ -5616,6 +5620,7 @@
 <translation id="4946998421534856407">啟動器鍵 + 向上箭咀鍵</translation>
 <translation id="4947376546135294974">來自你正在瀏覽網站的資料</translation>
 <translation id="4950100687509657457">建立設定檔</translation>
+<translation id="4950360215042327246">[預留位置字串]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 個檔案}other{# 個檔案}}</translation>
 <translation id="495170559598752135">動作</translation>
 <translation id="4951966678293618079">一律不儲存此網站的密碼</translation>
@@ -5754,6 +5759,7 @@
 <translation id="5061531353537614467">凍原</translation>
 <translation id="5062930723426326933">無法登入，請重新連線至互聯網，然後再試一次。</translation>
 <translation id="5063480226653192405">使用狀況</translation>
+<translation id="5064921774605267982">開啟<ph name="PROFILE_NAME" />的設定檔。這個設定檔是由你的家長管理。</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">在 Chrome OS 設定中管理安全 DNS</translation>
 <translation id="5066534201484101197">捲動回彈即可瀏覽頁面</translation>
@@ -6201,6 +6207,7 @@
 <translation id="5389224261615877010">彩虹</translation>
 <translation id="5389626883706033615">已禁止網站要求使用與你相關的既有資料</translation>
 <translation id="5389794555912875905">前往不安全的網站前先顯示警告 (建議)</translation>
+<translation id="5389943529251318913">將滑鼠速度降低</translation>
 <translation id="5390112241331447203">在意見報告中包含 system_logs.txt 檔案進行傳送。</translation>
 <translation id="5390677308841849479">深紅色和橙色</translation>
 <translation id="5392192690789334093">已允許傳送通知</translation>
@@ -7406,6 +7413,7 @@
 <translation id="6266984048393265562">自訂個人檔案</translation>
 <translation id="6267166720438879315">請選取您在 <ph name="HOST_NAME" /> 的驗證憑證</translation>
 <translation id="6268252012308737255">使用 <ph name="APP" /> 開啟</translation>
+<translation id="6269050081341530851">關閉重複的分頁時，系統會保留最舊的副本</translation>
 <translation id="6270309713620950855">靜音自動提醒</translation>
 <translation id="6270391203985052864">網站將可以要求向您傳送通知</translation>
 <translation id="6270486800167535228">固定咗擴充程式。揀就可以睇多啲選項</translation>
@@ -7947,6 +7955,7 @@
 <translation id="6679947539429331601">隱藏 12 小時</translation>
 <translation id="6680442031740878064">可用空間：<ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">語速</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [預留位置字串]</translation>
 <translation id="6683022854667115063">耳機</translation>
 <translation id="6683087162435654533">還原所有分頁</translation>
 <translation id="6683433919380522900">權限係<ph name="PERMISSION_STATE" /></translation>
@@ -8841,6 +8850,7 @@
 <translation id="7330533963640151632">「<ph name="USER_NAME" />」裝置的「<ph name="FEATURE_NAME" />」設定，所用分享帳戶為 <ph name="USER_EMAIL" />。</translation>
 <translation id="7331646370422660166">Alt 鍵 + 向下箭咀鍵</translation>
 <translation id="7332053360324989309">專用工作程式：<ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">重複的分頁</translation>
 <translation id="7333388112938984914">使用 metered connection 時無法上載檔案。</translation>
 <translation id="7333669215417470379">備份及還原應用程式和設定</translation>
 <translation id="7335974957018254119">使用拼字檢查的語言：</translation>

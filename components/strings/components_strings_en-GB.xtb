@@ -4534,6 +4534,7 @@ Additional details:
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> uses an unsupported protocol.</translation>
 <translation id="918454845714257218">Check the code on the <ph name="SIDE_OF_CARD" /> and try again</translation>
 <translation id="9186203289258525843">Set Chrome as default browser button, activate to set Chrome as the system's default browser</translation>
+<translation id="9189789270972826888">Click card details below to copy and paste if the card wasn't filled. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">Topics older than four weeks get auto-deleted</translation>
 <translation id="9191834167571392248">Punch bottom left</translation>
 <translation id="9192361865877479444">Metal (matte)</translation>

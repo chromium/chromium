@@ -169,6 +169,7 @@
 <translation id="129553762522093515">မကြာသေးခင်က ပိတ်ထားခဲ့သည်</translation>
 <translation id="1296930489679394997">လျှော့ဈေး</translation>
 <translation id="1297814096526086484">ကီးဘုတ်နှင့် မောက်စ်ကို လော့ခ်ချမလား။</translation>
+<translation id="1297832388362139384">အစိမ်း ၁</translation>
 <translation id="1301227606947843452">လီဂယ်ဆိုဒ်ကြီး</translation>
 <translation id="1301324364792935241">သင်၏ 'လုံခြုံသော DNS' ဆက်တင်များကို စစ်ဆေးပါ</translation>
 <translation id="1302418742166945866"><ph name="URL" /> က သင့် MIDI စက်များကို စီမံပြီး ပရိုဂရမ်ပြန်လုပ်လိုသည်</translation>
@@ -228,6 +229,7 @@
 <translation id="1384725838384960382">လုံခြုံသောပေးချေမှု အထောက်အထား စိစစ်ခြင်းစာရွက်</translation>
 <translation id="1386623374109090026">မှတ်ချက်များ</translation>
 <translation id="138810468159004008">ဝဘ်ဆိုက်ဝင်ကြည့်နေစဉ် ခွင့်ပြုရန်</translation>
+<translation id="139161720020179799">မီးခိုးရင့် ၁</translation>
 <translation id="1391625539203220400">ဤစက်တွင် IBAN သိမ်းမလား။</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> သည်မည်သည့် ဒေတာမျှ မပို့ခဲ့ပါ။</translation>
 <translation id="1393071644879491291">သင်ဝင်ကြည့်ရန်ကြိုးပမ်းသည့် ဝဘ်ဆိုက်ရှိ တိုက်ခိုက်သူများသည် ဆော့ဖ်ဝဲထည့်သွင်းရန် သို့မဟုတ် စကားဝှက်၊ ဖုန်း (သို့) ခရက်ဒစ်ကတ်နံပါတ်ကဲ့သို့သော အရာများပြရန် သင့်ကိုလှည့်စားနိုင်သည်။ ဘေးကင်းရာသို့ ပြန်သွားရန် Chrome က အထူးအကြံပြုပါသည်။ <ph name="BEGIN_LEARN_MORE_LINK" />ဤသတိပေးချက်အကြောင်း ပိုမိုလေ့လာရန်<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -704,6 +706,7 @@
 <translation id="2227758700723188171">ပညာသင်ထောက်ပံ့ကြေး၊ ပညာသင်ဆု</translation>
 <translation id="2228057197024893428">ဤလိပ်စာကို Chrome တွင် လောလောဆယ် သိမ်းထားသည်။ Google ထုတ်ကုန်များတွင် ၎င်းကိုသုံးရန် သင်၏ Google Account ဖြစ်သော <ph name="ACCOUNT" /> တွင်သိမ်းပါ။</translation>
 <translation id="2229456043301340598">လျစ်လျူရှုထားသော သီးသန့်မဟုတ်သည့် ဖြတ်လမ်းလင့်ခ်- <ph name="SHORTCUT_NAME" /></translation>
+<translation id="222962001646502673">မီးခိုးရင့် ၂</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{တဘ် ၁ ခု}other{တဘ် # ခု}}</translation>
 <translation id="2233745931693710080">စီဒီခွေ</translation>
 <translation id="2235344399760031203">ပြင်ပအဖွဲ့အစည်း၏ ကွတ်ကီးများကို ပိတ်ထားသည်</translation>
@@ -1730,6 +1733,7 @@
 <translation id="4084219288110917128">C1 စာအိတ်</translation>
 <translation id="4085326869263783566">ကူရေးပေးပါ။ ဖွင့်ရန် ‘တဘ်’ နှင့် ‘Enter ခလုတ်’ နှိပ်ပါ</translation>
 <translation id="4085769736382018559">ထုတ်ကုန်များ နှိုင်းယှဉ်ခြင်း</translation>
+<translation id="4085778582400064057">အပြာ ၂</translation>
 <translation id="4088981014127559358">ဘေး ၁ ပုံ ဒေါင်လိုက် အရွှေ့</translation>
 <translation id="4089152113577680600">ဗန်း ၁၄</translation>
 <translation id="4092349052316400070">လိပ်စာ ဖြည့်ရန်</translation>
@@ -1974,6 +1978,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ ဤစာမျက်နှာကို Google Translate ဖြင့်ဘာသာပြန်ရန် Tab နှိပ်ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="4515275063822566619">ကဒ်နှင့် လိပ်စာများသည် Chrome နှင့် သင်၏ Google အကောင့် (<ph name="ACCOUNT_EMAIL" />) မှဖြစ်သည်။ ၎င်းတို့ကို <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> တွင် စီမံခန့်ခွဲနိုင်သည်။</translation>
 <translation id="4515847625438516456">ကားသေး၊ ကားငယ်</translation>
+<translation id="451601984112574365">အစိမ်း ၃</translation>
 <translation id="4519245469315452746">အပ်ဒိတ်လုပ်ငန်းစဉ်အတွင်း သင့်စက် ရပ်တန့်သွားသည်။</translation>
 <translation id="4520048001084013693">ဤဖိုင် ဒေါင်းလုဒ်လုပ်ခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
@@ -2182,6 +2187,7 @@
 <translation id="4901952598169637881">ထသွားထလာ ရှူးဖိနပ်</translation>
 <translation id="4905659621780993806">သင့်စီမံခန့်ခွဲသူက စက်ကို <ph name="DATE" />၊ <ph name="TIME" /> တွင် အလိုအလျောက်ပြန်စမည်။ ဖွင့်ထားသောဖိုင်အားလုံး သင့်စက်ပြန်မစမီ သိမ်းပါ။</translation>
 <translation id="4913987521957242411">ဘယ်ဘက်ထိပ်တွင် ဖောက်ရန်</translation>
+<translation id="4914727764832832057">အပြာ ၁</translation>
 <translation id="4916389289686916969">ဖြစ်ရပ်မှန် TV ရှိုး</translation>
 <translation id="4917064667437236721">ပုံထုတ်သည့် ဆလင်ဒါ</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ကို ထည့်သွင်းပါ (ဒေါင်းလုဒ်လုပ်ရန် မလိုပါ)</translation>
@@ -2255,6 +2261,7 @@
 <translation id="5039804452771397117">ခွင့်ပြုရန်</translation>
 <translation id="5040262127954254034">ကိုယ်ရေးအချက်အလက်လုံခြုံမှု</translation>
 <translation id="5043480802608081735">သင် မိတ္တူကူးထားသော လင့်ခ်</translation>
+<translation id="5043753287208271200">အဝါ ၃</translation>
 <translation id="5045550434625856497">စကားဝှက် မမှန်ပါ</translation>
 <translation id="5048293684454354469">ကြော်ငြာအကြောင်းအရာများသည် ကြော်ငြာများ ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရာတွင် ဝဘ်ဆိုက်က သုံးနိုင်သည့် အရာများထဲမှ တစ်ခုဖြစ်သည်။ ကြော်ငြာအကြောင်းအရာများ မရှိသည့်တိုင် ဝဘ်ဆိုက်များက သင့်အား ကြော်ငြာပြနိုင်သော်လည်း ၎င်းတို့ကို ပုဂ္ဂိုလ်ရေးသီးသန့်သိပ်လုပ်မထားပါ။ <ph name="BEGIN_LINK" />သင့်ကြော်ငြာဆိုင်ရာ အချက်အလက်လုံခြုံမှုကို စီမံခြင်း<ph name="LINK_END" /> အကြောင်း ပိုမိုလေ့လာနိုင်သည်။</translation>
 <translation id="5052517576853118371">ဖွင့်ထားသည့် အကြောင်းအရာများ</translation>
@@ -2561,6 +2568,7 @@
 <translation id="5593640815048812868">လက်ပ်တော့၊ နုတ်ဘုတ်ကွန်ပျူတာ</translation>
 <translation id="5595485650161345191">လိပ်စာ တည်းဖြတ်ရန်</translation>
 <translation id="5596939519753369075">၂ x ၃.၅ လက်မ</translation>
+<translation id="5597254438174353289">အပြာ ၃</translation>
 <translation id="560412284261940334">စီမံရေးရာမှ အကူအညီမရနိုင်ပါ။</translation>
 <translation id="5605249000617390290">ဈေးနှုန်းခြေရာခံခြင်းအကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="5605670050355397069">လယ်ဂျာ</translation>
@@ -2616,6 +2624,7 @@
 <translation id="5701381305118179107">အလယ်</translation>
 <translation id="5707154300732650394">သင့်ခရီးစဉ်ကို ဆက်လုပ်ရန်</translation>
 <translation id="57094364128775171">ခိုင်မာသည့် စကားဝှက် အကြံပြုရန်…</translation>
+<translation id="570953204696852961">အနီ ၃</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">တိရစ္ဆာန်ကုဆရာဝန်များ</translation>
 <translation id="5715150588940290235">သိမ်းထားသော လုံခြုံရေးကုဒ်များကို ဖျက်မလား။</translation>
@@ -2816,6 +2825,7 @@
 <translation id="6085149458302186532">လေဘယ်လ် (အရောင်)</translation>
 <translation id="6087312102907839798">ဆက်စပ်သော ရှာဖွေမှုများ</translation>
 <translation id="6089505343295765444">သင့် Chrome မှတ်တမ်းမှ ဖျက်လိုက်သော တဘ်များကို သင်၏နှိုင်းယှဉ်မှုဇယားများတွင် ဆက်ပြပါမည်</translation>
+<translation id="6093599771645355227">အဝါ ၁</translation>
 <translation id="6093795393556121384">သင့်ကဒ်အား အတည်ပြုစိစစ်ပြီးဖြစ်၏</translation>
 <translation id="6094273045989040137">မှတ်ချက်ပေးရန်</translation>
 <translation id="6094290315941448991">လျှို့ဝှက်အကြောင်းအရာများကို မြင်နိုင်ချိန်တွင် ဖန်သားပြင်ရိုက်ကူးခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
@@ -3353,6 +3363,7 @@
 <translation id="7058774143982824355">CSV စကားဝှက် ပါဆာ ဝန်ဆောင်မှု</translation>
 <translation id="7062635574500127092">စိမ်းပြာရင့်</translation>
 <translation id="706295145388601875">Chrome ဆက်တင်များတွင် လိပ်စာများထည့်ရန်နှင့် စီမံရန်</translation>
+<translation id="7063157783216323487">အစိမ်း ၂</translation>
 <translation id="7064443976734085921">ကားသေး</translation>
 <translation id="7064851114919012435">ဆက်သွယ်ရန်အချက်အလက်</translation>
 <translation id="7067633076996245366">ဆိုးလ်နှင့် R&amp;B</translation>
@@ -3906,6 +3917,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Google Forms တွင် ဖောင်အသစ် အမြန်ပြုလုပ်ရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="8028892419725165118">ရိုးရိုး ဂိမ်း</translation>
 <translation id="8028960012888758725">အလုပ်ပြီးလျှင် ဖြတ်ထုတ်ရန်</translation>
+<translation id="8029829038322015001">အနီ ၁</translation>
 <translation id="8030729864112325446">အသက်မွေးမှု၊ စဉ်ဆက်မပြတ်ပညာရေး</translation>
 <translation id="8032546467100845887">အလင်းပေါက်</translation>
 <translation id="8035152190676905274">ဘောပင်</translation>
@@ -3913,6 +3925,7 @@
 <translation id="8037117624646282037">ဤစက်ပစ္စည်းကို လတ်တလော အသုံးပြုထားသူများ</translation>
 <translation id="8037357227543935929">မေးရန် (မူရင်း)</translation>
 <translation id="803771048473350947">ဖိုင်</translation>
+<translation id="8038182528865038593">အနီ ၂</translation>
 <translation id="8041089156583427627">အကြံပြုချက် ပို့ရန်</translation>
 <translation id="8041940743680923270">အထွေထွေ ပုံသေကို သုံးပါ(မေးရန်)</translation>
 <translation id="8043255123207491407">ရောင်းသူ၏ ဝန်ဆောင်မှုစည်းမျဉ်းများကို ကြည့်ပါ</translation>
@@ -4312,6 +4325,7 @@
 <translation id="8767881944435256294">{COUNT,plural, =1{ငွေပေးချေနည်းလမ်း ၁ ခု}other{ငွေပေးချေနည်းလမ်း # ခု}}</translation>
 <translation id="8768225988514678921">Slides တွင် Google တင်ပြမှုအသစ် အမြန်ပြုလုပ်ရန်အတွက် ‘တင်ပြမှု ပြုလုပ်ရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
 <translation id="8769662576926275897">ကဒ်အသေးစိတ်</translation>
+<translation id="8769858749286369844">အညို ၂</translation>
 <translation id="8770286973007342895">မြက်ရိတ်စက်</translation>
 <translation id="8772387130037509473">ယောဂနှင့် ပီလတိစ်</translation>
 <translation id="877348612833018844">{0,plural, =1{လျှို့ဝှက်ဖိုင်ကို ရွှေ့မလား။}other{လျှို့ဝှက်ဖိုင်များကို ရွှေ့မလား။}}</translation>
@@ -4403,6 +4417,7 @@
 <translation id="8956124158020778855">ဤဆက်တင်ကို ဖွင့်ပြီးနောက် စရေးရန် ဤတဘ်သို့ ပြန်လာပါ။</translation>
 <translation id="8957210676456822347">ထွက်ပေါက်မရှိသော မူလအင်တာနက်စာမျက်နှာ ခွင့်ပြူချက်</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
+<translation id="8959288490306482616">အညို ၃</translation>
 <translation id="8963117664422609631">ဝဘ်ဆိုက်ဆက်တင်များသို့ သွားရန်</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />အကြံပေးချက်များ:<ph name="MARKUP_2" />သင့်ဆီတွင် ဒေတာ ချိတ်ဆက်မှု ရှိနေတာ စစ်ကြည့်ပါ<ph name="MARKUP_3" />ဒီဝက်ဘ်စာမျက်နှာကို နောက်မှာ ပြန်တင်ပါ<ph name="MARKUP_4" />သင် ထည့်ပေးခဲ့တဲ့ လိပ်စာကို စစ်ကြည့်ပါ<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">ကတ်သိမ်းရန်</translation>
@@ -4465,6 +4480,7 @@
 <translation id="90695670378604968">ပလတ်စတစ် (မှိုင်းပျပျ)</translation>
 <translation id="9069693763241529744">နောက်ဆက်တွဲတစ်ခုက ပိတ်ဆို့ထားခြင်းဖြစ်သည်</translation>
 <translation id="9073799351042754113">ဤဝဘ်ဆိုက်အတွက် လုံခြုံရေးသတိပေးချက်များကို ပိတ်ရန် သင်ရွေးချယ်ထားပါသည်။</translation>
+<translation id="9075717835386447447">အညို ၁</translation>
 <translation id="9076283476770535406">၎င်းတွင် အရွယ်ရောက်ပြီးသူများသာ ကြည့်နိုင်သည့် အကြောင်းအရာများ ပါဝင်နိုင်ပါသည်</translation>
 <translation id="9078912659001679888">မွှေစက်နှင့် သစ်သီးညှစ်စက်</translation>
 <translation id="9078964945751709336">နောက်ထပ် အချက်အလက်များ လိုအပ်ပါသည်</translation>
@@ -4574,6 +4590,7 @@
 <translation id="949314938206378263">ဤဝဘ်ဆိုက်သို့ ဝင်ကြည့်ရန် သင်တောင်းဆိုထားသည်။ Family Link တွင် သင့်မိဘက စာပြန်နိုင်သည်။</translation>
 <translation id="950736567201356821">ထိပ်တွင် သုံးချက်ဖောက်ရန်</translation>
 <translation id="950926967802086924">လျှို့ဝှက်ကီး • Google Password Manager</translation>
+<translation id="95721182352849470">အဝါ ၂</translation>
 <translation id="961663415146723894">အောက်ခြေတွင် တွဲချုပ်ရန်</translation>
 <translation id="961856697154696964">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာ ဖျက်ရန်</translation>
 <translation id="961930410699694996">ဤတစ်ကြိမ်အတွက် တည်နေရာ ခွင့်ပြုထားသည်</translation>

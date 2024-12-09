@@ -1491,6 +1491,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="202352106777823113">La descarga estaba tardando demasiado y fue detenida por la red.</translation>
 <translation id="2024195579772565064">Borrar el motor de búsqueda</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">Clic de precisión</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> se ha bloqueado. Haz clic en este globo para volver a cargar la extensión.</translation>
 <translation id="2026377162111110983">Voz del área</translation>
 <translation id="2028449514182362831">No se habilitarán las funciones que necesitan sensores de movimiento.</translation>
@@ -4747,6 +4748,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4324577459193912240">El archivo está incompleto</translation>
 <translation id="4325237902968425115">Desinstalando <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4325433082696797523">Almacenamiento y energía</translation>
+<translation id="4325515113816851466">Las opciones de tu madre o padre no se aplicarán después de que salgas de la cuenta</translation>
 <translation id="4326146840124313313">La seguridad más sólida de Chrome realiza más acciones para protegerte contra sitios web, descargas y extensiones peligrosos.</translation>
 <translation id="4327380114687339519">Menú Extensiones</translation>
 <translation id="4330191372652740264">Agua helada</translation>
@@ -4869,6 +4871,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4412992751769744546">Permitir cookies de terceros</translation>
 <translation id="4413087696295876280">Leer la información y los datos del dispositivo ChromeOS Flex</translation>
 <translation id="44137799675104237">Escuchar el texto con voz natural</translation>
+<translation id="4414051792721275732">Cuando realices un gesto para hacer clic, la velocidad del mouse disminuirá para brindarte más control. Vuelve a realizar el gesto para completar el clic.</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">¿Deseas permitir que "<ph name="APP_NAME" />" obtenga la lista de los dispositivos USB conectados?</translation>
 <translation id="4414232939543644979">Nueva ventana de &amp;incógnito</translation>
@@ -6197,6 +6200,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5389224261615877010">Arcoíris</translation>
 <translation id="5389626883706033615">Los sitios no podrán solicitarte usar la información que guardaron sobre ti</translation>
 <translation id="5389794555912875905">Mostrar advertencias antes de acceder a sitios no seguros (recomendado)</translation>
+<translation id="5389943529251318913">Reducir la velocidad del mouse en</translation>
 <translation id="5390112241331447203">Incluye el archivo system_logs.txt que se envía en los informes de comentarios.</translation>
 <translation id="5390677308841849479">Rojo oscuro y naranja</translation>
 <translation id="5392192690789334093">Pueden enviar notificaciones</translation>

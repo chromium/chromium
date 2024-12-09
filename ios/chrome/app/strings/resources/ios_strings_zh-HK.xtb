@@ -1250,6 +1250,7 @@
 <translation id="6624219055418309072">在無痕模式中封鎖</translation>
 <translation id="6625830436658400045">系統會根據上次的備份還原同步處理設定。您隨時可在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步的資料。</translation>
 <translation id="6627583120233659107">編輯資料夾</translation>
+<translation id="6629759408545977279">來源：<ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">您的機構已關閉無痕模式</translation>
 <translation id="6638511529934826365">縮放文字…</translation>
 <translation id="6640268266988685324">開啟分頁</translation>
