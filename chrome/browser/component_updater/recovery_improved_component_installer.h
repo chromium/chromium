@@ -152,7 +152,6 @@ class RecoveryImprovedInstallerPolicy : public ComponentInstallerPolicy {
  public:
   explicit RecoveryImprovedInstallerPolicy(PrefService* prefs)
       : prefs_(prefs) {}
-  ~RecoveryImprovedInstallerPolicy() override = default;
   RecoveryImprovedInstallerPolicy(const RecoveryImprovedInstallerPolicy&) =
       delete;
   RecoveryImprovedInstallerPolicy& operator=(

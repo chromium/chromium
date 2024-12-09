@@ -83,8 +83,6 @@ class TestUpdater : public OnDemandUpdater {
   TestUpdater(const TestUpdater&) = delete;
   TestUpdater& operator=(const TestUpdater&) = delete;
 
-  ~TestUpdater() override = default;
-
   // Whether has a pending update request (either foreground or background).
   bool HasPendingUpdate(const std::string& name) {
     return base::Contains(background_updates_, name) ||

@@ -204,6 +204,7 @@ class FakePolicyManager : public PolicyManagerInterface {
 
  private:
   ~FakePolicyManager() override = default;
+
   bool has_active_device_policies_;
   std::optional<bool> cloud_policy_overrides_platform_policy_;
   std::string source_;

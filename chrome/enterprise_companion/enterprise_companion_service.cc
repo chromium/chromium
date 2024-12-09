@@ -31,7 +31,6 @@ class EnterpriseCompanionServiceImpl : public EnterpriseCompanionService {
       : dm_client_(std::move(dm_client)),
         shutdown_callback_(std::move(shutdown_callback)),
         event_logger_(event_logger) {}
-  ~EnterpriseCompanionServiceImpl() override = default;
 
   // Overrides for EnterpriseCompanionService.
   void Shutdown(base::OnceClosure callback) override {

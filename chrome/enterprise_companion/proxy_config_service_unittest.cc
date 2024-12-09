@@ -96,16 +96,13 @@ class FakeDMStorage : public device_management_storage::DMStorage {
   }
 
  private:
-  std::optional<enterprise_management::PolicyData> policy_data_;
-
   ~FakeDMStorage() override = default;
+
+  std::optional<enterprise_management::PolicyData> policy_data_;
 };
 
 class MockProxyConfigService final : public net::ProxyConfigService {
  public:
-  MockProxyConfigService() = default;
-  ~MockProxyConfigService() override = default;
-
   void AddObserver(Observer*) override {}
   void RemoveObserver(Observer*) override {}
 

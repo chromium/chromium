@@ -20,16 +20,6 @@
 namespace component_updater {
 
 class ComponentUpdaterConfiguratorImplTest : public testing::Test {
- public:
-  ComponentUpdaterConfiguratorImplTest() = default;
-
-  ComponentUpdaterConfiguratorImplTest(
-      const ComponentUpdaterConfiguratorImplTest&) = delete;
-  ComponentUpdaterConfiguratorImplTest& operator=(
-      const ComponentUpdaterConfiguratorImplTest&) = delete;
-
-  ~ComponentUpdaterConfiguratorImplTest() override = default;
-
  private:
   base::test::TaskEnvironment environment_;
 };

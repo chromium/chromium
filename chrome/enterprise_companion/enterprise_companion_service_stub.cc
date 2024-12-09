@@ -72,7 +72,6 @@ class Stub final : public mojom::EnterpriseCompanion {
     }
     server_.StartServer();
   }
-  ~Stub() override = default;
 
   // Overrides for mjom::EnterpriseCompanion.
   void Shutdown(ShutdownCallback callback) override {

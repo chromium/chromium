@@ -113,9 +113,7 @@ const base::FilePath& GetTestSuiteDirPath() {
 }  // namespace
 
 class ChromeUpdaterMacSetupTest : public testing::Test {
- public:
-  ~ChromeUpdaterMacSetupTest() override = default;
-
+ protected:
   static void SetUpTestSuite() {
     // SetUpTestSuite will run a script (install_test_helper.sh), which will set
     // up all the necessary things for running the mac installer test. This will

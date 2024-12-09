@@ -34,20 +34,12 @@ using testing::Return;
 class HistorySearchStringsComponentInstallerPolicyPublic
     : public HistorySearchStringsComponentInstallerPolicy {
  public:
-  HistorySearchStringsComponentInstallerPolicyPublic() = default;
   using HistorySearchStringsComponentInstallerPolicy::ComponentReady;
   using HistorySearchStringsComponentInstallerPolicy::VerifyInstallation;
 };
 
 class HistorySearchStringsComponentInstallerPolicyTest : public PlatformTest {
- public:
-  HistorySearchStringsComponentInstallerPolicyTest() = default;
-  ~HistorySearchStringsComponentInstallerPolicyTest() override = default;
-  HistorySearchStringsComponentInstallerPolicyTest(
-      const HistorySearchStringsComponentInstallerPolicyTest&) = delete;
-  HistorySearchStringsComponentInstallerPolicyTest& operator=(
-      const HistorySearchStringsComponentInstallerPolicyTest&) = delete;
-
+ protected:
   void SetUp() override {
     PlatformTest::SetUp();
 
@@ -63,7 +55,6 @@ class HistorySearchStringsComponentInstallerPolicyTest : public PlatformTest {
     listener()->ResetForTesting();
   }
 
- protected:
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
   component_updater::MockComponentUpdateService* cus() { return cus_.get(); }
   HistorySearchStringsComponentInstallerPolicyPublic* installer() {

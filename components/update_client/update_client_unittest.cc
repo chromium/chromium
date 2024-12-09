@@ -275,13 +275,8 @@ const std::vector<base::Value::Dict>& MockPingManagerImpl::events() const {
 }
 
 class UpdateClientTest : public testing::Test {
- public:
-  UpdateClientTest(const UpdateClientTest&) = delete;
-  UpdateClientTest& operator=(const UpdateClientTest&) = delete;
-
  protected:
   UpdateClientTest();
-  ~UpdateClientTest() override = default;
 
   void RunThreads();
 

@@ -29,8 +29,6 @@ class SodaComponentMockComponentUpdateService
       const SodaComponentMockComponentUpdateService&) = delete;
   SodaComponentMockComponentUpdateService& operator=(
       const SodaComponentMockComponentUpdateService&) = delete;
-
-  ~SodaComponentMockComponentUpdateService() override = default;
 };
 
 }  // namespace

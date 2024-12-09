@@ -40,9 +40,8 @@ namespace update_client {
 
 class PingManagerTest : public testing::Test,
                         public testing::WithParamInterface<bool> {
- public:
+ protected:
   PingManagerTest();
-  ~PingManagerTest() override = default;
 
   base::OnceClosure MakePingCallback();
   scoped_refptr<UpdateContext> MakeMockUpdateContext() const;
@@ -53,7 +52,6 @@ class PingManagerTest : public testing::Test,
 
   void PingSentCallback(int error, const std::string& response);
 
- protected:
   void Quit();
   void RunThreads();
 
@@ -61,14 +59,14 @@ class PingManagerTest : public testing::Test,
   scoped_refptr<PingManager> ping_manager_;
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
+  std::unique_ptr<TestingPrefServiceSimple> pref_{
+      std::make_unique<TestingPrefServiceSimple>()};
   base::OnceClosure quit_closure_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_;
 };
 
-PingManagerTest::PingManagerTest()
-    : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
-  pref_ = std::make_unique<TestingPrefServiceSimple>();
+PingManagerTest::PingManagerTest() {
   RegisterPersistedDataPrefs(pref_->registry());
 }
 

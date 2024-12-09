@@ -252,8 +252,6 @@ class WidevineCdmComponentInstallerPolicy : public ComponentInstallerPolicy {
   WidevineCdmComponentInstallerPolicy& operator=(
       const WidevineCdmComponentInstallerPolicy&) = delete;
 
-  ~WidevineCdmComponentInstallerPolicy() override = default;
-
  private:
   // The following methods override ComponentInstallerPolicy.
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;

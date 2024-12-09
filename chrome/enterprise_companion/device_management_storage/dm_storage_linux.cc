@@ -73,7 +73,6 @@ class TokenService : public TokenServiceInterface {
                                              : dm_token_path),
         enrollment_token_(LoadTokenFromFile(enrollment_token_path_)),
         dm_token_(LoadTokenFromFile(dm_token_path_)) {}
-  ~TokenService() override = default;
 
   // Overrides for TokenServiceInterface.
   std::string GetDeviceID() const override { return device_id_; }

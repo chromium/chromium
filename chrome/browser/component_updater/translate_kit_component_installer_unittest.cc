@@ -51,8 +51,6 @@ class TranslateKitComponentMockComponentUpdateService
       const TranslateKitComponentMockComponentUpdateService&) = delete;
   TranslateKitComponentMockComponentUpdateService& operator=(
       const TranslateKitComponentMockComponentUpdateService&) = delete;
-
-  ~TranslateKitComponentMockComponentUpdateService() override = default;
 };
 
 class RegisterTranslateKitComponentTest : public ::testing::Test {

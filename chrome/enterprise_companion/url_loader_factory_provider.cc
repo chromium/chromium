@@ -125,8 +125,6 @@ class URLLoaderFactoryProxy final : public network::mojom::URLLoaderFactory {
       mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote)
       : remote_(std::move(pending_remote)) {}
 
-  ~URLLoaderFactoryProxy() override = default;
-
   // Overrides for network::mojom::URLLoaderFactory.
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
