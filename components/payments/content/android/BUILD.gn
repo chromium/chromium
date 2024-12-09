@@ -274,6 +274,7 @@ robolectric_library("browser_binding_junit_test") {
     ":browser_binding_java",
     "//base:base_junit_test_support",
     "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
   ]
 }
 
@@ -287,6 +288,7 @@ android_library("browser_binding_unit_device_javatests") {
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
   ]
 }
