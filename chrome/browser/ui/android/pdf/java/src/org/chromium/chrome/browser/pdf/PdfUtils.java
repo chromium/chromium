@@ -140,6 +140,9 @@ public class PdfUtils {
     }
 
     static String getFileNameFromUrl(String url, String defaultTitle) {
+        if (url == null) {
+            return defaultTitle;
+        }
         Uri uri = Uri.parse(url);
         String scheme = uri.getScheme();
         assert scheme != null;
@@ -165,6 +168,9 @@ public class PdfUtils {
     }
 
     static String getFilePathFromUrl(String url) {
+        if (url == null) {
+            return null;
+        }
         GURL gurl = new GURL(url);
         if (getPdfPageTypeInternal(gurl, false) == PdfPageType.LOCAL) {
             return url;
