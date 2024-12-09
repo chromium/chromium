@@ -935,10 +935,10 @@ ExternalCanvasResource::ExternalCanvasResource(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider)
     : CanvasResource(std::move(provider),
-                     transferable_resource.size,
-                     transferable_resource.format,
+                     client_si->size(),
+                     client_si->format(),
                      kPremul_SkAlphaType,
-                     transferable_resource.color_space),
+                     client_si->color_space()),
       client_si_(std::move(client_si)),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       transferable_resource_(transferable_resource),
