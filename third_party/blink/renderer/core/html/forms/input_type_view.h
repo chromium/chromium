@@ -128,7 +128,6 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   // changing the input-type.
   void CreateShadowSubtreeIfNeeded(bool is_type_changing = false);
   void set_needs_update_view_in_create_shadow_subtree(bool value) {
-    DCHECK(RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled());
     needs_update_view_in_create_shadow_subtree_ = value;
   }
   virtual bool IsInnerEditorValueEmpty() const { return false; }

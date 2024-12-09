@@ -379,9 +379,6 @@ void HTMLInputElement::HandleBlurEvent() {
 }
 
 void HTMLInputElement::setType(const AtomicString& type) {
-  if (!RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled()) {
-    EnsureShadowSubtree();
-  }
   setAttribute(html_names::kTypeAttr, type);
 }
 
@@ -404,8 +401,7 @@ void HTMLInputElement::InitializeTypeInParsing() {
   if (!default_value.IsNull())
     input_type_->WarnIfValueIsInvalid(default_value);
 
-  if (!RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled() ||
-      input_type_view_->HasCreatedShadowSubtree()) {
+  if (input_type_view_->HasCreatedShadowSubtree()) {
     input_type_view_->UpdateView();
   } else {
     input_type_view_->set_needs_update_view_in_create_shadow_subtree(true);
@@ -492,9 +488,7 @@ void HTMLInputElement::UpdateType(const AtomicString& type_attribute_value) {
   // No need for CreateShadowSubtreeIfNeeded() to call UpdateView() as we'll
   // do that later on in this function (and calling UpdateView() here is
   // problematic as state hasn't fully been updated).
-  if (RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled()) {
-    input_type_view_->set_needs_update_view_in_create_shadow_subtree(false);
-  }
+  input_type_view_->set_needs_update_view_in_create_shadow_subtree(false);
   input_type_view_->CreateShadowSubtreeIfNeeded(true);
 
   UpdateWillValidateCache();
@@ -867,7 +861,6 @@ void HTMLInputElement::ParseAttribute(
     input_type_->WarnIfValueIsInvalidAndElementIsVisible(value);
     input_type_->InRangeChanged();
     if (input_type_view_->HasCreatedShadowSubtree() ||
-        !RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled() ||
         !input_type_view_->NeedsShadowSubtree()) {
       input_type_view_->ValueAttributeChanged();
     } else {
@@ -1770,8 +1763,7 @@ Node::InsertionNotificationRequest HTMLInputElement::InsertedInto(
     if (!Form()) {
       AddToRadioButtonGroup();
     }
-    if (RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled() &&
-        !input_type_view_->HasCreatedShadowSubtree() &&
+    if (!input_type_view_->HasCreatedShadowSubtree() &&
         input_type_view_->NeedsShadowSubtree()) {
       scheduled_create_shadow_tree_ = true;
       GetDocument().ScheduleShadowTreeCreation(*this);
@@ -1780,10 +1772,6 @@ Node::InsertionNotificationRequest HTMLInputElement::InsertedInto(
   ResetListAttributeTargetObserver();
   LogAddElementIfIsolatedWorldAndInDocument("input", html_names::kTypeAttr,
                                             html_names::kFormactionAttr);
-  if (!RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled()) {
-    EventDispatchForbiddenScope::AllowUserAgentEvents allow_events;
-    input_type_view_->CreateShadowSubtreeIfNeeded();
-  }
   return kInsertionShouldCallDidNotifySubtreeInsertions;
 }
 

@@ -157,11 +157,7 @@ TEST_F(HTMLInputElementTest, create) {
       GetDocument(), CreateElementFlags::ByParser(&GetDocument()));
   EXPECT_EQ(nullptr, input->UserAgentShadowRoot());
   input->ParserSetAttributes(Vector<Attribute, kAttributePrealloc>());
-  if (RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled()) {
-    EXPECT_EQ(nullptr, input->UserAgentShadowRoot());
-  } else {
-    EXPECT_NE(nullptr, input->UserAgentShadowRoot());
-  }
+  EXPECT_EQ(nullptr, input->UserAgentShadowRoot());
 }
 
 TEST_F(HTMLInputElementTest, NoAssertWhenMovedInNewDocument) {

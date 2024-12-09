@@ -147,13 +147,11 @@ void InputTypeView::CreateShadowSubtreeIfNeeded(bool is_type_changing) {
   // not fully be up to date, so that it's problematic to do the following.
   // Additionally the following is not necessary when the type is changing,
   // because HTMLInputElement effectively has similar logic.
-  if (RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled() &&
-      !is_type_changing) {
+  if (!is_type_changing) {
     if (needs_update_view_in_create_shadow_subtree_) {
       UpdateView();
     }
-    // When CreateInputShadowTreeDuringLayoutEnabled is true, placeholder
-    // updates are ignored. Update now if needed.
+    // Placeholder updates are ignored. Update now if needed.
     if (!GetElement().SuggestedValue().empty() ||
         GetElement().FastHasAttribute(html_names::kPlaceholderAttr)) {
       GetElement().UpdatePlaceholderVisibility();

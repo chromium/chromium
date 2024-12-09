@@ -555,8 +555,7 @@ bool TextFieldInputType::ShouldRespectListAttribute() {
 
 HTMLElement* TextFieldInputType::UpdatePlaceholderText(
     bool is_suggested_value) {
-  if (!HasCreatedShadowSubtree() &&
-      RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled()) {
+  if (!HasCreatedShadowSubtree()) {
     return nullptr;
   }
   if (!SupportsPlaceholder()) {

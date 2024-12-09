@@ -916,12 +916,6 @@
       name: "CorsRFC1918",
     },
     {
-      // Controls whether form elements may delay editor creation until layout.
-      // This is a kill switch. See https://crbug.com/325613706 for details.
-      name: "CreateInputShadowTreeDuringLayout",
-      status: "stable"
-    },
-    {
       // Allow WebAuthn relying parties to report information about existing
       // credentials back to credential storage providers.
       // Enabled by default on M132. Remove flag on or after M135.
