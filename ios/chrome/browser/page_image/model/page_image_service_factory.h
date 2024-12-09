@@ -8,22 +8,17 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ProfileIOS;
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace page_image_service {
 class ImageService;
 }  // namespace page_image_service
 
 // Factory for the components ImageService service which fetches salient images.
-class PageImageServiceFactory : public BrowserStateKeyedServiceFactory {
+class PageImageServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static page_image_service::ImageService* GetForProfile(ProfileIOS* profile);
   static PageImageServiceFactory* GetInstance();
-
-  PageImageServiceFactory(const PageImageServiceFactory&) = delete;
-  PageImageServiceFactory& operator=(const PageImageServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<PageImageServiceFactory>;
