@@ -89,8 +89,7 @@ TEST(AcceleratorTableTest, OpenFeedbackWithSearchBasedAccelerator) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST(AcceleratorTableTest, CheckDuplicatedAcceleratorsAsh) {
   base::flat_set<AcceleratorMapping, Cmp> accelerators(GetAcceleratorList());
-  for (size_t i = 0; i < ash::kAcceleratorDataLength; ++i) {
-    const ash::AcceleratorData& ash_entry = ash::kAcceleratorData[i];
+  for (const ash::AcceleratorData& ash_entry : ash::kAcceleratorData) {
     if (!ash_entry.trigger_on_press)
       continue;  // kAcceleratorMap does not have any release accelerators.
     // A few shortcuts are defined in the browser as well as in ash so that web

@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <array>
+
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback_forward.h"
@@ -39,7 +41,8 @@ ASH_PUBLIC_EXPORT constexpr int kDebugModifier =
 // If you plan on adding a new accelerator and want it displayed in the
 // Shortcuts app, please follow the instructions at:
 // `ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h`.
-ASH_PUBLIC_EXPORT inline constexpr AcceleratorData kAcceleratorData[] = {
+ASH_PUBLIC_EXPORT inline constexpr auto kAcceleratorData = std::to_array<
+    AcceleratorData>({
     {true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
      AcceleratorAction::kSwitchToLastUsedIme},
     {false, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
@@ -350,14 +353,12 @@ ASH_PUBLIC_EXPORT inline constexpr AcceleratorData kAcceleratorData[] = {
     // Game Dashboard shortcut.
     {true, ui::VKEY_G, ui::EF_COMMAND_DOWN,
      AcceleratorAction::kToggleGameDashboard},
-};
-ASH_PUBLIC_EXPORT inline constexpr size_t kAcceleratorDataLength =
-    std::size(kAcceleratorData);
+});
 
 // Accelerators that are enabled/disabled with new accelerator mapping.
 // crbug.com/1067269
-ASH_PUBLIC_EXPORT inline constexpr AcceleratorData
-    kDisableWithNewMappingAcceleratorData[] = {
+ASH_PUBLIC_EXPORT inline constexpr auto kDisableWithNewMappingAcceleratorData =
+    std::to_array<AcceleratorData>({
         // Desk creation and removal:
         // Due to https://crbug.com/976487, Search + "=" is always automatically
         // rewritten to F12, and so is Search + "-" to F11. So we had to
@@ -372,14 +373,11 @@ ASH_PUBLIC_EXPORT inline constexpr AcceleratorData
          AcceleratorAction::kDesksNewDesk},
         {true, ui::VKEY_F11, ui::EF_SHIFT_DOWN,
          AcceleratorAction::kDesksRemoveCurrentDesk},
-};
-ASH_PUBLIC_EXPORT inline constexpr size_t
-    kDisableWithNewMappingAcceleratorDataLength =
-        std::size(kDisableWithNewMappingAcceleratorData);
+    });
 
 // Accelerators that are enabled with positional shortcut mapping.
-ASH_PUBLIC_EXPORT inline constexpr AcceleratorData
-    kEnableWithPositionalAcceleratorsData[] = {
+ASH_PUBLIC_EXPORT inline constexpr auto kEnableWithPositionalAcceleratorsData =
+    std::to_array<AcceleratorData>({
         // These are the desk shortcuts as advertised, but previously
         // they were implicitly implemented in terms of F11 and F12
         // due to event rewrites. Since the F-Key rewrites are deprecated
@@ -391,53 +389,46 @@ ASH_PUBLIC_EXPORT inline constexpr AcceleratorData
          AcceleratorAction::kDesksNewDesk},
         {true, ui::VKEY_OEM_MINUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
          AcceleratorAction::kDesksRemoveCurrentDesk},
-};
-ASH_PUBLIC_EXPORT inline constexpr size_t
-    kEnableWithPositionalAcceleratorsDataLength =
-        std::size(kEnableWithPositionalAcceleratorsData);
+    });
 
 // Accelerators that are enabled with improved desks keyboards shortcuts.
-ASH_PUBLIC_EXPORT inline constexpr AcceleratorData
-    kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData[] = {
-        // Indexed-desk activation:
-        {true, ui::VKEY_1, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-         AcceleratorAction::kDesksActivate0},
-        {true, ui::VKEY_2, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-         AcceleratorAction::kDesksActivate1},
-        {true, ui::VKEY_3, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-         AcceleratorAction::kDesksActivate2},
-        {true, ui::VKEY_4, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-         AcceleratorAction::kDesksActivate3},
-        {true, ui::VKEY_5, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-         AcceleratorAction::kDesksActivate4},
-        {true, ui::VKEY_6, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-         AcceleratorAction::kDesksActivate5},
-        {true, ui::VKEY_7, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-         AcceleratorAction::kDesksActivate6},
-        {true, ui::VKEY_8, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-         AcceleratorAction::kDesksActivate7},
-        // Toggle assign to all desks:
-        {true, ui::VKEY_A, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-         AcceleratorAction::kDesksToggleAssignToAllDesks},
-};
-ASH_PUBLIC_EXPORT inline constexpr size_t
-    kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorDataLength =
-        std::size(kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData);
+ASH_PUBLIC_EXPORT inline constexpr auto
+    kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData =
+        std::to_array<AcceleratorData>({
+            // Indexed-desk activation:
+            {true, ui::VKEY_1, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+             AcceleratorAction::kDesksActivate0},
+            {true, ui::VKEY_2, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+             AcceleratorAction::kDesksActivate1},
+            {true, ui::VKEY_3, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+             AcceleratorAction::kDesksActivate2},
+            {true, ui::VKEY_4, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+             AcceleratorAction::kDesksActivate3},
+            {true, ui::VKEY_5, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+             AcceleratorAction::kDesksActivate4},
+            {true, ui::VKEY_6, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+             AcceleratorAction::kDesksActivate5},
+            {true, ui::VKEY_7, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+             AcceleratorAction::kDesksActivate6},
+            {true, ui::VKEY_8, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+             AcceleratorAction::kDesksActivate7},
+            // Toggle assign to all desks:
+            {true, ui::VKEY_A, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+             AcceleratorAction::kDesksToggleAssignToAllDesks},
+        });
 
 // Accelerators that are enabled with same app window cycling experiment.
-ASH_PUBLIC_EXPORT inline constexpr AcceleratorData
-    kEnableWithSameAppWindowCycleAcceleratorData[] = {
-        {true, ui::VKEY_OEM_3, ui::EF_ALT_DOWN,
-         AcceleratorAction::kCycleSameAppWindowsForward},
-        {true, ui::VKEY_OEM_3, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
-         AcceleratorAction::kCycleSameAppWindowsBackward},
-};
-ASH_PUBLIC_EXPORT inline constexpr size_t
-    kEnableWithSameAppWindowCycleAcceleratorDataLength =
-        std::size(kEnableWithSameAppWindowCycleAcceleratorData);
+ASH_PUBLIC_EXPORT inline constexpr auto
+    kEnableWithSameAppWindowCycleAcceleratorData =
+        std::to_array<AcceleratorData>({
+            {true, ui::VKEY_OEM_3, ui::EF_ALT_DOWN,
+             AcceleratorAction::kCycleSameAppWindowsForward},
+            {true, ui::VKEY_OEM_3, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
+             AcceleratorAction::kCycleSameAppWindowsBackward},
+        });
 
-ASH_PUBLIC_EXPORT inline constexpr AcceleratorData
-    kTilingWindowResizeAcceleratorData[] = {
+ASH_PUBLIC_EXPORT inline constexpr auto kTilingWindowResizeAcceleratorData =
+    std::to_array<AcceleratorData>({
         {true, ui::VKEY_OEM_COMMA, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
          AcceleratorAction::kTilingWindowResizeLeft},
         {true, ui::VKEY_OEM_PERIOD, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
@@ -446,10 +437,7 @@ ASH_PUBLIC_EXPORT inline constexpr AcceleratorData
          AcceleratorAction::kTilingWindowResizeUp},
         {true, ui::VKEY_OEM_2, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
          AcceleratorAction::kTilingWindowResizeDown},
-};
-ASH_PUBLIC_EXPORT inline constexpr size_t
-    kTilingWindowResizeAcceleratorDataLength =
-        std::size(kTilingWindowResizeAcceleratorData);
+    });
 
 ASH_PUBLIC_EXPORT inline constexpr AcceleratorData kGeminiAcceleratorData[] = {
     {true, ui::VKEY_F23, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,

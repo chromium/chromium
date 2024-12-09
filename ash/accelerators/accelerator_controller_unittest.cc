@@ -36,6 +36,7 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/ime/test_ime_controller_client.h"
 #include "ash/media/media_controller_impl.h"
+#include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/ash_prefs.h"
@@ -2384,8 +2385,9 @@ TEST_F(PreferredReservedAcceleratorsTest, AcceleratorsWithPinned) {
 
 TEST_F(AcceleratorControllerTest, DisallowedAtModalWindow) {
   std::set<AcceleratorAction> all_actions;
-  for (size_t i = 0; i < kAcceleratorDataLength; ++i)
-    all_actions.insert(kAcceleratorData[i].action);
+  for (const AcceleratorData& data : kAcceleratorData) {
+    all_actions.insert(data.action);
+  }
   std::set<AcceleratorAction> all_debug_actions;
   for (size_t i = 0; i < kDebugAcceleratorDataLength; ++i)
     all_debug_actions.insert(kDebugAcceleratorData[i].action);
@@ -2508,8 +2510,7 @@ TEST_F(AcceleratorControllerTest, DisallowedWithNoWindow) {
   for (size_t i = 0; i < kActionsNeedingWindowLength; ++i)
     actions_needing_window.insert(kActionsNeedingWindow[i]);
   std::map<AcceleratorAction, ui::Accelerator> accelerators_needing_window;
-  for (size_t i = 0; i < kAcceleratorDataLength; ++i) {
-    const auto& accelerator_data = kAcceleratorData[i];
+  for (const AcceleratorData& accelerator_data : kAcceleratorData) {
     auto iter = actions_needing_window.find(accelerator_data.action);
     if (!base::Contains(actions_needing_window, accelerator_data.action)) {
       continue;

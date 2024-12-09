@@ -7,10 +7,12 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "ash/accelerators/accelerator_table.h"
+
 #include <set>
 #include <tuple>
 
-#include "ash/accelerators/accelerator_table.h"
+#include "ash/public/cpp/accelerators.h"
 #include "base/hash/md5.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -61,13 +63,11 @@ std::string HashAcceleratorData(
 
 TEST(AcceleratorTableTest, CheckDuplicatedAccelerators) {
   std::set<AcceleratorData, Cmp> accelerators;
-  for (size_t i = 0; i < kAcceleratorDataLength; ++i) {
-    const AcceleratorData& entry = kAcceleratorData[i];
+  for (const AcceleratorData& entry : kAcceleratorData) {
     EXPECT_TRUE(accelerators.insert(entry).second)
         << "Duplicated accelerator: " << AcceleratorDataToString(entry);
   }
-  for (size_t i = 0; i < kDisableWithNewMappingAcceleratorDataLength; ++i) {
-    const AcceleratorData& entry = kDisableWithNewMappingAcceleratorData[i];
+  for (const AcceleratorData& entry : kDisableWithNewMappingAcceleratorData) {
     EXPECT_TRUE(accelerators.insert(entry).second)
         << "Duplicated accelerator: " << AcceleratorDataToString(entry);
   }
@@ -145,14 +145,12 @@ TEST(AcceleratorTableTest, CheckDeprecatedAccelerators) {
 // All new accelerators should be Search-based and approved by UX.
 TEST(AcceleratorTableTest, CheckSearchBasedAccelerators) {
   std::vector<AcceleratorData> non_search_accelerators;
-  for (size_t i = 0; i < kAcceleratorDataLength; ++i) {
-    const AcceleratorData& entry = kAcceleratorData[i];
+  for (const AcceleratorData& entry : kAcceleratorData) {
     if (entry.modifiers & ui::EF_COMMAND_DOWN)
       continue;
     non_search_accelerators.emplace_back(entry);
   }
-  for (size_t i = 0; i < kDisableWithNewMappingAcceleratorDataLength; ++i) {
-    const AcceleratorData& entry = kDisableWithNewMappingAcceleratorData[i];
+  for (const AcceleratorData& entry : kDisableWithNewMappingAcceleratorData) {
     if (entry.modifiers & ui::EF_COMMAND_DOWN)
       continue;
     non_search_accelerators.emplace_back(entry);
