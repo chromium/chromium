@@ -2689,7 +2689,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2869511363030898130"><ph name="APP_NAME" /> uygulamasında aç</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2870909136778269686">Güncelleniyor...</translation>
-<translation id="2871733351037274014">Sayfaları önceden yükleme</translation>
+<translation id="2871733351037274014">Sayfaları önceden yükle</translation>
 <translation id="2871813825302180988">Bu hesap bu cihazda zaten kullanılıyor.</translation>
 <translation id="287205682142673348">Bağlantı noktası yönlendirme</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> Sağlayıcısını Ekle...</translation>
@@ -4126,7 +4126,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="3898768766145818464">Videoyu oynatır veya duraklatır</translation>
 <translation id="389901847090970821">Klavye seçin</translation>
 <translation id="3899457911440165602">Sertifika silinirken hata oluştu</translation>
-<translation id="3900966090527141178">Şifreleri dışa aktar</translation>
+<translation id="3900966090527141178">Şifreleri dışa aktarın</translation>
 <translation id="390187954523570172"><ph name="TIME_AGO" /> kullanıldı</translation>
 <translation id="3903187154317825986">Yerleşik klavye</translation>
 <translation id="3903696968689283281">WiFi Direct Sahip Bilgisi:</translation>
@@ -4895,7 +4895,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4470957202018033307">Harici depolama tercihleri</translation>
 <translation id="4471354919263203780">Konuşma tanıma dosyaları indiriliyor... %<ph name="PERCENT" /></translation>
 <translation id="4472298120638043495">Tercih ettiğiniz Google Hesabı dilini (<ph name="NEW_LOCALE_FROM_GAIA" />) kullanabilirsiniz.</translation>
-<translation id="447252321002412580">Chrome'un özelliklerini ve performansını iyileştirmeye yardımcı olun</translation>
+<translation id="447252321002412580">Chrome'un özelliklerini ve performansını iyileştirmeye yardımcı ol</translation>
 <translation id="4472533928615930332"><ph name="STYLE" /> stilini içeren <ph name="SUBJECT" /> resimden <ph name="INDEX" />. resim oluşturuldu</translation>
 <translation id="4472575034687746823">Başlayın</translation>
 <translation id="4473559657152613417">Bir sekmeyi sağ tıklayıp "Sekmeyi Yeni Gruba Ekle"yi seçin</translation>

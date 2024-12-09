@@ -11,7 +11,7 @@
 <translation id="1035980983510608210">Si cierras todas las pestañas, también se cerrarán las pestañas fijas.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Desactivar</translation>
-<translation id="1041322626941363065">Advertirme si quedan expuestas las contraseñas ante una violación de la seguridad de los datos</translation>
+<translation id="1041322626941363065">Advertirme si mis contraseñas quedan expuestas en una violación de la seguridad de los datos</translation>
 <translation id="1044891598689252897">Los sitios funcionarán normalmente</translation>
 <translation id="104491362976654916">Página sin conexión</translation>
 <translation id="1049743911850919806">Incógnito</translation>
@@ -1007,7 +1007,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5744274077973758795">Se activaron las notificaciones de <ph name="FEATURE_NAME" /></translation>
 <translation id="574762237186762643">Eventos</translation>
 <translation id="5748177854685749242">Llega <ph name="DATE" /></translation>
-<translation id="5749158352074143502">Continúa con esta pestaña</translation>
+<translation id="5749158352074143502">Continuar con esta pestaña</translation>
 <translation id="5753021559215751319">Guardar contraseña</translation>
 <translation id="5756525336488841345">Ocultar la opción Favoritos</translation>
 <translation id="5758631781033351321">Aquí encontrarás tu lista de lectura</translation>
@@ -1508,7 +1508,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="7977451675950311423">Te advierte si usas una contraseña que fue hackeada en una violación de la seguridad de los datos.</translation>
 <translation id="797824194429476746">Las pestañas permanecerán abiertas en este dispositivo, pero el grupo se borrará de forma permanente.</translation>
 <translation id="7982789257301363584">Red</translation>
-<translation id="7987685713885608670">Para más seguridad, encripta las contraseñas en tu dispositivo antes de que se guarden en el Administrador de contraseñas de Google.</translation>
+<translation id="7987685713885608670">Para más seguridad, encripta las contraseñas en tu dispositivo antes de que se guarden en el Administrador de contraseñas de Google</translation>
 <translation id="798991908416757345">Los grupos de pestañas no están disponibles</translation>
 <translation id="7993619969781047893">Es posible que las características de algunos sitios no funcionen de forma correcta</translation>
 <translation id="7996239959906074962">Configuración…</translation>

@@ -509,7 +509,7 @@
 <translation id="3384347053049321195">分享图片</translation>
 <translation id="3387650086002190359">未能成功下载 <ph name="FILE_NAME" />，因为文件系统出现了错误。</translation>
 <translation id="3398320232533725830">打开书签管理器</translation>
-<translation id="3407392651057365886">预加载更多网页。被其他网站请求的网页可能会通过 Google 服务器预加载。</translation>
+<translation id="3407392651057365886">预加载更多网页。其他网站请求访问的网页可能会通过 Google 服务器预加载。</translation>
 <translation id="3414952576877147120">大小：</translation>
 <translation id="3421726884497337397">选择何时屏蔽第三方 Cookie</translation>
 <translation id="342220687432920852">{HOURS,plural, =1{# 小时前}other{# 小时前}}</translation>
@@ -588,7 +588,7 @@
 <translation id="3771290962915251154">此设置已被停用，因为开启了“家长控制”功能</translation>
 <translation id="3771694256347217732">Google 服务条款</translation>
 <translation id="3775705724665058594">发送到您的设备</translation>
-<translation id="3777796259512476958">会致使您从大多数网站退出账号</translation>
+<translation id="3777796259512476958">若删除此类数据，您会从大多数网站退出账号</translation>
 <translation id="379035798868314833">Google 密码管理工具将停止在此设备上运行</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 个标签页}other{# 个标签页}}</translation>
 <translation id="3795154175078851242">复制图片且含链接</translation>

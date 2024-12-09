@@ -6573,7 +6573,7 @@
 <translation id="5698878456427040674">تحقَّق مما إذا كان الحساب الذي اخترته صحيحًا.</translation>
 <translation id="5699227710146832453">من</translation>
 <translation id="570043786759263127">‏تطبيقات Google Play وخدماته</translation>
-<translation id="5700761515355162635">ملفات تعريف الارتباط الخارجية مسموحة</translation>
+<translation id="5700761515355162635">ملفات تعريف الارتباط الخارجية مسموح بها</translation>
 <translation id="5700836101007545240">تم إيقاف إضافة اتصال بواسطة المشرف</translation>
 <translation id="5701080607174488915">حدث خطأ أثناء جلب السياسة من الخادم.</translation>
 <translation id="5701212929149679556">التجوال على شبكة الجوّال</translation>
@@ -7140,7 +7140,7 @@
 <translation id="6122095009389448667">مواصلة حظر الموقع الإلكتروني هذا من الاطلاع على الحافظة</translation>
 <translation id="6122513630797178831">حفظ رمز التحقّق من البطاقة</translation>
 <translation id="6122600716821516697">هل تريد مشاركة الملف مع هذا الجهاز؟</translation>
-<translation id="6122831415929794347">هل تريد إيقاف "التصفُّح الآمن"؟</translation>
+<translation id="6122831415929794347">هل المطلوب إيقاف "التصفُّح الآمن"؟</translation>
 <translation id="6124650939968185064">تعتمد الإضافات التالية على هذه الإضافة:</translation>
 <translation id="6124698108608891449">يحتاج هذا الموقع الإلكتروني إلى مزيد من الأذونات.</translation>
 <translation id="6125479973208104919">عذرًا، ستحتاج إلى إضافة حسابك إلى جهاز <ph name="DEVICE_TYPE" /> هذا مرة أخرى.</translation>
@@ -9630,7 +9630,7 @@
 <translation id="7923564237306226146">‏اكتملت ترقية نظام التشغيل Linux</translation>
 <translation id="7924075559900107275">إصدار مرشَّح للدعم الطويل الأمد</translation>
 <translation id="7924358170328001543">خطأ في إعادة توجيه المنفذ</translation>
-<translation id="7925108652071887026">ملء البيانات تلقائيًا</translation>
+<translation id="7925108652071887026">بيانات الملء التلقائي</translation>
 <translation id="792514962475806987">مستوى التكبير الذي تم إرساؤه:</translation>
 <translation id="7925285046818567682">في انتظار <ph name="HOST_NAME" />‏ ...</translation>
 <translation id="7926423016278357561">لم يكن هذا أنا.</translation>

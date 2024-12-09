@@ -197,7 +197,7 @@
 <translation id="188237709236611317">Menüleiste mit intelligenter Sortierung</translation>
 <translation id="1883255238294161206">Liste ausblenden</translation>
 <translation id="1888854257756214946">Passwort auswählen…</translation>
-<translation id="1889872080060107187">Du meldest dich bei <ph name="URL" /> an</translation>
+<translation id="1889872080060107187">Du meldest dich in <ph name="URL" /> an</translation>
 <translation id="1890237935065108104">Diese Einstellung ist nicht verfügbar.</translation>
 <translation id="1894023287452300670">Hier den Preis beobachten</translation>
 <translation id="189531189292803889">Dein iPad wurde vor Kurzem wiederhergestellt. Möglicherweise hat sich dadurch dein Standardbrowser geändert.</translation>
@@ -565,7 +565,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3679163990085797665">Gelesene löschen</translation>
 <translation id="368329460027487650">Abgemeldet. Anmeldeoptionen werden geöffnet.</translation>
 <translation id="3695446226812920698">Weitere Informationen</translation>
-<translation id="3700134753671613714">Melden Sie sich an, um Ihre Lesezeichen auf allen Ihren Geräten abzurufen.</translation>
+<translation id="3700134753671613714">Melde dich an, um deine Lesezeichen auf allen Ihren Geräten abzurufen.</translation>
 <translation id="3706112388989951153">Lesezeichen bearbeiten</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} Passwort ist nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, speichere es in deinem Google-Konto {EMAIL}.}other{{COUNT} Passwörter sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto {EMAIL}.}}</translation>
 <translation id="371230970611282515">Erkennt schädliche Ereignisse im Voraus und warnt dich, bevor diese eintreten.</translation>
@@ -746,7 +746,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4587589328781138893">Websites</translation>
 <translation id="4592672037257622855">{count,plural, =1{Seite wurde deiner Leseliste hinzugefügt}other{{count} Seiten wurden deiner Leseliste hinzugefügt}}</translation>
 <translation id="459644946100970322">Benachrichtigungen zu Preisaktualisierungen aktivieren?</translation>
-<translation id="4601095002996233687">Umfangreiche Scans für verdächtige Downloads.</translation>
+<translation id="4601095002996233687">Umfangreiche Scans nach verdächtigen Downloads.</translation>
 <translation id="4606247758155004938">Dein Browser wird von deiner Organisation verwaltet.</translation>
 <translation id="4611811151908969241">„<ph name="DOMAIN_NAME" /> nicht mehr folgen“ ausblenden</translation>
 <translation id="461440297010471931">Mit Google suchen</translation>
@@ -1021,7 +1021,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5817176759448082654">Passwortcheck</translation>
 <translation id="5819208479324046259">Verwaltet von <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Wird synchronisiert…</translation>
-<translation id="5844284118433003733">Wenn du angemeldet bist, werden diese Daten mit deinem Google-Konto verknüpft, um dich in allen Google-Diensten besser zu schützen, wie beispielsweise nach einem Sicherheitsvorfall in Gmail.</translation>
+<translation id="5844284118433003733">Wenn du angemeldet bist, werden diese Daten mit deinem Google-Konto verknüpft, um dich in allen Google-Diensten besser zu schützen, beispielsweise durch erhöhten Schutz in Gmail nach einem Sicherheitsvorfall.</translation>
 <translation id="5846482154967366008">Suchmaschine</translation>
 <translation id="5854790677617711513">Älter als 30 Tage</translation>
 <translation id="5857770089550859117">Gib deine Passphrase ein, um die Synchronisierung zu starten.</translation>
@@ -1667,7 +1667,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8672993423386237345">Hilfe anzeigen</translation>
 <translation id="8674716540979958118">Du nutzt kompromittierte Passwörter.</translation>
 <translation id="8679900250380464358">Zur Leseliste hinzufügen</translation>
-<translation id="8680786875305615692">Dabei helfen, das Web für alle sicherer zu machen</translation>
+<translation id="8680786875305615692">Dazu beitragen, das Web für alle sicherer zu machen</translation>
 <translation id="8680787084697685621">Die Anmeldeinformationen für dieses Konto sind veraltet.</translation>
 <translation id="8683563711222071415">Adresse in Konto verschieben</translation>
 <translation id="8692689525339542358">Schütze dich bestmöglich vor schädlichen Websites, Downloads und Erweiterungen.</translation>

@@ -1249,7 +1249,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1865769994591826607">Uniquement les connexions au même site</translation>
 <translation id="186594096341696655">Diminuer le taux</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" dispose d'un droit d'accès en lecture et en écriture sur les images, les vidéos et les fichiers audio figurant dans les dossiers sélectionnés.</translation>
-<translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> est prêt à terminer l'installation.</translation>
+<translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> est prêt à terminer l'installation</translation>
 <translation id="1868553836791672080">La fonctionnalité Check-up Mots de passe n'est pas disponible dans Chromium</translation>
 <translation id="1868617395637139709">Utilisez la position pour les applis et services Android.</translation>
 <translation id="1869433484041798909">Bouton de favori</translation>
@@ -2085,7 +2085,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2442916515643169563">Ombre du texte</translation>
 <translation id="2443487764245141020">Les sites peuvent aussi avoir besoin d'identifier votre appareil à l'aide d'un ID</translation>
 <translation id="244475495405467108">Fermer les onglets à gauche</translation>
-<translation id="2444874983932528148">Reprenez facilement là où vous vous étiez arrêté</translation>
+<translation id="2444874983932528148">Reprenez facilement là où vous en étiez</translation>
 <translation id="2445081178310039857">Le répertoire racine de l'extension doit être indiqué.</translation>
 <translation id="2445484935443597917">Créer un profil</translation>
 <translation id="2445726032315793326">Loupe partielle</translation>
@@ -3541,7 +3541,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3507888235492474624">Relancer la recherche d'appareils Bluetooth</translation>
 <translation id="3508492320654304609">Impossible de supprimer vos données de connexion</translation>
 <translation id="3508920295779105875">Choisir un autre dossier...</translation>
-<translation id="3509379002674019679">Créez, enregistrez et gérez vos mots de passe pour vous connecter facilement à des sites et à des applis.</translation>
+<translation id="3509379002674019679">Créez, enregistrez et gérez vos mots de passe pour vous connecter facilement à des sites et applis.</translation>
 <translation id="3510471875518562537">Utilisez cette adresse sur votre iPhone</translation>
 <translation id="3511200754045804813">Nouvelle recherche</translation>
 <translation id="3511307672085573050">Copier l'adr&amp;esse du lien</translation>
@@ -4271,7 +4271,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />En savoir plus sur la précision de la localisation<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Importés</translation>
 <translation id="3992008114154328194">Téléchargement en cours de <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Sauvegarder les données</translation>
+<translation id="3993259701827857030">Sauvegarde des données</translation>
 <translation id="3993887353483242788">Synchronisez votre <ph name="DEVICE_TYPE" /> pour que vos préférences soient appliquées sur n'importe quel appareil lorsque vous vous connectez avec votre compte Google. Les préférences regroupent les applis, les paramètres, les mots de passe Wi-Fi, les langues, le fond d'écran, les raccourcis clavier, etc.</translation>
 <translation id="3994318741694670028">Malheureusement, votre ordinateur est configuré avec un ID matériel incorrect. Cela empêche l'installation des derniers correctifs de sécurité sur ChromeOS Flex et rend votre ordinateur <ph name="BEGIN_BOLD" />potentiellement vulnérable aux attaques malveillantes<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Déverrouillez votre téléphone et rapprochez-le de votre <ph name="DEVICE_TYPE" /> pour le déverrouiller.</translation>
@@ -4898,7 +4898,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4470957202018033307">Préférences de l'espace de stockage externe</translation>
 <translation id="4471354919263203780">Téléchargement des fichiers de reconnaissance vocale… <ph name="PERCENT" /> %</translation>
 <translation id="4472298120638043495">Vous pouvez utiliser la langue définie comme préférée dans votre compte Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
-<translation id="447252321002412580">Contribuer à l'amélioration des fonctionnalités et des performances de Chrome</translation>
+<translation id="447252321002412580">Contribuer à améliorer les fonctionnalités et performances de Chrome</translation>
 <translation id="4472533928615930332">Image générée <ph name="INDEX" /> sur <ph name="SUBJECT" />, style <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Premiers pas</translation>
 <translation id="4473559657152613417">Effectuez un clic droit sur un onglet et sélectionnez "Ajouter l'onglet à un nouveau groupe"</translation>
@@ -5597,7 +5597,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4979510648199782334">Configuration de Microsoft 365 terminée</translation>
 <translation id="4980805016576257426">Cette extension contient des logiciels malveillants.</translation>
 <translation id="4983159853748980742">Votre mot de passe n'a pas été partagé. Vérifiez votre connexion Internet et assurez-vous que vous êtes connecté à Chrome, puis réessayez.</translation>
-<translation id="4986706507552097681">Vous avez toujours la possibilité de sélectionner les éléments à synchroniser dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
+<translation id="4986706507552097681">Vous pourrez toujours choisir ce que vous voulez synchroniser dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="4986728572522335985">Cette opération supprimera toutes les données stockées sur la clé de sécurité, y compris son code</translation>
 <translation id="4987944280765486504">Votre Chromebook redémarrera une fois le téléchargement terminé, et vous pourrez poursuivre la configuration.</translation>
 <translation id="4988526792673242964">Pages</translation>
@@ -6537,7 +6537,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="567643736130151854">Connectez-vous et activez la synchronisation pour accéder à vos favoris, mots de passe et bien plus sur tous vos appareils</translation>
 <translation id="567740581294087470">Quel type de commentaires fournissez-vous ?</translation>
 <translation id="5677503058916217575">Langue de la page :</translation>
-<translation id="5677928146339483299">Bloqués</translation>
+<translation id="5677928146339483299">Bloqué</translation>
 <translation id="5678550637669481956">L'accès en lecture et en écriture à "<ph name="VOLUME_NAME" />" a été accordé.</translation>
 <translation id="5678821117681811450">Envoi à <ph name="WEB_DRIVE" />…</translation>
 <translation id="5678955352098267522">Lire vos données sur <ph name="WEBSITE_1" /></translation>
@@ -7317,7 +7317,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6247620186971210352">Aucune application n'a été trouvée</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" /> %</translation>
 <translation id="6247802389331535091">Système : <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="6248988683584659830">Rechercher</translation>
+<translation id="6248988683584659830">Rechercher dans les paramètres</translation>
 <translation id="6249200942125593849">Gérer les paramètres d'accessibilité</translation>
 <translation id="6250186368828697007">Les détails sont masqués lors du partage d'écran</translation>
 <translation id="6251870443722440887">Handles GDI</translation>
@@ -7795,7 +7795,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6610002944194042868">Options de traduction</translation>
 <translation id="6610064275805055636">Gérer les applications Web isolées</translation>
 <translation id="6611972847767394631">Retrouvez vos onglets ici</translation>
-<translation id="661266467055912436">Il renforce votre sécurité et celle de tous les utilisateurs sur le Web.</translation>
+<translation id="661266467055912436">Renforce votre sécurité et celle de tous les utilisateurs sur le Web.</translation>
 <translation id="6613267708691765962">Recherche de logiciels malveillants…</translation>
 <translation id="6613668613087513143">Espace insuffisant sur cet appareil pour finaliser la mise à jour. Libérez <ph name="NECESSARY_SPACE" /> sur votre appareil et réessayez depuis votre navigateur Chrome.</translation>
 <translation id="6614172284067813496">Page ajoutée à la liste de lecture</translation>
@@ -8066,7 +8066,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6805647936811177813">Connectez-vous à <ph name="TOKEN_NAME" /> pour importer le certificat client de <ph name="HOST_NAME" /></translation>
 <translation id="680572642341004180">Activer le suivi RLZ pour <ph name="SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="6806089545527108739">Ne pas autoriser, mais me demander plus tard</translation>
-<translation id="680644983456221885">Protection proactive en temps réel contre les extensions, sites et téléchargements dangereux, basée sur vos données de navigation envoyées à Google</translation>
+<translation id="680644983456221885">Protection proactive en temps réel contre les extensions, sites et téléchargements dangereux, basée sur vos données de navigation envoyées à Google.</translation>
 <translation id="6806781719264274042">Seulement vos contacts disposant d'un compte Google. <ph name="LINK_BEGIN" />Afficher les contacts<ph name="LINK_END" /></translation>
 <translation id="6808039367995747522">Pour continuer, insérez la clé de sécurité et appuyez dessus</translation>
 <translation id="6808166974213191158">Écriture des images système ChromeOS Flex</translation>
@@ -8936,7 +8936,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
     dans le panneau ChromeVox en haut de l'écran</translation>
 <translation id="7429568074268678162"><ph name="FILENAME" /> est peut-être dangereux. Vous pouvez télécharger ce fichier directement ou ajouter un mot de passe si vous souhaitez que Chrome le valide.</translation>
 <translation id="7431719494109538750">Aucun appareil HID trouvé</translation>
-<translation id="7431991332293347422">Contrôler la manière dont votre historique de navigation est utilisé pour personnaliser la recherche et plus encore</translation>
+<translation id="7431991332293347422">Contrôlez la manière dont votre historique de navigation est utilisé pour personnaliser la recherche et plus</translation>
 <translation id="7432200167665670017">Votre administrateur a bloqué "<ph name="EXTENSION_NAME" />" - Identifiant d'application <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">Insérez votre carte à puce pour continuer à utiliser votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Conserver</translation>
@@ -10326,7 +10326,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">plein écran</translation>
 <translation id="8412136526970428322">Autorisations accordées : <ph name="PERMISSION" /> (et <ph name="COUNT" /> de plus)</translation>
-<translation id="8413795581997394485">Protège contre les sites, les téléchargements et les extensions connus pour être dangereux. Lorsque vous consultez un site, Chrome envoie une partie obscurcie de l'URL à Google via un serveur de confidentialité qui masque votre adresse IP. Si un site a un comportement suspect, les URL complètes et des extraits du contenu des pages sont également envoyés.</translation>
+<translation id="8413795581997394485">Protection contre les extensions, sites et téléchargements connus pour être dangereux. Lorsque vous consultez un site, Chrome envoie une partie obscurcie de l'URL à Google via un serveur de confidentialité qui masque votre adresse IP. Si un site a un comportement suspect, les URL complètes et des extraits du contenu des pages sont également envoyés.</translation>
 <translation id="8413956290606243087">Voulez-vous activer ChromeVox, le lecteur d'écran intégré pour Chrome OS ?</translation>
 <translation id="8414396119627470038">Connectez-vous à <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (étui)</translation>
@@ -10541,7 +10541,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8569682776816196752">Aucun emplacement de destination trouvé.</translation>
 <translation id="8571213806525832805">4 dernières semaines</translation>
 <translation id="8571687764447439720">Ajouter un ticket Kerberos</translation>
-<translation id="8572052284359771939">Envoie les URL des sites que vous consultez et un petit échantillon du contenu des pages, les téléchargements, l'activité des extensions et des informations système à la navigation sécurisée Google pour vérifier s'ils sont dangereux.</translation>
+<translation id="8572052284359771939">Envoie les URL des sites que vous consultez et un petit échantillon du contenu des pages, des téléchargements, de l'activité des extensions et des informations système à la navigation sécurisée Google afin de détecter un éventuel danger.</translation>
 <translation id="8573111744706778015">Saisissez "uo7" pour obtenir "ươ"</translation>
 <translation id="8574990355410201600">Toujours activer le son sur <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Maintenez la touche <ph name="KEY_EQUIVALENT" /> enfoncée pour quitter</translation>

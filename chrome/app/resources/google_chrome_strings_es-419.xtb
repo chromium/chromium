@@ -387,7 +387,7 @@
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" />: Acceso a la red</translation>
 <translation id="5924017743176219022">Conectando a Internet...</translation>
-<translation id="5932997892801542621">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chrome envía lo que escribes a Google Drive a fin de obtener sugerencias de artículos. Esta función está desactivada en el modo Incógnito.</translation>
+<translation id="5932997892801542621">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chrome envía lo que escribes a Google Drive a fin de obtener sugerencias de artículos. Esta función está desactivada en el modo Incógnito</translation>
 <translation id="5940385492829620908">Aquí puedes encontrar tus páginas web, favoritos y otros contenidos de Chrome.</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5941830788786076944">Haga de Google Chrome su navegador predeterminado</translation>
@@ -634,7 +634,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8712767363896337380">Ya casi completas la actualización. Reinicia Chrome para completar la actualización.</translation>
 <translation id="8718062187489036808">Salir de Chrome</translation>
 <translation id="873133009373065397">Google Chrome no puede determinar ni establecer el navegador predeterminado</translation>
-<translation id="8765470054473112089">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chrome envía lo que escribes a tu motor de búsqueda predeterminado para obtener mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
+<translation id="8765470054473112089">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chrome envía lo que escribes a tu motor de búsqueda predeterminado para obtener mejores sugerencias. Esta función está desactivada en el modo Incógnito</translation>
 <translation id="8781673607513845160">Para usar la cámara, otorga acceso a Chrome en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Error de instalación: El administrador de red aplicó una política de grupo que impide la instalación (<ph name="INSTALL_ERROR" />).</translation>
 <translation id="8796073561259064743">Chrome bloqueó esta descarga porque el archivo puede dañar tus cuentas personales y de redes sociales, incluida <ph name="USER_EMAIL" /></translation>

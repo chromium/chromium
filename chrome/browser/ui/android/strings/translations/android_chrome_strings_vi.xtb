@@ -93,7 +93,7 @@
 <translation id="1383876407941801731">Tìm kiếm</translation>
 <translation id="1384704387250346179">Dịch hình ảnh bằng Google Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Hoạt động <ph name="LAST_UPDATED" /> ngày trước</translation>
-<translation id="1390418506739274310">Bạn có thể xem nhật ký từ các ứng dụng khác có mở đường liên kết trong Chrome. Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web khác tại <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="1390418506739274310">Nhật ký có thể bao gồm các đường liên kết được mở trong Chrome từ các ứng dụng khác. Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web khác tại <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Đã mở bảng thông tin chi tiết về giá ở dưới cùng trên toàn màn hình</translation>
 <translation id="1397811292916898096">Tìm kiếm bằng <ph name="PRODUCT_NAME" /></translation>
 <translation id="1398057416966591719">Bạn có thể <ph name="BEGIN_LINK1" />quy định những dữ liệu Chrome nào được lưu<ph name="END_LINK1" /> vào Tài khoản Google của bạn.
@@ -235,7 +235,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2100273922101894616">Tự động đăng nhập</translation>
 <translation id="2109384632594340939">ảnh hồ sơ</translation>
 <translation id="2111511281910874386">Chuyển đến trang</translation>
-<translation id="2119609734654412418">Dấu trang của bạn sẽ xuất hiện ở thẻ này</translation>
+<translation id="2119609734654412418">Bạn sẽ thấy các dấu trang của mình tại đây</translation>
 <translation id="2122601567107267586">Không thể mở ứng dụng</translation>
 <translation id="2132122640199389833">Xoá mọi thiết bị đã liên kết</translation>
 <translation id="213279576345780926">Đã đóng <ph name="TAB_TITLE" /></translation>
@@ -575,7 +575,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3710501561113687889">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ <ph name="FIELDS_STRING" /> của bạn với trang web này.</translation>
 <translation id="3714981814255182093">Mở thanh Tìm kiếm</translation>
 <translation id="3716182511346448902">Chrome đã tạm dừng trang này vì trang dùng quá nhiều bộ nhớ.</translation>
-<translation id="3718765429352682176">Bạn có thể xem nhật ký về các đường liên kết được mở trong Chrome từ các ứng dụng khác.</translation>
+<translation id="3718765429352682176">Nhật ký có thể bao gồm các đường liên kết được mở trong Chrome từ các ứng dụng khác.</translation>
 <translation id="3720422586473670527">Không, cảm ơn</translation>
 <translation id="3721119614952978349">Bạn và Google</translation>
 <translation id="3737319253362202215">Cài đặt bản dịch</translation>
@@ -1642,7 +1642,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8398389123831319859">Nhấn đúp và giữ để chuyển sang chế độ Ẩn danh</translation>
 <translation id="8402673309244746971">Chuyển đến phần Đang theo dõi</translation>
 <translation id="8413126021676339697">Hiển thị toàn bộ lịch sử</translation>
-<translation id="8413795581997394485">Bảo vệ bạn khỏi các trang web, nội dung tải xuống và tiện ích được xác định là nguy hiểm. Khi bạn truy cập vào một trang web, Chrome sẽ gửi cho Google một phần URL đã làm rối mã nguồn thông qua một máy chủ bảo mật giúp ẩn địa chỉ IP của bạn. Nếu một trang web có hành vi đáng ngờ, thì Chrome cũng sẽ gửi URL đầy đủ và các đoạn nội dung trên trang cho Google.</translation>
+<translation id="8413795581997394485">Bảo vệ bạn khỏi các trang web, nội dung tải xuống và tiện ích được xác định là nguy hiểm. Khi bạn truy cập vào một trang web, Chrome sẽ gửi cho Google một phần URL đã làm rối mã nguồn thông qua một máy chủ đảm bảo quyền riêng tư giúp ẩn địa chỉ IP của bạn. Nếu một trang web có hành vi đáng ngờ, thì Chrome cũng sẽ gửi URL đầy đủ và các đoạn nội dung trên trang cho Google.</translation>
 <translation id="8414396119627470038">Đăng nhập vào <ph name="SITE_ETLD_PLUS_ONE" /> bằng tài khoản <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8419144699778179708">Xoá nhật ký, kể cả dữ liệu trong hộp tìm kiếm</translation>
 <translation id="8419244640277402268">Bao gồm</translation>

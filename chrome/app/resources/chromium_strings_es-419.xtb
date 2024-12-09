@@ -65,7 +65,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="1880677175115548835">Seleccionar texto</translation>
 <translation id="1881322772814446296">Estás por acceder con una cuenta administrada, lo que significa que proporcionarás al administrador el control sobre tu perfil de Chromium. Tus datos de Chromium, como las aplicaciones, los favoritos, el historial, las contraseñas y otros parámetros de configuración quedarán vinculados a <ph name="USER_NAME" /> de forma permanente. Podrás eliminar estos datos a través del Panel de control de Cuentas de Google, pero no podrás asociarlos a otra cuenta. También puedes crear un perfil para mantener separados tus datos de Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="1900969832270057921">Servicio de Chromium Updater</translation>
-<translation id="1906696617298807388">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chromium envía lo que escribes a Google Drive a fin de obtener sugerencias de artículos. Esta función está desactivada en el modo Incógnito.</translation>
+<translation id="1906696617298807388">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chromium envía lo que escribes a Google Drive a fin de obtener sugerencias de artículos. Esta función está desactivada en el modo Incógnito</translation>
 <translation id="1911763535808217981">Si desactivas esta preferencia, podrás acceder a sitios de Google (como Gmail) sin tener que acceder a Chromium</translation>
 <translation id="1929939181775079593">Chromium no responde. ¿Quieres reiniciarlo ahora?</translation>
 <translation id="1933341829955786215">Tu organización, <ph name="MANAGER" />, requiere que accedas a Chromium</translation>
@@ -505,7 +505,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="7810005234485217901">Puedes fijar la Búsqueda con imágenes para acceder fácilmente</translation>
 <translation id="7828947555739565424">Ya existe un perfil de Chromium con esta cuenta en este dispositivo</translation>
 <translation id="7845233973568007926">Gracias por instalar <ph name="BUNDLE_NAME" />. Debes reiniciar tu computadora antes de usarlo.</translation>
-<translation id="7859018312476869945">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chromium envía lo que escribes a tu motor de búsqueda predeterminado para obtener mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
+<translation id="7859018312476869945">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chromium envía lo que escribes a tu motor de búsqueda predeterminado para obtener mejores sugerencias. Esta función está desactivada en el modo Incógnito</translation>
 <translation id="7867198900892795913">Chromium no se pudo actualizar a la última versión, por lo que te estás perdiendo las nuevas funciones y correcciones de seguridad.</translation>
 <translation id="7872446069773932638">Descargando… Segundos restantes: <ph name="SECONDS" /></translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Cómo puedes administrar tu información:<ph name="END_BOLD" /> Para proteger tu privacidad, borramos los intereses automáticamente después de 4 semanas. Es posible que, a medida que navegues, un interés vuelva a aparecer en la lista. O bien, puedes quitar los intereses que no quieres que Chromium tenga en cuenta.</translation>

@@ -956,7 +956,7 @@
 <translation id="1654580009054503925">不允許顯示要求</translation>
 <translation id="1654713139320245449">找不到投放目的地。需要協助嗎？</translation>
 <translation id="1656528038316521561">背景不透明度</translation>
-<translation id="1657406563541664238">只要自動傳送使用統計資料及當機報告給 Google，就能助我們一臂之力，讓「<ph name="PRODUCT_NAME" />」更臻完美</translation>
+<translation id="1657406563541664238">只要自動傳送使用統計資料及當機報告給 Google，就能助我們一臂之力，讓 <ph name="PRODUCT_NAME" /> 更臻完美</translation>
 <translation id="1657937299377480641">你必須要求家長授予權限，才能再次登入帳戶並存取教育資源</translation>
 <translation id="1658424621194652532">這個網頁正在存取你的麥克風。</translation>
 <translation id="1660763353352708040">電源變壓器發生問題</translation>
@@ -1248,7 +1248,7 @@
 <translation id="1865769994591826607">僅限同網站連線</translation>
 <translation id="186594096341696655">降低取樣率</translation>
 <translation id="186612162884103683">「<ph name="EXTENSION" />」對於勾選位置中的圖片、影片和聲音檔，具有讀取和寫入權限。</translation>
-<translation id="1867780286110144690">「<ph name="PRODUCT_NAME" />」已準備好完成安裝程序</translation>
+<translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> 已準備好完成安裝程序</translation>
 <translation id="1868553836791672080">Chromium 不支援密碼檢查功能</translation>
 <translation id="1868617395637139709">允許 Android 應用程式和服務使用位置資訊。</translation>
 <translation id="1869433484041798909">書籤按鈕</translation>

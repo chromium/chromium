@@ -11,7 +11,7 @@
 <translation id="1035980983510608210">Tüm sekmelerin kapatılması, sabit sekmelerin de kapanmasına neden olur.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Kapat</translation>
-<translation id="1041322626941363065">Şifreleriniz bir veri ihlalinde  olursa uyarı alın</translation>
+<translation id="1041322626941363065">Veri ihlali olması durumunda şifreleriniz açığa çıkarsa uyarı alın</translation>
 <translation id="1044891598689252897">Siteler normal şekilde çalışır</translation>
 <translation id="104491362976654916">Çevrimdışı sayfa</translation>
 <translation id="1049743911850919806">Gizli mod</translation>
@@ -205,7 +205,7 @@
 <translation id="1901600657316773839">Seçimi iptal etme</translation>
 <translation id="1904580727789512086">Ziyaret ettiğiniz URL'ler Google Hesabınıza kaydedilir</translation>
 <translation id="1911619930368729126">Google Drive'a yükle</translation>
-<translation id="1923342640370224680">Son Bir Saat</translation>
+<translation id="1923342640370224680">Son bir saat</translation>
 <translation id="1941314575388338491">Kopyalamak için iki kez dokunun.</translation>
 <translation id="1943478190258551035">Menü → Ayarlar</translation>
 <translation id="1952728750904661634">Yönetilen hesapla oturum açın</translation>
@@ -319,7 +319,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="2403129868389095715">Paketiniz teslim edilemiyor</translation>
 <translation id="2410754283952462441">Bir hesap seçin</translation>
 <translation id="2411749908844615428">{count,plural, =1{Klavyenizin üzerinde {count} tane kayıtlı adres mevcut.}other{Klavyenizin üzerinde {count} tane kayıtlı adres mevcut.}}</translation>
-<translation id="2424805048070062787">Bu sekmeyle devam edin</translation>
+<translation id="2424805048070062787">Bu sekmeyle devam et</translation>
 <translation id="2426805022920575512">Başka hesap seç</translation>
 <translation id="243275146591958220">İndirmeyi iptal et</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> adresinde "<ph name="USERNAME" />" için zaten kayıtlı şifreniz var</translation>
