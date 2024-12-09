@@ -6191,6 +6191,10 @@ crbug.com/343631044 virtual/select-parser-relaxation/accessibility/role-attribut
 crbug.com/362922565 html/select/select-typeahead-scroll.html [ Failure ]
 crbug.com/362922565 html/select/select-typeahead-with-spacekey.html [ Failure ]
 
+# Interesting issue with max-block-size: stretch
+crbug.com/382679385 wpt_internal/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-left.tentative.html [ Failure ]
+crbug.com/382679385 wpt_internal/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-right.tentative.html [ Failure ]
+
 # Several behavior differences between <selectlist> and <select style="appearance:base-select">. (These tests
 # were migrated from the old `the-selectlist-element` test suite.)
 crbug.com/366394195 external/wpt/html/semantics/forms/the-select-element/select-events.tentative.html [ Timeout ]

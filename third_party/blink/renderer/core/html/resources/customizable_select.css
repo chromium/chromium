@@ -61,7 +61,6 @@ select::picker(select) {
 
 select:not(:-internal-list-box)::picker(select) {
   box-sizing: border-box;
-  overflow: auto;
   border: 1px solid;
   padding: 0;
   color: CanvasText;
@@ -70,24 +69,20 @@ select:not(:-internal-list-box)::picker(select) {
   inset: auto;
   min-inline-size: anchor-size(self-inline);
   min-block-size: 1lh;
+  /* Go to the edge of the viewport, and add scrollbars if needed. */
+  max-block-size: -webkit-fill-available; /* Can be removed when stretch ships */
+  max-block-size: stretch;
+  overflow: auto;
   /* Below and span-right, by default. */
   position-area: block-end span-inline-end;
+  position-try-order: most-block-size;
   position-try-fallbacks:
     /* First try above and span-right. */
     block-start span-inline-end,
     /* Then below but span-left. */
     block-end span-inline-start,
     /* Then above and span-left. */
-    block-start span-inline-start,
-    /* Then just go back to below/right, and add a scrollbar. */
-    --internal-select-below-right-scrollable;
-}
-
-@position-try --internal-select-below-right-scrollable {
-    position-area: block-end span-inline-end;
-    height: 100%;
-    overflow: auto;
-    align-self: stretch;
+    block-start span-inline-start;
 }
 
 /* This rule is here to ensure that we can get a ComputedStyle for

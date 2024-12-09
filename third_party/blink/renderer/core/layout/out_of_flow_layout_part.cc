@@ -1923,16 +1923,12 @@ const LayoutResult* OutOfFlowLayoutPart::LayoutOOFNode(
 namespace {
 
 // The spec says:
-//
-// "
-// Implementations may choose to impose an implementation-defined limit on the
+// "Implementations may choose to impose an implementation-defined limit on the
 // length of position fallbacks lists, to limit the amount of excess layout work
-// that may be required. This limit must be at least five.
-// "
-//
-// We use 6 here because the first attempt is without anything from the
-// position fallbacks list applied.
-constexpr unsigned kMaxTryAttempts = 6;
+// that may be required. This limit must be at least five."
+// The "+1" is because the first attempt is without anything from the position
+// fallbacks list applied.
+constexpr unsigned kMaxTryAttempts = 5 + 1;
 
 // When considering multiple candidate styles (i.e. position-try-fallbacks),
 // we keep track of each successful placement as a NonOverflowingCandidate.

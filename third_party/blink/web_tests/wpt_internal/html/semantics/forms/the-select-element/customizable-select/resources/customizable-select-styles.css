@@ -7,7 +7,7 @@
 }
 
 .customizable-select-popover {
-  overflow: auto;
+  box-sizing: border-box;
   border: 1px solid;
   padding: 0;
   color: CanvasText;
@@ -16,17 +16,15 @@
   inset: auto;
   min-inline-size: anchor-size(self-inline);
   min-block-size: 1lh;
-  position-area: block-end span-inline-end;
-  position-try-fallbacks: block-start span-inline-end,
-    block-end span-inline-start,block-start span-inline-start,
-    --below-right-scrollable;
-}
-
-@position-try --below-right-scrollable {
-  position-area: block-end span-inline-end;
-  height: 100%;
+  max-block-size: -webkit-fill-available; /* Can be removed when stretch ships */
+  max-block-size: stretch;
   overflow: auto;
-  align-self: stretch;
+  position-area: block-end span-inline-end;
+  position-try-order: most-block-size;
+  position-try-fallbacks:
+    block-start span-inline-end,
+    block-end span-inline-start,
+    block-start span-inline-start;
 }
 
 .customizable-select-option {
