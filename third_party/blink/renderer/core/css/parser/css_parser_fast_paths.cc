@@ -1168,6 +1168,10 @@ ParseColorResult CSSParserFastPaths::ParseColor(const String& string,
                            color_id);
 }
 
+bool CSSParserFastPaths::IsBorderStyleValue(CSSValueID value_id) {
+  return value_id >= CSSValueID::kNone && value_id <= CSSValueID::kDouble;
+}
+
 bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     CSSPropertyID property_id,
     CSSValueID value_id,
@@ -1204,7 +1208,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kBorderInlineEndStyle:
     case CSSPropertyID::kBorderInlineStartStyle:
     case CSSPropertyID::kColumnRuleStyle:
-      return value_id >= CSSValueID::kNone && value_id <= CSSValueID::kDouble;
+      return IsBorderStyleValue(value_id);
     case CSSPropertyID::kBoxSizing:
       return value_id == CSSValueID::kBorderBox ||
              value_id == CSSValueID::kContentBox;
@@ -1804,7 +1808,6 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kWebkitBoxOrient,
     CSSPropertyID::kWebkitBoxPack,
     CSSPropertyID::kColumnFill,
-    CSSPropertyID::kColumnRuleStyle,
     CSSPropertyID::kFlexDirection,
     CSSPropertyID::kFlexWrap,
     CSSPropertyID::kFontKerning,

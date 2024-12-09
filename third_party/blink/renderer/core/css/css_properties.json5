@@ -6255,7 +6255,7 @@
     },
     {
       name: "column-rule-style",
-      property_methods: ["CSSValueFromComputedStyleInternal"],
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/gap_data_list.h"],

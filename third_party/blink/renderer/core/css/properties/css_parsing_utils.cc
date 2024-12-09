@@ -4988,7 +4988,12 @@ CSSValue* ConsumeGapDecorationPropertyValue(
     case CSSGapDecorationPropertyType::kWidth:
       return ConsumeLineWidth(stream, context,
                               css_parsing_utils::UnitlessQuirk::kForbid);
-      // TODO(crbug.com/357648037): Add kStyle when implemented.
+    case CSSGapDecorationPropertyType::kStyle: {
+      if (CSSParserFastPaths::IsBorderStyleValue(stream.Peek().Id())) {
+        return ConsumeIdent(stream);
+      }
+      return nullptr;
+    }
   }
 }
 
