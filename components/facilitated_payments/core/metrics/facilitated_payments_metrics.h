@@ -15,6 +15,12 @@ class TimeDelta;
 
 namespace payments::facilitated {
 
+// A payment system that is currently running.
+enum class FacilitatedPaymentsType {
+  kEwallet = 0,
+  kPix = 1,
+};
+
 // Reasons for why the payflow was exited early. These only include the reasons
 // after the renderer has detected a valid code and sent the signal to the
 // browser process.
