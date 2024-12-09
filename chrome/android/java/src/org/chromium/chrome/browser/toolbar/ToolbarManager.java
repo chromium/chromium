@@ -418,7 +418,7 @@ public class ToolbarManager
         @Override
         public int handleBackPress() {
             mIsInProgress = false;
-            if (mIsGestureMode) {
+            if (mIsGestureMode && mBackGestureInProgress) {
                 BackPressMetrics.recordNavStatusDuringGesture(
                         mStartNavDuringOngoingGesture, mActivity.getWindow());
                 BackPressMetrics.recordPredictiveGestureNav(
@@ -433,6 +433,7 @@ public class ToolbarManager
                 res = ToolbarManager.this.handleBackPress();
             }
             mBackGestureInProgress = false;
+            mIsGestureMode = false;
             mHandler = null;
             return res;
         }
@@ -445,15 +446,17 @@ public class ToolbarManager
         @Override
         public void handleOnBackCancelled() {
             mIsInProgress = false;
-            if (mIsGestureMode) {
+            if (mIsGestureMode && mBackGestureInProgress) {
                 BackPressMetrics.recordNavStatusDuringGesture(
                         mStartNavDuringOngoingGesture, mActivity.getWindow());
                 BackPressMetrics.recordPredictiveGestureNav(
                         mHandler != null, PredictiveGestureNavPhase.CANCELLED);
             }
+            if (mHandler != null) {
+                mHandler.onBackCancelled(mIsGestureMode);
+            }
             mBackGestureInProgress = false;
-            if (mHandler == null) return;
-            mHandler.onBackCancelled(mIsGestureMode);
+            mIsGestureMode = false;
             mHandler = null;
         }
 
