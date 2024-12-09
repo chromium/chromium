@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <array>
 #include <map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -1171,7 +1172,7 @@ void ComputeListOfNonEmptySurfaces(LayerTreeImpl* layer_tree_impl,
   // Surface which require copy of output (view transition captures) are exempt
   // because their contents are required regardless of the state of the target
   // surface.
-  bool removed_surface = false;
+  std::unordered_set<RenderSurfaceImpl*> surfaces_to_remove;
   for (RenderSurfaceImpl* surface : *initial_surface_list) {
     bool is_root = surface->EffectTreeIndex() == kContentsRootPropertyNodeId;
     RenderSurfaceImpl* target_surface = surface->render_target();
@@ -1179,13 +1180,30 @@ void ComputeListOfNonEmptySurfaces(LayerTreeImpl* layer_tree_impl,
                      (!target_surface->is_render_surface_list_member() &&
                       !surface->CopyOfOutputRequired()))) {
       surface->set_is_render_surface_list_member(false);
-      removed_surface = true;
-      target_surface->decrement_num_contributors();
+      surfaces_to_remove.insert(surface);
       continue;
+    }
+
+    // If one of the child surfaces had a CopyOfOutputRequired, it may be the
+    // reason we're adding it. However, we may have skipped its target surface
+    // already, so undelete the chain of all target surfaces for any surface
+    // that we're adding.
+    for (auto* target_to_undelete = target_surface;
+         surfaces_to_remove.count(target_to_undelete);
+         target_to_undelete = target_to_undelete->render_target()) {
+      surface->set_is_render_surface_list_member(true);
+      final_surface_list->push_back(target_to_undelete);
+      surfaces_to_remove.erase(target_to_undelete);
     }
     final_surface_list->push_back(surface);
   }
-  if (removed_surface) {
+
+  for (auto* surface : surfaces_to_remove) {
+    RenderSurfaceImpl* target_surface = surface->render_target();
+    target_surface->decrement_num_contributors();
+  }
+
+  if (!surfaces_to_remove.empty()) {
     for (LayerImpl* layer : *layer_tree_impl) {
       if (layer->contributes_to_drawn_render_surface()) {
         RenderSurfaceImpl* render_target = layer->render_target();
