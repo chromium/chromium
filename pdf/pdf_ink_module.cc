@@ -165,7 +165,8 @@ bool PdfInkModule::DrawThumbnail(SkCanvas& canvas, int page_index) {
 
   const ink::AffineTransform transform = GetInkThumbnailTransform(
       gfx::SkISizeToSize(canvas.imageInfo().dimensions()),
-      client_->GetPageContentsRect(page_index), client_->GetZoom());
+      client_->GetOrientation(), client_->GetPageContentsRect(page_index),
+      client_->GetZoom());
 
   ink::SkiaRenderer skia_renderer;
   for (const FinishedStrokeState& finished_stroke : it->second) {

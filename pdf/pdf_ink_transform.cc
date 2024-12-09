@@ -127,15 +127,24 @@ ink::AffineTransform GetInkRenderTransform(
 
 ink::AffineTransform GetInkThumbnailTransform(
     const gfx::Size& canvas_size,
+    PageOrientation orientation,
     const gfx::Rect& page_content_rect,
     float scale_factor) {
   // Since thumbnails are always drawn without any rotation, the transform only
   // needs to perform scaling.
+  //
+  // However, `page_content_rect` may be rotated, so normalize it as needed.
+  gfx::Size content_size = page_content_rect.size();
+  if (orientation == PageOrientation::kClockwise90 ||
+      orientation == PageOrientation::kClockwise270) {
+    content_size.Transpose();
+  }
+
   const float ratio =
-      scale_factor * std::min(static_cast<float>(canvas_size.width()) /
-                                  page_content_rect.width(),
-                              static_cast<float>(canvas_size.height()) /
-                                  page_content_rect.height());
+      scale_factor *
+      std::min(
+          static_cast<float>(canvas_size.width()) / content_size.width(),
+          static_cast<float>(canvas_size.height()) / content_size.height());
   return {ratio, 0, 0, 0, ratio, 0};
 }
 

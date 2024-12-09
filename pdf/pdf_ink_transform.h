@@ -106,9 +106,9 @@ ink::AffineTransform GetInkRenderTransform(
 // GetInkRenderTransform(), the transformation is simpler because there is no
 // origin offset, and the thumbnail canvas is never rotated. Note that the
 // thumbnail content may be rotated.
-// TODO(crbug.com/377528733): Add a PageOrientation parameter.
 ink::AffineTransform GetInkThumbnailTransform(
     const gfx::Size& canvas_size,
+    PageOrientation orientation,
     const gfx::Rect& page_content_rect,
     float scale_factor);
 
