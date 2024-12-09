@@ -112,6 +112,10 @@ tab-search-item {
   background-color: transparent;
 }
 
+:host([dedupe-enabled]) .mwb-list-item {
+  --mwb-item-height: 32px;
+}
+
 .subheading {
   color: var(--cr-secondary-text-color);
   font-size: 12px;

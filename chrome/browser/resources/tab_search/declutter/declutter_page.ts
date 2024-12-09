@@ -274,8 +274,14 @@ export class DeclutterPageElement extends CrLitElement {
       const urlTabs = tabs[url]!;
       if (urlTabs.length > 0) {
         const tabData: TabData = this.tabDataFromTab_(urlTabs[0]!);
-        tabData.tab.title = url;
-        tabData.tab.lastActiveElapsedText = urlTabs.length.toString();
+        const duplicateCount = urlTabs.length - 1;
+        if (duplicateCount === 1) {
+          tabData.tab.title =
+              loadTimeData.getStringF('duplicateItemTitleSingle', url);
+        } else {
+          tabData.tab.title = loadTimeData.getStringF(
+              'duplicateItemTitleMulti', url, duplicateCount);
+        }
         this.duplicateTabDatas_.push(tabData);
       }
     }

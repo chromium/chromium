@@ -9701,6 +9701,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_DECLUTTER_EMPTY_BODY" desc="The body text for the declutter empty state UI">
         No inactive tabs right now
       </message>
+      <message name="IDS_DUPLICATE_ITEM_TITLE_SINGLE" desc="The title for an item in the duplicate tabs list with 1 duplicate">
+        <ph name="URL">$1<ex>google.com</ex></ph> • 1 duplicate
+      </message>
+      <message name="IDS_DUPLICATE_ITEM_TITLE_MULTI" desc="The title for an item in the duplicate tabs list with multiple duplicates">
+        <ph name="URL">$1<ex>google.com</ex></ph> • <ph name="DUPLICATE_COUNT">$2<ex>2</ex></ph> duplicates
+      </message>
       <message name="IDS_TOOLTIP_TAB_DECLUTTER" desc="The tooltip for the Tab Declutter button.">
         Review inactive tabs?
       </message>

@@ -162,6 +162,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
        IDS_DECLUTTER_INACTIVE_TITLE_NO_DEDUPE},
       {"declutterTimestamp", IDS_DECLUTTER_TIMESTAMP},
       {"declutterTitle", IDS_DECLUTTER_TITLE},
+      {"duplicateItemTitleMulti", IDS_DUPLICATE_ITEM_TITLE_MULTI},
+      {"duplicateItemTitleSingle", IDS_DUPLICATE_ITEM_TITLE_SINGLE},
       // Selector UI strings
       {"autoTabGroupsSelectorHeading", IDS_AUTO_TAB_GROUPS_SELECTOR_HEADING},
       {"autoTabGroupsSelectorSubheading",
