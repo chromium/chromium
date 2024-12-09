@@ -503,7 +503,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
   if (kIPHDownloadEsbPromoFeature.name == feature->name) {
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
-    config->availability = Comparator(ANY, 0);
+    // Because this is a custom configuration being used in desktop user ed, use
+    // a non-default availability so the configurator doesn't try to write its
+    // own.
+    config->availability = Comparator(GREATER_THAN_OR_EQUAL, 0);
     config->session_rate = Comparator(ANY, 0);
     // Don't show if user has already seen an IPH this session.
     // Show the promo max once a year if the user hasn't interacted with
@@ -529,7 +532,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // c/b/ui/webui/downloads/downloads_dom_handler.cc
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
-    config->availability = Comparator(ANY, 0);
+    // Because this is a custom configuration being used in desktop user ed, use
+    // a non-default availability so the configurator doesn't try to write its
+    // own.
+    config->availability = Comparator(GREATER_THAN_OR_EQUAL, 0);
     config->session_rate = Comparator(ANY, 0);
 
     // This isn't an IPH so we don't suppress other engagement features.

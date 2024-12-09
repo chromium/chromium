@@ -204,7 +204,7 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
             std::inserter(config.event_configs, config.event_configs.begin()));
 
   // Set up some reasonable availability values.
-  if (config.availability.value != 0) {
+  if (config.availability != feature_engagement::Comparator()) {
     // There is already configuration specified for availability other than the
     // default. Make sure the availability is a lower bound.
     if (config.availability.type != feature_engagement::GREATER_THAN) {
