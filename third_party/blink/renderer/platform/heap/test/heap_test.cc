@@ -64,7 +64,11 @@ namespace blink {
 
 namespace {
 
-class HeapTest : public TestSupportingGC {};
+class HeapTest : public TestSupportingGC {
+#if DCHECK_IS_ON()
+  void TearDown() override { WTF::SetIsBeforeThreadCreatedForTest(); }
+#endif
+};
 
 class HeapDeathTest : public TestSupportingGC {};
 
