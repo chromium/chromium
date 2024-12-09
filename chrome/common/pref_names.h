@@ -10,6 +10,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/pref_font_webkit_names.h"
 #include "components/compose/buildflags.h"
 #include "components/offline_pages/buildflags/buildflags.h"
@@ -3241,9 +3242,15 @@ inline constexpr char kFeatureNotificationsEnabled[] =
 
 inline constexpr char kInternalOnlyUisEnabled[] = "internal_only_uis_enabled";
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(ENABLE_GLIC)
 inline constexpr char kGlicLauncherEnabled[] = "glic.launcher_enabled";
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// Boolean pref that enables or disables microphone access for Glic.
+inline constexpr char kGlicMicrophoneEnabled[] = "glic.microphone_enabled";
+// Boolean pref that enables or disables geolocation access for Glic.
+inline constexpr char kGlicGeolocationEnabled[] = "glic.geolocation_enabled";
+// Boolean pref that enables or disables tab context for Glic.
+inline constexpr char kGlicTabContextEnabled[] = "glic.tab_context_enabled";
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 // *************** SERVICE PREFS ***************
 // These are attached to the service process.

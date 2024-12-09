@@ -26,6 +26,9 @@ GlicConfiguration::~GlicConfiguration() = default;
 // static
 void GlicConfiguration::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kGlicLauncherEnabled, false);
+  registry->RegisterBooleanPref(prefs::kGlicMicrophoneEnabled, false);
+  registry->RegisterBooleanPref(prefs::kGlicGeolocationEnabled, false);
+  registry->RegisterBooleanPref(prefs::kGlicTabContextEnabled, false);
 }
 
 bool GlicConfiguration::IsEnabled() {
