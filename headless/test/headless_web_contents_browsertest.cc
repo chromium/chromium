@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -658,16 +659,17 @@ class BlockDevToolsEmbedding : public HeadlessDevTooledBrowserTest {
 
   void OnFrameTreeResult(base::Value::Dict result) {
     // Make sure the iframe did not load successfully.
-    auto& child_frames =
-        *result.FindListByDottedPath("result.frameTree.childFrames");
+    const auto& child_frames = CHECK_DEREF(
+        result.FindListByDottedPath("result.frameTree.childFrames"));
     EXPECT_EQ(DictString(child_frames[0].GetDict(), "frame.url"),
               "chrome-error://chromewebdata/");
     FinishAsynchronousTest();
   }
 
   bool ShouldEnableSitePerProcess() override {
-    // Currently this test seg faults with OOPIF enabled.
-    // https://crbug.com/382703193.
+    // Headless browser tests by default run with OOPIF enabled. This results in
+    // the child frame to appear in a separate target. For simplicity we disable
+    // OOPIF for this test and expect child frame in the same target.
     return false;
   }
 
