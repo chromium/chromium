@@ -13,8 +13,6 @@ static_library("android") {
     "byte_buffer_helper.h",
     "csp_checker_android.cc",
     "csp_checker_android.h",
-    "currency_formatter_android.cc",
-    "currency_formatter_android.h",
     "error_message_util.cc",
     "has_enrolled_instrument_query_android.cc",
     "jni_payment_app.cc",
@@ -42,6 +40,8 @@ static_library("android") {
     "payment_request_web_contents_data_android.cc",
     "payment_validator_android.cc",
     "ssl_validity_checker_android.cc",
+    "ui/currency_formatter_android.cc",
+    "ui/currency_formatter_android.h",
     "url_util.cc",
   ]
 
