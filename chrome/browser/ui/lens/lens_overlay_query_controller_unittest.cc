@@ -51,6 +51,9 @@ constexpr char kTestSuggestSignals[] = "encoded_image_signals";
 constexpr char kTestServerSessionId[] = "server_session_id";
 constexpr char kTestServerSessionId2[] = "server_session_id2";
 
+// The fake routing info.
+constexpr char kTestServerAddress[] = "test_server_address";
+
 // The fake search session id.
 constexpr char kTestSearchSessionId[] = "search_session_id";
 
@@ -209,6 +212,20 @@ class LensOverlayQueryControllerTest : public testing::Test {
     lens::LensOverlayRequestId proto;
     EXPECT_TRUE(proto.ParseFromString(serialized_proto));
     return proto.analytics_id();
+  }
+
+  lens::LensOverlayRoutingInfo GetRoutingInfoFromUrl(std::string url_string) {
+    GURL url = GURL(url_string);
+    std::string vsrid_param;
+    EXPECT_TRUE(
+        net::GetValueForKeyInQuery(url, kRequestIdParameterKey, &vsrid_param));
+    std::string serialized_proto;
+    EXPECT_TRUE(base::Base64UrlDecode(
+        vsrid_param, base::Base64UrlDecodePolicy::DISALLOW_PADDING,
+        &serialized_proto));
+    lens::LensOverlayRequestId proto;
+    EXPECT_TRUE(proto.ParseFromString(serialized_proto));
+    return proto.routing_info();
   }
 
   void CheckGen204IdsMatch(
@@ -1724,6 +1741,139 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(query_controller.num_full_page_translate_gen204_pings_sent(), 2);
 
   query_controller.EndQuery();
+}
+
+TEST_F(LensOverlayQueryControllerTest,
+       RoutingInfo_FromFullImageReseponse_IncludedInRequestId) {
+  // Disable the cluster info handshake flow.
+  feature_list_.Reset();
+  feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{lens::features::kLensOverlayLatencyOptimizations,
+                             lens::features::kLensOverlayContextualSearchbox});
+
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  // Set up the query controller responses.
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  fake_objects_response.mutable_cluster_info()->set_server_session_id(
+      kTestServerSessionId);
+  fake_objects_response.mutable_cluster_info()
+      ->mutable_routing_info()
+      ->set_server_address(kTestServerAddress);
+  query_controller.set_fake_objects_response(fake_objects_response);
+  lens::LensOverlayInteractionResponse fake_interaction_response;
+  fake_interaction_response.set_encoded_response(kTestSuggestSignals);
+  query_controller.set_fake_interaction_response(fake_interaction_response);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
+  query_controller.StartQueryFlow(
+      bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0);
+  ASSERT_TRUE(full_image_response_future.Wait());
+
+  auto region = lens::mojom::CenterRotatedBox::New();
+  region->box = gfx::RectF(30, 40, 50, 60);
+  region->coordinate_type =
+      lens::mojom::CenterRotatedBox_CoordinateType::kImage;
+  query_controller.SendMultimodalRequest(
+      std::move(region), kTestQueryText, lens::MULTIMODAL_SEARCH,
+      additional_search_query_params, std::nullopt);
+  task_environment_.RunUntilIdle();
+  query_controller.EndQuery();
+
+  // Verify the routing info is included in the request id.
+  ASSERT_TRUE(url_response_future.IsReady());
+  auto initial_sent_interaction_request =
+      query_controller.sent_interaction_request();
+  ASSERT_EQ(kTestServerAddress,
+            initial_sent_interaction_request.request_context()
+                .request_id()
+                .routing_info()
+                .server_address());
+  lens::LensOverlayRoutingInfo url_routing_info =
+      GetRoutingInfoFromUrl(url_response_future.Get().url());
+  ASSERT_EQ(kTestServerAddress, url_routing_info.server_address());
+}
+
+// Tests that the query controller attaches the server session id from the
+// cluster info response to the full image request.
+TEST_F(LensOverlayQueryControllerTest,
+       RoutingInfo_FromClusterInfoReseponse_IncludedInRequestId) {
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  // Set up the query controller responses.
+  lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response;
+  fake_cluster_info_response.set_server_session_id(kTestServerSessionId);
+  fake_cluster_info_response.set_search_session_id(kTestSearchSessionId);
+  fake_cluster_info_response.mutable_routing_info()->set_server_address(
+      kTestServerAddress);
+  query_controller.set_fake_cluster_info_response(fake_cluster_info_response);
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  fake_objects_response.mutable_cluster_info()->set_server_session_id(
+      kTestServerSessionId);
+  query_controller.set_fake_objects_response(fake_objects_response);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
+  query_controller.StartQueryFlow(
+      bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*underlying_content_bytes=*/{}, lens::MimeType::kUnknown, 0);
+  ASSERT_TRUE(full_image_response_future.Wait());
+
+  auto region = lens::mojom::CenterRotatedBox::New();
+  region->box = gfx::RectF(30, 40, 50, 60);
+  region->coordinate_type =
+      lens::mojom::CenterRotatedBox_CoordinateType::kImage;
+  query_controller.SendMultimodalRequest(
+      std::move(region), kTestQueryText, lens::MULTIMODAL_SEARCH,
+      additional_search_query_params, std::nullopt);
+  task_environment_.RunUntilIdle();
+  query_controller.EndQuery();
+
+  // Verify the routing info is included in the request id.
+  ASSERT_TRUE(url_response_future.IsReady());
+  auto initial_sent_interaction_request =
+      query_controller.sent_interaction_request();
+  ASSERT_EQ(kTestServerAddress,
+            initial_sent_interaction_request.request_context()
+                .request_id()
+                .routing_info()
+                .server_address());
+  lens::LensOverlayRoutingInfo url_routing_info =
+      GetRoutingInfoFromUrl(url_response_future.Get().url());
+  ASSERT_EQ(kTestServerAddress, url_routing_info.server_address());
 }
 
 }  // namespace lens
