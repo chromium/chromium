@@ -51,7 +51,6 @@ class CascadeLayer;
 class CSSRule;
 class CSSStyleSheet;
 class ExecutionContext;
-class StyleSheetContents;
 
 class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
  public:
@@ -412,13 +411,6 @@ class CORE_EXPORT StyleRuleScope : public StyleRuleGroup {
   void TraceAfterDispatch(blink::Visitor*) const;
 
   const StyleScope& GetStyleScope() const { return *style_scope_; }
-
-  void SetPreludeText(const ExecutionContext*,
-                      String,
-                      CSSNestingType,
-                      StyleRule* parent_rule_for_nesting,
-                      StyleSheetContents* style_sheet);
-
  private:
   Member<const StyleScope> style_scope_;
 };

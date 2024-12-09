@@ -676,25 +676,6 @@ void StyleRuleScope::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleGroup::TraceAfterDispatch(visitor);
 }
 
-void StyleRuleScope::SetPreludeText(const ExecutionContext* execution_context,
-                                    String value,
-                                    CSSNestingType nesting_type,
-                                    StyleRule* parent_rule_for_nesting,
-                                    StyleSheetContents* style_sheet) {
-  auto* parser_context =
-      MakeGarbageCollected<CSSParserContext>(*execution_context);
-  CSSParserTokenStream stream(value);
-
-  style_scope_ = StyleScope::Parse(stream, parser_context, nesting_type,
-                                   parent_rule_for_nesting, style_sheet);
-  if (!stream.AtEnd()) {
-    style_scope_ = nullptr;
-  }
-
-  // Reparent rules within the @scope's body.
-  Reparent(style_scope_->RuleForNesting());
-}
-
 StyleRuleGroup::StyleRuleGroup(RuleType type,
                                HeapVector<Member<StyleRuleBase>> rules)
     : StyleRuleBase(type), child_rules_(std::move(rules)) {}

@@ -93,60 +93,63 @@ TEST_F(StyleRuleTest, StyleRulePropertyCopy) {
 }
 
 TEST_F(StyleRuleTest, SetPreludeTextReparentsStyleRules) {
-  auto* scope_rule = DynamicTo<StyleRuleScope>(
+  CSSStyleSheet* sheet = css_test_helpers::CreateStyleSheet(GetDocument());
+  auto* scope_rule = DynamicTo<CSSScopeRule>(
       css_test_helpers::ParseRule(GetDocument(), R"CSS(
       @scope (.a) to (.b &) {
         .c & { }
       }
-    )CSS"));
+    )CSS")
+          ->CreateCSSOMWrapper(/*position_hint=*/0, sheet));
 
   ASSERT_TRUE(scope_rule);
-  ASSERT_EQ(1u, scope_rule->ChildRules().size());
-  StyleRule& child_rule = To<StyleRule>(*scope_rule->ChildRules()[0]);
+  ASSERT_EQ(1u, scope_rule->GetStyleRuleScope().ChildRules().size());
+  StyleRule& child_rule_before =
+      To<StyleRule>(*scope_rule->GetStyleRuleScope().ChildRules()[0]);
 
-  const StyleScope& scope_before = scope_rule->GetStyleScope();
+  const StyleScope& scope_before =
+      scope_rule->GetStyleRuleScope().GetStyleScope();
   StyleRule* rule_before = scope_before.RuleForNesting();
   ASSERT_TRUE(rule_before);
   EXPECT_EQ(".a", rule_before->SelectorsText());
 
   EXPECT_EQ(rule_before, FindParentSelector(scope_before.To())->ParentRule());
-  EXPECT_EQ(rule_before,
-            FindParentSelector(child_rule.FirstSelector())->ParentRule());
+  EXPECT_EQ(
+      rule_before,
+      FindParentSelector(child_rule_before.FirstSelector())->ParentRule());
 
-  // Note that CSSNestingType::kNone here refers to the nesting context outside
-  // of `scope_rule` (which in this case has no parent rule).
   scope_rule->SetPreludeText(GetDocument().GetExecutionContext(),
-                             "(.x) to (.b &)", CSSNestingType::kNone,
-                             /* parent_rule_for_nesting */ nullptr,
+                             "(.x) to (.b &)");
 
-                             /* style_sheet */ nullptr);
-
-  const StyleScope& scope_after = scope_rule->GetStyleScope();
+  DLOG(INFO) << "A";
+  const StyleScope& scope_after =
+      scope_rule->GetStyleRuleScope().GetStyleScope();
   StyleRule* rule_after = scope_after.RuleForNesting();
   ASSERT_TRUE(rule_after);
   EXPECT_EQ(".x", rule_after->SelectorsText());
+  StyleRule& child_rule_afer =
+      To<StyleRule>(*scope_rule->GetStyleRuleScope().ChildRules()[0]);
 
   // Verify that '&' (in '.b &') now points to `rule_after`.
   EXPECT_EQ(rule_after, FindParentSelector(scope_after.To())->ParentRule());
   // Verify that '&' (in '.c &') now points to `rule_after`.
   EXPECT_EQ(rule_after,
-            FindParentSelector(child_rule.FirstSelector())->ParentRule());
+            FindParentSelector(child_rule_afer.FirstSelector())->ParentRule());
 }
 
 TEST_F(StyleRuleTest, SetPreludeTextWithEscape) {
-  auto* scope_rule = DynamicTo<StyleRuleScope>(
+  CSSStyleSheet* sheet = css_test_helpers::CreateStyleSheet(GetDocument());
+  auto* scope_rule = DynamicTo<CSSScopeRule>(
       css_test_helpers::ParseRule(GetDocument(), R"CSS(
       @scope (.a) to (.b &) {
         .c & { }
       }
-    )CSS"));
+    )CSS")
+          ->CreateCSSOMWrapper(/*position_hint=*/0, sheet));
 
   // Don't crash.
   scope_rule->SetPreludeText(GetDocument().GetExecutionContext(),
-                             "(.x) to (.\\1F60A)", CSSNestingType::kNone,
-                             /* parent_rule_for_nesting */ nullptr,
-
-                             /* style_sheet */ nullptr);
+                             "(.x) to (.\\1F60A)");
 }
 
 TEST_F(StyleRuleTest, SetPreludeTextPreservesNestingContext) {
@@ -276,6 +279,34 @@ TEST_F(StyleRuleTest, SetPreludeTextBecomesNonImplicitScope) {
   EXPECT_TRUE(scope_rule->GetStyleRuleScope().GetStyleScope().IsImplicit());
   scope_rule->SetPreludeText(GetDocument().GetExecutionContext(), "(.a)");
   EXPECT_FALSE(scope_rule->GetStyleRuleScope().GetStyleScope().IsImplicit());
+}
+
+TEST_F(StyleRuleTest, SetPreludeTextInvalid) {
+  CSSStyleSheet* sheet = css_test_helpers::CreateStyleSheet(GetDocument());
+  auto* css_scope_rule = DynamicTo<CSSScopeRule>(
+      css_test_helpers::ParseRule(GetDocument(), "@scope (.a) {}")
+          ->CreateCSSOMWrapper(/*position_hint=*/0, sheet));
+
+  StyleRuleScope* before_rule = &css_scope_rule->GetStyleRuleScope();
+  // Don't crash:
+  css_scope_rule->SetPreludeText(GetDocument().GetExecutionContext(),
+                                 "(.a) to !!!!");
+  StyleRuleScope* after_rule = &css_scope_rule->GetStyleRuleScope();
+  EXPECT_EQ(after_rule, before_rule);
+}
+
+TEST_F(StyleRuleTest, SetPreludeTextUnexpectedTrailingTokens) {
+  CSSStyleSheet* sheet = css_test_helpers::CreateStyleSheet(GetDocument());
+  auto* css_scope_rule = DynamicTo<CSSScopeRule>(
+      css_test_helpers::ParseRule(GetDocument(), "@scope (.a) {}")
+          ->CreateCSSOMWrapper(/*position_hint=*/0, sheet));
+
+  StyleRuleScope* before_rule = &css_scope_rule->GetStyleRuleScope();
+  // Don't crash:
+  css_scope_rule->SetPreludeText(GetDocument().GetExecutionContext(),
+                                 "(.a) to (.b) trailing");
+  StyleRuleScope* after_rule = &css_scope_rule->GetStyleRuleScope();
+  EXPECT_EQ(after_rule, before_rule);
 }
 
 }  // namespace blink

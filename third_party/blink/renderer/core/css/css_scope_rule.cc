@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -86,12 +87,34 @@ void CSSScopeRule::SetPreludeText(const ExecutionContext* execution_context,
     }
   }
 
+  // Replace the inner StyleRuleScope with a new rule using the specified
+  // prelude.
+
   CSSStyleSheet* style_sheet = parentStyleSheet();
   StyleSheetContents* contents =
       style_sheet ? style_sheet->Contents() : nullptr;
-
-  GetStyleRuleScope().SetPreludeText(execution_context, value, nesting_type,
-                                     parent_rule_for_nesting, contents);
+  auto* parser_context =
+      MakeGarbageCollected<CSSParserContext>(*execution_context);
+  CSSParserTokenStream stream(value);
+  StyleScope* new_style_scope = StyleScope::Parse(
+      stream, parser_context, nesting_type, parent_rule_for_nesting, contents);
+  if (!new_style_scope || !stream.AtEnd()) {
+    // Quietly no-op if the provided prelude doesn't parse (similar to the
+    // behavior of CSSStyleRule::setSelectorText).
+    return;
+  }
+  // Any '&' selectors in child rules must now point to new_style_scope's
+  // internally-held style rule.
+  HeapVector<Member<StyleRuleBase>> new_child_rules;
+  new_child_rules.ReserveInitialCapacity(
+      GetStyleRuleScope().ChildRules().size());
+  for (StyleRuleBase* child_rule : GetStyleRuleScope().ChildRules()) {
+    // TODO(crbug.com/363019839): Re-nest instead.
+    new_child_rules.push_back(child_rule->Copy());
+    new_child_rules.back()->Reparent(new_style_scope->RuleForNesting());
+  }
+  group_rule_ = MakeGarbageCollected<StyleRuleScope>(
+      *new_style_scope, std::move(new_child_rules));
 }
 
 StyleRuleScope& CSSScopeRule::GetStyleRuleScope() {
