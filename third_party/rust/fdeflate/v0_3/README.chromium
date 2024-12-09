@@ -1,9 +1,9 @@
 Name: fdeflate
 URL: https://crates.io/crates/fdeflate
-Version: 0.3.6
-Revision: 4610c916ae1000c9b5839059340598a7c55130e8
+Version: 0.3.7
+Revision: c365c7e6ffa81feb2e1fb762eed7299f05c9b0ca
 License: Apache 2.0
-License File: //third_party/rust/chromium_crates_io/vendor/fdeflate-0.3.6/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/fdeflate-0.3.7/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes
 

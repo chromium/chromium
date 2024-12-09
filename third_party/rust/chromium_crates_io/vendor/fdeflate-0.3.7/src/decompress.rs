@@ -3,8 +3,8 @@ use simd_adler32::Adler32;
 use crate::{
     huffman::{self, build_table},
     tables::{
-        self, CLCL_ORDER, DIST_SYM_TO_DIST_BASE, DIST_SYM_TO_DIST_EXTRA, FIXED_CODE_LENGTHS,
-        LEN_SYM_TO_LEN_BASE, LEN_SYM_TO_LEN_EXTRA, LITLEN_TABLE_ENTRIES,
+        self, CLCL_ORDER, DIST_SYM_TO_DIST_BASE, DIST_SYM_TO_DIST_EXTRA, FIXED_DIST_TABLE,
+        FIXED_LITLEN_TABLE, LEN_SYM_TO_LEN_BASE, LEN_SYM_TO_LEN_EXTRA, LITLEN_TABLE_ENTRIES,
     },
 };
 
@@ -62,13 +62,12 @@ pub const EXCEPTIONAL_ENTRY: u32 = 0x4000;
 pub const SECONDARY_TABLE_ENTRY: u32 = 0x2000;
 
 /// The Decompressor state for a compressed block.
-#[repr(align(64))]
 #[derive(Eq, PartialEq, Debug)]
 struct CompressedBlock {
-    litlen_table: [u32; 4096],
+    litlen_table: Box<[u32; 4096]>,
     secondary_table: Vec<u16>,
 
-    dist_table: [u32; 512],
+    dist_table: Box<[u32; 512]>,
     dist_secondary_table: Vec<u16>,
 
     eof_code: u16,
@@ -103,6 +102,7 @@ pub struct Decompressor {
     queued_rle: Option<(u8, usize)>,
     queued_backref: Option<(usize, usize)>,
     last_block: bool,
+    fixed_table: bool,
 
     state: State,
     checksum: Adler32,
@@ -122,8 +122,8 @@ impl Decompressor {
             buffer: 0,
             nbits: 0,
             compression: CompressedBlock {
-                litlen_table: [0; 4096],
-                dist_table: [0; 512],
+                litlen_table: Box::new([0; 4096]),
+                dist_table: Box::new([0; 512]),
                 secondary_table: Vec::new(),
                 dist_secondary_table: Vec::new(),
                 eof_code: 0,
@@ -145,6 +145,7 @@ impl Decompressor {
             state: State::ZlibHeader,
             last_block: false,
             ignore_adler32: false,
+            fixed_table: false,
         }
     }
 
@@ -182,7 +183,7 @@ impl Decompressor {
 
     fn read_block_header(&mut self, remaining_input: &mut &[u8]) -> Result<(), DecompressionError> {
         self.fill_buffer(remaining_input);
-        if self.nbits < 3 {
+        if self.nbits < 10 {
             return Ok(());
         }
 
@@ -209,8 +210,43 @@ impl Decompressor {
             }
             0b01 => {
                 self.consume_bits(3);
-                // TODO: Do this statically rather than every time.
-                Self::build_tables(288, &FIXED_CODE_LENGTHS, &mut self.compression)?;
+
+                // Check for an entirely empty blocks which can happen if there are "partial
+                // flushes" in the deflate stream. With fixed huffman codes, the EOF symbol is
+                // 7-bits of zeros so we peak ahead and see if the next 7-bits are all zero.
+                if self.peak_bits(7) == 0 {
+                    self.consume_bits(7);
+                    if self.last_block {
+                        self.state = State::Checksum;
+                        return Ok(());
+                    }
+
+                    // At this point we've consumed the entire block and need to read the next block
+                    // header. If tail call optimization were guaranteed, we could just recurse
+                    // here. But without it, a long sequence of empty fixed-blocks might cause a
+                    // stack overflow. Instead, we consume all empty blocks in a loop and then
+                    // recurse. This is the only recursive call this function, and thus is safe.
+                    while self.nbits >= 10 && self.peak_bits(10) == 0b010 {
+                        self.consume_bits(10);
+                        self.fill_buffer(remaining_input);
+                    }
+                    return self.read_block_header(remaining_input);
+                }
+
+                // Build decoding tables if the previous block wasn't also a fixed block.
+                if !self.fixed_table {
+                    self.fixed_table = true;
+                    for chunk in self.compression.litlen_table.chunks_exact_mut(512) {
+                        chunk.copy_from_slice(&FIXED_LITLEN_TABLE);
+                    }
+                    for chunk in self.compression.dist_table.chunks_exact_mut(32) {
+                        chunk.copy_from_slice(&FIXED_DIST_TABLE);
+                    }
+                    self.compression.eof_bits = 7;
+                    self.compression.eof_code = 0;
+                    self.compression.eof_mask = 0x7f;
+                }
+
                 self.state = State::CompressedData;
                 Ok(())
             }
@@ -231,6 +267,7 @@ impl Decompressor {
 
                 self.consume_bits(17);
                 self.state = State::CodeLengthCodes;
+                self.fixed_table = false;
                 Ok(())
             }
             0b11 => Err(DecompressionError::InvalidBlockType),
@@ -375,7 +412,7 @@ impl Decompressor {
             &code_lengths[..hlit],
             &LITLEN_TABLE_ENTRIES,
             &mut codes[..hlit],
-            &mut compression.litlen_table,
+            &mut *compression.litlen_table,
             &mut compression.secondary_table,
             false,
             true,
@@ -397,7 +434,7 @@ impl Decompressor {
                 lengths,
                 &tables::DISTANCE_TABLE_ENTRIES,
                 &mut dist_codes,
-                &mut compression.dist_table,
+                &mut *compression.dist_table,
                 &mut compression.dist_secondary_table,
                 true,
                 false,
@@ -1125,6 +1162,23 @@ mod tests {
     }
 
     #[test]
+    fn fixed_tables() {
+        let mut compression = CompressedBlock {
+            litlen_table: Box::new([0; 4096]),
+            dist_table: Box::new([0; 512]),
+            secondary_table: Vec::new(),
+            dist_secondary_table: Vec::new(),
+            eof_code: 0,
+            eof_mask: 0,
+            eof_bits: 0,
+        };
+        Decompressor::build_tables(288, &FIXED_CODE_LENGTHS, &mut compression).unwrap();
+
+        assert_eq!(compression.litlen_table[..512], FIXED_LITLEN_TABLE);
+        assert_eq!(compression.dist_table[..32], FIXED_DIST_TABLE);
+    }
+
+    #[test]
     fn it_works() {
         roundtrip(b"Hello world!");
     }
@@ -1229,6 +1283,7 @@ mod tests {
     }
 
     mod test_utils;
+    use tables::FIXED_CODE_LENGTHS;
     use test_utils::{decompress_by_chunks, TestDecompressionError};
 
     fn verify_no_sensitivity_to_input_chunking(
