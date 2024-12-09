@@ -41,6 +41,8 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.webapps.WebappsUtils;
+import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -218,6 +220,12 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                             || currentTab.isNativePage();
             boolean isFileScheme = url.getScheme().equals(UrlConstants.FILE_SCHEME);
             boolean isContentScheme = url.getScheme().equals(UrlConstants.CONTENT_SCHEME);
+            // TODO(crbug.com/380936306): Hide open in Chrome for blob url. Revisit once we
+            // understand when the URL can be blob. Flag guard to make it safe to merge.
+            if (ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_OPEN_PDF_INLINE)
+                    && url.getScheme().equals(UrlConstants.BLOB_SCHEME)) {
+                openInChromeItemVisible = false;
+            }
             if (isNativePage || isFileScheme || isContentScheme || url.isEmpty()) {
                 addToHomeScreenVisible = false;
             }
