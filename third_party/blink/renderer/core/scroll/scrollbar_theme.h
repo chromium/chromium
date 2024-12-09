@@ -228,18 +228,10 @@ class CORE_EXPORT ScrollbarTheme {
   virtual gfx::Size NinePatchTrackAndButtonsCanvasSize(const Scrollbar&) const {
     NOTREACHED();
   }
-  virtual gfx::Size NinePatchTrackAndButtonsCanvasSize(const Scrollbar&,
-                                                       float scale) const {
-    NOTREACHED();
-  }
 
   // For a nine-patch resource, the aperture defines the center patch that will
   // be stretched out.
   virtual gfx::Rect NinePatchTrackAndButtonsAperture(const Scrollbar&) const {
-    NOTREACHED();
-  }
-  virtual gfx::Rect NinePatchTrackAndButtonsAperture(const Scrollbar&,
-                                                     float scale) const {
     NOTREACHED();
   }
 

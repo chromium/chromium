@@ -4861,7 +4861,6 @@ class LayerTreeHostTestPropertyChangesDuringUpdateArePushed
     scrollbar->set_has_thumb(false);
     scrollbar_layer_ =
         base::MakeRefCounted<FakePaintedScrollbarLayer>(root_->element_id());
-    scrollbar_layer_->SetBounds(gfx::Size(23, 100));
 
     root_->AddChild(scrollbar_layer_);
 

@@ -175,18 +175,14 @@ bool ScrollbarLayerDelegate::UsesNinePatchTrackAndButtonsResource() const {
   return scrollbar_->GetTheme().UsesNinePatchTrackAndButtonsResource();
 }
 
-gfx::Size ScrollbarLayerDelegate::NinePatchTrackAndButtonsCanvasSize(
-    float scale) const {
+gfx::Size ScrollbarLayerDelegate::NinePatchTrackAndButtonsCanvasSize() const {
   CHECK(UsesNinePatchTrackAndButtonsResource());
-  return scrollbar_->GetTheme().NinePatchTrackAndButtonsCanvasSize(*scrollbar_,
-                                                                   scale);
+  return scrollbar_->GetTheme().NinePatchTrackAndButtonsCanvasSize(*scrollbar_);
 }
 
-gfx::Rect ScrollbarLayerDelegate::NinePatchTrackAndButtonsAperture(
-    float scale) const {
+gfx::Rect ScrollbarLayerDelegate::NinePatchTrackAndButtonsAperture() const {
   CHECK(UsesNinePatchTrackAndButtonsResource());
-  return scrollbar_->GetTheme().NinePatchTrackAndButtonsAperture(*scrollbar_,
-                                                                 scale);
+  return scrollbar_->GetTheme().NinePatchTrackAndButtonsAperture(*scrollbar_);
 }
 
 bool ScrollbarLayerDelegate::ShouldPaint() const {

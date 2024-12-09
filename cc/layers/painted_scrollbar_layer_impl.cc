@@ -220,15 +220,14 @@ void PaintedScrollbarLayerImpl::AppendTrackAndButtonsQuads(
     track_and_buttons_shared_quad_state->opacity *= scaled_opacity;
   }
 
-  gfx::Rect scaled_track_and_buttons_quad_rect(internal_content_bounds_);
-
   if (uses_nine_patch_track_and_buttons_ && !has_find_in_page_tickmarks()) {
     AppendNinePatchScaledTrackAndButtons(render_pass,
                                          track_and_buttons_shared_quad_state,
-                                         scaled_track_and_buttons_quad_rect);
+                                         track_and_buttons_quad_rect);
     return;
   }
 
+  gfx::Rect scaled_track_and_buttons_quad_rect(internal_content_bounds_);
   gfx::Rect scaled_visible_track_and_buttons_quad_rect =
       gfx::ScaleToEnclosingRect(visible_track_and_buttons_quad_rect,
                                 internal_contents_scale_);
@@ -249,14 +248,15 @@ void PaintedScrollbarLayerImpl::AppendTrackAndButtonsQuads(
 void PaintedScrollbarLayerImpl::AppendNinePatchScaledTrackAndButtons(
     viz::CompositorRenderPass* render_pass,
     viz::SharedQuadState* shared_quad_state,
-    const gfx::Rect& track_and_buttons_quad_rect) {
+    gfx::Rect& track_and_buttons_quad_rect) {
   CHECK(uses_nine_patch_track_and_buttons_);
-  const gfx::Rect border(
+  gfx::Rect border(
       track_and_buttons_aperture_.x(), track_and_buttons_aperture_.y(),
       track_and_buttons_aperture_.x() * 2, track_and_buttons_aperture_.y() * 2);
-  const bool layout_changed = track_and_buttons_patch_generator_.SetLayout(
+  gfx::Rect layer_occlusion;
+  bool layout_changed = track_and_buttons_patch_generator_.SetLayout(
       track_and_buttons_image_bounds_, track_and_buttons_quad_rect.size(),
-      track_and_buttons_aperture_, border, /*output_occlusion=*/gfx::Rect(),
+      track_and_buttons_aperture_, border, layer_occlusion,
       /*fill_center=*/true, /*nearest_neighbor=*/false);
   if (layout_changed) {
     track_and_buttons_patch_generator_.CheckGeometryLimitations();
