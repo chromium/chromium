@@ -75,7 +75,6 @@ HttpStreamPool::Group::IdleStreamSocket::~IdleStreamSocket() = default;
 bool HttpStreamPool::Group::PausedJobComparator::operator()(Job* a,
                                                             Job* b) const {
   if (a->create_time() == b->create_time()) {
-    // TODO(crbug.com/381742472): Add a test to cover this case.
     return a < b;
   }
   return a->create_time() < b->create_time();
@@ -135,6 +134,7 @@ bool HttpStreamPool::Group::CanStartJob(Job* job) {
 }
 
 void HttpStreamPool::Group::OnJobComplete(Job* job) {
+  paused_jobs_.erase(job);
   notified_paused_jobs_.erase(job);
 
   if (attempt_manager_) {

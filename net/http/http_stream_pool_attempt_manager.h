@@ -162,6 +162,8 @@ class HttpStreamPool::AttemptManager
 
   std::optional<int> GetQuicTaskResultForTesting() { return quic_task_result_; }
 
+  void SetIsFailingForTest(bool is_failing) { is_failing_ = is_failing; }
+
   MultiplexedSessionCreationInitiator
   CalculateMultiplexedSessionCreationInitiator();
 

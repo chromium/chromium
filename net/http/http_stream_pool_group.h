@@ -191,6 +191,8 @@ class HttpStreamPool::Group {
   }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(HttpStreamPoolGroupTest, ComparePausedJobSet);
+
   struct IdleStreamSocket {
     IdleStreamSocket(std::unique_ptr<StreamSocket> stream_socket,
                      base::TimeTicks start_time);
