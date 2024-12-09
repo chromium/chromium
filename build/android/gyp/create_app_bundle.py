@@ -79,11 +79,6 @@ _ALLOWLISTED_NON_BASE_SERVICES = {
     'com.google.apps.tiktok.concurrent.AndroidFuturesService',
     'com.google.apps.tiktok.concurrent.InternalForegroundService',
 }
-_ALLOWLISTED_NON_BASE_PROVIDERS = {
-    # These need to be burned down.
-    ('com.google.android.libraries.sharing.sharekit.provider.'
-     'ShareKitContentProvider')
-}
 
 
 def _ParseArgs(args):
@@ -515,11 +510,10 @@ def _ValidateSplits(bundle_path, module_zips):
       continue
     provider_names = _GetComponentNames(cur_manifest, 'provider')
     for p in provider_names:
-      if p not in _ALLOWLISTED_NON_BASE_PROVIDERS:
-        errors.append(f'Provider {p} should be declared in the base manifest,'
-                      f' but is in "{module_name}" module. For details, see '
-                      'https://chromium.googlesource.com/chromium/src/+/main/'
-                      'docs/android_isolated_splits.md#contentproviders')
+      errors.append(f'Provider {p} should be declared in the base manifest,'
+                    f' but is in "{module_name}" module. For details, see '
+                    'https://chromium.googlesource.com/chromium/src/+/main/'
+                    'docs/android_isolated_splits.md#contentproviders')
 
   # Ensure all services are present in base module because service classes are
   # not found if they are not present in the base module. b/169196314
