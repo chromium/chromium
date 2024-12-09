@@ -5448,6 +5448,27 @@
   <message name="IDS_BRUSCHETTA_INSTALLER_CLEANING_UP_MESSAGE" desc="Message while the installer is cleaning up a failed install.">
     Install failed, cleaning up
   </message>
+  <message name="IDS_BRUSCHETTA_RESULT_UNKNOWN" desc="Bruschetta (codename) unknown result.">
+    Unknown result.
+  </message>
+  <message name="IDS_BRUSCHETTA_RESULT_SUCCESS" desc="Bruschetta (codename) result for success.">
+    Success.
+  </message>
+  <message name="IDS_BRUSCHETTA_RESULT_DLC_INSTALL_ERROR" desc="Bruschetta (codename) result for error installing DLC.">
+    Error installing DLC (oftentimes a reboot is needed, check Settings\>\>About ChromeOS for more information).
+  </message>
+  <message name="IDS_BRUSCHETTA_RESULT_START_VM_FAILED" desc="Bruschetta (codename) result for when VM fails to start.">
+    Starting VM failed.
+  </message>
+  <message name="IDS_BRUSCHETTA_RESULT_TIMEOUT" desc="Bruschetta (codename) result for a timeout.">
+    Timeout when booting or reconnecting to VM.
+  </message>
+  <message name="IDS_BRUSCHETTA_RESULT_FORBIDDEN_BY_POLICY" desc="Bruschetta (codename) result for when Bruschetta (codename) is forbidden by policy.">
+    Forbidden by policy.
+  </message>
+  <message name="IDS_BRUSCHETTA_RESULT_CONCIERGE_UNAVAILABLE" desc="Bruschetta (codename) result for when concierge service is unavailable.">
+    Concierge service is unavailable.
+  </message>
   <message name="IDS_BRUSCHETTA_UNINSTALLER_TITLE" desc="Title of the Bruschetta (codename) uninstaller, a dialog for uninstalling Bruschetta, the associated VM and files.">
     Remove <ph name="VM_NAME">$1<ex>Bruschetta</ex></ph>
   </message>

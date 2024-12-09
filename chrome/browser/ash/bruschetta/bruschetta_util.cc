@@ -50,20 +50,25 @@ const char kUefiDlc[] = "edk2-ovmf-dlc";
 
 const char kBruschettaVmName[] = "bru";
 
-const char* BruschettaResultString(const BruschettaResult res) {
-#define ENTRY(name)            \
-  case BruschettaResult::name: \
-    return #name
+const std::string BruschettaResultString(const BruschettaResult res) {
   switch (res) {
-    ENTRY(kUnknown);
-    ENTRY(kSuccess);
-    ENTRY(kDlcInstallError);
-    ENTRY(kStartVmFailed);
-    ENTRY(kTimeout);
-    ENTRY(kForbiddenByPolicy);
-    ENTRY(kConciergeUnavailable);
+    case BruschettaResult::kUnknown:
+      return l10n_util::GetStringUTF8(IDS_BRUSCHETTA_RESULT_UNKNOWN);
+    case BruschettaResult::kSuccess:
+      return l10n_util::GetStringUTF8(IDS_BRUSCHETTA_RESULT_SUCCESS);
+    case BruschettaResult::kDlcInstallError:
+      return l10n_util::GetStringUTF8(IDS_BRUSCHETTA_RESULT_DLC_INSTALL_ERROR);
+    case BruschettaResult::kStartVmFailed:
+      return l10n_util::GetStringUTF8(IDS_BRUSCHETTA_RESULT_START_VM_FAILED);
+    case BruschettaResult::kTimeout:
+      return l10n_util::GetStringUTF8(IDS_BRUSCHETTA_RESULT_TIMEOUT);
+    case BruschettaResult::kForbiddenByPolicy:
+      return l10n_util::GetStringUTF8(
+          IDS_BRUSCHETTA_RESULT_FORBIDDEN_BY_POLICY);
+    case BruschettaResult::kConciergeUnavailable:
+      return l10n_util::GetStringUTF8(
+          IDS_BRUSCHETTA_RESULT_CONCIERGE_UNAVAILABLE);
   }
-#undef ENTRY
   return "unknown code";
 }
 

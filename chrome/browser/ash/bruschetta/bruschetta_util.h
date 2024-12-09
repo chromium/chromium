@@ -45,7 +45,7 @@ struct RunningVmPolicy {
 using InstallableConfig = std::pair<std::string, base::Value::Dict>;
 
 // Returns the string name of the BruschettaResult.
-const char* BruschettaResultString(const BruschettaResult res);
+const std::string BruschettaResultString(const BruschettaResult res);
 
 guest_os::GuestId GetBruschettaAlphaId();
 
