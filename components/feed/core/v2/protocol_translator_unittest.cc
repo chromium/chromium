@@ -23,6 +23,7 @@
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/test/proto_printer.h"
 #include "components/feed/feed_feature_list.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace feed {
@@ -32,7 +33,7 @@ const char kResponsePbPath[] = "components/test/data/feed/response.binarypb";
 const base::Time kCurrentTime = base::Time::UnixEpoch() + base::Days(123);
 AccountInfo TestAccountInfo() {
   AccountInfo account_info;
-  account_info.gaia = "gaia";
+  account_info.gaia = GaiaId("gaia");
   account_info.email = "user@foo.com";
   return account_info;
 }
@@ -170,8 +171,8 @@ TEST_F(ProtocolTranslatorTest, RootEventIdNotPresent) {
 TEST_F(ProtocolTranslatorTest, WasSignedInRequest) {
   feedwire::Response response = EmptyWireResponse();
 
-  for (AccountInfo account_info :
-       std::initializer_list<AccountInfo>{{"gaia", "user@foo.com"}, {}}) {
+  for (AccountInfo account_info : std::initializer_list<AccountInfo>{
+           {GaiaId("gaia"), "user@foo.com"}, {}}) {
     RefreshResponseData refresh = TranslateWireResponse(response, account_info);
     ASSERT_TRUE(refresh.model_update_request);
     EXPECT_EQ(refresh.model_update_request->stream_data.signed_in(),

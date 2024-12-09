@@ -14,6 +14,7 @@
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace feed {
 namespace {
@@ -28,7 +29,7 @@ void AddContentHashes(const feedstore::Content& content,
 
 base::Time kTestTimeEpoch = base::Time::UnixEpoch();
 AccountInfo TestAccountInfo() {
-  return {"gaia", "user@foo"};
+  return {GaiaId("gaia"), "user@foo"};
 }
 
 ContentId MakeContentId(ContentId::Type type,
@@ -264,7 +265,7 @@ StreamModelUpdateRequestGenerator::MakeFirstPageWithSpecificContents(
   initial_update->stream_data.set_signed_in(signed_in);
   if (signed_in) {
     initial_update->stream_data.set_email(account_info.email);
-    initial_update->stream_data.set_gaia(account_info.gaia);
+    initial_update->stream_data.set_gaia(account_info.gaia.ToString());
   }
   initial_update->stream_data.set_logging_enabled(logging_enabled);
   initial_update->stream_data.set_privacy_notice_fulfilled(
@@ -307,7 +308,7 @@ StreamModelUpdateRequestGenerator::MakeNextPage(
   initial_update->stream_data.set_signed_in(signed_in);
   if (signed_in) {
     initial_update->stream_data.set_email(account_info.email);
-    initial_update->stream_data.set_gaia(account_info.gaia);
+    initial_update->stream_data.set_gaia(account_info.gaia.ToString());
   }
   initial_update->stream_data.set_logging_enabled(logging_enabled);
   initial_update->stream_data.set_privacy_notice_fulfilled(

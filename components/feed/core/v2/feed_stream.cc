@@ -67,6 +67,7 @@
 #include "components/offline_pages/task/closure_task.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace feed {
 namespace {
@@ -1054,7 +1055,7 @@ LaunchResult FeedStream::ShouldAttemptLoad(const StreamType& stream_type,
   // be called again from within the LoadStreamTask, and then the metadata
   // will be initialized.
   if (metadata_populated_ &&
-      delegate_->GetAccountInfo().gaia != metadata_.gaia()) {
+      delegate_->GetAccountInfo().gaia != GaiaId(metadata_.gaia())) {
     return {LoadStreamStatus::kDataInStoreIsForAnotherUser,
             feedwire::DiscoverLaunchResult::DATA_IN_STORE_IS_FOR_ANOTHER_USER};
   }
@@ -1328,7 +1329,7 @@ void FeedStream::BackgroundRefreshComplete(LoadStreamTask::Result result) {
 // Performs work that is necessary for both background and foreground load
 // tasks.
 void FeedStream::LoadTaskComplete(const LoadStreamTask::Result& result) {
-  if (delegate_->GetAccountInfo().gaia != metadata_.gaia()) {
+  if (delegate_->GetAccountInfo().gaia != GaiaId(metadata_.gaia())) {
     ClearAll();
     return;
   }
@@ -1384,7 +1385,8 @@ void FeedStream::FinishClearAll() {
   has_stored_data_.SetValue(false);
   feed::prefs::SetExperiments({}, *profile_prefs_);
   feed::prefs::ClearClientInstanceId(*profile_prefs_);
-  SetMetadata(feedstore::MakeMetadata(delegate_->GetAccountInfo().gaia));
+  SetMetadata(
+      feedstore::MakeMetadata(delegate_->GetAccountInfo().gaia.ToString()));
 
   delegate_->ClearAll();
 

@@ -839,7 +839,8 @@ TestWireResponseTranslator::TranslateStreamSource(
         result.model_update_request->stream_data.clear_email();
       } else {
         result.model_update_request->stream_data.set_signed_in(true);
-        result.model_update_request->stream_data.set_gaia(account_info.gaia);
+        result.model_update_request->stream_data.set_gaia(
+            account_info.gaia.ToString());
         result.model_update_request->stream_data.set_email(account_info.email);
       }
     }

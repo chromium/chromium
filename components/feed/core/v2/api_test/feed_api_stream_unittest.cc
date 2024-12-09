@@ -2233,7 +2233,7 @@ TEST_F(FeedApiTest, MetadataLoadedWhenDatabaseInitialized) {
     feedstore::Metadata initial_metadata;
     feedstore::SetSessionId(initial_metadata, "session-id", kExpiry);
     initial_metadata.set_consistency_token("token");
-    initial_metadata.set_gaia(GetAccountInfo().gaia);
+    initial_metadata.set_gaia(GetAccountInfo().gaia.ToString());
     store_->WriteMetadata(initial_metadata, base::DoNothing());
   }
 

@@ -33,6 +33,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/variations/scoped_variations_ids_provider.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
@@ -441,7 +442,7 @@ TEST_F(FeedNetworkTest, SendQueryRequestFailsForWrongUser) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(
       NetworkRequestType::kFeedQuery, GetTestFeedRequest(),
-      {"other-gaia", "other@foo.com"}, receiver.Bind());
+      {GaiaId("other-gaia"), "other@foo.com"}, receiver.Bind());
   task_environment_.RunUntilIdle();
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       test_factory()->GetPendingRequest(0);
@@ -776,7 +777,7 @@ TEST_F(FeedNetworkTest, SendApiRequest_UploadActionsFailsForWrongUser) {
   CallbackReceiver<FeedNetwork::ApiResult<feedwire::UploadActionsResponse>>
       receiver;
   AccountInfo other_account;
-  other_account.gaia = "some_other_gaia";
+  other_account.gaia = GaiaId("some_other_gaia");
   other_account.email = "some@other.com";
   feed_network()->SendApiRequest<UploadActionsDiscoverApi>(
       GetTestActionRequest(), other_account, request_metadata(),
