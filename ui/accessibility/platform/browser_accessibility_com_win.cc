@@ -1199,7 +1199,12 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributesForNames(
     BSTR* attrib_names,
     SHORT* name_space_id,
     BSTR* attrib_values) {
-  return E_NOTIMPL;
+  // Workaround for math not being spoken by NVDA and its extension Access8Math.
+  // https://github.com/nvaccess/nvda/issues/17421
+  // https://crbug.com/380161205
+  // Should normally return E_NOTIMPL.
+  WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_ATTRIBUTES_FOR_NAMES);
+  return S_FALSE;
 }
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_computedStyle(
