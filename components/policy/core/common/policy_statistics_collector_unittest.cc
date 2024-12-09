@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/policy_statistics_collector.h"
 
+#include <array>
 #include <cstring>
 #include <memory>
 #include <string>
@@ -62,7 +63,7 @@ const char kTestChromeSchema[] = R"(
       }
     })";
 
-const PolicyDetails kTestPolicyDetails[] = {
+const auto kTestPolicyDetails = std::to_array<PolicyDetails>({
     // is_deprecated is_future is_device_policy id  max_external_data_size
     {false, false, kProfile, kTestPolicy1Id, 0},
     {false, false, kProfile, kTestPolicy2Id, 0},
@@ -70,7 +71,7 @@ const PolicyDetails kTestPolicyDetails[] = {
     {false, false, kProfile, kEnrollmentTokenPolicyId, 0},
     {false, false, kProfile, kEnrollmentOptionPolicyId, 0},
     {false, false, kProfile, kBrowserSigninPolicyId, 0},
-};
+});
 
 }  // namespace
 

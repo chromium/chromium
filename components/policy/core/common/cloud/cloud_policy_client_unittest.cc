@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <set>
@@ -1877,11 +1873,11 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithExtensionPolicy) {
   em::DeviceManagementResponse policy_response = GetPolicyResponse();
 
   // Set up the |expected_responses| and |policy_response|.
-  static const char* kExtensions[] = {
+  static auto kExtensions = std::to_array<const char*>({
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
       "cccccccccccccccccccccccccccccccc",
-  };
+  });
   typedef std::map<std::pair<std::string, std::string>, em::PolicyFetchResponse>
       ResponseMap;
   ResponseMap expected_responses;

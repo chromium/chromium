@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 
+#include <array>
 #include <list>
 #include <memory>
 #include <string_view>
@@ -340,7 +341,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
       /*is_password_manager_upload=*/false));
 
   // Server responseses - returned  out of sequence.
-  const char* response_contents[] = {
+  auto response_contents = std::to_array<const char*>({
       "<autofillqueryresponse>"
       "<field autofilltype=\"86\" />"
       "<field autofilltype=\"3\" />"
@@ -351,7 +352,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
       "</autofillqueryresponse>",
       "",
       "<html></html>",
-  };
+  });
 
   // Request 1: Successful upload.
   request = url_loader_factory().GetPendingRequest(1);
@@ -911,7 +912,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
 
   test_api(crowdsourcing_manager()).set_max_form_cache_size(2);
 
-  const char* response_contents[] = {
+  auto response_contents = std::to_array<const char*>({
       "<autofillqueryresponse>"
       "<field autofilltype=\"0\" />"
       "<field autofilltype=\"3\" />"
@@ -930,7 +931,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
       "<field autofilltype=\"9\" />"
       "<field autofilltype=\"0\" />"
       "</autofillqueryresponse>",
-  };
+  });
 
   base::HistogramTester histogram;
   // Request with id 0.

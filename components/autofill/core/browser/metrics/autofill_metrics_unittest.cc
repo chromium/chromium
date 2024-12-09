@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -2775,10 +2776,11 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, LogServerOfferFormEvents) {
                       /*include_masked_server_credit_card=*/true,
                       /*masked_card_is_enrolled_for_virtual_card=*/false);
 
-  const std::string kMaskedServerCardIds[] = {
+  const auto kMaskedServerCardIds = std::to_array<std::string>({
       "12340000-0000-0000-0000-000000000001",
       "12340000-0000-0000-0000-000000000002",
-      "12340000-0000-0000-0000-000000000003"};
+      "12340000-0000-0000-0000-000000000003",
+  });
 
   autofill_manager().AddSeenForm(form, field_types);
 

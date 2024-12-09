@@ -11,6 +11,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -140,7 +141,7 @@ struct AesCbcKnownAnswer {
   const char* ciphertext;
 };
 
-const AesCbcKnownAnswer kAesCbcKnownAnswers[] = {
+const auto kAesCbcKnownAnswers = std::to_array<AesCbcKnownAnswer>({
     // F.2.1 (CBC-AES128.Encrypt)
     // http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf
     {"2b7e151628aed2a6abf7158809cf4f3c", "000102030405060708090a0b0c0d0e0f",
@@ -168,7 +169,8 @@ const AesCbcKnownAnswer kAesCbcKnownAnswers[] = {
 
     // Taken from encryptor_unittest.cc (EncryptorTest.EmptyEncrypt())
     {"3132383d5369787465656e4279746573", "5377656574205369787465656e204956", "",
-     "8518b8878d34e7185e300d0fcc426396"}};
+     "8518b8878d34e7185e300d0fcc426396"},
+});
 
 TEST_F(WebCryptoAesCbcTest, KnownAnswers) {
   for (const auto& test : kAesCbcKnownAnswers) {

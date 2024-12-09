@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <string_view>
 
 #include "base/check_op.h"
@@ -575,13 +576,11 @@ TEST_F(WebCryptoRsaSsaTest, GenerateKeyPairRsaBadModulusLength) {
 TEST_F(WebCryptoRsaSsaTest, GenerateKeyPairRsaBadExponent) {
   const unsigned int modulus_length = 1024;
 
-  const char* const kPublicExponents[] = {
+  const auto kPublicExponents = std::to_array<const char*>({
       "11",  // 17 - This is a valid public exponent, but currently disallowed.
-      "00",
-      "01",
-      "02",
+      "00", "01", "02",
       "010000",  // 65536
-  };
+  });
 
   for (auto* const exponent : kPublicExponents) {
     SCOPED_TRACE(&exponent - &kPublicExponents[0]);
@@ -881,14 +880,16 @@ TEST_F(WebCryptoRsaSsaTest, ImportExportJwkRsaPublicKey) {
     const blink::WebCryptoKeyUsageMask usage;
     const char* const jwk_alg;
   };
-  const TestCase kTests[] = {{blink::kWebCryptoAlgorithmIdSha1,
-                              blink::kWebCryptoKeyUsageVerify, "RS1"},
-                             {blink::kWebCryptoAlgorithmIdSha256,
-                              blink::kWebCryptoKeyUsageVerify, "RS256"},
-                             {blink::kWebCryptoAlgorithmIdSha384,
-                              blink::kWebCryptoKeyUsageVerify, "RS384"},
-                             {blink::kWebCryptoAlgorithmIdSha512,
-                              blink::kWebCryptoKeyUsageVerify, "RS512"}};
+  const auto kTests = std::to_array<TestCase>({
+      {blink::kWebCryptoAlgorithmIdSha1, blink::kWebCryptoKeyUsageVerify,
+       "RS1"},
+      {blink::kWebCryptoAlgorithmIdSha256, blink::kWebCryptoKeyUsageVerify,
+       "RS256"},
+      {blink::kWebCryptoAlgorithmIdSha384, blink::kWebCryptoKeyUsageVerify,
+       "RS384"},
+      {blink::kWebCryptoAlgorithmIdSha512, blink::kWebCryptoKeyUsageVerify,
+       "RS512"},
+  });
 
   for (const auto& test : kTests) {
     SCOPED_TRACE(&test - &kTests[0]);
