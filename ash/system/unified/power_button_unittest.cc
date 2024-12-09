@@ -407,6 +407,46 @@ TEST_F(PowerButtonTest, ClickingEmailShowsUserChooserView) {
   EXPECT_TRUE(quick_settings_view->GetDetailedViewForTest<UserChooserView>());
 }
 
+TEST_F(PowerButtonTest, UserItemButtonTooltipText) {
+  SimulateUserLogin("user@gmail.com", user_manager::UserType::kRegular);
+  SimulatePowerButtonPress();
+  LeftClickOn(GetEmailButton());
+
+  QuickSettingsView* quick_settings_view =
+      GetPrimaryUnifiedSystemTray()->bubble()->quick_settings_view();
+  EXPECT_TRUE(quick_settings_view->IsDetailedViewShown());
+
+  auto* user_chooser_view =
+      quick_settings_view->GetDetailedViewForTest<UserChooserView>();
+
+  ui::AXNodeData data;
+  gfx::Size zero_size;
+
+  for (const auto& button : user_chooser_view->user_item_buttons_) {
+    EXPECT_EQ(button->GetTooltipText(gfx::Point()),
+              user_chooser_view->GetUserItemAccessibleStringForTesting(
+                  button->user_index_for_testing()));
+    data = ui::AXNodeData();
+    button->GetViewAccessibility().GetAccessibleNodeData(&data);
+    EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              button->GetTooltipText(gfx::Point()));
+    EXPECT_NE(
+        data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+        button->GetTooltipText(gfx::Point()));
+
+    button->SetBoundsRect(gfx::Rect(zero_size));
+
+    EXPECT_EQ(button->GetTooltipText(gfx::Point()), u"");
+    data = ui::AXNodeData();
+    button->GetViewAccessibility().GetAccessibleNodeData(&data);
+    EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              button->GetTooltipText(gfx::Point()));
+    EXPECT_EQ(
+        data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+        button->GetTooltipText(gfx::Point()));
+  }
+}
+
 // Power button's rounded radii should change correctly when switching between
 // active/inactive.
 TEST_F(PowerButtonTest, ButtonRoundedRadii) {
