@@ -7,7 +7,6 @@
 #import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/managed/managed_bookmark_service.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -48,8 +47,9 @@ std::unique_ptr<KeyedService> BuildManagedBookmarkModel(
 // static
 bookmarks::ManagedBookmarkService* ManagedBookmarkServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<bookmarks::ManagedBookmarkService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()
+      ->GetServiceForProfileAs<bookmarks::ManagedBookmarkService>(
+          profile, /*create=*/true);
 }
 
 // static
@@ -65,9 +65,8 @@ ManagedBookmarkServiceFactory::GetDefaultFactory() {
 }
 
 ManagedBookmarkServiceFactory::ManagedBookmarkServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "ManagedBookmarkService",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("ManagedBookmarkService",
+                                    TestingCreation::kNoServiceForTests) {}
 
 ManagedBookmarkServiceFactory::~ManagedBookmarkServiceFactory() {}
 
@@ -75,8 +74,4 @@ std::unique_ptr<KeyedService>
 ManagedBookmarkServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   return BuildManagedBookmarkModel(context);
-}
-
-bool ManagedBookmarkServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
 }
