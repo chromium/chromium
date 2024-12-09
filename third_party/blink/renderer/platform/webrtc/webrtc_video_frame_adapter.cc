@@ -413,6 +413,11 @@ WebRtcVideoFrameAdapter::ScaledBuffer::ToI420() {
   return parent_->GetOrCreateFrameBufferForSize(size_)->ToI420();
 }
 
+scoped_refptr<media::VideoFrame>
+WebRtcVideoFrameAdapter::ScaledBuffer::getMediaVideoFrame() const {
+  return parent_->getMediaVideoFrame();
+}
+
 rtc::scoped_refptr<webrtc::VideoFrameBuffer>
 WebRtcVideoFrameAdapter::ScaledBuffer::GetMappedFrameBuffer(
     rtc::ArrayView<webrtc::VideoFrameBuffer::Type> types) {

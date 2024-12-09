@@ -1162,7 +1162,7 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk) {
     // |use_native_input_| state. As a result we don't toggle
     // |use_native_input_| flag here for them.
     if (frame_buffer->type() == webrtc::VideoFrameBuffer::Type::kNative) {
-      frame = static_cast<WebRtcVideoFrameAdapter*>(frame_buffer.get())
+      frame = static_cast<WebRtcVideoFrameAdapterInterface*>(frame_buffer.get())
                   ->getMediaVideoFrame();
       if (frame->storage_type() == media::VideoFrame::STORAGE_UNOWNED_MEMORY) {
         if (use_native_input_) {
@@ -1945,8 +1945,8 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
   bool requires_copy_or_scale =
       frame_buffer->type() != webrtc::VideoFrameBuffer::Type::kNative;
   if (!requires_copy_or_scale) {
-    const WebRtcVideoFrameAdapter* frame_adapter =
-        static_cast<WebRtcVideoFrameAdapter*>(frame_buffer.get());
+    const WebRtcVideoFrameAdapterInterface* frame_adapter =
+        static_cast<WebRtcVideoFrameAdapterInterface*>(frame_buffer.get());
     frame = frame_adapter->getMediaVideoFrame();
     frame->set_timestamp(timestamp);
     const media::VideoFrame::StorageType storage = frame->storage_type();
@@ -2120,7 +2120,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
         black_frame_, black_frame_->format(), black_frame_->visible_rect(),
         black_frame_->natural_size());
   } else {
-    frame = static_cast<WebRtcVideoFrameAdapter*>(frame_buffer.get())
+    frame = static_cast<WebRtcVideoFrameAdapterInterface*>(frame_buffer.get())
                 ->getMediaVideoFrame();
   }
   frame->set_timestamp(base::Microseconds(frame_chunk.timestamp_us));
