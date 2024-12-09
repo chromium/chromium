@@ -553,12 +553,12 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
-  const SkColorInfo resource_info = GetRenderingContextSkColorInfo();
   const SkAlphaType alpha_type = GetRenderingContextAlphaType();
   const SkColorType sk_color_type = GetRenderingContextSkColorType();
+  const sk_sp<SkColorSpace> sk_color_space = GetRenderingContextSkColorSpace();
   if (use_shared_image) {
     provider = CanvasResourceProvider::CreateSharedImageProvider(
-        Size(), sk_color_type, alpha_type, resource_info.refColorSpace(),
+        Size(), sk_color_type, alpha_type, sk_color_space,
         CanvasResourceProvider::ShouldInitialize::kCallClear,
         SharedGpuContext::ContextProviderWrapper(),
         can_use_gpu ? RasterMode::kGPU : RasterMode::kCPU,
@@ -568,7 +568,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     base::WeakPtr<CanvasResourceDispatcher> dispatcher_weakptr =
         GetOrCreateResourceDispatcher()->GetWeakPtr();
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-        Size(), sk_color_type, alpha_type, resource_info.refColorSpace(),
+        Size(), sk_color_type, alpha_type, sk_color_space,
         CanvasResourceProvider::ShouldInitialize::kCallClear,
         SharedGpuContext::SharedImageInterfaceProvider(), this);
   }
@@ -581,7 +581,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     // another type of resource prover above is a sign that the graphics
     // pipeline is in a bad state (e.g. gpu process crashed, out of memory)
     provider = CanvasResourceProvider::CreateBitmapProvider(
-        Size(), sk_color_type, alpha_type, resource_info.refColorSpace(),
+        Size(), sk_color_type, alpha_type, sk_color_space,
         CanvasResourceProvider::ShouldInitialize::kCallClear, this);
   }
 
