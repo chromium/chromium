@@ -330,6 +330,22 @@ bool IsDefaultANGLEVulkan() {
   if (active_gpu.driverId == VK_DRIVER_ID_IMAGINATION_PROPRIETARY) {
     return false;
   }
+
+  // Exclude old ARM drivers due to crashes related to creating
+  // AHB-based Video images in Vulkan.  http://anglebug.com/382676807.
+  if (active_gpu.driverId == VK_DRIVER_ID_ARM_PROPRIETARY &&
+      active_gpu.detailedDriverVersion.major <= 32) {
+    return false;
+  }
+
+  // Exclude old Qualcomm drivers due to inefficient (and buggy) fallback
+  // to CPU path in glCopyTextureCHROMIUM with multi-plane images.
+  // http://anglebug.com/383056998.
+  if (active_gpu.driverId == VK_DRIVER_ID_QUALCOMM_PROPRIETARY &&
+      (active_gpu.detailedDriverVersion.major != 512 ||
+       active_gpu.detailedDriverVersion.minor <= 530)) {
+    return false;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX)
