@@ -1292,7 +1292,7 @@ enum WebFeature {
   kFetchResponseConstructionWithStream = 1826,
   kLocationOrigin = 1827,
   kCanvas2DFilter = 1830,
-  kCanvas2DImageSmoothingQuality = 1831,
+  kOBSOLETE_Canvas2DImageSmoothingQuality = 1831,
   kCanvasToBlob = 1832,
   kCanvasToDataURL = 1833,
   kOffscreenCanvasConvertToBlob = 1834,
@@ -4599,6 +4599,7 @@ enum WebFeature {
   kVerticalFormControls = 5213,
   kV8AuthenticatorAttestationResponse_GetPublicKey_Method = 5214,
   kCloseWatcherScriptConstructor = 5215,
+  kCanvas2DImageSmoothingQuality2 = 5216,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

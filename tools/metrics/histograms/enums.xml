@@ -7285,7 +7285,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1828" label="DocumentOrigin"/>
   <int value="1829" label="SubtleCryptoOnlyStrictSecureContextCheckFailed"/>
   <int value="1830" label="Canvas2DFilter"/>
-  <int value="1831" label="Canvas2DImageSmoothingQuality"/>
+  <int value="1831" label="OBSOLETE_Canvas2DImageSmoothingQuality"/>
   <int value="1832" label="CanvasToBlob"/>
   <int value="1833" label="CanvasToDataURL"/>
   <int value="1834" label="OffscreenCanvasConvertToBlob"/>
@@ -10929,6 +10929,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5214"
       label="V8AuthenticatorAttestationResponse_GetPublicKey_Method"/>
   <int value="5215" label="CloseWatcherScriptConstructor"/>
+  <int value="5216" label="Canvas2DImageSmoothingQuality2"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

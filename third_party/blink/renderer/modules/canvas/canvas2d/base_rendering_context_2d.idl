@@ -39,7 +39,7 @@ interface mixin BaseRenderingContext2D {
 
     // image smoothing
     attribute boolean imageSmoothingEnabled; // (default True)
-    [MeasureAs=Canvas2DImageSmoothingQuality] attribute ImageSmoothingQuality imageSmoothingQuality; // (default "low")
+    [MeasureAs=Canvas2DImageSmoothingQuality2] attribute ImageSmoothingQuality imageSmoothingQuality; // (default "low")
 
     // colors and styles (see also the CanvasDrawingStyles interface)
     [HighEntropy, SetterCallWith=Isolate, RaisesException=Setter, GetterCallWith=ScriptState] attribute any strokeStyle; // (default black)
