@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -107,16 +108,15 @@ void GlicView::DragFromPoint(gfx::Vector2d mouse_location) {
         views::Widget::MoveLoopSource::kMouse;
     GetWidget()->RunMoveLoop(drag_offset, move_loop_source,
                              views::Widget::MoveLoopEscapeBehavior::kDontHide);
-    SnapToBrowserIfInBounds(
+    HandleBrowserPinning(
         GetWidget()->GetWindowBoundsInScreen().OffsetFromOrigin() +
         mouse_location);
     in_move_loop_ = false;
   }
 }
 
-void GlicView::SnapToBrowserIfInBounds(gfx::Vector2d mouse_location) {
+void GlicView::HandleBrowserPinning(gfx::Vector2d mouse_location) {
   views::Widget* widget = GetWidget();
-  gfx::Rect glic_rect = widget->GetWindowBoundsInScreen();
   // Loops through all browsers in activation order with the latest accessed
   // browser first.
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
@@ -144,13 +144,93 @@ void GlicView::SnapToBrowserIfInBounds(gfx::Vector2d mouse_location) {
          gfx::PointAtOffsetFromOrigin(mouse_location))
             .Length();
     if (glic_button_mouse_distance < kSnapDistanceThreshold) {
-      // TODO fix exact snap location
-      gfx::Point top_right = glic_button_rect.top_right();
-      int tab_strip_padding = GetLayoutConstant(TAB_STRIP_PADDING);
-      glic_rect.set_x(top_right.x() - glic_rect.width() - tab_strip_padding);
-      glic_rect.set_y(top_right.y() + tab_strip_padding);
-      widget->SetBounds(glic_rect);
+      MoveToBrowserPinTarget(browser);
+      // Close holder window if existing
+      if (holder_widget_) {
+        holder_widget_->CloseWithReason(
+            views::Widget::ClosedReason::kLostFocus);
+        holder_widget_.reset();
+      }
+      // add observer to new parent
+      pinned_target_widget_observer_.SetPinnedTargetWidget(window_widget);
+      views::Widget::ReparentNativeView(widget->GetNativeView(),
+                                        window_widget->GetNativeView());
+    } else if (widget->parent() == window_widget) {
+      // If farther than the snapping threshold from the current parent
+      // widget, open a blank holder window to reparent to
+      MaybeCreateHolderWindowAndReparent(widget);
     }
   }
+}
+
+void GlicView::MoveToBrowserPinTarget(Browser* browser) {
+  views::Widget* widget = GetWidget();
+  gfx::Rect glic_rect = widget->GetWindowBoundsInScreen();
+  // TODO fix exact snap location
+  gfx::Rect glic_button_rect = browser->window()
+                                   ->AsBrowserView()
+                                   ->tab_strip_region_view()
+                                   ->glic_button()
+                                   ->GetBoundsInScreen();
+  gfx::Point top_right = glic_button_rect.top_right();
+  int tab_strip_padding = GetLayoutConstant(TAB_STRIP_PADDING);
+  glic_rect.set_x(top_right.x() - glic_rect.width() - tab_strip_padding);
+  glic_rect.set_y(top_right.y() + tab_strip_padding);
+  widget->SetBounds(glic_rect);
+}
+
+void GlicView::MaybeCreateHolderWindowAndReparent(views::Widget* widget) {
+  pinned_target_widget_observer_.SetPinnedTargetWidget(nullptr);
+  if (!holder_widget_) {
+    holder_widget_ = std::make_unique<views::Widget>();
+    views::Widget::InitParams params(
+        views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+        views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+    params.activatable = views::Widget::InitParams::Activatable::kNo;
+    params.accept_events = false;
+    // Name specified for debug purposes
+    params.name = "HolderWindow";
+    params.bounds = gfx::Rect(0, 0, 0, 0);
+    params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+    holder_widget_->Init(std::move(params));
+  }
+  views::Widget::ReparentNativeView(widget->GetNativeView(),
+                                    holder_widget_->GetNativeView());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// PinnedTargetWidgetObserver implementations:
+GlicView::PinnedTargetWidgetObserver::PinnedTargetWidgetObserver(GlicView* glic)
+    : glic_view_(glic) {}
+
+GlicView::PinnedTargetWidgetObserver::~PinnedTargetWidgetObserver() {
+  SetPinnedTargetWidget(nullptr);
+}
+
+void GlicView::PinnedTargetWidgetObserver::SetPinnedTargetWidget(
+    views::Widget* widget) {
+  if (widget == pinned_target_widget_) {
+    return;
+  }
+  if (pinned_target_widget_ && pinned_target_widget_->HasObserver(this)) {
+    pinned_target_widget_->RemoveObserver(this);
+    pinned_target_widget_ = nullptr;
+  }
+  if (widget && !widget->HasObserver(this)) {
+    widget->AddObserver(this);
+    pinned_target_widget_ = widget;
+  }
+}
+
+void GlicView::PinnedTargetWidgetObserver::OnWidgetBoundsChanged(
+    views::Widget* widget,
+    const gfx::Rect& new_bounds) {
+  glic_view_->MoveToBrowserPinTarget(
+      chrome::FindBrowserWithWindow(widget->GetNativeWindow()));
+}
+
+void GlicView::PinnedTargetWidgetObserver::OnWidgetDestroying(
+    views::Widget* widget) {
+  SetPinnedTargetWidget(nullptr);
 }
 }  // namespace glic
