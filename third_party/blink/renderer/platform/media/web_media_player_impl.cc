@@ -1478,7 +1478,7 @@ WebTimeRanges WebMediaPlayerImpl::Seekable() const {
   // expected, disabling this breaks semi-live players, http://crbug.com/427412.
   const WebTimeRange seekable_range(0.0,
                                     force_seeks_to_zero ? 0.0 : seekable_end);
-  return WebTimeRanges(&seekable_range, 1);
+  return WebTimeRanges({seekable_range});
 }
 
 bool WebMediaPlayerImpl::IsPrerollAttemptNeeded() {

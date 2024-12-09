@@ -107,8 +107,8 @@ bool ParseJsonWebKey(const JsonWebKey& key, WebVector<uint8_t>& json_utf8) {
   if (key.hasK())
     json_object->SetString("k", key.k());
 
-  String json = json_object->ToJSONString();
-  json_utf8 = WebVector<uint8_t>(json.Utf8().c_str(), json.Utf8().length());
+  std::string json = json_object->ToJSONString().Utf8();
+  json_utf8 = WebVector<uint8_t>(base::as_bytes(base::span(json)));
   return true;
 }
 
