@@ -163,16 +163,9 @@ bool PdfInkModule::DrawThumbnail(SkCanvas& canvas, int page_index) {
     return false;
   }
 
-  // Since thumbnails are always drawn without any rotation, `transform` only
-  // needs to perform scaling.
-  const SkImageInfo canvas_info = canvas.imageInfo();
-  const gfx::Rect content_rect = client_->GetPageContentsRect(page_index);
-  const float ratio =
-      client_->GetZoom() *
-      std::min(
-          static_cast<float>(canvas_info.width()) / content_rect.width(),
-          static_cast<float>(canvas_info.height()) / content_rect.height());
-  const ink::AffineTransform transform = {ratio, 0, 0, 0, ratio, 0};
+  const ink::AffineTransform transform = GetInkThumbnailTransform(
+      gfx::SkISizeToSize(canvas.imageInfo().dimensions()),
+      client_->GetPageContentsRect(page_index), client_->GetZoom());
 
   ink::SkiaRenderer skia_renderer;
   for (const FinishedStrokeState& finished_stroke : it->second) {
