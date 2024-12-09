@@ -66,7 +66,7 @@ std::map<std::string, std::string> FormFillingStatsToSurveyStringData(
 
 }  // namespace
 
-struct VotesUploader::QueuedVote {
+struct VotesUploader::PendingVote {
   LocalFrameToken frame_of_form;
   FormSignature form_signature;
   base::OnceClosure upload_vote;
@@ -78,24 +78,24 @@ VotesUploader::VotesUploader(AutofillClient* client) : client_(*client) {
 
 VotesUploader::~VotesUploader() = default;
 
-base::SequencedTaskRunner& VotesUploader::vote_upload_task_runner() {
-  if (!vote_upload_task_runner_) {
+base::SequencedTaskRunner& VotesUploader::task_runner() {
+  if (!task_runner_) {
     // If the priority is BEST_EFFORT, the task can be preempted, which is
     // thought to cause high memory usage (as memory is retained by the task
     // while it is preempted), https://crbug.com/974249
-    vote_upload_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+    task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   }
-  return *vote_upload_task_runner_;
+  return *task_runner_;
 }
 
-void VotesUploader::WipeQueuedVotesForForm(FormSignature form_signature) {
-  std::erase_if(queued_votes_, [form_signature](const QueuedVote& vote) {
+void VotesUploader::WipePendingVotesForForm(FormSignature form_signature) {
+  std::erase_if(pending_votes_, [form_signature](const PendingVote& vote) {
     return vote.form_signature == form_signature;
   });
 }
 
-void VotesUploader::FlushQueuedVotesForFrame(const LocalFrameToken& frame) {
+void VotesUploader::FlushPendingVotesForFrame(const LocalFrameToken& frame) {
   // Removes from `list` all elements that satisfy `pred` and returns them
   // in a separate list.
   auto extract_if = []<typename T>(std::list<T>& list, auto pred) {
@@ -107,19 +107,20 @@ void VotesUploader::FlushQueuedVotesForFrame(const LocalFrameToken& frame) {
     return removed;
   };
 
-  // We remove the callbacks from `queued_votes_` *before* invoking them.
-  // The motivation is that we don't want to loop over `queued_votes_`
+  // We remove the callbacks from `pending_votes_` *before* invoking them.
+  // The motivation is that we don't want to loop over `pending_votes_`
   // and call member functions in the loop's body for memory safety reasons.
-  auto is_from_frame = [&](const QueuedVote& vote) {
+  auto is_from_frame = [&](const PendingVote& vote) {
     return vote.frame_of_form == frame;
   };
-  size_t num_old_queued_votes = queued_votes_.size();
-  std::list<QueuedVote> votes_of_frame =
-      extract_if(queued_votes_, is_from_frame);
-  DCHECK_EQ(queued_votes_.size() + votes_of_frame.size(), num_old_queued_votes);
+  size_t num_old_queued_votes = pending_votes_.size();
+  std::list<PendingVote> votes_of_frame =
+      extract_if(pending_votes_, is_from_frame);
+  DCHECK_EQ(pending_votes_.size() + votes_of_frame.size(),
+            num_old_queued_votes);
   DCHECK(std::ranges::all_of(votes_of_frame, is_from_frame));
-  DCHECK(std::ranges::none_of(queued_votes_, is_from_frame));
-  for (QueuedVote& vote : votes_of_frame) {
+  DCHECK(std::ranges::none_of(pending_votes_, is_from_frame));
+  for (PendingVote& vote : votes_of_frame) {
     std::move(vote.upload_vote).Run();
   }
 }
@@ -142,17 +143,16 @@ void VotesUploader::OnAutofillDriverStateChanged(
     AutofillDriver& driver,
     AutofillDriver::LifecycleState old_state,
     AutofillDriver::LifecycleState new_state) {
-  // Calls FlushQueuedVotes() after the currently pending
+  // Calls FlushPendingVotes() after the currently pending
   // DeterminePossibleFieldTypesForUpload() / OnFieldTypesDetermined() tasks are
   // finished.
   auto delayed_flush_queued_votes_for_frame =
       [this](const LocalFrameToken& frame) {
-        // Since vote_upload_task_runner() is a sequenced task runner,
-        // FlushQueuedVotes() will be called after any pending tasks and their
-        // replies.
-        vote_upload_task_runner().PostTaskAndReply(
+        // Since task_runner() is a sequenced task runner, FlushPendingVotes()
+        // will be called after any pending tasks and their replies.
+        task_runner().PostTaskAndReply(
             FROM_HERE, base::DoNothing(),
-            base::BindOnce(&VotesUploader::FlushQueuedVotesForFrame,
+            base::BindOnce(&VotesUploader::FlushPendingVotesForFrame,
                            weak_ptr_factory_.GetWeakPtr(), frame));
       };
 
@@ -182,7 +182,7 @@ void VotesUploader::OnAutofillDriverStateChanged(
 
   if (old_state == kPendingReset) {
     // Case (3): The was reset.
-    FlushQueuedVotesForFrame(driver.GetFrameToken());
+    FlushPendingVotesForFrame(driver.GetFrameToken());
   }
 }
 
@@ -236,7 +236,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   // TODO(crbug.com/368306576): Bound the size of `copied_profiles` and
   // `copied_credit_cards` by `kMaxDataConsideredForPossibleTypes` and make
   // the call to DeterminePossibleFieldTypesForUpload() synchronous.
-  vote_upload_task_runner().PostTaskAndReplyWithResult(
+  task_runner().PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           [](const std::vector<AutofillProfile>& profiles,
@@ -266,14 +266,14 @@ void VotesUploader::OnFieldTypesDetermined(
     ukm::SourceId ukm_source_id,
     std::unique_ptr<FormStructure> form) {
   LocalFrameToken frame = form->global_id().frame_token;
-  WipeQueuedVotesForForm(form->form_signature());
+  WipePendingVotesForForm(form->form_signature());
   if (observed_submission) {
     UploadVote(std::move(form), initial_interaction_timestamp,
                submission_timestamp, observed_submission, ukm_source_id);
-    FlushQueuedVotesForFrame(frame);
+    FlushPendingVotesForFrame(frame);
   } else {
-    TruncateQueueIfNecessary();
-    queued_votes_.push_front(
+    FlushOldestPendingVotesIfNecessary();
+    pending_votes_.push_front(
         {.frame_of_form = frame,
          .form_signature = form->form_signature(),
          .upload_vote = base::BindOnce(
@@ -283,16 +283,16 @@ void VotesUploader::OnFieldTypesDetermined(
   }
 }
 
-void VotesUploader::TruncateQueueIfNecessary() {
-  // Entries in queued_votes_ are submitted after navigations or form
+void VotesUploader::FlushOldestPendingVotesIfNecessary() {
+  // Entries in pending_votes_ are submitted after navigations or form
   // submissions. To reduce the risk of collecting too much data that is not
   // send, we allow only `kMaxEntriesInQueue` entries. Anything in excess will
   // be sent when the queue becomes to long.
   constexpr int kMaxEntriesInQueue = 10;
-  while (queued_votes_.size() >= kMaxEntriesInQueue) {
+  while (pending_votes_.size() >= kMaxEntriesInQueue) {
     base::OnceCallback oldest_callback =
-        std::move(queued_votes_.back().upload_vote);
-    queued_votes_.pop_back();
+        std::move(pending_votes_.back().upload_vote);
+    pending_votes_.pop_back();
     std::move(oldest_callback).Run();
   }
 }

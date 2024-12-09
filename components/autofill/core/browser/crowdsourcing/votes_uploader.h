@@ -39,7 +39,8 @@ class BrowserAutofillManager;
 // VotesUploader enqueues votes that are cast before form submission are
 // enqueued. New votes for a form signature replace already-enqueued ones for
 // that signature. Enqueued votes are flushed by BrowserAutofillManager when it
-// dies or is reset.
+// dies or is reset. Therefore, votes are called "pending" while they are in the
+// queue.
 //
 //   MaybeStartVoteUploadProcess()◄─────────BrowserAutofillManager
 //       │
@@ -58,7 +59,7 @@ class BrowserAutofillManager;
 //       │else                                   │
 //       │                                       │
 //       ▼                                       │
-//   Store QueuedVote, which is uploaded when    │
+//   Store PendingVote, which is uploaded when   │
 //   - a submission happens in the frame;        │
 //   - the frame becomes inactive                │
 //     kAutofillVoteWhenInactive is enabled;     │
@@ -66,7 +67,7 @@ class BrowserAutofillManager;
 //   - the frame is deleted;                     │
 //   - the queue becomes too large.              │
 //                                               │
-//   QueuedVote::upload_vote                     │
+//   PendingVote::upload_vote                    │
 //       │                                       │
 //       │                                       │
 //       ▼                                       │
@@ -117,22 +118,24 @@ class VotesUploader : public AutofillDriverFactory::Observer {
  private:
   friend class VotesUploaderTestApi;
 
-  struct QueuedVote;
+  struct PendingVote;
 
   // The reply of DeterminePossibleFieldTypesForUpload().
-  // Either calls UploadVote() or stores a QueuedVote.
+  // Either calls UploadVote() or stores a PendingVote.
   void OnFieldTypesDetermined(base::TimeTicks initial_interaction_timestamp,
                               base::TimeTicks submission_timestamp,
                               bool observed_submission,
                               ukm::SourceId ukm_source_id,
                               std::unique_ptr<FormStructure> submitted_form);
 
-  void FlushQueuedVotesForFrame(const LocalFrameToken& frame);
+  // Uploads all pending votes for forms from `frame`.
+  void FlushPendingVotesForFrame(const LocalFrameToken& frame);
 
   // Removes the callbacks for the given `form_signature` without calling them.
-  void WipeQueuedVotesForForm(FormSignature form_signature);
+  void WipePendingVotesForForm(FormSignature form_signature);
 
-  void TruncateQueueIfNecessary();
+  // Uploads the oldest votes if the queue of votes has become too long.
+  void FlushOldestPendingVotesIfNecessary();
 
   // AutofillDriverFactory::Observer:
   void OnAutofillDriverFactoryDestroyed(
@@ -143,32 +146,33 @@ class VotesUploader : public AutofillDriverFactory::Observer {
       AutofillDriver::LifecycleState old_state,
       AutofillDriver::LifecycleState new_state) override;
 
-  base::SequencedTaskRunner& vote_upload_task_runner();
+  // Task runner for asynchronously determining possible field types.
+  base::SequencedTaskRunner& task_runner();
 
   const raw_ref<AutofillClient> client_;
 
-  // List of callbacks to be called for sending blur votes. Only one callback is
-  // stored per FormSignature. We rely on FormSignatures rather than
-  // FormGlobalId to send votes for the various signatures of a form while it
-  // evolves (when fields are added or removed). The list of callbacks is
+  // List of pending votes. These votes were cast not when a form submission
+  // happened but, for example, when a form lost focus ("blur votes").
+  //
+  // Only one callback is stored per FormSignature. We rely on FormSignatures
+  // rather than FormGlobalId to send votes for the various signatures of a form
+  // while it evolves (when fields are added or removed). The list of votes is
   // ordered by time of creation: newest elements first. If the list becomes too
-  // long, the oldest queued callbacks are just called and popped removed the
-  // list.
+  // long, the oldest votes are popped from the list and uploaded.
   //
-  // Callbacks are triggered in the following situations:
-  // - We observe a form submission.
-  // - The list becomes to large.
-  //
-  // Callbacks are wiped in the following situations:
-  // - A form is submitted.
-  // - A callback is overridden by a more recent version.
-  std::list<QueuedVote> queued_votes_;
+  // Beware that this (like the other members) must not be accessed from
+  // `task_runner_`.
+  std::list<PendingVote> pending_votes_;
 
-  // This task runner sequentializes calls to
-  // DeterminePossibleFieldTypesForUpload() to ensure that blur votes are
-  // processed before form submission votes. This is important so that a
-  // submission can trigger the upload of blur votes.
-  scoped_refptr<base::SequencedTaskRunner> vote_upload_task_runner_;
+  // Task runner for DeterminePossibleFieldTypesForUpload(). It is important
+  // that this is a *sequenced* task runner for reasons:
+  // - Form submission not only uploads the submission vote but also flushes
+  //   blur votes. For that to work, the blur votes' OnFieldTypesDetermined()
+  //   must be called before the submission vote's OnFieldTypesDetermined().
+  // - When a frame becomes inactive or is reset, pending votes should be
+  //   flushed -- but first, pending DeterminePossibleFieldTypesForUpload()
+  //   calls need to finish.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::ScopedObservation<AutofillDriverFactory,
                           AutofillDriverFactory::Observer>

@@ -68,8 +68,8 @@ bool TestVotesUploader::MaybeStartVoteUploadProcess(
     // Since the `vote_upload_task_runner()` is a `base::SequencedTaskRunner`,
     // the `run_loop` is quit only after the task and reply posted by
     // MaybeStartVoteUploadProcess() is finished.
-    test_api(*this).vote_upload_task_runner().PostTaskAndReply(
-        FROM_HERE, base::DoNothing(), run_loop.QuitClosure());
+    test_api(*this).task_runner().PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                                   run_loop.QuitClosure());
     run_loop.Run();
     return true;
   }
