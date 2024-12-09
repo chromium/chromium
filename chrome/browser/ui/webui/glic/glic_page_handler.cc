@@ -46,6 +46,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler {
     std::optional<gfx::Size> actual_size = glic_service_->ResizePanel(size);
     if (!actual_size) {
       std::move(callback).Run(std::nullopt);
+      return;
     }
     std::move(callback).Run(actual_size);
   }

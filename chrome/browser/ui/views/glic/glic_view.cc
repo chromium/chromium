@@ -133,11 +133,13 @@ void GlicView::HandleBrowserPinning(gfx::Vector2d mouse_location) {
             web_view()->GetBrowserContext()) {
       continue;
     }
-    gfx::Rect glic_button_rect = browser->window()
-                                     ->AsBrowserView()
-                                     ->tab_strip_region_view()
-                                     ->glic_button()
-                                     ->GetBoundsInScreen();
+    auto* tab_strip_region_view =
+        browser->window()->AsBrowserView()->tab_strip_region_view();
+    if (!tab_strip_region_view || !tab_strip_region_view->glic_button()) {
+      continue;
+    }
+    gfx::Rect glic_button_rect =
+        tab_strip_region_view->glic_button()->GetBoundsInScreen();
 
     float glic_button_mouse_distance =
         (glic_button_rect.CenterPoint() -
