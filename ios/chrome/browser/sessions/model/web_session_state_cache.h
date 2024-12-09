@@ -9,7 +9,6 @@
 
 #import "base/files/file_path.h"
 #import "base/functional/callback_forward.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
 class ProfileIOS;
 

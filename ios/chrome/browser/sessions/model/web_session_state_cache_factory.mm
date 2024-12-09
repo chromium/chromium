@@ -7,14 +7,11 @@
 #import "base/functional/bind.h"
 #import "base/logging.h"
 #import "base/memory/ptr_util.h"
-#import "base/no_destructor.h"
 #import "components/keyed_service/core/keyed_service.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/sessions/model/web_session_state_cache.h"
 #import "ios/chrome/browser/sessions/model/web_session_state_cache_web_state_list_observer.h"
 #import "ios/chrome/browser/shared/model/browser/all_web_state_list_observation_registrar.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace {
@@ -76,8 +73,8 @@ std::unique_ptr<KeyedService> BuildWebSessionStateCacheWrapper(
 WebSessionStateCache* WebSessionStateCacheFactory::GetForProfile(
     ProfileIOS* profile) {
   WebSessionStateCacheWrapper* wrapper =
-      static_cast<WebSessionStateCacheWrapper*>(
-          GetInstance()->GetServiceForBrowserState(profile, true));
+      GetInstance()->GetServiceForProfileAs<WebSessionStateCacheWrapper>(
+          profile, /*create=*/true);
   return wrapper ? wrapper->web_session_state_cache() : nil;
 }
 
@@ -88,9 +85,8 @@ WebSessionStateCacheFactory* WebSessionStateCacheFactory::GetInstance() {
 }
 
 WebSessionStateCacheFactory::WebSessionStateCacheFactory()
-    : BrowserStateKeyedServiceFactory(
-          "WebSessionStateCache",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("WebSessionStateCache",
+                                    ProfileSelection::kRedirectedInIncognito) {}
 
 WebSessionStateCacheFactory::~WebSessionStateCacheFactory() = default;
 
@@ -98,9 +94,4 @@ std::unique_ptr<KeyedService>
 WebSessionStateCacheFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   return BuildWebSessionStateCacheWrapper(context);
-}
-
-web::BrowserState* WebSessionStateCacheFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateRedirectedInIncognito(context);
 }
