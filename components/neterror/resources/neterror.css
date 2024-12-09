@@ -97,11 +97,6 @@ a {
 </if>
 }
 
-[jscontent=hostName],
-[jscontent=failedUrl] {
-  overflow-wrap: break-word;
-}
-
 .secondary-button {
   background: #d9d9d9;
   color: #696969;
