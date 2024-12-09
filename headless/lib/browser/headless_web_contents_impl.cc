@@ -287,13 +287,12 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
     if (content::RenderWidgetHostView* view = rwh->GetView()) {
       if (fullscreen) {
         before_fullscreen_bounds_ = view->GetViewBounds();
-        gfx::Rect bounds = rwh->GetScreenInfo().available_rect;
+        gfx::Rect bounds = rwh->GetScreenInfo().rect;
         view->SetBounds(bounds);
       } else {
-        if (before_fullscreen_bounds_) {
-          view->SetBounds(before_fullscreen_bounds_.value());
-          before_fullscreen_bounds_.reset();
-        }
+        CHECK(before_fullscreen_bounds_);
+        view->SetBounds(before_fullscreen_bounds_.value());
+        before_fullscreen_bounds_.reset();
       }
     }
 

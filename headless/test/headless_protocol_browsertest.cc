@@ -701,7 +701,7 @@ HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
 HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     MAYBE_RequestFullscreenOnSecondaryScreen,
     "sanity/request-fullscreen-on-secondary-screen.js",
-    "--screen-info={ label='1st screen' }{  600x800 label='2nd screen' }")
+    "--screen-info={ label='1st screen' }{ 600x800 label='2nd screen' }")
 
 HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     MAYBE_ScreenRotationSecondaryScreen,
