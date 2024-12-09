@@ -8,6 +8,8 @@ option optimize_for = LITE_RUNTIME;
 
 package lens;
 
+import "lens_overlay_routing_info.proto";
+
 // The cluster info for a Lens Overlay session.
 message LensOverlayClusterInfo {
   // ID for subsequent server requests.
@@ -15,4 +17,7 @@ message LensOverlayClusterInfo {
 
   // ID for subsequent search requests.
   string search_session_id = 2;
+
+  // Info used for routing subsequent requests.
+  LensOverlayRoutingInfo routing_info = 6;
 }

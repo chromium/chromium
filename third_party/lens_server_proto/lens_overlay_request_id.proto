@@ -8,6 +8,8 @@ option optimize_for = LITE_RUNTIME;
 
 package lens;
 
+import "lens_overlay_routing_info.proto";
+
 // Request Id definition to support request sequencing and state lookup.
 message LensOverlayRequestId {
   // A unique identifier for a sequence of related Lens requests.
@@ -27,4 +29,7 @@ message LensOverlayRequestId {
   // Analytics ID for the Lens request. Will be updated on the initial request
   // and once per interaction request.
   bytes analytics_id = 4;
+
+  // Information about where to route the request.
+  LensOverlayRoutingInfo routing_info = 6;
 }
