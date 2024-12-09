@@ -28,7 +28,7 @@ const int kTestPrefValue1 = 1001;  // Some random value.
 const int kTestPrefValue2 = 1002;  // Some random value.
 
 // Constant for timeout while waiting for asynchronous sync operations.
-constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
+constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(20);
 
 // Waits for `entity_count` entities of PREFERENCE type on the fake server,
 // and fails with a GREYAssert if the condition is not met, within a short
@@ -92,8 +92,8 @@ void WaitForPreferenceValue(int pref_value) {
   // Sign in and sign out.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
   // Pref is not committed to the server.
   WaitForTestPreferenceOnFakeServer(false);
   [SigninEarlGrey signOut];
@@ -111,17 +111,11 @@ void WaitForPreferenceValue(int pref_value) {
 }
 
 // Tests that the value is written to local and account when signed in.
-// TODO(crbug.com/379843232): Test fails on ios-simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testPrefWrittenToLocalAndAccountIfSignedIn \
-  DISABLED_testPrefWrittenToLocalAndAccountIfSignedIn
-#else
-#define MAYBE_testPrefWrittenToLocalAndAccountIfSignedIn \
-  testPrefWrittenToLocalAndAccountIfSignedIn
-#endif
-- (void)MAYBE_testPrefWrittenToLocalAndAccountIfSignedIn {
+- (void)testPrefWrittenToLocalAndAccountIfSignedIn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
 
   // Pref does not exist on the server.
   WaitForTestPreferenceOnFakeServer(false);
@@ -148,18 +142,13 @@ void WaitForPreferenceValue(int pref_value) {
 
 // Tests that the account pref value is removed on signout and the local pref
 // value takes effect.
-// TODO(crbug.com/379843232): Test fails on ios-simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testAccountPrefValueRemovedOnSignout \
-  DISABLED_testAccountPrefValueRemovedOnSignout
-#else
-#define MAYBE_testAccountPrefValueRemovedOnSignout \
-  testAccountPrefValueRemovedOnSignout
-#endif
-- (void)MAYBE_testAccountPrefValueRemovedOnSignout {
+- (void)testAccountPrefValueRemovedOnSignout {
   // Set a pref value of `kTestPrefValue2` in account.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+
   [ChromeEarlGrey setIntegerValue:kTestPrefValue2
                       forUserPref:kTestSyncablePref];
   WaitForTestPreferenceOnFakeServer(true);
