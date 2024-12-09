@@ -163,7 +163,7 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
                       int defaulted_count,
                       const xmlChar** libxml_attributes);
   void EndElementNs();
-  void Characters(const xmlChar* chars, int length);
+  void Characters(base::span<const xmlChar> chars);
   void GetProcessingInstruction(const String& target, const String& data);
   void CdataBlock(const String&);
   void Comment(const String&);

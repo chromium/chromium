@@ -214,22 +214,15 @@ class PendingEndElementNSCallback final
 class PendingCharactersCallback final
     : public XMLDocumentParser::PendingCallback {
  public:
-  PendingCharactersCallback(const xmlChar* chars,
-                            int length,
+  PendingCharactersCallback(base::span<const xmlChar> chars,
                             TextPosition text_position)
       : PendingCallback(text_position),
-        chars_(xmlStrndup(chars, length)),
-        length_(length) {}
+        chars_(base::HeapArray<xmlChar>::CopiedFrom(chars)) {}
 
-  ~PendingCharactersCallback() override { xmlFree(chars_); }
-
-  void Call(XMLDocumentParser* parser) override {
-    parser->Characters(chars_, length_);
-  }
+  void Call(XMLDocumentParser* parser) override { parser->Characters(chars_); }
 
  private:
-  xmlChar* chars_;
-  int length_;
+  base::HeapArray<xmlChar> chars_;
 };
 
 class PendingProcessingInstructionCallback final
@@ -1200,18 +1193,18 @@ void XMLDocumentParser::SetScriptStartPosition(TextPosition text_position) {
   script_start_position_ = text_position;
 }
 
-void XMLDocumentParser::Characters(const xmlChar* chars, int length) {
+void XMLDocumentParser::Characters(base::span<const xmlChar> chars) {
   if (IsStopped())
     return;
 
   if (parser_paused_) {
-    pending_callbacks_.push_back(std::make_unique<PendingCharactersCallback>(
-        chars, length, GetTextPosition()));
+    pending_callbacks_.push_back(
+        std::make_unique<PendingCharactersCallback>(chars, GetTextPosition()));
     return;
   }
 
   CreateLeafTextNodeIfNeeded();
-  buffered_text_.AppendSpan(base::span(chars, static_cast<size_t>(length)));
+  buffered_text_.AppendSpan(chars);
 }
 
 void XMLDocumentParser::GetError(XMLErrors::ErrorType type,
@@ -1418,7 +1411,10 @@ static void EndElementNsHandler(void* closure,
 }
 
 static void CharactersHandler(void* closure, const xmlChar* chars, int length) {
-  GetParser(closure)->Characters(chars, length);
+  // SAFETY: libxml provides `chars` that point at `length` xmlChars.
+  auto chars_span =
+      UNSAFE_BUFFERS(base::span(chars, base::checked_cast<size_t>(length)));
+  GetParser(closure)->Characters(chars_span);
 }
 
 static void ProcessingInstructionHandler(void* closure,
