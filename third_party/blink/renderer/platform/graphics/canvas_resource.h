@@ -448,6 +448,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
       scoped_refptr<gpu::ClientSharedImage> client_si,
       const viz::TransferableResource& transferable_resource,
       viz::TransferableResource::ResourceSource resource_source,
+      gfx::HDRMetadata hdr_metadata,
       viz::ReleaseCallback release_callback,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceProvider>);
@@ -483,6 +484,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
       scoped_refptr<gpu::ClientSharedImage> client_si,
       const viz::TransferableResource& transferable_resource,
       viz::TransferableResource::ResourceSource resource_source,
+      gfx::HDRMetadata hdr_metadata,
       viz::ReleaseCallback out_callback,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceProvider>);
@@ -492,6 +494,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
       context_provider_wrapper_;
   viz::TransferableResource transferable_resource_;
   viz::TransferableResource::ResourceSource resource_source_;
+  gfx::HDRMetadata hdr_metadata_;
   bool is_overlay_candidate_ = false;
   viz::ReleaseCallback release_callback_;
   bool is_origin_clean_ = true;

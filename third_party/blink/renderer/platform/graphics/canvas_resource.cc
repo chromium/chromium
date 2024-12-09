@@ -808,6 +808,7 @@ scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
     scoped_refptr<gpu::ClientSharedImage> client_si,
     const viz::TransferableResource& transferable_resource,
     viz::TransferableResource::ResourceSource resource_source,
+    gfx::HDRMetadata hdr_metadata,
     viz::ReleaseCallback release_callback,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider) {
@@ -816,8 +817,8 @@ scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
   CHECK(client_si->mailbox() == transferable_resource.mailbox());
   auto resource = AdoptRef(new ExternalCanvasResource(
       std::move(client_si), transferable_resource, resource_source,
-      std::move(release_callback), std::move(context_provider_wrapper),
-      std::move(provider)));
+      hdr_metadata, std::move(release_callback),
+      std::move(context_provider_wrapper), std::move(provider)));
   return resource->IsValid() ? resource : nullptr;
 }
 
@@ -919,7 +920,7 @@ bool ExternalCanvasResource::
       transferable_resource_.sync_token(), client_si_->size(),
       client_si_->format(), is_overlay_candidate_, resource_source_);
   out_resource->color_space = client_si_->color_space();
-  out_resource->hdr_metadata = transferable_resource_.hdr_metadata;
+  out_resource->hdr_metadata = hdr_metadata_;
   out_resource->origin = client_si_->surface_origin();
 
   return true;
@@ -929,6 +930,7 @@ ExternalCanvasResource::ExternalCanvasResource(
     scoped_refptr<gpu::ClientSharedImage> client_si,
     const viz::TransferableResource& transferable_resource,
     viz::TransferableResource::ResourceSource resource_source,
+    gfx::HDRMetadata hdr_metadata,
     viz::ReleaseCallback out_callback,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider)
@@ -941,6 +943,7 @@ ExternalCanvasResource::ExternalCanvasResource(
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       transferable_resource_(transferable_resource),
       resource_source_(resource_source),
+      hdr_metadata_(hdr_metadata),
       is_overlay_candidate_(
           client_si_->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)),
       release_callback_(std::move(out_callback)) {

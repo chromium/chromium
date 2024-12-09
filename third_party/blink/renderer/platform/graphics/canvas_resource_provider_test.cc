@@ -698,7 +698,7 @@ TEST_F(CanvasResourceProviderTest,
 
   scoped_refptr<ExternalCanvasResource> resource =
       ExternalCanvasResource::Create(client_si, tr, tr.resource_source,
-                                     viz::ReleaseCallback(),
+                                     tr.hdr_metadata, viz::ReleaseCallback(),
                                      SharedGpuContext::ContextProviderWrapper(),
                                      provider->CreateWeakPtr());
 
