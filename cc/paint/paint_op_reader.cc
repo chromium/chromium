@@ -24,7 +24,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/numerics/safe_conversions.h"
+#include "base/numerics/safe_math.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/optional_util.h"
@@ -709,7 +709,12 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
   ReadSize(&colors_size);
 
   // If there are too many colors, abort.
-  size_t colors_bytes = colors_size * sizeof(decltype(ref.colors_)::value_type);
+  size_t colors_bytes;
+  if (!base::CheckMul(colors_size, sizeof(decltype(ref.colors_)::value_type))
+           .AssignIfValid(&colors_bytes)) {
+    SetInvalid(DeserializationError::
+                   kInsufficientRemainingBytes_Read_PaintShader_ColorSize);
+  }
   if (colors_bytes > remaining_bytes_) {
     SetInvalid(DeserializationError::
                    kInsufficientRemainingBytes_Read_PaintShader_ColorBytes);
