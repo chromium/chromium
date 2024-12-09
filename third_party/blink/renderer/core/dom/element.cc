@@ -3701,17 +3701,13 @@ bool Element::SkipStyleRecalcForContainer(
     return false;
   }
 
-  // ::scroll-marker-group boxes are created outside their originating element's
-  // box and cannot be skipped if the originating element is a size container
-  // because the pseudo element and its box need to be created before layout.
-  if (!style.ScrollMarkerGroupNone()) {
-    return false;
-  }
-
-  // Same as above about ::scroll-marker-group goes about ::scroll-button().
-  // Note: using generic kPseudoIdScrollButton here, as style collection only
-  // sets generic pseudo style flag on originating element.
-  if (CanGeneratePseudoElement(kPseudoIdScrollButton)) {
+  // ::scroll-marker-group and ::scroll-button() boxes are created outside their
+  // originating element's box and cannot be skipped if the originating element
+  // is a size container because the pseudo element and its box need to be
+  // created before layout.
+  if (!style.ScrollMarkerGroupNone() ||
+      CanGeneratePseudoElement(kPseudoIdScrollButton) ||
+      HasSiblingBoxPseudoElements()) {
     return false;
   }
 
@@ -8715,6 +8711,22 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
   }
   if (const ComputedStyle* style = GetComputedStyle()) {
     return style->CanGeneratePseudoElement(pseudo_id);
+  }
+  return false;
+}
+
+bool Element::HasSiblingBoxPseudoElements() const {
+  const ElementRareDataVector* rare_data = GetElementRareData();
+  if (!rare_data) {
+    return false;
+  }
+  for (PseudoId pseudo_id :
+       {kPseudoIdScrollUpButton, kPseudoIdScrollDownButton,
+        kPseudoIdScrollLeftButton, kPseudoIdScrollRightButton,
+        kPseudoIdScrollMarkerGroupAfter, kPseudoIdScrollMarkerGroupBefore}) {
+    if (rare_data->GetPseudoElement(pseudo_id)) {
+      return true;
+    }
   }
   return false;
 }

@@ -1655,6 +1655,12 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   template <typename Functor>
   bool PseudoElementStylesDependOnFunc(Functor& func) const;
 
+  // Returns true if this element has generate a pseudo element whose box is a
+  // sibling box of its originating element's box. In this case we cannot skip
+  // style recalc for size containers because that would break necessary layout
+  // containment by modifying the box tree outside the container during layout.
+  bool HasSiblingBoxPseudoElements() const;
+
   void ScrollLayoutBoxBy(const ScrollToOptions*);
   void ScrollLayoutBoxTo(const ScrollToOptions*);
   void ScrollFrameBy(const ScrollToOptions*);
