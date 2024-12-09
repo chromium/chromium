@@ -509,10 +509,10 @@ pub struct CodingIndependentCodePoints {
     pub is_video_full_range_image: bool,
 }
 
-/// Mastering Display Color Volume (mDCv) used at the point of content creation,
+/// Mastering Display Color Volume (mDCV) used at the point of content creation,
 /// as specified in [SMPTE-ST-2086](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=8353899).
 ///
-/// See https://www.w3.org/TR/png-3/#mDCv-chunk for more details.
+/// See https://www.w3.org/TR/png-3/#mDCV-chunk for more details.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct MasteringDisplayColorVolume {
     /// Mastering display chromaticities.
@@ -533,7 +533,7 @@ pub struct MasteringDisplayColorVolume {
 
 /// Content light level information of HDR content.
 ///
-/// See https://www.w3.org/TR/png-3/#cLLi-chunk for more details.
+/// See https://www.w3.org/TR/png-3/#cLLI-chunk for more details.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct ContentLightLevelInfo {
     /// Maximum Content Light Level indicates the maximum light level of any
@@ -569,6 +569,8 @@ pub struct Info<'a> {
     /// How colors are stored in the image.
     pub color_type: ColorType,
     pub interlaced: bool,
+    /// The image's `sBIT` chunk, if present; contains significant bits of the sample.
+    pub sbit: Option<Cow<'a, [u8]>>,
     /// The image's `tRNS` chunk, if present; contains the alpha channel of the image's palette, 1 byte per entry.
     pub trns: Option<Cow<'a, [u8]>>,
     pub pixel_dims: Option<PixelDimensions>,
@@ -580,6 +582,8 @@ pub struct Info<'a> {
     /// The contents of the image's `cHRM` chunk, if present.
     /// Prefer `source_chromaticities` to also get the derived replacements from sRGB chunks.
     pub chrm_chunk: Option<SourceChromaticities>,
+    /// The contents of the image's `bKGD` chunk, if present.
+    pub bkgd: Option<Cow<'a, [u8]>>,
 
     pub frame_control: Option<FrameControl>,
     pub animation_control: Option<AnimationControl>,
@@ -621,9 +625,11 @@ impl Default for Info<'_> {
             color_type: ColorType::Grayscale,
             interlaced: false,
             palette: None,
+            sbit: None,
             trns: None,
             gama_chunk: None,
             chrm_chunk: None,
+            bkgd: None,
             pixel_dims: None,
             frame_control: None,
             animation_control: None,

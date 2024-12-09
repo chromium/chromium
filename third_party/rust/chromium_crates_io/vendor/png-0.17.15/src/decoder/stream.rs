@@ -167,8 +167,6 @@ pub(crate) enum FormatErrorInner {
     /// Not a PNG, the magic signature is missing.
     InvalidSignature,
     // Errors of chunk level ordering, missing etc.
-    /// Ihdr must occur.
-    MissingIhdr,
     /// Fctl must occur if an animated chunk occurs.
     MissingFctl,
     /// Image data that was indicated in IHDR or acTL is missing.
@@ -179,6 +177,10 @@ pub(crate) enum FormatErrorInner {
     },
     /// 4.3., some chunks must be before IDAT.
     AfterIdat {
+        kind: ChunkType,
+    },
+    // 4.3., Some chunks must be after PLTE.
+    BeforePlte {
         kind: ChunkType,
     },
     /// 4.3., some chunks must be before PLTE.
@@ -205,6 +207,16 @@ pub(crate) enum FormatErrorInner {
     ShortPalette {
         expected: usize,
         len: usize,
+    },
+    /// sBIT chunk size based on color type.
+    InvalidSbitChunkSize {
+        color_type: ColorType,
+        expected: usize,
+        len: usize,
+    },
+    InvalidSbit {
+        sample_depth: BitDepth,
+        sbit: u8,
     },
     /// A palletized image did not have a palette.
     PaletteRequired,
@@ -292,11 +304,11 @@ impl fmt::Display for FormatError {
                 "CRC error: expected 0x{:x} have 0x{:x} while decoding {:?} chunk.",
                 crc_val, crc_sum, chunk
             ),
-            MissingIhdr => write!(fmt, "IHDR chunk missing"),
             MissingFctl => write!(fmt, "fcTL chunk missing before fdAT chunk."),
             MissingImageData => write!(fmt, "IDAT or fdAT chunk is missing."),
             ChunkBeforeIhdr { kind } => write!(fmt, "{:?} chunk appeared before IHDR chunk", kind),
             AfterIdat { kind } => write!(fmt, "Chunk {:?} is invalid after IDAT chunk.", kind),
+            BeforePlte { kind } => write!(fmt, "Chunk {:?} is invalid before PLTE chunk.", kind),
             AfterPlte { kind } => write!(fmt, "Chunk {:?} is invalid after PLTE chunk.", kind),
             OutsidePlteIdat { kind } => write!(
                 fmt,
@@ -313,6 +325,16 @@ impl fmt::Display for FormatError {
                 fmt,
                 "Not enough palette entries, expect {} got {}.",
                 expected, len
+            ),
+            InvalidSbitChunkSize {color_type, expected, len} => write!(
+                fmt,
+                "The size of the sBIT chunk should be {} byte(s), but {} byte(s) were provided for the {:?} color type.",
+                expected, len, color_type
+            ),
+            InvalidSbit {sample_depth, sbit} => write!(
+                fmt,
+                "Invalid sBIT value {}. It must be greater than zero and less than the sample depth {:?}.",
+                sbit, sample_depth
             ),
             PaletteRequired => write!(fmt, "Missing palette of indexed image."),
             InvalidDimensions => write!(fmt, "Invalid image dimensions"),
@@ -876,10 +898,11 @@ impl StreamingDecoder {
                 };
 
                 if val == sum || CHECKSUM_DISABLED {
-                    self.state = Some(State::new_u32(U32ValueKind::Length));
                     if type_str == IEND {
+                        debug_assert!(self.state.is_none());
                         Ok(Decoded::ImageEnd)
                     } else {
+                        self.state = Some(State::new_u32(U32ValueKind::Length));
                         Ok(Decoded::ChunkComplete(val, type_str))
                     }
                 } else if self.decode_options.skip_ancillary_crc_failures
@@ -953,6 +976,7 @@ impl StreamingDecoder {
         self.state = Some(State::new_u32(U32ValueKind::Crc(type_str)));
         let parse_result = match type_str {
             IHDR => self.parse_ihdr(),
+            chunk::sBIT => self.parse_sbit(),
             chunk::PLTE => self.parse_plte(),
             chunk::tRNS => self.parse_trns(),
             chunk::pHYs => self.parse_phys(),
@@ -962,8 +986,9 @@ impl StreamingDecoder {
             chunk::cHRM => self.parse_chrm(),
             chunk::sRGB => self.parse_srgb(),
             chunk::cICP => Ok(self.parse_cicp()),
-            chunk::mDCv => Ok(self.parse_mdcv()),
-            chunk::cLLi => Ok(self.parse_clli()),
+            chunk::mDCV => Ok(self.parse_mdcv()),
+            chunk::cLLI => Ok(self.parse_clli()),
+            chunk::bKGD => Ok(self.parse_bkgd()),
             chunk::iCCP if !self.decode_options.ignore_iccp_chunk => self.parse_iccp(),
             chunk::tEXt if !self.decode_options.ignore_text_chunk => self.parse_text(),
             chunk::zTXt if !self.decode_options.ignore_text_chunk => self.parse_ztxt(),
@@ -1085,6 +1110,78 @@ impl StreamingDecoder {
         }
     }
 
+    fn parse_sbit(&mut self) -> Result<Decoded, DecodingError> {
+        let mut parse = || {
+            let info = self.info.as_mut().unwrap();
+            if info.palette.is_some() {
+                return Err(DecodingError::Format(
+                    FormatErrorInner::AfterPlte { kind: chunk::sBIT }.into(),
+                ));
+            }
+
+            if self.have_idat {
+                return Err(DecodingError::Format(
+                    FormatErrorInner::AfterIdat { kind: chunk::sBIT }.into(),
+                ));
+            }
+
+            if info.sbit.is_some() {
+                return Err(DecodingError::Format(
+                    FormatErrorInner::DuplicateChunk { kind: chunk::sBIT }.into(),
+                ));
+            }
+
+            let (color_type, bit_depth) = { (info.color_type, info.bit_depth) };
+            // The sample depth for color type 3 is fixed at eight bits.
+            let sample_depth = if color_type == ColorType::Indexed {
+                BitDepth::Eight
+            } else {
+                bit_depth
+            };
+            self.limits
+                .reserve_bytes(self.current_chunk.raw_bytes.len())?;
+            let vec = self.current_chunk.raw_bytes.clone();
+            let len = vec.len();
+
+            // expected lenth of the chunk
+            let expected = match color_type {
+                ColorType::Grayscale => 1,
+                ColorType::Rgb | ColorType::Indexed => 3,
+                ColorType::GrayscaleAlpha => 2,
+                ColorType::Rgba => 4,
+            };
+
+            // Check if the sbit chunk size is valid.
+            if expected != len {
+                return Err(DecodingError::Format(
+                    FormatErrorInner::InvalidSbitChunkSize {
+                        color_type,
+                        expected,
+                        len,
+                    }
+                    .into(),
+                ));
+            }
+
+            for sbit in &vec {
+                if *sbit < 1 || *sbit > sample_depth as u8 {
+                    return Err(DecodingError::Format(
+                        FormatErrorInner::InvalidSbit {
+                            sample_depth,
+                            sbit: *sbit,
+                        }
+                        .into(),
+                    ));
+                }
+            }
+            info.sbit = Some(Cow::Owned(vec));
+            Ok(Decoded::Nothing)
+        };
+
+        parse().ok();
+        Ok(Decoded::Nothing)
+    }
+
     fn parse_trns(&mut self) -> Result<Decoded, DecodingError> {
         let info = self.info.as_mut().unwrap();
         if info.trns.is_some() {
@@ -1131,7 +1228,7 @@ impl StreamingDecoder {
                 // before the data chunk.
                 if info.palette.is_none() {
                     return Err(DecodingError::Format(
-                        FormatErrorInner::AfterPlte { kind: chunk::tRNS }.into(),
+                        FormatErrorInner::BeforePlte { kind: chunk::tRNS }.into(),
                     ));
                 } else if self.have_idat {
                     return Err(DecodingError::Format(
@@ -1342,7 +1439,7 @@ impl StreamingDecoder {
                 // `ScaledFloat::SCALING` is hardcoded to 100_000, which works
                 // well for the `cHRM` chunk where the spec says that "a value
                 // of 0.3127 would be stored as the integer 31270".  In the
-                // `mDCv` chunk the spec says that "0.708, 0.292)" is stored as
+                // `mDCV` chunk the spec says that "0.708, 0.292)" is stored as
                 // "{ 35400, 14600 }", using a scaling factor of 50_000, so we
                 // multiply by 2 before converting.
                 ScaledFloat::from_scaled((chunk as u32) * 2)
@@ -1365,8 +1462,8 @@ impl StreamingDecoder {
             })
         }
 
-        // The spec requires that the mDCv chunk MUST come before the PLTE and IDAT chunks.
-        // Additionally, we ignore a second, duplicated mDCv chunk (if any).
+        // The spec requires that the mDCV chunk MUST come before the PLTE and IDAT chunks.
+        // Additionally, we ignore a second, duplicated mDCV chunk (if any).
         let info = self.info.as_mut().unwrap();
         let is_before_plte_and_idat = !self.have_idat && info.palette.is_none();
         if is_before_plte_and_idat && info.mastering_display_color_volume.is_none() {
@@ -1392,7 +1489,7 @@ impl StreamingDecoder {
             })
         }
 
-        // We ignore a second, duplicated cLLi chunk (if any).
+        // We ignore a second, duplicated cLLI chunk (if any).
         let info = self.info.as_mut().unwrap();
         if info.content_light_level.is_none() {
             info.content_light_level = parse(&self.current_chunk.raw_bytes[..]).ok();
@@ -1658,6 +1755,32 @@ impl StreamingDecoder {
 
         Ok(Decoded::Nothing)
     }
+
+    // NOTE: This function cannot return `DecodingError` and handles parsing
+    // errors or spec violations as-if the chunk was missing.  See
+    // https://github.com/image-rs/image-png/issues/525 for more discussion.
+    fn parse_bkgd(&mut self) -> Decoded {
+        let info = self.info.as_mut().unwrap();
+        if info.bkgd.is_none() && !self.have_idat {
+            let expected = match info.color_type {
+                ColorType::Indexed => {
+                    if info.palette.is_none() {
+                        return Decoded::Nothing;
+                    };
+                    1
+                }
+                ColorType::Grayscale | ColorType::GrayscaleAlpha => 2,
+                ColorType::Rgb | ColorType::Rgba => 6,
+            };
+            let vec = self.current_chunk.raw_bytes.clone();
+            let len = vec.len();
+            if len == expected {
+                info.bkgd = Some(Cow::Owned(vec));
+            }
+        }
+
+        Decoded::Nothing
+    }
 }
 
 impl Info<'_> {
@@ -1707,7 +1830,9 @@ mod tests {
     use super::SourceChromaticities;
     use crate::test_utils::*;
     use crate::{Decoder, DecodingError, Reader};
+    use approx::assert_relative_eq;
     use byteorder::WriteBytesExt;
+    use std::borrow::Cow;
     use std::cell::RefCell;
     use std::collections::VecDeque;
     use std::fs::File;
@@ -1942,6 +2067,28 @@ mod tests {
         Ok(())
     }
 
+    #[test]
+    fn image_source_sbit() {
+        fn trial(path: &str, expected: Option<Cow<[u8]>>) {
+            let decoder = crate::Decoder::new(File::open(path).unwrap());
+            let reader = decoder.read_info().unwrap();
+            let actual: Option<Cow<[u8]>> = reader.info().sbit.clone();
+            assert!(actual == expected);
+        }
+
+        trial("tests/sbit/g.png", Some(Cow::Owned(vec![5u8])));
+        trial("tests/sbit/ga.png", Some(Cow::Owned(vec![5u8, 3u8])));
+        trial(
+            "tests/sbit/indexed.png",
+            Some(Cow::Owned(vec![5u8, 6u8, 5u8])),
+        );
+        trial("tests/sbit/rgb.png", Some(Cow::Owned(vec![5u8, 6u8, 5u8])));
+        trial(
+            "tests/sbit/rgba.png",
+            Some(Cow::Owned(vec![5u8, 6u8, 5u8, 8u8])),
+        );
+    }
+
     /// Test handling of a PNG file that contains *two* iCCP chunks.
     /// This is a regression test for https://github.com/image-rs/image/issues/1825.
     #[test]
@@ -1968,6 +2115,53 @@ mod tests {
         let mut decoder = crate::Decoder::new(File::open("tests/iccp/broken_iccp.png").unwrap());
         decoder.set_ignore_iccp_chunk(true);
         assert!(decoder.read_info().is_ok());
+    }
+
+    /// Test handling of `mDCV` and `cLLI` chunks.`
+    #[test]
+    fn test_mdcv_and_clli_chunks() {
+        let decoder = crate::Decoder::new(File::open("tests/bugfixes/cicp_pq.png").unwrap());
+        let reader = decoder.read_info().unwrap();
+        let info = reader.info();
+
+        let cicp = info.coding_independent_code_points.unwrap();
+        assert_eq!(cicp.color_primaries, 9);
+        assert_eq!(cicp.transfer_function, 16);
+        assert_eq!(cicp.matrix_coefficients, 0);
+        assert!(cicp.is_video_full_range_image);
+
+        let mdcv = info.mastering_display_color_volume.unwrap();
+        assert_relative_eq!(mdcv.chromaticities.red.0.into_value(), 0.680);
+        assert_relative_eq!(mdcv.chromaticities.red.1.into_value(), 0.320);
+        assert_relative_eq!(mdcv.chromaticities.green.0.into_value(), 0.265);
+        assert_relative_eq!(mdcv.chromaticities.green.1.into_value(), 0.690);
+        assert_relative_eq!(mdcv.chromaticities.blue.0.into_value(), 0.150);
+        assert_relative_eq!(mdcv.chromaticities.blue.1.into_value(), 0.060);
+        assert_relative_eq!(mdcv.chromaticities.white.0.into_value(), 0.3127);
+        assert_relative_eq!(mdcv.chromaticities.white.1.into_value(), 0.3290);
+        assert_relative_eq!(mdcv.min_luminance as f32 / 10_000.0, 0.01);
+        assert_relative_eq!(mdcv.max_luminance as f32 / 10_000.0, 5000.0);
+
+        let clli = info.content_light_level.unwrap();
+        assert_relative_eq!(clli.max_content_light_level as f32 / 10_000.0, 4000.0);
+        assert_relative_eq!(clli.max_frame_average_light_level as f32 / 10_000.0, 2627.0);
+    }
+
+    /// Tests what happens then [`Reader.finish`] is called twice.
+    #[test]
+    fn test_finishing_twice() {
+        let mut png = Vec::new();
+        write_noncompressed_png(&mut png, 16, 1024);
+        let decoder = Decoder::new(png.as_slice());
+        let mut reader = decoder.read_info().unwrap();
+
+        // First call to `finish` - expecting success.
+        reader.finish().unwrap();
+
+        // Second call to `finish` - expecting an error.
+        let err = reader.finish().unwrap_err();
+        assert!(matches!(&err, DecodingError::Parameter(_)));
+        assert_eq!("End of image has been reached", format!("{err}"));
     }
 
     /// Writes an acTL chunk.
@@ -2185,6 +2379,30 @@ mod tests {
         assert_eq!(3093270825, crc32fast::hash(&buf));
     }
 
+    #[test]
+    fn test_only_idat_chunk_in_input_stream() {
+        let png = {
+            let mut png = Vec::new();
+            write_png_sig(&mut png);
+            write_chunk(&mut png, b"IDAT", &[]);
+            png
+        };
+        let decoder = Decoder::new(png.as_slice());
+        let Err(err) = decoder.read_info() else {
+            panic!("Expected an error")
+        };
+        assert!(matches!(&err, DecodingError::Format(_)));
+        assert_eq!(
+            "ChunkType { type: IDAT, \
+                         critical: true, \
+                         private: false, \
+                         reserved: false, \
+                         safecopy: false \
+             } chunk appeared before IHDR chunk",
+            format!("{err}"),
+        );
+    }
+
     /// `StreamingInput` can be used by tests to simulate a streaming input
     /// (e.g. a slow http response, where all bytes are not immediately available).
     #[derive(Clone)]
@@ -2366,17 +2584,16 @@ mod tests {
     /// Creates a ready-to-test [`Reader`] which decodes an animated PNG that contains:
     /// IHDR, acTL, fcTL, IDAT, fcTL, fdAT, IEND.  (i.e. IDAT is part of the animation)
     fn create_reader_of_ihdr_actl_fctl_idat_fctl_fdat() -> Reader<VecDeque<u8>> {
-        let width = 16;
-        let frame_data = generate_rgba8_with_width_and_height(width, width);
+        let idat_width = 16;
         let mut fctl = crate::FrameControl {
-            width,
-            height: width,
+            width: idat_width,
+            height: idat_width, // same height and width
             ..Default::default()
         };
 
         let mut png = VecDeque::new();
         write_png_sig(&mut png);
-        write_rgba8_ihdr_with_width(&mut png, width);
+        write_rgba8_ihdr_with_width(&mut png, idat_width);
         write_actl(
             &mut png,
             &crate::AnimationControl {
@@ -2386,10 +2603,21 @@ mod tests {
         );
         fctl.sequence_number = 0;
         write_fctl(&mut png, &fctl);
-        write_chunk(&mut png, b"IDAT", &frame_data);
+        // Using `fctl.height + 1` means that the `IDAT` will have "left-over" data after
+        // processing.  This helps to verify that `Reader.read_until_image_data` discards the
+        // left-over data when resetting `UnfilteredRowsBuffer`.
+        let idat_data = generate_rgba8_with_width_and_height(fctl.width, fctl.height + 1);
+        write_chunk(&mut png, b"IDAT", &idat_data);
+
+        let fdat_width = 10;
         fctl.sequence_number = 1;
+        // Using different width in `IDAT` and `fDAT` frames helps to catch problems that
+        // may arise when `Reader.read_until_image_data` doesn't properly reset
+        // `UnfilteredRowsBuffer`.
+        fctl.width = fdat_width;
         write_fctl(&mut png, &fctl);
-        write_fdat(&mut png, 2, &frame_data);
+        let fdat_data = generate_rgba8_with_width_and_height(fctl.width, fctl.height);
+        write_fdat(&mut png, 2, &fdat_data);
         write_iend(&mut png);
 
         Decoder::new(png).read_info().unwrap()

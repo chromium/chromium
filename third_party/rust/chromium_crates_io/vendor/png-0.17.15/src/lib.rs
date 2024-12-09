@@ -74,10 +74,8 @@ mod traits;
 pub use crate::adam7::expand_pass as expand_interlaced_row;
 pub use crate::adam7::Adam7Info;
 pub use crate::common::*;
-pub use crate::decoder::{
-    DecodeOptions, Decoded, Decoder, DecodingError, InterlaceInfo, InterlacedRow, Limits,
-    OutputInfo, Reader, StreamingDecoder,
-};
+pub use crate::decoder::stream::{DecodeOptions, Decoded, DecodingError, StreamingDecoder};
+pub use crate::decoder::{Decoder, InterlaceInfo, InterlacedRow, Limits, OutputInfo, Reader};
 pub use crate::encoder::{Encoder, EncodingError, StreamWriter, Writer};
 pub use crate::filter::{AdaptiveFilterType, FilterType};
 

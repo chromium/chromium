@@ -415,12 +415,13 @@ third_party/blink/tools/blinkpy/common/checkout 1 1
 third_party/blink/tools/blinkpy/common/net 3 2
 third_party/blink/tools/blinkpy/common/system 2 1
 third_party/blink/tools/blinkpy/style/checkers 1 1
-third_party/blink/tools/blinkpy/w3c 21 8
+third_party/blink/tools/blinkpy/w3c 20 7
 third_party/blink/tools/blinkpy/web_tests 2 1
 third_party/blink/tools/blinkpy/web_tests/controllers 1 1
 third_party/blink/tools/blinkpy/web_tests/layout_package 7 2
 third_party/blink/tools/blinkpy/web_tests/models 1 1
 third_party/blink/tools/blinkpy/web_tests/port 1 1
+third_party/blink/tools/blinkpy/wpt_tests 1 1
 third_party/blink/web_tests/dom/domparsing 2 2
 third_party/blink/web_tests/external/wpt 2 1
 third_party/blink/web_tests/external/wpt/bluetooth/resources 2 1
@@ -775,7 +776,6 @@ third_party/tflite_support/src/tensorflow_lite_support/tools/ci_build/builds 1 1
 third_party/tflite_support/src/tensorflow_lite_support/tools/docs 1 1
 third_party/usb_ids 8 1
 third_party/utf/src/share 1 1
-third_party/webpagereplay 1 1
 third_party/webxr_test_pages 1 1
 third_party/webxr_test_pages/webxr-samples 7 5
 third_party/woff2/src 1 1
@@ -808,7 +808,6 @@ tools/crates/gnrt 1 1
 tools/emacs 320 4
 tools/git 2 1
 tools/mac/power/protos/third_party/pprof 1 1
-tools/mb/docs 1 1
 tools/md_browser 7 5
 tools/memory/partition_allocator/palloc_viewer 1 1
 tools/metrics/actions 1 1

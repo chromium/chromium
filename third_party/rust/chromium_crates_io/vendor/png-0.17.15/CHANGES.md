@@ -1,3 +1,36 @@
+## 0.17.15
+
+### Added
+
+* Add a public API to advance to the next frame in APNG decoder ([#518])
+* Add APIs to write ICC and EXIF chunks ([#526])
+* Add support for parsing the sBIT chunk ([#524])
+* Add support for parsing the bKGD chunk ([#538])
+* Add support for parsing the cICP chunk ([#529])
+* Add support for parsing mDCv and cLLi chunks ([#528], ([#543]))
+
+### Changed
+
+* Improve performance of Paeth filter during decoding ([#512], [#539])
+
+### Fixed
+
+* Avoid an infinite loop when retrying after a fatal error using `StreamingDecoder` ([#520])
+* Fixed chunk order in encoded files ([#526])
+
+[#495]: https://github.com/image-rs/image-png/pull/495
+[#496]: https://github.com/image-rs/image-png/pull/496
+[#512]: https://github.com/image-rs/image-png/pull/512
+[#518]: https://github.com/image-rs/image-png/pull/518
+[#520]: https://github.com/image-rs/image-png/pull/520
+[#524]: https://github.com/image-rs/image-png/pull/524
+[#526]: https://github.com/image-rs/image-png/pull/526
+[#528]: https://github.com/image-rs/image-png/pull/528
+[#529]: https://github.com/image-rs/image-png/pull/529
+[#538]: https://github.com/image-rs/image-png/pull/538
+[#539]: https://github.com/image-rs/image-png/pull/539
+[#543]: https://github.com/image-rs/image-png/pull/543
+
 ## 0.17.14
 
 * Updated to miniz_oxide 0.8.0.

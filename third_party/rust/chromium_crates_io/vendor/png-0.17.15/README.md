@@ -4,22 +4,17 @@
 [![Crates.io](https://img.shields.io/crates/v/png.svg)](https://crates.io/crates/png)
 [![License](https://img.shields.io/crates/l/png.svg)](https://github.com/image-rs/image-png)
 
-PNG decoder/encoder in pure Rust.
+Robust and performant PNG decoder/encoder in pure Rust. Also supports [APNG](https://en.wikipedia.org/wiki/APNG).
 
-It contains all features required to handle the entirety of [the PngSuite by
-Willem van Schack][PngSuite].
+No `unsafe` code, battle-tested, and fuzzed on [OSS-fuzz](https://github.com/google/oss-fuzz).
 
-[PngSuite]: http://www.schaik.com/pngsuite2011/pngsuite.html
+## Performance
 
-## pngcheck
+Performance is typically on par with or better than libpng.
 
-The `pngcheck` utility is a small demonstration binary that checks and prints
-metadata on every `.png` image provided via parameter. You can run it (for
-example on the test directories) with
+Includes a fast encoding mode powered by [fdeflate](https://crates.io/crates/fdeflate) that is dramatically faster than the fastest mode of libpng while *simultaneously* providing better compression ratio.
 
-```bash
-cargo run --release --example pngcheck ./tests/pngsuite/*
-```
+On nightly Rust compiler you can slightly speed up decoding of some images by enabling the `unstable` feature of this crate.
 
 ## License
 

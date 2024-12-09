@@ -1,21 +1,22 @@
 mod interlace_info;
-mod stream;
+mod read_decoder;
+pub(crate) mod stream;
 pub(crate) mod transform;
+mod unfiltering_buffer;
 mod zlib;
 
-pub use self::stream::{DecodeOptions, Decoded, DecodingError, StreamingDecoder};
-use self::stream::{FormatErrorInner, CHUNK_BUFFER_SIZE};
+use self::read_decoder::{ImageDataCompletionStatus, ReadDecoder};
+use self::stream::{DecodeOptions, DecodingError, FormatErrorInner, CHUNK_BUFFER_SIZE};
 use self::transform::{create_transform_fn, TransformFn};
+use self::unfiltering_buffer::UnfilteringBuffer;
 
-use std::io::{BufRead, BufReader, ErrorKind, Read};
+use std::io::Read;
 use std::mem;
 
 use crate::adam7::{self, Adam7Info};
-use crate::chunk;
 use crate::common::{
     BitDepth, BytesPerPixel, ColorType, Info, ParameterErrorKind, Transformations,
 };
-use crate::filter::{unfilter, FilterType};
 use crate::FrameControl;
 
 pub use interlace_info::InterlaceInfo;
@@ -128,30 +129,22 @@ impl<R: Read> Decoder<R> {
 
     /// Create a new decoder configuration with custom limits.
     pub fn new_with_limits(r: R, limits: Limits) -> Decoder<R> {
-        let mut decoder = StreamingDecoder::new();
-        decoder.limits = limits;
+        let mut read_decoder = ReadDecoder::new(r);
+        read_decoder.set_limits(limits);
 
         Decoder {
-            read_decoder: ReadDecoder {
-                reader: BufReader::with_capacity(CHUNK_BUFFER_SIZE, r),
-                decoder,
-                at_eof: false,
-            },
+            read_decoder,
             transform: Transformations::IDENTITY,
         }
     }
 
     /// Create a new decoder configuration with custom `DecodeOptions`.
     pub fn new_with_options(r: R, decode_options: DecodeOptions) -> Decoder<R> {
-        let mut decoder = StreamingDecoder::new_with_options(decode_options);
-        decoder.limits = Limits::default();
+        let mut read_decoder = ReadDecoder::with_options(r, decode_options);
+        read_decoder.set_limits(Limits::default());
 
         Decoder {
-            read_decoder: ReadDecoder {
-                reader: BufReader::with_capacity(CHUNK_BUFFER_SIZE, r),
-                decoder,
-                at_eof: false,
-            },
+            read_decoder,
             transform: Transformations::IDENTITY,
         }
     }
@@ -180,7 +173,7 @@ impl<R: Read> Decoder<R> {
     /// assert!(decoder.read_info().is_ok());
     /// ```
     pub fn set_limits(&mut self, limits: Limits) {
-        self.read_decoder.decoder.limits = limits;
+        self.read_decoder.set_limits(limits);
     }
 
     /// Read the PNG header and return the information contained within.
@@ -188,14 +181,7 @@ impl<R: Read> Decoder<R> {
     /// Most image metadata will not be read until `read_info` is called, so those fields will be
     /// None or empty.
     pub fn read_header_info(&mut self) -> Result<&Info<'static>, DecodingError> {
-        let mut buf = Vec::new();
-        while self.read_decoder.info().is_none() {
-            buf.clear();
-            if self.read_decoder.decode_next(&mut buf)?.is_none() {
-                return Err(DecodingError::IoError(ErrorKind::UnexpectedEof.into()));
-            }
-        }
-        Ok(self.read_decoder.info().unwrap())
+        self.read_decoder.read_header_info()
     }
 
     /// Reads all meta data until the first IDAT chunk
@@ -207,12 +193,11 @@ impl<R: Read> Decoder<R> {
             bpp: BytesPerPixel::One,
             subframe: SubframeInfo::not_yet_init(),
             remaining_frames: 0, // Temporary value - fixed below after reading `acTL` and `fcTL`.
-            data_stream: Vec::new(),
-            prev_start: 0,
-            current_start: 0,
+            unfiltering_buffer: UnfilteringBuffer::new(),
             transform: self.transform,
             transform_fn: None,
             scratch_buffer: Vec::new(),
+            finished: false,
         };
 
         // Check if the decoding buffer of a single raw line has a valid size.
@@ -269,9 +254,7 @@ impl<R: Read> Decoder<R> {
     /// assert!(decoder.read_info().is_ok());
     /// ```
     pub fn set_ignore_text_chunk(&mut self, ignore_text_chunk: bool) {
-        self.read_decoder
-            .decoder
-            .set_ignore_text_chunk(ignore_text_chunk);
+        self.read_decoder.set_ignore_text_chunk(ignore_text_chunk);
     }
 
     /// Set the decoder to ignore iccp chunks while parsing.
@@ -285,73 +268,13 @@ impl<R: Read> Decoder<R> {
     /// assert!(decoder.read_info().is_ok());
     /// ```
     pub fn set_ignore_iccp_chunk(&mut self, ignore_iccp_chunk: bool) {
-        self.read_decoder
-            .decoder
-            .set_ignore_iccp_chunk(ignore_iccp_chunk);
+        self.read_decoder.set_ignore_iccp_chunk(ignore_iccp_chunk);
     }
 
     /// Set the decoder to ignore and not verify the Adler-32 checksum
     /// and CRC code.
     pub fn ignore_checksums(&mut self, ignore_checksums: bool) {
-        self.read_decoder
-            .decoder
-            .set_ignore_adler32(ignore_checksums);
-        self.read_decoder.decoder.set_ignore_crc(ignore_checksums);
-    }
-}
-
-struct ReadDecoder<R: Read> {
-    reader: BufReader<R>,
-    decoder: StreamingDecoder,
-    at_eof: bool,
-}
-
-impl<R: Read> ReadDecoder<R> {
-    /// Returns the next decoded chunk. If the chunk is an ImageData chunk, its contents are written
-    /// into image_data.
-    fn decode_next(&mut self, image_data: &mut Vec<u8>) -> Result<Option<Decoded>, DecodingError> {
-        while !self.at_eof {
-            let (consumed, result) = {
-                let buf = self.reader.fill_buf()?;
-                if buf.is_empty() {
-                    return Err(DecodingError::IoError(ErrorKind::UnexpectedEof.into()));
-                }
-                self.decoder.update(buf, image_data)?
-            };
-            self.reader.consume(consumed);
-            match result {
-                Decoded::Nothing => (),
-                Decoded::ImageEnd => self.at_eof = true,
-                result => return Ok(Some(result)),
-            }
-        }
-        Ok(None)
-    }
-
-    fn finish_decoding(&mut self) -> Result<(), DecodingError> {
-        while !self.at_eof {
-            let buf = self.reader.fill_buf()?;
-            if buf.is_empty() {
-                return Err(DecodingError::IoError(ErrorKind::UnexpectedEof.into()));
-            }
-            let (consumed, event) = self.decoder.update(buf, &mut vec![])?;
-            self.reader.consume(consumed);
-            match event {
-                Decoded::Nothing => (),
-                Decoded::ImageEnd => self.at_eof = true,
-                // ignore more data
-                Decoded::ChunkComplete(_, _) | Decoded::ChunkBegin(_, _) | Decoded::ImageData => {}
-                Decoded::ImageDataFlushed => return Ok(()),
-                Decoded::PartialChunk(_) => {}
-                new => unreachable!("{:?}", new),
-            }
-        }
-
-        Err(DecodingError::IoError(ErrorKind::UnexpectedEof.into()))
-    }
-
-    fn info(&self) -> Option<&Info<'static>> {
-        self.decoder.info.as_ref()
+        self.read_decoder.ignore_checksums(ignore_checksums);
     }
 }
 
@@ -364,12 +287,8 @@ pub struct Reader<R: Read> {
     subframe: SubframeInfo,
     /// How many frames remain to be decoded.  Decremented after each `IDAT` or `fdAT` sequence.
     remaining_frames: usize,
-    /// Vec containing the uncompressed image data currently being processed.
-    data_stream: Vec<u8>,
-    /// Index in `data_stream` where the previous row starts.
-    prev_start: usize,
-    /// Index in `data_stream` where the current row starts.
-    current_start: usize,
+    /// Buffer with not-yet-`unfilter`-ed image rows
+    unfiltering_buffer: UnfilteringBuffer,
     /// Output transformations
     transform: Transformations,
     /// Function that can transform decompressed, unfiltered rows into final output.
@@ -379,6 +298,8 @@ pub struct Reader<R: Read> {
     /// to a byte slice. In a future version of this library, this buffer will be removed and
     /// `next_row` and `next_interlaced_row` will write directly into a user provided output buffer.
     scratch_buffer: Vec<u8>,
+    /// Whether `ImageEnd` was already reached by `fn finish`.
+    finished: bool,
 }
 
 /// The subframe specific information.
@@ -432,43 +353,15 @@ impl<R: Read> Reader<R> {
     /// Reads all meta data until the next frame data starts.
     /// Requires IHDR before the IDAT and fcTL before fdAT.
     fn read_until_image_data(&mut self) -> Result<(), DecodingError> {
-        loop {
-            // This is somewhat ugly. The API requires us to pass a buffer to decode_next but we
-            // know that we will stop before reading any image data from the stream. Thus pass an
-            // empty buffer and assert that remains empty.
-            let mut buf = Vec::new();
-            let state = self.decoder.decode_next(&mut buf)?;
-            assert!(buf.is_empty());
+        self.decoder.read_until_image_data()?;
 
-            match state {
-                Some(Decoded::ChunkBegin(_, chunk::IDAT))
-                | Some(Decoded::ChunkBegin(_, chunk::fdAT)) => break,
-                None => {
-                    return Err(DecodingError::Format(
-                        FormatErrorInner::MissingImageData.into(),
-                    ))
-                }
-                // Ignore all other chunk events. Any other chunk may be between IDAT chunks, fdAT
-                // chunks and their control chunks.
-                _ => {}
-            }
-        }
-
-        let info = self
-            .decoder
-            .info()
-            .ok_or(DecodingError::Format(FormatErrorInner::MissingIhdr.into()))?;
-        self.bpp = info.bpp_in_prediction();
-        self.subframe = SubframeInfo::new(info);
-        self.data_stream.clear();
-        self.current_start = 0;
-        self.prev_start = 0;
+        self.subframe = SubframeInfo::new(self.info());
+        self.bpp = self.info().bpp_in_prediction();
+        self.unfiltering_buffer = UnfilteringBuffer::new();
 
         // Allocate output buffer.
         let buflen = self.output_line_size(self.subframe.width);
-        self.decoder.decoder.limits.reserve_bytes(buflen)?;
-
-        self.prev_start = self.current_start;
+        self.decoder.reserve_bytes(buflen)?;
 
         Ok(())
     }
@@ -574,7 +467,7 @@ impl<R: Read> Reader<R> {
 
         // Discard the remaining data in the current sequence of `IDAT` or `fdAT` chunks.
         if !self.subframe.consumed_and_flushed {
-            self.decoder.finish_decoding()?;
+            self.decoder.finish_decoding_image_data()?;
             self.mark_subframe_as_consumed_and_flushed();
         }
 
@@ -597,7 +490,7 @@ impl<R: Read> Reader<R> {
             Some(interlace) => *interlace,
         };
         if interlace.line_number() == 0 {
-            self.prev_start = self.current_start;
+            self.unfiltering_buffer.reset_prev_row();
         }
         let rowlen = match interlace {
             InterlaceInfo::Null(_) => self.subframe.rowlen,
@@ -628,19 +521,17 @@ impl<R: Read> Reader<R> {
     /// Read the rest of the image and chunks and finish up, including text chunks or others
     /// This will discard the rest of the image if the image is not read already with [`Reader::next_frame`], [`Reader::next_row`] or [`Reader::next_interlaced_row`]
     pub fn finish(&mut self) -> Result<(), DecodingError> {
-        self.remaining_frames = 0;
-        self.data_stream.clear();
-        self.current_start = 0;
-        self.prev_start = 0;
-        loop {
-            let mut buf = Vec::new();
-            let state = self.decoder.decode_next(&mut buf)?;
-
-            if state.is_none() {
-                break;
-            }
+        if self.finished {
+            return Err(DecodingError::Parameter(
+                ParameterErrorKind::PolledAfterEndOfImage.into(),
+            ));
         }
 
+        self.remaining_frames = 0;
+        self.unfiltering_buffer = UnfilteringBuffer::new();
+        self.decoder.read_until_end_of_input()?;
+
+        self.finished = true;
         Ok(())
     }
 
@@ -651,8 +542,8 @@ impl<R: Read> Reader<R> {
         output_buffer: &mut [u8],
     ) -> Result<(), DecodingError> {
         self.next_raw_interlaced_row(rowlen)?;
-        assert_eq!(self.current_start - self.prev_start, rowlen - 1);
-        let row = &self.data_stream[self.prev_start..self.current_start];
+        let row = self.unfiltering_buffer.prev_row();
+        assert_eq!(row.len(), rowlen - 1);
 
         // Apply transformations and write resulting data to buffer.
         let transform_fn = {
@@ -717,52 +608,26 @@ impl<R: Read> Reader<R> {
         color.raw_row_length_from_width(depth, width) - 1
     }
 
-    /// Write the next raw interlaced row into `self.prev`.
-    ///
-    /// The scanline is filtered against the previous scanline according to the specification.
+    /// Unfilter the next raw interlaced row into `self.unfiltering_buffer`.
     fn next_raw_interlaced_row(&mut self, rowlen: usize) -> Result<(), DecodingError> {
         // Read image data until we have at least one full row (but possibly more than one).
-        while self.data_stream.len() - self.current_start < rowlen {
+        while self.unfiltering_buffer.curr_row_len() < rowlen {
             if self.subframe.consumed_and_flushed {
                 return Err(DecodingError::Format(
                     FormatErrorInner::NoMoreImageData.into(),
                 ));
             }
 
-            // Clear the current buffer before appending more data.
-            if self.prev_start > 0 {
-                self.data_stream.copy_within(self.prev_start.., 0);
-                self.data_stream
-                    .truncate(self.data_stream.len() - self.prev_start);
-                self.current_start -= self.prev_start;
-                self.prev_start = 0;
-            }
-
-            match self.decoder.decode_next(&mut self.data_stream)? {
-                Some(Decoded::ImageData) => (),
-                Some(Decoded::ImageDataFlushed) => self.mark_subframe_as_consumed_and_flushed(),
-                _ => (),
+            match self
+                .decoder
+                .decode_image_data(self.unfiltering_buffer.as_mut_vec())?
+            {
+                ImageDataCompletionStatus::ExpectingMoreData => (),
+                ImageDataCompletionStatus::Done => self.mark_subframe_as_consumed_and_flushed(),
             }
         }
 
-        // Get a reference to the current row and point scan_start to the next one.
-        let (prev, row) = self.data_stream.split_at_mut(self.current_start);
-
-        // Unfilter the row.
-        let filter = FilterType::from_u8(row[0]).ok_or(DecodingError::Format(
-            FormatErrorInner::UnknownFilterMethod(row[0]).into(),
-        ))?;
-        unfilter(
-            filter,
-            self.bpp,
-            &prev[self.prev_start..],
-            &mut row[1..rowlen],
-        );
-
-        self.prev_start = self.current_start + 1;
-        self.current_start += rowlen;
-
-        Ok(())
+        self.unfiltering_buffer.unfilter_curr_row(rowlen, self.bpp)
     }
 }
 
