@@ -10930,6 +10930,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="V8AuthenticatorAttestationResponse_GetPublicKey_Method"/>
   <int value="5215" label="CloseWatcherScriptConstructor"/>
   <int value="5216" label="Canvas2DImageSmoothingQuality2"/>
+  <int value="5217" label="NonNoneTouchActionWouldLoseEditableHandwriting"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

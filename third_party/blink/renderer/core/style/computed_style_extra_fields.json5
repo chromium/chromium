@@ -468,7 +468,7 @@
       field_template: "primitive",
       include_paths: ["third_party/blink/renderer/platform/graphics/touch_action.h"],
       type_name: "TouchAction",
-      field_size: 8,
+      field_size: 9,
       default_value: "TouchAction::kAuto",
       field_group: "*",
     },
