@@ -8895,3 +8895,6 @@ crbug.com/382506777 [ Linux ] external/wpt/scroll-animations/css/animation-inact
 
 # Gardener 2024-12-06
 crbug.com/382519579 [ Linux ] external/wpt/long-animation-frame/tentative/loaf-script-window-attribution.html [ Failure Pass ]
+
+crbug.com/383105114 [ Linux ] tables/mozilla/bugs/bug78162.html [ Failure Pass ]
+crbug.com/383105114 [ Win ] tables/mozilla/bugs/bug78162.html [ Failure Pass ]
