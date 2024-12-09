@@ -18,11 +18,13 @@ class BrowserContext;
 
 namespace glic {
 class GlicFocusedTabManager;
+class GlicProfileManager;
 class GlicWindowController;
 
 class GlicKeyedService : public KeyedService {
  public:
-  explicit GlicKeyedService(content::BrowserContext* browser_context);
+  explicit GlicKeyedService(content::BrowserContext* browser_context,
+                            GlicProfileManager* profile_manager);
   GlicKeyedService(const GlicKeyedService&) = delete;
   GlicKeyedService& operator=(const GlicKeyedService&) = delete;
   ~GlicKeyedService() override;
@@ -37,7 +39,7 @@ class GlicKeyedService : public KeyedService {
                  bool open_in_background,
                  const std::optional<int32_t>& window_id,
                  glic::mojom::WebClientHandler::CreateTabCallback callback);
-  void ClosePanel();
+  virtual void ClosePanel();
   std::optional<gfx::Size> ResizePanel(const gfx::Size& size);
 
   void GetContextFromFocusedTab(
@@ -45,11 +47,16 @@ class GlicKeyedService : public KeyedService {
       bool include_viewport_screenshot,
       glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback);
 
+  base::WeakPtr<GlicKeyedService> GetWeakPtr();
+
  private:
   raw_ptr<content::BrowserContext> browser_context_;
 
   std::unique_ptr<GlicWindowController> window_controller_;
   GlicFocusedTabManager focused_tab_manager_;
+  // Unowned
+  raw_ptr<GlicProfileManager> profile_manager_;
+  base::WeakPtrFactory<GlicKeyedService> weak_ptr_factory_{this};
 };
 
 }  // namespace glic

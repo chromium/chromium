@@ -6,6 +6,7 @@
 
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_page_context_fetcher.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -21,13 +22,17 @@
 
 namespace glic {
 
-GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context)
+GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context,
+                                   GlicProfileManager* profile_manager)
     : browser_context_(browser_context),
-      focused_tab_manager_(Profile::FromBrowserContext(browser_context)) {}
+      focused_tab_manager_(Profile::FromBrowserContext(browser_context)),
+      profile_manager_(profile_manager) {}
 
 GlicKeyedService::~GlicKeyedService() = default;
 
 void GlicKeyedService::LaunchUI() {
+  profile_manager_->OnUILaunching(this);
+
   if (!window_controller_) {
     window_controller_ = std::make_unique<GlicWindowController>(
         Profile::FromBrowserContext(browser_context_));
@@ -105,6 +110,10 @@ void GlicKeyedService::GetContextFromFocusedTab(
   if (BorderView* border = BorderView::FindBorderForWebContents(web_contents)) {
     border->StartAnimation();
   }
+}
+
+base::WeakPtr<GlicKeyedService> GlicKeyedService::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace glic

@@ -17,7 +17,8 @@
 #include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_window_manager.h"
+#include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 namespace glic {
@@ -48,8 +49,9 @@ GlicButton::~GlicButton() = default;
 void GlicButton::NotifyClick(const ui::Event& event) {
   TabStripControlButton::NotifyClick(event);
 #if BUILDFLAG(ENABLE_GLIC)
-  GlicWindowManager::GetInstance()->ShowGlicWindowForProfile(
-      tab_strip_controller_->GetProfile());
+  glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+      tab_strip_controller_->GetProfile())
+      ->LaunchUI();
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 

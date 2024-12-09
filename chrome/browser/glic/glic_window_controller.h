@@ -40,17 +40,11 @@ class GlicWindowController {
   // Called to notify the controller that the window was requested to be closed.
   void Close();
 
-  // Returns a WeakPtr to this instance. It can be destroyed at any time if the
-  // profile is deleted or if the browser shuts down.
-  base::WeakPtr<GlicWindowController> GetWeakPtr();
-
  private:
   const raw_ptr<Profile> profile_;
   views::UniqueWidgetPtr widget_;
   // Owned by widget_.
   raw_ptr<glic::GlicView> glic_view_ = nullptr;
-
-  base::WeakPtrFactory<GlicWindowController> weak_ptr_factory_{this};
 };
 
 }  // namespace glic

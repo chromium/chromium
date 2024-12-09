@@ -52,10 +52,6 @@ void GlicWindowController::Close() {
   glic_view_ = nullptr;
 }
 
-base::WeakPtr<GlicWindowController> GlicWindowController::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 GlicWindowController::~GlicWindowController() = default;
 
 }  // namespace glic

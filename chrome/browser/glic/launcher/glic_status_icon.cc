@@ -5,7 +5,7 @@
 #include "chrome/browser/glic/launcher/glic_status_icon.h"
 
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/glic/glic_profile.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/launcher/glic_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/status_icons/status_icon.h"
@@ -67,13 +67,15 @@ void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
     case IDC_GLIC_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT:
       // TODO(https://crbug.com/378143781): Use correct settings subpage and
       // show help bubble on the appropriate setting.
-      chrome::ShowSettingsSubPageForProfile(LastActiveGlicProfile(),
-                                            std::string());
+      chrome::ShowSettingsSubPageForProfile(
+          glic::GlicProfileManager::GetInstance()->GetProfileForLaunch(),
+          std::string());
       break;
     case IDC_GLIC_STATUS_ICON_MENU_SETTINGS:
       // TODO(https://crbug.com/378143780): Use the correct settings subpage.
-      chrome::ShowSettingsSubPageForProfile(LastActiveGlicProfile(),
-                                            std::string());
+      chrome::ShowSettingsSubPageForProfile(
+          glic::GlicProfileManager::GetInstance()->GetProfileForLaunch(),
+          std::string());
       break;
     default:
       NOTREACHED();

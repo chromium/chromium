@@ -13,14 +13,15 @@
 namespace system_permission_settings {
 class PlatformHandle;
 }  // namespace system_permission_settings
-namespace whats_new {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+namespace whats_new {
 class WhatsNewRegistry;
-#endif
 }  // namespace whats_new
 namespace glic {
 class GlicBackgroundModeManager;
-}
+class GlicProfileManager;
+}  // namespace glic
+#endif
 
 // This class owns the core controllers for features that are globally
 // scoped on desktop. It can be subclassed by tests to perform
@@ -52,6 +53,10 @@ class GlobalFeatures {
   whats_new::WhatsNewRegistry* whats_new_registry() {
     return whats_new_registry_.get();
   }
+
+  glic::GlicProfileManager* glic_profile_manager() {
+    return glic_profile_manager_.get();
+  }
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -81,6 +86,7 @@ class GlobalFeatures {
       system_permissions_platform_handle_;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   std::unique_ptr<whats_new::WhatsNewRegistry> whats_new_registry_;
+  std::unique_ptr<glic::GlicProfileManager> glic_profile_manager_;
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
