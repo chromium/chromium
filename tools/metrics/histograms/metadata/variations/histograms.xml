@@ -766,6 +766,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Variations.VariationsStateEncryptionStatus"
+    enum="VariationsStateEncryptionStatus" expires_after="2025-12-01">
+  <owner>svenzheng@google.com</owner>
+  <owner>vivianz@google.com</owner>
+  <summary>
+    Capture the status of variations state encryption in Chrome feedback report.
+  </summary>
+</histogram>
+
 <histogram name="Variations.WebViewDownloadJobInterval" units="minutes"
     expires_after="2025-05-25">
   <owner>ntfschr@chromium.org</owner>

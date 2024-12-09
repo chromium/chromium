@@ -21,6 +21,20 @@
 #include "components/variations/net/variations_command_line.h"
 #include "components/variations/variations_switches.h"
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "base/check_is_test.h"
+#include "third_party/boringssl/src/include/openssl/hpke.h"
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// Prod key for feedback encryption.
+// TODO(svenzheng): Update to a real prod key.
+const std::array<uint8_t, X25519_PUBLIC_VALUE_LEN> kFeedbackEncryptionPublicKey{
+    0x3c, 0x68, 0xe8, 0x54, 0xdf, 0x8c, 0xde, 0x15, 0x63, 0xb5, 0xa0,
+    0x24, 0xcc, 0x7b, 0xab, 0x77, 0xbe, 0x55, 0x19, 0x28, 0x26, 0x0f,
+    0xc0, 0xcf, 0x62, 0x2e, 0xce, 0x97, 0x29, 0xff, 0xe7, 0x2f};
+#endif
+
 // Exits the browser with a helpful error message.
 void ExitWithMessage(const std::string& message) {
   puts(message.c_str());
@@ -28,6 +42,12 @@ void ExitWithMessage(const std::string& message) {
 }
 
 namespace variations {
+
+#if !BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kFeedbackIncludeVariations,
+             "FeedbackIncludeVariations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 void MaybeUnpackVariationsStateFile() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -98,6 +118,69 @@ std::string GetStringFromDict(const base::Value::Dict& dict,
   return s ? *s : std::string();
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+// Encrypt `plaintext` with the `public_key` and save the result to
+// `ciphertext`. Also if `enc_len` is not null, update the length of enc
+// which is stored in `ciphertext`.
+VariationsStateEncryptionStatus EncryptStringWithPublicKey(
+    const std::string& plaintext,
+    std::vector<uint8_t>* ciphertext,
+    base::span<const uint8_t> public_key,
+    size_t* enc_len = nullptr) {
+  if (plaintext.empty()) {
+    return VariationsStateEncryptionStatus::kEmptyInput;
+  }
+  bssl::ScopedEVP_HPKE_CTX sender_context;
+
+  // The vector will hold the encapsulated shared secret "enc" followed by the
+  // symmetrically encrypted ciphertext "ct". Start with a size big enough for
+  // the shared secret.
+  ciphertext->resize(EVP_HPKE_MAX_ENC_LENGTH);
+  size_t encapsulated_shared_secret_len;
+
+  if (!EVP_HPKE_CTX_setup_sender(
+          /*ctx=*/sender_context.get(),
+          /*out_enc=*/ciphertext->data(),
+          /*out_enc_len=*/&encapsulated_shared_secret_len,
+          /*max_enc=*/ciphertext->size(),
+          /*kem=*/EVP_hpke_x25519_hkdf_sha256(),
+          /*kdf=*/EVP_hpke_hkdf_sha256(),
+          /*aead=*/EVP_hpke_aes_256_gcm(),
+          /*peer_public_key=*/public_key.data(),
+          /*peer_public_key_len=*/public_key.size(),
+          /*info=*/nullptr,
+          /*info_len=*/0)) {
+    DVLOG(1) << "hpke setup failed";
+    return VariationsStateEncryptionStatus::kHpkeSetupFailure;
+  }
+  if (enc_len != nullptr) {
+    *enc_len = encapsulated_shared_secret_len;
+  }
+  // This vector holds encapsulated shared secret and encrypted text.
+  // The encrypted text can be longer so we need to reserve enough length.
+  ciphertext->resize(encapsulated_shared_secret_len + plaintext.length() +
+                     EVP_HPKE_CTX_max_overhead(sender_context.get()));
+  auto ciphertext_span =
+      base::span(*ciphertext).subspan(encapsulated_shared_secret_len);
+  size_t ciphertext_len;
+
+  if (!EVP_HPKE_CTX_seal(
+          /*ctx=*/sender_context.get(),
+          /*out=*/ciphertext_span.data(),
+          /*out_len=*/&ciphertext_len,
+          /*max_out_len=*/ciphertext_span.size(),
+          /*in=*/reinterpret_cast<const uint8_t*>(plaintext.c_str()),
+          /*in_len=*/plaintext.length(),
+          /*ad=*/nullptr,
+          /*ad_len=*/0)) {
+    DVLOG(1) << "hpke seal failed";
+    return VariationsStateEncryptionStatus::kHpkeSealFailure;
+  }
+  ciphertext->resize(encapsulated_shared_secret_len + ciphertext_len);
+  return VariationsStateEncryptionStatus::kSuccess;
+}
+#endif
+
 }  // namespace
 
 VariationsCommandLine::VariationsCommandLine() = default;
@@ -130,7 +213,7 @@ VariationsCommandLine VariationsCommandLine::GetForCommandLine(
   return result;
 }
 
-std::string VariationsCommandLine::ToString() {
+std::string VariationsCommandLine::ToString() const {
   std::string output;
   output.append(
       GenerateParam(::switches::kForceFieldTrials, field_trial_states));
@@ -228,5 +311,23 @@ bool VariationsCommandLine::WriteToString(std::string* serialized_json) const {
   JSONStringValueSerializer serializer(serialized_json);
   return serializer.Serialize(dict);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+VariationsStateEncryptionStatus VariationsCommandLine::EncryptToString(
+    std::vector<uint8_t>* ciphertext) const {
+  return EncryptStringWithPublicKey(ToString(), ciphertext,
+                                    kFeedbackEncryptionPublicKey);
+}
+
+VariationsStateEncryptionStatus
+VariationsCommandLine::EncryptToStringForTesting(
+    std::vector<uint8_t>* ciphertext,
+    base::span<const uint8_t> public_key,
+    size_t* enc_len) const {
+  CHECK_IS_TEST();
+  return EncryptStringWithPublicKey(ToString(), ciphertext, public_key,
+                                    enc_len);
+}
+#endif
 
 }  // namespace variations

@@ -285,6 +285,17 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Null seed used">No seed used</int>
 </enum>
 
+<!-- LINT.IfChange(VariationsStateEncryptionStatus) -->
+
+<enum name="VariationsStateEncryptionStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Input empty"/>
+  <int value="2" label="Hpke setup failure"/>
+  <int value="3" label="Hpke seal failure"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/variations/net/variations_command_line.h:VariationsStateEncryptionStatus) -->
+
 </enums>
 
 </histogram-configuration>

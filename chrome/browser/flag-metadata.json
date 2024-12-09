@@ -4556,6 +4556,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "feedback-include-variations",
+    "owners": [ "svenzheng@google.com", "chrome-metrics-team@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "fetch-gaia-hash-on-sign-in",
     "owners":["nwokedi@chromium.org"],
     "expiry_milestone": 130

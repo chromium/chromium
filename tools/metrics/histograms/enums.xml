@@ -18211,6 +18211,7 @@ from previous Chrome versions.
   <int value="-866097797"
       label="ExperimentalAccessibilityDictationOffline:disabled"/>
   <int value="-865066703" label="CSSTextBoxTrim:disabled"/>
+  <int value="-864835103" label="FeedbackIncludeVariations:disabled"/>
   <int value="-864481314" label="FeedVideoInlinePlayback:disabled"/>
   <int value="-864266073" label="cros-regions-mode"/>
   <int value="-864234985" label="UseDdljsonApi:enabled"/>
@@ -24018,6 +24019,7 @@ from previous Chrome versions.
   <int value="1458041527" label="ShowScrollableMVTOnNTPAndroid:enabled"/>
   <int value="1458085218" label="MultiDisplayOverviewAndSplitView:disabled"/>
   <int value="1458255488" label="BlinkGenPropertyTrees:enabled"/>
+  <int value="1458301097" label="FeedbackIncludeVariations:enabled"/>
   <int value="1458475849" label="D3D11VideoDecoder:disabled"/>
   <int value="1458583431" label="arc-use-auth-endpoint"/>
   <int value="1459529277" label="disable-text-input-focus-manager"/>

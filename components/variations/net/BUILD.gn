@@ -31,6 +31,10 @@ static_library("net") {
     "//components/variations/proto",
   ]
 
+  if (!is_chromeos) {
+    deps += [ "//third_party/boringssl" ]
+  }
+
   if (use_blink) {
     sources += [
       "variations_url_loader_throttle.cc",

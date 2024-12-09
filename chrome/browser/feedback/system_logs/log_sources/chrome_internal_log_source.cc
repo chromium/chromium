@@ -77,6 +77,12 @@
 #include "base/mac/mac_util.h"
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "base/base64.h"
+#include "base/feature_list.h"
+#include "components/variations/net/variations_command_line.h"
+#endif
+
 namespace system_logs {
 
 namespace {
@@ -406,6 +412,11 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
   PopulateSyncLogs(response.get());
   PopulateExtensionInfoLogs(response.get());
   PopulatePowerApiLogs(response.get());
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(variations::kFeedbackIncludeVariations)) {
+    PopulateVariations(response.get());
+  }
+#endif
 #if BUILDFLAG(IS_WIN)
   PopulateUsbKeyboardDetected(response.get());
   PopulateEnrolledToDomain(response.get());
@@ -538,6 +549,20 @@ void ChromeInternalLogSource::PopulatePowerApiLogs(
   if (!info.empty())
     response->emplace(kPowerApiListKey, info);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+void ChromeInternalLogSource::PopulateVariations(SystemLogsResponse* response) {
+  std::vector<uint8_t> ciphertext;
+  auto status =
+      variations::VariationsCommandLine::GetForCurrentProcess().EncryptToString(
+          &ciphertext);
+  if (status == variations::VariationsStateEncryptionStatus::kSuccess) {
+    std::string base64_encoded =
+        base::Base64Encode(std::string(ciphertext.begin(), ciphertext.end()));
+    response->emplace("variations", base64_encoded);
+  }
+}
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ChromeInternalLogSource::PopulateLocalStateSettings(
