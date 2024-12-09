@@ -303,6 +303,8 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
   out_resource->color_space =
       current_swap_buffer_->GetSharedImage()->color_space();
   out_resource->hdr_metadata = hdr_metadata_;
+  out_resource->origin =
+      current_swap_buffer_->GetSharedImage()->surface_origin();
 
   // This holds a ref on the SwapBuffers that will keep it alive until the
   // mailbox is released (and while the release callback is running).
