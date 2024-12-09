@@ -1288,7 +1288,6 @@
       'filepath': 'ash/public/cpp/holding_space|'\
                   'ash/system/holding_space|'\
                   'ash/system/progress_indicator|'\
-                  'chrome/browser/lacros/.*holding_space|'\
                   'chrome/browser/ui/ash/holding_space|'\
                   'chrome/browser/ui/ash/thumbnail_loader|'\
                   'chromeos/crosapi/mojom/.*holding_space|'\
@@ -1423,7 +1422,6 @@
       'filepath': 'chrome/browser/chromeos/app_mode/'\
                   '|chrome/browser/ash/app_mode/'\
                   '|chrome/browser/ash/login/app_mode/'
-                  '|chrome/browser/lacros/app_mode/'\
                   '|chromeos/crosapi/mojom/kiosk_session_service.mojom',
     },
     'language': {
@@ -1595,7 +1593,6 @@
      'filepath': 'ash/clipboard/|'\
                  'ash/public/cpp/.*clipboard.*|'\
                  'chrome/browser/ash/crosapi/clipboard_history.*|'\
-                 'chrome/browser/lacros/clipboard_history.*|'\
                  'chrome/browser/ui/ash/clipboard.*|'\
                  'chromeos/ui/clipboard_history/',
     },
