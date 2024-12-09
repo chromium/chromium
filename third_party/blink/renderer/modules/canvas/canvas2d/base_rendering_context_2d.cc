@@ -3182,11 +3182,6 @@ V8CanvasTextRendering BaseRenderingContext2D::textRendering() const {
   return GetState().GetTextRendering();
 }
 
-float BaseRenderingContext2D::GetFontBaseline(
-    const SimpleFontData& font_data) const {
-  return TextMetrics::GetFontBaseline(GetState().GetTextBaseline(), font_data);
-}
-
 String BaseRenderingContext2D::textAlign() const {
   return TextAlignName(GetState().GetTextAlign());
 }
@@ -3450,15 +3445,20 @@ void BaseRenderingContext2D::setDirection(const String& direction_string) {
 }
 
 void BaseRenderingContext2D::fillText(const String& text, double x, double y) {
-  DrawTextInternal(text, x, y, CanvasRenderingContext2DState::kFillPaintType);
+  CanvasRenderingContext2DState& state = GetState();
+  DrawTextInternal(text, x, y, CanvasRenderingContext2DState::kFillPaintType,
+                   state.GetTextAlign(), state.GetTextBaseline(), 0,
+                   text.length());
 }
 
 void BaseRenderingContext2D::fillText(const String& text,
                                       double x,
                                       double y,
                                       double max_width) {
+  CanvasRenderingContext2DState& state = GetState();
   DrawTextInternal(text, x, y, CanvasRenderingContext2DState::kFillPaintType,
-                   &max_width);
+                   state.GetTextAlign(), state.GetTextBaseline(), 0,
+                   text.length(), &max_width);
 }
 
 void BaseRenderingContext2D::fillTextCluster(const TextCluster* text_cluster,
@@ -3466,21 +3466,29 @@ void BaseRenderingContext2D::fillTextCluster(const TextCluster* text_cluster,
                                              double y) {
   DrawTextInternal(
       text_cluster->text(), text_cluster->x() + x, text_cluster->y() + y,
-      CanvasRenderingContext2DState::kFillPaintType, nullptr, text_cluster);
+      CanvasRenderingContext2DState::kFillPaintType,
+      text_cluster->GetTextAlign(), text_cluster->GetTextBaseline(),
+      text_cluster->begin(), text_cluster->end(), nullptr,
+      &text_cluster->textMetrics()->GetFont());
 }
 
 void BaseRenderingContext2D::strokeText(const String& text,
                                         double x,
                                         double y) {
-  DrawTextInternal(text, x, y, CanvasRenderingContext2DState::kStrokePaintType);
+  CanvasRenderingContext2DState& state = GetState();
+  DrawTextInternal(text, x, y, CanvasRenderingContext2DState::kStrokePaintType,
+                   state.GetTextAlign(), state.GetTextBaseline(), 0,
+                   text.length());
 }
 
 void BaseRenderingContext2D::strokeText(const String& text,
                                         double x,
                                         double y,
                                         double max_width) {
+  CanvasRenderingContext2DState& state = GetState();
   DrawTextInternal(text, x, y, CanvasRenderingContext2DState::kStrokePaintType,
-                   &max_width);
+                   state.GetTextAlign(), state.GetTextBaseline(), 0,
+                   text.length(), &max_width);
 }
 
 const Font& BaseRenderingContext2D::AccessFont(HTMLCanvasElement* canvas) {
@@ -3499,8 +3507,12 @@ void BaseRenderingContext2D::DrawTextInternal(
     double x,
     double y,
     CanvasRenderingContext2DState::PaintType paint_type,
+    TextAlign align,
+    TextBaseline baseline,
+    unsigned run_start,
+    unsigned run_end,
     double* max_width,
-    const TextCluster* text_cluster) {
+    const Font* cluster_font) {
   HTMLCanvasElement* canvas = HostAsHTMLCanvasElement();
   if (canvas) {
     // The style resolution required for fonts is not available in frame-less
@@ -3529,6 +3541,7 @@ void BaseRenderingContext2D::DrawTextInternal(
     return;
   }
 
+  // TODO(crbug.com/40191831): Remove once identifiability study is removed.
   if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
         paint_type == CanvasRenderingContext2DState::kFillPaintType
@@ -3539,12 +3552,8 @@ void BaseRenderingContext2D::DrawTextInternal(
     identifiability_study_helper_.set_encountered_sensitive_ops();
   }
 
-  // If rendering a TextCluster that contains a TextMetrics object, use the font
-  // stored on that object to recreate the text accurately.
   const Font& font =
-      (text_cluster != nullptr && text_cluster->textMetrics() != nullptr)
-          ? text_cluster->textMetrics()->GetFont()
-          : AccessFont(canvas);
+      (cluster_font != nullptr) ? *cluster_font : AccessFont(canvas);
   const SimpleFontData* font_data = font.PrimaryFont();
   DCHECK(font_data);
   if (!font_data) {
@@ -3567,22 +3576,15 @@ void BaseRenderingContext2D::DrawTextInternal(
   gfx::PointF location(ClampTo<float>(x), ClampTo<float>(y));
   gfx::RectF bounds;
   double font_width = 0;
-  unsigned run_start = 0, run_end = 0;
-  if (text_cluster == nullptr) [[likely]] {
-    run_start = 0;
-    run_end = text.length();
+  if (run_start == 0 && run_end == text.length()) [[likely]] {
     font_width = font.Width(text_run, &bounds);
   } else {
-    run_start = text_cluster->begin();
-    run_end = text_cluster->end();
     font_width = font.SubRunWidth(text_run, run_start, run_end, &bounds);
   }
 
   bool use_max_width = (max_width && *max_width < font_width);
   double width = use_max_width ? *max_width : font_width;
 
-  TextAlign align = (text_cluster == nullptr) ? state.GetTextAlign()
-                                              : text_cluster->GetTextAlign();
   if (align == kStartTextAlign) {
     align = is_rtl ? kRightTextAlign : kLeftTextAlign;
   } else if (align == kEndTextAlign) {
@@ -3600,14 +3602,7 @@ void BaseRenderingContext2D::DrawTextInternal(
       break;
   }
 
-  if (text_cluster == nullptr) [[likely]] {
-    // Use the current ctx baseline.
-    location.Offset(0, GetFontBaseline(*font_data));
-  } else {
-    // Use the baseline passed in the TextCluster.
-    location.Offset(0, TextMetrics::GetFontBaseline(
-                           text_cluster->GetTextBaseline(), *font_data));
-  }
+  location.Offset(0, TextMetrics::GetFontBaseline(baseline, *font_data));
 
   bounds.Offset(location.x(), location.y());
   if (paint_type == CanvasRenderingContext2DState::kStrokePaintType) {
