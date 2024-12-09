@@ -31,6 +31,7 @@ interface OnDeviceInternalsToolsElement {
     modelInput: CrInputElement,
     temperatureInput: CrInputElement,
     textInput: CrInputElement,
+    imageInput: HTMLInputElement,
     topKInput: CrInputElement,
   };
 }
@@ -93,6 +94,7 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
         value: '',
       },
       error_: String,
+      imageError_: String,
       text_: String,
       loadModelStart_: {
         type: Number,
@@ -119,6 +121,10 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
       contextText_: String,
       topK_: Number,
       temperature_: Number,
+      file_: {
+        type: Object,
+        value: null,
+      },
     };
   }
 
@@ -133,6 +139,7 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
   private contextText_: string;
   private currentResponse_: Response|null;
   private error_: string;
+  private imageError_: string;
   private loadModelDuration_: number;
   private loadModelStart_: number;
   private modelPath_: string;
@@ -143,6 +150,7 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
   private temperature_: number = 0;
   private text_: string;
   private topK_: number = 1;
+  private file_: File|null = null;
 
   private proxy_: BrowserProxy = BrowserProxy.getInstance();
   private responseRouter_: StreamingResponderCallbackRouter =
@@ -152,6 +160,8 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     super.ready();
     this.getPerformanceClass_();
     this.$.temperatureInput.inputElement.step = '0.1';
+    this.$.imageInput.addEventListener(
+        'change', this.onImageChange_.bind(this));
   }
 
   private async getPerformanceClass_() {
@@ -172,6 +182,15 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     this.onModelSelected_();
   }
 
+  private onAddImageClick_() {
+    this.$.imageInput.click();
+  }
+
+  private onRemoteImageClick_() {
+    this.file_ = null;
+    this.$.imageInput.value = '';
+  }
+
   private onServiceCrashed_() {
     if (this.currentResponse_) {
       this.currentResponse_.error = true;
@@ -182,6 +201,15 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     this.modelPath_ = '';
     this.loadModelStart_ = 0;
     this.$.modelInput.focus();
+  }
+
+  private onImageChange_() {
+    this.imageError_ = '';
+    if ((this.$.imageInput.files?.length ?? 0) > 0) {
+      this.file_ = this.$.imageInput.files!.item(0) ?? null;
+    } else {
+      this.file_ = null;
+    }
   }
 
   private async onModelSelected_() {
@@ -249,8 +277,8 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     this.addResponse_();
   }
 
-  private onExecuteClick_() {
-    this.onExecute_();
+  private async onExecuteClick_() {
+    await this.onExecute_();
   }
 
   private addResponse_() {
@@ -259,7 +287,32 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     this.$.textInput.focus();
   }
 
-  private onExecute_() {
+  private async decodeBitmap_() {
+    const data = new Uint8Array(await this.file_!.arrayBuffer());
+    if (data.byteLength <= 0) {
+      return null;
+    }
+    const handle = Mojo.createSharedBuffer(data.byteLength).handle;
+    const buffer = new Uint8Array(handle.mapBuffer(0, data.byteLength).buffer);
+    buffer.set(data);
+
+    // BigBuffer type wants all properties but Mojo expects only one of them.
+    const bigBuffer = {
+      sharedMemory: {
+        bufferHandle: handle,
+        size: data.byteLength,
+      },
+      bytes: undefined,
+      invalidBuffer: undefined,
+    };
+    delete bigBuffer.invalidBuffer;
+    delete bigBuffer.bytes;
+    const {bitmap} = await this.proxy_.handler.decodeBitmap(bigBuffer);
+    return bitmap;
+  }
+
+  private async onExecute_() {
+    this.imageError_ = '';
     if (this.session_ === null) {
       return;
     }
@@ -269,6 +322,17 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     if (!this.$.temperatureInput.validate()) {
       return;
     }
+    const pieces = textToInputPieces(this.text_);
+    if (this.file_ !== null) {
+      const bitmap = await this.decodeBitmap_();
+      if (bitmap) {
+        pieces.unshift({bitmap});
+      } else {
+        this.file_ = null;
+        this.imageError_ = 'Image is invalid';
+        return;
+      }
+    }
     this.session_.execute(
         {
           ignoreContext: false,
@@ -277,7 +341,7 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
           maxOutputTokens: 0,
           topK: this.topK_,
           temperature: this.temperature_,
-          input: {pieces: textToInputPieces(this.text_)},
+          input: {pieces: pieces},
         },
         this.responseRouter_.$.bindNewPipeAndPassRemote());
     const onResponseId =
@@ -304,6 +368,10 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
 
   private canExecute_(): boolean {
     return !this.currentResponse_ && this.model_ !== null;
+  }
+
+  private canUploadFile_(): boolean {
+    return this.canExecute_() && this.file_ === null;
   }
 
   private isLoading_(): boolean {

@@ -12,6 +12,7 @@
 #include "components/optimization_guide/core/prediction_manager.h"
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
 #include "services/on_device_model/public/cpp/buildflags.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 
@@ -62,6 +63,7 @@ void OnDeviceInternalsPageHandler::LoadModel(
     const base::FilePath& model_path,
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     LoadModelCallback callback) {
+  base_model_.reset();
 #if BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE)
   // We treat the file path as a UUID on ChromeOS.
   base::Uuid uuid = base::Uuid::ParseLowercase(model_path.value());
@@ -109,13 +111,31 @@ void OnDeviceInternalsPageHandler::OnModelAssetsLoaded(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     LoadModelCallback callback,
     on_device_model::ModelAssets assets) {
+  auto receiver = base_model_.BindNewPipeAndPassReceiver();
   auto params = on_device_model::mojom::LoadModelParams::New();
   params->assets = std::move(assets);
   params->max_tokens = 4096;
-  GetService().LoadModel(std::move(params), std::move(model),
-                         std::move(callback));
+  GetService().LoadModel(
+      std::move(params), std::move(receiver),
+      base::BindOnce(&OnDeviceInternalsPageHandler::LoadAdaptation,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(model),
+                     std::move(callback)));
 }
 #endif
+
+void OnDeviceInternalsPageHandler::LoadAdaptation(
+    mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
+    LoadModelCallback callback,
+    on_device_model::mojom::LoadModelResult result) {
+  if (result != on_device_model::mojom::LoadModelResult::kSuccess) {
+    std::move(callback).Run(result);
+    return;
+  }
+  auto params = on_device_model::mojom::LoadAdaptationParams::New();
+  params->enable_image_input = true;
+  base_model_->LoadAdaptation(std::move(params), std::move(model),
+                              std::move(callback));
+}
 
 void OnDeviceInternalsPageHandler::GetEstimatedPerformanceClass(
     GetEstimatedPerformanceClassCallback callback) {
@@ -212,4 +232,13 @@ void OnDeviceInternalsPageHandler::GetOnDeviceInternalsData(
   }
 
   std::move(callback).Run(std::move(data));
+}
+
+void OnDeviceInternalsPageHandler::DecodeBitmap(
+    mojo_base::BigBuffer image_buffer,
+    DecodeBitmapCallback callback) {
+  data_decoder::DecodeImageIsolated(
+      base::span(image_buffer), data_decoder::mojom::ImageCodec::kDefault,
+      /*shrink_to_fit=*/false, data_decoder::kDefaultMaxSizeInBytes,
+      /*desired_image_frame_size=*/gfx::Size(), std::move(callback));
 }

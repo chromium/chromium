@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/public/cpp/buildflags.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 
 class OptimizationGuideKeyedService;
@@ -54,6 +55,8 @@ class OnDeviceInternalsPageHandler : public mojom::OnDeviceInternalsPageHandler,
       GetEstimatedPerformanceClassCallback callback) override;
   void GetOnDeviceInternalsData(
       GetOnDeviceInternalsDataCallback callback) override;
+  void DecodeBitmap(mojo_base::BigBuffer image_buffer,
+                    DecodeBitmapCallback callback) override;
 
   // optimization_guide::OptimizationGuideLogger::Observer:
   void OnLogMessageAdded(base::Time event_time,
@@ -62,10 +65,16 @@ class OnDeviceInternalsPageHandler : public mojom::OnDeviceInternalsPageHandler,
                          int source_line,
                          const std::string& message) override;
 
+  void LoadAdaptation(
+      mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
+      LoadModelCallback callback,
+      on_device_model::mojom::LoadModelResult result);
+
   mojo::Receiver<mojom::OnDeviceInternalsPageHandler> receiver_;
   mojo::Remote<mojom::OnDeviceInternalsPage> page_;
 
   mojo::Remote<Service> service_;
+  mojo::Remote<on_device_model::mojom::OnDeviceModel> base_model_;
 
   // Logger to receive the debug logs from the optimization guide service. Not
   // owned. Guaranteed to outlive |this|, since the logger is owned by the
