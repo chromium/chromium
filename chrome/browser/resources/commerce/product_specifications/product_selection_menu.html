@@ -71,7 +71,8 @@
       <div id="selectionContainer">
         <template is="dom-if"
             if="[[!showTableFullMessage_(forNewColumn, isTableFull)]]">
-          <template is="dom-repeat" items="[[sections]]" as="section">
+          <template is="dom-repeat" items="[[sections]]" as="section"
+              index-as="sectionIndex">
             <cr-expand-button expanded="{{section.expanded}}" no-hover
                 expand-icon="cr:arrow-drop-down"
                 collapse-icon="cr:arrow-drop-up">
@@ -87,8 +88,12 @@
                 </cr-url-list-item>
               </template>
               <!-- Add spacer instead of adding margin or padding to the -->
-              <!-- parent for smooth expand/collapse transitions. -->
-              <div class="dropdown-spacer"></div>
+              <!-- parent for smooth expand/collapse transitions for the -->
+              <!-- last section. -->
+              <template is="dom-if"
+                  if="[[isLastSection_(sections, sectionIndex)]]">
+                <div class="dropdown-spacer"></div>
+              </template>
             </cr-collapse>
           </template>
         </template>
