@@ -3576,8 +3576,16 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
   const ComputedStyle& style = container.GetLayoutObject()->StyleRef();
   DCHECK(style.IsContainerForSizeContainerQueries());
   WritingMode writing_mode = style.GetWritingMode();
-  PhysicalSize physical_size = AdjustForAbsoluteZoom::AdjustPhysicalSize(
-      ToPhysicalSize(logical_size, writing_mode), style);
+  PhysicalSize physical_size = ToPhysicalSize(logical_size, writing_mode);
+  // Clamping kIndefiniteSize to 0 is correct because the container is
+  // size-contained, and therefore an auto size will be as if it had no children
+  // (i.e. 0).
+  DCHECK(
+      (physical_size.width >= 0 || physical_size.width == kIndefiniteSize) &&
+      (physical_size.height >= 0 || physical_size.height == kIndefiniteSize));
+  physical_size.ClampNegativeToZero();
+  physical_size =
+      AdjustForAbsoluteZoom::AdjustPhysicalSize(physical_size, style);
   PhysicalAxes physical_axes = ToPhysicalAxes(contained_axes, writing_mode);
 
   StyleRecalcChange change;
