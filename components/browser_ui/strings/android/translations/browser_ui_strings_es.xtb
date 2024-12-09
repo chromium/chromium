@@ -201,7 +201,7 @@
 <translation id="4200726100658658164">Abrir Ajustes de ubicación</translation>
 <translation id="4226663524361240545">Es posible que las notificaciones hagan que el dispositivo vibre</translation>
 <translation id="4259722352634471385">Se ha bloqueado la navegación: <ph name="URL" /></translation>
-<translation id="4278390842282768270">Permitido</translation>
+<translation id="4278390842282768270">Concedido</translation>
 <translation id="429312253194641664">Un sitio web está reproduciendo elementos multimedia</translation>
 <translation id="42981349822642051">Mostrar</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Caduca mañana}other{Caduca dentro de # días}}</translation>
@@ -289,7 +289,7 @@
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> bloqueado</translation>
 <translation id="5632485077360054581">Muéstrame cómo</translation>
 <translation id="5649053991847567735">Descargas automáticas</translation>
-<translation id="5668404140385795438">Ignorar la solicitud de un sitio web para no ampliar la imagen</translation>
+<translation id="5668404140385795438">Ignora la solicitud de un sitio web para no ampliar la imagen</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
 <translation id="5689516760719285838">Ubicación</translation>
 <translation id="5690795753582697420">La cámara está desactivada en los ajustes de Android</translation>
@@ -478,7 +478,7 @@
 <translation id="83792324527827022">Un sitio web está usando tu cámara y tu micrófono</translation>
 <translation id="8380167699614421159">El sitio web muestra anuncios invasivos o engañosos</translation>
 <translation id="8394832520002899662">Toca para volver al sitio web</translation>
-<translation id="8409345997656833551">Recibir una notificación cuando un artículo pueda mostrarse en vista simplificada</translation>
+<translation id="8409345997656833551">Recibe una notificación cuando un artículo pueda mostrarse en vista simplificada</translation>
 <translation id="8423565414844018592">Ajuste de texto establecido en <ph name="TEXT_SCALING" /></translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8441146129660941386">Buscar hacia atrás</translation>

@@ -598,7 +598,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3830886834687455630">Aggiorna Google Play Services per controllare le tue password</translation>
 <translation id="3843603704176567761">A breve le password potrebbero smettere di funzionare su questo dispositivo. Per continuare a utilizzare le tue password, aggiorna Google Play Services.</translation>
 <translation id="3845098929839618392">Apri in scheda incognito</translation>
-<translation id="3847319713229060696">Contribuisci ad aumentare la sicurezza sul Web per tutti gli utenti</translation>
+<translation id="3847319713229060696">Contribuisci ad aumentare la sicurezza sul web per tutti gli utenti</translation>
 <translation id="3856096718352044181">Verifica che questo fornitore sia valido e riprova più tardi</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3892148308691398805">Copia testo</translation>
@@ -693,7 +693,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="433213510553688132">In attesa di seguire…</translation>
 <translation id="4335835283689002019">Navigazione sicura non attiva</translation>
 <translation id="4351244548802238354">Chiudi finestra di dialogo</translation>
-<translation id="4355272626458588338">Puoi tornare a una pagina che ritieni importante aggiungendo un preferito</translation>
+<translation id="4355272626458588338">Puoi tornare a una pagina che ritieni importante aggiungendola ai preferiti</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4359809482106103048">Riepilogo sulla sicurezza</translation>
 <translation id="4378154925671717803">Telefono</translation>
@@ -760,7 +760,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4642472735733036929">Monitoraggio del prezzo interrotto</translation>
 <translation id="4645146721047390964">In modalità di navigazione in incognito, i siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti, ad esempio per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
 <translation id="4650364565596261010">Predefinito</translation>
-<translation id="465657074423018424">Navigazione sicura ti protegge da siti web ingannevoli. Se la disattivi, fai molta attenzione quando navighi su Internet, soprattutto prima di inserire delle password.</translation>
+<translation id="465657074423018424">Navigazione sicura ti protegge da siti web ingannevoli. Se la disattivi, fai molta attenzione quando navighi su internet, soprattutto prima di inserire delle password.</translation>
 <translation id="4662373422909645029">Il nickname non può includere numeri</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> Preferiti eliminati</translation>
 <translation id="4664020984660113387">Rimuovi riepilogo</translation>
@@ -1061,7 +1061,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="6013305291643746595">Ordinamento per meno recente</translation>
 <translation id="6022659036123304283">Personalizza il tuo Chrome</translation>
 <translation id="6026538407078977628">Espandi a schermo intero</translation>
-<translation id="6030719887161080597">Gestisci le informazioni utilizzate dai siti per misurare il rendimento dell'annuncio</translation>
+<translation id="6030719887161080597">Gestisci le informazioni utilizzate dai siti per misurare il rendimento degli annunci</translation>
 <translation id="6039379616847168523">Vai alla scheda successiva</translation>
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="6040939430773295212">Contenuti ripetitivi</translation>
@@ -1198,7 +1198,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6595046016124923392">Le immagini vengono inviate a Google per migliorare le descrizioni.</translation>
 <translation id="6595634543029443878">{TAB_COUNT,plural, =1{Ripristina il gruppo di schede di <ph name="TAB_COUNT_ONE" /> scheda come nuovo gruppo di schede in background.}other{Ripristina il gruppo di schede di <ph name="TAB_COUNT_MANY" /> schede come nuovo gruppo di schede in background.}}</translation>
 <translation id="6604931690954120417">Se accedi a Chrome, le password salvate verranno memorizzate nel tuo Account Google. Per disattivare questa preferenza <ph name="BEGIN_LINK" />vai alle impostazioni<ph name="END_LINK" />.</translation>
-<translation id="661266467055912436">Migliora il livello di sicurezza per te e per chiunque sul Web.</translation>
+<translation id="661266467055912436">Migliora il livello di sicurezza per te e per chiunque sul web.</translation>
 <translation id="6621391692573306628">Per inviare questa scheda a un altro dispositivo, accedi a Chrome su entrambi i dispositivi</translation>
 <translation id="6625890511281718257">Condividi con il foglio di feedback sul riepilogo</translation>
 <translation id="6627583120233659107">Modifica cartella</translation>
@@ -1731,7 +1731,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8863714995118816041">Autorizzazioni consentite di nuovo per il sito <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Dati di Chrome nel tuo account</translation>
 <translation id="8888527824584402177">Le schede che non hai usato per <ph name="DAYS_INACTIVE" /> giorni vengono spostate qui<ph name="AUTODELETE_SECTION" />. Puoi modificare questa impostazione in qualsiasi momento in <ph name="SETTINGS_TITLE" />.</translation>
-<translation id="8898822736010347272">Invia a Google gli URL di alcune pagine visitate, informazioni limitate sul sistema e alcuni contenuti delle pagine per contribuire a scoprire le nuove minacce e proteggere tutti gli utenti del Web.</translation>
+<translation id="8898822736010347272">Invia a Google gli URL di alcune pagine visitate, informazioni limitate sul sistema e alcuni contenuti delle pagine per contribuire a scoprire le nuove minacce e proteggere tutti gli utenti del web.</translation>
 <translation id="8909135823018751308">Condividi…</translation>
 <translation id="8921980840204105660">Attiva la sincronizzazione per recuperare i preferiti dagli altri tuoi dispositivi</translation>
 <translation id="8922289737868596582">Usa il pulsante Altre opzioni per scaricare le pagine da usare offline</translation>

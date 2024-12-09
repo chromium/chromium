@@ -2312,7 +2312,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="261114180663074524">Faça login na sua conta da Microsoft e tente de novo</translation>
 <translation id="2611776654555141051">Ferramenta de retângulo</translation>
 <translation id="2612676031748830579">Número do cartão</translation>
-<translation id="261305050785128654">Informe aos sites os idiomas que você fala. Eles vão mostrar conteúdo nesses idiomas sempre que possível.</translation>
+<translation id="261305050785128654">Informe seus idiomas para que os sites mostrem conteúdo com essas opções sempre que possível.</translation>
 <translation id="2613210758071148851">Não permitir extensões em <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> poderá editar o arquivo <ph name="FILENAME" /></translation>
 <translation id="2613747923081026172">Criar grupo</translation>
@@ -4042,7 +4042,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3843464315703645664">Na lista de permissões interna</translation>
 <translation id="3844888638014364087">Emoji inserido</translation>
 <translation id="3846116211488856547">Tenha ferramentas para desenvolver sites, apps Android e muito mais. A instalação do Linux causará o download de <ph name="DOWNLOAD_SIZE" /> de dados.</translation>
-<translation id="3847319713229060696">Ajudar a melhorar a segurança para todos na Web</translation>
+<translation id="3847319713229060696">Ajudar a melhorar a segurança para todas as pessoas na Web</translation>
 <translation id="3848547754896969219">Abrir em &amp;uma janela anônima</translation>
 <translation id="3850172593216628215">As atualizações de segurança foram encerradas. Economize US$ 50 ou mais em um novo Chromebook.</translation>
 <translation id="385051799172605136">Voltar</translation>
@@ -4874,7 +4874,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4470957202018033307">Preferências de armazenamento externo</translation>
 <translation id="4471354919263203780">Fazendo o download dos arquivos de reconhecimento de fala… <ph name="PERCENT" />%</translation>
 <translation id="4472298120638043495">Você pode usar o idioma de sua preferência da Conta do Google (<ph name="NEW_LOCALE_FROM_GAIA" />)</translation>
-<translation id="447252321002412580">Ajude a melhorar os recursos e o desempenho do Chrome</translation>
+<translation id="447252321002412580">Ajudar a melhorar os recursos e o desempenho do Chrome</translation>
 <translation id="4472533928615930332">Imagem <ph name="INDEX" /> de <ph name="SUBJECT" /> gerada no estilo <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Vamos começar</translation>
 <translation id="4473559657152613417">Clique com o botão direito do mouse em uma guia e selecione "Adicionar guia ao novo grupo"</translation>
@@ -7096,7 +7096,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6122095009389448667">Continuar impedindo que esse site veja a área de transferência</translation>
 <translation id="6122513630797178831">Salvar CVC</translation>
 <translation id="6122600716821516697">Compartilhar com esse dispositivo?</translation>
-<translation id="6122831415929794347">Desativar "Navegação segura"?</translation>
+<translation id="6122831415929794347">Desativar a Navegação segura?</translation>
 <translation id="6124650939968185064">As extensões a seguir dependem desta extensão:</translation>
 <translation id="6124698108608891449">Este site precisa de outras permissões.</translation>
 <translation id="6125479973208104919">Adicione sua conta a esse <ph name="DEVICE_TYPE" /> novamente.</translation>
@@ -7956,7 +7956,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
     <ph name="BEGIN_PARAGRAPH2" />Você pode fazer login nesse dispositivo e consultar os campos listados como chromeosflex_ em chrome://system para conferir os dados enviados ao Google para filtragem de atualizações, assim como outras instâncias em que você compartilha dados com o Google.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Para saber mais detalhes sobre os dados que o <ph name="DEVICE_OS" /> pode compartilhar com o Google e como eles são usados, acesse g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770042910635026163">Sites que você visita que definem seus interesses</translation>
-<translation id="6770602306803890733">Melhora a segurança para você e para todos na Web</translation>
+<translation id="6770602306803890733">Melhora a segurança para você e para todas as pessoas na Web</translation>
 <translation id="6771503742377376720">É uma Autoridade de certificação</translation>
 <translation id="6772974422346500939">Abrir e editar</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>

@@ -4504,7 +4504,7 @@ Weitere Details:
 <translation id="963837307749850257">Alle Nutzer</translation>
 <translation id="964050462028070434">Passwörter und Passkeys verwalten…</translation>
 <translation id="969892804517981540">Offizieller Build</translation>
-<translation id="975560348586398090">{COUNT,plural, =0{Keine}=1{1 Eintrag}other{# Einträge}}</translation>
+<translation id="975560348586398090">{COUNT,plural, =0{Keine}=1{1 Element}other{# Elemente}}</translation>
 <translation id="976522784004777030">5 × 8 Zoll</translation>
 <translation id="977502174772294970">Hochzeiten</translation>
 <translation id="979107176848483472">Dein Browser und Profil werden verwaltet von <ph name="DOMAIN" /></translation>

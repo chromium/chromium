@@ -584,7 +584,7 @@
 <translation id="3771290962915251154">此设置已被停用，因为开启了“家长控制”功能</translation>
 <translation id="3771694256347217732">Google 服务条款</translation>
 <translation id="3775705724665058594">发送到您的设备</translation>
-<translation id="3777796259512476958">会致使您从大多数网站退出账号</translation>
+<translation id="3777796259512476958">若删除此类数据，您会从大多数网站退出账号</translation>
 <translation id="379035798868314833">Google 密码管理工具将停止在此设备上运行</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 个标签页}other{# 个标签页}}</translation>
 <translation id="3795154175078851242">复制图片且含链接</translation>

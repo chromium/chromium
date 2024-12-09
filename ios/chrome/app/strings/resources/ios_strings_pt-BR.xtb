@@ -339,7 +339,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2597486707832946298">Aproveite no iPhone o melhor do navegador para computador que você já conhece.</translation>
 <translation id="260378315836159338">Na parte de cima da tela, toque em +.</translation>
 <translation id="2612676031748830579">Número do cartão</translation>
-<translation id="261305050785128654">Informe aos sites os idiomas que você fala. Eles vão mostrar conteúdo nesses idiomas sempre que possível.</translation>
+<translation id="261305050785128654">Informe seus idiomas para que os sites mostrem conteúdo com essas opções sempre que possível.</translation>
 <translation id="2613747923081026172">Criar grupo</translation>
 <translation id="261735223792457154">Mostrar tudo…</translation>
 <translation id="261739049332372104">Para receber atualizações sobre conteúdos importantes para você, ative as notificações nas configurações do iOS.</translation>
@@ -1033,7 +1033,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5972844218283131174">Desmarcar tudo</translation>
 <translation id="5977976211062815271">Neste dispositivo</translation>
 <translation id="598634819525651074">Área</translation>
-<translation id="5988097621740394599">Ver reduções no preço nas suas guias</translation>
+<translation id="5988097621740394599">Ver reduções no preço nas suas guias.</translation>
 <translation id="5988851877894965432">Abrir URLs no Chrome</translation>
 <translation id="5996189683621529225">Pronto para retirada</translation>
 <translation id="6001839398155993679">Vamos lá</translation>
@@ -1061,7 +1061,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6100617279104942061">Login feito como <ph name="USER_EMAIL" />. Abre as configurações.</translation>
 <translation id="6103540626693881831">Criptografia no dispositivo</translation>
 <translation id="6122191549521593678">On-line</translation>
-<translation id="6122831415929794347">Desativar "Navegação segura"?</translation>
+<translation id="6122831415929794347">Desativar a Navegação segura?</translation>
 <translation id="6123514585040403489">As guias serão fechadas</translation>
 <translation id="6127379762771434464">Item removido</translation>
 <translation id="6136914049981179737">Segundos atrás</translation>
@@ -1434,7 +1434,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="78146569776629510">Downloads</translation>
 <translation id="7818164453519941565">Nova guia anônima</translation>
 <translation id="7839994177130598711">Os membros da sua família agora podem usar seu nome de usuário e sua senha ao fazer login em <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> com o Gerenciador de senhas do Google.</translation>
-<translation id="7840771868269352570">Os itens selec. serão removidos.</translation>
+<translation id="7840771868269352570">Os itens selecionados serão removidos.</translation>
 <translation id="7841180087127694526">Pesquisar texto copiado</translation>
 <translation id="7841418003178675048">Escolha quais cards vão aparecer na página "Nova guia".</translation>
 <translation id="7846296061357476882">Serviços do Google</translation>
@@ -1590,7 +1590,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8490629238792920282">Não foi possível criar o link</translation>
 <translation id="8503813439785031346">Nome de usuário</translation>
 <translation id="8505361906966222822">Salvar em…</translation>
-<translation id="850600235656508448">Abrir em modo de navegação anônima</translation>
+<translation id="850600235656508448">Abrir em navegação anônima</translation>
 <translation id="8511141513131731477">Ir para a primeira guia</translation>
 <translation id="852075982791215701">Ir para a última guia</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} senha e outros itens foram salvos apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {email}.}one{{count} senha e outros itens foram salvos apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {email}.}other{{count} senhas e outros itens foram salvos apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {email}.}}</translation>

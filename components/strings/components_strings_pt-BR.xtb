@@ -3723,7 +3723,7 @@ Mais detalhes:
 <translation id="7791543448312431591">Adicionar</translation>
 <translation id="7798389633136518089">Ignorado porque a política não foi definida por uma origem na nuvem.</translation>
 <translation id="7800304661137206267">A conexão foi criptografada utilizando <ph name="CIPHER" />, com <ph name="MAC" /> para mensagem de autenticação e <ph name="KX" /> como o mecanismo de troca de chaves.</translation>
-<translation id="7800977246388195491">O Chrome registra seus temas de interesse com base no seu histórico de navegação recente. Além disso, esses sites podem sugerir temas que talvez você goste. Depois, outros sites podem solicitar essas informações para mostrar anúncios personalizados. Você escolhe quais temas e sites são usados para exibição de anúncios.</translation>
+<translation id="7800977246388195491">O Chrome registra seus temas de interesse com base no seu histórico de navegação recente. Além disso, os sites que você visita podem sugerir temas que talvez você goste. Depois, outros sites podem solicitar essas informações para mostrar anúncios personalizados. Você escolhe quais temas e sites são usados para exibição de anúncios.</translation>
 <translation id="7802523362929240268">O site é legítimo</translation>
 <translation id="7802989406998618639">Insira o código de segurança de <ph name="NUMBER_OF_DIGITS" /> dígitos que fica na <ph name="SIDE_OF_CARD" /> para o banco confirmar sua identidade.</translation>
 <translation id="780301667611848630">Agora não</translation>
@@ -4065,7 +4065,7 @@ Mais detalhes:
 <translation id="8428213095426709021">Configurações</translation>
 <translation id="8428634594422941299">Entendi</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e "Enter" para gerenciar suas preferências de cookies nas configurações do Chrome</translation>
-<translation id="8433057134996913067">Essa opção desconecta você da maioria dos websites.</translation>
+<translation id="8433057134996913067">Esta opção desconecta você da maioria dos sites.</translation>
 <translation id="8434840396568290395">Animais de estimação</translation>
 <translation id="8436623588884785770">Adicionar política</translation>
 <translation id="8437238597147034694">&amp;Desfazer mover</translation>
