@@ -4833,13 +4833,6 @@ const char kSupportMultipleServerRequestsForPixPaymentsDescription[] =
     "When enabled, the network interface with Google Payments supports "
     "handling multiple concurrent requests for Pix flows.";
 
-const char kTabletToolbarReorderingAndroidName[] =
-    "Tablet Toolbar Reordering Android.";
-const char kTabletToolbarReorderingAndroidDescription[] =
-    "Enable Tablet Toolbar Reordering on Android - Reorder the toolbar by "
-    "placing the Home button from 1st to the 4th position after the Refresh"
-    "button to match the Desktop toolbar";
-
 const char kCrossDeviceTabPaneAndroidName[] = "Cross Device Tab Pane Android";
 const char kCrossDeviceTabPaneAndroidDescription[] =
     "Enables showing a new pane in the hub that displays the pre-existing "

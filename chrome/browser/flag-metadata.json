@@ -3925,11 +3925,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-tablet-toolbar-reordering",
-    "owners": [ "zheliooo@google.com", "twellington@google.com", "nemco@google.com", "clank-app-team@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "enable-tabstate-flatbuffer",
     "owners": [ "chrome-shopping@google.com" ],
     "expiry_milestone": 131
