@@ -680,10 +680,11 @@ void SessionImpl::SendResponse(ResponseType response_type) {
   std::string safe_response = on_device_state_->current_response.substr(
       0, on_device_state_->latest_safe_raw_output.length);
   on_device_state_->MutableLoggedResponse()->set_output_string(safe_response);
+  size_t previous_response_pos = on_device_state_->latest_response_pos;
   on_device_state_->latest_response_pos =
       on_device_state_->latest_safe_raw_output.length;
   on_device_state_->opts.adapter->ParseResponse(
-      *last_message_, safe_response, on_device_state_->latest_response_pos,
+      *last_message_, safe_response, previous_response_pos,
       base::BindOnce(&SessionImpl::OnParsedResponse,
                      on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
                      is_complete));

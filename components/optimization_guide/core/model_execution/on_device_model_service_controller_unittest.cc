@@ -50,6 +50,7 @@
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/redaction.pb.h"
 #include "components/optimization_guide/proto/substitution.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
@@ -3165,6 +3166,44 @@ TEST_F(OnDeviceModelServiceControllerTest, MinimumSafetyTokens) {
   };
 
   EXPECT_EQ(*response_.value(), expected_responses.back());
+  EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses));
+}
+
+// Validate chunk-by-chunk streaming mode works correctly.
+TEST_F(OnDeviceModelServiceControllerTest, TsInterval1_ChunkByChunk) {
+  // Configure a token interval to enable streaming responses.
+  FakeSafetyModelAsset safety_asset([]() {
+    auto safety_config = ComposeSafetyConfig();
+    safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    safety_config.mutable_partial_output_checks()->set_token_interval(1);
+    return safety_config;
+  }());
+  FakeAdaptationAsset compose_asset({
+      .config =
+          []() {
+            auto config = SimpleComposeConfig();
+            config.mutable_output_config()->set_response_streaming_mode(
+                proto::STREAMING_MODE_CHUNK_BY_CHUNK);
+            return config;
+          }(),
+  });
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .safety = &safety_asset,
+      .adaptations = {&compose_asset},
+  });
+  auto session = CreateSession();
+  EXPECT_TRUE(session);
+
+  fake_settings_.set_execute_result(
+      {"token1", " token2", " token3", " token4"});
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
+  task_environment_.RunUntilIdle();
+
+  const std::vector<std::string> expected_responses = {"token1", " token2",
+                                                       " token3", " token4"};
+  EXPECT_EQ(*response_.value(), "");
   EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses));
 }
 
