@@ -1149,18 +1149,18 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
         // size. Hence, we need to query the adjusted size of DrawingBuffer.
         gfx::Size adjusted_size = context_->DrawingBufferSize();
         if (!adjusted_size.IsEmpty()) {
-          SkColorInfo color_info =
-              GetRenderingContextSkColorInfo().makeAlphaType(
-                  kUnpremul_SkAlphaType);
-          if (color_info.colorType() == kN32_SkColorType)
-            color_info = color_info.makeColorType(kRGBA_8888_SkColorType);
-          else
-            color_info = color_info.makeColorType(kRGBA_F16_SkColorType);
+          SkColorType color_type = GetRenderingContextSkColorType();
+          if (color_type == kN32_SkColorType) {
+            color_type = kRGBA_8888_SkColorType;
+          } else {
+            color_type = kRGBA_F16_SkColorType;
+          }
           image_bitmap = StaticBitmapImage::Create(
               std::move(pixel_data),
               SkImageInfo::Make(
                   SkISize::Make(adjusted_size.width(), adjusted_size.height()),
-                  color_info));
+                  color_type, kUnpremul_SkAlphaType,
+                  GetRenderingContextSkColorSpace()));
         }
       }
     }
