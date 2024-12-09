@@ -220,10 +220,16 @@
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #else
+#include "base/task/current_thread.h"
 #include "chrome/browser/user_education/browser_user_education_storage_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
+#include "chrome/common/webui_url_constants.h"
+#include "components/lens/lens_features.h"
+#include "components/services/storage/public/mojom/local_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/public/browser/host_zoom_map.h"
+#include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1492,6 +1498,50 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   data = storage_service.ReadRecentSessionData();
   ASSERT_EQ(0U, data.recent_session_start_times.size());
   ASSERT_FALSE(data.enabled_time.has_value());
+}
+
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveLensOverlayWebUIStorage) {
+  // Enable the translate languages feature.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(lens::features::kLensOverlayTranslateLanguages);
+
+  // Setup local storage data to the Lens Overlay WebUI origin.
+  const GURL lens_overlay_url = GURL(chrome::kChromeUILensOverlayUntrustedURL);
+  storage::mojom::LocalStorageControl* local_storage_control =
+      GetProfile()->GetDefaultStoragePartition()->GetLocalStorageControl();
+  blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting(lens_overlay_url.spec());
+  mojo::Remote<blink::mojom::StorageArea> area;
+  local_storage_control->BindStorageArea(storage_key,
+                                         area.BindNewPipeAndPassReceiver());
+
+  // Add the fake data to the Lens Overlay WebUI origin.
+  base::test::TestFuture<bool> added_data_future;
+  area->Put({'k', 'e', 'y'}, {'v', 'a', 'l', 'u', 'e'}, std::nullopt, "source",
+            added_data_future.GetCallback());
+  ASSERT_TRUE(added_data_future.Get());
+
+  // Next, run the function that is supposed to remove this storage.
+  BlockUntilBrowsingDataRemoved(base::Time::Now(), base::Time::Max(),
+                                constants::DATA_TYPE_HISTORY, false);
+
+  // Check if the local storage was successfully removed. ClearData only
+  // guarantees that tasks to delete data are scheduled when its callback is
+  // invoked. It doesn't guarantee data has actually been cleared. So use
+  // RunUntil to verify data is cleared.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    std::vector<blink::mojom::KeyValuePtr> data;
+    base::RunLoop loop;
+    area->GetAll(
+        /*new_observer=*/mojo::NullRemote(),
+        base::BindLambdaForTesting(
+            [&](std::vector<blink::mojom::KeyValuePtr> data_in) {
+              data = std::move(data_in);
+              loop.Quit();
+            }));
+    loop.Run();
+    return data.size() == 0UL;
+  }));
 }
 #endif
 
