@@ -243,6 +243,7 @@
   if (IsIOSSoftLockEnabled()) {
     [self setUpPrefObservers];
     [self logIncognitoLockStateHistogramOnce];
+    [self recordIncognitoLockImpressionForSceneState:sceneState];
   }
 }
 
@@ -491,7 +492,9 @@
 
 // Records impressions of the Incognito lock for reauth and soft lock states.
 - (void)recordIncognitoLockImpressionForSceneState:(SceneState*)sceneState {
-  if (sceneState.incognitoContentVisible &&
+  // sceneState.UIEnabled guarantees that sceneState.controller has been
+  // initialized.
+  if (sceneState.UIEnabled && sceneState.incognitoContentVisible &&
       sceneState.activationLevel == SceneActivationLevelForegroundActive) {
     switch ([self incognitoLockState]) {
       case IncognitoLockState::kNone:
