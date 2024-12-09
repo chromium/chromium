@@ -9,10 +9,16 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
+
+using css_test_helpers::ParseRule;
+using css_test_helpers::ParseSelectorList;
 
 namespace {
 
@@ -435,6 +441,81 @@ TEST(CSSSelector, CheckHasArgumentMatchInShadowTreeFlag) {
   selector = selector->NextSimpleSelector();
   EXPECT_EQ(selector->GetPseudoType(), CSSSelector::kPseudoHas);
   EXPECT_TRUE(selector->HasArgumentMatchInShadowTree());
+}
+
+TEST(CSSSelector, RenestAmpersand) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext scoped_execution_context;
+  Document* document =
+      Document::CreateForTest(scoped_execution_context.GetExecutionContext());
+
+  StyleRule* a = To<StyleRule>(ParseRule(*document, ".a {}"));
+  StyleRule* b = To<StyleRule>(ParseRule(*document, ".b {}"));
+
+  CSSSelectorList* list = ParseSelectorList("&", CSSNestingType::kNesting,
+                                            /*parent_rule_for_nesting=*/a);
+  ASSERT_TRUE(list && list->IsValid());
+  EXPECT_EQ(a, list->First()->ParentRule());
+
+  EXPECT_EQ(std::nullopt, list->First()->Renest(a));  // No-op.
+
+  std::optional<CSSSelector> renested = list->First()->Renest(b);
+  ASSERT_TRUE(renested.has_value());
+  EXPECT_EQ(b, renested->ParentRule());
+}
+
+TEST(CSSSelector, RenestList) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext scoped_execution_context;
+  Document* document =
+      Document::CreateForTest(scoped_execution_context.GetExecutionContext());
+
+  StyleRule* a = To<StyleRule>(ParseRule(*document, ".a {}"));
+  StyleRule* b = To<StyleRule>(ParseRule(*document, ".b {}"));
+
+  CSSSelectorList* old_list = ParseSelectorList(
+      "&:is(&, .d)", CSSNestingType::kNesting, /*parent_rule_for_nesting=*/a);
+  ASSERT_TRUE(old_list && old_list->IsValid());
+
+  EXPECT_EQ(old_list, old_list->Renest(a));  // No-op.
+
+  CSSSelectorList* new_list = old_list->Renest(b);
+  EXPECT_NE(old_list, new_list);
+
+  EXPECT_EQ(":is(.a):is(:is(.a), .d)",
+            old_list->First()->SelectorTextExpandingPseudoParent());
+  EXPECT_EQ(":is(.b):is(:is(.b), .d)",
+            new_list->First()->SelectorTextExpandingPseudoParent());
+}
+
+TEST(CSSSelector, RenestNoNesting) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext scoped_execution_context;
+  Document* document =
+      Document::CreateForTest(scoped_execution_context.GetExecutionContext());
+
+  StyleRule* a = To<StyleRule>(ParseRule(*document, ".a {}"));
+  CSSSelectorList* list = ParseSelectorList(".a:is(.b, .c):not(.c)");
+  ASSERT_TRUE(list && list->IsValid());
+  EXPECT_EQ(list, list->Renest(a));
+}
+
+TEST(CSSSelector, RenestScope) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext scoped_execution_context;
+  Document* document =
+      Document::CreateForTest(scoped_execution_context.GetExecutionContext());
+
+  StyleRule* a = To<StyleRule>(ParseRule(*document, ".a {}"));
+  StyleRule* b = To<StyleRule>(ParseRule(*document, ".b {}"));
+  CSSSelectorList* list =
+      ParseSelectorList(":scope:is(:scope)", CSSNestingType::kScope,
+                        /*parent_rule_for_nesting=*/a);
+  ASSERT_TRUE(list && list->IsValid());
+  EXPECT_EQ(list, list->Renest(a));
+  // There is no '&' selector in `list`: no need to re-nest even when
+  // the parent rule changed:
+  EXPECT_EQ(list, list->Renest(b));
 }
 
 }  // namespace blink

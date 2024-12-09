@@ -424,7 +424,32 @@ class CORE_EXPORT CSSSelector {
   // within this simple selector (including inner selector lists).
   //
   // See also StyleRule::Reparent().
+  //
+  // TODO(crbug.com/363019837): Remove this and replace with re-nesting.
   void Reparent(StyleRule* new_parent);
+
+  // Re-nesting
+  // ==========
+  //
+  // During parsing, the parent pseudo-class ('&') gains a reference
+  // to its parent StyleRule (if any), see `parent_rule_for_nesting`
+  // passed to CSSSelectorParser. This is problematic for certain CSSOM
+  // mutations, e.g. selectorText="..." on an outer style rule, since
+  // any '&' selectors held within that outer style rule now need
+  // to be point to the modified selector/rule.
+  //
+  // Since the selector list of a StyleRule is effectively an inline part
+  // of the StyleRule itself (see AdditionalBytesForSelectors), and because
+  // RuleSet invalidation requires both the old and new rule to exist
+  // in a usable state at the same time (see RuleSetDiff), we handle such
+  // mutations by effectively making a copy of the nested rule and its selector
+  // list, except that any '&' selectors are updated to the point to the new
+  // outer rule.
+  //
+  // If this simple selector contains any parent pseudo-classes ('&'),
+  // returns a copy with any parent rule references updated to `new_parent`.
+  // Returns std::nullopt when no references needed an update.
+  std::optional<CSSSelector> Renest(StyleRule* new_parent) const;
 
   // Selectors are kept in an array by CSSSelectorList. The next component of
   // the selector is the next item in the array.
@@ -683,11 +708,15 @@ class CORE_EXPORT CSSSelector {
 
   struct RareData : public GarbageCollected<RareData> {
     explicit RareData(const AtomicString& value);
+    // Does not deep copy `selector_list_`.
+    RareData(const RareData&);
     ~RareData();
 
     bool MatchNth(unsigned count);
     int NthAValue() const { return bits_.nth_.a_; }
     int NthBValue() const { return bits_.nth_.b_; }
+    // See CSSSelector::Renest.
+    RareData* Renest(StyleRule* new_parent);
 
     AtomicString matching_value_;
     AtomicString serializing_value_;

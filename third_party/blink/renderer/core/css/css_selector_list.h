@@ -147,6 +147,20 @@ class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
     CSSSelectorList::Reparent(first_selector_, new_parent);
   }
 
+  // Re-nest each simple selector in `selector_list` into `result`,
+  // falling back to the original simple selector when CSSSelector::Renest
+  // returns no value, and returning 'true' if at least one simple selector
+  // needed re-nesting.
+  //
+  // See also CSSSelector::Renest.
+  static bool Renest(const CSSSelector* selector_list,
+                     StyleRule* new_parent,
+                     HeapVector<CSSSelector>& result);
+
+  // Returns a re-nested selector list (see CSSSelector::Renest),
+  // or `this` if no re-nested was required.
+  CSSSelectorList* Renest(StyleRule* new_parent);
+
   // True if at least one (complex) selector in the list
   // is allowed inside '&' (see CSSSelector::IsAllowedInParentPseudo).
   static bool IsAnyAllowedInParentPseudo(const CSSSelector* selector_list);
