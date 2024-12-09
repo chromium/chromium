@@ -362,8 +362,6 @@ BOOL ApplicationIsInBackground() {
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   if (level >= SceneActivationLevelForegroundActive) {
-    sceneState.presentingModalOverlay =
-        (_uiBlockerTarget != nil) && (_uiBlockerTarget != sceneState);
     [_observers appState:self sceneDidBecomeActive:sceneState];
   }
   crash_keys::SetForegroundScenesCount([self foregroundScenes].count);
