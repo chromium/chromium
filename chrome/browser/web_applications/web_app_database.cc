@@ -929,6 +929,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
 
   local_data->set_is_diy_app(web_app.is_diy_app());
 
+  local_data->set_was_shortcut_app(web_app.was_shortcut_app());
+
   return local_data;
 }
 
@@ -1765,6 +1767,8 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
 
   web_app->SetIsDiyApp(local_data.is_diy_app());
+
+  web_app->SetWasShortcutApp(local_data.was_shortcut_app());
 
   return web_app;
 }

@@ -758,6 +758,10 @@ void WebApp::SetIsDiyApp(bool is_diy_app) {
   is_diy_app_ = is_diy_app;
 }
 
+void WebApp::SetWasShortcutApp(bool was_shortcut_app) {
+  was_shortcut_app_ = was_shortcut_app;
+}
+
 void WebApp::AddPlaceholderInfoToManagementExternalConfigMap(
     WebAppManagement::Type type,
     bool is_placeholder) {
@@ -947,7 +951,8 @@ bool WebApp::operator==(const WebApp& other) const {
         app.generated_icon_fix_,
         app.supported_links_offer_ignore_count_,
         app.supported_links_offer_dismiss_count_,
-        app.is_diy_app_
+        app.is_diy_app_,
+        app.was_shortcut_app_
         // clang-format on
     );
   };
@@ -1159,6 +1164,8 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
            supported_links_offer_dismiss_count_);
 
   root.Set("is_diy_app", is_diy_app_);
+
+  root.Set("was_shortcut_app", was_shortcut_app_);
 
   return base::Value(std::move(root));
 }

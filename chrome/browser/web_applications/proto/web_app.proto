@@ -439,4 +439,8 @@ message WebAppProto {
   // user (3-dot menu, Install page as App...). DIY apps aren't promotable or
   // installable, and the user can customize its name.
   optional bool is_diy_app = 68;
+
+  // Set to true if the app was installed via the shortcut app install path by
+  // the user and was migrated to being a DIY app.
+  optional bool was_shortcut_app = 69;
 }

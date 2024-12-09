@@ -170,6 +170,7 @@
    },
    "install_state": "1",
    "is_diy_app": true,
+   "was_shortcut_app": true,
    "is_from_sync_and_pending_installation": true,
    "is_generated_icon": true,
    "is_uninstalling": false,
