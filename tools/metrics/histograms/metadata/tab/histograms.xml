@@ -2078,6 +2078,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.NewTabButton.AccidentalClicks" enum="AccidentalClickType"
+    expires_after="2025-05-04">
+  <owner>emshack@chromium.org</owner>
+  <owner>shibalik@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records the total number of new tab button clicks, and the number of
+    accidental clicks as measured by less than a second passing between clicking
+    the new tab button and clicking tab search. Percentage of accidental clicks
+    can be determined by accidental clicks / total clicks. This metric only logs
+    for clicks within the tab strip combo button.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.NTPCountAtResume" units="tabs" expires_after="2025-04-13">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>sugoi@chromium.org</owner>
@@ -2787,6 +2801,20 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether the URL in the tab state file and the tab state metadata
     list match when each tab is restored. Android-only.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.AccidentalClicks" enum="AccidentalClickType"
+    expires_after="2025-05-04">
+  <owner>emshack@chromium.org</owner>
+  <owner>shibalik@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records the total number of tab search clicks, and the number of accidental
+    clicks as measured by less than a second passing between clicking tab search
+    and clicking the new tab button. Percentage of accidental clicks can be
+    determined by accidental clicks / total clicks. This metric only logs for
+    clicks within the tab strip combo button.
   </summary>
 </histogram>
 

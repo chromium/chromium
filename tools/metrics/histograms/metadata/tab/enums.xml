@@ -26,6 +26,15 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(AccidentalClickType) -->
+
+<enum name="AccidentalClickType">
+  <int value="0" label="Click"/>
+  <int value="1" label="Accidental Click"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/tabs/tab_strip_combo_button.cc:AccidentalClickType) -->
+
 <enum name="BooleanFocusedTab">
   <int value="0" label="Not Focused"/>
   <int value="1" label="Focused"/>

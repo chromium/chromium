@@ -25,6 +25,8 @@ class TabStripComboButton : public views::View {
   TabStripComboButton& operator=(const TabStripComboButton&) = delete;
   ~TabStripComboButton() override;
 
+  void OnNewTabButtonStateChanged();
+  void OnTabSearchButtonStateChanged();
   void UpdateSeparatorVisibility();
 
   views::Button* new_tab_button() { return new_tab_button_; }
@@ -38,6 +40,8 @@ class TabStripComboButton : public views::View {
   raw_ptr<TabSearchContainer> tab_search_container_ = nullptr;
   raw_ptr<views::Separator> separator_ = nullptr;
 
+  base::TimeTicks new_tab_button_last_pressed_;
+  base::TimeTicks tab_search_button_last_pressed_;
   std::list<base::CallbackListSubscription> subscriptions_;
 };
 
