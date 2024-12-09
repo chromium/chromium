@@ -1901,8 +1901,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter x
 [Worker]     getter y
 [Worker]     method constructor
-[Worker]     setter x
-[Worker]     setter y
 [Worker] interface TextDecoder
 [Worker]     attribute @@toStringTag
 [Worker]     getter encoding

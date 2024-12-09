@@ -2300,6 +2300,64 @@
   variants:
   - *load-font-variant-definition
 
+- name: 2d.text.measure.text-clusters-rendering-options.tentative
+  desc: >-
+    Test that fillTextCluster() correctly applies the options passed as a
+    dictionary.
+  test_type: promise
+  fonts:
+  - CanvasTest
+  size: [100, 300]
+  code: |
+    {{ load_font }}
+
+    ctx.font = '50px CanvasTest';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    const text = 'E';
+    const tm = ctx.measureText(text);
+    const cluster = tm.getTextClusters()[0];
+
+    // Background color.
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = '#0f0';
+
+    // Override the align and baseline of the cluster.
+    ctx.fillTextCluster(cluster, 50, 50, {align: 'right', baseline: 'bottom'});
+    @assert pixel 5,5 ==~ 0,255,0,255;
+    @assert pixel 45,5 ==~ 0,255,0,255;
+    @assert pixel 5,45 ==~ 0,255,0,255;
+    @assert pixel 45,45 ==~ 0,255,0,255;
+    @assert pixel 55,5 ==~ 255,0,0,255;
+    @assert pixel 5,55 ==~ 255,0,0,255;
+    @assert pixel 5,55 ==~ 255,0,0,255;
+    @assert pixel 55,55 ==~ 255,0,0,255;
+
+    // Override the x and y values of the cluster.
+    ctx.fillTextCluster(cluster, 0, 100, {x: 10, y: 10});
+    @assert pixel 15,115 ==~ 0,255,0,255;
+    @assert pixel 55,115 ==~ 0,255,0,255;
+    @assert pixel 15,155 ==~ 0,255,0,255;
+    @assert pixel 55,155 ==~ 0,255,0,255;
+    @assert pixel 65,115 ==~ 255,0,0,255;
+    @assert pixel 15,165 ==~ 255,0,0,255;
+    @assert pixel 65,165 ==~ 255,0,0,255;
+
+    // Override the align, baseline, x, and y values of the cluster.
+    ctx.fillTextCluster(cluster, 50, 250,
+                        {align: 'right', baseline: 'bottom', x: 10,  y: 10});
+    @assert pixel 15,215 ==~ 0,255,0,255;
+    @assert pixel 55,215 ==~ 0,255,0,255;
+    @assert pixel 15,255 ==~ 0,255,0,255;
+    @assert pixel 55,255 ==~ 0,255,0,255;
+    @assert pixel 65,215 ==~ 255,0,0,255;
+    @assert pixel 15,265 ==~ 255,0,0,255;
+    @assert pixel 65,265 ==~ 255,0,0,255;
+  variants:
+  - *load-font-variant-definition
+
 - name: 2d.text.drawing.style.absolute.spacing
   desc: Testing letter spacing and word spacing with absolute length
   code: |

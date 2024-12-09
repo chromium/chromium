@@ -114,6 +114,7 @@ class Path;
 class Path2D;
 class ScriptState;
 class TextCluster;
+class TextClusterOptions;
 class TextMetrics;
 class V8GPUTextureFormat;
 class V8UnionCanvasFilterOrString;
@@ -484,6 +485,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   // The x and y parameters are added to the values from the TextCluster to
   // position the cluster.
   void fillTextCluster(const TextCluster* text_cluster, double x, double y);
+  void fillTextCluster(const TextCluster* text_cluster,
+                       double x,
+                       double y,
+                       const TextClusterOptions* cluster_options);
 
   void Trace(Visitor*) const override;
 

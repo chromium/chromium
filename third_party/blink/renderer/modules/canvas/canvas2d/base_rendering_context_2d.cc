@@ -58,6 +58,7 @@
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_text_cluster_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_begin_layer_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_2d_gpu_transfer_option.h"
@@ -3464,12 +3465,37 @@ void BaseRenderingContext2D::fillText(const String& text,
 void BaseRenderingContext2D::fillTextCluster(const TextCluster* text_cluster,
                                              double x,
                                              double y) {
-  DrawTextInternal(
-      text_cluster->text(), text_cluster->x() + x, text_cluster->y() + y,
-      CanvasRenderingContext2DState::kFillPaintType,
-      text_cluster->GetTextAlign(), text_cluster->GetTextBaseline(),
-      text_cluster->begin(), text_cluster->end(), nullptr,
-      &text_cluster->textMetrics()->GetFont());
+  fillTextCluster(text_cluster, x, y, /*cluster_options=*/nullptr);
+}
+
+void BaseRenderingContext2D::fillTextCluster(
+    const TextCluster* text_cluster,
+    double x,
+    double y,
+    const TextClusterOptions* cluster_options) {
+  DCHECK(text_cluster);
+  TextAlign align = text_cluster->GetTextAlign();
+  TextBaseline baseline = text_cluster->GetTextBaseline();
+  double cluster_x = text_cluster->x();
+  double cluster_y = text_cluster->y();
+  if (cluster_options != nullptr) {
+    if (cluster_options->hasX()) {
+      cluster_x = cluster_options->x();
+    }
+    if (cluster_options->hasY()) {
+      cluster_y = cluster_options->y();
+    }
+    if (cluster_options->hasAlign()) {
+      ParseTextAlign(cluster_options->align(), align);
+    }
+    if (cluster_options->hasBaseline()) {
+      ParseTextBaseline(cluster_options->baseline(), baseline);
+    }
+  }
+  DrawTextInternal(text_cluster->text(), cluster_x + x, cluster_y + y,
+                   CanvasRenderingContext2DState::kFillPaintType, align,
+                   baseline, text_cluster->begin(), text_cluster->end(),
+                   nullptr, &text_cluster->textMetrics()->GetFont());
 }
 
 void BaseRenderingContext2D::strokeText(const String& text,

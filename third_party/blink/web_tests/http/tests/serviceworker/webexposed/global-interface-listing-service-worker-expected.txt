@@ -1992,8 +1992,6 @@ interface TextCluster
     getter x
     getter y
     method constructor
-    setter x
-    setter y
 interface TextDecoder
     attribute @@toStringTag
     getter encoding
