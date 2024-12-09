@@ -7432,9 +7432,15 @@ TEST_F(BrowserAutofillManagerTest,
   OnAskForValuesToFill(form, form.fields()[0]);
 
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
-  EXPECT_THAT(external_delegate()->suggestions(),
-              ElementsAre(EqualsSuggestion(
-                  SuggestionType::kAddressEntryOnTyping, address_home_line1)));
+  const std::vector<Suggestion>& suggestions =
+      external_delegate()->suggestions();
+  ASSERT_TRUE(suggestions.size() > 0);
+  // Assert that the first suggestion is of type
+  // `SuggestionType::kAddressEntryOnTyping` and its text is the profile value
+  // for `ADDRESS_HOME_LINE1`.
+  EXPECT_THAT(suggestions[0],
+              EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
+                               address_home_line1));
 }
 
 class BrowserAutofillManagerPlusAddressTest

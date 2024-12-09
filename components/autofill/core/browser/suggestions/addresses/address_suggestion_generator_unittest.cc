@@ -152,7 +152,9 @@ TEST_F(AddressSuggestionGeneratorTest,
       ElementsAre(
           EqualsSuggestion(SuggestionType::kAddressEntryOnTyping, u"Larry"),
           EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
-                           u"Larry page")));
+                           u"Larry page"),
+          EqualsSuggestion(SuggestionType::kSeparator),
+          EqualsSuggestion(SuggestionType::kManageAddress)));
   // Expects that NO suggestion is returned if the field content matches
   // `NAME_FULL` prefix from the a profile that is not the top one (for now we
   // only support suggestions form one profile), and the field content has at
@@ -161,9 +163,12 @@ TEST_F(AddressSuggestionGeneratorTest,
             0u);
   // Expects that for data that are number (like `ADDRESS_HOME_ZIP`) only two
   // matching characters are enough to create suggestions.
-  EXPECT_THAT(GetSuggestionsOnTypingForProfile(address_data(), u"43"),
-              ElementsAre(EqualsSuggestion(
-                  SuggestionType::kAddressEntryOnTyping, u"4398125")));
+  EXPECT_THAT(
+      GetSuggestionsOnTypingForProfile(address_data(), u"43"),
+      ElementsAre(
+          EqualsSuggestion(SuggestionType::kAddressEntryOnTyping, u"4398125"),
+          EqualsSuggestion(SuggestionType::kSeparator),
+          EqualsSuggestion(SuggestionType::kManageAddress)));
   // However 1 matching digit is not enough to return a suggestion.
   EXPECT_THAT(GetSuggestionsOnTypingForProfile(address_data(), u"4").size(),
               0u);

@@ -685,6 +685,11 @@ std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
       suggestions_text.insert(suggestion_text);
     }
   }
+  if (suggestions.size() > 0) {
+    // TODO(crbug.com/381994105): Consider adding undo.
+    base::ranges::move(GetAddressFooterSuggestions(/*is_autofilled=*/false),
+                       std::back_inserter(suggestions));
+  }
   return suggestions;
 }
 
