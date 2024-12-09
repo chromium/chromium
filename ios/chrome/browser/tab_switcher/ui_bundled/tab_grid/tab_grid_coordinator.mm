@@ -1583,7 +1583,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   config.collabID = collabID;
   config.applicationHandler = HandlerForProtocol(
       self.regularBrowser->GetCommandDispatcher(), ApplicationCommands);
-  shareKitService->ManageGroup(config);
+  shareKitService->ManageTabGroup(config);
 }
 
 - (void)shareTabGroup:(base::WeakPtr<const TabGroup>)group {
@@ -1599,7 +1599,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   config.baseViewController = self.baseViewController;
   config.applicationHandler = HandlerForProtocol(
       self.regularBrowser->GetCommandDispatcher(), ApplicationCommands);
-  shareKitService->ShareGroup(config);
+  shareKitService->ShareTabGroup(config);
 }
 
 - (void)showRecentActivityForTabGroup:(base::WeakPtr<const TabGroup>)tabGroup {

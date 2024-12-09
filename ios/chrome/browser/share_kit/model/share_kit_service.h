@@ -41,21 +41,15 @@ class ShareKitService : public KeyedService {
 
   // Initiates the share group flow for the given `config` and returns its
   // sessionID.
-  virtual NSString* ShareTabGroup(ShareKitShareGroupConfiguration* config);
-  // TODO(crbug.com/377869115): Remove this.
-  virtual void ShareGroup(ShareKitShareGroupConfiguration* config);
+  virtual NSString* ShareTabGroup(ShareKitShareGroupConfiguration* config) = 0;
 
   // Initiates the flow to manage the group, using `config` and returns its
   // sessionID.
-  virtual NSString* ManageTabGroup(ShareKitManageConfiguration* config);
-  // TODO(crbug.com/377869115): Remove this.
-  virtual void ManageGroup(ShareKitManageConfiguration* config);
+  virtual NSString* ManageTabGroup(ShareKitManageConfiguration* config) = 0;
 
   // Initiates the flow to join the group, using `config` and returns its
   // sessionID.
-  virtual NSString* JoinTabGroup(ShareKitJoinConfiguration* config);
-  // TODO(crbug.com/377869115): Remove this.
-  virtual void JoinGroup(ShareKitJoinConfiguration* config);
+  virtual NSString* JoinTabGroup(ShareKitJoinConfiguration* config) = 0;
 
   // Returns a new FacePile view controller for the given `config`.
   virtual UIViewController* FacePile(ShareKitFacePileConfiguration* config) = 0;

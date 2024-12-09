@@ -38,8 +38,10 @@ void IOSCollaborationControllerDelegate::ShowError(ResultCallback result,
 }
 
 void IOSCollaborationControllerDelegate::Cancel(ResultCallback result) {
+  if (session_id_) {
+    collaboration_flow_->share_kit_service()->CancelSession(session_id_);
+  }
   std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
-  // TODO(crbug.com/377306986): Implement this.
 }
 
 void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
@@ -95,7 +97,7 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
     completion_block(outcome);
   };
 
-  join_flow.share_kit_service()->JoinGroup(config);
+  session_id_ = join_flow.share_kit_service()->JoinTabGroup(config);
 }
 
 void IOSCollaborationControllerDelegate::ShowShareDialog(
@@ -124,7 +126,7 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
     completion_block(outcome);
   };
 
-  share_flow.share_kit_service()->ShareGroup(config);
+  session_id_ = share_flow.share_kit_service()->ShareTabGroup(config);
 }
 
 void IOSCollaborationControllerDelegate::PromoteTabGroup(

@@ -325,7 +325,7 @@
   config.collabID = collabID;
   config.applicationHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
-  shareKitService->ManageGroup(config);
+  shareKitService->ManageTabGroup(config);
 }
 
 - (void)shareTabGroup:(base::WeakPtr<const TabGroup>)group {
@@ -341,7 +341,7 @@
   config.baseViewController = self.baseViewController;
   config.applicationHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
-  shareKitService->ShareGroup(config);
+  shareKitService->ShareTabGroup(config);
 }
 
 - (void)showRecentActivityForTabGroup:(base::WeakPtr<const TabGroup>)tabGroup {

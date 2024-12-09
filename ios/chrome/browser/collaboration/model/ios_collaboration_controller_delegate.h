@@ -38,6 +38,7 @@ class IOSCollaborationControllerDelegate
 
  private:
   std::unique_ptr<CollaborationFlowConfiguration> collaboration_flow_;
+  NSString* session_id_ = nil;
 };
 
 }  // namespace collaboration

@@ -160,7 +160,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   config.tabGroup = tabGroup;
   config.baseViewController = self.baseViewController;
   config.applicationHandler = self.applicationHandler;
-  _shareKitService->ShareGroup(config);
+  _shareKitService->ShareTabGroup(config);
 }
 
 - (void)showRecentActivity {
@@ -184,7 +184,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   config.baseViewController = self.baseViewController;
   config.collabID = collabID;
   config.applicationHandler = self.applicationHandler;
-  _shareKitService->ManageGroup(config);
+  _shareKitService->ManageTabGroup(config);
 }
 
 - (void)showTabGroupEdition {

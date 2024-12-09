@@ -391,7 +391,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   config.baseViewController = self.baseViewController;
   config.applicationHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
-  shareKitService->ShareGroup(config);
+  shareKitService->ShareTabGroup(config);
 }
 
 // Manage the group with `collabID`.
@@ -407,7 +407,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   config.collabID = collabID;
   config.applicationHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
-  shareKitService->ManageGroup(config);
+  shareKitService->ManageTabGroup(config);
 }
 
 // Sets up the `_viewController`.
