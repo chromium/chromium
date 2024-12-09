@@ -15,8 +15,6 @@
   color: var(--cr-primary-text-color);
   cursor: pointer;
   display: flex;
-  font-size: 13px;
-  font-weight: 400;
   justify-content: space-between;
   line-height: 16px;
   margin-top: 8px;
