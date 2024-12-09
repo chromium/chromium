@@ -3111,6 +3111,7 @@ static_library("browser") {
       "search_resumption/start_suggest_service_factory.cc",
       "search_resumption/start_suggest_service_factory.h",
       "segmentation_platform/android/contextual_page_action_controller_android.cc",
+      "segmentation_platform/android/home_modules_ranking_helper.cc",
       "segmentation_platform/android/segmentation_platform_service_factory_android.cc",
       "segmentation_platform/client_util/tab_data_collection_util.cc",
       "segmentation_platform/client_util/tab_data_collection_util.h",
