@@ -2295,6 +2295,7 @@ static_library("browser") {
     "//components/security_state/core",
     "//components/segmentation_platform/embedder",
     "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/embedder/home_modules:constants",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",

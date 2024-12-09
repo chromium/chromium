@@ -7,6 +7,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
+#include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
@@ -33,6 +34,16 @@ std::map<SignalKey, FeatureQuery> DefaultBrowserPromo::GetInputs() {
 
 CardSelectionInfo::ShowResult DefaultBrowserPromo::ComputeCardResult(
     const CardSelectionSignals& signals) const {
+  // Check for a forced `ShowResult`.
+  std::optional<CardSelectionInfo::ShowResult> forced_result =
+      GetForcedEphemeralModuleShowResult();
+
+  if (forced_result.has_value() &&
+      forced_result.value().result_label.has_value() &&
+      kDefaultBrowserPromo == forced_result.value().result_label.value()) {
+    return forced_result.value();
+  }
+
   CardSelectionInfo::ShowResult result;
   result.result_label = kDefaultBrowserPromo;
 
@@ -65,6 +76,15 @@ CardSelectionInfo::ShowResult DefaultBrowserPromo::ComputeCardResult(
 }
 
 bool DefaultBrowserPromo::IsEnabled(int impression_count) {
+  std::optional<CardSelectionInfo::ShowResult> forced_result =
+      GetForcedEphemeralModuleShowResult();
+
+  if (forced_result.has_value() &&
+      forced_result.value().result_label.has_value() &&
+      kDefaultBrowserPromo == forced_result.value().result_label.value()) {
+    return true;
+  }
+
   if (!base::FeatureList::IsEnabled(features::kEducationalTipModule)) {
     return false;
   }
