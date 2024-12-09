@@ -421,6 +421,8 @@ viz_component("service") {
       "frame_sinks/external_begin_frame_source_android.h",
       "gl/throw_uncaught_exception.cc",
       "gl/throw_uncaught_exception.h",
+      "input/fling_scheduler_android.cc",
+      "input/fling_scheduler_android.h",
       "input/render_input_router_support_android.cc",
       "input/render_input_router_support_android.h",
     ]
@@ -686,6 +688,7 @@ viz_source_set("unit_tests") {
       "display/overlay_processor_surface_control_unittest.cc",
       "display/overlay_unittest.cc",
       "frame_sinks/external_begin_frame_source_android_unittest.cc",
+      "frame_sinks/fling_scheduler_android_unittest.cc",
     ]
   }
 

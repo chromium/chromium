@@ -23,6 +23,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "components/input/android/android_input_callback.h"
 #include "components/input/android/input_receiver_data.h"
+#include "components/viz/service/input/fling_scheduler_android.h"
 #endif
 
 namespace input {
@@ -55,6 +56,7 @@ class VIZ_SERVICE_EXPORT InputManager
       public input::RenderWidgetHostInputEventRouter::Delegate,
 #if BUILDFLAG(IS_ANDROID)
       public input::AndroidInputCallbackClient,
+      public FlingSchedulerAndroid::Delegate,
 #endif
       public RenderInputRouterSupportBase::Delegate,
       public RenderInputRouterDelegateImpl::Delegate {
@@ -98,6 +100,10 @@ class VIZ_SERVICE_EXPORT InputManager
   // AndroidInputCallbackClient implementation.
   bool OnMotionEvent(base::android::ScopedInputEvent input_event,
                      const FrameSinkId& root_frame_sink_id) override;
+
+  // FlingSchedulerAndroid::Delegate implementation.
+  BeginFrameSource* GetBeginFrameSourceForFrameSink(
+      const FrameSinkId& id) override;
 #endif
 
   // RenderInputRouterDelegateImpl::Delegate implementation.
@@ -133,6 +139,13 @@ class VIZ_SERVICE_EXPORT InputManager
       const FrameSinkId& frame_sink_id);
 
   void OnRIRDelegateClientDisconnected(uint32_t grouping_id);
+
+  void SetupRenderInputRouter(input::RenderInputRouter* render_input_router,
+                              const FrameSinkId& frame_sink_id);
+
+  std::unique_ptr<input::FlingSchedulerBase> MakeFlingScheduler(
+      input::RenderInputRouter* rir,
+      const FrameSinkId& frame_sink_id);
 
 #if BUILDFLAG(IS_ANDROID)
   // Android input receiver is created only for the very first root compositor

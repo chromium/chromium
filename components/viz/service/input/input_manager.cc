@@ -22,6 +22,7 @@
 #include "components/input/android/scoped_input_receiver.h"
 #include "components/input/android/scoped_input_receiver_callbacks.h"
 #include "components/input/android/scoped_input_transfer_token.h"
+#include "components/viz/service/input/fling_scheduler_android.h"
 #include "components/viz/service/input/render_input_router_support_android.h"
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
@@ -106,6 +107,27 @@ InputManager::InputManager(FrameSinkManagerImpl* frame_sink_manager)
   frame_sink_manager_->AddObserver(this);
 }
 
+std::unique_ptr<input::FlingSchedulerBase> InputManager::MakeFlingScheduler(
+    input::RenderInputRouter* rir,
+    const FrameSinkId& frame_sink_id) {
+#if BUILDFLAG(IS_ANDROID)
+  return std::make_unique<FlingSchedulerAndroid>(rir, this, frame_sink_id);
+#else
+  NOTREACHED();
+#endif
+}
+
+void InputManager::SetupRenderInputRouter(
+    input::RenderInputRouter* render_input_router,
+    const FrameSinkId& frame_sink_id) {
+  // TODO(382291983): Setup RenderInputRouter's mojo connections to renderer.
+  render_input_router->SetFlingScheduler(
+      MakeFlingScheduler(render_input_router, frame_sink_id));
+
+  render_input_router->SetupInputRouter(
+      GetDeviceScaleFactorForId(frame_sink_id));
+}
+
 void InputManager::OnCreateCompositorFrameSink(
     const FrameSinkId& frame_sink_id,
     bool is_root,
@@ -158,8 +180,7 @@ void InputManager::OnCreateCompositorFrameSink(
       /* fling_scheduler */ nullptr,
       /* delegate */ rir_delegate.get(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
-  render_input_router->SetupInputRouter(
-      GetDeviceScaleFactorForId(frame_sink_id));
+  SetupRenderInputRouter(render_input_router.get(), frame_sink_id);
 
   frame_sink_metadata_map_.emplace(std::make_pair(
       frame_sink_id,
@@ -515,6 +536,11 @@ bool InputManager::OnMotionEvent(base::android::ScopedInputEvent input_event,
   // Always return true since we are receiving input on Viz after hit testing on
   // Browser already determined that web contents are being hit.
   return true;
+}
+
+BeginFrameSource* InputManager::GetBeginFrameSourceForFrameSink(
+    const FrameSinkId& id) {
+  return frame_sink_manager_->GetFrameSinkForId(id)->begin_frame_source();
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

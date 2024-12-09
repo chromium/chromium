@@ -147,6 +147,11 @@ void RenderInputRouter::SetupInputRouter(float device_scale_factor) {
   input_router_->SetDeviceScaleFactor(device_scale_factor);
 }
 
+void RenderInputRouter::SetFlingScheduler(
+    std::unique_ptr<FlingSchedulerBase> fling_scheduler) {
+  fling_scheduler_ = std::move(fling_scheduler);
+}
+
 void RenderInputRouter::BindRenderInputRouterInterfaces(
     mojo::PendingRemote<blink::mojom::RenderInputRouterClient> remote) {
   client_remote_.reset();
