@@ -438,6 +438,17 @@ void LensOverlayQueryController::SendContextualTextQuery(
                       additional_search_query_params);
     return;
   }
+
+  // If there is a page content request in flight, wait for it to finish before
+  // sending the contextual text query.
+  if (page_content_request_in_progress_) {
+    pending_contextual_query_callback_ =
+        base::BindOnce(&LensOverlayQueryController::SendContextualTextQuery,
+                       weak_ptr_factory_.GetWeakPtr(), query_text,
+                       lens_selection_type, additional_search_query_params);
+    return;
+  }
+
   // Include the vit to get contextualized results.
   additional_search_query_params = AddVisualInputTypeQueryParam(
       additional_search_query_params, underlying_content_type_);
@@ -535,7 +546,8 @@ LensOverlayQueryController::CreateEndpointFetcher(
     const std::string& http_method,
     const base::TimeDelta& timeout,
     const std::vector<std::string>& request_headers,
-    const std::vector<std::string>& cors_exempt_headers) {
+    const std::vector<std::string>& cors_exempt_headers,
+    const UploadProgressCallback upload_progress_callback) {
   // If provided, serialize the request to a string to include as the request
   // post data.
   std::string request_string;
@@ -559,6 +571,7 @@ LensOverlayQueryController::CreateEndpointFetcher(
       EndpointFetcher::RequestParams::Builder()
           .SetCredentialsMode(CredentialsMode::kInclude)
           .SetSetSiteForCookies(true)
+          .SetUploadProgressCallback(upload_progress_callback)
           .Build());
 }
 
@@ -630,7 +643,7 @@ void LensOverlayQueryController::PerformClusterInfoFetchRequest(
   cluster_info_endpoint_fetcher_ = CreateEndpointFetcher(
       nullptr, fetch_url, kHttpGetMethod,
       base::Milliseconds(lens::features::GetLensOverlayServerRequestTimeout()),
-      request_headers, cors_exempt_headers);
+      request_headers, cors_exempt_headers, base::DoNothing());
 
   // Finally, perform the request.
   cluster_info_endpoint_fetcher_->PerformRequest(
@@ -1011,6 +1024,7 @@ void LensOverlayQueryController::PerformPageContentRequest(
   page_content_access_token_fetcher_.reset();
 
   // Pass no response callback because this is a fire and forget request.
+  page_content_request_in_progress_ = true;
   PerformFetchRequest(
       &request, &headers,
       base::Milliseconds(
@@ -1019,7 +1033,10 @@ void LensOverlayQueryController::PerformPageContentRequest(
           &LensOverlayQueryController::OnPageContentEndpointFetcherCreated,
           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&LensOverlayQueryController::PageContentResponseHandler,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          &LensOverlayQueryController::PageContentUploadProgressHandler,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void LensOverlayQueryController::PageContentResponseHandler(
@@ -1031,6 +1048,18 @@ void LensOverlayQueryController::PageContentResponseHandler(
       VitQueryParamValueForMimeType(underlying_content_type_),
       /*cluster_info_latency=*/std::nullopt,
       /*encoded_analytics_id=*/std::nullopt);
+}
+
+void LensOverlayQueryController::PageContentUploadProgressHandler(
+    uint64_t position,
+    uint64_t total) {
+  if (position == total) {
+    page_content_request_in_progress_ = false;
+    if (pending_contextual_query_callback_) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(pending_contextual_query_callback_));
+    }
+  }
 }
 
 void LensOverlayQueryController::SendInteraction(
@@ -1380,7 +1409,8 @@ void LensOverlayQueryController::PerformFetchRequest(
     const base::TimeDelta& timeout,
     base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
         fetcher_created_callback,
-    EndpointFetcherCallback response_received_callback) {
+    EndpointFetcherCallback response_received_callback,
+    UploadProgressCallback upload_progress_callback) {
   CHECK(request);
   CHECK(request_headers);
 
@@ -1400,9 +1430,9 @@ void LensOverlayQueryController::PerformFetchRequest(
 
   // Create the EndpointFetcher, responsible for making the request using our
   // given params.
-  std::unique_ptr<EndpointFetcher> endpoint_fetcher =
-      CreateEndpointFetcher(request, fetch_url, kHttpPostMethod, timeout,
-                            *request_headers, cors_exempt_headers);
+  std::unique_ptr<EndpointFetcher> endpoint_fetcher = CreateEndpointFetcher(
+      request, fetch_url, kHttpPostMethod, timeout, *request_headers,
+      cors_exempt_headers, upload_progress_callback);
   EndpointFetcher* fetcher = endpoint_fetcher.get();
 
   // Run callback that the fetcher was created. This is used to keep the

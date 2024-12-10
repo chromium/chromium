@@ -157,7 +157,8 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
     const std::string& http_method,
     const base::TimeDelta& timeout,
     const std::vector<std::string>& request_headers,
-    const std::vector<std::string>& cors_exempt_headers) {
+    const std::vector<std::string>& cors_exempt_headers,
+    const UploadProgressCallback upload_progress_callback) {
   lens::LensOverlayServerResponse fake_server_response;
   std::string fake_server_response_string;
   google_apis::ApiErrorCode fake_server_response_code =
@@ -216,6 +217,18 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
   EndpointResponse fake_endpoint_response;
   fake_endpoint_response.response = fake_server_response_string;
   fake_endpoint_response.http_status_code = fake_server_response_code;
+
+  if (upload_progress_callback) {
+    last_upload_progress_callback_ = std::move(upload_progress_callback);
+  }
+  // If there is an upload progress callback, run it immedietly with 100%
+  // progress, unless disable_page_upload_response_callback in which case the
+  // caller will need to call the callback manually.
+  if (!disable_page_upload_response_callback &&
+      !last_upload_progress_callback_.is_null()) {
+    // Simulate the upload progress callback completing the upload.
+    std::move(last_upload_progress_callback_).Run(1, 1);
+  }
 
   auto response = std::make_unique<FakeEndpointFetcher>(fake_endpoint_response);
   response->disable_responding_ = disable_response;

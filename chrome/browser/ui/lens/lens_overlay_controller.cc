@@ -2695,6 +2695,11 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
   state_ = state_ == State::kOverlayAndResults ? State::kOverlayAndResults
                                                : State::kLivePageAndResults;
 
+  // The searchbox text is set once the URL loads in the results frame, however,
+  // adding it here allows the user to see the text query in the searchbox while
+  // a long query loads.
+  SetSearchboxInputText(search_box_text);
+
   results_side_panel_coordinator_->RegisterEntryAndShow();
   MaybeLaunchSurvey();
 }
