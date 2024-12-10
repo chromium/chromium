@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/strings/grit/components_strings.h"
@@ -68,6 +69,7 @@
 #include "ui/views/view_tracker.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace user_education {
 
@@ -293,6 +295,33 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView, kCloseButtonIdForTesting);
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView, kBodyTextIdForTesting);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView, kTitleTextIdForTesting);
+
+// TODO(https://crbug.com/382611284): Temporarily handle the case when the
+// primary window is minimized by closing the help bubble. Remove this code when
+// the issue is solved at the Views framework level.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+class HelpBubbleView::PrimaryWidgetObserver : public views::WidgetObserver {
+ public:
+  explicit PrimaryWidgetObserver(HelpBubbleView& help_bubble)
+      : help_bubble_(help_bubble) {
+    observation_.Observe(help_bubble_->GetWidget()->GetPrimaryWindowWidget());
+  }
+  ~PrimaryWidgetObserver() override = default;
+
+ private:
+  void OnWidgetDestroying(views::Widget*) override { observation_.Reset(); }
+  void OnWidgetShowStateChanged(views::Widget* widget) override {
+    if (widget->IsMinimized()) {
+      help_bubble_->GetWidget()->CloseWithReason(
+          views::Widget::ClosedReason::kLostFocus);
+    }
+  }
+
+  const raw_ref<HelpBubbleView> help_bubble_;
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
+};
+#endif
 
 // Watches for the anchor view to be destroyed or removed from its widget.
 // Used in cases where the anchor element is not the same as the anchor view.
@@ -742,6 +771,10 @@ HelpBubbleView::HelpBubbleView(
   if (event_relay_) {
     event_relay_->Init(this);
   }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  primary_widget_observer_ = std::make_unique<PrimaryWidgetObserver>(*this);
+#endif
 
   MaybeStartAutoCloseTimer();
 }

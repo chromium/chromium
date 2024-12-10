@@ -35,6 +35,7 @@
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -499,5 +500,14 @@ TEST_F(HelpBubbleViewsTest, RootViewAccessibleName) {
       root_view_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
       help_bubble_->bubble_view()->GetAccessibleWindowTitle());
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+TEST_F(HelpBubbleViewsTest, MinimizeAnchorWidget) {
+  views::test::WidgetDestroyedWaiter waiter(
+      help_bubble_->bubble_view()->GetWidget());
+  widget_->Minimize();
+  waiter.Wait();
+}
+#endif
 
 }  // namespace user_education
