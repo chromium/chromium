@@ -42,19 +42,20 @@ def init(ctx):
         properties["gn_args:" + k] = v
     for k, v in gn_logs.read(ctx).items():
         properties["gn_logs:" + k] = v
+    container_image = "docker://gcr.io/chops-public-images-prod/rbe/siso-chromium/linux@sha256:ef35d347f4a4a2d32b76fd908e66e96f59bf8ba7379fd5626548244c45343b2b"
     step_config = {
         "properties": properties,
         "platforms": {
             "default": {
                 "OSFamily": "Linux",
-                "container-image": "docker://gcr.io/chops-public-images-prod/rbe/siso-chromium/linux@sha256:912808c295e578ccde53b0685bcd0d56c15d7a03e819dcce70694bfe3fdab35e",
+                "container-image": container_image,
                 "label:action_default": "1",
             },
             # Large workers are usually used for Python actions like generate bindings, mojo generators etc
             # They can run on Linux workers.
             "large": {
                 "OSFamily": "Linux",
-                "container-image": "docker://gcr.io/chops-public-images-prod/rbe/siso-chromium/linux@sha256:912808c295e578ccde53b0685bcd0d56c15d7a03e819dcce70694bfe3fdab35e",
+                "container-image": container_image,
                 # As of Jul 2023, the action_large pool uses n2-highmem-8 with 200GB of pd-ssd.
                 # The pool is intended for the following actions.
                 #  - slow actions that can benefit from multi-cores and/or faster disk I/O. e.g. link, mojo, generate bindings etc.
