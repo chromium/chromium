@@ -78,7 +78,6 @@ def MaybeRunCommand(name, argv, stamp_file, force, experimental=False):
             'cwd': os.getcwd(),
             'tty': autoninja_tty,
             'build_id': autoninja_build_id,
-            'experimental': experimental,
             'stamp_file': stamp_file,
         }).encode('utf8'))
 

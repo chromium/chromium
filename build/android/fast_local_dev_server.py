@@ -320,14 +320,13 @@ class Task:
   """Class to represent one task and operations on it."""
 
   def __init__(self, name: str, cwd: str, cmd: List[str], tty: IO[str],
-               stamp_file: str, build_id: str, remote_print: bool, options):
+               stamp_file: str, build_id: str, options):
     self.name = name
     self.cwd = cwd
     self.cmd = cmd
     self.stamp_file = stamp_file
     self.tty = tty
     self.build_id = build_id
-    self.remote_print = remote_print
     self.options = options
     self._terminated = False
     self._replaced = False
@@ -443,7 +442,7 @@ class Task:
       message = '\n'.join(preamble + [stdout])
       log_to_file(message, build_id=self.build_id)
       log(message, quiet=self.options.quiet)
-      if self.remote_print:
+      if self.tty:
         # Add emoji to show that output is from the build server.
         preamble = [f'⏩ {line}' for line in preamble]
         remote_message = '\n'.join(preamble + [stdout])
@@ -472,11 +471,11 @@ def _handle_add_task(data, current_tasks: Dict[Tuple[str, str], Task], options):
   """Handle messages of type ADD_TASK."""
   build_id = data['build_id']
   task_outdir = data['cwd']
+  tty_name = data.get('tty')
 
-  is_experimental = data.get('experimental', False)
   tty = None
-  if is_experimental:
-    tty = open(data['tty'], 'wt')
+  if tty_name:
+    tty = open(tty_name, 'wt')
     BuildManager.register_tty(build_id, tty)
 
   # Make sure a logfile for the build_id exists.
@@ -487,7 +486,6 @@ def _handle_add_task(data, current_tasks: Dict[Tuple[str, str], Task], options):
                   cmd=data['cmd'],
                   tty=tty,
                   build_id=build_id,
-                  remote_print=is_experimental,
                   stamp_file=data['stamp_file'],
                   options=options)
   existing_task = current_tasks.get(new_task.key)
@@ -676,6 +674,26 @@ def _register_builder(build_id, builder_pid):
   return 1
 
 
+def _print_build_status(build_id):
+  build_info = query_build_info(build_id)
+  pending_tasks = build_info['pending_tasks']
+  completed_tasks = build_info['completed_tasks']
+  total_tasks = pending_tasks + completed_tasks
+
+  # Print nothing if we never got any tasks.
+  if completed_tasks:
+    if pending_tasks:
+      print('Build server is still running in the background. ' +
+            f'[{completed_tasks}/{total_tasks}] Tasks Done.')
+      print('Run this to wait for the pending tasks:')
+      server_path = os.path.relpath(str(server_utils.SERVER_SCRIPT))
+      print(' '.join([server_path, '--wait-for-build', build_id]))
+    else:
+      print('Build Server is done with all background tasks. ' +
+            f'[{completed_tasks}/{total_tasks}] Tasks Done.')
+  return 0
+
+
 def _wait_for_task_requests(args):
   with socket.socket(socket.AF_UNIX) as sock:
     sock.settimeout(_SOCKET_TIMEOUT)
@@ -709,6 +727,9 @@ def main():
                       metavar='BUILD_ID',
                       help='Wait for build server to finish with all tasks '
                       'for BUILD_ID and output any pending messages.')
+  parser.add_argument('--print-status',
+                      metavar='BUILD_ID',
+                      help='Print the current state of a build.')
   parser.add_argument(
       '--register-build-id',
       metavar='BUILD_ID',
@@ -723,6 +744,8 @@ def main():
     return _check_if_running()
   if args.wait_for_build:
     return _wait_for_build(args.wait_for_build)
+  if args.print_status:
+    return _print_build_status(args.print_status)
   if args.register_build_id:
     return _register_builder(args.register_build_id, args.builder_pid)
   if args.cancel_build:
