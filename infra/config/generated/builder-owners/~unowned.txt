@@ -17,10 +17,8 @@ ci/Comparison Windows (reclient)(CQ)
 ci/Comparison ios (reclient)
 ci/Comparison ios (reclient)(CQ)
 ci/Leak Detection Linux
-ci/Linux Builder (reclient compare)
 ci/Linux Viz
 ci/Mac ASAN Release Media
-ci/Mac Builder (reclient compare)
 ci/Mac Builder Next
 ci/Mac deterministic
 ci/Mac deterministic (dbg)
@@ -28,7 +26,6 @@ ci/Mac13 Tests
 ci/Oreo Phone Tester
 ci/Site Isolation Android
 ci/Win 10 Fast Ring
-ci/Win x64 Builder (reclient compare)
 ci/Win x64 Builder (reclient)
 ci/android-11-x86-fyi-rel
 ci/android-11-x86-rel
