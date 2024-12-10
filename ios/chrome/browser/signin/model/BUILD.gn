@@ -131,7 +131,6 @@ source_set("authentication_service") {
     ":system_identity_util",
     "//base",
     "//components/browser_sync",
-    "//components/keyed_service/core",
     "//components/pref_registry",
     "//components/prefs",
     "//components/signin/ios/browser:features",
@@ -355,7 +354,6 @@ source_set("trusted_vault") {
   ]
   deps = [
     "//base",
-    "//components/keyed_service/core",
     "//components/trusted_vault",
     "//ios/public/provider/chrome/browser/signin:signin_sso_api",
   ]
@@ -406,7 +404,6 @@ source_set("test_support") {
     ":trusted_vault",
     "//base",
     "//components/image_fetcher/core:test_support",
-    "//components/keyed_service/core",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//ios/chrome/browser/shared/model/profile",
