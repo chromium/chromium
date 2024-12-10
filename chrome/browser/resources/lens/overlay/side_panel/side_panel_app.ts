@@ -18,7 +18,7 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {LensSidePanelPageHandlerInterface} from '../lens_side_panel.mojom-webui.js';
-import {handleEscapeSearchbox, onEscapeKeyPressed, onSearchboxKeydown} from '../searchbox_utils.js';
+import {handleEscapeSearchbox, onSearchboxKeydown} from '../searchbox_utils.js';
 
 import {getTemplate} from './side_panel_app.html.js';
 import {SidePanelBrowserProxyImpl} from './side_panel_browser_proxy.js';
@@ -180,9 +180,6 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     this.eventTracker_.add(document, 'keydown', (event: KeyboardEvent) => {
       if (event.key !== 'Escape' && this.isSearchboxFocused) {
         onSearchboxKeydown(this, this.$.searchbox);
-      }
-      if (event.key === 'Escape') {
-        onEscapeKeyPressed(this, event);
       }
     });
   }

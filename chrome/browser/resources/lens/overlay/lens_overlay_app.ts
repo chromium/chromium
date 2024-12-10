@@ -36,7 +36,7 @@ import {UserAction} from './lens.mojom-webui.js';
 import {getTemplate} from './lens_overlay_app.html.js';
 import {recordLensOverlayInteraction, recordTimeToWebUIReady} from './metrics_utils.js';
 import {PerformanceTracker} from './performance_tracker.js';
-import {handleEscapeSearchbox, onEscapeKeyPressed, onSearchboxKeydown} from './searchbox_utils.js';
+import {handleEscapeSearchbox, onSearchboxKeydown} from './searchbox_utils.js';
 import type {SelectionOverlayElement} from './selection_overlay.js';
 import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import type {TranslateButtonElement} from './translate_button.js';
@@ -266,9 +266,6 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     this.eventTracker_.add(document, 'keydown', (event: KeyboardEvent) => {
       if (event.key !== 'Escape' && this.isSearchboxFocused) {
         onSearchboxKeydown(this, this.$.searchbox);
-      }
-      if (event.key === 'Escape') {
-        onEscapeKeyPressed(this, event);
       }
     });
     this.eventTracker_.add(
