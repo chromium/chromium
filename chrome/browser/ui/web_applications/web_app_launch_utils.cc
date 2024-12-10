@@ -19,6 +19,7 @@
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/one_shot_event.h"
@@ -389,7 +390,8 @@ std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
     const webapps::AppId& app_id,
     blink::mojom::DisplayMode requested_display_mode,
     bool ignore_browser_tabs_for_standalone_apps,
-    bool for_navigate_new) {
+    bool for_navigate_new,
+    Browser* navigate_params_requested_browser) {
   std::optional<std::pair<Browser*, int>> first_app_browser_match;
   std::optional<std::pair<Browser*, int>> first_browser_tab_match;
   // These are the type `std::optional<std::pair<Browser*, int>>` for easy usage
@@ -423,11 +425,22 @@ std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
     return {};
   };
 
+  // If the `NavigateParams::browser` was populated, and it is a normal browser,
+  // prefer that over the most recently used one if we need to create a new
+  // browser tab.
+  if (navigate_params_requested_browser &&
+      navigate_params_requested_browser->is_type_normal()) {
+    first_normal_browser = {navigate_params_requested_browser, -1};
+  }
+
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
     if (browser->IsAttemptingToCloseBrowser() || browser->IsBrowserClosing()) {
       continue;
     }
-    if (!(browser->is_type_normal() || browser->is_type_app())) {
+    if (!(browser->is_type_normal() ||
+          (browser->is_type_app() &&
+           // Exclude "hosted app" windows, which are 'app' type too.
+           AppBrowserController::IsWebApp(browser)))) {
       continue;
     }
     if (browser->profile() != &profile) {
@@ -494,6 +507,62 @@ std::optional<webapps::AppId> GetWebAppControllingUrl(
 #else
   return provider->registrar_unsafe().FindAppThatCapturesLinksInScope(url);
 #endif
+}
+
+bool IsDispositionValidForNavigationCapturing(
+    WindowOpenDisposition disposition) {
+  switch (disposition) {
+    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+    case WindowOpenDisposition::NEW_WINDOW:
+      return true;
+    case WindowOpenDisposition::UNKNOWN:
+      // Note: App popups are handled in browser_navigator.cc
+    case WindowOpenDisposition::NEW_POPUP:
+    case WindowOpenDisposition::CURRENT_TAB:
+    case WindowOpenDisposition::SINGLETON_TAB:
+    case WindowOpenDisposition::SAVE_TO_DISK:
+    case WindowOpenDisposition::OFF_THE_RECORD:
+    case WindowOpenDisposition::IGNORE_ACTION:
+    case WindowOpenDisposition::SWITCH_TO_TAB:
+    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
+      return false;
+  }
+}
+
+bool IsPageTransitionValidForNavigationCapturing(
+    ui::PageTransition transition) {
+  switch (ui::PageTransitionStripQualifier(transition)) {
+    case ui::PAGE_TRANSITION_TYPED:
+    case ui::PAGE_TRANSITION_AUTO_TOPLEVEL:
+    case ui::PAGE_TRANSITION_AUTO_BOOKMARK:
+    case ui::PAGE_TRANSITION_AUTO_SUBFRAME:
+    case ui::PAGE_TRANSITION_MANUAL_SUBFRAME:
+    case ui::PAGE_TRANSITION_GENERATED:
+    case ui::PAGE_TRANSITION_RELOAD:
+    case ui::PAGE_TRANSITION_KEYWORD:
+    case ui::PAGE_TRANSITION_KEYWORD_GENERATED:
+      return false;
+    case ui::PAGE_TRANSITION_LINK:
+    case ui::PAGE_TRANSITION_FORM_SUBMIT:
+      break;
+    default:
+      NOTREACHED(base::NotFatalUntil::M135);
+  }
+  if (base::to_underlying(ui::PageTransitionGetQualifier(transition)) != 0) {
+    // Qualifiers indicate that this navigation was the result of a click on a
+    // forward/back button, typing in the URL bar, or client-side redirections.
+    // Don't handle any of those types of navigations.
+    return false;
+  }
+  return true;
+}
+
+bool IsServiceWorkerClientOpenNavigation(const NavigateParams& params) {
+  return params.open_pwa_window_if_possible &&
+         ui::PageTransitionCoreTypeIs(params.transition,
+                                      ui::PAGE_TRANSITION_AUTO_TOPLEVEL) &&
+         params.disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB;
 }
 
 }  // namespace
@@ -807,7 +876,8 @@ bool MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
   ClientModeAndBrowser client_mode_and_browser =
       GetEffectiveClientModeAndBrowserForCapturing(
           *profile, app_id, /*source_tab_app_id_from_navigation=*/std::nullopt,
-          /*ignore_browser_tabs_for_standalone_apps=*/true);
+          /*ignore_browser_tabs_for_standalone_apps=*/true,
+          /*navigate_params_requested_browser=*/nullptr);
   LaunchHandler::ClientMode client_mode =
       client_mode_and_browser.effective_client_mode;
   if (client_mode != LaunchHandler::ClientMode::kFocusExisting &&
@@ -1332,7 +1402,8 @@ ClientModeAndBrowser GetEffectiveClientModeAndBrowserForCapturing(
     Profile& profile,
     const webapps::AppId& app_id,
     const std::optional<webapps::AppId> source_tab_app_id_from_navigation,
-    bool ignore_browser_tabs_for_standalone_apps) {
+    bool ignore_browser_tabs_for_standalone_apps,
+    Browser* navigate_params_requested_browser) {
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForWebApps(&profile);
   CHECK(provider);
@@ -1351,7 +1422,8 @@ ClientModeAndBrowser GetEffectiveClientModeAndBrowserForCapturing(
       profile, app_id, registrar.GetAppEffectiveDisplayMode(app_id),
       ignore_browser_tabs_for_standalone_apps,
       /*for_navigate_new=*/result.effective_client_mode ==
-          LaunchHandler::ClientMode::kNavigateNew);
+          LaunchHandler::ClientMode::kNavigateNew,
+      navigate_params_requested_browser);
   if (app_host.has_value()) {
     CHECK(app_host->first);
     result.browser = app_host->first;
@@ -1388,9 +1460,44 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
       !params.url.is_valid()) {
     return AppNavigationResult::CapturingDisabled();
   }
-  base::Value::Dict debug_data;
 
-  if (params.open_pwa_window_if_possible) {
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile);
+  if (!provider) {
+    return AppNavigationResult::CapturingDisabled();
+  }
+  web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
+
+  std::optional<webapps::AppId> source_browser_app_id =
+      params.browser && web_app::AppBrowserController::IsWebApp(params.browser)
+          ? std::optional(params.browser->app_controller()->app_id())
+          : std::nullopt;
+  std::optional<webapps::AppId> controlling_app_id =
+      GetWebAppControllingUrl(profile, provider, params.url);
+  std::optional<DisplayMode> controlling_app_display_mode;
+  if (controlling_app_id) {
+    controlling_app_display_mode =
+        registrar.GetAppEffectiveDisplayMode(*controlling_app_id);
+  }
+
+  // Only proceed as below if the navigation capturing is enabled. The flag in
+  // the redirection info has to store the result of this check, so that the
+  // logic in `OnWebAppNavigationAfterWebContentsCreation()` is skipped when not
+  // needed.
+  bool navigation_capturing_enabled =
+      IsNavigationCapturingReimplExperimentEnabled(
+          source_browser_app_id, params.url, controlling_app_id,
+          controlling_app_display_mode);
+  bool is_service_worker_clients_open_window =
+      IsServiceWorkerClientOpenNavigation(params);
+
+  // TODO(https://crbug.com/382542907): Remove `open_pwa_window_if_possible` or
+  // make it IWA-specific.
+  bool is_service_worker_clients_open_window_with_nav_capturing =
+      is_service_worker_clients_open_window && navigation_capturing_enabled;
+  if (params.open_pwa_window_if_possible &&
+      (!is_service_worker_clients_open_window_with_nav_capturing ||
+       params.force_open_pwa_window)) {
     std::optional<webapps::AppId> app_id =
         web_app::FindInstalledAppWithUrlInScope(profile, params.url,
                                                 /*window_only=*/true);
@@ -1453,54 +1560,36 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
 
   // Below here handles the states outlined in
   // https://bit.ly/pwa-navigation-capturing
+  if (!navigation_capturing_enabled) {
+    return AppNavigationResult::CapturingDisabled();
+  }
   if (params.started_from_context_menu ||
       params.pwa_navigation_capturing_force_off ||
       params.tabstrip_index != -1) {
     return AppNavigationResult::CapturingDisabled();
   }
-  switch (params.disposition) {
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
-    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-    case WindowOpenDisposition::NEW_POPUP:
-    case WindowOpenDisposition::NEW_WINDOW:
-      break;
-    case WindowOpenDisposition::UNKNOWN:
-    case WindowOpenDisposition::CURRENT_TAB:
-    case WindowOpenDisposition::SINGLETON_TAB:
-    case WindowOpenDisposition::SAVE_TO_DISK:
-    case WindowOpenDisposition::OFF_THE_RECORD:
-    case WindowOpenDisposition::IGNORE_ACTION:
-    case WindowOpenDisposition::SWITCH_TO_TAB:
-    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
-      return AppNavigationResult::CapturingDisabled();
-  }
-
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(profile);
-  if (!provider) {
+  if (!IsDispositionValidForNavigationCapturing(params.disposition)) {
     return AppNavigationResult::CapturingDisabled();
   }
-  web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
-
-  std::optional<webapps::AppId> source_browser_app_id =
-      params.browser && web_app::AppBrowserController::IsWebApp(params.browser)
-          ? std::optional(params.browser->app_controller()->app_id())
-          : std::nullopt;
-  std::optional<webapps::AppId> controlling_app_id =
-      GetWebAppControllingUrl(profile, provider, params.url);
-  std::optional<DisplayMode> controlling_app_display_mode;
-  if (controlling_app_id) {
-    controlling_app_display_mode =
-        registrar.GetAppEffectiveDisplayMode(*controlling_app_id);
+  // The service worker clients API currently uses
+  // PAGE_TRANSITION_AUTO_TOPLEVEL, which is normally considered invalid for
+  // navigation capturing. Explicitly allow that.
+  if (!is_service_worker_clients_open_window &&
+      !IsPageTransitionValidForNavigationCapturing(params.transition)) {
+    return AppNavigationResult::CapturingDisabled();
   }
-
-  // Only proceed as below if the navigation capturing is enabled. The flag in
-  // the redirection info has to store the result of this check, so that the
-  // logic in `OnWebAppNavigationAfterWebContentsCreation()` is skipped when not
-  // needed.
-  if (!IsNavigationCapturingReimplExperimentEnabled(
-          source_browser_app_id, params.url, controlling_app_id,
-          controlling_app_display_mode)) {
+  bool is_for_new_browser =
+      params.browser && params.browser->tab_strip_model()->count() == 0 &&
+      (params.disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
+       params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB);
+  if (is_for_new_browser) {
+    // Some calls to `Navigate` populate a newly created browser in
+    // `params.browser`, with no tabs. Callers can assume that browser is used,
+    // so enabling capturing cause the user to see a browser with no tabs. We
+    // cannot simply close it, as sometimes callers then use/reference that
+    // browser. While that is likely a bug (callers should use the
+    // `params.browser` to be compatible with other logic that changes the
+    // browser), disable capturing in this case for now.
     return AppNavigationResult::CapturingDisabled();
   }
 
@@ -1511,6 +1600,7 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
         *controlling_app_display_mode));
   }
 
+  base::Value::Dict debug_data;
   content::WebContents* source_contents = params.source_contents;
   std::optional<webapps::AppId> source_contents_app_id =
       source_contents ? base::OptionalFromPtr(
@@ -1520,7 +1610,8 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   if (controlling_app_id) {
     client_mode_and_browser = GetEffectiveClientModeAndBrowserForCapturing(
         *profile, *controlling_app_id, source_contents_app_id,
-        /*ignore_browser_tabs=*/false);
+        /*ignore_browser_tabs=*/false,
+        /*navigate_params_requested_browser=*/params.browser);
     debug_data.Set(
         "effective_client_mode",
         base::ToString(client_mode_and_browser->effective_client_mode));
@@ -1558,6 +1649,12 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
                  base::ToString(params.contents_to_insert.get()));
   debug_data.Set("source_browser_app_id",
                  source_browser_app_id.value_or("<none>"));
+  debug_data.Set("params.transition",
+                 ui::PageTransitionGetCoreTransitionString(
+                     ui::PageTransitionStripQualifier(params.transition)));
+  debug_data.Set(
+      "params.transition.qualifiers",
+      static_cast<int>(ui::PageTransitionGetQualifier(params.transition)));
 
   const bool is_user_modified_click =
       params.disposition == WindowOpenDisposition::NEW_WINDOW ||
