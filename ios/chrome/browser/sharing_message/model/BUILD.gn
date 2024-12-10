@@ -46,12 +46,12 @@ source_set("sharing_message_bridge_factory") {
   ]
   deps = [
     "//base",
-    "//components/keyed_service/ios",
     "//components/send_tab_to_self",
     "//components/sharing_message",
     "//components/sync/base",
     "//components/sync/model",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/common",
   ]
 }
