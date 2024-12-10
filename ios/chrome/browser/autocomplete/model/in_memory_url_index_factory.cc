@@ -9,12 +9,10 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #include "ios/chrome/browser/history/model/history_service_factory.h"
 #include "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #include "ios/components/webui/web_ui_url_constants.h"
@@ -45,8 +43,8 @@ std::unique_ptr<KeyedService> BuildInMemoryURLIndex(
 
 // static
 InMemoryURLIndex* InMemoryURLIndexFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<InMemoryURLIndex*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<InMemoryURLIndex>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -56,15 +54,15 @@ InMemoryURLIndexFactory* InMemoryURLIndexFactory::GetInstance() {
 }
 
 InMemoryURLIndexFactory::InMemoryURLIndexFactory()
-    : BrowserStateKeyedServiceFactory(
-          "InMemoryURLIndex",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("InMemoryURLIndex",
+                                    ProfileSelection::kRedirectedInIncognito,
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(ios::BookmarkModelFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
 }
 
-InMemoryURLIndexFactory::~InMemoryURLIndexFactory() {}
+InMemoryURLIndexFactory::~InMemoryURLIndexFactory() = default;
 
 // static
 BrowserStateKeyedServiceFactory::TestingFactory
@@ -75,15 +73,6 @@ InMemoryURLIndexFactory::GetDefaultFactory() {
 std::unique_ptr<KeyedService> InMemoryURLIndexFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   return BuildInMemoryURLIndex(context);
-}
-
-web::BrowserState* InMemoryURLIndexFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateRedirectedInIncognito(context);
-}
-
-bool InMemoryURLIndexFactory::ServiceIsNULLWhileTesting() const {
-  return true;
 }
 
 }  // namespace ios
