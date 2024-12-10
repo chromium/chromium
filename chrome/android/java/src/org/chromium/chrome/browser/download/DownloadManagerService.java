@@ -132,7 +132,6 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     private long mNativeDownloadManagerService;
     // Flag to track if we need to post a task to update download notifications.
     private boolean mIsUiUpdateScheduled;
-    private int mAutoResumptionLimit = -1;
     private DownloadManagerRequestInterceptor mDownloadManagerRequestInterceptor;
 
     // Whether any ChromeActivity is launched.
@@ -1553,14 +1552,6 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         editor.apply();
     }
 
-    // Deprecated after new download backend.
-    int getAutoResumptionLimit() {
-        if (mAutoResumptionLimit < 0) {
-            mAutoResumptionLimit = DownloadManagerServiceJni.get().getAutoResumptionLimit();
-        }
-        return mAutoResumptionLimit;
-    }
-
     /**
      * Creates an interrupted download in native code to be used by instrumentation tests.
      * @param url URL of the download.
@@ -1602,8 +1593,6 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     @NativeMethods
     interface Natives {
         boolean isSupportedMimeType(@JniType("std::string") String mimeType);
-
-        int getAutoResumptionLimit();
 
         long init(DownloadManagerService caller, boolean isProfileAdded);
 
