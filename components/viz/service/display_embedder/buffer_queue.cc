@@ -91,6 +91,10 @@ void BufferQueue::SwapBuffersComplete(bool did_present) {
     if (in_flight_buffer) {
       available_buffers_.push_back(std::move(in_flight_buffer));
     }
+    // Since skipped swap can sometimes be due to failure to draw to the primary
+    // plane, add full damage to ensure that primary plane buffers are fully
+    // redrawn.
+    UpdateBufferDamage(gfx::Rect(size_));
   }
 
   if (buffers_can_be_purged_) {
