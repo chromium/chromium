@@ -17,6 +17,7 @@ import androidx.preference.PreferenceCategory;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -26,6 +27,7 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -39,7 +41,7 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
     @VisibleForTesting static final int MAX_DISPLAYED_SITES = 15;
 
     private static final String FLEDGE_TOGGLE_PREFERENCE = "fledge_toggle";
-    // private static final String FLEDGE_DESCRIPTION_PREFERENCE = "fledge_description";
+    private static final String FLEDGE_DESCRIPTION_PREFERENCE = "fledge_description";
     private static final String HEADING_PREFERENCE = "fledge_heading";
     private static final String CURRENT_SITES_PREFERENCE = "current_fledge_sites";
     private static final String EMPTY_FLEDGE_PREFERENCE = "fledge_empty";
@@ -48,6 +50,7 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
     private static final String FOOTER_PREFERENCE = "fledge_page_footer";
 
     private ChromeSwitchPreference mFledgeTogglePreference;
+    private TextMessagePreference mFledgeDescriptionPreference;
     private PreferenceCategoryWithClickableSummary mHeadingPreference;
     private PreferenceCategory mCurrentSitesCategory;
     private TextMessagePreference mEmptyFledgePreference;
@@ -80,6 +83,7 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
         SettingsUtils.addPreferencesFromResource(this, R.xml.fledge_preference);
 
         mFledgeTogglePreference = findPreference(FLEDGE_TOGGLE_PREFERENCE);
+        mFledgeDescriptionPreference = findPreference(FLEDGE_DESCRIPTION_PREFERENCE);
         mHeadingPreference = findPreference(HEADING_PREFERENCE);
         mCurrentSitesCategory = findPreference(CURRENT_SITES_PREFERENCE);
         mEmptyFledgePreference = findPreference(EMPTY_FLEDGE_PREFERENCE);
@@ -135,11 +139,80 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
                                         onManagingAdPrivacyClicked();
                                     }
                                 })));
+        handleAdsApiUxEnhancements();
     }
 
     @Override
     public ObservableSupplier<String> getPageTitle() {
         return mPageTitle;
+    }
+
+    private void handleAdsApiUxEnhancements() {
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)) {
+            return;
+        }
+        mFledgeTogglePreference.setSummary(
+                getContext()
+                        .getString(R.string.settings_site_suggested_ads_page_toggle_sub_label_v2));
+        mFledgeDescriptionPreference.setSummary(
+                SpanApplier.applySpans(
+                        getResources()
+                                .getString(
+                                        R.string
+                                                .settings_site_suggested_ads_page_explanation_v2_clank),
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        onLearnMoreClicked();
+                                    }
+                                })));
+        mHeadingPreference.setSummary(
+                getContext()
+                        .getString(
+                                R.string.settings_site_suggested_ads_current_sites_description_v2));
+        ClickableSpansTextMessagePreference disclaimerPreference =
+                findPreference("fledge_page_disclaimer");
+        disclaimerPreference.setVisible(true);
+        disclaimerPreference.setSummary(
+                SpanApplier.applySpans(
+                        getResources()
+                                .getString(
+                                        R.string.settings_site_suggested_ads_page_disclaimer_clank),
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        onPrivacyPolicyLinkClicked();
+                                    }
+                                })));
+        mFooterPreference.setSummary(
+                SpanApplier.applySpans(
+                        getResources()
+                                .getString(R.string.settings_site_suggested_ads_page_footer_v2),
+                        new SpanApplier.SpanInfo(
+                                "<link1>",
+                                "</link1>",
+                                new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        onFledgeSettingsLinkClicked();
+                                    }
+                                }),
+                        new SpanApplier.SpanInfo(
+                                "<link2>",
+                                "</link2>",
+                                new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        onCookieSettingsLink();
+                                    }
+                                })));
     }
 
     private void onLearnMoreClicked() {
@@ -158,6 +231,10 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
 
     private void onCookieSettingsLink() {
         launchCookieSettings();
+    }
+
+    private void onPrivacyPolicyLinkClicked() {
+        getCustomTabLauncher().openUrlInCct(getContext(), UrlConstants.GOOGLE_PRIVACY_POLICY);
     }
 
     @Override

@@ -510,8 +510,14 @@
         You can make changes in ad privacy settings
       </message>
       <!--Site suggested ads settings page - Ads API UX Enhancement-->
-      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_TOGGLE_SUB_LABEL_V2" desc="" translateable="false">
+      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_TOGGLE_SUB_LABEL_V2" desc="" translateable="false" formatter_data="android_java">
         Websites and their advertising partners can use your activity, such as how you spend your time on sites you visit, to personalize ads for you
+      </message>
+      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_EXPLANATION_V2_CLANK" desc="" translateable="false" formatter_data="android_java">
+        Your activity is one of the many things a site can use to suggest ads. When site-suggested ads is turned off, sites can still show you ads but they may be less personalized. Learn more about <ph name="BEGIN_LINK">&lt;link&gt;</ph>managing your ad privacy<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
+      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_CURRENT_SITES_DESCRIPTION_V2" desc="A paragraph beneath the 'Sites' label. It explains how users can control the sites that appear in the list. * 'block sites': When a user blocks a site, that site may no longer save info with Chrome about the user's visit. As the user continues to browse, they will not see ads suggested by the blocked site. * 'auto-deletes': We included the 'auto' to reinforce that this is part of a system and the deletion is done regularly. " translateable="false" formatter_data="android_java">
+        You can block sites you don't want. Chrome also auto-deletes sites from the list that are older than 30 days.
       </message>
       <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_EXPLANATION_V2" desc="" translateable="false">
         Your activity is one of the many things a site can use to suggest ads. When site-suggested ads is turned off, sites can still show you ads but they may be less personalized. Learn more about
@@ -522,17 +528,26 @@
       <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_EXPLANATION_V2_LINK_ARIA_DESCRIPTION" desc="" translateable="false">
         Learn more about site-suggested ads
       </message>
-      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_LEARN_MORE_BULLET_1_V2" desc="" translateable="false">
+      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_LEARN_MORE_BULLET_1_V2" desc="" translateable="false" formatter_data="android_java">
         Site-suggested ads help protect your browsing history and identity while allowing sites to show you relevant ads. Using your activity, other sites can suggest related ads as you continue browsing. You can see a list of these sites and block the ones you don't want in settings.
       </message>
-      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_LEARN_MORE_BULLET_2_V2" desc="" translateable="false">
+      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_LEARN_MORE_BULLET_2_V2" desc="" translateable="false" formatter_data="android_java">
         For example, if you visit a site to find recipes for dinner, the site might decide that you're interested in cooking. Later, another site may show you a related ad for a grocery delivery service suggested by the first site.
       </message>
       <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_LEARN_MORE_BULLET_3_V2" desc="" translateable="false">
         Chrome deletes any activity data that you've shared with sites after 30 days. If you visit a site again it may reappear on the list. Learn more about <ph name="BEGIN_LINK1">&lt;a href="$1" aria-description="$2" target="_blank"&gt;</ph>managing your ad privacy in Chrome<ph name="LINK_END1">&lt;/a&gt;</ph>.
       </message>
+      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_LEARN_MORE_BULLET_3_V2_CLANK" desc="" translateable="false" formatter_data="android_java">
+        Chrome deletes any activity data that you've shared with sites after 30 days. If you visit a site again it may reappear on the list. Learn more about <ph name="BEGIN_LINK">&lt;link&gt;</ph>managing your ad privacy in Chrome<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
       <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_LEARN_MORE_BULLET_3_V2_LINK_ARIA_DESCRIPTION" desc="" translateable="false">
         Learn more about managing your ad privacy
+      </message>
+      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_FOOTER_V2" desc="This footer explains how other privacy settings work with the site-suggested ads page" formatter_data="android_java" translateable="false">
+        Whether an ad you see is personalized can depend on many things including this setting, <ph name="BEGIN_LINK_1">&lt;link1&gt;</ph>ad topics<ph name="END_LINK_1">&lt;/link1&gt;</ph>, your <ph name="BEGIN_LINK_2">&lt;link2&gt;</ph>cookie settings<ph name="END_LINK_2">&lt;/link2&gt;</ph>, and if the site you're viewing personalizes ads.
+      </message>
+      <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER_CLANK" desc="" translateable="false" formatter_data="android_java">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. Learn more about how Google protects your data in our <ph name="BEGIN_LINK">&lt;link&gt;</ph>Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
       <message name="IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER" desc="" translateable="false">
         Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. Learn more about how Google protects your data in our <ph name="BEGIN_LINK1">&lt;a href="$1" aria-description="$2" on-click="$3" target="_blank"&gt;</ph>Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>.
