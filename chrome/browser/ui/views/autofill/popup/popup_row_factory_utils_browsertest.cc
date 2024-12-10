@@ -53,7 +53,7 @@ Suggestion CreateSuggestionWithChildren(const std::u16string& main_text,
   return suggestion;
 }
 
-Suggestion CreatePredictionImprovementsFeedback() {
+Suggestion CreateAutofillAiFeedback() {
   Suggestion suggestion(SuggestionType::kAutofillAiFeedback);
   suggestion.icon = Suggestion::Icon::kAutofillAi;
   suggestion.highlight_on_select = false;
@@ -85,7 +85,7 @@ const Suggestion kSuggestions[] = {
                "label",
                Suggestion::Icon::kGlobe,
                SuggestionType::kSeePromoCodeDetails),
-    CreatePredictionImprovementsFeedback(),
+    CreateAutofillAiFeedback(),
     Suggestion("Autofill_with_AI",
                "",
                Suggestion::Icon::kAutofillAi,

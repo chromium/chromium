@@ -1994,7 +1994,7 @@ TEST_F(PopupViewViewsTest, SearchBar_PressedKeysPassedToController) {
   generator().PressAndReleaseKey(ui::VKEY_DOWN);
 }
 
-TEST_F(PopupViewViewsTest, PredictionImprovementsLoadingOnShowA11yFocus) {
+TEST_F(PopupViewViewsTest, AutofillAiLoadingOnShowA11yFocus) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   CreateAndShowView({SuggestionType::kAutofillAiLoadingState});
 
@@ -2007,8 +2007,7 @@ TEST_F(PopupViewViewsTest, PredictionImprovementsLoadingOnShowA11yFocus) {
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kFocus, *row_view));
 }
 
-TEST_F(PopupViewViewsTest,
-       PredictionImprovementsLoadingOnSuggestionsChangedA11yFocus) {
+TEST_F(PopupViewViewsTest, AutofillAiLoadingOnSuggestionsChangedA11yFocus) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   CreateAndShowView({SuggestionType::kFillAutofillAi});
   UpdateSuggestions({SuggestionType::kAutofillAiLoadingState});
@@ -2022,7 +2021,7 @@ TEST_F(PopupViewViewsTest,
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kFocus, *row_view));
 }
 
-TEST_F(PopupViewViewsTest, PredictionImprovementsSuggestionsLoadedAnnounced) {
+TEST_F(PopupViewViewsTest, AutofillAiSuggestionsLoadedAnnounced) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   CreateAndShowView({SuggestionType::kAutofillAiLoadingState});
   MockFunction<PopupViewViewsTestApi::A11yAnnouncer::RunType> a11y_announcer;

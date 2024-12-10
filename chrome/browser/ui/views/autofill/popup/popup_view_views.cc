@@ -691,11 +691,11 @@ void PopupViewViews::OnSuggestionsChanged(bool prefer_prev_arrow_side) {
     return;
   }
 
-  // TODO(crbug.com/374715256): Prediction improvements suggestions are
-  // generated asynchronously, after showing the "loading" popup. Testing on
-  // the `kPredictionImprovementsFeedback` suggestion is a way to understand
-  // that the suggestions are generated successfully and announce it. This
-  // approach should be reconsidered in favor of something more reliable.
+  // TODO(crbug.com/374715256): Autofill Ai suggestions are generated
+  // asynchronously, after showing the "loading" popup. Testing for the
+  // `kAutofillAiFeedback` suggestion is a way to understand that the
+  // suggestions are generated successfully and announce it. This approach
+  // should be reconsidered in favor of something more reliable.
   CHECK(controller(), base::NotFatalUntil::M134);
   if (controller() &&
       base::Contains(controller()->GetSuggestions(),
@@ -1056,18 +1056,16 @@ void PopupViewViews::CreateSuggestionViews() {
           // Set element identifiers for tests.
           if (suggestions[current_line_number].type ==
               SuggestionType::kRetrieveAutofillAi) {
-            row_view->SetProperty(
-                views::kElementIdentifierKey,
-                kAutofillPredictionImprovementsTriggerElementId);
+            row_view->SetProperty(views::kElementIdentifierKey,
+                                  kAutofillAiTriggerElementId);
           } else if (suggestions[current_line_number].type ==
                      SuggestionType::kFillAutofillAi) {
             row_view->SetProperty(views::kElementIdentifierKey,
-                                  kAutofillPredictionImprovementsFillElementId);
+                                  kAutofillAiFillElementId);
           } else if (suggestions[current_line_number].type ==
                      SuggestionType::kAutofillAiError) {
-            row_view->SetProperty(
-                views::kElementIdentifierKey,
-                kAutofillPredictionImprovementsErrorElementId);
+            row_view->SetProperty(views::kElementIdentifierKey,
+                                  kAutofillAiErrorElementId);
           }
 
           const base::Feature* const feature =

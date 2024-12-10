@@ -653,12 +653,11 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillAiBrowserTest,
                   ManuallyFillAndSubmitForm(), WaitForSaveBubbleAndAccept());
   base::RunLoop().RunUntilIdle();
   VerifyDataImportedIntoUserAnnotations();
-  RunTestSequence(
-      NavigateToAboutBlank(), NavigateToFormPage(), ClickOnNameField(),
-      WaitForAndAcceptSuggestion(
-          kAutofillPredictionImprovementsTriggerElementId),
-      WaitForAndAcceptSuggestion(kAutofillPredictionImprovementsFillElementId),
-      WaitForFieldsToBeFilledAutomatically());
+  RunTestSequence(NavigateToAboutBlank(), NavigateToFormPage(),
+                  ClickOnNameField(),
+                  WaitForAndAcceptSuggestion(kAutofillAiTriggerElementId),
+                  WaitForAndAcceptSuggestion(kAutofillAiFillElementId),
+                  WaitForFieldsToBeFilledAutomatically());
 }
 
 // Tests that the error suggestion is shown if filling suggestions cannot be
@@ -672,10 +671,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillAiBrowserTest,
   VerifyDataImportedIntoUserAnnotations();
   RunTestSequence(NavigateToAboutBlank(), NavigateToFormPage(),
                   ClickOnNameField(),
-                  WaitForAndAcceptSuggestion(
-                      kAutofillPredictionImprovementsTriggerElementId,
-                      ResponseType::kServerError),
-                  WaitForShow(kAutofillPredictionImprovementsErrorElementId));
+                  WaitForAndAcceptSuggestion(kAutofillAiTriggerElementId,
+                                             ResponseType::kServerError),
+                  WaitForShow(kAutofillAiErrorElementId));
 }
 
 }  // namespace
