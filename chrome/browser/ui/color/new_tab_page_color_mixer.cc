@@ -152,10 +152,6 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
   // to the GM3 color mixer. When removing a color ID, remove it from the
   // GM3 mixer if it already exists there.
   // LINT.IfChange
-  mixer[kColorNewTabPageActionButtonBackground] =
-      select_topmost_element_background_color;
-  mixer[kColorNewTabPageActionButtonForeground] =
-      select_topmost_element_foreground_color;
   mixer[kColorNewTabPageBorder] = SelectBasedOnWhiteNtpBackground(
       gfx::kGoogleGrey300, element_background_color);
   mixer[kColorNewTabPageChipBackground] = element_background_color;
@@ -285,15 +281,7 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   const bool dark_mode =
       key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
 
-  // Non-native surfaces in GM3 rely on a prominent color that may or may not
-  // match the accent color.
-  const SkColor prominent_color =
-      dark_mode ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600;
-
   ui::ColorMixer& mixer = provider->AddMixer();
-  mixer[kColorNewTabPageActionButtonBackground] = {prominent_color};
-  mixer[kColorNewTabPageActionButtonForeground] =
-      ui::GetColorWithMaxContrast(kColorNewTabPageActionButtonBackground);
   mixer[kColorNewTabPageBackground] = {kColorToolbar};
   mixer[kColorNewTabPageHeader] = {SkColorSetRGB(0x96, 0x96, 0x96)};
   mixer[kColorNewTabPageLogoUnthemedDark] = {gfx::kGoogleGrey700};
