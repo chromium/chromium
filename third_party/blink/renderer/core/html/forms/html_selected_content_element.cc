@@ -37,18 +37,20 @@ void HTMLSelectedContentElement::CloneContentsFromOptionElement(
 
 Node::InsertionNotificationRequest HTMLSelectedContentElement::InsertedInto(
     ContainerNode& insertion_point) {
+  HTMLElement::InsertedInto(insertion_point);
+  return Node::InsertionNotificationRequest::
+      kInsertionShouldCallDidNotifySubtreeInsertions;
+}
+
+void HTMLSelectedContentElement::DidNotifySubtreeInsertionsToDocument() {
   // Call SelectedContentElementInserted on the first ancestor <select> if we
   // just got inserted into a <select> and there are no other <select>s in
   // between.
   // TODO(crbug.com/40236878): Use a flat tree traversal here.
   disabled_ = false;
-  bool passed_insertion_point = false;
   HTMLSelectElement* first_ancestor_select = nullptr;
   for (auto* ancestor = parentNode(); ancestor;
        ancestor = ancestor->parentNode()) {
-    if (ancestor == insertion_point) {
-      passed_insertion_point = true;
-    }
     if (IsA<HTMLOptionElement>(ancestor) ||
         IsA<HTMLSelectedContentElement>(ancestor)) {
       // Putting a <selectedcontent> inside an <option> or another
@@ -62,12 +64,9 @@ Node::InsertionNotificationRequest HTMLSelectedContentElement::InsertedInto(
         disabled_ = true;
       }
       first_ancestor_select = select;
-      if (passed_insertion_point) {
-        select->SelectedContentElementInserted(this);
-      }
+      select->SelectedContentElementInserted(this);
     }
   }
-  return HTMLElement::InsertedInto(insertion_point);
 }
 
 void HTMLSelectedContentElement::RemovedFrom(ContainerNode& container) {

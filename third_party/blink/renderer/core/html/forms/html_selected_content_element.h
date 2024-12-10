@@ -20,6 +20,7 @@ class HTMLSelectedContentElement : public HTMLElement {
   void CloneContentsFromOptionElement(const HTMLOptionElement* option);
 
   Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
+  void DidNotifySubtreeInsertionsToDocument() override;
   void RemovedFrom(ContainerNode&) override;
 
  private:
