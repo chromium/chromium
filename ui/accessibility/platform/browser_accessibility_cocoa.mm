@@ -593,7 +593,7 @@ bool ui::IsNSRange(id value) {
 
 // Returns an array of BrowserAccessibilityCocoa objects, representing the
 // accessibility children of this object.
-- (NSArray*)AXChildren {
+- (NSArray*)accessibilityChildren {
   if (![self instanceActive])
     return nil;
   if (_needsToUpdateChildren) {

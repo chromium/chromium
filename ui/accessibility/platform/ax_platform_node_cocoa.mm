@@ -1199,7 +1199,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     return nil;
   }
 
-  for (id child in [[self AXChildren] reverseObjectEnumerator]) {
+  for (id child in [[self accessibilityChildren] reverseObjectEnumerator]) {
     if (!NSPointInRect(point, [child accessibilityFrame]))
       continue;
     if (id foundChild = [child accessibilityHitTest:point])
@@ -2077,7 +2077,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return NSAccessibilityUnignoredAncestor(_node->GetParent());
 }
 
-- (NSArray*)AXChildren {
+- (NSArray*)accessibilityChildren {
   if (!_node)
     return @[];
 
@@ -2579,8 +2579,8 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 // NSAccessibility: Determining Relationships.
-- (NSArray*)accessibilityChildren {
-  return [self AXChildren];
+- (NSArray*)AXChildren {
+  return [self accessibilityChildren];
 }
 
 - (id)accessibilityParent {
@@ -3341,7 +3341,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
       _node->GetRole() != ax::mojom::Role::kMathMLFraction) {
     return nil;
   }
-  NSArray* children = [self AXChildren];
+  NSArray* children = [self accessibilityChildren];
   if ([children count] >= 1)
     return children[0];
   return nil;
@@ -3352,7 +3352,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
       _node->GetRole() != ax::mojom::Role::kMathMLFraction) {
     return nil;
   }
-  NSArray* children = [self AXChildren];
+  NSArray* children = [self accessibilityChildren];
   if ([children count] >= 2)
     return children[1];
   return nil;
@@ -3364,7 +3364,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
         _node->GetRole() == ax::mojom::Role::kMathMLSquareRoot)) {
     return nil;
   }
-  NSArray* children = [self AXChildren];
+  NSArray* children = [self accessibilityChildren];
   if (_node->GetRole() == ax::mojom::Role::kMathMLRoot) {
     if ([children count] >= 1)
       return [NSArray arrayWithObjects:children[0], nil];
@@ -3378,7 +3378,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
       _node->GetRole() != ax::mojom::Role::kMathMLRoot) {
     return nil;
   }
-  NSArray* children = [self AXChildren];
+  NSArray* children = [self accessibilityChildren];
   if ([children count] >= 2)
     return children[1];
   return nil;
@@ -3395,7 +3395,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
         _node->GetRole() == ax::mojom::Role::kMathMLMultiscripts)) {
     return nil;
   }
-  NSArray* children = [self AXChildren];
+  NSArray* children = [self accessibilityChildren];
   if ([children count] >= 1)
     return children[0];
   return nil;
@@ -3407,7 +3407,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
         _node->GetRole() == ax::mojom::Role::kMathMLUnderOver)) {
     return nil;
   }
-  NSArray* children = [self AXChildren];
+  NSArray* children = [self accessibilityChildren];
   if ([children count] >= 2)
     return children[1];
   return nil;
@@ -3419,7 +3419,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
         _node->GetRole() == ax::mojom::Role::kMathMLUnderOver)) {
     return nil;
   }
-  NSArray* children = [self AXChildren];
+  NSArray* children = [self accessibilityChildren];
   if (_node->GetRole() == ax::mojom::Role::kMathMLOver &&
       [children count] >= 2) {
     return children[1];
@@ -3437,7 +3437,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
         _node->GetRole() == ax::mojom::Role::kMathMLSubSup)) {
     return nil;
   }
-  NSArray* children = [self AXChildren];
+  NSArray* children = [self accessibilityChildren];
   if ([children count] >= 2)
     return children[1];
   return nil;
@@ -3449,7 +3449,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
         _node->GetRole() == ax::mojom::Role::kMathMLSubSup)) {
     return nil;
   }
-  NSArray* children = [self AXChildren];
+  NSArray* children = [self accessibilityChildren];
   if (_node->GetRole() == ax::mojom::Role::kMathMLSup &&
       [children count] >= 2) {
     return children[1];
@@ -3484,7 +3484,7 @@ NSDictionary* CreateMathSubSupScriptsPair(AXPlatformNodeCocoa* subscript,
   NSMutableArray* ret = [NSMutableArray array];
   bool foundBaseElement = false;
   AXPlatformNodeCocoa* subscript = nullptr;
-  for (AXPlatformNodeCocoa* child in [self AXChildren]) {
+  for (AXPlatformNodeCocoa* child in [self accessibilityChildren]) {
     if ([child internalRole] == ax::mojom::Role::kMathMLPrescriptDelimiter)
       break;
     if (!foundBaseElement) {
@@ -3509,7 +3509,7 @@ NSDictionary* CreateMathSubSupScriptsPair(AXPlatformNodeCocoa* subscript,
   NSMutableArray* ret = [NSMutableArray array];
   bool foundPrescriptDelimiter = false;
   AXPlatformNodeCocoa* subscript = nullptr;
-  for (AXPlatformNodeCocoa* child in [self AXChildren]) {
+  for (AXPlatformNodeCocoa* child in [self accessibilityChildren]) {
     if (!foundPrescriptDelimiter) {
       foundPrescriptDelimiter =
           ([child internalRole] == ax::mojom::Role::kMathMLPrescriptDelimiter);
