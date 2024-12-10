@@ -2,7 +2,7 @@ Name: wycheproof
 URL: https://crates.io/crates/wycheproof
 Version: 0.4.0
 Revision: be067ecfc83ab2630c16081a1aa454a0135c86f5
-License: Apache 2.0
+License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/wycheproof-0.4.0/LICENSE
 Shipped: no
 Security Critical: no
