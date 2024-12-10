@@ -5068,6 +5068,30 @@
             ]
         }
     ],
+    "ChromnientLatencyOptimizations": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "AllOptimizationsEnabled",
+                    "params": {
+                        "enable-cluster-info-optimization": "true",
+                        "enable-early-interaction-optimization": "true",
+                        "enable-early-start-query-flow-optimization": "true"
+                    },
+                    "enable_features": [
+                        "LensOverlayLatencyOptimizations"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromnientMoreTranslateLanguages": [
         {
             "platforms": [
