@@ -27,10 +27,22 @@ void CollaborationMessagingTabData::SetMessage(PersistentMessage message) {
         message.collaboration_event == CollaborationEvent::TAB_UPDATED);
 
   message_ = message;
+  NotifyMessageChanged();
 }
 
 void CollaborationMessagingTabData::ClearMessage(PersistentMessage message) {
   message_ = std::nullopt;
+  NotifyMessageChanged();
+}
+
+base::CallbackListSubscription
+CollaborationMessagingTabData::RegisterMessageChangedCallback(
+    CallbackList::CallbackType cb) {
+  return message_changed_callback_list_.Add(std::move(cb));
+}
+
+void CollaborationMessagingTabData::NotifyMessageChanged() {
+  message_changed_callback_list_.Notify();
 }
 
 }  // namespace tab_groups

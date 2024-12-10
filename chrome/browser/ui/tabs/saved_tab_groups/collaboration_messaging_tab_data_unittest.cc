@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 
+#include "base/test/mock_callback.h"
 #include "components/collaboration/public/messaging/message.h"
 #include "components/data_sharing/public/group_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,6 +72,26 @@ TEST_F(CollaborationMessagingTabDataTest, CanSetAndClearData) {
   EXPECT_EQ(tab_data().collaboration_event(), CollaborationEvent::TAB_UPDATED);
 
   tab_data().ClearMessage(message2);
+  EXPECT_FALSE(tab_data().HasMessage());
+}
+
+TEST_F(CollaborationMessagingTabDataTest, NotifiesListeners) {
+  EXPECT_FALSE(tab_data().HasMessage());
+
+  auto message = CreateMessage("User", "URL", CollaborationEvent::TAB_ADDED);
+
+  base::MockCallback<CollaborationMessagingTabData::CallbackList::CallbackType>
+      cb;
+  auto subscription = tab_data().RegisterMessageChangedCallback(cb.Get());
+
+  // Callback is called when message is set.
+  EXPECT_CALL(cb, Run);
+  tab_data().SetMessage(message);
+  EXPECT_TRUE(tab_data().HasMessage());
+
+  // Callback is called again when message is cleared.
+  EXPECT_CALL(cb, Run);
+  tab_data().ClearMessage(message);
   EXPECT_FALSE(tab_data().HasMessage());
 }
 
