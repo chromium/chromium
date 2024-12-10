@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
+
 #include <memory>
 #include <utility>
 
@@ -9,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -26,7 +29,6 @@
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
@@ -89,6 +91,13 @@ class IntentChipButtonBrowserTest
         browser()->tab_strip_model()->GetActiveWebContents());
     tab_helper->SetIconUpdateCallbackForTesting(
         intent_picker_done.GetCallback());
+    // On Mac, updating the icon requires asynchronous work that is done on the
+    // threadpool (see `WebAppsIntentPickerDelegate::FindAllAppsForUrl()` for
+    // more information). Flushing the thread pool thus helps prevent flakiness
+    // in tests.
+#if BUILDFLAG(IS_MAC)
+    base::ThreadPoolInstance::Get()->FlushForTesting();
+#endif  // BUILDFLAG(IS_MAC)
     action();
     if (HasFailure()) {
       return testing::AssertionFailure();
@@ -199,33 +208,6 @@ IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), out_of_scope_url));
 
   EXPECT_FALSE(GetIntentChip()->GetVisible());
-}
-
-// TODO(crbug.com/41488032): This test is flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_IconVisibilityAfterTabSwitching \
-  DISABLED_IconVisibilityAfterTabSwitching
-#else
-#define MAYBE_IconVisibilityAfterTabSwitching IconVisibilityAfterTabSwitching
-#endif
-IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest,
-                       MAYBE_IconVisibilityAfterTabSwitching) {
-  const GURL in_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
-  const GURL out_of_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetOutOfScopeUrlPath());
-
-  OmniboxChipButton* intent_chip_button = GetIntentChip();
-
-  OpenNewTab(in_scope_url);
-  EXPECT_TRUE(intent_chip_button->GetVisible());
-  OpenNewTab(out_of_scope_url);
-  EXPECT_FALSE(intent_chip_button->GetVisible());
-
-  chrome::SelectPreviousTab(browser());
-  EXPECT_TRUE(intent_chip_button->GetVisible());
-  chrome::SelectNextTab(browser());
-  EXPECT_FALSE(intent_chip_button->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest,
