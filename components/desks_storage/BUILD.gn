@@ -4,6 +4,8 @@
 
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
+assert(is_chromeos)
+
 static_library("desks_storage") {
   output_name = "desks_storage_lib"
 
