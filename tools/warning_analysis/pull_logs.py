@@ -56,8 +56,8 @@ def parse_args(args):
     # than to use the cli arguments, especially if you want a custom filter.
     default_config = {
         "log_dir": None,
-        "cl": 0,
-        "patchset": 0,
+        "cl": 5648382,
+        "patchset": 15,
         "step_names": [
             "compile (with patch)", "compile", "compile (without patch)"
         ],
@@ -97,7 +97,7 @@ def parse_args(args):
         "-f",
         "--filter",
         action="store_true",
-        help="If true, strip unintesting build lines (those which begin "
+        help="If true, strip uninteresting build lines (those which begin "
         "with '[').")
     parser.add_argument(
         "-v",
@@ -152,23 +152,36 @@ def identify_builds(cl_id, patchset):
               "c/chromium/src/+/{}/{}".format(cl_id, patchset))
 
     # Make sure we're only getting the most recent set of builds by grabbing the
-    # cq_attempt_key tag from the first build returned.
+    # cq_attempt_key tag from the first build returned. If the tag isn't present
+    # it means that build was triggered manually, so keep trying until we find
+    # one that has the tag.
     # This strategy relies on the fact that that builds are returned in reverse
     # chronological order.
-    most_recent_build = subprocess.run([bb, "ls", "-cl", cl_str, "-1", "-json"],
-                                       check=True,
-                                       stdout=subprocess.PIPE,
-                                       text=True)
+    num_builds_to_check = 10
+    most_recent_builds = subprocess.run(
+        [bb, "ls", "-cl", cl_str, "-" + str(num_builds_to_check), "-json"],
+        check=True,
+        stdout=subprocess.PIPE,
+        text=True)
 
-    if (len(most_recent_build.stdout) == 0):
+    if (len(most_recent_builds.stdout) == 0):
         raise RuntimeError("Couldn't find any builds. Did you use a valid "
                            "cl_id AND patchset number?")
 
-    output = json.loads(most_recent_build.stdout)
-    for tag in output["tags"]:
-        if tag["key"] == "cq_attempt_key":
-            cq_attempt_key = tag["value"]
-            break
+    output = [
+        json.loads(build) for build in most_recent_builds.stdout.splitlines()
+    ]
+    cq_attempt_key = None
+    for i in range(0, num_builds_to_check - 1):
+        for tag in output[i]["tags"]:
+            if tag["key"] == "cq_attempt_key":
+                cq_attempt_key = tag["value"]
+                break
+    if not cq_attempt_key:
+        raise RuntimeError(
+            "None of the {} most recent builds were associated with a CQ run. "
+            "Did you launch a bunch of manual builds after hitting the button?".
+            format(num_builds_to_check))
 
     # Grab the info for all builds in the most recent set
     build_list = subprocess.run([
