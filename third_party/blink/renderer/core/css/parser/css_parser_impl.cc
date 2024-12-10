@@ -1265,10 +1265,12 @@ StyleRuleNestedDeclarations* CSSParserImpl::CreateNestedDeclarationsRule(
       break;
   }
 
-  return MakeGarbageCollected<StyleRuleNestedDeclarations>(StyleRule::Create(
-      base::span<CSSSelector>{selectors.begin(), selectors.size()},
-      CreateCSSPropertyValueSet(declarations, context_->Mode(),
-                                context_->GetDocument())));
+  return MakeGarbageCollected<StyleRuleNestedDeclarations>(
+      nesting_type,
+      StyleRule::Create(
+          base::span<CSSSelector>{selectors.begin(), selectors.size()},
+          CreateCSSPropertyValueSet(declarations, context_->Mode(),
+                                    context_->GetDocument())));
 }
 
 void CSSParserImpl::EmitNestedDeclarationsRuleIfNeeded(

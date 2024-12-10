@@ -594,7 +594,6 @@ StyleRuleBase* StyleRuleBase::Renest(StyleRule* new_parent) {
         return this;
       }
       CHECK(new_style_scope);
-      // TODO(crbug.com/363019839): Don't re-nest nested declaration rules.
       HeapVector<Member<StyleRuleBase>> new_child_rules;
       RenestRules(To<StyleRuleScope>(this)->ChildRules(),
                   new_style_scope->RuleForNesting(), new_child_rules);
@@ -628,13 +627,26 @@ StyleRuleBase* StyleRuleBase::Renest(StyleRule* new_parent) {
       // they are always replaced during application anyway.
       return this;
     case kNestedDeclarations: {
-      StyleRule* old_inner_rule =
-          To<StyleRuleNestedDeclarations>(this)->InnerStyleRule();
+      auto* nested_declarations_rule = To<StyleRuleNestedDeclarations>(this);
+      // Nested declaration rules are different from regular nested style rules,
+      // since they don't refer to their parent rule with any '&' selector.
+      // Instead the outer selector list is *copied* parse-time. Now that we're
+      // being re-nested, we need to create a new StyleRuleNestedDeclarations
+      // rule, again with a copy of the new parent rule's selector list.
+      //
+      // The copying behavior does not apply to nested declaration rules held
+      // by @scope rules, however, since they always just behave like
+      // :where(:scope).
+      if (nested_declarations_rule->NestingType() == CSSNestingType::kScope) {
+        return this;
+      }
+      StyleRule* old_inner_rule = nested_declarations_rule->InnerStyleRule();
       HeapVector<CSSSelector> selectors =
           CSSSelectorList::Copy(new_parent->FirstSelector());
       auto* new_inner_rule = StyleRule::Create(
           selectors, old_inner_rule->Properties().ImmutableCopyIfNeeded());
-      return MakeGarbageCollected<StyleRuleNestedDeclarations>(new_inner_rule);
+      return MakeGarbageCollected<StyleRuleNestedDeclarations>(
+          nested_declarations_rule->NestingType(), new_inner_rule);
     }
     case kPageMargin:
     case kProperty:
