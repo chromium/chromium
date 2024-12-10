@@ -45,10 +45,8 @@ void MigrateCertsOnBackgroundThread(
   result.cert_count = certs_to_migrate.size();
   for (net::PlatformTrustStore::CertWithTrust& cert_to_migrate :
        certs_to_migrate) {
-    net::ServerCertificateDatabase::CertInformation cert_info;
-    cert_info.sha256hash_hex =
-        base::HexEncode(crypto::SHA256Hash(cert_to_migrate.cert_bytes));
-    cert_info.der_cert = std::move(cert_to_migrate.cert_bytes);
+    net::ServerCertificateDatabase::CertInformation cert_info(
+        cert_to_migrate.cert_bytes);
     cert_info.cert_metadata.mutable_trust()->set_trust_type(
         MapTrust(cert_to_migrate.trust));
 

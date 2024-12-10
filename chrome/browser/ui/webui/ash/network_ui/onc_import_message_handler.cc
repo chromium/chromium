@@ -222,11 +222,8 @@ void OncImportMessageHandler::ImportServerCertificates(
   for (const auto& cert : certs->server_or_authority_certificates()) {
     scoped_refptr<net::X509Certificate> cert_to_import = cert.certificate();
 
-    net::ServerCertificateDatabase::CertInformation cert_info;
-    cert_info.sha256hash_hex = base::ToLowerASCII(
-        base::HexEncode(net::X509Certificate::CalculateFingerprint256(
-                            cert_to_import->cert_buffer())
-                            .data));
+    net::ServerCertificateDatabase::CertInformation cert_info(
+        cert_to_import->cert_span());
 
     bool found = false;
     for (const auto& current_cert : current_certs) {
@@ -244,7 +241,6 @@ void OncImportMessageHandler::ImportServerCertificates(
                     CERTIFICATE_TRUST_TYPE_TRUSTED
               : chrome_browser_server_certificate_database::CertificateTrust::
                     CERTIFICATE_TRUST_TYPE_UNSPECIFIED);
-      cert_info.der_cert = base::ToVector(cert_to_import->cert_span());
 
       cert_infos.push_back(std::move(cert_info));
     }

@@ -350,13 +350,9 @@ void UserCertSource::FileRead(std::optional<std::vector<uint8_t>> file_bytes) {
       net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
           profile_);
 
-  net::ServerCertificateDatabase::CertInformation cert_info;
-  cert_info.sha256hash_hex = base::ToLowerASCII(
-      base::HexEncode(net::X509Certificate::CalculateFingerprint256(
-                          cert_to_import->cert_buffer())
-                          .data));
+  net::ServerCertificateDatabase::CertInformation cert_info(
+      cert_to_import->cert_span());
   cert_info.cert_metadata.mutable_trust()->set_trust_type(trust_);
-  cert_info.der_cert = base::ToVector(cert_to_import->cert_span());
 
   std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
   cert_infos.push_back(std::move(cert_info));

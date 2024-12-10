@@ -73,11 +73,8 @@ class UserCertSourcesUnitTest : public ChromeRenderViewHostTestHarness {
     net::ServerCertificateDatabaseService* server_cert_service =
         net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
             profile());
-    net::ServerCertificateDatabase::CertInformation cert_info;
-    cert_info.sha256hash_hex = base::ToLowerASCII(base::HexEncode(
-        net::X509Certificate::CalculateFingerprint256(cert->cert_buffer())
-            .data));
-    cert_info.der_cert = base::ToVector(cert->cert_span());
+    net::ServerCertificateDatabase::CertInformation cert_info(
+        cert->cert_span());
     cert_info.cert_metadata.mutable_trust()->set_trust_type(
         chrome_browser_server_certificate_database::
             CertificateTrust_CertificateTrustType_CERTIFICATE_TRUST_TYPE_TRUSTED);
