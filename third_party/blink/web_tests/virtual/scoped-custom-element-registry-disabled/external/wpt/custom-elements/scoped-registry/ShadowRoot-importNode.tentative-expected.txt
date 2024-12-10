@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+[FAIL] ShadowRoot.importNode: an upgrade candidate from document
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] ShadowRoot.importNode: a custom element from another shadow tree
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] ShadowRoot.importNode: a template content from document
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+Harness: the test ran to completion.

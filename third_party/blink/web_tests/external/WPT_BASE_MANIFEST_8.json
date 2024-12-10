@@ -366261,8 +366261,16 @@
      ]
     },
     "scoped-registry": {
+     "ShadowRoot-importNode.tentative-expected.txt": [
+      "0c06fe382c42d836617f3ae57f3cbab701bd99dd",
+      []
+     ],
      "ShadowRoot-innerHTML-upgrade.tentative-expected.txt": [
       "19e9f1ae0c3128b7c4d417fa3e123bf4d28e2050",
+      []
+     ],
+     "ShadowRoot-innerHTML.tentative-expected.txt": [
+      "4d238c23f8cc78445abc3568519c3c89b75c659a",
       []
      ]
     },
@@ -484163,6 +484171,13 @@
        {}
       ]
      ],
+     "set-selector-text.html": [
+      "fe216a9edbc53ccfa9b695af17ea36339f550bf6",
+      [
+       null,
+       {}
+      ]
+     ],
      "top-level-is-scope.html": [
       "fefc77d5d045381f0def0ce9b6a335a5e38d1165",
       [
@@ -508693,6 +508708,13 @@
        {}
       ]
      ],
+     "ShadowRoot-importNode.tentative.html": [
+      "dc5ef24bd8009ecc27ac8b592a44497a91b9a68f",
+      [
+       null,
+       {}
+      ]
+     ],
      "ShadowRoot-init-registry.tentative.html": [
       "f9bc5b5b5686a0f5cb43ea653f623ba164c5cabb",
       [
@@ -508702,6 +508724,13 @@
      ],
      "ShadowRoot-innerHTML-upgrade.tentative.html": [
       "11cecb1533b53839570387ff5d0c5e9e9df69f56",
+      [
+       null,
+       {}
+      ]
+     ],
+     "ShadowRoot-innerHTML.tentative.html": [
+      "bee3f18a96d2e3694e5d859e1ca1dc2da5047d4e",
       [
        null,
        {}
@@ -733230,7 +733259,7 @@
       ]
      ],
      "gemm.https.any.js": [
-      "7f8181dd5dd9fed9d1920cf3a6e34bfea051c298",
+      "86912305f9a5e8a7f246a2410904900534df2f44",
       [
        "webnn/conformance_tests/gemm.https.any.html?cpu",
        {
@@ -738048,7 +738077,7 @@
       ]
      ],
      "matmul.https.any.js": [
-      "8a16c567c8afb9143a7226729223ff14a7f1587d",
+      "8d0ff1517bac15466b4630871a464b21e0c18d42",
       [
        "webnn/conformance_tests/matmul.https.any.html?cpu",
        {

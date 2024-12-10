@@ -6451,6 +6451,7 @@ crbug.com/1385881 [ Mac12 ] external/wpt/fetch/metadata/generated/audioworklet.h
 crbug.com/1385881 [ Mac13 ] external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
 crbug.com/1385881 [ Mac13-arm64 ] external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
 crbug.com/1385881 [ Mac14 ] external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
+crbug.com/1385881 [ Mac14-arm64 ] external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
 crbug.com/1385881 [ Mac15 ] external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
 crbug.com/1385881 [ Mac15-arm64 ] external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
 crbug.com/1385881 [ Win ] external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
