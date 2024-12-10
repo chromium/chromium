@@ -941,11 +941,8 @@ const gfx::RoundedCornersF OverviewItem::GetRoundedCorners() const {
   }
 
   const aura::Window* window = transform_window_.window();
-
-  const auto header_rounded_corners = overview_item_view_->header_view()
-                                          ->GetBackground()
-                                          ->GetRoundedCornerRadii()
-                                          .value_or(gfx::RoundedCornersF());
+  const auto header_rounded_corners =
+      overview_item_view_->header_view()->layer()->rounded_corner_radii();
   const auto* layer = window->layer();
   const gfx::RoundedCornersF& transform_window_rounded_corners =
       layer->rounded_corner_radii();
@@ -1130,6 +1127,7 @@ void OverviewItem::CreateItemWidget(
   views::Widget::InitParams params = CreateOverviewItemWidgetParams(
       GetWindow()->parent(), "OverviewItemWidget",
       /*accept_events=*/true);
+
   // The key is not needed for all `OverviewItemBase` objects, such as the drop
   // target.
   params.init_properties_container.SetProperty(kIsOverviewItemKey, true);

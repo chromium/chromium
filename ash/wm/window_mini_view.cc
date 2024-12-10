@@ -133,7 +133,7 @@ void WindowMiniView::SetBackdropVisibility(bool visible) {
   if (!backdrop_view_) {
     // Always put the backdrop view under other children.
     backdrop_view_ = AddChildViewAt(std::make_unique<views::View>(), 0);
-    backdrop_view_->SetPaintToLayer();
+    backdrop_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     backdrop_view_->SetBackground(
         views::CreateThemedSolidBackground(cros_tokens::kCrosSysScrim));
 
@@ -246,8 +246,7 @@ gfx::RoundedCornersF WindowMiniView::GetRoundedCorners() const {
   }
 
   const gfx::RoundedCornersF header_rounded_corners =
-      header_view_->background()->GetRoundedCornerRadii().value_or(
-          gfx::RoundedCornersF());
+      header_view_->layer()->rounded_corner_radii();
   const gfx::RoundedCornersF preview_rounded_corners =
       preview_view_->layer()->rounded_corner_radii();
   return gfx::RoundedCornersF(header_rounded_corners.upper_left(),

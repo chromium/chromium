@@ -16,9 +16,9 @@ class Window;
 }  // namespace aura
 
 namespace views {
+class FlexLayoutView;
 class ImageView;
 class Label;
-class View;
 }  // namespace views
 
 namespace ash {
@@ -32,13 +32,22 @@ class ASH_EXPORT WindowMiniViewHeaderView : public views::BoxLayoutView {
   METADATA_HEADER(WindowMiniViewHeaderView, views::BoxLayoutView)
 
  public:
+  // Flex layout priorities for the `icon_label_view()`. The enums are listed
+  // in highest to lowest priority (high priority has the least flexibility to
+  // grow/shrink is more likely to get its preferred size).
+  enum IconLabelFlexPriorities {
+    kIconOrCloseButton = 1,
+    kTitleLabel,
+    kLeftoverSpace
+  };
+
   explicit WindowMiniViewHeaderView(WindowMiniView* window_mini_view);
   WindowMiniViewHeaderView(const WindowMiniViewHeaderView&) = delete;
   WindowMiniViewHeaderView& operator=(const WindowMiniViewHeaderView&) = delete;
   ~WindowMiniViewHeaderView() override;
 
   views::Label* title_label() { return title_label_; }
-  views::View* icon_label_view() { return icon_label_view_; }
+  views::FlexLayoutView* icon_label_view() { return icon_label_view_; }
 
   void UpdateIconView(aura::Window* window);
   void UpdateTitleLabel(aura::Window* window);
@@ -58,17 +67,23 @@ class ASH_EXPORT WindowMiniViewHeaderView : public views::BoxLayoutView {
   void ResetRoundedCorners();
 
  private:
+  // views::View:
+  void OnThemeChanged() override;
+
   // The parent view of `this`, which is guaranteed not null during the lifetime
   // of `this`.
   raw_ptr<WindowMiniView> window_mini_view_;
 
   // A view that wraps up the icon and title label. Owned by the views
   // hierarchy.
-  raw_ptr<views::BoxLayoutView> icon_label_view_;
+  raw_ptr<views::FlexLayoutView> icon_label_view_;
 
   // Views for the icon and title. Owned by the views hierarchy.
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::ImageView> icon_view_ = nullptr;
+
+  // Separator between the header and the overview window.
+  raw_ptr<views::View> separator_ = nullptr;
 
   // The current rounded corner parameters for this view's background. May be
   // `nullopt` if a background is not set yet.

@@ -12,6 +12,8 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -20,6 +22,10 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/view_class_properties.h"
+#include "ui/views/view_observer.h"
 
 namespace ash {
 
@@ -55,10 +61,17 @@ WindowMiniViewHeaderView::WindowMiniViewHeaderView(
     : window_mini_view_(window_mini_view) {
   SetOrientation(views::BoxLayout::Orientation::kVertical);
 
-  icon_label_view_ = AddChildView(std::make_unique<views::BoxLayoutView>());
-  icon_label_view_->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-  icon_label_view_->SetInsideBorderInsets(kHeaderInsets);
-  icon_label_view_->SetBetweenChildSpacing(kHeaderPaddingDp);
+  // This is to apply the rounded corners to child layers.
+  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  layer()->SetIsFastRoundedCorner(true);
+
+  icon_label_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
+  icon_label_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
+  icon_label_view_->SetInteriorMargin(kHeaderInsets);
+  icon_label_view_->SetDefault(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(0, kHeaderPaddingDp, 0, kHeaderPaddingDp));
+  icon_label_view_->SetCollapseMargins(true);
 
   title_label_ = icon_label_view_->AddChildView(std::make_unique<views::Label>(
       GetWindowTitle(window_mini_view_->source_window())));
@@ -68,13 +81,39 @@ WindowMiniViewHeaderView::WindowMiniViewHeaderView(
   title_label_->SetFontList(gfx::FontList().Derive(
       kLabelFontDelta, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
   title_label_->SetEnabledColorId(cros_tokens::kCrosSysPrimary);
-  icon_label_view_->SetFlexForView(title_label_, 1);
+  title_label_->SetPaintToLayer();
+  title_label_->layer()->SetFillsBoundsOpaquely(false);
+
+  views::View* leftover_space =
+      icon_label_view_->AddChildView(std::make_unique<views::View>());
+
+  // Flex layout should accomplish the following:
+  // +------+-------+-------------------------------------------------+--------+
+  // | icon | label |               leftover space                    | close  |
+  // |      |       |                                                 | button |
+  // +------+-------+-------------------------------------------------+--------+
+  // 1) The icon and close button get their preferred sizes.
+  // 2) If the label's preferred size fits between the icon and close button,
+  //    blank space is added between the label and close button until the close
+  //    button is right aligned.
+  // 3) If the label's preferred size doesn't fit between the icon and close
+  //    button, it gets shrunk until it fits (leftover space above is zero).
+  title_label_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum)
+          .WithOrder(IconLabelFlexPriorities::kTitleLabel));
+  leftover_space->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded)
+          .WithOrder(IconLabelFlexPriorities::kLeftoverSpace)
+          .WithWeight(1));
 
   RefreshHeaderViewRoundedCorners();
 
-  views::Separator* separator =
-      AddChildView(std::make_unique<views::Separator>());
-  separator->SetColorId(kColorAshWindowHeaderStrokeColor);
+  separator_ = AddChildView(std::make_unique<views::View>());
+  separator_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  separator_->SetPreferredSize(gfx::Size(1, views::Separator::kThickness));
 
   SetFlexForView(icon_label_view_, 1);
 }
@@ -94,6 +133,11 @@ void WindowMiniViewHeaderView::UpdateIconView(aura::Window* window) {
   if (!icon_view_) {
     icon_view_ = icon_label_view_->AddChildViewAt(
         std::make_unique<views::ImageView>(), 0);
+    icon_view_->SetPaintToLayer();
+    icon_view_->layer()->SetFillsBoundsOpaquely(false);
+    icon_view_->SetProperty(views::kFlexBehaviorKey,
+                            views::FlexSpecification().WithOrder(
+                                IconLabelFlexPriorities::kIconOrCloseButton));
   }
 
   icon_view_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
@@ -112,12 +156,10 @@ void WindowMiniViewHeaderView::RefreshHeaderViewRoundedCorners() {
           default_corner_radius, default_corner_radius, 0, 0));
   if (current_header_view_rounded_corners_ &&
       *current_header_view_rounded_corners_ == new_rounded_corners) {
-    DCHECK(GetBackground());
     return;
   }
   current_header_view_rounded_corners_ = new_rounded_corners;
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysHeader, new_rounded_corners));
+  layer()->SetRoundedCornerRadius(new_rounded_corners);
 }
 
 void WindowMiniViewHeaderView::SetHeaderViewRoundedCornerRadius(
@@ -129,6 +171,14 @@ void WindowMiniViewHeaderView::SetHeaderViewRoundedCornerRadius(
 void WindowMiniViewHeaderView::ResetRoundedCorners() {
   custom_header_view_rounded_corners_.reset();
   RefreshHeaderViewRoundedCorners();
+}
+
+void WindowMiniViewHeaderView::OnThemeChanged() {
+  View::OnThemeChanged();
+  CHECK(GetColorProvider());
+  layer()->SetColor(GetColorProvider()->GetColor(cros_tokens::kCrosSysHeader));
+  separator_->layer()->SetColor(
+      GetColorProvider()->GetColor(kColorAshWindowHeaderStrokeColor));
 }
 
 BEGIN_METADATA(WindowMiniViewHeaderView)
