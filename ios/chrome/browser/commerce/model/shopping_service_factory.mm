@@ -10,7 +10,6 @@
 #import "components/commerce/core/shopping_service.h"
 #import "components/commerce/ios/browser/web_extractor_impl.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/prefs/pref_service.h"
 #import "components/variations/service/variations_service_utils.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
@@ -23,7 +22,6 @@
 #import "ios/chrome/browser/power_bookmarks/model/power_bookmark_service_factory.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -39,21 +37,20 @@ ShoppingServiceFactory* ShoppingServiceFactory::GetInstance() {
 
 // static
 ShoppingService* ShoppingServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<ShoppingService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<ShoppingService>(
+      profile, /*create=*/true);
 }
 
 // static
 ShoppingService* ShoppingServiceFactory::GetForProfileIfExists(
     ProfileIOS* profile) {
-  return static_cast<ShoppingService*>(
-      GetInstance()->GetServiceForBrowserState(profile, false));
+  return GetInstance()->GetServiceForProfileAs<ShoppingService>(
+      profile, /*create=*/false);
 }
 
 ShoppingServiceFactory::ShoppingServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "ShoppingService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("ShoppingService",
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ios::BookmarkModelFactory::GetInstance());
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
@@ -100,10 +97,6 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       std::make_unique<commerce::WebExtractorImpl>(),
       IOSChromeTabRestoreServiceFactory::GetForProfile(profile));
-}
-
-bool ShoppingServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
 }
 
 }  // namespace commerce
