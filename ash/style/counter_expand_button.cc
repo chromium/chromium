@@ -15,7 +15,6 @@
 #include "ash/system/notification_center/message_center_utils.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/metrics/histogram_functions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/animation_throughput_reporter.h"
@@ -37,7 +36,6 @@ constexpr gfx::Insets kFocusInsets(2);
 constexpr gfx::Insets kImageInsets(2);
 constexpr auto kLabelInsets = gfx::Insets::TLBR(0, 8, 0, 0);
 constexpr int kCornerRadius = 12;
-constexpr int kChevronIconSize = 16;
 constexpr int kJellyChevronIconSize = 20;
 constexpr int kLabelFontSize = 12;
 
@@ -58,10 +56,8 @@ CounterExpandButton::CounterExpandButton() {
   label->SetText(base::NumberToString16(counter_));
   label->SetVisible(ShouldShowLabel());
   label_ = AddChildView(std::move(label));
-  if (chromeos::features::IsJellyEnabled()) {
-    ash::TypographyProvider::Get()->StyleLabel(
-        ash::TypographyToken::kCrosAnnotation1, *label_);
-  }
+  ash::TypographyProvider::Get()->StyleLabel(
+      ash::TypographyToken::kCrosAnnotation1, *label_);
 
   auto image = std::make_unique<views::ImageView>();
   image->SetPaintToLayer();
@@ -113,10 +109,9 @@ void CounterExpandButton::UpdateCounter(int count) {
 }
 
 void CounterExpandButton::UpdateIcons() {
-  SkColor icon_color =
+  const SkColor icon_color =
       GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface);
-  int icon_size = chromeos::features::IsJellyEnabled() ? kJellyChevronIconSize
-                                                       : kChevronIconSize;
+  const int icon_size = kJellyChevronIconSize;
 
   expanded_image_ =
       gfx::CreateVectorIcon(kChevronUpSmallIcon, icon_size, icon_color);
