@@ -72,6 +72,7 @@ import org.chromium.components.collaboration.messaging.EitherId.EitherGroupId;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.collaboration.messaging.MessagingBackendService.PersistentMessageObserver;
 import org.chromium.components.collaboration.messaging.PersistentMessage;
+import org.chromium.components.collaboration.messaging.PersistentNotificationType;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -1300,7 +1301,8 @@ public class TabGridDialogMediator
                 EitherGroupId.createLocalId(new LocalTabGroupId(currentTabGroupId));
         List<PersistentMessage> messages =
                 mMessagingBackendService.getMessagesForGroup(
-                        eitherGroupId, /* type= */ Optional.empty());
+                        eitherGroupId,
+                        /* type= */ Optional.of(PersistentNotificationType.DIRTY_TAB));
         Map<Integer, Integer> collaborationEventCounts = new HashMap<>();
         for (PersistentMessage message : messages) {
             collaborationEventCounts.merge(message.collaborationEvent, 1, Integer::sum);
