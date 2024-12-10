@@ -479,6 +479,9 @@ try_.gpu.optional_tests_builder(
             "webgl2_conformance_d3d11_passthrough_tests 8086:9bc5": targets.remove(
                 reason = "TODO(crbug.com/41483572): Re-add this when capacity issues are resolved.",
             ),
+            "webgl_conformance_vulkan_passthrough_tests 10de:2184": targets.remove(
+                reason = "TODO(crbug.com/380431384): flaky crashes in random tests.",
+            ),
             "xr_browser_tests 8086:9bc5": targets.mixin(
                 # TODO(crbug.com/40937024): Remove this once the flakes on Intel are
                 # resolved.

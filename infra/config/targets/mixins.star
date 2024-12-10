@@ -1240,10 +1240,6 @@ targets.mixin(
     # We always need this entry to be generated since it is used by
     # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
-    # TODO(crbug.com/40888390): The swarming dimensions for
-    # webgpu_blink_web_tests and webgpu_cts_tests on linux-code-coverage
-    # must be kept manually in sync with the appropriate mixin; currently,
-    # this one, which is used by Dawn Linux x64 Release (NVIDIA).
     swarming = targets.swarming(
         dimensions = {
             "gpu": "10de:2184-440.100",
@@ -1575,10 +1571,6 @@ targets.mixin(
     # We always need this entry to be generated since it is used by
     # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
-    # TODO(crbug.com/40888390): The swarming dimensions for
-    # webgpu_blink_web_tests and webgpu_cts_tests on mac-code-coverage
-    # must be kept manually in sync with the appropriate mixin; currently,
-    # this one, which is used by Dawn Mac x64 Release (Intel).
     swarming = targets.swarming(
         dimensions = {
             "cpu": "x86-64",
@@ -2173,15 +2165,11 @@ targets.mixin(
     # We always need this entry to be generated since it is used by
     # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
-    # TODO(crbug.com/40888390): The swarming dimensions for
-    # webgpu_blink_web_tests and webgpu_cts_tests on win10-code-coverage
-    # must be kept manually in sync with the appropriate mixin; currently,
-    # this one, which is used by Dawn Win10 x64 Release (NVIDIA).
     swarming = targets.swarming(
         dimensions = {
             "display_attached": "1",
-            "gpu": "10de:2184-27.21.14.5638",
-            "os": "Windows-10-18363",
+            "gpu": "10de:2184-27.21.14.5638|10de:2184-31.0.15.4601",
+            "os": "Windows-10-18363|Windows-10-19045",
             "pool": "chromium.tests.gpu",
         },
     ),
