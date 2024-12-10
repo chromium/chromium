@@ -3993,10 +3993,7 @@ ui::ImageModel BrowserView::GetWindowIcon() {
 #if BUILDFLAG(IS_CHROMEOS)
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   if (browser_->is_type_normal()) {
-    int resource_id = ash::switches::IsAshDebugBrowserEnabled()
-                          ? IDR_DEBUG_CHROME_APP_ICON_192
-                          : IDR_CHROME_APP_ICON_192;
-    return ui::ImageModel::FromImage(rb.GetImageNamed(resource_id));
+    return ui::ImageModel::FromImage(rb.GetImageNamed(IDR_CHROME_APP_ICON_192));
   }
   auto* window = GetNativeWindow();
   int override_window_icon_resource_id =

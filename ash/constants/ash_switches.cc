@@ -507,9 +507,6 @@ const char kEnableArcVmDlc[] = "enable-arcvm-dlc";
 // Enables ARCVM realtime VCPU feature.
 const char kEnableArcVmRtVcpu[] = "enable-arcvm-rt-vcpu";
 
-// Adds ash-browser back to launcher, even if in LacrosOnly mode.
-const char kEnableAshDebugBrowser[] = "enable-ash-debug-browser";
-
 // Used to override `kDisableBirchWeatherApiForTesting` for specific tast tests.
 const char kEnableBirchWeatherApiForTestingOverride[] =
     "enable-birch-weather-api-for-testing-override";
@@ -1219,11 +1216,6 @@ bool ShouldSkipOobePostLogin() {
 bool ShouldShowAccessibilityButtonOnMarketingOptInForTesting() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kOobeShowAccessibilityButtonOnMarketingOptInForTesting);
-}
-
-bool IsAshDebugBrowserEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      kEnableAshDebugBrowser);
 }
 
 bool IsTabletFormFactor() {

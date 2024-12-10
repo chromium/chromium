@@ -96,8 +96,7 @@ syncer::StringOrdinal GetAdjacentPosition(
     if (!sync_item->item_pin_ordinal.IsValid()) {
       continue;
     }
-    if (exclude_chrome && (item_id == app_constants::kChromeAppId ||
-                           item_id == app_constants::kAshDebugBrowserAppId)) {
+    if (exclude_chrome && item_id == app_constants::kChromeAppId) {
       continue;
     }
     if (position.IsValid() && !compare(position, sync_item->item_pin_ordinal)) {

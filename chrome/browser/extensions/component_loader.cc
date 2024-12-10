@@ -489,10 +489,7 @@ void ComponentLoader::AddDefaultComponentExtensions(
   if (!skip_session_components) {
     AddWebStoreApp();
 #if BUILDFLAG(IS_CHROMEOS)
-    if (crosapi::browser_util::IsAshWebBrowserEnabled() ||
-        ash::switches::IsAshDebugBrowserEnabled()) {
-      AddChromeApp();
-    }
+    AddChromeApp();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(ENABLE_PDF)
     Add(pdf_extension_util::GetManifest(),
