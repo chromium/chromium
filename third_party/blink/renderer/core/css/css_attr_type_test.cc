@@ -16,8 +16,10 @@ const char* kDimensionUnits[] = {"em",   "ex",   "cap", "ch",   "ic",  "rem",
                                  "vmin", "vmax", "deg", "grad", "rad", "turn",
                                  "ms",   "ms",   "hz",  "khz"};
 const char* kValidAttrSyntax[] = {
-    "type(<color>)", "type(<length> | <percentage>)", "type(<angle>#)",
-    "type(<color>+ | <image>#)"};
+    "type(<color>)",   "type(<length> | <percentage>)",
+    "type(<angle>#)",  "type(<color>+ | <image>#)",
+    "type(<color> )",  "type( <color>)",
+    "type( <color> )", "type(<length>)   "};
 const char* kInvalidAttrSyntax[] = {"type(<number >)", "type(< angle>)",
                                     "type(<length> +)", "type(<color> !)",
                                     "type(!<color>)"};
