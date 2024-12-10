@@ -47,6 +47,7 @@ build_webui("build") {
 
   mojo_files_deps = [
     "//chrome/browser/new_tab_page/modules/file_suggestion:mojo_bindings_ts__generator",
+    "//chrome/browser/new_tab_page/modules/v2/authentication:mojo_bindings_ts__generator",
     "//chrome/browser/new_tab_page/modules/v2/calendar:mojo_bindings_ts__generator",
     "//chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption:mojo_bindings_ts__generator",
     "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_ts__generator",
@@ -57,6 +58,7 @@ build_webui("build") {
     "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/authentication/microsoft_auth.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/url_visit_types.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom-webui.ts",

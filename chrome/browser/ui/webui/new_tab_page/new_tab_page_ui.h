@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_suggestion.mojom.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
+#include "chrome/browser/new_tab_page/modules/v2/authentication/microsoft_auth.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
@@ -73,6 +74,7 @@ class FooHandler;
 class GoogleCalendarPageHandler;
 class OutlookCalendarPageHandler;
 class GURL;
+class MicrosoftAuthPageHandler;
 class MostRelevantTabResumptionPageHandler;
 class MostVisitedHandler;
 class NewTabPageHandler;
@@ -175,6 +177,13 @@ class NewTabPageUI
   void BindInterface(
       mojo::PendingReceiver<ntp::calendar::mojom::OutlookCalendarPageHandler>
           pending_receiver);
+
+  // Instantiates the implementor of
+  // npt::authentication::mojom::MicrosoftAuthPageHandler mojo
+  // interface passing the pending receiver that will be internally bound.
+  void BindInterface(mojo::PendingReceiver<
+                     ntp::authentication::mojom::MicrosoftAuthPageHandler>
+                         pending_receiver);
 
 #if !defined(OFFICIAL_BUILD)
   // Instantiates the implementor of the foo::mojom::FooHandler mojo interface
@@ -280,8 +289,9 @@ class NewTabPageUI
   const std::vector<ntp::ModuleIdDetail> module_id_details_;
 
   // Mojo implementations for modules:
-  std::unique_ptr<GoogleCalendarPageHandler> google_calendar_handler_;
   std::unique_ptr<DriveSuggestionHandler> drive_handler_;
+  std::unique_ptr<GoogleCalendarPageHandler> google_calendar_handler_;
+  std::unique_ptr<MicrosoftAuthPageHandler> microsoft_auth_handler_;
   std::unique_ptr<OutlookCalendarPageHandler> outlook_calendar_handler_;
   PrefChangeRegistrar pref_change_registrar_;
 

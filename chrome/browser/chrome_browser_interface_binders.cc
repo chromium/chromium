@@ -151,6 +151,7 @@
 #else
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_suggestion.mojom.h"
+#include "chrome/browser/new_tab_page/modules/v2/authentication/microsoft_auth.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
@@ -1145,6 +1146,13 @@ void PopulateChromeWebUIFrameBinders(
   if (base::FeatureList::IsEnabled(ntp_features::kNtpOutlookCalendarModule)) {
     RegisterWebUIControllerInterfaceBinder<
         ntp::calendar::mojom::OutlookCalendarPageHandler, NewTabPageUI>(map);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kNtpMicrosoftAuthenticationModule)) {
+    RegisterWebUIControllerInterfaceBinder<
+        ntp::authentication::mojom::MicrosoftAuthPageHandler, NewTabPageUI>(
+        map);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
