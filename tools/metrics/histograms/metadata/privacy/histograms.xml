@@ -1438,16 +1438,6 @@ Incognito profiles count towards the original profile. -->
   <token key="PSNotice" variants="PSNotice"/>
 </histogram>
 
-<histogram name="PrivacySandbox.NoticeQueueState" enum="NoticeQueueState"
-    expires_after="2025-10-13">
-  <owner>aashnas@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records queueing related states for a notice. Logged for every notice
-    required for the active profile.
-  </summary>
-</histogram>
-
 <histogram name="PrivacySandbox.NoticeRequirement.IsVariationCountryEmpty"
     enum="Boolean" expires_after="2025-05-25">
   <owner>chrstne@google.com</owner>

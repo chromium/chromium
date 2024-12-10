@@ -121,9 +121,6 @@ class PrivacySandboxService : public KeyedService {
   };
 
   // Contains the possible states of the Notice Queue.
-  // Must be kept in sync with NoticeQueueState in
-  // tools/metrics/histograms/enums.xml
-  // LINT.IfChange(NoticeQueueState)
   enum class NoticeQueueState {
     // Queued on browser startup.
     kQueueOnStartup = 0,
@@ -137,7 +134,6 @@ class PrivacySandboxService : public KeyedService {
     kReleaseOnShown = 4,
     kMaxValue = kReleaseOnShown,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:NoticeQueueState)
 
   // If during the trials a previous consent decision was made, or the notice
   // was already acknowledged, and the privacy sandbox is disabled,

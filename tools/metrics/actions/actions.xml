@@ -27889,6 +27889,51 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="NoticeQueue.PrivacySandboxNotice.QueueOnStartup">
+  <owner>aashnas@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded when a Privacy Sandbox notice is required on startup and added to
+    the queue.
+  </description>
+</action>
+
+<action name="NoticeQueue.PrivacySandboxNotice.QueueOnThOrNav">
+  <owner>aashnas@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded when a Privacy Sandbox notice is required on tab helper creation or
+    user navigation and added to the queue.
+  </description>
+</action>
+
+<action name="NoticeQueue.PrivacySandboxNotice.ReleaseOnDMA">
+  <owner>aashnas@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded when a Privacy Sandbox notice is suppressed for the rest of the
+    session after a DMA notice and removed from the queue.
+  </description>
+</action>
+
+<action name="NoticeQueue.PrivacySandboxNotice.ReleaseOnShown">
+  <owner>aashnas@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded when a Privacy Sandbox notice is successfully shown and removed
+    from the queue.
+  </description>
+</action>
+
+<action name="NoticeQueue.PrivacySandboxNotice.ReleaseOnThOrNav">
+  <owner>aashnas@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded when a Privacy Sandbox notice is not required on tab helper
+    creation or user navigation and removed from the queue.
+  </description>
+</action>
+
 <action name="Notifications.Mute">
   <owner>dewittj@chromium.org</owner>
   <description>

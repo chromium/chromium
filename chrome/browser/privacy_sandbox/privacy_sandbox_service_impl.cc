@@ -97,6 +97,25 @@ bool ShouldBlockThirdPartyOrFirstPartyCookies(
          default_content_setting == ContentSetting::CONTENT_SETTING_BLOCK;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+const char* QueueSourceToUserActionString(NoticeQueueState notice_state) {
+  switch (notice_state) {
+    case NoticeQueueState::kQueueOnStartup:
+      return "NoticeQueue.PrivacySandboxNotice.QueueOnStartup";
+    case NoticeQueueState::kQueueOnThOrNav:
+      return "NoticeQueue.PrivacySandboxNotice.QueueOnThOrNav";
+    case NoticeQueueState::kReleaseOnThOrNav:
+      return "NoticeQueue.PrivacySandboxNotice.ReleaseOnThOrNav";
+    case NoticeQueueState::kReleaseOnDMA:
+      return "NoticeQueue.PrivacySandboxNotice.ReleaseOnDMA";
+    case NoticeQueueState::kReleaseOnShown:
+      return "NoticeQueue.PrivacySandboxNotice.ReleaseOnShown";
+    default:
+      NOTREACHED();
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Similar to the function above, but checks for ALL 3P cookies to be blocked
 // pre and post 3PCD.
 bool AreAllThirdPartyCookiesBlocked(
@@ -722,8 +741,8 @@ void PrivacySandboxServiceImpl::MaybeUnqueueNotice(
   notice_handle_.Release();
   // Unqueue if we are in the queue (checked by controller).
   GetProductMessagingController()->UnqueueRequiredNotice(kPrivacySandboxNotice);
-
-  base::UmaHistogramEnumeration("PrivacySandbox.NoticeQueue", unqueue_source);
+  base::RecordAction(
+      base::UserMetricsAction(QueueSourceToUserActionString(unqueue_source)));
 }
 
 bool PrivacySandboxServiceImpl::IsNoticeQueued() {
@@ -750,7 +769,8 @@ void PrivacySandboxServiceImpl::MaybeQueueNotice(
   GetProductMessagingController()->QueueRequiredNotice(
       kPrivacySandboxNotice,
       base::BindOnce(&PrivacySandboxServiceImpl::HoldQueueHandle, weak_factory_.GetWeakPtr()), {/* TODO(crbug.com/370804492): When we add the DMA notice, add it to this show_after_ list*/});
-  base::UmaHistogramEnumeration("PrivacySandbox.NoticeQueue", queue_source);
+  base::RecordAction(
+      base::UserMetricsAction(QueueSourceToUserActionString(queue_source)));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
