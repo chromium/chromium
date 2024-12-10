@@ -16,6 +16,7 @@
 #include "base/base_switches.h"
 #include "base/callback_list.h"
 #include "base/command_line.h"
+#include "base/debug/leak_annotations.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
