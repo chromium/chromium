@@ -19,7 +19,7 @@ const reportPoller = new ReportPoller(
     /*fullTimeoutMs=*/ 5000,
 );
 
-promise_test(async t => {
+private_aggregation_promise_test(async t => {
   const fencedframe = await attachFencedFrameContext({
     generator_api: 'fledge',
     register_beacon: true,
