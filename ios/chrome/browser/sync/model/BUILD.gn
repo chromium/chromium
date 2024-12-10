@@ -30,6 +30,7 @@ source_set("model") {
     "//components/dom_distiller/core",
     "//components/history/core/browser",
     "//components/invalidation/impl",
+    "//components/keyed_service/ios",
     "//components/network_time",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/sharing",
