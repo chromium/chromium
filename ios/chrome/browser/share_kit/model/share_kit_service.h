@@ -37,7 +37,7 @@ class ShareKitService : public KeyedService {
   virtual void PrimaryAccountChanged() = 0;
 
   // Cancels the current `sessionID` flow.
-  virtual void CancelSession(NSString* session_id);
+  virtual void CancelSession(NSString* session_id) = 0;
 
   // Initiates the share group flow for the given `config` and returns its
   // sessionID.
