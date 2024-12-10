@@ -15,11 +15,8 @@
 
 namespace {
 void SetAlwaysShowTrafficLights(NSWindow* browser_window, bool always_show) {
-  if (base::FeatureList::IsEnabled(
-          remote_cocoa::features::kFullscreenAlwaysShowTrafficLights)) {
-    [base::apple::ObjCCast<BrowserNativeWidgetWindow>(browser_window)
-        setAlwaysShowTrafficLights:always_show ? YES : NO];
-  }
+  [base::apple::ObjCCast<BrowserNativeWidgetWindow>(browser_window)
+      setAlwaysShowTrafficLights:YES];
 }
 }  // namespace
 
