@@ -376,7 +376,13 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest,
 
 // Tests that the lazy background page stays alive until all visible views are
 // closed.
-IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, WaitForView) {
+// TODO: crbug.com/379109454 - Fix flakiness of the test.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#define MAYBE_WaitForView DISABLED_WaitForView
+#else
+#define MAYBE_WaitForView WaitForView
+#endif
+IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, MAYBE_WaitForView) {
   ExtensionHostTestHelper host_helper(profile());
   host_helper.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
   ResultCatcher catcher;
@@ -518,7 +524,8 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, NaClInView) {
 // Tests that the lazy background page stays alive until all visible views are
 // closed.
 // http://crbug.com/175778; test fails frequently on OS X
-#if BUILDFLAG(IS_MAC)
+// TODO: crbug.com/379109454 - Fix flakiness of the test.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_WaitForNTP DISABLED_WaitForNTP
 #else
 #define MAYBE_WaitForNTP WaitForNTP
