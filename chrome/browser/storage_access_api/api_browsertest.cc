@@ -394,6 +394,8 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
     return https_server_.GetURL(host, path);
   }
 
+  // TODO(crbug.com/381856829): Update SetBlockThirdPartyCookies to use sync
+  // interface once implemented.
   void SetBlockThirdPartyCookies(bool value) {
     browser()->profile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,

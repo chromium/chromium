@@ -46,7 +46,9 @@
 #include "ui/base/window_open_disposition.h"
 
 using content::BrowserThread;
+using testing::ElementsAreArray;
 using testing::Gt;
+using testing::ValuesIn;
 
 namespace {
 
@@ -55,6 +57,8 @@ constexpr char kHostASubdomain[] = "subdomain.a.test";
 constexpr char kHostB[] = "b.test";
 constexpr char kHostC[] = "c.test";
 constexpr char kHostD[] = "d.test";
+
+constexpr char kSameSiteNoneSecure[] = ";SameSite=None;Secure";
 
 constexpr char kRequestOutcomeHistogram[] =
     "API.TopLevelStorageAccess.RequestOutcome";
@@ -66,6 +70,11 @@ constexpr char kRequestStorageAccessUkmEntryName[] =
     "RequestStorageAccessFor.RequestStorageResult";
 
 constexpr char kRequestStorageResultMetricName[] = "RequestStorageResult";
+
+constexpr char kTopLevelStorageExemptionReasonEntryName[] =
+    "RequestStorageAccessFor.TopLevelStorageIsExemptionReason";
+
+constexpr char kTopLevelStorageExemptionReasonMetricName[] = "NumberOfCookies";
 
 // Path for URL of custom response
 constexpr char kFetchWithCredentialsPath[] = "/respondwithcookies";
@@ -162,7 +171,19 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
     return https_server_.GetURL(host, "/");
   }
 
+  // TODO(crbug.com/381856829): Update SetBlockThirdPartyCookies to use sync
+  // interface once implemented.
   void SetBlockThirdPartyCookies(bool value) {
+    // The call to the perf should be enough to set third party cookie blocking.
+    // Until crbug.com/381856829 is fixed, we also call set it using the cookie
+    // manager to help reduce the potential for flakiness due to the race
+    // condition described in the bug.
+    browser()
+        ->profile()
+        ->GetDefaultStoragePartition()
+        ->GetCookieManagerForBrowserProcess()
+        ->BlockThirdPartyCookies(value);
+
     browser()->profile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,
         static_cast<int>(
@@ -1316,6 +1337,177 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                   /*sample=*/content_settings::CookieSettingsBase::
                       AllowedByStorageAccessType::kStorageAccessOnly),
               Gt(0));
+}
+
+enum class CookieSetMechanism {
+  kBrowserInternal,
+  kDocumentCookie,
+  kNetworkResponse
+};
+
+struct TopLevelStorageExemptionReasonTestData {
+  CookieSetMechanism cookie_set_mechanism;
+  std::vector<std::string> cookie_name_value;
+  bool block_third_party_cookies;
+  std::string expected_cookie_string;
+  std::vector<int64_t> expected_metric_value;
+};
+
+class TopLevelStorageExemptionReasonMetricTest
+    : public RequestStorageAccessForWithFirstPartySetsBrowserTest,
+      public testing::WithParamInterface<
+          TopLevelStorageExemptionReasonTestData> {
+ public:
+  bool block_third_party_cookies() const {
+    return GetParam().block_third_party_cookies;
+  }
+
+  CookieSetMechanism cookie_set_mechanism() const {
+    return GetParam().cookie_set_mechanism;
+  }
+
+  const std::vector<std::string>& cookie_name_value() {
+    return GetParam().cookie_name_value;
+  }
+
+  std::string expected_cookie_string() const {
+    return GetParam().expected_cookie_string;
+  }
+
+  const std::vector<int64_t>& expected_metric_value() {
+    return GetParam().expected_metric_value;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no label */,
+    TopLevelStorageExemptionReasonMetricTest,
+    ValuesIn({
+        // RequestStorageAccessForOrigin called but not the exemption reason.
+        TopLevelStorageExemptionReasonTestData{
+            .cookie_set_mechanism = CookieSetMechanism::kBrowserInternal,
+            .cookie_name_value = {"cross-site=b.test"},
+            .block_third_party_cookies = false,
+            .expected_cookie_string = "cross-site=b.test",
+            .expected_metric_value = {},
+        },
+        // One cookie access granted through TopLevelStorage.
+        TopLevelStorageExemptionReasonTestData{
+            .cookie_set_mechanism = CookieSetMechanism::kBrowserInternal,
+            .cookie_name_value = {"cross-site=b.test"},
+            .block_third_party_cookies = true,
+            .expected_cookie_string = "cross-site=b.test",
+            .expected_metric_value = {1},
+        },
+        // Multiple cookie access granted through TopLevelStorage using
+        // kBrowserInternal.
+        TopLevelStorageExemptionReasonTestData{
+            .cookie_set_mechanism = CookieSetMechanism::kBrowserInternal,
+            .cookie_name_value = {"cross-site=b.test", "second-cookie"},
+            .block_third_party_cookies = true,
+            .expected_cookie_string = "cross-site=b.test; second-cookie",
+            .expected_metric_value = {2}},
+        // Confirm that metric records exponential numbers of cookies
+        // correctly.
+        TopLevelStorageExemptionReasonTestData{
+            .cookie_set_mechanism = CookieSetMechanism::kBrowserInternal,
+            .cookie_name_value = {"cross-site=b.test", "second-cookie=2",
+                                  "third-cookie=3", "fourth-cookie=4",
+                                  "fifth-cookie=5", "sixth-cookie=6",
+                                  "seventh-cookie=7", "eighth-cookie=8",
+                                  "ninth-cookie=9", "tenth-cookie=10"},
+            .block_third_party_cookies = true,
+            .expected_cookie_string =
+                "cross-site=b.test; second-cookie=2; third-cookie=3; "
+                "fourth-cookie=4; fifth-cookie=5; sixth-cookie=6; "
+                "seventh-cookie=7; eighth-cookie=8; ninth-cookie=9; "
+                "tenth-cookie=10",
+            .expected_metric_value = {8},
+        },
+        // Test by using document.cookie to set the cookie.
+        TopLevelStorageExemptionReasonTestData{
+            .cookie_set_mechanism = CookieSetMechanism::kDocumentCookie,
+            .cookie_name_value = {"document=b.test"},
+            .block_third_party_cookies = true,
+            .expected_cookie_string = "document=b.test",
+            .expected_metric_value = {1},
+        },
+        // Multiple cookie access granted through TopLevelStorage using
+        // document.cookie.
+        TopLevelStorageExemptionReasonTestData{
+            .cookie_set_mechanism = CookieSetMechanism::kDocumentCookie,
+            .cookie_name_value = {"cross-site=b.test", "second-cookie"},
+            .block_third_party_cookies = true,
+            .expected_cookie_string = "cross-site=b.test; second-cookie",
+            .expected_metric_value = {2}},
+        // Test by using network response to set the cookie.
+        TopLevelStorageExemptionReasonTestData{
+            .cookie_set_mechanism = CookieSetMechanism::kNetworkResponse,
+            .cookie_name_value = {"network=b.test"},
+            .block_third_party_cookies = true,
+            .expected_cookie_string = "network=b.test",
+            .expected_metric_value = {1}},
+        // Multiple cookie access granted through TopLevelStorage using network
+        // response.
+        TopLevelStorageExemptionReasonTestData{
+            .cookie_set_mechanism = CookieSetMechanism::kNetworkResponse,
+            .cookie_name_value = {"cross-site=b.test", "second-cookie"},
+            .block_third_party_cookies = true,
+            .expected_cookie_string = "cross-site=b.test; second-cookie",
+            .expected_metric_value = {2}},
+    }));
+
+IN_PROC_BROWSER_TEST_P(TopLevelStorageExemptionReasonMetricTest,
+                       TestMetricResults) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  SetBlockThirdPartyCookies(block_third_party_cookies());
+
+  switch (cookie_set_mechanism()) {
+    case CookieSetMechanism::kBrowserInternal:
+      for (const auto& name_value : cookie_name_value()) {
+        ASSERT_TRUE(content::SetCookie(
+            browser()->profile(), GetURL(kHostB),
+            base::StrCat({name_value, kSameSiteNoneSecure})));
+      }
+      break;
+    case CookieSetMechanism::kDocumentCookie:
+      NavigateToPageWithFrame(kHostB);
+      for (const auto& name_value : cookie_name_value()) {
+        EXPECT_TRUE(content::ExecJs(
+            GetFrame(), content::JsReplace(
+                            "document.cookie = $1",
+                            base::StrCat({name_value, kSameSiteNoneSecure}))));
+      }
+      break;
+    case CookieSetMechanism::kNetworkResponse:
+      NavigateToPageWithFrame(kHostB);
+      for (const auto& name_value : cookie_name_value()) {
+        NavigateFrameTo(kHostB, base::StrCat({"/set-cookie?", name_value,
+                                              kSameSiteNoneSecure}));
+      }
+      break;
+    default: {
+      ADD_FAILURE() << "Invalid value in switch statement.";
+    }
+  }
+
+  ASSERT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
+            expected_cookie_string());
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/");
+
+  EXPECT_TRUE(storage::test::RequestStorageAccessForOrigin(
+      GetPrimaryMainFrame(), GetURL(kHostB).spec()));
+
+  EXPECT_EQ(CookiesFromFetchWithCredentials(GetPrimaryMainFrame(), kHostB,
+                                            /*cors_enabled=*/true),
+            expected_cookie_string());
+
+  EXPECT_THAT(ukm_recorder.GetMetricsEntryValues(
+                  kTopLevelStorageExemptionReasonEntryName,
+                  kTopLevelStorageExemptionReasonMetricName),
+              ElementsAreArray(expected_metric_value()));
 }
 
 }  // namespace

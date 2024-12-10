@@ -19378,7 +19378,7 @@ be describing additional metrics about the same event.
 
 <event name="RequestStorageAccessFor.RequestStorageResult">
   <owner>selya@google.com</owner>
-  <owner>cfredric@google.com</owner>
+  <owner>cfredric@chromium.org</owner>
   <summary>
     Records invocations of document.requestStorageAccessFor and reasons the
     request was approved or rejected. Recorded for every call to the function,
@@ -19387,6 +19387,27 @@ be describing additional metrics about the same event.
   <metric name="RequestStorageResult" enum="RequestStorageResult">
     <summary>
       The result of the requestStorageAccessFor call.
+    </summary>
+  </metric>
+</event>
+
+<event name="RequestStorageAccessFor.TopLevelStorageIsExemptionReason">
+  <owner>selya@google.com</owner>
+  <owner>cfredric@chromium.org</owner>
+  <summary>
+    Tracks when a cookie is included in a network request due to the
+    ExemptionReason::kTopLevelStorageAccess. This state can only occur when a
+    request is cors-enabled and made from the top-level frame. Reads from
+    document.cookies (and requests that are not cors-enabled) are not included
+    because the value is always 0 and those are not recorded. Cookies that have
+    been written by document.cookies or network responses may be included if
+    subsequent request meets the requirments for kTopLevelStorageAccess.
+  </summary>
+  <metric name="NumberOfCookies">
+    <summary>
+      Number of cookies where ExemptionReason::kTopLevelStorageAccess is the
+      reason a cookie is included in a given request. The value is rounded down
+      to the nearest exponential bucket with factor of 2.0.
     </summary>
   </metric>
 </event>

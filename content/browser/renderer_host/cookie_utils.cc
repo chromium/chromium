@@ -119,6 +119,15 @@ void PotentiallyRecordCookieOriginMismatch(
   }
 }
 
+void RecordCookiesExemptedByTopLevelStorage(ukm::SourceId source_id,
+                                            int affected_cookies_in_request) {
+  ukm::builders::RequestStorageAccessFor_TopLevelStorageIsExemptionReason(
+      source_id)
+      .SetNumberOfCookies(ukm::GetExponentialBucketMin(
+          affected_cookies_in_request, /*bucket_spacing=*/2.0))
+      .Record(ukm::UkmRecorder::Get());
+}
+
 // Relies on checks in RecordPartitionedCookiesUKMs to confirm that that the
 // cookie name is not "receive-cookie-deprecation", that cookie is first party
 // partitioned and the RenderFrameHost is not prerendering.
@@ -306,6 +315,8 @@ void EmitCookieWarningsAndMetricsOnce(
 
   bool cookie_has_domain_non_ascii = false;
 
+  int cookies_exempted_by_top_level_storage_access = 0;
+
   for (const network::mojom::CookieOrLineWithAccessResultPtr& cookie :
        cookie_details->cookie_list) {
     const net::CookieInclusionStatus& status = cookie->access_result.status;
@@ -372,6 +383,11 @@ void EmitCookieWarningsAndMetricsOnce(
 
     if (partitioned_cookies_exist) {
       RecordPartitionedCookiesUKMs(rfh, cookie->cookie_or_line->get_cookie());
+    }
+
+    if (cookie->access_result.status.exemption_reason() ==
+        net::CookieInclusionStatus::ExemptionReason::kTopLevelStorageAccess) {
+      cookies_exempted_by_top_level_storage_access++;
     }
 
     breaking_context_downgrade =
@@ -478,6 +494,12 @@ void EmitCookieWarningsAndMetricsOnce(
   if (cookie_has_domain_non_ascii) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfh, blink::mojom::WebFeature::kCookieDomainNonASCII);
+  }
+
+  if (cookies_exempted_by_top_level_storage_access) {
+    RecordCookiesExemptedByTopLevelStorage(
+        rfh->GetPageUkmSourceId(),
+        cookies_exempted_by_top_level_storage_access);
   }
 }
 
