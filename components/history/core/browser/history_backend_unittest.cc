@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <iterator>
 #include <limits>
 #include <memory>
@@ -3172,14 +3173,14 @@ TEST_F(HistoryBackendTest, ExpireHistory) {
       base::Time::UnixEpoch().LocalMidnight() + base::Hours(12);
 
   // Insert 4 entries into the database.
-  HistoryAddPageArgs args[4];
+  std::array<HistoryAddPageArgs, 4> args;
   for (size_t i = 0; i < std::size(args); ++i) {
     args[i].url = GURL("http://example" + base::NumberToString(i) + ".com");
     args[i].time = reference_time + base::Days(i);
     backend_->AddPage(args[i]);
   }
 
-  URLRow url_rows[4];
+  std::array<URLRow, 4> url_rows;
   for (unsigned int i = 0; i < std::size(args); ++i)
     ASSERT_TRUE(backend_->GetURL(args[i].url, &url_rows[i]));
 

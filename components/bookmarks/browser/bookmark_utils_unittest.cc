@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/bookmarks/browser/bookmark_utils.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -222,8 +218,11 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesConjunction) {
   EXPECT_THAT(GetBookmarksMatchingProperties(model.get(), query, 100),
               UnorderedElementsAre(node1));
 
-  std::unique_ptr<std::u16string>* fields[] = {&query.word_phrase_query,
-                                               &query.url, &query.title};
+  auto fields = std::to_array<std::unique_ptr<std::u16string>*>({
+      &query.word_phrase_query,
+      &query.url,
+      &query.title,
+  });
 
   // Test two fields matching.
   for (size_t i = 0; i < std::size(fields); i++) {
