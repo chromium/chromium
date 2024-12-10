@@ -3924,6 +3924,7 @@ ci.builder(
     ),
     targets = targets.bundle(
         targets = [
+            "android_14_device_ci_only_gtests",
             "android_14_device_gtests",
             "chromium_android_scripts",
         ],

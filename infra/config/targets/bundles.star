@@ -140,7 +140,7 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "android_14_device_fyi_gtests",
+    name = "android_14_device_ci_only_gtests",
     targets = [
         "system_webview_shell_instrumentation_tests",
         targets.bundle(
@@ -151,6 +151,9 @@ targets.bundle(
             ],
         ),
         "webview_ui_instrumentation_tests",
+    ],
+    mixins = [
+        "ci_only",
     ],
 )
 
