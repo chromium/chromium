@@ -13,12 +13,14 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sharing_message/sharing_message_sender.h"
 #include "components/sharing_message/sharing_send_message_result.h"
 #include "components/sharing_message/web_push/web_push_sender.h"
 #include "components/sync/protocol/unencrypted_sharing_message.pb.h"
+#include "components/sync/service/sync_service_observer.h"
 #include "components/sync_device_info/device_info.h"
 
 namespace gcm {
@@ -43,7 +45,8 @@ class SharingSyncPreference;
 class VapidKeyManager;
 
 // Responsible for sending FCM messages within Sharing infrastructure.
-class SharingFCMSender : public SharingMessageSender::SendMessageDelegate {
+class SharingFCMSender : public SharingMessageSender::SendMessageDelegate,
+                         public syncer::SyncServiceObserver {
  public:
   using SharingMessage = components_sharing_message::SharingMessage;
   using SendMessageCallback =
@@ -83,6 +86,14 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate {
           server_channel,
       SharingMessage message,
       SendMessageCallback callback);
+
+  // Removes any pending messages that are waiting for the sync service to
+  // initialize. This must be called if the device is unregistered.
+  void ClearPendingMessages() override;
+
+  // syncer::SyncServiceObserver overrides.
+  void OnStateChanged(syncer::SyncService* sync_service) override;
+  void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
   // Used to inject fake WebPushSender in integration tests.
   void SetWebPushSenderForTesting(
@@ -157,6 +168,28 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate {
   const raw_ptr<const syncer::LocalDeviceInfoProvider>
       local_device_info_provider_;
   const raw_ptr<syncer::SyncService> sync_service_;
+  base::ScopedObservation<syncer::SyncService, SharingFCMSender>
+      sync_service_observation_{this};
+
+  // Pending messages that are waiting for the sync service to initialize.
+  struct PendingMessage {
+    PendingMessage(
+        components_sharing_message::FCMChannelConfiguration fcm_configuration,
+        base::TimeDelta time_to_live,
+        SharingMessage message,
+        SendMessageCallback callback);
+    PendingMessage(const PendingMessage& other) = delete;
+    PendingMessage& operator=(const PendingMessage& other) = delete;
+    PendingMessage(PendingMessage&& other);
+    PendingMessage& operator=(PendingMessage&& other);
+    ~PendingMessage();
+
+    components_sharing_message::FCMChannelConfiguration fcm_configuration;
+    base::TimeDelta time_to_live;
+    SharingMessage message;
+    SendMessageCallback callback;
+  };
+  std::vector<PendingMessage> pending_messages_;
 
   base::WeakPtrFactory<SharingFCMSender> weak_ptr_factory_{this};
 };
