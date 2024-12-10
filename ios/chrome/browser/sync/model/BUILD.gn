@@ -146,6 +146,7 @@ source_set("sync_invalidations_service_factory") {
     "//ios/chrome/browser/gcm/model",
     "//ios/chrome/browser/gcm/model/instance_id",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]
 }
 
