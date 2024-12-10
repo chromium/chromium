@@ -14,7 +14,6 @@
 #import "components/browser_sync/common_controller_builder.h"
 #import "components/history/core/browser/features.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/network_time/network_time_tracker.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/browser/sharing/password_receiver_service.h"
@@ -256,18 +255,13 @@ SyncServiceFactory* SyncServiceFactory::GetInstance() {
 }
 
 // static
-SyncServiceFactory::TestingFactory SyncServiceFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildSyncService);
-}
-
-// static
 syncer::SyncService* SyncServiceFactory::GetForProfile(ProfileIOS* profile) {
   if (!syncer::IsSyncAllowedByFlag()) {
     return nullptr;
   }
 
-  return static_cast<syncer::SyncService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<syncer::SyncService>(
+      profile, /*create*/ true);
 }
 
 // static
@@ -277,21 +271,24 @@ syncer::SyncService* SyncServiceFactory::GetForProfileIfExists(
     return nullptr;
   }
 
-  return static_cast<syncer::SyncService*>(
-      GetInstance()->GetServiceForBrowserState(profile, false));
+  return GetInstance()->GetServiceForProfileAs<syncer::SyncService>(
+      profile, /*create*/ false);
 }
 
 // static
 syncer::SyncServiceImpl*
-SyncServiceFactory::GetAsSyncServiceImplForBrowserStateForTesting(
+SyncServiceFactory::GetForProfileAsSyncServiceImplForTesting(
     ProfileIOS* profile) {
-  return static_cast<syncer::SyncServiceImpl*>(GetForProfile(profile));
+  if (!syncer::IsSyncAllowedByFlag()) {
+    return nullptr;
+  }
+
+  return GetInstance()->GetServiceForProfileAs<syncer::SyncServiceImpl>(
+      profile, /*create*/ true);
 }
 
 SyncServiceFactory::SyncServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "SyncService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("SyncService") {
   // The SyncServiceImpl depends on various KeyedServices being around
   // when it is shut down.  Specify those dependencies here to build the proper
   // destruction order. Note that some of the dependencies are listed here but

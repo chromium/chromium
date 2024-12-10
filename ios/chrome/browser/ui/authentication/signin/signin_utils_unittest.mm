@@ -53,8 +53,6 @@ class SigninUtilsTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
-    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              SyncServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
     identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
     account_manager_service_ =

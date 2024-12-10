@@ -71,8 +71,7 @@ void OverrideSyncNetwork(const syncer::CreateHttpPostProviderFactory&
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   DCHECK(profile);
   syncer::SyncServiceImpl* service =
-      SyncServiceFactory::GetAsSyncServiceImplForBrowserStateForTesting(
-          profile);
+      SyncServiceFactory::GetForProfileAsSyncServiceImplForTesting(profile);
   service->OverrideNetworkForTest(create_http_post_provider_factory_cb);
 }
 

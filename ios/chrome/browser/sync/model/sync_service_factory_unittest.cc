@@ -118,8 +118,7 @@ TEST_F(SyncServiceFactoryTest, DisableSyncFlag) {
 // and properly initialized.
 TEST_F(SyncServiceFactoryTest, CreateSyncServiceImplDefault) {
   syncer::SyncServiceImpl* sync_service =
-      SyncServiceFactory::GetAsSyncServiceImplForBrowserStateForTesting(
-          profile());
+      SyncServiceFactory::GetForProfileAsSyncServiceImplForTesting(profile());
   syncer::DataTypeSet types = sync_service->GetRegisteredDataTypesForTest();
   const syncer::DataTypeSet default_types = DefaultDatatypes();
   EXPECT_EQ(default_types.size(), types.size());
