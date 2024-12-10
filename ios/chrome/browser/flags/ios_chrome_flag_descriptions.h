@@ -1030,6 +1030,10 @@ extern const char kEnableLensOverlayDescription[];
 extern const char kEnableLensViewFinderUnifiedExperienceName[];
 extern const char kEnableLensViewFinderUnifiedExperienceDescription[];
 
+// Title and description for the flag to enable Lens Context Menu unification
+extern const char kEnableLensContextMenuUnifiedExperienceName[];
+extern const char kEnableLensContextMenuUnifiedExperienceDescription[];
+
 // Title and description for the flag to enable the new transitions in the
 // TabGrid.
 extern const char kTabGridNewTransitionsName[];
