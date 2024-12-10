@@ -14,7 +14,6 @@
 #import "components/gcm_driver/gcm_profile_service.h"
 #import "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "components/sharing_message/ios_push/sharing_ios_push_sender.h"
@@ -45,6 +44,7 @@
 #import "ios/web/public/thread/web_thread.h"
 
 namespace {
+
 // Removes old encryption info with empty authorized_entity to avoid DCHECK.
 // See http://crbug/987591
 void CleanEncryptionInfoWithoutAuthorizedEntity(gcm::GCMDriver* gcm_driver) {
@@ -64,15 +64,8 @@ void CleanEncryptionInfoWithoutAuthorizedEntity(gcm::GCMDriver* gcm_driver) {
 // static
 SharingService* IOSSharingServiceFactory::GetForProfile(ProfileIOS* profile) {
   CHECK(!profile->IsOffTheRecord());
-  return static_cast<SharingService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
-}
-
-// static
-SharingService* IOSSharingServiceFactory::GetForProfileIfExists(
-    ProfileIOS* profile) {
-  return static_cast<SharingService*>(
-      GetInstance()->GetServiceForBrowserState(profile, false));
+  return GetInstance()->GetServiceForProfileAs<SharingService>(profile,
+                                                               /*create=*/true);
 }
 
 // static
@@ -82,9 +75,8 @@ IOSSharingServiceFactory* IOSSharingServiceFactory::GetInstance() {
 }
 
 IOSSharingServiceFactory::IOSSharingServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "SharingService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("SharingService",
+                                    ServiceCreation::kCreateWithProfile) {
   DependsOn(IOSChromeInstanceIDProfileServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
@@ -176,8 +168,4 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
       std::move(device_source), std::move(handler_registry),
       std::move(fcm_handler), sync_service, favicon_service, send_tab_model,
       std::move(task_runner));
-}
-
-bool IOSSharingServiceFactory::ServiceIsCreatedWithBrowserState() const {
-  return true;
 }
