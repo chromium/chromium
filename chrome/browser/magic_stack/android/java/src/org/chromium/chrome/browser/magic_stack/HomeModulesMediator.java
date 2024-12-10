@@ -14,9 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.components.segmentation_platform.ClassificationResult;
-import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.PredictionOptions;
-import org.chromium.components.segmentation_platform.ProcessedValue;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
 import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -638,8 +636,8 @@ public class HomeModulesMediator {
 
         mSegmentationPlatformService.getClassificationResult(
                 "android_home_module_ranker",
-                /* prediction_options= */ createPredictionOptions(),
-                /* inputContext= */ createInputContext(),
+                createPredictionOptions(),
+                mModuleRegistry.createInputContext(),
                 result -> {
                     // It is possible that the result is received after the magic stack has been
                     // hidden, exit now.
@@ -657,33 +655,12 @@ public class HomeModulesMediator {
     }
 
     /**
-     * Creates an instance of InputContext. Each module in the set will have a freshness score,
-     * whose default value is {@link INVALID_FRESHNESS_SCORE} if hasn't been set.
-     */
-    @VisibleForTesting
-    InputContext createInputContext() {
-        InputContext inputContext = new InputContext();
-        for (@ModuleType int moduleType = 0; moduleType < ModuleType.NUM_ENTRIES; moduleType++) {
-            if (moduleType == ModuleType.EDUCATIONAL_TIP) {
-                continue;
-            }
-
-            inputContext.addEntry(
-                    HomeModulesMetricsUtils.getFreshnessInputContextString(moduleType),
-                    ProcessedValue.fromFloat(
-                            getFreshnessScore(isHomeModuleRankerV2Enabled(), moduleType)));
-        }
-
-        return inputContext;
-    }
-
-    /**
      * Creates an instance of PredictionOptions. If feature flag is enabled generate ondemand
      * prediction options else will generate cache prediction options.
      */
     @VisibleForTesting
     PredictionOptions createPredictionOptions() {
-        boolean usePredictionOptions = isHomeModuleRankerV2Enabled();
+        boolean usePredictionOptions = HomeModulesUtils.isHomeModuleRankerV2Enabled();
         if (usePredictionOptions) {
             return new PredictionOptions(
                     /* onDemandExecution= */ true,
@@ -692,20 +669,6 @@ public class HomeModulesMediator {
         } else {
             return new PredictionOptions(/* on_demand= */ false);
         }
-    }
-
-    /** Returns the freshness score of a module if valid. */
-    private int getFreshnessScore(boolean useFreshnessScore, @ModuleType int moduleType) {
-        if (!useFreshnessScore) return INVALID_FRESHNESS_SCORE;
-
-        long timeStamp = HomeModulesUtils.getFreshnessScoreTimeStamp(moduleType);
-        if (timeStamp == HomeModulesUtils.INVALID_TIMESTAMP
-                || SystemClock.elapsedRealtime() - timeStamp
-                        >= HomeModulesMediator.FRESHNESS_THRESHOLD_MS) {
-            return INVALID_FRESHNESS_SCORE;
-        }
-
-        return HomeModulesUtils.getFreshnessCount(moduleType);
     }
 
     @VisibleForTesting
@@ -798,10 +761,5 @@ public class HomeModulesMediator {
 
     boolean getIsShownForTesting() {
         return mIsShown;
-    }
-
-    private boolean isHomeModuleRankerV2Enabled() {
-        return ChromeFeatureList.isEnabled(
-                ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2);
     }
 }

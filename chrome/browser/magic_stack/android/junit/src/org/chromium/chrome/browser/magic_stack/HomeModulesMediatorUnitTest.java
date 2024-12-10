@@ -18,9 +18,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.magic_stack.HomeModulesMediator.INVALID_FRESHNESS_SCORE;
-
-import android.os.SystemClock;
 import android.text.TextUtils;
 
 import androidx.test.filters.SmallTest;
@@ -43,7 +40,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.components.segmentation_platform.ClassificationResult;
-import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.PredictionOptions;
 import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -643,22 +639,6 @@ public class HomeModulesMediatorUnitTest {
         ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER,
         ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2
     })
-    public void testCreateContextInputEnabled_Empty() {
-        assertTrue(
-                ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2));
-
-        // Verifies that createInputContext() returns an empty one with invalid score value.
-        InputContext inputContext = mMediator.createInputContext();
-        verifyEmptyInputContext(inputContext);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER,
-        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2
-    })
     public void testCreateOptions_FlagEnabled() {
         assertTrue(
                 ChromeFeatureList.isEnabled(
@@ -688,64 +668,6 @@ public class HomeModulesMediatorUnitTest {
         PredictionOptions expectedOptions = new PredictionOptions(false);
         actualOptions.equals(expectedOptions);
     }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER})
-    @DisableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2})
-    public void testCreateContextInputEnabled_NoFreshnessScore() {
-        assertFalse(
-                ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2));
-        @ModuleType int moduleType = ModuleType.PRICE_CHANGE;
-
-        // Verifies that createInputContext() returns an empty one with invalid score value if the
-        // freshness score is invalid or not added.
-        HomeModulesUtils.setFreshnessCountForTesting(
-                moduleType, HomeModulesUtils.INVALID_FRESHNESS_SCORE);
-        InputContext inputContext = mMediator.createInputContext();
-        verifyEmptyInputContext(inputContext);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER,
-        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2
-    })
-    public void testCreateContextInputEnabled() {
-        assertTrue(
-                ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2));
-        @ModuleType int moduleType = ModuleType.PRICE_CHANGE;
-
-        // Verifies that if the logged time is longer than the threshold, the freshness score is
-        // invalid.
-        int expectedScore = 100;
-        long scoreLoggedTime =
-                SystemClock.elapsedRealtime() - HomeModulesMediator.FRESHNESS_THRESHOLD_MS - 10;
-        HomeModulesUtils.setFreshnessScoreTimeStamp(moduleType, scoreLoggedTime);
-        HomeModulesUtils.setFreshnessCountForTesting(moduleType, expectedScore);
-        InputContext inputContext = mMediator.createInputContext();
-        verifyEmptyInputContext(inputContext);
-
-        // Verifies that the freshness score will be used if the logging time is less than the
-        // threshold.
-        scoreLoggedTime = SystemClock.elapsedRealtime() - 10;
-        HomeModulesUtils.setFreshnessScoreTimeStamp(moduleType, scoreLoggedTime);
-        HomeModulesUtils.setFreshnessCountForTesting(moduleType, expectedScore);
-        int[] scores = new int[] {-1, expectedScore, -1, -1, -1};
-        inputContext = mMediator.createInputContext();
-        verifyInputContext(inputContext, scores);
-
-        // Verifies that if the freshness score becomes invalid or removed, there isn't any entry
-        // added to the InputContext.
-        HomeModulesUtils.setFreshnessCountForTesting(moduleType, INVALID_FRESHNESS_SCORE);
-        inputContext = mMediator.createInputContext();
-        verifyEmptyInputContext(inputContext);
-    }
-
-    // newly added:
 
     @Test
     @SmallTest
@@ -911,41 +833,6 @@ public class HomeModulesMediatorUnitTest {
         String expectedFreshnessString = "tab_resumption_freshness";
         TextUtils.equals(
                 expectedFreshnessString,
-                HomeModulesMetricsUtils.getFreshnessInputContextString(moduleType));
-    }
-
-    private void verifyInputContext(InputContext inputContext, int[] scores) {
-        assertEquals(ModuleType.NUM_ENTRIES - 1, inputContext.getSizeForTesting());
-
-        int j = 0;
-        for (int i = 0; i < ModuleType.NUM_ENTRIES; i++) {
-            if (i == ModuleType.EDUCATIONAL_TIP) {
-                continue;
-            }
-
-            assertEquals(
-                    scores[j],
-                    inputContext.getEntryForTesting(
-                                    HomeModulesMetricsUtils.getFreshnessInputContextString(i))
-                            .floatValue,
-                    0.01);
-            j = j + 1;
-        }
-    }
-
-    private void verifyEmptyInputContext(InputContext inputContext) {
-        assertEquals(ModuleType.NUM_ENTRIES - 1, inputContext.getSizeForTesting());
-        for (int i = 0; i < ModuleType.NUM_ENTRIES; i++) {
-            if (i == ModuleType.EDUCATIONAL_TIP) {
-                continue;
-            }
-
-            assertEquals(
-                    INVALID_FRESHNESS_SCORE,
-                    inputContext.getEntryForTesting(
-                                    HomeModulesMetricsUtils.getFreshnessInputContextString(i))
-                            .floatValue,
-                    0.01);
-        }
+                HomeModulesUtils.getFreshnessInputContextString(moduleType));
     }
 }
