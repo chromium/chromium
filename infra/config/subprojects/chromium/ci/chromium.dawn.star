@@ -2653,6 +2653,8 @@ ci.thin_tester(
         category = "ToT|Windows|x64|Intel",
         short_name = "770",
     ),
+    # Can hit the default build timeout if no tasks end up being deduped.
+    execution_timeout = 4 * time.hour,
 )
 
 ci.thin_tester(
