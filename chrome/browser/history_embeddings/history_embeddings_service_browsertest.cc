@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
 
   // Search for the passage.
   base::test::TestFuture<SearchResult> search_future;
-  service()->Search(nullptr, "A B C D e f g", {}, 1,
+  service()->Search(nullptr, "A B C D e f g", {}, 1, /*skip_answering=*/false,
                     search_future.GetRepeatingCallback());
   SearchResult result = search_future.Take();
   EXPECT_EQ(result.scored_url_rows.size(), 1u);
@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsWithLowAggregationBrowserTest,
 
   // Search for the passage.
   base::test::TestFuture<SearchResult> search_future;
-  service()->Search(nullptr, "A B C", {}, 1,
+  service()->Search(nullptr, "A B C", {}, 1, /*skip_answering=*/false,
                     search_future.GetRepeatingCallback());
   SearchResult result = search_future.Take();
   EXPECT_EQ(result.scored_url_rows.size(), 1u);
@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Search for the passage.
   base::test::TestFuture<SearchResult> search_future;
-  service()->Search(nullptr, "A B C D e f g", {}, 1,
+  service()->Search(nullptr, "A B C D e f g", {}, 1, /*skip_answering=*/false,
                     search_future.GetRepeatingCallback());
   SearchResult result = search_future.Take();
   EXPECT_TRUE(result.scored_url_rows.empty());
@@ -325,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
 
   // Search for the passage.
   base::test::TestFuture<SearchResult> search_future;
-  service()->Search(nullptr, "A B C D e f g", {}, 1,
+  service()->Search(nullptr, "A B C D e f g", {}, 1, /*skip_answering=*/false,
                     search_future.GetRepeatingCallback());
   SearchResult result = search_future.Take();
   EXPECT_TRUE(result.scored_url_rows.empty());
@@ -473,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsWithUrlFilterBrowserTest,
 
   // Search for the passage, should return empty result because of the filter.
   base::test::TestFuture<SearchResult> search_future;
-  service()->Search(nullptr, "A B C D e f g", {}, 1,
+  service()->Search(nullptr, "A B C D e f g", {}, 1, /*skip_answering=*/false,
                     search_future.GetRepeatingCallback());
   SearchResult result = search_future.Take();
   EXPECT_TRUE(result.scored_url_rows.empty());
@@ -508,7 +508,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsWithUrlFilterBrowserTest,
 
   // Search for the passage; should have valid result since the URL is allowed.
   base::test::TestFuture<SearchResult> search_future;
-  service()->Search(nullptr, "A B C D e f g", {}, 1,
+  service()->Search(nullptr, "A B C D e f g", {}, 1, /*skip_answering=*/false,
                     search_future.GetRepeatingCallback());
   SearchResult result = search_future.Take();
   EXPECT_EQ(result.scored_url_rows.size(), 1u);
@@ -543,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
 
     // Search with an answerable query by ending it with '?'.
     base::test::TestFuture<SearchResult> search_future;
-    service()->Search(nullptr, "A B C D?", {}, 1,
+    service()->Search(nullptr, "A B C D?", {}, 1, /*skip_answering=*/false,
                       search_future.GetRepeatingCallback());
     SearchResult first_result = search_future.Take();
     EXPECT_EQ(first_result.scored_url_rows.size(), 1u);
@@ -572,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
 
     // Search with a query that does not signal query intent (not answerable).
     base::test::TestFuture<SearchResult> search_future;
-    service()->Search(nullptr, "A B C D", {}, 1,
+    service()->Search(nullptr, "A B C D", {}, 1, /*skip_answering=*/false,
                       search_future.GetRepeatingCallback());
     SearchResult first_result = search_future.Take();
     EXPECT_EQ(first_result.scored_url_rows.size(), 1u);
@@ -610,7 +610,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsRestrictedSigninBrowserTest,
   // Search with a query that signals question intent, but is not answerable
   // due to account restriction.
   base::test::TestFuture<SearchResult> search_future;
-  service()->Search(nullptr, "A B C D?", {}, 1,
+  service()->Search(nullptr, "A B C D?", {}, 1, /*skip_answering=*/false,
                     search_future.GetRepeatingCallback());
   SearchResult first_result = search_future.Take();
   EXPECT_EQ(first_result.scored_url_rows.size(), 1u);

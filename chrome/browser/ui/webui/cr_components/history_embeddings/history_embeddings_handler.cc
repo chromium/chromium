@@ -100,6 +100,7 @@ void HistoryEmbeddingsHandler::Search(
   last_result_ = service->Search(
       &last_result_, query->query, query->time_range_start,
       history_embeddings::GetFeatureParameters().search_result_item_count,
+      /*skip_answering=*/false,
       base::BindRepeating(&HistoryEmbeddingsHandler::OnReceivedSearchResult,
                           weak_ptr_factory_.GetWeakPtr()));
   VLOG(3) << "HistoryEmbeddingsHandler::Search started for '"

@@ -191,6 +191,7 @@ SearchResult SearchResult::Clone() {
   clone.query = query;
   clone.time_range_start = time_range_start;
   clone.count = count;
+  clone.search_params = search_params;
   clone.scored_url_rows = scored_url_rows;
   return clone;
 }
@@ -392,6 +393,7 @@ SearchResult HistoryEmbeddingsService::Search(
     std::string query,
     std::optional<base::Time> time_range_start,
     size_t count,
+    bool skip_answering,
     SearchResultCallback callback) {
   SearchResult result;
 
@@ -416,13 +418,27 @@ SearchResult HistoryEmbeddingsService::Search(
   result.time_range_start = time_range_start;
   result.count = count;
 
-  SearchParams search_params;
-  search_params.erase_non_ascii =
+  // Set search parameters, kept within result for caller convenience.
+  result.search_params.skip_answering = skip_answering;
+  result.search_params.erase_non_ascii =
       GetFeatureParameters().erase_non_ascii_characters;
-  if (search_params.erase_non_ascii) {
+  if (result.search_params.erase_non_ascii) {
     EraseNonAsciiCharacters(query);
   }
-  if (QueryIsFiltered(query, search_params)) {
+  result.search_params.word_match_minimum_embedding_score =
+      GetFeatureParameters().word_match_min_embedding_score;
+  result.search_params.word_match_score_boost_factor =
+      GetFeatureParameters().word_match_score_boost_factor;
+  result.search_params.word_match_limit =
+      GetFeatureParameters().word_match_limit;
+  result.search_params.word_match_smoothing_factor =
+      GetFeatureParameters().word_match_smoothing_factor;
+  result.search_params.word_match_max_term_count =
+      GetFeatureParameters().word_match_max_term_count;
+  result.search_params.word_match_required_term_ratio =
+      GetFeatureParameters().word_match_required_term_ratio;
+
+  if (QueryIsFiltered(query, result.search_params)) {
     result.count = 0;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(
@@ -432,29 +448,17 @@ SearchResult HistoryEmbeddingsService::Search(
                        callback, result.Clone()));
     return result;
   }
-  search_params.word_match_minimum_embedding_score =
-      GetFeatureParameters().word_match_min_embedding_score;
-  search_params.word_match_score_boost_factor =
-      GetFeatureParameters().word_match_score_boost_factor;
-  search_params.word_match_limit = GetFeatureParameters().word_match_limit;
-  search_params.word_match_smoothing_factor =
-      GetFeatureParameters().word_match_smoothing_factor;
-  search_params.word_match_max_term_count =
-      GetFeatureParameters().word_match_max_term_count;
-  search_params.word_match_required_term_ratio =
-      GetFeatureParameters().word_match_required_term_ratio;
 
   embedder_->ComputePassagesEmbeddings(
       PassageKind::QUERY, {std::move(query)},
       base::BindOnce(&HistoryEmbeddingsService::OnQueryEmbeddingComputed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(search_params), result.Clone()));
+                     result.Clone()));
   return result;
 }
 
 void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
     SearchResultCallback callback,
-    SearchParams search_params,
     SearchResult result,
     std::vector<std::string> query_passages,
     std::vector<Embedding> query_embeddings,
@@ -479,7 +483,7 @@ void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
   query_id_++;
   storage_.AsyncCall(&Storage::Search)
       .WithArgs(query_id_weak_ptr_factory_.GetWeakPtr(), query_id_.load(),
-                std::move(search_params), std::move(query_embeddings.front()),
+                result.search_params, std::move(query_embeddings.front()),
                 result.time_range_start, result.count)
       .Then(base::BindOnce(&HistoryEmbeddingsService::OnSearchCompleted,
                            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -975,6 +979,12 @@ void HistoryEmbeddingsService::OnPrimarySearchResultReady(
     SearchResultCallback callback,
     SearchResult result) {
   callback.Run(result.Clone());
+
+  // Do no intent classification or answering if `Search` caller requested
+  // to `skip_answering`.
+  if (result.search_params.skip_answering) {
+    return;
+  }
 
   // TODO(b/369446266): Intent classification can execute in parallel with
   //  initial query embedding computation and search. This doesn't make

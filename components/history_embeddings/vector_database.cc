@@ -153,8 +153,10 @@ ScoredUrl& ScoredUrl::operator=(const ScoredUrl&) = default;
 ////////////////////////////////////////////////////////////////////////////////
 
 SearchParams::SearchParams() = default;
+SearchParams::SearchParams(const SearchParams&) = default;
 SearchParams::SearchParams(SearchParams&&) = default;
 SearchParams::~SearchParams() = default;
+SearchParams& SearchParams::operator=(const SearchParams&) = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 

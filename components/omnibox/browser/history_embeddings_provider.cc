@@ -92,7 +92,7 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
       metrics::OmniboxEventProto_Feature_HISTORY_EMBEDDINGS_FEATURE);
   service->Search(
       nullptr, base::UTF16ToUTF8(adjusted_input.text()), {},
-      provider_max_matches_,
+      provider_max_matches_, /*skip_answering=*/false,
       base::BindRepeating(&HistoryEmbeddingsProvider::OnReceivedSearchResult,
                           weak_factory_.GetWeakPtr()));
 }

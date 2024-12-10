@@ -43,8 +43,10 @@ struct ScoredUrl {
 
 struct SearchParams {
   SearchParams();
+  SearchParams(const SearchParams&);
   SearchParams(SearchParams&&);
   ~SearchParams();
+  SearchParams& operator=(const SearchParams&);
 
   // Portions of lower-cased query representing terms usable for text search.
   // Owned std::string instances are used instead of std::string_view into
@@ -78,6 +80,9 @@ struct SearchParams {
   // If true, any non-ASCII characters in queries or passages will be erased
   // instead of ignoring such queries or passages entirely.
   bool erase_non_ascii = false;
+
+  // If true, answering step will be skipped even if the query is answerable.
+  bool skip_answering = false;
 };
 
 struct SearchInfo {

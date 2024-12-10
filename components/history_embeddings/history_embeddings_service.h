@@ -123,6 +123,7 @@ struct SearchResult {
   std::string query;
   std::optional<base::Time> time_range_start;
   size_t count = 0;
+  SearchParams search_params;
 
   // The actual search result data. Note that the size of this vector will
   // not necessarily match the above requested `count`.
@@ -180,17 +181,19 @@ class HistoryEmbeddingsService : public KeyedService,
   // the time range is inclusive and the end is unbounded. Practically, this can
   // be thought of as [start, now) but now isn't fixed. Virtual for testing.
   // The `callback` may be called back later with another search result
-  // containing an answer. This two-phase result callback scheme lets callers
-  // receive initial search results without having to wait longer for answers.
-  // The `previous_search_result` may be nullptr to signal the beginning of a
-  // completely new search session; if it is non-null and the session_id was
-  // set, the new session_id is set based on the previous to indicate a
-  // continuing search session. Returns a stub result that can be used to detect
-  // if a later published SearchResult instance is related to this search.
+  // containing an answer, only if `skip_answering` is false.  This two-phase
+  // result callback scheme lets callers receive initial search results without
+  // having to wait longer for answers.  The `previous_search_result` may be
+  // nullptr to signal the beginning of a completely new search session; if it
+  // is non-null and the session_id was set, the new session_id is set based on
+  // the previous to indicate a continuing search session. Returns a stub result
+  // that can be used to detect if a later published SearchResult instance is
+  // related to this search.
   virtual SearchResult Search(SearchResult* previous_search_result,
                               std::string query,
                               std::optional<base::Time> time_range_start,
                               size_t count,
+                              bool skip_answering,
                               SearchResultCallback callback);
 
   // Weak `this` provider method.
@@ -320,7 +323,6 @@ class HistoryEmbeddingsService : public KeyedService,
   // computed.
   void OnQueryEmbeddingComputed(
       SearchResultCallback callback,
-      SearchParams search_params,
       SearchResult result,
       std::vector<std::string> query_passages,
       std::vector<Embedding> query_embedding,

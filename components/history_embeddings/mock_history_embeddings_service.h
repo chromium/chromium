@@ -27,6 +27,7 @@ class MockHistoryEmbeddingsService : public HistoryEmbeddingsService {
                std::string query,
                std::optional<base::Time> time_range_start,
                size_t count,
+               bool skip_answering,
                SearchResultCallback callback),
               (override));
   explicit MockHistoryEmbeddingsService(
