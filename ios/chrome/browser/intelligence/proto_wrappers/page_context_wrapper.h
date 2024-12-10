@@ -32,7 +32,8 @@ class WebState;
 - (instancetype)
       initWithWebState:(web::WebState*)webState
     completionCallback:
-        (base::OnceCallback<void(optimization_guide::proto::PageContext*)>)
+        (base::OnceCallback<
+            void(std::unique_ptr<optimization_guide::proto::PageContext>)>)
             completionCallback NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

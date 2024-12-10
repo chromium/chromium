@@ -32,7 +32,8 @@ const int kAsyncTasksCount = 1;
 
   // The callback to execute once all async work is complete, whichs
   // relinquishes ownership of the PageContext proto to the callback's handler.
-  base::OnceCallback<void(optimization_guide::proto::PageContext*)>
+  base::OnceCallback<void(
+      std::unique_ptr<optimization_guide::proto::PageContext>)>
       _completion_callback;
 
   // Unique pointer to the PageContext proto.
@@ -46,7 +47,8 @@ const int kAsyncTasksCount = 1;
 - (instancetype)
       initWithWebState:(web::WebState*)webState
     completionCallback:
-        (base::OnceCallback<void(optimization_guide::proto::PageContext*)>)
+        (base::OnceCallback<
+            void(std::unique_ptr<optimization_guide::proto::PageContext>)>)
             completionCallback {
   self = [super init];
   if (self) {
@@ -79,6 +81,8 @@ const int kAsyncTasksCount = 1;
   // Also, every code path for a given task should eventually execute the
   // `barrier` callback, otherwise the `BarrierClosure` will never execute its
   // completion block.
+
+  // Take WebState snapshot.
   if (_webState->CanTakeSnapshot()) {
     CGRect rect = [_webState->GetView() bounds];
     _webState->TakeSnapshot(rect, base::BindRepeating(^(UIImage* image) {
@@ -95,7 +99,7 @@ const int kAsyncTasksCount = 1;
 // All async tasks are complete, execute the overall completion callback.
 // Relinquish ownership to the callback handler.
 - (void)asyncWorkCompletedForPageContext {
-  std::move(_completion_callback).Run(_page_context.release());
+  std::move(_completion_callback).Run(std::move(_page_context));
 }
 
 // Convert UIImage snapshot to PNG, and then to base64 encoded string. Set the

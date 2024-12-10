@@ -99,9 +99,12 @@
       allowReorganizingExistingGroups:true
                      groupingStrategy:strategy
                    completionCallback:base::BindOnce(^(
-                                          optimization_guide::proto::
-                                              TabOrganizationRequest* request) {
-                     [weakSelf onTabOrganizationRequestCreated:request];
+                                          std::unique_ptr<
+                                              optimization_guide::proto::
+                                                  TabOrganizationRequest>
+                                              request) {
+                     [weakSelf
+                         onTabOrganizationRequestCreated:std::move(request)];
                    })];
   [_tabOrganizationRequestWrapper populateRequestFieldsAsync];
 }
@@ -159,11 +162,13 @@
 // Handles the populated tab organization request by passing it to the model
 // execution service.
 - (void)onTabOrganizationRequestCreated:
-    (optimization_guide::proto::TabOrganizationRequest*)request {
+    (std::unique_ptr<optimization_guide::proto::TabOrganizationRequest>)
+        request {
   // Execute the request.
   __weak __typeof(self) weakSelf = self;
   _service->ExecuteModel(
-      optimization_guide::ModelBasedCapabilityKey::kTabOrganization, *request,
+      optimization_guide::ModelBasedCapabilityKey::kTabOrganization,
+      *request.release(),
       /*execution_timeout*/ std::nullopt,
       base::BindOnce(
           ^(optimization_guide::OptimizationGuideModelExecutionResult result,

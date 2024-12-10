@@ -35,8 +35,9 @@ class WebStateList;
                             TabOrganizationRequest_TabOrganizationModelStrategy)
                            groupingStrategy
                  completionCallback:
-                     (base::OnceCallback<void(
-                          optimization_guide::proto::TabOrganizationRequest*)>)
+                     (base::OnceCallback<
+                         void(std::unique_ptr<optimization_guide::proto::
+                                                  TabOrganizationRequest>)>)
                          completionCallback NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
