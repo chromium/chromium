@@ -70,7 +70,8 @@
 }
 
 - (void)showVirtualCardEnrollmentBottomSheet:
-    (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model {
+            (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model
+                              originWebState:(web::WebState*)originWebState {
   _virtualCardEnrollUiModel = std::move(model);
 }
 

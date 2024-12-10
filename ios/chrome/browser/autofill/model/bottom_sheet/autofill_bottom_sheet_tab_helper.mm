@@ -87,7 +87,8 @@ void AutofillBottomSheetTabHelper::ShowVirtualCardEnrollmentBottomSheet(
     std::unique_ptr<autofill::VirtualCardEnrollUiModel> model,
     autofill::VirtualCardEnrollmentCallbacks callbacks) {
   virtual_card_enrollment_callbacks_ = std::move(callbacks);
-  [commands_handler_ showVirtualCardEnrollmentBottomSheet:std::move(model)];
+  [commands_handler_ showVirtualCardEnrollmentBottomSheet:std::move(model)
+                                           originWebState:web_state_];
 }
 
 void AutofillBottomSheetTabHelper::ShowEditAddressBottomSheet() {

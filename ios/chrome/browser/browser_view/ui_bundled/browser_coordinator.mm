@@ -33,6 +33,7 @@
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/card_unmask_authentication_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/autofill_edit_profile_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_coordinator.h"
@@ -275,6 +276,7 @@
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
+#import "ios/web/public/web_state.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -1857,10 +1859,18 @@ enum class ToolbarKind {
 }
 
 - (void)showVirtualCardEnrollmentBottomSheet:
-    (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model {
+            (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model
+                              originWebState:(web::WebState*)originWebState {
   if (self.virtualCardEnrollmentBottomSheetCoordinator) {
     [self.virtualCardEnrollmentBottomSheetCoordinator stop];
   }
+
+  if (self.activeWebState != originWebState) {
+    // Do not show the sheet if the current tab is not the one where the credit
+    // card was originally saved.
+    return;
+  }
+
   self.virtualCardEnrollmentBottomSheetCoordinator =
       [[VirtualCardEnrollmentBottomSheetCoordinator alloc]
              initWithUIModel:std::move(model)
