@@ -1317,8 +1317,7 @@ void StyleResolver::InitStyle(Element& element,
     // the element has rules but no matched properties, we currently clone.
     state.SetStyle(*parent_style);
 
-    // Highlight Pseudos do not support custom properties defined on the
-    // pseudo itself. They may use var() references but those must be resolved
+    // Highlight Pseudos may use var() references but those must be resolved
     // against the originating element. Share the variables from the originating
     // style.
     state.StyleBuilder().CopyInheritedVariablesFrom(

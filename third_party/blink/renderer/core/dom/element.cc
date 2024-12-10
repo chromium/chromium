@@ -5187,11 +5187,17 @@ Element::HighlightRecalc Element::CalculateHighlightRecalc(
     return HighlightRecalc::kNone;
   }
   // If we are a root element (our parent is a Document or ShadowRoot), we can
-  // skip highlight recalc if there neither are nor were any non-UA highlight
-  // rules (regardless of whether or not they are non-universal), and the root’s
-  // effective zoom (‘zoom’ × page zoom × device scale factor) did not change.
+  // skip highlight recalc if all of the following are true:
+  // * there neither are nor were any non-UA highlight rules (regardless of
+  //   whether or not they are non-universal), because then no inherited
+  //   highlight properties have changed.
+  // * the root’s effective zoom (‘zoom’ × page zoom × device scale factor) did
+  //   not change, because then no units have changed size.
+  // * the InitialData for custom properties has not changed, because then
+  //   custom properties will still have the same initial values.
   // In that case, we only need to calculate highlight styles once, because our
-  // UA styles only use type selectors and we never change them dynamically.
+  // UA styles only use type selectors, do not have custom properties, and we
+  // never change them dynamically.
   DCHECK(IsInTreeScope());
   if (parentNode() == GetTreeScope().RootNode()) {
     if (new_style.HasNonUaHighlightPseudoStyles()) {
@@ -5202,6 +5208,9 @@ Element::HighlightRecalc Element::CalculateHighlightRecalc(
         return HighlightRecalc::kFull;
       }
       if (old_style->EffectiveZoom() != new_style.EffectiveZoom()) {
+        return HighlightRecalc::kFull;
+      }
+      if (old_style->InitialData() != new_style.InitialData()) {
         return HighlightRecalc::kFull;
       }
       // Neither the new style nor the old style has any non-UA highlight rules,
