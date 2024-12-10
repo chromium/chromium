@@ -21,7 +21,7 @@ std::vector<std::string> GetFixedModuleList() {
   return {};
 #else
   return {
-      kPriceChange, kSingleTab, kTabResumption, kSafetyHub, kAuxiliarySearch,
+      kPriceChange, kSingleTab, kSafetyHub, kAuxiliarySearch, kTabResumption
   };
 #endif
 }
