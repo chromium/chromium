@@ -6,8 +6,10 @@ found in the LICENSE file.
 -->
 
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/phone_tab_switcher_empty_state_illustration_background"
-            android:drawable="@drawable/phone_tab_switcher_empty_state_illustration_background" />
+    <item android:id="@+id/phone_tab_switcher_empty_state_illustration_cloud_left"
+            android:drawable="@drawable/phone_tab_switcher_empty_state_illustration_cloud_left" />
+    <item android:id="@+id/phone_tab_switcher_empty_state_illustration_cloud_right"
+            android:drawable="@drawable/phone_tab_switcher_empty_state_illustration_cloud_right" />
     <item android:id="@+id/phone_tab_switcher_empty_state_illustration_bottom_window"
             android:drawable="@drawable/phone_tab_switcher_empty_state_illustration_bottom_window" />
     <item android:id="@+id/phone_tab_switcher_empty_state_illustration_top_window"
