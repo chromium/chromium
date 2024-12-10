@@ -152,7 +152,6 @@ BASE_DECLARE_FEATURE(kReadAloudServerExperiments);
 BASE_DECLARE_FEATURE(kReadAloudIPHMenuButtonHighlightCCT);
 BASE_DECLARE_FEATURE(kRedirectExplicitCTAIntentsToExistingActivity);
 BASE_DECLARE_FEATURE(kReengagementNotification);
-BASE_DECLARE_FEATURE(kReaderModeInCCT);
 BASE_DECLARE_FEATURE(kRecordSuppressionMetrics);
 BASE_DECLARE_FEATURE(kRelatedSearchesAllLanguage);
 BASE_DECLARE_FEATURE(kRelatedSearchesSwitch);

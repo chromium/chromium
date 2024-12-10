@@ -8,7 +8,6 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
@@ -125,15 +124,6 @@ public class DomDistillerTabUtils {
             sHeuristics = DomDistillerTabUtilsJni.get().getDistillerHeuristics();
         }
         return sHeuristics;
-    }
-
-    /**
-     * Check if the distilled content should be shown in a Chrome Custom Tab (CCT).
-     *
-     * @return True if it should.
-     */
-    public static boolean isCctMode() {
-        return ChromeFeatureList.sReaderModeCct.isEnabled();
     }
 
     /**

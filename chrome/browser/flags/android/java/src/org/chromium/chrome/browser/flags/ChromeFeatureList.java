@@ -460,7 +460,6 @@ public abstract class ChromeFeatureList {
     public static final String READALOUD_TAP_TO_SEEK = "ReadAloudTapToSeek";
     public static final String READALOUD_IPH_MENU_BUTTON_HIGHLIGHT_CCT =
             "ReadAloudIPHMenuButtonHighlightCCT";
-    public static final String READER_MODE_IN_CCT = "ReaderModeInCCT";
     public static final String READING_LIST_ENABLE_SYNC_TRANSPORT_MODE_UPON_SIGNIN =
             "ReadingListEnableSyncTransportModeUponSignIn";
     public static final String RECORD_SUPPRESSION_METRICS = "RecordSuppressionMetrics";
@@ -928,8 +927,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(QUICK_DELETE_ANDROID_SURVEY, false);
     public static final MutableFlagWithSafeDefault sReadAloudTapToSeek =
             newMutableFlagWithSafeDefault(READALOUD_TAP_TO_SEEK, false);
-    public static final MutableFlagWithSafeDefault sReaderModeCct =
-            newMutableFlagWithSafeDefault(READER_MODE_IN_CCT, false);
     public static final MutableFlagWithSafeDefault sRecordSuppressionMetrics =
             newMutableFlagWithSafeDefault(RECORD_SUPPRESSION_METRICS, true);
     public static final MutableFlagWithSafeDefault sSafetyHub =

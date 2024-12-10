@@ -618,7 +618,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         // button for this site on other tabs.
         removeUrlFromMutedSites(mDistillerUrl);
 
-        if (DomDistillerTabUtils.isCctMode() && !SysUtils.isLowEndDevice()) {
+        if (!SysUtils.isLowEndDevice()) {
             distillInCustomTab();
         } else {
             navigateToReaderMode();

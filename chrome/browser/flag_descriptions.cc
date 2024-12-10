@@ -4746,10 +4746,6 @@ const char kReaderModeHeuristicsAllArticles[] = "All articles";
 const char kReaderModeHeuristicsAlwaysOff[] = "Never";
 const char kReaderModeHeuristicsAlwaysOn[] = "Always";
 
-const char kReaderModeInCCTName[] = "Reader Mode in CCT";
-const char kReaderModeInCCTDescription[] =
-    "Open Reader Mode in Chrome Custom Tabs.";
-
 const char kReengagementNotificationName[] =
     "Enable re-engagement notifications";
 const char kReengagementNotificationDescription[] =

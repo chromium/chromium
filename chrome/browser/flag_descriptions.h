@@ -2760,9 +2760,6 @@ extern const char kReaderModeHeuristicsAllArticles[];
 extern const char kReaderModeHeuristicsAlwaysOff[];
 extern const char kReaderModeHeuristicsAlwaysOn[];
 
-extern const char kReaderModeInCCTName[];
-extern const char kReaderModeInCCTDescription[];
-
 extern const char kReengagementNotificationName[];
 extern const char kReengagementNotificationDescription[];
 
