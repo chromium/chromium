@@ -12,8 +12,6 @@ static_library("quick_insert") {
     "quick_insert_client_impl.h",
     "quick_insert_file_suggester.cc",
     "quick_insert_file_suggester.h",
-    "quick_insert_link_suggester.cc",
-    "quick_insert_link_suggester.h",
     "quick_insert_thumbnail_loader.cc",
     "quick_insert_thumbnail_loader.h",
   ]

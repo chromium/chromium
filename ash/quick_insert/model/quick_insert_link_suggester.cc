@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/quick_insert/quick_insert_link_suggester.h"
+#include "ash/quick_insert/model/quick_insert_link_suggester.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
@@ -10,9 +10,6 @@
 #include "base/barrier_callback.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/favicon/favicon_service_factory.h"
-#include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/history/core/browser/history_service.h"
@@ -43,30 +40,29 @@ bool IsLinkLikelyPersonalized(const GURL& url) {
 
 }  // namespace
 
-QuickInsertLinkSuggester::QuickInsertLinkSuggester(Profile* profile) {
-  history_service_ = HistoryServiceFactory::GetForProfile(
-      profile, ServiceAccessType::EXPLICIT_ACCESS);
-  favicon_service_ = FaviconServiceFactory::GetForProfile(
-      profile, ServiceAccessType::EXPLICIT_ACCESS);
-}
+QuickInsertLinkSuggester::QuickInsertLinkSuggester() = default;
 
 QuickInsertLinkSuggester::~QuickInsertLinkSuggester() = default;
 
 void QuickInsertLinkSuggester::GetSuggestedLinks(
+    history::HistoryService* history_service,
+    favicon::FaviconService* favicon_service,
     size_t max_links,
     SuggestedLinksCallback callback) {
-  CHECK(history_service_);
+  CHECK(history_service);
   history::QueryOptions options;
   options.max_count = max_links;
   options.SetRecentDayRange(kRecentDayRange);
-  history_service_->QueryHistory(
+  history_service->QueryHistory(
       std::u16string(), options,
       base::BindOnce(&QuickInsertLinkSuggester::OnGetBrowsingHistory,
-                     weak_factory_.GetWeakPtr(), std::move(callback)),
+                     weak_factory_.GetWeakPtr(), favicon_service,
+                     std::move(callback)),
       &history_query_tracker_);
 }
 
 void QuickInsertLinkSuggester::OnGetBrowsingHistory(
+    favicon::FaviconService* favicon_service,
     SuggestedLinksCallback callback,
     history::QueryResults results) {
   std::vector<history::URLResult> filtered_results;
@@ -78,7 +74,7 @@ void QuickInsertLinkSuggester::OnGetBrowsingHistory(
                           return result.url().SchemeIsHTTPOrHTTPS();
                         });
 
-  if (favicon_service_) {
+  if (favicon_service) {
     favicon_query_trackers_ =
         std::vector<base::CancelableTaskTracker>(filtered_results.size());
     auto barrier_callback = base::BarrierCallback<ash::QuickInsertSearchResult>(
@@ -86,7 +82,7 @@ void QuickInsertLinkSuggester::OnGetBrowsingHistory(
         /*done_callback=*/std::move(callback));
 
     for (size_t i = 0; i < filtered_results.size(); ++i) {
-      favicon_service_->GetFaviconImageForPageURL(
+      favicon_service->GetFaviconImageForPageURL(
           filtered_results[i].url(),
           base::BindOnce(&QuickInsertLinkSuggester::OnGetFaviconImage,
                          weak_factory_.GetWeakPtr(), filtered_results[i],

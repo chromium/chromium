@@ -44,9 +44,10 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/lobster/lobster_service_provider.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/quick_insert/quick_insert_file_suggester.h"
-#include "chrome/browser/ui/ash/quick_insert/quick_insert_link_suggester.h"
 #include "chrome/browser/ui/ash/quick_insert/quick_insert_thumbnail_loader.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -454,12 +455,6 @@ void QuickInsertClientImpl::GetRecentDriveFileResults(
                      .Then(std::move(callback)));
 }
 
-void QuickInsertClientImpl::GetSuggestedLinkResults(
-    size_t max_results,
-    SuggestedLinksCallback callback) {
-  link_suggester_->GetSuggestedLinks(max_results, std::move(callback));
-}
-
 void QuickInsertClientImpl::FetchFileThumbnail(
     const base::FilePath& path,
     const gfx::Size& size,
@@ -537,6 +532,16 @@ void QuickInsertClientImpl::ActiveUserChanged(user_manager::User* active_user) {
                      weak_factory_.GetWeakPtr(), active_user));
 }
 
+history::HistoryService* QuickInsertClientImpl::GetHistoryService() {
+  return HistoryServiceFactory::GetForProfile(
+      profile_, ServiceAccessType::EXPLICIT_ACCESS);
+}
+
+favicon::FaviconService* QuickInsertClientImpl::GetFaviconService() {
+  return FaviconServiceFactory::GetForProfile(
+      profile_, ServiceAccessType::EXPLICIT_ACCESS);
+}
+
 void QuickInsertClientImpl::SetProfileByUser(const user_manager::User* user) {
   Profile* profile = Profile::FromBrowserContext(
       ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user));
@@ -561,7 +566,6 @@ void QuickInsertClientImpl::SetProfile(Profile* profile) {
   ranker_manager_ = std::make_unique<app_list::RankerManager>(profile_);
 
   file_suggester_ = std::make_unique<QuickInsertFileSuggester>(profile_);
-  link_suggester_ = std::make_unique<QuickInsertLinkSuggester>(profile_);
   thumbnail_loader_ = std::make_unique<QuickInsertThumbnailLoader>(profile_);
 
   if (controller_ != nullptr) {

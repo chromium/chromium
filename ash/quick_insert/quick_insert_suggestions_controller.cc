@@ -116,7 +116,8 @@ void QuickInsertSuggestionsController::GetSuggestions(
     // supports filtering.
     switch (category) {
       case QuickInsertCategory::kLinks:
-        client.GetSuggestedLinkResults(
+        link_suggester_.GetSuggestedLinks(
+            client.GetHistoryService(), client.GetFaviconService(),
             /*max_results=*/10,
             base::BindRepeating(&GetMostRecentResults, 1).Then(callback));
         break;
@@ -155,7 +156,9 @@ void QuickInsertSuggestionsController::GetSuggestionsForCategory(
     case QuickInsertCategory::kLinks:
       // TODO: b/366237507 - Request only kMaxRecentLinks results once
       // HistoryService supports filtering.
-      client.GetSuggestedLinkResults(kMaxRecentLinks * 3, std::move(callback));
+      link_suggester_.GetSuggestedLinks(
+          client.GetHistoryService(), client.GetFaviconService(),
+          kMaxRecentLinks * 3, std::move(callback));
       return;
     case QuickInsertCategory::kEmojisGifs:
     case QuickInsertCategory::kEmojis:

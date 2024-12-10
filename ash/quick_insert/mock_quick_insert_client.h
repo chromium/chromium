@@ -56,10 +56,6 @@ class ASH_EXPORT MockQuickInsertClient : public QuickInsertClient {
               (size_t, RecentFilesCallback),
               (override));
   MOCK_METHOD(void,
-              GetSuggestedLinkResults,
-              (size_t, SuggestedLinksCallback),
-              (override));
-  MOCK_METHOD(void,
               FetchFileThumbnail,
               (const base::FilePath& path,
                const gfx::Size& size,
@@ -71,6 +67,8 @@ class ASH_EXPORT MockQuickInsertClient : public QuickInsertClient {
               (),
               (override));
   MOCK_METHOD(void, Announce, (std::u16string_view message), (override));
+  MOCK_METHOD(history::HistoryService*, GetHistoryService, (), (override));
+  MOCK_METHOD(favicon::FaviconService*, GetFaviconService, (), (override));
 };
 
 }  // namespace ash

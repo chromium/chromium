@@ -10,10 +10,15 @@
 #include "ash/quick_insert/mock_quick_insert_client.h"
 #include "ash/quick_insert/model/quick_insert_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
+#include "components/history/core/test/history_service_test_util.h"
 #include "ui/base/ime/ash/fake_ime_keyboard.h"
 #include "ui/base/ime/fake_text_input_client.h"
 
@@ -37,11 +42,29 @@ using ::testing::Return;
 using ::testing::VariantWith;
 using ::testing::WithArg;
 
-using QuickInsertSuggestionsControllerTest = testing::Test;
+class QuickInsertSuggestionsControllerTest : public testing::Test {
+ public:
+  QuickInsertSuggestionsControllerTest() {
+    CHECK(history_dir_.CreateUniqueTempDir());
+    history_service_ =
+        history::CreateHistoryService(history_dir_.GetPath(), true);
+  }
+
+  history::HistoryService* GetHistoryService() {
+    return history_service_.get();
+  }
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+  base::ScopedTempDir history_dir_;
+  std::unique_ptr<history::HistoryService> history_service_;
+};
 
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWhenUnfocusedReturnsNewWindowResults) {
   NiceMock<MockQuickInsertClient> client;
+  EXPECT_CALL(client, GetHistoryService)
+      .WillRepeatedly(Return(GetHistoryService()));
   QuickInsertSuggestionsController controller;
   input_method::FakeImeKeyboard keyboard;
   QuickInsertModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr,
@@ -114,6 +137,8 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWhenFocusedDoesNotReturnNewWindowResults) {
   NiceMock<MockQuickInsertClient> client;
+  EXPECT_CALL(client, GetHistoryService)
+      .WillRepeatedly(Return(GetHistoryService()));
   QuickInsertSuggestionsController controller;
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_method::FakeImeKeyboard keyboard;
@@ -134,6 +159,8 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWhenCapsOffReturnsCapsOn) {
   NiceMock<MockQuickInsertClient> client;
+  EXPECT_CALL(client, GetHistoryService)
+      .WillRepeatedly(Return(GetHistoryService()));
   QuickInsertSuggestionsController controller;
   input_method::FakeImeKeyboard keyboard;
   keyboard.SetCapsLockEnabled(false);
@@ -156,6 +183,8 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWhenCapsOnReturnsCapsOff) {
   NiceMock<MockQuickInsertClient> client;
+  EXPECT_CALL(client, GetHistoryService)
+      .WillRepeatedly(Return(GetHistoryService()));
   QuickInsertSuggestionsController controller;
   input_method::FakeImeKeyboard keyboard;
   keyboard.SetCapsLockEnabled(true);
@@ -178,6 +207,8 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWithSelectionReturnsCaseTransforms) {
   NiceMock<MockQuickInsertClient> client;
+  EXPECT_CALL(client, GetHistoryService)
+      .WillRepeatedly(Return(GetHistoryService()));
   QuickInsertSuggestionsController controller;
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_field.SetTextAndSelection(u"a", gfx::Range(0, 1));
@@ -206,6 +237,8 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWithNoSelectionDoesNotReturnCaseTransforms) {
   NiceMock<MockQuickInsertClient> client;
+  EXPECT_CALL(client, GetHistoryService)
+      .WillRepeatedly(Return(GetHistoryService()));
   QuickInsertSuggestionsController controller;
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_method::FakeImeKeyboard keyboard;
@@ -231,14 +264,22 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsRequestsAndReturnsSuggestionsPerCategory) {
+  const base::Time now = base::Time::Now();
+  auto* history_service = GetHistoryService();
+  history_service->AddPageWithDetails(
+      GURL("https://a.com"), /*title=*/u"", /*visit_count=*/1,
+      /*typed_count=*/1,
+      /*last_visit=*/now,
+      /*hidden=*/false, history::SOURCE_BROWSED);
+  history_service->AddPageWithDetails(
+      GURL("https://b.com"), /*title=*/u"", /*visit_count=*/1,
+      /*typed_count=*/1,
+      /*last_visit=*/now - base::Seconds(1),
+      /*hidden=*/false, history::SOURCE_BROWSED);
+  history::BlockUntilHistoryProcessesPendingRequests(history_service);
   NiceMock<MockQuickInsertClient> client;
-  EXPECT_CALL(client, GetSuggestedLinkResults(_, _))
-      .WillOnce(RunOnceCallback<1>(std::vector<QuickInsertSearchResult>{
-          QuickInsertBrowsingHistoryResult(GURL("a.com"), u"a",
-                                           /*icon=*/{}),
-          QuickInsertBrowsingHistoryResult(GURL("b.com"), u"b",
-                                           /*icon=*/{}),
-      }));
+  EXPECT_CALL(client, GetHistoryService)
+      .WillRepeatedly(Return(history_service));
   EXPECT_CALL(client, GetRecentDriveFileResults(5, _))
       .WillOnce(RunOnceCallback<1>(std::vector<QuickInsertSearchResult>{
           QuickInsertDriveFileResult(/*id=*/{}, u"a", GURL("a.com"),
@@ -259,13 +300,14 @@ TEST_F(QuickInsertSuggestionsControllerTest,
                          &keyboard, QuickInsertModel::EditorStatus::kEnabled,
                          QuickInsertModel::LobsterStatus::kEnabled);
 
+  base::test::TestFuture<void> history_future;
   base::MockCallback<QuickInsertSuggestionsController::SuggestionsCallback>
       callback;
   EXPECT_CALL(callback, Run).Times(AnyNumber());
   EXPECT_CALL(
       callback,
       Run(ElementsAre(VariantWith<QuickInsertBrowsingHistoryResult>(_))))
-      .Times(1);
+      .WillOnce([&]() { history_future.SetValue(); });
   EXPECT_CALL(callback,
               Run(ElementsAre(VariantWith<QuickInsertDriveFileResult>(_))))
       .Times(1);
@@ -276,23 +318,37 @@ TEST_F(QuickInsertSuggestionsControllerTest,
       .Times(1);
 
   controller.GetSuggestions(client, model, callback.Get());
+  ASSERT_TRUE(history_future.Wait());
 }
 
 TEST_F(QuickInsertSuggestionsControllerTest, GetSuggestionsForLinkCategory) {
-  const std::vector<QuickInsertSearchResult> suggested_links = {
-      QuickInsertBrowsingHistoryResult(GURL("a.com"), u"a", /*icon=*/{}),
-      QuickInsertBrowsingHistoryResult(GURL("b.com"), u"b", /*icon=*/{}),
-  };
+  const base::Time now = base::Time::Now();
+  auto* history_service = GetHistoryService();
+  history_service->AddPageWithDetails(
+      GURL("https://a.com"), /*title=*/u"a", /*visit_count=*/1,
+      /*typed_count=*/1,
+      /*last_visit=*/now,
+      /*hidden=*/false, history::SOURCE_BROWSED);
+  history_service->AddPageWithDetails(
+      GURL("https://b.com"), /*title=*/u"b", /*visit_count=*/1,
+      /*typed_count=*/1,
+      /*last_visit=*/now - base::Seconds(1),
+      /*hidden=*/false, history::SOURCE_BROWSED);
+  history::BlockUntilHistoryProcessesPendingRequests(history_service);
   NiceMock<MockQuickInsertClient> client;
-  EXPECT_CALL(client, GetSuggestedLinkResults)
-      .WillOnce(RunOnceCallback<1>(suggested_links));
+  EXPECT_CALL(client, GetHistoryService)
+      .WillRepeatedly(Return(history_service));
   QuickInsertSuggestionsController controller;
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   controller.GetSuggestionsForCategory(client, QuickInsertCategory::kLinks,
                                        future.GetRepeatingCallback());
 
-  EXPECT_EQ(future.Take(), suggested_links);
+  EXPECT_THAT(future.Take(),
+              ElementsAre(VariantWith<QuickInsertBrowsingHistoryResult>(
+                              FieldsAre(GURL("https://a.com"), u"a", _, _)),
+                          VariantWith<QuickInsertBrowsingHistoryResult>(
+                              FieldsAre(GURL("https://b.com"), u"b", _, _)), ));
 }
 
 TEST_F(QuickInsertSuggestionsControllerTest,

@@ -24,8 +24,16 @@
 class SkBitmap;
 class PrefService;
 
+namespace favicon {
+class FaviconService;
+}
+
 namespace gfx {
 class Size;
+}
+
+namespace history {
+class HistoryService;
 }
 
 namespace network {
@@ -49,8 +57,6 @@ class ASH_EXPORT QuickInsertClient {
       base::OnceCallback<void(std::vector<QuickInsertSearchResult>)>;
   using RecentFilesCallback =
       base::OnceCallback<void(std::vector<QuickInsertSearchResult>)>;
-  using SuggestedLinksCallback =
-      base::RepeatingCallback<void(std::vector<QuickInsertSearchResult>)>;
   using FetchFileThumbnailCallback =
       base::OnceCallback<void(const SkBitmap* bitmap, base::File::Error error)>;
 
@@ -89,9 +95,6 @@ class ASH_EXPORT QuickInsertClient {
   virtual void GetRecentDriveFileResults(size_t max_files,
                                          RecentFilesCallback callback) = 0;
 
-  virtual void GetSuggestedLinkResults(size_t max_results,
-                                       SuggestedLinksCallback callback) = 0;
-
   virtual void FetchFileThumbnail(const base::FilePath& path,
                                   const gfx::Size& size,
                                   FetchFileThumbnailCallback callback) = 0;
@@ -103,6 +106,9 @@ class ASH_EXPORT QuickInsertClient {
 
   // Make an announcement via an offscreen live region.
   virtual void Announce(std::u16string_view message) = 0;
+
+  virtual history::HistoryService* GetHistoryService() = 0;
+  virtual favicon::FaviconService* GetFaviconService() = 0;
 
  protected:
   QuickInsertClient();

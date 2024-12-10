@@ -74,26 +74,6 @@ using ::testing::VariantWith;
 
 namespace fmp = extensions::api::file_manager_private;
 
-class TestFaviconService : public favicon::MockFaviconService {
- public:
-  TestFaviconService() = default;
-  TestFaviconService(const TestFaviconService&) = delete;
-  TestFaviconService& operator=(const TestFaviconService&) = delete;
-  ~TestFaviconService() override = default;
-
-  // favicon::FaviconService:
-  base::CancelableTaskTracker::TaskId GetFaviconImageForPageURL(
-      const GURL& page_url,
-      favicon_base::FaviconImageCallback callback,
-      base::CancelableTaskTracker* tracker) override {
-    page_url_ = page_url;
-    std::move(callback).Run(favicon_base::FaviconImageResult());
-    return {};
-  }
-
-  GURL page_url_;
-};
-
 bool CreateTestFile(const base::FilePath& path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   if (!base::WriteFile(path, "test_file")) {
@@ -544,76 +524,6 @@ TEST_F(QuickInsertClientImplTest, GetRecentDriveFilesTruncates) {
   client.GetRecentDriveFileResults(/*max_files=*/1, future.GetCallback());
 
   EXPECT_THAT(future.Get(), SizeIs(1));
-}
-
-TEST_F(QuickInsertClientImplTest, GetSuggestedLinkResultsReturnsLinks) {
-  ash::QuickInsertController controller;
-  QuickInsertClientImpl client(&controller, user_manager());
-  const base::Time now = base::Time::Now();
-  AddSearchToHistory(profile(), GURL("http://a.com/history"),
-                     now - base::Seconds(1));
-  AddSearchToHistory(profile(), GURL("http://b.com/history"), now);
-  TestFaviconService favicon_service;
-  client.get_link_suggester_for_test()->set_favicon_service_for_test(
-      &favicon_service);
-
-  base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
-  client.GetSuggestedLinkResults(100u, future.GetRepeatingCallback());
-
-  EXPECT_THAT(
-      future.Get(),
-      ElementsAre(VariantWith<ash::QuickInsertBrowsingHistoryResult>(
-                      Field("url", &ash::QuickInsertBrowsingHistoryResult::url,
-                            GURL("http://b.com/history"))),
-                  VariantWith<ash::QuickInsertBrowsingHistoryResult>(
-                      Field("url", &ash::QuickInsertBrowsingHistoryResult::url,
-                            GURL("http://a.com/history")))));
-  EXPECT_EQ(favicon_service.page_url_, GURL("http://a.com/history"));
-}
-
-TEST_F(QuickInsertClientImplTest,
-       GetSuggestedLinkResultsAreTruncatedToMostRecent) {
-  ash::QuickInsertController controller;
-  QuickInsertClientImpl client(&controller, user_manager());
-  const base::Time now = base::Time::Now();
-  AddSearchToHistory(profile(), GURL("http://a.com/history"),
-                     now - base::Seconds(1));
-  AddSearchToHistory(profile(), GURL("http://b.com/history"), now);
-  TestFaviconService favicon_service;
-  client.get_link_suggester_for_test()->set_favicon_service_for_test(
-      &favicon_service);
-
-  base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
-  client.GetSuggestedLinkResults(1u, future.GetRepeatingCallback());
-
-  EXPECT_THAT(future.Get(),
-              ElementsAre(VariantWith<ash::QuickInsertBrowsingHistoryResult>(
-                  Field("url", &ash::QuickInsertBrowsingHistoryResult::url,
-                        GURL("http://b.com/history")))));
-  EXPECT_EQ(favicon_service.page_url_, GURL("http://b.com/history"));
-}
-
-TEST_F(QuickInsertClientImplTest,
-       GetSuggestedLinkResultsFiltersOutPersonalizedLinks) {
-  ash::QuickInsertController controller;
-  QuickInsertClientImpl client(&controller, user_manager());
-  const base::Time now = base::Time::Now();
-  AddSearchToHistory(profile(),
-                     GURL("https://mail.google.com/mail/u/0/#inbox/aaa"), now);
-  AddSearchToHistory(profile(),
-                     GURL("https://mail.google.com/chat/u/0/#chat/aaa"), now);
-  AddSearchToHistory(profile(), GURL("https://mail.google.com"), now);
-  TestFaviconService favicon_service;
-  client.get_link_suggester_for_test()->set_favicon_service_for_test(
-      &favicon_service);
-
-  base::test::TestFuture<std::vector<ash::QuickInsertSearchResult>> future;
-  client.GetSuggestedLinkResults(100u, future.GetRepeatingCallback());
-
-  EXPECT_THAT(future.Get(),
-              ElementsAre(VariantWith<ash::QuickInsertBrowsingHistoryResult>(
-                  Field("url", &ash::QuickInsertBrowsingHistoryResult::url,
-                        GURL("https://mail.google.com")))));
 }
 
 TEST_F(QuickInsertClientImplTest,

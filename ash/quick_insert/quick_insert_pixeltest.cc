@@ -13,8 +13,11 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/strcat.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/test/history_service_test_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,7 +55,13 @@ class QuickInsertPixelTest : public AshTestBase,
     QuickInsertController::RegisterProfilePrefs(prefs_.registry());
     prefs_.registry()->RegisterDictionaryPref(prefs::kEmojiPickerHistory);
 
+    CHECK(history_dir_.CreateUniqueTempDir());
+    history_service_ =
+        history::CreateHistoryService(history_dir_.GetPath(), true);
+
     ON_CALL(client_, GetPrefs).WillByDefault(Return(&prefs_));
+    ON_CALL(client_, GetHistoryService)
+        .WillByDefault(Return(history_service_.get()));
 
     QuickInsertController::DisableFeatureTourForTesting();
   }
@@ -94,6 +103,8 @@ class QuickInsertPixelTest : public AshTestBase,
   sync_preferences::TestingPrefServiceSyncable prefs_;
   NiceMock<MockQuickInsertClient> client_;
   std::unique_ptr<QuickInsertController> controller_;
+  base::ScopedTempDir history_dir_;
+  std::unique_ptr<history::HistoryService> history_service_;
 };
 
 ui::InputMethod* GetInputMethod() {
