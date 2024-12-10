@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
@@ -103,16 +104,14 @@ class GPUQueue : public DawnObject<wgpu::Queue> {
   void WriteBufferImpl(ScriptState* script_state,
                        GPUBuffer* buffer,
                        uint64_t buffer_offset,
-                       uint64_t data_byte_length,
-                       const void* data_base_ptr,
+                       base::span<const uint8_t> data,
                        unsigned data_bytes_per_element,
                        uint64_t data_byte_offset,
                        std::optional<uint64_t> byte_size,
                        ExceptionState& exception_state);
   void WriteTextureImpl(ScriptState* script_state,
                         GPUImageCopyTexture* destination,
-                        const void* data,
-                        size_t dataSize,
+                        base::span<const uint8_t> data,
                         GPUImageDataLayout* data_layout,
                         const V8GPUExtent3D* write_size,
                         ExceptionState& exception_state);
