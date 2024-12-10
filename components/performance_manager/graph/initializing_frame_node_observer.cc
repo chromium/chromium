@@ -36,6 +36,16 @@ void InitializingFrameNodeObserverManager::NotifyFrameNodeTearingDown(
   }
 }
 
+void InitializingFrameNodeObserverManager::OnBeforeFrameNodeAdded(
+    const FrameNode* frame_node,
+    const FrameNode* pending_parent_frame_node,
+    const PageNode* pending_page_node,
+    const ProcessNode* pending_process_node,
+    const FrameNode* pending_parent_or_outer_document_or_embedder) {
+  // Ignore this as this class manually notifies observers of new frame nodes
+  // using `OnFrameNodeInitializing()`.
+}
+
 void InitializingFrameNodeObserverManager::OnFrameNodeAdded(
     const FrameNode* frame_node) {
   // Ignore this as this class manually notifies observes of new frame nodes

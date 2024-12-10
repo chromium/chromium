@@ -89,7 +89,9 @@ class WorkerNodeImpl
  private:
   friend class WorkerNodeImplDescriber;
 
-  void OnJoiningGraph() override;
+  // NodeBase:
+  void OnInitializingProperties() override;
+  void OnInitializingEdges() override;
   void OnUninitializing() override;
   void RemoveNodeAttachedData() override;
 

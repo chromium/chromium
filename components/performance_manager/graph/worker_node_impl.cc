@@ -221,7 +221,7 @@ base::WeakPtr<WorkerNodeImpl> WorkerNodeImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void WorkerNodeImpl::OnJoiningGraph() {
+void WorkerNodeImpl::OnInitializingProperties() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Make sure all weak pointers, even `weak_this_` that was created on the UI
@@ -231,13 +231,15 @@ void WorkerNodeImpl::OnJoiningGraph() {
 
   NodeAttachedDataStorage::Create(this);
   execution_context::WorkerExecutionContext::Create(this, this);
+}
 
+void WorkerNodeImpl::OnInitializingEdges() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   process_node_->AddWorker(this);
 }
 
 void WorkerNodeImpl::OnUninitializing() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   process_node_->RemoveWorker(this);
 }
 
@@ -248,24 +250,27 @@ void WorkerNodeImpl::RemoveNodeAttachedData() {
 
 const ProcessNode* WorkerNodeImpl::GetProcessNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return process_node();
+  return graph()->NodeEdgesArePublic(this) ? process_node() : nullptr;
 }
 
 WorkerNode::NodeSetView<const FrameNode*> WorkerNodeImpl::GetClientFrames()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(graph()->NodeEdgesArePublic(this) || client_frames_.empty());
   return NodeSetView<const FrameNode*>(client_frames_);
 }
 
 WorkerNode::NodeSetView<const WorkerNode*> WorkerNodeImpl::GetClientWorkers()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(graph()->NodeEdgesArePublic(this) || client_workers_.empty());
   return NodeSetView<const WorkerNode*>(client_workers_);
 }
 
 WorkerNode::NodeSetView<const WorkerNode*> WorkerNodeImpl::GetChildWorkers()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(graph()->NodeEdgesArePublic(this) || child_workers_.empty());
   return NodeSetView<const WorkerNode*>(child_workers_);
 }
 

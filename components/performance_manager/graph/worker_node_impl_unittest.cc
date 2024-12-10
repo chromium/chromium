@@ -30,6 +30,10 @@ class LenientMockObserver : public WorkerNodeImpl::Observer {
   LenientMockObserver() = default;
   ~LenientMockObserver() override = default;
 
+  MOCK_METHOD(void,
+              OnBeforeWorkerNodeAdded,
+              (const WorkerNode*, const ProcessNode*),
+              (override));
   MOCK_METHOD(void, OnWorkerNodeAdded, (const WorkerNode*), (override));
   MOCK_METHOD(void, OnBeforeWorkerNodeRemoved, (const WorkerNode*), (override));
   MOCK_METHOD(void,
@@ -275,17 +279,34 @@ TEST_F(WorkerNodeImplTest, ObserverWorks) {
 
   // Remove observers at the head and tail of the list inside a callback, and
   // expect that `obs` is still notified correctly.
-  EXPECT_CALL(head_obs, OnWorkerNodeAdded(_)).WillOnce(InvokeWithoutArgs([&] {
-    graph()->RemoveWorkerNodeObserver(&head_obs);
-    graph()->RemoveWorkerNodeObserver(&tail_obs);
-  }));
+  EXPECT_CALL(head_obs, OnBeforeWorkerNodeAdded(_, _))
+      .WillOnce(InvokeWithoutArgs([&] {
+        graph()->RemoveWorkerNodeObserver(&head_obs);
+        graph()->RemoveWorkerNodeObserver(&tail_obs);
+      }));
   // `tail_obs` should not be notified as it was removed.
-  EXPECT_CALL(tail_obs, OnWorkerNodeAdded(_)).Times(0);
+  EXPECT_CALL(tail_obs, OnBeforeWorkerNodeAdded(_, _)).Times(0);
 
   // Create a worker node and expect a matching call to "OnWorkerNodeAdded".
   const WorkerNode* worker_node = nullptr;
+  const ProcessNode* process_node = nullptr;
+  EXPECT_CALL(obs, OnBeforeWorkerNodeAdded(_, _))
+      .WillOnce(Invoke(
+          [&](const WorkerNode* node, const ProcessNode* pending_process_node) {
+            worker_node = node;
+            process_node = pending_process_node;
+
+            // Node should be created without edges.
+            EXPECT_FALSE(node->GetProcessNode());
+            EXPECT_TRUE(node->GetClientFrames().empty());
+            EXPECT_TRUE(node->GetClientWorkers().empty());
+            EXPECT_TRUE(node->GetChildWorkers().empty());
+          }));
   EXPECT_CALL(obs, OnWorkerNodeAdded(_))
-      .WillOnce(Invoke([&](const WorkerNode* node) { worker_node = node; }));
+      .WillOnce(Invoke([&](const WorkerNode* node) {
+        EXPECT_EQ(worker_node, node);
+        EXPECT_EQ(process_node, node->GetProcessNode());
+      }));
   auto dedicated_worker = CreateNode<WorkerNodeImpl>(
       WorkerNode::WorkerType::kDedicated, process.get());
   EXPECT_EQ(worker_node, dedicated_worker.get());
@@ -315,7 +336,12 @@ TEST_F(WorkerNodeImplTest, Observer_AddWorkerNodes) {
   auto frame = CreateFrameNodeAutoId(process.get(), page.get());
 
   // Create workers.
-  EXPECT_CALL(obs, OnWorkerNodeAdded(_)).Times(3);
+  EXPECT_CALL(obs, OnBeforeWorkerNodeAdded(_, _));
+  EXPECT_CALL(obs, OnWorkerNodeAdded(_));
+  EXPECT_CALL(obs, OnBeforeWorkerNodeAdded(_, _));
+  EXPECT_CALL(obs, OnWorkerNodeAdded(_));
+  EXPECT_CALL(obs, OnBeforeWorkerNodeAdded(_, _));
+  EXPECT_CALL(obs, OnWorkerNodeAdded(_));
 
   auto dedicated_worker = CreateNode<WorkerNodeImpl>(
       WorkerNode::WorkerType::kDedicated, process.get());
@@ -374,7 +400,12 @@ TEST_F(WorkerNodeImplTest, Observer_ClientsOfServiceWorkers) {
   auto frame = CreateFrameNodeAutoId(process.get(), page.get());
 
   // Create workers.
-  EXPECT_CALL(obs, OnWorkerNodeAdded(_)).Times(3);
+  EXPECT_CALL(obs, OnBeforeWorkerNodeAdded(_, _));
+  EXPECT_CALL(obs, OnWorkerNodeAdded(_));
+  EXPECT_CALL(obs, OnBeforeWorkerNodeAdded(_, _));
+  EXPECT_CALL(obs, OnWorkerNodeAdded(_));
+  EXPECT_CALL(obs, OnBeforeWorkerNodeAdded(_, _));
+  EXPECT_CALL(obs, OnWorkerNodeAdded(_));
 
   auto dedicated_worker = CreateNode<WorkerNodeImpl>(
       WorkerNode::WorkerType::kDedicated, process.get());
@@ -433,6 +464,7 @@ TEST_F(WorkerNodeImplTest, Observer_OnFinalResponseURLDetermined) {
   auto process = CreateNode<ProcessNodeImpl>();
 
   // Create the worker.
+  EXPECT_CALL(obs, OnBeforeWorkerNodeAdded(_, _));
   EXPECT_CALL(obs, OnWorkerNodeAdded(_));
   auto worker = CreateNode<WorkerNodeImpl>(WorkerNode::WorkerType::kDedicated,
                                            process.get());
@@ -453,6 +485,7 @@ TEST_F(WorkerNodeImplTest, Observer_OnPriorityAndReasonChanged) {
   auto process = CreateNode<ProcessNodeImpl>();
 
   // Create the worker.
+  EXPECT_CALL(obs, OnBeforeWorkerNodeAdded(_, _));
   EXPECT_CALL(obs, OnWorkerNodeAdded(_));
   auto worker = CreateNode<WorkerNodeImpl>(WorkerNode::WorkerType::kDedicated,
                                            process.get());

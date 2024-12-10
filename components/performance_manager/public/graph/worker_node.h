@@ -84,7 +84,8 @@ class WorkerNode : public TypedNode<WorkerNode> {
   virtual const std::string& GetBrowserContextID() const = 0;
 
   // Returns the process node to which this worker belongs. This is a constant
-  // over the lifetime of the frame.
+  // over the lifetime of the frame, except that it will always be null during
+  // the OnBeforeWorkerNodeAdded() notification.
   virtual const ProcessNode* GetProcessNode() const = 0;
 
   // Returns the unique token identifying this worker.
@@ -154,12 +155,26 @@ class WorkerNodeObserver : public base::CheckedObserver {
 
   // Node lifetime notifications.
 
-  // Called when a |worker_node| is added to the graph. Observers must not make
+  // Called before a `worker_node` is added to the graph. OnPageNodeAdded() is
+  // better for most purposes, but this can be useful if an observer needs to
+  // check the state of the graph without including `worker_node`.
+  //
+  // `pending_process_node` is the node that will be returned from
+  // GetProcessNode() after `worker_node` is added to the graph.
+  //
+  // Observers must not make any property changes or cause re-entrant
+  // notifications during the scope of this call. Instead, make property changes
+  // via a separate posted task.
+  virtual void OnBeforeWorkerNodeAdded(
+      const WorkerNode* worker_node,
+      const ProcessNode* pending_process_node) = 0;
+
+  // Called when a `worker_node` is added to the graph. Observers must not make
   // any property changes or cause re-entrant notifications during the scope of
   // this call. Instead, make property changes via a separate posted task.
   virtual void OnWorkerNodeAdded(const WorkerNode* worker_node) = 0;
 
-  // Called before a |worker_node| is removed from the graph. Observers must not
+  // Called before a `worker_node` is removed from the graph. Observers must not
   // make any property changes or cause re-entrant notifications during the
   // scope of this call.
   virtual void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) = 0;
@@ -222,8 +237,9 @@ class WorkerNode::ObserverDefaultImpl : public WorkerNodeObserver {
   ~ObserverDefaultImpl() override;
 
   // WorkerNodeObserver implementation:
-
-  // Called when a |worker_node| is added to the graph.
+  void OnBeforeWorkerNodeAdded(
+      const WorkerNode* worker_node,
+      const ProcessNode* pending_process_node) override {}
   void OnWorkerNodeAdded(const WorkerNode* worker_node) override {}
   void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) override {}
   void OnFinalResponseURLDetermined(const WorkerNode* worker_node) override {}

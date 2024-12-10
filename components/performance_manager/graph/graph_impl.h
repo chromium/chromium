@@ -133,6 +133,9 @@ class GraphImpl : public Graph {
   // Returns true if |node| is in this graph.
   bool NodeInGraph(const NodeBase* node) const;
 
+  // Returns true iff `node` is in a state where its edges are publicly visible.
+  bool NodeEdgesArePublic(const NodeBase* node) const;
+
   // Management functions for node owners, any node added to the graph must be
   // removed from the graph before it's deleted.
   void AddNewNode(NodeBase* new_node);
@@ -196,8 +199,9 @@ class GraphImpl : public Graph {
   using FrameById =
       std::map<ProcessAndFrameId, raw_ptr<FrameNodeImpl, CtnExperimental>>;
 
+  void DispatchBeforeNodeAddedNotifications(NodeBase* node);
   void DispatchNodeAddedNotifications(NodeBase* node);
-  void DispatchNodeRemovedNotifications(NodeBase* node);
+  void DispatchBeforeNodeRemovedNotifications(NodeBase* node);
 
   // Returns a new serialization ID.
   friend class NodeBase;

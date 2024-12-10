@@ -229,7 +229,7 @@ class PageNodeImpl
   NodeSetView<const FrameNode*> GetMainFrameNodes() const override;
 
   // NodeBase:
-  void OnJoiningGraph() override;
+  void OnInitializingProperties() override;
   void OnBeforeLeavingGraph() override;
   void RemoveNodeAttachedData() override;
 

@@ -45,8 +45,9 @@ class NodeBase {
   // The state of this node.
   NodeState GetNodeState() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!graph_)
+    if (!graph_) {
       return NodeState::kNotInGraph;
+    }
     return graph_->GetNodeState(this);
   }
 
@@ -87,29 +88,46 @@ class NodeBase {
 
   // Node lifecycle:
 
-  // Step 0: A node is constructed. Node state is kNotInGraph.
+  // Step 0: A node is constructed. Node state is kNotInGraph. Outgoing edges
+  // are set but not publicly visible.
 
   // Step 1:
-  // Joins the |graph|. Node must be in the kNotInGraph state, and will
-  // transition to kInitializing immediately after this call.
-  void JoinGraph(GraphImpl* graph);
+  // Initializes the `graph_` pointer. Node must be in the kNotInGraph state,
+  // and will transition to kInitializingProperties immediately after this call.
+  void SetGraphPointer(GraphImpl* graph);
 
   // Step 2:
-  // Called as this node is joining |graph_|, a good opportunity to initialize
-  // node state. The node will be in the kInitializing state during this
-  // call. Nodes may modify their properties but *not* cause notifications to be
-  // emitted.
-  virtual void OnJoiningGraph();
+  // Called after `graph_` is set, a good opportunity to initialize node state.
+  // The node will be in the kInitializingProperties state during this call.
+  // Nodes may modify their properties that don't affect the graph topology but
+  // *not* cause notifications to be emitted. After this the state transitions
+  // to kInitializedNotInGraph.
+  virtual void OnInitializingProperties();
 
   // Step 3:
-  // Node added notifications are dispatched. The node must not be modified
-  // during any of these notifications. The node is in the kJoingGraph state.
+  // OnBeforeNodeAdded notifications are dispatched. The node must not be
+  // modified during any of these notifications. The node is in the
+  // kInitializingNotInGraph state, and will transition to kInitializingEdges.
 
   // Step 4:
+  // Called after properties are initialized, for nodes to update incoming edges
+  // to fully join the graph. The node will be in the kInitializingEdges state
+  // during this call, and will transition to kJoiningGraph immediately
+  // afterward. Nodes may modify their properties that link to other nodes but
+  // *not* cause notifications to be emitted.
+  virtual void OnInitializingEdges();
+
+  // Step 5:
+  // OnNodeAdded notifications are dispatched. The node must not be modified
+  // during any of these notifications. The node is in the kJoingGraph state.
+  // TODO(crbug.com/40640034 ): Loosen this restriction to parallel
+  // OnBeforeLeavingGraph()?
+
+  // Step 6:
   // The node lives in the graph normally at this point, in the kActiveInGraph
   // state.
 
-  // Step 5:
+  // Step 7:
   // Called just before leaving |graph_|. The node will be in the kActiveInGraph
   // state during this call. The node may make property changes, and these
   // changes may cause notifications to be dispatched. This must leave the node
@@ -120,11 +138,11 @@ class NodeBase {
   // would have when the page has no opener.
   virtual void OnBeforeLeavingGraph();
 
-  // Step 6:
+  // Step 8:
   // Node removed notifications are dispatched. The node must not be modified
   // during any of these notifications. The node is in the kLeavingGraph state.
 
-  // Step 7:
+  // Step 9:
   // Called while leaving |graph_|, a good opportunity to uninitialize node
   // state. The node will be in the kUninitializing state during this call.
   // Nodes may modify their properties but *not* cause notifications that have
@@ -132,13 +150,13 @@ class NodeBase {
   // the node is already gone.
   virtual void OnUninitializing();
 
-  // Step 8:
+  // Step 10:
   // Called as this node is leaving |graph_|. Any private node-attached data
   // should be destroyed at this point. The node is in the kUninitializing
   // state.
   virtual void RemoveNodeAttachedData() = 0;
 
-  // Step 9:
+  // Step 11:
   // Leaves the graph that this node is a part of. The node is in the
   // kUninitializing state during this call, and will be in the kNotInGraph
   // state immediately afterwards.

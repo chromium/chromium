@@ -93,22 +93,28 @@ class FrameNode : public TypedNode<FrameNode> {
 
   // Returns the parent of this frame node. This may be null if this frame node
   // is the main (root) node of a frame tree. This is a constant over the
-  // lifetime of the frame.
+  // lifetime of the frame, except that it will always be null during the
+  // OnBeforeFrameNodeAdded() notification.
   virtual const FrameNode* GetParentFrameNode() const = 0;
 
   // Returns the document owning the frame this RenderFrameHost is located in,
   // which will either be a parent (for <iframe>s) or outer document (for
-  // <fencedframe> or an embedder (e.g. GuestViews)).
+  // <fencedframe> or an embedder (e.g. GuestViews)). This is a constant over
+  // the lifetime of the frame, except that it will always be null during the
+  // OnBeforeFrameNodeAdded() notification.
+  //
   // This method is equivalent to
   // RenderFrameHost::GetParentOrOuterDocumentOrEmbedder().
   virtual const FrameNode* GetParentOrOuterDocumentOrEmbedder() const = 0;
 
   // Returns the page node to which this frame belongs. This is a constant over
-  // the lifetime of the frame.
+  // the lifetime of the frame, except that it will always be null during the
+  // OnBeforeFrameNodeAdded() notification.
   virtual const PageNode* GetPageNode() const = 0;
 
   // Returns the process node with which this frame belongs. This is a constant
-  // over the lifetime of the frame.
+  // over the lifetime of the frame, except that it will always be null during
+  // the OnBeforeFrameNodeAdded() notification.
   virtual const ProcessNode* GetProcessNode() const = 0;
 
   // Gets the unique token associated with this frame. This is a constant over
@@ -265,12 +271,32 @@ class FrameNodeObserver : public base::CheckedObserver {
 
   // Node lifetime notifications.
 
-  // Called when a |frame_node| is added to the graph. Observers must not make
+  // Called before a `frame_node` is added to the graph. OnFrameNodeAdded() is
+  // better for most purposes, but this can be useful if an observer needs to
+  // check the state of the graph without including `frame_node`.
+  //
+  // `pending_parent_frame_node`, `pending_page_node`, `pending_process_node`,
+  // and `pending_parent_or_outer_document_or_embedder` are the nodes that will
+  // be returned from GetParentFrameNode(), GetPageNode(), GetProcessNode() and
+  // GetParentOrOuterDocumentOrEmbedder() after `frame_node` is added to the
+  // graph.
+  //
+  // Observers must not make any property changes or cause re-entrant
+  // notifications during the scope of this call. Instead, make property changes
+  // via a separate posted task.
+  virtual void OnBeforeFrameNodeAdded(
+      const FrameNode* frame_node,
+      const FrameNode* pending_parent_frame_node,
+      const PageNode* pending_page_node,
+      const ProcessNode* pending_process_node,
+      const FrameNode* pending_parent_or_outer_document_or_embedder) = 0;
+
+  // Called when a `frame_node` is added to the graph. Observers must not make
   // any property changes or cause re-entrant notifications during the scope of
   // this call. Instead, make property changes via a separate posted task.
   virtual void OnFrameNodeAdded(const FrameNode* frame_node) = 0;
 
-  // Called before a |frame_node| is removed from the graph. Observers must not
+  // Called before a `frame_node` is removed from the graph. Observers must not
   // make any property changes or cause re-entrant notifications during the
   // scope of this call.
   virtual void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) = 0;
@@ -374,6 +400,12 @@ class FrameNode::ObserverDefaultImpl : public FrameNodeObserver {
   ~ObserverDefaultImpl() override;
 
   // FrameNodeObserver implementation:
+  void OnBeforeFrameNodeAdded(
+      const FrameNode* frame_node,
+      const FrameNode* pending_parent_frame_node,
+      const PageNode* pending_page_node,
+      const ProcessNode* pending_process_node,
+      const FrameNode* pending_parent_or_outer_document_or_embedder) override {}
   void OnFrameNodeAdded(const FrameNode* frame_node) override {}
   void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override {}
   void OnCurrentFrameChanged(const FrameNode* previous_frame_node,

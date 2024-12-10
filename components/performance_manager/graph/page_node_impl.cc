@@ -496,7 +496,7 @@ void PageNodeImpl::set_has_nonempty_beforeunload(
   has_nonempty_beforeunload_ = has_nonempty_beforeunload;
 }
 
-void PageNodeImpl::OnJoiningGraph() {
+void PageNodeImpl::OnInitializingProperties() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Make sure all weak pointers, even `weak_this_` that was created on the UI
@@ -530,21 +530,25 @@ void PageNodeImpl::RemoveNodeAttachedData() {
 
 const FrameNode* PageNodeImpl::GetOpenerFrameNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(graph()->NodeEdgesArePublic(this) || !opener_frame_node());
   return opener_frame_node();
 }
 
 const FrameNode* PageNodeImpl::GetEmbedderFrameNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(graph()->NodeEdgesArePublic(this) || !embedder_frame_node());
   return embedder_frame_node();
 }
 
 const FrameNode* PageNodeImpl::GetMainFrameNode() const {
+  CHECK(graph()->NodeEdgesArePublic(this) || !main_frame_node());
   return main_frame_node();
 }
 
 PageNode::NodeSetView<const FrameNode*> PageNodeImpl::GetMainFrameNodes()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(graph()->NodeEdgesArePublic(this) || main_frame_nodes_.empty());
   return NodeSetView<const FrameNode*>(main_frame_nodes_);
 }
 

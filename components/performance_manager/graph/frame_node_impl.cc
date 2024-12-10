@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
@@ -667,45 +668,51 @@ void FrameNodeImpl::SetViewportIntersectionForTesting(
 
 const FrameNode* FrameNodeImpl::GetParentFrameNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return parent_frame_node();
+  return graph()->NodeEdgesArePublic(this) ? parent_frame_node() : nullptr;
 }
 
 const FrameNode* FrameNodeImpl::GetParentOrOuterDocumentOrEmbedder() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return parent_or_outer_document_or_embedder();
+  return graph()->NodeEdgesArePublic(this)
+             ? parent_or_outer_document_or_embedder()
+             : nullptr;
 }
 
 const PageNode* FrameNodeImpl::GetPageNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return page_node();
+  return graph()->NodeEdgesArePublic(this) ? page_node() : nullptr;
 }
 
 const ProcessNode* FrameNodeImpl::GetProcessNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return process_node();
+  return graph()->NodeEdgesArePublic(this) ? process_node() : nullptr;
 }
 
 FrameNode::NodeSetView<const FrameNode*> FrameNodeImpl::GetChildFrameNodes()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(graph()->NodeEdgesArePublic(this) || child_frame_nodes_.empty());
   return NodeSetView<const FrameNode*>(child_frame_nodes_);
 }
 
 FrameNode::NodeSetView<const PageNode*> FrameNodeImpl::GetOpenedPageNodes()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(graph()->NodeEdgesArePublic(this) || opened_page_nodes_.empty());
   return NodeSetView<const PageNode*>(opened_page_nodes_);
 }
 
 FrameNode::NodeSetView<const PageNode*> FrameNodeImpl::GetEmbeddedPageNodes()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(graph()->NodeEdgesArePublic(this) || embedded_page_nodes_.empty());
   return NodeSetView<const PageNode*>(embedded_page_nodes_);
 }
 
 FrameNode::NodeSetView<const WorkerNode*> FrameNodeImpl::GetChildWorkerNodes()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(graph()->NodeEdgesArePublic(this) || child_worker_nodes_.empty());
   return NodeSetView<const WorkerNode*>(child_worker_nodes_);
 }
 
@@ -733,7 +740,7 @@ void FrameNodeImpl::RemoveChildFrame(FrameNodeImpl* child_frame_node) {
   DCHECK_EQ(1u, removed);
 }
 
-void FrameNodeImpl::OnJoiningGraph() {
+void FrameNodeImpl::OnInitializingProperties() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Make sure all weak pointers, even `weak_this_` that was created on the UI
@@ -747,15 +754,19 @@ void FrameNodeImpl::OnJoiningGraph() {
   // Enable querying this node using process and frame routing ids.
   graph()->RegisterFrameNodeForId(process_node_->GetRenderProcessHostId(),
                                   render_frame_id_, this);
+}
 
-  // Notify the initializing observers.
-  graph()->NotifyFrameNodeInitializing(this);
+void FrameNodeImpl::OnInitializingEdges() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Wire this up to the other nodes in the graph.
   if (parent_frame_node_)
     parent_frame_node_->AddChildFrame(this);
   page_node_->AddFrame(base::PassKey<FrameNodeImpl>(), this);
   process_node_->AddFrame(this);
+
+  // Notify the initializing observers.
+  graph()->NotifyFrameNodeInitializing(this);
 }
 
 void FrameNodeImpl::OnBeforeLeavingGraph() {
@@ -771,6 +782,9 @@ void FrameNodeImpl::OnUninitializing() {
 
   DCHECK(child_frame_nodes_.empty());
 
+  // Notify the initializing observers for cleanup.
+  graph()->NotifyFrameNodeTearingDown(this);
+
   // Leave the page.
   DCHECK(graph()->NodeInGraph(page_node_));
   page_node_->RemoveFrame(base::PassKey<FrameNodeImpl>(), this);
@@ -784,9 +798,6 @@ void FrameNodeImpl::OnUninitializing() {
   // And leave the process.
   DCHECK(graph()->NodeInGraph(process_node_));
   process_node_->RemoveFrame(this);
-
-  // Notify the initializing observers for cleanup.
-  graph()->NotifyFrameNodeTearingDown(this);
 
   // Disable querying this node using process and frame routing ids.
   graph()->UnregisterFrameNodeForId(process_node_->GetRenderProcessHostId(),

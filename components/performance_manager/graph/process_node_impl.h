@@ -208,7 +208,7 @@ class ProcessNodeImpl
   void OnAllFramesInProcessFrozen();
 
   // NodeBase:
-  void OnJoiningGraph() override;
+  void OnInitializingProperties() override;
   void OnUninitializing() override;
   void RemoveNodeAttachedData() override;
 

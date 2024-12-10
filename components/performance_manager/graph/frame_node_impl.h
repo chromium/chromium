@@ -256,7 +256,8 @@ class FrameNodeImpl
   void RemoveChildFrame(FrameNodeImpl* frame_node);
 
   // NodeBase:
-  void OnJoiningGraph() override;
+  void OnInitializingProperties() override;
+  void OnInitializingEdges() override;
   void OnBeforeLeavingGraph() override;
   void OnUninitializing() override;
   void RemoveNodeAttachedData() override;

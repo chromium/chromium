@@ -246,6 +246,7 @@ class LenientMockObserver : public PageNodeImpl::Observer {
   LenientMockObserver() = default;
   ~LenientMockObserver() override = default;
 
+  MOCK_METHOD(void, OnBeforePageNodeAdded, (const PageNode*), (override));
   MOCK_METHOD(void, OnPageNodeAdded, (const PageNode*), (override));
   MOCK_METHOD(void, OnBeforePageNodeRemoved, (const PageNode*), (override));
   // Note that opener/embedder functionality is actually tested in the
@@ -296,6 +297,18 @@ class LenientMockObserver : public PageNodeImpl::Observer {
     notified_page_node_ = page_node;
   }
 
+  void TestNotifiedPageNode(const PageNode* page_node) const {
+    EXPECT_EQ(notified_page_node_, page_node);
+  }
+
+  void ExpectNoEdges(const PageNode* page_node) {
+    // Node should be created without edges.
+    EXPECT_FALSE(page_node->GetOpenerFrameNode());
+    EXPECT_FALSE(page_node->GetEmbedderFrameNode());
+    EXPECT_FALSE(page_node->GetMainFrameNode());
+    EXPECT_TRUE(page_node->GetMainFrameNodes().empty());
+  }
+
   const PageNode* TakeNotifiedPageNode() {
     const PageNode* node = notified_page_node_;
     notified_page_node_ = nullptr;
@@ -308,9 +321,11 @@ class LenientMockObserver : public PageNodeImpl::Observer {
 
 using MockObserver = ::testing::StrictMock<LenientMockObserver>;
 
-using testing::_;
-using testing::Invoke;
-using testing::InvokeWithoutArgs;
+using ::testing::_;
+using ::testing::DoAll;
+using ::testing::InSequence;
+using ::testing::Invoke;
+using ::testing::InvokeWithoutArgs;
 
 }  // namespace
 
@@ -326,16 +341,23 @@ TEST_F(PageNodeImplTest, ObserverWorks) {
 
   // Remove observers at the head and tail of the list inside a callback, and
   // expect that `obs` is still notified correctly.
-  EXPECT_CALL(head_obs, OnPageNodeAdded(_)).WillOnce(InvokeWithoutArgs([&] {
-    graph()->RemovePageNodeObserver(&head_obs);
-    graph()->RemovePageNodeObserver(&tail_obs);
-  }));
+  EXPECT_CALL(head_obs, OnBeforePageNodeAdded(_))
+      .WillOnce(InvokeWithoutArgs([&] {
+        graph()->RemovePageNodeObserver(&head_obs);
+        graph()->RemovePageNodeObserver(&tail_obs);
+      }));
   // `tail_obs` should not be notified as it was removed.
-  EXPECT_CALL(tail_obs, OnPageNodeAdded(_)).Times(0);
+  EXPECT_CALL(tail_obs, OnBeforePageNodeAdded(_)).Times(0);
 
   // Create a page node and expect a matching call to "OnPageNodeAdded".
-  EXPECT_CALL(obs, OnPageNodeAdded(_))
-      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
+  {
+    InSequence seq;
+    EXPECT_CALL(obs, OnBeforePageNodeAdded(_))
+        .WillOnce(DoAll(Invoke(&obs, &MockObserver::SetNotifiedPageNode),
+                        Invoke(&obs, &MockObserver::ExpectNoEdges)));
+    EXPECT_CALL(obs, OnPageNodeAdded(_))
+        .WillOnce(Invoke(&obs, &MockObserver::TestNotifiedPageNode));
+  }
   auto page_node = CreateNode<PageNodeImpl>();
   const PageNode* raw_page_node = page_node.get();
   EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());

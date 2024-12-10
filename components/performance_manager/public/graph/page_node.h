@@ -244,12 +244,21 @@ class PageNodeObserver : public base::CheckedObserver {
 
   // Node lifetime notifications.
 
-  // Called when a |page_node| is added to the graph. Observers must not make
+  // Called before a `page_node` is added to the graph. OnPageNodeAdded() is
+  // better for most purposes, but this can be useful if an observer needs to
+  // check the state of the graph without including `page_node`.
+  //
+  // Observers must not make any property changes or cause re-entrant
+  // notifications during the scope of this call. Instead, make property changes
+  // via a separate posted task.
+  virtual void OnBeforePageNodeAdded(const PageNode* page_node) = 0;
+
+  // Called when a `page_node` is added to the graph. Observers must not make
   // any property changes or cause re-entrant notifications during the scope of
   // this call. Instead, make property changes via a separate posted task.
   virtual void OnPageNodeAdded(const PageNode* page_node) = 0;
 
-  // Called before a |page_node| is removed from the graph. Observers must not
+  // Called before a `page_node` is removed from the graph. Observers must not
   // make any property changes or cause re-entrant notifications during the
   // scope of this call.
   virtual void OnBeforePageNodeRemoved(const PageNode* page_node) = 0;
@@ -360,6 +369,7 @@ class PageNode::ObserverDefaultImpl : public PageNodeObserver {
   ~ObserverDefaultImpl() override;
 
   // PageNodeObserver implementation:
+  void OnBeforePageNodeAdded(const PageNode* page_node) override {}
   void OnPageNodeAdded(const PageNode* page_node) override {}
   void OnBeforePageNodeRemoved(const PageNode* page_node) override {}
   void OnOpenerFrameNodeChanged(const PageNode* page_node,
