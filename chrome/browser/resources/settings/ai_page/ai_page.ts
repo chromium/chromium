@@ -10,6 +10,7 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {UserAnnotationsManagerProxyImpl} from '../autofill_page/user_annotations_manager_proxy.js';
+import {BaseMixin} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {AiPageInteractions, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
@@ -25,7 +26,9 @@ export interface SettingsAiPageElement {
   };
 }
 
-const SettingsAiPageElementBase = PrefsMixin(PolymerElement);
+// BaseMixin is needed to populate the associatedControl field for search in
+// subpages, see crbug.com/378927854.
+const SettingsAiPageElementBase = PrefsMixin(BaseMixin(PolymerElement));
 export class SettingsAiPageElement extends SettingsAiPageElementBase {
   static get is() {
     return 'settings-ai-page';
