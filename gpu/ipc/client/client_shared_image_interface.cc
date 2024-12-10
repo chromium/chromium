@@ -353,15 +353,10 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::ImportSharedImage(
 
   DCHECK(!mailbox.IsZero());
   AddMailbox(mailbox);
-  proxy_->AddReferenceToSharedImage(sync_token, mailbox, metadata.usage);
+  proxy_->AddReferenceToSharedImage(sync_token, mailbox);
 
   return base::WrapRefCounted<ClientSharedImage>(new ClientSharedImage(
       mailbox, metadata, sync_token, holder_, texture_target));
-}
-
-SharedImageUsageSet ClientSharedImageInterface::UsageForMailbox(
-    const Mailbox& mailbox) {
-  return proxy_->UsageForMailbox(mailbox);
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::NotifyMailboxAdded(

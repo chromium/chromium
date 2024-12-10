@@ -37,11 +37,6 @@ scoped_refptr<ClientSharedImage> SharedImageInterface::CreateSharedImage(
   NOTREACHED();
 }
 
-SharedImageUsageSet SharedImageInterface::UsageForMailbox(
-    const Mailbox& mailbox) {
-  return SharedImageUsageSet();
-}
-
 scoped_refptr<ClientSharedImage>
 SharedImageInterface::AddReferenceToSharedImage(
     const SyncToken& sync_token,

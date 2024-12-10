@@ -58,7 +58,6 @@ class SharedImageInterfaceProxy {
     SharedImageRefData& operator=(const SharedImageRefData&) = delete;
 
     int ref_count = 0;
-    gpu::SharedImageUsageSet usage;
     std::vector<SyncToken> destruction_sync_tokens;
   };
 
@@ -99,8 +98,7 @@ class SharedImageInterfaceProxy {
 
   void DestroySharedImage(const SyncToken& sync_token, const Mailbox& mailbox);
   void AddReferenceToSharedImage(const SyncToken& sync_token,
-                                 const Mailbox& mailbox,
-                                 gpu::SharedImageUsageSet usage);
+                                 const Mailbox& mailbox);
 
   SyncToken GenVerifiedSyncToken();
   SyncToken GenUnverifiedSyncToken();
@@ -126,7 +124,6 @@ class SharedImageInterfaceProxy {
 
   scoped_refptr<gfx::NativePixmap> GetNativePixmap(const gpu::Mailbox& mailbox);
 
-  gpu::SharedImageUsageSet UsageForMailbox(const Mailbox& mailbox);
   void NotifyMailboxAdded(const Mailbox& mailbox,
                           gpu::SharedImageUsageSet usage);
 
@@ -139,12 +136,10 @@ class SharedImageInterfaceProxy {
                           size_t* shm_offset,
                           bool* done_with_shm) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  void AddMailbox(const Mailbox& mailbox, SharedImageUsageSet usage)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void AddMailbox(const Mailbox& mailbox) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Returns true if it's first time mailbox was added.
-  [[nodiscard]] bool AddMailboxOrAddReference(const Mailbox& mailbox,
-                                              SharedImageUsageSet usage)
+  [[nodiscard]] bool AddMailboxOrAddReference(const Mailbox& mailbox)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   const raw_ptr<GpuChannelHost> host_;

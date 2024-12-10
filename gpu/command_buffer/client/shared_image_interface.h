@@ -377,10 +377,6 @@ class GPU_EXPORT SharedImageInterface
       const gpu::Mailbox& mailbox) = 0;
 #endif
 
-  // Provides the usage flags supported by the given |mailbox|. This must have
-  // been created using a SharedImageInterface on the same channel.
-  virtual SharedImageUsageSet UsageForMailbox(const Mailbox& mailbox);
-
   // Informs that existing |mailbox| with the specified metadata can be passed
   // to DestroySharedImage().
   virtual scoped_refptr<ClientSharedImage> NotifyMailboxAdded(

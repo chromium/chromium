@@ -105,7 +105,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   params->si_info = CreateSharedImageInfo(si_info);
   {
     base::AutoLock lock(lock_);
-    AddMailbox(mailbox, si_info.meta.usage);
+    AddMailbox(mailbox);
     // Note: we enqueue the IPC under the lock to guarantee monotonicity of the
     // release ids as seen by the service.
     last_flush_id_ = host_->EnqueueDeferredMessage(
@@ -191,7 +191,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
           mojom::DeferredSharedImageRequest::NewCreateSharedImageWithData(
               std::move(params))),
       /*sync_token_fences=*/{}, ++next_release_id_);
-  AddMailbox(mailbox, si_info.meta.usage);
+  AddMailbox(mailbox);
   return mailbox;
 }
 
@@ -216,7 +216,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
       /*sync_token_fences=*/{}, ++next_release_id_);
   host_->EnsureFlush(last_flush_id_);
 
-  AddMailbox(mailbox, si_info.meta.usage);
+  AddMailbox(mailbox);
   return mailbox;
 }
 
@@ -506,8 +506,8 @@ SharedImageInterfaceProxy::CreateSwapChain(viz::SharedImageFormat format,
   {
     base::AutoLock lock(lock_);
 
-    AddMailbox(mailboxes.front_buffer, usage);
-    AddMailbox(mailboxes.back_buffer, usage);
+    AddMailbox(mailboxes.front_buffer);
+    AddMailbox(mailboxes.back_buffer);
 
     last_flush_id_ = host_->EnqueueDeferredMessage(
         mojom::DeferredRequestParams::NewSharedImageRequest(
@@ -563,13 +563,12 @@ scoped_refptr<gfx::NativePixmap> SharedImageInterfaceProxy::GetNativePixmap(
 
 void SharedImageInterfaceProxy::AddReferenceToSharedImage(
     const SyncToken& sync_token,
-    const Mailbox& mailbox,
-    gpu::SharedImageUsageSet usage) {
+    const Mailbox& mailbox) {
   std::vector<SyncToken> dependencies =
       GenerateDependenciesFromSyncToken(std::move(sync_token), host_);
   {
     base::AutoLock lock(lock_);
-    if (AddMailboxOrAddReference(mailbox, usage)) {
+    if (AddMailboxOrAddReference(mailbox)) {
       // Note: we enqueue the IPC under the lock to guarantee monotonicity of
       // the release ids as seen by the service.
       last_flush_id_ = host_->EnqueueDeferredMessage(
@@ -581,47 +580,25 @@ void SharedImageInterfaceProxy::AddReferenceToSharedImage(
   }
 }
 
-void SharedImageInterfaceProxy::AddMailbox(const Mailbox& mailbox,
-                                           gpu::SharedImageUsageSet usage) {
-  bool added = AddMailboxOrAddReference(mailbox, usage);
+void SharedImageInterfaceProxy::AddMailbox(const Mailbox& mailbox) {
+  bool added = AddMailboxOrAddReference(mailbox);
   CHECK(added);
 }
 
 bool SharedImageInterfaceProxy::AddMailboxOrAddReference(
-    const Mailbox& mailbox,
-    gpu::SharedImageUsageSet usage) {
+    const Mailbox& mailbox) {
   lock_.AssertAcquired();
 
   auto& info = mailbox_infos_[mailbox];
-  if (++info.ref_count == 1) {
-    // If we just added this mailbox, initialize usage.
-    info.usage = usage;
-  }
-
-  // Usage can't be changed.
-  CHECK_EQ(info.usage, usage);
-
+  info.ref_count++;
   return info.ref_count == 1;
-}
-
-SharedImageUsageSet SharedImageInterfaceProxy::UsageForMailbox(
-    const Mailbox& mailbox) {
-  base::AutoLock lock(lock_);
-
-  // The mailbox may have been destroyed if the context on which the shared
-  // image was created is deleted.
-  auto it = mailbox_infos_.find(mailbox);
-  if (it == mailbox_infos_.end()) {
-    return SharedImageUsageSet();
-  }
-  return it->second.usage;
 }
 
 void SharedImageInterfaceProxy::NotifyMailboxAdded(
     const Mailbox& mailbox,
     gpu::SharedImageUsageSet usage) {
   base::AutoLock lock(lock_);
-  AddMailbox(mailbox, usage);
+  AddMailbox(mailbox);
 }
 
 SharedImageInterfaceProxy::SharedImageRefData::SharedImageRefData() = default;

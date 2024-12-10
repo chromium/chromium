@@ -104,7 +104,6 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
   void DestroySharedImage(
       const SyncToken& sync_token,
       scoped_refptr<ClientSharedImage> client_shared_image) override;
-  SharedImageUsageSet UsageForMailbox(const Mailbox& mailbox) override;
   scoped_refptr<ClientSharedImage> NotifyMailboxAdded(
       const Mailbox& mailbox,
       viz::SharedImageFormat format,

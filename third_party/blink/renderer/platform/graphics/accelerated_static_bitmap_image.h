@@ -137,8 +137,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
 
   SkImageInfo GetSkImageInfo() const override;
 
-  gpu::SharedImageUsageSet GetUsage() const override;
-
  private:
   struct ReleaseContext {
     scoped_refptr<MailboxRef> mailbox_ref;

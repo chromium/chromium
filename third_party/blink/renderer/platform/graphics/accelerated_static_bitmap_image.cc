@@ -436,11 +436,4 @@ bool AcceleratedStaticBitmapImage::CurrentFrameKnownToBeOpaque() {
   return sk_image_info_.isOpaque();
 }
 
-gpu::SharedImageUsageSet AcceleratedStaticBitmapImage::GetUsage() const {
-  return ContextProviderWrapper()
-      ->ContextProvider()
-      .SharedImageInterface()
-      ->UsageForMailbox(shared_image_->mailbox());
-}
-
 }  // namespace blink
