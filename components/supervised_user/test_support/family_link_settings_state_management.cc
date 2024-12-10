@@ -300,7 +300,8 @@ void FamilyLinkSettingsState::Seed(
       {.request_body = intent_->GetRequest()},
       base::BindLambdaForTesting([&](const ProtoFetcherStatus& status,
                                      std::unique_ptr<std::string> response) {
-        CHECK(status.IsOk()) << "WaitForRequestToComplete failed";
+        CHECK(status.IsOk()) << "WaitForRequestToComplete failed with status: "
+                             << status.ToString();
         run_loop.Quit();
       }),
 
@@ -324,7 +325,8 @@ void FamilyLinkSettingsState::StartSeeding(
       {.request_body = intent_->GetRequest()},
       base::BindOnce([](const ProtoFetcherStatus& status,
                         std::unique_ptr<std::string> response) {
-        CHECK(status.IsOk()) << "WaitForRequestToComplete failed";
+        CHECK(status.IsOk()) << "WaitForRequestToComplete failed with status: "
+                             << status.ToString();
       }),
       intent_->GetConfig(), {std::string(subject_account_id)},
       version_info::Channel::UNKNOWN);
