@@ -23,7 +23,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="ChromeOS.AudioSelection" enum="AudioSelectionEvents"
-    expires_after="2025-03-31">
+    expires_after="2025-06-08">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>

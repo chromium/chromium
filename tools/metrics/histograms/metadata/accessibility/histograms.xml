@@ -1023,7 +1023,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Accessibility.CrosSpokenFeedback.BrailleDisplayConnected.ConnectionChanged"
-    enum="BooleanConnected" expires_after="2025-02-28">
+    enum="BooleanConnected" expires_after="2025-06-08">
   <owner>dtseng@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1035,7 +1035,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Accessibility.CrosSpokenFeedback.BrailleDisplayConnected.ConnectionDuration"
-    units="seconds" expires_after="2025-02-28">
+    units="seconds" expires_after="2025-06-08">
   <owner>dtseng@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1810,7 +1810,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.Ash.Boca.Babelorca.TargetLanguage"
-    enum="LocaleCodeISO639" expires_after="2025-04-04">
+    enum="LocaleCodeISO639" expires_after="2025-06-08">
   <owner>caott@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -2110,7 +2110,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.Performance.AXObjectCacheImpl.Snapshot"
-    units="bytes" expires_after="2025-03-30">
+    units="bytes" expires_after="2025-06-08">
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2871,7 +2871,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.OCR.Latency.{ImageSize}" units="ms"
-    expires_after="2025-04-06">
+    expires_after="2025-06-08">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -3188,7 +3188,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.ReaderShownForPageLoad" enum="Boolean"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>mdjones@chromium.org</owner>
   <summary>
     Records if the panel became visible at any point after a page was navigated.

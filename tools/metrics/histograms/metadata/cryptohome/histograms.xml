@@ -525,7 +525,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToPerformEphemeralMount" units="ms"
-    expires_after="2025-04-01">
+    expires_after="2025-06-08">
   <owner>sarthakkukreti@chromium.org</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>

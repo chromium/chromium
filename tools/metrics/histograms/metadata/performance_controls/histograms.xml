@@ -295,7 +295,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.MemorySaver.SettingsChangeExceptionList"
-    enum="MemorySaverModeExceptionListAction" expires_after="2025-02-10">
+    enum="MemorySaverModeExceptionListAction" expires_after="2025-06-08">
   <owner>charlesmeng@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>

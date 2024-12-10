@@ -272,7 +272,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.TextElementUsage.LongField.EditingTime" units="ms"
-    expires_after="2025-04-06">
+    expires_after="2025-06-08">
   <owner>harringtond@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>

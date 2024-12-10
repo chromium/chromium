@@ -166,7 +166,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}ResponseStatus"
-    enum="LocalSearchServiceResponseStatus" expires_after="2025-04-06">
+    enum="LocalSearchServiceResponseStatus" expires_after="2025-06-08">
   <owner>chenjih@google.com</owner>
   <owner>laurencom@chromium.org</owner>
   <summary>

@@ -236,7 +236,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="HoldingSpace.Item.TotalCountV2.{type}.FileSystemType.{fs_type}"
-    units="items" expires_after="2025-02-10">
+    units="items" expires_after="2025-06-08">
   <owner>dmblack@google.com</owner>
   <owner>alexandrahill@google.com</owner>
   <summary>

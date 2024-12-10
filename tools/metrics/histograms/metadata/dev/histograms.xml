@@ -75,7 +75,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.CSSHintShown" enum="DevToolsCSSHintShown"
-    expires_after="2025-03-09">
+    expires_after="2025-06-08">
   <owner>changhaohan@google.com</owner>
   <owner>mathiasb@google.com</owner>
   <owner>yangguo@google.com</owner>
@@ -246,7 +246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelIssueExpanded"
-    enum="DevToolsIssuesPanelIssueExpanded" expires_after="2025-04-06">
+    enum="DevToolsIssuesPanelIssueExpanded" expires_after="2025-06-08">
   <owner>bmeurer@google.com</owner>
   <owner>danilsomsikov@google.com</owner>
   <summary>
@@ -255,7 +255,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelOpenedFrom"
-    enum="DevToolsIssuesPanelOpenedFrom" expires_after="2025-04-06">
+    enum="DevToolsIssuesPanelOpenedFrom" expires_after="2025-06-08">
   <owner>bmeurer@google.com</owner>
   <owner>danilsomsikov@google.com</owner>
   <summary>
@@ -264,7 +264,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelResourceOpened"
-    enum="DevToolsIssuesPanelResourceOpened" expires_after="2025-04-06">
+    enum="DevToolsIssuesPanelResourceOpened" expires_after="2025-06-08">
   <owner>bmeurer@google.com</owner>
   <owner>danilsomsikov@google.com</owner>
   <summary>
@@ -319,7 +319,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.LighthouseCategoryUsed"
-    enum="DevToolsLighthouseCategoryUsed" expires_after="2025-03-30">
+    enum="DevToolsLighthouseCategoryUsed" expires_after="2025-06-08">
   <owner>asraine@google.com</owner>
   <owner>paulirish@google.com</owner>
   <owner>cjamcl@google.com</owner>

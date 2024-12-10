@@ -361,7 +361,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 
 <histogram name="FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialState"
     enum="FamilyLinkUserReauthenticationInterstitialState"
-    expires_after="2025-03-23">
+    expires_after="2025-06-08">
   <owner>anthie@google.com</owner>
   <owner>ljjlee@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -663,7 +663,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="FamilyUser.WebFilterType.PerRecord"
-    enum="FamilyLinkWebFilterType" expires_after="2025-03-30">
+    enum="FamilyLinkWebFilterType" expires_after="2025-06-08">
   <owner>fernandex@chromium.org</owner>
   <owner>agawronska@chromium.org</owner>
   <owner>chrome-kids-eng@google.com</owner>
