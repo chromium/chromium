@@ -1,0 +1,15 @@
+package org.chromium.chrome;
+
+import androidx.annotation.IntDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@IntDef(flag = true, value = {
+    FooBar.A, FooBar.B, FooBar.C
+})
+@Retention(RetentionPolicy.SOURCE)
+public @interface FooBar {
+  int A = 1 << 0;
+  int B = 1 << 1;
+  int C = 1 << 1;
