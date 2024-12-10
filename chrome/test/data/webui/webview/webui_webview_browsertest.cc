@@ -7,6 +7,7 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "build/config/coverage/buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -54,6 +56,7 @@ class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
     // Wait for the OOBE WebUI to be shown.
     ash::OobeScreenWaiter(ash::WelcomeView::kScreenId).Wait();
 #else
+    set_test_loader_host(GetWebViewEnabledWebUIURL().host());
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GetWebViewEnabledWebUIURL()));
 #endif
@@ -96,8 +99,9 @@ class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
 #endif
   }
 
-  testing::AssertionResult RunTestCase(const std::string& test_case,
-                                       const std::string& url) {
+  testing::AssertionResult RunContentScriptTestCase(
+      const std::string& test_case,
+      const std::string& url) {
     return RunTestOnWebContents(
         GetWebContentsForTesting(), "webview/webview_content_script_test.js",
         base::StringPrintf("window.webviewUrl = '%s'; "
@@ -105,16 +109,48 @@ class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
                            url.c_str(), test_case.c_str()),
         true);
   }
+
+  void RunBasicTestCase(const std::string& test_case, const std::string& url) {
+    RunTest("webview/webview_basic_test.js",
+            base::StringPrintf("window.webviewUrl = '%s'; "
+                               "runMochaTest('WebviewBasicTest', '%s');",
+                               url.c_str(), test_case.c_str()),
+            false);
+  }
+
+#if BUILDFLAG(ENABLE_GLIC)
+  // Required to enable chrome://glic.
+  base::test::ScopedFeatureList scoped_feature_list_{{ features::kGlic }};
+#endif
 };
 
 // Checks that hiding and showing the WebUI host page doesn't break guests in
 // it.
 // Regression test for http://crbug.com/515268
 IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, DisplayNone) {
-  ASSERT_TRUE(RunTestOnWebContents(GetWebContentsForTesting(),
-                                   "webview/webview_basic_test.js",
-                                   "mocha.run()", true));
+  ASSERT_TRUE(RunTestOnWebContents(
+      GetWebContentsForTesting(), "webview/webview_basic_test.js",
+      "runMochaTest('WebviewBasicTest', 'DisplayNone')", true));
 }
+
+#if BUILDFLAG(ENABLE_GLIC)
+IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, MediaRequestAllowOnGlic) {
+  set_test_loader_host("glic");
+  RunBasicTestCase("MediaRequestAllowOnGlic",
+                   GetTestUrl("webview/mediarequest.html").spec());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, MediaRequestDenyOnGlic) {
+  set_test_loader_host("glic");
+  RunBasicTestCase("MediaRequestDenyOnGlic",
+                   GetTestUrl("webview/mediarequest.html").spec());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, MediaRequestAllowOnSignIn) {
+  RunBasicTestCase("MediaRequestAllowOnSignIn",
+                   GetTestUrl("webview/mediarequest.html").spec());
+}
+#endif
 
 // TODO(crbug.com/41400417) Flaky on CrOS trybots.
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(NDEBUG)
@@ -123,30 +159,31 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, DisplayNone) {
 #define MAYBE_ExecuteScriptCode ExecuteScriptCode
 #endif
 IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, MAYBE_ExecuteScriptCode) {
-  ASSERT_TRUE(
-      RunTestCase("ExecuteScriptCode", GetTestUrl("empty.html").spec()));
+  ASSERT_TRUE(RunContentScriptTestCase("ExecuteScriptCode",
+                                       GetTestUrl("empty.html").spec()));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, ExecuteScriptCodeFromFile) {
-  ASSERT_TRUE(RunTestCase("ExecuteScriptCodeFromFile",
-                          GetTestUrl("empty.html").spec()));
+  ASSERT_TRUE(RunContentScriptTestCase("ExecuteScriptCodeFromFile",
+                                       GetTestUrl("empty.html").spec()));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, AddContentScript) {
-  ASSERT_TRUE(RunTestCase("AddContentScript", GetTestUrl("empty.html").spec()));
+  ASSERT_TRUE(RunContentScriptTestCase("AddContentScript",
+                                       GetTestUrl("empty.html").spec()));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, AddMultiContentScripts) {
-  ASSERT_TRUE(
-      RunTestCase("AddMultiContentScripts", GetTestUrl("empty.html").spec()));
+  ASSERT_TRUE(RunContentScriptTestCase("AddMultiContentScripts",
+                                       GetTestUrl("empty.html").spec()));
 }
 
 IN_PROC_BROWSER_TEST_F(
     WebUIWebViewBrowserTest,
     AddContentScriptWithSameNameShouldOverwriteTheExistingOne) {
-  ASSERT_TRUE(
-      RunTestCase("AddContentScriptWithSameNameShouldOverwriteTheExistingOne",
-                  GetTestUrl("empty.html").spec()));
+  ASSERT_TRUE(RunContentScriptTestCase(
+      "AddContentScriptWithSameNameShouldOverwriteTheExistingOne",
+      GetTestUrl("empty.html").spec()));
 }
 
 #if (BUILDFLAG(IS_CHROMEOS_ASH) && !defined(NDEBUG)) || \
@@ -162,14 +199,14 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     WebUIWebViewBrowserTest,
     MAYBE_AddContentScriptToOneWebViewShouldNotInjectToTheOtherWebView) {
-  ASSERT_TRUE(RunTestCase(
+  ASSERT_TRUE(RunContentScriptTestCase(
       "AddContentScriptToOneWebViewShouldNotInjectToTheOtherWebView",
       GetTestUrl("empty.html").spec()));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, AddAndRemoveContentScripts) {
-  ASSERT_TRUE(RunTestCase("AddAndRemoveContentScripts",
-                          GetTestUrl("empty.html").spec()));
+  ASSERT_TRUE(RunContentScriptTestCase("AddAndRemoveContentScripts",
+                                       GetTestUrl("empty.html").spec()));
 }
 
 // Disable code coverage for the NewWindowAPI test. Currently code coverage
@@ -202,17 +239,18 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewCoverageDisabledBrowserTest,
     // TODO(crbug.com/40947671): re-enable this test.
     return;
   }
-  ASSERT_TRUE(RunTestCase("AddContentScriptsWithNewWindowAPI",
-                          GetTestUrl("guest_from_opener.html").spec()));
+  ASSERT_TRUE(
+      RunContentScriptTestCase("AddContentScriptsWithNewWindowAPI",
+                               GetTestUrl("guest_from_opener.html").spec()));
 }
 
 // https://crbug.com/665512.
 IN_PROC_BROWSER_TEST_F(
     WebUIWebViewBrowserTest,
     DISABLED_ContentScriptIsInjectedAfterTerminateAndReloadWebView) {
-  ASSERT_TRUE(
-      RunTestCase("ContentScriptIsInjectedAfterTerminateAndReloadWebView",
-                  GetTestUrl("empty.html").spec()));
+  ASSERT_TRUE(RunContentScriptTestCase(
+      "ContentScriptIsInjectedAfterTerminateAndReloadWebView",
+      GetTestUrl("empty.html").spec()));
 }
 
 // TODO(crbug.com/41284814) Flaky on CrOS trybots.
@@ -227,13 +265,14 @@ IN_PROC_BROWSER_TEST_F(
 #endif
 IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest,
                        MAYBE_ContentScriptExistsAsLongAsWebViewTagExists) {
-  ASSERT_TRUE(RunTestCase("ContentScriptExistsAsLongAsWebViewTagExists",
-                          GetTestUrl("empty.html").spec()));
+  ASSERT_TRUE(
+      RunContentScriptTestCase("ContentScriptExistsAsLongAsWebViewTagExists",
+                               GetTestUrl("empty.html").spec()));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, AddContentScriptWithCode) {
-  ASSERT_TRUE(
-      RunTestCase("AddContentScriptWithCode", GetTestUrl("empty.html").spec()));
+  ASSERT_TRUE(RunContentScriptTestCase("AddContentScriptWithCode",
+                                       GetTestUrl("empty.html").spec()));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, ContextMenuInspectElement) {
