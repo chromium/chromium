@@ -21,7 +21,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
-#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/mock_component_updater_service.h"

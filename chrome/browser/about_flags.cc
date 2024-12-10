@@ -1023,26 +1023,9 @@ const FeatureEntry::FeatureVariation kBorealisZinkGlDriverVariations[] = {
 
 const char kLacrosAvailabilityIgnoreInternalName[] =
     "lacros-availability-ignore";
-const char kLacrosStabilityInternalName[] = "lacros-stability";
 const char kLacrosWaylandLoggingInternalName[] = "lacros-wayland-logging";
 const char kArcEnableVirtioBlkForDataInternalName[] =
     "arc-enable-virtio-blk-for-data";
-
-const FeatureEntry::Choice kLacrosStabilityChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {ash::standalone_browser::kLacrosStabilityChannelCanary,
-     ash::standalone_browser::kLacrosStabilitySwitch,
-     ash::standalone_browser::kLacrosStabilityChannelCanary},
-    {ash::standalone_browser::kLacrosStabilityChannelDev,
-     ash::standalone_browser::kLacrosStabilitySwitch,
-     ash::standalone_browser::kLacrosStabilityChannelDev},
-    {ash::standalone_browser::kLacrosStabilityChannelBeta,
-     ash::standalone_browser::kLacrosStabilitySwitch,
-     ash::standalone_browser::kLacrosStabilityChannelBeta},
-    {ash::standalone_browser::kLacrosStabilityChannelStable,
-     ash::standalone_browser::kLacrosStabilitySwitch,
-     ash::standalone_browser::kLacrosStabilityChannelStable},
-};
 
 const char kLacrosSelectionInternalName[] = "lacros-selection";
 const char kProjectorServerSideSpeechRecognition[] =
@@ -4834,9 +4817,6 @@ const FeatureEntry kFeatureEntries[] = {
     {ash::standalone_browser::kLacrosAvailabilityPolicyInternalName, "", "",
      kOsCrOS, MULTI_VALUE_TYPE(kLacrosAvailabilityPolicyChoices)},
     // Used to carry the policy value crossing the Chrome process lifetime.
-    {kLacrosStabilityInternalName, flag_descriptions::kLacrosStabilityName,
-     flag_descriptions::kLacrosStabilityDescription, kOsCrOS,
-     MULTI_VALUE_TYPE(kLacrosStabilityChoices)},
     {kLacrosWaylandLoggingInternalName,
      flag_descriptions::kLacrosWaylandLoggingName,
      flag_descriptions::kLacrosWaylandLoggingDescription, kOsCrOS,
@@ -11963,10 +11943,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   if (!strcmp(kArcEnableAttestationFlag, entry.internal_name)) {
     return base::CommandLine::ForCurrentProcess()->HasSwitch(
         ash::switches::kArcEnableAttestation);
-  }
-
-  if (!strcmp(kLacrosStabilityInternalName, entry.internal_name)) {
-    return !crosapi::browser_util::IsLacrosAllowedToBeEnabled();
   }
 
   if (!strcmp(kArcEnableVirtioBlkForDataInternalName, entry.internal_name)) {

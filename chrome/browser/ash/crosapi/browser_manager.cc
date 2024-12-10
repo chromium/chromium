@@ -72,7 +72,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/ash/components/standalone_browser/channel_util.h"
 #include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"

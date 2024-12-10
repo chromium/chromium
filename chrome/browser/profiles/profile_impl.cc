@@ -213,7 +213,6 @@
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/session_manager/core/session_manager.h"
@@ -664,8 +663,6 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
       ash::ProfileHelper::IsPrimaryProfile(this)) {
     auto& map = profile_policy_connector_->policy_service()->GetPolicies(
         policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
-    ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
-        map, IsNewProfile(), IsRegularProfile());
     crosapi::browser_util::CacheLacrosAvailability(map);
     ash::standalone_browser::CacheLacrosSelection(map);
   }
@@ -1210,8 +1207,6 @@ void ProfileImpl::OnPrefsLoaded(CreateMode create_mode, bool success) {
         auto& map = profile_policy_connector_->policy_service()->GetPolicies(
             policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
                                     std::string()));
-        ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
-            map, IsNewProfile(), IsRegularProfile());
         crosapi::browser_util::CacheLacrosAvailability(map);
         ash::standalone_browser::CacheLacrosSelection(map);
       }

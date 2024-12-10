@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
@@ -54,7 +53,6 @@ class ScopedLacrosAvailabilityCache {
       const ScopedLacrosAvailabilityCache&) = delete;
   ~ScopedLacrosAvailabilityCache() {
     browser_util::ClearLacrosAvailabilityCacheForTest();
-    ash::standalone_browser::BrowserSupport::Shutdown();
   }
 
  private:
@@ -66,12 +64,6 @@ class ScopedLacrosAvailabilityCache {
         base::Value(GetLacrosAvailabilityPolicyName(lacros_availability)),
         /*external_data_fetcher=*/nullptr);
     browser_util::CacheLacrosAvailability(policy);
-    if (ash::standalone_browser::BrowserSupport::
-            IsInitializedForPrimaryUser()) {
-      ash::standalone_browser::BrowserSupport::Shutdown();
-    }
-    ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
-        policy, false, false);
   }
 };
 
@@ -87,13 +79,7 @@ class BrowserUtilTest : public testing::Test {
   }
 
   void TearDown() override {
-    if (ash::standalone_browser::BrowserSupport::
-            IsInitializedForPrimaryUser()) {
-      ash::standalone_browser::BrowserSupport::Shutdown();
-    }
     fake_user_manager_.Reset();
-    ash::standalone_browser::BrowserSupport::SetCpuSupportedForTesting(
-        std::nullopt);
   }
 
   const user_manager::User* AddRegularUser(const std::string& email,
@@ -106,8 +92,6 @@ class BrowserUtilTest : public testing::Test {
       fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
                                        /*browser_restart=*/false,
                                        /*is_child=*/false);
-      ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
-          policy::PolicyMap(), false, false);
     }
     return user;
   }
@@ -137,11 +121,6 @@ TEST_F(BrowserUtilTest, IsAshWebBrowserDisabled) {
   AddRegularUser("user@managedchrome.com");
   ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosOnly);
   EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
-}
-
-TEST_F(BrowserUtilTest, LacrosOnlyBrowserAllowed) {
-  AddRegularUser("user@test.com");
-  EXPECT_TRUE(browser_util::IsLacrosOnlyBrowserAllowed());
 }
 
 TEST_F(BrowserUtilTest, MetadataMissing) {
@@ -315,28 +294,6 @@ TEST_F(BrowserUtilTest, GetLacrosLaunchSwitchSourceGoogle) {
   }
 }
 
-// Lacros availability has no effect on non-googlers
-TEST_F(BrowserUtilTest, LacrosAvailabilityIgnoreNonGoogle) {
-  AddRegularUser("user@random.com");
-
-  base::test::ScopedCommandLine cmd_line;
-  cmd_line.GetProcessCommandLine()->AppendSwitch(
-      ash::switches::kLacrosAvailabilityIgnore);
-  ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosDisallowed);
-  EXPECT_FALSE(browser_util::IsLacrosAllowedToBeEnabled());
-}
-
-// Lacros availability has an effect on googlers
-TEST_F(BrowserUtilTest, LacrosAvailabilityIgnoreGoogleDisableToUserChoice) {
-  AddRegularUser("user@google.com");
-
-  base::test::ScopedCommandLine cmd_line;
-  cmd_line.GetProcessCommandLine()->AppendSwitch(
-      ash::switches::kLacrosAvailabilityIgnore);
-  ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosDisallowed);
-  EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
-}
-
 // Lacros availability has an effect on googlers
 TEST_F(BrowserUtilTest, LacrosAvailabilityIgnoreGoogleEnableToUserChoice) {
   AddRegularUser("user@google.com");
@@ -345,7 +302,6 @@ TEST_F(BrowserUtilTest, LacrosAvailabilityIgnoreGoogleEnableToUserChoice) {
   cmd_line.GetProcessCommandLine()->AppendSwitch(
       ash::switches::kLacrosAvailabilityIgnore);
   ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosOnly);
-  EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
   EXPECT_FALSE(browser_util::IsLacrosEnabled());
 }
 

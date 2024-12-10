@@ -21,15 +21,12 @@
 #include "base/version.h"
 #include "chrome/browser/ash/crosapi/lacros_selection_loader.h"
 #include "chrome/browser/ash/crosapi/lacros_selection_loader_factory.h"
-#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "components/component_updater/ash/component_manager_ash.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using ash::standalone_browser::BrowserSupport;
 
 namespace crosapi {
 namespace {

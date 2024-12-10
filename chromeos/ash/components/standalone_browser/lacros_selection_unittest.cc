@@ -10,7 +10,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/test/scoped_command_line.h"
 #include "base/values.h"
-#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -58,13 +57,7 @@ class LacrosSelectionTest : public testing::Test {
   }
 
   void TearDown() override {
-    if (ash::standalone_browser::BrowserSupport::
-            IsInitializedForPrimaryUser()) {
-      ash::standalone_browser::BrowserSupport::Shutdown();
-    }
     fake_user_manager_.Reset();
-    ash::standalone_browser::BrowserSupport::SetCpuSupportedForTesting(
-        std::nullopt);
   }
 
   const user_manager::User* AddRegularUser(const std::string& email) {
@@ -73,8 +66,6 @@ class LacrosSelectionTest : public testing::Test {
     fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
                                      /*browser_restart=*/false,
                                      /*is_child=*/false);
-    ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
-        policy::PolicyMap(), false, false);
     return user;
   }
 

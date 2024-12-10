@@ -79,10 +79,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 // Returns the user directory for lacros-chrome.
 base::FilePath GetUserDataDir();
 
-// Returns true if the Lacros feature is allowed to be enabled for primary user.
-// This checks user type, chrome channel and enterprise policy.
-bool IsLacrosAllowedToBeEnabled();
-
 // Returns true if the Lacros feature is enabled for the primary user.
 bool IsLacrosEnabled();
 
@@ -90,16 +86,6 @@ bool IsLacrosEnabled();
 // enabled and is the only browser.
 // DEPRECATED. Please use !IsLacrosEnabled().
 bool IsAshWebBrowserEnabled();
-
-// Returns true if Lacros can be used as the only browser
-// for the current session.
-// Note that IsLacrosEnabled may return false, even if this returns
-// true, specifically, if the feature is disabled by user/policy.
-bool IsLacrosOnlyBrowserAllowed();
-
-// Returns true if `ash::standalone_browser::features::kLacrosOnly` flag is
-// allowed to be configured on about:flags page.
-bool IsLacrosOnlyFlagAllowed();
 
 // Returns true if chrome apps should be routed through Lacros instead of ash.
 bool IsLacrosChromeAppsEnabled();

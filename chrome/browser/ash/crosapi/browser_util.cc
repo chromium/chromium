@@ -30,7 +30,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/channel/channel_info.h"
-#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
@@ -121,44 +120,12 @@ base::FilePath GetUserDataDir() {
   return base_path.Append("lacros");
 }
 
-bool IsLacrosAllowedToBeEnabled() {
-  if (!ash::standalone_browser::BrowserSupport::IsInitializedForPrimaryUser()) {
-    // This function must be called only after user session starts.
-    base::debug::DumpWithoutCrashing();
-    // Returning false for compatibility.
-    // TODO(crbug.com/40286020): replace this logic by CHECK/DCHECK.
-    return false;
-  }
-  return ash::standalone_browser::BrowserSupport::GetForPrimaryUser()
-      ->IsAllowed();
-}
-
 bool IsLacrosEnabled() {
   return false;
 }
 
 bool IsAshWebBrowserEnabled() {
   return true;
-}
-
-bool IsLacrosOnlyBrowserAllowed() {
-  if (!ash::standalone_browser::BrowserSupport::IsInitializedForPrimaryUser()) {
-    // This function must be called only after user session starts.
-    base::debug::DumpWithoutCrashing();
-    // Returning false for compatibility.
-    // TODO(crbug.com/40286020): replace this logic by CHECK/DCHECK.
-    return false;
-  }
-  return ash::standalone_browser::BrowserSupport::GetForPrimaryUser()
-      ->IsAllowed();
-}
-
-bool IsLacrosOnlyFlagAllowed() {
-  return IsLacrosOnlyBrowserAllowed() &&
-         // Hide lacros_only flag for guest sessions as they do always start
-         // with a fresh and anonymous profile, hence ignoring this setting.
-         !UserManager::Get()->IsLoggedInAsGuest() &&
-         (GetCachedLacrosAvailability() == LacrosAvailability::kUserChoice);
 }
 
 bool IsLacrosChromeAppsEnabled() {
