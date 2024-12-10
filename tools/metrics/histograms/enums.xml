@@ -10933,6 +10933,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5217" label="NonNoneTouchActionWouldLoseEditableHandwriting"/>
   <int value="5218"
       label="CSSEnvironmentVariable_SafeAreaInsetBottom_FastPath"/>
+  <int value="5219" label="SrcSetUsedHigherDensityImageFromCache"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

@@ -429,7 +429,12 @@ static unsigned AvoidDownloadIfHigherDensityResourceIsInCache(
         url,
         document->Fetcher()->GetCacheIdentifier(url,
                                                 /*skip_service_worker=*/false));
-    if ((resource && resource->IsLoaded()) || url.ProtocolIsData()) {
+    if (resource && resource->IsLoaded()) {
+      UseCounter::Count(document,
+                        WebFeature::kSrcSetUsedHigherDensityImageFromCache);
+      return i;
+    }
+    if (url.ProtocolIsData()) {
       return i;
     }
   }
