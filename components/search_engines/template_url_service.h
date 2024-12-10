@@ -437,6 +437,10 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // Returns true if the default search provider is controlled by an extension.
   bool IsExtensionControlledDefaultSearch() const;
 
+  DefaultSearchManager::Source default_search_provider_source() const {
+    return default_search_provider_source_;
+  }
+
   // Returns the default search specified in the prepopulated data, if it
   // exists.  If not, returns first URL in |template_urls_|, or NULL if that's
   // empty. The returned object is owned by TemplateURLService and can be
