@@ -200,7 +200,8 @@ class TabGroupRowMediator {
                                 new SharedImageTilesColor(SharedImageTilesColor.Style.DYNAMIC),
                                 mDataSharingService);
             }
-            mSharedImageTilesCoordinator.updateCollaborationId(mSavedTabGroup.collaborationId);
+            mSharedImageTilesCoordinator.fetchImagesForCollaborationId(
+                    mSavedTabGroup.collaborationId);
             mPropertyModel.set(
                     TabGroupRowProperties.SHARED_IMAGE_TILES_VIEW,
                     mSharedImageTilesCoordinator.getView());

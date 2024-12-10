@@ -215,7 +215,7 @@ public class TabGroupColorViewProvider implements Destroyable {
                                 ColorPickerUtils.getTabGroupColorPickerItemColor(
                                         mContext, mColorId, mIsIncognito)),
                         mDataSharingService);
-        mSharedImageTilesCoordinator.updateCollaborationId(collaborationId);
+        mSharedImageTilesCoordinator.fetchImagesForCollaborationId(collaborationId);
 
         View view = mSharedImageTilesCoordinator.getView();
         FrameLayout.LayoutParams params =
@@ -245,7 +245,7 @@ public class TabGroupColorViewProvider implements Destroyable {
 
     private void onCollaborationIdChanged(@Nullable String collaborationId) {
         if (mSharedImageTilesCoordinator != null) {
-            mSharedImageTilesCoordinator.updateCollaborationId(collaborationId);
+            mSharedImageTilesCoordinator.fetchImagesForCollaborationId(collaborationId);
         }
     }
 

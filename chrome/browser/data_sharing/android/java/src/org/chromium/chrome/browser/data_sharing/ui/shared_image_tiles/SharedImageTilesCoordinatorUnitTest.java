@@ -42,6 +42,8 @@ import org.chromium.components.data_sharing.PeopleGroupActionFailure;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.ui.base.TestActivity;
 
+import java.util.List;
+
 /** Unit test for {@link SharedImageTilesCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SharedImageTilesCoordinatorUnitTest {
@@ -72,6 +74,7 @@ public class SharedImageTilesCoordinatorUnitTest {
                 new SharedImageTilesCoordinator(mActivity, type, color, mDataSharingService);
         mView = mSharedImageTilesCoordinator.getView();
         mCountTileView = mView.findViewById(R.id.tiles_count);
+        doReturn(mDataSharingUiDelegate).when(mDataSharingService).getUiDelegate();
     }
 
     private void verifyViews(int countVisibility, int iconViewCount) {
@@ -132,7 +135,6 @@ public class SharedImageTilesCoordinatorUnitTest {
                         })
                 .when(mDataSharingService)
                 .readGroup(eq(COLLABORATION_ID), any(Callback.class));
-        doReturn(mDataSharingUiDelegate).when(mDataSharingService).getUiDelegate();
     }
 
     @Test
@@ -168,7 +170,8 @@ public class SharedImageTilesCoordinatorUnitTest {
     public void testFetchPeopleIcon() {
         simulateReadGroupWith2ValidMembers();
         Callback<Boolean> mockFinishedCallback = mock(Callback.class);
-        mSharedImageTilesCoordinator.updateCollaborationId(COLLABORATION_ID, mockFinishedCallback);
+        mSharedImageTilesCoordinator.fetchImagesForCollaborationId(
+                COLLABORATION_ID, mockFinishedCallback);
 
         ArgumentCaptor<DataSharingAvatarBitmapConfig> configCaptor =
                 ArgumentCaptor.forClass(DataSharingAvatarBitmapConfig.class);
@@ -199,14 +202,61 @@ public class SharedImageTilesCoordinatorUnitTest {
         simulateReadGroupWith2ValidMembers();
 
         Callback<Boolean> mockFinishedCallback = mock(Callback.class);
-        mSharedImageTilesCoordinator.updateCollaborationId(COLLABORATION_ID, mockFinishedCallback);
+        mSharedImageTilesCoordinator.fetchImagesForCollaborationId(
+                COLLABORATION_ID, mockFinishedCallback);
 
         verify(mockFinishedCallback, never()).onResult(anyBoolean());
 
         // A new update would fail the previous ongoing update.
         Callback<Boolean> mockFinishedCallback2 = mock(Callback.class);
-        mSharedImageTilesCoordinator.updateCollaborationId(COLLABORATION_ID, mockFinishedCallback2);
+        mSharedImageTilesCoordinator.fetchImagesForCollaborationId(
+                COLLABORATION_ID, mockFinishedCallback2);
 
         verify(mockFinishedCallback).onResult(false);
+    }
+
+    @Test
+    public void testUpdateGroupMembers() {
+        GroupMember memberValid1 =
+                new GroupMember(
+                        /* gaiaId= */ null,
+                        /* displayName= */ null,
+                        EMAIL,
+                        /* role= */ 0,
+                        /* avatarUrl= */ null,
+                        /* givenName= */ null);
+        GroupMember memberValid2 =
+                new GroupMember(
+                        /* gaiaId= */ null,
+                        /* displayName= */ null,
+                        EMAIL,
+                        /* role= */ 0,
+                        /* avatarUrl= */ null,
+                        /* givenName= */ null);
+        ArgumentCaptor<DataSharingAvatarBitmapConfig> configCaptor =
+                ArgumentCaptor.forClass(DataSharingAvatarBitmapConfig.class);
+
+        // Two members.
+        mSharedImageTilesCoordinator.onGroupMembersChanged(
+                COLLABORATION_ID, List.of(memberValid1, memberValid2));
+        verify(mDataSharingUiDelegate, times(2)).getAvatarBitmap(configCaptor.capture());
+        verifyViews(View.GONE, /* iconViewCount= */ 2);
+
+        // No members.
+        mSharedImageTilesCoordinator.onGroupMembersChanged(COLLABORATION_ID, /* members= */ null);
+        verify(mDataSharingUiDelegate, times(2)).getAvatarBitmap(configCaptor.capture());
+        verifyViews(View.GONE, /* iconViewCount= */ 0);
+
+        // Two members.
+        mSharedImageTilesCoordinator.onGroupMembersChanged(
+                COLLABORATION_ID, List.of(memberValid1, memberValid2));
+        verify(mDataSharingUiDelegate, times(4)).getAvatarBitmap(configCaptor.capture());
+        verifyViews(View.GONE, /* iconViewCount= */ 2);
+
+        // No group.
+        mSharedImageTilesCoordinator.onGroupMembersChanged(
+                /* collaborationId= */ null, /* members= */ null);
+        verify(mDataSharingUiDelegate, times(4)).getAvatarBitmap(configCaptor.capture());
+        verifyViews(View.GONE, /* iconViewCount= */ 0);
     }
 }

@@ -1049,12 +1049,13 @@ public class TabGridDialogMediator
             showOrUpdateCollaborationActivityMessageCard();
 
             assert mSharedImageTilesCoordinator != null;
-            mSharedImageTilesCoordinator.updateCollaborationId(collaborationId);
+            mSharedImageTilesCoordinator.fetchImagesForCollaborationId(collaborationId);
         } else {
             if (mSharedImageTilesCoordinator != null) {
                 // Remove any images left in the shared image tiles component so they don't waste
                 // memory.
-                mSharedImageTilesCoordinator.updateCollaborationId(/* collaborationId= */ null);
+                mSharedImageTilesCoordinator.fetchImagesForCollaborationId(
+                        /* collaborationId= */ null);
             }
             removeCollaborationActivityMessageCard();
         }

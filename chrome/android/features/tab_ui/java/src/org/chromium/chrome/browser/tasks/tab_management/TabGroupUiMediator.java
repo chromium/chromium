@@ -452,7 +452,7 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
 
     private void onCollaborationIdChanged(@Nullable String collaborationId) {
         if (mSharedImageTilesCoordinator != null) {
-            mSharedImageTilesCoordinator.updateCollaborationId(collaborationId);
+            mSharedImageTilesCoordinator.fetchImagesForCollaborationId(collaborationId);
         }
     }
 

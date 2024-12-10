@@ -1130,7 +1130,7 @@ public class TabGroupUiMediatorUnitTest {
 
         assertFalse(mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE));
         assertTrue(mModel.get(TabGroupUiProperties.IMAGE_TILES_CONTAINER_VISIBLE));
-        verify(mSharedImageTilesCoordinator).updateCollaborationId(COLLABORATION_ID1);
+        verify(mSharedImageTilesCoordinator).fetchImagesForCollaborationId(COLLABORATION_ID1);
 
         // Remove the collaboration data.
         verify(mDataSharingService).addObserver(mSharingObserverCaptor.capture());
@@ -1138,7 +1138,7 @@ public class TabGroupUiMediatorUnitTest {
 
         assertTrue(mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE));
         assertFalse(mModel.get(TabGroupUiProperties.IMAGE_TILES_CONTAINER_VISIBLE));
-        verify(mSharedImageTilesCoordinator).updateCollaborationId(null);
+        verify(mSharedImageTilesCoordinator).fetchImagesForCollaborationId(null);
     }
 
     @Test
@@ -1150,7 +1150,7 @@ public class TabGroupUiMediatorUnitTest {
 
         assertTrue(mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE));
         assertFalse(mModel.get(TabGroupUiProperties.IMAGE_TILES_CONTAINER_VISIBLE));
-        verify(mSharedImageTilesCoordinator).updateCollaborationId(COLLABORATION_ID1);
+        verify(mSharedImageTilesCoordinator).fetchImagesForCollaborationId(COLLABORATION_ID1);
     }
 
     @Test

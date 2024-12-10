@@ -1581,7 +1581,7 @@ public class TabGridDialogMediatorUnitTest {
 
         assertFalse(mModel.get(TabGridDialogProperties.SHOW_SHARE_BUTTON));
         assertFalse(mModel.get(TabGridDialogProperties.SHOW_IMAGE_TILES));
-        verify(mSharedImageTilesCoordinator).updateCollaborationId(null);
+        verify(mSharedImageTilesCoordinator).fetchImagesForCollaborationId(null);
     }
 
     @Test
@@ -1595,7 +1595,7 @@ public class TabGridDialogMediatorUnitTest {
         resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1, GROUP_MEMBER2);
         assertFalse(mModel.get(TabGridDialogProperties.SHOW_SHARE_BUTTON));
         assertTrue(mModel.get(TabGridDialogProperties.SHOW_IMAGE_TILES));
-        verify(mSharedImageTilesCoordinator).updateCollaborationId(COLLABORATION_ID1);
+        verify(mSharedImageTilesCoordinator).fetchImagesForCollaborationId(COLLABORATION_ID1);
         verify(mDialogController, never()).addMessageCardItem(/* position= */ eq(0), any());
 
         // Reset with null first as re-using the same TabGroupId does not reset the observer.
@@ -1604,7 +1604,7 @@ public class TabGridDialogMediatorUnitTest {
                 .thenReturn(false);
         resetForDataSharing(/* isShared= */ false);
         verify(mDialogController).removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
-        verify(mSharedImageTilesCoordinator).updateCollaborationId(null);
+        verify(mSharedImageTilesCoordinator).fetchImagesForCollaborationId(null);
         assertTrue(mModel.get(TabGridDialogProperties.SHOW_SHARE_BUTTON));
         assertEquals(
                 R.string.tab_grid_share_button_text,

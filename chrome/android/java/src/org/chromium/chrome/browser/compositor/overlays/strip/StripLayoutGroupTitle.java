@@ -332,7 +332,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
         }
 
         // Update the collaboration ID and fetch group data from the data sharing service.
-        mSharedImageTilesCoordinator.updateCollaborationId(
+        mSharedImageTilesCoordinator.fetchImagesForCollaborationId(
                 collaborationId,
                 (result) -> {
                     if (result) {
