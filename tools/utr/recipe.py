@@ -100,7 +100,9 @@ class LegacyRunner:
                build_dir,
                additional_test_args=None,
                reuse_task=None,
-               skip_coverage=False):
+               skip_coverage=False,
+               no_rbe=False,
+               no_siso=False):
     """Constructor for LegacyRunner
 
     Args:
@@ -117,6 +119,8 @@ class LegacyRunner:
       additional_test_args: List of additional args to pass to the tests.
       reuse_task: String of a swarming task to reuse.
       skip_coverage: If True, skip code coverage instrumentation.
+      no_rbe: If True, disables RBE during compile.
+      no_siso: If True, disabled Siso during compile and isolate.
     """
     self._recipes_py = recipes_py
     self._skip_coverage = skip_coverage
@@ -185,6 +189,10 @@ class LegacyRunner:
     if not '$build/siso' in input_props:
       input_props['$build/siso'] = {}
     input_props['$build/siso']['project'] = self._get_siso_project()
+    if no_rbe:
+      input_props['no_rbe'] = True
+    if no_siso:
+      input_props['no_siso'] = True
     self._input_props = input_props
 
   def _merge_rerun_props(self, rerun_props_from_recipe):
