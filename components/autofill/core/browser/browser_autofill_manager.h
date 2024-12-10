@@ -234,7 +234,7 @@ class BrowserAutofillManager : public AutofillManager {
       base::span<const AutofillField*> safe_filled_autofill_fields,
       const base::flat_set<FieldGlobalId>& filled_field_ids,
       const base::flat_set<FieldGlobalId>& safe_field_ids,
-      base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
+      const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
           skip_reasons,
       const FillingPayload& filling_payload,
       AutofillTriggerSource trigger_source,
@@ -622,7 +622,7 @@ class BrowserAutofillManager : public AutofillManager {
       FormStructure& form_structure,
       AutofillField& trigger_autofill_field,
       const base::flat_set<FieldGlobalId>& safe_field_ids,
-      base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
+      const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
           skip_reasons,
       const FillingPayload& filling_payload,
       bool is_refill);

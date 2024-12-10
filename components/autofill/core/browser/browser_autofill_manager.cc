@@ -2210,7 +2210,7 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
     base::span<const AutofillField*> safe_filled_autofill_fields,
     const base::flat_set<FieldGlobalId>& filled_field_ids,
     const base::flat_set<FieldGlobalId>& safe_field_ids,
-    base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
+    const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
         skip_reasons,
     const FillingPayload& filling_payload,
     AutofillTriggerSource trigger_source,
@@ -2252,7 +2252,7 @@ void BrowserAutofillManager::AppendFillLogEvents(
     FormStructure& form_structure,
     AutofillField& trigger_autofill_field,
     const base::flat_set<FieldGlobalId>& safe_field_ids,
-    base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
+    const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
         skip_reasons,
     const FillingPayload& filling_payload,
     bool is_refill) {
@@ -2276,8 +2276,8 @@ void BrowserAutofillManager::AppendFillLogEvents(
     const FieldGlobalId field_id = field.global_id();
     const bool has_value_before = !form.fields()[i].value().empty();
     const FieldFillingSkipReason skip_reason =
-        skip_reasons[field_id].empty() ? FieldFillingSkipReason::kNotSkipped
-                                       : *skip_reasons[field_id].begin();
+        skip_reasons.at(field_id).empty() ? FieldFillingSkipReason::kNotSkipped
+                                          : *skip_reasons.at(field_id).begin();
     if (!IsCheckable(field.check_status())) {
       if (skip_reason == FieldFillingSkipReason::kNotSkipped) {
         field.AppendLogEventIfNotRepeated(FillFieldLogEvent{
