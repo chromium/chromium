@@ -19,6 +19,8 @@ namespace chromeos::onc {
 crypto::SubtlePassKey MakeCryptoPassKey();
 }
 
+class OSCryptImpl;
+
 namespace crypto {
 
 // A crypto::SubtlePassKey allows you to call subtle, difficult-to-get-right, or
@@ -46,6 +48,10 @@ class CRYPTO_EXPORT SubtlePassKey final {
   // ONC EncryptedConfiguration objects can contain and require us to use
   // arbitrary (possibly attacker-supplied) PBKDF2 parameters.
   friend SubtlePassKey chromeos::onc::MakeCryptoPassKey();
+
+  // This class uses custom PBKDF2 parameters and has to keep doing so for
+  // compatibility with existing persisted data.
+  friend class ::OSCryptImpl;
 };
 
 }  // namespace crypto

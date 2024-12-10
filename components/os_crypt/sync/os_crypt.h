@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
+#include "crypto/subtle_passkey.h"
 
 #if BUILDFLAG(IS_LINUX)
 class KeyStorageLinux;
@@ -232,21 +233,28 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCryptImpl {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_LINUX)
-  // Returns a cached string of "peanuts". Is thread-safe.
-  crypto::SymmetricKey* GetPasswordV10();
+  static constexpr size_t kDerivedKeyBytes = 16;
 
-  // Caches and returns the password from the KeyStorage or null if there is no
-  // service. Is thread-safe. Set `probe` to true if caller wishes to get
-  // nullptr back rather than crashing due to no config being set.
-  crypto::SymmetricKey* GetPasswordV11(bool probe);
+  crypto::SubtlePassKey MakeCryptoPassKey();
 
-  // For password_v10, nullptr means uninitialised.
-  std::unique_ptr<crypto::SymmetricKey> password_v10_cache_;
+  // Derive a new key of `kDerivedKeyBytes` from a given input key using
+  // PBKDF2-HMAC-SHA1.
+  std::array<uint8_t, kDerivedKeyBytes> Pbkdf2(const std::string& key);
 
-  // For password_v11, nullptr means no backend.
-  std::unique_ptr<crypto::SymmetricKey> password_v11_cache_;
+  // Try to fill in `v11_key_` with a V1.1 derived key. Returns true if a v11
+  // key is now present in `v11_key_` (which may have just been cached
+  // previously) and false if one is not present. If `try_v11_` is false, and
+  // there is no cached v11 key, this method just returns false.
+  bool DeriveV11Key();
 
-  bool is_password_v11_cached_ = false;
+  // The cached V1.1 derived key. If this is nullopt, no V1.1 key is available
+  // yet, but `DeriveV11Key()` may be able to generate one.
+  std::optional<std::array<uint8_t, kDerivedKeyBytes>> v11_key_;
+
+  // Whether to try V1.1 key generation at all. When OSCrypt is used in the
+  // network service, V1.1 key generation can't succeed (it is blocked by the
+  // sandbox) so it should never be attempted.
+  bool try_v11_ = true;
 
   // |config_| is used to initialise |password_v11_cache_| and then cleared.
   std::unique_ptr<os_crypt::Config> config_;
