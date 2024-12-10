@@ -14,10 +14,12 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.GroupData;
+import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
+import java.util.List;
 import java.util.Objects;
 
 /** Provides a simple interface to watch shared state for a single tab group. */
@@ -41,6 +43,8 @@ public class SharedGroupObserver implements Destroyable {
             };
 
     private final ObservableSupplierImpl<Integer> mGroupSharedStateSupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<List<GroupMember>> mGroupMembersSupplier =
             new ObservableSupplierImpl<>();
     // Track a matching collaboration id because it allows us to not assume sync will still give the
     // old collaboration id if the group is deleted.
@@ -66,6 +70,7 @@ public class SharedGroupObserver implements Destroyable {
         @Nullable SavedTabGroup group = mTabGroupSyncService.getGroup(mLocalTabGroupId);
         if (group == null || !TabShareUtils.isCollaborationIdValid(group.collaborationId)) {
             mGroupSharedStateSupplier.set(GroupSharedState.NOT_SHARED);
+            mGroupMembersSupplier.set(null);
         } else {
             mCurrentCollaborationIdSupplier.set(group.collaborationId);
             dataSharingService.readGroup(group.collaborationId, this::onReadGroup);
@@ -89,6 +94,14 @@ public class SharedGroupObserver implements Destroyable {
     }
 
     /**
+     * The held value contains the list of members of the group. Upon the initial construction of
+     * this class it is possible there's no value set yet.
+     */
+    public ObservableSupplier<List<GroupMember>> getGroupMembersSupplier() {
+        return mGroupMembersSupplier;
+    }
+
+    /**
      * The held value corresponds to the collaboration id for the group. Upon initial construction
      * of this class the value will be up-to-date. May be transiently out of sync with the state
      * held by {@link #getGroupSharedStateSupplier()} if async update are in flight.
@@ -99,11 +112,13 @@ public class SharedGroupObserver implements Destroyable {
 
     private void onReadGroup(@NonNull GroupDataOrFailureOutcome outcome) {
         mGroupSharedStateSupplier.set(TabShareUtils.discernSharedGroupState(outcome));
+        mGroupMembersSupplier.set(TabShareUtils.getGroupMembers(outcome));
     }
 
     private void updateForNonDeletedGroupData(@Nullable GroupData groupData) {
         if (isOurGroup(groupData)) {
             mGroupSharedStateSupplier.set(TabShareUtils.discernSharedGroupState(groupData));
+            mGroupMembersSupplier.set(TabShareUtils.getGroupMembers(groupData));
         }
     }
 
@@ -111,6 +126,7 @@ public class SharedGroupObserver implements Destroyable {
         if (Objects.equals(groupId, mCurrentCollaborationIdSupplier.get())) {
             mCurrentCollaborationIdSupplier.set(null);
             mGroupSharedStateSupplier.set(GroupSharedState.NOT_SHARED);
+            mGroupMembersSupplier.set(null);
         }
     }
 

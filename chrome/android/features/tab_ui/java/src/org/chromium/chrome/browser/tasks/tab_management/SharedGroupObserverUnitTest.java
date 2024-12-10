@@ -38,6 +38,8 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
+import java.util.List;
+
 /** Unit tests for {@link SharedGroupObserver}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SharedGroupObserverUnitTest {
@@ -76,6 +78,8 @@ public class SharedGroupObserverUnitTest {
         @GroupSharedState int state = observer.getGroupSharedStateSupplier().get();
         assertEquals(GroupSharedState.NOT_SHARED, state);
 
+        assertNull(observer.getGroupMembersSupplier().get());
+
         @Nullable String collaborationId = observer.getCollaborationIdSupplier().get();
         assertNull(collaborationId);
     }
@@ -89,6 +93,8 @@ public class SharedGroupObserverUnitTest {
                 new SharedGroupObserver(TAB_GROUP_ID, mTabGroupSyncService, mDataSharingService);
         @GroupSharedState int state = observer.getGroupSharedStateSupplier().get();
         assertEquals(GroupSharedState.NOT_SHARED, state);
+
+        assertNull(observer.getGroupMembersSupplier().get());
 
         @Nullable String collaborationId = observer.getCollaborationIdSupplier().get();
         assertNull(collaborationId);
@@ -108,6 +114,8 @@ public class SharedGroupObserverUnitTest {
         @GroupSharedState int state = observer.getGroupSharedStateSupplier().get();
         assertEquals(GroupSharedState.NOT_SHARED, state);
 
+        assertNull(observer.getGroupMembersSupplier().get());
+
         @Nullable String collaborationId = observer.getCollaborationIdSupplier().get();
         assertEquals(COLLABORATION_ID1, collaborationId);
     }
@@ -123,6 +131,8 @@ public class SharedGroupObserverUnitTest {
         mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1);
         @GroupSharedState int state = observer.getGroupSharedStateSupplier().get();
         assertEquals(GroupSharedState.COLLABORATION_ONLY, state);
+
+        assertEquals(List.of(GROUP_MEMBER1), observer.getGroupMembersSupplier().get());
 
         @Nullable String collaborationId = observer.getCollaborationIdSupplier().get();
         assertEquals(COLLABORATION_ID1, collaborationId);
@@ -140,6 +150,9 @@ public class SharedGroupObserverUnitTest {
         @GroupSharedState int state = observer.getGroupSharedStateSupplier().get();
         assertEquals(GroupSharedState.HAS_OTHER_USERS, state);
 
+        assertEquals(
+                List.of(GROUP_MEMBER1, GROUP_MEMBER2), observer.getGroupMembersSupplier().get());
+
         @Nullable String collaborationId = observer.getCollaborationIdSupplier().get();
         assertEquals(COLLABORATION_ID1, collaborationId);
     }
@@ -155,6 +168,7 @@ public class SharedGroupObserverUnitTest {
         observer.getGroupSharedStateSupplier().addObserver(mOnSharedGroupStateChanged);
         ShadowLooper.runUiThreadTasks();
         verify(mOnSharedGroupStateChanged).onResult(GroupSharedState.NOT_SHARED);
+        assertNull(observer.getGroupMembersSupplier().get());
         Mockito.clearInvocations(mOnSharedGroupStateChanged);
 
         savedTabGroup.collaborationId = COLLABORATION_ID1;
@@ -163,6 +177,7 @@ public class SharedGroupObserverUnitTest {
                 .getValue()
                 .onGroupAdded(SharedGroupTestHelper.newGroupData(COLLABORATION_ID1, GROUP_MEMBER1));
         verify(mOnSharedGroupStateChanged).onResult(GroupSharedState.COLLABORATION_ONLY);
+        assertEquals(List.of(GROUP_MEMBER1), observer.getGroupMembersSupplier().get());
 
         @Nullable String collaborationId = observer.getCollaborationIdSupplier().get();
         assertEquals(COLLABORATION_ID1, collaborationId);
@@ -173,10 +188,13 @@ public class SharedGroupObserverUnitTest {
                         SharedGroupTestHelper.newGroupData(
                                 COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2));
         verify(mOnSharedGroupStateChanged).onResult(GroupSharedState.HAS_OTHER_USERS);
+        assertEquals(
+                List.of(GROUP_MEMBER1, GROUP_MEMBER2), observer.getGroupMembersSupplier().get());
 
         savedTabGroup.collaborationId = COLLABORATION_ID1;
         mSharingObserverCaptor.getValue().onGroupRemoved(COLLABORATION_ID1);
         verify(mOnSharedGroupStateChanged).onResult(GroupSharedState.NOT_SHARED);
+        assertNull(observer.getGroupMembersSupplier().get());
 
         collaborationId = observer.getCollaborationIdSupplier().get();
         assertNull(collaborationId);
