@@ -564,6 +564,7 @@ class WPTAdapter:
                 logger.info('Setting environment variable %s to %s', name,
                             value)
                 os.environ[name] = value
+            os.environ['FONTCONFIG_SYSROOT'] = self.port.build_path()
 
             if self.using_upstream_wpt:
                 tests_root = self.tools_root
