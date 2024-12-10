@@ -659,6 +659,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="PasswordManager.AcknowledgeGroupedAffiliationsWarning.ConfirmationResult"
+    enum="AcknowledgeGroupedCredentialSheetBridgeDismissReason"
+    expires_after="2025-06-15">
+  <owner>atsvirchkova@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Tracks the result of user interaction with the grouped affiliated credential
+    filling warning (it's shown when user fills the password saved for another
+    web site or Android app, but related to the current web site). It is logged
+    when the warning is being dismissed.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.AddCredentialFromSettings.AccountStoreUsed2"
     enum="Boolean" expires_after="2025-04-13">
   <owner>mamir@google.com</owner>

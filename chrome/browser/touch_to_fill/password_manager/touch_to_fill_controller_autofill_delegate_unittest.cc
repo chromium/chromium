@@ -941,6 +941,7 @@ TEST_F(TouchToFillControllerAutofillTest,
 
 TEST_F(TouchToFillControllerAutofillTest,
        TriggersAcknowledgeDialogBeforeFillingGroupedCredential) {
+  base::HistogramTester uma_recorder;
   // Test multiple credentials with one of them being an Android credential.
   std::string display_name = "Example android app";
   UiCredential credentials[] = {UiCredential(
@@ -970,10 +971,14 @@ TEST_F(TouchToFillControllerAutofillTest,
   EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword);
   acknowledge_grouped_credential_sheet_helper().DismissSheet(
       AcknowledgeGroupedCredentialSheetBridge::DismissReason::kAccept);
+  uma_recorder.ExpectUniqueSample(
+      "PasswordManager.FillSuggestionsGroupedMatchAccepted", /*sample=*/true,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(TouchToFillControllerAutofillTest,
        TriggersShowIfUserGoesBackFromAcknowledgeGroupedCredentialSheet) {
+  base::HistogramTester uma_recorder;
   UiCredential credentials[] = {MakeUiCredential(
       {.username = "alice",
        .password = "p4ssw0rd",
@@ -1000,6 +1005,9 @@ TEST_F(TouchToFillControllerAutofillTest,
   EXPECT_CALL(*recreated_view_ptr, Show);
   acknowledge_grouped_credential_sheet_helper().DismissSheet(
       AcknowledgeGroupedCredentialSheetBridge::DismissReason::kBack);
+  uma_recorder.ExpectUniqueSample(
+      "PasswordManager.FillSuggestionsGroupedMatchAccepted", /*sample=*/false,
+      /*expected_bucket_count=*/1);
 }
 
 class TouchToFillControllerAutofillTestWithSubmissionReadinessVariationTest

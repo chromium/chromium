@@ -85,6 +85,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Edited"/>
 </enum>
 
+<enum name="AcknowledgeGroupedCredentialSheetBridgeDismissReason">
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Back button pressed"/>
+  <int value="2" label="Ignored"/>
+</enum>
+
 <enum name="AddCredentialFromSettingsUserInteractions">
   <int value="0" label="Add Credential Dialog is opened"/>
   <int value="1" label="Add Credential Dialog is closed"/>

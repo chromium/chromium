@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -72,8 +73,7 @@ class AcknowledgeGroupedCredentialSheetControllerTest : public testing::Test {
 
 TEST_F(AcknowledgeGroupedCredentialSheetControllerTest,
        ShowAndDismissAcknowledgeSheet) {
-  // TODO(crbug.com/372635361): After implementing the bridge, expect the call
-  // to show the actual sheet. Now only checks that the callback is called.
+  base::HistogramTester histogram_tester;
   base::MockCallback<base::OnceCallback<void(DismissReson)>> mock_reply;
   EXPECT_CALL(*mock_jni_bridge(), Show(kCurrentHostname, kCredentialHostname));
   controller_->ShowAcknowledgeSheet(kCurrentHostname, kCredentialHostname,
@@ -83,12 +83,29 @@ TEST_F(AcknowledgeGroupedCredentialSheetControllerTest,
   EXPECT_CALL(mock_reply, Run(DismissReson::kBack));
   bridge()->OnDismissed(jni_zero::AttachCurrentThread(),
                         /*accepted=*/static_cast<int>(DismissReson::kBack));
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.AcknowledgeGroupedAffiliationsWarning."
+      "ConfirmationResult",
+      DismissReson::kBack, 1);
+}
+
+TEST_F(AcknowledgeGroupedCredentialSheetControllerTest,
+       ShowAndAcceptAcknowledgeSheet) {
+  base::HistogramTester histogram_tester;
+  controller_->ShowAcknowledgeSheet(kCurrentHostname, kCredentialHostname,
+                                    window_android_.get()->get(),
+                                    base::DoNothing());
+
+  bridge()->OnDismissed(jni_zero::AttachCurrentThread(),
+                        /*accepted=*/static_cast<int>(DismissReson::kAccept));
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.AcknowledgeGroupedAffiliationsWarning."
+      "ConfirmationResult",
+      DismissReson::kAccept, 1);
 }
 
 TEST_F(AcknowledgeGroupedCredentialSheetControllerTest,
        SheetDismissesWhenControllerIsDestroyed) {
-  // TODO(crbug.com/372635361): After implementing the bridge, expect the call
-  // to show the actual sheet. Now only checks that the callback is called.
   base::MockCallback<base::OnceCallback<void(DismissReson)>> mock_reply;
   EXPECT_CALL(*mock_jni_bridge(), Show);
   controller_->ShowAcknowledgeSheet(kCurrentHostname, kCredentialHostname,

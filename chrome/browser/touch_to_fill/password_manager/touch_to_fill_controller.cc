@@ -174,6 +174,14 @@ void TouchToFillController::OnCredentialSelected(
     return;
   }
 
+  // Emit UMA if grouped affiliation match was available for the user.
+  if (base::ranges::find_if(credentials_, [](const UiCredential& login) {
+        return login.match_type() ==
+               password_manager_util::GetLoginMatchType::kGrouped;
+      }) != credentials_.end()) {
+    password_manager::metrics_util::LogFillSuggestionGroupedMatchAccepted(
+        /*grouped_match_accepted=*/false);
+  }
   // Unretained is safe here because TouchToFillController owns the delegate.
   ttf_delegate_->OnCredentialSelected(
       credential, base::BindOnce(&TouchToFillController::ActionCompleted,
@@ -183,6 +191,11 @@ void TouchToFillController::OnCredentialSelected(
 void TouchToFillController::OnAcknowledgementBeforeFillingReceived(
     const password_manager::UiCredential& credential,
     AcknowledgeGroupedCredentialSheetBridge::DismissReason dismiss_reason) {
+  // Emit UMA if grouped affiliation match was available for the user.
+  password_manager::metrics_util::LogFillSuggestionGroupedMatchAccepted(
+      dismiss_reason ==
+      AcknowledgeGroupedCredentialSheetBridge::DismissReason::kAccept);
+
   switch (dismiss_reason) {
     case AcknowledgeGroupedCredentialSheetBridge::DismissReason::kAccept:
       // Unretained is safe here because TouchToFillController owns the
