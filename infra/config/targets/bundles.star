@@ -221,7 +221,7 @@ targets.bundle(
                 "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
             ],
         ),
-        "webview_trichrome_64_cts_tests_no_field_trial_suite",
+        "android_ci_only_fieldtrial_webview_tests",
     ],
 )
 
