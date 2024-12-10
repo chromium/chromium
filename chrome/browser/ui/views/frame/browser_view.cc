@@ -1836,6 +1836,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
           ChromeWebContentsViewFocusHelper::FromWebContents(new_contents);
       if (focus_helper &&
           focus_helper->GetStoredFocus() != contents_web_view_) {
+        GetWidget()->UpdateAccessibleNameForRootView();
         GetWidget()->GetRootView()->NotifyAccessibilityEvent(
             ax::mojom::Event::kFocusContext, true);
       }
