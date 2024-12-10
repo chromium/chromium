@@ -87,7 +87,7 @@ INSTANTIATE_TEST_SUITE_P(
         {2.0, -1, "src.gif", "2x.gif 2px", "src.gif", 1.0, -1},
         {2.0, -1, "src.gif", "2x.gif 2ex", "src.gif", 1.0, -1},
         {10.0, -1, "src.gif", "2x.gif 2e1x", "2x.gif", 20.0, -1},
-        {2.0, -1, "src.gif", "2x.gif 2e1x", "src.gif", 1.0, -1},
+        {2.0, -1, "src.gif", "2x.gif 2e1x", "2x.gif", 20.0, -1},
         {2.0, -1, "src.gif", "2x.gif +2x", "src.gif", 1.0, -1},
         {1.5, -1, "src.gif", "2x.gif 2x", "2x.gif", 2.0, -1},
         {2.5, -1, "src.gif", "2x.gif 2x", "2x.gif", 2.0, -1},
@@ -163,7 +163,7 @@ INSTANTIATE_TEST_SUITE_P(
         {1.0, 400, "", "400.gif 400w 400h, 6000.gif 6000w", "400.gif", 1.0,
          400},
         {4.0, 400, "", "400.gif 400w, 6000.gif 6000w", "6000.gif", 15.0, 6000},
-        {3.8, 400, "", "400.gif 400w, 6000.gif 6000w", "400.gif", 1.0, 400},
+        {3.8, 400, "", "400.gif 400w, 6000.gif 6000w", "6000.gif", 15.0, 6000},
         {0.9, 800, "src.gif", "400.gif 400w", "400.gif", 0.5, 400},
         {0.9, 800, "src.gif", "1x.gif 1x, 400.gif 400w", "1x.gif", 1.0, -1},
         {0.9, 800, "src.gif", "1x.gif 0.6x, 400.gif 400w", "1x.gif", 0.6, -1},
@@ -380,9 +380,34 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     MaxDensityHTMLSrcsetParserTest,
     testing::ValuesIn(std::vector<SrcsetParserTestCase>{
-        {10.0, -1, "src.gif", "2x.gif 2e1x", "src.gif", 1.0, -1},
+        {10.0, -1, "src.gif", "2x.gif 2e1x", "2x.gif", 20.0, -1},
         {2.5, -1, "src.gif", "1.5x.gif 1.5x, 3x.gif 3x", "3x.gif", 3.0, -1},
         {4.0, 400, "", "400.gif 400w, 1000.gif 1000w", "1000.gif", 2.5, 1000},
+    }));
+
+class SrcsetSelectionMatchesImageSetDisabledHTMLSrcsetParserTest
+    : public HTMLSrcsetParserTest {};
+
+TEST_P(SrcsetSelectionMatchesImageSetDisabledHTMLSrcsetParserTest,
+       SrcsetSelectionMatchesImageSetDisabled) {
+  test::TaskEnvironment task_environment;
+  ScopedSrcsetSelectionMatchesImageSetForTest enabled(false);
+  const SrcsetParserTestCase test = GetParam();
+  ImageCandidate candidate = BestFitSourceForImageAttributes(
+      test.device_scale_factor, test.effective_size, test.src_input,
+      test.srcset_input);
+
+  EXPECT_EQ(test.output_density, candidate.Density());
+  EXPECT_EQ(test.output_resource_width, candidate.GetResourceWidth());
+  EXPECT_EQ(test.output_url, candidate.ToString().Ascii());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SrcsetSelectionMatchesImageSetDisabledHTMLSrcsetParserTest,
+    testing::ValuesIn(std::vector<SrcsetParserTestCase>{
+        {2.0, -1, "src.gif", "2x.gif 2e1x", "src.gif", 1.0, -1},
+        {3.8, 400, "", "400.gif 400w, 6000.gif 6000w", "400.gif", 1.0, 400},
     }));
 
 }  // namespace blink

@@ -383,8 +383,17 @@ static void ParseImageCandidatesFromSrcsetAttribute(
 
 static unsigned SelectionLogic(Vector<ImageCandidate*>& image_candidates,
                                float device_scale_factor) {
-  unsigned i = 0;
+  if (RuntimeEnabledFeatures::SrcsetSelectionMatchesImageSetEnabled()) {
+    unsigned i = 0;
+    for (; i < image_candidates.size() - 1; ++i) {
+      if (image_candidates[i]->Density() >= device_scale_factor) {
+        return i;
+      }
+    }
+    return i;
+  }
 
+  unsigned i = 0;
   for (; i < image_candidates.size() - 1; ++i) {
     unsigned next = i + 1;
     float next_density;
@@ -399,8 +408,9 @@ static unsigned SelectionLogic(Vector<ImageCandidate*>& image_candidates,
     geometric_mean = sqrt(current_density * next_density);
     if (((device_scale_factor <= 1.0) &&
          (device_scale_factor > current_density)) ||
-        (device_scale_factor >= geometric_mean))
+        (device_scale_factor >= geometric_mean)) {
       return next;
+    }
     break;
   }
   return i;

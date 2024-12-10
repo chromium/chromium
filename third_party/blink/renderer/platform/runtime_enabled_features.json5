@@ -4005,6 +4005,11 @@
     {
       name: "SrcsetMaxDensity",
     },
+    // Kill switch for change to unify image-set and srcset selection logic.
+    {
+      name: "SrcsetSelectionMatchesImageSet",
+      status: "stable",
+    },
     // Used as argument in attribute of stable-release functions/interfaces
     // where a runtime-enabled feature name is required for correct IDL syntax.
     // This is a global flag; do not change its status.
