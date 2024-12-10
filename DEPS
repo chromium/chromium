@@ -5438,7 +5438,7 @@ hooks = [
     'pattern': '.',
     # Always download profiles on Android builds. The GN arg `is_official_build`
     # is required to consider the profiles during build time.
-    'condition': 'checkout_pgo_profiles or checkout_android',
+    'condition': 'checkout_pgo_profiles',
     'action': [ 'python3',
                 'src/v8/tools/builtins-pgo/download_profiles.py',
                 'download',
