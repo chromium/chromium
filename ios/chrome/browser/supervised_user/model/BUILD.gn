@@ -29,7 +29,6 @@ source_set("model") {
   deps = [
     ":capabilities",
     ":sync_settings_factory",
-    "//components/keyed_service/ios",
     "//components/prefs",
     "//components/security_interstitials/core",
     "//components/signin/public/identity_manager",
