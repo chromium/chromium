@@ -209,7 +209,7 @@ class TabSearchPageHandler
   void MaybeShowUI();
 
   tab_search::mojom::ProfileDataPtr CreateProfileData();
-  void UpdateStaleTabs();
+  void UpdateUnusedTabs();
 
   void SetTabDeclutterController(
       tabs::TabDeclutterController* tab_declutter_controller);
@@ -280,6 +280,10 @@ class TabSearchPageHandler
   // Called when the browser window context for this WebUI has changed.
   void BrowserWindowInterfaceChanged();
 
+  std::vector<tabs::TabInterface*> FilterDuplicateTabsFromStaleTabs(
+      std::vector<tabs::TabInterface*> stale_tabs,
+      std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs);
+
   mojo::Receiver<tab_search::mojom::PageHandler> receiver_;
   mojo::Remote<tab_search::mojom::Page> page_;
   const raw_ptr<content::WebUI> web_ui_;
@@ -322,6 +326,7 @@ class TabSearchPageHandler
       listened_sessions_;
 
   std::vector<tabs::TabInterface*> stale_tabs_;
+  std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs_;
   std::map<tabs::TabInterface*, std::vector<base::CallbackListSubscription>>
       tab_declutter_subscriptions_map_;
 

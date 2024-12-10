@@ -71,6 +71,10 @@ class MockTabDeclutterController : public tabs::TabDeclutterController {
       : TabDeclutterController(browser) {}
 
   MOCK_METHOD(std::vector<tabs::TabInterface*>, GetStaleTabs, (), (override));
+  MOCK_METHOD((std::map<GURL, std::vector<tabs::TabInterface*>>),
+              GetDuplicateTabs,
+              (),
+              (override));
 };
 
 class MockPage : public tab_search::mojom::Page {
@@ -928,7 +932,8 @@ class TabSearchPageHandlerDeclutterTest : public TabSearchPageHandlerTest {
  public:
   void SetUp() override {
     TabSearchPageHandlerTest::SetUp();
-    feature_list_.InitWithFeatures({features::kTabstripDeclutter}, {});
+    feature_list_.InitWithFeatures(
+        {features::kTabstripDeclutter, features::kTabstripDedupe}, {});
     testing_profile_ = std::make_unique<TestingProfile>();
     tab_strip_model_delegate_ = std::make_unique<TestTabStripModelDelegate>();
     tab_strip_model_ = std::make_unique<TabStripModel>(
@@ -974,8 +979,9 @@ class TabSearchPageHandlerDeclutterTest : public TabSearchPageHandlerTest {
 
 TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterFindStaleTabs) {
   EXPECT_CALL(page_, UnusedTabsChanged(_)).Times(1);
-  std::vector<tabs::TabInterface*> stale_tabs_raw_ptr;
 
+  // Create stale tabs.
+  std::vector<tabs::TabInterface*> stale_tabs_raw_ptr;
   for (int i = 0; i < 4; ++i) {
     std::unique_ptr<tabs::TabModel> tab_model =
         std::make_unique<tabs::TabModel>(
@@ -986,16 +992,38 @@ TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterFindStaleTabs) {
     fake_tab_strip_model()->AppendTab(std::move(tab_model), false);
   }
 
+  // Create duplicate tabs.
+  std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs;
+  GURL duplicate_tabs_url("https://duplicate_url.com");
+  for (int i = 0; i < 2; ++i) {
+    std::unique_ptr<tabs::TabModel> tab_model =
+        std::make_unique<tabs::TabModel>(
+            content::WebContents::Create(
+                content::WebContents::CreateParams(testing_profile())),
+            fake_tab_strip_model());
+    duplicate_tabs[duplicate_tabs_url].push_back(tab_model.get());
+    fake_tab_strip_model()->AppendTab(std::move(tab_model), false);
+  }
+
   EXPECT_CALL(*tab_declutter_controller(), GetStaleTabs())
       .WillOnce(testing::Return(stale_tabs_raw_ptr));
+
+  EXPECT_CALL(*tab_declutter_controller(), GetDuplicateTabs())
+      .WillOnce(testing::Return(duplicate_tabs));
 
   tab_search::mojom::PageHandler::GetUnusedTabsCallback callback =
       base::BindLambdaForTesting(
           [&](tab_search::mojom::UnusedTabInfoPtr unused_tabs) {
+            // Verify stale tabs.
             EXPECT_EQ(4u, unused_tabs->stale_tabs.size());
+
+            // Verify duplicate tabs.
+            auto it =
+                unused_tabs->duplicate_tabs.find(duplicate_tabs_url.spec());
+            ASSERT_NE(it, unused_tabs->duplicate_tabs.end());
+            EXPECT_EQ(2u, it->second.size());
           });
 
-  // Installing a declutter controller will trigger `GetUnusedTabs()`.
   handler()->GetUnusedTabs(std::move(callback));
 }
 
@@ -1013,14 +1041,28 @@ TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterObserverTest) {
     fake_tab_strip_model()->AppendTab(std::move(tab_model), false);
   }
 
+  std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs;
+  GURL duplicate_tabs_url("https://duplicate_url.com");
+  for (int i = 0; i < 2; ++i) {
+    std::unique_ptr<tabs::TabModel> tab_model =
+        std::make_unique<tabs::TabModel>(
+            content::WebContents::Create(
+                content::WebContents::CreateParams(testing_profile())),
+            fake_tab_strip_model());
+    duplicate_tabs[duplicate_tabs_url].push_back(tab_model.get());
+    fake_tab_strip_model()->AppendTab(std::move(tab_model), false);
+  }
+
   EXPECT_CALL(*tab_declutter_controller(), GetStaleTabs())
       .WillRepeatedly(testing::Return(stale_tabs_raw_ptr));
+
+  EXPECT_CALL(*tab_declutter_controller(), GetDuplicateTabs())
+      .WillRepeatedly(testing::Return(duplicate_tabs));
 
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner);
   tab_declutter_controller()->SetTimerForTesting(
       task_runner->GetMockTickClock(), task_runner);
-
 
   task_runner->FastForwardBy(
       tab_declutter_controller()->declutter_timer_interval());

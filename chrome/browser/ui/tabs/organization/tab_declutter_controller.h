@@ -84,7 +84,7 @@ class TabDeclutterController {
 
   virtual std::vector<tabs::TabInterface*> GetStaleTabs();
 
-  std::map<GURL, std::vector<tabs::TabInterface*>> GetDuplicateTabs();
+  virtual std::map<GURL, std::vector<tabs::TabInterface*>> GetDuplicateTabs();
 
   TabStripModel* tab_strip_model() { return tab_strip_model_; }
 
