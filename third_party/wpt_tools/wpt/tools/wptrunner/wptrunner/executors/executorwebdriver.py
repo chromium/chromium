@@ -77,7 +77,11 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
     def set_timeout(self, timeout):
         self.webdriver.timeouts.script = timeout
 
-    def create_window(self, type="tab", **kwargs):
+    def create_window(self, type=None, **kwargs):
+        # WebKitGTK-based browsers have issues when the test is opened in a new tab instead of a separate window
+        # See: https://github.com/web-platform-tests/wpt/issues/49262 and https://webkit.org/b/283392
+        if type is None:
+            type = 'window' if 'webkitgtk:browserOptions' in self.parent.capabilities else 'tab'
         return self.webdriver.new_window(type_hint=type)
 
     @property

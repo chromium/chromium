@@ -1178,6 +1178,7 @@
 -virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/navigation-intercepted-by-service-worker.https.html
 -virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/navigator-plugins.html
 -virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/referrer.html
+-virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/referrer-policy-mismatch.html
 -virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/referrer-policy-no-referrer.html
 -virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/referrer-policy-origin.html
 -virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/referrer-policy-strict-origin.html
