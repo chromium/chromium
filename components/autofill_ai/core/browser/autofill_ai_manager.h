@@ -104,9 +104,9 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   void RemoveStrikesForImportFromForm(const autofill::FormStructure& form);
 
   // Called when feedback about the feature is given by the user for saving
-  // autofill predictions. `model_execution_id` identifies the model execution
+  // Autofill AI data. `model_execution_id` identifies the model execution
   // logs and will be sent part of the user feedback.
-  void SaveAutofillPredictionsUserFeedbackReceived(
+  void SaveAutofillAiDataUserFeedbackReceived(
       const std::string& model_execution_id,
       UserFeedback feedback);
 
@@ -165,7 +165,7 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   void UpdateSuggestions(const std::vector<autofill::Suggestion>& suggestions);
 
   // Returns whether improved predictions exist for the `field`.
-  bool HasImprovedPredictionsForField(const autofill::FormFieldData& field);
+  bool HasAutofillAiDataForField(const autofill::FormFieldData& field);
 
   void OnReceivedAXTreeForFormImport(
       const GURL& url,
@@ -176,9 +176,9 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
 
   // Returns true if the user has the flag enabled and is overall eligible for
   // the feature, such as signin state (check the implementation for details).
-  // It also checks whether the `url` is eligible. Note that differently from
-  // `IsPredictionImprovementsEligible()` this method does not check whether the
-  // pref is enabled.
+  // It also checks whether the `url` is eligible. Note that unlike
+  // `IsAutofillAiEligible()` this method does not check whether the pref is
+  // enabled.
   bool IsURLEligibleForAutofillAi(const GURL& url) const;
 
   // Returns values to fill based on the `cache_`.
@@ -188,7 +188,7 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   // generation fails.
   void OnFailedToGenerateSuggestions();
 
-  // Logger that records various prediction improvements metrics.
+  // Logger that records various Autofill AI metrics.
   AutofillAiLogger logger_;
 
   // Sets the potentially new state of the `form` fields' focusability in the
@@ -218,7 +218,7 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   // beginning of retrieving prediction improvements.
   std::optional<autofill::FormGlobalId> last_queried_form_global_id_;
   // Address suggestions that will be shown as defined in
-  // `CreateFillingSuggestions()` after prediction improvements was triggered.
+  // `CreateFillingSuggestions()` after Autofill AI was triggered.
   std::vector<autofill::Suggestion> autofill_suggestions_;
 
   // Stores the model execution id for the latest successful retrieval of

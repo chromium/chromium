@@ -1232,7 +1232,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext context,
     OnGenerateSuggestionsCallback callback,
-    AutofillAiDelegate::HasData has_prediction_improvements_data) {
+    AutofillAiDelegate::HasData has_autofill_ai_data) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   // Note that this function cannot exit early in case GetCachedFormAndField()
@@ -1260,7 +1260,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
   auto generate_suggestions_and_maybe_show_ui_phase2 = base::BindOnce(
       &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2,
       weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source,
-      has_prediction_improvements_data, context, std::move(callback));
+      has_autofill_ai_data, context, std::move(callback));
 
   if (context.field_is_relevant_for_plus_addresses) {
     client().GetPlusAddressDelegate()->GetAffiliatedPlusAddresses(
@@ -1278,7 +1278,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     const FormData& form,
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
-    AutofillAiDelegate::HasData has_prediction_improvements_data,
+    AutofillAiDelegate::HasData has_autofill_ai_data,
     SuggestionsContext context,
     OnGenerateSuggestionsCallback callback,
     std::vector<std::string> plus_addresses) {
@@ -1308,7 +1308,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     return;
   }
   AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
-  if (delegate && has_prediction_improvements_data &&
+  if (delegate && has_autofill_ai_data &&
       (trigger_source == AutofillSuggestionTriggerSource::kAutofillAi ||
        trigger_source ==
            AutofillSuggestionTriggerSource::kFormControlElementClicked)) {
@@ -1648,7 +1648,7 @@ void BrowserAutofillManager::FillOrPreviewProfileForm(
       trigger_source);
 }
 
-void BrowserAutofillManager::FillOrPreviewFormWithPredictionImprovements(
+void BrowserAutofillManager::FillOrPreviewFormWithAutofillAiData(
     mojom::ActionPersistence action_persistence,
     const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons,
     const FormData& form,
@@ -1660,7 +1660,7 @@ void BrowserAutofillManager::FillOrPreviewFormWithPredictionImprovements(
                              &form_structure, &autofill_trigger_field)) {
     return;
   }
-  form_filler_->FillOrPreviewFormWithPredictionImprovements(
+  form_filler_->FillOrPreviewFormWithAutofillAiData(
       action_persistence, ignorable_skip_reasons, form, trigger_field,
       *form_structure, *autofill_trigger_field, values_to_fill);
   if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate()) {

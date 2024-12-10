@@ -192,9 +192,9 @@ class BrowserAutofillManager : public AutofillManager {
   /////////////////
   // DO NOT USE! //
   /////////////////
-  // See `FormFiller::FillOrPreviewFormWithPredictionImprovements()`.
+  // See `FormFiller::FillOrPreviewFormWithAutofillAiData()`.
   // TODO(crbug.com/40227071): Clean up the API and remove this function.
-  virtual void FillOrPreviewFormWithPredictionImprovements(
+  void FillOrPreviewFormWithAutofillAiData(
       mojom::ActionPersistence action_persistence,
       const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons,
       const FormData& form,
@@ -515,8 +515,8 @@ class BrowserAutofillManager : public AutofillManager {
       autofill_metrics::SuggestionRankingContext& ranking_context);
 
   // Generates and prioritizes different kinds of suggestions and
-  // suggestion surfaces accordingly (e.g. Fast Checkout, Prediction
-  // improvements, SingleFieldFiller(s), address and credit card popups).
+  // suggestion surfaces accordingly (e.g. Fast Checkout, Autofill AI,
+  // SingleFieldFiller(s), address and credit card popups).
   // Suggestion flows that handle their own UI flow (e.g. FastCheckout, TTF,
   // SingleFieldFiller) are triggered from within these functions.
   //
@@ -537,12 +537,12 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext context,
       OnGenerateSuggestionsCallback callback,
-      AutofillAiDelegate::HasData has_prediction_improvements_data);
+      AutofillAiDelegate::HasData has_autofill_ai_data);
   void GenerateSuggestionsAndMaybeShowUIPhase2(
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
-      AutofillAiDelegate::HasData has_prediction_improvements_data,
+      AutofillAiDelegate::HasData has_autofill_ai_data,
       SuggestionsContext context,
       OnGenerateSuggestionsCallback callback,
       std::vector<std::string> plus_addresses);

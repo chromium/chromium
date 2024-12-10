@@ -43,7 +43,7 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
       override;
   bool IsAutofillAiEnabledPref() const override;
   void TryToOpenFeedbackPage(const std::string& feedback_id) override;
-  void OpenPredictionImprovementsSettings() override;
+  void OpenAutofillAiSettings() override;
   bool IsUserEligible() override;
   autofill::FormStructure* GetCachedFormStructure(
       const autofill::FormData& form_data) override;
@@ -69,8 +69,8 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
   const raw_ref<content::WebContents> web_contents_;
   const raw_ref<const PrefService> prefs_;
 
-  // Returns whether the optimization guide suggests that Autofill prediction
-  // improvements should currently be allowed to report feedback.
+  // Returns whether the optimization guide suggests that Autofill AI should
+  // should currently be allowed to report feedback.
   bool CanShowFeedbackPage();
 
   // TODO(crbug.com/371534239): Rename to `model_executor_`.

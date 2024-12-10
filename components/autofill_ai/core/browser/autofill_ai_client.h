@@ -85,11 +85,10 @@ class AutofillAiClient {
   // Opens the feedback page if the feature is allowed for feedback.
   virtual void TryToOpenFeedbackPage(const std::string& feedback_id) = 0;
 
-  // Opens the settings page for prediction improvements.
-  virtual void OpenPredictionImprovementsSettings() = 0;
+  // Opens the settings page for Autofill AI.
+  virtual void OpenAutofillAiSettings() = 0;
 
-  // Returns whether the current user is eligible for the improved prediction
-  // experience.
+  // Returns whether the current user is eligible for Autofill AI.
   virtual bool IsUserEligible() = 0;
 
   // Returns a pointer to a FormStructure for the corresponding `form_data`
@@ -106,8 +105,7 @@ class AutofillAiClient {
       autofill::FieldType field_type,
       const autofill::FormFieldData& field) = 0;
 
-  // Shows a bubble asking whether the user wants to save prediction
-  // improvements data.
+  // Shows a bubble asking whether the user wants to save Autofill AI data.
   virtual void ShowSaveAutofillAiBubble(
       std::unique_ptr<user_annotations::FormAnnotationResponse>
           form_annotation_response,

@@ -1023,9 +1023,9 @@ TEST_F(AutofillExternalDelegateTest, AutofillSuggestionAvailability_Autofill) {
 }
 
 // Test that a11y autofill availability is set to `kAutofillAvailable` when
-// the popup is open with the `kRetrievePredictionImprovements` suggestion.
+// the popup is open with the `kRetrieveAutofillAi` suggestion.
 TEST_F(AutofillExternalDelegateTest,
-       AutofillSuggestionAvailability_RetrievePredictionImprovements) {
+       AutofillSuggestionAvailability_RetrieveAutofillAi) {
   IssueOnQuery();
 
   std::vector<Suggestion> suggestions = {
@@ -1254,21 +1254,20 @@ TEST_F(AutofillExternalDelegateTest,
                                           SuggestionPosition{.row = 0});
 }
 
-// Tests that on acceptance of a `kRetrievePredictionImprovements` suggestion,
+// Tests that on acceptance of a `kRetrieveAutofillAi` suggestion,
 // the `AutofillAiDelegate::OnClickedTriggerSuggestion()` event handler is
 // called.
 TEST_F(AutofillExternalDelegateTest,
-       DidAcceptRetrievePredictionImprovementsSuggestionCallsEventHandler) {
+       DidAcceptRetrieveAutofillAiSuggestionCallsEventHandler) {
   EXPECT_CALL(*client().GetAutofillAiDelegate(), OnClickedTriggerSuggestion);
   external_delegate().DidAcceptSuggestion(
       Suggestion(u"Autocomplete", SuggestionType::kRetrieveAutofillAi), {});
 }
 
-// Tests that on acceptance of a `kFillPredictionImprovements` suggestion with
+// Tests that on acceptance of a `kFillAutofillAi` suggestion with
 // `Suggestion::AutofillAiPayload` payload, the full form is filled
 // accordingly.
-TEST_F(AutofillExternalDelegateTest,
-       DidAcceptFillPredictionImprovementsFillsFullForm) {
+TEST_F(AutofillExternalDelegateTest, DidAcceptFillAutofillAiFillsFullForm) {
   FormData form = CreateTestAddressFormData();
   ASSERT_GT(form.fields().size(), 0UL);
   const std::u16string value_to_fill = u"John";
@@ -1299,10 +1298,9 @@ TEST_F(AutofillExternalDelegateTest,
                   Property("value", &FormFieldData::value, value_to_fill))));
 }
 
-// Tests that on acceptance of a `kFillPredictionImprovements` suggestion with
+// Tests that on acceptance of a `kFillAutofillAi` suggestion with
 // `Suggestion::ValueToFill` payload, the queried field is filled.
-TEST_F(AutofillExternalDelegateTest,
-       DidAcceptFillPredictionImprovementsFillsSingleField) {
+TEST_F(AutofillExternalDelegateTest, DidAcceptFillAutofillAiFillsSingleField) {
   IssueOnQuery();
   ASSERT_GT(queried_form().fields().size(), 0UL);
   const std::u16string value_to_fill = u"John";
@@ -1320,10 +1318,10 @@ TEST_F(AutofillExternalDelegateTest,
   external_delegate().DidAcceptSuggestion(fill_suggestion, {});
 }
 
-// Tests that the `AutofillPredictionImprovementsDelegate` is notified when the
-// `kPredictionImprovementsLoadingState` suggestion is shown.
+// Tests that the `AutofillAutofillAiDelegate` is notified when the
+// `kAutofillAiLoadingState` suggestion is shown.
 TEST_F(AutofillExternalDelegateTest,
-       OnPredictionImprovementsSuggestionsShownNotifiesDelegate) {
+       OnAutofillAiSuggestionsShownNotifiesDelegate) {
   FormData form = CreateTestAddressFormData();
   ASSERT_GT(form.fields().size(), 0UL);
   const std::u16string value_to_fill = u"John";

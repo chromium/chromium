@@ -219,8 +219,8 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
       const Suggestion& suggestion,
       const SuggestionMetadata& metadata);
 
-  // Fills `values_to_fill` into the fields of `query_form_`.
-  void FillPredictionImprovements(const Suggestion& suggestion);
+  // Fills `suggestion.values_to_fill` into the fields of `query_form_`.
+  void FillAutofillAiData(const Suggestion& suggestion);
 
   // Handle applying any Autofill option listings to the Autofill popup.
   // This function should only get called when there is at least one

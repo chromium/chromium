@@ -268,8 +268,8 @@ void AutofillContextMenuManager::ExecuteCommand(int command_id) {
   CHECK(IsAutofillCustomCommandId(CommandId(command_id)));
 
   if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS) {
-    ExecutePredictionImprovementsCommand(autofill_driver->GetFrameToken(),
-                                         *autofill_driver);
+    ExecuteAutofillAiCommand(autofill_driver->GetFrameToken(),
+                             *autofill_driver);
     return;
   }
 
@@ -355,14 +355,14 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
 
   bool add_plus_address_fallback = false;
   bool add_passwords_fallback = false;
-  bool add_prediction_improvements = false;
+  bool add_autofill_ai = false;
 
   // Do not show autofill context menu options for input fields that cannot be
   // filled by the driver. See crbug.com/1367547.
   if (autofill_driver && autofill_driver->CanShowAutofillUi()) {
     auto* web_contents = content::WebContents::FromRenderFrameHost(
         autofill_driver->render_frame_host());
-    add_prediction_improvements = ShouldAddPredictionImprovementsItem(
+    add_autofill_ai = ShouldAddAutofillAiItem(
         autofill_driver->GetAutofillClient().GetAutofillAiDelegate(),
         web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
     add_plus_address_fallback =
@@ -377,7 +377,7 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
   }
 
   if (!add_plus_address_fallback && !add_passwords_fallback &&
-      !add_prediction_improvements) {
+      !add_autofill_ai) {
     return;
   }
   menu_model_->AddTitle(
@@ -393,7 +393,7 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
           CHECK_DEREF(password_manager_driver));
     }
   }
-  if (add_prediction_improvements) {
+  if (add_autofill_ai) {
     menu_model_->AddItemWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS,
         IDS_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS,
@@ -436,7 +436,7 @@ bool AutofillContextMenuManager::ShouldAddPlusAddressManualFallbackItem(
              plus_addresses::features::kPlusAddressFallbackFromContextMenu);
 }
 
-bool AutofillContextMenuManager::ShouldAddPredictionImprovementsItem(
+bool AutofillContextMenuManager::ShouldAddAutofillAiItem(
     AutofillAiDelegate* delegate,
     const GURL& url) {
   // TODO(crbug.com/372158654): Implement suitable criteria or remove the entry.
@@ -557,7 +557,7 @@ void AutofillContextMenuManager::
   }
 }
 
-void AutofillContextMenuManager::ExecutePredictionImprovementsCommand(
+void AutofillContextMenuManager::ExecuteAutofillAiCommand(
     const LocalFrameToken& frame_token,
     ContentAutofillDriver& autofill_driver) {
   autofill_driver.browser_events().RendererShouldTriggerSuggestions(

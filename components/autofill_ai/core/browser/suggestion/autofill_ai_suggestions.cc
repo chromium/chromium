@@ -158,7 +158,7 @@ void AddLabelToFillingSuggestion(autofill::Suggestion& suggestion) {
   suggestion.labels = {{autofill::Suggestion::Text(label)}};
 }
 
-autofill::Suggestion CreateEditPredictionImprovementsInformation() {
+autofill::Suggestion CreateEditAutofillAiData() {
   autofill::Suggestion edit_suggestion;
   edit_suggestion.type = autofill::SuggestionType::kEditAutofillAiData;
   edit_suggestion.icon = autofill::Suggestion::Icon::kEdit;
@@ -273,7 +273,7 @@ std::vector<autofill::Suggestion> CreateFillingSuggestions(
   suggestion.payload = payload;
   suggestion.icon = autofill::Suggestion::Icon::kAutofillAi;
 
-  // Add a `kFillPredictionImprovements` suggestion with a separator to
+  // Add a `kFillAutofillAi` suggestion with a separator to
   // `suggestion.children` before the field-by-field filling entries.
   suggestion.children.emplace_back(CreateFillAllSuggestion(payload));
   suggestion.children.emplace_back(autofill::SuggestionType::kSeparator);
@@ -292,8 +292,7 @@ std::vector<autofill::Suggestion> CreateFillingSuggestions(
   AddLabelToFillingSuggestion(suggestion);
 
   suggestion.children.emplace_back(autofill::SuggestionType::kSeparator);
-  suggestion.children.emplace_back(
-      CreateEditPredictionImprovementsInformation());
+  suggestion.children.emplace_back(CreateEditAutofillAiData());
 
   // TODO(crbug.com/365512352): Figure out how to handle Undo suggestion.
   std::vector<autofill::Suggestion> filling_suggestions = {suggestion};

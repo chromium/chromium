@@ -155,7 +155,7 @@ AutofillAiManager::GetFieldValueSensitivityMap(
 
 AutofillAiManager::~AutofillAiManager() = default;
 
-bool AutofillAiManager::HasImprovedPredictionsForField(
+bool AutofillAiManager::HasAutofillAiDataForField(
     const autofill::FormFieldData& field) {
   return cache_ && cache_->contains(field.global_id());
 }
@@ -234,7 +234,7 @@ std::vector<autofill::Suggestion> AutofillAiManager::GetSuggestions(
       // Show a cached prediction improvements filling suggestion for `field` if
       // it exists. This may contain additional `autofill_suggestions`, appended
       // to the prediction improvements.
-      if (HasImprovedPredictionsForField(field)) {
+      if (HasAutofillAiDataForField(field)) {
         return CreateFillingSuggestions(*client_, *cache_, form, field,
                                         autofill_suggestions);
       }
@@ -352,7 +352,7 @@ void AutofillAiManager::UpdateSuggestionsAfterReceivedPredictions(
     const autofill::FormFieldData& trigger_field) {
   switch (prediction_retrieval_state_) {
     case PredictionRetrievalState::kDoneSuccess:
-      if (HasImprovedPredictionsForField(trigger_field)) {
+      if (HasAutofillAiDataForField(trigger_field)) {
         UpdateSuggestions(CreateFillingSuggestions(
             *client_, *cache_, form, trigger_field, autofill_suggestions_));
       } else {
@@ -376,7 +376,7 @@ void AutofillAiManager::UserFeedbackReceived(UserFeedback feedback) {
   }
 }
 
-void AutofillAiManager::SaveAutofillPredictionsUserFeedbackReceived(
+void AutofillAiManager::SaveAutofillAiDataUserFeedbackReceived(
     const std::string& model_execution_id,
     UserFeedback feedback) {
   if (feedback == UserFeedback::kThumbsDown) {
@@ -387,7 +387,7 @@ void AutofillAiManager::SaveAutofillPredictionsUserFeedbackReceived(
 // TODO(crbug.com/362468426): Rename this method to
 // `UserClickedManagePredictionsImprovements()`.
 void AutofillAiManager::UserClickedLearnMore() {
-  client_->OpenPredictionImprovementsSettings();
+  client_->OpenAutofillAiSettings();
 }
 
 bool AutofillAiManager::IsURLEligibleForAutofillAi(const GURL& url) const {
@@ -676,7 +676,7 @@ bool AutofillAiManager::ShouldDisplayIph(
 }
 
 void AutofillAiManager::GoToSettings() const {
-  client_->OpenPredictionImprovementsSettings();
+  client_->OpenAutofillAiSettings();
 }
 
 void AutofillAiManager::OnFailedToGenerateSuggestions() {

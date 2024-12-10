@@ -66,9 +66,8 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // available for the field.
   void MaybeAddAutofillFeedbackItem();
 
-  // Conditionally adds the item to trigger filling with prediction
-  // improvements.
-  void MaybeAddAutofillPredictionImprovementsItem();
+  // Conditionally adds the item to trigger filling with Autofill AI.
+  void MaybeAddAutofillAiItem();
 
   // Conditionally adds the address, payments and / or passwords Autofill manual
   // fallbacks to the context menu model depending on whether there's data to
@@ -80,9 +79,8 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   bool ShouldAddPlusAddressManualFallbackItem(
       ContentAutofillDriver& autofill_driver);
 
-  // Returns if the item to trigger prediction improvements should be added.
-  bool ShouldAddPredictionImprovementsItem(AutofillAiDelegate* delegate,
-                                           const GURL& url);
+  // Returns if the item to trigger Autofill AI should be added.
+  bool ShouldAddAutofillAiItem(AutofillAiDelegate* delegate, const GURL& url);
 
   // Checks if the currently focused field is a password field and whether
   // password filling is enabled.
@@ -124,10 +122,9 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
 
   void LogSelectPasswordManualFallbackContextMenuEntryAccepted();
 
-  // Triggers the filling with prediction improvements flow.
-  void ExecutePredictionImprovementsCommand(
-      const LocalFrameToken& frame_token,
-      ContentAutofillDriver& autofill_driver);
+  // Triggers the filling with Autofill AI data.
+  void ExecuteAutofillAiCommand(const LocalFrameToken& frame_token,
+                                ContentAutofillDriver& autofill_driver);
 
   // Triggers the feedback flow for Autofill command.
   void ExecuteAutofillFeedbackCommand(const LocalFrameToken& frame_token,

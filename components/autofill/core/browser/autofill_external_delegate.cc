@@ -529,9 +529,9 @@ void AutofillExternalDelegate::OnSuggestionsShown(
                              return GetFillingProductFromSuggestionType(type) ==
                                     FillingProduct::kAutofillAi;
                            })) {
-    if (auto* prediction_improvements_delegate =
+    if (auto* autofill_ai_delegate =
             manager_->client().GetAutofillAiDelegate()) {
-      prediction_improvements_delegate->OnSuggestionsShown(
+      autofill_ai_delegate->OnSuggestionsShown(
           shown_suggestion_types, query_form_, query_field_,
           CreateUpdateSuggestionsCallback());
     }
@@ -667,8 +667,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     case SuggestionType::kFillAutofillAi:
-      // TODO(crbug.com/361414075): Implement previewing prediction
-      // improvements.
+      // TODO(crbug.com/361414075): Implement previewing Autofill AI data.
       break;
     case SuggestionType::kAddressEntryOnTyping:
       CHECK(suggestion.field_by_field_filling_type_used);
@@ -875,7 +874,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       }
       return;
     case SuggestionType::kFillAutofillAi:
-      FillPredictionImprovements(suggestion);
+      FillAutofillAiData(suggestion);
       break;
     case SuggestionType::kEditAutofillAiData:
       if (AutofillAiDelegate* delegate =
@@ -1190,7 +1189,7 @@ void AutofillExternalDelegate::FillAutofillFormData(
   }
 }
 
-void AutofillExternalDelegate::FillPredictionImprovements(
+void AutofillExternalDelegate::FillAutofillAiData(
     const Suggestion& suggestion) {
   // Single field filling.
   if (absl::holds_alternative<Suggestion::ValueToFill>(suggestion.payload)) {
@@ -1205,7 +1204,7 @@ void AutofillExternalDelegate::FillPredictionImprovements(
     // Full form filling.
     Suggestion::AutofillAiPayload payload =
         suggestion.GetPayload<Suggestion::AutofillAiPayload>();
-    manager_->FillOrPreviewFormWithPredictionImprovements(
+    manager_->FillOrPreviewFormWithAutofillAiData(
         mojom::ActionPersistence::kFill, payload.ignorable_skip_reasons,
         query_form_, query_field_, payload.values_to_fill);
   }

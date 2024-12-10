@@ -171,7 +171,7 @@ void ChromeAutofillAiClient::TryToOpenFeedbackPage(
       /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));
 }
 
-void ChromeAutofillAiClient::OpenPredictionImprovementsSettings() {
+void ChromeAutofillAiClient::OpenAutofillAiSettings() {
   web_contents_->OpenURL(
       content::OpenURLParams(
           GURL(
@@ -196,7 +196,7 @@ void ChromeAutofillAiClient::ShowSaveAutofillAiBubble(
             &autofill_ai::AutofillAiManager::UserClickedLearnMore,
             prediction_improvements_manager_.GetWeakPtr()),
         base::BindRepeating(&autofill_ai::AutofillAiManager::
-                                SaveAutofillPredictionsUserFeedbackReceived,
+                                SaveAutofillAiDataUserFeedbackReceived,
                             prediction_improvements_manager_.GetWeakPtr(),
                             form_annotation_response->model_execution_id));
     return;

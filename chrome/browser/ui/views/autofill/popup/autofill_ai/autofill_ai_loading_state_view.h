@@ -12,8 +12,7 @@
 namespace autofill_ai {
 
 // Shows `suggestion.icon` next to `AutofillAiAnimatedGradientView`.
-// This view is meant to be shown for
-// `SuggestionType::kPredictionImprovementsLoadingState`.
+// This view is meant to be shown for `SuggestionType::kAutofillAiLoadingState`.
 class AutofillAiLoadingStateView : public views::BoxLayoutView {
   METADATA_HEADER(AutofillAiLoadingStateView, views::BoxLayoutView)
 

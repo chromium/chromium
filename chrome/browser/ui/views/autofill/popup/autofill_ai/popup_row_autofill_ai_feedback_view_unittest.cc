@@ -265,7 +265,7 @@ TEST_F(PopupRowAutofillAiFeedbackViewTest,
 }
 
 TEST_F(PopupRowAutofillAiFeedbackViewTest,
-       EnterIsHandledForFocusedManagePredictionImprovementsLink) {
+       EnterIsHandledForFocusedManageAutofillAiLink) {
   CreateFeedbackRowAndGetButtons();
   view().SetSelectedCell(PopupRowView::CellType::kContent);
 

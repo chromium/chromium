@@ -1665,7 +1665,7 @@ TEST_F(FormFillerTest, FillOrPreviewFormWithPredictionImprovements) {
   EXPECT_CALL(autofill_driver_, ApplyFormAction)
       .WillOnce(DoAll(SaveArgElementsTo<2>(&filled_fields),
                       Return(std::vector<FieldGlobalId>())));
-  browser_autofill_manager_->FillOrPreviewFormWithPredictionImprovements(
+  browser_autofill_manager_->FillOrPreviewFormWithAutofillAiData(
       mojom::ActionPersistence::kFill,
       /*ignorable_skip_reasons=*/{}, form, form.fields().front(),
       values_to_fill);

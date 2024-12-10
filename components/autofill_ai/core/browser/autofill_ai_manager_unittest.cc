@@ -288,7 +288,7 @@ TEST_F(AutofillAiManagerTest, RetrievalFailed_FallbackToAutofill) {
 }
 
 // Tests that the `update_suggestions_callback` is called eventually with the
-// `kFillPredictionImprovements` suggestion.
+// `kFillAutofillAi` suggestion.
 TEST_F(AutofillAiManagerTest, EndToEnd) {
   // Empty form, as seen by the user.
   autofill::test::FormDescription form_description = {
@@ -604,7 +604,7 @@ INSTANTIATE_TEST_SUITE_P(
 // before autofill suggestions.
 TEST_F(
     AutofillAiManagerTest,
-    GetSuggestions_DoneSuccessWithAutofillSuggestions_PredictionImprovementsSuggestionsShownBeforeAutofill) {
+    GetSuggestions_DoneSuccessWithAutofillSuggestions_AutofillAiSuggestionsShownBeforeAutofill) {
   std::vector<Suggestion> autofill_suggestions = {Suggestion(kAddressEntry),
                                                   Suggestion(kSeparator),
                                                   Suggestion(kManageAddress)};
@@ -1017,7 +1017,7 @@ TEST_F(AutofillAiManagerTest, HasDataStoredReturnsFalseIfDataIsNotStored) {
 // Tests that the prediction improvements settings page is opened when the
 // manage prediction improvements link is clicked.
 TEST_F(AutofillAiManagerTest, OpenSettingsWhenManagePILinkIsClicked) {
-  EXPECT_CALL(client(), OpenPredictionImprovementsSettings);
+  EXPECT_CALL(client(), OpenAutofillAiSettings);
   manager().UserClickedLearnMore();
 }
 
@@ -1302,8 +1302,7 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleOnEmptyForm) {
   EXPECT_FALSE(manager().IsEligibleForAutofillAi(form, field));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillAiTest,
-       PredictionImprovementsEligibility_Eligible) {
+TEST_F(IsFormAndFieldEligibleAutofillAiTest, AutofillAiEligibility_Eligible) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kAutofillAi, {{"skip_allowlist", "true"}});

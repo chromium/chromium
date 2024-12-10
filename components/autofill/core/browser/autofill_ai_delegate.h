@@ -57,8 +57,8 @@ class AutofillAiDelegate {
   // TODO(crbug.com/365512352): Remove if not needed.
   virtual void UserClickedLearnMore() = 0;
 
-  // Called when the `SuggestionType::kRetrievePredictionImprovements`
-  // suggestion was accepted.
+  // Called when the `SuggestionType::kRetrieveAutofillAi` suggestion was
+  // accepted.
   virtual void OnClickedTriggerSuggestion(
       const FormData& form,
       const FormFieldData& trigger_field,

@@ -512,7 +512,7 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
                                       field.global_id(), value);
 }
 
-void FormFiller::FillOrPreviewFormWithPredictionImprovements(
+void FormFiller::FillOrPreviewFormWithAutofillAiData(
     mojom::ActionPersistence action_persistence,
     const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons,
     const FormData& form,
@@ -524,7 +524,7 @@ void FormFiller::FillOrPreviewFormWithPredictionImprovements(
   // Previously, the following if statement wasn't there and instead a CHECK
   // expecting equal number of fields in `form` and `form_structure`. However,
   // dynamic form changes can cause the numbers of fields to differ which caused
-  // a crash when this method was called by Autofill prediction improvements.
+  // a crash when this method was called by Autofill AI.
   // Return early here to mitigate further crashes.
   // TODO(crbug.com/372026861): Properly handle this case.
   if (result_fields.size() != form_structure.field_count()) {

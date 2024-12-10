@@ -124,11 +124,11 @@ class FormFiller {
   // DO NOT USE! //
   /////////////////
   // Fills or previews `values_to_fill` in the `form`. Called only by
-  // `AutofillPredictionImprovementsManager`.
+  // `AutofillAiManager`.
   // Minimal version of `FillOrPreviewForm()` that misses every feature besides
-  // filling / preview. E.g. does not handle refill, undo or any metrics.
+  // filling / preview. E.g. does not handle refill, undo, or any metrics.
   // TODO(crbug.com/40227071): Clean up the generic API and remove this.
-  void FillOrPreviewFormWithPredictionImprovements(
+  void FillOrPreviewFormWithAutofillAiData(
       mojom::ActionPersistence action_persistence,
       const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons,
       const FormData& form,
