@@ -35,7 +35,7 @@ ManagedProfileCreator::ManagedProfileCreator(
       profile_manager->GetProfileAttributesStorage();
   profile_observation_.Observe(&storage);
 
-  auto icon_index = storage.ChooseAvatarIconIndexForNewProfile();
+  auto icon_index = profiles::GetPlaceholderAvatarIndex();
   std::u16string name = local_profile_name.empty()
                             ? storage.ChooseNameForNewProfile(icon_index)
                             : local_profile_name;
