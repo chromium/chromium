@@ -333,10 +333,9 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
 }
 
 SkColorInfo CanvasRenderingContextHost::GetRenderingContextSkColorInfo() const {
-  if (RenderingContext())
-    return RenderingContext()->CanvasRenderingContextSkColorInfo();
-  return SkColorInfo(kN32_SkColorType, kPremul_SkAlphaType,
-                     SkColorSpace::MakeSRGB());
+  return SkColorInfo(GetRenderingContextSkColorType(),
+                     GetRenderingContextAlphaType(),
+                     GetRenderingContextSkColorSpace());
 }
 
 SkAlphaType CanvasRenderingContextHost::GetRenderingContextAlphaType() const {
@@ -351,7 +350,8 @@ SkColorType CanvasRenderingContextHost::GetRenderingContextSkColorType() const {
 
 sk_sp<SkColorSpace>
 CanvasRenderingContextHost::GetRenderingContextSkColorSpace() const {
-  return GetRenderingContextSkColorInfo().refColorSpace();
+  return RenderingContext() ? RenderingContext()->GetSkColorSpace()
+                            : SkColorSpace::MakeSRGB();
 }
 
 bool CanvasRenderingContextHost::IsOffscreenCanvas() const {
