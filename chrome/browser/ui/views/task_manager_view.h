@@ -11,6 +11,7 @@
 #include "chrome/browser/task_manager/task_manager_metrics_recorder.h"
 #include "chrome/browser/ui/task_manager/task_manager_table_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/task_manager_search_bar_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/table_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -141,7 +142,8 @@ class TaskManagerView : public TableViewDelegate,
 
   // Creates all corresponding subcomponents for the header.
   std::unique_ptr<views::View> CreateTabbedPane();
-  std::unique_ptr<views::Textfield> CreateSearchBar(const gfx::Insets& margins);
+  std::unique_ptr<views::View> CreateSearchBar(
+      const ChromeLayoutProvider* provider);
   std::unique_ptr<views::MdTextButton> CreateEndProcessButton(
       const gfx::Insets& margins);
   std::unique_ptr<views::Separator> CreateSeparator(const gfx::Insets& margins);

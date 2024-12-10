@@ -39,6 +39,7 @@
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
+#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
@@ -97,7 +98,7 @@ const auto kTabDefinitions = std::to_array<TaskManagerView::FilterTab>(
 
 TaskManagerView::~TaskManagerView() {
   // Delete child views now, while our table model still exists.
-  end_process_btn_ = nullptr;  // Destroyed by `container` below.
+  end_process_btn_ = nullptr;  // Destroyed by `right_aligned_container` below.
   RemoveAllChildViews();
 
   // When the view is destroyed, the lifecycle of the Task Manager is complete.
@@ -433,25 +434,44 @@ void TaskManagerView::CreateHeader(const ChromeLayoutProvider* provider) {
 
   // Empty Container, Search Bar, End Task Button, and Separator
   auto empty_view = std::make_unique<views::View>();
-  std::unique_ptr<views::Textfield> search_bar = CreateSearchBar(
-      gfx::Insets::TLBR(0, 0, vertical_spacing, horizontal_spacing));
-  std::unique_ptr<views::MdTextButton> end_process_btn = CreateEndProcessButton(
-      gfx::Insets::TLBR(0, horizontal_spacing, vertical_spacing, 0));
-  std::unique_ptr<views::Separator> separator =
-      CreateSeparator(gfx::Insets::TLBR(0, 0, separator_spacing, 0));
+  empty_view->SetProperty(views::kMarginsKey,
+                          gfx::Insets::VH(0, horizontal_spacing));
 
+  auto search_bar_container = CreateSearchBar(provider);
+
+  auto end_process_btn = CreateEndProcessButton(
+      gfx::Insets::TLBR(0, horizontal_spacing, vertical_spacing, 0));
+
+  auto separator =
+      CreateSeparator(gfx::Insets::TLBR(0, 0, separator_spacing, 0));
   // Allow empty spacing and the search bar to flex freely.
   header_layout->SetFlexForView(empty_view.get(), 2);
-  header_layout->SetFlexForView(search_bar.get(), 3);
+  header_layout->SetFlexForView(search_bar_container.get(), 3);
 
   // Set the layout manager for the parent container to BoxLayout.
   container->SetLayoutManager(std::move(header_layout));
 
+  auto right_aligned_container = std::make_unique<views::View>();
+  right_aligned_container->SetProperty(views::kMarginsKey,
+                                       gfx::Insets::VH(0, horizontal_spacing));
+  // The container holds search bar and end process button, so their layout
+  // could keep consistent during resizing.
+  auto right_aligned_container_layout = std::make_unique<views::BoxLayout>();
+  right_aligned_container_layout->SetOrientation(
+      views::LayoutOrientation::kHorizontal);
+  right_aligned_container_layout->set_cross_axis_alignment(
+      views::LayoutAlignment::kCenter);
+  right_aligned_container->SetLayoutManager(
+      std::move(right_aligned_container_layout));
+
+  right_aligned_container->AddChildView(std::move(search_bar_container));
+  end_process_btn_ =
+      right_aligned_container->AddChildView(std::move(end_process_btn));
+
   // Compose all parts into header.
   container->AddChildView(std::move(tabs));
   container->AddChildView(std::move(empty_view));
-  container->AddChildView(std::move(search_bar));
-  end_process_btn_ = container->AddChildView(std::move(end_process_btn));
+  container->AddChildView(std::move(right_aligned_container));
 
   // Attach header to the top of the dialog contents.
   AddChildView(std::move(container));
@@ -460,15 +480,34 @@ void TaskManagerView::CreateHeader(const ChromeLayoutProvider* provider) {
   AddChildView(std::move(separator));
 }
 
-std::unique_ptr<views::Textfield> TaskManagerView::CreateSearchBar(
-    const gfx::Insets& margins) {
-  auto search_bar = std::make_unique<views::Textfield>();
-  search_bar->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_TASK_MANAGER_SEARCH_ACCESSIBILITY_NAME));
-  search_bar->SetPlaceholderText(
-      l10n_util::GetStringUTF16(IDS_TASK_MANAGER_SEARCH_PLACEHOLDER));
-  search_bar->SetProperty(views::kMarginsKey, margins);
-  return search_bar;
+std::unique_ptr<views::View> TaskManagerView::CreateSearchBar(
+    const ChromeLayoutProvider* provider) {
+  const int vertical_spacing = provider->GetDistanceMetric(
+      DISTANCE_TASK_MANAGER_HEADER_VERTICAL_SPACING);
+  const int horizontal_spacing = provider->GetDistanceMetric(
+      DISTANCE_TASK_MANAGER_HEADER_HORIZONTAL_SPACING);
+  const int search_bar_container_radius = provider->GetCornerRadiusMetric(
+      views::ShapeContextTokens::kOmniboxExpandedRadius);
+
+  auto search_bar_layout = std::make_unique<views::BoxLayout>();
+  search_bar_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
+  search_bar_layout->set_main_axis_alignment(views::LayoutAlignment::kEnd);
+  search_bar_layout->set_cross_axis_alignment(views::LayoutAlignment::kEnd);
+
+  auto search_bar_container = std::make_unique<views::View>();
+  search_bar_container->SetBackground(views::CreateThemedRoundedRectBackground(
+      kColorTaskManagerSearchBarBackground, search_bar_container_radius));
+  search_bar_container->SetLayoutManager(std::move(search_bar_layout));
+  search_bar_container->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(0, 0, vertical_spacing, horizontal_spacing));
+
+  auto search_bar = std::make_unique<TaskManagerSearchBarView>(
+      l10n_util::GetStringUTF16(IDS_TASK_MANAGER_SEARCH_PLACEHOLDER),
+      gfx::Insets::VH(0, horizontal_spacing));
+  search_bar_container->AddChildView(std::move(search_bar));
+
+  return search_bar_container;
 }
 
 std::unique_ptr<views::MdTextButton> TaskManagerView::CreateEndProcessButton(

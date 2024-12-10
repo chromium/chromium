@@ -648,6 +648,9 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
     mixer[kColorTaskManagerBackground] = {ui::kColorSysSurface2};
+    mixer[kColorTaskManagerSearchBarBackground] = {
+        ui::kColorSysBaseContainerElevated};
+    mixer[kColorTaskManagerSearchBarTransparent] = {SK_ColorTRANSPARENT};
   }
 #endif  // BUILDFLAG(IS_ANDROID)
   mixer[kColorThumbnailTabBackground] =

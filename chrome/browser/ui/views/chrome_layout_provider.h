@@ -104,6 +104,9 @@ enum ChromeDistanceMetric {
   DISTANCE_TASK_MANAGER_HEADER_HORIZONTAL_SPACING,
   // Vertical spacing between the header components and the header separator.
   DISTANCE_TASK_MANAGER_HEADER_VERTICAL_SPACING,
+  // Width and height of the vector icons shown in the search bar of the task
+  // manager.
+  DISTANCE_TASK_MANAGER_SEARCH_ICON_SIZE,
   // Distance between most child elements inside the toast.
   DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING,
   // Distance between the toast label and action button.
