@@ -509,8 +509,13 @@ class CheckAddedDepsHaveTestApprovalsTest(unittest.TestCase):
 
     def testApprovedAdditionalDep(self):
         self.input_api.InitFiles([
-            MockAffectedFile('pdf/DEPS', ['include_rules=["+v8/123"]']),
+            MockAffectedFile('pdf/DEPS',
+                             ['include_rules=["+v8/123", "+foo/bar"]']),
             MockAffectedFile('v8/DEPS', ['new_usages_require_review=True']),
+            # Check that we ignore "DEPS" directories. Note there are real cases
+            # of directories named "deps/" and, especially for case-insensitive file
+            # systems we should prevent these from being considered.
+            MockAffectedFile('foo/bar/DEPS/boofar', ['boofar file contents']),
         ])
 
         # mark the additional dep as approved.

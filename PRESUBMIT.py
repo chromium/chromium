@@ -3453,7 +3453,7 @@ def _FindAllDepsFilesForSubpath(input_api, subpath):
     ret = []
     while subpath:
         cur = input_api.os_path.join(input_api.change.RepositoryRoot(), subpath, 'DEPS')
-        if input_api.os_path.exists(cur):
+        if input_api.os_path.isfile(cur):
             ret.append(cur)
         subpath = input_api.os_path.dirname(subpath)
     return ret
