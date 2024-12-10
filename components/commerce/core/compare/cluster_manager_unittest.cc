@@ -61,8 +61,11 @@ class MockClusterServerProxy : public ClusterServerProxy {
  public:
   MockClusterServerProxy(
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      : ClusterServerProxy(identity_manager, url_loader_factory) {}
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      AccountChecker* account_checker)
+      : ClusterServerProxy(identity_manager,
+                           url_loader_factory,
+                           account_checker) {}
   MockClusterServerProxy(const MockClusterServerProxy&) = delete;
   MockClusterServerProxy operator=(const MockClusterServerProxy&) = delete;
   ~MockClusterServerProxy() override = default;
@@ -89,7 +92,8 @@ class ClusterManagerTest : public testing::Test {
         GetAllProductSpecifications(
             testing::An<ProductSpecificationsService::GetAllCallback>()))
         .Times(1);
-    auto proxy = std::make_unique<MockClusterServerProxy>(nullptr, nullptr);
+    auto proxy =
+        std::make_unique<MockClusterServerProxy>(nullptr, nullptr, nullptr);
     server_proxy_ = proxy.get();
     cluster_manager_ = std::make_unique<ClusterManager>(
         product_specification_service_.get(), std::move(proxy),
@@ -294,7 +298,7 @@ TEST_F(ClusterManagerTest,
   server_proxy_ = nullptr;
   cluster_manager_ = std::make_unique<ClusterManager>(
       product_specification_service_.get(),
-      std::make_unique<ClusterServerProxy>(nullptr, nullptr),
+      std::make_unique<ClusterServerProxy>(nullptr, nullptr, nullptr),
       base::BindRepeating(&ClusterManagerTest::GetProductInfo,
                           base::Unretained(this)),
       base::BindRepeating(&ClusterManagerTest::url_infos,
@@ -351,7 +355,7 @@ TEST_F(ClusterManagerTest, ClusterManagerInitialization_SkipInvalidSet) {
   server_proxy_ = nullptr;
   cluster_manager_ = std::make_unique<ClusterManager>(
       product_specification_service_.get(),
-      std::make_unique<ClusterServerProxy>(nullptr, nullptr),
+      std::make_unique<ClusterServerProxy>(nullptr, nullptr, nullptr),
       base::BindRepeating(&ClusterManagerTest::GetProductInfo,
                           base::Unretained(this)),
       base::BindRepeating(&ClusterManagerTest::url_infos,
@@ -381,7 +385,7 @@ TEST_F(ClusterManagerTest, ClusterManagerInitialization_KickOffRemoving) {
   server_proxy_ = nullptr;
   cluster_manager_ = std::make_unique<ClusterManager>(
       product_specification_service_.get(),
-      std::make_unique<ClusterServerProxy>(nullptr, nullptr),
+      std::make_unique<ClusterServerProxy>(nullptr, nullptr, nullptr),
       base::BindRepeating(&ClusterManagerTest::GetProductInfo,
                           base::Unretained(this)),
       base::BindRepeating(&ClusterManagerTest::url_infos,

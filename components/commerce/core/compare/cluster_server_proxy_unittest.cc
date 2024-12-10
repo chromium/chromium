@@ -12,13 +12,17 @@
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/pref_names.h"
+#include "components/commerce/core/test_utils.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/endpoint_fetcher/mock_endpoint_fetcher.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -77,8 +81,11 @@ class FakeClusterServerProxy : public ClusterServerProxy {
  public:
   FakeClusterServerProxy(
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      : ClusterServerProxy(identity_manager, url_loader_factory) {}
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      AccountChecker* account_checker)
+      : ClusterServerProxy(identity_manager,
+                           url_loader_factory,
+                           account_checker) {}
   FakeClusterServerProxy(const FakeClusterServerProxy&) = delete;
   FakeClusterServerProxy operator=(const FakeClusterServerProxy&) = delete;
   ~FakeClusterServerProxy() override = default;
@@ -91,13 +98,21 @@ class FakeClusterServerProxy : public ClusterServerProxy {
 class ClusterServerProxyTest : public testing::Test {
  protected:
   void SetUp() override {
+    // Setup to pass CanFetchProductSpecificationsData check.
+    scoped_feature_list_.InitAndEnableFeature(commerce::kProductSpecifications);
+    account_checker_ = std::make_unique<commerce::MockAccountChecker>();
+    prefs_ = std::make_unique<TestingPrefServiceSimple>();
+    commerce::RegisterCommercePrefs(prefs_->registry());
+    account_checker_->SetPrefs(prefs_.get());
+    commerce::EnableProductSpecificationsDataFetch(account_checker_.get(),
+                                                   prefs_.get());
     fetcher_ = std::make_unique<MockEndpointFetcher>();
     scoped_refptr<network::SharedURLLoaderFactory> test_url_loader_factory =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
     server_proxy_ = std::make_unique<FakeClusterServerProxy>(
         identity_test_env_.identity_manager(),
-        std::move(test_url_loader_factory));
+        std::move(test_url_loader_factory), account_checker_.get());
     ON_CALL(*server_proxy_, CreateEndpointFetcher).WillByDefault([this]() {
       return std::move(fetcher_);
     });
@@ -109,7 +124,10 @@ class ClusterServerProxyTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   std::unique_ptr<MockEndpointFetcher> fetcher_;
+  std::unique_ptr<commerce::MockAccountChecker> account_checker_;
+  std::unique_ptr<TestingPrefServiceSimple> prefs_;
   std::unique_ptr<FakeClusterServerProxy> server_proxy_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ClusterServerProxyTest, TestGetComparableProducts) {
@@ -132,6 +150,22 @@ TEST_F(ClusterServerProxyTest, TestGetComparableProductsWithServerError) {
   EXPECT_CALL(*server_proxy_,
               CreateEndpointFetcher(GURL(kTestServerUrl), GetPostData()))
       .Times(1);
+  base::RunLoop run_loop;
+  server_proxy_->GetComparableProducts(
+      std::vector<uint64_t>{kProduct1Id, kProduct2Id},
+      base::BindOnce([](const std::vector<uint64_t>& product_cluster_ids) {
+        ASSERT_EQ(product_cluster_ids.size(), 0u);
+      }).Then(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(ClusterServerProxyTest, TestGetComparableProductsNotEligible) {
+  // Turning off MSBB should block fetches for new data from happening.
+  account_checker_->SetAnonymizedUrlDataCollectionEnabled(false);
+
+  fetcher_->SetFetchResponse(kSimpleResponse);
+  EXPECT_CALL(*server_proxy_, CreateEndpointFetcher(testing::_, testing::_))
+      .Times(0);
   base::RunLoop run_loop;
   server_proxy_->GetComparableProducts(
       std::vector<uint64_t>{kProduct1Id, kProduct2Id},
