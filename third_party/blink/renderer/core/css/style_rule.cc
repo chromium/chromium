@@ -586,9 +586,23 @@ StyleRuleBase* StyleRuleBase::Renest(StyleRule* new_parent) {
       }
       return new_rule;
     }
-    case kScope:
-      // TODO(crbug.com/363019839): Implement this.
-      return this;
+    case kScope: {
+      const StyleScope* old_style_scope =
+          &To<StyleRuleScope>(this)->GetStyleScope();
+      const StyleScope* new_style_scope = old_style_scope->Renest(new_parent);
+      if (old_style_scope == new_style_scope) {
+        return this;
+      }
+      CHECK(new_style_scope);
+      // TODO(crbug.com/363019839): Don't re-nest nested declaration rules.
+      HeapVector<Member<StyleRuleBase>> new_child_rules;
+      RenestRules(To<StyleRuleScope>(this)->ChildRules(),
+                  new_style_scope->RuleForNesting(), new_child_rules);
+      // Note that `new_child_rules` is usable here even if `RenestRules`
+      // returned false.
+      return MakeGarbageCollected<StyleRuleScope>(*new_style_scope,
+                                                  std::move(new_child_rules));
+    }
     case kLayerBlock:
       return RenestGroupRule(To<StyleRuleLayerBlock>(this), new_parent);
     case kContainer:

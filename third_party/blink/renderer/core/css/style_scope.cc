@@ -30,6 +30,23 @@ StyleScope* StyleScope::CopyWithParent(const StyleScope* parent) const {
   return copy;
 }
 
+const StyleScope* StyleScope::Renest(StyleRule* new_parent) const {
+  StyleRule* reparented_from =
+      from_ ? To<StyleRule>(from_->Renest(new_parent)) : nullptr;
+  if (from_ == reparented_from) {
+    return this;
+  }
+  // Note that for the "to" selector, any '&' selectors must point
+  // to the "from" selector.
+  CSSSelectorList* reparented_to = to_ ? to_->Renest(reparented_from) : nullptr;
+  // For implicit scopes, we should have exited early due to from_==nullptr.
+  CHECK(!contents_);
+  // The `parent_` member should only be populated via calls to CopyWithParent
+  // (RuleSet-time), and this StyleScope should not be one such copy.
+  CHECK(!parent_);
+  return MakeGarbageCollected<StyleScope>(reparented_from, reparented_to);
+}
+
 const CSSSelector* StyleScope::From() const {
   if (from_) {
     return from_->FirstSelector();
