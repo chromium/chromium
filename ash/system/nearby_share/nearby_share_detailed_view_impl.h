@@ -56,12 +56,19 @@ class ASH_EXPORT NearbyShareDetailedViewImpl : public NearbyShareDetailedView,
                            const std::u16string& sublabel);
   void CreateEveryoneRow();
 
+  void FormatEveryoneRow(const ui::ColorId color_id,
+                         const bool in_high_visibility,
+                         const bool is_row_enabled);
+  void FormatVisibilitySelectionContainer(const bool in_high_visibility);
+
   void OnSettingsButtonClicked();
   void OnQuickShareToggleClicked();
   void OnYourDevicesSelected();
   void OnContactsSelected();
   void OnHiddenSelected();
   void OnEveryoneToggleClicked();
+
+  void SetCheckCircle(const bool in_high_visibility);
 
   raw_ptr<views::Button> settings_button_ = nullptr;
   raw_ptr<RoundedContainer> is_enabled_container_ = nullptr;
