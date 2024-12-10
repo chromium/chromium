@@ -212,15 +212,6 @@ constexpr char kHistoryStateScript[] =
     "(function() {history.replaceState({'test':1}, 'test'); "
     "history.pushState({'test':1}, 'test'); history.back();})();";
 
-// Returns true if the selection elements have bounds and are ready for input
-// events.
-constexpr char kOverlayReadyScript[] =
-    "(function() {const regionLayerBounds "
-    "=document.querySelector('lens-overlay-app').shadowRoot.querySelector('"
-    "lens-selection-overlay').shadowRoot.querySelector('region-selection')."
-    "getBoundingClientRect(); return regionLayerBounds.width > 0 && "
-    "regionLayerBounds.height > 0;})();";
-
 constexpr char kTestSuggestSignals[] = "encoded_image_signals";
 
 constexpr char kStartTimeQueryParamKey[] = "qsubts";
@@ -605,23 +596,8 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     return controller->GetOverlayWebViewForTesting()->GetWebContents();
   }
 
-  // Waits for the WebUI to have the screenshot loaded and is ready for input
-  // events.
-  void WaitForOverlayReady(content::WebContents* overlay_web_contents) {
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return content::EvalJs(overlay_web_contents->GetPrimaryMainFrame(),
-                             kOverlayReadyScript,
-                             content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-          .ExtractBool();
-    }));
-  }
-
   void SimulateLeftClickDrag(gfx::Point from, gfx::Point to) {
     auto* overlay_web_contents = GetOverlayWebContents();
-
-    // We need to wait until the selection overlay has resized and is ready to
-    // receive input events.
-    WaitForOverlayReady(overlay_web_contents);
 
     // We should wait for the main frame's hit-test data to be ready before
     // sending the click event below to avoid flakiness.
@@ -6063,7 +6039,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
 
 // TODO(crbug.com/360161233): This test is flaky.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
-                       DISABLED_PreselectionToastDisappearsOnSelection) {
+                       PreselectionToastDisappearsOnSelection) {
   WaitForPaint();
 
   // State should start in off.
