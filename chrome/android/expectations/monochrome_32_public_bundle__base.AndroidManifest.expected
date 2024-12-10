@@ -227,6 +227,12 @@
         android:exported="true">
       <path-permission android:path="/bookmarks/search_suggest_query" android:readPermission="android.permission.GLOBAL_SEARCH"/>
     </provider>  # DIFF-ANCHOR: f1c2d7e1
+    <provider  # DIFF-ANCHOR: 6e040436
+        android:name="org.chromium.chrome.browser.provider.PageContentProvider"
+        android:authorities="$PACKAGE.PageContentProvider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+    </provider>  # DIFF-ANCHOR: 6e040436
     <provider  # DIFF-ANCHOR: 67014fab
         android:name="org.chromium.chrome.browser.util.ChromeFileProvider"
         android:authorities="$PACKAGE.FileProvider"

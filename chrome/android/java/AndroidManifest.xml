@@ -1341,6 +1341,13 @@ by a child template that "extends" this file.
                   android:readPermission="android.permission.GLOBAL_SEARCH" />
       </provider>
 
+      <provider
+            android:name="org.chromium.chrome.browser.provider.PageContentProvider"
+            android:authorities="{{ manifest_package }}.PageContentProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+      </provider>
+
       {% block base_application_definitions %}
       {% endblock %}
       {% block extra_application_definitions_for_test %}

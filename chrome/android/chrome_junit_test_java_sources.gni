@@ -2,6 +2,7 @@ chrome_junit_test_java_sources = [
   "java/src/org/chromium/chrome/browser/hub/HubLayoutUnitTest.java",
   "java/src/org/chromium/chrome/browser/hub/HubProviderUnitTest.java",
   "java/src/org/chromium/chrome/browser/hub/HubTabSwitcherMetricsRecorderUnitTest.java",
+  "java/src/org/chromium/chrome/browser/provider/PageContentProviderImplUnitTest.java",
   "java/src/org/chromium/chrome/browser/segmentation_platform/ContextualPageActionControllerUnitTest.java",
   "java/src/org/chromium/chrome/browser/segmentation_platform/DiscountsActionProviderTest.java",
   "java/src/org/chromium/chrome/browser/segmentation_platform/PriceInsightsActionProviderTest.java",

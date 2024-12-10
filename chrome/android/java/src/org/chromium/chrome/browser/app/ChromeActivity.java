@@ -140,6 +140,7 @@ import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.provider.PageContentProviderImpl;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.selection.SelectionPopupBackPressHandler;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -1457,6 +1458,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         // No information is provided in incognito mode and overview mode.
         if (tab != null && !tab.isIncognito() && !isInOverviewMode()) {
             outContent.setWebUri(Uri.parse(tab.getUrl().getSpec()));
+
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_PDF_ASSIST_CONTENT)
                     && tab.getNativePage() instanceof PdfPage pdfPage) {
                 EnterpriseInfo.OwnedState state =
@@ -1465,6 +1467,14 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 String structuredData = pdfPage.requestAssistContent(state.mProfileOwned);
                 if (structuredData != null) {
                     outContent.setStructuredData(structuredData);
+                }
+            } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_CONTENT_PROVIDER)
+                    && UrlUtilities.isHttpOrHttps(tab.getUrl())) {
+                String pageContentStructuredData =
+                        PageContentProviderImpl.getAssistContentStructuredDataForUrl(
+                                tab.getUrl().getSpec(), getActivityTabProvider());
+                if (pageContentStructuredData != null) {
+                    outContent.setStructuredData(pageContentStructuredData);
                 }
             }
         }
