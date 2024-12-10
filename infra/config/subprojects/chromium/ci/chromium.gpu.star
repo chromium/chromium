@@ -376,7 +376,6 @@ ci.gpu.windows_builder(
         category = "Windows",
     ),
     cq_mirrors_console_view = "mirrors",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.gpu.windows_builder(
@@ -410,7 +409,6 @@ ci.gpu.windows_builder(
     console_view_entry = consoles.console_view_entry(
         category = "Windows",
     ),
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.thin_tester(
