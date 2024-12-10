@@ -518,12 +518,26 @@ void InputHandlerProxy::DispatchSingleInputEvent(
 
   current_overscroll_params_.reset();
 
-  WebInputEventAttribution attribution =
-      PerformEventAttribution(event_with_callback->event());
   InputHandlerProxy::EventDisposition disposition =
-      RouteToTypeSpecificHandler(event_with_callback.get(), attribution);
+      RouteToTypeSpecificHandler(event_with_callback.get());
 
   const WebInputEvent& event = event_with_callback->event();
+  WebInputEventAttribution attribution;
+  switch (disposition) {
+    case DID_NOT_HANDLE:
+    case DID_NOT_HANDLE_NON_BLOCKING:
+    case DID_NOT_HANDLE_NON_BLOCKING_DUE_TO_FLING:
+      attribution = PerformEventAttribution(event);
+      break;
+    default:
+      if (!::features::IsCCSlimmingEnabled()) {
+        // With CC Slimming enabled, we skip attribution since they are not
+        // sent to the main thread.
+        attribution = PerformEventAttribution(event);
+      }
+      break;
+  }
+
   const WebGestureEvent::Type type = event.GetType();
   switch (type) {
     case WebGestureEvent::Type::kGestureScrollBegin:
@@ -748,8 +762,7 @@ bool HasScrollbarJumpKeyModifier(const WebInputEvent& event) {
 
 InputHandlerProxy::EventDisposition
 InputHandlerProxy::RouteToTypeSpecificHandler(
-    EventWithCallback* event_with_callback,
-    const WebInputEventAttribution& original_attribution) {
+    EventWithCallback* event_with_callback) {
   DCHECK(input_handler_);
 
   cc::EventsMetricsManager::ScopedMonitor::DoneCallback done_callback;
@@ -789,7 +802,7 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
 
     case WebInputEvent::Type::kGestureScrollUpdate:
       return HandleGestureScrollUpdate(
-          static_cast<const WebGestureEvent&>(event), original_attribution,
+          static_cast<const WebGestureEvent&>(event),
           event_with_callback->metrics(),
           event_with_callback->latency_info().trace_id());
 
@@ -1138,7 +1151,6 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
 InputHandlerProxy::EventDisposition
 InputHandlerProxy::HandleGestureScrollUpdate(
     const WebGestureEvent& gesture_event,
-    const WebInputEventAttribution& original_attribution,
     cc::EventMetrics* metrics,
     int64_t trace_id) {
   TRACE_EVENT("input", "InputHandlerProxy::HandleGestureScrollUpdate",
