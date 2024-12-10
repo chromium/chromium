@@ -430,7 +430,7 @@ SafetyCheckNotificationsExperimentTypeEnabled() {
       base::GetFieldTrialParamByFeatureAsInt(
           kSafetyCheckNotifications, kSafetyCheckNotificationsExperimentType,
           /*default_value=*/
-          (int)SafetyCheckNotificationsExperimentalArm::kVerbose));
+          (int)SafetyCheckNotificationsExperimentalArm::kSuccinct));
 }
 
 SafetyCheckNotificationsImpressionTrigger

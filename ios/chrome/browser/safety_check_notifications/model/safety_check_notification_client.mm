@@ -86,8 +86,7 @@ bool CanSendProvisionalNotifications(
   UNAuthorizationStatus auth_status =
       [PushNotificationUtil getSavedPermissionSettings];
 
-  return auth_status == UNAuthorizationStatusProvisional ||
-         auth_status == UNAuthorizationStatusNotDetermined;
+  return auth_status == UNAuthorizationStatusProvisional;
 }
 
 }  // namespace
@@ -366,12 +365,6 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
     return;
   }
 
-  // If `experimental_arm` is `kSuccinct`, only one notification can be
-  // scheduled at a time. Otherwise, multiple notifications can be scheduled
-  // concurrently.
-  SafetyCheckNotificationsExperimentalArm experimental_arm =
-      SafetyCheckNotificationsExperimentTypeEnabled();
-
   UNNotificationRequest* password_notification =
       PasswordNotificationRequest(password_state, insecure_password_counts);
 
@@ -380,16 +373,15 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
         addNotificationRequest:password_notification
          withCompletionHandler:nil];
 
+    GetApplicationContext()->GetLocalState()->SetInteger(
+        prefs::kIosSafetyCheckNotificationsLastSent,
+        static_cast<int>(SafetyCheckNotificationType::kPasswords));
+
     base::UmaHistogramEnumeration("IOS.Notifications.SafetyCheck.Requested",
                                   SafetyCheckNotificationType::kPasswords);
 
-    // In the `kSuccinct` experiment arm, only one notification is allowed at a
-    // time. Exit early after scheduling it.
-    if (experimental_arm ==
-        SafetyCheckNotificationsExperimentalArm::kSuccinct) {
-      std::move(completion).Run();
-      return;
-    }
+    std::move(completion).Run();
+    return;
   }
 
   UNNotificationRequest* safe_browsing_notification =
@@ -401,16 +393,15 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
         addNotificationRequest:safe_browsing_notification
          withCompletionHandler:nil];
 
+    GetApplicationContext()->GetLocalState()->SetInteger(
+        prefs::kIosSafetyCheckNotificationsLastSent,
+        static_cast<int>(SafetyCheckNotificationType::kSafeBrowsing));
+
     base::UmaHistogramEnumeration("IOS.Notifications.SafetyCheck.Requested",
                                   SafetyCheckNotificationType::kSafeBrowsing);
 
-    // In the `kSuccinct` experiment arm, only one notification is allowed at a
-    // time. Exit early after scheduling it.
-    if (experimental_arm ==
-        SafetyCheckNotificationsExperimentalArm::kSuccinct) {
-      std::move(completion).Run();
-      return;
-    }
+    std::move(completion).Run();
+    return;
   }
 
   UNNotificationRequest* update_chrome_notification =
@@ -421,6 +412,10 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
     [UNUserNotificationCenter.currentNotificationCenter
         addNotificationRequest:update_chrome_notification
          withCompletionHandler:nil];
+
+    GetApplicationContext()->GetLocalState()->SetInteger(
+        prefs::kIosSafetyCheckNotificationsLastSent,
+        static_cast<int>(SafetyCheckNotificationType::kUpdateChrome));
 
     base::UmaHistogramEnumeration("IOS.Notifications.SafetyCheck.Requested",
                                   SafetyCheckNotificationType::kUpdateChrome);
