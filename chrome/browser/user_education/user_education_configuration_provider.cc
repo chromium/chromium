@@ -4,6 +4,8 @@
 
 #include "chrome/browser/user_education/user_education_configuration_provider.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -21,6 +23,16 @@ std::string FeatureNameToEventName(const base::Feature& feature) {
     name = name.substr(strlen(kIPHPrefix));
   }
   return name;
+}
+
+// Returns whether a comparator is bounded from above.
+bool IsAdditionalConfigBounded(const feature_engagement::EventConfig& config) {
+  const auto& comparator = config.comparator;
+  return (comparator.value > 0 &&
+          comparator.type == feature_engagement::LESS_THAN) ||
+         comparator.type == feature_engagement::LESS_THAN_OR_EQUAL ||
+         (comparator.value == 0 &&
+          comparator.type == feature_engagement::EQUAL);
 }
 
 }  // namespace
@@ -210,14 +222,18 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
     if (config.availability.type != feature_engagement::GREATER_THAN) {
       config.availability.type = feature_engagement::GREATER_THAN_OR_EQUAL;
     }
-  } else if (!config.event_configs.empty() ||
-             config.used.comparator.value != 0 ||
-             additional.initial_delay_days().has_value()) {
-    // Use the initial delay specified, or settle on a default. When there are
-    // additional conditions or a nontrivial "used" condition, assume that some
-    // time will be required to determine if the conditions are met.
+  } else if (additional.initial_delay_days().has_value()) {
+    // Explicit availability was set in User Ed config, so use that.
     config.availability.type = feature_engagement::GREATER_THAN_OR_EQUAL;
-    config.availability.value = additional.initial_delay_days().value_or(7);
+    config.availability.value = additional.initial_delay_days().value();
+  } else if (std::any_of(config.event_configs.begin(),
+                         config.event_configs.end(),
+                         &IsAdditionalConfigBounded)) {
+    // If any of the additional event configs have put a maximum cap on a
+    // particular event, then default to a minimum availability period to give
+    // enough time to determine if the events in question happened.
+    config.availability.type = feature_engagement::GREATER_THAN_OR_EQUAL;
+    config.availability.value = 7;
   } else {
     // This should already be the default - the promo will be available as soon
     // as the feature is enabled.
