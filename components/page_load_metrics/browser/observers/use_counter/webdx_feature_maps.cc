@@ -288,6 +288,15 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kVerticalFormControls,
            WebDXFeature::kVerticalFormControls},
           {WebFeature::kNavigatorPdfViewerEnabled, WebDXFeature::kPdfViewer},
+          {WebFeature::kReferrerPolicyHeader, WebDXFeature::kReferrerPolicy},
+          {WebFeature::kHTMLAnchorElementReferrerPolicyAttribute,
+           WebDXFeature::kReferrerPolicy},
+          {WebFeature::kHTMLIFrameElementReferrerPolicyAttribute,
+           WebDXFeature::kReferrerPolicy},
+          {WebFeature::kHTMLImageElementReferrerPolicyAttribute,
+           WebDXFeature::kReferrerPolicy},
+          {WebFeature::kHTMLLinkElementReferrerPolicyAttribute,
+           WebDXFeature::kReferrerPolicy},
       }};
 
   return *kMap;
