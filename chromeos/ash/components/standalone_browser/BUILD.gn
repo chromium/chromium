@@ -49,7 +49,6 @@ source_set("unit_tests") {
 
   deps = [
     ":standalone_browser",
-    ":test_support",
     "//ash/constants:constants",
     "//base/test:test_support",
     "//components/account_id",
@@ -59,15 +58,5 @@ source_set("unit_tests") {
     "//components/user_manager:test_support",
     "//content/test:test_support",
     "//testing/gtest:gtest",
-  ]
-}
-
-source_set("test_support") {
-  testonly = true
-
-  deps = [
-    ":standalone_browser",
-    "//ash/constants",
-    "//base/test:test_support",
   ]
 }
