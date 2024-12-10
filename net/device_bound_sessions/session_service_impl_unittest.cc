@@ -347,6 +347,55 @@ TEST_F(SessionServiceImplTest, DeleteSession) {
   EXPECT_FALSE(service().GetSession(site, session_id));
 }
 
+TEST_F(SessionServiceImplTest, DeleteAllSessionsByCreationTime) {
+  net::SchemefulSite site(kTestUrl);
+
+  AddSessionsForTesting({{"SessionA", kUrlString},
+                         {"SessionB", kUrlString},
+                         {"SessionC", kUrlString}});
+
+  service()
+      .GetSession(site, Session::Id("SessionA"))
+      ->set_creation_date(base::Time::Now() - base::Days(6));
+  service()
+      .GetSession(site, Session::Id("SessionB"))
+      ->set_creation_date(base::Time::Now() - base::Days(4));
+  service()
+      .GetSession(site, Session::Id("SessionC"))
+      ->set_creation_date(base::Time::Now() - base::Days(2));
+
+  base::RunLoop run_loop;
+  service().DeleteAllSessions(
+      base::Time::Now() - base::Days(5), base::Time::Now() - base::Days(3),
+      /*including_domains=*/std::nullopt, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(service().GetSession(site, Session::Id("SessionA")));
+  EXPECT_FALSE(service().GetSession(site, Session::Id("SessionB")));
+  EXPECT_TRUE(service().GetSession(site, Session::Id("SessionC")));
+}
+
+TEST_F(SessionServiceImplTest, DeleteAllSessionsBySite) {
+  GURL url_a("https://a_example.com");
+  GURL url_b("https://b_example.com");
+
+  AddSessionsForTesting(
+      {{kSessionId, url_a.spec()}, {kSessionId, url_b.spec()}});
+
+  SchemefulSite site_a(url_a);
+  SchemefulSite site_b(url_b);
+
+  base::RunLoop run_loop;
+  service().DeleteAllSessions(
+      /*created_after_time=*/std::nullopt,
+      /*created_before_time=*/std::nullopt,
+      /*including_domains=*/{{site_a}}, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_FALSE(service().GetSession(site_a, Session::Id(kSessionId)));
+  EXPECT_TRUE(service().GetSession(site_b, Session::Id(kSessionId)));
+}
+
 TEST_F(SessionServiceImplTest, TestDeferWithRequestRestart) {
   AddSessionsForTesting({{kSessionId, kUrlString}});
 

@@ -81,6 +81,11 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       base::OnceCallback<void(const std::vector<SessionKey>&)> callback)
       override;
   void DeleteSession(const SchemefulSite& site, const Session::Id& id) override;
+  void DeleteAllSessions(
+      std::optional<base::Time> created_after_time,
+      std::optional<base::Time> created_before_time,
+      const std::optional<std::vector<net::SchemefulSite>>& including_sites,
+      base::OnceClosure completion_callback) override;
   Session* GetSession(const SchemefulSite& site,
                       const Session::Id& session_id) const;
 
@@ -116,7 +121,6 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // `session_store_` and any BFCache entries.
   // Return the iterator to the next session in the map.
   [[nodiscard]] SessionsMap::iterator DeleteSessionInternal(
-      const SchemefulSite& site,
       SessionsMap::iterator it);
 
   // Whether we are waiting on the initial load of saved sessions to complete.

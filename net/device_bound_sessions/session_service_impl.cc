@@ -4,6 +4,7 @@
 
 #include "net/device_bound_sessions/session_service_impl.h"
 
+#include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
@@ -26,6 +27,27 @@ void NotifySessionAccess(SessionService::OnAccessCallback callback,
   }
 
   callback.Run({site, session.id()});
+}
+
+bool SessionMatchesFilter(
+    const SchemefulSite& site,
+    const Session& session,
+    std::optional<base::Time> created_after_time,
+    std::optional<base::Time> created_before_time,
+    const std::optional<std::vector<net::SchemefulSite>>& including_sites) {
+  if (created_before_time && *created_before_time < session.creation_date()) {
+    return false;
+  }
+
+  if (created_after_time && *created_after_time > session.creation_date()) {
+    return false;
+  }
+
+  if (including_sites && !base::Contains(*including_sites, site)) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -105,6 +127,7 @@ void SessionServiceImpl::OnRegistrationComplete(
   session->set_unexportable_key_id(std::move(params->key_id));
 
   const SchemefulSite site(url::Origin::Create(params->url));
+
   NotifySessionAccess(on_access_callback, site, *session);
 
   AddSession(site, std::move(session));
@@ -117,7 +140,7 @@ SessionServiceImpl::GetSessionsForSite(const SchemefulSite& site) {
   auto [begin, end] = unpartitioned_sessions_.equal_range(site);
   for (auto it = begin; it != end;) {
     if (now >= it->second->expiry_date()) {
-      it = DeleteSessionInternal(site, it);
+      it = DeleteSessionInternal(it);
     } else {
       it->second->RecordAccess();
       it++;
@@ -313,18 +336,35 @@ void SessionServiceImpl::DeleteSession(const SchemefulSite& site,
   auto range = unpartitioned_sessions_.equal_range(site);
   for (auto it = range.first; it != range.second; ++it) {
     if (it->second->id() == id) {
-      std::ignore = DeleteSessionInternal(site, it);
+      std::ignore = DeleteSessionInternal(it);
       return;
     }
   }
 }
 
+void SessionServiceImpl::DeleteAllSessions(
+    std::optional<base::Time> created_after_time,
+    std::optional<base::Time> created_before_time,
+    const std::optional<std::vector<net::SchemefulSite>>& including_sites,
+    base::OnceClosure completion_callback) {
+  for (auto it = unpartitioned_sessions_.begin();
+       it != unpartitioned_sessions_.end();) {
+    if (SessionMatchesFilter(it->first, *it->second, created_after_time,
+                             created_before_time, including_sites)) {
+      it = DeleteSessionInternal(it);
+    } else {
+      ++it;
+    }
+  }
+
+  std::move(completion_callback).Run();
+}
+
 SessionServiceImpl::SessionsMap::iterator
 SessionServiceImpl::DeleteSessionInternal(
-    const SchemefulSite& site,
     SessionServiceImpl::SessionsMap::iterator it) {
   if (session_store_) {
-    session_store_->DeleteSession(site, it->second->id());
+    session_store_->DeleteSession(it->first, it->second->id());
   }
 
   // TODO(crbug.com/353774923): Clear BFCache entries for this session.

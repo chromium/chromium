@@ -41,4 +41,12 @@ void DeviceBoundSessionManager::DeleteSession(
       net::device_bound_sessions::Session::Id(session_key.id));
 }
 
+void DeviceBoundSessionManager::DeleteAllSessions(
+    network::mojom::DeviceBoundSessionFilterPtr filter,
+    base::OnceClosure completion_callback) {
+  service_->DeleteAllSessions(
+      filter->created_after_time, filter->created_before_time,
+      filter->including_sites, std::move(completion_callback));
+}
+
 }  // namespace network

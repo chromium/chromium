@@ -55,6 +55,14 @@ class SessionServiceMock : public SessionService {
               DeleteSession,
               (const SchemefulSite& site, const Session::Id& id),
               (override));
+  MOCK_METHOD(
+      void,
+      DeleteAllSessions,
+      (std::optional<base::Time> created_after_time,
+       std::optional<base::Time> created_before_time,
+       const std::optional<std::vector<net::SchemefulSite>>& including_sites,
+       base::OnceClosure completion_callback),
+      (override));
 };
 
 }  // namespace net::device_bound_sessions

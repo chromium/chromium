@@ -29,6 +29,8 @@ class DeviceBoundSessionManager : public mojom::DeviceBoundSessionManager {
   void GetAllSessions(GetAllSessionsCallback callback) override;
   void DeleteSession(
       const net::device_bound_sessions::SessionKey& session_key) override;
+  void DeleteAllSessions(network::mojom::DeviceBoundSessionFilterPtr filter,
+                         base::OnceClosure completion_callback) override;
 
  private:
   explicit DeviceBoundSessionManager(
