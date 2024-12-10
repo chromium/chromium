@@ -2,7 +2,7 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++descriptionList
-++++++++term
+++++++++term name='Term'
 ++++++++++staticText name='Term'
 ++++++++++++inlineTextBox name='Term'
 ++++++++definition

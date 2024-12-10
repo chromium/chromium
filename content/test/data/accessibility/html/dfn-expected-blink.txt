@@ -1,6 +1,6 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++term
+++++++term name='Web Browser'
 ++++++++staticText name='Web Browser'
 ++++++staticText name=' A computer program with a graphical user interface for displaying HTML files, used to navigate the World Wide Web.'

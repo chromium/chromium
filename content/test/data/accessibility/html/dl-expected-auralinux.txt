@@ -1,6 +1,6 @@
 [document web]
 ++[description list]
-++++[description term]
+++++[description term] name='Term'
 ++++++[static] name='Term'
 ++++[description value]
 ++++++[static] name='Description'

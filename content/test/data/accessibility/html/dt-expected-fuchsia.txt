@@ -2,7 +2,7 @@ UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
 ++++++UNKNOWN
-++++++++UNKNOWN
+++++++++UNKNOWN label='Coffee'
 ++++++++++STATIC_TEXT label='Coffee'
 ++++++++++++UNKNOWN label='Coffee'
 ++++++++UNKNOWN

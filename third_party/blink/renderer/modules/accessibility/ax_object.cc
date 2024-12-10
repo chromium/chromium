@@ -7754,6 +7754,7 @@ bool AXObject::SupportsNameFromContents(bool recursive,
     case ax::mojom::blink::Role::kStaticText:
     case ax::mojom::blink::Role::kSwitch:
     case ax::mojom::blink::Role::kTab:
+    case ax::mojom::blink::Role::kTerm:
     case ax::mojom::blink::Role::kToggleButton:
     case ax::mojom::blink::Role::kTreeItem:
     case ax::mojom::blink::Role::kTooltip:
@@ -7890,7 +7891,6 @@ bool AXObject::SupportsNameFromContents(bool recursive,
     case ax::mojom::blink::Role::kTable:
     case ax::mojom::blink::Role::kTabList:
     case ax::mojom::blink::Role::kTabPanel:
-    case ax::mojom::blink::Role::kTerm:
     case ax::mojom::blink::Role::kTextField:
     case ax::mojom::blink::Role::kTextFieldWithComboBox:
     case ax::mojom::blink::Role::kTimer:

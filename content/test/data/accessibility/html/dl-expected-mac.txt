@@ -1,6 +1,6 @@
 AXWebArea AXRoleDescription='HTML content'
 ++AXList AXSubrole=AXDefinitionList AXRoleDescription='definition list'
-++++AXGroup AXSubrole=AXTerm AXRoleDescription='term'
+++++AXGroup AXSubrole=AXTerm AXRoleDescription='term' AXTitle='Term'
 ++++++AXStaticText AXRoleDescription='text' AXValue='Term'
 ++++AXGroup AXSubrole=AXDefinition AXRoleDescription='definition'
 ++++++AXStaticText AXRoleDescription='text' AXValue='Description'

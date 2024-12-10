@@ -1,7 +1,7 @@
 UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN
-++++++UNKNOWN
+++++++UNKNOWN label='Web Browser'
 ++++++++STATIC_TEXT label='Web Browser'
 ++++++++++UNKNOWN label='Web Browser'
 ++++++STATIC_TEXT label=' A computer program with a graphical user interface for displaying HTML files, used to navigate the World Wide Web.'

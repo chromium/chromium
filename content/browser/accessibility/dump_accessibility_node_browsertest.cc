@@ -633,6 +633,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameFromContent) {
   RunAccNameTest(FILE_PATH_LITERAL("name-from-content.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameFromContentDfn) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-from-content-dfn.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameFromContentOfLabel) {
   RunAccNameTest(FILE_PATH_LITERAL("name-from-content-of-label.html"));
 }
@@ -647,6 +651,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
                        NameFromContentOfLabelledbyElementsOneOfWhichIsHidden) {
   RunAccNameTest(FILE_PATH_LITERAL(
       "name-from-content-of-labelledby-elements-one-of-which-is-hidden.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameFromContentTermRole) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-from-content-term-role.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
