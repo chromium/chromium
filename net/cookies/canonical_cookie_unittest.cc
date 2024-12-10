@@ -2486,6 +2486,14 @@ TEST(CanonicalCookieTest, IncludeForRequestURL_SchemeBoundStatus) {
       CookieAccessSemantics::UNKNOWN, CookieScopeSemantics::UNKNOWN,
       /*delegate_treats_url_as_trustworthy=*/true);
 
+  CookieAccessParams trusted_legacy_params(
+      CookieAccessSemantics::UNKNOWN, CookieScopeSemantics::LEGACY,
+      /*delegate_treats_url_as_trustworthy=*/true);
+
+  CookieAccessParams legacy_params(
+      CookieAccessSemantics::UNKNOWN, CookieScopeSemantics::LEGACY,
+      /*delegate_treats_url_as_trustworthy=*/false);
+
   GURL secure_url("https://www.example.test:123/");
   GURL insecure_url("http://www.example.test:123/");
 
@@ -2585,6 +2593,28 @@ TEST(CanonicalCookieTest, IncludeForRequestURL_SchemeBoundStatus) {
             .status.HasExclusionReason(
                 CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH));
 
+    // When cookie scope semantic is LEGACY OBC behavior is not applied
+    // meaning we should not exclude due to scheme mismatch
+    auto status_insecure =
+        insecure_cookie
+            ->IncludeForRequestURL(secure_url, options, legacy_params)
+            .status;
+    auto status_secure =
+        secure_cookie->IncludeForRequestURL(secure_url, options, legacy_params)
+            .status;
+    EXPECT_TRUE(status_insecure.IsInclude());
+
+    EXPECT_TRUE(status_secure.IsInclude());
+
+    // Cookie will have scheme mismatch warning instead of exclusion when cookie
+    // scope semantics is set to LEGACY
+    EXPECT_TRUE(status_insecure.HasWarningReason(
+        CookieInclusionStatus::WARN_SCHEME_MISMATCH));
+
+    // Secure cookie with secure_url should have no warnings
+    EXPECT_FALSE(status_secure.HasWarningReason(
+        CookieInclusionStatus::WARN_SCHEME_MISMATCH));
+
     // If a url is treated as trustworthy, then it's allowed to access cookies
     // with a secure source scheme. But we should have a warning indicating
     // this.
@@ -2594,6 +2624,15 @@ TEST(CanonicalCookieTest, IncludeForRequestURL_SchemeBoundStatus) {
     EXPECT_TRUE(status.IsInclude());
     EXPECT_TRUE(status.HasWarningReason(
         CookieInclusionStatus::WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC));
+
+    // If cookie scope semantics in params is set to LEGACY we will no longer
+    // have a warning indicition.
+    EXPECT_FALSE(
+        secure_cookie
+            ->IncludeForRequestURL(insecure_url, options, trusted_legacy_params)
+            .status.HasWarningReason(
+                CookieInclusionStatus::
+                    WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC));
 
     // Cookies with an unset source scheme should match any url scheme.
     EXPECT_TRUE(unset_cookie->IncludeForRequestURL(secure_url, options, params)
@@ -2616,6 +2655,10 @@ TEST(CanonicalCookieTest, IncludeForRequestURL_PortBoundStatus) {
   CookieAccessParams params(CookieAccessSemantics::UNKNOWN,
                             CookieScopeSemantics::NONLEGACY,
                             /*delegate_treats_url_as_trustworthy=*/false);
+
+  CookieAccessParams legacy_scoped_params(
+      CookieAccessSemantics::UNKNOWN, CookieScopeSemantics::LEGACY,
+      /*delegate_treats_url_as_trustworthy=*/false);
 
   GURL url1("https://www.example.test:443/");
   GURL url2("https://www.example.test:123/");
@@ -2662,6 +2705,17 @@ TEST(CanonicalCookieTest, IncludeForRequestURL_PortBoundStatus) {
     EXPECT_TRUE(cookie1->IncludeForRequestURL(url2, options, params)
                     .status.HasExclusionReason(
                         CookieInclusionStatus::EXCLUDE_PORT_MISMATCH));
+
+    auto status =
+        cookie1->IncludeForRequestURL(url2, options, legacy_scoped_params)
+            .status;
+    // When cookie scope semantic is LEGACY OBC behavior is not applied
+    // meaning we should not exclude due to port mismatch
+    EXPECT_TRUE(status.IsInclude());
+    // Cookie will have port mismatch warning instead of exclusion when cookie
+    // scope semantics is set to LEGACY
+    EXPECT_TRUE(
+        status.HasWarningReason(CookieInclusionStatus::WARN_PORT_MISMATCH));
 
     // Cookies with an unspecified port should match any url port.
     EXPECT_TRUE(unspecified_cookie->IncludeForRequestURL(url1, options, params)

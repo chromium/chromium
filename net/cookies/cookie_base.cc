@@ -237,7 +237,8 @@ CookieAccessResult CookieBase::IncludeForRequestURL(
       is_allowed_to_access_secure_cookies = true;
       if (SecureAttribute() ||
           (cookie_util::IsSchemeBoundCookiesEnabled() &&
-           source_scheme_ == CookieSourceScheme::kSecure)) {
+           source_scheme_ == CookieSourceScheme::kSecure &&
+           params.scope_semantics != net::CookieScopeSemantics::LEGACY)) {
         status.AddWarningReason(
             CookieInclusionStatus::
                 WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC);
@@ -267,7 +268,8 @@ CookieAccessResult CookieBase::IncludeForRequestURL(
   if (source_scheme_ == CookieSourceScheme::kSecure &&
       cookie_access_scheme == CookieAccessScheme::kNonCryptographic &&
       !status.HasExclusionReason(CookieInclusionStatus::EXCLUDE_SECURE_ONLY)) {
-    if (cookie_util::IsSchemeBoundCookiesEnabled()) {
+    if (cookie_util::IsSchemeBoundCookiesEnabled() &&
+        params.scope_semantics != net::CookieScopeSemantics::LEGACY) {
       status.AddExclusionReason(CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH);
     } else {
       status.AddWarningReason(CookieInclusionStatus::WARN_SCHEME_MISMATCH);
@@ -277,7 +279,8 @@ CookieAccessResult CookieBase::IncludeForRequestURL(
   // kCryptographic urls.
   else if (source_scheme_ == CookieSourceScheme::kNonSecure &&
            cookie_access_scheme == CookieAccessScheme::kCryptographic) {
-    if (cookie_util::IsSchemeBoundCookiesEnabled()) {
+    if (cookie_util::IsSchemeBoundCookiesEnabled() &&
+        params.scope_semantics != net::CookieScopeSemantics::LEGACY) {
       status.AddExclusionReason(CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH);
     } else {
       status.AddWarningReason(CookieInclusionStatus::WARN_SCHEME_MISMATCH);
@@ -299,7 +302,8 @@ CookieAccessResult CookieBase::IncludeForRequestURL(
       cookie_access_scheme == CookieAccessScheme::kTrustworthy &&
       source_port_ == 443;
   if (!port_matches && !trustworthy_and_443) {
-    if (cookie_util::IsPortBoundCookiesEnabled()) {
+    if (cookie_util::IsPortBoundCookiesEnabled() &&
+        params.scope_semantics != net::CookieScopeSemantics::LEGACY) {
       status.AddExclusionReason(CookieInclusionStatus::EXCLUDE_PORT_MISMATCH);
     } else {
       status.AddWarningReason(CookieInclusionStatus::WARN_PORT_MISMATCH);
