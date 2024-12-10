@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/heap_array.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/blockfile/disk_format.h"
 #include "net/disk_cache/blockfile/storage_block-inl.h"
@@ -288,7 +289,7 @@ class NET_EXPORT_PRIVATE EntryImpl
   // responsible for deleting the block (or file) from the backing store at some
   // point; there is no need to report any storage-size change, only to do the
   // actual cleanup.
-  void GetData(int index, std::unique_ptr<char[]>* buffer, Addr* address);
+  void GetData(int index, base::HeapArray<char>* buffer, Addr* address);
 
   // |net_log_| should be early since some field destructors (at least
   // ~SparseControl) can touch it.

@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/heap_array.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -81,7 +82,7 @@ class ChildrenDeleter
 
   // Two ways of deleting the children: if we have the children map, use Start()
   // directly, otherwise pass the data address to ReadData().
-  void Start(std::unique_ptr<char[]> buffer, int len);
+  void Start(base::HeapArray<char> buffer, int len);
   void ReadData(disk_cache::Addr address, int len);
 
  private:
@@ -94,7 +95,7 @@ class ChildrenDeleter
   std::string name_;
   disk_cache::Bitmap children_map_;
   int64_t signature_ = 0;
-  std::unique_ptr<char[]> buffer_;
+  base::HeapArray<char> buffer_;
 };
 
 // This is the callback of the file operation.
@@ -102,7 +103,7 @@ void ChildrenDeleter::OnFileIOComplete(int bytes_copied) {
   Start(std::move(buffer_), bytes_copied);
 }
 
-void ChildrenDeleter::Start(std::unique_ptr<char[]> buffer, int len) {
+void ChildrenDeleter::Start(base::HeapArray<char> buffer, int len) {
   buffer_ = std::move(buffer);
   if (len < static_cast<int>(sizeof(disk_cache::SparseData)))
     return Release();
@@ -110,13 +111,13 @@ void ChildrenDeleter::Start(std::unique_ptr<char[]> buffer, int len) {
   // Just copy the information from |buffer|, delete |buffer| and start deleting
   // the child entries.
   disk_cache::SparseData* data =
-      reinterpret_cast<disk_cache::SparseData*>(buffer_.get());
+      reinterpret_cast<disk_cache::SparseData*>(buffer_.data());
   signature_ = data->header.signature;
 
   int num_bits = (len - sizeof(disk_cache::SparseHeader)) * 8;
   children_map_.Resize(num_bits, false);
   children_map_.SetMap(data->bitmap, num_bits / 32);
-  buffer_.reset();
+  buffer_ = {};
 
   DeleteChildren();
 }
@@ -133,10 +134,11 @@ void ChildrenDeleter::ReadData(disk_cache::Addr address, int len) {
   size_t file_offset = address.start_block() * address.BlockSize() +
                        disk_cache::kBlockHeaderSize;
 
-  buffer_ = std::make_unique<char[]>(len);
+  buffer_ = base::HeapArray<char>::Uninit(len);
   bool completed;
-  if (!file->Read(buffer_.get(), len, file_offset, this, &completed))
+  if (!file->Read(buffer_.data(), len, file_offset, this, &completed)) {
     return Release();
+  }
 
   if (completed)
     OnFileIOComplete(len);
@@ -376,11 +378,12 @@ void SparseControl::DeleteChildren(EntryImpl* entry) {
   if (map_len > kMaxMapSize || map_len % 4)
     return;
 
-  std::unique_ptr<char[]> buffer;
+  base::HeapArray<char> buffer;
   Addr address;
   entry->GetData(kSparseIndex, &buffer, &address);
-  if (!buffer && !address.is_initialized())
+  if (buffer.empty() && !address.is_initialized()) {
     return;
+  }
 
   entry->net_log().AddEvent(net::NetLogEventType::SPARSE_DELETE_CHILDREN);
 
@@ -390,7 +393,7 @@ void SparseControl::DeleteChildren(EntryImpl* entry) {
   // The object will self destruct when finished.
   deleter->AddRef();
 
-  if (buffer) {
+  if (!buffer.empty()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&ChildrenDeleter::Start, deleter,
                                   std::move(buffer), data_len));
