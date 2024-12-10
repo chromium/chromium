@@ -105,6 +105,11 @@ struct CC_EXPORT TransformNode {
   // outer viewport size before Blink repositions the fixed layers.
   bool moved_by_outer_viewport_bounds_delta_y : 1 = false;
 
+  // Used by the compositor to determine which layers need to be repositioned by
+  // the compositor as a result of safe area inset bottom before Blink
+  // repositions the fixed layers.
+  bool moved_by_safe_area_bottom : 1 = false;
+
   // Layer scale factor is used as a fallback when we either cannot adjust
   // raster scale or if the raster scale cannot be extracted from the screen
   // space transform. For layers in the subtree of the page scale layer, the

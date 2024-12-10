@@ -232,6 +232,10 @@ CompositingReasons CompositingReasonsForViewportScrollEffect(
   if (layout_object.StyleRef().IsFixedToBottom()) {
     reasons |= CompositingReason::kFixedPosition |
                CompositingReason::kAffectedByOuterViewportBoundsDelta;
+
+    if (layout_object.StyleRef().IsBottomRelativeToSafeAreaInset()) {
+      reasons |= CompositingReason::kAffectedBySafeAreaBottom;
+    }
   }
 
   return reasons;

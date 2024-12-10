@@ -194,6 +194,11 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPreventDuplicateImageDecodes);
 // initialized to 0 instead of now.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kInitImageDecodeLastUseTime);
 
+// The position affected by the safe area inset bottom will be handled by CC in
+// the Render Compositor Thread. The transform metrix y is adjusted for all
+// affected nodes.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDynamicSafeAreaInsetsSupportedByCC);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

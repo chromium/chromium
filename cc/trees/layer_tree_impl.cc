@@ -453,38 +453,58 @@ void LayerTreeImpl::UpdateViewportContainerSizes() {
   ViewportAnchor anchor(InnerViewportScrollNode(), OuterViewportScrollNode(),
                         this);
 
-  float top_controls_shown_ratio =
+  const float top_controls_shown_ratio =
       top_controls_shown_ratio_->Current(IsActiveTree());
-  float bottom_controls_shown_ratio =
+  const float bottom_controls_shown_ratio =
       bottom_controls_shown_ratio_->Current(IsActiveTree());
-  float top_controls_layout_height = browser_controls_shrink_blink_size()
-                                         ? top_controls_height()
-                                         : top_controls_min_height();
-  float top_content_offset =
+  const float top_controls_layout_height = browser_controls_shrink_blink_size()
+                                               ? top_controls_height()
+                                               : top_controls_min_height();
+  const float top_content_offset =
       top_controls_height() > 0
           ? top_controls_height() * top_controls_shown_ratio
           : 0.f;
   float delta_from_top_controls =
       top_controls_layout_height - top_content_offset;
-  float bottom_controls_layout_height = browser_controls_shrink_blink_size()
-                                            ? bottom_controls_height()
-                                            : bottom_controls_min_height();
-  float bottom_content_offset =
+  const float bottom_controls_layout_height =
+      browser_controls_shrink_blink_size() ? bottom_controls_height()
+                                           : bottom_controls_min_height();
+  const float bottom_content_offset =
       bottom_controls_height() > 0
           ? bottom_controls_height() * bottom_controls_shown_ratio
           : 0.f;
   delta_from_top_controls +=
       bottom_controls_layout_height - bottom_content_offset;
 
-  // TODO: use max_safe_area_inset_bottom() for SafeAreaInsets support.
+  // The delta to be added to transform matrix if dynamic safe area is
+  // supported.
+  auto* property_trees = this->property_trees();
+  if (base::FeatureList::IsEnabled(
+          features::kDynamicSafeAreaInsetsSupportedByCC)) {
+    const float real_saib =
+        std::max(0.0f, max_safe_area_inset_bottom() - bottom_content_offset);
+    const float blink_saib = std::max(
+        0.0f, max_safe_area_inset_bottom() - bottom_controls_layout_height);
+    const float transform_delta_by_safe_area_inset_bottom =
+        -(real_saib - blink_saib);
+
+    const float scaled_transform_delta_by_safe_area_inset_bottom =
+        transform_delta_by_safe_area_inset_bottom / min_page_scale_factor();
+
+    if (property_trees->transform_delta_by_safe_area_inset_bottom() !=
+        scaled_transform_delta_by_safe_area_inset_bottom) {
+      property_trees->SetTransformDeltaBySafeAreaInsetBottom(
+          scaled_transform_delta_by_safe_area_inset_bottom);
+    }
+  }
 
   // Adjust the viewport layers by shrinking/expanding the container to account
   // for changes in the size (e.g. browser controls) since the last resize from
   // Blink.
-  auto* property_trees = this->property_trees();
   gfx::Vector2dF bounds_delta(0.f, delta_from_top_controls);
-  if (property_trees->inner_viewport_container_bounds_delta() == bounds_delta)
+  if (property_trees->inner_viewport_container_bounds_delta() == bounds_delta) {
     return;
+  }
 
   property_trees->SetInnerViewportContainerBoundsDelta(bounds_delta);
 

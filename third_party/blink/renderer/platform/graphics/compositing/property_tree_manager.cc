@@ -476,6 +476,14 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
     transform_tree_.AddNodeAffectedByOuterViewportBoundsDelta(id);
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kDynamicSafeAreaInsetsSupportedByCC)) {
+    if (transform_node.IsAffectedBySafeArea()) {
+      compositor_node.moved_by_safe_area_bottom = true;
+      transform_tree_.AddNodeAffectedBySafeAreaInsetBottom(id);
+    }
+  }
+
   compositor_node.in_subtree_of_page_scale_layer =
       transform_node.IsInSubtreeOfPageScale();
 

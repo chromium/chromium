@@ -192,4 +192,8 @@ BASE_FEATURE(kInitImageDecodeLastUseTime,
              "InitImageDecodeLastUseTime",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDynamicSafeAreaInsetsSupportedByCC,
+             "DynamicSafeAreaInsetsSupportedByCC",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

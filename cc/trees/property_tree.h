@@ -253,6 +253,16 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
     nodes_affected_by_outer_viewport_bounds_delta_ = std::move(nodes);
   }
 
+  void NeedTransformUpdateForSafeAreaInsetBottom();
+
+  void AddNodeAffectedBySafeAreaInsetBottom(int node_id);
+
+  bool HasNodesAffectedBySafeAreaBottom() const;
+
+  const std::vector<int>& nodes_affected_by_safe_area_bottom() const {
+    return nodes_affected_by_safe_area_inset_bottom_;
+  }
+
   const std::vector<StickyPositionNodeData>& sticky_position_data() const {
     return sticky_position_data_;
   }
@@ -340,6 +350,7 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   float device_scale_factor_;
   float device_transform_scale_factor_;
   std::vector<int> nodes_affected_by_outer_viewport_bounds_delta_;
+  std::vector<int> nodes_affected_by_safe_area_inset_bottom_;
   std::vector<TransformCachedNodeData> cached_data_;
   std::vector<StickyPositionNodeData> sticky_position_data_;
   std::vector<AnchorPositionScrollData> anchor_position_scroll_data_;
@@ -835,6 +846,7 @@ class CC_EXPORT PropertyTrees final {
   void MaximumAnimationScaleChanged(ElementId element_id, float maximum_scale);
   void SetInnerViewportContainerBoundsDelta(gfx::Vector2dF bounds_delta);
   void SetOuterViewportContainerBoundsDelta(gfx::Vector2dF bounds_delta);
+  void SetTransformDeltaBySafeAreaInsetBottom(float);
   void UpdateChangeTracking();
   void GetChangedNodes(std::vector<int>& effect_nodes,
                        std::vector<int>& transform_nodes) const;
@@ -854,6 +866,10 @@ class CC_EXPORT PropertyTrees final {
   }
   gfx::Vector2dF outer_viewport_container_bounds_delta() const {
     return outer_viewport_container_bounds_delta_.Read(synchronizer());
+  }
+
+  float transform_delta_by_safe_area_inset_bottom() const {
+    return transform_delta_by_safe_area_inset_bottom_.Read(synchronizer());
   }
 
   std::unique_ptr<base::trace_event::TracedValue> AsTracedValue() const;
@@ -915,6 +931,7 @@ class CC_EXPORT PropertyTrees final {
       inner_viewport_container_bounds_delta_;
   ProtectedSequenceReadable<gfx::Vector2dF>
       outer_viewport_container_bounds_delta_;
+  ProtectedSequenceReadable<float> transform_delta_by_safe_area_inset_bottom_;
 
   const AnimationScaleData& GetAnimationScaleData(int transform_id);
 
