@@ -9,6 +9,7 @@
 
 #include "components/metrics/field_trials_provider.h"
 
+#include <array>
 #include <string_view>
 
 #include "base/metrics/field_trial.h"
@@ -28,11 +29,13 @@ namespace {
 
 constexpr const char* kSuffix = "UKM";
 
-const ActiveGroup kFieldTrials[] = {{"Trial1", "Group1"},
-                                    {"Trial2", "Group2"},
-                                    {"Trial3", "Group3"}};
-const ActiveGroup kSyntheticFieldTrials[] = {{"Synthetic1", "SyntheticGroup1"},
-                                             {"Synthetic2", "SyntheticGroup2"}};
+const auto kFieldTrials = std::to_array<ActiveGroup>({
+    {"Trial1", "Group1"},
+    {"Trial2", "Group2"},
+    {"Trial3", "Group3"},
+});
+const auto kSyntheticFieldTrials = std::to_array<ActiveGroup>(
+    {{"Synthetic1", "SyntheticGroup1"}, {"Synthetic2", "SyntheticGroup2"}});
 
 ActiveGroupId ToActiveGroupId(ActiveGroup active_group,
                               std::string suffix = "");

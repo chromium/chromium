@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/search_engines/template_url.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
 
 #include "base/base64.h"
@@ -125,14 +121,16 @@ TEST_F(TemplateURLTest, URLRefTestSearchTerms) {
     const char* url;
     const std::u16string terms;
     const std::string output;
-  } search_term_cases[] = {
+  };
+  auto search_term_cases = std::to_array<SearchTermsCase>({
       {"http://foo{searchTerms}", u"sea rch/bar", "http://foosea%20rch/bar"},
       {"http://foo{searchTerms}?boo=abc", u"sea rch/bar",
        "http://foosea%20rch/bar?boo=abc"},
       {"http://foo/?boo={searchTerms}", u"sea rch/bar",
        "http://foo/?boo=sea+rch%2Fbar"},
       {"http://en.wikipedia.org/{searchTerms}", u"wiki/?",
-       "http://en.wikipedia.org/wiki/%3F"}};
+       "http://en.wikipedia.org/wiki/%3F"},
+  });
   for (size_t i = 0; i < std::size(search_term_cases); ++i) {
     const SearchTermsCase& value = search_term_cases[i];
     TemplateURLData data;
@@ -550,10 +548,12 @@ TEST_F(TemplateURLTest, URLRefTestSearchTermsUsingTermsData) {
     const char* url;
     const std::u16string terms;
     const char* output;
-  } search_term_cases[] = {{"{google:baseURL}{language}{searchTerms}",
-                            std::u16string(), "http://example.com/e/en"},
-                           {"{google:baseSuggestURL}{searchTerms}",
-                            std::u16string(), "http://example.com/complete/"}};
+  };
+  auto search_term_cases = std::to_array<SearchTermsCase>(
+      {{"{google:baseURL}{language}{searchTerms}", std::u16string(),
+        "http://example.com/e/en"},
+       {"{google:baseSuggestURL}{searchTerms}", std::u16string(),
+        "http://example.com/complete/"}});
 
   TestingSearchTermsData search_terms_data("http://example.com/e/");
   TemplateURLData data;
@@ -575,7 +575,8 @@ TEST_F(TemplateURLTest, URLRefTermToWide) {
   struct ToWideCase {
     const char* encoded_search_term;
     const std::u16string expected_decoded_term;
-  } to_wide_cases[] = {
+  };
+  auto to_wide_cases = std::to_array<ToWideCase>({
       {"hello+world", u"hello world"},
       // Test some big-5 input.
       {"%a7A%A6%6e+to+you", u"\x4f60\x597d to you"},
@@ -589,7 +590,7 @@ TEST_F(TemplateURLTest, URLRefTermToWide) {
       {"C%2B%2B", u"C++"},
       // C%2B is escaped as C%252B, make sure we unescape it properly.
       {"C%252B", u"C%2B"},
-  };
+  });
 
   // Set one input encoding: big-5. This is so we can test fallback to UTF-8.
   TemplateURLData data;
@@ -1361,16 +1362,32 @@ TEST_F(TemplateURLTest, SearchTermKeyLocation) {
 }
 
 TEST_F(TemplateURLTest, GoogleBaseSuggestURL) {
-  static const struct {
+  struct Data {
     const char* const base_url;
     const char* const base_suggest_url;
-  } data[] = {
-    { "http://google.com/", "http://google.com/complete/", },
-    { "http://www.google.com/", "http://www.google.com/complete/", },
-    { "http://www.google.co.uk/", "http://www.google.co.uk/complete/", },
-    { "http://www.google.com.by/", "http://www.google.com.by/complete/", },
-    { "http://google.com/intl/xx/", "http://google.com/complete/", },
   };
+  static const auto data = std::to_array<Data>({
+      {
+          "http://google.com/",
+          "http://google.com/complete/",
+      },
+      {
+          "http://www.google.com/",
+          "http://www.google.com/complete/",
+      },
+      {
+          "http://www.google.co.uk/",
+          "http://www.google.co.uk/complete/",
+      },
+      {
+          "http://www.google.com.by/",
+          "http://www.google.com.by/complete/",
+      },
+      {
+          "http://google.com/intl/xx/",
+          "http://google.com/complete/",
+      },
+  });
 
   for (size_t i = 0; i < std::size(data); ++i)
     CheckSuggestBaseURL(data[i].base_url, data[i].base_suggest_url);
@@ -2169,21 +2186,52 @@ TEST_F(TemplateURLTest, IsSearchURL) {
   data.alternate_urls.push_back("http://bar/webhp#q={searchTerms}");
   TemplateURL search_provider(data);
 
-  const struct {
+  struct UrlData {
     const char* const url;
     bool result;
-  } url_data[] = {
-    { "http://bar/search?q=foo&oq=foo", true, },
-    { "http://bar/?q=foo&oq=foo", true, },
-    { "http://bar/#output=search&q=foo&oq=foo", true, },
-    { "http://bar/webhp#q=foo&oq=foo", true, },
-    { "http://bar/#q=foo&oq=foo", true, },
-    { "http://bar/?ext=foo&q=foo#ref=bar", true, },
-    { "http://bar/url?url=http://www.foo.com/&q=foo#ref=bar", false, },
-    { "http://bar/", false, },
-    { "http://foo/", false, },
-    { "http://bar/newtab", false, },
   };
+  const auto url_data = std::to_array<UrlData>({
+      {
+          "http://bar/search?q=foo&oq=foo",
+          true,
+      },
+      {
+          "http://bar/?q=foo&oq=foo",
+          true,
+      },
+      {
+          "http://bar/#output=search&q=foo&oq=foo",
+          true,
+      },
+      {
+          "http://bar/webhp#q=foo&oq=foo",
+          true,
+      },
+      {
+          "http://bar/#q=foo&oq=foo",
+          true,
+      },
+      {
+          "http://bar/?ext=foo&q=foo#ref=bar",
+          true,
+      },
+      {
+          "http://bar/url?url=http://www.foo.com/&q=foo#ref=bar",
+          false,
+      },
+      {
+          "http://bar/",
+          false,
+      },
+      {
+          "http://foo/",
+          false,
+      },
+      {
+          "http://bar/newtab",
+          false,
+      },
+  });
 
   for (size_t i = 0; i < std::size(url_data); ++i) {
     EXPECT_EQ(url_data[i].result,

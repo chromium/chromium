@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/domain_reliability/context.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <string>
@@ -1267,10 +1263,10 @@ TEST_F(DomainReliabilityContextTest,
 
   InitContext(MakeTestConfig());
 
-  net::IsolationInfo isolation_infos[] = {
+  auto isolation_infos = std::to_array<net::IsolationInfo>({
       net::IsolationInfo::CreateTransient(),
       net::IsolationInfo::CreateTransient(),
-  };
+  });
 
   // Add `DomainReliabilityContext::kMaxQueuedBeacons` beacons, using a
   // different IsolationInfo for every other beacon.

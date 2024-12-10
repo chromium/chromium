@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/feedback/redaction_tool/redaction_tool.h"
 
 #include <gtest/gtest.h>
 
+#include <array>
 #include <set>
 #include <string_view>
 #include <utility>
@@ -603,7 +599,7 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
   EXPECT_EQ("(URL: 1)", RedactCustomPatterns("http://example.com/foo?test=1"));
   EXPECT_EQ("Foo (URL: 2) Bar",
             RedactCustomPatterns("Foo http://192.168.0.1/foo?test=1#123 Bar"));
-  const char* kURLs[] = {
+  auto kURLs = std::to_array<const char*>({
       "http://example.com/foo?test=1",
       "http://userid:password@example.com:8080",
       "http://userid:password@example.com:8080/",
@@ -621,7 +617,7 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
       "https://aaaaaaaaaaaaaaaa.com",
       "file:///var/log/messages",
       "file:///usr/local/home/iby/web%20page%20test.html",
-  };
+  });
   for (size_t i = 0; i < std::size(kURLs); ++i) {
     SCOPED_TRACE(kURLs[i]);
     std::string got = RedactCustomPatterns(kURLs[i]);

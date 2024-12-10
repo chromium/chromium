@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <limits>
 #include <utility>
 
@@ -202,7 +203,7 @@ TEST_F(CommandStorageBackendTest, SimpleReadWriteEncrypted) {
 }
 
 TEST_F(CommandStorageBackendTest, RandomDataEncrypted) {
-  struct TestData data[] = {
+  auto data = std::to_array<TestData>({
       {1, "a"},
       {2, "ab"},
       {3, "abc"},
@@ -216,7 +217,7 @@ TEST_F(CommandStorageBackendTest, RandomDataEncrypted) {
       {11, "abcdefghijk"},
       {12, "abcdefghijkl"},
       {13, "abcdefghijklm"},
-  };
+  });
 
   const std::vector<uint8_t> key = CommandStorageManager::CreateCryptoKey();
   for (size_t i = 0; i < std::size(data); ++i) {
@@ -240,10 +241,10 @@ TEST_F(CommandStorageBackendTest, RandomDataEncrypted) {
 }
 
 TEST_F(CommandStorageBackendTest, BigDataEncrypted) {
-  struct TestData data[] = {
+  auto data = std::to_array<TestData>({
       {1, "a"},
       {2, "ab"},
-  };
+  });
 
   const std::vector<uint8_t> key = CommandStorageManager::CreateCryptoKey();
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
@@ -422,7 +423,7 @@ TEST_F(CommandStorageBackendTest, SimpleReadWriteWithRestoreType) {
 }
 
 TEST_F(CommandStorageBackendTest, RandomDataWithRestoreType) {
-  struct TestData data[] = {
+  auto data = std::to_array<TestData>({
       {1, "a"},
       {2, "ab"},
       {3, "abc"},
@@ -436,7 +437,7 @@ TEST_F(CommandStorageBackendTest, RandomDataWithRestoreType) {
       {11, "abcdefghijk"},
       {12, "abcdefghijkl"},
       {13, "abcdefghijklm"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(data); ++i) {
     scoped_refptr<CommandStorageBackend> backend =
@@ -459,10 +460,10 @@ TEST_F(CommandStorageBackendTest, RandomDataWithRestoreType) {
 }
 
 TEST_F(CommandStorageBackendTest, BigDataWithRestoreType) {
-  struct TestData data[] = {
+  auto data = std::to_array<TestData>({
       {1, "a"},
       {2, "ab"},
-  };
+  });
 
   scoped_refptr<CommandStorageBackend> backend = CreateBackendWithRestoreType();
   std::vector<std::unique_ptr<SessionCommand>> commands;

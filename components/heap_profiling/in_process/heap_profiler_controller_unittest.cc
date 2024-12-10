@@ -4,6 +4,7 @@
 
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 
+#include <array>
 #include <atomic>
 #include <iomanip>
 #include <memory>
@@ -1322,14 +1323,14 @@ auto GetProfileMetadataFunc(std::string_view name) {
 }
 
 // End-to-end test with multiple child processes.
-constexpr FeatureTestParams kMultipleChildConfigs[] = {
+constexpr const auto kMultipleChildConfigs = std::to_array<FeatureTestParams>({
     {
         .gpu_snapshot_prob = 100,
         .network_snapshot_prob = 100,
         .renderer_snapshot_prob = 66,
         .utility_snapshot_prob = 50,
     },
-};
+});
 
 using HeapProfilerControllerMultipleChildTest = HeapProfilerControllerTest;
 

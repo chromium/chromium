@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/flags_ui/flags_state.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <set>
@@ -123,7 +119,7 @@ const FeatureEntry::Choice kMultiChoices[] = {
 
 // The entries that are set for these tests. The 3rd entry is not supported on
 // the current platform, all others are.
-static FeatureEntry kEntries[] = {
+auto kEntries = std::to_array<FeatureEntry>({
     {kFlags1, kDummyName, kDummyDescription,
      0,  // Ends up being mapped to the current platform.
      SINGLE_VALUE_TYPE(kSwitch1)},
@@ -169,7 +165,8 @@ static FeatureEntry kEntries[] = {
      0,  // Ends up being mapped to the current platform.
      FEATURE_WITH_PARAMS_VALUE_TYPE(kTestFeature3,
                                     kTestVariations3,
-                                    kTestTrial)}};
+                                    kTestTrial)},
+});
 
 class FlagsStateTest : public ::testing::Test,
                        public flags_ui::FlagsState::Delegate {
@@ -495,13 +492,14 @@ TEST_F(FlagsStateTest, RemoveFlagSwitches) {
 }
 
 TEST_F(FlagsStateTest, RemoveFlagSwitches_Features) {
-  struct {
+  struct Cases {
     int enabled_choice;  // 0: default, 1: enabled, 2: disabled.
     const char* existing_enable_features;
     const char* existing_disable_features;
     const char* expected_enable_features;
     const char* expected_disable_features;
-  } cases[] = {
+  };
+  auto cases = std::to_array<Cases>({
       // Default value: Should not affect existing flags.
       {0, nullptr, nullptr, nullptr, nullptr},
       {0, "A,B", "C", "A,B", "C"},
@@ -511,7 +509,7 @@ TEST_F(FlagsStateTest, RemoveFlagSwitches_Features) {
       // "Disable" option: should only affect disabled list.
       {2, nullptr, nullptr, nullptr, "FeatureName1"},
       {2, "A,B", "C", "A,B", "C,FeatureName1"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(base::StringPrintf(
@@ -795,13 +793,14 @@ TEST_F(FlagsStateTest, FeatureValues) {
   const FeatureEntry& entry = kEntries[6];
   ASSERT_EQ(kFlags7, entry.internal_name);
 
-  struct {
+  struct Cases {
     int enabled_choice;
     const char* existing_enable_features;
     const char* existing_disable_features;
     const char* expected_enable_features;
     const char* expected_disable_features;
-  } cases[] = {
+  };
+  auto cases = std::to_array<Cases>({
       // Nothing selected.
       {-1, nullptr, nullptr, "", ""},
       // "Default" option selected, same as nothing selected.
@@ -814,7 +813,7 @@ TEST_F(FlagsStateTest, FeatureValues) {
       {1, "Foo,Bar", nullptr, "Foo,Bar,FeatureName1", ""},
       // "Disable" option should get added to the existing list.
       {2, nullptr, "Foo,Bar", "", "Foo,Bar,FeatureName1"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(base::StringPrintf(

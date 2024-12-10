@@ -4,6 +4,8 @@
 
 #include "components/history_embeddings/sql_database.h"
 
+#include <array>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -145,10 +147,10 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, WriteCloseAndThenReadUrlData) {
                                     GetEncryptorInstance());
 
   // Write embeddings.
-  UrlData url_datas[] = {
+  auto url_datas = std::to_array<UrlData>({
       UrlData(1, 1, base::Time::Now()),
       UrlData(2, 2, base::Time::Now()),
-  };
+  });
   url_datas[0].passages.add_passages("data 0 passage 0");
   url_datas[0].embeddings.push_back(FakeEmbedding());
   url_datas[1].passages.add_passages("data 1 passage 0");
@@ -459,10 +461,10 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, IterationSkipsAndReportsMismatches) {
                                     GetEncryptorInstance());
 
   // Write embeddings.
-  UrlData url_datas[] = {
+  auto url_datas = std::to_array<UrlData>({
       UrlData(1, 1, base::Time::Now()),
       UrlData(2, 2, base::Time::Now()),
-  };
+  });
   url_datas[0].passages.add_passages("data 0 passage 0");
   url_datas[0].embeddings.push_back(FakeEmbedding());
   url_datas[1].passages.add_passages("data 1 passage 0");
@@ -498,11 +500,11 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, OldVisitsAreExpired) {
                                     GetEncryptorInstance());
 
   // Write embeddings; one for an old visit, one for a new visit.
-  UrlData url_datas[] = {
+  auto url_datas = std::to_array<UrlData>({
       UrlData(/*url_id=*/1, /*visit_id=*/1,
               base::Time::Now() - base::Days(100)),
       UrlData(/*url_id=*/2, /*visit_id=*/2, base::Time::Now()),
-  };
+  });
   url_datas[0].passages.add_passages("data 0 passage 0");
   url_datas[0].embeddings.push_back(FakeEmbedding());
   url_datas[1].passages.add_passages("data 1 passage 0");

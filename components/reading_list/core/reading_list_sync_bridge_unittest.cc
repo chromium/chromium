@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/reading_list/core/reading_list_sync_bridge.h"
 
+#include <array>
 #include <map>
 #include <set>
 #include <utility>
@@ -558,10 +554,12 @@ TEST_F(ReadingListSyncBridgeTest, CompareEntriesForSync) {
   entryA.set_update_time_us(99);
   ExpectAB(entryA, entryB, true);
   ExpectAB(entryB, entryA, false);
-  sync_pb::ReadingListSpecifics::ReadingListEntryStatus status_oder[3] = {
-      sync_pb::ReadingListSpecifics::UNSEEN,
-      sync_pb::ReadingListSpecifics::UNREAD,
-      sync_pb::ReadingListSpecifics::READ};
+  std::array<sync_pb::ReadingListSpecifics::ReadingListEntryStatus, 3>
+      status_oder = {
+          sync_pb::ReadingListSpecifics::UNSEEN,
+          sync_pb::ReadingListSpecifics::UNREAD,
+          sync_pb::ReadingListSpecifics::READ,
+      };
   for (int index_a = 0; index_a < 3; index_a++) {
     entryA.set_status(status_oder[index_a]);
     for (int index_b = 0; index_b < 3; index_b++) {
