@@ -319,7 +319,6 @@ const string kJapaneseManageUserDictionarySubpagePath =
 const string kAppLanguagesSubpagePath = "osLanguages/languages/appLanguages";
 
 // Files section.
-const string kFilesSectionPath = "files";
 const string kGoogleDriveSubpagePath = "googleDrive";
 const string kOneDriveSubpagePath = "oneDrive";
 const string kOfficeFilesSubpagePath = "officeFiles";

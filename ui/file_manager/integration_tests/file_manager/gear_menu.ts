@@ -417,7 +417,7 @@ export async function newFolderInDownloads() {
  */
 export async function showFilesSettingsButton() {
   const settingsWindowOrigin = 'chrome://os-settings';
-  const filesSettingsWindowURL = 'chrome://os-settings/files';
+  const filesSettingsWindowURL = 'chrome://os-settings/systemPreferences';
 
   // Open Files.App on Downloads and wait for the gear menu button to appear.
   const appId = await remoteCall.setupAndWaitUntilReady(
