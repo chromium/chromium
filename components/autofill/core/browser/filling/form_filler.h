@@ -86,9 +86,6 @@ class FormFiller {
   // Resets states that FormFiller holds and maintains.
   void Reset();
 
-  // TODO(crbug.com/41490871): Remove.
-  std::optional<base::TimeTicks> GetOriginalFillingTime(FormGlobalId form_id);
-
   base::TimeDelta get_limit_before_refill() { return limit_before_refill_; }
 
   // Given a `form`, returns a map from each field's id to the skip reason for
@@ -191,12 +188,12 @@ class FormFiller {
 
   // Keeps track of the filling context for a form, used to make refill
   // attempts.
-  struct FillingContext {
+  struct RefillContext {
     // |filling_payload| contains the data used to perform the initial filling
     // operation.
-    FillingContext(const AutofillField& field,
-                   const FillingPayload& filling_payload);
-    ~FillingContext();
+    RefillContext(const AutofillField& field,
+                  const FillingPayload& filling_payload);
+    ~RefillContext();
 
     // Whether a refill attempt was made.
     bool attempted_refill = false;
@@ -214,7 +211,7 @@ class FormFiller {
     url::Origin filled_origin;
     // The time at which the initial fill occurred.
     // TODO(crbug.com/41490871): Remove in favor of
-    // FormStructure::last_filling_timestamp
+    // FormStructure::last_filling_timestamp_.
     const base::TimeTicks original_fill_time;
     // The timer used to trigger a refill.
     base::OneShotTimer on_refill_timer;
@@ -230,10 +227,10 @@ class FormFiller {
     std::optional<FormData> filled_form;
   };
 
-  void SetFillingContext(FormGlobalId form_id,
-                         std::unique_ptr<FillingContext> context);
+  void SetRefillContext(FormGlobalId form_id,
+                        std::unique_ptr<RefillContext> context);
 
-  FillingContext* GetFillingContext(FormGlobalId form_id);
+  RefillContext* GetRefillContext(FormGlobalId form_id);
 
   // Stores the value to be filled into a field, along with its field type and
   // if it's an override.
@@ -271,9 +268,9 @@ class FormFiller {
   // some of the filling operations.
   FormAutofillHistory form_autofill_history_;
 
-  // A map from FormGlobalId to FillingContext instances used to make refill
+  // A map from FormGlobalId to RefillContext instances used to make refill
   // attempts for dynamic forms.
-  std::map<FormGlobalId, std::unique_ptr<FillingContext>> filling_context_;
+  std::map<FormGlobalId, std::unique_ptr<RefillContext>> refill_context_;
 
   // The maximum amount of time between a change in the form and the original
   // fill that triggers a refill. This value is only changed in browser tests,

@@ -331,9 +331,8 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
   return skip_reasons;
 }
 
-FormFiller::FillingContext::FillingContext(
-    const AutofillField& field,
-    const FillingPayload& filling_payload)
+FormFiller::RefillContext::RefillContext(const AutofillField& field,
+                                         const FillingPayload& filling_payload)
     : filled_field_id(field.global_id()),
       filled_field_signature(field.GetFieldSignature()),
       filled_origin(field.origin()),
@@ -349,7 +348,7 @@ FormFiller::FillingContext::FillingContext(
       filling_payload);
 }
 
-FormFiller::FillingContext::~FillingContext() = default;
+FormFiller::RefillContext::~RefillContext() = default;
 
 FormFiller::FormFiller(BrowserAutofillManager& manager) : manager_(manager) {}
 
@@ -360,15 +359,8 @@ LogManager* FormFiller::log_manager() {
 }
 
 void FormFiller::Reset() {
-  filling_context_.clear();
+  refill_context_.clear();
   form_autofill_history_.Reset();
-}
-
-std::optional<base::TimeTicks> FormFiller::GetOriginalFillingTime(
-    FormGlobalId form_id) {
-  FillingContext* filling_context = GetFillingContext(form_id);
-  return filling_context ? std::optional(filling_context->original_fill_time)
-                         : std::nullopt;
 }
 
 base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
@@ -467,8 +459,8 @@ FillingProduct FormFiller::UndoAutofill(
   form.set_fields(std::move(fields));
 
   // Do not attempt a refill after an Undo operation.
-  if (GetFillingContext(form.global_id())) {
-    SetFillingContext(form.global_id(), nullptr);
+  if (GetRefillContext(form.global_id())) {
+    SetRefillContext(form.global_id(), nullptr);
   }
 
   // Since Undo only affects fields that were already filled, and only sets
@@ -644,17 +636,16 @@ void FormFiller::FillOrPreviewForm(
   if (action_persistence == mojom::ActionPersistence::kFill && !is_refill) {
     form_structure.set_last_filling_timestamp(base::TimeTicks::Now());
     if (FillingProductSupportsRefills(filling_product)) {
-      SetFillingContext(form_structure.global_id(),
-                        std::make_unique<FillingContext>(autofill_trigger_field,
-                                                         filling_payload));
+      SetRefillContext(form_structure.global_id(),
+                       std::make_unique<RefillContext>(autofill_trigger_field,
+                                                       filling_payload));
     }
   }
 
-  FillingContext* filling_context =
-      GetFillingContext(form_structure.global_id());
+  RefillContext* refill_context = GetRefillContext(form_structure.global_id());
   bool could_attempt_refill = FillingProductSupportsRefills(filling_product) &&
-                              filling_context != nullptr &&
-                              !filling_context->attempted_refill && !is_refill;
+                              refill_context != nullptr &&
+                              !refill_context->attempted_refill && !is_refill;
 
   std::vector<FormFieldData> result_fields = form.fields();
   CHECK_EQ(result_fields.size(), form_structure.field_count());
@@ -672,8 +663,8 @@ void FormFiller::FillOrPreviewForm(
       base::MakeFlatMap<FieldGlobalId, DenseSet<FieldFillingSkipReason>>(
           GetFieldFillingSkipReasons(
               result_fields, form_structure, autofill_trigger_field,
-              filling_context ? filling_context->type_groups_originally_filled
-                              : std::optional<DenseSet<FieldTypeGroup>>(),
+              refill_context ? refill_context->type_groups_originally_filled
+                             : std::optional<DenseSet<FieldTypeGroup>>(),
               filling_product, is_refill),
           {},
           [&ignorable_skip_reasons](
@@ -712,13 +703,13 @@ void FormFiller::FillOrPreviewForm(
     }
 
     if (could_attempt_refill) {
-      filling_context->type_groups_originally_filled.insert(
+      refill_context->type_groups_originally_filled.insert(
           autofill_field.Type().group());
     }
     std::string failure_to_fill;  // Reason for failing to fill.
     const std::map<FieldGlobalId, std::u16string>& forced_fill_values =
-        filling_context ? filling_context->forced_fill_values
-                        : std::map<FieldGlobalId, std::u16string>();
+        refill_context ? refill_context->forced_fill_values
+                       : std::map<FieldGlobalId, std::u16string>();
 
     // Fill the data from `filling_payload` into `result_form`, which will be
     // sent to the renderer.
@@ -759,8 +750,8 @@ void FormFiller::FillOrPreviewForm(
                is_autofilled_after, failure_to_fill.c_str());
   }
   if (could_attempt_refill) {
-    filling_context->filled_form = form;
-    filling_context->filled_form->set_fields(result_fields);
+    refill_context->filled_form = form;
+    refill_context->filled_form->set_fields(result_fields);
   }
   // Remove fields that won't be filled. This includes:
   // - Fields that have a skip reason.
@@ -829,10 +820,10 @@ void FormFiller::FillOrPreviewForm(
                         << LogMessage::kSendFillingData << Br{}
                         << std::move(buffer);
 
-  if (filling_context) {
+  if (refill_context) {
     // When a new preview/fill starts, previously forced_fill_values should be
     // ignored the operation could be for a different card or address.
-    filling_context->forced_fill_values.clear();
+    refill_context->forced_fill_values.clear();
   }
 
   manager_->OnDidFillOrPreviewForm(
@@ -849,9 +840,8 @@ bool FormFiller::ShouldTriggerRefill(
     RefillTriggerReason refill_trigger_reason) {
   // Should not refill if a form with the same FormGlobalId that has not been
   // filled before.
-  FillingContext* filling_context =
-      GetFillingContext(form_structure.global_id());
-  if (filling_context == nullptr) {
+  RefillContext* refill_context = GetRefillContext(form_structure.global_id());
+  if (refill_context == nullptr) {
     return false;
   }
 
@@ -859,34 +849,33 @@ bool FormFiller::ShouldTriggerRefill(
   // form and the received form. Other trigger reasons do not need this check
   // since they do not depend on the form changing.
   if (refill_trigger_reason == RefillTriggerReason::kFormChanged &&
-      filling_context->filled_form &&
+      refill_context->filled_form &&
       FormData::DeepEqual(form_structure.ToFormData(),
-                          *filling_context->filled_form)) {
+                          *refill_context->filled_form)) {
     return false;
   }
 
-  // TODO(crbug.com/41490871): Use form_structure.last_filling_timestamp()
-  // instead of filling_context->original_fill_time
-  base::TimeTicks now = base::TimeTicks::Now();
-  base::TimeDelta delta = now - filling_context->original_fill_time;
+  // TODO(crbug.com/41490871): Use form_structure.last_filling_timestamp_
+  // instead of filling_context->original_fill_time.
+  base::TimeDelta delta =
+      base::TimeTicks::Now() - refill_context->original_fill_time;
 
-  return !filling_context->attempted_refill && delta < limit_before_refill_;
+  return !refill_context->attempted_refill && delta < limit_before_refill_;
 }
 
 void FormFiller::ScheduleRefill(const FormData& form,
                                 const FormStructure& form_structure,
                                 AutofillTriggerSource trigger_source,
                                 RefillTriggerReason refill_trigger_reason) {
-  FillingContext* filling_context =
-      GetFillingContext(form_structure.global_id());
-  DCHECK(filling_context != nullptr);
+  RefillContext* refill_context = GetRefillContext(form_structure.global_id());
+  DCHECK(refill_context != nullptr);
   // If a timer for the refill was already running, it means the form
   // changed again. Stop the timer and start it again.
-  if (filling_context->on_refill_timer.IsRunning()) {
-    filling_context->on_refill_timer.Stop();
+  if (refill_context->on_refill_timer.IsRunning()) {
+    refill_context->on_refill_timer.Stop();
   }
   // Start a new timer to trigger refill.
-  filling_context->on_refill_timer.Start(
+  refill_context->on_refill_timer.Start(
       FROM_HERE, kWaitTimeForDynamicForms,
       base::BindRepeating(&FormFiller::TriggerRefill,
                           weak_ptr_factory_.GetWeakPtr(), form, trigger_source,
@@ -901,18 +890,17 @@ void FormFiller::TriggerRefill(const FormData& form,
   if (!form_structure) {
     return;
   }
-  FillingContext* filling_context =
-      GetFillingContext(form_structure->global_id());
-  DCHECK(filling_context);
+  RefillContext* refill_context = GetRefillContext(form_structure->global_id());
+  DCHECK(refill_context);
 
   // The refill attempt can happen from different paths, some of which happen
   // after waiting for a while. Therefore, although this condition has been
   // checked prior to calling TriggerRefill, it may not hold, when we get
   // here.
-  if (filling_context->attempted_refill) {
+  if (refill_context->attempted_refill) {
     return;
   }
-  filling_context->attempted_refill = true;
+  refill_context->attempted_refill = true;
 
   // Try to find the field from which the original fill originated.
   // The precedence for the look up is the following:
@@ -924,11 +912,11 @@ void FormFiller::TriggerRefill(const FormData& form,
   auto comparison_attributes =
       [&](const std::unique_ptr<AutofillField>& field) {
         return std::make_tuple(
-            field->origin() == filling_context->filled_origin,
+            field->origin() == refill_context->filled_origin,
             field->IsFocusable(),
-            field->global_id() == filling_context->filled_field_id,
+            field->global_id() == refill_context->filled_field_id,
             field->GetFieldSignature() ==
-                filling_context->filled_field_signature,
+                refill_context->filled_field_signature,
             field->renderer_id());
       };
   auto it =
@@ -937,10 +925,10 @@ void FormFiller::TriggerRefill(const FormData& form,
       it != form_structure->end() ? it->get() : nullptr;
   bool found_matching_element =
       autofill_field &&
-      autofill_field->origin() == filling_context->filled_origin &&
-      (autofill_field->global_id() == filling_context->filled_field_id ||
+      autofill_field->origin() == refill_context->filled_origin &&
+      (autofill_field->global_id() == refill_context->filled_field_id ||
        autofill_field->GetFieldSignature() ==
-           filling_context->filled_field_signature);
+           refill_context->filled_field_signature);
   if (!found_matching_element) {
     return;
   }
@@ -952,7 +940,7 @@ void FormFiller::TriggerRefill(const FormData& form,
                           trigger_source,
                           /*is_refill=*/true);
       },
-      filling_context->profile_or_credit_card);
+      refill_context->profile_or_credit_card);
 }
 
 void FormFiller::MaybeTriggerRefillForExpirationDate(
@@ -1004,24 +992,22 @@ void FormFiller::MaybeTriggerRefillForExpirationDate(
 
   if (ShouldTriggerRefill(form_structure,
                           RefillTriggerReason::kExpirationDateFormatted)) {
-    FillingContext* filling_context =
-        GetFillingContext(form_structure.global_id());
-    DCHECK(filling_context);  // This is enforced by ShouldTriggerRefill.
-    filling_context->forced_fill_values[field.global_id()] = refill_value;
+    RefillContext& refill_context =
+        CHECK_DEREF(GetRefillContext(form_structure.global_id()));
+    refill_context.forced_fill_values[field.global_id()] = refill_value;
     ScheduleRefill(form, form_structure, trigger_source,
                    RefillTriggerReason::kExpirationDateFormatted);
   }
 }
 
-void FormFiller::SetFillingContext(FormGlobalId form_id,
-                                   std::unique_ptr<FillingContext> context) {
-  filling_context_[form_id] = std::move(context);
+void FormFiller::SetRefillContext(FormGlobalId form_id,
+                                  std::unique_ptr<RefillContext> context) {
+  refill_context_[form_id] = std::move(context);
 }
 
-FormFiller::FillingContext* FormFiller::GetFillingContext(
-    FormGlobalId form_id) {
-  auto it = filling_context_.find(form_id);
-  return it != filling_context_.end() ? it->second.get() : nullptr;
+FormFiller::RefillContext* FormFiller::GetRefillContext(FormGlobalId form_id) {
+  auto it = refill_context_.find(form_id);
+  return it != refill_context_.end() ? it->second.get() : nullptr;
 }
 
 FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
