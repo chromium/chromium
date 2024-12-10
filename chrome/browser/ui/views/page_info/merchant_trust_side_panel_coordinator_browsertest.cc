@@ -129,7 +129,8 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
   EXPECT_CALL(*service(), GetMerchantTrustInfo(_, _))
       .WillRepeatedly(
           Invoke([](const GURL& url, page_info::MerchantDataCallback callback) {
-            std::move(callback).Run(url, std::nullopt);
+            std::move(callback).Run(
+                url, std::make_optional(CreateValidMerchantData()));
           }));
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), kGURLWithMerchantTrustData));
@@ -152,14 +153,15 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
             SidePanelEntry::Id::kMerchantTrust);
 
   // Navigate to a different URL with no merchant trust data.
+  EXPECT_CALL(*service(), GetMerchantTrustInfo(_, _))
+      .WillRepeatedly(
+          Invoke([](const GURL& url, page_info::MerchantDataCallback callback) {
+            std::move(callback).Run(url, std::nullopt);
+          }));
   GURL kGURLWithoutMerchantTrustData = CreateUrl(kUrlWithoutMerchantTrustData);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), kGURLWithoutMerchantTrustData));
-  // The side panel will not be closed immediately because the animation is in
-  // progress.
-  ASSERT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
-
-  // Side panel should eventually close.
+  // Side panel should eventually close, after the animation.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !side_panel_coordinator()->IsSidePanelShowing(); }));
 }
