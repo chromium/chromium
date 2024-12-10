@@ -79,3 +79,22 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "guest_util_browsertest.cc" ]
+  deps = [
+    ":glic",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/extensions:extensions",
+    "//chrome/browser/ui",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//ui/events:test_support",
+  ]
+}

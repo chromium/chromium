@@ -11,8 +11,9 @@ class WebContents;
 
 namespace glic {
 
-// If `guest_contents` is the glic guest, do glic-specific setup.
-void OnGuestAdded(content::WebContents* guest_contents);
+// If `guest_contents` is the glic guest, do glic-specific setup and return
+// true, otherwise return false.
+bool OnGuestAdded(content::WebContents* guest_contents);
 
 }  // namespace glic
 

@@ -11,7 +11,7 @@
 
 namespace glic {
 
-void OnGuestAdded(content::WebContents* guest_contents) {
+bool OnGuestAdded(content::WebContents* guest_contents) {
   content::WebContents* top =
       guest_view::GuestViewBase::GetTopLevelWebContents(guest_contents);
 
@@ -19,7 +19,9 @@ void OnGuestAdded(content::WebContents* guest_contents) {
     // TODO(crbug.com/382322927): This could instead be done by having all guest
     // WebContents inherit background color from their embedders.
     guest_contents->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
+    return true;
   }
+  return false;
 }
 
 }  // namespace glic
