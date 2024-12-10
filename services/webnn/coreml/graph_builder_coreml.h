@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "base/containers/flat_map.h"
@@ -396,6 +397,25 @@ class GraphBuilderCoreml {
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForLstm(
       const mojom::Lstm& operation,
+      CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForLstm(
+      uint64_t input_operand_id,
+      uint64_t weight_operand_id,
+      uint64_t recurrent_weight_operand_id,
+      uint32_t hidden_size,
+      std::optional<uint64_t> bias_operand_id,
+      std::optional<uint64_t> recurrent_bias_operand_id,
+      std::optional<uint64_t> peephole_weight_operand_id,
+      std::optional<uint64_t> initial_hidden_state_operand_id,
+      std::optional<uint64_t> initial_cell_state_operand_id,
+      bool return_sequence,
+      mojom::RecurrentNetworkDirection direction,
+      mojom::LstmWeightLayout layout,
+      base::span<const mojom::RecurrentNetworkActivation> activations,
+      base::span<const uint64_t> output_operand_ids,
+      CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForLstmCell(
+      const mojom::LstmCell& operation,
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForMatmul(
       uint64_t input_x_operand_id,

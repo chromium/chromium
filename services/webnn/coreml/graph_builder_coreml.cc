@@ -1060,8 +1060,9 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // to include int32.
        /*linear_input=*/DataTypeConstraint::kFloat16To32,
        /*lstm_input=*/DataTypeConstraint::kFloat16To32,
-       // LstmCell is not implemented.
-       /*lstm_cell_input=*/{},
+       // LstmCell is implemented with lstm, they should have the same
+       // constraints.
+       /*lstm_cell_input=*/DataTypeConstraint::kFloat16To32,
        /*matmul_input=*/kFloatsAndInt32,
        /*pad_input=*/DataTypeConstraint::kFloat16To32,
        /*average_pool2d_input=*/DataTypeConstraint::kFloat16To32,
@@ -1307,6 +1308,11 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         RETURN_IF_ERROR(AddOperationForLstm(*operation->get_lstm(), block));
         break;
       }
+      case mojom::Operation::Tag::kLstmCell: {
+        RETURN_IF_ERROR(
+            AddOperationForLstmCell(*operation->get_lstm_cell(), block));
+        break;
+      }
       case mojom::Operation::Tag::kMatmul: {
         RETURN_IF_ERROR(AddOperationForMatmul(*operation->get_matmul(), block));
         break;
@@ -1421,7 +1427,6 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         break;
       }
       case mojom::Operation::Tag::kDequantizeLinear:
-      case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kQuantizeLinear:
       case mojom::Operation::Tag::kReverse:
@@ -3268,54 +3273,61 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForLinear(
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForLstm(
-    const mojom::Lstm& operation,
+    uint64_t input_operand_id,
+    uint64_t weight_operand_id,
+    uint64_t recurrent_weight_operand_id,
+    uint32_t hidden_size,
+    std::optional<uint64_t> bias_operand_id,
+    std::optional<uint64_t> recurrent_bias_operand_id,
+    std::optional<uint64_t> peephole_weight_operand_id,
+    std::optional<uint64_t> initial_hidden_state_operand_id,
+    std::optional<uint64_t> initial_cell_state_operand_id,
+    bool return_sequence,
+    mojom::RecurrentNetworkDirection direction,
+    mojom::LstmWeightLayout layout,
+    base::span<const mojom::RecurrentNetworkActivation> activations,
+    base::span<const uint64_t> output_operand_ids,
     CoreML::Specification::MILSpec::Block& block) {
-  if (!constant_operands_->contains(operation.weight_operand_id)) {
+  if (!constant_operands_->contains(weight_operand_id)) {
     return NewNotSupportedError("lstm argument weight must be constant.");
   }
-  if (!constant_operands_->contains(operation.recurrent_weight_operand_id)) {
+  if (!constant_operands_->contains(recurrent_weight_operand_id)) {
     return NewNotSupportedError(
         "lstm argument recurrentWeight must be constant.");
   }
-  if (operation.bias_operand_id &&
-      !constant_operands_->contains(*operation.bias_operand_id)) {
+  if (bias_operand_id && !constant_operands_->contains(*bias_operand_id)) {
     return NewNotSupportedError("lstm argument bias must be constant.");
   }
-  if (operation.recurrent_bias_operand_id &&
-      !constant_operands_->contains(*operation.recurrent_bias_operand_id)) {
+  if (recurrent_bias_operand_id &&
+      !constant_operands_->contains(*recurrent_bias_operand_id)) {
     return NewNotSupportedError(
         "lstm argument recurrentBias must be constant.");
   }
-  if (operation.peephole_weight_operand_id &&
-      !constant_operands_->contains(*operation.peephole_weight_operand_id)) {
+  if (peephole_weight_operand_id &&
+      !constant_operands_->contains(*peephole_weight_operand_id)) {
     return NewNotSupportedError(
         "lstm argument peepholeWeight must be constant.");
   }
 
-  const OperandInfo& input_operand_info =
-      GetOperandInfo(operation.input_operand_id);
+  const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
   CoreML::Specification::MILSpec::DataType data_type =
       input_operand_info.mil_data_type;
   OperandDataType operand_data_type = MILDataTypeToOperandType(data_type);
   CHECK(context_properties_.data_type_limits.lstm_input.Has(operand_data_type));
 
+  CHECK_EQ(data_type, GetOperandInfo(weight_operand_id).mil_data_type);
   CHECK_EQ(data_type,
-           GetOperandInfo(operation.weight_operand_id).mil_data_type);
-  CHECK_EQ(data_type,
-           GetOperandInfo(operation.recurrent_weight_operand_id).mil_data_type);
-  if (operation.bias_operand_id) {
+           GetOperandInfo(recurrent_weight_operand_id).mil_data_type);
+  if (bias_operand_id) {
+    CHECK_EQ(data_type, GetOperandInfo(*bias_operand_id).mil_data_type);
+  }
+  if (recurrent_bias_operand_id) {
     CHECK_EQ(data_type,
-             GetOperandInfo(*operation.bias_operand_id).mil_data_type);
+             GetOperandInfo(*recurrent_bias_operand_id).mil_data_type);
   }
-  if (operation.recurrent_bias_operand_id) {
-    CHECK_EQ(
-        data_type,
-        GetOperandInfo(*operation.recurrent_bias_operand_id).mil_data_type);
-  }
-  if (operation.peephole_weight_operand_id) {
-    CHECK_EQ(
-        data_type,
-        GetOperandInfo(*operation.peephole_weight_operand_id).mil_data_type);
+  if (peephole_weight_operand_id) {
+    CHECK_EQ(data_type,
+             GetOperandInfo(*peephole_weight_operand_id).mil_data_type);
   }
 
   static constexpr char kParamActivation[] = "activation";
@@ -3338,13 +3350,12 @@ GraphBuilderCoreml::AddOperationForLstm(
   static constexpr char kBothDirection[] = "both";
 
   uint32_t num_of_directions =
-      operation.direction == mojom::RecurrentNetworkDirection::kBoth ? 2 : 1;
+      direction == mojom::RecurrentNetworkDirection::kBoth ? 2 : 1;
 
   CHECK_EQ(input_operand_info.dimensions.size(), 3u);
+  uint32_t steps = input_operand_info.dimensions[0];
   uint32_t batch_size = input_operand_info.dimensions[1];
   uint32_t input_size = input_operand_info.dimensions[2];
-  uint32_t hidden_size = operation.hidden_size;
-  uint32_t steps = operation.steps;
 
   // If `initial_hidden_state` or `initial_cell_state` is provided, need to
   // change dimensions: [numDirections, batchSize, hiddenSize] -> [batchSize,
@@ -3354,19 +3365,17 @@ GraphBuilderCoreml::AddOperationForLstm(
       GenerateInternalOperandInfo(
           data_type, base::span<const uint32_t>(
                          {batch_size, hidden_size * num_of_directions})));
-  if (operation.initial_hidden_state_operand_id) {
-    CHECK_EQ(GetOperandInfo(*operation.initial_hidden_state_operand_id)
-                 .mil_data_type,
+  if (initial_hidden_state_operand_id) {
+    CHECK_EQ(GetOperandInfo(*initial_hidden_state_operand_id).mil_data_type,
              input_operand_info.mil_data_type);
     ASSIGN_OR_RETURN(
         uint64_t transposed_initial_hidden_state,
         GenerateInternalOperandInfo(
             data_type, base::span<const uint32_t>(
                            {batch_size, num_of_directions, hidden_size})));
-    RETURN_IF_ERROR(
-        AddOperationForTranspose(*operation.initial_hidden_state_operand_id,
-                                 transposed_initial_hidden_state,
-                                 base::span<const uint32_t>({1, 0, 2}), block));
+    RETURN_IF_ERROR(AddOperationForTranspose(
+        *initial_hidden_state_operand_id, transposed_initial_hidden_state,
+        base::span<const uint32_t>({1, 0, 2}), block));
     RETURN_IF_ERROR(AddOperationForReshape(transposed_initial_hidden_state,
                                            initial_hidden_state, block));
 
@@ -3380,17 +3389,16 @@ GraphBuilderCoreml::AddOperationForLstm(
       GenerateInternalOperandInfo(
           data_type, base::span<const uint32_t>(
                          {batch_size, hidden_size * num_of_directions})));
-  if (operation.initial_cell_state_operand_id) {
-    CHECK_EQ(
-        GetOperandInfo(*operation.initial_cell_state_operand_id).mil_data_type,
-        input_operand_info.mil_data_type);
+  if (initial_cell_state_operand_id) {
+    CHECK_EQ(GetOperandInfo(*initial_cell_state_operand_id).mil_data_type,
+             input_operand_info.mil_data_type);
     ASSIGN_OR_RETURN(
         uint64_t transposed_initial_cell_state,
         GenerateInternalOperandInfo(
             data_type, base::span<const uint32_t>(
                            {batch_size, num_of_directions, hidden_size})));
     RETURN_IF_ERROR(AddOperationForTranspose(
-        *operation.initial_cell_state_operand_id, transposed_initial_cell_state,
+        *initial_cell_state_operand_id, transposed_initial_cell_state,
         base::span<const uint32_t>({1, 0, 2}), block));
     RETURN_IF_ERROR(AddOperationForReshape(transposed_initial_cell_state,
                                            initial_cell_state, block));
@@ -3402,8 +3410,8 @@ GraphBuilderCoreml::AddOperationForLstm(
 
   // Need to reorder layout to CoreML expected [input, forget, output, cell] -
   // ifog.
-  std::vector<size_t> layout_reorder;
-  switch (operation.layout) {
+  std::array<size_t, 4> layout_reorder;
+  switch (layout) {
     case (mojom::LstmWeightLayout::kIfgo): {
       layout_reorder = {0, 1, 3, 2};
       break;
@@ -3416,47 +3424,41 @@ GraphBuilderCoreml::AddOperationForLstm(
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpLstmTypeName);
-  RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamX,
-                                      operation.input_operand_id));
+  RETURN_IF_ERROR(
+      SetInputFromOperand(*op->mutable_inputs(), kOpParamX, input_operand_id));
   RETURN_IF_ERROR(SetInputFromOperand(
       *op->mutable_inputs(), kParamInitialHiddenState, initial_hidden_state));
   RETURN_IF_ERROR(SetInputFromOperand(
       *op->mutable_inputs(), kParamInitialCellState, initial_cell_state));
-  std::string_view direction;
-  switch (operation.direction) {
+  std::string_view direction_param_value;
+  switch (direction) {
     case mojom::RecurrentNetworkDirection::kForward:
-      direction = kForwardDirection;
+      direction_param_value = kForwardDirection;
       break;
     case mojom::RecurrentNetworkDirection::kBackward:
-      direction = kBackwardDirection;
+      direction_param_value = kBackwardDirection;
       break;
     case mojom::RecurrentNetworkDirection::kBoth:
-      direction = kBothDirection;
+      direction_param_value = kBothDirection;
       break;
   }
 
   SetInputsWithValues(
       *op->mutable_inputs(),
       {{kParamRecurrentActivation,
-        CreateStringImmediateValue(
-            GetActivationParam(operation.activations[0]))},
-       {kParamCellActivation, CreateStringImmediateValue(GetActivationParam(
-                                  operation.activations[1]))},
-       {kParamActivation, CreateStringImmediateValue(
-                              GetActivationParam(operation.activations[2]))},
-       {kParamDirection, CreateStringImmediateValue(direction)},
-       {kParamOutputSequence,
-        CreateScalarImmediateValue(operation.return_sequence)}});
+        CreateStringImmediateValue(GetActivationParam(activations[0]))},
+       {kParamCellActivation,
+        CreateStringImmediateValue(GetActivationParam(activations[1]))},
+       {kParamActivation,
+        CreateStringImmediateValue(GetActivationParam(activations[2]))},
+       {kParamDirection, CreateStringImmediateValue(direction_param_value)},
+       {kParamOutputSequence, CreateScalarImmediateValue(return_sequence)}});
 
   size_t item_byte_size = weights_file_handle_->GetByteSize(operand_data_type);
 
-  const OperandInfo& weight_operand =
-      GetOperandInfo(operation.weight_operand_id);
-  CHECK_EQ(weight_operand.dimensions.size(), 3u);
-  CHECK_EQ(weight_operand.dimensions[0], 1u);
   base::FixedArray<uint32_t> weight_dimension{4 * hidden_size, input_size};
   base::span<const uint8_t> weight =
-      constant_operands_->at(operation.weight_operand_id)->ByteSpan();
+      constant_operands_->at(weight_operand_id)->ByteSpan();
 
   // Based on layout reorder, calculate [(offset, size), ..] to extract
   // subspans to write.
@@ -3475,7 +3477,7 @@ GraphBuilderCoreml::AddOperationForLstm(
       *op->mutable_inputs(), kParamInputWeight,
       weight.first(weight_size_per_direction), operand_data_type,
       weight_dimension, weight_new_order));
-  if (operation.direction == mojom::RecurrentNetworkDirection::kBoth) {
+  if (direction == mojom::RecurrentNetworkDirection::kBoth) {
     RETURN_IF_ERROR(SetInputFromConstantReordered(
         *op->mutable_inputs(), kParamInputWeightBack,
         weight.subspan(weight_size_per_direction, weight_size_per_direction),
@@ -3483,7 +3485,7 @@ GraphBuilderCoreml::AddOperationForLstm(
   }
 
   base::span<const uint8_t> recurrent_weight =
-      constant_operands_->at(operation.recurrent_weight_operand_id)->ByteSpan();
+      constant_operands_->at(recurrent_weight_operand_id)->ByteSpan();
   base::FixedArray<uint32_t> recurrent_weight_dimension{4 * hidden_size,
                                                         hidden_size};
 
@@ -3501,7 +3503,7 @@ GraphBuilderCoreml::AddOperationForLstm(
       recurrent_weight.first(recurrent_weight_size_per_direction),
       operand_data_type, recurrent_weight_dimension,
       recurrent_weight_new_order));
-  if (operation.direction == mojom::RecurrentNetworkDirection::kBoth) {
+  if (direction == mojom::RecurrentNetworkDirection::kBoth) {
     RETURN_IF_ERROR(SetInputFromConstantReordered(
         *op->mutable_inputs(), kParamRecurrentWeightBack,
         recurrent_weight.subspan(recurrent_weight_size_per_direction,
@@ -3510,10 +3512,9 @@ GraphBuilderCoreml::AddOperationForLstm(
         recurrent_weight_new_order));
   }
 
-  if (operation.peephole_weight_operand_id) {
+  if (peephole_weight_operand_id) {
     base::span<const uint8_t> peephole_weight =
-        constant_operands_->at(*operation.peephole_weight_operand_id)
-            ->ByteSpan();
+        constant_operands_->at(*peephole_weight_operand_id)->ByteSpan();
     base::FixedArray<uint32_t> peephole_weight_dimension{3 * hidden_size};
     // WebNN peephole weight layout is [input, output, forget], CoreML takes
     // [input, forget, output]
@@ -3530,7 +3531,7 @@ GraphBuilderCoreml::AddOperationForLstm(
         *op->mutable_inputs(), kParamPeephole,
         peephole_weight.first(peephole_weight_size_per_direction),
         operand_data_type, peephole_weight_dimension, peephole_new_order));
-    if (operation.direction == mojom::RecurrentNetworkDirection::kBoth) {
+    if (direction == mojom::RecurrentNetworkDirection::kBoth) {
       RETURN_IF_ERROR(SetInputFromConstantReordered(
           *op->mutable_inputs(), kParamPeepholeBack,
           peephole_weight.subspan(peephole_weight_size_per_direction,
@@ -3547,19 +3548,18 @@ GraphBuilderCoreml::AddOperationForLstm(
   }
   size_t bias_size_per_direction = 4 * hidden_size * item_byte_size;
   // CoreML's 'bias' param is the combination of bias and recurrent_bias.
-  if (operation.bias_operand_id && operation.recurrent_bias_operand_id) {
+  if (bias_operand_id && recurrent_bias_operand_id) {
     base::span<const uint8_t> bias =
-        constant_operands_->at(*operation.bias_operand_id)->ByteSpan();
+        constant_operands_->at(*bias_operand_id)->ByteSpan();
     base::span<const uint8_t> recurrent_bias =
-        constant_operands_->at(*operation.recurrent_bias_operand_id)
-            ->ByteSpan();
+        constant_operands_->at(*recurrent_bias_operand_id)->ByteSpan();
 
     RETURN_IF_ERROR(SetInputFromTwoConstantsReordered(
         *op->mutable_inputs(), kOpParamBias,
         bias.first(bias_size_per_direction),
         recurrent_bias.first(bias_size_per_direction), operand_data_type,
         bias_dimensions, bias_new_order));
-    if (operation.direction == mojom::RecurrentNetworkDirection::kBoth) {
+    if (direction == mojom::RecurrentNetworkDirection::kBoth) {
       RETURN_IF_ERROR(SetInputFromTwoConstantsReordered(
           *op->mutable_inputs(), kParamBiasBack,
           bias.subspan(bias_size_per_direction, bias_size_per_direction),
@@ -3567,18 +3567,17 @@ GraphBuilderCoreml::AddOperationForLstm(
                                  bias_size_per_direction),
           operand_data_type, bias_dimensions, bias_new_order));
     }
-  } else if (operation.bias_operand_id || operation.recurrent_bias_operand_id) {
-    uint64_t bias_operand_id = operation.bias_operand_id
-                                   ? *operation.bias_operand_id
-                                   : *operation.recurrent_bias_operand_id;
+  } else if (bias_operand_id || recurrent_bias_operand_id) {
+    uint64_t coreml_bias_param =
+        bias_operand_id.value_or(*recurrent_bias_operand_id);
     base::span<const uint8_t> bias =
-        constant_operands_->at(bias_operand_id)->ByteSpan();
+        constant_operands_->at(coreml_bias_param)->ByteSpan();
     RETURN_IF_ERROR(SetInputFromConstantReordered(
         *op->mutable_inputs(), kOpParamBias,
         bias.first(bias_size_per_direction), operand_data_type, bias_dimensions,
         bias_new_order));
 
-    if (operation.direction == mojom::RecurrentNetworkDirection::kBoth) {
+    if (direction == mojom::RecurrentNetworkDirection::kBoth) {
       RETURN_IF_ERROR(SetInputFromConstantReordered(
           *op->mutable_inputs(), kParamBiasBack,
           bias.subspan(bias_size_per_direction, bias_size_per_direction),
@@ -3586,11 +3585,11 @@ GraphBuilderCoreml::AddOperationForLstm(
     }
   }
 
-  if (operation.return_sequence) {
+  if (return_sequence) {
     // If return sequence, the first output of the CoreML lstm is the
     // outputs of every step [steps, batchSize, numDirections * hiddenSize] that
     // need to be reshaped to [steps, numDirections, batchSize, hiddenSize].
-    CHECK_EQ(operation.output_operand_ids.size(), 3u);
+    CHECK_EQ(output_operand_ids.size(), 3u);
     ASSIGN_OR_RETURN(uint64_t coreml_first_output_id,
                      GenerateInternalOperandInfo(
                          data_type, base::span<const uint32_t>(
@@ -3608,7 +3607,7 @@ GraphBuilderCoreml::AddOperationForLstm(
     // [steps, batchSize, numDirections, hiddenSize] -> [steps, numDirections,
     // batchSize, hiddenSize]
     RETURN_IF_ERROR(AddOperationForTranspose(
-        coreml_first_output_id_reshaped, operation.output_operand_ids[2],
+        coreml_first_output_id_reshaped, output_operand_ids[2],
         base::span<const uint32_t>({0, 2, 1, 3}), block));
   } else {
     // Else, the first output of CoreML lstm is the output of the last step with
@@ -3623,7 +3622,7 @@ GraphBuilderCoreml::AddOperationForLstm(
   // The second and third CoreML outputs are last step hidden state and cell
   // state. Both need to reshape & transpose from [batchSize, numDirection *
   // hiddenSize] -> [numDirections, batchSize, hiddenSize]
-  CHECK_GE(operation.output_operand_ids.size(), 2u);
+  CHECK_GE(output_operand_ids.size(), 2u);
   for (size_t i = 0; i < 2u; i++) {
     ASSIGN_OR_RETURN(
         uint64_t output_id,
@@ -3641,10 +3640,82 @@ GraphBuilderCoreml::AddOperationForLstm(
 
     // [batchSize, numDirections, hiddenSize] -> [numDirections, batchSize,
     // hiddenSize]
-    RETURN_IF_ERROR(AddOperationForTranspose(
-        output_id_reshaped, operation.output_operand_ids[i],
-        base::span<const uint32_t>({1, 0, 2}), block));
+    RETURN_IF_ERROR(
+        AddOperationForTranspose(output_id_reshaped, output_operand_ids[i],
+                                 base::span<const uint32_t>({1, 0, 2}), block));
   }
+  return base::ok();
+}
+
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForLstm(
+    const mojom::Lstm& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  return AddOperationForLstm(
+      operation.input_operand_id, operation.weight_operand_id,
+      operation.recurrent_weight_operand_id, operation.hidden_size,
+      operation.bias_operand_id, operation.recurrent_bias_operand_id,
+      operation.peephole_weight_operand_id,
+      operation.initial_hidden_state_operand_id,
+      operation.initial_cell_state_operand_id, operation.return_sequence,
+      operation.direction, operation.layout, operation.activations,
+      operation.output_operand_ids, block);
+}
+
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForLstmCell(
+    const mojom::LstmCell& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  // CoreML only has 'lstm' operation. So treat it as a single step
+  // lstm.
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  CHECK_EQ(input_operand_info.dimensions.size(), 2u);
+  uint32_t batch_size = input_operand_info.dimensions[0];
+  ASSIGN_OR_RETURN(uint64_t reshaped_input,
+                   GenerateInternalOperandInfo(
+                       input_operand_info.mil_data_type,
+                       base::span<const uint32_t>(
+                           {/*steps=*/1, input_operand_info.dimensions[0],
+                            input_operand_info.dimensions[1]})));
+  RETURN_IF_ERROR(AddOperationForReshape(operation.input_operand_id,
+                                         reshaped_input, block));
+
+  // hidden_state, cell_state, output_hidden_state, output_cell_state all need
+  // to add a numOfDirections dimension.
+  std::array<uint64_t, 4> reshaped_operands;
+  for (auto& reshaped_operand : reshaped_operands) {
+    ASSIGN_OR_RETURN(
+        reshaped_operand,
+        GenerateInternalOperandInfo(
+            input_operand_info.mil_data_type,
+            base::span<const uint32_t>(
+                {/*numOfDirections=*/1, batch_size, operation.hidden_size})));
+  }
+  uint64_t hidden_state_operand_id = reshaped_operands[0];
+  uint64_t cell_state_operand_id = reshaped_operands[1];
+  uint64_t output_hidden_state = reshaped_operands[2];
+  uint64_t output_cell_state = reshaped_operands[3];
+  RETURN_IF_ERROR(AddOperationForReshape(operation.hidden_state_operand_id,
+                                         hidden_state_operand_id, block));
+  RETURN_IF_ERROR(AddOperationForReshape(operation.cell_state_operand_id,
+                                         cell_state_operand_id, block));
+
+  RETURN_IF_ERROR(AddOperationForLstm(
+      reshaped_input, operation.weight_operand_id,
+      operation.recurrent_weight_operand_id, operation.hidden_size,
+      operation.bias_operand_id, operation.recurrent_bias_operand_id,
+      operation.peephole_weight_operand_id, hidden_state_operand_id,
+      cell_state_operand_id,
+      /*return_sequence=*/false, mojom::RecurrentNetworkDirection::kForward,
+      operation.layout, operation.activations,
+      base::span<const uint64_t>({output_hidden_state, output_cell_state}),
+      block));
+  CHECK_EQ(operation.output_operand_ids.size(), 2u);
+  RETURN_IF_ERROR(AddOperationForReshape(
+      output_hidden_state, operation.output_operand_ids[0], block));
+  RETURN_IF_ERROR(AddOperationForReshape(
+      output_cell_state, operation.output_operand_ids[1], block));
   return base::ok();
 }
 
