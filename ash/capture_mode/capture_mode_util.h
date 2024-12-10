@@ -252,7 +252,7 @@ ASH_EXPORT void AddActionButton(views::Button::PressedCallback callback,
                                 ActionButtonViewID id);
 
 ASH_EXPORT void AnimateToOpacity(
-    ui::Layer* layer,
+    views::Widget* widget,
     const float opacity,
     const base::TimeDelta duration =
         capture_mode::kCaptureUIOpacityChangeDuration);

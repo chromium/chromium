@@ -470,8 +470,8 @@ class ASH_EXPORT CaptureModeSession
   // finishes executing.
   void OnScannerActionExecuted(bool success);
 
-  // Creates the feedback button widget if it wasn't previously created, and
-  // updates the widget's bounds.
+  // Creates the feedback button widget if it wasn't previously created and
+  // should be shown, and updates the widget's bounds and visibility.
   void UpdateFeedbackButtonWidget();
 
   // Returns true if `widget` is the `feedback_button_widget_` and we should

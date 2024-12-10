@@ -47,6 +47,7 @@
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/tab_slider_button.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
@@ -1000,43 +1001,67 @@ TEST_F(SunfishTest, DismissButtonsOnSourceChange) {
   // Start default mode. Test the buttons are hidden.
   auto* controller =
       StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
-  ASSERT_TRUE(controller->IsActive());
+  VerifyActiveBehavior(BehaviorType::kDefault);
   auto* session =
       static_cast<CaptureModeSession*>(controller->capture_mode_session());
   CaptureModeSessionTestApi session_test_api(session);
   ASSERT_FALSE(session_test_api.GetActionContainerWidget());
 
-  // Select a region and wait for the buttons to show up.
+  // Select a region large enough that the video capture button will not
+  // intersect with where the search action button previously was and wait for
+  // the buttons to show up.
   auto* generator = GetEventGenerator();
-  SelectCaptureModeRegion(generator, gfx::Rect(10, 10, 40, 40),
+  SelectCaptureModeRegion(generator, gfx::Rect(10, 10, 200, 200),
                           /*release_mouse=*/true, /*verify_region=*/true);
   auto* container_widget = session_test_api.GetActionContainerWidget();
   ASSERT_TRUE(container_widget->IsVisible());
   ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
-  EXPECT_TRUE(
-      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton));
+  auto* search_button =
+      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton);
+  gfx::Rect search_button_bounds(search_button->GetBoundsInScreen());
 
   // Set the type to `kVideo`. Test the buttons are hidden.
   controller->SetType(CaptureModeType::kVideo);
   EXPECT_FALSE(container_widget->IsVisible());
   EXPECT_EQ(session_test_api.GetActionButtons().size(), 0u);
+  auto* label_view = session_test_api.GetCaptureLabelView();
+  ASSERT_TRUE(label_view->IsRecordingTypeDropDownButtonVisible());
+  const gfx::Rect capture_button_bounds(label_view->capture_button_container()
+                                            ->capture_button()
+                                            ->GetBoundsInScreen());
+  ASSERT_FALSE(capture_button_bounds.Intersects(search_button_bounds));
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+
+  // Hover over where the search button was previously shown.
+  generator->MoveMouseTo(search_button_bounds.CenterPoint());
+  EXPECT_EQ(ui::mojom::CursorType::kCell, cursor_manager->GetCursor().type());
 
   // Switch back to `kImage` then select a region.
   controller->SetType(CaptureModeType::kImage);
-  SelectCaptureModeRegion(generator, gfx::Rect(100, 100, 50, 50),
+  CaptureModeTestApi().SetUserSelectedRegion(gfx::Rect());
+  SelectCaptureModeRegion(generator, gfx::Rect(10, 10, 200, 200),
                           /*release_mouse=*/true, /*verify_region=*/true);
   EXPECT_TRUE(container_widget->IsVisible());
   EXPECT_EQ(session_test_api.GetActionButtons().size(), 1u);
-  EXPECT_TRUE(
-      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton));
+  search_button =
+      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton);
+  ASSERT_TRUE(search_button);
+  EXPECT_TRUE(search_button->GetVisible());
+  search_button_bounds = search_button->GetBoundsInScreen();
 
   // Set the source to `kFullscreen`. Test the buttons are hidden.
   controller->SetSource(CaptureModeSource::kFullscreen);
   EXPECT_FALSE(container_widget->IsVisible());
   EXPECT_EQ(session_test_api.GetActionButtons().size(), 0u);
+  EXPECT_EQ(ui::mojom::CursorType::kCustom, cursor_manager->GetCursor().type());
+
+  // Hover over where the search button was previously shown.
+  generator->MoveMouseTo(search_button_bounds.CenterPoint());
+  EXPECT_EQ(ui::mojom::CursorType::kCustom, cursor_manager->GetCursor().type());
 
   // Switch back to `kRegion` then select a region.
   controller->SetSource(CaptureModeSource::kRegion);
+  CaptureModeTestApi().SetUserSelectedRegion(gfx::Rect());
   SelectCaptureModeRegion(generator, gfx::Rect(10, 10, 50, 50),
                           /*release_mouse=*/true, /*verify_region=*/true);
   EXPECT_TRUE(container_widget->IsVisible());
@@ -1051,6 +1076,48 @@ TEST_F(SunfishTest, DismissButtonsOnSourceChange) {
 
   // TODO(b/377569542): Re-show the action buttons if the mode changes back to
   // image region.
+}
+
+TEST_F(SunfishTest, HideFeedbackButtonOnSourceTypeChange) {
+  // Start default image region capture mode.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  views::Widget* feedback_button_widget =
+      session_test_api.GetFeedbackButtonWidget();
+  ASSERT_TRUE(feedback_button_widget);
+  EXPECT_EQ(1.f, feedback_button_widget->GetLayer()->GetTargetOpacity());
+
+  // Simulate clicking the video toggle button to change the type.
+  LeftClickOn(GetVideoToggleButton());
+  ASSERT_EQ(CaptureModeType::kVideo, controller->type());
+
+  // Test the feedback button is hidden and hovering over it does not update the
+  // cursor.
+  ASSERT_TRUE(feedback_button_widget);
+  EXPECT_FALSE(feedback_button_widget->IsVisible());
+  EXPECT_EQ(0.f, feedback_button_widget->GetLayer()->GetTargetOpacity());
+
+  auto* generator = GetEventGenerator();
+  generator->MoveMouseTo(
+      feedback_button_widget->GetWindowBoundsInScreen().CenterPoint());
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  EXPECT_EQ(ui::mojom::CursorType::kCell, cursor_manager->GetCursor().type());
+
+  // Switch back to image region capture.
+  LeftClickOn(GetImageToggleButton());
+  ASSERT_EQ(CaptureModeType::kImage, controller->type());
+
+  // Test the feedback button is re-shown and hovering over it updates the
+  // cursor.
+  ASSERT_TRUE(feedback_button_widget);
+  EXPECT_TRUE(feedback_button_widget->IsVisible());
+  EXPECT_EQ(1.f, feedback_button_widget->GetLayer()->GetTargetOpacity());
+
+  generator->MoveMouseTo(
+      feedback_button_widget->GetWindowBoundsInScreen().CenterPoint());
+  EXPECT_EQ(ui::mojom::CursorType::kHand, cursor_manager->GetCursor().type());
 }
 
 // Tests that the search button is re-shown on region selected or adjusted in
