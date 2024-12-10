@@ -887,26 +887,35 @@ ToolsMenuModel::~ToolsMenuModel() = default;
 // - Developer tools.
 // - Option to enable profiling.
 void ToolsMenuModel::Build(Browser* browser) {
-  if (base::FeatureList::IsEnabled(features::kTabOrganizationAppMenuItem) &&
-      TabOrganizationUtils::GetInstance()->IsEnabled(browser->profile())) {
-    auto* const tab_organization_service =
-        TabOrganizationServiceFactory::GetForProfile(browser->profile());
-    if (tab_organization_service) {
-      AddItemWithStringIdAndVectorIcon(
-          this, IDC_ORGANIZE_TABS, IDS_TAB_ORGANIZE_MENU, kAutoTabGroupsIcon);
+  // Tablet mode does not have a Tab Search button, so tab organization and
+  // declutter are unavailable. We should not show tablet mode users these menu
+  // items.
+  bool is_tablet_mode = false;
+#if BUILDFLAG(IS_CHROMEOS)
+  is_tablet_mode = display::Screen::GetScreen()->InTabletMode();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  if (!is_tablet_mode) {
+    if (base::FeatureList::IsEnabled(features::kTabOrganizationAppMenuItem) &&
+        TabOrganizationUtils::GetInstance()->IsEnabled(browser->profile())) {
+      auto* const tab_organization_service =
+          TabOrganizationServiceFactory::GetForProfile(browser->profile());
+      if (tab_organization_service) {
+        AddItemWithStringIdAndVectorIcon(
+            this, IDC_ORGANIZE_TABS, IDS_TAB_ORGANIZE_MENU, kAutoTabGroupsIcon);
+      }
     }
-  }
 
-  if (base::FeatureList::IsEnabled(features::kTabstripDeclutter) &&
-      !browser->profile()->IsIncognitoProfile()) {
-    AddItemWithStringIdAndVectorIcon(this, IDC_DECLUTTER_TABS,
-                                     features::IsTabstripDedupeEnabled()
-                                         ? IDS_DECLUTTER_MENU
-                                         : IDS_DECLUTTER_MENU_NO_DEDUPE,
-                                     kTabCloseInactiveIcon);
-    SetIsNewFeatureAt(
-        GetIndexOfCommandId(IDC_DECLUTTER_TABS).value(),
-        browser->window()->MaybeShowNewBadgeFor(features::kTabstripDeclutter));
+    if (base::FeatureList::IsEnabled(features::kTabstripDeclutter) &&
+        !browser->profile()->IsIncognitoProfile()) {
+      AddItemWithStringIdAndVectorIcon(this, IDC_DECLUTTER_TABS,
+                                       features::IsTabstripDedupeEnabled()
+                                           ? IDS_DECLUTTER_MENU
+                                           : IDS_DECLUTTER_MENU_NO_DEDUPE,
+                                       kTabCloseInactiveIcon);
+      SetIsNewFeatureAt(GetIndexOfCommandId(IDC_DECLUTTER_TABS).value(),
+                        browser->window()->MaybeShowNewBadgeFor(
+                            features::kTabstripDeclutter));
+    }
   }
 
   AddItemWithStringIdAndVectorIcon(this, IDC_NAME_WINDOW, IDS_NAME_WINDOW,
