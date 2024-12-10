@@ -401,7 +401,7 @@ const base::FeatureParam<base::TimeDelta>
     kIpPrivacyTryGetAuthTokensNotEligibleBackoff{
         &kEnableIpProtectionProxy,
         /*name=*/"IpPrivacyTryGetAuthTokensNotEligibleBackoff",
-        /*default_value=*/base::Days(1)};
+        /*default_value=*/base::Hours(1)};
 
 const base::FeatureParam<base::TimeDelta>
     kIpPrivacyTryGetAuthTokensTransientBackoff{
