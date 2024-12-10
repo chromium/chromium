@@ -174,8 +174,8 @@ void ChromeAutofillAiClient::TryToOpenFeedbackPage(
 void ChromeAutofillAiClient::OpenPredictionImprovementsSettings() {
   web_contents_->OpenURL(
       content::OpenURLParams(
-          GURL(base::StrCat({"chrome://settings/",
-                             chrome::kAutofillPredictionImprovementsSubPage})),
+          GURL(
+              base::StrCat({"chrome://settings/", chrome::kAutofillAiSubPage})),
           content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
           ui::PAGE_TRANSITION_LINK,
           /*is_renderer_initiated=*/false),

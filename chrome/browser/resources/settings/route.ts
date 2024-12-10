@@ -245,9 +245,8 @@ function createRoutes(): SettingsRoutes {
     r.PAYMENTS = r.AUTOFILL.createChild('/payments');
     r.ADDRESSES = r.AUTOFILL.createChild('/addresses');
 
-    if (loadTimeData.getBoolean('autofillPredictionImprovementsEnabled')) {
-      r.AUTOFILL_PREDICTION_IMPROVEMENTS =
-          r.AUTOFILL.createChild('/autofillPredictionImprovements');
+    if (loadTimeData.getBoolean('autofillAiEnabled')) {
+      r.AUTOFILL_AI = r.AUTOFILL.createChild('/autofillAi');
     }
 
     // <if expr="is_win or is_macosx">

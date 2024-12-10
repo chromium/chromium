@@ -1287,35 +1287,35 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"benefitsTermsTagForCreditCardListEntry",
        IDS_AUTOFILL_SETTINGS_PAGE_BENEFITS_TERMS_TAG_FOR_CREDIT_CARD_LIST_ENTRY},
       {"cardBenefitsLabel", IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_LABEL},
-      {"autofillPredictionImprovementsPageTitle",
+      {"autofillAiPageTitle",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_PAGE_TITLE},
-      {"autofillPredictionImprovementsDescription",
+      {"autofillAiDescription",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DESCRIPTION},
-      {"autofillPredictionImprovementsWhenOnSavedInfo",
+      {"autofillAiWhenOnSavedInfo",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_WHEN_ON_SAVED_INFO},
-      {"autofillPredictionImprovementsUseToFill",
+      {"autofillAiUseToFill",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_WHEN_ON_USE_TO_FILL},
-      {"autofillPredictionImprovementsNewFeature",
+      {"autofillAiNewFeature",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_NEW_FEATURE},
-      {"autofillPredictionImprovementsToConsiderDataUsage",
+      {"autofillAiToConsiderDataUsage",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_DATA_USAGE},
-      {"autofillPredictionImprovementsToConsiderDataStorage",
+      {"autofillAiToConsiderDataStorage",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_STORAGE},
-      {"autofillPredictionImprovementsToConsiderDataImprovement",
+      {"autofillAiToConsiderDataImprovement",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_IMPROVEMENT},
-      {"autofillPredictionImprovementsUserAnnotationsHeader",
+      {"autofillAiUserAnnotationsHeader",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_USER_ANNOTATIONS_HEADER},
-      {"autofillPredictionImprovementsUserAnnotationsNone",
+      {"autofillAiUserAnnotationsNone",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_USER_ANNOTATIONS_NONE},
-      {"autofillPredictionImprovementsDeleteEntryDialogTitle",
+      {"autofillAiDeleteEntryDialogTitle",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TITLE},
-      {"autofillPredictionImprovementsDeleteEntryDialogText",
+      {"autofillAiDeleteEntryDialogText",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TEXT},
-      {"autofillPredictionImprovementsDeleteAllEntriesButtonLabel",
+      {"autofillAiDeleteAllEntriesButtonLabel",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_BUTTON_LABEL},
-      {"autofillPredictionImprovementsDeleteAllEntriesDialogTitle",
+      {"autofillAiDeleteAllEntriesDialogTitle",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_DIALOG_TITLE},
-      {"autofillPredictionImprovementsDeleteAllEntriesDialogText",
+      {"autofillAiDeleteAllEntriesDialogText",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_DIALOG_TEXT},
   };
 
@@ -1331,7 +1331,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                          autofill::payments::GetManageInstrumentsUrl().spec());
   html_source->AddString("addressesAndPaymentMethodsLearnMoreURL",
                          chrome::kAddressesAndPaymentMethodsLearnMoreURL);
-  html_source->AddString("autofillPredictionImprovementsLearnMoreURL",
+  html_source->AddString("autofillAiLearnMoreURL",
                          chrome::kAutofillPredictionImprovementsLearnMoreURL);
   html_source->AddString(
       "signedOutUserLabel",
@@ -1423,15 +1423,15 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       plus_addresses::features::kPlusAddressManagementUrl.Get());
 
   html_source->AddBoolean(
-      "autofillPredictionImprovementsEnabled",
+      "autofillAiEnabled",
       autofill_ai::IsAutofillAiSupported(profile->GetPrefs()));
 
   html_source->AddBoolean(
-      "autofillPredictionBootstrappingEnabled",
+      "autofillAiBootstrappingEnabled",
       base::FeatureList::IsEnabled(autofill_ai::kAutofillAiBootstrapping));
 
   html_source->AddString(
-      "autofillPredictionImprovementsToggleSubLabel",
+      "autofillAiToggleSubLabel",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TOGGLE_SUB_LABEL,
           chrome::kAutofillPredictionImprovementsLearnMoreURL));

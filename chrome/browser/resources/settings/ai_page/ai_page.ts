@@ -93,10 +93,8 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
             map.set(routes.AI_TAB_ORGANIZATION.path, '#tabOrganizationRowV2');
           }
 
-          if (routes.AUTOFILL_PREDICTION_IMPROVEMENTS) {
-            map.set(
-                routes.AUTOFILL_PREDICTION_IMPROVEMENTS.path,
-                '#autofillAiRowV2');
+          if (routes.AUTOFILL_AI) {
+            map.set(routes.AUTOFILL_AI.path, '#autofillAiRowV2');
           }
 
           return map;
@@ -161,7 +159,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
 
   private async setShowAutofillAiControl_() {
     this.showAutofillAIControl_ =
-        loadTimeData.getBoolean('autofillPredictionImprovementsEnabled') &&
+        loadTimeData.getBoolean('autofillAiEnabled') &&
         (await UserAnnotationsManagerProxyImpl.getInstance().isUserEligible() ||
          await UserAnnotationsManagerProxyImpl.getInstance().hasEntries());
   }
@@ -183,7 +181,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         'Settings.AiPage.AutofillAIEntryPointClick');
 
     const router = Router.getInstance();
-    router.navigateTo(router.getRoutes().AUTOFILL_PREDICTION_IMPROVEMENTS);
+    router.navigateTo(router.getRoutes().AUTOFILL_AI);
   }
 
   private onCompareRowClick_() {

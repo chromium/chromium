@@ -41,7 +41,7 @@ static_assert(base::to_underlying(kAllow) == 0);
 static_assert(base::to_underlying(kAllowWithoutLogging) == 1);
 static_assert(base::to_underlying(kDisable) == 2);
 
-class AutofillPredictionImprovementsPolicyTest
+class AutofillAiPolicyTest
     : public PolicyTest,
       public testing::WithParamInterface<ModelExecutionEnterprisePolicyValue> {
  public:
@@ -65,7 +65,7 @@ class AutofillPredictionImprovementsPolicyTest
     UpdateProviderPolicy(policies);
 
     // The base test fixture creates a tab before we set the policy. We create a
-    // new tab so a new ChromeAutofillPredictionImprovementsClient is created.
+    // new tab so a new ChromeAutofillAiClient is created.
     AddBlankTabAndShow(browser());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -79,10 +79,9 @@ class AutofillPredictionImprovementsPolicyTest
 
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&AutofillPredictionImprovementsPolicyTest::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &AutofillAiPolicyTest::OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
   }
 
  private:
@@ -113,28 +112,27 @@ class AutofillPredictionImprovementsPolicyTest
 };
 
 INSTANTIATE_TEST_SUITE_P(,
-                         AutofillPredictionImprovementsPolicyTest,
+                         AutofillAiPolicyTest,
                          testing::Values(kAllow,
                                          kAllowWithoutLogging,
                                          kDisable));
 
-// Tests that the chrome://settings entry for Autofill Predictions Improvement
-// is reachable iff the policy is enabled.
-IN_PROC_BROWSER_TEST_P(AutofillPredictionImprovementsPolicyTest,
-                       SettingsDisabledByPolicy) {
+// Tests that the chrome://settings entry for Autofill AI is reachable iff the
+// policy is enabled.
+IN_PROC_BROWSER_TEST_P(AutofillAiPolicyTest, SettingsDisabledByPolicy) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL("chrome://settings/autofillPredictionImprovements")));
+      browser(),
+      GURL(base::StrCat({"chrome://settings/", chrome::kAutofillAiSubPage}))));
   EXPECT_EQ(
       autofill_ai::IsAutofillAiSupported(browser()->profile()->GetPrefs()),
       !disabled_by_policy());
   EXPECT_EQ(GetWebContents()->GetURL().path(),
-            disabled_by_policy() ? "/" : "/autofillPredictionImprovements");
+            base::StrCat(
+                {"/", disabled_by_policy() ? "" : chrome::kAutofillAiSubPage}));
 }
 
-// Tests that AutofillPredictionsImprovementDelegate exists iff it is allowed by
-// the policy.
-IN_PROC_BROWSER_TEST_P(AutofillPredictionImprovementsPolicyTest,
-                       DelegateDisabledByPolicy) {
+// Tests that `AutofillAiDelegate` exists iff it is allowed by the policy.
+IN_PROC_BROWSER_TEST_P(AutofillAiPolicyTest, DelegateDisabledByPolicy) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
                      "/autofill/autofill_address_enabled.html")));

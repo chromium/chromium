@@ -270,8 +270,8 @@ void MaybeRegisterChromeFeaturePromos(
                 if (!browser) {
                   return;
                 }
-                chrome::ShowSettingsSubPage(
-                    browser, chrome::kAutofillPredictionImprovementsSubPage);
+                chrome::ShowSettingsSubPage(browser,
+                                            chrome::kAutofillAiSubPage);
               }))
           .SetBubbleTitleText(IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)

@@ -8,7 +8,7 @@ import 'chrome://settings/settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertTrue, assertEquals} from 'chrome://webui-test/chai_assert.js';
-import type {SettingsSimpleConfirmationDialogElement, SettingsAutofillPredictionImprovementsSectionElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsSimpleConfirmationDialogElement, SettingsAutofillAiSectionElement} from 'chrome://settings/lazy_load.js';
 import {UserAnnotationsManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 
 import {TestUserAnnotationsManagerProxyImpl} from './test_user_annotations_manager_proxy.js';
@@ -16,14 +16,13 @@ import {TestUserAnnotationsManagerProxyImpl} from './test_user_annotations_manag
 import {isVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
-suite('AutofillPredictionImprovementsSectionUiDisabledToggleTest', function() {
+suite('AutofillAiSectionUiDisabledToggleTest', function() {
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   test('testEntriesWithInitiallyDisabledToggle', async function() {
-    const section = document.createElement(
-        'settings-autofill-prediction-improvements-section');
+    const section = document.createElement('settings-autofill-ai-section');
     section.prefs = {
       autofill: {
         prediction_improvements: {
@@ -48,8 +47,8 @@ suite('AutofillPredictionImprovementsSectionUiDisabledToggleTest', function() {
   });
 });
 
-suite('AutofillPredictionImprovementsSectionUiTest', function() {
-  let section: SettingsAutofillPredictionImprovementsSectionElement;
+suite('AutofillAiSectionUiTest', function() {
+  let section: SettingsAutofillAiSectionElement;
   let entries: HTMLElement;
   let userAnnotationManager: TestUserAnnotationsManagerProxyImpl;
 
@@ -73,8 +72,7 @@ suite('AutofillPredictionImprovementsSectionUiTest', function() {
     ];
     userAnnotationManager.setEntries(testEntries);
 
-    section = document.createElement(
-        'settings-autofill-prediction-improvements-section');
+    section = document.createElement('settings-autofill-ai-section');
     section.prefs = {
       autofill: {
         prediction_improvements: {
@@ -218,20 +216,19 @@ suite('AutofillPredictionImprovementsSectionUiTest', function() {
   });
 });
 
-suite('AutofillPredictionImprovementsSectionToggleTest', function() {
-  let section: SettingsAutofillPredictionImprovementsSectionElement;
+suite('AutofillAiSectionToggleTest', function() {
+  let section: SettingsAutofillAiSectionElement;
   let userAnnotationManager: TestUserAnnotationsManagerProxyImpl;
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    loadTimeData.overrideValues({autofillPredictionBootstrappingEnabled: true});
+    loadTimeData.overrideValues({autofillAiBootstrappingEnabled: true});
 
     userAnnotationManager = new TestUserAnnotationsManagerProxyImpl();
     UserAnnotationsManagerProxyImpl.setInstance(userAnnotationManager);
 
-    section = document.createElement(
-        'settings-autofill-prediction-improvements-section');
+    section = document.createElement('settings-autofill-ai-section');
     section.prefs = {
       autofill: {
         prediction_improvements: {
@@ -248,7 +245,7 @@ suite('AutofillPredictionImprovementsSectionToggleTest', function() {
   });
 
   test('testTriggerBootstrappingCalledWhenConditionsMet', async function() {
-    loadTimeData.overrideValues({autofillPredictionBootstrappingEnabled: true});
+    loadTimeData.overrideValues({autofillAiBootstrappingEnabled: true});
     userAnnotationManager.setEntries([]);
 
     userAnnotationManager.reset();
@@ -267,8 +264,7 @@ suite('AutofillPredictionImprovementsSectionToggleTest', function() {
   test(
       'testTriggerBootstrappingNotCalledWhenBootstrappingDisabled',
       async function() {
-        loadTimeData.overrideValues(
-            {autofillPredictionBootstrappingEnabled: false});
+        loadTimeData.overrideValues({autofillAiBootstrappingEnabled: false});
         userAnnotationManager.setEntries([]);
 
         userAnnotationManager.reset();
@@ -284,7 +280,7 @@ suite('AutofillPredictionImprovementsSectionToggleTest', function() {
       });
 
   test('testTriggerBootstrappingNotCalledWhenToggleDisabled', async function() {
-    loadTimeData.overrideValues({autofillPredictionBootstrappingEnabled: true});
+    loadTimeData.overrideValues({autofillAiBootstrappingEnabled: true});
     userAnnotationManager.setEntries([]);
 
     userAnnotationManager.reset();
@@ -303,7 +299,7 @@ suite('AutofillPredictionImprovementsSectionToggleTest', function() {
   });
 
   test('testTriggerBootstrappingNotCalledWhenHasEntries', async function() {
-    loadTimeData.overrideValues({autofillPredictionBootstrappingEnabled: true});
+    loadTimeData.overrideValues({autofillAiBootstrappingEnabled: true});
     userAnnotationManager.setEntries([
       {
         entryId: 1,
@@ -325,7 +321,7 @@ suite('AutofillPredictionImprovementsSectionToggleTest', function() {
   });
 
   test('testTriggerBootstrappingNotCalledWhenComponentDisabled', async function() {
-    loadTimeData.overrideValues({autofillPredictionBootstrappingEnabled: true});
+    loadTimeData.overrideValues({autofillAiBootstrappingEnabled: true});
     userAnnotationManager.setEntries([]);
 
     userAnnotationManager.reset();
@@ -341,7 +337,7 @@ suite('AutofillPredictionImprovementsSectionToggleTest', function() {
   });
 
   test('testGetEntriesCalledWhenBootstrappingAddsEntries', async function() {
-    loadTimeData.overrideValues({autofillPredictionBootstrappingEnabled: true});
+    loadTimeData.overrideValues({autofillAiBootstrappingEnabled: true});
 
     userAnnotationManager.setEntries([]);
     userAnnotationManager.setEntriesBootstrapped(true);

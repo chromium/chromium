@@ -20,7 +20,7 @@ export interface SettingsRoutes {
   AI_TAB_ORGANIZATION: Route;
   APPEARANCE: Route;
   AUTOFILL: Route;
-  AUTOFILL_PREDICTION_IMPROVEMENTS: Route;
+  AUTOFILL_AI: Route;
   BASIC: Route;
   CAPTIONS: Route;
   CERTIFICATES: Route;

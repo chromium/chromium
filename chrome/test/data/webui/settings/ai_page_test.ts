@@ -73,7 +73,7 @@ suite('ExperimentalAdvancedPage', function() {
   test('FeaturesVisibilityWithRefreshEnabled', async () => {
     // Case 1, a subset of the controls should be visible.
     loadTimeData.overrideValues({
-      autofillPredictionImprovementsEnabled: true,
+      autofillAiEnabled: true,
       showHistorySearchControl: false,
       showCompareControl: true,
       showComposeControl: true,
@@ -123,7 +123,7 @@ suite('ExperimentalAdvancedPage', function() {
 
     // Case 2, a different subset of the controls should be visible.
     loadTimeData.overrideValues({
-      autofillPredictionImprovementsEnabled: false,
+      autofillAiEnabled: false,
       showHistorySearchControl: true,
       showCompareControl: false,
       showComposeControl: false,
@@ -281,7 +281,7 @@ suite('ExperimentalAdvancedPage', function() {
 
   test('AutofillAiRow', async () => {
     loadTimeData.overrideValues({
-      autofillPredictionImprovementsEnabled: true,
+      autofillAiEnabled: true,
     });
     resetRouterForTesting();
     await createPage();
@@ -296,9 +296,7 @@ suite('ExperimentalAdvancedPage', function() {
         AiPageInteractions.AUTOFILL_AI_CLICK,
         'Settings.AiPage.AutofillAIEntryPointClick');
 
-    assertEquals(
-        routes.AUTOFILL_PREDICTION_IMPROVEMENTS,
-        Router.getInstance().getCurrentRoute());
+    assertEquals(routes.AUTOFILL_AI, Router.getInstance().getCurrentRoute());
   });
 
   test('WallpaperSearchRow', async () => {
@@ -373,7 +371,7 @@ suite('ExperimentalAdvancedPageRefreshDisabled', () => {
   test('AutofillAIVisibility', async () => {
     // Hide Autofill AI row.
     loadTimeData.overrideValues({
-      autofillPredictionImprovementsEnabled: false,
+      autofillAiEnabled: false,
     });
     await createPage();
 
@@ -383,7 +381,7 @@ suite('ExperimentalAdvancedPageRefreshDisabled', () => {
 
     // Show Autofill AI search row.
     loadTimeData.overrideValues({
-      autofillPredictionImprovementsEnabled: true,
+      autofillAiEnabled: true,
     });
     await createPage();
 

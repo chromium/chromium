@@ -91,9 +91,8 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillSection) {
   RunTest("settings/autofill_section_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillPredictionImprovementsSection) {
-  RunTest("settings/autofill_prediction_improvements_section_test.js",
-          "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillAiSection) {
+  RunTest("settings/autofill_ai_section_test.js", "mocha.run()");
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)

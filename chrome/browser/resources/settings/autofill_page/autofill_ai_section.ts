@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview 'settings-autofill-prediction-improvements-section' is
- * the section containing configuration options for prediction improvements.
+ * @fileoverview 'settings-autofill-ai-section' contains configuration options
+ * for Autofill AI.
  */
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -33,30 +33,30 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
-import {getTemplate} from './autofill_prediction_improvements_section.html.js';
+import {getTemplate} from './autofill_ai_section.html.js';
 import type {UserAnnotationsManagerProxy} from './user_annotations_manager_proxy.js';
 import {UserAnnotationsManagerProxyImpl} from './user_annotations_manager_proxy.js';
 
 type UserAnnotationsEntry = chrome.autofillPrivate.UserAnnotationsEntry;
 
 // browser_element_identifiers constants
-const PREDICTION_IMPROVEMENTS_HEADER_ELEMENT_ID =
+const AUTOFILL_AI_HEADER_ELEMENT_ID =
     'SettingsUI::kAutofillPredictionImprovementsHeaderElementId';
 
-export interface SettingsAutofillPredictionImprovementsSectionElement {
+export interface SettingsAutofillAiSectionElement {
   $: {
     prefToggle: SettingsToggleButtonElement,
     entriesHeaderTitle: HTMLElement,
   };
 }
 
-const SettingsAutofillPredictionImprovementsSectionElementBase =
+const SettingsAutofillAiSectionElementBase =
     HelpBubbleMixin(PrefsMixin(I18nMixin(PolymerElement)));
 
-export class SettingsAutofillPredictionImprovementsSectionElement extends
-    SettingsAutofillPredictionImprovementsSectionElementBase {
+export class SettingsAutofillAiSectionElement extends
+    SettingsAutofillAiSectionElementBase {
   static get is() {
-    return 'settings-autofill-prediction-improvements-section';
+    return 'settings-autofill-ai-section';
   }
 
   static get template() {
@@ -104,12 +104,12 @@ export class SettingsAutofillPredictionImprovementsSectionElement extends
         });
 
     this.registerHelpBubble(
-        PREDICTION_IMPROVEMENTS_HEADER_ELEMENT_ID, this.$.entriesHeaderTitle);
+        AUTOFILL_AI_HEADER_ELEMENT_ID, this.$.entriesHeaderTitle);
   }
 
   private onToggleSubLabelLinkClick_(): void {
     OpenWindowProxyImpl.getInstance().openUrl(
-        loadTimeData.getString('autofillPredictionImprovementsLearnMoreURL'));
+        loadTimeData.getString('autofillAiLearnMoreURL'));
   }
 
   private onPrefToggleChanged_() {
@@ -120,7 +120,7 @@ export class SettingsAutofillPredictionImprovementsSectionElement extends
 
   private async maybeTriggerBootstrapping_() {
     const bootstrappingDisabled =
-        !loadTimeData.getBoolean('autofillPredictionBootstrappingEnabled');
+        !loadTimeData.getBoolean('autofillAiBootstrappingEnabled');
     const toggleDisabled = !this.$.prefToggle.checked;
     const hasEntries = await this.userAnnotationsManager_.hasEntries();
     // Only trigger bootstrapping if the pref was just enabled and there are no
@@ -185,19 +185,15 @@ export class SettingsAutofillPredictionImprovementsSectionElement extends
     if (!entry) {
       return '';
     }
-    return this.i18n(
-        'autofillPredictionImprovementsDeleteEntryDialogText', entry.key,
-        entry.value);
+    return this.i18n('autofillAiDeleteEntryDialogText', entry.key, entry.value);
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-autofill-prediction-improvements-section':
-        SettingsAutofillPredictionImprovementsSectionElement;
+    'settings-autofill-ai-section': SettingsAutofillAiSectionElement;
   }
 }
 
 customElements.define(
-    SettingsAutofillPredictionImprovementsSectionElement.is,
-    SettingsAutofillPredictionImprovementsSectionElement);
+    SettingsAutofillAiSectionElement.is, SettingsAutofillAiSectionElement);

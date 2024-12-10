@@ -22,7 +22,7 @@
    <settings-toggle-button
        id="prefToggle" disabled$="[[disabled]]"
        no-extension-indicator label=" "
-       sub-label-with-link="$i18n{autofillPredictionImprovementsToggleSubLabel}"
+       sub-label-with-link="$i18n{autofillAiToggleSubLabel}"
        on-sub-label-link-clicked="onToggleSubLabelLinkClick_"
        on-settings-boolean-control-change="onPrefToggleChanged_"
        pref="{{prefs.autofill.prediction_improvements.enabled}}">
@@ -34,13 +34,13 @@
          <li>
            <cr-icon icon="settings20:sync-saved-locally"></cr-icon>
            <div class="cr-secondary-text">
-             $i18n{autofillPredictionImprovementsWhenOnSavedInfo}
+             $i18n{autofillAiWhenOnSavedInfo}
            </div>
          </li>
          <li>
            <cr-icon icon="settings20:text-analysis"></cr-icon>
            <div class="cr-secondary-text">
-             $i18n{autofillPredictionImprovementsUseToFill}
+             $i18n{autofillAiUseToFill}
            </div>
          </li>
        </ul>
@@ -53,25 +53,25 @@
          <li>
            <cr-icon icon="settings20:psychiatry"></cr-icon>
            <div class="cr-secondary-text">
-             $i18n{autofillPredictionImprovementsNewFeature}
+             $i18n{autofillAiNewFeature}
            </div>
          </li>
          <li>
            <cr-icon icon="settings20:googleg"></cr-icon>
            <div class="cr-secondary-text">
-             $i18n{autofillPredictionImprovementsToConsiderDataUsage}
+             $i18n{autofillAiToConsiderDataUsage}
            </div>
          </li>
          <li>
            <cr-icon icon="settings20:file-save"></cr-icon>
            <div class="cr-secondary-text">
-             $i18n{autofillPredictionImprovementsToConsiderDataStorage}
+             $i18n{autofillAiToConsiderDataStorage}
            </div>
          </li>
          <li>
            <cr-icon icon="settings20:account-box"></cr-icon>
            <div class="cr-secondary-text">
-             $i18n{autofillPredictionImprovementsToConsiderDataImprovement}
+             $i18n{autofillAiToConsiderDataImprovement}
            </div>
          </li>
        </ul>
@@ -82,12 +82,12 @@
 <div id="entriesHeader" class="cr-row">
   <h2 class="flex">
     <span id="entriesHeaderTitle">
-      $i18n{autofillPredictionImprovementsUserAnnotationsHeader}</span>
+      $i18n{autofillAiUserAnnotationsHeader}</span>
   </h2>
   <cr-button id="deleteAllEntries" class="header-aligned-button"
       on-click="onDeleteAllEntriesClick_"
       disabled="[[!userAnnotationsEntries_.length]]">
-    $i18n{autofillPredictionImprovementsDeleteAllEntriesButtonLabel}
+    $i18n{autofillAiDeleteAllEntriesButtonLabel}
   </cr-button>
 </div>
 <ul id="entries" class="list-frame vertical-list">
@@ -97,22 +97,21 @@
         <div class="cr-secondary-text item-label">[[item.key]]</div>
         [[item.value]]
       </div>
-      <cr-icon-button iron-icon="cr20:delete"
-          on-click="onDeleteEntryCick_"
-          title="$i18n{autofillPredictionImprovementsDeleteEntryDialogTitle}">
+      <cr-icon-button iron-icon="cr20:delete" on-click="onDeleteEntryCick_"
+          title="$i18n{autofillAiDeleteEntryDialogTitle}">
       </cr-icon-button>
     </li>
   </template>
   <template is="dom-if" if="[[!userAnnotationsEntries_.length]]" restamp>
     <li id="entriesNone" class="list-item">
-      $i18n{autofillPredictionImprovementsUserAnnotationsNone}
+      $i18n{autofillAiUserAnnotationsNone}
     </li>
   </template>
 </ul>
 
 <template is="dom-if" if="[[entryToDelete_]]" restamp>
   <settings-simple-confirmation-dialog id="deleteEntryDialog"
-      title-text="$i18n{autofillPredictionImprovementsDeleteEntryDialogTitle}"
+      title-text="$i18n{autofillAiDeleteEntryDialogTitle}"
       body-text="[[deleteEntryConfirmationText_]]"
       confirm-text="$i18n{delete}"
       on-close="onDeleteEntryDialogClose_">
@@ -121,10 +120,8 @@
 
 <template is="dom-if" if="[[deleteAllEntriesConfirmationShown_]]" restamp>
   <settings-simple-confirmation-dialog id="deleteAllEntriesDialog"
-      title-text=
-          "$i18n{autofillPredictionImprovementsDeleteAllEntriesDialogTitle}"
-      body-text=
-          "$i18n{autofillPredictionImprovementsDeleteAllEntriesDialogText}"
+      title-text="$i18n{autofillAiDeleteAllEntriesDialogTitle}"
+      body-text="$i18n{autofillAiDeleteAllEntriesDialogText}"
       confirm-text="$i18n{delete}"
       on-close="onDeleteAllEntriesDialogClose_">
   </settings-simple-confirmation-dialog>
