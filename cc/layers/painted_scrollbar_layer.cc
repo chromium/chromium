@@ -203,7 +203,8 @@ bool PaintedScrollbarLayer::Update() {
   bool updated = false;
 
   updated |= ScrollbarLayerBase::Update();
-  updated |= UpdateInternalContentScale();
+  const bool internal_content_scaled = UpdateInternalContentScale();
+  updated |= internal_content_scaled;
   updated |= UpdateGeometry();
   updated |= SetHasFindInPageTickmarks(scrollbar_.Read(*this)->HasTickmarks());
 
@@ -223,26 +224,30 @@ bool PaintedScrollbarLayer::Update() {
     updated = true;
   }
 
-  updated |= UpdateTrackAndButtonsIfNeeded();
+  updated |= UpdateTrackAndButtonsIfNeeded(internal_content_scaled);
   updated |= UpdateThumbIfNeeded();
 
   return updated;
 }
 
-bool PaintedScrollbarLayer::UpdateTrackAndButtonsIfNeeded() {
+bool PaintedScrollbarLayer::UpdateTrackAndButtonsIfNeeded(
+    bool internal_content_scaled) {
   bool updated = false;
   gfx::Size size = bounds();
   gfx::Size scaled_size = internal_content_bounds_.Read(*this);
   if (!track_and_buttons_resource_.Read(*this) ||
-      scrollbar_.Read(*this)->TrackAndButtonsNeedRepaint()) {
+      scrollbar_.Read(*this)->TrackAndButtonsNeedRepaint() ||
+      (uses_nine_patch_track_and_buttons_ && internal_content_scaled)) {
     if (uses_nine_patch_track_and_buttons_ &&
         // Can't use nine-patch track and buttons if tickmarks are present.
         !scrollbar_.Read(*this)->HasTickmarks()) {
-      size = scrollbar_.Read(*this)->NinePatchTrackAndButtonsCanvasSize();
+      size = scrollbar_.Read(*this)->NinePatchTrackAndButtonsCanvasSize(
+          /*scale=*/1.f);
+      const float scale = internal_contents_scale_.Read(*this);
       scaled_size =
-          gfx::ScaleToCeiledSize(size, internal_contents_scale_.Read(*this));
+          scrollbar_.Read(*this)->NinePatchTrackAndButtonsCanvasSize(scale);
       track_and_buttons_aperture_.Write(*this) =
-          scrollbar_.Read(*this)->NinePatchTrackAndButtonsAperture();
+          scrollbar_.Read(*this)->NinePatchTrackAndButtonsAperture(scale);
     }
 
     track_and_buttons_resource_.Write(*this) = ScopedUIResource::Create(

@@ -71,7 +71,7 @@ class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
  private:
   gfx::Size LayerSizeToContentSize(const gfx::Size& layer_size) const;
   bool UpdateThumbIfNeeded();
-  bool UpdateTrackAndButtonsIfNeeded();
+  bool UpdateTrackAndButtonsIfNeeded(bool internal_content_scaled);
 
   template <typename T>
   bool UpdateProperty(T value, T* prop) {

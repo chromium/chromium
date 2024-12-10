@@ -822,7 +822,9 @@
   {
     "prefix": "fluent-non-overlay-scrollbar",
     "platforms": ["Linux", "Win"],
-    "bases": ["fast/scrolling/scrollbars", "external/wpt/css/css-scrollbars"],
+    "bases": ["fast/scrolling/scrollbars",
+              "external/wpt/css/css-scrollbars",
+              "scrollbars/scaled-rendering"],
     "args": ["--enable-features=FluentScrollbar",
              "--enable-threaded-compositing"],
     "expires": "Jul 1, 2025",
