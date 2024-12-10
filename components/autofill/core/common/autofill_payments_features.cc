@@ -291,11 +291,11 @@ BASE_FEATURE(kAutofillUnmaskCardRequestTimeout,
 // When enabled, adds a timeout on the network request for UploadCard requests.
 BASE_FEATURE(kAutofillUploadCardRequestTimeout,
              "AutofillUploadCardRequestTimeout",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kAutofillUploadCardRequestTimeoutMilliseconds{
     &kAutofillUploadCardRequestTimeout,
     "autofill_upload_card_request_timeout_milliseconds",
-    /*default_value=*/7000};
+    /*default_value=*/6500};
 
 // Controls offering credit card upload to Google Payments. Cannot ever be
 // ENABLED_BY_DEFAULT because the feature state depends on the user's country.
@@ -317,11 +317,11 @@ const base::FeatureParam<int> kAutofillUpstreamUpdatedUiTreatment{
 // When enabled, adds a timeout on the network request for VcnEnroll requests.
 BASE_FEATURE(kAutofillVcnEnrollRequestTimeout,
              "AutofillVcnEnrollRequestTimeout",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kAutofillVcnEnrollRequestTimeoutMilliseconds{
     &kAutofillVcnEnrollRequestTimeout,
     "autofill_vcn_enroll_request_timeout_milliseconds",
-    /*default_value=*/7500};
+    /*default_value=*/6500};
 
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, eWallet accounts are synced from the Google Payments servers
