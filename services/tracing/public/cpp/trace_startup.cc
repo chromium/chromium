@@ -14,7 +14,6 @@
 #include "components/tracing/common/tracing_switches.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/producer_client.h"
-#include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
 #include "services/tracing/public/cpp/perfetto/traced_value_proto_writer.h"
 #include "services/tracing/public/cpp/trace_event_agent.h"
 #include "services/tracing/public/cpp/trace_event_args_allowlist.h"
@@ -53,7 +52,6 @@ bool IsTracingInitialized() {
 
 void EnableStartupTracingIfNeeded() {
   RegisterTracedValueProtoWriter();
-  TraceEventDataSource::GetInstance()->RegisterStartupHooks();
 
   // Create the PerfettoTracedProcess.
   PerfettoTracedProcess::Get();
