@@ -1829,6 +1829,10 @@ void StyleCascade::ApplyIsBottomRelativeToSafeAreaInset() {
   if (CSSParserFastPaths::IsSafeAreaInsetBottom(
           unparsed->VariableDataValue()->OriginalText())) {
     state_.StyleBuilder().SetIsBottomRelativeToSafeAreaInset(true);
+
+    UseCounter::Count(
+        state_.GetDocument(),
+        WebFeature::kCSSEnvironmentVariable_SafeAreaInsetBottom_FastPath);
   }
 }
 

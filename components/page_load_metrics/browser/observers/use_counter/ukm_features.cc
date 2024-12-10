@@ -414,6 +414,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kThirdPartyCookieBlocked,
           WebFeature::kStorageAccessAPI_requestStorageAccessFor_Method,
           WebFeature::kSharedWorkerScriptUnderServiceWorkerControlIsBlob,
+          WebFeature::kCSSEnvironmentVariable_SafeAreaInsetBottom_FastPath,
       }));
   return *opt_in_features;
 }
