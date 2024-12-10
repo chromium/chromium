@@ -1120,6 +1120,9 @@ chromium-metrics-reviews@google.com.
     <variant name="PrimaryAction"/>
   </token>
   <token key="PromoStat">
+    <variant name="ActiveDayCount"
+        summary="Represents number days user has been active within last
+                 valid period."/>
     <variant name="AutofllUseCount"
         summary="Represents number of times user used autofill suggestions."/>
     <variant name="BookmarkUseCount"

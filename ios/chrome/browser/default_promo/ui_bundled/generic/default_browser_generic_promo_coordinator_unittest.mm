@@ -13,6 +13,7 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
+#import "ios/chrome/browser/default_browser/model/promo_statistics.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -46,34 +47,85 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
   return std::make_unique<feature_engagement::test::MockTracker>();
 }
 
-void ExpectTotalCountForTriggerCriteriaExperiment(
+void ExpectMetricsForTriggerCriteriaExperiment(
     base::HistogramTester* histogram_tester,
     const std::string& action_str,
-    int count) {
+    int total_count) {
   histogram_tester->ExpectTotalCount(
-      "IOS.DefaultBrowserPromo." + action_str + ".PromoDisplayCount", count);
+      "IOS.DefaultBrowserPromo." + action_str + ".ActiveDayCount", total_count);
+  histogram_tester->ExpectBucketCount(
+      "IOS.DefaultBrowserPromo." + action_str + ".ActiveDayCount", 1,
+      total_count);
+
+  histogram_tester->ExpectTotalCount(
+      "IOS.DefaultBrowserPromo." + action_str + ".PromoDisplayCount",
+      total_count);
+  histogram_tester->ExpectBucketCount(
+      "IOS.DefaultBrowserPromo." + action_str + ".PromoDisplayCount", 2,
+      total_count);
+
   histogram_tester->ExpectTotalCount(
       "IOS.DefaultBrowserPromo." + action_str + ".LastPromoInteractionNumDays",
-      count);
+      total_count);
+  histogram_tester->ExpectBucketCount(
+      "IOS.DefaultBrowserPromo." + action_str + ".LastPromoInteractionNumDays",
+      3, total_count);
+
   histogram_tester->ExpectTotalCount(
-      "IOS.DefaultBrowserPromo." + action_str + ".ChromeColdStartCount", count);
+      "IOS.DefaultBrowserPromo." + action_str + ".ChromeColdStartCount",
+      total_count);
+  histogram_tester->ExpectBucketCount(
+      "IOS.DefaultBrowserPromo." + action_str + ".ChromeColdStartCount", 4,
+      total_count);
+
   histogram_tester->ExpectTotalCount(
-      "IOS.DefaultBrowserPromo." + action_str + ".ChromeWarmStartCount", count);
+      "IOS.DefaultBrowserPromo." + action_str + ".ChromeWarmStartCount",
+      total_count);
+  histogram_tester->ExpectBucketCount(
+      "IOS.DefaultBrowserPromo." + action_str + ".ChromeWarmStartCount", 5,
+      total_count);
+
   histogram_tester->ExpectTotalCount(
       "IOS.DefaultBrowserPromo." + action_str + ".ChromeIndirectStartCount",
-      count);
+      total_count);
+  histogram_tester->ExpectBucketCount(
+      "IOS.DefaultBrowserPromo." + action_str + ".ChromeIndirectStartCount", 6,
+      total_count);
+
   histogram_tester->ExpectTotalCount(
       "IOS.DefaultBrowserPromo." + action_str + ".PasswordManagerUseCount",
-      count);
+      total_count);
+  histogram_tester->ExpectBucketCount(
+      "IOS.DefaultBrowserPromo." + action_str + ".PasswordManagerUseCount", 7,
+      total_count);
+
   histogram_tester->ExpectTotalCount(
       "IOS.DefaultBrowserPromo." + action_str + ".OmniboxClipboardUseCount",
-      count);
+      total_count);
+  histogram_tester->ExpectBucketCount(
+      "IOS.DefaultBrowserPromo." + action_str + ".OmniboxClipboardUseCount", 8,
+      total_count);
+
   histogram_tester->ExpectTotalCount(
-      "IOS.DefaultBrowserPromo." + action_str + ".BookmarkUseCount", count);
+      "IOS.DefaultBrowserPromo." + action_str + ".BookmarkUseCount",
+      total_count);
+  histogram_tester->ExpectBucketCount(
+      "IOS.DefaultBrowserPromo." + action_str + ".BookmarkUseCount", 9,
+      total_count);
+
   histogram_tester->ExpectTotalCount(
-      "IOS.DefaultBrowserPromo." + action_str + ".AutofllUseCount", count);
+      "IOS.DefaultBrowserPromo." + action_str + ".AutofllUseCount",
+      total_count);
+  histogram_tester->ExpectBucketCount(
+      "IOS.DefaultBrowserPromo." + action_str + ".AutofllUseCount", 10,
+      total_count);
+
   histogram_tester->ExpectTotalCount(
-      "IOS.DefaultBrowserPromo." + action_str + ".SpecialTabsUseCount", count);
+      "IOS.DefaultBrowserPromo." + action_str + ".SpecialTabsUseCount",
+      total_count);
+  histogram_tester->ExpectBucketCount(
+      "IOS.DefaultBrowserPromo." + action_str + ".SpecialTabsUseCount", 11,
+      total_count);
 }
 
 }  // namespace
@@ -102,6 +154,21 @@ class DefaultBrowserGenericPromoCoordinatorTest : public PlatformTest {
     coordinator_ = [[DefaultBrowserGenericPromoCoordinator alloc]
         initWithBaseViewController:view_controller_
                            browser:browser_.get()];
+
+    PromoStatistics* promo_stats = [[PromoStatistics alloc] init];
+    promo_stats.activeDayCount = 1;
+    promo_stats.promoDisplayCount = 2;
+    promo_stats.numDaysSinceLastPromo = 3;
+    promo_stats.chromeColdStartCount = 4;
+    promo_stats.chromeWarmStartCount = 5;
+    promo_stats.chromeIndirectStartCount = 6;
+    promo_stats.passwordManagerUseCount = 7;
+    promo_stats.omniboxClipboardUseCount = 8;
+    promo_stats.bookmarkUseCount = 9;
+    promo_stats.autofillUseCount = 10;
+    promo_stats.specialTabsUseCount = 11;
+
+    [coordinator_ setPromoStatisticsForTesting:promo_stats];
   }
 
   void TearDown() override {
@@ -174,16 +241,15 @@ TEST_F(DefaultBrowserGenericPromoCoordinatorTest,
   scoped_feature_list.InitAndEnableFeature(
       feature_engagement::kDefaultBrowserTriggerCriteriaExperiment);
   base::HistogramTester histogram_tester;
-
   [coordinator_ start];
 
   // Check that histograms for appear action are recorded, but for other actions
   // there are not.
-  ExpectTotalCountForTriggerCriteriaExperiment(&histogram_tester, "Appear", 1);
-  ExpectTotalCountForTriggerCriteriaExperiment(&histogram_tester,
-                                               "PrimaryAction", 0);
-  ExpectTotalCountForTriggerCriteriaExperiment(&histogram_tester, "Cancel", 0);
-  ExpectTotalCountForTriggerCriteriaExperiment(&histogram_tester, "Dismiss", 0);
+  ExpectMetricsForTriggerCriteriaExperiment(&histogram_tester, "Appear", 1);
+  ExpectMetricsForTriggerCriteriaExperiment(&histogram_tester, "PrimaryAction",
+                                            0);
+  ExpectMetricsForTriggerCriteriaExperiment(&histogram_tester, "Cancel", 0);
+  ExpectMetricsForTriggerCriteriaExperiment(&histogram_tester, "Dismiss", 0);
 
   DefaultBrowserInstructionsViewController* promo_view_controller =
       base::apple::ObjCCastStrict<DefaultBrowserInstructionsViewController>(
@@ -201,11 +267,11 @@ TEST_F(DefaultBrowserGenericPromoCoordinatorTest,
 
   // Check that after dismissing the promo only histograms for cancel action are
   // recorded.
-  ExpectTotalCountForTriggerCriteriaExperiment(&histogram_tester, "Appear", 1);
-  ExpectTotalCountForTriggerCriteriaExperiment(&histogram_tester,
-                                               "PrimaryAction", 0);
-  ExpectTotalCountForTriggerCriteriaExperiment(&histogram_tester, "Cancel", 1);
-  ExpectTotalCountForTriggerCriteriaExperiment(&histogram_tester, "Dismiss", 0);
+  ExpectMetricsForTriggerCriteriaExperiment(&histogram_tester, "Appear", 1);
+  ExpectMetricsForTriggerCriteriaExperiment(&histogram_tester, "PrimaryAction",
+                                            0);
+  ExpectMetricsForTriggerCriteriaExperiment(&histogram_tester, "Cancel", 1);
+  ExpectMetricsForTriggerCriteriaExperiment(&histogram_tester, "Dismiss", 0);
 }
 
 // Tests that the right histograms are recorded for trigger criteria experiment.
@@ -225,11 +291,11 @@ TEST_F(DefaultBrowserGenericPromoCoordinatorTest,
 
   // Check that histograms for appear action are recorded, but for other actions
   // there are not.
-  ExpectTotalCountForTriggerCriteriaExperiment(&histogram_tester, "Appear", 1);
-  ExpectTotalCountForTriggerCriteriaExperiment(&histogram_tester,
-                                               "PrimaryAction", 0);
-  ExpectTotalCountForTriggerCriteriaExperiment(&histogram_tester, "Cancel", 0);
-  ExpectTotalCountForTriggerCriteriaExperiment(&histogram_tester, "Dismiss", 0);
+  ExpectMetricsForTriggerCriteriaExperiment(&histogram_tester, "Appear", 1);
+  ExpectMetricsForTriggerCriteriaExperiment(&histogram_tester, "PrimaryAction",
+                                            0);
+  ExpectMetricsForTriggerCriteriaExperiment(&histogram_tester, "Cancel", 0);
+  ExpectMetricsForTriggerCriteriaExperiment(&histogram_tester, "Dismiss", 0);
 
   DefaultBrowserInstructionsViewController* promo_view_controller =
       base::apple::ObjCCastStrict<DefaultBrowserInstructionsViewController>(
@@ -246,9 +312,9 @@ TEST_F(DefaultBrowserGenericPromoCoordinatorTest,
 
   // Check that after primaryaction the promo only histograms for primary action
   // action are recorded.
-  ExpectTotalCountForTriggerCriteriaExperiment(&histogram_tester, "Appear", 1);
-  ExpectTotalCountForTriggerCriteriaExperiment(&histogram_tester,
-                                               "PrimaryAction", 1);
-  ExpectTotalCountForTriggerCriteriaExperiment(&histogram_tester, "Cancel", 0);
-  ExpectTotalCountForTriggerCriteriaExperiment(&histogram_tester, "Dismiss", 0);
+  ExpectMetricsForTriggerCriteriaExperiment(&histogram_tester, "Appear", 1);
+  ExpectMetricsForTriggerCriteriaExperiment(&histogram_tester, "PrimaryAction",
+                                            1);
+  ExpectMetricsForTriggerCriteriaExperiment(&histogram_tester, "Cancel", 0);
+  ExpectMetricsForTriggerCriteriaExperiment(&histogram_tester, "Dismiss", 0);
 }

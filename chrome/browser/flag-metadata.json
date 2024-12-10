@@ -1895,7 +1895,7 @@
   {
     "name": "default-browser-promo-trigger-criteria-experiment",
     "owners": [ "gayane@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 140
   },
   {  "name": "default-browser-video-in-settings",
      "owners": [ "gayane@google.com", "bling-flags@google.com" ],
