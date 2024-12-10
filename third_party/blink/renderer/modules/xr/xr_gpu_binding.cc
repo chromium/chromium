@@ -85,9 +85,8 @@ XRGPUBinding::XRGPUBinding(XRSession* session, GPUDevice* device)
 XRProjectionLayer* XRGPUBinding::createProjectionLayer(
     const XRGPUProjectionLayerInit* init,
     ExceptionState& exception_state) {
-  // TODO(crbug.com/5818595): Validate the colorFormat and depthStencilFormat.
-
-  if (!CanCreateLayer(exception_state)) {
+  if (!CanCreateLayer(exception_state) ||
+      !ValidateFormats(init, exception_state)) {
     return nullptr;
   }
 
@@ -121,7 +120,8 @@ XRProjectionLayer* XRGPUBinding::createProjectionLayer(
   // Create the side-by-side color swap chain
   wgpu::TextureDescriptor color_desc = {};
   color_desc.label = "XRProjectionLayer Color";
-  color_desc.format = AsDawnEnum(init->colorFormat());
+  // TODO(crbug.com/359418629): Currently all backend images are RGBA8 format.
+  color_desc.format = wgpu::TextureFormat::RGBA8Unorm;
   color_desc.usage = static_cast<wgpu::TextureUsage>(init->textureUsage());
   color_desc.size = {static_cast<uint32_t>(texture_size.width()),
                      static_cast<uint32_t>(texture_size.height()),
@@ -142,7 +142,8 @@ XRProjectionLayer* XRGPUBinding::createProjectionLayer(
   // TODO(crbug.com/359418629): Remove once array Mailboxes are available.
   XRGPUTextureArraySwapChain* wrapped_swap_chain =
       MakeGarbageCollected<XRGPUTextureArraySwapChain>(
-          device_, color_swap_chain, session()->array_texture_layers());
+          device_, color_swap_chain, AsDawnEnum(init->colorFormat()),
+          session()->array_texture_layers());
 
   // Create the depth/stencil swap chain
   XRGPUStaticSwapChain* depth_stencil_swap_chain = nullptr;
@@ -211,8 +212,9 @@ gfx::Rect XRGPUBinding::GetViewportForView(XRProjectionLayer* layer,
 }
 
 V8GPUTextureFormat XRGPUBinding::getPreferredColorFormat() {
-  // TODO(crbug.com/5818595): Replace with GPU::preferred_canvas_format()?
-  return FromDawnEnum(wgpu::TextureFormat::RGBA8Unorm);
+  // TODO(crbug.com/5818595): Ensure the backend swap chain format matches this.
+  // Till then the copy between formats is done in XRGPUTextureArraySwapChain.
+  return FromDawnEnum(GPU::preferred_canvas_format());
 }
 
 bool XRGPUBinding::CanCreateLayer(ExceptionState& exception_state) {
@@ -228,6 +230,41 @@ bool XRGPUBinding::CanCreateLayer(ExceptionState& exception_state) {
                                       "Cannot create a new layer with a "
                                       "destroyed WebGPU device.");
     return false;
+  }
+
+  return true;
+}
+
+bool XRGPUBinding::ValidateFormats(const XRGPUProjectionLayerInit* init,
+                                   ExceptionState& exception_state) {
+  // Is the color format supported?
+  switch (init->colorFormat().AsEnum()) {
+    case V8GPUTextureFormat::Enum::kBgra8Unorm:
+    case V8GPUTextureFormat::Enum::kRgba8Unorm:
+      // TODO(crbug.com/5818595): Support 'rgba16float'
+      break;
+    default:
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "Only 'rgba8unorm' or 'bgra8unorm' colorFormats are supported.");
+      return false;
+  }
+
+  if (init->hasDepthStencilFormat()) {
+    switch (init->depthStencilFormat().value().AsEnum()) {
+      case V8GPUTextureFormat::Enum::kStencil8:
+      case V8GPUTextureFormat::Enum::kDepth16Unorm:
+      case V8GPUTextureFormat::Enum::kDepth24Plus:
+      case V8GPUTextureFormat::Enum::kDepth24PlusStencil8:
+      case V8GPUTextureFormat::Enum::kDepth32Float:
+      case V8GPUTextureFormat::Enum::kDepth32FloatStencil8:
+        break;
+      default:
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kInvalidStateError,
+            "depthStencilFormat must be a depth and/or stencil format.");
+        return false;
+    }
   }
 
   return true;
