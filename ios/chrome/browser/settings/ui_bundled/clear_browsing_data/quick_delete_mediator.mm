@@ -287,8 +287,13 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
     // This could occur due to race condition with multiple windows and
     // simultaneous taps. See crbug.com/368310663.
   }
+
   browsing_data::RecordDeleteBrowsingDataAction(
       browsing_data::DeleteBrowsingDataAction::kClearBrowsingDataDialog);
+
+  // This time range metric is not recorded in BrowsingDataRemoverImpl since the
+  // deletion is trigger with timestamps.
+  browsing_data::RecordDeletionForPeriod(_selectedTimeRange);
 
   // TODO(crbug.com/365776279): Monitor if deletion can be double triggered.
   DUMP_WILL_BE_CHECK(!_deletionTriggered);
@@ -401,9 +406,6 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
   } else {
     _browsingDataRemover->RemoveInRange(beginTime, endTime, removeMask,
                                         std::move(delayedCompletion), params);
-    // This metric is not recorded in BrowsingDataRemoverImpl since the deletion
-    // is trigger with timestamps.
-    browsing_data::RecordDeletionForPeriod(_selectedTimeRange);
   }
 
   RecordCookieOrCacheDeletedFromDialogHistogram(removeMask);
