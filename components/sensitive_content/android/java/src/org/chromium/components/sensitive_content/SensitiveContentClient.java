@@ -219,6 +219,7 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
     }
 
     /** Observes changes made by the {@link SensitiveContentClient}. */
+    @FunctionalInterface
     public static interface Observer {
         /**
          * Called when the content sensitivity changed.

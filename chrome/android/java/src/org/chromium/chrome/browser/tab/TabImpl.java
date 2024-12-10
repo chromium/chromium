@@ -105,7 +105,7 @@ import java.util.Objects;
  * Implementation of the interface {@link Tab}. Contains and manages a {@link ContentView}. This
  * class is not intended to be extended.
  */
-class TabImpl implements Tab, SensitiveContentClient.Observer {
+class TabImpl implements Tab {
     /** Used for logging. */
     private static final String TAG = "Tab";
 
@@ -290,6 +290,12 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
     private String mPendingNativePageHost;
 
     private SmoothTransitionDelegate mNativePageSmoothTransitionDelegate;
+
+    /**
+     * Notified when the content sensitivity changes, and sets the content sensitivity property on
+     * the {@link TabState}.
+     */
+    private SensitiveContentClient.Observer mSensitiveContentClientObserver;
 
     /** Tracks the origin of a background color change. */
     @IntDef({
@@ -1911,11 +1917,12 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
                     && ChromeFeatureList.isEnabled(SensitiveContentFeatures.SENSITIVE_CONTENT)
                     && ChromeFeatureList.isEnabled(
                             SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)) {
+                mSensitiveContentClientObserver = this::setTabHasSensitiveContent;
                 // Adding the observation has to happen after the native `initWebContents`, so that
                 // the {@link SensitiveContentClient} is properly initialized.
                 SensitiveContentClient sensitiveContentClient =
                         SensitiveContentClient.fromWebContents(webContents);
-                sensitiveContentClient.addObserver(this);
+                sensitiveContentClient.addObserver(mSensitiveContentClientObserver);
                 sensitiveContentClient.restoreContentSensitivityFromTabState(
                         getTabHasSensitiveContent());
             }
@@ -2372,7 +2379,8 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
                 && ChromeFeatureList.isEnabled(SensitiveContentFeatures.SENSITIVE_CONTENT)
                 && ChromeFeatureList.isEnabled(
                         SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)) {
-            SensitiveContentClient.fromWebContents(mWebContents).removeObserver(this);
+            SensitiveContentClient.fromWebContents(mWebContents)
+                    .removeObserver(mSensitiveContentClientObserver);
         }
 
         if (mAutofillProvider != null) {
@@ -2535,12 +2543,6 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
         for (TabObserver observer : mObservers) {
             observer.onTabUnarchived(this);
         }
-    }
-
-    // SensitiveContentClient.Observer
-    @Override
-    public void onContentSensitivityChanged(boolean contentIsSensitive) {
-        setTabHasSensitiveContent(contentIsSensitive);
     }
 
     @NativeMethods
