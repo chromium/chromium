@@ -568,11 +568,6 @@ const char kIOSDockingPromoDescription[] =
     "When enabled, the user will be presented an animated, instructional "
     "promo showing how to move Chrome to their native iOS dock.";
 
-extern const char kIOSEditMenuHideSearchWebName[] =
-    "Hides Search Web in edit menu";
-extern const char kIOSEditMenuHideSearchWebDescription[] =
-    "Hides the Search Web entry in edit menu.";
-
 const char kIOSKeyboardAccessoryUpgradeName[] =
     "Enable the keyboard accessory upgrade on iOS";
 const char kIOSKeyboardAccessoryUpgradeDescription[] =

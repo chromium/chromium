@@ -482,10 +482,6 @@ extern const char kIOSDisableParcelTrackingDescription[];
 extern const char kIOSDockingPromoName[];
 extern const char kIOSDockingPromoDescription[];
 
-// Title and description for the flag to hide Search Web edit menu entry.
-extern const char kIOSEditMenuHideSearchWebName[];
-extern const char kIOSEditMenuHideSearchWebDescription[];
-
 // Title and description for the flag to enable the keyboard accessory upgrade.
 extern const char kIOSKeyboardAccessoryUpgradeName[];
 extern const char kIOSKeyboardAccessoryUpgradeDescription[];

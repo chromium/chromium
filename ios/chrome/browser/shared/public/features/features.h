@@ -281,9 +281,6 @@ const base::TimeDelta InactiveThresholdForNewUsersUntilDockingPromoShown();
 // Promo to old users.
 const base::TimeDelta InactiveThresholdForOldUsersUntilDockingPromoShown();
 
-// Feature flag to hide search web in the edit menu.
-BASE_DECLARE_FEATURE(kIOSEditMenuHideSearchWeb);
-
 // Feature flag to use direct upload for Lens searches.
 BASE_DECLARE_FEATURE(kIOSLensUseDirectUpload);
 

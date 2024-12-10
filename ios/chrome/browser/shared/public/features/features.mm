@@ -255,10 +255,6 @@ BASE_FEATURE(kIOSDockingPromoPreventDeregistrationKillswitch,
              "IOSDockingPromoPreventDeregistrationKillswitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSEditMenuHideSearchWeb,
-             "IOSEditMenuHideSearchWeb",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableColorLensAndVoiceIconsInHomeScreenWidget,
              "kEnableColorLensAndVoiceIconsInHomeScreenWidget",
              base::FEATURE_ENABLED_BY_DEFAULT);
