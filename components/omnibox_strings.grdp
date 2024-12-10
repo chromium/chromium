@@ -235,6 +235,9 @@
   <message name="IDS_ACC_KEYWORD_MODE" desc="Announcement when entering keyword search mode.">
     Search <ph name="KEYWORD_SUFFIX">$1<ex>Youtube</ex>, type a query and press Enter to search</ph>
   </message>
+  <message name="IDS_ACC_ASK_KEYWORD_MODE" desc="Announcement when entering keyword mode for an engine that is suitable for asking vs. searching (e.g. Gemini).">
+    Ask <ph name="KEYWORD_SUFFIX">$1<ex>Gemini</ex>, type a question or ask it to do something and press Enter</ph>
+  </message>
 
   <!-- Accessibility labels for the omnibox thumbs up feedback button. -->
   <message name="IDS_ACC_THUMBS_UP_SUGGESTION_FOCUSED_PREFIX" desc="Announcement when thumbs up feedback button is focused.">
@@ -392,7 +395,7 @@
     Enter a word or two
   </message>
   <message name="IDS_OMNIBOX_GEMINI_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user input is empty and the user is in the @gemini scope.">
-    Enter your question or prompt
+    Enter a question
   </message>
 
   <!-- Strings for Android Hub Search. -->
