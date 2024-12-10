@@ -395,6 +395,7 @@ BASE_DECLARE_FEATURE(kGraduationUseEmbeddedTransferEndpoint);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFeatureManagementGrowthFramework);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFlexFirmwareUpdate);
+COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kAndroidVpnAppsOnFlex);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthFramework);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1139,6 +1140,7 @@ bool AreEphemeralNetworkPoliciesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool CanEphemeralNetworkPoliciesBeEnabledByPolicy();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFlexFirmwareUpdateEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAndroidVpnAppsOnFlexEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFullscreenAfterUnlockAllowed();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFullscreenAlertBubbleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBlockFwupdClientEnabled();

@@ -23625,6 +23625,7 @@ from previous Chrome versions.
       label="AutofillParseVcnCardOnFileStandaloneCvcFields:disabled"/>
   <int value="1302421166" label="NativeNotifications:disabled"/>
   <int value="1304523073" label="RetryGetVideoCaptureDeviceInfos:enabled"/>
+  <int value="1304524016" label="AndroidVpnAppsOnFlex:disabled"/>
   <int value="1304557739" label="WebAppDontAddExistingAppsToSync:enabled"/>
   <int value="1304609573" label="TabGroupSyncForceOff:enabled"/>
   <int value="1304636193" label="ArcEnableUnifiedAudioFocus:enabled"/>
@@ -25253,6 +25254,7 @@ from previous Chrome versions.
   <int value="1935968341" label="(Obsolete) LacrosExtensionPrinting:enabled"/>
   <int value="1936099143" label="RemotePlaybackBackend:enabled"/>
   <int value="1936308950" label="ExoConsumedByImeByFlag:disabled"/>
+  <int value="1936583530" label="AndroidVpnAppsOnFlex:enabled"/>
   <int value="1936774335" label="EcheSWASendStartSignaling:enabled"/>
   <int value="1936810062" label="WebVrVsyncAlign:enabled"/>
   <int value="1937435913"
