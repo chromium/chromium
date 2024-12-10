@@ -44,14 +44,17 @@ TEST_F(SelectorFilterParentScopeTest, ParentScope) {
   SelectorFilter& filter = GetDocument().GetStyleResolver().GetSelectorFilter();
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
 
-  SelectorFilterRootScope root_scope(nullptr);
-  SelectorFilterParentScope html_scope(*GetDocument().documentElement());
+  SelectorFilterParentScope root_scope(
+      nullptr, SelectorFilterParentScope::ScopeType::kRoot);
+  SelectorFilterParentScope html_scope(
+      GetDocument().documentElement(),
+      SelectorFilterParentScope::ScopeType::kParent);
   {
-    SelectorFilterParentScope body_scope(*GetDocument().body());
-    SelectorFilterParentScope::EnsureParentStackIsPushed();
+    SelectorFilterParentScope body_scope(
+        GetDocument().body(), SelectorFilterParentScope::ScopeType::kParent);
     {
-      SelectorFilterParentScope div_scope(*div);
-      SelectorFilterParentScope::EnsureParentStackIsPushed();
+      SelectorFilterParentScope div_scope(
+          div, SelectorFilterParentScope::ScopeType::kParent);
 
       base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
           MakeGarbageCollected<CSSParserContext>(
@@ -82,9 +85,9 @@ TEST_F(SelectorFilterParentScopeTest, RootScope) {
   SelectorFilter& filter = GetDocument().GetStyleResolver().GetSelectorFilter();
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
 
-  SelectorFilterRootScope span_scope(
-      GetDocument().getElementById(AtomicString("y")));
-  SelectorFilterParentScope::EnsureParentStackIsPushed();
+  SelectorFilterParentScope span_scope(
+      GetDocument().getElementById(AtomicString("y")),
+      SelectorFilterParentScope::ScopeType::kRoot);
 
   HeapVector<CSSSelector> arena;
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
@@ -157,8 +160,8 @@ TEST_F(SelectorFilterParentScopeTest, AttributeFilter) {
   SelectorFilter& filter = GetDocument().GetStyleResolver().GetSelectorFilter();
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
 
-  SelectorFilterRootScope span_scope(inner);
-  SelectorFilterParentScope::EnsureParentStackIsPushed();
+  SelectorFilterParentScope span_scope(
+      inner, SelectorFilterParentScope::ScopeType::kRoot);
 
   HeapVector<CSSSelector> arena;
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(

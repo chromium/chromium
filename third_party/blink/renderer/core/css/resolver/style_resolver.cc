@@ -1211,8 +1211,6 @@ const ComputedStyle* StyleResolver::ResolveStyle(
   DCHECK(GetDocument().GetFrame());
   DCHECK(GetDocument().GetSettings());
 
-  SelectorFilterParentScope::EnsureParentStackIsPushed();
-
   // The StyleResolverState is where we actually end up accumulating the
   // computed style. It's just a convenient way of not having to send
   // a lot of input/output variables around between the different functions.

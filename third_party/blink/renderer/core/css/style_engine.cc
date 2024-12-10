@@ -3715,7 +3715,8 @@ void StyleEngine::RecalcStyle(StyleRecalcChange change,
   Element& root_element = style_recalc_root_.RootElement();
   Element* parent = FlatTreeTraversal::ParentElement(root_element);
 
-  SelectorFilterRootScope filter_scope(parent);
+  SelectorFilterParentScope filter_scope(
+      parent, SelectorFilterParentScope::ScopeType::kRoot);
   root_element.RecalcStyle(change, style_recalc_context);
 
   for (ContainerNode* ancestor = root_element.GetStyleRecalcParent(); ancestor;
@@ -3739,8 +3740,10 @@ void StyleEngine::RecalcPositionTryStyleForPseudoElement(
   SkipStyleRecalcScope skip_scope(*this);
   CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
       &GetDocument(), /*within-selector_checking=*/false);
-  SelectorFilterRootScope filter_scope(FlatTreeTraversal::ParentElement(
-      *pseudo_element.UltimateOriginatingElement()));
+  SelectorFilterParentScope filter_scope(
+      FlatTreeTraversal::ParentElement(
+          *pseudo_element.UltimateOriginatingElement()),
+      SelectorFilterParentScope::ScopeType::kRoot);
   pseudo_element.RecalcStyle(style_recalc_change, style_recalc_context);
 }
 
@@ -3748,7 +3751,8 @@ void StyleEngine::RecalcTransitionPseudoStyle() {
   // TODO(khushalsagar) : This forces a style recalc and layout tree rebuild
   // for the pseudo element tree each time we do a style recalc phase. See if
   // we can optimize this to only when the pseudo element tree is dirtied.
-  SelectorFilterRootScope filter_scope(nullptr);
+  SelectorFilterParentScope filter_scope(
+      nullptr, SelectorFilterParentScope::ScopeType::kRoot);
   document_->documentElement()->RecalcTransitionPseudoTreeStyle(
       view_transition_names_);
 }
@@ -3805,7 +3809,8 @@ void StyleEngine::RebuildLayoutTree(Element* size_container) {
 
     // We need a root scope here in case we recalc style for ::first-letter
     // elements as part of UpdateFirstLetterPseudoElement.
-    SelectorFilterRootScope filter_scope(nullptr);
+    SelectorFilterParentScope filter_scope(
+        nullptr, SelectorFilterParentScope::ScopeType::kRoot);
 
     Element& root_element = layout_tree_rebuild_root_.RootElement();
     {
