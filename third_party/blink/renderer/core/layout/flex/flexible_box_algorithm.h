@@ -112,27 +112,15 @@ class FlexItem {
 
   ItemPosition Alignment() const;
 
-  // Returns the main-start margin value.
-  LayoutUnit FlowAwareMarginStart() const;
-  // Returns the main-end margin value.
-  LayoutUnit FlowAwareMarginEnd() const;
   // Returns the cross-start margin value ignoring flex-wrap.
   LayoutUnit FlowAwareMarginBefore() const;
   // Returns the cross-end margin value ignoring flex-wrap.
   LayoutUnit FlowAwareMarginAfter() const;
-  // Returns the margin value on the block-end in the container writing-mode.
-  // This isn't aware of `flex-direction` and `flex-wrap`.
-  LayoutUnit MarginBlockEnd() const;
 
   LayoutUnit MainAxisMarginExtent() const;
   LayoutUnit CrossAxisMarginExtent() const;
 
   LayoutUnit MarginBoxAscent(bool is_last_baseline, bool is_wrap_reverse) const;
-
-  void UpdateAutoMarginsInMainAxis(LayoutUnit auto_margin_offset);
-
-  // Returns true if the margins were adjusted due to auto margin resolution.
-  bool UpdateAutoMarginsInCrossAxis(LayoutUnit available_alignment_space);
 
   LayoutUnit CrossAxisOffset(const NGFlexLine&, LayoutUnit cross_axis_size);
 
@@ -152,7 +140,7 @@ class FlexItem {
   const MinMaxSizes min_max_main_sizes_;
   const LayoutUnit hypothetical_main_content_size_;
   const LayoutUnit main_axis_border_padding_;
-  PhysicalBoxStrut physical_margins_;
+  const PhysicalBoxStrut physical_margins_;
   const BoxStrut scrollbars_;
   const WritingDirectionMode baseline_writing_direction_;
   const BaselineGroup baseline_group_;
@@ -246,12 +234,6 @@ class FlexLine {
   // This modifies remaining_free_space.
   bool ResolveFlexibleLengths();
 
-  // Distributes remaining_free_space across the main axis auto margins
-  // of the flex items of this line and returns the amount that should be
-  // used for each auto margins. If there are no auto margins, leaves
-  // remaining_free_space unchanged.
-  LayoutUnit ApplyMainAxisAutoMarginAdjustment();
-
   // Computes & sets desired_position on the FlexItems on this line.
   // Before calling this function, the items need to be laid out with
   // flexed_content_size set as the override main axis size, and
@@ -261,6 +243,7 @@ class FlexLine {
 
   FlexibleBoxAlgorithm* algorithm_;
   FlexItemVectorView line_items_;
+
   const LayoutUnit sum_flex_base_size_;
   const LayoutUnit sum_hypothetical_main_size_;
 
@@ -340,11 +323,6 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
   bool IsMultiline() const { return style_->FlexWrap() != EFlexWrap::kNowrap; }
   static bool IsHorizontalFlow(const ComputedStyle&);
   static bool IsColumnFlow(const ComputedStyle&);
-  // Returns the physical direction of the main axis.
-  // This function is aware of `writing-mode`, `direction`, and
-  // `flex-direction`, but assumes `flex-direction:column-reverse` is same as
-  // `flex-direction:column`.
-  PhysicalDirection MainAxisDirection() const;
   // Returns the physical direction of the cross axis.
   // This function is aware of `writing-mode`, `flex-direction`, and
   // no `flex-wrap`.

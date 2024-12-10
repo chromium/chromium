@@ -47,6 +47,7 @@ struct NGFlexLine {
   void Trace(Visitor* visitor) const { visitor->Trace(line_items); }
 
   LayoutUnit main_axis_free_space;
+  unsigned main_axis_auto_margin_count;
   LayoutUnit sum_hypothetical_main_size;
   LayoutUnit line_cross_size;
   LayoutUnit cross_axis_offset;

@@ -39,11 +39,44 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
+#include "third_party/blink/renderer/platform/text/writing_mode_utils.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 namespace {
+
+template <typename Value>
+class PhysicalToFlex {
+  STACK_ALLOCATED();
+
+ public:
+  PhysicalToFlex(WritingDirectionMode writing_direction,
+                 bool is_column,
+                 Value top,
+                 Value right,
+                 Value bottom,
+                 Value left)
+      : logical_(writing_direction, top, right, bottom, left),
+        is_column_(is_column) {}
+
+  Value MainStart() const {
+    return is_column_ ? logical_.BlockStart() : logical_.InlineStart();
+  }
+  Value MainEnd() const {
+    return is_column_ ? logical_.BlockEnd() : logical_.InlineEnd();
+  }
+  Value CrossStart() const {
+    return is_column_ ? logical_.InlineStart() : logical_.BlockStart();
+  }
+  Value CrossEnd() const {
+    return is_column_ ? logical_.InlineEnd() : logical_.BlockEnd();
+  }
+
+ private:
+  PhysicalToLogical<Value> logical_;
+  bool is_column_;
+};
 
 class BaselineAccumulator {
   STACK_ALLOCATED();
@@ -1161,6 +1194,8 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
         line->remaining_free_space_;
     flex_line_outputs->back().sum_hypothetical_main_size =
         line->sum_hypothetical_main_size_;
+    flex_line_outputs->back().main_axis_auto_margin_count =
+        line->main_axis_auto_margin_count_;
     flex_line_outputs->back().line_cross_size = line->cross_axis_extent_;
     flex_line_outputs->back().major_baseline = line->max_major_ascent_;
     flex_line_outputs->back().minor_baseline = line->max_minor_ascent_;
@@ -1344,7 +1379,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
   const LayoutUnit space_between_lines =
       FlexibleBoxAlgorithm::ContentDistributionSpaceBetweenChildren(
           cross_axis_free_space, align_content, num_lines);
-  LayoutUnit cross_axis_offset =
+  LayoutUnit line_cross_axis_offset =
       (is_column_ ? BorderScrollbarPadding().inline_start
                   : BorderScrollbarPadding().block_start) +
       InitialContentPositionOffset(align_content, ContentPosition::kStart,
@@ -1357,7 +1392,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
   for (wtf_size_t flex_line_idx = 0; flex_line_idx < flex_line_outputs->size();
        ++flex_line_idx) {
     NGFlexLine& line_output = (*flex_line_outputs)[flex_line_idx];
-    line_output.cross_axis_offset = cross_axis_offset;
+    line_output.cross_axis_offset = line_cross_axis_offset;
 
     bool is_first_line = flex_line_idx == 0;
     bool is_last_line = flex_line_idx == flex_line_outputs->size() - 1;
@@ -1366,16 +1401,29 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
                                           is_last_line);
     }
 
+    const bool should_apply_main_axis_auto_margin =
+        line_output.main_axis_auto_margin_count &&
+        line_output.main_axis_free_space > LayoutUnit();
+
+    const LayoutUnit main_axis_free_space =
+        should_apply_main_axis_auto_margin ? LayoutUnit()
+                                           : line_output.main_axis_free_space;
+    const LayoutUnit main_axis_auto_margin =
+        should_apply_main_axis_auto_margin
+            ? line_output.main_axis_free_space /
+                  line_output.main_axis_auto_margin_count
+            : LayoutUnit();
+
     const wtf_size_t line_items_size = line_output.line_items.size();
     const LayoutUnit space_between_items =
         FlexibleBoxAlgorithm::ContentDistributionSpaceBetweenChildren(
-            line_output.main_axis_free_space, justify_content, line_items_size);
+            main_axis_free_space, justify_content, line_items_size);
     LayoutUnit main_axis_offset =
         (is_column_ ? BorderScrollbarPadding().block_start
                     : BorderScrollbarPadding().inline_start) +
         InitialContentPositionOffset(justify_content, safe_justify_position,
-                                     line_output.main_axis_free_space,
-                                     line_items_size, is_reverse_direction);
+                                     main_axis_free_space, line_items_size,
+                                     is_reverse_direction);
 
     for (wtf_size_t flex_item_idx = 0;
          flex_item_idx < line_output.line_items.size(); ++flex_item_idx) {
@@ -1399,10 +1447,10 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
 
       flex_item.has_descendant_that_depends_on_percentage_block_size =
           layout_result->HasDescendantThatDependsOnPercentageBlockSize();
-      flex_item.margin_block_end = item->MarginBlockEnd();
+
+      const auto& item_style = flex_item.Style();
 
       if (should_propagate_row_break_values) {
-        const auto& item_style = flex_item.Style();
         auto item_break_before = JoinFragmentainerBreakValues(
             item_style.BreakBefore(), layout_result->InitialBreakBefore());
         auto item_break_after = JoinFragmentainerBreakValues(
@@ -1444,39 +1492,78 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
       const LayoutUnit cross_axis_size =
           is_column_ ? fragment.InlineSize() : fragment.BlockSize();
 
-      main_axis_offset += item->FlowAwareMarginStart();
-      const LayoutUnit item_cross_axis_offset =
-          cross_axis_offset +
+      PhysicalBoxStrut physical_margins = item->physical_margins_;
+      const PhysicalToFlex<LayoutUnit&> margin(
+          writing_direction, is_column_, physical_margins.top,
+          physical_margins.right, physical_margins.bottom,
+          physical_margins.left);
+
+      // Apply any auto margins.
+      {
+        const PhysicalToFlex is_margin_auto(writing_direction, is_column_,
+                                            item_style.MarginTop().IsAuto(),
+                                            item_style.MarginRight().IsAuto(),
+                                            item_style.MarginBottom().IsAuto(),
+                                            item_style.MarginLeft().IsAuto());
+
+        // Cross-axis margins are handled in the typical way.
+        const LayoutUnit margin_space =
+            (line_output.line_cross_size - margin.CrossStart() -
+             cross_axis_size - margin.CrossEnd())
+                .ClampNegativeToZero();
+        if (is_margin_auto.CrossStart() && is_margin_auto.CrossEnd()) {
+          margin.CrossStart() = margin_space / 2;
+          margin.CrossEnd() = margin_space / 2;
+        } else if (is_margin_auto.CrossStart()) {
+          margin.CrossStart() = margin_space;
+        } else if (is_margin_auto.CrossEnd()) {
+          margin.CrossEnd() = margin_space;
+        }
+
+        // Main-axis margins are distributed to evenly across the whole line.
+        if (is_margin_auto.MainStart()) {
+          margin.MainStart() = main_axis_auto_margin;
+        }
+        if (is_margin_auto.MainEnd()) {
+          margin.MainEnd() = main_axis_auto_margin;
+        }
+      }
+
+      main_axis_offset += margin.MainStart();
+      const LayoutUnit cross_axis_offset =
+          line_cross_axis_offset + margin.CrossStart() +
           item->CrossAxisOffset(line_output, cross_axis_size);
 
       const LogicalOffset offset =
-          is_column_ ? LogicalOffset(item_cross_axis_offset, main_axis_offset)
-                     : LogicalOffset(main_axis_offset, item_cross_axis_offset);
+          is_column_ ? LogicalOffset(cross_axis_offset, main_axis_offset)
+                     : LogicalOffset(main_axis_offset, cross_axis_offset);
       flex_item.offset = offset;
 
-      main_axis_offset += item->FlexedBorderBoxSize() +
-                          item->FlowAwareMarginEnd() + space_between_items +
-                          algorithm_.gap_between_items_;
+      main_axis_offset += item->FlexedBorderBoxSize() + margin.MainEnd() +
+                          space_between_items + algorithm_.gap_between_items_;
+
+      const BoxStrut logical_margins =
+          physical_margins.ConvertToLogical(writing_direction);
 
       if (!InvolvedInBlockFragmentation(container_builder_)) {
-        container_builder_.AddResult(
-            *layout_result, offset,
-            item->physical_margins_.ConvertToLogical(writing_direction));
+        container_builder_.AddResult(*layout_result, offset, logical_margins);
         baseline_accumulator.AccumulateItem(fragment, offset.block_offset,
                                             is_first_line, is_last_line);
       } else {
         flex_item.total_remaining_block_size = fragment.BlockSize();
+        flex_item.margin_block_end = logical_margins.block_end;
       }
 
       if (PropagateFlexItemInfo(item, flex_line_idx, offset,
-                                physical_fragment.Size()) ==
+                                physical_fragment.Size(), physical_margins) ==
           LayoutResult::kNeedsRelayoutWithNoChildScrollbarChanges) {
         status = LayoutResult::kNeedsRelayoutWithNoChildScrollbarChanges;
       }
     }
 
-    cross_axis_offset += line_output.line_cross_size + space_between_lines +
-                         algorithm_.gap_between_lines_;
+    line_cross_axis_offset += line_output.line_cross_size +
+                              space_between_lines +
+                              algorithm_.gap_between_lines_;
   }
 
   if (auto first_baseline = baseline_accumulator.FirstBaseline())
@@ -2037,7 +2124,8 @@ LayoutResult::EStatus FlexLayoutAlgorithm::PropagateFlexItemInfo(
     FlexItem* flex_item,
     wtf_size_t flex_line_idx,
     LogicalOffset offset,
-    PhysicalSize fragment_size) {
+    PhysicalSize fragment_size,
+    const PhysicalBoxStrut& physical_margins) {
   DCHECK(flex_item);
   LayoutResult::EStatus status = LayoutResult::kSuccess;
 
@@ -2055,7 +2143,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::PropagateFlexItemInfo(
         offset.ConvertToPhysical(GetConstraintSpace().GetWritingDirection(),
                                  flexbox_size, item_rect.size);
     // devtools uses margin box.
-    item_rect.Expand(flex_item->physical_margins_);
+    item_rect.Expand(physical_margins);
     DCHECK_GE(layout_info_for_devtools_->lines.size(), 1u);
     DevtoolsFlexInfo::Item item(
         item_rect, flex_item->MarginBoxAscent(

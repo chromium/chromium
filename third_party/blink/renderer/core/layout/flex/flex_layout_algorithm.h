@@ -81,10 +81,12 @@ class CORE_EXPORT FlexLayoutAlgorithm
       HeapVector<NGFlexLine>* flex_line_outputs,
       Vector<EBreakBetween>* row_break_between_outputs,
       FlexBreakTokenData::FlexBreakBeforeRow* break_before_row);
-  LayoutResult::EStatus PropagateFlexItemInfo(FlexItem* flex_item,
-                                              wtf_size_t flex_line_idx,
-                                              LogicalOffset offset,
-                                              PhysicalSize fragment_size);
+  LayoutResult::EStatus PropagateFlexItemInfo(
+      FlexItem* flex_item,
+      wtf_size_t flex_line_idx,
+      LogicalOffset offset,
+      PhysicalSize fragment_size,
+      const PhysicalBoxStrut& physical_margins);
   void LayoutColumnReverse(LayoutUnit main_axis_content_size);
 
   // This is same method as FlexItem but we need that logic before FlexItem is
