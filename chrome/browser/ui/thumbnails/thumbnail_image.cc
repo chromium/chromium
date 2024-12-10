@@ -229,9 +229,9 @@ gfx::ImageSkia ThumbnailImage::UncompressImage(
   SkBitmap bitmap = gfx::JPEGCodec::Decode(compressed->data);
   if (!bitmap.isNull()) {
     result = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+    result.MakeThreadSafe();
   }
 
-  result.MakeThreadSafe();
   return result;
 }
 
