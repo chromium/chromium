@@ -677,7 +677,8 @@ XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       buffer->shared_image, buffer->produce_sync_token,
-      /* shared_image_texture_id = */ 0, sk_image_info, GL_TEXTURE_2D,
+      /* shared_image_texture_id = */ 0, sk_image_info,
+      buffer->shared_image->GetTextureTarget(),
       drawing_buffer_->ContextProviderWeakPtr(),
       base::PlatformThread::CurrentRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
