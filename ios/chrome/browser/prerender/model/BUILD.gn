@@ -25,8 +25,6 @@ source_set("model") {
   public_deps = [ "//base" ]
   deps = [
     ":prerender_pref",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/prefs",
     "//components/prefs/ios",
     "//components/signin/ios/browser",
@@ -45,6 +43,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/signin/model",
