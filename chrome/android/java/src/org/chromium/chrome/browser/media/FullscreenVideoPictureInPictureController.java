@@ -10,6 +10,7 @@ import android.app.PictureInPictureParams;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.PowerManager;
 import android.os.SystemClock;
 import android.util.Rational;
 
@@ -68,6 +69,7 @@ public class FullscreenVideoPictureInPictureController {
         static final int REPARENT = 5;
         static final int LEFT_FULLSCREEN = 6;
         static final int WEB_CONTENTS_LEFT_FULLSCREEN = 7;
+        static final int START = 8;
     }
 
     private static final float MIN_ASPECT_RATIO = 1 / 2.39f;
@@ -110,6 +112,7 @@ public class FullscreenVideoPictureInPictureController {
     private final Activity mActivity;
     private final ActivityTabProvider mActivityTabProvider;
     private final FullscreenManager mFullscreenManager;
+    private final PowerManager mPowerManager;
 
     /** Did we last tell the framework that auto-enter is allowed (true) or not? */
     private boolean mIsAutoEnterAllowed;
@@ -126,6 +129,9 @@ public class FullscreenVideoPictureInPictureController {
     /** Is media paused because we suspended it when the pip window was stashed? */
     private boolean mIsSuspendedForStash;
 
+    /** Was pip dismissed while the screen was off? */
+    private boolean mDismissPending;
+
     public FullscreenVideoPictureInPictureController(
             Activity activity,
             ActivityTabProvider activityTabProvider,
@@ -133,6 +139,7 @@ public class FullscreenVideoPictureInPictureController {
         mActivity = activity;
         mActivityTabProvider = activityTabProvider;
         mFullscreenManager = fullscreenManager;
+        mPowerManager = (PowerManager) mActivity.getSystemService(Activity.POWER_SERVICE);
 
         if (ENABLE_AUTO_ENTER) {
             addObserversIfNeeded();
@@ -346,12 +353,25 @@ public class FullscreenVideoPictureInPictureController {
     }
 
     /**
-     * Called when `mActivity` is stopped, to allow us to clean up. A new instance will be created
+     * Called when `mActivity` is destroyed, to allow us to clean up. A new instance will be created
      * later, when the activity is restarted.
      */
-    public void onStop() {
-        // Unconditionally remove listeners, since a new instance will be created onStart.
+    public void onDestroy() {
         removeObserversIfNeeded();
+    }
+
+    public void onStart() {
+        // If we deferred dismissing pip because the screen was off, then dismiss it now if we can.
+        if (mDismissPending) {
+            dismissActivityIfNeeded(mActivity, MetricsEndReason.START);
+        }
+    }
+
+    public void onResume() {
+        // Unconditionally dismiss pip, because the activity has been resumed.  This can happen if
+        // we get out of sync; we rely on exiting fullscreen to exit pip, and sometimes that just
+        // doesn't happen.  This exits pip if the user starts chrome again while in pip.
+        dismissActivityIfNeeded(mActivity, MetricsEndReason.RESUME);
     }
 
     private static Rect getVideoBounds(WebContents webContents, Activity activity) {
@@ -408,6 +428,9 @@ public class FullscreenVideoPictureInPictureController {
      */
     private void onExitedPictureInPicture(@MetricsEndReason int reason) {
         Log.i(TAG, "Exited picture in picture with reason: " + reason);
+
+        // Any pending dismiss is no longer pending.
+        mDismissPending = true;
 
         // If we don't believe that a Picture in Picture session is active, it means that the
         // cleanup call happened while Chrome was not PIP'ing. The early return also avoid recording
@@ -536,6 +559,7 @@ public class FullscreenVideoPictureInPictureController {
         // with the framework, if applicable.
         Log.i(TAG, "Dismiss activity with reason " + reason);
         updateAutoPictureInPictureStatusIfNeeded();
+        mDismissPending = false;
 
         if (!isPipSessionActive()) {
             return;
@@ -557,16 +581,29 @@ public class FullscreenVideoPictureInPictureController {
         }
 
         // If we're currently in Picture in Picture mode, then notify the framework to exit it.
-        activity.moveTaskToBack(true);
-        onExitedPictureInPicture(reason);
+        if (mPowerManager.isInteractive()) {
+            // Screen is on and unlocked.  Close pip immediately.  This will have the side-effect of
+            // pausing media playback.
+            activity.moveTaskToBack(true);
+            onExitedPictureInPicture(reason);
+
+        } else {
+            // Due to a framework issue, turning off pip while the screen is off or the keyguard is
+            // active gets Android into a bad state.  Instead, suspend media playback now and then
+            // wait for onStart before trying to close it.  This happens after unlock.
+            mIsSuspendedForStash = false;
+            mDismissPending = true;
+            final MediaSession mediaSession = getMediaSession();
+
+            if (mediaSession != null && mIsPlaying) {
+                mediaSession.suspend();
+            }
+        }
     }
 
     /**
-     * A class to dismiss the Activity when the tab:
-     * - Closes.
-     * - Re-parents (attaches to a different activity).
-     * - Crashes.
-     * - Leaves fullscreen.
+     * A class to dismiss the Activity when the tab closes /re-parents (attaches to a different
+     * activity) / crashes / leaves fullscreen.
      */
     private class DismissActivityOnTabEventObserver extends EmptyTabObserver {
         private final Activity mActivity;
