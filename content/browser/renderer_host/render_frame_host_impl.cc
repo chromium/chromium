@@ -1447,27 +1447,11 @@ WindowProxyUserActivationState GetWindowProxyUserActivationState(
 class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
                                   public ServiceWorkerContextObserver {
  public:
-  explicit DiscardedRFHProcessHelper(RenderProcessHost* host) : host_(host) {
-    if (host_->IsInitializedAndNotDead() && !host_->IsDeletingSoon()) {
-      service_worker_context_observation_.Observe(
-          host_->GetStoragePartition()->GetServiceWorkerContext());
-    }
-  }
+  explicit DiscardedRFHProcessHelper(RenderProcessHost* host) : host_(host) {}
   DiscardedRFHProcessHelper(const DiscardedRFHProcessHelper&) = delete;
   DiscardedRFHProcessHelper& operator=(const DiscardedRFHProcessHelper&) =
       delete;
   ~DiscardedRFHProcessHelper() override = default;
-
-  // ServiceWorkerContextObserver:
-  void OnVersionStoppedRunning(int64_t version_id) override {
-    // Service workers may outlive the documents of their discarded rfh if
-    // executing pre-existing tasks. Attempt a shutdown if any associated worker
-    // has stopped to clear away the process if possible.
-    ShutdownForDiscardIfPossible();
-  }
-  void OnDestruct(ServiceWorkerContext* context) override {
-    service_worker_context_observation_.Reset();
-  }
 
   static DiscardedRFHProcessHelper* GetForRenderProcessHost(
       RenderProcessHost* host) {
@@ -1487,7 +1471,7 @@ class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
     shutdown_attempt_timer_.Stop();
     retries_ = 0;
     shutdown_attempt_timer_.Start(
-        FROM_HERE, /*delay=*/base::TimeDelta(),
+        FROM_HERE, /*delay=*/kUnloadTimeout,
         base::BindRepeating(&DiscardedRFHProcessHelper::ShutdownIfPossible,
                             base::Unretained(this)));
   }
@@ -1497,8 +1481,6 @@ class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
   // discarded frames remain.
   void ShutdownIfPossible() {
     if (!host_->IsInitializedAndNotDead() || host_->IsDeletingSoon()) {
-      shutdown_attempt_timer_.Stop();
-      retries_ = 0;
       return;
     }
 
@@ -1506,7 +1488,7 @@ class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
     // continue until a maximum delay of kKeepAliveHandleFactoryTimeout is
     // reached.
     constexpr base::TimeDelta kProcessShutdownRetryDelay =
-        base::Milliseconds(5000);
+        base::Milliseconds(500);
 
     // Attempt a fast shutdown if only discarded frames remain in the process. A
     // render process may host both speculative and non-speculative frames,
@@ -1534,7 +1516,8 @@ class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
          RenderProcessHostImpl::kKeepAliveHandleFactoryTimeout) &&
         !host_->FastShutdownIfPossible(
             /*page_count=*/discarded_widgets.size(),
-            /*skip_unload_handlers=*/true)) {
+            /*skip_unload_handlers=*/true,
+            /*ignore_workers=*/true)) {
       retries_++;
       shutdown_attempt_timer_.Start(
           FROM_HERE, kProcessShutdownRetryDelay,
@@ -1551,9 +1534,6 @@ class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
 
   // Owns this.
   const raw_ptr<RenderProcessHost> host_;
-
-  base::ScopedObservation<ServiceWorkerContext, ServiceWorkerContextObserver>
-      service_worker_context_observation_{this};
 };
 
 }  // namespace

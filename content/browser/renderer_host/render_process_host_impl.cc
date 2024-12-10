@@ -3601,7 +3601,8 @@ bool RenderProcessHostImpl::ShutdownRequested() {
 }
 
 bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
-                                                   bool skip_unload_handlers) {
+                                                   bool skip_unload_handlers,
+                                                   bool ignore_workers) {
   base::UmaHistogramBoolean(
       "BrowserRenderProcessHost.FastShutdownIfPossible.Total", true);
   // Do not shut down the process if there are active or pending views other
@@ -3639,7 +3640,7 @@ bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
     return false;
   }
 
-  if (worker_ref_count_ != 0) {
+  if (!ignore_workers && worker_ref_count_ != 0) {
     LogDelayReasonForFastShutdown(DelayShutdownReason::kWorker);
     return false;
   }

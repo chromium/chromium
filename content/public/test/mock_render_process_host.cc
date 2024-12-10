@@ -241,7 +241,8 @@ bool MockRenderProcessHost::ShutdownRequested() {
 }
 
 bool MockRenderProcessHost::FastShutdownIfPossible(size_t page_count,
-                                                   bool skip_unload_handlers) {
+                                                   bool skip_unload_handlers,
+                                                   bool ignore_workers) {
   if (GetActiveViewCount() != page_count)
     return false;
   // We aren't actually going to do anything, but set |fast_shutdown_started_|
