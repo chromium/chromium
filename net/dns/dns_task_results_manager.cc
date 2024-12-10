@@ -12,10 +12,12 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/connection_endpoint_metadata.h"
+#include "net/base/features.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/dns/host_resolver.h"
@@ -71,6 +73,13 @@ bool CompareServiceEndpoint(const ServiceEndpoint& a,
   return CompareServiceEndpointAddresses(a, b);
 }
 
+// https://datatracker.ietf.org/doc/html/draft-pauly-v6ops-happy-eyeballs-v3-02#name-summary-of-configurable-val
+constexpr base::FeatureParam<base::TimeDelta> kResolutionDelay{
+    &features::kHappyEyeballsV3,
+    "resolution_delay",
+    base::Milliseconds(50),
+};
+
 }  // namespace
 
 // Holds service endpoint results per domain name.
@@ -88,6 +97,11 @@ struct DnsTaskResultsManager::PerDomainResult {
 
   std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata> metadatas;
 };
+
+// static
+base::TimeDelta DnsTaskResultsManager::GetResolutionDelay() {
+  return kResolutionDelay.Get();
+}
 
 DnsTaskResultsManager::DnsTaskResultsManager(Delegate* delegate,
                                              HostResolver::Host host,
@@ -207,7 +221,7 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
           NetLogEventType::HOST_RESOLVER_SERVICE_ENDPOINTS_RESOLUTION_DELAY);
       // Safe to unretain since `this` owns the timer.
       resolution_delay_timer_.Start(
-          FROM_HERE, kResolutionDelay,
+          FROM_HERE, GetResolutionDelay(),
           base::BindOnce(&DnsTaskResultsManager::OnAaaaResolutionTimedout,
                          base::Unretained(this)));
     }

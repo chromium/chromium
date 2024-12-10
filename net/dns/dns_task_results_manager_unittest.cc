@@ -243,7 +243,7 @@ TEST_F(DnsTaskResultsManagerTest, IPv6Timedout) {
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
 
   // AAAA is timed out. Service endpoints should be available after timeout.
-  FastForwardBy(DnsTaskResultsManager::kResolutionDelay +
+  FastForwardBy(DnsTaskResultsManager::GetResolutionDelay() +
                 base::Milliseconds(1));
 
   EXPECT_THAT(manager->GetCurrentEndpoints(),
@@ -354,7 +354,7 @@ TEST_F(DnsTaskResultsManagerTest, IPv4NoDataIPv6AfterResolutionDelay) {
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
 
   // The resolution delay passed. Service endpoints should not be available yet.
-  FastForwardBy(DnsTaskResultsManager::kResolutionDelay +
+  FastForwardBy(DnsTaskResultsManager::GetResolutionDelay() +
                 base::Milliseconds(1));
 
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
@@ -482,7 +482,7 @@ TEST_F(DnsTaskResultsManagerTest, IPv6TimedoutAfterMetadata) {
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
 
   // AAAA is timed out. Service endpoints should be available with metadatas.
-  FastForwardBy(DnsTaskResultsManager::kResolutionDelay +
+  FastForwardBy(DnsTaskResultsManager::GetResolutionDelay() +
                 base::Milliseconds(1));
 
   ASSERT_TRUE(manager->IsMetadataReady());
@@ -518,7 +518,7 @@ TEST_F(DnsTaskResultsManagerTest, IPv4NoDataIPv6TimedoutAfterMetadata) {
 
   // AAAA is timed out. Service endpoints should not be available since there
   // are no addresses.
-  FastForwardBy(DnsTaskResultsManager::kResolutionDelay +
+  FastForwardBy(DnsTaskResultsManager::GetResolutionDelay() +
                 base::Milliseconds(1));
 
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
