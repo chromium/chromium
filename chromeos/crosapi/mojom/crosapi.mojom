@@ -123,26 +123,6 @@ import "services/media_session/public/mojom/audio_focus.mojom";
 import "services/media_session/public/mojom/media_controller.mojom";
 import "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom";
 
-// BrowserInfo is a set of parameters passed to ash from browser (such as
-// lacros-chrome) upon its startup, which contains the browser information
-// such as version, etc.
-[RenamedFrom="crosapi.mojom.LacrosInfo"]
-struct BrowserInfo {
-  // Version of the browser displayed to user in feedback report, etc.
-  // It includes both browser version and channel in the format of:
-  // {browser version} {channel}
-  // For example, "87.0.0.1 dev", "86.0.4240.38 beta".
-  string browser_version@0;
-
-  // Lacros publishes the set of workarounds it has implemented. This is needed
-  // to cherry-picks of lacros bug fixes to older branches. See
-  // `ash_workarounds` for more details.
-  [MinVersion=1]
-  array<string>? lacros_workarounds@1;
-
-  // TODO(crbug.com/40145693): Add more parameters later.
-};
-
 // Crosapi defines the APIs that live in ash-chrome and are accessed from
 // client applications (such as lacros-chrome). When adding a major new API
 // please note the milestone when you added it, to help us reason about
