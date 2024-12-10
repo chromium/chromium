@@ -308,31 +308,39 @@ void HomeModulesCardRegistry::CreateAllCards() {
     std::optional<CardSelectionInfo::ShowResult> forced_result =
         GetForcedEphemeralModuleShowResult();
 
-    // If a card is forced to be shown, add it immediately.
+    // Determine the forced card identifier and label, if any.
+    TipIdentifier forced_identifier = TipIdentifier::kUnknown;
+    std::string_view forced_label;
+
     if (forced_result.has_value() &&
         forced_result.value().position == EphemeralHomeModuleRank::kTop) {
-      TipIdentifier identifier = TipIdentifierForOutputLabel(
-          forced_result.value().result_label.value());
+      forced_label = forced_result.value().result_label.value();
+      forced_identifier = TipIdentifierForOutputLabel(forced_label);
 
-      if (identifier != TipIdentifier::kUnknown) {
-        AddCardForTip(identifier, all_cards_by_priority_, profile_prefs_);
+      if (forced_identifier != TipIdentifier::kUnknown) {
+        AddCardForTip(forced_identifier, all_cards_by_priority_,
+                      profile_prefs_);
       }
     }
 
-    std::string enabled_variations = features::TipsExperimentTrainEnabled();
-
-    // Iterates the variation labels without extra allocations.
+    // Iterate through variation labels and add unique cards.
     for (std::string_view variation_label :
-         base::SplitString(enabled_variations, ",", base::TRIM_WHITESPACE,
-                           base::SPLIT_WANT_NONEMPTY)) {
-      // Skip forced card as it will be added by the forcing mechanism.
-      if (forced_result.has_value() &&
-          forced_result.value().result_label.value() == variation_label) {
+         base::SplitString(features::TipsExperimentTrainEnabled(), ",",
+                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+      TipIdentifier identifier = TipIdentifierForOutputLabel(variation_label);
+
+      // Skip adding if:
+      // 1. The identifier is unknown.
+      // 2. It matches the forced identifier.
+      // 3. Both belong to the same "family" of Lens cards.
+      if (identifier == TipIdentifier::kUnknown ||
+          identifier == forced_identifier ||
+          (LensEphemeralModule::IsModuleLabel(variation_label) &&
+           LensEphemeralModule::IsModuleLabel(forced_label))) {
         continue;
       }
 
-      AddCardForTip(TipIdentifierForOutputLabel(variation_label),
-                    all_cards_by_priority_, profile_prefs_);
+      AddCardForTip(identifier, all_cards_by_priority_, profile_prefs_);
     }
   }
 
