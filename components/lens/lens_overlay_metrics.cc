@@ -383,7 +383,8 @@ void RecordLensResponseTime(base::TimeDelta response_time) {
   base::UmaHistogramTimes("Lens.Overlay.LensResponseTime", response_time);
 }
 
-void MaybeRecordContextualSearchBoxShown(bool shown,
+void MaybeRecordContextualSearchBoxShown(ukm::SourceId source_id,
+                                         bool shown,
                                          lens::MimeType page_content_type) {
   // Only record if the contextual search box feature is enabled.
   if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
@@ -396,6 +397,12 @@ void MaybeRecordContextualSearchBoxShown(bool shown,
       "Lens.Overlay.ContextualSearchBox.ByPageContentType." +
       MimeTypeToMetricString(page_content_type) + ".Shown";
   base::UmaHistogramBoolean(sliced_invoked_histogram_name, shown);
+
+  // Record UKM for contextual search box shown.
+  ukm::builders::Lens_Overlay_ContextualSearchBox_Shown event(source_id);
+  event.SetWasShown(shown)
+      .SetDocumentType(static_cast<int64_t>(page_content_type))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void RecordContextualSearchboxTimeToInteractionAfterNavigation(
