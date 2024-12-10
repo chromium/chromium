@@ -204,8 +204,7 @@
   // We assume the dismiss was done by the user.
   self.mediator.signinCoordinatorResult = SigninCoordinatorResultCanceledByUser;
   // UIShutdownNoDismiss because the UI is already dismissed.
-  [self interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
-                 completion:nil];
+  [self interruptWithAction:SynchronousStopAction() completion:nil];
 }
 
 #pragma mark - AccountMenuMediatorDelegate
@@ -596,6 +595,9 @@
   _viewController = nil;
   switch (action) {
     case SigninCoordinatorInterrupt::UIShutdownNoDismiss: {
+      CHECK(!base::FeatureList::IsEnabled(
+                kIOSInterruptibleCoordinatorAlwaysDismissed),
+            base::NotFatalUntil::M136);
       if (completion) {
         completion();
       }

@@ -204,6 +204,9 @@
   };
   switch (action) {
     case SigninCoordinatorInterrupt::UIShutdownNoDismiss:
+      CHECK(!base::FeatureList::IsEnabled(
+                kIOSInterruptibleCoordinatorAlwaysDismissed),
+            base::NotFatalUntil::M136);
       finishCompletionBlock();
       break;
     case SigninCoordinatorInterrupt::DismissWithoutAnimation:

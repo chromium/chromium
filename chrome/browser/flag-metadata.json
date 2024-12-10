@@ -5237,6 +5237,14 @@
     "expiry_milestone": 130
   },
   {
+    "name": "ios-interruptible-coordinator-always-dismissed",
+    "owners": [
+      "arthurmilchior@google.com",
+      "chrome-signin-team@google.com"
+    ],
+    "expiry_milestone": 137
+  },
+  {
     "name": "ios-interruptible-coordinator-stop-synchronously",
     "owners": [
       "arthurmilchior@google.com",

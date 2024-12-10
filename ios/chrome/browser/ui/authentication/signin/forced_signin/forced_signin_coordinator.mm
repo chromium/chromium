@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/interruptible_chrome_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 
 @interface ForcedSigninCoordinator () <FirstRunScreenDelegate>
@@ -166,6 +167,9 @@
   BOOL animated = NO;
   switch (action) {
     case SigninCoordinatorInterrupt::UIShutdownNoDismiss: {
+      CHECK(!base::FeatureList::IsEnabled(
+                kIOSInterruptibleCoordinatorAlwaysDismissed),
+            base::NotFatalUntil::M136);
       [self.childCoordinator
           interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
                    completion:finishCompletion];

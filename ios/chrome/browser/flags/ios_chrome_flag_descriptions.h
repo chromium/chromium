@@ -454,6 +454,11 @@ extern const char kIndicateIdentityErrorInOverflowMenuDescription[];
 extern const char kInProductHelpDemoModeName[];
 extern const char kInProductHelpDemoModeDescription[];
 
+// Title and description for the flag that force all interruptible chrome
+// coordinator to be dismissed.
+extern const char kIOSInterruptibleCoordinatorAlwaysDismissedName[];
+extern const char kIOSInterruptibleCoordinatorAlwaysDismissedDescription[];
+
 // Title and description for the flag to enable stopping synchronously
 // interruptible coordinators.
 extern const char kIOSInterruptibleCoordinatorStoppedSynchronouslyName[];

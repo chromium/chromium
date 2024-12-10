@@ -4,9 +4,26 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/interruptible_chrome_coordinator.h"
 
-BASE_FEATURE(kIOSInterruptibleCoordinatorStoppedSynchronously,
-             "InterruptibleCoordinatorStoppedSynchronously",
+BASE_FEATURE(kIOSInterruptibleCoordinatorAlwaysDismissed,
+             "InterruptibleChromeAlwaysDismissed",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIOSInterruptibleCoordinatorStoppedSynchronously,
+             "InterruptibleChromeStoppedSynchronously",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+SigninCoordinatorInterrupt SynchronousStopAction() {
+  if (base::FeatureList::IsEnabled(
+          kIOSInterruptibleCoordinatorAlwaysDismissed)) {
+    // If the interruption is not synchronous, we must continue to send
+    // UIShutdownNoDismiss.
+    CHECK(base::FeatureList::IsEnabled(
+              kIOSInterruptibleCoordinatorStoppedSynchronously),
+          base::NotFatalUntil::M136);
+    return SigninCoordinatorInterrupt::DismissWithoutAnimation;
+  }
+  return SigninCoordinatorInterrupt::UIShutdownNoDismiss;
+}
 
 @implementation InterruptibleChromeCoordinator
 

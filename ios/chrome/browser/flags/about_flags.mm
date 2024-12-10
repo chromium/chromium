@@ -1866,6 +1866,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          kIdentityConfirmationSnackbar,
          kIdentityConfirmationSnackbarTestingVariations,
          "IdentityConfirmationSnackbar")},
+    {"ios-interruptible-coordinator-always-dismissed",
+     flag_descriptions::kIOSInterruptibleCoordinatorAlwaysDismissedName,
+     flag_descriptions::kIOSInterruptibleCoordinatorAlwaysDismissedDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSInterruptibleCoordinatorStoppedSynchronously)},
     {"ios-interruptible-coordinator-stop-synchronously",
      flag_descriptions::kIOSInterruptibleCoordinatorStoppedSynchronouslyName,
      flag_descriptions::

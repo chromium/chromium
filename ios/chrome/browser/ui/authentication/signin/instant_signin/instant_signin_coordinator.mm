@@ -158,6 +158,9 @@
       completion();
     }
   } else if (action == SigninCoordinatorInterrupt::UIShutdownNoDismiss) {
+    CHECK(!base::FeatureList::IsEnabled(
+              kIOSInterruptibleCoordinatorAlwaysDismissed),
+          base::NotFatalUntil::M136);
     // In case of `UIShutdownNoDismiss`, everything should be done
     // synchronously. So we should not wait for the mediator interruption to be
     // done. The coordinator needs to finish itself, and then call the interrupt

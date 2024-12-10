@@ -82,6 +82,9 @@ using l10n_util::GetNSStringF;
   };
   switch (action) {
     case SigninCoordinatorInterrupt::UIShutdownNoDismiss:
+      CHECK(!base::FeatureList::IsEnabled(
+                kIOSInterruptibleCoordinatorAlwaysDismissed),
+            base::NotFatalUntil::M136);
       // TrustedVaultClientBackend doesn't support no dismiss. Therefore there
       // is nothing to do. It will be just deallocated when the service will
       // be shutdown.
@@ -108,7 +111,13 @@ using l10n_util::GetNSStringF;
     std::move(_dialogCancelCallback).Run(animated, nil);
     cancelCompletion();
   } else {
-    std::move(_dialogCancelCallback).Run(animated, cancelCompletion);
+    if (base::FeatureList::IsEnabled(
+            kIOSInterruptibleCoordinatorStoppedSynchronously)) {
+      std::move(_dialogCancelCallback).Run(animated, nil);
+      cancelCompletion();
+    } else {
+      std::move(_dialogCancelCallback).Run(animated, cancelCompletion);
+    }
   }
 }
 

@@ -168,6 +168,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_notification_infobar_delegate.h"
@@ -1236,9 +1237,8 @@ void OnListFamilyMembersResponse(
   // The UI should be stopped before the models they observe are stopped.
   // SigninCoordinator teardown is performed by the `signinCompletion` on
   // termination of async events, do not add additional teardown here.
-  [self.signinCoordinator
-      interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
-               completion:nil];
+  [self.signinCoordinator interruptWithAction:SynchronousStopAction()
+                                   completion:nil];
   // `self.signinCoordinator.signinCompletion()` was called in the interrupt
   // method. Therefore now `self.signinCoordinator` is now stopped, and
   // `self.signinCoordinator` is now nil.

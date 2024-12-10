@@ -10,8 +10,17 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
+// If `kInterruptibleChromeAlwaysDismissed` is is disabled,
+// `UIShutdownNoDismiss` is returned. Otherwise `DismissWithoutAnimation`.
+SigninCoordinatorInterrupt SynchronousStopAction();
+
 // Feature flag to enable a synchronous sync of signin coordinators.
 BASE_DECLARE_FEATURE(kIOSInterruptibleCoordinatorStoppedSynchronously);
+
+// Feature flag to enable a synchronous sync of signin coordinators. It must
+// only be enabled if `kIOSInterruptibleCoordinatorStoppedSynchronously` is
+// enabled.
+BASE_DECLARE_FEATURE(kIOSInterruptibleCoordinatorAlwaysDismissed);
 
 // Interface for a ChromeCoordinator that can be interrupted without following
 // the conventional flow.

@@ -136,6 +136,9 @@
       break;
     }
     case SigninCoordinatorInterrupt::UIShutdownNoDismiss:
+      CHECK(!base::FeatureList::IsEnabled(
+                kIOSInterruptibleCoordinatorAlwaysDismissed),
+            base::NotFatalUntil::M136);
       // The view should be ignored and leave it being presented.
       _navigationController.presentationController.delegate = nil;
       _navigationController = nil;

@@ -170,9 +170,7 @@ class AccountMenuCoordinatorTest : public PlatformTest,
     OCMExpect(view_controller_.dataSource = nil);
     OCMExpect(mediator_.consumer = nil);
     OCMExpect(view_controller_.mutator = nil);
-    [coordinator_
-        interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
-                 completion:nil];
+    [coordinator_ interruptWithAction:SynchronousStopAction() completion:nil];
   }
 
   base::test::ScopedFeatureList feature_list_;

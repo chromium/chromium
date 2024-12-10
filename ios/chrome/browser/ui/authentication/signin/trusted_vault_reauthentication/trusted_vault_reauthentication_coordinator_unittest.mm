@@ -234,12 +234,11 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest,
       }));
   // Interrupt the coordinator.
   __block bool interrupt_completion_called = false;
-  [signinCoordinator
-      interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
-               completion:^() {
-                 EXPECT_TRUE(signin_completion_called);
-                 interrupt_completion_called = true;
-               }];
+  [signinCoordinator interruptWithAction:SynchronousStopAction()
+                              completion:^() {
+                                EXPECT_TRUE(signin_completion_called);
+                                interrupt_completion_called = true;
+                              }];
   // Sign-in and interrupt completion blocks should be called synchronously.
   EXPECT_TRUE(signin_completion_called);
   EXPECT_TRUE(interrupt_completion_called);

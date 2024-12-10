@@ -86,8 +86,7 @@ enum class SignInHistorySyncStep {
 
 - (void)stop {
   if (_currentStep != SignInHistorySyncStep::kCompleted) {
-    [self interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
-                   completion:nil];
+    [self interruptWithAction:SynchronousStopAction() completion:nil];
   }
 
   _syncService = nullptr;

@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 
 @interface FirstRunCoordinator () <FirstRunScreenDelegate,
@@ -70,9 +71,8 @@
     InterruptibleChromeCoordinator* interruptibleChildCoordinator =
         base::apple::ObjCCast<InterruptibleChromeCoordinator>(
             self.childCoordinator);
-    [interruptibleChildCoordinator
-        interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
-                 completion:nil];
+    [interruptibleChildCoordinator interruptWithAction:SynchronousStopAction()
+                                            completion:nil];
     [self stopChildCoordinator];
   }
   [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
