@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
 #include <string_view>
 #include <unordered_set>
@@ -459,12 +455,13 @@ TEST_F(ProfileAttributesStorageTest, RemoveProfile) {
 TEST_F(ProfileAttributesStorageTest, RemoveProfileByAccountId) {
   DisableObserver();  // This test doesn't test observers.
   EXPECT_EQ(0u, storage()->GetNumberOfProfiles());
-  const struct {
+  struct TestCases {
     const char* profile_path;
     const char* profile_name;
     AccountId account_id;
     bool is_consented_primary_account;
-  } kTestCases[] = {
+  };
+  const auto kTestCases = std::to_array<TestCases>({
       {"path_1", "name_1", AccountId::FromUserEmailGaiaId("email1", "111111"),
        true},
       {"path_2", "name_3", AccountId::FromUserEmailGaiaId("email2", "222222"),
@@ -472,7 +469,8 @@ TEST_F(ProfileAttributesStorageTest, RemoveProfileByAccountId) {
       {"path_3", "name_3", AccountId::FromUserEmailGaiaId("email3", "333333"),
        false},
       {"path_4", "name_4", AccountId::FromUserEmailGaiaId("email4", "444444"),
-       false}};
+       false},
+  });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     ProfileAttributesInitParams params;
@@ -1927,17 +1925,25 @@ TEST_F(ProfileAttributesStorageTest,
   EXPECT_EQ(0U, storage()->GetNumberOfProfiles());
   // Mimic a pre-existing Directory with profiles that has legacy profile
   // names.
-  const struct {
+  struct TestCases {
     const char* profile_path;
     const char* profile_name;
     bool is_using_default_name;
-  } kTestCases[] = {
-      {"path_1", "Default Profile", true}, {"path_2", "First user", true},
-      {"path_3", "Lemonade", true},        {"path_4", "Batman", true},
-      {"path_5", "Batman", false},         {"path_6", "Person 2", true},
-      {"path_7", "Person 3", true},        {"path_8", "Person 1", true},
-      {"path_9", "Person 2", true},        {"path_10", "Person 1", true},
-      {"path_11", "Smith", false},         {"path_12", "Person 2", true}};
+  };
+  const auto kTestCases = std::to_array<TestCases>({
+      {"path_1", "Default Profile", true},
+      {"path_2", "First user", true},
+      {"path_3", "Lemonade", true},
+      {"path_4", "Batman", true},
+      {"path_5", "Batman", false},
+      {"path_6", "Person 2", true},
+      {"path_7", "Person 3", true},
+      {"path_8", "Person 1", true},
+      {"path_9", "Person 2", true},
+      {"path_10", "Person 1", true},
+      {"path_11", "Smith", false},
+      {"path_12", "Person 2", true},
+  });
   const size_t kNumProfiles = std::size(kTestCases);
 
   ProfileAttributesEntry* entry = nullptr;

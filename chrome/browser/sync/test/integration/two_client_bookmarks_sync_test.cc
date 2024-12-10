@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -2277,9 +2278,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
                        MC_FolderNameChangeConflict) {
   ASSERT_TRUE(SetupClients());
 
-  const BookmarkNode* folderA[2];
-  const BookmarkNode* folderB[2];
-  const BookmarkNode* folderC[2];
+  std::array<const BookmarkNode*, 2> folderA;
+  std::array<const BookmarkNode*, 2> folderB;
+  std::array<const BookmarkNode*, 2> folderC;
 
   // Create empty folder A on both clients.
   folderA[0] = AddFolder(0, IndexedFolderName(0));

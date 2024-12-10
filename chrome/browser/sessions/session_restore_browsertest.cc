@@ -9,6 +9,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <set>
 #include <vector>
 
@@ -2357,7 +2358,7 @@ class LoadOrderObserver : public BrowserListObserver,
 IN_PROC_BROWSER_TEST_F(SmartSessionRestoreTest, MAYBE_PRE_CorrectLoadingOrder) {
   Profile* profile = browser()->profile();
 
-  const int activation_order[] = {4, 2, 1, 5, 0, 3};
+  const auto activation_order = std::to_array<int>({4, 2, 1, 5, 0, 3});
 
   // Replace the first tab and add the other tabs.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kUrls[0])));
@@ -2416,7 +2417,7 @@ IN_PROC_BROWSER_TEST_F(SmartSessionRestoreTest, MAYBE_PRE_CorrectLoadingOrder) {
 }
 
 IN_PROC_BROWSER_TEST_F(SmartSessionRestoreTest, MAYBE_CorrectLoadingOrder) {
-  const int activation_order[] = {4, 2, 5, 0, 3, 1};
+  const auto activation_order = std::to_array<int>({4, 2, 5, 0, 3, 1});
   Profile* profile = browser()->profile();
 
   // Close the browser that gets opened automatically so we can track the order

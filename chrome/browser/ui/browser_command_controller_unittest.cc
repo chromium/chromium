@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/browser_command_controller.h"
+
+#include <array>
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
@@ -356,7 +353,7 @@ FullscreenTestBrowserWindow::GetWebContentsForExclusiveAccess() {
 
 TEST_F(BrowserCommandControllerFullscreenTest,
        UpdateCommandsForFullscreenMode) {
-  struct {
+  struct Commands {
     int command_id;
     // Whether the command is enabled in tab mode.
     bool enabled_in_tab;
@@ -366,15 +363,16 @@ TEST_F(BrowserCommandControllerFullscreenTest,
     bool enabled_in_fullscreen;
     // Whether the keyboard shortcut is reserved in fullscreen mode.
     bool reserved_in_fullscreen;
-  } commands[] = {
-    // 1. Most commands are disabled in fullscreen.
-    // 2. In fullscreen, only the exit fullscreen commands are reserved. All
-    // other shortcuts should be delivered to the web page. See
-    // http://crbug.com/680809.
+  };
+  auto commands = std::to_array<Commands>({
+      // 1. Most commands are disabled in fullscreen.
+      // 2. In fullscreen, only the exit fullscreen commands are reserved. All
+      // other shortcuts should be delivered to the web page. See
+      // http://crbug.com/680809.
 
-    //         Command ID        |      tab mode      |      fullscreen     |
-    //                           | enabled | reserved | enabled  | reserved |
-    // clang-format off
+      //         Command ID        |      tab mode      |      fullscreen     |
+      //                           | enabled | reserved | enabled  | reserved |
+      // clang-format off
     { IDC_OPEN_CURRENT_URL,        true,     false,     false,     false    },
     { IDC_FOCUS_TOOLBAR,           true,     false,     false,     false    },
     { IDC_FOCUS_LOCATION,          true,     false,     false,     false    },
@@ -403,8 +401,8 @@ TEST_F(BrowserCommandControllerFullscreenTest,
     { IDC_SELECT_PREVIOUS_TAB,     true,     true,      true,      false    },
     { IDC_EXIT,                    true,     true,      true,      true     },
     { IDC_SHOW_AS_TAB,             false,    false,     false,     false    },
-    // clang-format on
-  };
+      // clang-format on
+  });
   const input::NativeWebKeyboardEvent key_event(
       blink::WebInputEvent::Type::kUndefined, 0,
       blink::WebInputEvent::GetStaticTimeStampForTests());

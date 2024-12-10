@@ -4,6 +4,7 @@
 
 #include "components/browsing_data/content/browsing_data_model.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -1352,7 +1353,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   auto* dom_storage_context = storage_partition->GetDOMStorageContext();
 
   // Fetch local storage size from backend.
-  base::test::TestFuture<uint64_t> test_entry_storage_size[3];
+  std::array<base::test::TestFuture<uint64_t>, 3> test_entry_storage_size;
   dom_storage_context->GetLocalStorageUsage(base::BindLambdaForTesting(
       [&](const std::vector<content::StorageUsageInfo>& storage_usage_info) {
         ASSERT_EQ(3U, storage_usage_info.size());

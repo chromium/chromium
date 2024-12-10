@@ -10,6 +10,7 @@
 #include "components/url_pattern_index/url_pattern_index.h"
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <memory>
 #include <numeric>
@@ -1082,16 +1083,19 @@ TEST_F(UrlPatternIndexTest, RequestMethod) {
   const flat::ActivationType no_activation = flat::ActivationType_NONE;
   const std::string origin = "http://foo.com";
 
-  const struct {
+  struct RequestMethods {
     std::string name;
     flat::RequestMethod request_method;
-  } request_methods[] = {{"delete", flat::RequestMethod_DELETE},
-                         {"get", flat::RequestMethod_GET},
-                         {"head", flat::RequestMethod_HEAD},
-                         {"options", flat::RequestMethod_OPTIONS},
-                         {"patch", flat::RequestMethod_PATCH},
-                         {"post", flat::RequestMethod_POST},
-                         {"put", flat::RequestMethod_PUT}};
+  };
+  const auto request_methods = std::to_array<RequestMethods>({
+      {"delete", flat::RequestMethod_DELETE},
+      {"get", flat::RequestMethod_GET},
+      {"head", flat::RequestMethod_HEAD},
+      {"options", flat::RequestMethod_OPTIONS},
+      {"patch", flat::RequestMethod_PATCH},
+      {"post", flat::RequestMethod_POST},
+      {"put", flat::RequestMethod_PUT},
+  });
 
   int next_rule_id = 0;
   for (auto request_method : request_methods) {
@@ -1146,20 +1150,23 @@ TEST_F(UrlPatternIndexTest, EmbedderConditions) {
                                     [](int i) { return i % 2 == 0; });
       });
 
-  struct {
+  struct Cases {
     const std::string url;
     const EmbedderConditionsMatcher matcher;
     const bool expect_match;
     // Fields below are valid iff `expect_match` is true.
     const uint32_t expected_id = 0;
     const std::optional<std::vector<uint8_t>> expected_embedder_data;
-  } cases[] = {{url_1, match_first_element_one, true, 1, embedder_data_1},
-               {url_1, match_has_evens, true, 1, embedder_data_1},
-               {url_1, match_first_element_three, false},
-               {url_2, match_first_element_one, false},
-               {url_2, match_has_evens, true, 2, embedder_data_2},
-               {url_2, match_first_element_three, false},
-               {"http://abc.com", match_first_element_one, false}};
+  };
+  auto cases = std::to_array<Cases>({
+      {url_1, match_first_element_one, true, 1, embedder_data_1},
+      {url_1, match_has_evens, true, 1, embedder_data_1},
+      {url_1, match_first_element_three, false},
+      {url_2, match_first_element_one, false},
+      {url_2, match_has_evens, true, 2, embedder_data_2},
+      {url_2, match_first_element_three, false},
+      {"http://abc.com", match_first_element_one, false},
+  });
 
   for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(::testing::Message() << "Testing case " << i);

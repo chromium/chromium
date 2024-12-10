@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <memory>
 #include <string_view>
 #include <utility>
@@ -1589,7 +1585,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestWSSInvalidCertAndClose) {
   GURL wss_loop_url(wss_loop_url_path);
 
   // Create tabs and visit pages which keep on creating wss connections.
-  WebContents* tabs[16];
+  std::array<WebContents*, 16> tabs;
   for (int i = 0; i < 16; ++i) {
     tabs[i] = chrome::AddSelectedTabWithURL(browser(), wss_loop_url,
                                             ui::PAGE_TRANSITION_LINK);

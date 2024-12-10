@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -319,11 +315,11 @@ TEST_F(USBDevicePermissionMessagesTest, SingleDevice) {
 
 TEST_F(USBDevicePermissionMessagesTest, MultipleDevice) {
   const char16_t kMessage[] = u"Access any of these USB devices";
-  const char* kDetails[] = {
+  auto kDetails = std::to_array<const char*>({
       "PVR Mass Storage from HUMAX Co., Ltd.",
       "unknown devices from HUMAX Co., Ltd.",
-      "devices from an unknown vendor"
-  };
+      "devices from an unknown vendor",
+  });
 
   // Prepare data set
   base::Value::List permission_list;

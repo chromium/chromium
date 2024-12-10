@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <set>
@@ -3842,14 +3838,15 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, TabIdFiltering) {
       base::StringPrintf(kFetchTemplate, fetch_url.spec().c_str());
 
   GURL new_url = embedded_test_server()->GetURL(kHost, kUrlPath);
-  struct {
+  struct Cases {
     int expected_tab_id;
     std::string expected_host;
-  } cases[] = {
+  };
+  auto cases = std::to_array<Cases>({
       {first_tab_id, "rule1.com"},
       {second_tab_id, kHost},
       {third_tab_id, "rule3.com"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(cases); i++) {
     SCOPED_TRACE(base::StringPrintf("Testing case %zu", i));

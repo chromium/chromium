@@ -4,6 +4,7 @@
 
 #include "chrome/browser/upgrade_detector/upgrade_detector_impl.h"
 
+#include <array>
 #include <initializer_list>
 #include <memory>
 #include <string>
@@ -515,7 +516,7 @@ TEST_P(UpgradeDetectorImplTimerTest, TestNotificationTimer) {
   detector.UpgradeDetected(TestUpgradeDetectorImpl::UPGRADE_AVAILABLE_REGULAR);
 
   // Cache the thresholds for the detector's annoyance levels.
-  const base::TimeDelta thresholds[5] = {
+  const std::array<base::TimeDelta, 5> thresholds = {
       detector.GetThresholdForLevel(
           UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW),
       detector.GetThresholdForLevel(UpgradeDetector::UPGRADE_ANNOYANCE_LOW),

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/site_settings_handler.h"
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -3462,11 +3463,11 @@ TEST_F(SiteSettingsHandlerTest, ExcludeWebUISchemesInLists) {
   const ContentSettingsType content_settings_type =
       ContentSettingsType::NOTIFICATIONS;
   // Register WebUIAllowlist auto-granted permissions.
-  const url::Origin kWebUIOrigins[] = {
+  const auto kWebUIOrigins = std::to_array<url::Origin>({
       url::Origin::Create(GURL("chrome://test")),
       url::Origin::Create(GURL("chrome-untrusted://test")),
       url::Origin::Create(GURL("devtools://devtools")),
-  };
+  });
 
   WebUIAllowlist* allowlist = WebUIAllowlist::GetOrCreate(profile());
   for (const url::Origin& origin : kWebUIOrigins)
@@ -6204,8 +6205,12 @@ TEST_F(SiteSettingsHandlerTest, ClearClientHints) {
   SetupModel();
   handler()->OnStorageFetched();
 
-  GURL hosts[] = {GURL("https://example.com/"), GURL("https://www.example.com"),
-                  GURL("https://google.com/"), GURL("https://www.google.com/")};
+  auto hosts = std::to_array<GURL>({
+      GURL("https://example.com/"),
+      GURL("https://www.example.com"),
+      GURL("https://google.com/"),
+      GURL("https://www.google.com/"),
+  });
 
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
@@ -6287,8 +6292,12 @@ TEST_F(SiteSettingsHandlerTest, ClearReducedAcceptLanguage) {
   SetupModel();
   handler()->OnStorageFetched();
 
-  GURL hosts[] = {GURL("https://example.com/"), GURL("https://www.example.com"),
-                  GURL("https://google.com/"), GURL("https://www.google.com/")};
+  auto hosts = std::to_array<GURL>({
+      GURL("https://example.com/"),
+      GURL("https://www.example.com"),
+      GURL("https://google.com/"),
+      GURL("https://www.google.com/"),
+  });
 
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
@@ -6365,8 +6374,12 @@ TEST_F(SiteSettingsHandlerTest, ClearDurableStorage) {
   SetupModel();
   handler()->OnStorageFetched();
 
-  GURL hosts[] = {GURL("https://example.com/"), GURL("https://www.example.com"),
-                  GURL("https://google.com/"), GURL("https://www.google.com/")};
+  auto hosts = std::to_array<GURL>({
+      GURL("https://example.com/"),
+      GURL("https://www.example.com"),
+      GURL("https://google.com/"),
+      GURL("https://www.google.com/"),
+  });
 
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());

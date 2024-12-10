@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -120,10 +116,12 @@ class MediaGalleriesPermissionsTest : public extensions::ExtensionPrefsTest {
       raw_ptr<std::vector<MediaGalleryPermission>> expectation;
     };
 
-    const TestData test_data[] = {{&extension1_id_, &extension1_expectation_},
-                                  {&extension2_id_, &extension2_expectation_},
-                                  {&extension3_id_, &extension3_expectation_},
-                                  {&extension4_id_, &extension4_expectation_}};
+    const auto test_data = std::to_array<TestData>({
+        {&extension1_id_, &extension1_expectation_},
+        {&extension2_id_, &extension2_expectation_},
+        {&extension3_id_, &extension3_expectation_},
+        {&extension4_id_, &extension4_expectation_},
+    });
     for (size_t i = 0; i < std::size(test_data); i++) {
       std::vector<MediaGalleryPermission> actual =
           gallery_prefs_->GetGalleryPermissionsFromPrefs(*test_data[i].id);

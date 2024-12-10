@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -582,8 +578,9 @@ TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarIncognitoEnableExtension) {
   extensions::TestExtensionDir dir2;
   dir2.WriteManifest(base::StringPrintf(kManifest, "incognito2"));
 
-  extensions::TestExtensionDir* dirs[] = {&dir1, &dir2};
-  const extensions::Extension* extensions[] = {nullptr, nullptr};
+  auto dirs = std::to_array<extensions::TestExtensionDir*>({&dir1, &dir2});
+  auto extensions =
+      std::to_array<const extensions::Extension*>({nullptr, nullptr});
   for (size_t i = 0; i < std::size(dirs); ++i) {
     // The extension id will be calculated from the file path; we need this to
     // wait for the extension to load.

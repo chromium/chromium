@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/browsing_data/core/counters/autofill_counter.h"
 
+#include <array>
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -459,10 +455,13 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, TimeRanges) {
     const browsing_data::BrowsingDataCounter::ResultInt expected_num_addresses;
     const browsing_data::BrowsingDataCounter::ResultInt
         expected_num_user_annotations;
-  } test_cases[] = {{base::Time(), 2, 3, 3, 0},
-                    {kTime1, 2, 3, 3, 0},
-                    {kTime2, 1, 2, 2, 0},
-                    {kTime3, 1, 1, 0, 0}};
+  };
+  auto test_cases = std::to_array<TestCase>({
+      {base::Time(), 2, 3, 3, 0},
+      {kTime1, 2, 3, 3, 0},
+      {kTime2, 1, 2, 2, 0},
+      {kTime3, 1, 1, 0, 0},
+  });
 
   Profile* profile = browser()->profile();
   browsing_data::AutofillCounter counter(

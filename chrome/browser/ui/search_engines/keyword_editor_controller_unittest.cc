@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/search_engines/keyword_editor_controller.h"
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -428,8 +424,13 @@ TEST_F(KeywordEditorControllerTest, EnginesSortedByName) {
       },
   };
 
-  const std::u16string kExpectedShortNamesOrder[] = {
-      u"Active 1", u"active 2", u"Active 3", u"inactive 1", u"Inactive 2"};
+  const auto kExpectedShortNamesOrder = std::to_array<std::u16string>({
+      u"Active 1",
+      u"active 2",
+      u"Active 3",
+      u"inactive 1",
+      u"Inactive 2",
+  });
 
   std::vector<TemplateURL*> engines;
   for (SearchEngineOrderingTestCase test_case : kTestCases) {
@@ -483,9 +484,13 @@ TEST_F(KeywordEditorControllerTest, EnginesSortedByNameWithManagedSiteSearch) {
       },
   };
 
-  const std::u16string kExpectedShortNamesOrder[] = {
-      u"policy 1", u"Policy 2", u"Non-managed 1", u"non-managed 2",
-      u"Non-managed 3"};
+  const auto kExpectedShortNamesOrder = std::to_array<std::u16string>({
+      u"policy 1",
+      u"Policy 2",
+      u"Non-managed 1",
+      u"non-managed 2",
+      u"Non-managed 3",
+  });
 
   std::vector<TemplateURL*> engines;
   for (SearchEngineOrderingTestCase test_case : kTestCases) {
@@ -547,10 +552,18 @@ TEST_F(KeywordEditorControllerTest, FeaturedEnterpriseSiteSearch) {
       },
   };
 
-  const std::u16string kExpectedShortNamesOrder[] = {
-      u"Featured 1", u"Featured 2", u"Non-featured", u"User-defined engine"};
-  const std::u16string kExpectedKeywordsToDisplay[] = {u"@kw1, kw1", u"@kw2",
-                                                       u"kw3", u"kw2"};
+  const auto kExpectedShortNamesOrder = std::to_array<std::u16string>({
+      u"Featured 1",
+      u"Featured 2",
+      u"Non-featured",
+      u"User-defined engine",
+  });
+  const auto kExpectedKeywordsToDisplay = std::to_array<std::u16string>({
+      u"@kw1, kw1",
+      u"@kw2",
+      u"kw3",
+      u"kw2",
+  });
 
   std::vector<TemplateURL*> engines;
   for (SearchEngineOrderingTestCase test_case : kTestCases) {
@@ -639,10 +652,16 @@ TEST_F(KeywordEditorControllerTest,
       },
   };
 
-  const std::u16string kExpectedShortNamesOrder[] = {
-      u"Featured 1", u"Featured 2", u"User-defined engine"};
-  const std::u16string kExpectedKeywordsToDisplay[] = {u"@kw1", u"@kw2, kw2",
-                                                       u"kw1"};
+  const auto kExpectedShortNamesOrder = std::to_array<std::u16string>({
+      u"Featured 1",
+      u"Featured 2",
+      u"User-defined engine",
+  });
+  const auto kExpectedKeywordsToDisplay = std::to_array<std::u16string>({
+      u"@kw1",
+      u"@kw2, kw2",
+      u"kw1",
+  });
 
   std::vector<TemplateURL*> engines;
   for (SearchEngineOrderingTestCase test_case : kTestCases) {

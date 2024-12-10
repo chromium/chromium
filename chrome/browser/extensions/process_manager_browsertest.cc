@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "extensions/browser/process_manager.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -56,7 +54,6 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/browsertest_util.h"
-#include "extensions/browser/process_manager.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -1190,7 +1187,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
   // Try navigating the web tab to each nested URL with the app's origin.  This
   // should be blocked.
-  GURL nested_urls[] = {blob_url, filesystem_url};
+  auto nested_urls = std::to_array<GURL>({blob_url, filesystem_url});
   for (size_t i = 0; i < std::size(nested_urls); i++) {
     content::TestNavigationObserver observer(web_tab);
     EXPECT_TRUE(
@@ -1307,7 +1304,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
   // Attempt opening the nested urls using window.open(url, '', 'noopener').
   // This should not be allowed.
-  GURL nested_urls[] = {blob_url, filesystem_url};
+  auto nested_urls = std::to_array<GURL>({blob_url, filesystem_url});
   for (size_t i = 0; i < std::size(nested_urls); i++) {
     content::WebContents* new_popup =
         OpenPopupNoOpener(tab->GetPrimaryMainFrame(), nested_urls[i]);

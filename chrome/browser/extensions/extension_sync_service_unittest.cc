@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/extension_sync_service.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <string>
@@ -936,7 +932,7 @@ TEST_F(ExtensionSyncServiceTest, GetSyncAppDataUserSettings) {
 TEST_F(ExtensionSyncServiceTest, GetSyncAppDataUserSettingsOnExtensionMoved) {
   InitializeEmptyExtensionService();
   const size_t kAppCount = 3;
-  const Extension* apps[kAppCount];
+  std::array<const Extension*, kAppCount> apps;
   apps[0] = PackAndInstallCRX(data_dir().AppendASCII("app1"), INSTALL_NEW);
   apps[1] = PackAndInstallCRX(data_dir().AppendASCII("app2"), INSTALL_NEW);
   apps[2] = PackAndInstallCRX(data_dir().AppendASCII("app4"), INSTALL_NEW);
@@ -957,7 +953,7 @@ TEST_F(ExtensionSyncServiceTest, GetSyncAppDataUserSettingsOnExtensionMoved) {
         extension_sync_service()->GetAllSyncDataForTesting(syncer::APPS);
     ASSERT_EQ(list.size(), 3U);
 
-    std::unique_ptr<ExtensionSyncData> data[kAppCount];
+    std::array<std::unique_ptr<ExtensionSyncData>, kAppCount> data;
     for (size_t i = 0; i < kAppCount; ++i) {
       data[i] = ExtensionSyncData::CreateFromSyncData(list[i]);
       ASSERT_TRUE(data[i].get());
@@ -966,7 +962,7 @@ TEST_F(ExtensionSyncServiceTest, GetSyncAppDataUserSettingsOnExtensionMoved) {
     // The sync data is not always in the same order our apps were installed in,
     // so we do that sorting here so we can make sure the values are changed as
     // expected.
-    syncer::StringOrdinal app_launch_ordinals[kAppCount];
+    std::array<syncer::StringOrdinal, kAppCount> app_launch_ordinals;
     for (size_t i = 0; i < kAppCount; ++i) {
       for (size_t j = 0; j < kAppCount; ++j) {
         if (apps[i]->id() == data[j]->id())

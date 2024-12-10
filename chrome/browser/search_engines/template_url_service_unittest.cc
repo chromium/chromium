@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/search_engines/template_url_service.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -1464,7 +1460,8 @@ TEST_P(TemplateURLServiceTest, UpdateKeywordSearchTermsForURL) {
   struct TestData {
     const std::string url;
     const std::u16string term;
-  } data[] = {
+  };
+  auto data = std::to_array<TestData>({
       {"http://foo/", std::u16string()},
       {"http://foo/foo?q=xx", std::u16string()},
       {"http://x/bar?q=xx", std::u16string()},
@@ -1476,7 +1473,7 @@ TEST_P(TemplateURLServiceTest, UpdateKeywordSearchTermsForURL) {
       {"http://x/foo?q=b#query=xx", u"xx"},
       {"http://x/foo?q=b#q=xx", u"b"},
       {"http://x/foo?query=b#q=xx", std::u16string()},
-  };
+  });
 
   test_util()->ChangeModelToLoadState();
   AddKeywordWithDate("name", "x", "http://x/foo?q={searchTerms}",
@@ -1493,11 +1490,12 @@ TEST_P(TemplateURLServiceTest, UpdateKeywordSearchTermsForURL) {
 TEST_P(TemplateURLServiceTest, DontUpdateKeywordSearchForNonReplaceable) {
   struct TestData {
     const std::string url;
-  } data[] = {
+  };
+  auto data = std::to_array<TestData>({
       {"http://foo/"},
       {"http://x/bar?q=xx"},
       {"http://x/foo?y=xx"},
-  };
+  });
 
   test_util()->ChangeModelToLoadState();
   AddKeywordWithDate("name", "x", "http://x/foo", "http://sugg1", std::string(),

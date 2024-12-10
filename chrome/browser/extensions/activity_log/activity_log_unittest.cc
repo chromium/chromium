@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 
 #include "base/command_line.h"
@@ -47,7 +43,7 @@ namespace {
 
 const char kExtensionId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
-const char* const kUrlApiCalls[] = {
+const auto kUrlApiCalls = std::to_array<const char*>({
     "HTMLButtonElement.formAction", "HTMLEmbedElement.src",
     "HTMLFormElement.action",       "HTMLFrameElement.src",
     "HTMLHtmlElement.manifest",     "HTMLIFrameElement.src",
@@ -58,7 +54,8 @@ const char* const kUrlApiCalls[] = {
     "HTMLModElement.cite",          "HTMLObjectElement.data",
     "HTMLQuoteElement.cite",        "HTMLScriptElement.src",
     "HTMLSourceElement.src",        "HTMLTrackElement.src",
-    "HTMLVideoElement.poster"};
+    "HTMLVideoElement.poster",
+});
 
 }  // namespace
 

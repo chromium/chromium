@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/browser_instant_controller.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -59,11 +55,13 @@ struct TabReloadTestCase {
 };
 
 // Test cases for when Google is the initial, but not final provider.
-const TabReloadTestCase kTabReloadTestCasesFinalProviderNotGoogle[] = {
-    {"NTP", chrome::kChromeUINewTabPageURL, false, true},
-    {"Remote SERP", "https://www.google.com/url?bar=search+terms", false,
-     false},
-    {"Other NTP", "https://bar.com/newtab", false, false}};
+const auto kTabReloadTestCasesFinalProviderNotGoogle =
+    std::to_array<TabReloadTestCase>({
+        {"NTP", chrome::kChromeUINewTabPageURL, false, true},
+        {"Remote SERP", "https://www.google.com/url?bar=search+terms", false,
+         false},
+        {"Other NTP", "https://bar.com/newtab", false, false},
+    });
 
 class FakeWebContentsObserver : public content::WebContentsObserver {
  public:

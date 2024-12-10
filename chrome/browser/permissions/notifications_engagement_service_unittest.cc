@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/notifications_engagement_service_factory.h"
+#include <array>
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,8 +47,8 @@ void NotificationsEngagementServiceTest::SetUp() {
 
 TEST_F(NotificationsEngagementServiceTest,
        NotificationsEngagementContentSetting) {
-  GURL hosts[] = {GURL("https://google.com/"),
-                  GURL("https://www.youtube.com/")};
+  auto hosts = std::to_array<GURL>(
+      {GURL("https://google.com/"), GURL("https://www.youtube.com/")});
 
   // Otherwise the test time and the service time will be out of sync and cause
   // the tests to fail.

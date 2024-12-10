@@ -10,6 +10,7 @@
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
 
 #include <algorithm>
+#include <array>
 #include <list>
 #include <map>
 #include <memory>
@@ -2280,7 +2281,7 @@ TEST_F(WebRtcEventLogManagerTest,
        DISABLED_RemoteLogFileCreatedInCorrectDirectory) {
   // Set up separate browser contexts; each one will get one log.
   constexpr size_t kLogsNum = 3;
-  std::unique_ptr<TestingProfile> browser_contexts[kLogsNum];
+  std::array<std::unique_ptr<TestingProfile>, kLogsNum> browser_contexts;
   std::vector<std::unique_ptr<MockRenderProcessHost>> rphs;
   for (size_t i = 0; i < kLogsNum; ++i) {
     browser_contexts[i] = CreateBrowserContext();
@@ -2289,7 +2290,7 @@ TEST_F(WebRtcEventLogManagerTest,
   }
 
   // Prepare to store the logs' paths in distinct memory locations.
-  std::optional<base::FilePath> file_paths[kLogsNum];
+  std::array<std::optional<base::FilePath>, kLogsNum> file_paths;
   for (size_t i = 0; i < kLogsNum; ++i) {
     const auto key = GetPeerConnectionKey(rphs[i].get(), kLid);
     EXPECT_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
@@ -2314,13 +2315,14 @@ TEST_F(WebRtcEventLogManagerTest,
 
 TEST_F(WebRtcEventLogManagerTest,
        StartRemoteLoggingSanityIfDuplicateIdsInDifferentRendererProcesses) {
-  std::unique_ptr<MockRenderProcessHost> rphs[2] = {
+  std::array<std::unique_ptr<MockRenderProcessHost>, 2> rphs = {
       std::make_unique<MockRenderProcessHost>(browser_context_.get()),
       std::make_unique<MockRenderProcessHost>(browser_context_.get()),
   };
 
-  PeerConnectionKey keys[2] = {GetPeerConnectionKey(rphs[0].get(), 0),
-                               GetPeerConnectionKey(rphs[1].get(), 0)};
+  std::array<PeerConnectionKey, 2> keys = {
+      GetPeerConnectionKey(rphs[0].get(), 0),
+      GetPeerConnectionKey(rphs[1].get(), 0)};
 
   // The ID is shared, but that's not a problem, because the renderer process
   // are different.
@@ -2331,7 +2333,7 @@ TEST_F(WebRtcEventLogManagerTest,
   OnPeerConnectionSessionIdSet(keys[1], id);
 
   // Make sure the logs get written to separate files.
-  std::optional<base::FilePath> file_paths[2];
+  std::array<std::optional<base::FilePath>, 2> file_paths;
   for (size_t i = 0; i < 2; ++i) {
     EXPECT_CALL(remote_observer_, OnRemoteLogStarted(keys[i], _, _))
         .Times(1)
@@ -2517,7 +2519,7 @@ TEST_F(WebRtcEventLogManagerTest,
 TEST_F(WebRtcEventLogManagerTest,
        DISABLED_LogMultipleActiveRemoteLogsDifferentBrowserContexts) {
   constexpr size_t kLogsNum = 3;
-  std::unique_ptr<TestingProfile> browser_contexts[kLogsNum];
+  std::array<std::unique_ptr<TestingProfile>, kLogsNum> browser_contexts;
   std::vector<std::unique_ptr<MockRenderProcessHost>> rphs;
   for (size_t i = 0; i < kLogsNum; ++i) {
     browser_contexts[i] = CreateBrowserContext();
@@ -2560,7 +2562,7 @@ TEST_F(WebRtcEventLogManagerTest,
 }
 
 TEST_F(WebRtcEventLogManagerTest, DifferentRemoteLogsMayHaveDifferentMaximums) {
-  const std::string logs[2] = {"abra", "cadabra"};
+  const std::array<std::string, 2> logs = {"abra", "cadabra"};
   std::vector<std::optional<base::FilePath>> file_paths(std::size(logs));
   std::vector<PeerConnectionKey> keys;
   for (size_t i = 0; i < std::size(logs); ++i) {
@@ -2776,9 +2778,9 @@ TEST_F(WebRtcEventLogManagerTest,
   SuppressUploading();
 
   // Create additional BrowserContexts for the test.
-  std::unique_ptr<TestingProfile> browser_contexts[2] = {
+  std::array<std::unique_ptr<TestingProfile>, 2> browser_contexts = {
       CreateBrowserContext(), CreateBrowserContext()};
-  std::unique_ptr<MockRenderProcessHost> rphs[2] = {
+  std::array<std::unique_ptr<MockRenderProcessHost>, 2> rphs = {
       std::make_unique<MockRenderProcessHost>(browser_contexts[0].get()),
       std::make_unique<MockRenderProcessHost>(browser_contexts[1].get())};
 
@@ -2873,8 +2875,8 @@ TEST_F(WebRtcEventLogManagerTest,
   std::list<WebRtcLogFileInfo> expected_files;
   ASSERT_TRUE(base::CreateDirectory(remote_logs_dir));
 
-  base::FilePath::StringPieceType extensions[] = {
-      kWebRtcEventLogUncompressedExtension, kWebRtcEventLogGzippedExtension};
+  auto extensions = std::to_array<base::FilePath::StringPieceType>(
+      {kWebRtcEventLogUncompressedExtension, kWebRtcEventLogGzippedExtension});
   ASSERT_LE(std::size(extensions), kMaxPendingRemoteBoundWebRtcEventLogs)
       << "Lacking test coverage.";
 
@@ -3022,7 +3024,7 @@ TEST_F(WebRtcEventLogManagerTest, ExpiredFilesArePrunedRatherThanUploaded) {
 
   UnloadMainTestProfile();
 
-  base::FilePath file_paths[2];
+  std::array<base::FilePath, 2> file_paths;
   for (size_t i = 0; i < 2; ++i) {
     base::File file;
     ASSERT_TRUE(CreateRemoteBoundLogFile(
@@ -3097,8 +3099,8 @@ TEST_F(WebRtcEventLogManagerTest, RemoteLogEmptyStringHandledGracefully) {
 #if BUILDFLAG(IS_POSIX)
 TEST_F(WebRtcEventLogManagerTest,
        UnopenedRemoteLogFilesNotCountedTowardsActiveLogsLimit) {
-  std::unique_ptr<TestingProfile> browser_contexts[2];
-  std::unique_ptr<MockRenderProcessHost> rphs[2];
+  std::array<std::unique_ptr<TestingProfile>, 2> browser_contexts;
+  std::array<std::unique_ptr<MockRenderProcessHost>, 2> rphs;
   for (size_t i = 0; i < 2; ++i) {
     browser_contexts[i] = CreateBrowserContext();
     rphs[i] =
@@ -3567,8 +3569,8 @@ TEST_F(WebRtcEventLogManagerTest,
        StartRemoteLoggingOverMultipleWebAppsDisallowed) {
   // Test assumes there are at least two legal web-app IDs.
   ASSERT_NE(kMinWebRtcEventLogWebAppId, kMaxWebRtcEventLogWebAppId);
-  const size_t web_app_ids[2] = {kMinWebRtcEventLogWebAppId,
-                                 kMaxWebRtcEventLogWebAppId};
+  const std::array<size_t, 2> web_app_ids = {kMinWebRtcEventLogWebAppId,
+                                             kMaxWebRtcEventLogWebAppId};
 
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
   ASSERT_TRUE(OnPeerConnectionAdded(key));

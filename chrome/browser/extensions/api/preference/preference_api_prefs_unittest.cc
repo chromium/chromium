@@ -9,6 +9,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -138,8 +139,13 @@ void ExtensionControlledPrefsTest::UninstallExtension(
 void ExtensionControlledPrefsTest::EnsureExtensionInstalled(
     Extension* extension) {
   // Install extension the first time a preference is set for it.
-  Extension* extensions[] = {extension1(), extension2(), extension3(),
-                             extension4(), internal_extension()};
+  auto extensions = std::to_array<Extension*>({
+      extension1(),
+      extension2(),
+      extension3(),
+      extension4(),
+      internal_extension(),
+  });
   for (size_t i = 0; i < kNumInstalledExtensions; ++i) {
     if (extension == extensions[i] && !installed_[i]) {
       prefs()->OnExtensionInstalled(extension,
@@ -155,8 +161,13 @@ void ExtensionControlledPrefsTest::EnsureExtensionInstalled(
 
 void ExtensionControlledPrefsTest::EnsureExtensionUninstalled(
     const ExtensionId& extension_id) {
-  Extension* extensions[] = {extension1(), extension2(), extension3(),
-                             extension4(), internal_extension()};
+  auto extensions = std::to_array<Extension*>({
+      extension1(),
+      extension2(),
+      extension3(),
+      extension4(),
+      internal_extension(),
+  });
   for (size_t i = 0; i < kNumInstalledExtensions; ++i) {
     if (extensions[i]->id() == extension_id) {
       installed_[i] = false;

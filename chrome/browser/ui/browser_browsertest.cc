@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/browser.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -1502,7 +1498,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OpenAppWindowLikeNtp) {
 // Makes sure the browser doesn't crash when
 // set_show_state(ui::mojom::WindowShowState::kMaximized) has been invoked.
 IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
-  Browser::CreateParams params[] = {
+  auto params = std::to_array<Browser::CreateParams>({
       Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true),
       Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true),
       Browser::CreateParams::CreateForApp("app_name", true, gfx::Rect(),
@@ -1512,7 +1508,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
                                                browser()->profile(), true),
       Browser::CreateParams(Browser::TYPE_PICTURE_IN_PICTURE,
                             browser()->profile(), true),
-  };
+  });
   for (size_t i = 0; i < std::size(params); ++i) {
     params[i].initial_show_state = ui::mojom::WindowShowState::kMaximized;
     AddBlankTabAndShow(Browser::Create(params[i]));
@@ -1528,7 +1524,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
 // Makes sure the browser doesn't crash when
 // set_show_state(ui::mojom::WindowShowState::kMinimized) has been invoked.
 IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_StartMinimized) {
-  Browser::CreateParams params[] = {
+  auto params = std::to_array<Browser::CreateParams>({
       Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true),
       Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true),
       Browser::CreateParams::CreateForApp("app_name", true, gfx::Rect(),
@@ -1538,7 +1534,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_StartMinimized) {
                                                browser()->profile(), true),
       Browser::CreateParams(Browser::TYPE_PICTURE_IN_PICTURE,
                             browser()->profile(), true),
-  };
+  });
   for (size_t i = 0; i < std::size(params); ++i) {
     params[i].initial_show_state = ui::mojom::WindowShowState::kMinimized;
     AddBlankTabAndShow(Browser::Create(params[i]));

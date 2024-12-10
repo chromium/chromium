@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -320,13 +316,16 @@ TEST_F(TabsApiUnitTest, IsTabStripEditable) {
 }
 
 TEST_F(TabsApiUnitTest, QueryWithoutTabsPermission) {
-  GURL tab_urls[] = {GURL("http://www.google.com"),
-                     GURL("http://www.example.com"),
-                     GURL("https://www.google.com")};
-  std::string tab_titles[] = {"", "Sample title", "Sample title"};
+  auto tab_urls = std::to_array<GURL>({
+      GURL("http://www.google.com"),
+      GURL("http://www.example.com"),
+      GURL("https://www.google.com"),
+  });
+  auto tab_titles =
+      std::to_array<std::string>({"", "Sample title", "Sample title"});
 
   // Add 3 web contentses to the browser.
-  content::WebContents* web_contentses[std::size(tab_urls)];
+  std::array<content::WebContents*, std::size(tab_urls)> web_contentses;
   for (size_t i = 0; i < std::size(tab_urls); ++i) {
     std::unique_ptr<content::WebContents> web_contents =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
@@ -371,13 +370,16 @@ TEST_F(TabsApiUnitTest, QueryWithoutTabsPermission) {
 }
 
 TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
-  GURL tab_urls[] = {GURL("http://www.google.com"),
-                     GURL("http://www.example.com"),
-                     GURL("https://www.google.com/test")};
-  std::string tab_titles[] = {"", "Sample title", "Sample title"};
+  auto tab_urls = std::to_array<GURL>({
+      GURL("http://www.google.com"),
+      GURL("http://www.example.com"),
+      GURL("https://www.google.com/test"),
+  });
+  auto tab_titles =
+      std::to_array<std::string>({"", "Sample title", "Sample title"});
 
   // Add 3 web contentses to the browser.
-  content::WebContents* web_contentses[std::size(tab_urls)];
+  std::array<content::WebContents*, std::size(tab_urls)> web_contentses;
   for (size_t i = 0; i < std::size(tab_urls); ++i) {
     std::unique_ptr<content::WebContents> web_contents =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);

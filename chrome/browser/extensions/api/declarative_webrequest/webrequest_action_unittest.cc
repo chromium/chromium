@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "extensions/browser/api/declarative_webrequest/webrequest_action.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 
 #include "base/files/file_path.h"
@@ -23,7 +21,6 @@
 #include "chrome/common/extensions/extension_test_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/api/declarative_webrequest/request_stage.h"
-#include "extensions/browser/api/declarative_webrequest/webrequest_action.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_condition.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_constants.h"
 #include "extensions/browser/api/web_request/permission_helper.h"
@@ -560,25 +557,25 @@ TEST(WebRequestActionTest, GetName) {
       " \"lowerPriorityThan\": 123,"
       " \"hasTag\": \"some_tag\""
       "}]";
-  const char* const kExpectedNames[] = {
-    "declarativeWebRequest.RedirectRequest",
-    "declarativeWebRequest.RedirectByRegEx",
-    "declarativeWebRequest.SetRequestHeader",
-    "declarativeWebRequest.RemoveRequestHeader",
-    "declarativeWebRequest.AddResponseHeader",
-    "declarativeWebRequest.RemoveResponseHeader",
-    "declarativeWebRequest.SendMessageToExtension",
-    "declarativeWebRequest.AddRequestCookie",
-    "declarativeWebRequest.AddResponseCookie",
-    "declarativeWebRequest.EditRequestCookie",
-    "declarativeWebRequest.EditResponseCookie",
-    "declarativeWebRequest.RemoveRequestCookie",
-    "declarativeWebRequest.RemoveResponseCookie",
-    "declarativeWebRequest.CancelRequest",
-    "declarativeWebRequest.RedirectToTransparentImage",
-    "declarativeWebRequest.RedirectToEmptyDocument",
-    "declarativeWebRequest.IgnoreRules",
-  };
+  const auto kExpectedNames = std::to_array<const char*>({
+      "declarativeWebRequest.RedirectRequest",
+      "declarativeWebRequest.RedirectByRegEx",
+      "declarativeWebRequest.SetRequestHeader",
+      "declarativeWebRequest.RemoveRequestHeader",
+      "declarativeWebRequest.AddResponseHeader",
+      "declarativeWebRequest.RemoveResponseHeader",
+      "declarativeWebRequest.SendMessageToExtension",
+      "declarativeWebRequest.AddRequestCookie",
+      "declarativeWebRequest.AddResponseCookie",
+      "declarativeWebRequest.EditRequestCookie",
+      "declarativeWebRequest.EditResponseCookie",
+      "declarativeWebRequest.RemoveRequestCookie",
+      "declarativeWebRequest.RemoveResponseCookie",
+      "declarativeWebRequest.CancelRequest",
+      "declarativeWebRequest.RedirectToTransparentImage",
+      "declarativeWebRequest.RedirectToEmptyDocument",
+      "declarativeWebRequest.IgnoreRules",
+  });
   std::unique_ptr<WebRequestActionSet> action_set(CreateSetOfActions(kActions));
   ASSERT_EQ(std::size(kExpectedNames), action_set->actions().size());
   size_t index = 0;

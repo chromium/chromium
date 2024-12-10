@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 
+#include <array>
 #include <memory>
 
 #include "base/run_loop.h"
@@ -31,9 +32,11 @@ class NotificationPermissionReviewServiceTest : public testing::Test {
   void CreateMockNotificationPermissionsForReview() {
     // Add a couple of notification permission and check they appear in review
     // list.
-    GURL urls[] = {GURL("https://google.com:443"),
-                   GURL("https://www.youtube.com:443"),
-                   GURL("https://www.example.com:443")};
+    auto urls = std::to_array<GURL>({
+        GURL("https://google.com:443"),
+        GURL("https://www.youtube.com:443"),
+        GURL("https://www.example.com:443"),
+    });
 
     auto* site_engagement_service =
         site_engagement::SiteEngagementServiceFactory::GetForProfile(profile());
@@ -114,8 +117,11 @@ class NotificationPermissionReviewServiceTest : public testing::Test {
 
 TEST_F(NotificationPermissionReviewServiceTest,
        IgnoreOriginForNotificationPermissionReview) {
-  std::string urls[] = {"https://google.com:443", "https://www.youtube.com:443",
-                        "https://www.example.com:443"};
+  auto urls = std::to_array<std::string>({
+      "https://google.com:443",
+      "https://www.youtube.com:443",
+      "https://www.example.com:443",
+  });
   SetNotificationPermissionAndRecordEngagement(GURL(urls[0]),
                                                CONTENT_SETTING_ALLOW, 1);
   SetNotificationPermissionAndRecordEngagement(GURL(urls[1]),
@@ -204,8 +210,11 @@ TEST_F(NotificationPermissionReviewServiceTest, SingleOriginTest) {
 
 TEST_F(NotificationPermissionReviewServiceTest,
        ShowOnlyGrantedNotificationPermissions) {
-  GURL urls[] = {GURL("https://google.com/"), GURL("https://www.youtube.com/"),
-                 GURL("https://www.example.com/")};
+  auto urls = std::to_array<GURL>({
+      GURL("https://google.com/"),
+      GURL("https://www.youtube.com/"),
+      GURL("https://www.example.com/"),
+  });
   SetNotificationPermissionAndRecordEngagement(urls[0], CONTENT_SETTING_ALLOW,
                                                1);
   SetNotificationPermissionAndRecordEngagement(urls[1], CONTENT_SETTING_BLOCK,

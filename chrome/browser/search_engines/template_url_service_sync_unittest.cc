@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include <stddef.h>
 
@@ -1923,14 +1919,15 @@ TEST_F(TemplateURLServiceSyncTest, MergeInSyncTemplateURL) {
   //    the model after the merge.
   //  * If |keywords_conflict| is true, the TemplateURLs are set up with
   //    the same keyword.
-  const struct {
+  struct TestCases {
     ExpectedTemplateURL conflict_winner;
     ExpectedTemplateURL synced_at_start;
     ExpectedTemplateURL update_sent;
     ExpectedTemplateURL present_in_model;
     bool keywords_conflict;
     size_t final_num_turls;
-  } test_cases[] = {
+  };
+  const auto test_cases = std::to_array<TestCases>({
       // Both are synced and the new sync entry is better: Local is left as-is,
       // and the Sync is added.
       {SYNC, BOTH, NEITHER, BOTH, true, 2},
@@ -1947,7 +1944,7 @@ TEST_F(TemplateURLServiceSyncTest, MergeInSyncTemplateURL) {
       // keywords, with no updates sent. Note that MergeDataAndStartSyncing is
       // responsible for creating the ACTION_ADD for the local TemplateURL.
       {NEITHER, SYNC, NEITHER, BOTH, false, 2},
-  };
+  });
 
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(testing::Message() << "Case #" << i << std::endl);

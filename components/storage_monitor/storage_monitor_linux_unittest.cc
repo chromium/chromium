@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <array>
+
 // StorageMonitorLinux unit tests.
 
 #include "components/storage_monitor/storage_monitor_linux.h"
@@ -62,19 +64,17 @@ struct TestDeviceData {
   uint64_t partition_size_in_bytes;
 };
 
-const TestDeviceData kTestDeviceData[] = {
-  { kDeviceDCIM1, "UUID:FFF0-000F",
-    StorageInfo::REMOVABLE_MASS_STORAGE_WITH_DCIM, 88788 },
-  { kDeviceDCIM2, "VendorModelSerial:ComName:Model2010:8989",
-    StorageInfo::REMOVABLE_MASS_STORAGE_WITH_DCIM,
-    8773 },
-  { kDeviceDCIM3, "VendorModelSerial:::WEM319X792",
-    StorageInfo::REMOVABLE_MASS_STORAGE_WITH_DCIM, 22837 },
-  { kDeviceNoDCIM, "UUID:ABCD-1234",
-    StorageInfo::REMOVABLE_MASS_STORAGE_NO_DCIM, 512 },
-  { kDeviceFixed, "UUID:743A-2349",
-    StorageInfo::FIXED_MASS_STORAGE, 17282 },
-};
+const auto kTestDeviceData = std::to_array<TestDeviceData>({
+    {kDeviceDCIM1, "UUID:FFF0-000F",
+     StorageInfo::REMOVABLE_MASS_STORAGE_WITH_DCIM, 88788},
+    {kDeviceDCIM2, "VendorModelSerial:ComName:Model2010:8989",
+     StorageInfo::REMOVABLE_MASS_STORAGE_WITH_DCIM, 8773},
+    {kDeviceDCIM3, "VendorModelSerial:::WEM319X792",
+     StorageInfo::REMOVABLE_MASS_STORAGE_WITH_DCIM, 22837},
+    {kDeviceNoDCIM, "UUID:ABCD-1234",
+     StorageInfo::REMOVABLE_MASS_STORAGE_NO_DCIM, 512},
+    {kDeviceFixed, "UUID:743A-2349", StorageInfo::FIXED_MASS_STORAGE, 17282},
+});
 
 std::unique_ptr<StorageInfo> GetDeviceInfo(const base::FilePath& device_path,
                                            const base::FilePath& mount_point) {
