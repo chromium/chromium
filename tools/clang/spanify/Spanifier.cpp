@@ -911,11 +911,13 @@ void InsertTrailingComma(const clang::InitListExpr* init_list_expr,
 // complexes, but they can be conservatively summarized by the need for extra
 // braces when the elements themselves are initialized with braces.
 bool CanElideBracesForStdArrayInitialization(
-    clang::QualType element_type,
-    const clang::InitListExpr* init_list_expr) {
-  for (unsigned int index = 0; index < init_list_expr->getNumInits(); ++index) {
-    const clang::Expr* expr = init_list_expr->getInit(index);
-    if (clang::dyn_cast_or_null<clang::InitListExpr>(expr)) {
+    const clang::InitListExpr* init_list_expr,
+    const clang::SourceManager& source_manager) {
+  // If the init list contains brace-enclosed elements, we can't always elide
+  // the braces.
+  for (const clang::Expr* expr : init_list_expr->inits()) {
+    const clang::SourceLocation& begin_loc = expr->getBeginLoc();
+    if (source_manager.getCharacterData(begin_loc)[0] == '{') {
       return false;
     }
   }
@@ -956,8 +958,8 @@ std::string RewriteStdArrayWithInitList(
     }
   }
 
-  const bool elide_braces = CanElideBracesForStdArrayInitialization(
-      array_type->getElementType(), init_list_expr);
+  const bool elide_braces =
+      CanElideBracesForStdArrayInitialization(init_list_expr, source_manager);
 
   return llvm::formatv(elide_braces ? "std::array<{0}, {1}> {2} = {3}"
                                     : "std::array<{0}, {1}> {2} = {{{3}}",

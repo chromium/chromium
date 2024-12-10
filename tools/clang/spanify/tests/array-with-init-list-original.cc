@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <vector>
 
 namespace {
 
@@ -164,4 +165,30 @@ void test_brace_elision_computed_size() {
   // std::array<Aggregate, size> buffer = {{{1, 2}, {3, 4}}};
   Aggregate buffer[size] = {{1, 2}, {3, 4}};
   std::ignore = buffer[0];
+}
+
+void test_with_nested_vector() {
+  // Expected rewrite:
+  // auto data = std::to_array<std::vector<int>>({
+  //     {1, 2, 3},
+  //     {4, 5, 6},
+  // });
+  std::vector<int> data[] = {
+      {1, 2, 3},
+      {4, 5, 6},
+  };
+  std::ignore = data[0];
+}
+
+void test_with_nested_vector_const_size() {
+  // Expected rewrite:
+  // std::array<std::vector<int>, 2> data = {{
+  //    {1, 2, 3},
+  //    {4, 5, 6},
+  // }};
+  std::vector<int> data[2] = {
+      {1, 2, 3},
+      {4, 5, 6},
+  };
+  std::ignore = data[0];
 }
