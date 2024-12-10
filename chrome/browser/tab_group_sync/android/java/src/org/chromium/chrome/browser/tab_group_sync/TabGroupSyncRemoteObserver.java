@@ -131,4 +131,9 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
     @Override
     public void onTabGroupLocalIdChanged(
             String syncTabGroupId, @Nullable LocalTabGroupId localTabGroupId) {}
+
+    @Override
+    public void onLocalObservationModeChanged(boolean observeLocalChanges) {
+        mEnableLocalObserverCallback.onResult(observeLocalChanges);
+    }
 }

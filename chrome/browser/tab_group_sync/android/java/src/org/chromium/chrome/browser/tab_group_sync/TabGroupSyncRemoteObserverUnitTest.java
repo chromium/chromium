@@ -192,6 +192,15 @@ public class TabGroupSyncRemoteObserverUnitTest {
         verify(mLocalMutationHelper, never()).closeTabGroup(any(), anyInt());
     }
 
+    @Test
+    public void testOnLocalObservationModeChanged() {
+        Assert.assertTrue(mEnabledLocalObservers);
+        mRemoteObserver.onLocalObservationModeChanged(false);
+        Assert.assertFalse(mEnabledLocalObservers);
+        mRemoteObserver.onLocalObservationModeChanged(true);
+        Assert.assertTrue(mEnabledLocalObservers);
+    }
+
     private class TestTabCreationDelegate implements TabCreationDelegate {
         private int mNextTabId;
 
