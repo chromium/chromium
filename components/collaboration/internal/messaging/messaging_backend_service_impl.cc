@@ -21,9 +21,11 @@ namespace collaboration::messaging {
 
 MessagingBackendServiceImpl::MessagingBackendServiceImpl(
     std::unique_ptr<TabGroupChangeNotifier> tab_group_change_notifier,
+    std::unique_ptr<MessagingBackendStore> messaging_backend_store,
     tab_groups::TabGroupSyncService* tab_group_sync_service,
     data_sharing::DataSharingService* data_sharing_service)
     : tab_group_change_notifier_(std::move(tab_group_change_notifier)),
+      store_(std::move(messaging_backend_store)),
       tab_group_sync_service_(tab_group_sync_service),
       data_sharing_service_(data_sharing_service) {
   tab_group_change_notifier_->AddObserver(this);

@@ -15,10 +15,6 @@
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 
-namespace collaboration::messaging {
-class MessagingBackendStore;
-}
-
 namespace data_sharing {
 class DataSharingService;
 }  // namespace data_sharing
@@ -28,12 +24,15 @@ class TabGroupSyncService;
 }  // namespace tab_groups
 
 namespace collaboration::messaging {
+class MessagingBackendStore;
+
 // The implementation of the MessagingBackendService.
 class MessagingBackendServiceImpl : public MessagingBackendService,
                                     public TabGroupChangeNotifier::Observer {
  public:
   MessagingBackendServiceImpl(
       std::unique_ptr<TabGroupChangeNotifier> tab_group_change_notifier,
+      std::unique_ptr<MessagingBackendStore> messaging_backend_store,
       tab_groups::TabGroupSyncService* tab_group_sync_service,
       data_sharing::DataSharingService* data_sharing_service);
   ~MessagingBackendServiceImpl() override;

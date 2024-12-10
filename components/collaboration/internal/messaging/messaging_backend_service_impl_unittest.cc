@@ -8,6 +8,7 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "components/collaboration/internal/messaging/storage/messaging_backend_store.h"
 #include "components/collaboration/internal/messaging/tab_group_change_notifier.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
@@ -40,6 +41,56 @@ class MockTabGroupChangeNotifier : public TabGroupChangeNotifier {
   MOCK_METHOD(bool, IsInitialized, (), (override));
 };
 
+class MockMessagingBackendStore : public MessagingBackendStore {
+ public:
+  MockMessagingBackendStore() = default;
+  ~MockMessagingBackendStore() override = default;
+
+  MOCK_METHOD(void,
+              Initialize,
+              (base::OnceCallback<void(bool)> on_initialized_callback),
+              (override));
+  MOCK_METHOD(bool, HasAnyDirtyMessages, (DirtyType dirty_type), (override));
+  MOCK_METHOD(void,
+              ClearDirtyMessageForTab,
+              (const data_sharing::GroupId& collaboration_id,
+               const base::Uuid& tab_id,
+               DirtyType dirty_type),
+              (override));
+  MOCK_METHOD(void,
+              ClearDirtyMessage,
+              (const base::Uuid uuid, DirtyType dirty_type),
+              (override));
+  MOCK_METHOD(std::vector<collaboration_pb::Message>,
+              GetDirtyMessages,
+              (DirtyType dirty_type),
+              (override));
+  MOCK_METHOD(std::vector<collaboration_pb::Message>,
+              GetDirtyMessagesForGroup,
+              (const data_sharing::GroupId& collaboration_id,
+               DirtyType dirty_type),
+              (override));
+  MOCK_METHOD(std::optional<collaboration_pb::Message>,
+              GetDirtyMessageForTab,
+              (const data_sharing::GroupId& collaboration_id,
+               const base::Uuid& tab_id,
+               DirtyType dirty_type),
+              (override));
+  MOCK_METHOD(std::vector<collaboration_pb::Message>,
+              GetRecentMessagesForGroup,
+              (const data_sharing::GroupId& collaboration_id),
+              (override));
+  MOCK_METHOD(void,
+              AddMessage,
+              (const collaboration_pb::Message& message),
+              (override));
+  MOCK_METHOD(base::TimeDelta, GetRecentMessageCutoffDuration, (), (override));
+  MOCK_METHOD(void,
+              SetRecentMessageCutoffDuration,
+              (base::TimeDelta time_delta),
+              (override));
+};
+
 class MessagingBackendServiceImplTest : public testing::Test {
  public:
   void SetUp() override {
@@ -59,8 +110,13 @@ class MessagingBackendServiceImplTest : public testing::Test {
     EXPECT_CALL(*unowned_tab_group_change_notifier_, Initialize());
     EXPECT_CALL(*unowned_tab_group_change_notifier_, RemoveObserver(_));
 
+    auto mock_messaging_backend_store =
+        std::make_unique<MockMessagingBackendStore>();
+    unowned_messaging_backend_store_ = mock_messaging_backend_store.get();
+
     service_ = std::make_unique<MessagingBackendServiceImpl>(
         std::move(tab_group_change_notifier),
+        std::move(mock_messaging_backend_store),
         mock_tab_group_sync_service_.get(),
         /*data_sharing_service=*/nullptr);
   }
@@ -72,6 +128,7 @@ class MessagingBackendServiceImplTest : public testing::Test {
       mock_tab_group_sync_service_;
   std::unique_ptr<MessagingBackendServiceImpl> service_;
   raw_ptr<MockTabGroupChangeNotifier> unowned_tab_group_change_notifier_;
+  raw_ptr<MockMessagingBackendStore> unowned_messaging_backend_store_;
   raw_ptr<TabGroupChangeNotifier::Observer> notifier_observer_;
 };
 
