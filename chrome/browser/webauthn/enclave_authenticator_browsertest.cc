@@ -1243,8 +1243,9 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
 #if BUILDFLAG(IS_MAC)
 
+// TODO(crbug.com/383203166): Disabled on Mac for test failures.
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
-                       RegisterICloudDriveEnabled_NoGPMDefault) {
+                       DISABLED_RegisterICloudDriveEnabled_NoGPMDefault) {
   if (__builtin_available(macOS 13.5, *)) {
     // Override iCloud Drive to appear enabled. Because of this GPM should not
     // be the default since none of the other conditions apply.
@@ -2898,8 +2899,15 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_EQ(script_result, "\"webauthn: OK\"");
 }
 
+// TODO(crbug.com/383203166): Disabled on Mac for test failures.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_NotForSameGoogleAccount DISABLED_NotForSameGoogleAccount
+#else
+#define MAYBE_NotForSameGoogleAccount NotForSameGoogleAccount
+#endif
+
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
-                       NotForSameGoogleAccount) {
+                       MAYBE_NotForSameGoogleAccount) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("accounts.google.com", "/title1.html")));
   EnableUVKeySupport();
