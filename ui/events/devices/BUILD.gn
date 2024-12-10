@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
@@ -54,6 +56,13 @@ component("devices") {
     ]
   }
 
+  if (is_ios && use_blink) {
+    sources += [
+      "input_device_observer_ios.h",
+      "input_device_observer_ios.mm",
+    ]
+  }
+
   defines = [ "EVENTS_DEVICES_IMPLEMENTATION" ]
 
   public_deps = [
@@ -63,6 +72,7 @@ component("devices") {
 
   deps = [
     "//base",
+    "//build:blink_buildflags",
     "//skia",
     "//ui/events:platform_event",
     "//ui/gfx/geometry",
@@ -88,10 +98,15 @@ source_set("unittests") {
     "touchscreen_device_unittest.cc",
   ]
 
+  if (is_ios && use_blink) {
+    sources += [ "input_device_observer_ios_unittest.cc" ]
+  }
+
   deps = [
     ":devices",
     "//base",
     "//base/test:test_support",
+    "//build:blink_buildflags",
   ]
 }
 
