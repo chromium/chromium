@@ -634,11 +634,7 @@ inline bool String::ContainsOnlyLatin1OrEmpty() const {
   if (Is8Bit())
     return true;
 
-  const UChar* characters = Characters16();
-  UChar ored = 0;
-  for (wtf_size_t i = 0; i < impl_->length(); ++i)
-    ored |= characters[i];
-  return !(ored & 0xFF00);
+  return base::ranges::all_of(Span16(), [](UChar ch) { return ch < 0x0100; });
 }
 
 #ifdef __OBJC__
