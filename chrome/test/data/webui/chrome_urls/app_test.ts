@@ -5,10 +5,11 @@
 import 'chrome://chrome-urls/app.js';
 
 import type {ChromeUrlsAppElement} from 'chrome://chrome-urls/app.js';
+import {INTERNAL_DEBUG_PAGES_HASH} from 'chrome://chrome-urls/app.js';
 import {BrowserProxyImpl} from 'chrome://chrome-urls/browser_proxy.js';
 import type {WebuiUrlInfo} from 'chrome://chrome-urls/chrome_urls.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestChromeUrlsBrowserProxy} from './test_chrome_urls_browser_proxy.js';
@@ -191,5 +192,44 @@ suite('ChromeUrlsAppTest', function() {
     internalItems = lists[1]!.querySelectorAll('li');
     assertEquals(1, internalItems.length);
     assertFalse(!!internalItems[0]!.querySelector('a'));
+  });
+
+  test('Navigate to debug UI headings', async () => {
+    // Ensure we need to scroll by making a short window and lots of urls.
+    // We do this by making the <body> scrollable and document fixed height
+    // since we can't resize the window itself in tests.
+    document.documentElement.style.height = '200px';
+    document.documentElement.style.maxHeight = '200px';
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.height = '100%';
+    document.body.style.overflow = 'auto';
+
+    window.history.replaceState({}, '', `/#${INTERNAL_DEBUG_PAGES_HASH}`);
+    window.dispatchEvent(new CustomEvent('popstate'));
+    const webuiUrls: WebuiUrlInfo[] = [
+      {url: {url: 'chrome://settings/'}, enabled: true, internal: false},
+      {url: {url: 'chrome://extensions/'}, enabled: true, internal: false},
+      {url: {url: 'chrome://downloads/'}, enabled: true, internal: false},
+      {url: {url: 'chrome://print/'}, enabled: true, internal: false},
+      {url: {url: 'chrome://history/'}, enabled: true, internal: false},
+      {url: {url: 'chrome://new-tab-page/'}, enabled: true, internal: false},
+      {url: {url: 'chrome://whats-new/'}, enabled: true, internal: false},
+      {url: {url: 'chrome://bookmarks/'}, enabled: false, internal: false},
+      {url: {url: 'chrome://test-1/'}, enabled: false, internal: false},
+      {url: {url: 'chrome://test-2/'}, enabled: false, internal: false},
+      {url: {url: 'chrome://test-3/'}, enabled: false, internal: false},
+      {url: {url: 'chrome://test-4/'}, enabled: false, internal: false},
+      {url: {url: 'chrome://test-5/'}, enabled: false, internal: false},
+      {url: {url: 'chrome://webui-gallery/'}, enabled: true, internal: true},
+    ];
+    await finishSetup(webuiUrls);
+
+    const header =
+        app.shadowRoot!.querySelector<HTMLElement>('#internal-debugging-pages');
+    assertTrue(!!header);
+    // Header should be in the viewport.
+    assertGT(
+        200 + document.body.scrollTop,
+        app.offsetTop + header.offsetTop + header.offsetHeight);
   });
 });

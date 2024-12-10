@@ -4,13 +4,19 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
+import {CrRouter} from 'chrome://resources/js/cr_router.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {WebuiUrlInfo} from './chrome_urls.mojom-webui.js';
+
+export const INTERNAL_DEBUG_PAGES_HASH: string = 'internal-debug-pages';
 
 export class ChromeUrlsAppElement extends CrLitElement {
   static get is() {
@@ -40,9 +46,27 @@ export class ChromeUrlsAppElement extends CrLitElement {
   protected internalUrlInfos_: WebuiUrlInfo[] = [];
   protected commandUrls_: Url[] = [];
   protected internalUisEnabled_: boolean = false;
+  protected tracker_: EventTracker = new EventTracker();
+
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('internalUrlInfos_') &&
+        this.internalUrlInfos_.length > 0) {
+      this.onHashChanged_(CrRouter.getInstance().getHash());
+    }
+  }
 
   override connectedCallback() {
     super.connectedCallback();
+
+    this.onHashChanged_(CrRouter.getInstance().getHash());
+    this.tracker_.add(
+        CrRouter.getInstance(), 'cr-router-hash-changed',
+        (e: Event) => this.onHashChanged_((e as CustomEvent<string>).detail));
 
     BrowserProxyImpl.getInstance().handler.getUrls().then(({urlsData}) => {
       // Since we use GURL on the C++ side, we need to remove the trailing
@@ -58,6 +82,23 @@ export class ChromeUrlsAppElement extends CrLitElement {
       this.commandUrls_ = urlsData.commandUrls.map(url => getPrettyUrl(url));
       this.internalUisEnabled_ = urlsData.internalDebuggingUisEnabled;
     });
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.tracker_.removeAll();
+  }
+
+  private onHashChanged_(hash: string) {
+    if (hash !== INTERNAL_DEBUG_PAGES_HASH ||
+        this.internalUrlInfos_.length === 0) {
+      return;
+    }
+
+    const header = this.shadowRoot!.querySelector<HTMLElement>(
+        '#internal-debugging-pages');
+    assert(header);
+    header.scrollIntoView(true);
   }
 
   protected getDebugPagesEnabledText_(): string {

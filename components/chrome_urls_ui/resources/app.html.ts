@@ -18,7 +18,7 @@ export function getHtml(this: ChromeUrlsAppElement) {
     }`)}
 </ul>
 ${this.internalUrlInfos_.length ? html`
-  <h2>Internal Debugging Page URLs</h2>
+  <h2 id="internal-debugging-pages">Internal Debugging Page URLs</h2>
   <p id="debug-pages-description">
     <span>Internal debugging pages are currently </span>
     <span class="bold">${this.getDebugPagesEnabledText_()}</span><span>.</span>
