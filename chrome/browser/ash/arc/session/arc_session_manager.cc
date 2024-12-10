@@ -1949,10 +1949,17 @@ void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
   // implement their own checking logic after supporting DLC installation later.
   if (ash::switches::IsRevenBranding() &&
       ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
-    // Check if the Reven device is compatible for ARC.
-    hardware_checker_->IsRevenDeviceCompatibleForArc(
-        base::BindOnce(&ArcSessionManager::OnEnableArcOnReven,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(jobs)));
+    if (ash::features::IsAndroidVpnAppsOnFlexEnabled()) {
+      // Check if the Reven device is compatible for ARC.
+      hardware_checker_->IsRevenDeviceCompatibleForArc(
+          base::BindOnce(&ArcSessionManager::OnEnableArcOnReven,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(jobs)));
+    } else {
+      VLOG(1) << "enable-android-vpn-apps-on-flex flag is off and cannot "
+                 "install arcvm images.";
+      OnExpandPropertyFilesAndReadSalt(
+          ArcSessionManager::ExpansionResult{{}, false});
+    }
   } else {
     VLOG(1) << "Reven device is not managed and cannot install arcvm images.";
     OnExpandPropertyFilesAndReadSalt(

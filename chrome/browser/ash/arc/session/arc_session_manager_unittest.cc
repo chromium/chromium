@@ -1673,6 +1673,10 @@ TEST_F(ArcSessionManagerTest, EnableHardwareCheck) {
   // Add arcvm-dlc command flag.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kEnableArcVmDlc);
+  // Enable enable-android-vpn-apps-on-flex chrome flag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ash::features::kAndroidVpnAppsOnFlex);
   auto mock_hardware_checker_ = std::make_unique<MockArcRevenHardwareChecker>();
   EXPECT_CALL(*mock_hardware_checker_,
               IsRevenDeviceCompatibleForArc(::testing::_))
@@ -1692,6 +1696,28 @@ TEST_F(ArcSessionManagerTest, NoArcVmInstallOnUnmanaged) {
   // Add arcvm-dlc command flag.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kEnableArcVmDlc);
+  auto mock_hardware_checker_ = std::make_unique<MockArcRevenHardwareChecker>();
+  EXPECT_CALL(*mock_hardware_checker_,
+              IsRevenDeviceCompatibleForArc(::testing::_))
+      .Times(0);
+  arc_session_manager()->reset_property_files_expansion_result();
+  arc_session_manager()->ExpandPropertyFilesAndReadSalt();
+}
+
+// Verify that the hardware check is not being run to install
+// the arcvm DLC image when enable-android-vpn-apps-on-flex flag is off.
+TEST_F(ArcSessionManagerTest, NoArcVmInstallWithFlagOff) {
+  cros_settings_test_helper_.InstallAttributes()->SetCloudManaged(
+      "example.com", "fake-device-id");
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kRevenBranding);
+  // Add arcvm-dlc command flag.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableArcVmDlc);
+  // Disable enable-android-vpn-apps-on-flex chrome flag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      ash::features::kAndroidVpnAppsOnFlex);
   auto mock_hardware_checker_ = std::make_unique<MockArcRevenHardwareChecker>();
   EXPECT_CALL(*mock_hardware_checker_,
               IsRevenDeviceCompatibleForArc(::testing::_))
