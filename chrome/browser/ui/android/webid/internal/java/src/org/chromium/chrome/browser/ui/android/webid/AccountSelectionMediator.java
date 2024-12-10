@@ -161,6 +161,37 @@ class AccountSelectionMediator {
         int NUM_ENTRIES = 7;
     }
 
+    /**
+     * The following integers are used for histograms. Do not remove or modify existing values, but
+     * you may add new values at the end and increase NUM_ENTRIES. This enum should be kept in sync
+     * with DisclosureDialogResult in
+     * chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h as well as with
+     * FedCmDisclosureDialogResult in tools/metrics/histograms/enums.xml.
+     */
+    @IntDef({
+        DisclosureDialogResult.CONTINUE,
+        DisclosureDialogResult.CANCEL,
+        DisclosureDialogResult.BACK,
+        DisclosureDialogResult.DESTROY,
+        DisclosureDialogResult.SWIPE,
+        DisclosureDialogResult.BACK_PRESS,
+        DisclosureDialogResult.TAP_SCRIM,
+        DisclosureDialogResult.NUM_ENTRIES
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @VisibleForTesting
+    @interface DisclosureDialogResult {
+        int CONTINUE = 0;
+        int CANCEL = 1;
+        int BACK = 2;
+        int DESTROY = 3;
+        int SWIPE = 4;
+        int BACK_PRESS = 5;
+        int TAP_SCRIM = 6;
+
+        int NUM_ENTRIES = 7;
+    }
+
     private boolean mRegisteredObservers;
     private boolean mWasDismissed;
     // Keeps track of the last bottom sheet seen by the BottomSheetObserver. Used to know whether a
@@ -223,6 +254,10 @@ class AccountSelectionMediator {
     // The current state of the loading dialog if opened for metrics purposes. Histogram is only
     // recorded for active mode.
     private @Nullable Integer mLoadingDialogState;
+
+    // The current state of the disclosure dialog if opened for metrics purposes. Histogram is only
+    // recorded for active mode.
+    private @Nullable Integer mDisclosureDialogState;
 
     // Whether there was a login to IDP CCT that was closed while the loading dialog is open. This
     // could mean that the user successfully completed the login to IDP flow.
@@ -328,6 +363,10 @@ class AccountSelectionMediator {
                                             mHeaderType == HeaderType.LOADING
                                                     ? LoadingDialogResult.SWIPE
                                                     : null;
+                                    mDisclosureDialogState =
+                                            mHeaderType == HeaderType.REQUEST_PERMISSION
+                                                    ? DisclosureDialogResult.SWIPE
+                                                    : null;
                                 } else if (reason
                                         == BottomSheetController.StateChangeReason.BACK_PRESS) {
                                     dismissReason = IdentityRequestDialogDismissReason.BACK_PRESS;
@@ -355,6 +394,10 @@ class AccountSelectionMediator {
                                     mLoadingDialogState =
                                             mHeaderType == HeaderType.LOADING
                                                     ? LoadingDialogResult.TAP_SCRIM
+                                                    : null;
+                                    mDisclosureDialogState =
+                                            mHeaderType == HeaderType.REQUEST_PERMISSION
+                                                    ? DisclosureDialogResult.TAP_SCRIM
                                                     : null;
                                 }
                                 onDismissed(dismissReason);
@@ -430,6 +473,10 @@ class AccountSelectionMediator {
 
     private void handleBackPress() {
         mSelectedAccount = null;
+        if (mHeaderType == HeaderType.REQUEST_PERMISSION) {
+            mDisclosureDialogState = DisclosureDialogResult.BACK_PRESS;
+            maybeRecordDisclosureDialogResult();
+        }
         showAccountsInternal(/* newAccounts= */ null);
     }
 
@@ -590,8 +637,8 @@ class AccountSelectionMediator {
         if (mRpMode != RpMode.ACTIVE) return;
 
         // mLoadingDialogState is set on dismissal e.g. tap scrim, back press or if the loading
-        // dialog gets updated into an account chooser. If it hasn't been set but onDismiss has
-        // called this while showing the loading dialog, it means the user has closed the tab or
+        // dialog gets updated into an account chooser. If it hasn't been set but onDismissed is
+        // called while the loading dialog is being shown, it means the user has closed the tab or
         // navigated away.
         if (mLoadingDialogState == null && mHeaderType == HeaderType.LOADING) {
             mLoadingDialogState = LoadingDialogResult.DESTROY;
@@ -610,8 +657,37 @@ class AccountSelectionMediator {
         mLoadingDialogState = null;
     }
 
+    private void maybeRecordDisclosureDialogResult() {
+        if (mRpMode != RpMode.ACTIVE) return;
+
+        // mDisclosureDialogState is set on dismissal e.g. tap scrim, back press or if the user
+        // presses continue. If it hasn't been set but onDismissed is called while the disclosure
+        // dialog is being shown, it means the user has closed the tab or navigated away.
+        if (mDisclosureDialogState == null && mHeaderType == HeaderType.REQUEST_PERMISSION) {
+            mDisclosureDialogState = DisclosureDialogResult.DESTROY;
+        }
+
+        // Can be null when the disclosure dialog is not shown.
+        if (mDisclosureDialogState == null) return;
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "Blink.FedCm.Button.DisclosureDialogResult",
+                mDisclosureDialogState,
+                SheetType.NUM_ENTRIES);
+        if (mUkmRecorder != null) {
+            mUkmRecorder
+                    .addMetric("Button.DisclosureDialogResult", mDisclosureDialogState)
+                    .record();
+        }
+        mDisclosureDialogState = null;
+    }
+
     void showVerifySheet(Account account) {
         if (mHeaderType == HeaderType.SIGN_IN || mHeaderType == HeaderType.REQUEST_PERMISSION) {
+            if (mHeaderType == HeaderType.REQUEST_PERMISSION) {
+                mDisclosureDialogState = DisclosureDialogResult.CONTINUE;
+                maybeRecordDisclosureDialogResult();
+            }
             mHeaderType = HeaderType.VERIFY;
             updateSheet(Arrays.asList(account), /* areAccountsClickable= */ false);
             updateBackPressBehavior();
@@ -1156,6 +1232,7 @@ class AccountSelectionMediator {
             maybeRecordAccountChooserResult(mAccountChooserState);
         }
         maybeRecordLoadingDialogResult();
+        maybeRecordDisclosureDialogResult();
         dismissContent();
         mDelegate.onDismissed(dismissReason);
     }
