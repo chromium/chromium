@@ -11,6 +11,7 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace syncer {
 
@@ -27,9 +28,10 @@ CollaborationMetadata& CollaborationMetadata::operator=(
 CollaborationMetadata CollaborationMetadata::FromRemoteProto(
     const sync_pb::SyncEntity::CollaborationMetadata& remote_proto) {
   return CollaborationMetadata(
-      /*created_by=*/remote_proto.creation_attribution().obfuscated_gaia_id(),
+      /*created_by=*/GaiaId(
+          remote_proto.creation_attribution().obfuscated_gaia_id()),
       /*last_updated_by=*/
-      remote_proto.last_update_attribution().obfuscated_gaia_id(),
+      GaiaId(remote_proto.last_update_attribution().obfuscated_gaia_id()),
       /*collaboration_id=*/remote_proto.collaboration_id());
 }
 
@@ -37,19 +39,20 @@ CollaborationMetadata CollaborationMetadata::FromRemoteProto(
 CollaborationMetadata CollaborationMetadata::FromLocalProto(
     const sync_pb::EntityMetadata::CollaborationMetadata& local_proto) {
   return CollaborationMetadata(
-      /*created_by=*/local_proto.creation_attribution().obfuscated_gaia_id(),
+      /*created_by=*/GaiaId(
+          local_proto.creation_attribution().obfuscated_gaia_id()),
       /*last_updated_by=*/
-      local_proto.last_update_attribution().obfuscated_gaia_id(),
+      GaiaId(local_proto.last_update_attribution().obfuscated_gaia_id()),
       /*collaboration_id=*/local_proto.collaboration_id());
 }
 
 // static
 CollaborationMetadata CollaborationMetadata::ForLocalChange(
-    std::string_view changed_by,
+    const GaiaId& changed_by,
     std::string_view collaboration_id) {
   return CollaborationMetadata(
-      /*created_by=*/std::string(changed_by),
-      /*last_updated_by=*/std::string(changed_by),
+      /*created_by=*/changed_by,
+      /*last_updated_by=*/changed_by,
       /*collaboration_id=*/std::string(collaboration_id));
 }
 
@@ -58,11 +61,11 @@ CollaborationMetadata::ToRemoteProto() const {
   sync_pb::SyncEntity::CollaborationMetadata remote_proto;
   if (!created_by_.empty()) {
     remote_proto.mutable_creation_attribution()->set_obfuscated_gaia_id(
-        created_by_);
+        created_by_.ToString());
   }
   if (!last_updated_by_.empty()) {
     remote_proto.mutable_last_update_attribution()->set_obfuscated_gaia_id(
-        last_updated_by_);
+        last_updated_by_.ToString());
   }
   remote_proto.set_collaboration_id(collaboration_id_);
   return remote_proto;
@@ -73,11 +76,11 @@ CollaborationMetadata::ToLocalProto() const {
   sync_pb::EntityMetadata::CollaborationMetadata local_proto;
   if (!created_by_.empty()) {
     local_proto.mutable_creation_attribution()->set_obfuscated_gaia_id(
-        created_by_);
+        created_by_.ToString());
   }
   if (!last_updated_by_.empty()) {
     local_proto.mutable_last_update_attribution()->set_obfuscated_gaia_id(
-        last_updated_by_);
+        last_updated_by_.ToString());
   }
   local_proto.set_collaboration_id(collaboration_id_);
   return local_proto;
@@ -85,13 +88,13 @@ CollaborationMetadata::ToLocalProto() const {
 
 size_t CollaborationMetadata::EstimateMemoryUsage() const {
   using base::trace_event::EstimateMemoryUsage;
-  return EstimateMemoryUsage(created_by_) +
-         EstimateMemoryUsage(last_updated_by_) +
+  return EstimateMemoryUsage(created_by_.ToString()) +
+         EstimateMemoryUsage(last_updated_by_.ToString()) +
          EstimateMemoryUsage(collaboration_id_);
 }
 
-CollaborationMetadata::CollaborationMetadata(std::string created_by,
-                                             std::string last_updated_by,
+CollaborationMetadata::CollaborationMetadata(GaiaId created_by,
+                                             GaiaId last_updated_by,
                                              std::string collaboration_id)
     : created_by_(std::move(created_by)),
       last_updated_by_(std::move(last_updated_by)),

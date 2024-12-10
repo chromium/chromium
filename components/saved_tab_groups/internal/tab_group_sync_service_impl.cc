@@ -566,7 +566,7 @@ void TabGroupSyncServiceImpl::MakeTabGroupShared(
   CHECK(!saved_group->is_shared_tab_group());
 
   // TODO(crbug.com/380088920): add CHECK to verify that the bridge is syncing.
-  std::optional<std::string> account_id =
+  std::optional<GaiaId> account_id =
       sync_bridge_mediator_->GetTrackingAccountIdForSharedBridge();
   if (!account_id.has_value()) {
     // Do not share the group if the bridge is not syncing. This should not

@@ -45,7 +45,7 @@ GroupMember MakeGroupMember(const GaiaId& gaia_id,
 }
 
 data_sharing_pb::GroupMember MakeGroupMemberProto(
-    const GaiaId& gaia_id,
+    const std::string& gaia_id,
     const std::string& display_name,
     const std::string& email,
     data_sharing_pb::MemberRole role,
@@ -63,8 +63,9 @@ TEST(GroupDataProtoUtilsTest, ShouldConvertGroupDataToProto) {
   GroupData group_data;
   group_data.group_token.group_id = GroupId(kGroupId);
   group_data.display_name = kGroupDisplayName;
-  group_data.members.push_back(MakeGroupMember(
-      kGaiaId1, kUser1DisplayName, kEmail1, MemberRole::kOwner, kAvatarUrl1));
+  group_data.members.push_back(
+      MakeGroupMember(GaiaId(kGaiaId1), kUser1DisplayName, kEmail1,
+                      MemberRole::kOwner, kAvatarUrl1));
   group_data.group_token.access_token = kGroupAccessToken;
 
   data_sharing_pb::GroupData group_data_proto = GroupDataToProto(group_data);
@@ -101,7 +102,7 @@ TEST(GroupDataProtoUtilsTest, ShouldMakeGroupDataFromProto) {
 
   ASSERT_THAT(group_data.members, SizeIs(1));
   const GroupMember& member = group_data.members[0];
-  EXPECT_EQ(member.gaia_id, kGaiaId1);
+  EXPECT_EQ(member.gaia_id.ToString(), kGaiaId1);
   EXPECT_EQ(member.display_name, kUser1DisplayName);
   EXPECT_EQ(member.email, kEmail1);
   EXPECT_EQ(member.role, MemberRole::kOwner);
@@ -113,10 +114,12 @@ TEST(GroupDataProtoUtilsTest,
   GroupData original_group_data;
   original_group_data.group_token.group_id = GroupId(kGroupId);
   original_group_data.display_name = kGroupDisplayName;
-  original_group_data.members.push_back(MakeGroupMember(
-      kGaiaId1, kUser1DisplayName, kEmail1, MemberRole::kOwner, kAvatarUrl1));
-  original_group_data.members.push_back(MakeGroupMember(
-      kGaiaId2, kUser2DisplayName, kEmail2, MemberRole::kMember, kAvatarUrl2));
+  original_group_data.members.push_back(
+      MakeGroupMember(GaiaId(kGaiaId1), kUser1DisplayName, kEmail1,
+                      MemberRole::kOwner, kAvatarUrl1));
+  original_group_data.members.push_back(
+      MakeGroupMember(GaiaId(kGaiaId2), kUser2DisplayName, kEmail2,
+                      MemberRole::kMember, kAvatarUrl2));
   original_group_data.group_token.access_token = kGroupAccessToken;
 
   GroupData group_data_from_proto =
@@ -130,14 +133,14 @@ TEST(GroupDataProtoUtilsTest,
   ASSERT_THAT(group_data_from_proto.members, SizeIs(2));
 
   const GroupMember& member1 = group_data_from_proto.members[0];
-  EXPECT_EQ(member1.gaia_id, kGaiaId1);
+  EXPECT_EQ(member1.gaia_id.ToString(), kGaiaId1);
   EXPECT_EQ(member1.display_name, kUser1DisplayName);
   EXPECT_EQ(member1.email, kEmail1);
   EXPECT_EQ(member1.role, MemberRole::kOwner);
   EXPECT_EQ(member1.avatar_url.spec(), kAvatarUrl1);
 
   const GroupMember& member2 = group_data_from_proto.members[1];
-  EXPECT_EQ(member2.gaia_id, kGaiaId2);
+  EXPECT_EQ(member2.gaia_id.ToString(), kGaiaId2);
   EXPECT_EQ(member2.display_name, kUser2DisplayName);
   EXPECT_EQ(member2.email, kEmail2);
   EXPECT_EQ(member2.role, MemberRole::kMember);

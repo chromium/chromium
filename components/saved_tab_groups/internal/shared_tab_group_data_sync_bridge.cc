@@ -238,7 +238,7 @@ void AddEntryToBatch(syncer::MutableDataBatch* batch,
                      sync_pb::SharedTabGroupDataSpecifics specifics,
                      const CollaborationId& collaboration_id,
                      base::Time creation_time,
-                     std::string_view changed_by) {
+                     const GaiaId& changed_by) {
   std::unique_ptr<syncer::EntityData> entity_data =
       CreateEntityData(std::move(specifics),
                        syncer::CollaborationMetadata::ForLocalChange(

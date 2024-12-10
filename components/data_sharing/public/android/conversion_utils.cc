@@ -9,6 +9,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/data_sharing/public/group_data.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -30,7 +31,7 @@ namespace data_sharing::conversion {
 ScopedJavaLocalRef<jobject> CreateJavaGroupMember(JNIEnv* env,
                                                   const GroupMember& member) {
   return Java_GroupMember_createGroupMember(
-      env, ConvertUTF8ToJavaString(env, member.gaia_id),
+      env, ConvertUTF8ToJavaString(env, member.gaia_id.ToString()),
       ConvertUTF8ToJavaString(env, member.display_name),
       ConvertUTF8ToJavaString(env, member.email), static_cast<int>(member.role),
       url::GURLAndroid::FromNativeGURL(env, member.avatar_url),

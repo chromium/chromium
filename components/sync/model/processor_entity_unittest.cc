@@ -927,8 +927,8 @@ TEST_F(ProcessorEntityTest, LocalDeletionRecordsVersionInfoIfFeatureIsEnabled) {
 }
 
 TEST_F(ProcessorEntityTest, ShouldCreateAndCommitNewLocalSharedItem) {
-  const std::string kCreatorUserId = "creator_user_id";
-  const std::string kUpdaterUserId = "updater_user_id";
+  const GaiaId kCreatorUserId("creator_user_id");
+  const GaiaId kUpdaterUserId("updater_user_id");
 
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
   entity->RecordLocalUpdate(
@@ -942,16 +942,16 @@ TEST_F(ProcessorEntityTest, ShouldCreateAndCommitNewLocalSharedItem) {
   EXPECT_EQ(kUncommittedVersion, entity->metadata().server_version());
   EXPECT_EQ("collaboration",
             entity->metadata().collaboration().collaboration_id());
-  EXPECT_EQ(kCreatorUserId, entity->metadata()
-                                .collaboration()
-                                .last_update_attribution()
-                                .obfuscated_gaia_id());
+  EXPECT_EQ(kCreatorUserId.ToString(), entity->metadata()
+                                           .collaboration()
+                                           .last_update_attribution()
+                                           .obfuscated_gaia_id());
 
   // The same user ID is used as a creator for the first time.
-  EXPECT_EQ(kCreatorUserId, entity->metadata()
-                                .collaboration()
-                                .creation_attribution()
-                                .obfuscated_gaia_id());
+  EXPECT_EQ(kCreatorUserId.ToString(), entity->metadata()
+                                           .collaboration()
+                                           .creation_attribution()
+                                           .obfuscated_gaia_id());
   EXPECT_TRUE(entity->IsUnsynced());
 
   // Generate a commit request.
@@ -969,14 +969,14 @@ TEST_F(ProcessorEntityTest, ShouldCreateAndCommitNewLocalSharedItem) {
               /*changed_by=*/kUpdaterUserId, "collaboration")),
       /*trimmed_specifics=*/{},
       /*unique_position=*/std::nullopt);
-  EXPECT_EQ(kUpdaterUserId, entity->metadata()
-                                .collaboration()
-                                .last_update_attribution()
-                                .obfuscated_gaia_id());
-  EXPECT_EQ(kCreatorUserId, entity->metadata()
-                                .collaboration()
-                                .creation_attribution()
-                                .obfuscated_gaia_id());
+  EXPECT_EQ(kUpdaterUserId.ToString(), entity->metadata()
+                                           .collaboration()
+                                           .last_update_attribution()
+                                           .obfuscated_gaia_id());
+  EXPECT_EQ(kCreatorUserId.ToString(), entity->metadata()
+                                           .collaboration()
+                                           .creation_attribution()
+                                           .obfuscated_gaia_id());
   EXPECT_NE(entity->metadata()
                 .collaboration()
                 .last_update_attribution()
@@ -1027,7 +1027,7 @@ TEST_F(ProcessorEntityTest, ShouldPopulateCollaborationForTombstones) {
   entity->RecordLocalUpdate(GenerateSharedTabGroupDataEntityData(
                                 kHash, "guid",
                                 CollaborationMetadata::ForLocalChange(
-                                    /*changed_by=*/"", "collaboration")),
+                                    /*changed_by=*/GaiaId(), "collaboration")),
                             /*trimmed_specifics=*/{},
                             /*unique_position=*/std::nullopt);
   entity->RecordLocalDeletion(DeletionOrigin::Unspecified());

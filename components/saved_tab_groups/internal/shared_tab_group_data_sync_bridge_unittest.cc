@@ -795,7 +795,8 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldCheckValidEntities) {
 
   EXPECT_TRUE(bridge()->IsEntityDataValid(CreateEntityData(
       MakeTabGroupSpecifics("test title", sync_pb::SharedTabGroup::GREEN),
-      kCollaborationId, kDefaultGaiaId, /*updated_by=*/kDefaultGaiaId)));
+      kCollaborationId, GaiaId(kDefaultGaiaId),
+      /*updated_by=*/GaiaId(kDefaultGaiaId))));
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldRemoveLocalGroupsOnDisableSync) {

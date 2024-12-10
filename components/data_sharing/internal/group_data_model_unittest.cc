@@ -508,10 +508,10 @@ TEST_F(GroupDataModelTest, ShouldGetPossiblyRemovedGroupMember) {
                    .has_value());
 
   // Member never existed, nullopt should be returned.
-  EXPECT_FALSE(
-      model()
-          .GetPossiblyRemovedGroupMember(group_id, "non-existing-member")
-          .has_value());
+  EXPECT_FALSE(model()
+                   .GetPossiblyRemovedGroupMember(group_id,
+                                                  GaiaId("non-existing-member"))
+                   .has_value());
   // TODO(crbug.com/373628741): add coverage for the scenario when member was
   // removed from the group once it is properly supported (i.e. removed members
   // data is temporarily stored).
