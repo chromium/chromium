@@ -6183,6 +6183,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.Mac.ValidColorSpaceAfterTransform"
+    enum="Boolean" expires_after="2025-06-01">
+  <owner>kron@google.com</owner>
+  <owner>video-cmi-mpp@google.com</owner>
+  <summary>
+    A boolean count of how often a valid color space can be determined from the
+    transformed buffer in VideoCaptureDeviceAVFoundation. This is recorded for
+    the first frame in didOutputSampleBuffer that has been passed through the
+    transformer.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.ScaleOverride" units="units"
     expires_after="2025-04-24">
   <owner>jophba@chromium.org</owner>
