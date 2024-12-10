@@ -109,10 +109,8 @@ std::unique_ptr<google_apis::RequestSender> MakeSender(Profile* profile) {
 // static
 void GoogleCalendarPageHandler::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpCalendarModule)) {
     registry->RegisterTimePref(kGoogleCalendarLastDismissedTimePrefName,
                                base::Time());
-  }
 }
 
 GoogleCalendarPageHandler::GoogleCalendarPageHandler(
