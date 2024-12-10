@@ -64,8 +64,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
-#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -297,15 +295,6 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
 
   // InProcessBrowserTest:
   ~ArcAuthServiceTest() override = default;
-
-  void SetUp() override {
-    std::vector<base::test::FeatureRef> lacros =
-        ash::standalone_browser::GetFeatureRefs();
-    lacros.push_back(
-        ash::standalone_browser::features::kLacrosForSupervisedUsers);
-    feature_list_.InitWithFeatures({}, lacros);
-    InProcessBrowserTest::SetUp();
-  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     arc::SetArcAvailableCommandLineForTesting(command_line);
@@ -585,7 +574,6 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<AccountAppsAvailabilitySetter> arc_availability_setter_;
   std::unique_ptr<TestSettingsWindowManager> settings_window_manager_;
-  base::test::ScopedFeatureList feature_list_;
   base::test::ScopedCommandLine scoped_command_line_;
 
   // Not owned.

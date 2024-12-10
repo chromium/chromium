@@ -161,7 +161,6 @@
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #else
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
@@ -4714,7 +4713,6 @@ WebAppIntegrationTestDriver::GetTestAppHomePageHandler(
 
 WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   std::vector<base::test::FeatureRef> enabled_features;
-  std::vector<base::test::FeatureRef> disabled_features;
   enabled_features.push_back(blink::features::kDesktopPWAsSubApps);
   enabled_features.push_back(blink::features::kDesktopPWAsTabStrip);
   enabled_features.push_back(features::kDesktopPWAsTabStripSettings);
@@ -4724,21 +4722,13 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   enabled_features.push_back(features::kRecordWebAppDebugInfo);
   enabled_features.push_back(features::kWebAppDontAddExistingAppsToSync);
 #if BUILDFLAG(IS_CHROMEOS)
-  // WebAppIntegrationTest runs in Ash only when Lacros is disabled.
-  // If Lacros is enabled, WebAppIntegrationTest runs in Lacros with crosapi
-  // enabled.
-  //
-  // TODO(crbug.com/375937556): Revise this now that the Lacros support is
-  // removed.
-  base::Extend(disabled_features, ash::standalone_browser::GetFeatureRefs());
-
   // TODO(crbug.com/40236806): Update test driver to work with new UI.
   enabled_features.push_back(apps::features::kLinkCapturingUiUpdate);
 #else
   // TODO(b/313492499): Update test driver to work with new intent picker UI.
   enabled_features.push_back(features::kPwaNavigationCapturing);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  scoped_feature_list_.InitWithFeatures(enabled_features, {});
 }
 
 WebAppIntegrationTest::~WebAppIntegrationTest() = default;

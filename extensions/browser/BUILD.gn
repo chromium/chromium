@@ -1010,8 +1010,6 @@ source_set("unit_tests") {
       "//chromeos/ash/components/dbus/upstart",
       "//chromeos/ash/components/login/login_state",
       "//chromeos/ash/components/network:test_support",
-      "//chromeos/ash/components/standalone_browser",
-      "//chromeos/ash/components/standalone_browser:test_support",
       "//chromeos/constants",
       "//chromeos/crosapi/mojom",
       "//chromeos/dbus/permission_broker",

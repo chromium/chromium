@@ -105,7 +105,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace webapps {
@@ -164,14 +163,8 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
          {{feature_engagement::kIPHDemoModeFeatureChoiceParam,
            feature_engagement::kIPHDesktopPwaInstallFeature.name}}},
         {feature_engagement::kIPHDesktopPwaInstallFeature, {}}};
-    std::vector<base::test::FeatureRef> disabled_features;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    base::Extend(disabled_features, ash::standalone_browser::GetFeatureRefs());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-    features_.InitWithFeaturesAndParameters(enabled_features,
-                                            disabled_features);
+    features_.InitWithFeaturesAndParameters(enabled_features, {});
   }
 
   PwaInstallViewBrowserTest(const PwaInstallViewBrowserTest&) = delete;

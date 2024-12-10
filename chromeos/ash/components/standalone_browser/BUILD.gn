@@ -65,8 +65,6 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
 
-  sources = [ "feature_refs.cc" ]
-
   deps = [
     ":standalone_browser",
     "//ash/constants",

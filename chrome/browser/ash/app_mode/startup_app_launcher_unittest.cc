@@ -59,7 +59,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-forward.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-shared.h"

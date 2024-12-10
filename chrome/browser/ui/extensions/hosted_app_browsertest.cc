@@ -105,7 +105,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "base/containers/extend.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #endif
 
 using content::RenderFrameHost;
@@ -230,9 +229,6 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
         // tests.
         features::kHttpsUpgrades,
     };
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    base::Extend(disabled, ash::standalone_browser::GetFeatureRefs());
-#endif
     scoped_feature_list_.InitWithFeatures(/*enabled_features=*/{}, disabled);
   }
 

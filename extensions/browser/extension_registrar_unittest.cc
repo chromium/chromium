@@ -26,7 +26,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/common/pref_names.h"  // nogncheck
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/account_id/account_id.h"  // nogncheck
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
