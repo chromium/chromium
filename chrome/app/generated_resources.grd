@@ -8738,8 +8738,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <ph name="BREAK">&lt;br&gt;</ph>
         You can manage settings from the card menu or see more options in Customize Chrome.
       </message>
-      <message name="IDS_NTP_MODULES_TAB_RESUMPTION_SENTENCE" desc="Name of the tabs in the Tab Resumption module in sentence case shown in various UIs.">
-        Tabs
+      <message name="IDS_NTP_MODULES_TAB_RESUMPTION_MULTI_DISMISS" desc="String text for module dismissal in the Tab Resumption module.">
+        Tabs hidden
+      </message>
+      <message name="IDS_NTP_MODULES_TAB_RESUMPTION_SINGLE_DISMISS" desc="String text for single tab dismissal in the Tab Resumption module.">
+        Tab hidden
       </message>
       <message name="IDS_NTP_MODULES_TAB_RESUMPTION_RECENTLY_OPENED" desc="Default string text for when a tab was opened less than 60 seconds ago.">
         Recently opened

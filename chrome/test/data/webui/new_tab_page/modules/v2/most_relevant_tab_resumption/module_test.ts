@@ -168,7 +168,7 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
       await microtasksFinished();
 
       const dismissEvent: DismissModuleElementEvent = await waitForDismissEvent;
-      assertEquals(`Tabs hidden`, dismissEvent.detail.message);
+      assertEquals(`Tab hidden`, dismissEvent.detail.message);
       assertEquals(
           1, metrics.count(`NewTabPage.TabResumption.VisitDismissIndex`, 0));
       assertEquals(1, handler.getCallCount(`dismissURLVisit`));
