@@ -16,9 +16,4 @@ namespace embedder_support {
 BASE_FEATURE(kOriginTrialsSampleAPIThirdPartyAlternativeUsage,
              "OriginTrialsSampleAPIThirdPartyAlternativeUsage",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kConversionMeasurementAPIAlternativeUsage,
-             "ConversionMeasurementAPIAlternativeUsage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace embedder_support

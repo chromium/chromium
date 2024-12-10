@@ -13,11 +13,6 @@ namespace embedder_support {
 // origin trial third party tokens.
 BASE_DECLARE_FEATURE(kOriginTrialsSampleAPIThirdPartyAlternativeUsage);
 
-// Field trial feature for controlling usage restriction of the
-// Conversion Measurement API's origin trial tokens. When disabled, the API
-// cannot be enabled by tokens using the user subset usage restriction.
-BASE_DECLARE_FEATURE(kConversionMeasurementAPIAlternativeUsage);
-
 }  // namespace embedder_support
 
 #endif  // COMPONENTS_EMBEDDER_SUPPORT_ORIGIN_TRIALS_FEATURES_H_
