@@ -5,6 +5,7 @@
 #include "components/zoom/zoom_controller.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
 #include "components/zoom/zoom_event_manager.h"
 #include "components/zoom/zoom_observer.h"
@@ -36,12 +37,61 @@ double ZoomController::GetZoomLevelForWebContents(
   return content::HostZoomMap::GetZoomLevel(web_contents);
 }
 
+// static
+ZoomController* ZoomController::CreateForWebContents(
+    content::WebContents* web_contents) {
+  return CreateForWebContentsAndRenderFrameHost(
+      web_contents, web_contents->GetPrimaryMainFrame()->GetGlobalId());
+}
+
+// static
+ZoomController* ZoomController::CreateForWebContentsAndRenderFrameHost(
+    content::WebContents* web_contents,
+    const content::GlobalRenderFrameHostId rfh_id) {
+  if (auto* manager = Manager::FromWebContents(web_contents)) {
+    if (rfh_id == web_contents->GetPrimaryMainFrame()->GetGlobalId()) {
+      // It's possible that CreateForWebContents() is called multiple times with
+      // the same values. If so, just return the existing ZoomController.
+      return manager->zoom_controller(rfh_id);
+    }
+    // If we get here, we must be creating a ZoomController for a subframe.
+    // TODO(https://crbug.com/376084060): implement creating ZoomControllers for
+    // subframes.
+    return nullptr;
+  }
+
+  Manager::CreateForWebContents(web_contents);
+  return Manager::FromWebContents(web_contents)->zoom_controller(rfh_id);
+}
+
+// static
+ZoomController* ZoomController::FromWebContents(
+    const content::WebContents* web_contents) {
+  auto* manager = ZoomController::Manager::FromWebContents(web_contents);
+
+  return manager ? manager->zoom_controller(
+                       web_contents->GetPrimaryMainFrame()->GetGlobalId())
+                 : nullptr;
+}
+
+ZoomController::Manager::Manager(content::WebContents* web_contents)
+    : content::WebContentsUserData<ZoomController::Manager>(*web_contents) {
+  // Note: can't use make_unique<> below since ZoomController's constructor is
+  // protected.
+  mainframe_zoom_controller_ =
+      base::WrapUnique(new ZoomController(web_contents));
+}
+
+ZoomController::Manager::~Manager() = default;
+
 ZoomController::ZoomController(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<ZoomController>(*web_contents),
       browser_context_(web_contents->GetBrowserContext()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  host_zoom_map_ = content::HostZoomMap::GetForWebContents(web_contents);
+  // TODO(https://crbug.com/376084060):  convert this to be able to use a
+  // RenderFrameHost other than that of the mainframe.
+  host_zoom_map_ = content::HostZoomMap::Get(
+      web_contents->GetPrimaryMainFrame()->GetSiteInstance());
   zoom_level_ = host_zoom_map_->GetDefaultZoomLevel();
 
   zoom_subscription_ =
@@ -421,6 +471,6 @@ bool ZoomController::PageScaleFactorIsOne() const {
   return web_contents()->GetPrimaryPage().IsPageScaleFactorOne();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ZoomController);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ZoomController::Manager);
 
 }  // namespace zoom
