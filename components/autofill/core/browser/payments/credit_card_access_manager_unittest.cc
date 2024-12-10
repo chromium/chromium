@@ -1141,7 +1141,7 @@ TEST_P(CreditCardAccessManagerAuthFlowTest,
 // Ensures that the WebAuthn enrollment prompt is invoked after user opts in. In
 // this case, the user is not yet enrolled server-side, and thus receives
 // |creation_options|.
-TEST_F(CreditCardAccessManagerTest,
+TEST_P(CreditCardAccessManagerAuthFlowTest,
        FIDOEnrollmentSuccess_CreationOptions_Desktop) {
   base::HistogramTester histogram_tester;
   std::string webauthn_result_histogram_name =
@@ -1162,7 +1162,7 @@ TEST_F(CreditCardAccessManagerTest,
   payments_network_interface().AllowFidoRegistration(true);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
   WaitForCallbacks();
 
   // Mock user and payments response.
@@ -1204,7 +1204,8 @@ TEST_F(CreditCardAccessManagerTest,
 
 // Ensures that the correct number of strikes are added when the user declines
 // the WebAuthn offer.
-TEST_F(CreditCardAccessManagerTest, FIDOEnrollment_OfferDeclined_Desktop) {
+TEST_P(CreditCardAccessManagerAuthFlowTest,
+       FIDOEnrollment_OfferDeclined_Desktop) {
   base::HistogramTester histogram_tester;
   std::string promo_shown_histogram_name =
       "Autofill.BetterAuth.OptInPromoShown.FromCheckoutFlow";
@@ -1220,7 +1221,7 @@ TEST_F(CreditCardAccessManagerTest, FIDOEnrollment_OfferDeclined_Desktop) {
   payments_network_interface().AllowFidoRegistration(true);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
   WaitForCallbacks();
 
   // Mock user and payments response.
@@ -1239,7 +1240,7 @@ TEST_F(CreditCardAccessManagerTest, FIDOEnrollment_OfferDeclined_Desktop) {
 
 // Ensures that the correct number of strikes are added when the user declines
 // the WebAuthn offer.
-TEST_F(CreditCardAccessManagerTest,
+TEST_P(CreditCardAccessManagerAuthFlowTest,
        FIDOEnrollment_OfferDeclinedAfterAccepting_Desktop) {
   base::HistogramTester histogram_tester;
   std::string promo_shown_histogram_name =
@@ -1256,7 +1257,7 @@ TEST_F(CreditCardAccessManagerTest,
   payments_network_interface().AllowFidoRegistration(true);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
   WaitForCallbacks();
 
   // Mock user and payments response.
@@ -1276,7 +1277,7 @@ TEST_F(CreditCardAccessManagerTest,
 
 // Ensures that the correct number of strikes are added when the user fails to
 // complete user-verification for an opt-in attempt.
-TEST_F(CreditCardAccessManagerTest,
+TEST_P(CreditCardAccessManagerAuthFlowTest,
        FIDOEnrollment_UserVerificationFailed_Desktop) {
   base::HistogramTester histogram_tester;
   std::string webauthn_result_histogram_name =
@@ -1293,7 +1294,7 @@ TEST_F(CreditCardAccessManagerTest,
   payments_network_interface().AllowFidoRegistration(true);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
   InvokeUnmaskDetailsTimeout();
   WaitForCallbacks();
 
@@ -1323,7 +1324,7 @@ TEST_F(CreditCardAccessManagerTest,
 // Ensures that the WebAuthn enrollment prompt is invoked after user opts in. In
 // this case, the user is already enrolled server-side, and thus receives
 // |request_options|.
-TEST_F(CreditCardAccessManagerTest,
+TEST_P(CreditCardAccessManagerAuthFlowTest,
        FIDOEnrollmentSuccess_RequestOptions_Desktop) {
   base::HistogramTester histogram_tester;
   std::string webauthn_result_histogram_name =
@@ -1339,7 +1340,7 @@ TEST_F(CreditCardAccessManagerTest,
   payments_network_interface().AllowFidoRegistration(true);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
   WaitForCallbacks();
 
   // Mock user and payments response.
@@ -1618,14 +1619,14 @@ TEST_P(CreditCardAccessManagerAuthFlowTest,
 }
 
 // Ensures that |is_authentication_in_progress_| is set correctly.
-TEST_F(CreditCardAccessManagerTest, AuthenticationInProgress) {
+TEST_P(CreditCardAccessManagerAuthFlowTest, AuthenticationInProgress) {
   CreateServerCard(kTestGUID, kTestNumber);
   const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
   EXPECT_FALSE(IsAuthenticationInProgress());
 
-  FetchCreditCard(card);
+  FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
 
   EXPECT_TRUE(IsAuthenticationInProgress());
   EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kSuccess, kTestNumber));
