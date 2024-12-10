@@ -17,7 +17,7 @@ Element* ClosestInclusiveAncestorContainer(Element& element,
        container = FlatTreeTraversal::ParentElement(*container)) {
     const ComputedStyle* style = container->GetComputedStyle();
     if (!style) {
-      // TODO(crbug.com/1400631): Eliminate all invalid calls to
+      // TODO(crbug.com/40250356): Eliminate all invalid calls to
       // StyleRecalcContext::From[Inclusive]Ancestors, then either turn
       // if (!style) into CHECK(style) or simplify into checking:
       // container->GetComputedStyle()->IsContainerForSizeContainerQueries()

@@ -2392,7 +2392,10 @@ void StyleEngine::ApplyRuleSetInvalidationForTreeScope(
                                        changed_rule_flags,
                                        /*is_shadow_host=*/true);
     selector_filter.PushParent(host);
-    if (host.GetStyleChangeType() == kSubtreeStyleChange) {
+    if (host.GetStyleChangeType() == kSubtreeStyleChange ||
+        !host.GetComputedStyle()) {
+      // Skip traversal of the shadow tree if the host is marked for subtree
+      // recalc, or if the host is not rendered.
       return;
     }
     for (auto rule_set : rule_sets) {
