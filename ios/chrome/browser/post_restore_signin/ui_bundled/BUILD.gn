@@ -4,8 +4,6 @@ source_set("ui_bundled") {
     "metrics.mm",
     "post_restore_signin_provider.h",
     "post_restore_signin_provider.mm",
-    "post_restore_signin_view_controller.h",
-    "post_restore_signin_view_controller.mm",
   ]
   public_deps = [
     "//ios/chrome/browser/promos_manager/model:types",
@@ -41,10 +39,7 @@ source_set("ui_bundled") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "post_restore_signin_provider_unittest.mm",
-    "post_restore_signin_view_controller_unittest.mm",
-  ]
+  sources = [ "post_restore_signin_provider_unittest.mm" ]
   deps = [
     ":ui_bundled",
     "//base",

@@ -15,7 +15,6 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/post_restore_signin/ui_bundled/metrics.h"
-#import "ios/chrome/browser/post_restore_signin/ui_bundled/post_restore_signin_view_controller.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
