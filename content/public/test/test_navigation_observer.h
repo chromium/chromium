@@ -93,6 +93,9 @@ class TestNavigationObserver {
   // WebContents.
   void WatchExistingWebContents();
 
+  // Start watching the provided |web_contents|.
+  void WatchWebContents(content::WebContents* web_contents);
+
   // The URL of the last finished navigation (that matched URL / net error
   // filters, if set).
   const GURL& last_navigation_url() const { return last_navigation_url_; }

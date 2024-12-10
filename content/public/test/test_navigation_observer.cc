@@ -143,6 +143,12 @@ void TestNavigationObserver::WatchExistingWebContents() {
     RegisterAsObserver(web_contents);
 }
 
+void TestNavigationObserver::WatchWebContents(
+    content::WebContents* web_contents) {
+  CHECK(web_contents);
+  RegisterAsObserver(web_contents);
+}
+
 void TestNavigationObserver::RegisterAsObserver(WebContents* web_contents) {
   web_contents_state_[web_contents].observer =
       std::make_unique<TestWebContentsObserver>(this, web_contents);
