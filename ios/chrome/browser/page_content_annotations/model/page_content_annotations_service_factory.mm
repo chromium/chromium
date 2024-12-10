@@ -10,7 +10,6 @@
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/page_content_annotations/core/page_content_annotations_features.h"
 #import "components/page_content_annotations/core/page_content_annotations_service.h"
 #import "components/variations/service/variations_service_utils.h"
@@ -31,10 +30,7 @@ std::unique_ptr<KeyedService> BuildPageContentAnnotationsService(
     web::BrowserState* context) {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   DCHECK(profile);
-
-  if (profile->IsOffTheRecord()) {
-    return nullptr;
-  }
+  DCHECK(!profile->IsOffTheRecord());
   if (!page_content_annotations::features::
           ShouldEnablePageContentAnnotations()) {
     return nullptr;
@@ -74,8 +70,10 @@ std::unique_ptr<KeyedService> BuildPageContentAnnotationsService(
 // static
 page_content_annotations::PageContentAnnotationsService*
 PageContentAnnotationsServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<page_content_annotations::PageContentAnnotationsService*>(
-      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
+  return GetInstance()
+      ->GetServiceForProfileAs<
+          page_content_annotations::PageContentAnnotationsService>(
+          profile, /*create=*/true);
 }
 
 // static
@@ -86,9 +84,9 @@ PageContentAnnotationsServiceFactory::GetInstance() {
 }
 
 PageContentAnnotationsServiceFactory::PageContentAnnotationsServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "PageContentAnnotationsService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("PageContentAnnotationsService",
+                                    ServiceCreation::kCreateWithProfile,
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
@@ -108,14 +106,4 @@ std::unique_ptr<KeyedService>
 PageContentAnnotationsServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   return BuildPageContentAnnotationsService(context);
-}
-
-bool PageContentAnnotationsServiceFactory::ServiceIsCreatedWithBrowserState()
-    const {
-  return page_content_annotations::features::
-      ShouldEnablePageContentAnnotations();
-}
-
-bool PageContentAnnotationsServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
 }
