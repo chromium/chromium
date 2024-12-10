@@ -78,6 +78,7 @@ source_set("test_support") {
     "//components/saved_tab_groups/public",
     "//ios/chrome/browser/data_sharing/model:ui_delegate",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/test/app:test_support",
   ]
 }
 

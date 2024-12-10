@@ -8,8 +8,8 @@
 
 @implementation TabGroupSyncEarlGreyImpl
 
-- (void)prepareFakeSavedTabGroups {
-  [TabGroupSyncEarlGreyAppInterface prepareFakeSavedTabGroups];
+- (void)prepareFakeSavedTabGroups:(NSInteger)numberOfGroups {
+  [TabGroupSyncEarlGreyAppInterface prepareFakeSavedTabGroups:numberOfGroups];
 }
 
 - (void)removeAtIndex:(unsigned int)index {

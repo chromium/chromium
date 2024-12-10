@@ -10,8 +10,8 @@
 // App-side implementation for TabGroupSyncEarlGrey.
 @interface TabGroupSyncEarlGreyAppInterface : NSObject
 
-// Creates and saves 3 saved tab groups.
-+ (void)prepareFakeSavedTabGroups;
+// Creates and saves `numberOfGroups` saved tab groups.
++ (void)prepareFakeSavedTabGroups:(NSInteger)numberOfGroups;
 
 // Removes a group at `index`.
 + (void)removeAtIndex:(unsigned int)index;

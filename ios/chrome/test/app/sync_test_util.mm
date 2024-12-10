@@ -22,6 +22,9 @@
 #import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/metrics/demographics/demographic_metrics_test_utils.h"
+#import "components/saved_tab_groups/internal/saved_tab_group_sync_bridge.h"
+#import "components/saved_tab_groups/public/saved_tab_group.h"
+#import "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/base/pref_names.h"
 #import "components/sync/base/time.h"
@@ -487,6 +490,10 @@ void AddSyncPassphrase(const std::string& sync_passphrase) {
   AddSyncPassphraseInternal(sync_passphrase);
 }
 
+void AddCollaboration(const std::string& collaboration_id) {
+  gSyncFakeServer->AddCollaboration(collaboration_id);
+}
+
 void AddBookmarkWithSyncPassphrase(const std::string& sync_passphrase) {
   syncer::KeyParamsForTesting key_params =
       AddSyncPassphraseInternal(sync_passphrase);
@@ -496,6 +503,55 @@ void AddBookmarkWithSyncPassphrase(const std::string& sync_passphrase) {
   server_entity->SetSpecifics(GetEncryptedBookmarkEntitySpecifics(
       server_entity->GetSpecifics().bookmark(), key_params));
   gSyncFakeServer->InjectEntity(std::move(server_entity));
+}
+
+namespace {
+// Adds SavedTabGroup `specifics` to the fake server.
+void AddDataToFakeServer(const sync_pb::SavedTabGroupSpecifics& specifics) {
+  sync_pb::EntitySpecifics group_entity_specifics;
+  sync_pb::SavedTabGroupSpecifics* group_specifics =
+      group_entity_specifics.mutable_saved_tab_group();
+  group_specifics->CopyFrom(specifics);
+
+  std::string client_tag = group_specifics->guid();
+  int64_t creation_time = group_specifics->creation_time_windows_epoch_micros();
+  int64_t update_time = group_specifics->update_time_windows_epoch_micros();
+
+  gSyncFakeServer->InjectEntity(
+      syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+          "non_unique_name", client_tag, group_entity_specifics,
+          /*creation_time=*/creation_time,
+          /*last_modified_time=*/update_time));
+}
+}  // namespace
+
+void AddGroupToFakeServer(const tab_groups::SavedTabGroup& group) {
+  AddDataToFakeServer(
+      tab_groups::SavedTabGroupSyncBridge::SavedTabGroupToSpecificsForTest(
+          group));
+}
+
+void AddTabToFakeServer(const tab_groups::SavedTabGroupTab& tab) {
+  AddDataToFakeServer(
+      tab_groups::SavedTabGroupSyncBridge::SavedTabGroupTabToSpecificsForTest(
+          tab));
+}
+
+void DeleteTabOrGroupFromFakeServer(const base::Uuid& uuid) {
+  std::vector<sync_pb::SyncEntity> server_tabs_and_groups =
+      gSyncFakeServer->GetSyncEntitiesByDataType(syncer::SAVED_TAB_GROUP);
+
+  // Remove the entity with a matching `uuid`.
+  for (const sync_pb::SyncEntity& tab_or_group : server_tabs_and_groups) {
+    const sync_pb::SavedTabGroupSpecifics actual_specifics =
+        tab_or_group.specifics().saved_tab_group();
+    if (base::Uuid::ParseCaseInsensitive(actual_specifics.guid()) == uuid) {
+      // Replace it with a tombstone to remove it from sync.
+      gSyncFakeServer->InjectEntity(
+          syncer::PersistentTombstoneEntity::CreateFromEntity(tab_or_group));
+      return;
+    }
+  }
 }
 
 }  // namespace chrome_test_util
