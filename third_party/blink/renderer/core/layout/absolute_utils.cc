@@ -807,8 +807,8 @@ const LayoutResult* ComputeOofBlockDimensions(
     const LayoutUnit main_block_size = ResolveMainBlockLength(
         space, style, border_padding, style.LogicalHeight(),
         &Length::FillAvailable(), kIndefiniteSize, imcb.BlockSize());
-    const MinMaxSizes min_max_block_sizes =
-        ComputeInitialMinMaxBlockSizes(space, node, border_padding);
+    const MinMaxSizes min_max_block_sizes = ComputeInitialMinMaxBlockSizes(
+        space, node, border_padding, imcb.BlockSize());
     block_size = min_max_block_sizes.ClampSizeToMinAndMax(main_block_size);
   } else {
     DCHECK_NE(dimensions->size.inline_size, kIndefiniteSize);
