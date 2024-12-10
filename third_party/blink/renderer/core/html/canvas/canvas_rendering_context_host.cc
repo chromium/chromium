@@ -340,7 +340,8 @@ SkColorInfo CanvasRenderingContextHost::GetRenderingContextSkColorInfo() const {
 }
 
 SkAlphaType CanvasRenderingContextHost::GetRenderingContextAlphaType() const {
-  return GetRenderingContextSkColorInfo().alphaType();
+  return RenderingContext() ? RenderingContext()->GetAlphaType()
+                            : kPremul_SkAlphaType;
 }
 
 SkColorType CanvasRenderingContextHost::GetRenderingContextSkColorType() const {

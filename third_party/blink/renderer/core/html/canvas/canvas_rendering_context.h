@@ -179,6 +179,9 @@ class CORE_EXPORT CanvasRenderingContext
   }
 
   virtual SkColorInfo CanvasRenderingContextSkColorInfo() const = 0;
+  SkAlphaType GetAlphaType() const {
+    return CanvasRenderingContextSkColorInfo().alphaType();
+  }
 
   virtual scoped_refptr<StaticBitmapImage> GetImage(FlushReason) = 0;
   virtual bool IsComposited() const = 0;
