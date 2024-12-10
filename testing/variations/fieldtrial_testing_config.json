@@ -13111,28 +13111,6 @@
             ]
         }
     ],
-    "LinkedServicesSetting": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "ios",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LinkedServicesSetting",
-                        "LinkedServicesSettingIos"
-                    ]
-                }
-            ]
-        }
-    ],
     "LiveCaptionChromeOS2": [
         {
             "platforms": [

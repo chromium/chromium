@@ -364,7 +364,7 @@ BASE_FEATURE(kPrivacyGuideForceAvailable,
 // settings.
 BASE_FEATURE(kLinkedServicesSetting,
              "LinkedServicesSetting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Enables or disables the Happiness Tracking System demo mode for Desktop
