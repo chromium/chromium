@@ -185,7 +185,7 @@ class AutofillManager
     // `filled_fields` represents the fields that were sent to the renderer to
     // be filled: each `FormFieldData::value` contains the filled or previewed
     // value; the corresponding `AutofillField` contains the field type
-    // information. The field values come from `profile_or_credit_card`.
+    // information. The field values come from `filling_payload`.
     // TODO(crbug.com/40227496): Get rid of FormFieldData.
     // TODO(crbug.com/40280003): Consider removing the event in favor of
     // OnAfterDidFillAutofillFormData(), which is fired by the renderer.
@@ -194,8 +194,7 @@ class AutofillManager
         FormGlobalId form,
         mojom::ActionPersistence action_persistence,
         base::span<const FormFieldData* const> filled_fields,
-        absl::variant<const AutofillProfile*, const CreditCard*>
-            profile_or_credit_card) {}
+        const FillingPayload& filling_payload) {}
 
     // Fired when a form is submitted. A `FormData` is passed instead of a
     // `FormGlobalId` because the form structure cached inside `AutofillManager`

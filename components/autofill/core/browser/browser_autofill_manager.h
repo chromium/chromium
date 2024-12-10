@@ -236,8 +236,7 @@ class BrowserAutofillManager : public AutofillManager {
       const base::flat_set<FieldGlobalId>& safe_field_ids,
       base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
           skip_reasons,
-      absl::variant<const AutofillProfile*, const CreditCard*>
-          profile_or_credit_card,
+      const FillingPayload& filling_payload,
       AutofillTriggerSource trigger_source,
       bool is_refill);
 
@@ -625,8 +624,7 @@ class BrowserAutofillManager : public AutofillManager {
       const base::flat_set<FieldGlobalId>& safe_field_ids,
       base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
           skip_reasons,
-      absl::variant<const AutofillProfile*, const CreditCard*>
-          profile_or_credit_card,
+      const FillingPayload& filling_payload,
       bool is_refill);
 
   // Handles the credit card specific logic after a form is filled, including

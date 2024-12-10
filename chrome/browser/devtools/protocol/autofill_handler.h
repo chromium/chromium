@@ -18,7 +18,6 @@ using protocol::String;
 
 namespace autofill {
 class AutofillClient;
-class AutofillProfile;
 class ContentAutofillDriver;
 class CreditCard;
 }
@@ -63,9 +62,7 @@ class AutofillHandler : public protocol::Autofill::Backend,
       autofill::FormGlobalId form,
       autofill::mojom::ActionPersistence action_persistence,
       base::span<const autofill::FormFieldData* const> filled_fields,
-      absl::variant<const autofill::AutofillProfile*,
-                    const autofill::CreditCard*> profile_or_credit_card)
-      override;
+      const autofill::FillingPayload& filling_payload) override;
 
   // ContentAutofillDriverFactory::Observer:
   void OnContentAutofillDriverFactoryDestroyed(

@@ -37,8 +37,7 @@ void BrowserAutofillManagerTestDelegate::OnFillOrPreviewDataModelForm(
     FormGlobalId form,
     mojom::ActionPersistence action_persistence,
     base::span<const FormFieldData* const> filled_fields,
-    absl::variant<const AutofillProfile*, const CreditCard*>
-        profile_or_credit_card) {
+    const FillingPayload& filling_payload) {
   switch (action_persistence) {
     case mojom::ActionPersistence::kFill:
       DidFillFormData();

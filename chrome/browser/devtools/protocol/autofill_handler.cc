@@ -227,19 +227,18 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
     autofill::FormGlobalId form,
     autofill::mojom::ActionPersistence action_persistence,
     base::span<const autofill::FormFieldData* const> filled_fields,
-    absl::variant<const autofill::AutofillProfile*, const autofill::CreditCard*>
-        profile_or_credit_card) {
+    const autofill::FillingPayload& filling_payload) {
   // We only care about address forms that were filled.
   if (action_persistence != autofill::mojom::ActionPersistence::kFill ||
       !absl::holds_alternative<const autofill::AutofillProfile*>(
-          profile_or_credit_card)) {
+          filling_payload)) {
     return;
   }
 
   autofill::FormStructure& form_structure =
       CHECK_DEREF(manager.FindCachedFormById(form));
   const autofill::AutofillProfile* profile_used_to_fill_form =
-      absl::get<const autofill::AutofillProfile*>(profile_or_credit_card);
+      absl::get<const autofill::AutofillProfile*>(filling_payload);
 
   auto field_id_to_form_field_data =
       base::MakeFlatMap<autofill::FieldGlobalId,

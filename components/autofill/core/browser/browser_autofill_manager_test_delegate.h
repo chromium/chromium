@@ -44,8 +44,7 @@ class BrowserAutofillManagerTestDelegate : public AutofillManager::Observer {
       FormGlobalId form,
       mojom::ActionPersistence action_persistence,
       base::span<const FormFieldData* const> filled_fields,
-      absl::variant<const AutofillProfile*, const CreditCard*>
-          profile_or_credit_card) override;
+      const FillingPayload& filling_payload) override;
 
   void OnSuggestionsShown(AutofillManager& manager) override;
 

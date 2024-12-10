@@ -31,6 +31,8 @@ enum class RefillTriggerReason {
   kExpirationDateFormatted,
 };
 
+using FillingPayload = absl::variant<const AutofillProfile*, const CreditCard*>;
+
 // Helper class responsible for [re]filling forms and fields.
 //
 // It is privately owned by the BrowserAutofillManager, which is the only
@@ -138,17 +140,15 @@ class FormFiller {
       const AutofillField& autofill_trigger_field,
       const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill);
 
-  // Fills or previews `profile_or_credit_card` in the `form`.
+  // Fills or previews the data from `filling_payload` into `form`.
   // TODO(crbug.com/40227071): Clean up the API.
-  void FillOrPreviewForm(
-      mojom::ActionPersistence action_persistence,
-      const FormData& form,
-      absl::variant<const AutofillProfile*, const CreditCard*>
-          profile_or_credit_card,
-      FormStructure& form_structure,
-      AutofillField& autofill_field,
-      AutofillTriggerSource trigger_source,
-      bool is_refill = false);
+  void FillOrPreviewForm(mojom::ActionPersistence action_persistence,
+                         const FormData& form,
+                         const FillingPayload& filling_payload,
+                         FormStructure& form_structure,
+                         AutofillField& autofill_field,
+                         AutofillTriggerSource trigger_source,
+                         bool is_refill = false);
 
   // Whether there should be an attempts to refill the form. Returns true if all
   // the following are satisfied:
@@ -190,18 +190,19 @@ class FormFiller {
   // Keeps track of the filling context for a form, used to make refill
   // attempts.
   struct FillingContext {
-    // |profile_or_credit_card| contains either AutofillProfile or CreditCard
-    // and must be non-null.
-    // If |profile_or_credit_card| contains a CreditCard, |optional_cvc| may be
-    // non-null.
+    // |filling_payload| contains the data used to perform the initial filling
+    // operation.
     FillingContext(const AutofillField& field,
-                   absl::variant<const AutofillProfile*, const CreditCard*>
-                       profile_or_credit_card);
+                   const FillingPayload& filling_payload);
     ~FillingContext();
 
     // Whether a refill attempt was made.
     bool attempted_refill = false;
-    // The profile or credit card that was used for the initial fill.
+    // The profile or credit card that was used for the initial fill. This is
+    // slightly different from `filling_payload` that is used by the filling
+    // function: This contains actual objects because this needs to survive
+    // potential storage mutation, and this only contains payloads that support
+    // refills.
     absl::variant<CreditCard, AutofillProfile> profile_or_credit_card;
     // Possible identifiers of the field that was focused when the form was
     // initially filled. A refill shall be triggered from the same field.
@@ -244,8 +245,7 @@ class FormFiller {
   // override.
   FieldFillingData GetFieldFillingData(
       const AutofillField& autofill_field,
-      const absl::variant<const AutofillProfile*, const CreditCard*>
-          profile_or_credit_card,
+      const FillingPayload& filling_payload,
       const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
       const FormFieldData& field_data,
       mojom::ActionPersistence action_persistence,
@@ -257,8 +257,7 @@ class FormFiller {
   // TODO(crbug.com/40227071): Cleanup API and logic.
   bool FillField(
       AutofillField& autofill_field,
-      absl::variant<const AutofillProfile*, const CreditCard*>
-          profile_or_credit_card,
+      const FillingPayload& filling_payload,
       const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
       FormFieldData& field_data,
       mojom::ActionPersistence action_persistence,

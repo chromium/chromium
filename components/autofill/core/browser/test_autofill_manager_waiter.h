@@ -503,10 +503,9 @@ class TestAutofillManagerSingleEventWaiter {
         FormGlobalId form,
         mojom::ActionPersistence action_persistence,
         base::span<const FormFieldData* const> filled_fields,
-        absl::variant<const AutofillProfile*, const CreditCard*>
-            profile_or_credit_card) override {
+        const FillingPayload& filling_payload) override {
       MaybeQuit(&Observer::OnFillOrPreviewDataModelForm, manager, form,
-                action_persistence, filled_fields, profile_or_credit_card);
+                action_persistence, filled_fields, filling_payload);
     }
     void OnFormSubmitted(AutofillManager& manager,
                          const FormData& form) override {

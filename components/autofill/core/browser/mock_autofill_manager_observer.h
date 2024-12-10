@@ -12,9 +12,6 @@
 
 namespace autofill {
 
-class AutofillProfile;
-class CreditCard;
-
 class MockAutofillManagerObserver : public AutofillManager::Observer {
  public:
   MockAutofillManagerObserver();
@@ -130,8 +127,7 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
                FormGlobalId,
                mojom::ActionPersistence action_persistence,
                (base::span<const FormFieldData* const>),
-               (absl::variant<const AutofillProfile*, const CreditCard*>
-                    profile_or_credit_card)),
+               (const FillingPayload& filling_payload)),
               (override));
 
   MOCK_METHOD(void,

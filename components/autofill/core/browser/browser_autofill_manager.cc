@@ -36,6 +36,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/overloaded.h"
 #include "base/hash/hash.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
@@ -85,6 +86,7 @@
 #include "components/autofill/core/browser/filling/addresses/field_filling_address_util.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/filling/form_autofill_history.h"
+#include "components/autofill/core/browser/filling/form_filler.h"
 #include "components/autofill/core/browser/filling/payments/field_filling_payments_util.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
@@ -157,6 +159,15 @@ using FillingProductSet = DenseSet<FillingProduct>;
 using mojom::SubmissionSource;
 
 namespace {
+
+FillDataType GetFillDataTypeFromFillingPayload(
+    const FillingPayload& filling_payload) {
+  return absl::visit(
+      base::Overloaded{
+          [](const AutofillProfile*) { return FillDataType::kAutofillProfile; },
+          [](const CreditCard*) { return FillDataType::kCreditCard; }},
+      filling_payload);
+}
 
 void LogDeveloperEngagementUkm(ukm::UkmRecorder* ukm_recorder,
                                ukm::SourceId source_id,
@@ -2201,38 +2212,39 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
     const base::flat_set<FieldGlobalId>& safe_field_ids,
     base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
         skip_reasons,
-    absl::variant<const AutofillProfile*, const CreditCard*>
-        profile_or_credit_card,
+    const FillingPayload& filling_payload,
     AutofillTriggerSource trigger_source,
     bool is_refill) {
   NotifyObservers(&Observer::OnFillOrPreviewDataModelForm,
                   form_structure.global_id(), action_persistence,
-                  safe_filled_fields, profile_or_credit_card);
+                  safe_filled_fields, filling_payload);
   if (action_persistence == mojom::ActionPersistence::kPreview) {
     return;
   }
   CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
 
   AppendFillLogEvents(form, form_structure, trigger_autofill_field,
-                      safe_field_ids, skip_reasons, profile_or_credit_card,
-                      is_refill);
+                      safe_field_ids, skip_reasons, filling_payload, is_refill);
   client().DidFillForm(trigger_source, is_refill);
-  if (absl::holds_alternative<const CreditCard*>(profile_or_credit_card)) {
-    LogAndRecordCreditCardFill(
-        form_structure, trigger_autofill_field, safe_filled_fields,
-        safe_filled_autofill_fields, filled_field_ids, safe_field_ids,
-        CHECK_DEREF(absl::get<const CreditCard*>(profile_or_credit_card)),
-        trigger_source, is_refill);
-    return;
-  }
-  const AutofillProfile& filled_profile = CHECK_DEREF(CHECK_DEREF(
-      absl::get_if<const AutofillProfile*>(&profile_or_credit_card)));
-  LogAndRecordProfileFill(form_structure, trigger_autofill_field,
-                          safe_filled_fields, safe_filled_autofill_fields,
-                          filled_profile, trigger_source, is_refill);
-  MaybeShowPlusAddressEmailOverrideNotification(safe_filled_autofill_fields,
-                                                safe_filled_fields,
-                                                filled_profile, form_structure);
+
+  absl::visit(
+      base::Overloaded{[&](const AutofillProfile* profile) {
+                         LogAndRecordProfileFill(
+                             form_structure, trigger_autofill_field,
+                             safe_filled_fields, safe_filled_autofill_fields,
+                             *profile, trigger_source, is_refill);
+                         MaybeShowPlusAddressEmailOverrideNotification(
+                             safe_filled_autofill_fields, safe_filled_fields,
+                             *profile, form_structure);
+                       },
+                       [&](const CreditCard* credit_card) {
+                         LogAndRecordCreditCardFill(
+                             form_structure, trigger_autofill_field,
+                             safe_filled_fields, safe_filled_autofill_fields,
+                             filled_field_ids, safe_field_ids, *credit_card,
+                             trigger_source, is_refill);
+                       }},
+      filling_payload);
 }
 
 void BrowserAutofillManager::AppendFillLogEvents(
@@ -2242,21 +2254,17 @@ void BrowserAutofillManager::AppendFillLogEvents(
     const base::flat_set<FieldGlobalId>& safe_field_ids,
     base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
         skip_reasons,
-    absl::variant<const AutofillProfile*, const CreditCard*>
-        profile_or_credit_card,
+    const FillingPayload& filling_payload,
     bool is_refill) {
   std::string country_code;
-  if (const AutofillProfile** address =
-          absl::get_if<const AutofillProfile*>(&profile_or_credit_card)) {
+  if (const AutofillProfile* const* address =
+          absl::get_if<const AutofillProfile*>(&filling_payload)) {
     country_code =
         base::UTF16ToUTF8((*address)->GetRawInfo(ADDRESS_HOME_COUNTRY));
   }
   TriggerFillFieldLogEvent trigger_fill_field_log_event =
       TriggerFillFieldLogEvent{
-          .data_type =
-              absl::holds_alternative<const CreditCard*>(profile_or_credit_card)
-                  ? FillDataType::kCreditCard
-                  : FillDataType::kAutofillProfile,
+          .data_type = GetFillDataTypeFromFillingPayload(filling_payload),
           .associated_country_code = country_code,
           .timestamp = base::Time::Now()};
   trigger_autofill_field.AppendLogEventIfNotRepeated(
