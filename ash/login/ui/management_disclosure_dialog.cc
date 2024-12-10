@@ -16,13 +16,10 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
@@ -31,6 +28,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
@@ -73,9 +71,7 @@ std::unique_ptr<views::Label> CreateLabel(const std::u16string& text,
   label->SetTextStyle(style);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetEnabledColorId(
-      chromeos::features::IsJellyrollEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-          : kColorAshTextColorPrimary);
+      static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface));
   label->SetMultiLine(true);
   return label;
 }

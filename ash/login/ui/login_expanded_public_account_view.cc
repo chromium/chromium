@@ -20,7 +20,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/system_shadow.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -28,7 +27,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -80,14 +78,11 @@ constexpr int kSeparatorMarginDp = 20;
 constexpr int kPortraitPaneSpacing = 24;
 
 constexpr int kTextLineHeightDp = 16;
-constexpr int kRoundRectCornerRadiusDp = 2;
 constexpr int kJellyRoundRectCornerRadiusDp = 8;
 
-constexpr int kDropDownIconSizeDp = 16;
 constexpr int kJellyDropDownIconSizeDp = 20;
 constexpr int kArrowButtonSizeDp = 48;
 constexpr int kAdvancedViewButtonWidthDp = 190;
-constexpr int kAdvancedViewButtonHeightDp = 16;
 constexpr int kJellyAdvancedViewButtonHeightDp = 20;
 constexpr int kSpacingBetweenSelectionTitleAndButtonDp = 4;
 
@@ -221,10 +216,8 @@ class SelectionButtonView : public LoginButton {
         views::BoxLayout::MainAxisAlignment::kStart);
     AddChildView(label_container);
 
-    const bool is_jelly = chromeos::features::IsJellyrollEnabled();
-    label_ = CreateLabel(text, is_jelly ? static_cast<ui::ColorId>(
-                                              cros_tokens::kCrosSysOnSurface)
-                                        : kColorAshTextColorPrimary);
+    label_ = CreateLabel(
+        text, static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface));
     left_margin_view_ = add_horizontal_margin(left_margin_, label_container);
     label_container->AddChildView(label_.get());
 
@@ -239,7 +232,7 @@ class SelectionButtonView : public LoginButton {
 
     icon_ = new views::ImageView;
     icon_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
-    int icon_size = is_jelly ? kJellyDropDownIconSizeDp : kDropDownIconSizeDp;
+    const int icon_size = kJellyDropDownIconSizeDp;
     icon_->SetPreferredSize(gfx::Size(icon_size, icon_size));
 
     icon_container->AddChildView(icon_.get());
@@ -303,8 +296,6 @@ class MonitoringWarningView : public NonAccessibleView {
   MonitoringWarningView()
       : NonAccessibleView(kMonitoringWarningClassName),
         warning_type_(WarningType::kNone) {
-    const bool is_jelly = chromeos::features::IsJellyrollEnabled();
-
     const std::u16string label_text = l10n_util::GetStringUTF16(
         IDS_ASH_LOGIN_PUBLIC_ACCOUNT_MONITORING_WARNING);
     views::Builder<views::View>(this)
@@ -317,18 +308,15 @@ class MonitoringWarningView : public NonAccessibleView {
                 .SetVisible(false)
                 .SetImage(ui::ImageModel::FromVectorIcon(
                     vector_icons::kWarningIcon,
-                    is_jelly ? static_cast<ui::ColorId>(
-                                   cros_tokens::kCrosSysOnSurface)
-                             : kColorAshIconColorWarning,
+                    static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface),
                     kMonitoringWarningIconSizeDp)),
             views::Builder<views::View>()
                 .CopyAddressTo(&placeholder_)
                 .SetPreferredSize(gfx::Size(0, kMonitoringWarningIconSizeDp)),
             views::Builder<views::Label>(
                 base::WrapUnique(CreateLabel(
-                    label_text, is_jelly ? static_cast<ui::ColorId>(
-                                               cros_tokens::kCrosSysOnSurface)
-                                         : kColorAshTextColorPrimary)))
+                    label_text,
+                    static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface))))
                 .SetMultiLine(true)
                 .CopyAddressTo(&label_)
                 .SetLineHeight(kTextLineHeightDp))
@@ -439,21 +427,17 @@ class RightPaneView : public NonAccessibleView {
     learn_more_label_ = AddChildView(std::make_unique<views::StyledLabel>());
     learn_more_label_->SetText(text);
 
-    const bool is_jelly = chromeos::features::IsJellyrollEnabled();
-
     views::StyledLabel::RangeStyleInfo style;
     style.custom_font = learn_more_label_->GetFontList().Derive(
         0, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL);
     style.override_color_id =
-        is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-                 : kColorAshTextColorPrimary;
+        static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface);
     learn_more_label_->AddStyleRange(gfx::Range(0, offset), style);
 
     views::StyledLabel::RangeStyleInfo link_style =
         views::StyledLabel::RangeStyleInfo::CreateForLink(on_learn_more_tapped);
     link_style.override_color_id =
-        is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimary)
-                 : kColorAshButtonLabelColorBlue;
+        static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimary);
     learn_more_label_->AddStyleRange(gfx::Range(offset, offset + link.length()),
                                      link_style);
     learn_more_label_->SetAutoColorReadabilityEnabled(false);
@@ -470,12 +454,9 @@ class RightPaneView : public NonAccessibleView {
                             base::Unretained(this)),
         l10n_util::GetStringUTF16(
             IDS_ASH_LOGIN_PUBLIC_SESSION_LANGUAGE_AND_INPUT));
-    ui::ColorId advanced_view_button_color_id =
-        is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimary)
-                 : kColorAshButtonLabelColorBlue;
-    int advanced_view_button_icon_size = is_jelly
-                                             ? kJellyAdvancedViewButtonHeightDp
-                                             : kAdvancedViewButtonHeightDp;
+    const ui::ColorId advanced_view_button_color_id =
+        static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimary);
+    const int advanced_view_button_icon_size = kJellyAdvancedViewButtonHeightDp;
     advanced_view_button_->SetTextColorId(advanced_view_button_color_id);
     advanced_view_button_->SetIcon(kLoginScreenButtonDropdownIcon,
                                    advanced_view_button_color_id);
@@ -816,20 +797,14 @@ LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(
       on_dismissed_(on_dismissed),
       event_handler_(
           std::make_unique<LoginExpandedPublicAccountEventHandler>(this)) {
-  if (chromeos::features::IsJellyrollEnabled()) {
-    SetBackground(views::CreateThemedRoundedRectBackground(
-        cros_tokens::kCrosSysSystemBaseElevated,
-        kJellyRoundRectCornerRadiusDp));
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        kJellyRoundRectCornerRadiusDp,
-        views::HighlightBorder::Type::kHighlightBorderOnShadow));
-    shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
-        this, SystemShadow::Type::kElevation12);
-    shadow_->SetRoundedCornerRadius(kJellyRoundRectCornerRadiusDp);
-  } else {
-    SetBackground(views::CreateThemedRoundedRectBackground(
-        kColorAshShieldAndBase80, kRoundRectCornerRadiusDp));
-  }
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemBaseElevated, kJellyRoundRectCornerRadiusDp));
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      kJellyRoundRectCornerRadiusDp,
+      views::HighlightBorder::Type::kHighlightBorderOnShadow));
+  shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
+      this, SystemShadow::Type::kElevation12);
+  shadow_->SetRoundedCornerRadius(kJellyRoundRectCornerRadiusDp);
 
   SetPreferredSize(GetPreferredSizeLandscape());
   SetUseDefaultFillLayout(true);
@@ -852,10 +827,8 @@ LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(
   }
 
   separator_ = box_layout_view_->AddChildView(std::make_unique<views::View>());
-  ui::ColorId separator_color_id =
-      chromeos::features::IsJellyrollEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSeparator)
-          : kColorAshSeparatorColor;
+  const ui::ColorId separator_color_id =
+      static_cast<ui::ColorId>(cros_tokens::kCrosSysSeparator);
   separator_->SetBackground(
       views::CreateThemedSolidBackground(separator_color_id));
 
@@ -873,10 +846,8 @@ LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(
           kArrowButtonSizeDp));
   submit_button_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_ASH_LOGIN_PUBLIC_ACCOUNT_LOG_IN_BUTTON_ACCESSIBLE_NAME));
-  if (chromeos::features::IsJellyrollEnabled()) {
-    submit_button_->SetBackgroundColorId(
-        cros_tokens::kCrosSysSystemPrimaryContainer);
-  }
+  submit_button_->SetBackgroundColorId(
+      cros_tokens::kCrosSysSystemPrimaryContainer);
 }
 
 LoginExpandedPublicAccountView::~LoginExpandedPublicAccountView() = default;

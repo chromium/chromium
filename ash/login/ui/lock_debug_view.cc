@@ -41,7 +41,6 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
