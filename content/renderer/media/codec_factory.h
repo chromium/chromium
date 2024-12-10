@@ -181,7 +181,7 @@ class CONTENT_EXPORT CodecFactory {
 // CodecFactoryDefault is the default derived class, which has no
 // decoder provider. It does not have any supported video decoder configs and
 // returns a null pointer when creating a hardware video decoder.
-class CodecFactoryDefault final : public CodecFactory {
+class CONTENT_EXPORT CodecFactoryDefault final : public CodecFactory {
  public:
   CodecFactoryDefault(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
