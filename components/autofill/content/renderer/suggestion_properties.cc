@@ -29,7 +29,7 @@ bool ShouldAutofillOnEmptyValues(
     case AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick:
     case AutofillSuggestionTriggerSource::kContentEditableClicked:
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
-    case AutofillSuggestionTriggerSource::kPredictionImprovements:
+    case AutofillSuggestionTriggerSource::kAutofillAi:
       return true;
     case AutofillSuggestionTriggerSource::kTextFieldDidChange:
       return false;
@@ -64,7 +64,7 @@ bool ShouldAutofillOnLongValues(
     case AutofillSuggestionTriggerSource::kTextFieldDidChange:
     case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
-    case AutofillSuggestionTriggerSource::kPredictionImprovements:
+    case AutofillSuggestionTriggerSource::kAutofillAi:
     case AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess:
       return false;
     case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
@@ -93,7 +93,7 @@ bool RequiresCaretAtEnd(AutofillSuggestionTriggerSource trigger_source) {
     case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
     case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
-    case AutofillSuggestionTriggerSource::kPredictionImprovements:
+    case AutofillSuggestionTriggerSource::kAutofillAi:
       return false;
     // `kShowCardsFromAccount`, `kPasswordManager`, `kiOS`, and
     // `kPlusAddressUpdatedInBrowserProcess` are not used in the renderer code.
@@ -130,7 +130,7 @@ bool ShouldShowFullSuggestionListForPasswordManager(
         kShowPromptAfterDialogClosedNonManualFallback:
     case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
     case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
-    case AutofillSuggestionTriggerSource::kPredictionImprovements:
+    case AutofillSuggestionTriggerSource::kAutofillAi:
       return false;
     // `kShowCardsFromAccount`, `kPasswordManager`, `kiOS`, and
     // `kPlusAddressUpdatedInBrowserProcess` are not used in the renderer code.

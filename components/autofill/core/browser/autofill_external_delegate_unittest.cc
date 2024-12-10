@@ -1277,11 +1277,10 @@ TEST_F(AutofillExternalDelegateTest,
   ASSERT_TRUE(field_to_fill);
 
   manager().OnFormsSeen({form}, {});
-  external_delegate().OnQuery(
-      form, *field_to_fill,
-      /*caret_bounds=*/gfx::Rect(),
-      AutofillSuggestionTriggerSource::kPredictionImprovements,
-      /*update_datalist=*/false);
+  external_delegate().OnQuery(form, *field_to_fill,
+                              /*caret_bounds=*/gfx::Rect(),
+                              AutofillSuggestionTriggerSource::kAutofillAi,
+                              /*update_datalist=*/false);
   Suggestion fill_suggestion =
       Suggestion(u"Autocomplete", SuggestionType::kFillAutofillAi);
   fill_suggestion.payload = Suggestion::AutofillAiPayload(
@@ -1333,11 +1332,10 @@ TEST_F(AutofillExternalDelegateTest,
   ASSERT_TRUE(field_to_fill);
 
   manager().OnFormsSeen({form}, {});
-  external_delegate().OnQuery(
-      form, *field_to_fill,
-      /*caret_bounds=*/gfx::Rect(),
-      AutofillSuggestionTriggerSource::kPredictionImprovements,
-      /*update_datalist=*/false);
+  external_delegate().OnQuery(form, *field_to_fill,
+                              /*caret_bounds=*/gfx::Rect(),
+                              AutofillSuggestionTriggerSource::kAutofillAi,
+                              /*update_datalist=*/false);
   EXPECT_CALL(*client().GetAutofillAiDelegate(), OnSuggestionsShown);
   external_delegate().OnSuggestionsShown(std::vector<Suggestion>{
       Suggestion(SuggestionType::kAutofillAiLoadingState)});

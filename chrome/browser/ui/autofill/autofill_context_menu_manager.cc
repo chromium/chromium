@@ -562,7 +562,7 @@ void AutofillContextMenuManager::ExecutePredictionImprovementsCommand(
     ContentAutofillDriver& autofill_driver) {
   autofill_driver.browser_events().RendererShouldTriggerSuggestions(
       FieldGlobalId(frame_token, FieldRendererId(params_.field_renderer_id)),
-      AutofillSuggestionTriggerSource::kPredictionImprovements);
+      AutofillSuggestionTriggerSource::kAutofillAi);
 }
 
 void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(

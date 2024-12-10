@@ -521,8 +521,7 @@ void AutofillAiManager::UpdateSuggestions(
     return;
   }
   update_suggestions_callback_.Run(
-      suggestions,
-      autofill::AutofillSuggestionTriggerSource::kPredictionImprovements);
+      suggestions, autofill::AutofillSuggestionTriggerSource::kAutofillAi);
 }
 
 void AutofillAiManager::MaybeImportForm(

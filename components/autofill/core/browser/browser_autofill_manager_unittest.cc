@@ -6601,9 +6601,8 @@ TEST_F(BrowserAutofillManagerTest, ShowAutofillAiSuggestions) {
       .WillOnce(Return(std::vector<Suggestion>{
           Suggestion(u"Autocomplete", SuggestionType::kRetrieveAutofillAi)}));
 
-  OnAskForValuesToFill(
-      form, form.fields().front(),
-      AutofillSuggestionTriggerSource::kPredictionImprovements);
+  OnAskForValuesToFill(form, form.fields().front(),
+                       AutofillSuggestionTriggerSource::kAutofillAi);
   EXPECT_THAT(external_delegate()->suggestions(),
               ElementsAre(Field(&Suggestion::type,
                                 Eq(SuggestionType::kRetrieveAutofillAi))));
@@ -6623,9 +6622,8 @@ TEST_F(BrowserAutofillManagerTest, ShowAutofillAiIPH) {
               ShowAutofillFieldIphForFeature(
                   _, AutofillClient::IphFeature::kPredictionImprovements));
 
-  OnAskForValuesToFill(
-      form, form.fields().front(),
-      AutofillSuggestionTriggerSource::kPredictionImprovements);
+  OnAskForValuesToFill(form, form.fields().front(),
+                       AutofillSuggestionTriggerSource::kAutofillAi);
 }
 
 // Tests that an Autofill profile is not imported into the address data manager

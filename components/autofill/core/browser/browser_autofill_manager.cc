@@ -390,7 +390,7 @@ bool IsTriggerSourceOnlyRelevantForCompose(
     case AutofillSuggestionTriggerSource::
         kShowPromptAfterDialogClosedNonManualFallback:
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
-    case AutofillSuggestionTriggerSource::kPredictionImprovements:
+    case AutofillSuggestionTriggerSource::kAutofillAi:
     case AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess:
       return false;
   }
@@ -1309,8 +1309,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
   }
   AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
   if (delegate && has_prediction_improvements_data &&
-      (trigger_source ==
-           AutofillSuggestionTriggerSource::kPredictionImprovements ||
+      (trigger_source == AutofillSuggestionTriggerSource::kAutofillAi ||
        trigger_source ==
            AutofillSuggestionTriggerSource::kFormControlElementClicked)) {
     std::vector<Suggestion> prediction_improvements_suggestions =
@@ -1774,7 +1773,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
       case AutofillTriggerSource::kSelectOptionsChanged:
       case AutofillTriggerSource::kJavaScriptChangedAutofilledValue:
       case AutofillTriggerSource::kManualFallback:
-      case AutofillTriggerSource::kPredictionImprovements:
+      case AutofillTriggerSource::kAutofillAi:
       case AutofillTriggerSource::kNone:
         NOTREACHED();
     }

@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAiEnabledTest, ActionTriggersSuggestions) {
       RendererShouldTriggerSuggestions(
           FieldGlobalId{LocalFrameToken(main_rfh()->GetFrameToken().value()),
                         form.fields()[0].renderer_id()},
-          AutofillSuggestionTriggerSource::kPredictionImprovements));
+          AutofillSuggestionTriggerSource::kAutofillAi));
 
   autofill_context_menu_manager()->ExecuteCommand(
       IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS);

@@ -127,8 +127,8 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
       // context menu) and a trigger source (by selecting a suggestion generated
       // through the context menu).
       return AutofillTriggerSource::kManualFallback;
-    case AutofillSuggestionTriggerSource::kPredictionImprovements:
-      return AutofillTriggerSource::kPredictionImprovements;
+    case AutofillSuggestionTriggerSource::kAutofillAi:
+      return AutofillTriggerSource::kAutofillAi;
   }
   NOTREACHED();
 }
