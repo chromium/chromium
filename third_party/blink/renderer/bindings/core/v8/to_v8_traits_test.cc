@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 
 #include "base/time/time.h"
@@ -75,22 +70,22 @@ TEST(ToV8TraitsTest, Boolean) {
 TEST(ToV8TraitsTest, BigInt) {
   test::TaskEnvironment task_environment;
   const V8TestingScope scope;
-  uint64_t words[5];
+  std::array<uint64_t, 5> words;
 
   // 0
   TEST_TOV8_TRAITS(
       scope, IDLBigint, "0",
-      BigInt(v8::BigInt::NewFromWords(scope.GetContext(), 0, 0, words)
+      BigInt(v8::BigInt::NewFromWords(scope.GetContext(), 0, 0, words.data())
                  .ToLocalChecked()));
   // +/- 1
   words[0] = 1;
   TEST_TOV8_TRAITS(
       scope, IDLBigint, "1",
-      BigInt(v8::BigInt::NewFromWords(scope.GetContext(), 0, 1, words)
+      BigInt(v8::BigInt::NewFromWords(scope.GetContext(), 0, 1, words.data())
                  .ToLocalChecked()));
   TEST_TOV8_TRAITS(
       scope, IDLBigint, "-1",
-      BigInt(v8::BigInt::NewFromWords(scope.GetContext(), 1, 1, words)
+      BigInt(v8::BigInt::NewFromWords(scope.GetContext(), 1, 1, words.data())
                  .ToLocalChecked()));
 
   // +/- 2^64
@@ -98,11 +93,11 @@ TEST(ToV8TraitsTest, BigInt) {
   words[1] = 1;
   TEST_TOV8_TRAITS(
       scope, IDLBigint, "18446744073709551616",
-      BigInt(v8::BigInt::NewFromWords(scope.GetContext(), 0, 2, words)
+      BigInt(v8::BigInt::NewFromWords(scope.GetContext(), 0, 2, words.data())
                  .ToLocalChecked()));
   TEST_TOV8_TRAITS(
       scope, IDLBigint, "-18446744073709551616",
-      BigInt(v8::BigInt::NewFromWords(scope.GetContext(), 1, 2, words)
+      BigInt(v8::BigInt::NewFromWords(scope.GetContext(), 1, 2, words.data())
                  .ToLocalChecked()));
 
   // +/- 2^128
@@ -111,11 +106,11 @@ TEST(ToV8TraitsTest, BigInt) {
   words[2] = 1;
   TEST_TOV8_TRAITS(
       scope, IDLBigint, "340282366920938463463374607431768211456",
-      BigInt(v8::BigInt::NewFromWords(scope.GetContext(), 0, 3, words)
+      BigInt(v8::BigInt::NewFromWords(scope.GetContext(), 0, 3, words.data())
                  .ToLocalChecked()));
   TEST_TOV8_TRAITS(
       scope, IDLBigint, "-340282366920938463463374607431768211456",
-      BigInt(v8::BigInt::NewFromWords(scope.GetContext(), 1, 3, words)
+      BigInt(v8::BigInt::NewFromWords(scope.GetContext(), 1, 3, words.data())
                  .ToLocalChecked()));
 
   // +/- 2^320 - 1
@@ -127,13 +122,13 @@ TEST(ToV8TraitsTest, BigInt) {
       scope, IDLBigint,
       "213598703592091008239502170616955211460270452235665276994704160782221972"
       "5780640550022962086936575",
-      BigInt(v8::BigInt::NewFromWords(scope.GetContext(), 0, 5, words)
+      BigInt(v8::BigInt::NewFromWords(scope.GetContext(), 0, 5, words.data())
                  .ToLocalChecked()));
   TEST_TOV8_TRAITS(
       scope, IDLBigint,
       "-21359870359209100823950217061695521146027045223566527699470416078222197"
       "25780640550022962086936575",
-      BigInt(v8::BigInt::NewFromWords(scope.GetContext(), 1, 5, words)
+      BigInt(v8::BigInt::NewFromWords(scope.GetContext(), 1, 5, words.data())
                  .ToLocalChecked()));
 }
 
@@ -291,8 +286,8 @@ TEST(ToV8TraitsTest, NotShared) {
   test::TaskEnvironment task_environment;
   const V8TestingScope scope;
   auto not_shared = NotShared<DOMUint8Array>(DOMUint8Array::Create(2));
-  not_shared->Data()[0] = static_cast<uint8_t>(0);
-  not_shared->Data()[1] = static_cast<uint8_t>(255);
+  not_shared->AsSpan()[0] = static_cast<uint8_t>(0);
+  not_shared->AsSpan()[1] = static_cast<uint8_t>(255);
   TEST_TOV8_TRAITS(scope, NotShared<DOMUint8Array>, "0,255", not_shared);
 }
 
@@ -300,9 +295,9 @@ TEST(ToV8TraitsTest, MaybeShared) {
   test::TaskEnvironment task_environment;
   const V8TestingScope scope;
   auto maybe_shared = MaybeShared<DOMInt8Array>(DOMInt8Array::Create(3));
-  maybe_shared->Data()[0] = static_cast<int8_t>(-128);
-  maybe_shared->Data()[1] = static_cast<int8_t>(0);
-  maybe_shared->Data()[2] = static_cast<int8_t>(127);
+  maybe_shared->AsSpan()[0] = static_cast<int8_t>(-128);
+  maybe_shared->AsSpan()[1] = static_cast<int8_t>(0);
+  maybe_shared->AsSpan()[2] = static_cast<int8_t>(127);
   TEST_TOV8_TRAITS(scope, MaybeShared<DOMInt8Array>, "-128,0,127",
                    maybe_shared);
 }

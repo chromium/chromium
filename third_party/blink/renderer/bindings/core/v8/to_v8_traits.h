@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_TO_V8_TRAITS_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_TO_V8_TRAITS_H_
 
@@ -323,11 +318,13 @@ template <typename ElementIDLType, typename ContainerType>
   const auto callback = [&current_it, end_it, script_state]() {
     DCHECK(end_it != current_it);
     std::ignore = end_it;
+    // SAFETY: v8::Array::New ensures the current callback will be called no
+    // more than sequence.size() times, so the current_it++ is safe.
+    auto it = UNSAFE_BUFFERS(current_it++);
     if constexpr (WTF::IsAnyMemberType<decltype(*current_it)>::value) {
-      return ToV8Traits<ElementIDLType>::ToV8(script_state,
-                                              (current_it++)->Get());
+      return ToV8Traits<ElementIDLType>::ToV8(script_state, it->Get());
     } else {
-      return ToV8Traits<ElementIDLType>::ToV8(script_state, *(current_it++));
+      return ToV8Traits<ElementIDLType>::ToV8(script_state, *it);
     }
   };
   return v8::Array::New(script_state->GetContext(),
@@ -376,20 +373,17 @@ template <typename ValueIDLType, typename ContainerType>
     object = v8::Object::New(isolate);
   }
   v8::Local<v8::Context> context = script_state->GetContext();
-  typename ContainerType::const_iterator end = record.end();
-  for (typename ContainerType::const_iterator iter = record.begin();
-       iter != end; ++iter) {
+  for (const auto& [key, value] : record) {
     v8::Local<v8::Value> v8_value;
-    if constexpr (WTF::IsAnyMemberType<decltype(iter->second)>::value) {
-      v8_value =
-          ToV8Traits<ValueIDLType>::ToV8(script_state, iter->second.Get());
+    if constexpr (WTF::IsAnyMemberType<decltype(value)>::value) {
+      v8_value = ToV8Traits<ValueIDLType>::ToV8(script_state, value.Get());
     } else {
-      v8_value = ToV8Traits<ValueIDLType>::ToV8(script_state, iter->second);
+      v8_value = ToV8Traits<ValueIDLType>::ToV8(script_state, value);
     }
     // The object was just created so setting the property shouldn't fail.
     CHECK(object
-              ->CreateDataProperty(
-                  context, V8AtomicString(isolate, iter->first), v8_value)
+              ->CreateDataProperty(context, V8AtomicString(isolate, key),
+                                   v8_value)
               .ToChecked());
   }
   return object;

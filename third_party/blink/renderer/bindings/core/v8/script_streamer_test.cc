@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 
 #include <memory>
@@ -1158,8 +1153,8 @@ TEST_F(BackgroundResourceScriptStreamerTest, HasCodeCache) {
   V8TestingScope scope;
   Init(scope.GetIsolate());
   mojo_base::BigBuffer code_cache_data = CreateDummyCodeCacheData();
-  const std::vector<uint8_t> code_cache_data_copy(
-      code_cache_data.data(), code_cache_data.data() + code_cache_data.size());
+  const std::vector<uint8_t> code_cache_data_copy(code_cache_data.begin(),
+                                                  code_cache_data.end());
   RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     // Set charset to make the code cache valid.
@@ -1198,8 +1193,8 @@ TEST_F(BackgroundResourceScriptStreamerCodeCacheDecodeStartTest, HasCodeCache) {
   V8TestingScope scope;
   Init(scope.GetIsolate());
   mojo_base::BigBuffer code_cache_data = CreateDummyCodeCacheData();
-  const std::vector<uint8_t> code_cache_data_copy(
-      code_cache_data.data(), code_cache_data.data() + code_cache_data.size());
+  const std::vector<uint8_t> code_cache_data_copy(code_cache_data.begin(),
+                                                  code_cache_data.end());
   RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     // Set charset to make the code cache valid.
@@ -1236,8 +1231,8 @@ TEST_F(BackgroundResourceScriptStreamerCodeCacheDecodeStartTest,
   Init(scope.GetIsolate());
   mojo_base::BigBuffer code_cache_data = CreateDummyCodeCacheDataWithHash(
       base::span_from_cstring(kLargeEnoughScript));
-  const std::vector<uint8_t> code_cache_data_copy(
-      code_cache_data.data(), code_cache_data.data() + code_cache_data.size());
+  const std::vector<uint8_t> code_cache_data_copy(code_cache_data.begin(),
+                                                  code_cache_data.end());
   RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     // Set charset to make the code cache valid.
@@ -1274,8 +1269,8 @@ TEST_F(BackgroundResourceScriptStreamerCodeCacheDecodeStartTest,
   Init(scope.GetIsolate());
   mojo_base::BigBuffer code_cache_data = CreateDummyCodeCacheDataWithHash(
       base::span_from_cstring("not matching script"));
-  const std::vector<uint8_t> code_cache_data_copy(
-      code_cache_data.data(), code_cache_data.data() + code_cache_data.size());
+  const std::vector<uint8_t> code_cache_data_copy(code_cache_data.begin(),
+                                                  code_cache_data.end());
   RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     // Set charset to make the code cache valid.
@@ -1311,8 +1306,8 @@ TEST_F(BackgroundResourceScriptStreamerTest, HasTimeStampData) {
   V8TestingScope scope;
   Init(scope.GetIsolate());
   mojo_base::BigBuffer time_stamp_data = CreateDummyTimeStampData();
-  const std::vector<uint8_t> time_stamp_data_copy(
-      time_stamp_data.data(), time_stamp_data.data() + time_stamp_data.size());
+  const std::vector<uint8_t> time_stamp_data_copy(time_stamp_data.begin(),
+                                                  time_stamp_data.end());
   RunInBackgroundThread(base::BindLambdaForTesting([&]() {
     network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
     // Set a dummy time stamp data.
