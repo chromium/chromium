@@ -5958,6 +5958,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_SWITCHER_CLOSE_TAB" desc="The accessibility label for the closing of a selected tab. [iOS only]">
         Close tab.
       </message>
+      <message name="IDS_IOS_TAB_SWITCHER_CLOSE_GROUP" desc="The accessibility label for the closing of a selected tab group. [iOS only]">
+        Close group.
+      </message>
       <message name="IDS_IOS_TAB_SWITCHER_CREATE_NEW_INCOGNITO_TAB" desc="The accessibility label for the button that creates new Incognito tabs. [iOS only]">
         Create new Incognito tab.
       </message>

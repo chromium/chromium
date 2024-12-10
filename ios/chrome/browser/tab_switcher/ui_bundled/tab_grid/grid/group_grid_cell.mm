@@ -213,7 +213,21 @@ const CGFloat kColorDotLargeInset = 20;
   // title and close button.
   return YES;
 }
-// TODO(crbug.com/41484563): Add the accessibility custom actions.
+
+- (NSArray*)accessibilityCustomActions {
+  if ([self isInSelectionMode]) {
+    // If the cell is in tab grid selection mode, only allow toggling the
+    // selection state.
+    return nil;
+  }
+
+  // In normal cell mode, there are 2 actions, accessible through swiping. The
+  // default is to select the group cell. Another is to close the group cell.
+  return @[ [[UIAccessibilityCustomAction alloc]
+      initWithName:l10n_util::GetNSString(IDS_IOS_TAB_SWITCHER_CLOSE_GROUP)
+            target:self
+          selector:@selector(closeButtonTapped:)] ];
+}
 
 #pragma mark - Public
 
