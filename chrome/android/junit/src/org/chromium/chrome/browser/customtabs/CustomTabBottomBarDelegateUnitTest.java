@@ -93,6 +93,8 @@ public class CustomTabBottomBarDelegateUnitTest {
         when(mCustomTabActivity.getCustomTabActivityTabProvider()).thenReturn(mTabProvider);
         when(mCustomTabActivity.getCustomTabNightModeStateController())
                 .thenReturn(mNightModeStateController);
+        when(mCustomTabActivity.getTheme()).thenAnswer(input -> mActivity.getTheme());
+        when(mCustomTabActivity.getResources()).thenAnswer(input -> mActivity.getResources());
         mIntentDataProvider =
                 new CustomTabIntentDataProvider(
                         mIntent, mActivity, CustomTabsIntent.COLOR_SCHEME_LIGHT);
@@ -162,7 +164,7 @@ public class CustomTabBottomBarDelegateUnitTest {
         var description = "description";
         CustomButtonParams customButtonParams = Mockito.mock(CustomButtonParams.class);
         when(customButtonParams.getId()).thenReturn(1);
-        when(customButtonParams.getIcon(any())).thenReturn(icon);
+        when(customButtonParams.getIcon(any(), any())).thenReturn(icon);
         when(customButtonParams.getDescription()).thenReturn(description);
 
         mBottomBarDelegate.updateBottomBarButtons(customButtonParams);
@@ -178,7 +180,7 @@ public class CustomTabBottomBarDelegateUnitTest {
         var description = "description";
         CustomButtonParams customButtonParams = Mockito.mock(CustomButtonParams.class);
         when(customButtonParams.getId()).thenReturn(1);
-        when(customButtonParams.getIcon(any())).thenReturn(icon);
+        when(customButtonParams.getIcon(any(), any())).thenReturn(icon);
         when(customButtonParams.getDescription()).thenReturn(description);
         CustomTabBottomBarDelegate.CustomButtonsUpdater updater =
                 Mockito.mock(CustomTabBottomBarDelegate.CustomButtonsUpdater.class);

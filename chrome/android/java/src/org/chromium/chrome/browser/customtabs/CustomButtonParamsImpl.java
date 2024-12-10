@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -107,6 +108,17 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
         }
     }
 
+    @Override
+    public Drawable getIcon(Context context, ColorStateList tint) {
+        if (mShouldTint) {
+            TintedDrawable icon = new TintedDrawable(context, mIcon);
+            icon.setTint(tint);
+            return icon;
+        } else {
+            return new BitmapDrawable(context.getResources(), mIcon);
+        }
+    }
+
     /**
      * @return The content description for the customized button.
      */
@@ -134,11 +146,15 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
      *
      * @param parent The parent that the inflated {@link ImageButton}.
      * @param listener {@link OnClickListener} that should be used with the button.
+     * @param buttonIconTint tint to be applied to button icon, if icon should be tinted.
      * @return Parsed list of {@link CustomButtonParams}, which is empty if the input is invalid.
      */
     @Override
     public ImageButton buildBottomBarButton(
-            Context context, ViewGroup parent, OnClickListener listener) {
+            Context context,
+            ViewGroup parent,
+            OnClickListener listener,
+            ColorStateList buttonIconTint) {
         assert !mIsOnToolbar;
 
         ImageButton button =
@@ -146,7 +162,7 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
                         LayoutInflater.from(context)
                                 .inflate(R.layout.custom_tabs_bottombar_item, parent, false);
         button.setId(mId);
-        button.setImageDrawable(getIcon(context));
+        button.setImageDrawable(getIcon(context, buttonIconTint));
         button.setContentDescription(mDescription);
         if (mPendingIntent == null) {
             button.setEnabled(false);

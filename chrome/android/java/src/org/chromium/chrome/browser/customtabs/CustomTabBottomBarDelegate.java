@@ -9,6 +9,7 @@ import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,13 +33,17 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.OverlayPanelManagerObserver;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.night_mode.RemoteViewsWithNightModeInflater;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.ui.base.ViewportInsets;
@@ -188,7 +193,8 @@ public class CustomTabBottomBarDelegate
                         v -> sendPendingIntentWithUrl(pendingIntent, null, mActivity, mTabProvider);
             }
             layout.addView(
-                    params.buildBottomBarButton(mActivity, getBottomBarView(), clickListener));
+                    params.buildBottomBarButton(
+                            mActivity, getBottomBarView(), clickListener, getButtonIconTint()));
         }
         getBottomBarView().addView(layout);
     }
@@ -204,7 +210,19 @@ public class CustomTabBottomBarDelegate
         }
         ImageButton button = (ImageButton) getBottomBarView().findViewById(params.getId());
         button.setContentDescription(params.getDescription());
-        button.setImageDrawable(params.getIcon(mActivity));
+        button.setImageDrawable(params.getIcon(mActivity, getButtonIconTint()));
+    }
+
+    private ColorStateList getButtonIconTint() {
+        // We use OmniboxResourceProvider so that our color scheme matches the CCT top toolbar's
+        // color scheme - see CustomTabToolbar.
+        @BrandedColorScheme
+        int brandedColorScheme =
+                OmniboxResourceProvider.getBrandedColorScheme(
+                        mActivity,
+                        mDataProvider.getCustomTabMode() == CustomTabProfileType.INCOGNITO,
+                        mDataProvider.getColorProvider().getBottomBarColor());
+        return ThemeUtils.getThemedToolbarIconTint(mActivity, brandedColorScheme);
     }
 
     /**
