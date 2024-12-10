@@ -85,23 +85,21 @@ enum class PushNotificationLifecycleEvent {
 // This function creates a dictionary that maps signed-in user's GAIA IDs to a
 // map of each user's preferences for each push notification enabled feature.
 GaiaIdToPushNotificationPreferenceMap*
-GaiaIdToPushNotificationPreferenceMapFromCache(
-    ProfileAttributesStorageIOS* storage) {
-  const size_t number_of_profiles = storage->GetNumberOfProfiles();
+GaiaIdToPushNotificationPreferenceMapFromCache() {
+  ProfileManagerIOS* manager = GetApplicationContext()->GetProfileManager();
+  ProfileAttributesStorageIOS* storage = manager->GetProfileAttributesStorage();
   NSMutableDictionary* account_preference_map =
       [[NSMutableDictionary alloc] init];
 
-  for (size_t i = 0; i < number_of_profiles; i++) {
-    ProfileAttributesIOS attr = storage->GetAttributesForProfileAtIndex(i);
+  // TODO(crbug.com/383315797): Migrate prefs to ProfileAttributesStorageIOS.
+  for (ProfileIOS* profile : manager->GetLoadedProfiles()) {
+    ProfileAttributesIOS attr =
+        storage->GetAttributesForProfileWithName(profile->GetProfileName());
     if (attr.GetGaiaId().empty()) {
       continue;
     }
 
-    PrefService* pref_service = GetApplicationContext()
-                                    ->GetProfileManager()
-                                    ->GetProfileWithName(attr.GetProfileName())
-                                    ->GetPrefs();
-
+    PrefService* pref_service = profile->GetPrefs();
     NSMutableDictionary<NSString*, NSNumber*>* preference_map =
         [[NSMutableDictionary alloc] init];
     const base::Value::Dict& permissions =
@@ -241,12 +239,8 @@ void SendNAUFConfigurationForProfileWithSettings(
 
 - (void)applicationDidRegisterWithAPNS:(NSData*)deviceToken
                                profile:(ProfileIOS*)profile {
-  ProfileAttributesStorageIOS* storage = GetApplicationContext()
-                                             ->GetProfileManager()
-                                             ->GetProfileAttributesStorage();
-
   GaiaIdToPushNotificationPreferenceMap* accountPreferenceMap =
-      GaiaIdToPushNotificationPreferenceMapFromCache(storage);
+      GaiaIdToPushNotificationPreferenceMapFromCache();
 
   // Return early if no accounts are signed into Chrome.
   if (!accountPreferenceMap.count) {
