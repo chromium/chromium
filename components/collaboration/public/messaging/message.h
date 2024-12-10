@@ -134,9 +134,6 @@ struct MessageAttribution {
   MessageAttribution(const MessageAttribution& other);
   ~MessageAttribution();
 
-  // TODO(nyquist): Maybe make collaboration, tab, group, and affected users
-  // vectors.
-
   // The collaboration this message is associated with (if any).
   data_sharing::GroupId collaboration_id;
 
@@ -147,9 +144,15 @@ struct MessageAttribution {
   std::optional<TabMessageMetadata> tab_metadata;
 
   // The user the related action applies to (if any).
+  // This is the added or removed user for
+  // CollaborationEvent::COLLABORATION_MEMBER_ADDED and
+  // CollaborationEvent::COLLABORATION_MEMBER_REMOVED, otherwise std::nullopt.
   std::optional<data_sharing::GroupMember> affected_user;
 
   // The user who performed the related action and caused the message (if any).
+  // This is not set for CollaborationEvent::COLLABORATION_MEMBER_ADDED and
+  // CollaborationEvent::COLLABORATION_MEMBER_REMOVED since we do not have a way
+  // to know how the change was triggered.
   std::optional<data_sharing::GroupMember> triggering_user;
 };
 

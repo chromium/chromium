@@ -23,17 +23,20 @@ namespace collaboration::messaging {
 //
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.collaboration.messaging
 enum class RecentActivityAction {
+  // No action should be taken.
+  kNone = 0,
+
   // Focus a given tab.
-  kFocusTab = 0,
+  kFocusTab = 1,
 
   // Reopen a given URL as a new tab in the group.
-  kReopenTab = 1,
+  kReopenTab = 2,
 
   // Open the tab group dialog UI to edit tab group properties.
-  kOpenTabGroupEditDialog = 2,
+  kOpenTabGroupEditDialog = 3,
 
   // Open the people group management screen.
-  kManageSharing = 3
+  kManageSharing = 4
 };
 
 // Struct containing information needed to show one row in the activity log UI.
@@ -55,6 +58,9 @@ struct ActivityLogItem {
   std::string timestamp_text;
 
   // Display name to be shown in the title line.
+  // This is the triggering user for tab and tab group related events.
+  // This is the affected user for membership changes (added/removed user).
+  // This the `data_sharing::GroupMember::given_name`.
   std::string user_display_name;
 
   // Whether the user associated with the activity log item is the current

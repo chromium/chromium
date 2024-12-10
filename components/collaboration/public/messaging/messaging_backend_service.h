@@ -20,6 +20,7 @@ class MessagingBackendService : public KeyedService,
                                 public base::SupportsUserData {
  public:
   class PersistentMessageObserver : public base::CheckedObserver {
+   public:
     // Invoked once when the service is initialized. This is invoked only once
     // and is immediately invoked if the service was initialized before the
     // observer was added. The initialization state can also be inspected using
