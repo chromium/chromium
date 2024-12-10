@@ -65,16 +65,10 @@ class OnDeviceInternalsPageHandler : public mojom::OnDeviceInternalsPageHandler,
                          int source_line,
                          const std::string& message) override;
 
-  void LoadAdaptation(
-      mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
-      LoadModelCallback callback,
-      on_device_model::mojom::LoadModelResult result);
-
   mojo::Receiver<mojom::OnDeviceInternalsPageHandler> receiver_;
   mojo::Remote<mojom::OnDeviceInternalsPage> page_;
 
   mojo::Remote<Service> service_;
-  mojo::Remote<on_device_model::mojom::OnDeviceModel> base_model_;
 
   // Logger to receive the debug logs from the optimization guide service. Not
   // owned. Guaranteed to outlive |this|, since the logger is owned by the

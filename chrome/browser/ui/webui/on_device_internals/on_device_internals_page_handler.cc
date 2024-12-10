@@ -63,7 +63,6 @@ void OnDeviceInternalsPageHandler::LoadModel(
     const base::FilePath& model_path,
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     LoadModelCallback callback) {
-  base_model_.reset();
 #if BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE)
   // We treat the file path as a UUID on ChromeOS.
   base::Uuid uuid = base::Uuid::ParseLowercase(model_path.value());
@@ -111,31 +110,13 @@ void OnDeviceInternalsPageHandler::OnModelAssetsLoaded(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     LoadModelCallback callback,
     on_device_model::ModelAssets assets) {
-  auto receiver = base_model_.BindNewPipeAndPassReceiver();
   auto params = on_device_model::mojom::LoadModelParams::New();
   params->assets = std::move(assets);
   params->max_tokens = 4096;
-  GetService().LoadModel(
-      std::move(params), std::move(receiver),
-      base::BindOnce(&OnDeviceInternalsPageHandler::LoadAdaptation,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(model),
-                     std::move(callback)));
+  GetService().LoadModel(std::move(params), std::move(model),
+                         std::move(callback));
 }
 #endif
-
-void OnDeviceInternalsPageHandler::LoadAdaptation(
-    mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
-    LoadModelCallback callback,
-    on_device_model::mojom::LoadModelResult result) {
-  if (result != on_device_model::mojom::LoadModelResult::kSuccess) {
-    std::move(callback).Run(result);
-    return;
-  }
-  auto params = on_device_model::mojom::LoadAdaptationParams::New();
-  params->enable_image_input = true;
-  base_model_->LoadAdaptation(std::move(params), std::move(model),
-                              std::move(callback));
-}
 
 void OnDeviceInternalsPageHandler::GetEstimatedPerformanceClass(
     GetEstimatedPerformanceClassCallback callback) {

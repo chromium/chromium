@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
+import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_hidden_style.css.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_textarea/cr_textarea.js';
-import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -108,6 +109,10 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
         type: Array,
         value: () => [],
       },
+      baseModel_: {
+        type: Object,
+        value: null,
+      },
       model_: {
         type: Object,
         value: null,
@@ -119,9 +124,10 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
       contextExpanded_: Boolean,
       contextLength_: Number,
       contextText_: String,
+      enableImageInput_: Boolean,
       topK_: Number,
       temperature_: Number,
-      file_: {
+      imageFile_: {
         type: Object,
         value: null,
       },
@@ -143,6 +149,7 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
   private loadModelDuration_: number;
   private loadModelStart_: number;
   private modelPath_: string;
+  private baseModel_: OnDeviceModelRemote|null;
   private model_: OnDeviceModelRemote|null;
   private performanceClassText_: string;
   private responses_: Response[];
@@ -150,7 +157,8 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
   private temperature_: number = 0;
   private text_: string;
   private topK_: number = 1;
-  private file_: File|null = null;
+  private imageFile_: File|null = null;
+  private enableImageInput_: boolean = false;
 
   private proxy_: BrowserProxy = BrowserProxy.getInstance();
   private responseRouter_: StreamingResponderCallbackRouter =
@@ -187,7 +195,7 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
   }
 
   private onRemoteImageClick_() {
-    this.file_ = null;
+    this.imageFile_ = null;
     this.$.imageInput.value = '';
   }
 
@@ -198,6 +206,7 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     }
     this.error_ = 'Service crashed, please reload the model.';
     this.model_ = null;
+    this.baseModel_ = null;
     this.modelPath_ = '';
     this.loadModelStart_ = 0;
     this.$.modelInput.focus();
@@ -206,17 +215,22 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
   private onImageChange_() {
     this.imageError_ = '';
     if ((this.$.imageInput.files?.length ?? 0) > 0) {
-      this.file_ = this.$.imageInput.files!.item(0) ?? null;
+      this.imageFile_ = this.$.imageInput.files!.item(0) ?? null;
     } else {
-      this.file_ = null;
+      this.imageFile_ = null;
     }
   }
 
   private async onModelSelected_() {
     this.error_ = '';
+    if (this.baseModel_) {
+      this.baseModel_.$.close();
+    }
     if (this.model_) {
       this.model_.$.close();
     }
+    this.imageFile_ = null;
+    this.baseModel_ = null;
     this.model_ = null;
     this.loadModelStart_ = new Date().getTime();
     const modelPath = this.$.modelInput.value;
@@ -227,13 +241,31 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     // <if expr="not is_win">
     const processedPath = modelPath;
     // </if>
-    const newModel = new OnDeviceModelRemote();
-    const {result} = await this.proxy_.handler.loadModel(
-        {path: processedPath}, newModel.$.bindNewPipeAndPassReceiver());
+    const baseModel = new OnDeviceModelRemote();
+    let newModel = new OnDeviceModelRemote();
+    let {result} = await this.proxy_.handler.loadModel(
+        {path: processedPath}, baseModel.$.bindNewPipeAndPassReceiver());
+    if (result === LoadModelResult.kSuccess && this.enableImageInput_) {
+      result = (await baseModel.loadAdaptation(
+                    {
+                      enableImageInput: true,
+                      maxTokens: 0,
+                      assets: {
+                        weights: null,
+                        weightsPath: null,
+                      },
+                    },
+                    newModel.$.bindNewPipeAndPassReceiver()))
+                   .result;
+    } else {
+      // No adaptation needed, just use the base model.
+      newModel = baseModel;
+    }
     if (result !== LoadModelResult.kSuccess) {
       this.error_ =
           'Unable to load model. Specify a correct and absolute path.';
     } else {
+      this.baseModel_ = baseModel;
       this.model_ = newModel;
       this.model_.onConnectionError.addListener(() => {
         this.onServiceCrashed_();
@@ -288,7 +320,7 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
   }
 
   private async decodeBitmap_() {
-    const data = new Uint8Array(await this.file_!.arrayBuffer());
+    const data = new Uint8Array(await this.imageFile_!.arrayBuffer());
     if (data.byteLength <= 0) {
       return null;
     }
@@ -323,12 +355,12 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
       return;
     }
     const pieces = textToInputPieces(this.text_);
-    if (this.file_ !== null) {
+    if (this.imageFile_ !== null) {
       const bitmap = await this.decodeBitmap_();
       if (bitmap) {
         pieces.unshift({bitmap});
       } else {
-        this.file_ = null;
+        this.imageFile_ = null;
         this.imageError_ = 'Image is invalid';
         return;
       }
@@ -371,19 +403,27 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
   }
 
   private canUploadFile_(): boolean {
-    return this.canExecute_() && this.file_ === null;
+    return this.canExecute_() && this.imageFile_ === null;
   }
 
   private isLoading_(): boolean {
     return this.loadModelStart_ !== 0;
   }
 
+  private imagesEnabled_(): boolean {
+    return this.model_ !== this.baseModel_;
+  }
+
   private getModelText_(): string {
     if (this.modelPath_.length === 0) {
       return '';
     }
-    return 'Model loaded from ' + this.modelPath_ + ' in ' +
+    let text = 'Model loaded from ' + this.modelPath_ + ' in ' +
         this.loadModelDuration_ + 'ms';
+    if (this.imagesEnabled_()) {
+      text += ' [images enabled]';
+    }
+    return text;
   }
 }
 
