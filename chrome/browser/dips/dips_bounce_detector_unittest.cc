@@ -1616,3 +1616,112 @@ TEST(DIPSRedirectContextTest,
           std::pair<std::string, std::pair<GURL, bool>>(
               "b.test", std::make_pair(current_interaction_url.url, true))));
 }
+
+TEST(DIPSRedirectContextTest,
+     GetServerRedirectsSinceLastPrimaryPageChangeNoRedirects) {
+  std::vector<ChainPair> chains;
+  DIPSRedirectContext context(
+      base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
+      UrlAndSourceId(),
+      /*redirect_prefix_count=*/0);
+  ASSERT_EQ(context.size(), 0u);
+
+  base::span<const DIPSRedirectInfoPtr> server_redirects =
+      context.GetServerRedirectsSinceLastPrimaryPageChange();
+
+  EXPECT_EQ(server_redirects.size(), 0u);
+}
+
+TEST(DIPSRedirectContextTest,
+     GetServerRedirectsSinceLastPrimaryPageChangeOnlyClientSideRedirects) {
+  std::vector<ChainPair> chains;
+  DIPSRedirectContext context(
+      base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
+      UrlAndSourceId(),
+      /*redirect_prefix_count=*/0);
+  context.AppendCommitted(
+      MakeClientRedirect("http://a.test/", SiteDataAccessType::kNone, false,
+                         true),
+      {}, MakeUrlAndId("http://b.test/"), false);
+  ASSERT_EQ(context.size(), 1u);
+
+  base::span<const DIPSRedirectInfoPtr> server_redirects =
+      context.GetServerRedirectsSinceLastPrimaryPageChange();
+
+  EXPECT_EQ(server_redirects.size(), 0u);
+}
+
+TEST(DIPSRedirectContextTest,
+     GetServerRedirectsSinceLastPrimaryPageChangeOnlyServerSideRedirects) {
+  std::vector<ChainPair> chains;
+  DIPSRedirectContext context(
+      base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
+      UrlAndSourceId(),
+      /*redirect_prefix_count=*/0);
+  context.AppendCommitted(
+      MakeUrlAndId("http://a.test/"),
+      {MakeServerRedirects({"http://b.test/", "http://c.test/"})},
+      MakeUrlAndId("http://d.test"), false);
+  ASSERT_EQ(context.size(), 2u);
+
+  base::span<const DIPSRedirectInfoPtr> server_redirects =
+      context.GetServerRedirectsSinceLastPrimaryPageChange();
+
+  EXPECT_EQ(server_redirects.size(), 2u);
+  EXPECT_EQ(server_redirects[0]->url.url, "http://b.test/");
+  EXPECT_EQ(server_redirects[0]->redirect_type, DIPSRedirectType::kServer);
+  EXPECT_EQ(server_redirects[1]->url.url, "http://c.test/");
+  EXPECT_EQ(server_redirects[1]->redirect_type, DIPSRedirectType::kServer);
+}
+
+TEST(
+    DIPSRedirectContextTest,
+    GetServerRedirectsSinceLastPrimaryPageChangeNoServerSideRedirectsSinceLastClientSideRedirect) {
+  std::vector<ChainPair> chains;
+  DIPSRedirectContext context(
+      base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
+      UrlAndSourceId(),
+      /*redirect_prefix_count=*/0);
+  context.AppendCommitted(MakeUrlAndId("http://a.test"),
+                          {MakeServerRedirects({"http://b.test"})},
+                          MakeUrlAndId("http://c.test/"), false);
+  context.AppendCommitted(
+      MakeClientRedirect("http://b.test/", SiteDataAccessType::kNone, false,
+                         true),
+      {}, MakeUrlAndId("http://d.test/"), false);
+  ASSERT_EQ(context.size(), 2u);
+
+  base::span<const DIPSRedirectInfoPtr> server_redirects =
+      context.GetServerRedirectsSinceLastPrimaryPageChange();
+
+  EXPECT_EQ(server_redirects.size(), 0u);
+}
+
+TEST(
+    DIPSRedirectContextTest,
+    GetServerRedirectsSinceLastPrimaryPageChangeServerSideRedirectsPrecededByClientSideRedirect) {
+  std::vector<ChainPair> chains;
+  DIPSRedirectContext context(
+      base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
+      UrlAndSourceId(),
+      /*redirect_prefix_count=*/0);
+  context.AppendCommitted(MakeUrlAndId("http://a.test/"),
+                          {MakeServerRedirects({"http://b.test/"})},
+                          MakeUrlAndId("http://c.test/"), false);
+  context.AppendCommitted(
+      MakeClientRedirect("http://b.test/", SiteDataAccessType::kNone, false,
+                         true),
+      MakeServerRedirects({"http://a.test/server-redirect/"}),
+      MakeUrlAndId("http://d.test/"), false);
+  ASSERT_EQ(context.size(), 3u);
+  ASSERT_EQ(context[0].redirect_type, DIPSRedirectType::kServer);
+  ASSERT_EQ(context[1].redirect_type, DIPSRedirectType::kClient);
+  ASSERT_EQ(context[2].redirect_type, DIPSRedirectType::kServer);
+
+  base::span<const DIPSRedirectInfoPtr> server_redirects =
+      context.GetServerRedirectsSinceLastPrimaryPageChange();
+
+  EXPECT_EQ(server_redirects.size(), 1u);
+  EXPECT_EQ(server_redirects[0]->url.url, "http://a.test/server-redirect/");
+  EXPECT_EQ(server_redirects[0]->redirect_type, DIPSRedirectType::kServer);
+}

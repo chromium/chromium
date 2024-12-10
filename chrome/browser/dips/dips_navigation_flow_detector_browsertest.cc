@@ -36,6 +36,7 @@
 #include "services/network/test/trust_token_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/switches.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
@@ -116,6 +117,8 @@ std::string_view kSuspectedTrackerFlowEntrypointUkmEventName =
     "DIPS.SuspectedTrackerFlowEntrypoint";
 std::string_view kInFlowInteractionUkmEventName =
     "DIPS.TrustIndicator.InFlowInteraction";
+std::string_view kInFlowSuccessorInteractionUkmEventName =
+    "DIPS.TrustIndicator.InFlowSuccessorInteraction";
 std::string_view kDirectNavigationUkmEventName =
     "DIPS.TrustIndicator.DirectNavigation";
 std::string_view kSiteA = "a.test";
@@ -147,6 +150,11 @@ class DipsNavigationFlowDetectorTest : public PlatformBrowserTest {
     ukm_recorder_.emplace();
 
     SetTestClock();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Prevents flakiness by handling clicks even before content is drawn.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   content::WebContents* GetActiveWebContents() {
@@ -197,7 +205,13 @@ class DipsNavigationFlowDetectorTest : public PlatformBrowserTest {
   }
 
   void SimulateUserActivation(content::WebContents* web_contents) {
+#if BUILDFLAG(IS_ANDROID)
+    // TODO - crbug.com/40247129: Remove the ExecJs workaround once mouse clicks
+    // / taps reliably trigger user activation on Android
+    ASSERT_TRUE(content::ExecJs(web_contents, ""));
+#else
     SimulateMouseClickAndWait(web_contents);
+#endif
   }
 
   [[nodiscard]] testing::AssertionResult WaitUntilTransientActivationLost(
@@ -774,20 +788,6 @@ IN_PROC_BROWSER_TEST_P(
   ukm_recorder().ExpectEntryMetric(entrypoint_entry, "FlowId", *flow_id);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DipsNavigationFlowDetectorClientRedirectTest,
-    testing::Values(ClientRedirectType::kMetaTag,
-                    ClientRedirectType::kJsWindowLocationReplace,
-                    ClientRedirectType::kRedirectLikeNavigation),
-    [](const testing::TestParamInfo<
-        DipsNavigationFlowDetectorClientRedirectTest::ParamType>& param_info) {
-      ClientRedirectType client_redirect_type = param_info.param;
-      CHECK(client_redirect_type >= 0 &&
-            client_redirect_type < kClientRedirectTypeNames.size());
-      return std::string(kClientRedirectTypeNames[client_redirect_type]);
-    });
-
 IN_PROC_BROWSER_TEST_F(
     DipsNavigationFlowDetectorTest,
     SuspectedTrackerFlowNotEmittedWhenServerRedirectIsMultiHop) {
@@ -1042,6 +1042,330 @@ IN_PROC_BROWSER_TEST_F(
   ExpectNoUkmEventsOfType(kSuspectedTrackerFlowReferrerUkmEventName);
   ExpectNoUkmEventsOfType(kSuspectedTrackerFlowEntrypointUkmEventName);
   ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
+}
+
+IN_PROC_BROWSER_TEST_P(DipsNavigationFlowDetectorClientRedirectTest,
+                       InFlowSuccessorInteractionEmittedForAllClientRedirects) {
+  // Visit A.
+  content::WebContents* web_contents = GetActiveWebContents();
+  GURL referrer_url =
+      embedded_https_test_server_.GetURL(kSiteA, "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, referrer_url));
+  // Client-redirect to B, the entrypoint for this flow.
+  GURL entrypoint_url =
+      embedded_https_test_server_.GetURL(kSiteB, "/title1.html");
+  PerformClientRedirect(web_contents, entrypoint_url);
+  // Client-redirect to another page on B, the successor for this flow, and
+  // interact with the page.
+  GURL successor_url =
+      embedded_https_test_server_.GetURL(kSiteB, "/title2.html");
+  PerformClientRedirect(web_contents, successor_url);
+  SimulateUserActivation(web_contents);
+  ASSERT_TRUE(WaitUntilTransientActivationLost(
+      web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
+  // Client-redirect to C, ending the flow, and wait for UKM to emit.
+  GURL flow_end_url =
+      embedded_https_test_server_.GetURL(kSiteC, "/title1.html");
+  base::RunLoop ukm_loop;
+  ukm_recorder().SetOnAddEntryCallback(kInFlowSuccessorInteractionUkmEventName,
+                                       ukm_loop.QuitClosure());
+  PerformClientRedirect(web_contents, flow_end_url);
+  ukm_loop.Run();
+
+  // Expect InFlowSuccessorInteraction to have been emitted correctly.
+  auto ukm_entries =
+      ukm_recorder().GetEntriesByName(kInFlowSuccessorInteractionUkmEventName);
+  ASSERT_EQ(ukm_entries.size(), 1u);
+  auto ukm_entry = ukm_entries.at(0);
+  ukm_recorder().ExpectEntrySourceHasUrl(ukm_entry, entrypoint_url);
+  ukm_recorder().ExpectEntryMetric(ukm_entry, "SuccessorRedirectIndex", 1);
+  ukm_recorder().ExpectEntryMetric(ukm_entry, "DidEntrypointAccessStorage",
+                                   false);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    DipsNavigationFlowDetectorClientRedirectTest,
+    InFlowSuccessorInteractionEmittedForMixOfClientAndServerRedirects) {
+  // Visit A.
+  content::WebContents* web_contents = GetActiveWebContents();
+  GURL referrer_url =
+      embedded_https_test_server_.GetURL(kSiteA, "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, referrer_url));
+  // Client-redirect to B, the entrypoint for this flow.
+  GURL entrypoint_url =
+      embedded_https_test_server_.GetURL(kSiteB, "/title1.html");
+  PerformClientRedirect(web_contents, entrypoint_url);
+  // Client-redirect to another page on B, which server-redirects to yet another
+  // page on B (the successor for this flow), and interact with the page.
+  GURL successor_url =
+      embedded_https_test_server_.GetURL(kSiteB, "/title2.html");
+  GURL server_redirector_url = embedded_https_test_server_.GetURL(
+      kSiteB, "/server-redirect?/title2.html");
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, server_redirector_url, successor_url));
+  SimulateUserActivation(web_contents);
+  ASSERT_TRUE(WaitUntilTransientActivationLost(
+      web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
+  // Client-redirect to C, ending the flow, and wait for UKM to emit.
+  GURL flow_end_url =
+      embedded_https_test_server_.GetURL(kSiteC, "/title1.html");
+  base::RunLoop ukm_loop;
+  ukm_recorder().SetOnAddEntryCallback(kInFlowSuccessorInteractionUkmEventName,
+                                       ukm_loop.QuitClosure());
+  PerformClientRedirect(web_contents, flow_end_url);
+  ukm_loop.Run();
+
+  // Expect InFlowSuccessorInteraction to have been emitted correctly.
+  auto ukm_entries =
+      ukm_recorder().GetEntriesByName(kInFlowSuccessorInteractionUkmEventName);
+  ASSERT_EQ(ukm_entries.size(), 1u);
+  auto ukm_entry = ukm_entries.at(0);
+  ukm_recorder().ExpectEntrySourceHasUrl(ukm_entry, entrypoint_url);
+  ukm_recorder().ExpectEntryMetric(ukm_entry, "SuccessorRedirectIndex", 2);
+  ukm_recorder().ExpectEntryMetric(ukm_entry, "DidEntrypointAccessStorage",
+                                   false);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DipsNavigationFlowDetectorTest,
+    InFlowSuccessorInteractionEmittedForMultipleSuccessorInteractions) {
+  // Visit A.
+  content::WebContents* web_contents = GetActiveWebContents();
+  GURL referrer_url =
+      embedded_https_test_server_.GetURL(kSiteA, "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, referrer_url));
+  // Client-redirect to B, the entrypoint for this flow.
+  GURL entrypoint_url =
+      embedded_https_test_server_.GetURL(kSiteB, "/title1.html");
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, entrypoint_url));
+  // Client-redirect to another page on B, the first successor for this flow,
+  // and interact with the page.
+  GURL first_successor_url =
+      embedded_https_test_server_.GetURL(kSiteB, "/title2.html");
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, first_successor_url));
+  SimulateUserActivation(web_contents);
+  ASSERT_TRUE(WaitUntilTransientActivationLost(
+      web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
+  // Client-redirect to yet another page on B, the second successor for this
+  // flow, and interact with the page.
+  GURL second_successor_url =
+      embedded_https_test_server_.GetURL(kSiteB, "/title3.html");
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, first_successor_url));
+  SimulateUserActivation(web_contents);
+  ASSERT_TRUE(WaitUntilTransientActivationLost(
+      web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
+  // Client-redirect to C, ending the flow, and wait for UKM to emit.
+  GURL flow_end_url =
+      embedded_https_test_server_.GetURL(kSiteC, "/title1.html");
+  base::RunLoop ukm_loop;
+  ukm_recorder().SetOnAddEntryCallback(kInFlowSuccessorInteractionUkmEventName,
+                                       ukm_loop.QuitClosure());
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, flow_end_url));
+  ukm_loop.Run();
+
+  // Expect InFlowSuccessorInteraction entries to have been emitted correctly.
+  auto ukm_entries =
+      ukm_recorder().GetEntriesByName(kInFlowSuccessorInteractionUkmEventName);
+  ASSERT_EQ(ukm_entries.size(), 2u);
+  auto ukm_entry_1 = ukm_entries.at(0);
+  ukm_recorder().ExpectEntrySourceHasUrl(ukm_entry_1, entrypoint_url);
+  ukm_recorder().ExpectEntryMetric(ukm_entry_1, "SuccessorRedirectIndex", 1);
+  ukm_recorder().ExpectEntryMetric(ukm_entry_1, "DidEntrypointAccessStorage",
+                                   false);
+  auto ukm_entry_2 = ukm_entries.at(1);
+  ukm_recorder().ExpectEntrySourceHasUrl(ukm_entry_2, entrypoint_url);
+  ukm_recorder().ExpectEntryMetric(ukm_entry_2, "SuccessorRedirectIndex", 2);
+  ukm_recorder().ExpectEntryMetric(ukm_entry_2, "DidEntrypointAccessStorage",
+                                   false);
+}
+
+IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+                       InFlowSuccessorInteractionEmittedForConsecutiveFlows) {
+  // Visit A.
+  content::WebContents* web_contents = GetActiveWebContents();
+  GURL referrer_url =
+      embedded_https_test_server_.GetURL(kSiteA, "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, referrer_url));
+  // Client-redirect to B, the entrypoint for the first flow.
+  GURL first_entrypoint_url =
+      embedded_https_test_server_.GetURL(kSiteB, "/title1.html");
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, first_entrypoint_url));
+  // Client-redirect to another page on B, the successor for the first flow, and
+  // interact with the page.
+  GURL first_successor_url =
+      embedded_https_test_server_.GetURL(kSiteB, "/title2.html");
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, first_successor_url));
+  SimulateUserActivation(web_contents);
+  ASSERT_TRUE(WaitUntilTransientActivationLost(
+      web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
+  // Client-redirect to C, ending the first flow, and wait for UKM to emit.
+  GURL flow_end_url =
+      embedded_https_test_server_.GetURL(kSiteC, "/title1.html");
+  base::RunLoop ukm_loop_1;
+  ukm_recorder().SetOnAddEntryCallback(kInFlowSuccessorInteractionUkmEventName,
+                                       ukm_loop_1.QuitClosure());
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, flow_end_url));
+  ukm_loop_1.Run();
+  // Client-redirect to a page on site D, the entrypoint for the second flow,
+  // and server-redirect within site D.
+  GURL second_entrypoint_url = embedded_https_test_server_.GetURL(
+      kSiteD,
+      "/server-redirect-with-secure-cookie?/server-redirect%3F/title1.html");
+  GURL entrypoint_nav_commit_url =
+      embedded_https_test_server_.GetURL(kSiteD, "/title1.html");
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, second_entrypoint_url, entrypoint_nav_commit_url));
+  // Client-redirect to another page on site D, the successor for the second
+  // flow, and interact with the page.
+  GURL second_successor_url =
+      embedded_https_test_server_.GetURL(kSiteD, "/title2.html");
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, second_successor_url));
+  SimulateUserActivation(web_contents);
+  ASSERT_TRUE(WaitUntilTransientActivationLost(
+      web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
+  // Client-redirect to C, ending the second flow, and wait for UKM to emit.
+  base::RunLoop ukm_loop_2;
+  ukm_recorder().SetOnAddEntryCallback(kInFlowSuccessorInteractionUkmEventName,
+                                       ukm_loop_2.QuitClosure());
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, flow_end_url));
+  ukm_loop_2.Run();
+
+  // Expect InFlowSuccessorInteraction to have been emitted correctly.
+  auto ukm_entries =
+      ukm_recorder().GetEntriesByName(kInFlowSuccessorInteractionUkmEventName);
+  ASSERT_EQ(ukm_entries.size(), 2u);
+  auto first_ukm_entry = ukm_entries.at(0);
+  ukm_recorder().ExpectEntrySourceHasUrl(first_ukm_entry, first_entrypoint_url);
+  ukm_recorder().ExpectEntryMetric(first_ukm_entry, "SuccessorRedirectIndex",
+                                   1);
+  ukm_recorder().ExpectEntryMetric(first_ukm_entry,
+                                   "DidEntrypointAccessStorage", false);
+  auto second_ukm_entry = ukm_entries.at(1);
+  ukm_recorder().ExpectEntrySourceHasUrl(second_ukm_entry,
+                                         second_entrypoint_url);
+  ukm_recorder().ExpectEntryMetric(second_ukm_entry, "SuccessorRedirectIndex",
+                                   3);
+  ukm_recorder().ExpectEntryMetric(second_ukm_entry,
+                                   "DidEntrypointAccessStorage", true);
+}
+
+IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+                       InFlowSuccessorInteractionNotEmittedWhenNoFlowEnd) {
+  // Visit A.
+  content::WebContents* web_contents = GetActiveWebContents();
+  GURL referrer_url =
+      embedded_https_test_server_.GetURL(kSiteA, "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, referrer_url));
+  // Client-redirect to B, the entrypoint for this flow.
+  GURL entrypoint_url =
+      embedded_https_test_server_.GetURL(kSiteB, "/title1.html");
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, entrypoint_url));
+  // Client-redirect to another page on B, the successor for this flow, and
+  // interact with the page.
+  GURL successor_url =
+      embedded_https_test_server_.GetURL(kSiteB, "/title2.html");
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, successor_url));
+  SimulateUserActivation(web_contents);
+  ASSERT_TRUE(WaitUntilTransientActivationLost(
+      web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
+
+  ExpectNoUkmEventsOfType(kInFlowSuccessorInteractionUkmEventName);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DipsNavigationFlowDetectorTest,
+    InFlowSuccessorInteractionNotEmittedWhenMultipleCrossSiteServerRedirects) {
+  // Visit A.
+  content::WebContents* web_contents = GetActiveWebContents();
+  GURL referrer_url =
+      embedded_https_test_server_.GetURL(kSiteA, "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, referrer_url));
+  // Client-redirect to C, which server-redirects to D, which server-redirects
+  // to B, the would-be entrypoint.
+  GURL entrypoint_url =
+      embedded_https_test_server_.GetURL(kSiteB, "/title1.html");
+  GURL first_server_redirector_url = embedded_https_test_server_.GetURL(
+      kSiteC, "/cross-site/d.test/cross-site/b.test/title1.html");
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, first_server_redirector_url, entrypoint_url));
+  // Client-redirect to another page on B, the would-be successor, and interact
+  // with the page.
+  GURL successor_url =
+      embedded_https_test_server_.GetURL(kSiteB, "/title2.html");
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, successor_url));
+  SimulateUserActivation(web_contents);
+  ASSERT_TRUE(WaitUntilTransientActivationLost(
+      web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
+  // Client-redirect to C, which would end a valid flow.
+  GURL flow_end_url =
+      embedded_https_test_server_.GetURL(kSiteC, "/title1.html");
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, flow_end_url));
+
+  ExpectNoUkmEventsOfType(kInFlowSuccessorInteractionUkmEventName);
+}
+
+IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+                       InFlowSuccessorInteractionOnlyEmittedOncePerSuccessor) {
+  // Visit A.
+  content::WebContents* web_contents = GetActiveWebContents();
+  GURL referrer_url =
+      embedded_https_test_server_.GetURL(kSiteA, "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, referrer_url));
+  // Client-redirect to B, the entrypoint for this flow.
+  GURL entrypoint_url =
+      embedded_https_test_server_.GetURL(kSiteB, "/title1.html");
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, entrypoint_url));
+  // Client-redirect to another page on B, which server-redirects to yet another
+  // page on B (the successor for this flow), and interact with the page
+  // multiple times.
+  GURL successor_url =
+      embedded_https_test_server_.GetURL(kSiteB, "/title2.html");
+  GURL server_redirector_url = embedded_https_test_server_.GetURL(
+      kSiteB, "/server-redirect?/title2.html");
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, server_redirector_url, successor_url));
+  SimulateUserActivation(web_contents);
+  ASSERT_TRUE(WaitUntilTransientActivationLost(
+      web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
+  SimulateUserActivation(web_contents);
+  ASSERT_TRUE(WaitUntilTransientActivationLost(
+      web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
+  SimulateUserActivation(web_contents);
+  ASSERT_TRUE(WaitUntilTransientActivationLost(
+      web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
+  // Client-redirect to C, ending the flow, and wait for UKM to emit.
+  GURL flow_end_url =
+      embedded_https_test_server_.GetURL(kSiteC, "/title1.html");
+  base::RunLoop ukm_loop;
+  ukm_recorder().SetOnAddEntryCallback(kInFlowSuccessorInteractionUkmEventName,
+                                       ukm_loop.QuitClosure());
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, flow_end_url));
+  ukm_loop.Run();
+
+  // Expect only one InFlowSuccessorInteraction event.
+  auto ukm_entries =
+      ukm_recorder().GetEntriesByName(kInFlowSuccessorInteractionUkmEventName);
+  ASSERT_EQ(ukm_entries.size(), 1u);
+  auto ukm_entry = ukm_entries.at(0);
+  ukm_recorder().ExpectEntrySourceHasUrl(ukm_entry, entrypoint_url);
+  ukm_recorder().ExpectEntryMetric(ukm_entry, "SuccessorRedirectIndex", 2);
+  ukm_recorder().ExpectEntryMetric(ukm_entry, "DidEntrypointAccessStorage",
+                                   false);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1969,3 +2293,17 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorWebAuthnTest,
                                    "WereEntryAndExitRendererInitiated", false);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DipsNavigationFlowDetectorClientRedirectTest,
+    testing::Values(ClientRedirectType::kMetaTag,
+                    ClientRedirectType::kJsWindowLocationReplace,
+                    ClientRedirectType::kRedirectLikeNavigation),
+    [](const testing::TestParamInfo<
+        DipsNavigationFlowDetectorClientRedirectTest::ParamType>& param_info) {
+      ClientRedirectType client_redirect_type = param_info.param;
+      CHECK(client_redirect_type >= 0 &&
+            client_redirect_type < kClientRedirectTypeNames.size());
+      return std::string(kClientRedirectTypeNames[client_redirect_type]);
+    });

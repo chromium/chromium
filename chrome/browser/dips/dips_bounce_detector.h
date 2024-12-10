@@ -10,6 +10,7 @@
 #include <variant>
 
 #include "base/check_deref.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -164,6 +165,12 @@ class DIPSRedirectContext {
       const GURL& first_party_url,
       base::optional_ref<std::set<std::string>> allowed_sites,
       bool require_current_interaction) const;
+
+  // Returns the server redirects from the last navigation. Note that due to
+  // limitations in C++ the DIPSRedirectInfo objects are unavoidably mutable.
+  // Clients must not modify them.
+  base::span<const DIPSRedirectInfoPtr>
+  GetServerRedirectsSinceLastPrimaryPageChange() const;
 
  private:
   void AppendClientRedirect(DIPSRedirectInfoPtr client_redirect);

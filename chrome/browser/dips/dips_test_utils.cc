@@ -65,10 +65,18 @@ void AccessCookieViaJSIn(content::WebContents* web_contents,
   bool js_succeeded = content::ExecJs(frame,
                                       content::JsReplace(
                                           R"(
-      var element = document.createElement('meta');
-      element.setAttribute('http-equiv', 'refresh');
-      element.setAttribute('content', '0; url=$1');
-      document.getElementsByTagName('head')[0].appendChild(element);)",
+      function redirectViaMetaTag() {
+        var element = document.createElement('meta');
+        element.setAttribute('http-equiv', 'refresh');
+        element.setAttribute('content', '0; url=$1');
+        document.getElementsByTagName('head')[0].appendChild(element);
+      }
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", redirectViaMetaTag);
+      } else {
+        redirectViaMetaTag();
+      }
+      )",
                                           target_url),
                                       content::EXECUTE_SCRIPT_NO_USER_GESTURE);
   if (!js_succeeded) {

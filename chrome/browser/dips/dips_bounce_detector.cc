@@ -329,6 +329,22 @@ DIPSRedirectContext::GetRedirectHeuristicURLs(
   return sites_to_url_and_current_interaction;
 }
 
+base::span<const DIPSRedirectInfoPtr>
+DIPSRedirectContext::GetServerRedirectsSinceLastPrimaryPageChange() const {
+  size_t index = size();
+  for (; index > 0; --index) {
+    const DIPSRedirectInfo& redirect = *redirects_.at(index - 1);
+    if (redirect.redirect_type != DIPSRedirectType::kServer) {
+      break;
+    }
+  }
+
+  // For all i in [index, size()), redirects_[i] is a server redirect.
+  // Either i=0, or redirects_[i-1] is a client redirect.
+
+  return base::span(redirects_).subspan(index);
+}
+
 void DIPSRedirectContext::HandleUncommitted(
     DIPSNavigationStart navigation_start,
     std::vector<DIPSRedirectInfoPtr> server_redirects) {

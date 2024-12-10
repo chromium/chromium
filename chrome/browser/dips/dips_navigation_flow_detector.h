@@ -69,6 +69,36 @@ struct EntrypointInfo {
   bool was_referral_client_redirect;
 };
 
+enum FlowStatus {
+  kFlowInvalidated = 0,
+  kFlowOngoing,
+  kFlowEnded,
+};
+
+class InFlowSuccessorInteractionState {
+ public:
+  explicit InFlowSuccessorInteractionState(
+      dips::EntrypointInfo&& flow_entrypoint);
+  ~InFlowSuccessorInteractionState();
+
+  void IncrementFlowIndex(size_t increment);
+  void RecordSuccessorInteractionAtCurrentFlowIndex();
+  bool IsAtSuccessor() const;
+
+  const dips::EntrypointInfo& flow_entrypoint() const {
+    return flow_entrypoint_;
+  }
+  size_t flow_index() const { return flow_index_; }
+  const std::vector<size_t>& successor_interaction_indices() const {
+    return successor_interaction_indices_;
+  }
+
+ private:
+  dips::EntrypointInfo flow_entrypoint_;
+  size_t flow_index_ = 0;
+  std::vector<size_t> successor_interaction_indices_;
+};
+
 }  // namespace dips
 
 // Detects possible navigation flows with the aim of discovering how to
@@ -107,9 +137,19 @@ class DipsNavigationFlowDetector
 
   void MaybeEmitInFlowInteraction(int32_t flow_id);
 
+  void MaybeEmitInFlowSuccessorInteraction();
+
  private:
   // So WebContentsUserData::CreateForWebContents can call the constructor.
   friend class content::WebContentsUserData<DipsNavigationFlowDetector>;
+
+  dips::FlowStatus FlowStatusAfterNavigation(
+      bool did_most_recent_navigation_start_new_flow) const;
+  // Returns whether the entrypoint was set or not.
+  bool MaybeInitializeSuccessorInteractionTrackingState();
+  void ResetSuccessorInteractionTrackingState();
+
+  const DIPSRedirectContext& GetRedirectContext() const;
 
   // start WebContentsObserver overrides
   // For client-initiated cookie accesses, and late-reported cookie accesses in
@@ -137,6 +177,15 @@ class DipsNavigationFlowDetector
   std::optional<dips::PageVisitInfo> two_pages_ago_visit_info_;
   std::optional<dips::PageVisitInfo> previous_page_visit_info_;
   std::optional<dips::PageVisitInfo> current_page_visit_info_;
+
+  // The status of a flow for the purposes of InFlowSuccessorInteraction, after
+  // the most recent primary page change.
+  dips::FlowStatus flow_status_ = dips::FlowStatus::kFlowInvalidated;
+  // Data needed for emitting DIPS.TrustIndicator.InFlowSuccessorInteraction.
+  // Set only when there's an ongoing flow that's possibly valid (we can't know
+  // for sure until it ends or is invalidated).
+  std::optional<dips::InFlowSuccessorInteractionState>
+      successor_interaction_tracking_state_;
 
   // Tracks a navigational cookie access notification that is received before
   // the navigation finishes.
