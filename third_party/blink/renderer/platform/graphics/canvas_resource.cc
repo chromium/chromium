@@ -232,9 +232,10 @@ bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
       client_shared_image->mailbox(), client_shared_image->GetTextureTarget(),
       GetSyncTokenWithOptionalVerification(needs_verified_synctoken),
       client_shared_image->size(), client_shared_image->format(),
-      IsOverlayCandidate(), viz::TransferableResource::ResourceSource::kCanvas);
+      IsOverlayCandidate(), GetTransferableResourceSource());
 
   out_resource->color_space = client_shared_image->color_space();
+  out_resource->hdr_metadata = GetHDRMetadata();
 
   // When a resource is returned by the display compositor, a sync token is
   // provided to indicate when the compositor's commands using the resource are
@@ -915,9 +916,10 @@ bool ExternalCanvasResource::
   *out_resource = viz::TransferableResource::MakeGpu(
       client_si_, client_si_->GetTextureTarget(),
       GetSyncTokenWithOptionalVerification(false), client_si_->size(),
-      client_si_->format(), IsOverlayCandidate(), resource_source_);
+      client_si_->format(), IsOverlayCandidate(),
+      GetTransferableResourceSource());
   out_resource->color_space = client_si_->color_space();
-  out_resource->hdr_metadata = hdr_metadata_;
+  out_resource->hdr_metadata = GetHDRMetadata();
   out_resource->origin = client_si_->surface_origin();
 
   return true;

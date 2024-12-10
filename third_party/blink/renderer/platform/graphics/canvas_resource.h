@@ -192,6 +192,11 @@ class PLATFORM_EXPORT CanvasResource
   // Returns true if the resource is backed by memory such that it can be used
   // for direct scanout by the display.
   virtual bool IsOverlayCandidate() const { return false; }
+  virtual gfx::HDRMetadata GetHDRMetadata() const { return gfx::HDRMetadata(); }
+  virtual viz::TransferableResource::ResourceSource
+  GetTransferableResourceSource() const {
+    return viz::TransferableResource::ResourceSource::kCanvas;
+  }
 
   gpu::InterfaceBase* InterfaceBase() const;
   gpu::gles2::GLES2Interface* ContextGL() const;
@@ -471,6 +476,11 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
 
  private:
   bool IsOverlayCandidate() const final { return is_overlay_candidate_; }
+  gfx::HDRMetadata GetHDRMetadata() const final { return hdr_metadata_; }
+  viz::TransferableResource::ResourceSource GetTransferableResourceSource()
+      const final {
+    return resource_source_;
+  }
   bool UsesAcceleratedRaster() const final { return true; }
   const gpu::SyncToken GetSyncTokenWithOptionalVerification(
       bool needs_verified_token) override;
