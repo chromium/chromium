@@ -31,6 +31,7 @@
 // This file would be called String.h, but that conflicts with <string.h>
 // on systems without case-sensitive file systems.
 
+#include <array>
 #include <iosfwd>
 #include <string_view>
 #include <type_traits>
@@ -692,19 +693,18 @@ class WTF_EXPORT NewlineThenWhitespaceStringsTable {
   // The constant is kept small to minimize the overhead of the table (496
   // bytes).
   static constexpr size_t kTableSize = 32;
+  using TableType = std::array<String, kTableSize>;
 
   static void Init();
 
   static inline String GetStringForLength(size_t string_length) {
-    DCHECK_NE(string_length, 0u);
-    DCHECK_LT(string_length, kTableSize);
     return g_table_[string_length];
   }
 
   static bool IsNewlineThenWhitespaces(const StringView& view);
 
  private:
-  static const String (&g_table_)[kTableSize];
+  static const TableType& g_table_;
 };
 
 // Pretty printer for gtest and base/logging.*.  It prepends and appends
