@@ -217,9 +217,6 @@ class ASH_EXPORT AppListItemView : public views::Button,
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnThemeChanged() override;
 
-  // views::View overrides:
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
-
   // When a dragged view enters this view, a preview circle is shown for
   // non-folder item while the icon is enlarged for folder item. When a
   // dragged view exits this view, the reverse animation will be performed.
@@ -470,6 +467,8 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   void UpdateAccessibleDescription();
 
+  void UpdateTooltipText();
+
   // The app list config used to layout this view. The initial values is set
   // during view construction, but can be changed by calling
   // `UpdateAppListConfig()`.
@@ -625,6 +624,8 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // progress value. Used when animating the view in from a promise app state to
   // simulate promise icon UI.
   std::optional<float> forced_progress_indicator_value_;
+
+  base::CallbackListSubscription new_install_dot_visibility_changed_callback_;
 
   base::WeakPtrFactory<AppListItemView> weak_ptr_factory_{this};
 };

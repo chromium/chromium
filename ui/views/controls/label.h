@@ -256,6 +256,12 @@ class VIEWS_EXPORT Label : public View,
   // Updates the tooltip text cached on the View.
   void UpdateTooltipText();
 
+  // This function returns the computed tooltip for the label, irrespective of
+  // the `handles_tooltips_` value. If `handles_tooltips_` is false, the tooltip
+  // will be suppressed and not shown to the user, but the unsuppressed value
+  // will still be locally cached if available.
+  std::u16string GetComputedTooltip();
+
   // Get or set whether this label can act as a tooltip handler; the default is
   // true.  Set to false whenever an ancestor view should handle tooltips
   // instead.
@@ -351,6 +357,9 @@ class VIEWS_EXPORT Label : public View,
 
   void AddDisplayTextTruncationCallback(
       base::RepeatingCallback<void(Label*)> callback);
+
+  void AddLabelTooltipTextChangedCallback(
+      base::RepeatingCallback<void()> callback);
 
  protected:
   // Create a single RenderText instance to actually be painted.
@@ -555,10 +564,11 @@ class VIEWS_EXPORT Label : public View,
   ui::SimpleMenuModel context_menu_contents_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
 
-  base::CallbackListSubscription full_text_changed_subscription_;
+  std::u16string suppressed_tooltip_text_;
 
   base::RepeatingCallback<void(Label*)>
       on_display_text_truncation_changed_callback_;
+  base::RepeatingCallback<void()> label_tooltip_text_changed_callback_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Label, View)

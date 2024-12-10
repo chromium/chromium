@@ -544,23 +544,32 @@ void Label::SetTooltipText(const std::u16string& tooltip_text) {
 
 void Label::UpdateTooltipText() {
   if (GetHandlesTooltips()) {
-    if (GetObscured()) {
-      SetCachedTooltipText(std::u16string());
-      return;
-    }
-
-    if (!custom_tooltip_text_.empty()) {
-      SetCachedTooltipText(custom_tooltip_text_);
-      return;
-    }
-
-    if (ShouldShowDefaultTooltip()) {
-      SetCachedTooltipText(full_text_->GetDisplayText());
-      return;
-    }
+    SetCachedTooltipText(GetComputedTooltip());
+    suppressed_tooltip_text_.clear();
+  } else {
+    SetCachedTooltipText(std::u16string());
+    suppressed_tooltip_text_ = GetComputedTooltip();
   }
 
-  SetCachedTooltipText(std::u16string());
+  if (label_tooltip_text_changed_callback_) {
+    label_tooltip_text_changed_callback_.Run();
+  }
+}
+
+std::u16string Label::GetComputedTooltip() {
+  if (GetObscured()) {
+    return std::u16string();
+  }
+
+  if (!custom_tooltip_text_.empty()) {
+    return custom_tooltip_text_;
+  }
+
+  if (ShouldShowDefaultTooltip()) {
+    return full_text_->GetDisplayText();
+  }
+
+  return std::u16string();
 }
 
 bool Label::GetHandlesTooltips() const {
@@ -1267,6 +1276,11 @@ void Label::ExecuteCommand(int command_id, int event_flags) {
 void Label::AddDisplayTextTruncationCallback(
     base::RepeatingCallback<void(Label*)> callback) {
   on_display_text_truncation_changed_callback_ = callback;
+}
+
+void Label::AddLabelTooltipTextChangedCallback(
+    base::RepeatingCallback<void()> callback) {
+  label_tooltip_text_changed_callback_ = std::move(callback);
 }
 
 bool Label::GetAcceleratorForCommandId(int command_id,
