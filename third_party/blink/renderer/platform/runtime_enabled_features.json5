@@ -363,6 +363,14 @@
       // enabled to make the whole feature work.
     },
     {
+      name: "AllowSyntheticTimingForCanvasCapture",
+      base_feature: "none",
+      status: {
+        "Mac": "stable",
+        "default": ""
+      }
+    },
+    {
       name: "AllowURNsInIframes",
       base_feature: "none",
     },

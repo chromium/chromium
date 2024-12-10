@@ -58,6 +58,7 @@ class OffscreenCanvasPlaceholderTest : public Test {
     return dispatcher_->id_generator_.PeekNextValueForTesting();
   }
   void DrawSomething();
+  void CreateDispatcher();
 
  protected:
   void SetUp() override;
@@ -70,6 +71,7 @@ class OffscreenCanvasPlaceholderTest : public Test {
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
   std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
       test_web_shared_image_interface_provider_;
+  unsigned placeholder_id_ = 0;
 };
 
 void OffscreenCanvasPlaceholderTest::SetUp() {
@@ -77,15 +79,8 @@ void OffscreenCanvasPlaceholderTest::SetUp() {
   test_web_shared_image_interface_provider_ =
       TestWebGraphicsSharedImageInterfaceProvider::Create();
 
-  unsigned placeholder_id = GenPlaceholderId();
-  placeholder_.RegisterPlaceholderCanvas(placeholder_id);
-  dispatcher_ = std::make_unique<MockCanvasResourceDispatcher>(placeholder_id);
-  dispatcher_->SetPlaceholderCanvasDispatcher(placeholder_id);
-  resource_provider_ = CanvasResourceProvider::CreateSharedBitmapProvider(
-      gfx::Size(kWidth, kHeight), kN32_SkColorType, kPremul_SkAlphaType,
-      SkColorSpace::MakeSRGB(),
-      CanvasResourceProvider::ShouldInitialize::kCallClear,
-      test_web_shared_image_interface_provider_.get());
+  placeholder_id_ = GenPlaceholderId();
+  placeholder_.RegisterPlaceholderCanvas(placeholder_id_);
 }
 
 void OffscreenCanvasPlaceholderTest::TearDown() {
@@ -93,6 +88,16 @@ void OffscreenCanvasPlaceholderTest::TearDown() {
   dispatcher_.reset();
   placeholder_.UnregisterPlaceholderCanvas();
   Test::TearDown();
+}
+
+void OffscreenCanvasPlaceholderTest::CreateDispatcher() {
+  dispatcher_ = std::make_unique<MockCanvasResourceDispatcher>(placeholder_id_);
+  dispatcher_->SetPlaceholderCanvasDispatcher(placeholder_id_);
+  resource_provider_ = CanvasResourceProvider::CreateSharedBitmapProvider(
+      gfx::Size(kWidth, kHeight), kN32_SkColorType, kPremul_SkAlphaType,
+      SkColorSpace::MakeSRGB(),
+      CanvasResourceProvider::ShouldInitialize::kCallClear,
+      test_web_shared_image_interface_provider_.get());
 }
 
 void OffscreenCanvasPlaceholderTest::DrawSomething() {
@@ -120,6 +125,7 @@ TEST_F(OffscreenCanvasPlaceholderTest, OldFrameSentBack) {
   // This test verifies that OffscreenCanvasPlaceholder send back
   // the previous frame when it receives a new one.
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
+  CreateDispatcher();
 
   EXPECT_CALL(*(dispatcher()), ReclaimResource(_, _)).Times(0);
   DrawSomething();
@@ -153,6 +159,7 @@ TEST_F(OffscreenCanvasPlaceholderTest, OldFrameNotReclaimedUntilUnref) {
   // This test verifies that OffscreenCanvasPlaceholder send back
   // the previous frame when it receives a new one.
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
+  CreateDispatcher();
 
   EXPECT_CALL(*(dispatcher()), ReclaimResource(_, _)).Times(0);
   DrawSomething();
@@ -191,6 +198,54 @@ TEST_F(OffscreenCanvasPlaceholderTest, OldFrameNotReclaimedUntilUnref) {
   // Run pending task to complete the reclaim.
   platform->RunUntilIdle();
   Mock::VerifyAndClearExpectations(dispatcher());
+}
+
+TEST_F(OffscreenCanvasPlaceholderTest, DeferredAnimationStateIsApplied) {
+  // Test that changes to the animation state are deferred until the resource is
+  // provided to the placeholder.
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
+  // Animation state changes are only deferred before the placeholder has a
+  // dispatcher, so be sure that we don't have one now.
+  ASSERT_FALSE(dispatcher());
+  const auto initial_state = placeholder()->GetAnimationStateForTesting();
+  constexpr auto deferred_state =
+      CanvasResourceDispatcher::AnimationState::kSuspended;
+  // It doesn't really matter what the initial animation state is, but we want
+  // to be sure that we're actually going to change it.
+  ASSERT_NE(initial_state, deferred_state);
+  // Change the state, which should be deferred.
+  placeholder()->SetSuspendOffscreenCanvasAnimation(deferred_state);
+  EXPECT_EQ(initial_state, placeholder()->GetAnimationStateForTesting());
+
+  // Now that the state change is deferred, we can create a dispatcher to
+  // undefer it.
+  CreateDispatcher();
+  EXPECT_EQ(initial_state, dispatcher()->GetAnimationStateForTesting());
+
+  // Now push a resource, which should apply the animation state change to both
+  // the placeholder and the dispatcher.
+  DispatchOneFrame();
+  platform->RunUntilIdle();
+  // Both the placeholder and the dispatcher should now agree on the new
+  // animation state.
+  EXPECT_EQ(deferred_state, placeholder()->GetAnimationStateForTesting());
+  EXPECT_EQ(deferred_state, dispatcher()->GetAnimationStateForTesting());
+}
+
+TEST_F(OffscreenCanvasPlaceholderTest,
+       AnimationStateIsNotDeferredWithDispatcher) {
+  // Test that, once we have a dispatcher, animation state changes are applied
+  // right away.
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
+  CreateDispatcher();
+  const auto initial_state = placeholder()->GetAnimationStateForTesting();
+  constexpr auto deferred_state =
+      CanvasResourceDispatcher::AnimationState::kSuspended;
+  ASSERT_NE(initial_state, deferred_state);
+  placeholder()->SetSuspendOffscreenCanvasAnimation(deferred_state);
+  platform->RunUntilIdle();
+  EXPECT_EQ(deferred_state, placeholder()->GetAnimationStateForTesting());
+  EXPECT_EQ(deferred_state, dispatcher()->GetAnimationStateForTesting());
 }
 
 }  // namespace

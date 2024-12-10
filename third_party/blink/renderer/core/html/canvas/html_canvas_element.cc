@@ -1533,12 +1533,28 @@ void HTMLCanvasElement::DiscardResourceProvider() {
 }
 
 void HTMLCanvasElement::UpdateSuspendOffscreenCanvasAnimation() {
-  if (GetPage()) {
-    SetSuspendOffscreenCanvasAnimation(
-        GetPage()->GetVisibilityState() ==
-            mojom::blink::PageVisibilityState::kHidden &&
-        !HasCanvasCapture());
+  if (!GetPage()) {
+    return;
   }
+
+  CanvasResourceDispatcher::AnimationState animation_state =
+      CanvasResourceDispatcher::AnimationState::kActive;
+  const bool is_hidden = GetPage()->GetVisibilityState() ==
+                         mojom::blink::PageVisibilityState::kHidden;
+  if (is_hidden) {
+    if (HasCanvasCapture()) {
+      const bool allow_synthetic_timing =
+          RuntimeEnabledFeatures::AllowSyntheticTimingForCanvasCaptureEnabled();
+      animation_state = allow_synthetic_timing
+                            ? CanvasResourceDispatcher::AnimationState::
+                                  kActiveWithSyntheticTiming
+                            : CanvasResourceDispatcher::AnimationState::kActive;
+    } else {
+      animation_state = CanvasResourceDispatcher::AnimationState::kSuspended;
+    }
+  }
+
+  SetSuspendOffscreenCanvasAnimation(animation_state);
 }
 
 void HTMLCanvasElement::PageVisibilityChanged() {

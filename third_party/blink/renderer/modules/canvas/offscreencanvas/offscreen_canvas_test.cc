@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_draw_listener.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/modules/canvas/htmlcanvas/html_canvas_element_module.h"
 #include "third_party/blink/renderer/modules/canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d.h"
@@ -25,6 +26,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/mock_compositor_frame_sink.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_embedded_frame_sink_provider.h"
 #include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
@@ -47,6 +49,20 @@ class AcceleratedCompositingTestPlatform
     : public blink::TestingPlatformSupport {
  public:
   bool IsGpuCompositingDisabled() const override { return false; }
+};
+
+class TestCanvasDrawListener : public GarbageCollected<TestCanvasDrawListener>,
+                               public CanvasDrawListener {
+ public:
+  TestCanvasDrawListener() = default;
+
+  NewFrameCallback GetNewFrameCallback() override { return {}; }
+
+  bool CanDiscardAlpha() const override { return false; }
+
+  bool NeedsNewFrame() const override { return true; }
+
+  void RequestFrame() override {}
 };
 
 }  // unnamed namespace
@@ -80,11 +96,14 @@ class OffscreenCanvasTest : public ::testing::Test,
     return test_web_shared_image_interface_provider_->GetWeakPtr();
   }
 
+  HTMLCanvasElement* GetCanvasElement() const { return canvas_element_; }
+
  private:
   test::TaskEnvironment task_environment_;
   std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
   Persistent<OffscreenCanvas> offscreen_canvas_;
   Persistent<OffscreenCanvasRenderingContext2D> context_;
+  Persistent<HTMLCanvasElement> canvas_element_;
   FakeGLES2Interface gl_;
   std::unique_ptr<
       ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>>
@@ -112,12 +131,12 @@ void OffscreenCanvasTest::SetUp() {
   GetDocument().documentElement()->setInnerHTML(
       String::FromUTF8("<body><canvas id='c'></canvas></body>"));
 
-  auto* canvas_element =
+  canvas_element_ =
       To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
 
   DummyExceptionStateForTesting exception_state;
   offscreen_canvas_ = HTMLCanvasElementModule::transferControlToOffscreen(
-      ToScriptStateForMainWorld(GetWindow()->GetFrame()), *canvas_element,
+      ToScriptStateForMainWorld(GetWindow()->GetFrame()), *canvas_element_,
       exception_state);
   // |offscreen_canvas_| should inherit the FrameSinkId from |canvas_element|s
   // SurfaceLayerBridge, but in tests this id is zero; fill it up by hand.
@@ -146,6 +165,33 @@ void OffscreenCanvasTest::TearDown() {
 TEST_F(OffscreenCanvasTest, AnimationNotInitiallySuspended) {
   ScriptState::Scope scope(GetScriptState());
   EXPECT_FALSE(Dispatcher()->IsAnimationSuspended());
+}
+
+TEST_F(OffscreenCanvasTest, AnimationUsesSyntheticTimerWhenHidden) {
+  ScriptState::Scope scope(GetScriptState());
+  ScopedAllowSyntheticTimingForCanvasCaptureForTest timer_feature(true);
+
+  // We need a resource dispatcher, else this all gets queued until we get one.
+  offscreen_canvas().GetOrCreateResourceDispatcher();
+
+  // Cause the page to be hidden.
+  GetDocument().GetPage()->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHidden, /*is_initial_state=*/false);
+  EXPECT_EQ(GetDocument().GetPage()->GetVisibilityState(),
+            mojom::blink::PageVisibilityState::kHidden);
+
+  // Without capture, animation should be suspended.
+  EXPECT_EQ(GetCanvasElement()->GetAnimationStateForTesting(),
+            CanvasResourceDispatcher::AnimationState::kSuspended);
+
+  // Cause the canvas to believe that it's being captured, and verify that we're
+  // now using synthetic timing.
+  auto* listener = MakeGarbageCollected<TestCanvasDrawListener>();
+  GetCanvasElement()->AddListener(listener);
+  EXPECT_EQ(
+      GetCanvasElement()->GetAnimationStateForTesting(),
+      CanvasResourceDispatcher::AnimationState::kActiveWithSyntheticTiming);
+  GetCanvasElement()->RemoveListener(listener);
 }
 
 // Verifies that an offscreen_canvas()s PushFrame()/Commit() has the appropriate
