@@ -9,8 +9,6 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 
-#include <memory>
-
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"

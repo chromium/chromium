@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/audio/audio_destination.h"
 
+#include <array>
 #include <memory>
 
 #include "media/base/audio_glitch_info.h"
@@ -206,13 +202,17 @@ TEST_P(AudioDestinationTest, GlitchAndDelay) {
 
   const int kRenderCount = 3;
 
-  media::AudioGlitchInfo glitches[]{
+  auto glitches = std::to_array<media::AudioGlitchInfo>({
       {.duration = base::Milliseconds(120), .count = 3},
       {},
-      {.duration = base::Milliseconds(20), .count = 1}};
+      {.duration = base::Milliseconds(20), .count = 1},
+  });
 
-  base::TimeDelta delays[]{base::Milliseconds(100), base::Milliseconds(90),
-                           base::Milliseconds(80)};
+  auto delays = std::to_array<base::TimeDelta>({
+      base::Milliseconds(100),
+      base::Milliseconds(90),
+      base::Milliseconds(80),
+  });
 
   // When creating the AudioDestination, some silence is added to the fifo to
   // prevent an underrun on the first callback. This contributes a constant

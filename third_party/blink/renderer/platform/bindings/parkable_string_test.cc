@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 
 #include <algorithm>
+#include <array>
 #include <cstring>
 #include <limits>
 
@@ -348,7 +349,7 @@ TEST_P(ParkableStringTest, ParkUnparkIdenticalContent) {
 }
 
 TEST_P(ParkableStringTest, DecompressUtf16String) {
-  UChar emoji_grinning_face[2] = {0xd83d, 0xde00};
+  std::array<UChar, 2> emoji_grinning_face = {0xd83d, 0xde00};
   size_t size_in_chars = 2 * kSizeKb * 1000 / sizeof(UChar);
 
   Vector<UChar> data(size_in_chars);

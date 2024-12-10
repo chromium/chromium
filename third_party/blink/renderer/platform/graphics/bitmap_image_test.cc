@@ -35,6 +35,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 
+#include <array>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
@@ -479,9 +481,13 @@ TEST_F(BitmapImageTest, GifDecoderMultiThreaded) {
     cc::PaintImage::GeneratorClientId client_id;
   };
 
-  Decode decodes[4];
-  SkColor expected_color[4] = {SkColorSetARGB(255, 0, 128, 0), SK_ColorRED,
-                               SK_ColorBLUE, SK_ColorYELLOW};
+  std::array<Decode, 4> decodes;
+  std::array<SkColor, 4> expected_color = {
+      SkColorSetARGB(255, 0, 128, 0),
+      SK_ColorRED,
+      SK_ColorBLUE,
+      SK_ColorYELLOW,
+  };
   for (int i = 0; i < 4; ++i) {
     decodes[i].thread =
         std::make_unique<base::Thread>("Decode" + std::to_string(i));

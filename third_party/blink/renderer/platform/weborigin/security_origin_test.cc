@@ -37,6 +37,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <string_view>
 
 #include "base/test/scoped_command_line.h"
@@ -80,7 +81,7 @@ class SecurityOriginTest : public testing::Test {
 };
 
 TEST_F(SecurityOriginTest, ValidPortsCreateTupleOrigins) {
-  uint16_t ports[] = {0, 80, 443, 5000, kMaxAllowedPort};
+  auto ports = std::to_array<uint16_t>({0, 80, 443, 5000, kMaxAllowedPort});
 
   for (size_t i = 0; i < std::size(ports); ++i) {
     scoped_refptr<const SecurityOrigin> origin =
@@ -127,12 +128,12 @@ TEST_F(SecurityOriginTest, CanAccess) {
     const char* origin2;
   };
 
-  TestCase tests[] = {
+  auto tests = std::to_array<TestCase>({
       {true, "https://foobar.com", "https://foobar.com"},
       {false, "https://foobar.com", "https://bazbar.com"},
       {true, "file://localhost/", "file://localhost/"},
       {false, "file:///", "file://localhost/"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(tests); ++i) {
     scoped_refptr<const SecurityOrigin> origin1 =
@@ -236,10 +237,10 @@ TEST_F(SecurityOriginTest, CanRequest) {
     const char* url;
   };
 
-  TestCase tests[] = {
+  auto tests = std::to_array<TestCase>({
       {true, "https://foobar.com", "https://foobar.com"},
       {false, "https://foobar.com", "https://bazbar.com"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(tests); ++i) {
     scoped_refptr<const SecurityOrigin> origin =

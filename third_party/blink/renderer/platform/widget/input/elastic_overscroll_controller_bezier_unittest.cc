@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/widget/input/elastic_overscroll_controller_bezier.h"
+
+#include <array>
 
 #include "build/build_config.h"
 #include "cc/input/input_handler.h"
@@ -294,9 +291,10 @@ TEST_F(ElasticOverscrollControllerBezierTest, VerifyForwardAnimationTick) {
   SendGestureScrollEnd(now);
 
   const int TOTAL_FRAMES = 28;
-  const int stretch_amount_y[TOTAL_FRAMES] = {
+  const std::array<int, TOTAL_FRAMES> stretch_amount_y = {
       -19, -41, -55, -65, -72, -78, -82, -85, -88, -89, -78, -64, -53, -44,
-      -37, -30, -25, -20, -16, -13, -10, -7,  -5,  -4,  -2,  -1,  -1,  0};
+      -37, -30, -25, -20, -16, -13, -10, -7,  -5,  -4,  -2,  -1,  -1,  0,
+  };
 
   for (int i = 0; i < TOTAL_FRAMES; i++) {
     controller_.Animate(now + base::Milliseconds(i * 16));
@@ -313,9 +311,10 @@ TEST_F(ElasticOverscrollControllerBezierTest, VerifyForwardAnimationTick) {
   controller_.scroll_velocity_ = gfx::Vector2dF(-3000.f, 0.f);
   SendGestureScrollEnd(now);
 
-  const int stretch_amount_x[TOTAL_FRAMES] = {
+  const std::array<int, TOTAL_FRAMES> stretch_amount_x = {
       -9,  -24, -34, -42, -48, -54, -58, -62, -66, -69, -62, -52, -43, -36,
-      -30, -25, -20, -17, -13, -10, -8,  -6,  -4,  -3,  -2,  -1,  0,   0};
+      -30, -25, -20, -17, -13, -10, -8,  -6,  -4,  -3,  -2,  -1,  0,   0,
+  };
 
   for (int i = 0; i < TOTAL_FRAMES; i++) {
     controller_.Animate(now + base::Milliseconds(i * 16));

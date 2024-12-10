@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/gamepad/gamepad_comparisons.h"
 
+#include <array>
+
 #include "base/test/task_environment.h"
 #include "device/gamepad/public/cpp/gamepad.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -165,7 +167,7 @@ class GamepadComparisonsTest : public testing::Test {
   GamepadList CreateGamepadListWithTopLeftTouchesTouchId1() {
     double axes[1] = {0.0};
     device::GamepadButton buttons[1] = {{false, false, 0.0}};
-    device::GamepadTouch touch[2];
+    std::array<device::GamepadTouch, 2> touch;
     initTouch(0.0f, 0.0f, 0, 0, false, 0, 0, touch[0]);
     initTouch(0.0f, 0.0f, 0, 1, false, 0, 0, touch[1]);
     auto list = CreateEmptyGamepadList();
@@ -182,7 +184,7 @@ class GamepadComparisonsTest : public testing::Test {
   GamepadList CreateGamepadListWithTopLeftTouchesTouchId3() {
     double axes[1] = {0.0};
     device::GamepadButton buttons[1] = {{false, false, 0.0}};
-    device::GamepadTouch touch[2];
+    std::array<device::GamepadTouch, 2> touch;
     initTouch(0.0f, 0.0f, 0, 0, false, 0, 0, touch[0]);
     initTouch(0.0f, 0.0f, 0, 3, false, 0, 0, touch[1]);
     auto list = CreateEmptyGamepadList();

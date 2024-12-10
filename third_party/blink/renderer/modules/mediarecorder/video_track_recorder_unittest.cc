@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
 
+#include <array>
 #include <sstream>
 #include <string_view>
 
@@ -85,10 +86,10 @@ const VideoTrackRecorder::CodecId kTrackRecorderTestCodec[] = {
     VideoTrackRecorder::CodecId::kAv1,
 #endif
 };
-const gfx::Size kTrackRecorderTestSize[] = {
-    gfx::Size(kVEAEncoderMinResolutionWidth / 2,
-              kVEAEncoderMinResolutionHeight / 2),
-    gfx::Size(kVEAEncoderMinResolutionWidth, kVEAEncoderMinResolutionHeight)};
+const auto kTrackRecorderTestSize = std::to_array<gfx::Size>(
+    {gfx::Size(kVEAEncoderMinResolutionWidth / 2,
+               kVEAEncoderMinResolutionHeight / 2),
+     gfx::Size(kVEAEncoderMinResolutionWidth, kVEAEncoderMinResolutionHeight)});
 static const int kTrackRecorderTestSizeDiff = 20;
 
 constexpr media::VideoCodec MediaVideoCodecFromCodecId(

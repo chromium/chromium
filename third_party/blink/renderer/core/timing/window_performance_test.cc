@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 
+#include <array>
 #include <cstdint>
 
 #include "base/numerics/safe_conversions.h"
@@ -1687,13 +1683,16 @@ TEST_P(WindowPerformanceTest, InteractionID) {
   RunPendingTasks();
 
   // Check UKM values.
-  struct {
+  struct ExpectedUkm {
     int max_duration;
     int total_duration;
     UserInteractionType type;
-  } expected_ukm[] = {{25, 40, UserInteractionType::kKeyboard},
-                      {70, 90, UserInteractionType::kTapOrClick},
-                      {50, 80, UserInteractionType::kDrag}};
+  };
+  auto expected_ukm = std::to_array<ExpectedUkm>({
+      {25, 40, UserInteractionType::kKeyboard},
+      {70, 90, UserInteractionType::kTapOrClick},
+      {50, 80, UserInteractionType::kDrag},
+  });
   auto entries = GetUkmRecorder()->GetEntriesByName(
       ukm::builders::Responsiveness_UserInteraction::kEntryName);
   EXPECT_EQ(3u, entries.size());

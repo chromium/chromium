@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 
 #include <unicode/uscript.h>
+
+#include <array>
 
 #include "base/check.h"
 #include "base/test/bind.h"
@@ -1735,7 +1732,7 @@ TEST_F(HarfBuzzShaperTest, SafeToBreakLatinDiscretionaryLigatures) {
   // RA Ligature, unkerned D D, D A kerns, A Y kerns, Y o kerns, o V kerns, V a
   // kerns, no kerning with D.
   String test_word(u"RADDAYoVaDD");
-  unsigned safe_to_break_positions[] = {2, 3, 9, 10};
+  auto safe_to_break_positions = std::to_array<unsigned int>({2, 3, 9, 10});
   HarfBuzzShaper shaper(test_word);
   const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
 
@@ -2193,7 +2190,7 @@ TEST_F(HarfBuzzShaperTest, MAYBE_EmojiPercentage) {
     unsigned expected_broken_clusters;
   };
 
-  Expectation expectations[] = {{3, 2}, {3, 2}, {6, 4}};
+  auto expectations = std::to_array<Expectation>({{3, 2}, {3, 2}, {6, 4}});
 #if BUILDFLAG(IS_ANDROID)
   // On Android 11, SDK level 30, fallback occurs to an emoji
   // font that has coverage for the last segment. Adjust the expectation.

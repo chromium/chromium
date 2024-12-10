@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 #include <algorithm>
+#include <array>
 #include <cstdlib>
 #include <memory>
 
@@ -260,9 +261,14 @@ TEST(SharedBufferTest, GetIteratorAt) {
   EXPECT_EQ(0, memcmp(it299->data(), data.data() + 299, it299->size()));
 
   // All of the iterators above are different each other.
-  const SharedBuffer::Iterator iters[] = {
-      it0, it1, it126, it127, it128, it299,
-  };
+  const auto iters = std::to_array<SharedBuffer::Iterator>({
+      it0,
+      it1,
+      it126,
+      it127,
+      it128,
+      it299,
+  });
   for (size_t i = 0; i < std::size(iters); ++i) {
     for (size_t j = 0; j < std::size(iters); ++j) {
       EXPECT_EQ(i == j, iters[i] == iters[j]);
