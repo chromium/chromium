@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <tuple>
 
@@ -99,15 +95,19 @@ class CopyOutputScalingPixelTest
     constexpr gfx::Size viewport_size = gfx::Size(48, 20);
     constexpr int x_block = 8;
     constexpr int y_block = 4;
-    constexpr SkColor4f smaller_pass_colors[4] = {
-        SkColors::kRed, SkColors::kGreen, SkColors::kBlue, SkColors::kYellow};
+    constexpr std::array<SkColor4f, 4> smaller_pass_colors = {
+        SkColors::kRed,
+        SkColors::kGreen,
+        SkColors::kBlue,
+        SkColors::kYellow,
+    };
     constexpr SkColor4f root_pass_color = SkColors::kWhite;
 
     AggregatedRenderPassList list;
 
     // Create the render passes drawn on top of the root render pass.
-    AggregatedRenderPass* smaller_passes[4];
-    gfx::Rect smaller_pass_rects[4];
+    std::array<AggregatedRenderPass*, 4> smaller_passes;
+    std::array<gfx::Rect, 4> smaller_pass_rects;
     AggregatedRenderPassId pass_id{5};
     for (int i = 0; i < 4;
          ++i, pass_id = AggregatedRenderPassId{pass_id.value() - 1}) {

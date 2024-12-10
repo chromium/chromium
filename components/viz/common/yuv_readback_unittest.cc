@@ -8,6 +8,7 @@
 #endif
 
 #include <algorithm>
+#include <array>
 #include <tuple>
 
 #include "base/functional/bind.h"
@@ -34,7 +35,7 @@
 namespace viz {
 
 namespace {
-int kYUVReadbackSizes[] = {2, 4, 14};
+auto kYUVReadbackSizes = std::to_array<int>({2, 4, 14});
 }
 
 class YUVReadbackTest : public testing::Test {
@@ -399,9 +400,12 @@ class YUVReadbackTest : public testing::Test {
     memset(U, 0x80, u_stride * output_ysize / 2);
     memset(V, 0x80, v_stride * output_ysize / 2);
 
-    const float kRGBtoYColorWeights[] = {0.257f, 0.504f, 0.098f, 0.0625f};
-    const float kRGBtoUColorWeights[] = {-0.148f, -0.291f, 0.439f, 0.5f};
-    const float kRGBtoVColorWeights[] = {0.439f, -0.368f, -0.071f, 0.5f};
+    const auto kRGBtoYColorWeights =
+        std::to_array<float>({0.257f, 0.504f, 0.098f, 0.0625f});
+    const auto kRGBtoUColorWeights =
+        std::to_array<float>({-0.148f, -0.291f, 0.439f, 0.5f});
+    const auto kRGBtoVColorWeights =
+        std::to_array<float>({0.439f, -0.368f, -0.071f, 0.5f});
 
     for (int y = 0; y < ysize; y++) {
       for (int x = 0; x < xsize; x++) {

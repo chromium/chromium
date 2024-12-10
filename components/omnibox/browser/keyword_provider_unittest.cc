@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <utility>
@@ -362,14 +363,15 @@ TEST_F(KeywordProviderTest, GetKeywordForInput) {
 }
 
 TEST_F(KeywordProviderTest, GetSubstitutingTemplateURLForInput) {
-  struct {
+  struct Cases {
     const std::string text;
     const size_t cursor_position;
     const bool allow_exact_keyword_match;
     const std::string expected_url;
     const std::string updated_text;
     const size_t updated_cursor_position;
-  } cases[] = {
+  };
+  auto cases = std::to_array<Cases>({
       {"foo", std::u16string::npos, true, "", "foo", std::u16string::npos},
       {"aa foo", std::u16string::npos, true, "aa.com?foo={searchTerms}", "foo",
        std::u16string::npos},
@@ -401,7 +403,7 @@ TEST_F(KeywordProviderTest, GetSubstitutingTemplateURLForInput) {
       // Disallow exact keyword match.
       {"aa foo", std::u16string::npos, false, "", "aa foo",
        std::u16string::npos},
-  };
+  });
   for (size_t i = 0; i < std::size(cases); i++) {
     AutocompleteInput input(
         ASCIIToUTF16(cases[i].text), cases[i].cursor_position,

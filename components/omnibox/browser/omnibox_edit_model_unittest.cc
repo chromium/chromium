@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/omnibox/browser/omnibox_edit_model.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -138,7 +134,8 @@ TEST_F(OmniboxEditModelTest, AdjustTextForCopy) {
     const char* expected_url;
 
     const char* url_for_display = "";
-  } input[] = {
+  };
+  auto input = std::to_array<Data>({
       // Test that http:// is inserted if all text is selected.
       {"a.de/b", 0, "", false, "a.de/b", "http://a.de/b", true,
        "http://a.de/b"},
@@ -228,7 +225,7 @@ TEST_F(OmniboxEditModelTest, AdjustTextForCopy) {
       {"https://ja.wikipedia.org/wiki/目次", 0, "", false,
        "https://wikipedia.org/wiki/目次", "https://wikipedia.org/wiki/目次",
        false, ""},
-  };
+  });
 
   for (size_t i = 0; i < std::size(input); ++i) {
     location_bar_model()->set_formatted_full_url(

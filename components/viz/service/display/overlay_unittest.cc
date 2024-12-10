@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
+#include <array>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -1953,14 +1949,17 @@ TEST_F(SingleOverlayOnTopTest, OpaqueOverlayDamageSubtract) {
   constexpr int kCandidateSmall = 64;
   const gfx::Rect kOverlayDisplayRect = {10, 10, kCandidateSmall,
                                          kCandidateSmall};
-  const gfx::Rect kDamageRect[] = {
+  const auto kDamageRect = std::to_array<gfx::Rect>({
       gfx::Rect(10, 10, kCandidateSmall, kCandidateSmall),
       gfx::Rect(0, 10, kCandidateSmall, kCandidateSmall),
-      gfx::Rect(6, 6, kCandidateSmall, kCandidateSmall)};
+      gfx::Rect(6, 6, kCandidateSmall, kCandidateSmall),
+  });
 
-  const gfx::Rect kExpectedDamage[] = {
-      gfx::Rect(), gfx::Rect(0, 10, 10, kCandidateSmall),
-      gfx::Rect(6, 6, kCandidateSmall, kCandidateSmall)};
+  const auto kExpectedDamage = std::to_array<gfx::Rect>({
+      gfx::Rect(),
+      gfx::Rect(0, 10, 10, kCandidateSmall),
+      gfx::Rect(6, 6, kCandidateSmall, kCandidateSmall),
+  });
 
   AddExpectedRectToOverlayProcessor(gfx::RectF(kOverlayDisplayRect));
   for (size_t i = 0; i < std::size(kDamageRect); ++i) {
@@ -2012,11 +2011,11 @@ TEST_F(SingleOverlayOnTopTest, NonOpaquePureOverlayFirstFrameDamage) {
   constexpr int kCandidateSmall = 64;
   const gfx::Rect kOverlayDisplayRect(10, 10, kCandidateSmall, kCandidateSmall);
 
-  const gfx::Rect kExpectedDamage[] = {
+  const auto kExpectedDamage = std::to_array<gfx::Rect>({
       kOverlayDisplayRect,
       gfx::Rect(),
       gfx::Rect(),
-  };
+  });
 
   AddExpectedRectToOverlayProcessor(gfx::RectF(kOverlayDisplayRect));
   for (size_t i = 0; i < std::size(kExpectedDamage); ++i) {
@@ -2064,12 +2063,14 @@ TEST_F(SingleOverlayOnTopTest, NonOpaquePureOverlayNonOccludingDamage) {
   const gfx::Rect kInFrontDamage = {0, 0, 16, 16};
   const gfx::Rect kBehindOverlayDamage = {10, 10, 32, 32};
 
-  const gfx::Rect kExpectedDamage[] = {
-      kInFrontDamage, kInFrontDamage,
+  const auto kExpectedDamage = std::to_array<gfx::Rect>({
+      kInFrontDamage,
+      kInFrontDamage,
       // As the overlay transitions to transparent it must contribute damage.
       gfx::UnionRects(kInFrontDamage, kOverlayDisplayRect),
       // After the transition, the overlay itself doesn't contribute damage.
-      gfx::UnionRects(kInFrontDamage, kBehindOverlayDamage)};
+      gfx::UnionRects(kInFrontDamage, kBehindOverlayDamage),
+  });
 
   AddExpectedRectToOverlayProcessor(gfx::RectF(kOverlayDisplayRect));
   for (size_t i = 0; i < std::size(kExpectedDamage); ++i) {
@@ -3742,7 +3743,8 @@ TEST_F(UnderlayTest, DamageNotExcludedForNonIdenticalConsecutiveUnderlays) {
 
 // Underlay damage can only be excluded if the previous frame's underlay exists.
 TEST_F(UnderlayTest, DamageNotExcludedForNonConsecutiveIdenticalUnderlays) {
-  bool has_fullscreen_candidate[] = {true, false, true, true, true, false};
+  auto has_fullscreen_candidate =
+      std::to_array<bool>({true, false, true, true, true, false});
 
   for (int i = 0; i < 3; ++i) {
     SCOPED_TRACE(i);
@@ -3795,8 +3797,18 @@ TEST_F(UnderlayTest, DamageNotExcludedForNonConsecutiveIdenticalUnderlays) {
 TEST_F(
     UnderlayTest,
     DamageNotExcludedForConsecutiveUnderlaysIfOneHasMaskFilterAndOtherDoesNot) {
-  constexpr bool kHasMaskFilter[] = {true, false, true,  false, true,
-                                     true, true,  false, false, false};
+  constexpr const auto kHasMaskFilter = std::to_array<bool>({
+      true,
+      false,
+      true,
+      false,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+  });
 
   for (int i = 0; i < 10; ++i) {
     SCOPED_TRACE(i);
@@ -4227,13 +4239,18 @@ TEST_F(UnderlayTest, UpdateDamageRectWhenNoPromotion) {
   // the third pass there is no overlay promotion, but the damage should be the
   // union of the damage_rect with CreateRenderPass's output_rect which is {0,
   // 0, 256, 256}. This is due to the demotion of the current overlay.
-  bool has_fullscreen_candidate[] = {true, true, false};
-  gfx::Rect damages[] = {gfx::Rect(0, 0, 32, 32), gfx::Rect(0, 0, 32, 32),
-                         gfx::Rect(0, 0, 312, 16)};
-  gfx::Rect expected_damages[] = {gfx::Rect(0, 0, 256, 256),
-                                  gfx::Rect(0, 0, 0, 0),
-                                  gfx::Rect(0, 0, 312, 256)};
-  size_t expected_candidate_size[] = {1, 1, 0};
+  auto has_fullscreen_candidate = std::to_array<bool>({true, true, false});
+  auto damages = std::to_array<gfx::Rect>({
+      gfx::Rect(0, 0, 32, 32),
+      gfx::Rect(0, 0, 32, 32),
+      gfx::Rect(0, 0, 312, 16),
+  });
+  auto expected_damages = std::to_array<gfx::Rect>({
+      gfx::Rect(0, 0, 256, 256),
+      gfx::Rect(0, 0, 0, 0),
+      gfx::Rect(0, 0, 312, 256),
+  });
+  auto expected_candidate_size = std::to_array<size_t>({1, 1, 0});
 
   for (size_t i = 0; i < std::size(expected_damages); ++i) {
     SCOPED_TRACE(i);
@@ -4993,19 +5010,23 @@ TEST_F(UnderlayTest, EstimateOccludedDamage) {
 
   const int kCandidateSmall = 50;
   const int kCandidateLarge = 100;
-  const gfx::Rect kCandidateRects[] = {
+  const auto kCandidateRects = std::to_array<gfx::Rect>({
       gfx::Rect(0, 0, kCandidateSmall, kCandidateSmall),
       gfx::Rect(100, 100, kCandidateSmall, kCandidateSmall),
-      gfx::Rect(100, 100, kCandidateLarge, kCandidateLarge), kOverlayRect};
+      gfx::Rect(100, 100, kCandidateLarge, kCandidateLarge),
+      kOverlayRect,
+  });
 
-  const bool kCandidateUseSurfaceIndex[] = {true, true, true, false};
+  const auto kCandidateUseSurfaceIndex =
+      std::to_array<bool>({true, true, true, false});
 
-  const int kExpectedDamages[] = {
+  const auto kExpectedDamages = std::to_array<int>({
       kCandidateSmall * kCandidateSmall,
       kCandidateSmall * kCandidateSmall - kOccluderWidth * kOccluderWidth,
       kCandidateLarge * kCandidateLarge - kOccluderWidth * kOccluderWidth * 2,
       kOverlayRect.width() * kOverlayRect.height() -
-          kOccluderWidth * kOccluderWidth * 2};
+          kOccluderWidth * kOccluderWidth * 2,
+  });
 
   static_assert(
       std::size(kCandidateRects) == std::size(kCandidateUseSurfaceIndex),
@@ -6340,9 +6361,14 @@ TEST_F(MultiOverlayTest, RequiredOverlayOnly) {
 }
 
 TEST_F(MultiOverlayTest, CappedAtMaxOverlays) {
-  constexpr gfx::Rect kCandRects[]{{0, 0, 64, 64},   {64, 0, 64, 64},
-                                   {0, 64, 64, 64},  {64, 64, 64, 64},
-                                   {0, 128, 64, 64}, {64, 128, 64, 64}};
+  constexpr const auto kCandRects = std::to_array<gfx::Rect>({
+      {0, 0, 64, 64},
+      {64, 0, 64, 64},
+      {0, 64, 64, 64},
+      {64, 64, 64, 64},
+      {0, 128, 64, 64},
+      {64, 128, 64, 64},
+  });
   constexpr gfx::Rect kBottomTwo(0, 128, 128, 64);
 
   damage_rect_ = gfx::Rect(0, 0, 128, 192);

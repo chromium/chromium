@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/display/occlusion_culler.h"
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -135,14 +131,14 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithIntersectingBackdropFilter) {
   float opacity = 1.f;
 
   // Rects, shared quad states and quads map 1:1:1
-  gfx::Rect rects[3] = {
+  std::array<gfx::Rect, 3> rects = {
       gfx::Rect(75, 0, 50, 100),
       gfx::Rect(0, 0, 50, 50),
       gfx::Rect(0, 0, 100, 100),
   };
 
-  SharedQuadState* shared_quad_states[3];
-  DrawQuad* quads[3];
+  std::array<SharedQuadState*, 3> shared_quad_states;
+  std::array<DrawQuad*, 3> quads;
 
   // Set up the backdrop filter render pass
   auto& bd_render_pass = frame.render_pass_list.at(0);
@@ -2133,15 +2129,15 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithMultipleRenderPass) {
 
   // rect 3 is inside of combined rect of rect 1 and rect 2.
   // rect 4 is identical to rect 3, but in a separate render pass.
-  gfx::Rect rects[4] = {
+  std::array<gfx::Rect, 4> rects = {
       gfx::Rect(0, 0, 100, 100),
       gfx::Rect(100, 0, 60, 60),
       gfx::Rect(10, 10, 120, 30),
       gfx::Rect(10, 10, 120, 30),
   };
 
-  SharedQuadState* shared_quad_states[4];
-  SolidColorDrawQuad* quads[4];
+  std::array<SharedQuadState*, 4> shared_quad_states;
+  std::array<SolidColorDrawQuad*, 4> quads;
   for (int i = 0; i < 4; i++) {
     // add all but quad 4 into non-root render pass.
     auto& render_pass =
@@ -3309,7 +3305,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingSplit) {
   // * -> Visible rect for the quads.
 
   const gfx::Rect occluding_rect(10, 10, 1000, 490);
-  const gfx::Rect quad_rects[3] = {
+  const std::array<gfx::Rect, 3> quad_rects = {
       gfx::Rect(0, 0, 1200, 20),
       gfx::Rect(0, 20, 600, 490),
       gfx::Rect(600, 20, 600, 490),
@@ -3323,7 +3319,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingSplit) {
   SharedQuadState* shared_quad_state_occluded =
       frame.render_pass_list.front()->CreateAndAppendSharedQuadState();
 
-  SolidColorDrawQuad* quads[4];
+  std::array<SolidColorDrawQuad*, 4> quads;
   for (auto*& quad : quads) {
     quad = frame.render_pass_list.front()
                ->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
@@ -3363,7 +3359,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingSplit) {
     //  +---+------------+---------+-----+
     //  |        4       |        5      |
     //  +----------------+---------------+
-    const gfx::Rect expected_visible_rects[5]{
+    const std::array<gfx::Rect, 5> expected_visible_rects = {
         // The occluded region of rest one is small, so we do not split the
         // quad.
         quad_rects[0],
@@ -3425,7 +3421,7 @@ TEST_F(OcclusionCullerTest, FirstPassVisibleComplexityReduction) {
   // If the merge is not done, this visible region will be discarded and the
   // quad will not be split.
 
-  const gfx::Rect occluding_rects[2] = {
+  const std::array<gfx::Rect, 2> occluding_rects = {
       gfx::Rect(300, 0, 550, 270),
       gfx::Rect(850, 50, 150, 150),
   };
@@ -3473,7 +3469,7 @@ TEST_F(OcclusionCullerTest, FirstPassVisibleComplexityReduction) {
   //
   // * -> Visible rect for the quads.
 
-  const gfx::Rect expected_visible_rects[6] = {
+  const std::array<gfx::Rect, 6> expected_visible_rects = {
       occluding_rects[0],
       occluding_rects[1],
       gfx::Rect(0, 0, 300, 270),

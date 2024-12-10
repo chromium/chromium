@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -311,8 +312,12 @@ TEST_F(FeaturedSearchProviderTest, StarterPackExpansionRelevance) {
     return x.relevance > y.relevance;
   });
 
-  std::string expected_match_order[] = {kGeminiUrl, kBookmarksUrl, kHistoryUrl,
-                                        kTabsUrl};
+  auto expected_match_order = std::to_array<std::string>({
+      kGeminiUrl,
+      kBookmarksUrl,
+      kHistoryUrl,
+      kTabsUrl,
+  });
   for (size_t i = 0; i < matches.size(); i++) {
     EXPECT_EQ(matches[i].destination_url, GURL(expected_match_order[i]));
   }

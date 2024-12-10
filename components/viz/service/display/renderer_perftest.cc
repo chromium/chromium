@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <array>
+
 // This perf test measures the time from when the display compositor starts
 // drawing on the compositor thread to when a swap buffers occurs on the
 // GPU main thread.
@@ -428,7 +430,7 @@ class RendererPerfTest : public VizPerfTest {
   void RunTextureQuads5x5() {
     const gfx::Size kTextureSize =
         ScaleToCeiledSize(kSurfaceSize, /*x_scale=*/0.2, /*y_scale=*/0.2);
-    ResourceId resource_ids[5][5];
+    std::array<std::array<ResourceId, 5>, 5> resource_ids;
     for (int i = 0; i < 5; i++) {
       for (int j = 0; j < 5; j++) {
         resource_list_.push_back(CreateTestTexture(
