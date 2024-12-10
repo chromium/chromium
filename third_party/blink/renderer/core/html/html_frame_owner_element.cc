@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/events/current_input_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
+#include "third_party/blink/renderer/core/fetch/fetch_later_util.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -420,6 +421,20 @@ void HTMLFrameOwnerElement::UpdateRequiredPolicy() {
   }
 
   if (ContentFrame()) {
+    frame->GetLocalFrameHostRemote().DidChangeFramePolicy(
+        ContentFrame()->GetFrameToken(), frame_policy_);
+  }
+}
+
+void HTMLFrameOwnerElement::UpdateDeferredFetchPolicy() {
+  if (!IsFetchLaterUseDeferredFetchPolicyEnabled()) {
+    return;
+  }
+  frame_policy_.deferred_fetch_policy =
+      GetContainerDeferredFetchPolicyOnNavigation(this);
+
+  if (ContentFrame()) {
+    auto* frame = GetDocument().GetFrame();
     frame->GetLocalFrameHostRemote().DidChangeFramePolicy(
         ContentFrame()->GetFrameToken(), frame_policy_);
   }

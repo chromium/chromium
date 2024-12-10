@@ -1500,9 +1500,11 @@ std::unique_ptr<WebContentsImpl> WebContentsImpl::CreateWithOpener(
         opener_rfh->active_sandbox_flags();
     if (opener_rfh->IsSandboxed(network::mojom::WebSandboxFlags::
                                     kPropagatesToAuxiliaryBrowsingContexts)) {
-      new_root->SetPendingFramePolicy({opener_flags,
-                                       {} /* container_policy */,
-                                       {} /* required_document_policy */});
+      new_root->SetPendingFramePolicy(
+          {opener_flags,
+           {} /* container_policy */,
+           {} /* required_document_policy */,
+           blink::FramePolicy::DeferredFetchPolicy::kDisabled});
     }
     new_root->SetInitialPopupURL(params.initial_popup_url);
     new_root->SetPopupCreatorOrigin(opener_rfh->GetLastCommittedOrigin());

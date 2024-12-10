@@ -2205,6 +2205,10 @@ void DocumentLoader::DidCommitNavigation() {
   if (commit_reason_ != CommitReason::kRegular)
     return;
 
+  if (auto* owner = DynamicTo<HTMLFrameOwnerElement>(frame_->Owner()); owner) {
+    owner->UpdateDeferredFetchPolicy();
+  }
+
   // When committing a new document, the FrameScheduler might need to carry over
   // the previous document's FrameScheduler's `UnreportedTaskTime()`, as that
   // value should be aggregated across all documents that ever committed in the

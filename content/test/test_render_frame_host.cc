@@ -202,7 +202,10 @@ TestRenderFrameHost* TestRenderFrameHost::AppendChildWithPolicy(
       blink::mojom::TreeScopeType::kDocument, frame_name, frame_unique_name,
       false, blink::LocalFrameToken(), base::UnguessableToken::Create(),
       blink::DocumentToken(),
-      blink::FramePolicy({network::mojom::WebSandboxFlags::kNone, allow, {}}),
+      blink::FramePolicy({network::mojom::WebSandboxFlags::kNone,
+                          allow,
+                          {},
+                          blink::FramePolicy::DeferredFetchPolicy::kDisabled}),
       blink::mojom::FrameOwnerProperties(),
       blink::FrameOwnerElementType::kIframe, ukm::kInvalidSourceId);
   return static_cast<TestRenderFrameHost*>(

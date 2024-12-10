@@ -358,7 +358,8 @@ void FencedFrame::DidChangeFramePolicy(const blink::FramePolicy& frame_policy) {
   // in the browser, allowing us to use non-fixed sets of sandbox flags.
   inner_root->SetPendingFramePolicy(blink::FramePolicy(
       current_frame_policy.sandbox_flags, frame_policy.container_policy,
-      current_frame_policy.required_document_policy));
+      current_frame_policy.required_document_policy,
+      frame_policy.deferred_fetch_policy));
 }
 
 }  // namespace content
