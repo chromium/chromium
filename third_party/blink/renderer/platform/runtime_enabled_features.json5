@@ -1326,11 +1326,9 @@
       // customizable.
       name: "CustomizableSelect",
       status: "experimental",
-      // :open is used in the UA stylesheet for CustomizableSelect, so this feature
-      // will not work properly without CSSPseudoOpen.
       // SelectParserRelaxation is needed to allow more content in <select>
       // than just <option>s etc.
-      depends_on: ["CSSPseudoOpen", "SelectParserRelaxation"],
+      depends_on: ["SelectParserRelaxation"],
     },
     {
       name: "Database",
