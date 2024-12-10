@@ -1036,6 +1036,10 @@
     "label": "//headless:headless_unittests",
     "type": "console_test_launcher",
   },
+  "highway_tests": {
+    "label": "//third_party/highway:highway_tests",
+    "type": "console_test_launcher",
+  },
   "image_processor_perf_test": {
     "label": "//media/gpu/chromeos:image_processor_perf_test",
     "type": "additional_compile_target",

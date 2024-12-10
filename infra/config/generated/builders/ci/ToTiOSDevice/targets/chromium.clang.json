@@ -62,6 +62,49 @@
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
         "variant_id": "iPhone 15 Pro 17.5.1 or 17.6.1 or 18.0"
+      },
+      {
+        "args": [
+          "--restart",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "16b40",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "highway_tests iPhone 15 Pro 17.5.1 or 17.6.1 or 18.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:a18b7d95d26f3c6bf9591978b19cf0ca8268ac7d"
+            }
+          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "device": "iPhone16,1",
+            "os": "Mac-14"
+          },
+          "expiration": 21600,
+          "named_caches": [
+            {
+              "name": "xcode_ios_16b40",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "highway_tests",
+        "test_id_prefix": "ninja://third_party/highway:highway_tests/",
+        "variant_id": "iPhone 15 Pro 17.5.1 or 17.6.1 or 18.0"
       }
     ]
   }

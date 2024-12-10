@@ -1130,6 +1130,11 @@ targets.binaries.console_test_launcher(
 )
 
 targets.binaries.console_test_launcher(
+    name = "highway_tests",
+    label = "//third_party/highway:highway_tests",
+)
+
+targets.binaries.console_test_launcher(
     name = "install_static_unittests",
     label = "//chrome/install_static:install_static_unittests",
     # All references have been moved to starlark

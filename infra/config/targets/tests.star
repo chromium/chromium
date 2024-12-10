@@ -622,6 +622,10 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.gtest_test(
+    name = "highway_tests",
+)
+
+targets.tests.gtest_test(
     name = "openscreen_unittests",
 )
 

@@ -762,6 +762,7 @@
 
     'clang_tot_gtests': {
       'base_unittests': {},
+      'highway_tests': {},
     },
 
     'client_v8_chromium_gtests': {

@@ -553,6 +553,7 @@ targets.legacy_basic_suite(
     name = "clang_tot_gtests",
     tests = {
         "base_unittests": targets.legacy_test_config(),
+        "highway_tests": targets.legacy_test_config(),
     },
 )
 
