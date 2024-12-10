@@ -2689,6 +2689,7 @@ crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attribut
 crbug.com/343720396 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?1-2 [ Crash Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac13 ] external/wpt/webrtc/RTCPeerConnection-setLocalDescription-pranswer.html [ Timeout ]
 crbug.com/382988706 external/wpt/css/css-rhythm/replaced-elements/block-level-canvas-margins-affected-by-block-step-size.html [ Failure ]
 crbug.com/382988706 external/wpt/css/css-rhythm/replaced-elements/block-level-embed-margins-affected-by-block-step-size.html [ Failure ]
 crbug.com/382988706 external/wpt/css/css-rhythm/replaced-elements/block-level-iframe-margins-affected-by-block-step-size.html [ Failure ]
@@ -6445,6 +6446,7 @@ crbug.com/1385919 [ Win ] external/wpt/css/selectors/focus-visible-002.html [ Sk
 crbug.com/1385905 [ Win ] external/wpt/editing/run/caret-navigation-around-line-break.html [ Skip Timeout ]
 crbug.com/1385881 [ Mac12 ] external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
 crbug.com/1385881 [ Mac13 ] external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
+crbug.com/1385881 [ Mac13-arm64 ] external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
 crbug.com/1385881 [ Mac14 ] external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
 crbug.com/1385881 [ Mac15 ] external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
 crbug.com/1385881 [ Mac15-arm64 ] external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
@@ -8011,6 +8013,7 @@ crbug.com/356930166 [ Mac13 ] external/wpt/webrtc/legacy/simplecall_callbacks.ht
 crbug.com/356930166 [ Mac14 ] external/wpt/webrtc/legacy/simplecall_callbacks.https.html [ Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/legacy/simplecall_callbacks.https.html [ Timeout ]
 crbug.com/356930166 [ Mac13 ] external/wpt/webrtc/no-media-call.html [ Timeout ]
+crbug.com/356930166 [ Mac14 ] external/wpt/webrtc/no-media-call.html [ Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/no-media-call.html [ Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/promises-call.html [ Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/protocol/additional-codecs.html [ Skip Timeout ]
@@ -8071,6 +8074,7 @@ crbug.com/356930166 [ Mac14 ] external/wpt/webrtc/RTCSctpTransport-maxChannels.h
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/RTCSctpTransport-maxChannels.html [ Timeout ]
 crbug.com/356930166 [ Mac13 ] external/wpt/webrtc/simplecall-no-ssrcs.https.html [ Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/simplecall-no-ssrcs.https.html [ Timeout ]
+crbug.com/356930166 [ Mac14 ] external/wpt/webrtc/simplecall.https.html [ Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/simplecall.https.html [ Timeout ]
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-errors.https.html [ Timeout ]
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc-extensions/RTCRtpSynchronizationSource-captureTimestamp.html [ Skip Timeout ]

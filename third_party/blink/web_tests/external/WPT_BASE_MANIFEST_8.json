@@ -387194,10 +387194,6 @@
        ]
       }
      },
-     "dimension-attributes-expected.txt": [
-      "291e645f241409c89fc804ed2ec5949351bf1b13",
-      []
-     ],
      "interactive-media": {
       "links-forms-and-navigation": {
        "original-id.json": [
@@ -477606,7 +477602,21 @@
         ]
        ],
        "gap-decorations-style-computed.html": [
-        "379fb89c071774c9864a670dd220d2c2cf462e63",
+        "60600bdb8a7fdfa01c2826f578f4a51a9b713dc5",
+        [
+         null,
+         {}
+        ]
+       ],
+       "gap-decorations-style-invalid.html": [
+        "d2a11f6c0d3220559778c784164bcbc82cd4b0f2",
+        [
+         null,
+         {}
+        ]
+       ],
+       "gap-decorations-style-valid.html": [
+        "74d243bd6da188c761c84e0cdb4fc96969c6b8a6",
         [
          null,
          {}
@@ -616059,6 +616069,20 @@
          {}
         ]
        ],
+       "button-click-resets-with-commandfor.tentative.html": [
+        "a1e3669717e90c16d93b11cde663a73495c852a5",
+        [
+         null,
+         {}
+        ]
+       ],
+       "button-click-submits-with-commandfor.tentative.html": [
+        "ced0d9ef152d82920fee888947bba0484335585b",
+        [
+         null,
+         {}
+        ]
+       ],
        "button-click-submits.html": [
         "86b92402e46896917748c792d14ec1989fc1a4b8",
         [
@@ -618491,7 +618515,7 @@
         ]
        ],
        "dialog-requestclose.tentative.html": [
-        "eb2270b861c75e8318760b1ee6ce5398c780d780",
+        "18486f791b4a6c6e2f23f4c9f1c566f9f3dbf8a1",
         [
          null,
          {
@@ -618903,7 +618927,7 @@
        ]
       ],
       "invoketarget-button-event-dispatch.tentative.html": [
-       "ef870627a066f5dd85f29ce6ea664581ea0259fc",
+       "74148caa2107d3e99acc4f9223c19eaad9de4ec1",
        [
         null,
         {
@@ -630551,6 +630575,13 @@
     ],
     "dynamic-integrity.html": [
      "e4ac7b431b583d3d209c69c71ca2114cb02b0c2e",
+     [
+      null,
+      {}
+     ]
+    ],
+    "external-import-map-errors.html": [
+     "ea2a1c058755deb0646505ed3b4909a4a123cb25",
      [
       null,
       {}
