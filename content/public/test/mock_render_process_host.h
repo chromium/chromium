@@ -117,6 +117,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool FastShutdownStarted() override;
   const base::Process& GetProcess() override;
   bool IsReady() override;
+  ChildProcessId GetID() const override;
   int GetDeprecatedID() const override;
   base::SafeRef<RenderProcessHost> GetSafeRef() const override;
   bool IsInitializedAndNotDead() override;
@@ -323,7 +324,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   // Stores IPC messages that would have been sent to the renderer.
   IPC::TestSink sink_;
   int bad_msg_count_;
-  int id_;
+  ChildProcessId id_;
   bool has_connection_;
   raw_ptr<BrowserContext, DanglingUntriaged> browser_context_;
   base::ObserverList<RenderProcessHostObserver> observers_;

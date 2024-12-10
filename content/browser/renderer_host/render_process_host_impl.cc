@@ -1109,8 +1109,9 @@ GetBadMojoMessageCallbackForTesting() {
   return *s_callback;
 }
 
-void InvokeBadMojoMessageCallbackForTesting(int render_process_id,
-                                            const std::string& error) {
+void InvokeBadMojoMessageCallbackForTesting(  // IN-TEST
+    ChildProcessId render_process_id,
+    const std::string& error) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&InvokeBadMojoMessageCallbackForTesting,
@@ -1249,7 +1250,7 @@ bool IsKeepAliveRefCountAllowed() {
 }  // namespace
 
 RenderProcessHostImpl::IOThreadHostImpl::IOThreadHostImpl(
-    int render_process_id,
+    ChildProcessId render_process_id,
     base::WeakPtr<RenderProcessHostImpl> weak_host,
     std::unique_ptr<service_manager::BinderRegistry> binders,
     mojo::PendingReceiver<mojom::ChildProcessHost> host_receiver)
@@ -1730,7 +1731,7 @@ bool RenderProcessHostImpl::Init() {
     in_process_renderer_.reset(g_renderer_main_thread_factory(
         InProcessChildThreadParams(GetIOThreadTaskRunner({}),
                                    &mojo_invitation_),
-        base::checked_cast<int32_t>(id_)));
+        base::checked_cast<int32_t>(id_.GetUnsafeValue())));
 
     base::Thread::Options options;
 #if BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
@@ -2383,7 +2384,8 @@ void RenderProcessHostImpl::CreateEmbeddedFrameSinkProvider(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!embedded_frame_sink_provider_) {
     // The client id gets converted to a uint32_t in FrameSinkId.
-    uint32_t renderer_client_id = base::checked_cast<uint32_t>(id_);
+    uint32_t renderer_client_id =
+        base::checked_cast<uint32_t>(id_.GetUnsafeValue());
     embedded_frame_sink_provider_ =
         std::make_unique<EmbeddedFrameSinkProviderImpl>(
             GetHostFrameSinkManager(), renderer_client_id);
@@ -2501,7 +2503,7 @@ void RenderProcessHostImpl::BindDomStorage(
   }
 
   dom_storage_receiver_ids_.insert(storage_partition_impl_->BindDomStorage(
-      id_, std::move(receiver), std::move(client)));
+      id_.GetUnsafeValue(), std::move(receiver), std::move(client)));
 
   // Renderers only use this interface to send a single BindDomStorage message,
   // so we can tear down the receiver now.
@@ -3815,6 +3817,10 @@ bool RenderProcessHostImpl::InSameStoragePartition(
 }
 
 int RenderProcessHostImpl::GetDeprecatedID() const {
+  return id_.GetUnsafeValue();
+}
+
+ChildProcessId RenderProcessHostImpl::GetID() const {
   return id_;
 }
 
@@ -4538,6 +4544,11 @@ RenderProcessHost::iterator RenderProcessHost::AllHostsIterator() {
 RenderProcessHost* RenderProcessHost::FromID(int render_process_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return GetAllHosts().Lookup(render_process_id);
+}
+
+RenderProcessHost* RenderProcessHost::FromID(ChildProcessId render_process_id) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  return RenderProcessHost::FromID(render_process_id.GetUnsafeValue());
 }
 
 // static
@@ -5522,7 +5533,7 @@ RenderProcessHostImpl::FindReusableProcessHostForSiteInstance(
 }
 
 // static
-void RenderProcessHostImpl::OnMojoError(int render_process_id,
+void RenderProcessHostImpl::OnMojoError(ChildProcessId render_process_id,
                                         const std::string& error) {
   LOG(ERROR) << "Terminating render process for bad Mojo message: " << error;
 

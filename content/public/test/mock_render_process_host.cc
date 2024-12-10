@@ -277,8 +277,12 @@ bool MockRenderProcessHost::Send(IPC::Message* msg) {
   return true;
 }
 
-int MockRenderProcessHost::GetDeprecatedID() const {
+ChildProcessId MockRenderProcessHost::GetID() const {
   return id_;
+}
+
+int MockRenderProcessHost::GetDeprecatedID() const {
+  return id_.GetUnsafeValue();
 }
 
 base::SafeRef<RenderProcessHost> MockRenderProcessHost::GetSafeRef() const {

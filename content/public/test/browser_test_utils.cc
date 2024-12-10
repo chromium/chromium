@@ -2572,7 +2572,7 @@ std::optional<int> RenderProcessHostKillWaiter::Wait() {
 
 RenderProcessHostBadMojoMessageWaiter::RenderProcessHostBadMojoMessageWaiter(
     RenderProcessHost* render_process_host)
-    : monitored_render_process_id_(render_process_host->GetDeprecatedID()),
+    : monitored_render_process_id_(render_process_host->GetID()),
       kill_waiter_(render_process_host,
                    "Stability.BadMessageTerminated.Content") {
   // base::Unretained is safe below, because the destructor unregisters the
@@ -2603,7 +2603,7 @@ std::optional<std::string> RenderProcessHostBadMojoMessageWaiter::Wait() {
 }
 
 void RenderProcessHostBadMojoMessageWaiter::OnBadMojoMessage(
-    int render_process_id,
+    ChildProcessId render_process_id,
     const std::string& error) {
   if (render_process_id == monitored_render_process_id_)
     observed_mojo_error_ = error;

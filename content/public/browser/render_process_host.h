@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
@@ -307,7 +308,10 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // plugins, etc.
   //
   // This will never return ChildProcessHost::kInvalidUniqueID.
-  // TODO(crbug.com/379869738): Add ChildProcessId GetID().
+  virtual ChildProcessId GetID() const = 0;
+
+  // TODO(crbug.com/379869738): Deprecated, please use the ChildProcessId
+  // version above.
   virtual int GetDeprecatedID() const = 0;
 
   // Returns a SafeRef to `this`. It should only be used in non-owning cases,
@@ -784,6 +788,10 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
 
   // Returns the RenderProcessHost given its ID.  Returns nullptr if the ID does
   // not correspond to a live RenderProcessHost.
+  static RenderProcessHost* FromID(ChildProcessId render_process_id);
+
+  // TODO(crbug.com/379869738): Deprecated, please use the ChildProcessId
+  // version above.
   static RenderProcessHost* FromID(int render_process_id);
 
   // Returns the RenderProcessHost given its renderer's service instance ID,
@@ -821,7 +829,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // IOThreadHostImpl::BindHostReceiver() will pass through |callback| first if
   // non-null. |callback| is only called from the IO thread.
   using BindHostReceiverInterceptor =
-      base::RepeatingCallback<void(int render_process_id,
+      base::RepeatingCallback<void(ChildProcessId render_process_id,
                                    mojo::GenericPendingReceiver* receiver)>;
   static void InterceptBindHostReceiverForTesting(
       BindHostReceiverInterceptor callback);

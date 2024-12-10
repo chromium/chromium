@@ -7,6 +7,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "content/common/buildflags.h"
+#include "content/public/browser/child_process_id.h"
 
 namespace content {
 class BrowserMessageFilter;
@@ -361,6 +362,11 @@ enum BadMessageReason {
 void ReceivedBadMessage(RenderProcessHost* host, BadMessageReason reason);
 
 // Equivalent to the above, but callable from any thread.
+void ReceivedBadMessage(ChildProcessId render_process_id,
+                        BadMessageReason reason);
+
+// TODO(crbug.com/379869738): Deprecated, please use ReceivedBadMessage with
+// ChildProcessId above.
 void ReceivedBadMessage(int render_process_id, BadMessageReason reason);
 
 #if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)

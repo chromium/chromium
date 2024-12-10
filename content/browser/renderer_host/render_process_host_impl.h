@@ -253,7 +253,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
   bool IsReady() override;
   BrowserContext* GetBrowserContext() override;
   bool InSameStoragePartition(StoragePartition* partition) override;
-  // TODO(crbug.com/379869738): Add ChildProcessId GetID().
+  ChildProcessId GetID() const override;
+  // TODO(crbug.com/379869738): Deprecated, please use the ChildProcessId
+  // version above.
   int GetDeprecatedID() const override;
   base::SafeRef<RenderProcessHost> GetSafeRef() const override;
   bool IsInitializedAndNotDead() override;
@@ -413,6 +415,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   // Register/unregister the host identified by the host id in the global host
   // list.
+  static void RegisterHost(ChildProcessId host_id, RenderProcessHost* host);
+  static void UnregisterHost(ChildProcessId host_id);
+
+  // TODO(crbug.com/379869738): Deprecated, please use the ChildProcessId
+  // version above.
   static void RegisterHost(int host_id, RenderProcessHost* host);
   static void UnregisterHost(int host_id);
 
@@ -609,7 +616,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   static bool HasDomStorageBinderForTesting();
 
   using BadMojoMessageCallbackForTesting =
-      base::RepeatingCallback<void(int render_process_host_id,
+      base::RepeatingCallback<void(ChildProcessId render_process_host_id,
                                    const std::string& error)>;
   static void SetBadMojoMessageCallbackForTesting(
       BadMojoMessageCallbackForTesting callback);
@@ -944,10 +951,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   class IOThreadHostImpl : public mojom::ChildProcessHost {
    public:
     IOThreadHostImpl(
-        int render_process_id,
+        ChildProcessId render_process_id,
         base::WeakPtr<RenderProcessHostImpl> weak_host,
         std::unique_ptr<service_manager::BinderRegistry> binders,
         mojo::PendingReceiver<mojom::ChildProcessHost> host_receiver);
+
     ~IOThreadHostImpl() override;
 
     IOThreadHostImpl(const IOThreadHostImpl& other) = delete;
@@ -968,7 +976,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
         base::WeakPtr<RenderProcessHostImpl> weak_host,
         mojo::GenericPendingReceiver receiver);
 
-    const int render_process_id_;
+    const ChildProcessId render_process_id_;
     const base::WeakPtr<RenderProcessHostImpl> weak_host_;
     std::unique_ptr<service_manager::BinderRegistry> binders_;
     mojo::Receiver<mojom::ChildProcessHost> receiver_{this};
@@ -1170,7 +1178,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void PopulateTerminationInfoRendererFields(ChildProcessTerminationInfo* info);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  static void OnMojoError(int render_process_id, const std::string& error);
+  static void OnMojoError(ChildProcessId render_process_id,
+                          const std::string& error);
 
   template <typename InterfaceType>
   using AddReceiverCallback =
@@ -1332,7 +1341,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   std::unique_ptr<ChildProcessLauncher> child_process_launcher_;
 
   // The globally-unique identifier for this RenderProcessHost.
-  const int id_;
+  const ChildProcessId id_;
 
   // This field is not a raw_ptr<> because problems related to passing to a
   // templated && parameter, which is later forwarded to something that doesn't
