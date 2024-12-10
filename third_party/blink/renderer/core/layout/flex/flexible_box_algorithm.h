@@ -111,8 +111,6 @@ class FlexItem {
 
   ItemPosition Alignment() const;
 
-  bool MainAxisIsInlineAxis() const;
-
   // Returns the main-start margin value.
   LayoutUnit FlowAwareMarginStart() const;
   // Returns the main-end margin value.

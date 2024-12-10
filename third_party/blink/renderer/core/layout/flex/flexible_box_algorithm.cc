@@ -109,10 +109,6 @@ FlexItem::FlexItem(const FlexibleBoxAlgorithm* algorithm,
       << "Use LayoutUnit::Max() for no max size";
 }
 
-bool FlexItem::MainAxisIsInlineAxis() const {
-  return algorithm_->IsHorizontalFlow() == style_->IsHorizontalWritingMode();
-}
-
 LayoutUnit FlexItem::FlowAwareMarginStart() const {
   switch (algorithm_->MainAxisDirection()) {
     case PhysicalDirection::kUp:

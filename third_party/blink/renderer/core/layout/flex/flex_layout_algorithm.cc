@@ -1123,17 +1123,18 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
       //    fragment)
       if (DoesItemStretch(flex_item.ng_input_node_) &&
           flex_item.layout_result_) {
-        DCHECK(!flex_item.MainAxisIsInlineAxis());
-        BoxStrut border = ComputeBorders(child_space, flex_item.ng_input_node_);
-        BoxStrut padding =
-            ComputePadding(child_space, flex_item.ng_input_node_.Style());
+        const auto& item_style = flex_item.ng_input_node_.Style();
+        DCHECK_NE(is_horizontal_flow_, item_style.IsHorizontalWritingMode());
+        const BoxStrut border_padding =
+            ComputeBorders(child_space, flex_item.ng_input_node_) +
+            ComputePadding(child_space, item_style);
         if (flex_item.ng_input_node_.IsReplaced()) {
           LogicalSize logical_border_box_size = ComputeReplacedSize(
-              flex_item.ng_input_node_, child_space, border + padding);
+              flex_item.ng_input_node_, child_space, border_padding);
           flex_item.cross_axis_size_ = logical_border_box_size.inline_size;
         } else {
           flex_item.cross_axis_size_ = ComputeInlineSizeForFragment(
-              child_space, flex_item.ng_input_node_, border + padding);
+              child_space, flex_item.ng_input_node_, border_padding);
         }
       } else if (is_computing_multiline_column_intrinsic_size) {
         flex_item.cross_axis_size_ = *flex_item.max_content_contribution_;
