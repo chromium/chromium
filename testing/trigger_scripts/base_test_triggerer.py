@@ -125,8 +125,11 @@ class BaseTestTriggerer(object):  # pylint: disable=useless-object-inheritance
             additional_args += shard_map_args
         return additional_args
 
+    # Overridden by subclasses.
+    # pylint: disable=no-self-use
     def append_additional_args(self, args, shard_index):
         """ Gives subclasses ability to append additional args if necessary
+    # pylint: enable=no-self-use
 
     Base class just returns given args."""
         del shard_index  # unused
@@ -150,6 +153,8 @@ class BaseTestTriggerer(object):  # pylint: disable=useless-object-inheritance
         if not all(isinstance(entry, dict) for entry in self._bot_configs):
             raise ValueError('Bot configurations must all be dictionaries')
 
+    # Overridden for testing.
+    # pylint: disable=no-self-use
     def list_bots(self, dimensions, server='chromium-swarm.appspot.com'):
         """List bots having specified bot dimensions.
 
@@ -170,7 +175,10 @@ class BaseTestTriggerer(object):  # pylint: disable=useless-object-inheritance
             subprocess.check_call(args)
             with open(result_json.name) as f:
                 return json.load(f)
+    # pylint: enable=no-self-use
 
+    # Overridden for testing.
+    # pylint: disable=no-self-use
     def list_tasks(self, tags, limit=None, server='chromium-swarm.appspot.com'):
         """List bots having specified task tags.
 
@@ -199,33 +207,43 @@ class BaseTestTriggerer(object):  # pylint: disable=useless-object-inheritance
             subprocess.check_call(args)
             with open(result_json.name) as f:
                 return json.load(f)
+    # pylint: enable=no-self-use
 
-    def remove_swarming_dimension(self, args, dimension):
-        for i, argument in enumerate(args):
-            if argument == '--dimension' and args[i + 1] == dimension:
-                return args[:i] + args[i + 3:]
-        return args
-
+    # Overridden for testing.
+    # pylint: disable=no-self-use
     def make_temp_file(self, prefix=None, suffix=None):
         # This trick of closing the file handle is needed on Windows in order to
         # make the file writeable.
         h, temp_file = tempfile.mkstemp(prefix=prefix, suffix=suffix)
         os.close(h)
         return temp_file
+    # pylint: enable=no-self-use
 
+    # Overridden for testing.
+    # pylint: disable=no-self-use
     def delete_temp_file(self, temp_file):
         os.remove(temp_file)
+    # pylint: enable=no-self-use
 
+    # Overridden for testing.
+    # pylint: disable=no-self-use
     def read_json_from_temp_file(self, temp_file):
         with open(temp_file) as f:
             return json.load(f)
+    # pylint: enable=no-self-use
 
+    # Overridden for testing.
+    # pylint: disable=no-self-use
     def read_encoded_json_from_temp_file(self, temp_file):
         return strip_unicode(self.read_json_from_temp_file(temp_file))
+    # pylint: enable=no-self-use
 
+    # Overridden for testing.
+    # pylint: disable=no-self-use
     def write_json_to_file(self, merged_json, output_file):
         with open(output_file, 'w') as f:
             json.dump(merged_json, f)
+    # pylint: enable=no-self-use
 
     def run_swarming_go(self,
                         args,
@@ -273,13 +291,6 @@ class BaseTestTriggerer(object):  # pylint: disable=useless-object-inheritance
         # bot_config_index is an index into self._bot_configs
         pass
 
-    def indices_to_trigger(self, args):
-        """Returns the indices of the swarming shards that should be
-        triggered."""
-        if args.shard_index is None:
-            return list(range(args.shards))
-        return [args.shard_index]
-
     def generate_shard_map(self, args, buildername, selected_config):
         """Returns shard map generated on runtime if needed."""
         pass  # pylint: disable=unnecessary-pass
@@ -314,7 +325,7 @@ class BaseTestTriggerer(object):  # pylint: disable=useless-object-inheritance
         filtered_remaining_args = copy.deepcopy(remaining)
         for config in self._bot_configs:
             for k in config.keys():
-                filtered_remaining_args = self.remove_swarming_dimension(
+                filtered_remaining_args = remove_swarming_dimension(
                     filtered_remaining_args, k)
         # crbug/1140389: debug print outs
         logging.info('DEBUG: After filtered: %s', filtered_remaining_args)
@@ -323,8 +334,7 @@ class BaseTestTriggerer(object):  # pylint: disable=useless-object-inheritance
         #pylint: disable=assignment-from-no-return
         selected_config = self.select_config_indices(args)
         shard_map = self.generate_shard_map(
-            args, self._findBuilderName(filtered_remaining_args),
-            selected_config)
+            args, _findBuilderName(filtered_remaining_args), selected_config)
         #pylint: enable=assignment-from-no-return
         # Choose selected configs for this run of the test suite.
         for shard_index, bot_index in selected_config:
@@ -354,16 +364,6 @@ class BaseTestTriggerer(object):  # pylint: disable=useless-object-inheritance
                 self.delete_temp_file(json_temp)
         self.write_json_to_file(merged_json, args.dump_json)
         return 0
-
-    # pylint: disable=inconsistent-return-statements
-    def _findBuilderName(self, args):
-        args_length = len(args)
-        for i in range(args_length):
-            if (args[i] == '--tag' and i < args_length - 1
-                    and args[i + 1].startswith('buildername:')):
-                return args[i + 1].split(':', 1)[1]
-
-    # pylint: enable=inconsistent-return-statements
 
     @staticmethod
     def setup_parser_contract(parser):
@@ -397,3 +397,27 @@ class BaseTestTriggerer(object):  # pylint: disable=useless-object-inheritance
                             help='Which shard to trigger. Duplicated from the '
                             '`swarming.py trigger` command.')
         return parser
+
+
+def remove_swarming_dimension(args, dimension):
+    for i, argument in enumerate(args):
+        if argument == '--dimension' and args[i + 1] == dimension:
+            return args[:i] + args[i + 3:]
+    return args
+
+
+def indices_to_trigger(args):
+    """Returns the indices of the swarming shards that should be
+    triggered."""
+    if args.shard_index is None:
+        return list(range(args.shards))
+    return [args.shard_index]
+
+
+def _findBuilderName(args):
+    args_length = len(args)
+    for i in range(args_length):
+        if (args[i] == '--tag' and i < args_length - 1
+                and args[i + 1].startswith('buildername:')):
+            return args[i + 1].split(':', 1)[1]
+    return None

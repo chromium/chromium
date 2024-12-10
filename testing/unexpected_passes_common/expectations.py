@@ -155,6 +155,8 @@ class Expectations(object):
   def __init__(self):
     self._cached_tag_groups = {}
 
+  # Overridden by subclasses.
+  # pylint: disable=no-self-use
   def CreateTestExpectationMap(
       self, expectation_files: Optional[Union[str, List[str]]],
       tests: Optional[Iterable[str]],
@@ -208,8 +210,8 @@ class Expectations(object):
       for ef in expectation_files:
         # Normalize to '/' as the path separator.
         expectation_file_name = os.path.normpath(ef).replace(os.path.sep, '/')
-        content = self._GetNonRecentExpectationContent(expectation_file_name,
-                                                       grace_period)
+        content = _GetNonRecentExpectationContent(expectation_file_name,
+                                                  grace_period)
         AddContentToMap(content, expectation_map, expectation_file_name)
     else:
       expectation_file_name = ''
@@ -219,60 +221,7 @@ class Expectations(object):
       AddContentToMap(content, expectation_map, expectation_file_name)
 
     return expectation_map
-
-  def _GetNonRecentExpectationContent(self, expectation_file_path: str,
-                                      num_days: datetime.timedelta) -> str:
-    """Gets content from |expectation_file_path| older than |num_days| days.
-
-    Args:
-      expectation_file_path: A string containing a filepath pointing to an
-          expectation file.
-      num_days: A datetime.timedelta containing how old an expectation in the
-          given expectation file must be to be included.
-
-    Returns:
-      The contents of the expectation file located at |expectation_file_path|
-      as a string with any recent expectations removed.
-    """
-    content = ''
-    # `git blame` output is normally in the format:
-    # revision optional_filename (author date time timezone lineno) line_content
-    # The --porcelain option is meant to be more machine readable, but is much
-    # more difficult to parse for what we need to do here. In order to
-    # guarantee that the filename won't be included in the output (by default,
-    # it will be shown if there is content from a renamed file), pass -c to
-    # use the same format as `git annotate`, which is:
-    # revision (author date time timezone lineno)line_content
-    # (Note the lack of space between the ) and the content).
-    cmd = ['git', 'blame', '-c', expectation_file_path]
-    with open(os.devnull, 'w', newline='', encoding='utf-8') as devnull:
-      blame_output = subprocess.check_output(cmd,
-                                             stderr=devnull).decode('utf-8')
-    for line in blame_output.splitlines(True):
-      match = GIT_BLAME_REGEX.match(line)
-      assert match
-      date = match.groupdict()['date']
-      line_content = match.groupdict()['content']
-      stripped_line_content = line_content.strip()
-      # Auto-add comments and blank space, otherwise only add if the grace
-      # period has expired.
-      if not stripped_line_content or stripped_line_content.startswith('#'):
-        content += line_content
-      else:
-        if six.PY2:
-          date_parts = date.split('-')
-          date = datetime.date(year=int(date_parts[0]),
-                               month=int(date_parts[1]),
-                               day=int(date_parts[2]))
-        else:
-          date = datetime.date.fromisoformat(date)
-        date_diff = datetime.date.today() - date
-        if date_diff > num_days:
-          content += line_content
-        else:
-          logging.debug('Omitting expectation %s because it is too new',
-                        line_content.rstrip())
-    return content
+  # pylint: enable=no-self-use
 
   def RemoveExpectationsFromFile(self,
                                  expectations: List[data_types.Expectation],
@@ -511,14 +460,6 @@ class Expectations(object):
     """
     raise NotImplementedError()
 
-  def ParseTaggedTestListContent(self, content: str
-                                 ) -> expectations_parser.TaggedTestListParser:
-    """Helper to parse typ expectation files.
-
-    This allows subclasses to avoid adding typ to PYTHONPATH.
-    """
-    return expectations_parser.TaggedTestListParser(content)
-
   def FilterToKnownTags(self, tags: Iterable[str]) -> Set[str]:
     """Filters |tags| to only include tags known to expectation files.
 
@@ -596,14 +537,17 @@ class Expectations(object):
         filtered_tags.add(tag_group[best_index])
     return frozenset(filtered_tags)
 
-  def _ConsolidateKnownOverlappingTags(self, typ_tags: FrozenSet[str]
-                                       ) -> FrozenSet[str]:
+  # Overridden by subclasses.
+  # pylint: disable=no-self-use
+  def _ConsolidateKnownOverlappingTags(
+      self, typ_tags: FrozenSet[str]) -> FrozenSet[str]:
     """Consolidates tags that are known to overlap/cause issues.
 
     One known example of this would be dual GPU machines that report tags for
     both GPUs.
     """
     return typ_tags
+  # pylint: enable=no-self-use
 
   def NarrowSemiStaleExpectationScope(
       self, stale_expectation_map: data_types.TestExpectationMap) -> Set[str]:
@@ -825,6 +769,15 @@ class Expectations(object):
     raise NotImplementedError()
 
 
+def ParseTaggedTestListContent(
+    content: str) -> expectations_parser.TaggedTestListParser:
+  """Helper to parse typ expectation files.
+
+  This allows subclasses to avoid adding typ to PYTHONPATH.
+  """
+  return expectations_parser.TaggedTestListParser(content)
+
+
 def _LineContainsGroupStartComment(line: str) -> bool:
   return FINDER_GROUP_COMMENT_START in line
 
@@ -947,6 +900,60 @@ def _ExpectationPartOfNonRemovableGroup(
   all_expectations_in_group = group_to_expectations[group_name]
   group_removable = all_expectations_in_group <= removable_expectations
   return not group_removable
+
+
+def _GetNonRecentExpectationContent(expectation_file_path: str,
+                                    num_days: datetime.timedelta) -> str:
+  """Gets content from |expectation_file_path| older than |num_days| days.
+
+  Args:
+    expectation_file_path: A string containing a filepath pointing to an
+        expectation file.
+    num_days: A datetime.timedelta containing how old an expectation in the
+        given expectation file must be to be included.
+
+  Returns:
+    The contents of the expectation file located at |expectation_file_path|
+    as a string with any recent expectations removed.
+  """
+  content = ''
+  # `git blame` output is normally in the format:
+  # revision optional_filename (author date time timezone lineno) line_content
+  # The --porcelain option is meant to be more machine readable, but is much
+  # more difficult to parse for what we need to do here. In order to
+  # guarantee that the filename won't be included in the output (by default,
+  # it will be shown if there is content from a renamed file), pass -c to
+  # use the same format as `git annotate`, which is:
+  # revision (author date time timezone lineno)line_content
+  # (Note the lack of space between the ) and the content).
+  cmd = ['git', 'blame', '-c', expectation_file_path]
+  with open(os.devnull, 'w', newline='', encoding='utf-8') as devnull:
+    blame_output = subprocess.check_output(cmd, stderr=devnull).decode('utf-8')
+  for line in blame_output.splitlines(True):
+    match = GIT_BLAME_REGEX.match(line)
+    assert match
+    date = match.groupdict()['date']
+    line_content = match.groupdict()['content']
+    stripped_line_content = line_content.strip()
+    # Auto-add comments and blank space, otherwise only add if the grace
+    # period has expired.
+    if not stripped_line_content or stripped_line_content.startswith('#'):
+      content += line_content
+    else:
+      if six.PY2:
+        date_parts = date.split('-')
+        date = datetime.date(year=int(date_parts[0]),
+                             month=int(date_parts[1]),
+                             day=int(date_parts[2]))
+      else:
+        date = datetime.date.fromisoformat(date)
+      date_diff = datetime.date.today() - date
+      if date_diff > num_days:
+        content += line_content
+      else:
+        logging.debug('Omitting expectation %s because it is too new',
+                      line_content.rstrip())
+  return content
 
 
 def _RemoveStaleComments(content: str, removed_lines: Set[int],

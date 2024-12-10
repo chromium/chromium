@@ -108,8 +108,10 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     mock_pathlib_exists.return_value = True
     expected_file = str(run_performance_tests.SHARD_MAPS_DIR / 'file')
 
-    run_performance_tests.load_map_file('file', 'dir')
+    content = run_performance_tests.load_map_file('file', 'dir')
 
+    self.assertIsInstance(content, dict)
+    self.assertEqual(content['foo'], 1)
     mock_copy_map_file_to_out_dir.assert_called_with(expected_file, 'dir')
 
   @mock.patch.object(os.path, 'exists')
@@ -136,6 +138,7 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     self.assertEqual(content['foo'], 1)
     mock_copy_map_file_to_out_dir.assert_called_with(mock.ANY, 'dir')
 
+  # pylint: disable=no-self-use
   @mock.patch.object(os.path, 'exists')
   @mock.patch.object(shutil, 'copyfile')
   def testCopyMapFileToOutDirSuccess(self, mock_copyfile, mock_exists):
@@ -143,14 +146,16 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     run_performance_tests.copy_map_file_to_out_dir('file', 'dir')
 
     mock_copyfile.assert_called_with('file', 'dir/benchmarks_shard_map.json')
+  # pylint: enable=no-self-use
 
   @mock.patch.object(run_performance_tests.CrossbenchTest, 'execute_benchmark')
   def testCrossbenchTestBenchmarksArg(self, mock_execute_benchmark):
-    fake_args = self._create_crossbench_args()
+    fake_args = _create_crossbench_args()
     options = run_performance_tests.parse_arguments(fake_args)
 
-    run_performance_tests.CrossbenchTest(options, 'dir').execute()
+    rc = run_performance_tests.CrossbenchTest(options, 'dir').execute()
 
+    self.assertEqual(rc, 0)
     mock_execute_benchmark.assert_called_with('speedometer_3.0',
                                               'speedometer3.crossbench', [])
 
@@ -184,8 +189,9 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     ]
     expected_options = run_performance_tests.parse_arguments(fake_args[1:])
 
-    run_performance_tests.main(fake_args)
+    rc = run_performance_tests.main(fake_args)
 
+    self.assertEqual(rc, 0)
     mock_load_map_file.assert_called_with('foo', 'dir')
     mock_run_benchmarks_on_shardmap.assert_called_with('map_file',
                                                        expected_options, 'dir',
@@ -205,8 +211,9 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     ]
     expected_options = run_performance_tests.parse_arguments(fake_args[1:])
 
-    run_performance_tests.main(fake_args)
+    rc = run_performance_tests.main(fake_args)
 
+    self.assertEqual(rc, 0)
     mock_load_map_string.assert_called_with('json', 'dir')
     mock_run_benchmarks_on_shardmap.assert_called_with('map_string',
                                                        expected_options, 'dir',
@@ -307,7 +314,7 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
          mock.call('b2', 'display2', [])])
 
   def testCrossbenchGetNetworkArgWithNetwork(self):
-    fake_args = self._create_crossbench_args() + ['--network=foo']
+    fake_args = _create_crossbench_args() + ['--network=foo']
     options = run_performance_tests.parse_arguments(fake_args)
     expected_network = ['--network=foo']
 
@@ -316,7 +323,7 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     self.assertEqual(crosebench_test.network, expected_network)
 
   def testCrossbenchGetDefaultFileServer(self):
-    fake_args = self._create_crossbench_args() + ['--fileserver']
+    fake_args = _create_crossbench_args() + ['--fileserver']
     options = run_performance_tests.parse_arguments(fake_args)
     src_dir = run_performance_tests.CHROMIUM_SRC_DIR
     local_fileserver = str(src_dir / 'third_party/speedometer/v3.0')
@@ -332,7 +339,7 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     self.assertDictEqual(network_dict, expected_dict)
 
   def testCrossbenchGetTargetFileServer(self):
-    fake_args = self._create_crossbench_args() + ['--fileserver=foo']
+    fake_args = _create_crossbench_args() + ['--fileserver=foo']
     options = run_performance_tests.parse_arguments(fake_args)
     src_dir = run_performance_tests.CHROMIUM_SRC_DIR
     local_fileserver = str(src_dir / 'foo')
@@ -350,7 +357,7 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
   @mock.patch.object(binary_manager, 'FetchPath')
   def testCrossbenchGetDefaultWpr(self, mock_fetch_path):
     mock_fetch_path.return_value = 'wpr_go_path'
-    fake_args = self._create_crossbench_args() + ['--wpr']
+    fake_args = _create_crossbench_args() + ['--wpr']
     options = run_performance_tests.parse_arguments(fake_args)
     data_dir = run_performance_tests.PAGE_SETS_DATA
     archive = str(data_dir / 'crossbench_android_speedometer_3.0_000.wprgo')
@@ -368,7 +375,7 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
   @mock.patch.object(binary_manager, 'FetchPath')
   def testCrossbenchGetTargetWpr(self, mock_fetch_path):
     mock_fetch_path.return_value = 'wpr_go_path'
-    fake_args = self._create_crossbench_args() + ['--wpr=foo']
+    fake_args = _create_crossbench_args() + ['--wpr=foo']
     options = run_performance_tests.parse_arguments(fake_args)
     data_dir = run_performance_tests.PAGE_SETS_DATA
     archive = str(data_dir / 'foo')
@@ -383,11 +390,12 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     network_dict = json.loads(crosebench_test.network[0].split('=', 1)[1])
     self.assertDictEqual(network_dict, expected_dict)
 
-  def _create_crossbench_args(self, browser='./chrome'):
-    return [
-        './cp.py',
-        '--isolated-script-test-output=output',
-        '--benchmarks=speedometer_3.0',
-        '--benchmark-display-name=speedometer3.crossbench',
-        f'--browser={browser}',
-    ]
+
+def _create_crossbench_args(browser='./chrome'):
+  return [
+      './cp.py',
+      '--isolated-script-test-output=output',
+      '--benchmarks=speedometer_3.0',
+      '--benchmark-display-name=speedometer3.crossbench',
+      f'--browser={browser}',
+  ]

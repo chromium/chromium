@@ -56,26 +56,21 @@ class UploadTestResultArtifactsTest(unittest.TestCase):
       }
     }
 
-  def _loadTest(self, json_data, upload):
-    return upload_test_result_artifacts.upload_artifacts(
-        json_data, '/tmp', upload, 'test-bucket')
-
-
   def loadTestEndToEndSimple(self):
     test_data = self.makeTestJson(1, 10)
-    print(self._loadTest(test_data, False))
+    print(_loadTest(test_data, False))
 
   def loadTestEndToEndManySmall(self):
     test_data = self.makeTestJson(1000, 10)
-    self._loadTest(test_data, False)
+    _loadTest(test_data, False)
 
   def loadTestEndToEndSomeBig(self):
     test_data = self.makeTestJson(100, 10000000)
-    self._loadTest(test_data, False)
+    _loadTest(test_data, False)
 
   def loadTestEndToEndVeryBig(self):
     test_data = self.makeTestJson(2, 1000000000)
-    self._loadTest(test_data, False)
+    _loadTest(test_data, False)
 
   ### End load test section.
 
@@ -301,6 +296,12 @@ class UploadTestResultArtifactsTest(unittest.TestCase):
     self.assertEqual(
         upload_test_result_artifacts.get_file_digest(path),
         '86f7e437faa5a7fce15d1ddcb9eaeaea377667b8')
+
+
+def _loadTest(json_data, upload):
+  return upload_test_result_artifacts.upload_artifacts(json_data, '/tmp',
+                                                       upload, 'test-bucket')
+
 
 if __name__ == '__main__':
   unittest.main()

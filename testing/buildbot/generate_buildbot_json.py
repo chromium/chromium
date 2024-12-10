@@ -24,6 +24,9 @@ import buildbot_json_magic_substitutions as magic_substitutions
 
 # pylint: disable=super-with-arguments,useless-super-delegation
 
+# Disabled instead of fixing to avoid a large amount of churn.
+# pylint: disable=no-self-use
+
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 BROWSER_CONFIG_TO_TARGET_SUFFIX_MAP = {

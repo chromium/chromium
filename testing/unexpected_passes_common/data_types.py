@@ -509,6 +509,8 @@ class BaseTestExpectationMap(BaseTypedMap):
               self._AddSingleResult(r, stats)
     return matched_results
 
+  # Overridden by subclasses.
+  # pylint: disable=no-self-use
   def _AddSingleResult(self, result: BaseResult, stats: BaseBuildStats) -> None:
     """Adds |result| to |self|.
 
@@ -520,6 +522,7 @@ class BaseTestExpectationMap(BaseTypedMap):
       stats.AddPassedBuild(result.tags)
     else:
       stats.AddFailedBuild(result.build_id, result.tags)
+  # pylint: enable=no-self-use
 
   def SplitByStaleness(
       self) -> Tuple['BaseTestExpectationMap', 'BaseTestExpectationMap',
@@ -603,8 +606,10 @@ class BaseTestExpectationMap(BaseTypedMap):
                                     [FULL_PASS, PARTIAL_PASS, NEVER_PASS])
     return stale_dict, semi_stale_dict, active_dict
 
-  def _ShouldTreatSemiStaleAsActive(self, pass_map: Dict[int, 'BuilderStepMap']
-                                    ) -> bool:
+  # Overridden by subclasses.
+  # pylint: disable=no-self-use
+  def _ShouldTreatSemiStaleAsActive(
+      self, pass_map: Dict[int, 'BuilderStepMap']) -> bool:
     """Check if a semi-stale expectation should be treated as active.
 
     Allows for implementation-specific workarounds.
@@ -619,6 +624,7 @@ class BaseTestExpectationMap(BaseTypedMap):
     """
     del pass_map
     return False
+  # pylint: enable=no-self-use
 
   def FilterOutUnusedExpectations(self) -> Dict[str, List[BaseExpectation]]:
     """Filters out any unused Expectations from stored data.

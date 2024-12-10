@@ -252,14 +252,18 @@ class GtestCommandGenerator(object):
       return ['--gtest_filter=' + ':'.join(filter_list)]
     return []
 
+  # pylint: disable=no-self-use
   def _generate_repeat_args(self):
     # TODO(crbug.com/40608634): Support --isolated-script-test-repeat.
     return []
+  # pylint: enable=no-self-use
 
+  # pylint: disable=no-self-use
   def _generate_also_run_disabled_tests_args(self):
     # TODO(crbug.com/40608634): Support
     # --isolated-script-test-also-run-disabled-tests.
     return []
+  # pylint: enable=no-self-use
 
   def _generate_output_args(self, output_dir):
     output_args = []
@@ -515,7 +519,7 @@ class TelemetryCommandGenerator(object):
         selection_args.append('--story-shard-end-index=%d' %
                               (self._story_selection_config['end']))
       if 'sections' in self._story_selection_config:
-        range_string = self._generate_story_index_ranges(
+        range_string = _generate_story_index_ranges(
             self._story_selection_config['sections'])
         if range_string:
           selection_args.append('--story-shard-indexes=%s' % range_string)
@@ -529,26 +533,6 @@ class TelemetryCommandGenerator(object):
           self._options.isolated_script_test_output)
       return ['--logs-dir', os.path.join(isolated_out_dir, self.benchmark)]
     return []
-
-  def _generate_story_index_ranges(self, sections):
-    range_string = ''
-    for section in sections:
-      begin = section.get('begin', '')
-      end = section.get('end', '')
-      # If there only one story in the range, we only keep its index.
-      # In general, we expect either begin or end, or both.
-      if begin != '' and end != '' and end - begin == 1:
-        new_range = str(begin)
-      elif begin != '' or end != '':
-        new_range = '%s-%s' % (str(begin), str(end))
-      else:
-        raise ValueError('Index ranges in "sections" in shard map should have'
-                         'at least one of "begin" and "end": %s' % str(section))
-      if range_string:
-        range_string += ',%s' % new_range
-      else:
-        range_string = new_range
-    return range_string
 
   def _generate_reference_build_args(self):
     if self._is_reference:
@@ -564,6 +548,27 @@ class TelemetryCommandGenerator(object):
     if self._options.results_label:
       return ['--results-label=' + self._options.results_label]
     return []
+
+
+def _generate_story_index_ranges(sections):
+  range_string = ''
+  for section in sections:
+    begin = section.get('begin', '')
+    end = section.get('end', '')
+    # If there only one story in the range, we only keep its index.
+    # In general, we expect either begin or end, or both.
+    if begin != '' and end != '' and end - begin == 1:
+      new_range = str(begin)
+    elif begin != '' or end != '':
+      new_range = '%s-%s' % (str(begin), str(end))
+    else:
+      raise ValueError('Index ranges in "sections" in shard map should have'
+                       'at least one of "begin" and "end": %s' % str(section))
+    if range_string:
+      range_string += ',%s' % new_range
+    else:
+      range_string = new_range
+  return range_string
 
 
 def execute_telemetry_benchmark(command_generator,
@@ -727,22 +732,18 @@ class CrossbenchTest(object):
   def __init__(self, options, isolated_out_dir):
     self.options = options
     self.isolated_out_dir = isolated_out_dir
-    browser_arg = self._get_browser_arg(options.passthrough_args)
-    self.is_android = self._is_android(browser_arg)
+    browser_arg = _get_browser_arg(options.passthrough_args)
+    self.is_android = _is_android(browser_arg)
     self._find_browser(browser_arg)
     self.driver_path_arg = self._find_chromedriver(browser_arg)
     self.network = self._get_network_arg(options.passthrough_args)
 
-  def _get_browser_arg(self, args):
-    browser_arg = self._get_arg(args, '--browser=', must_exists=True)
-    return browser_arg.split('=', 1)[1]
-
   def _get_network_arg(self, args):
-    if _arg := self._get_arg(args, '--network='):
+    if _arg := _get_arg(args, '--network='):
       return [_arg]
-    if _arg := self._get_arg(args, '--fileserver'):
+    if _arg := _get_arg(args, '--fileserver'):
       return self._create_fileserver_network(_arg)
-    if self._get_arg(args, '--wpr'):
+    if _get_arg(args, '--wpr'):
       return self._create_wpr_network(args)
     if self.options.benchmarks in self.BENCHMARK_FILESERVERS:
       # Use file server when it is available.
@@ -763,13 +764,13 @@ class CrossbenchTest(object):
     # Replacing --fileserver with --network.
     self.options.passthrough_args.remove(arg)
     return [
-        self._create_network_json('local',
-                                  path=fileserver_relative_path,
-                                  url='http://localhost:0')
+        _create_network_json('local',
+                             path=fileserver_relative_path,
+                             url='http://localhost:0')
     ]
 
   def _create_wpr_network(self, args):
-    wpr_arg = self._get_arg(args, '--wpr')
+    wpr_arg = _get_arg(args, '--wpr')
     if wpr_arg and '=' in wpr_arg:
       wpr_name = wpr_arg.split('=', 1)[1]
     else:
@@ -780,33 +781,7 @@ class CrossbenchTest(object):
     if wpr_arg:
       # Replacing --wpr with --network.
       self.options.passthrough_args.remove(wpr_arg)
-    return [self._create_network_json('wpr', path=archive, wpr_go_bin=wpr_go)]
-
-  def _create_network_json(self, config_type, path, url=None, wpr_go_bin=None):
-    network_dict = {'type': config_type}
-    network_dict['path'] = path
-    if url:
-      network_dict['url'] = url
-    if wpr_go_bin:
-      network_dict['wpr_go_bin'] = wpr_go_bin
-    network_json = json.dumps(network_dict)
-    return f'--network={network_json}'
-
-  def _get_arg(self, args, arg, must_exists=False):
-    if _args := [a for a in args if a.startswith(arg)]:
-      if len(_args) != 1:
-        raise ValueError(f'Expects exactly one {arg} on command line')
-      return _args[0]
-    if must_exists:
-      raise ValueError(f'{arg} argument is missing!')
-    return []
-
-  def _is_android(self, browser_arg):
-    """Is the test running on an Android device.
-
-    See third_party/catapult/telemetry/telemetry/internal/backends/android_browser_backend_settings.py  # pylint: disable=line-too-long
-    """
-    return browser_arg.lower().startswith('android')
+    return [_create_network_json('wpr', path=archive, wpr_go_bin=wpr_go)]
 
   def _find_browser(self, browser_arg):
     # Replacing --browser with the generated self.browser.
@@ -934,6 +909,40 @@ class CrossbenchTest(object):
         self.options.benchmarks,
         (self.options.benchmark_display_name or self.options.benchmarks),
         self.options.passthrough_args)
+
+
+def _create_network_json(config_type, path, url=None, wpr_go_bin=None):
+  network_dict = {'type': config_type}
+  network_dict['path'] = path
+  if url:
+    network_dict['url'] = url
+  if wpr_go_bin:
+    network_dict['wpr_go_bin'] = wpr_go_bin
+  network_json = json.dumps(network_dict)
+  return f'--network={network_json}'
+
+
+def _get_browser_arg(args):
+  browser_arg = _get_arg(args, '--browser=', must_exists=True)
+  return browser_arg.split('=', 1)[1]
+
+
+def _get_arg(args, arg, must_exists=False):
+  if _args := [a for a in args if a.startswith(arg)]:
+    if len(_args) != 1:
+      raise ValueError(f'Expects exactly one {arg} on command line')
+    return _args[0]
+  if must_exists:
+    raise ValueError(f'{arg} argument is missing!')
+  return []
+
+
+def _is_android(browser_arg):
+  """Is the test running on an Android device.
+
+  See third_party/catapult/telemetry/telemetry/internal/backends/android_browser_backend_settings.py  # pylint: disable=line-too-long
+  """
+  return browser_arg.lower().startswith('android')
 
 
 def parse_arguments(args):

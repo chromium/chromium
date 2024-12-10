@@ -314,6 +314,8 @@ class BigQueryQuerier:
     """
     raise NotImplementedError()
 
+  # Overridden by subclasses.
+  # pylint: disable=no-self-use
   def _ShouldSkipOverResult(self, result: QueryResult) -> bool:
     """Whether |result| should be ignored and skipped over.
 
@@ -325,6 +327,7 @@ class BigQueryQuerier:
     """
     del result
     return False
+  # pylint: enable=no-self-use
 
   def _StripPrefixFromTestId(self, test_id: str) -> str:
     """Strips the prefix from a test ID, leaving only the test case name.

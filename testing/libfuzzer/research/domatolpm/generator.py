@@ -188,6 +188,7 @@ class ProtoType:
   """Represents a Proto type."""
   name: str
 
+  @property
   def is_one_of(self) -> bool:
     return False
 
@@ -211,14 +212,17 @@ class OneOfProtoMessage(ProtoMessage):
   """Represents a Proto message with a oneof field."""
   oneofname: str
 
+  @property
   def is_one_of(self) -> bool:
     return True
 
 
 class CppExpression:
 
+  # pylint: disable=no-self-use
   def repr(self):
     raise Exception('Not implemented.')
+  # pylint: enable=no-self-use
 
 
 @dataclasses.dataclass
@@ -274,12 +278,15 @@ class CppFunctionHandler:
   name: str
   exprs: typing.List[CppExpression]
 
+  @property
   def is_oneof_handler(self) -> bool:
     return False
 
+  @property
   def is_string_table_handler(self) -> bool:
     return False
 
+  @property
   def is_message_handler(self) -> bool:
     return False
 
@@ -296,6 +303,7 @@ class CppStringTableHandler(CppFunctionHandler):
     self.strings = strings
     self.var_name = var_name
 
+  @property
   def is_string_table_handler(self) -> bool:
     return True
 
@@ -315,6 +323,7 @@ class CppProtoMessageFunctionHandler(CppFunctionHandler):
   def creates_new(self):
     return self.creator is not None
 
+  @property
   def is_message_handler(self) -> bool:
     return True
 
@@ -338,6 +347,7 @@ class CppOneOfMessageFunctionHandler(CppFunctionHandler):
     a = list(self.cases.keys())[-1]
     return self.cases[a]
 
+  @property
   def is_oneof_handler(self) -> bool:
     return True
 
@@ -527,6 +537,8 @@ class DomatoBuilder:
     for field in message.fields:
       self.backrefs[field.type.name].append(message.name)
 
+  # Handlers should be together even if some of them don't actually use self.
+  # pylint: disable=no-self-use
   def _int_handler(
       self, part,
       field_name: str) -> typing.Tuple[ProtoType, CppHandlerCallExpr]:
@@ -546,6 +558,16 @@ class DomatoBuilder:
                                   extra_args=extra_args)
     return proto_type, contents
 
+  def _default_handler(
+      self, part,
+      field_name: str) -> typing.Tuple[ProtoType, CppHandlerCallExpr]:
+    proto_type = DOMATO_TO_PROTO_BUILT_IN[part['tagname']]
+    handler = DOMATO_TO_CPP_HANDLERS[part['tagname']]
+    contents = CppHandlerCallExpr(handler=handler, field_name=field_name)
+    return proto_type, contents
+
+  # pylint: enable=no-self-use
+
   def _lines_handler(
       self, part,
       field_name: str) -> typing.Tuple[ProtoType, CppHandlerCallExpr]:
@@ -557,14 +579,6 @@ class DomatoBuilder:
     proto_type = handler_name
     contents = CppHandlerCallExpr(handler=f'handle_{handler_name}',
                                   field_name=field_name)
-    return proto_type, contents
-
-  def _default_handler(
-      self, part,
-      field_name: str) -> typing.Tuple[ProtoType, CppHandlerCallExpr]:
-    proto_type = DOMATO_TO_PROTO_BUILT_IN[part['tagname']]
-    handler = DOMATO_TO_CPP_HANDLERS[part['tagname']]
-    contents = CppHandlerCallExpr(handler=handler, field_name=field_name)
     return proto_type, contents
 
   def _parse_rule(self, creator_name, rules):
@@ -665,7 +679,7 @@ class DomatoBuilder:
     for name in self.handlers:
       msg = self.handlers[name].msg
       func = self.handlers[name].func
-      if msg.is_one_of() or not func.is_message_handler() or func.creates_new(
+      if msg.is_one_of or not func.is_message_handler or func.creates_new(
       ) or name == self.root:
         continue
       if name not in self.backrefs:
@@ -673,7 +687,7 @@ class DomatoBuilder:
       for elt in self.backrefs[name]:
         if elt == name or elt not in self.handlers:
           continue
-        if self.handlers[elt].msg.is_one_of():
+        if self.handlers[elt].msg.is_one_of:
           continue
         to_merge[elt].add(name)
 
@@ -714,7 +728,7 @@ class DomatoBuilder:
     generated.
     """
     for entry in self.handlers.values():
-      if entry.msg.is_one_of() or entry.func.is_string_table_handler():
+      if entry.msg.is_one_of or entry.func.is_string_table_handler:
         continue
       for proto_id, field in enumerate(entry.msg.fields, start=1):
         field.proto_id = proto_id
@@ -740,7 +754,7 @@ class DomatoBuilder:
     generated.
     """
     for entry in self.handlers.values():
-      if not entry.msg.is_one_of():
+      if not entry.msg.is_one_of:
         continue
       cases = {}
       for proto_id, field in enumerate(entry.msg.fields, start=1):
@@ -763,12 +777,12 @@ class DomatoBuilder:
     for name in list(self.handlers.keys()):
       msg = self.handlers[name].msg
 
-      if not msg.is_one_of():
+      if not msg.is_one_of:
         continue
 
       if not all(f.type.name in self.handlers and len(self.handlers[
           f.type.name].msg.fields) == 0 and not self.handlers[f.type.name].msg.
-                 is_one_of() and len(self.handlers[f.type.name].func.exprs) == 1
+                 is_one_of and len(self.handlers[f.type.name].func.exprs) == 1
                  for f in msg.fields):
         continue
 
@@ -809,7 +823,7 @@ class DomatoBuilder:
         _terminal_messages.add(name)
         _being_visited.remove(name)
         return True
-      if msg.is_one_of():
+      if msg.is_one_of:
         f = next(
             (f for f in msg.fields if recursive_terminal_marker(f.type.name)),
             None)
@@ -837,7 +851,7 @@ class DomatoBuilder:
     for name in list(self.handlers.keys()):
       msg = self.handlers[name].msg
       func = self.handlers[name].func
-      if not msg.is_one_of():
+      if not msg.is_one_of:
         continue
 
       for field in msg.fields:
@@ -845,9 +859,8 @@ class DomatoBuilder:
           continue
         field_msg = self.handlers[field.type.name].msg
         field_func = self.handlers[field.type.name].func
-        if field_msg.is_one_of() or len(
-            field_msg.fields) != 1 or not field_func.is_message_handler(
-            ) or field_func.creates_new():
+        if (field_msg.is_one_of or len(field_msg.fields) != 1
+            or not field_func.is_message_handler or field_func.creates_new()):
           continue
         func.cases.pop(field.name)
         field.name = field_msg.fields[0].name
@@ -883,7 +896,7 @@ class DomatoBuilder:
       msg = self.handlers[name].msg
       func = self.handlers[name].func
 
-      if not msg.is_one_of() or len(msg.fields) > 1:
+      if not msg.is_one_of or len(msg.fields) > 1:
         continue
 
       # The message is a unary oneof. Let's make sure it's only child doesn't
@@ -895,7 +908,7 @@ class DomatoBuilder:
       # somewhere else.
       assert name in self.backrefs[msg.fields[0].type.name]
       field_msg: ProtoMessage = self.handlers[msg.fields[0].type.name].msg
-      if field_msg.is_one_of():
+      if field_msg.is_one_of:
         continue
 
       field_func = self.handlers[msg.fields[0].type.name].func
@@ -918,7 +931,7 @@ class DomatoBuilder:
     has_made_changes = False
     for name in self.handlers:
       func: CppFunctionHandler = self.handlers[name].func
-      if not func.is_message_handler() or len(func.exprs) <= 1:
+      if not func.is_message_handler or len(func.exprs) <= 1:
         continue
 
       exprs = []
@@ -965,7 +978,7 @@ class DomatoBuilder:
     return len(to_remove) > 0
 
   def _split_oneof_internal(self, entry):
-    assert entry.msg.is_one_of()
+    assert entry.msg.is_one_of
     low_name = self.create_internal_message()
     high_name = self.create_internal_message()
     fields_low = copy.copy(entry.msg.fields[:len(entry.msg.fields) // 2])
@@ -1018,7 +1031,7 @@ class DomatoBuilder:
     """Splits oneofs that are too big and that would grow protobuf files.
     """
     for entry in self.handlers.values():
-      if entry.msg.is_one_of() and len(entry.msg.fields) > 200:
+      if entry.msg.is_one_of and len(entry.msg.fields) > 200:
         self._split_oneof_internal(entry)
         return True
     return False
@@ -1071,7 +1084,7 @@ class DomatoBuilder:
     return comp_list
 
   def _fusion_similar_messages_impl(self, new_msg_name, messages):
-    is_one_of = self.handlers[messages[0]].msg.is_one_of()
+    is_one_of = self.handlers[messages[0]].msg.is_one_of
     if is_one_of:
       new_msg = OneOfProtoMessage(new_msg_name,
                                   fields=self.handlers[messages[0]].msg.fields,
@@ -1099,10 +1112,10 @@ class DomatoBuilder:
   def _fusion_similar_messages(self):
     oneof_entries = collections.defaultdict(list)
     msg_entries = collections.defaultdict(list)
-    for e in (e for e in self.handlers.values() if e.msg.is_one_of()):
+    for e in (e for e in self.handlers.values() if e.msg.is_one_of):
       h = hash(''.join(f.type.name for f in e.msg.fields))
       oneof_entries[h].append(e.msg.name)
-    for e in (e for e in self.handlers.values() if not e.msg.is_one_of()):
+    for e in (e for e in self.handlers.values() if not e.msg.is_one_of):
       h = hash(''.join(f.type.name for f in e.msg.fields))
       msg_entries[h].append(e.msg.name)
     res = {}
@@ -1127,8 +1140,8 @@ def _render_proto_internal(
     should_generate_repeated_lines: bool, proto_ns: str,
     imports: typing.List[str]):
   _render_internal(template, {
-      'messages': [m for m in proto_messages if not m.is_one_of()],
-      'oneofmessages': [m for m in proto_messages if m.is_one_of()],
+      'messages': [m for m in proto_messages if not m.is_one_of],
+      'oneofmessages': [m for m in proto_messages if m.is_one_of],
       'generate_repeated_lines': should_generate_repeated_lines,
       'proto_ns': proto_ns,
       'imports': imports,
@@ -1164,9 +1177,9 @@ def render_proto(environment: jinja2.Environment, generated_dir: str,
 def render_cpp(environment: jinja2.Environment, gen_dir: str, out_f: str,
                name: str, builder: DomatoBuilder, files: typing.List[File]):
   for file in files:
-    funcs = [f for f in file.cpps if f.is_message_handler()]
-    oneofs = [f for f in file.cpps if f.is_oneof_handler()]
-    stfunctions = [f for f in file.cpps if f.is_string_table_handler()]
+    funcs = [f for f in file.cpps if f.is_message_handler]
+    oneofs = [f for f in file.cpps if f.is_oneof_handler]
+    stfunctions = [f for f in file.cpps if f.is_string_table_handler]
     has_line = 'line' in (f.type.name for msg in file.protos
                           for f in msg.fields)
     rendering_context = {

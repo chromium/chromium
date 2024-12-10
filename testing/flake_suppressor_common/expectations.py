@@ -17,6 +17,9 @@ from flake_suppressor_common import common_typing as ct
 
 from typ import expectations_parser
 
+# Disabled instead of fixing to avoid a large amount of churn.
+# pylint: disable=no-self-use
+
 CHROMIUM_SRC_DIR = os.path.realpath(
     os.path.join(os.path.dirname(__file__), '..', '..'))
 GITILES_URL = 'https://chromium.googlesource.com/chromium/src/+/refs/heads/main'

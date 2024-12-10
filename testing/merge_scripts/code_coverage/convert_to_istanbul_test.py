@@ -299,20 +299,6 @@ subtract(5, 2);
   def tearDown(self):
     shutil.rmtree(self.task_output_dir)
 
-  def list_files(self, absolute_path):
-    actual_files = []
-    for root, _, files in os.walk(absolute_path):
-      actual_files.extend(
-          [os.path.join(root, file_name) for file_name in files])
-
-    return actual_files
-
-  def _write_files(self, root_dir, *file_path_contents):
-    for data in file_path_contents:
-      file_path, contents = data
-      with open(os.path.join(root_dir, file_path), 'w') as f:
-        f.write(contents)
-
   def _write_transformations(self, source_dir, out_dir, original_file_name,
                              input_file_name, output_file_name):
     original_file = os.path.join(source_dir, original_file_name)
@@ -332,8 +318,8 @@ subtract(5, 2);
     for path_url, contents in file_path_contents:
       file_path, url = path_url
       url_to_path_map[file_path] = url
-      self._write_files(self.source_dir, (url, contents))
-      self._write_files(self.out_dir, (url, contents))
+      _write_files(self.source_dir, (url, contents))
+      _write_files(self.out_dir, (url, contents))
       self._write_transformations(self.source_dir, self.out_dir, url, url, url)
     with open(os.path.join(self.out_dir, 'parsed_scripts.json'),
               'w',
@@ -341,7 +327,7 @@ subtract(5, 2);
       f.write(json.dumps(url_to_path_map))
 
   def write_coverages(self, *file_path_contents):
-    self._write_files(self.coverage_dir, *file_path_contents)
+    _write_files(self.coverage_dir, *file_path_contents)
 
   def test_happy_path(self):
     self.write_sources((('//file.js', 'file.js'), self._TEST_SOURCE_A))
@@ -350,13 +336,12 @@ subtract(5, 2);
     merger.convert_raw_coverage_to_istanbul([self.coverage_dir], self.out_dir,
                                             self.task_output_dir)
 
-    istanbul_files = self.list_files(
-        os.path.join(self.task_output_dir, 'istanbul'))
+    istanbul_files = list_files(os.path.join(self.task_output_dir, 'istanbul'))
     self.assertEqual(len(istanbul_files), 1)
 
   def test_invalid_mapping(self):
     self.write_sources((('//file.js', 'file.js'), self._TEST_SOURCE_A))
-    self._write_files(
+    _write_files(
         self.out_dir,
         ('file.js', self._TEST_SOURCE_A + '\n' + self._INVALID_MAPPING_A))
     self.write_coverages(('test_coverage.cov.json', self._TEST_COVERAGE_A))
@@ -364,8 +349,7 @@ subtract(5, 2);
     merger.convert_raw_coverage_to_istanbul([self.coverage_dir], self.out_dir,
                                             self.task_output_dir)
 
-    istanbul_files = self.list_files(
-        os.path.join(self.task_output_dir, 'istanbul'))
+    istanbul_files = list_files(os.path.join(self.task_output_dir, 'istanbul'))
     self.assertEqual(len(istanbul_files), 0)
 
   def test_no_coverages_in_file(self):
@@ -380,8 +364,7 @@ subtract(5, 2);
     merger.convert_raw_coverage_to_istanbul([self.coverage_dir], self.out_dir,
                                             self.task_output_dir)
 
-    istanbul_files = self.list_files(
-        os.path.join(self.task_output_dir, 'istanbul'))
+    istanbul_files = list_files(os.path.join(self.task_output_dir, 'istanbul'))
     self.assertEqual(len(istanbul_files), 0)
 
   def test_invalid_coverage_file(self):
@@ -401,8 +384,7 @@ subtract(5, 2);
     merger.convert_raw_coverage_to_istanbul([self.coverage_dir], self.out_dir,
                                             self.task_output_dir)
 
-    istanbul_files = self.list_files(
-        os.path.join(self.task_output_dir, 'istanbul'))
+    istanbul_files = list_files(os.path.join(self.task_output_dir, 'istanbul'))
     self.assertEqual(len(istanbul_files), 2)
 
   def test_multiple_coverages_no_leading_double_slash(self):
@@ -414,8 +396,7 @@ subtract(5, 2);
     merger.convert_raw_coverage_to_istanbul([self.coverage_dir], self.out_dir,
                                             self.task_output_dir)
 
-    istanbul_files = self.list_files(
-        os.path.join(self.task_output_dir, 'istanbul'))
+    istanbul_files = list_files(os.path.join(self.task_output_dir, 'istanbul'))
     self.assertEqual(len(istanbul_files), 1)
 
   def test_multiple_duplicate_coverages_flattened(self):
@@ -428,8 +409,7 @@ subtract(5, 2);
     merger.convert_raw_coverage_to_istanbul([self.coverage_dir], self.out_dir,
                                             self.task_output_dir)
 
-    istanbul_files = self.list_files(
-        os.path.join(self.task_output_dir, 'istanbul'))
+    istanbul_files = list_files(os.path.join(self.task_output_dir, 'istanbul'))
     self.assertEqual(len(istanbul_files), 2)
 
   def test_original_source_missing(self):
@@ -440,8 +420,7 @@ subtract(5, 2);
     merger.convert_raw_coverage_to_istanbul([self.coverage_dir], self.out_dir,
                                             self.task_output_dir)
 
-    istanbul_files = self.list_files(
-        os.path.join(self.task_output_dir, 'istanbul'))
+    istanbul_files = list_files(os.path.join(self.task_output_dir, 'istanbul'))
     self.assertEqual(len(istanbul_files), 0)
 
   def test_multiple_coverages_in_multiple_shards(self):
@@ -452,18 +431,32 @@ subtract(5, 2);
 
     self.write_sources((('//test.js', 'test.js'), self._TEST_SOURCE_B),
                        (('//test1.js', 'test1.js'), self._TEST_SOURCE_C))
-    self._write_files(coverage_dir_1,
-                      ('test_coverage_1.cov.json', self._TEST_COVERAGE_B))
-    self._write_files(
+    _write_files(coverage_dir_1,
+                 ('test_coverage_1.cov.json', self._TEST_COVERAGE_B))
+    _write_files(
         coverage_dir_2,
         ('test_coverage_2.cov.json', self._TEST_COVERAGE_DUPLICATE_DOUBLE))
 
     merger.convert_raw_coverage_to_istanbul([coverage_dir_1, coverage_dir_2],
                                             self.out_dir, self.task_output_dir)
 
-    istanbul_files = self.list_files(
-        os.path.join(self.task_output_dir, 'istanbul'))
+    istanbul_files = list_files(os.path.join(self.task_output_dir, 'istanbul'))
     self.assertEqual(len(istanbul_files), 2)
+
+
+def list_files(absolute_path):
+  actual_files = []
+  for root, _, files in os.walk(absolute_path):
+    actual_files.extend([os.path.join(root, file_name) for file_name in files])
+
+  return actual_files
+
+
+def _write_files(root_dir, *file_path_contents):
+  for data in file_path_contents:
+    file_path, contents = data
+    with open(os.path.join(root_dir, file_path), 'w') as f:
+      f.write(contents)
 
 
 if __name__ == '__main__':

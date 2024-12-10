@@ -63,6 +63,8 @@ import web_idl
 class SwiftExpression:
   """Generic type for representing a Swift type."""
 
+  # Overridden by subclasses.
+  # pylint: disable=no-self-use
   def fuzzilli_repr(self) -> str:
     """Returns the Fuzzilli representation of this expression.
 
@@ -70,6 +72,7 @@ class SwiftExpression:
         the string representation of this expression.
     """
     raise Exception('Not implemented.')
+  # pylint: enable=no-self-use
 
 
 class SwiftNil(SwiftExpression):

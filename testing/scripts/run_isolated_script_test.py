@@ -65,25 +65,43 @@ class BareScriptTestAdapter(common.BaseIsolatedScriptArgsAdapter):
 
 class IsolatedScriptTestAdapter(common.BaseIsolatedScriptArgsAdapter):
 
+  # Overriding parent implementation.
+  # pylint: disable=no-self-use
   def generate_sharding_args(self, total_shards, shard_index):
     # This script only uses environment variable for sharding.
     del total_shards, shard_index  # unused
     return []
+  # pylint: enable=no-self-use
 
+  # Overriding parent implementation.
+  # pylint: disable=no-self-use
   def generate_test_also_run_disabled_tests_args(self):
     return ['--isolated-script-test-also-run-disabled-tests']
+  # pylint: enable=no-self-use
 
+  # Overriding parent implementation.
+  # pylint: disable=no-self-use
   def generate_test_filter_args(self, test_filter_str):
     return ['--isolated-script-test-filter=%s' % test_filter_str]
+  # pylint: enable=no-self-use
 
+  # Overriding parent implementation.
+  # pylint: disable=no-self-use
   def generate_test_output_args(self, output):
     return ['--isolated-script-test-output=%s' % output]
+  # pylint: enable=no-self-use
 
+  # Overriding parent implementation.
+  # pylint: disable=no-self-use
   def generate_test_launcher_retry_limit_args(self, retry_limit):
     return ['--isolated-script-test-launcher-retry-limit=%d' % retry_limit]
+  # pylint: enable=no-self-use
 
+  # Overriding parent implementation.
+  # pylint: disable=no-self-use
   def generate_test_repeat_args(self, repeat_count):
     return ['--isolated-script-test-repeat=%d' % repeat_count]
+  # pylint: enable=no-self-use
 
 
 class TypUnittestAdapter(common.BaseIsolatedScriptArgsAdapter):
@@ -92,10 +110,13 @@ class TypUnittestAdapter(common.BaseIsolatedScriptArgsAdapter):
     super(TypUnittestAdapter, self).__init__()
     self._temp_filter_file = None
 
+  # Overriding parent implementation.
+  # pylint: disable=no-self-use
   def generate_sharding_args(self, total_shards, shard_index):
     # This script only uses environment variable for sharding.
     del total_shards, shard_index  # unused
     return []
+  # pylint: enable=no-self-use
 
   def generate_test_filter_args(self, test_filter_str):
     filter_list = common.extract_filter_list(test_filter_str)
@@ -108,14 +129,23 @@ class TypUnittestAdapter(common.BaseIsolatedScriptArgsAdapter):
 
     return ['--%s=' % arg_name + self._temp_filter_file.name]
 
+  # Overriding parent implementation.
+  # pylint: disable=no-self-use
   def generate_test_output_args(self, output):
     return ['--write-full-results-to', output]
+  # pylint: enable=no-self-use
 
+  # Overriding parent implementation.
+  # pylint: disable=no-self-use
   def generate_test_launcher_retry_limit_args(self, retry_limit):
     return ['--isolated-script-test-launcher-retry-limit=%d' % retry_limit]
+  # pylint: enable=no-self-use
 
+  # Overriding parent implementation.
+  # pylint: disable=no-self-use
   def generate_test_repeat_args(self, repeat_count):
     return ['--isolated-script-test-repeat=%d' % repeat_count]
+  # pylint: enable=no-self-use
 
   def clean_up_after_test_run(self):
     if self._temp_filter_file:
