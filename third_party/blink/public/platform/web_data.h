@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DATA_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DATA_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -52,6 +53,8 @@ class BLINK_PLATFORM_EXPORT WebData {
 
   WebData() = default;
 
+  explicit WebData(base::span<const uint8_t> data)
+      : WebData(reinterpret_cast<const char*>(data.data()), data.size()) {}
   WebData(const char* data, size_t size) { Assign(data, size); }
 
   template <int N>

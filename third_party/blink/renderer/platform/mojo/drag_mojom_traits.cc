@@ -178,9 +178,7 @@ bool StructTraits<blink::mojom::DragItemBinaryDataView,
       !data.ReadContentDisposition(&content_disposition)) {
     return false;
   }
-  out->data =
-      blink::WebData(reinterpret_cast<const char*>(file_contents.data().data()),
-                     file_contents.data().size());
+  out->data = blink::WebData(file_contents.data());
   out->image_accessible = data.is_image_accessible();
   out->source_url = source_url;
   out->filename_extension = blink::FilePathToWebString(filename_extension);
