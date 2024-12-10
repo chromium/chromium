@@ -600,15 +600,17 @@ component("skia") {
   }
 
   if (skia_support_skottie) {
+    import("//third_party/skia/modules/jsonreader/jsonreader.gni")
     import("//third_party/skia/modules/skottie/skottie.gni")
     import("//third_party/skia/modules/skresources/skresources.gni")
     import("//third_party/skia/modules/sksg/sksg.gni")
     import("//third_party/skia/modules/skshaper/skshaper.gni")
     public += skia_skottie_public
+    sources += skia_jsonreader_sources
+    sources += skia_shaper_primitive_sources
     sources += skia_skottie_sources
     sources += skia_skresources_sources
     sources += skia_sksg_sources
-    sources += skia_shaper_primitive_sources
     defines += [
       "SK_SHAPER_PRIMITIVE_AVAILABLE",
       "SKOTTIE_TRIVIAL_FONTRUN_ITER",
