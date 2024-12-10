@@ -81,6 +81,7 @@ static_library("test_support") {
 
   deps = [
     ":browser",
+    "//components/facilitated_payments/core/utils",
     "//testing/gmock:gmock",
   ]
 }

@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 
 class GURL;
 
@@ -95,8 +96,7 @@ class EwalletManager {
 
   // Called after receiving the `result` of invoking the purchase manager for
   // payment.
-  void OnTransactionResult(
-      FacilitatedPaymentsApiClient::PurchaseActionResult result);
+  void OnTransactionResult(PurchaseActionResult result);
 
   // A list of eWallets that support the payment link provided in
   // TriggerEwalletPushPayment().

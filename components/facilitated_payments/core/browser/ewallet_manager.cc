@@ -19,6 +19,7 @@
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_response_details.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/features/features.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "components/facilitated_payments/core/validation/payment_link_validator.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "url/gurl.h"
@@ -204,8 +205,7 @@ void EwalletManager::OnInitiatePaymentResponseReceived(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void EwalletManager::OnTransactionResult(
-    FacilitatedPaymentsApiClient::PurchaseActionResult result) {
+void EwalletManager::OnTransactionResult(PurchaseActionResult result) {
   // When server responds to the purchase action, Google Play Services takes
   // over, but the dismiss of progress screen is not taken over. Calling
   // `DismissPrompt` to dismiss it manually.

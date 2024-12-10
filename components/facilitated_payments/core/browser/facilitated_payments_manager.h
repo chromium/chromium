@@ -24,6 +24,7 @@
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_response_details.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -34,8 +35,6 @@ namespace payments::facilitated {
 
 class FacilitatedPaymentsClient;
 class FacilitatedPaymentsDriver;
-
-using PurchaseActionResult = FacilitatedPaymentsApiClient::PurchaseActionResult;
 
 // A cross-platform interface that manages the flow of payments for non-form
 // based form-of-payments between the browser and the Payments platform. It is

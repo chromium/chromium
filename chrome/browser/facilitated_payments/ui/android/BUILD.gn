@@ -55,13 +55,8 @@ android_library("public_java") {
     "//chrome/browser/profiles/android:java",
     "//components/autofill/android:payments_autofill_java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/facilitated_payments/core/utils:facilitated_payments_enums_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
-
-  srcjar_deps = [ ":facilitated_payments_enums" ]
-}
-
-java_cpp_enum("facilitated_payments_enums") {
-  sources = [ "//components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h" ]
 }
