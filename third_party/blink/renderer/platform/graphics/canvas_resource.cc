@@ -662,12 +662,11 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
 
   scoped_refptr<StaticBitmapImage> image;
   auto client_shared_image = GetClientSharedImage();
-  uint32_t texture_target = client_shared_image->GetTextureTarget();
 
   // If its cross thread, then the sync token was already verified.
   image = AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       std::move(client_shared_image), GetSyncToken(), texture_id_for_image,
-      image_info, texture_target, context_provider_wrapper_, owning_thread_ref_,
+      image_info, context_provider_wrapper_, owning_thread_ref_,
       owning_thread_task_runner_, std::move(release_callback),
       supports_display_compositing_, is_overlay_candidate_);
 
@@ -866,9 +865,8 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       client_si_, GetSyncToken(), /*shared_image_texture_id=*/0u,
-      CreateSkImageInfo(), client_si_->GetTextureTarget(),
-      context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
-      std::move(release_callback),
+      CreateSkImageInfo(), context_provider_wrapper_, owning_thread_ref_,
+      owning_thread_task_runner_, std::move(release_callback),
       /*supports_display_compositing=*/true, is_overlay_candidate_);
 }
 
@@ -1021,8 +1019,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       back_buffer_shared_image_, GetSyncToken(), shared_texture_id, image_info,
-      back_buffer_shared_image_->GetTextureTarget(), context_provider_wrapper_,
-      owning_thread_ref_, owning_thread_task_runner_,
+      context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
       std::move(release_callback), /*supports_display_compositing=*/true,
       /*is_overlay_candidate=*/true);
 }

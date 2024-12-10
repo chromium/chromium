@@ -65,7 +65,6 @@ AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
     const gpu::SyncToken& sync_token,
     GLuint shared_image_texture_id,
     const SkImageInfo& sk_image_info,
-    GLenum texture_target,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::PlatformThreadRef context_thread_ref,
     scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
@@ -74,10 +73,10 @@ AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
     bool is_overlay_candidate) {
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
       std::move(shared_image), sync_token, shared_image_texture_id,
-      sk_image_info, texture_target, supports_display_compositing,
-      is_overlay_candidate, ImageOrientationEnum::kDefault,
-      std::move(context_provider_wrapper), context_thread_ref,
-      std::move(context_task_runner), std::move(release_callback)));
+      sk_image_info, supports_display_compositing, is_overlay_candidate,
+      ImageOrientationEnum::kDefault, std::move(context_provider_wrapper),
+      context_thread_ref, std::move(context_task_runner),
+      std::move(release_callback)));
 }
 
 // static
@@ -116,10 +115,8 @@ AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
       },
       shared_gpu_context, shared_image);
 
-  auto texture_target = shared_image->GetTextureTarget();
-
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
-      std::move(shared_image), sync_token, 0u, sk_image_info, texture_target,
+      std::move(shared_image), sync_token, 0u, sk_image_info,
       supports_display_compositing, is_overlay_candidate,
       ImageOrientationEnum::kDefault, shared_gpu_context,
       base::PlatformThreadRef(),
@@ -132,7 +129,6 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
     const gpu::SyncToken& sync_token,
     GLuint shared_image_texture_id,
     const SkImageInfo& sk_image_info,
-    GLenum texture_target,
     bool supports_display_compositing,
     bool is_overlay_candidate,
     const ImageOrientation& orientation,
@@ -143,7 +139,6 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
     : StaticBitmapImage(orientation),
       shared_image_(std::move(shared_image)),
       sk_image_info_(sk_image_info),
-      texture_target_(texture_target),
       supports_display_compositing_(supports_display_compositing),
       is_overlay_candidate_(is_overlay_candidate),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
@@ -349,7 +344,7 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
   }
 
   GrGLTextureInfo texture_info;
-  texture_info.fTarget = texture_target_;
+  texture_info.fTarget = shared_image_->GetTextureTarget();
   texture_info.fID = shared_context_texture_id;
   texture_info.fFormat =
       context_provider_wrapper->ContextProvider().GetGrGLTextureFormat(
@@ -408,7 +403,8 @@ gpu::MailboxHolder AcceleratedStaticBitmapImage::GetMailboxHolder() const {
     return gpu::MailboxHolder();
   }
   return gpu::MailboxHolder(shared_image_->mailbox(),
-                            mailbox_ref_->sync_token(), texture_target_);
+                            mailbox_ref_->sync_token(),
+                            shared_image_->GetTextureTarget());
 }
 
 scoped_refptr<gpu::ClientSharedImage>

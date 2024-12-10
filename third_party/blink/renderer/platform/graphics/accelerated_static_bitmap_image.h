@@ -42,9 +42,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   //
   // |sk_image_info| provides the metadata associated with the backing.
   //
-  // |texture_target| is the target that the texture should be bound to if the
-  // backing is used with GL.
-  //
   // |context_provider| is the context that the shared image was created with.
   // |context_thread_ref| and |context_task_runner| refer to the thread the
   // context is bound to. If the image is created on a different thread than
@@ -62,7 +59,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       const gpu::SyncToken&,
       GLuint shared_image_texture_id,
       const SkImageInfo& sk_image_info,
-      GLenum texture_target,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::PlatformThreadRef context_thread_ref,
       scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
@@ -157,7 +153,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       const gpu::SyncToken&,
       GLuint shared_image_texture_id,
       const SkImageInfo& sk_image_info,
-      GLenum texture_target,
       bool supports_display_compositing,
       bool is_overlay_candidate,
       const ImageOrientation& orientation,
@@ -171,7 +166,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
 
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
   const SkImageInfo sk_image_info_;
-  const GLenum texture_target_;
   const bool supports_display_compositing_ : 1;
   const bool is_overlay_candidate_ : 1;
 
