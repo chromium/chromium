@@ -223,7 +223,7 @@ test("components_unittests") {
     "//components/enterprise/common:unit_tests",
     "//components/enterprise/connectors/core:unit_tests",
     "//components/enterprise/obfuscation/core:unit_tests",
-    "//components/facilitated_payments/core/util:unit_tests",
+    "//components/facilitated_payments/core/validation:unit_tests",
     "//components/favicon/core:unit_tests",
     "//components/favicon_base:unit_tests",
     "//components/feature_engagement:unit_tests",

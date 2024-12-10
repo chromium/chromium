@@ -2,6 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("ui_utils") {
+static_library("utils") {
   sources = [ "facilitated_payments_ui_utils.h" ]
 }

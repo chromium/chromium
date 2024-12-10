@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FACILITATED_PAYMENTS_CORE_UTIL_PIX_CODE_VALIDATOR_H_
-#define COMPONENTS_FACILITATED_PAYMENTS_CORE_UTIL_PIX_CODE_VALIDATOR_H_
+#ifndef COMPONENTS_FACILITATED_PAYMENTS_CORE_VALIDATION_PIX_CODE_VALIDATOR_H_
+#define COMPONENTS_FACILITATED_PAYMENTS_CORE_VALIDATION_PIX_CODE_VALIDATOR_H_
 
 #include <string>
 #include <utility>
@@ -46,4 +46,4 @@ class PixCodeValidator : public mojom::PixCodeValidator {
 
 }  // namespace payments::facilitated
 
-#endif  // COMPONENTS_FACILITATED_PAYMENTS_CORE_UTIL_PIX_CODE_VALIDATOR_H_
+#endif  // COMPONENTS_FACILITATED_PAYMENTS_CORE_VALIDATION_PIX_CODE_VALIDATOR_H_

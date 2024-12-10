@@ -31,7 +31,7 @@ reviewer.
   <int value="2" label="Manage payment methods option selected."/>
 </enum>
 
-<!-- LINT.ThenChange(/components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h:FopSelectorAction) -->
+<!-- LINT.ThenChange(/components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h:FopSelectorAction) -->
 
 <enum name="FacilitatedPayments.InitiatePurchaseActionResult">
   <int value="0" label="Failed"/>
@@ -81,7 +81,7 @@ reviewer.
   <int value="3" label="Error screen"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h:UiState) -->
+<!-- LINT.ThenChange(/components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h:UiState) -->
 
 </enums>
 

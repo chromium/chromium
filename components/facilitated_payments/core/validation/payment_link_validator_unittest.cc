@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/facilitated_payments/core/util/payment_link_validator.h"
+#include "components/facilitated_payments/core/validation/payment_link_validator.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 

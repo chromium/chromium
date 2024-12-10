@@ -19,7 +19,7 @@
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_response_details.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/features/features.h"
-#include "components/facilitated_payments/core/util/payment_link_validator.h"
+#include "components/facilitated_payments/core/validation/payment_link_validator.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "url/gurl.h"
 

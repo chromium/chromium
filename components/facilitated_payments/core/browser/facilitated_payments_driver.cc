@@ -10,7 +10,7 @@
 #include "components/facilitated_payments/core/browser/ewallet_manager.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_manager.h"
 #include "components/facilitated_payments/core/features/features.h"
-#include "components/facilitated_payments/core/util/pix_code_validator.h"
+#include "components/facilitated_payments/core/validation/pix_code_validator.h"
 
 namespace payments::facilitated {
 

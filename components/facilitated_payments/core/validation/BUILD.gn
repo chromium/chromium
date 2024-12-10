@@ -4,7 +4,7 @@
 
 import("//testing/test.gni")
 
-static_library("util") {
+static_library("validation") {
   sources = [
     "payment_link_validator.cc",
     "payment_link_validator.h",
@@ -33,7 +33,7 @@ source_set("unit_tests") {
 
   deps = [
     ":fuzzer_util",
-    ":util",
+    ":validation",
     "//testing/gtest",
     "//third_party/re2",
   ]
@@ -55,7 +55,7 @@ test("pix_code_validator_fuzzer") {
 
   deps = [
     ":fuzzer_util",
-    ":util",
+    ":validation",
     "//third_party/fuzztest:fuzztest_gtest_main",
   ]
 }
