@@ -917,12 +917,6 @@ BASE_FEATURE(kParentAccessCodeForOnlineLogin,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Keep a client-side log of when websites access permission-gated capabilities
-// to allow the user to audit usage.
-BASE_FEATURE(kPermissionAuditing,
-             "PermissionAuditing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enable support for "Plugin VMs" on Chrome OS.
 BASE_FEATURE(kPluginVm, "PluginVm", base::FEATURE_DISABLED_BY_DEFAULT);

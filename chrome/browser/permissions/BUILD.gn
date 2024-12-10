@@ -33,8 +33,6 @@ source_set("permissions") {
     "origin_keyed_permission_action_service_factory.h",
     "permission_actions_history_factory.cc",
     "permission_actions_history_factory.h",
-    "permission_auditing_service_factory.cc",
-    "permission_auditing_service_factory.h",
     "permission_decision_auto_blocker_factory.cc",
     "permission_decision_auto_blocker_factory.h",
     "permission_manager_factory.cc",
