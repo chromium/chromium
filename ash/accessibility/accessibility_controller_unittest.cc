@@ -14,6 +14,7 @@
 #include "ash/accessibility/filter_keys_event_rewriter.h"
 #include "ash/accessibility/flash_screen_controller.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
+#include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
@@ -776,13 +777,18 @@ TEST_F(AccessibilityControllerTest, SetMouseKeysEnabled) {
   controller()->AddObserver(&observer);
   EXPECT_EQ(0, observer.status_changed_count_);
 
+  MouseKeysController* mouse_keys_controller =
+      Shell::Get()->mouse_keys_controller();
+
   mouse_keys.SetEnabled(true);
   EXPECT_TRUE(mouse_keys.enabled());
+  EXPECT_FALSE(mouse_keys_controller->paused());
   EXPECT_EQ(1, observer.status_changed_count_);
   ExpectSessionDurationMetricCount("CrosMouseKeys", 0);
 
   mouse_keys.SetEnabled(false);
   EXPECT_FALSE(mouse_keys.enabled());
+  EXPECT_FALSE(mouse_keys_controller->paused());
   EXPECT_EQ(2, observer.status_changed_count_);
   ExpectSessionDurationMetricCount("CrosMouseKeys", 1);
 

@@ -47,12 +47,19 @@ class ASH_EXPORT MouseKeysTray : public TrayBackgroundView,
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
+  base::WeakPtr<MouseKeysTray> GetWeakPtr();
+
  private:
   friend class MouseKeysTrayTest;
 
   views::ImageView* GetIcon();
 
   ScopedSessionObserver session_observer_{this};
+
+  // Callback that's called when they tray is pressed.
+  void OnMouseKeyIconPressed(const ui::Event& event);
+
+  base::WeakPtrFactory<MouseKeysTray> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
