@@ -33,8 +33,8 @@ bool IsScreenReaderEnabled() {
   return AccessibilityManager::Get() &&
          AccessibilityManager::Get()->IsSpokenFeedbackEnabled();
 #else
-  // TODO(katie): Can we use AXMode in Chrome OS as well? May need to stop
-  // Switch Access and Select-to-Speak from setting kScreenReader.
+  // TODO(crbug.com/383057958): Consider updating this to return true only when
+  // an actual screen reader is enabled.
   ui::AXMode mode =
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
   return mode.has_mode(ui::AXMode::kScreenReader);

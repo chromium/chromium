@@ -7,7 +7,10 @@
 
 namespace accessibility_state_utils {
 
-// Returns true if a screen reader is enabled on any platform.
+// On ChromeOS returns true if the screen reader is enabled.
+// On other platforms returns true if screen reader mode is enabled, which can
+// be true if any functionality that needs screen reader compatibility is
+// enabled.
 bool IsScreenReaderEnabled();
 
 // Overrides |IsScreenReaderEnabled| for testing.
