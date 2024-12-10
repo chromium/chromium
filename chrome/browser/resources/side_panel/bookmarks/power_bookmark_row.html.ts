@@ -65,7 +65,8 @@ export function getHtml(this: PowerBookmarkRowElement) {
   ` : ''}
 
   ${this.isBookmarksBar_() ? html`
-    <cr-icon slot="folder-icon" icon="bookmarks:bookmarks-bar"></cr-icon>
+    <cr-icon class="bookmark-icon" slot="folder-icon"
+        icon="bookmarks:bookmarks-bar"></cr-icon>
   ` :''}
 
   ${this.isShoppingCollection_(this.bookmark) ? html`
