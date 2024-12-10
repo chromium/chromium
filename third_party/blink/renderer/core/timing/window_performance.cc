@@ -1374,7 +1374,6 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
     base::TimeTicks render_time,
     uint64_t paint_size,
     base::TimeTicks load_time,
-    base::TimeTicks first_animated_frame_time,
     const AtomicString& id,
     const String& url,
     Element* element,
@@ -1385,8 +1384,6 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
       RenderTimeToDOMHighResTimeStamp(start_time);
   DOMHighResTimeStamp render_timestamp =
       RenderTimeToDOMHighResTimeStamp(render_time);
-  DOMHighResTimeStamp first_animated_frame_timestamp =
-      RenderTimeToDOMHighResTimeStamp(first_animated_frame_time);
 
   // TODO(crbug.com/381270287) integrate with PaintMixin. This currently doesn't
   // have a proper paint_time.
@@ -1394,9 +1391,8 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
 
   // TODO(yoav): Should we modify start to represent the animated frame?
   auto* entry = MakeGarbageCollected<LargestContentfulPaint>(
-      start_timestamp, render_timestamp, paint_size, load_timestamp,
-      first_animated_frame_timestamp, id, url, element, DomWindow(),
-      is_triggered_by_soft_navigation);
+      start_timestamp, render_timestamp, paint_size, load_timestamp, id, url,
+      element, DomWindow(), is_triggered_by_soft_navigation);
 
   QueueEntryWithPaintTiming(
       WTF::BindOnce(

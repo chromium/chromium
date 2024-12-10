@@ -143,9 +143,7 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
       /*start_time=*/start_time, /*render_time=*/render_time,
       /*paint_size=*/largest_image->recorded_size,
       /*load_time=*/largest_image->load_time,
-      /*first_animated_frame_time=*/
-      expose_paint_time_to_api ? largest_image->first_animated_frame_time
-                               : base::TimeTicks(),
+
       /*id=*/image_id, /*url=*/image_url, /*element=*/image_element,
       is_triggered_by_soft_navigation);
 
@@ -187,7 +185,7 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulText(
       /*render_time=*/largest_text.paint_time,
       /*paint_size=*/largest_text.recorded_size,
       /*load_time=*/base::TimeTicks(),
-      /*first_animated_frame_time=*/base::TimeTicks(), /*id=*/text_id,
+      /*id=*/text_id,
       /*url=*/g_empty_string, /*element=*/text_element,
       is_triggered_by_soft_navigation);
 
