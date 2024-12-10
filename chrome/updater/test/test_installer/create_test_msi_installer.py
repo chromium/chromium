@@ -66,9 +66,7 @@ class TestInstaller:
         target_wxs = msi_base_file_path + '.wxs'
 
         if sys.platform == 'win32' and os.path.isfile(
-                self._candle_path) and os.path.isfile(self._light_path) and (
-                    not os.path.isfile(target_wxs) or not filecmp.cmp(
-                        self._msi_template_path, target_wxs, shallow=False)):
+                self._candle_path) and os.path.isfile(self._light_path):
             checked_in_dir = os.path.dirname(self._checked_in_msi)
             if not os.path.exists(checked_in_dir):
                 os.makedirs(checked_in_dir)
