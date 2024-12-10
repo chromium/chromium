@@ -485,6 +485,58 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityColumnIndexRange) {
   EXPECT_EQ(range.length, 1UL);    // Only one column in this simple setup
 }
 
+// accessibilityLinkedUIElements controls relation.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityLinkedUIElementsControls) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTabList
+    ++++2 kTab intListAttribute=kControlsIds,3
+    ++++3 kTabPanel
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* tab = GetCocoaNode(2);
+  TestUIElements([tab accessibilityLinkedUIElements], { 3 });
+}
+
+// accessibilityLinkedUIElements flows-to relation.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityLinkedUIElementsFlowsTo) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kGenericContainer intListAttribute=kFlowtoIds,3
+    ++++3 kGenericContainer
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* flows_to = GetCocoaNode(2);
+  TestUIElements([flows_to accessibilityLinkedUIElements], { 3 });
+}
+
+// accessibilityLinkedUIElements in page link target relation.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityLinkedUIElementsInPageLinkTarget) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kGenericContainer intAttribute=kInPageLinkTargetId,3
+    ++++3 kGenericContainer
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* node = GetCocoaNode(2);
+  TestUIElements([node accessibilityLinkedUIElements], { 3 });
+}
+
+// accessibilityLinkedUIElements radio group relation.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityLinkedUIElementsRadioGroup) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kRadioGroup
+    ++++3 kRadioButton intListAttribute=kRadioGroupIds,2
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* radio_button = GetCocoaNode(3);
+  TestUIElements([radio_button accessibilityLinkedUIElements], { 2 });
+}
+
 // accessibilityRows on a tree.
 TEST_P(AXPlatformNodeCocoaTest, AccessibilityRowsOnTree) {
   ui::TestAXTreeUpdate update(std::string(R"HTML(

@@ -282,6 +282,8 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
       @"accessibilityDisclosureLevel" : NSAccessibilityDisclosureLevelAttribute,
       @"accessibilityHeader" : NSAccessibilityHeaderAttribute,
       @"accessibilityIndex" : NSAccessibilityIndexAttribute,
+      @"accessibilityLinkedUIElements" :
+          NSAccessibilityLinkedUIElementsAttribute,
       @"accessibilityRowCount" : NSAccessibilityRowCountAttribute,
       @"accessibilityRowHeaderUIElements" :
           NSAccessibilityRowHeaderUIElementsAttribute,
@@ -514,6 +516,24 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   }
 
   return true;
+}
+
+- (NSArray*)uiElementsForAttribute:(ax::mojom::IntListAttribute)attribute {
+  NSMutableArray* elements = [NSMutableArray array];
+  ui::AXPlatformNodeDelegate* delegate = [self nodeDelegate];
+  if (!delegate) {
+    return elements;
+  }
+
+  const std::vector<int32_t>& attributeValues =
+      delegate->GetIntListAttribute(attribute);
+  for (auto& attributeValue : attributeValues) {
+    ui::AXPlatformNode* node = delegate->GetFromNodeID(attributeValue);
+    if (node) {
+      [elements addObject:node->GetNativeViewAccessible()];
+    }
+  }
+  return elements;
 }
 
 - (void)getTreeItemDescendantNodeIds:(std::vector<int32_t>*)treeItemIds {
@@ -2388,6 +2408,42 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
   return @"";
 }
+
+// LINT.IfChange(accessibilityLinkedUIElements)
+- (NSArray*)accessibilityLinkedUIElements {
+  if (![self instanceActive]) {
+    return nil;
+  }
+
+  ui::AXPlatformNodeDelegate* delegate = [self nodeDelegate];
+  if (!delegate) {
+    return nil;
+  }
+
+  NSMutableArray* elements = [[NSMutableArray alloc] init];
+  [elements
+      addObjectsFromArray:[self uiElementsForAttribute:
+                                    ax::mojom::IntListAttribute::kControlsIds]];
+  [elements
+      addObjectsFromArray:[self uiElementsForAttribute:
+                                    ax::mojom::IntListAttribute::kFlowtoIds]];
+
+  int targetId;
+  if (delegate->GetIntAttribute(ax::mojom::IntAttribute::kInPageLinkTargetId,
+                                &targetId)) {
+    ui::AXPlatformNode* target = delegate->GetFromNodeID(targetId);
+    if (target) {
+      [elements addObject:target->GetNativeViewAccessible()];
+    }
+  }
+
+  [elements
+      addObjectsFromArray:[self
+                              uiElementsForAttribute:
+                                  ax::mojom::IntListAttribute::kRadioGroupIds]];
+  return elements;
+}
+// LINT.ThenChange(ui/accessibility/platform/browser_accessibility_cocoa.mm:accessibilityLinkedUIElements)
 
 - (NSString*)accessibilityTitle {
   if (![self instanceActive])

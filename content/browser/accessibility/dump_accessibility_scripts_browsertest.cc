@@ -551,6 +551,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityLabel) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityLinkedUIElements) {
+  RunTypedTest<kMacMethods>("accessibility-linked-ui-elements.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AccessibilityNumberOfCharacters) {
   RunTypedTest<kMacMethods>("accessibility-number-of-characters.html");
 }

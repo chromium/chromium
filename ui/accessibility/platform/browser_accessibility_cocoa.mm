@@ -927,42 +927,33 @@ bool ui::IsNSRange(id value) {
   return base::SysUTF8ToNSString(node->GetLanguage());
 }
 
-// private
-- (void)addLinkedUIElementsFromAttribute:(ax::mojom::IntListAttribute)attribute
-                                   addTo:(NSMutableArray*)outArray {
-  const std::vector<int32_t>& attributeValues =
-      _owner->GetIntListAttribute(attribute);
-  for (size_t i = 0; i < attributeValues.size(); ++i) {
-    BrowserAccessibility* element =
-        _owner->manager()->GetFromID(attributeValues[i]);
-    if (element)
-      [outArray addObject:element->GetNativeViewAccessible()];
-  }
-}
-
-// private
+// LINT.IfChange(accessibilityLinkedUIElements)
 - (NSArray*)linkedUIElements {
-  NSMutableArray* ret = [[NSMutableArray alloc] init];
-  [self
-      addLinkedUIElementsFromAttribute:ax::mojom::IntListAttribute::kControlsIds
-                                 addTo:ret];
-  [self addLinkedUIElementsFromAttribute:ax::mojom::IntListAttribute::kFlowtoIds
-                                   addTo:ret];
+  NSMutableArray* elements = [[NSMutableArray alloc] init];
+  [elements
+      addObjectsFromArray:[self uiElementsForAttribute:
+                                    ax::mojom::IntListAttribute::kControlsIds]];
+  [elements
+      addObjectsFromArray:[self uiElementsForAttribute:
+                                    ax::mojom::IntListAttribute::kFlowtoIds]];
 
   int target_id;
   if (_owner->GetIntAttribute(ax::mojom::IntAttribute::kInPageLinkTargetId,
                               &target_id)) {
     BrowserAccessibility* target =
         _owner->manager()->GetFromID(static_cast<int32_t>(target_id));
-    if (target)
-      [ret addObject:target->GetNativeViewAccessible()];
+    if (target) {
+      [elements addObject:target->GetNativeViewAccessible()];
+    }
   }
 
-  [self addLinkedUIElementsFromAttribute:ax::mojom::IntListAttribute::
-                                             kRadioGroupIds
-                                   addTo:ret];
-  return ret;
+  [elements
+      addObjectsFromArray:[self
+                              uiElementsForAttribute:
+                                  ax::mojom::IntListAttribute::kRadioGroupIds]];
+  return elements;
 }
+// LINT.ThenChange(ui/accessibility/platform/browser_accessibility_cocoa.mm:accessibilityLinkedUIElements)
 
 - (NSNumber*)maxValue {
   if (![self instanceActive])
