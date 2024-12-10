@@ -9,6 +9,7 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/arc/keymint/cert_store_bridge_keymint.h"
 #include "chromeos/ash/components/dbus/arc/arc_keymint_client.h"
+#include "mojo/core/configuration.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 
@@ -176,6 +177,9 @@ void ArcKeyMintBridge::BootstrapMojoConnection(
     LOG(ERROR) << "ArcKeyMintBridge could not bind to invitation";
     std::move(callback).Run(false);
     return;
+  }
+  if (!mojo::core::GetConfiguration().is_broker_process) {
+    invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_SHARE_BROKER);
   }
 
   // Bootstrap cert_store channel attached to the same invitation.

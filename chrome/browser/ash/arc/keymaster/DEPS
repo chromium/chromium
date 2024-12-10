@@ -17,5 +17,5 @@ include_rules = [
   "+chrome/services/keymaster/public/mojom",
 
   # Dependencies outside of //chrome:
-  "+mojo/core/embedder",
+  "+mojo/core",
 ]
