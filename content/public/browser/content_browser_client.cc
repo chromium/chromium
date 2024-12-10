@@ -1817,16 +1817,14 @@ const base::FeatureParam<std::string> kLanguageDetectionLocalFileModelPath{
     &blink::features::kLanguageDetectionAPI,
     "language_detection_local_file_model_path", ""};
 
-// Returns a singleton of `ContentLanguageDetectionDriver`. This will provide
-// the model from a flag-param path.
-language_detection::ContentLanguageDetectionDriver&
-GetContentLanguageDetectionDriver() {
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner =
+// We need to initialize the provider after it is created. This should not be
+// inside `GetContentLanguageDetectionDriver` or it will be performed on every
+// call.
+language_detection::LanguageDetectionModelProvider*
+CreateLanguageDetectionModelProvider() {
+  auto* provider = new language_detection::LanguageDetectionModelProvider(
       base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-
-  static base::NoDestructor<language_detection::LanguageDetectionModelProvider>
-      provider(background_task_runner);
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
   const std::string model_file_path =
       kLanguageDetectionLocalFileModelPath.Get();
   if (model_file_path.length()) {
@@ -1837,9 +1835,15 @@ GetContentLanguageDetectionDriver() {
     // a model will become available.
     provider->UnloadModelFile();
   }
+  return provider;
+}
 
+// Returns a singleton of `ContentLanguageDetectionDriver`. This will provide
+// the model from a flag-param path.
+language_detection::ContentLanguageDetectionDriver&
+GetContentLanguageDetectionDriver() {
   static base::NoDestructor<language_detection::ContentLanguageDetectionDriver>
-      driver(provider.get());
+      driver(CreateLanguageDetectionModelProvider());
   return *driver.get();
 }
 }  // namespace
