@@ -368,19 +368,15 @@ message TableData {
   // The name of the table, coming from the caption.
   string table_name = 1;
 
-  TableRow header_row = 2;
+  repeated TableRow header_rows = 2;
 
   repeated TableRow body_rows = 3;
 
-  TableRow footer_row = 4;
+  repeated TableRow footer_rows = 4;
 }
 
 message TableRow {
-  repeated TableCell cells = 2;
-}
-
-message TableCell {
-  repeated ContentNode cell_content = 3;
+  repeated ContentNode cells = 1;
 }
 
 message IframeData {
@@ -1271,7 +1267,7 @@ enum AnnotatedPageContentVersion {
 }
 
 // In the future, this will be expanded to include more types of content.
-// Next ID: 11;
+// Next ID: 12;
 enum ContentAttributeType {
   CONTENT_ATTRIBUTE_UNKNOWN = 0;
 
@@ -1296,6 +1292,8 @@ enum ContentAttributeType {
   CONTENT_ATTRIBUTE_IMAGE = 9;
 
   CONTENT_ATTRIBUTE_TABLE = 10;
+
+  CONTENT_ATTRIBUTE_TABLE_CELL = 11;
 }
 
 // Next ID: 5
