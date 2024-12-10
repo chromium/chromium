@@ -86,11 +86,19 @@ CoralChipButton* GetFirstCoralButton() {
   // Creating `OverviewGridTestApi` will crash if we aren't in overview mode.
   const std::vector<raw_ptr<BirchChipButtonBase>>& birch_chips =
       OverviewGridTestApi(Shell::GetPrimaryRootWindow()).GetBirchChips();
-  CHECK_EQ(1u, birch_chips.size());
+  CHECK_GE(birch_chips.size(), 1u);
 
   auto* coral_button = views::AsViewClass<CoralChipButton>(birch_chips[0]);
   CHECK(!!coral_button);
   return coral_button;
+}
+
+size_t GetCoralButtonNum() {
+  return base::ranges::count_if(
+      OverviewGridTestApi(Shell::GetPrimaryRootWindow()).GetBirchChips(),
+      [](auto& chip) {
+        return chip->GetItem()->GetType() == BirchItemType::kCoral;
+      });
 }
 
 }  // namespace ash

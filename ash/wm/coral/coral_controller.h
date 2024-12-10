@@ -18,6 +18,7 @@
 
 namespace ash {
 
+class Desk;
 class DeskTemplate;
 class FakeCoralService;
 
@@ -111,8 +112,9 @@ class ASH_EXPORT CoralController {
   void CacheEmbeddings(const CoralRequest& request,
                        base::OnceCallback<void(bool)> callback);
 
-  // Creates a new desk for the content group.
-  void OpenNewDeskWithGroup(CoralResponse::Group group);
+  // Creates a new desk for the content group from `source_desk`.
+  void OpenNewDeskWithGroup(CoralResponse::Group group,
+                            const Desk* source_desk);
 
   // Creates a saved desk with up to one browser with tabs from `group`.
   void CreateSavedDeskFromGroup(coral::mojom::GroupPtr group);

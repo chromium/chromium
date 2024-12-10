@@ -113,10 +113,12 @@ bool BirchCoralItem::operator==(const BirchCoralItem& rhs) const = default;
 BirchCoralItem::~BirchCoralItem() = default;
 
 void BirchCoralItem::LaunchGroup(BirchChipButtonBase* birch_chip_button) {
+  auto* birch_coral_provider = BirchCoralProvider::Get();
+
   switch (source_) {
     case CoralSource::kPostLogin: {
       coral::mojom::GroupPtr group =
-          BirchCoralProvider::Get()->ExtractGroupById(group_id_);
+          birch_coral_provider->ExtractGroupById(group_id_);
       Shell::Get()->coral_delegate()->LaunchPostLoginGroup(std::move(group));
       BirchCoralProvider::Get()->OnPostLoginClusterRestored();
       // End the Overview after restore.
@@ -141,9 +143,15 @@ void BirchCoralItem::LaunchGroup(BirchChipButtonBase* birch_chip_button) {
       aura::Window* active_root =
           birch_chip_button->GetWidget()->GetNativeWindow()->GetRootWindow();
 
+      // Cache the in-session source desk before extracting the group in case
+      // the pointer gets reset.
+      const Desk* source_desk = birch_coral_provider->in_session_source_desk();
+      CHECK(source_desk);
+
       coral::mojom::GroupPtr group =
-          BirchCoralProvider::Get()->ExtractGroupById(group_id_);
-      Shell::Get()->coral_controller()->OpenNewDeskWithGroup(std::move(group));
+          birch_coral_provider->ExtractGroupById(group_id_);
+      Shell::Get()->coral_controller()->OpenNewDeskWithGroup(std::move(group),
+                                                             source_desk);
 
       // Nudge the desk name on the same display with the `birch_chip_button`.
       auto* overview_controller = Shell::Get()->overview_controller();

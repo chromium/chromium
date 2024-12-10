@@ -170,10 +170,9 @@ void CoralController::CacheEmbeddings(const CoralRequest& request,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void CoralController::OpenNewDeskWithGroup(CoralResponse::Group group) {
-  // TODO(crbug.com/378558824): Fix desk preview view after moving apps and
-  // tabs.
-  // TODO(crbug.com/378558491): Handle floating window.
+void CoralController::OpenNewDeskWithGroup(CoralResponse::Group group,
+                                           const Desk* source_desk) {
+  CHECK(!!source_desk);
   if (group->entities.empty()) {
     return;
   }
@@ -183,7 +182,7 @@ void CoralController::OpenNewDeskWithGroup(CoralResponse::Group group) {
   const coral_util::TabsAndApps tabs_apps =
       coral_util::SplitContentData(group->entities);
 
-  int src_desk_index = desks_controller->GetActiveDeskIndex();
+  int src_desk_index = desks_controller->GetDeskIndex(source_desk);
 
   // First place all windows that should be moved in a set, this is so we can
   // have O(1) lookups for snap groups later.

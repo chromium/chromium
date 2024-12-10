@@ -63,6 +63,10 @@ BirchCoralProvider* g_instance = nullptr;
 
 constexpr char16_t kTitlePlaceholder[] = u"Suggested Group";
 
+// The minimum number of entities in a group that allows user to remove an
+// entity.
+constexpr size_t kMinGroupSizeToRemove = 3;
+
 bool HasValidClusterCount(size_t num_clusters) {
   return num_clusters <= kMaxClusterCount;
 }
@@ -317,6 +321,12 @@ coral::mojom::GroupPtr BirchCoralProvider::ExtractGroupById(
   CHECK(iter != groups.end());
   auto group = std::move(*iter);
   groups.erase(iter);
+  // Clear the `in_session_source_desk_` when there is no groups to avoid
+  // dangling ptr and reset the window observer.
+  if (groups.empty()) {
+    in_session_source_desk_ = nullptr;
+    windows_observation_.RemoveAllObservations();
+  }
   observers_.Notify(&Observer::OnCoralGroupRemoved, group->id);
   return group;
 }
@@ -334,6 +344,9 @@ void BirchCoralProvider::RemoveItemFromGroup(const base::Token& group_id,
   CHECK(coral_item_remover_);
   auto& group = GetGroupById(group_id);
 
+  // The group should not be modified when there are less than
+  // `kMinGroupSizeToRemove` entities.
+  CHECK_GE(group->entities.size(), kMinGroupSizeToRemove);
   group->entities.erase(
       std::remove_if(group->entities.begin(), group->entities.end(),
                      [identifier](const coral::mojom::EntityPtr& entity) {
@@ -418,7 +431,7 @@ void BirchCoralProvider::OnTabItemRemoved(TabClusterUIItem* tab_item) {
     return;
   }
 
-  OnTabRemovedFromActiveDesk(tab_item);
+  OnTabRemovedFromSourceDesk(tab_item);
 }
 
 void BirchCoralProvider::TitleUpdated(const base::Token& id,
@@ -439,7 +452,7 @@ void BirchCoralProvider::TitleUpdated(const base::Token& id,
 
 void BirchCoralProvider::OnWindowDestroyed(aura::Window* window) {
   if (!IsBrowserWindow(window)) {
-    OnAppWindowRemovedFromActiveDesk(window);
+    OnAppWindowRemovedFromSourceDesk(window);
   }
 
   // Note, we should remove the window from observing list after modifying the
@@ -449,10 +462,18 @@ void BirchCoralProvider::OnWindowDestroyed(aura::Window* window) {
 
 void BirchCoralProvider::OnWindowParentChanged(aura::Window* window,
                                                aura::Window* parent) {
+  // When the last group is launched the `in_session_source_desk_` is reset and
+  // its windows are still being observed, we only need to removed the
+  // observation.
+  if (!in_session_source_desk_) {
+    windows_observation_.RemoveObservation(window);
+    return;
+  }
+
   // If an observed window is moved to another desk, remove the associated
   // entities from the `response_`. When parent is null, the window may be in
   // the middle of changing parent.
-  if (!parent || desks_util::BelongsToActiveDesk(window)) {
+  if (!parent || desks_util::BelongsToDesk(window, in_session_source_desk_)) {
     return;
   }
 
@@ -462,11 +483,11 @@ void BirchCoralProvider::OnWindowParentChanged(aura::Window* window,
     for (const auto& tab_item :
          Shell::Get()->tab_cluster_ui_controller()->tab_items()) {
       if (tab_item->current_info().browser_window == window) {
-        OnTabRemovedFromActiveDesk(tab_item.get());
+        OnTabRemovedFromSourceDesk(tab_item.get());
       }
     }
   } else {
-    OnAppWindowRemovedFromActiveDesk(window);
+    OnAppWindowRemovedFromSourceDesk(window);
   }
 
   // Note, we should remove the window from observing list after modifying the
@@ -475,9 +496,11 @@ void BirchCoralProvider::OnWindowParentChanged(aura::Window* window,
 }
 
 void BirchCoralProvider::OnOverviewModeEnded() {
-  // Clear the in-session `response_` and reset the app windows observation.
+  // Clear the in-session `response_` and reset the in-session source desk and
+  // the app windows observation.
   if (response_ && response_->source() == CoralSource::kInSession) {
     response_.reset();
+    in_session_source_desk_ = nullptr;
     windows_observation_.RemoveAllObservations();
   }
 }
@@ -487,6 +510,7 @@ void BirchCoralProvider::OnSessionStateChanged(
   // Clear stale items on login.
   if (state == session_manager::SessionState::ACTIVE) {
     response_.reset();
+    in_session_source_desk_ = nullptr;
   }
 }
 
@@ -625,6 +649,10 @@ void BirchCoralProvider::HandleCoralResponse(
   }
   Shell::Get()->birch_model()->SetCoralItems(items);
 
+  if (response_->source() == CoralSource::kInSession) {
+    in_session_source_desk_ = DesksController::Get()->active_desk();
+  }
+
   ObserveAllWindowsInResponse();
 }
 
@@ -716,7 +744,7 @@ void BirchCoralProvider::ObserveAllWindowsInResponse() {
       });
 }
 
-void BirchCoralProvider::OnTabRemovedFromActiveDesk(
+void BirchCoralProvider::OnTabRemovedFromSourceDesk(
     TabClusterUIItem* tab_item) {
   const std::string url = tab_item->current_info().source;
 
@@ -733,7 +761,7 @@ void BirchCoralProvider::OnTabRemovedFromActiveDesk(
   }
 }
 
-void BirchCoralProvider::OnAppWindowRemovedFromActiveDesk(
+void BirchCoralProvider::OnAppWindowRemovedFromSourceDesk(
     aura::Window* app_window) {
   CHECK(!IsBrowserWindow(app_window));
 
@@ -769,6 +797,11 @@ void BirchCoralProvider::RemoveEntity(std::string_view entity_identifier) {
       if (group->entities.empty()) {
         const base::Token group_id = group->id;
         group_iter = groups.erase(group_iter);
+        // Clear the `in_session_source_desk_` when there is no groups since the
+        // source desk may be in the process of removal.
+        if (groups.empty()) {
+          in_session_source_desk_ = nullptr;
+        }
         observers_.Notify(&Observer::OnCoralGroupRemoved, group_id);
         continue;
       }

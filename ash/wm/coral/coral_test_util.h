@@ -51,6 +51,9 @@ TabAppSelectionHost* ShowAndGetSelectorMenu(
 // Gets the first coral button on the primary root window.
 CoralChipButton* GetFirstCoralButton();
 
+// Gets the number of coral chips on the primary root window.
+size_t GetCoralButtonNum();
+
 }  // namespace ash
 
 #endif  // ASH_WM_CORAL_CORAL_TEST_UTIL_H_
