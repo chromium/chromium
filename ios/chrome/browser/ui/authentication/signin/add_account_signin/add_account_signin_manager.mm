@@ -129,7 +129,7 @@
         }
       };
       if (base::FeatureList::IsEnabled(
-              kIOSInterruptibleChromeStoppedSynchronously)) {
+              kIOSInterruptibleCoordinatorStoppedSynchronously)) {
         [self.identityInteractionManager cancelAuthActivityAnimated:animated
                                                          completion:nil];
         cancelCompletion();

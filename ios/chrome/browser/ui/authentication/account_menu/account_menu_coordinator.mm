@@ -444,7 +444,7 @@
     }
   };
   if (base::FeatureList::IsEnabled(
-          kIOSInterruptibleChromeStoppedSynchronously)) {
+          kIOSInterruptibleCoordinatorStoppedSynchronously)) {
     [self stopChildrenAndViewControllerWithAction:action completion:nil];
     childrenCompletion();
   } else {

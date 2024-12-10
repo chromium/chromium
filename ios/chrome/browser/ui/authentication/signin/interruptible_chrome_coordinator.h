@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
 // Feature flag to enable a synchronous sync of signin coordinators.
-BASE_DECLARE_FEATURE(kIOSInterruptibleChromeStoppedSynchronously);
+BASE_DECLARE_FEATURE(kIOSInterruptibleCoordinatorStoppedSynchronously);
 
 // Interface for a ChromeCoordinator that can be interrupted without following
 // the conventional flow.
@@ -24,7 +24,7 @@ BASE_DECLARE_FEATURE(kIOSInterruptibleChromeStoppedSynchronously);
 // called synchronously. Simply calls `completion` if the
 // method is not overridden.
 // TODO(crbug.com/381444097): Remove the completion parameter when the flag
-// IOSInterruptibleChromeStoppedSynchronously is removed.
+// IOSInterruptibleCoordinatorStoppedSynchronously is removed.
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion;
 

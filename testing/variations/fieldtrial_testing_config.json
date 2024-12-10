@@ -12410,16 +12410,16 @@
             ]
         }
     ],
-    "InterruptibleChromeStoppedSynchronously": [
+    "InterruptibleCoordinatorStoppedSynchronously": [
         {
             "platforms": [
                 "ios"
             ],
             "experiments": [
                 {
-                    "name": "InterruptibleChromeStoppedSynchronously",
+                    "name": "InterruptibleCoordinatorStoppedSynchronously",
                     "enable_features": [
-                        "InterruptibleChromeStoppedSynchronously"
+                        "InterruptibleCoordinatorStoppedSynchronously"
                     ]
                 }
             ]

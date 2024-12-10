@@ -533,9 +533,9 @@ const char kInProductHelpDemoModeDescription[] =
     "an individual promotion causes that promotion but no other promotions to "
     "occur.";
 
-const char kIOSInterruptibleChromeStoppedSynchronouslyName[] =
+const char kIOSInterruptibleCoordinatorStoppedSynchronouslyName[] =
     "Stop interruptible coordinators synchronously";
-const char kIOSInterruptibleChromeStoppedSynchronouslyDescription[] =
+const char kIOSInterruptibleCoordinatorStoppedSynchronouslyDescription[] =
     "When enabled, the interruptible coordinator’s completion method are "
     "called synchronously during interrupt.";
 

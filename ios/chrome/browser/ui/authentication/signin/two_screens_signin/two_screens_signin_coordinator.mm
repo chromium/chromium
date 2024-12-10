@@ -248,7 +248,7 @@ using base::UserMetricsAction;
         weakNavigationController.presentingViewController;
     if (presentingViewController) {
       if (base::FeatureList::IsEnabled(
-              kIOSInterruptibleChromeStoppedSynchronously)) {
+              kIOSInterruptibleCoordinatorStoppedSynchronously)) {
         [presentingViewController dismissViewControllerAnimated:animated
                                                      completion:nil];
         finishCompletion();

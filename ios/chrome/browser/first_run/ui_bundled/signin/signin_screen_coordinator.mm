@@ -149,7 +149,7 @@
                  completion:(ProceduralBlock)completion {
   if (self.addAccountSigninCoordinator) {
     if (base::FeatureList::IsEnabled(
-            kIOSInterruptibleChromeStoppedSynchronously)) {
+            kIOSInterruptibleCoordinatorStoppedSynchronously)) {
       [self.addAccountSigninCoordinator interruptWithAction:action
                                                  completion:nil];
 

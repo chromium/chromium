@@ -104,7 +104,7 @@ using l10n_util::GetNSStringF;
     // Checks that `cancelCompletion` is executed synchronously.
     CHECK(!self.signinCompletion, base::NotFatalUntil::M126);
   } else if (base::FeatureList::IsEnabled(
-                 kIOSInterruptibleChromeStoppedSynchronously)) {
+                 kIOSInterruptibleCoordinatorStoppedSynchronously)) {
     std::move(_dialogCancelCallback).Run(animated, nil);
     cancelCompletion();
   } else {

@@ -456,8 +456,8 @@ extern const char kInProductHelpDemoModeDescription[];
 
 // Title and description for the flag to enable stopping synchronously
 // interruptible coordinators.
-extern const char kIOSInterruptibleChromeStoppedSynchronouslyName[];
-extern const char kIOSInterruptibleChromeStoppedSynchronouslyDescription[];
+extern const char kIOSInterruptibleCoordinatorStoppedSynchronouslyName[];
+extern const char kIOSInterruptibleCoordinatorStoppedSynchronouslyDescription[];
 
 // Title and description for the flag to enable metrics collection for edit
 // menu.

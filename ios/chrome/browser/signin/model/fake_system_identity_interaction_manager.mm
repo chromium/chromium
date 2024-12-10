@@ -176,7 +176,7 @@ BOOL gUsingUnknownCapabilities;
 - (void)cancelAuthActivityAnimated:(BOOL)animated
                         completion:(ProceduralBlock)completion {
   if (base::FeatureList::IsEnabled(
-          kIOSInterruptibleChromeStoppedSynchronously)) {
+          kIOSInterruptibleCoordinatorStoppedSynchronously)) {
     CHECK(!completion);
   }
   NSError* error = ios::provider::CreateUserCancelledSigninError();
@@ -232,7 +232,7 @@ BOOL gUsingUnknownCapabilities;
                                   completion:completion];
   };
   if (base::FeatureList::IsEnabled(
-          kIOSInterruptibleChromeStoppedSynchronously)) {
+          kIOSInterruptibleCoordinatorStoppedSynchronously)) {
     [_authActivityViewController.presentingViewController
         dismissViewControllerAnimated:animated
                            completion:nil];

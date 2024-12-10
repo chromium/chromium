@@ -211,7 +211,7 @@
       BOOL animated =
           action == SigninCoordinatorInterrupt::DismissWithAnimation;
       if (base::FeatureList::IsEnabled(
-              kIOSInterruptibleChromeStoppedSynchronously)) {
+              kIOSInterruptibleCoordinatorStoppedSynchronously)) {
         [self.navigationController.presentingViewController
             dismissViewControllerAnimated:animated
                                completion:nil];

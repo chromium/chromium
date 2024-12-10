@@ -173,7 +173,7 @@
     }
   } else {
     if (base::FeatureList::IsEnabled(
-            kIOSInterruptibleChromeStoppedSynchronously)) {
+            kIOSInterruptibleCoordinatorStoppedSynchronously)) {
       [_mediator interruptWithAction:action completion:nil];
       if (completion) {
         completion();

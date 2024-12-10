@@ -58,10 +58,10 @@ class PrefService;
 
 // Interrupts the add account view. `action` controls
 // whether the dimissal is done and whether it is animated.
-// If the flag kIOSInterruptibleChromeStoppedSynchronously is enabled,
+// If the flag kIOSInterruptibleCoordinatorStoppedSynchronously is enabled,
 // `completion` is invoked directly. If
-// kIOSInterruptibleChromeStoppedSynchronously is disabled, `completion` will be
-// invoked asynchronously.
+// kIOSInterruptibleCoordinatorStoppedSynchronously is disabled, `completion`
+// will be invoked asynchronously.
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion;
 

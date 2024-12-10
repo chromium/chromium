@@ -183,7 +183,7 @@
 
   ProceduralBlock childCompletion = ^{
     if (base::FeatureList::IsEnabled(
-            kIOSInterruptibleChromeStoppedSynchronously)) {
+            kIOSInterruptibleCoordinatorStoppedSynchronously)) {
       [weakSelf.navigationController.presentingViewController
           dismissViewControllerAnimated:animated
                              completion:nil];
