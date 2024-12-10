@@ -27,10 +27,12 @@ import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImag
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesType;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Provides a view for tab group color dots and shared image tiles if a collaboration. To properly
@@ -38,7 +40,7 @@ import java.util.Arrays;
  * from living indefinitely.
  */
 public class TabGroupColorViewProvider implements Destroyable {
-    private final Callback<String> mOnCollaborationIdChanged = this::onCollaborationIdChanged;
+    private final Callback<List<GroupMember>> mOnGroupMembersChanged = this::onGroupMembersChanged;
     private final Callback<Integer> mOnGroupSharedStateChanged = this::onGroupSharedStateChanged;
     private final @NonNull Context mContext;
     private final @NonNull Token mTabGroupId;
@@ -78,9 +80,7 @@ public class TabGroupColorViewProvider implements Destroyable {
             mDataSharingService = dataSharingService;
             mSharedGroupObserver =
                     new SharedGroupObserver(tabGroupId, tabGroupSyncService, dataSharingService);
-            mSharedGroupObserver
-                    .getCollaborationIdSupplier()
-                    .addObserver(mOnCollaborationIdChanged);
+            mSharedGroupObserver.getGroupMembersSupplier().addObserver(mOnGroupMembersChanged);
             mSharedGroupObserver
                     .getGroupSharedStateSupplier()
                     .addObserver(mOnGroupSharedStateChanged);
@@ -94,9 +94,7 @@ public class TabGroupColorViewProvider implements Destroyable {
     public void destroy() {
         if (mSharedGroupObserver != null) {
             mSharedGroupObserver.destroy();
-            mSharedGroupObserver
-                    .getCollaborationIdSupplier()
-                    .removeObserver(mOnCollaborationIdChanged);
+            mSharedGroupObserver.getGroupMembersSupplier().removeObserver(mOnGroupMembersChanged);
             mSharedGroupObserver
                     .getGroupSharedStateSupplier()
                     .removeObserver(mOnGroupSharedStateChanged);
@@ -243,9 +241,15 @@ public class TabGroupColorViewProvider implements Destroyable {
         }
     }
 
-    private void onCollaborationIdChanged(@Nullable String collaborationId) {
-        if (mSharedImageTilesCoordinator != null) {
-            mSharedImageTilesCoordinator.fetchImagesForCollaborationId(collaborationId);
+    private void onGroupMembersChanged(@Nullable List<GroupMember> members) {
+        if (mSharedImageTilesCoordinator == null) return;
+
+        @Nullable String collaborationId = mSharedGroupObserver.getCollaborationIdSupplier().get();
+        if (members != null && TabShareUtils.isCollaborationIdValid(collaborationId)) {
+            mSharedImageTilesCoordinator.onGroupMembersChanged(collaborationId, members);
+        } else {
+            mSharedImageTilesCoordinator.onGroupMembersChanged(
+                    /* collaborationId= */ null, /* members= */ null);
         }
     }
 

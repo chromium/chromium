@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator.Bott
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -84,7 +85,7 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
     }
 
     private final Callback<Integer> mOnGroupSharedStateChanged = this::onGroupSharedStateChanged;
-    private final Callback<String> mOnCollaborationIdChanged = this::onCollaborationIdChanged;
+    private final Callback<List<GroupMember>> mOnGroupMembersChanged = this::onGroupMembersChanged;
     private final PropertyModel mModel;
     private final TabModelObserver mTabModelObserver;
     private final ResetHandler mResetHandler;
@@ -163,8 +164,8 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
                     .getGroupSharedStateSupplier()
                     .addObserver(mOnGroupSharedStateChanged);
             mTransitiveSharedGroupObserver
-                    .getCollaborationIdSupplier()
-                    .addObserver(mOnCollaborationIdChanged);
+                    .getGroupMembersSupplier()
+                    .addObserver(mOnGroupMembersChanged);
         } else {
             mTransitiveSharedGroupObserver = null;
         }
@@ -450,9 +451,16 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
         mTransitiveSharedGroupObserver.setTabGroupId(tab.getTabGroupId());
     }
 
-    private void onCollaborationIdChanged(@Nullable String collaborationId) {
-        if (mSharedImageTilesCoordinator != null) {
-            mSharedImageTilesCoordinator.fetchImagesForCollaborationId(collaborationId);
+    private void onGroupMembersChanged(@Nullable List<GroupMember> members) {
+        if (mSharedImageTilesCoordinator == null) return;
+
+        @Nullable
+        String collaborationId = mTransitiveSharedGroupObserver.getCollaborationIdSupplier().get();
+        if (members != null && TabShareUtils.isCollaborationIdValid(collaborationId)) {
+            mSharedImageTilesCoordinator.onGroupMembersChanged(collaborationId, members);
+        } else {
+            mSharedImageTilesCoordinator.onGroupMembersChanged(
+                    /* collaborationId= */ null, /* members= */ null);
         }
     }
 
@@ -537,8 +545,8 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
                     .getGroupSharedStateSupplier()
                     .removeObserver(mOnGroupSharedStateChanged);
             mTransitiveSharedGroupObserver
-                    .getCollaborationIdSupplier()
-                    .removeObserver(mOnCollaborationIdChanged);
+                    .getGroupMembersSupplier()
+                    .removeObserver(mOnGroupMembersChanged);
             mTransitiveSharedGroupObserver.destroy();
         }
     }

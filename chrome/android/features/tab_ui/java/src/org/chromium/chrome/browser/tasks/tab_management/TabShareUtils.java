@@ -116,7 +116,9 @@ public class TabShareUtils {
         if (groupData == null) {
             return null;
         } else {
-            return groupData.members;
+            @Nullable List<GroupMember> members = groupData.members;
+            if (members == null) return null;
+            return members.isEmpty() ? null : members;
         }
     }
 
