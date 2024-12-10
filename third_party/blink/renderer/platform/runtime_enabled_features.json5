@@ -4776,6 +4776,14 @@
       public: true,
     },
     {
+      // Launch feature flag for GPURequestAdapterOptions featureLevel
+      // https://chromestatus.com/feature/5154347661656064
+      name: "WebGPUFeatureLevel",
+      status: "experimental",
+      // Also enabled as part of all experimental WebGPU features.
+      implied_by: ["WebGPUExperimentalFeatures"],
+    },
+    {
       // Launch feature flag for 1-component GPUVertexFormat and unorm8x4-bgra
       name: "WebGPUOneComponentVertexFormats",
       status: "stable",
