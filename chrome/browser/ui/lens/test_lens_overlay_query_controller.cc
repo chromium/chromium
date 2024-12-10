@@ -171,6 +171,7 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
              !request->objects_request().has_image_data() &&
              request->objects_request().has_payload()) {
     // Page content upload request.
+    num_page_content_update_requests_sent_++;
     sent_page_content_objects_request_.CopyFrom(request->objects_request());
     // The server doesn't send a response to this request, so no need to set
     // the response string to something meaningful.

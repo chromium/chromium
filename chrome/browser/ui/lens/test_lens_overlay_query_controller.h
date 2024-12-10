@@ -137,6 +137,10 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return num_full_page_translate_gen204_pings_sent_;
   }
 
+  const int& num_page_content_update_requests_sent() const {
+    return num_page_content_update_requests_sent_;
+  }
+
   void StartQueryFlow(
       const SkBitmap& screenshot,
       GURL page_url,
@@ -267,6 +271,9 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   // The number of full page translate gen204 pings sent by the query
   // controller.
   int num_full_page_translate_gen204_pings_sent_ = 0;
+
+  // The number of page content update requests sent by the query controller.
+  int num_page_content_update_requests_sent_ = 0;
 };
 
 }  // namespace lens
