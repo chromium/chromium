@@ -413,9 +413,7 @@ void LogicalAnchorQueryMap::Update(const LayoutObject& layout_object) const {
   HeapHashSet<Member<const LayoutObject>> anchored_oof_containers_and_ancestors;
   for (const LayoutObject* runner = &layout_object;
        runner && runner != &root_box_; runner = runner->Parent()) {
-    const auto result = anchored_oof_containers_and_ancestors.insert(runner);
-    if (!result.is_new_entry)
-      break;
+    anchored_oof_containers_and_ancestors.insert(runner);
   }
 
   // Traverse descendants and collect anchor queries for each containing block.
