@@ -31,25 +31,6 @@ AudioBuffer::ExternalMemory::ExternalMemory(ExternalMemory&&) = default;
 
 namespace {
 
-// TODO(crbug.com/41258600): Use vector instructions to speed this up.
-template <class SourceSampleTypeTraits>
-void CopyConvertFromInterleaved(
-    const typename SourceSampleTypeTraits::ValueType* source_buffer,
-    int num_frames_to_write,
-    const std::vector<float*> dest) {
-  const int channels = dest.size();
-  for (int ch = 0; ch < channels; ++ch) {
-    float* dest_data = dest[ch];
-    for (int target_frame_index = 0, read_pos_in_source = ch;
-         target_frame_index < num_frames_to_write;
-         ++target_frame_index, read_pos_in_source += channels) {
-      auto source_value = source_buffer[read_pos_in_source];
-      dest_data[target_frame_index] =
-          SourceSampleTypeTraits::ToFloat(source_value);
-    }
-  }
-}
-
 class SelfOwnedMemory : public AudioBuffer::ExternalMemory {
  public:
   explicit SelfOwnedMemory(size_t size)
