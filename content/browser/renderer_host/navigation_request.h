@@ -2114,10 +2114,6 @@ class CONTENT_EXPORT NavigationRequest
   // contexts or if DocumentIsolationPolicy is not supported.
   void SanitizeDocumentIsolationPolicyHeader();
 
-  // Sets up service worker client info to inherit controller from the parent
-  // frame if it is a same origin srcdoc iframe.
-  void InheritServiceWorkerControllerFromParentIfNeeded();
-
   // Never null. The pointee node owns this navigation request instance.
   // This field is not a raw_ptr because of incompatibilities with tracing
   // (TRACE_EVENT*), perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.
