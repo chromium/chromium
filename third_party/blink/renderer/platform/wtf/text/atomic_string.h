@@ -18,11 +18,6 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/377326291): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ATOMIC_STRING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ATOMIC_STRING_H_
 
@@ -60,12 +55,11 @@ class WTF_EXPORT AtomicString {
   static void Init();
 
   AtomicString() = default;
-  explicit AtomicString(const LChar* chars)
-      : AtomicString(base::span<const LChar>{
-            chars, chars ? strlen(reinterpret_cast<const char*>(chars)) : 0}) {}
-
   explicit AtomicString(const char* chars)
-      : AtomicString(reinterpret_cast<const LChar*>(chars)) {}
+      // SAFETY: The below span creation is safe if `chars` points to a
+      // NUL-terminated string.
+      : AtomicString(base::as_bytes(
+            UNSAFE_BUFFERS(base::span(chars, chars ? strlen(chars) : 0u)))) {}
   explicit AtomicString(base::span<const LChar> chars);
   explicit AtomicString(
       base::span<const UChar> chars,
