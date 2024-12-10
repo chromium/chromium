@@ -8,4 +8,5 @@ include_rules = [
   "+components/drive",
   "+components/invalidation/impl/fake_invalidation_service.h",
   "+components/signin",
+  "+mojo/core",
 ]
