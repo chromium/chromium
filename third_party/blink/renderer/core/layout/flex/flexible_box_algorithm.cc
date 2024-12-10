@@ -77,6 +77,7 @@ ContentDistributionType BoxPackToContentDistribution(EBoxPack box_pack) {
 
 FlexItem::FlexItem(const FlexibleBoxAlgorithm* algorithm,
                    const ComputedStyle& style,
+                   unsigned main_axis_auto_margin_count,
                    LayoutUnit flex_base_content_size,
                    MinMaxSizes min_max_main_sizes,
                    LayoutUnit main_axis_border_padding,
@@ -91,6 +92,7 @@ FlexItem::FlexItem(const FlexibleBoxAlgorithm* algorithm,
       style_(style),
       flex_grow_(style.ResolvedFlexGrow(algorithm_->StyleRef())),
       flex_shrink_(style.ResolvedFlexShrink(algorithm_->StyleRef())),
+      main_axis_auto_margin_count_(main_axis_auto_margin_count),
       flex_base_content_size_(flex_base_content_size),
       min_max_main_sizes_(min_max_main_sizes),
       hypothetical_main_content_size_(
@@ -455,30 +457,16 @@ bool FlexLine::ResolveFlexibleLengths() {
 }
 
 LayoutUnit FlexLine::ApplyMainAxisAutoMarginAdjustment() {
-  if (remaining_free_space_ <= LayoutUnit())
+  if (remaining_free_space_ <= LayoutUnit()) {
     return LayoutUnit();
-
-  int number_of_auto_margins = 0;
-  bool is_horizontal = algorithm_->IsHorizontalFlow();
-  for (const auto& line_item : line_items_) {
-    const ComputedStyle& style = *line_item.style_;
-    if (is_horizontal) {
-      if (style.MarginLeft().IsAuto())
-        ++number_of_auto_margins;
-      if (style.MarginRight().IsAuto())
-        ++number_of_auto_margins;
-    } else {
-      if (style.MarginTop().IsAuto())
-        ++number_of_auto_margins;
-      if (style.MarginBottom().IsAuto())
-        ++number_of_auto_margins;
-    }
   }
-  if (!number_of_auto_margins)
+
+  if (!main_axis_auto_margin_count_) {
     return LayoutUnit();
+  }
 
   LayoutUnit size_of_auto_margin =
-      remaining_free_space_ / number_of_auto_margins;
+      remaining_free_space_ / main_axis_auto_margin_count_;
   remaining_free_space_ = LayoutUnit();
   return size_of_auto_margin;
 }
@@ -609,10 +597,11 @@ FlexibleBoxAlgorithm::FlexibleBoxAlgorithm(const ComputedStyle* style,
 
 FlexLine* FlexibleBoxAlgorithm::ComputeNextFlexLine() {
   LayoutUnit sum_flex_base_size;
+  LayoutUnit sum_hypothetical_main_size;
   double total_flex_grow = 0;
   double total_flex_shrink = 0;
   double total_weighted_flex_shrink = 0;
-  LayoutUnit sum_hypothetical_main_size;
+  unsigned main_axis_auto_margin_count = 0;
 
   bool line_has_in_flow_item = false;
 
@@ -630,12 +619,13 @@ FlexLine* FlexibleBoxAlgorithm::ComputeNextFlexLine() {
     line_has_in_flow_item = true;
     sum_flex_base_size +=
         flex_item.FlexBaseMarginBoxSize() + gap_between_items_;
+    sum_hypothetical_main_size +=
+        flex_item.HypotheticalMainAxisMarginBoxSize() + gap_between_items_;
     total_flex_grow += flex_item.flex_grow_;
     total_flex_shrink += flex_item.flex_shrink_;
     total_weighted_flex_shrink +=
         flex_item.flex_shrink_ * flex_item.flex_base_content_size_;
-    sum_hypothetical_main_size +=
-        flex_item.HypotheticalMainAxisMarginBoxSize() + gap_between_items_;
+    main_axis_auto_margin_count += flex_item.main_axis_auto_margin_count_;
   }
   if (line_has_in_flow_item) {
     // We added a gap after every item but there shouldn't be one after the last
@@ -650,8 +640,9 @@ FlexLine* FlexibleBoxAlgorithm::ComputeNextFlexLine() {
   if (next_item_index_ > start_index) {
     return &flex_lines_.emplace_back(
         this, FlexItemVectorView(&all_items_, start_index, next_item_index_),
-        sum_flex_base_size, total_flex_grow, total_flex_shrink,
-        total_weighted_flex_shrink, sum_hypothetical_main_size);
+        sum_flex_base_size, sum_hypothetical_main_size, total_flex_grow,
+        total_flex_shrink, total_weighted_flex_shrink,
+        main_axis_auto_margin_count);
   }
   return nullptr;
 }

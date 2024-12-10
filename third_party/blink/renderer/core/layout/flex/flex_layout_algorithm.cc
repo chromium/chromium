@@ -603,6 +603,11 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         border_padding_in_child_writing_mode.ConvertToPhysical(
             child_style.GetWritingDirection()));
 
+    const unsigned main_axis_auto_margin_count =
+        is_horizontal_flow_ ? child_style.MarginLeft().IsAuto() +
+                                  child_style.MarginRight().IsAuto()
+                            : child_style.MarginTop().IsAuto() +
+                                  child_style.MarginBottom().IsAuto();
     const LayoutUnit main_axis_border_padding =
         is_horizontal_flow_ ? physical_border_padding.HorizontalSum()
                             : physical_border_padding.VerticalSum();
@@ -886,12 +891,12 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         /* is_parallel_context */ !is_column_, is_last_baseline,
         /* is_flipped */ is_wrap_reverse);
     algorithm_
-        .emplace_back(child.Style(), flex_base_content_size,
-                      min_max_sizes_in_main_axis_direction,
-                      main_axis_border_padding, physical_child_margins,
-                      scrollbars, baseline_writing_mode, baseline_group,
-                      is_initial_block_size_indefinite,
-                      is_used_flex_basis_indefinite, depends_on_min_max_sizes)
+        .emplace_back(
+            child.Style(), main_axis_auto_margin_count, flex_base_content_size,
+            min_max_sizes_in_main_axis_direction, main_axis_border_padding,
+            physical_child_margins, scrollbars, baseline_writing_mode,
+            baseline_group, is_initial_block_size_indefinite,
+            is_used_flex_basis_indefinite, depends_on_min_max_sizes)
         .ng_input_node_ = child;
     // Save the layout result so that we can maybe reuse it later.
     if (layout_result && !is_main_axis_inline_axis) {
