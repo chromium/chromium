@@ -3584,6 +3584,11 @@ void RenderProcessHostImpl::SetUnresponsiveDocumentJSCallStackAndToken(
   unresponsive_document_javascript_call_stack_ =
       untrusted_javascript_call_stack;
   unresponsive_document_token_ = frame_token.value();
+  TRACE_EVENT1(
+      "browser",
+      "RenderProcessHostImpl::SetUnresponsiveDocumentJSCallStackAndToken",
+      "UnresponsiveJavaScriptCallStack",
+      unresponsive_document_javascript_call_stack_);
 }
 
 void RenderProcessHostImpl::InterruptJavaScriptIsolateAndCollectCallStack() {
