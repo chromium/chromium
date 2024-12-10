@@ -131,6 +131,14 @@ DedicatedWorkerHost::DedicatedWorkerHost(
 }
 
 DedicatedWorkerHost::~DedicatedWorkerHost() {
+  // If this instance is being destroyed because its mojo connection was
+  // disconnected, then the destruction of the `service_worker_handle_` could
+  // end up causing this instance to be deleted again through
+  // RenderProcessExited, if that handle was the only thing keeping the
+  // RenderProcessHost alive. Stop observing the RenderProcessHost right away to
+  // avoid this issue. See https://crbug.com/383067308
+  scoped_process_host_observation_.Reset();
+
   // This DedicatedWorkerHost is destroyed via either the mojo disconnection
   // or RenderProcessHostObserver. This destruction should be called before
   // the observed render process host (`worker_process_host_`) is destroyed.
