@@ -89,15 +89,12 @@ if (enable_extensions) {
     "web_view_internal.json",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     extensions_api_schema_files_ += [
       "diagnostics.idl",
       "media_perception_private.idl",
+      "webcam_private.idl",
     ]
-  }
-
-  if (is_chromeos) {
-    extensions_api_schema_files_ += [ "webcam_private.idl" ]
   }
 }
 

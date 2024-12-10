@@ -82,12 +82,4 @@ void LaunchAppWithCallback(
     base::OnceCallback<void(Browser* browser, apps::LaunchContainer container)>
         callback);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Shows the browser for |profile| if existent, otherwise attempts to open it.
-// Returns true if browser window already exists or if it was successfully
-// launched.
-bool ShowBrowserForProfile(Profile* profile,
-                           const apps::AppLaunchParams& params);
-#endif
-
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_APPLICATION_LAUNCH_H_

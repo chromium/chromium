@@ -102,7 +102,7 @@
 #include "pdf/pdf_features.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "base/containers/extend.h"
 #endif
@@ -198,20 +198,12 @@ bool TryToLoadImage(const content::ToRenderFrameHost& adapter,
 // potential UI issue on mac. We should fix the issue on mac and remove its
 // dependency on BrowserList::GetLastActive().
 
-void WaitUntilBrowserBecomeActiveOrLastActive(Browser* browser) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  ui_test_utils::WaitUntilBrowserBecomeActive(browser);
-#else
+void WaitUntilBrowserBecomeLastActive(Browser* browser) {
   ui_test_utils::WaitForBrowserSetLastActive(browser);
-#endif
 }
 
 void ExpectBrowserBecomesActiveOrLastActive(Browser* browser) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_TRUE(ui_test_utils::IsBrowserActive(browser));
-#else
   EXPECT_EQ(browser, chrome::FindLastActive());
-#endif
 }
 
 }  // namespace
@@ -229,6 +221,7 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
         // tests.
         features::kHttpsUpgrades,
     };
+
     scoped_feature_list_.InitWithFeatures(/*enabled_features=*/{}, disabled);
   }
 
@@ -336,7 +329,7 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
   // that navigated to |target_url| in the main browser window.
   void TestAppActionOpensForegroundTab(base::OnceClosure action,
                                        const GURL& target_url) {
-    WaitUntilBrowserBecomeActiveOrLastActive(app_browser_);
+    WaitUntilBrowserBecomeLastActive(app_browser_);
     ExpectBrowserBecomesActiveOrLastActive(app_browser_);
 
     size_t num_browsers = chrome::GetBrowserCount(profile());
@@ -347,7 +340,7 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
     ASSERT_NO_FATAL_FAILURE(std::move(action).Run());
 
     // Wait until the main browser becomes active.
-    WaitUntilBrowserBecomeActiveOrLastActive(browser());
+    WaitUntilBrowserBecomeLastActive(browser());
 
     EXPECT_EQ(num_browsers, chrome::GetBrowserCount(profile()));
     ExpectBrowserBecomesActiveOrLastActive(browser());
@@ -429,7 +422,7 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, MAYBE_CtrlClickLink) {
     GTEST_SKIP() << "Ctrl-click tests for web apps are thoroughly handled in "
                     "WebAppLinkCapturingParameterizedBrowserTest";
   }
-  WaitUntilBrowserBecomeActiveOrLastActive(browser());
+  WaitUntilBrowserBecomeLastActive(browser());
   ExpectBrowserBecomesActiveOrLastActive(browser());
 
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -443,7 +436,7 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, MAYBE_CtrlClickLink) {
   url_observer.Wait();
 
   // Wait until app_browser_ becomes active.
-  WaitUntilBrowserBecomeActiveOrLastActive(app_browser_);
+  WaitUntilBrowserBecomeLastActive(app_browser_);
   ExpectBrowserBecomesActiveOrLastActive(app_browser_);
 
   const GURL url = embedded_test_server()->GetURL(
@@ -702,7 +695,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering,
 }
 
 // TODO(crbug.com/40890220): Flaky test.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(HostedAppTest, DISABLED_LoadIcon) {
   SetupApp("hosted_app");
 

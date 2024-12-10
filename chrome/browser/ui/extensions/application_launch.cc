@@ -179,8 +179,8 @@ ui::mojom::WindowShowState DetermineWindowShowState(
     return ui::mojom::WindowShowState::kFullscreen;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // In ash, LAUNCH_TYPE_FULLSCREEN launches in a maximized app window and
+#if BUILDFLAG(IS_CHROMEOS)
+  // In ChromeOS, LAUNCH_TYPE_FULLSCREEN launches in a maximized app window and
   // LAUNCH_TYPE_WINDOW launches in a default app window.
   extensions::LaunchType launch_type =
       extensions::GetLaunchType(ExtensionPrefs::Get(profile), extension);
@@ -271,9 +271,9 @@ WebContents* OpenApplicationTab(Profile* profile,
     contents = params.navigated_or_inserted_contents;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // In ash, LAUNCH_FULLSCREEN launches in the OpenApplicationWindow function
-  // i.e. it should not reach here.
+#if BUILDFLAG(IS_CHROMEOS)
+  // In ChromeOS, LAUNCH_FULLSCREEN launches in the OpenApplicationWindow
+  // function i.e. it should not reach here.
   DCHECK(launch_type != extensions::LAUNCH_TYPE_FULLSCREEN);
 #else
   // TODO(skerner):  If we are already in full screen mode, and the user set the
@@ -284,7 +284,7 @@ WebContents* OpenApplicationTab(Profile* profile,
       !browser->window()->IsFullscreen()) {
     chrome::ToggleFullscreenMode(browser, /*user_initiated=*/false);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return contents;
 }
 
@@ -372,12 +372,6 @@ WebContents* OpenEnabledApplication(Profile* profile,
   if (!extension) {
     return nullptr;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!profile->IsMainProfile()) {
-    return nullptr;
-  }
-#endif
 
   if (extensions::WebFileHandlers::SupportsWebFileHandlers(*extension)) {
     // If the extension supports Web File Handlers, File Handlers are required.
@@ -585,28 +579,3 @@ void LaunchAppWithCallback(
 
   std::move(callback).Run(app_browser, container);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool ShowBrowserForProfile(Profile* profile,
-                           const apps::AppLaunchParams& params) {
-  Browser* browser = chrome::FindTabbedBrowser(
-      profile, /*match_original_profiles=*/false, params.display_id);
-  if (browser) {
-    // For existing browser, ensure its window is shown and activated.
-    browser->window()->Show();
-    browser->window()->Activate();
-    return true;
-  }
-
-  // No browser for this profile, need to open a new one.
-  if (Browser::GetCreationStatusForProfile(profile) ==
-      Browser::CreationStatus::kOk) {
-    browser = Browser::Create(
-        Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
-    browser->window()->Show();
-    return true;
-  }
-
-  return false;
-}
-#endif

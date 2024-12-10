@@ -559,10 +559,6 @@ static_library("common") {
     sources += [
       "manifest_handlers/action_handlers_handler.cc",
       "manifest_handlers/action_handlers_handler.h",
-    ]
-  }
-  if (is_chromeos_ash) {
-    sources += [
       "manifest_handlers/input_components_handler.cc",
       "manifest_handlers/input_components_handler.h",
     ]
@@ -713,11 +709,10 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos) {
-    sources += [ "manifest_handlers/file_handler_manifest_unittest.cc" ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [ "manifest_handlers/action_handlers_handler_unittest.cc" ]
+    sources += [
+      "manifest_handlers/action_handlers_handler_unittest.cc",
+      "manifest_handlers/file_handler_manifest_unittest.cc",
+    ]
   }
 
   data = [

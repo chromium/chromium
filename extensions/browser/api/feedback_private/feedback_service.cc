@@ -412,7 +412,7 @@ void FeedbackService::OnAllLogsFetched(
                           base::TimeTicks::Now() - params.form_submit_time);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void FeedbackService::EncryptVariations(
     scoped_refptr<feedback::FeedbackData> feedback_data,
     base::RepeatingClosure barrier_closure) {
@@ -661,6 +661,6 @@ void FeedbackService::VariationsFinished(
   std::move(barrier_closure).Run();
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions
