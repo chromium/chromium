@@ -3953,8 +3953,8 @@ This is emitted for two scenarios when a worker may be unregistered:
     It is permuted by channel type (message type). {ChannelType}.
   </summary>
   <token key="DispatchTarget">
-    <variant name="ForFrame" summary="frame"/>
-    <variant name="ForWorker" summary="worker"/>
+    <variant name=".ForFrame" summary="frame"/>
+    <variant name=".ForWorker" summary="worker"/>
   </token>
   <token key="ChannelType" variants="ChannelType"/>
 </histogram>
