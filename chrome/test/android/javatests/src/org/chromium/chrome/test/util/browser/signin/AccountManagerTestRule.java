@@ -159,24 +159,10 @@ public class AccountManagerTestRule implements TestRule {
     /**
      * Initializes the next add account flow with a given account to add.
      *
-     * @param newAccountName The account name to return when the add account flow finishes.
+     * @param newAccount The account that should be added by the add account flow.
      */
-    public void setAddAccountFlowResult(@Nullable String newAccountName) {
-        setAddAccountFlowResult(newAccountName, false);
-    }
-
-    /**
-     * Initializes the next add account flow with a given account to add. Should be called before
-     * the add account flow starts.
-     *
-     * @param newAccountName The account name to return when the add account flow finishes.
-     * @param isMinorModeEnabled The account be subject to minor mode restrictions
-     */
-    public void setAddAccountFlowResult(
-            @Nullable String newAccountName, boolean isMinorModeEnabled) {
-        // TODO(crbug.com/343872217) To be replaced with a single method that takes {@link
-        // AccountInfo}
-        mFakeAccountManagerFacade.setAddAccountFlowResult(newAccountName, isMinorModeEnabled);
+    public void setAddAccountFlowResult(@Nullable AccountInfo newAccount) {
+        mFakeAccountManagerFacade.setAddAccountFlowResult(newAccount);
     }
 
     /** Removes an account with the given {@link CoreAccountId}. */

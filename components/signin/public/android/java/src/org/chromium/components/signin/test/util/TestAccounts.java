@@ -63,6 +63,8 @@ public class TestAccounts {
             new AccountInfo.Builder(
                             "test.noname@gmail.com",
                             FakeAccountManagerFacade.toGaiaId("test.noname@gmail.com"))
+                    .fullName(null)
+                    .givenName(null)
                     .build();
 
     /**

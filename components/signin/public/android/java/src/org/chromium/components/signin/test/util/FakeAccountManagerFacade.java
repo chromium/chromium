@@ -80,24 +80,15 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
             Intent data = new Intent();
             FakeAccountManagerFacade accountManagerFacade =
                     (FakeAccountManagerFacade) AccountManagerFacadeProvider.getInstance();
-            String addedAccountName = accountManagerFacade.mNameOfAccountToAdd;
-            boolean minorModeEnabled = accountManagerFacade.mIsMinorModeEnabledForAccountToAdd;
+            AccountInfo addedAccount = accountManagerFacade.mAccountToAdd;
 
-            data.putExtra(AccountManager.KEY_ACCOUNT_NAME, addedAccountName);
-            if (addedAccountName != null) {
+            data.putExtra(
+                    AccountManager.KEY_ACCOUNT_NAME, CoreAccountInfo.getEmailFrom(addedAccount));
+            if (addedAccount != null) {
                 ((FakeAccountManagerFacade) AccountManagerFacadeProvider.getInstance())
-                        .addAccount(
-                                new AccountInfo.Builder(
-                                                addedAccountName, toGaiaId(addedAccountName))
-                                        .accountCapabilities(
-                                                new AccountCapabilitiesBuilder()
-                                                        .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(
-                                                                !minorModeEnabled)
-                                                        .build())
-                                        .build());
+                        .addAccount(addedAccount);
             }
-            accountManagerFacade.mNameOfAccountToAdd = null;
-            accountManagerFacade.mIsMinorModeEnabledForAccountToAdd = false;
+            accountManagerFacade.mAccountToAdd = null;
             setResult(RESULT_OK, data);
             finish();
         }
@@ -105,8 +96,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         private void cancel() {
             FakeAccountManagerFacade accountManagerFacade =
                     (FakeAccountManagerFacade) AccountManagerFacadeProvider.getInstance();
-            accountManagerFacade.mNameOfAccountToAdd = null;
-            accountManagerFacade.mIsMinorModeEnabledForAccountToAdd = false;
+            accountManagerFacade.mAccountToAdd = null;
             setResult(RESULT_CANCELED, null);
             finish();
         }
@@ -125,11 +115,8 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     private Intent mAddAccountIntent =
             new Intent(ContextUtils.getApplicationContext(), AddAccountActivityStub.class);
 
-    /** Name of the account that will be added by AddAccountActivityStub. */
-    private String mNameOfAccountToAdd;
-
-    /** Whether the minor mode is enabled for the account added by AddAccountActivityStub. */
-    private boolean mIsMinorModeEnabledForAccountToAdd;
+    /** The account that will be added by AddAccountActivityStub. */
+    private AccountInfo mAccountToAdd;
 
     private boolean mDidAccountFetchingSucceed = true;
 
@@ -367,14 +354,10 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     /**
      * Initializes the next add account flow with a given account to add.
      *
-     * @param newAccountName The account name to return when the add account flow finishes.
-     * @param isMinorModeEnabled The account is subjected to minor mode restrictions
+     * @param newAccount The account that should be added by the add account flow.
      */
-    public void setAddAccountFlowResult(
-            @Nullable String newAccountName, boolean isMinorModeEnabled) {
-        // TODO(crbug.com/343872217) Update method to use AccountInfo
-        mNameOfAccountToAdd = newAccountName;
-        mIsMinorModeEnabledForAccountToAdd = isMinorModeEnabled;
+    public void setAddAccountFlowResult(@Nullable AccountInfo newAccount) {
+        mAccountToAdd = newAccount;
     }
 
     /**

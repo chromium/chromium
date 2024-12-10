@@ -416,7 +416,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         // Add the second account.
         onView(withText(TestAccounts.AADC_ADULT_ACCOUNT.getEmail())).perform(click());
         onView(withText(R.string.signin_add_account_to_device)).perform(click());
-        mSigninTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2.getEmail());
+        mSigninTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2);
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         // Verify that the fullscreen sign-in promo is shown with the newly added account.

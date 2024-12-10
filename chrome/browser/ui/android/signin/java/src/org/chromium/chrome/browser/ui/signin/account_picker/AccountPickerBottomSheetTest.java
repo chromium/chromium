@@ -34,6 +34,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -1078,7 +1079,7 @@ public class AccountPickerBottomSheetTest {
         buildAndShowCollapsedThenExpandedBottomSheet();
 
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
-        mAccountManagerTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2.getEmail());
+        mAccountManagerTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2);
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
@@ -1107,7 +1108,7 @@ public class AccountPickerBottomSheetTest {
         buildAndShowBottomSheet(AccountPickerLaunchMode.CHOOSE_ACCOUNT);
 
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
-        mAccountManagerTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2.getEmail());
+        mAccountManagerTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2);
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
@@ -1257,7 +1258,7 @@ public class AccountPickerBottomSheetTest {
 
         // Start sign-in and remove the account before completing the device lock.
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
-        mAccountManagerTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2.getEmail());
+        mAccountManagerTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2);
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT2.getId());
         SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
@@ -1277,7 +1278,7 @@ public class AccountPickerBottomSheetTest {
 
         // Start sign-in and remove the account before validating the management notice.
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
-        mAccountManagerTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2.getEmail());
+        mAccountManagerTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2);
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
         waitForView(
                 (ViewGroup) mCoordinator.getBottomSheetViewForTesting(),
@@ -1394,7 +1395,7 @@ public class AccountPickerBottomSheetTest {
             onView(withId(R.id.account_picker_header_subtitle)).check(matches(not(isDisplayed())));
         }
         onVisibleView(withText(accountInfo.getEmail())).check(matches(isDisplayed()));
-        if (!accountInfo.getFullName().isEmpty()) {
+        if (!TextUtils.isEmpty(accountInfo.getFullName())) {
             onVisibleView(withText(accountInfo.getFullName())).check(matches(isDisplayed()));
         }
         String continueAsText =
@@ -1402,7 +1403,7 @@ public class AccountPickerBottomSheetTest {
                         .getActivity()
                         .getString(
                                 R.string.sync_promo_continue_as,
-                                accountInfo.getGivenName().isEmpty()
+                                TextUtils.isEmpty(accountInfo.getGivenName())
                                         ? accountInfo.getEmail()
                                         : accountInfo.getGivenName());
         onView(withText(continueAsText)).check(matches(isDisplayed()));
