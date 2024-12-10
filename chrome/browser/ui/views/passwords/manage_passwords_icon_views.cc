@@ -43,6 +43,7 @@ ManagePasswordsIconViews::ManagePasswordsIconViews(
   const std::u16string tooltip_and_accessible_name_text =
       GetTextForTooltipAndAccessibleName();
   GetViewAccessibility().SetName(tooltip_and_accessible_name_text);
+  UpdateTooltipText();
 
   // TODO(b/353777476): Strip out pinned toolbar button code into a shared
   // controller for page action and pinned button.
@@ -68,6 +69,7 @@ void ManagePasswordsIconViews::SetState(password_manager::ui::State state) {
   const std::u16string tooltip_and_accessible_name_text =
       GetTextForTooltipAndAccessibleName();
   GetViewAccessibility().SetName(tooltip_and_accessible_name_text);
+  UpdateTooltipText();
 
   // TODO(b/353777476): Strip out pinned toolbar button code into a shared
   // controller for page action and pinned button.

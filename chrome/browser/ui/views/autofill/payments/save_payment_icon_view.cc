@@ -51,6 +51,7 @@ SavePaymentIconView::SavePaymentIconView(
   command_id_ = command_id;
   SetUpForInOutAnimation();
   GetViewAccessibility().SetName(GetTextForTooltipAndAccessibleName());
+  UpdateTooltipText();
 }
 
 SavePaymentIconView::~SavePaymentIconView() = default;
@@ -84,6 +85,7 @@ void SavePaymentIconView::UpdateImpl() {
   SetVisible(should_show);
 
   GetViewAccessibility().SetName(GetTextForTooltipAndAccessibleName());
+  UpdateTooltipText();
 
   if (command_enabled && controller->ShouldShowSavingPaymentAnimation()) {
     SetEnabled(false);

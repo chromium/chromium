@@ -30,6 +30,7 @@ AddressBubblesIconView::AddressBubblesIconView(
                          "SaveAutofillAddress",
                          kActionShowAddressesBubbleOrPage) {
   GetViewAccessibility().SetName(GetTextForTooltipAndAccessibleName());
+  UpdateTooltipText();
 }
 
 AddressBubblesIconView::~AddressBubblesIconView() = default;
@@ -58,6 +59,7 @@ void AddressBubblesIconView::UpdateImpl() {
 
   SetVisible(should_show);
   GetViewAccessibility().SetName(GetTextForTooltipAndAccessibleName());
+  UpdateTooltipText();
 }
 
 std::u16string
