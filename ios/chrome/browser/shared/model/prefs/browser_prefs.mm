@@ -195,22 +195,6 @@ constexpr char
 // Deprecated 11/2024
 constexpr char kEnableDoNotTrackIos[] = "enable_do_not_track";
 
-// Helper function migrating the preference `pref_name` of type "double" from
-// `defaults` to `pref_service`.
-void MigrateDoublePreferenceFromUserDefaults(std::string_view pref_name,
-                                             PrefService* pref_service,
-                                             NSUserDefaults* defaults) {
-  NSString* key = @(pref_name.data());
-  NSNumber* value =
-      base::apple::ObjCCast<NSNumber>([defaults objectForKey:key]);
-  if (!value) {
-    return;
-  }
-
-  pref_service->SetDouble(pref_name.data(), [value doubleValue]);
-  [defaults removeObjectForKey:key];
-}
-
 // Helper function migrating the preference `pref_name` of type "int" from
 // `defaults` to `pref_service`.
 void MigrateIntegerPreferenceFromUserDefaults(std::string_view pref_name,
@@ -272,26 +256,6 @@ void MigrateNSDatePreferenceFromUserDefaults(std::string_view pref_name,
   }
 
   pref_service->SetTime(pref_name.data(), base::Time::FromNSDate(value));
-  [defaults removeObjectForKey:key];
-}
-
-// Helper function migrating the preference `pref_name` of type Array of NSDate
-// from `defaults` to `pref_service`.
-void MigrateArrayOfDatesPreferenceFromUserDefaults(std::string_view pref_name,
-                                                   PrefService* pref_service,
-                                                   NSUserDefaults* defaults) {
-  NSString* key = @(pref_name.data());
-  NSArray* value =
-      base::apple::ObjCCastStrict<NSArray>([defaults objectForKey:key]);
-  if (!value) {
-    return;
-  }
-  base::Value::List list_value;
-  for (NSDate* date : value) {
-    base::Time time = base::Time::FromNSDate(date);
-    list_value.Append(TimeToValue(time));
-  }
-  pref_service->SetList(pref_name.data(), std::move(list_value));
   [defaults removeObjectForKey:key];
 }
 
@@ -1184,60 +1148,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  // Added 09/2023.
-  // TODO(crbug.com/40933843) To be removed after a few milestones.
-  MigrateNSDatePreferenceFromUserDefaults(kActivityBucketLastReportedDateKey,
-                                          prefs, defaults);
-
-  // Added 10/2023.
-  // TODO(crbug.com/40933843) To be removed after a few milestones.
-  MigrateIntegerPreferenceFromUserDefaults(kActivityBucketKey, prefs, defaults);
-
-  // Added 10/2023.
-  // TODO(crbug.com/40933843) To be removed after a few milestones.
-  MigrateDoublePreferenceFromUserDefaults(kTimeSpentInFeedAggregateKey, prefs,
-                                          defaults);
-
-  // Added 10/2023.
-  // TODO(crbug.com/40933843) To be removed after a few milestones.
-  MigrateNSDatePreferenceFromUserDefaults(kLastDayTimeInFeedReportedKey, prefs,
-                                          defaults);
-
-  // Added 10/2023.
-  MigrateNSDatePreferenceFromUserDefaults(
-      kLastInteractionTimeForFollowingGoodVisits, prefs, defaults);
-
-  // Added 10/2023.
-  MigrateNSDatePreferenceFromUserDefaults(
-      kLastInteractionTimeForDiscoverGoodVisits, prefs, defaults);
-
-  // Added 10/2023.
-  MigrateNSDatePreferenceFromUserDefaults(kLastInteractionTimeForGoodVisits,
-                                          prefs, defaults);
-
-  // Added 10/2023.
-  MigrateDoublePreferenceFromUserDefaults(
-      kLongDiscoverFeedVisitTimeAggregateKey, prefs, defaults);
-
-  // Added 10/2023.
-  MigrateDoublePreferenceFromUserDefaults(
-      kLongFollowingFeedVisitTimeAggregateKey, prefs, defaults);
-
-  // Added 10/2023.
-  MigrateDoublePreferenceFromUserDefaults(kLongFeedVisitTimeAggregateKey, prefs,
-                                          defaults);
-
-  // Added 10/2023.
-  MigrateNSDatePreferenceFromUserDefaults(kArticleVisitTimestampKey, prefs,
-                                          defaults);
-
-  // Added 10/2023.
-  MigrateIntegerPreferenceFromUserDefaults(kLastUsedFeedForGoodVisitsKey, prefs,
-                                           defaults);
-
-  // Added 10/2023.
-  MigrateArrayOfDatesPreferenceFromUserDefaults(
-      kActivityBucketLastReportedDateArrayKey, prefs, defaults);
 
   // Added 12/2023.
   prefs->ClearPref(kSigninLastAccounts);
