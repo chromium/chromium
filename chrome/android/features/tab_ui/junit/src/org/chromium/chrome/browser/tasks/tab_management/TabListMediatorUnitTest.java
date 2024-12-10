@@ -482,7 +482,7 @@ public class TabListMediatorUnitTest {
 
         mModelList = new TabListModel();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
 
@@ -4985,7 +4985,7 @@ public class TabListMediatorUnitTest {
                 String.valueOf(value));
         FeatureList.mergeTestValues(testValues, /* replace= */ true);
 
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(value);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(value);
     }
 
     private void assertAllUnset(PropertyModel model, List<PropertyKey> keys) {

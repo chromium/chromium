@@ -76,7 +76,7 @@ public class PriceMessageServiceUnitTest {
         testValues.addFeatureFlagOverride(ChromeFeatureList.PRICE_ANNOTATIONS, true);
         FeatureList.setTestValues(testValues);
 
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(true);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
                 PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, true);

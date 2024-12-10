@@ -136,7 +136,7 @@ public class PriceChangeModuleMediatorUnitTest {
                         ContextUtils.getAppSharedPreferences());
         mSharedPreferenceManager = ChromeSharedPreferences.getInstance();
         mFaviconSize = mContext.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(true);
 
         Map<String, Boolean> featureOverride = new HashMap<>();
         featureOverride.put(ChromeFeatureList.PRICE_CHANGE_MODULE, true);

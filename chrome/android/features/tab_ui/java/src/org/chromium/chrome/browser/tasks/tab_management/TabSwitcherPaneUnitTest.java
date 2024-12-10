@@ -196,7 +196,7 @@ public class TabSwitcherPaneUnitTest {
 
         mActionTester = new UserActionTester();
 
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(true);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
 
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);

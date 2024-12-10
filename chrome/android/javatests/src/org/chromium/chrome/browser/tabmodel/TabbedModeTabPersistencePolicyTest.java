@@ -113,7 +113,7 @@ public class TabbedModeTabPersistencePolicyTest {
 
         Mockito.when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         Mockito.when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
     }
 
     @After

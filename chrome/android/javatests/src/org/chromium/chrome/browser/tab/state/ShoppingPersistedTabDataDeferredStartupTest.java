@@ -62,7 +62,7 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
                     PersistedTabDataConfiguration.setUseTestConfig(true);
                 });
         ProfileManager.setLastUsedProfileForTesting(mProfileMock);
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
         doReturn(true).when(mNavigationHandle).isInPrimaryMainFrame();
         ShoppingPersistedTabDataService.setServiceForTesting(mShoppingPersistedTabDataService);
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);

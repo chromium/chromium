@@ -595,7 +595,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
 
     private void setUpPriceTracking() {
         assert mProfile != null;
-        if (PriceTrackingFeatures.isPriceTrackingEnabled(mProfile)) {
+        if (PriceTrackingFeatures.isPriceAnnotationsEnabled(mProfile)) {
             PriceDropNotificationManager notificationManager =
                     PriceDropNotificationManagerFactory.create(mProfile);
             if (mPriceMessageService == null) {

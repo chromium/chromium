@@ -115,7 +115,7 @@ public class PriceChangeModuleBuilderUnitTest {
     @SmallTest
     public void testBuildModule_Eligible() {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(true);
         assertTrue(PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mProfile));
 
         assertTrue(mModuleBuilder.build(mModuleDelegate, mBuildCallback));
