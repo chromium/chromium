@@ -44,7 +44,7 @@ const AllEvents = [
     name: 'contentload',
     trigger: async (controlledframe) => {
       await new Promise((resolve, reject) => {
-        controlledframe.addEventListener('loadstop', resolve);
+        controlledframe.addEventListener('loadstop', resolve, {once: true});
         controlledframe.reload();
       });
     }
@@ -57,10 +57,22 @@ const AllEvents = [
     }
   },
   {
+    name: 'loadabort',
+    trigger: async (controlledframe) => {
+      await new Promise((resolve, reject) => {
+        controlledframe.addEventListener('loadabort', resolve, {once: true});
+        controlledframe.src = 'chrome://flags';
+      });
+    },
+    // Resets the <controlledframe> because this test case changes the 'src'
+    // attribute.
+    resetControlledFrameAfter: true
+  },
+  {
     name: 'loadcommit',
     trigger: async (controlledframe) => {
       await new Promise((resolve, reject) => {
-        controlledframe.addEventListener('loadstop', resolve);
+        controlledframe.addEventListener('loadstop', resolve, {once: true});
         controlledframe.reload();
       });
     }
@@ -69,7 +81,7 @@ const AllEvents = [
     name: 'loadstart',
     trigger: async (controlledframe) => {
       await new Promise((resolve, reject) => {
-        controlledframe.addEventListener('loadstop', resolve);
+        controlledframe.addEventListener('loadstop', resolve, {once: true});
         controlledframe.reload();
       });
     }
@@ -78,9 +90,17 @@ const AllEvents = [
     name: 'loadstop',
     trigger: async (controlledframe) => {
       await new Promise((resolve, reject) => {
-        controlledframe.addEventListener('loadstop', resolve);
+        controlledframe.addEventListener('loadstop', resolve, {once: true});
         controlledframe.reload();
       });
+    }
+  },
+  {
+    name: 'newwindow',
+    trigger: async (controlledframe) => {
+      controlledframe.executeScript({code: 'window.open("/title2.html");'});
+      // Wait a short time for window to be dropped.
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
   },
   {
@@ -92,11 +112,19 @@ const AllEvents = [
       })()`;
       await executeAsyncScript(controlledframe, triggerScript);
     }
+  },
+  {
+    name: 'zoomchange',
+    trigger: async (controlledframe) => {
+      controlledframe.setZoom(0.25325);
+      // Wait a short time for zoom to apply.
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
   }
 ];
 
 promise_test(async (test) => {
-  const controlledFrame = await createControlledFrame('/simple.html');
+  let controlledFrame = await createControlledFrame('/simple.html');
 
   for (oneEvent of AllEvents) {
     for (eventHandler of EventHandlers) {
@@ -114,7 +142,11 @@ promise_test(async (test) => {
 
       // Trigger the event, and verify that counter is increased.
       await oneEvent.trigger(controlledFrame);
-      assert_true(counter === 1);
+      assert_true(
+          counter === 1,
+          `Expected ${
+              oneEvent.name} to be triggered 1 time, but actually triggered ${
+              counter} time(s).`);
 
       // Reset the counter and unregister the handler.
       counter = 0;
@@ -123,7 +155,16 @@ promise_test(async (test) => {
 
       // Trigger the event again. Observe that the counter is not changed.
       await oneEvent.trigger(controlledFrame);
-      assert_true(counter === 0);
+      assert_true(
+          counter === 0,
+          `Expected ${
+              oneEvent.name} to be triggered 0 time, but actually triggered ${
+              counter} time(s).`);
+
+      if (oneEvent.resetControlledFrameAfter) {
+        controlledFrame.remove();
+        controlledFrame = await createControlledFrame('/simple.html');
+      }
     }
   }
 }, 'Event Handlers');
