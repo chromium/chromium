@@ -176,9 +176,9 @@ bool ImageLayerBridge::PrepareTransferableResource(
     if (!image_for_compositor || !image_for_compositor->ContextProvider())
       return false;
 
-    auto mailbox_holder = image_for_compositor->GetMailboxHolder();
+    auto shared_image = image_for_compositor->GetSharedImage();
 
-    if (mailbox_holder.mailbox.IsZero()) {
+    if (!shared_image) {
       // This can happen, for example, if an ImageBitmap is produced from a
       // WebGL-rendered OffscreenCanvas and then the WebGL context is forcibly
       // lost. This seems to be the only reliable point where this can be
@@ -189,14 +189,13 @@ bool ImageLayerBridge::PrepareTransferableResource(
     const gfx::Size size(image_for_compositor->width(),
                          image_for_compositor->height());
 
-    auto* sii = image_for_compositor->ContextProvider()->SharedImageInterface();
-    bool is_overlay_candidate = sii->UsageForMailbox(mailbox_holder.mailbox)
-                                    .Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
+    bool is_overlay_candidate =
+        shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
 
     SkColorType color_type = image_for_compositor->GetSkColorInfo().colorType();
     *out_resource = viz::TransferableResource::MakeGpu(
-        mailbox_holder.mailbox, mailbox_holder.texture_target,
-        mailbox_holder.sync_token, size,
+        shared_image, shared_image->GetTextureTarget(),
+        image_for_compositor->GetSyncToken(), size,
         viz::SkColorTypeToSinglePlaneSharedImageFormat(color_type),
         is_overlay_candidate,
         viz::TransferableResource::ResourceSource::kImageLayerBridge);
