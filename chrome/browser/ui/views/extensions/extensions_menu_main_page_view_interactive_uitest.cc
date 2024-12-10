@@ -27,10 +27,12 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/browser/extension_host_registry.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/interaction/state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -42,6 +44,49 @@ namespace {
 using PermissionsManager = extensions::PermissionsManager;
 using ScriptingPermissionsModifier = extensions::ScriptingPermissionsModifier;
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
+
+enum class ExtensionHostState { kNone = 0, kLoaded = 1, kDestroyed = 2 };
+
+class ExtensionHostObserver : public ui::test::ObservationStateObserver<
+                                  ExtensionHostState,
+                                  extensions::ExtensionHostRegistry,
+                                  extensions::ExtensionHostRegistry::Observer> {
+ public:
+  explicit ExtensionHostObserver(
+      extensions::ExtensionHostRegistry* host_registry,
+      const extensions::ExtensionId& extension_id)
+      : ObservationStateObserver(host_registry), extension_id_(extension_id) {
+    host_state_ = ExtensionHostState::kNone;
+  }
+  ~ExtensionHostObserver() override = default;
+
+ protected:
+  // ExtensionHostRegistry::Observer:
+  void OnExtensionHostCompletedFirstLoad(
+      content::BrowserContext* browser_context,
+      extensions::ExtensionHost* host) override {
+    if (host->extension_id() != extension_id_) {
+      return;
+    }
+
+    host_state_ = ExtensionHostState::kLoaded;
+    OnStateObserverStateChanged(host_state_);
+  }
+
+  void OnExtensionHostDestroyed(content::BrowserContext* browser_context,
+                                extensions::ExtensionHost* host) override {
+    if (host->extension_id() != extension_id_) {
+      return;
+    }
+
+    host_state_ = ExtensionHostState::kDestroyed;
+    OnStateObserverStateChanged(host_state_);
+  }
+
+ private:
+  extensions::ExtensionId extension_id_;
+  ExtensionHostState host_state_;
+};
 
 }  // namespace
 
@@ -520,6 +565,15 @@ class ExtensionsMenuMainPageViewInteractiveTest
         l10n_util::GetStringUTF16(label_id));
   }
 
+  // Verifies whether `extension_id` has its action popped out in the extensions
+  // container.
+  auto CheckPoppedOutAction(
+      const std::optional<extensions::ExtensionId>& extension_id) {
+    return CheckResult(
+        [&]() { return extensions_container()->GetPoppedOutActionId(); },
+        extension_id);
+  }
+
   // Returns the menu item view for `extension_id` in the menu's main page, if
   // existent.
   ExtensionMenuItemView* GetMenuItemViewFor(
@@ -655,9 +709,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       CheckResult(
           [&]() { return extensions_container()->IsExtensionsMenuShowing(); },
           false),
-      CheckResult(
-          [&]() { return extensions_container()->GetPoppedOutActionId(); },
-          std::nullopt));
+      CheckPoppedOutAction(std::nullopt));
 }
 
 // Tests triggering the extension's action while the extensions menu is opened
@@ -701,6 +753,53 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
   // fixed.
 }
 
+// Tests that clicking on the extension menu item for an extension with a popup
+// pops out its action on the toolbar and loads the popup, and when the popup
+// is dismissed the popup is closed and the action pops in on the toolbar.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
+                       TriggerExtensionPopup) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ExtensionHostObserver,
+                                      kExtensionHostState);
+
+  constexpr char kExtensionMenuItemActionButton[] =
+      "extension_menu_item_action_button";
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("simple_with_popup"));
+
+  RunTestSequence(
+      InstrumentTab(kTab), OpenExtensionsMenu(),
+
+      // Trigger the extension's action by clicking on its menu
+      // entry.
+      CheckView(kExtensionMenuItemViewElementId,
+                [extension](ExtensionMenuItemView* menu_item) {
+                  return menu_item->view_controller()->GetId() ==
+                         extension->id();
+                }),
+      NameDescendantViewByType<ExtensionsMenuButton>(
+          kExtensionMenuItemViewElementId, kExtensionMenuItemActionButton),
+      ObserveState(kExtensionHostState,
+                   extensions::ExtensionHostRegistry::Get(profile()),
+                   extension->id()),
+      PressButton(kExtensionMenuItemActionButton),
+
+      // Verify extension's action is popped out, and the extension's popup is
+      // loaded on the toolbar.
+      WaitForShow(kToolbarActionViewElementId),
+      CheckPoppedOutAction(extension->id()),
+      WaitForState(kExtensionHostState, ExtensionHostState::kLoaded),
+
+      // Hide the extension's popup.
+      Do([this]() { extensions_container()->HideActivePopup(); }),
+
+      // Verify the extension's popup is destroyed, and the extension's action
+      // is hidden on the toolbar.
+      WaitForState(kExtensionHostState, ExtensionHostState::kDestroyed),
+      WaitForHide(kToolbarActionViewElementId),
+      CheckPoppedOutAction(std::nullopt));
+}
+
 // Tests that removing an extension while it's action is showing a popup removes
 // the action from the toolbar.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
@@ -727,18 +826,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 
       // Verify extension's action is popped out.
       WaitForShow(kToolbarActionViewElementId).SetTransitionOnlyOnEvent(true),
-      CheckResult(
-          [&]() { return extensions_container()->GetPoppedOutActionId(); },
-          extension->id()),
+      CheckPoppedOutAction(extension->id()),
 
       // Disable the extension.
       Do([&]() { DisableExtension(extension->id()); }),
 
       // Verify extension's action is not popped out.
       WaitForHide(kToolbarActionViewElementId).SetTransitionOnlyOnEvent(true),
-      CheckResult(
-          [&]() { return extensions_container()->GetPoppedOutActionId(); },
-          std::nullopt));
+      CheckPoppedOutAction(std::nullopt));
 }
 
 // Tests that removing multiple extensions while one of the extension's action
@@ -772,9 +867,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 
       // Verify extension A action is popped out.
       WaitForShow(kToolbarActionViewElementId).SetTransitionOnlyOnEvent(true),
-      CheckResult(
-          [&]() { return extensions_container()->GetPoppedOutActionId(); },
-          extension_A->id()),
+      CheckPoppedOutAction(extension_A->id()),
 
       // Disable both extensions.
       Do([&]() {
@@ -784,9 +877,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 
       // Verify extension A action is not popped out.
       WaitForHide(kToolbarActionViewElementId).SetTransitionOnlyOnEvent(true),
-      CheckResult(
-          [&]() { return extensions_container()->GetPoppedOutActionId(); },
-          std::nullopt));
+      CheckPoppedOutAction(std::nullopt));
 }
 
 // Test that an extension's context menu shows the correct label when the
@@ -826,9 +917,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // Verify extension is pinned but not stored as the popped out action.
       WaitForShow(kToolbarActionViewElementId)
           .SetTransitionOnlyOnEvent(/*transition_only_on_event=*/true),
-      CheckResult(
-          [&]() { return extensions_container()->GetPoppedOutActionId(); },
-          std::nullopt),
+      CheckPoppedOutAction(std::nullopt),
 
       // Verify the toggle visibility entry is "unpin from toolbar" label when
       // context menu is opened from the toolbar action or the extensions menu.
@@ -875,9 +964,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // action.
       WaitForShow(kToolbarActionViewElementId)
           .SetTransitionOnlyOnEvent(/*transition_only_on_event=*/true),
-      CheckResult(
-          [this]() { return extensions_container()->GetPoppedOutActionId(); },
-          extension->id()),
+      CheckPoppedOutAction(extension->id()),
 
       // Verify the toggle visibility entry when opened from the toolbar is to
       // pin the extension, since the extension is not pinned (just popped out).
