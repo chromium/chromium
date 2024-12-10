@@ -13,6 +13,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -818,7 +819,7 @@ TEST_F(RenderViewImplTest, BeginNavigation) {
       blink::mojom::RequestContextType::INTERNAL);
   blink::WebHTTPBody post_body;
   post_body.Initialize();
-  post_body.AppendData("blah");
+  post_body.AppendData(blink::WebData(base::byte_span_from_cstring("blah")));
   form_navigation_info->url_request.SetHttpBody(post_body);
   form_navigation_info->url_request.SetRequestorOrigin(requestor_origin);
   form_navigation_info->frame_type =
@@ -938,7 +939,7 @@ TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
   data_navigation_info->url_request.SetHttpMethod("POST");
   blink::WebHTTPBody post_body;
   post_body.Initialize();
-  post_body.AppendData("blah");
+  post_body.AppendData(blink::WebData(base::byte_span_from_cstring("blah")));
   data_navigation_info->url_request.SetHttpBody(post_body);
   data_navigation_info->frame_type =
       blink::mojom::RequestContextFrameType::kTopLevel;

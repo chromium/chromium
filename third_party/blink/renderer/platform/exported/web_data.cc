@@ -44,15 +44,16 @@ void WebData::Assign(const WebData& other) {
   private_ = other.private_;
 }
 
-void WebData::Assign(const char* data, size_t size) {
-  private_ = SharedBuffer::Create(data, size);
+void WebData::Assign(base::span<const uint8_t> data) {
+  private_ = SharedBuffer::Create(data);
 }
 
-void WebData::Append(const char* data, size_t size) {
-  if (private_.IsNull())
-    private_ = SharedBuffer::Create(data, size);
-  else
-    private_->Append(data, size);
+void WebData::Append(base::span<const uint8_t> data) {
+  if (private_.IsNull()) {
+    private_ = SharedBuffer::Create(data);
+  } else {
+    private_->Append(data);
+  }
 }
 
 size_t WebData::size() const {

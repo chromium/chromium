@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/containers/span.h"
 #include "content/common/content_export.h"
 
 class SkBitmap;
@@ -20,9 +21,9 @@ namespace content {
 // Helper function to decode the image using the data passed in.
 // On success returns the decoded image.
 // On failure returns an empty bitmap.
-CONTENT_EXPORT SkBitmap DecodeImage(const unsigned char* data,
-                                    const gfx::Size& desired_image_size,
-                                    size_t size);
+CONTENT_EXPORT SkBitmap DecodeImage(base::span<const uint8_t> data,
+                                    const gfx::Size& desired_image_size);
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_CHILD_IMAGE_DECODER_UTILS_H_

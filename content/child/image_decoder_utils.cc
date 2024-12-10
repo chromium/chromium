@@ -13,11 +13,9 @@ using blink::WebImage;
 
 namespace content {
 
-SkBitmap DecodeImage(const unsigned char* data,
-                     const gfx::Size& desired_image_size,
-                     size_t size) {
-  WebData buffer(reinterpret_cast<const char*>(data), size);
-  return WebImage::FromData(buffer, desired_image_size);
+SkBitmap DecodeImage(base::span<const unsigned char> data,
+                     const gfx::Size& desired_image_size) {
+  return WebImage::FromData(WebData(data), desired_image_size);
 }
 
 }  // namespace content
