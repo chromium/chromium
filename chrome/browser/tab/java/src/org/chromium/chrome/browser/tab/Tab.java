@@ -343,7 +343,7 @@ public interface Tab extends TabLifecycle {
     long getTimestampMillis();
 
     /**
-     * Sets the last time this tab was shown. Used for delcutter to mark the tab as "active" after
+     * Sets the last time this tab was shown. Used for declutter to mark the tab as "active" after
      * it's restored, but not immediately shown.
      */
     void setTimestampMillis(long timestampMillis);

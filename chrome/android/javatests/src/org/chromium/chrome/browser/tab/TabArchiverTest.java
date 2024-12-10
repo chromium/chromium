@@ -81,6 +81,7 @@ public class TabArchiverTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     private static final String TEST_PATH = "/chrome/test/data/android/about.html";
+    private static final String TEST_PATH_2 = "/chrome/test/data/android/google.html";
 
     private @Mock Clock mClock;
     private @Mock TabModelSelector mSelector;
@@ -312,7 +313,7 @@ public class TabArchiverTest {
 
         // Set the clock to 1 hour after 0.
         doReturn(TimeUnit.HOURS.toMillis(1)).when(mClock).currentTimeMillis();
-        // Set the timestamp for both tabs at 0, they should will be archived.
+        // Set the timestamp for both tabs at 0, they should be archived.
         ((TabImpl) mRegularTabModel.getTabAt(0)).setTimestampMillisForTesting(0);
         ((TabImpl) mRegularTabModel.getTabAt(1)).setTimestampMillisForTesting(0);
 
@@ -357,7 +358,7 @@ public class TabArchiverTest {
 
         // Set the clock to 1 hour after 0.
         doReturn(TimeUnit.HOURS.toMillis(1)).when(mClock).currentTimeMillis();
-        // Set the timestamp for both tabs at 0, they should will be archived.
+        // Set the timestamp for both tabs at 0, they should be archived.
         ((TabImpl) mRegularTabModel.getTabAt(0)).setTimestampMillisForTesting(0);
         ((TabImpl) mRegularTabModel.getTabAt(1)).setTimestampMillisForTesting(0);
 
@@ -372,7 +373,7 @@ public class TabArchiverTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecords("Tabs.TabArchived.TabCount", 2)
                         .build();
-        // The grouped tab should be skipped.
+        // The grouped tab should not be skipped.
         runOnUiThreadBlocking(
                 () ->
                         mTabArchiver.onTabModelSelectorAdded(
@@ -382,6 +383,165 @@ public class TabArchiverTest {
                                         .get()));
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
         assertEquals(2, mArchivedTabModel.getCount());
+        watcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS)
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS)
+    public void testGroupedDuplicateTabsAreNotArchived() throws Exception {
+        sActivityTestRule.loadUrlInNewTab(
+                sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+        sActivityTestRule.loadUrlInNewTab(
+                sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+        sActivityTestRule.loadUrlInNewTab(
+                sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+
+        runOnUiThreadBlocking(
+                () -> {
+                    // Set the tab to expire after 1 hour to simplify testing.
+                    mTabArchiveSettings.setArchiveTimeDeltaHours(1);
+                });
+
+        // Set the clock to 1 hour after 0.
+        doReturn(TimeUnit.HOURS.toMillis(1)).when(mClock).currentTimeMillis();
+        // Set the timestamp for both tabs at 0, they should be archived.
+        ((TabImpl) mRegularTabModel.getTabAt(0)).setTimestampMillisForTesting(0);
+        ((TabImpl) mRegularTabModel.getTabAt(1)).setTimestampMillisForTesting(0);
+        ((TabImpl) mRegularTabModel.getTabAt(2)).setTimestampMillisForTesting(0);
+
+        // Simulate the first and second tab being added to a group.
+        runOnUiThreadBlocking(
+                () -> {
+                    Token token = Token.createRandom();
+                    mRegularTabModel.getTabAt(0).setTabGroupId(token);
+                    mRegularTabModel.getTabAt(1).setTabGroupId(token);
+                });
+
+        assertEquals(4, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Tabs.TabArchived.TabCount", 1)
+                        .build();
+        // The grouped tabs should be skipped. But the single tab, even though it is a duplicate
+        // URL, should be archived since it is a standalone tab which passed the time threshold.
+        runOnUiThreadBlocking(
+                () ->
+                        mTabArchiver.onTabModelSelectorAdded(
+                                sActivityTestRule
+                                        .getActivity()
+                                        .getTabModelSelectorSupplier()
+                                        .get()));
+        CriteriaHelper.pollUiThread(() -> 3 == mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+        watcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS)
+    public void testDuplicateTabsAreArchived() throws Exception {
+        // Tab 2
+        sActivityTestRule.loadUrlInNewTab(
+                sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+        // Tab 3
+        sActivityTestRule.loadUrlInNewTab(
+                sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+        // Tab 4
+        sActivityTestRule.loadUrlInNewTab(
+                sActivityTestRule.getTestServer().getURL(TEST_PATH_2), /* incognito= */ false);
+
+        runOnUiThreadBlocking(
+                () -> {
+                    // Set the tab to expire after 2 hour to simplify testing.
+                    mTabArchiveSettings.setArchiveTimeDeltaHours(2);
+                });
+
+        // Set the clock to 1 hour after 0. No tabs should be archived by timestamp eligibility.
+        doReturn(TimeUnit.HOURS.toMillis(1)).when(mClock).currentTimeMillis();
+        // Set the timestamp for the second and third tabs sharing the same URL (not fourth since it
+        // will be the new active tab), tab 2 at 0 and tab 3 at 1.
+        ((TabImpl) mRegularTabModel.getTabAt(1)).setTimestampMillisForTesting(0);
+        ((TabImpl) mRegularTabModel.getTabAt(2)).setTimestampMillisForTesting(1);
+
+        assertEquals(4, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Tabs.TabArchived.TabCount", 1)
+                        .build();
+        // Only one of the tabs with duplicate URLs should be archived.
+        runOnUiThreadBlocking(
+                () ->
+                        mTabArchiver.onTabModelSelectorAdded(
+                                sActivityTestRule
+                                        .getActivity()
+                                        .getTabModelSelectorSupplier()
+                                        .get()));
+        CriteriaHelper.pollUiThread(() -> 3 == mRegularTabModel.getCount());
+        // Check that tab 3 (which is now tab 2) is the duplicate that remains as it is last active.
+        CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getTabAt(1).getTimestampMillis());
+        assertEquals(1, mArchivedTabModel.getCount());
+        // Check that tab 2 has been archived.
+        assertEquals(0, mArchivedTabModel.getTabAt(0).getTimestampMillis());
+        watcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS)
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS)
+    public void testDuplicateTabInGroupIsNotArchived_BaseDuplicateOutOfGroup() throws Exception {
+        // Tab 2
+        sActivityTestRule.loadUrlInNewTab(
+                sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+        // Tab 3
+        sActivityTestRule.loadUrlInNewTab(
+                sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+        // Tab 4
+        sActivityTestRule.loadUrlInNewTab(
+                sActivityTestRule.getTestServer().getURL(TEST_PATH_2), /* incognito= */ false);
+
+        runOnUiThreadBlocking(
+                () -> {
+                    // Set the tab to expire after 2 hour to simplify testing.
+                    mTabArchiveSettings.setArchiveTimeDeltaHours(2);
+                });
+
+        // Set the clock to 1 hour after 0. No tabs should be archived by timestamp eligibility.
+        doReturn(TimeUnit.HOURS.toMillis(1)).when(mClock).currentTimeMillis();
+        // Set the timestamp for the second and third tabs sharing the same URL (not fourth since it
+        // will be the new active tab), tab 2 at 0 and tab 3 at 1.
+        ((TabImpl) mRegularTabModel.getTabAt(1)).setTimestampMillisForTesting(0);
+        ((TabImpl) mRegularTabModel.getTabAt(2)).setTimestampMillisForTesting(1);
+
+        // Simulate the first and second tab being added to a group.
+        runOnUiThreadBlocking(
+                () -> {
+                    Token token = Token.createRandom();
+                    mRegularTabModel.getTabAt(0).setTabGroupId(token);
+                    mRegularTabModel.getTabAt(1).setTabGroupId(token);
+                });
+
+        assertEquals(4, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder().expectNoRecords("Tabs.TabArchived.TabCount").build();
+        // None of the tabs with duplicate URLs should be archived.
+        runOnUiThreadBlocking(
+                () ->
+                        mTabArchiver.onTabModelSelectorAdded(
+                                sActivityTestRule
+                                        .getActivity()
+                                        .getTabModelSelectorSupplier()
+                                        .get()));
+        CriteriaHelper.pollUiThread(() -> 4 == mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
         watcher.assertExpected();
     }
 

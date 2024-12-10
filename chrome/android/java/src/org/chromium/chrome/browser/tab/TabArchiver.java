@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -289,6 +290,12 @@ public class TabArchiver implements TabWindowManager.Observer {
                             List<Tab> tabsToArchive = new ArrayList<>();
                             HashMap<Token, Boolean> groupIdToArchiveEligibilityMap =
                                     new HashMap<>();
+                            HashMap<GURL, Long> tabUrlToLastActiveTimestampMap = new HashMap<>();
+                            if (shouldArchiveDuplicateTabs()) {
+                                recordTabUrlLastActiveTimestamps(
+                                        tabUrlToLastActiveTimestampMap, model);
+                            }
+
                             for (int i = 0; i < model.getCount(); i++) {
                                 Tab tab = model.getTabAt(i);
                                 // If there's an existing archived tab for the tab id, then we've
@@ -309,8 +316,10 @@ public class TabArchiver implements TabWindowManager.Observer {
                                                     ? isGroupTabEligibleForArchive(
                                                             regularTabGroupModelFilter,
                                                             groupIdToArchiveEligibilityMap,
+                                                            tabUrlToLastActiveTimestampMap,
                                                             tab)
-                                                    : isTabEligibleForArchive(tab);
+                                                    : isTabEligibleForArchive(
+                                                            tabUrlToLastActiveTimestampMap, tab);
                                     if (isTabOrGroupTabEligibleForArchive) {
                                         tabsToArchive.add(tab);
                                     }
@@ -345,6 +354,7 @@ public class TabArchiver implements TabWindowManager.Observer {
     private boolean isGroupTabEligibleForArchive(
             TabGroupModelFilter regularTabGroupModelFilter,
             HashMap<Token, Boolean> groupIdToArchiveEligibilityMap,
+            HashMap<GURL, Long> tabUrlToLastActiveTimestampMap,
             Tab tab) {
         if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()) {
             // Create a map between group id tokens and their archive eligibility. If a group has
@@ -355,7 +365,8 @@ public class TabArchiver implements TabWindowManager.Observer {
                 return groupIdToArchiveEligibilityMap.get(tabGroupId);
             } else {
                 boolean isTabGroupEligibleForArchive =
-                        isTabGroupEligibleForArchive(regularTabGroupModelFilter, tab);
+                        isTabGroupEligibleForArchive(
+                                regularTabGroupModelFilter, tabUrlToLastActiveTimestampMap, tab);
                 groupIdToArchiveEligibilityMap.put(tabGroupId, isTabGroupEligibleForArchive);
                 return isTabGroupEligibleForArchive;
             }
@@ -365,29 +376,36 @@ public class TabArchiver implements TabWindowManager.Observer {
     }
 
     private boolean isTabGroupEligibleForArchive(
-            TabGroupModelFilter regularTabGroupModelFilter, Tab tab) {
+            TabGroupModelFilter regularTabGroupModelFilter,
+            HashMap<GURL, Long> tabUrlToLastActiveTimestampMap,
+            Tab tab) {
         List<Tab> relatedTabList =
                 regularTabGroupModelFilter.getRelatedTabListForRootId(tab.getRootId());
         for (Tab relatedTab : relatedTabList) {
-            if (!isTabEligibleForArchive(relatedTab)) {
+            if (!isTabEligibleForArchive(tabUrlToLastActiveTimestampMap, relatedTab)) {
                 return false;
             }
         }
         return true;
     }
 
-    private boolean isTabEligibleForArchive(Tab tab) {
+    private boolean isTabEligibleForArchive(
+            HashMap<GURL, Long> tabUrlToLastActiveTimestampMap, Tab tab) {
         TabState tabState = TabStateExtractor.from(tab);
         if (tabState.contentsState == null) return false;
 
         long timestampMillis = tab.getTimestampMillis();
         int tabAgeDays = timestampMillisToDays(timestampMillis);
-        boolean result =
+        boolean isTabTimestampEligibleForArchive =
                 isTimestampWithinTargetHours(
                         timestampMillis, mTabArchiveSettings.getArchiveTimeDeltaHours());
+        boolean isDuplicateTabEligibleForArchive =
+                shouldArchiveDuplicateTabs()
+                        ? isDuplicateTab(tabUrlToLastActiveTimestampMap, tab)
+                        : false;
         RecordHistogram.recordCount1000Histogram(
                 "Tabs.TabArchiveEligibilityCheck.AfterNDays", tabAgeDays);
-        return result;
+        return isTabTimestampEligibleForArchive || isDuplicateTabEligibleForArchive;
     }
 
     private boolean isArchivedTabEligibleForDeletion(
@@ -402,6 +420,43 @@ public class TabArchiver implements TabWindowManager.Observer {
         RecordHistogram.recordCount1000Histogram(
                 "Tabs.TabAutoDeleteEligibilityCheck.AfterNDays", tabAgeDays);
         return result;
+    }
+
+    // A tab is marked as a duplicate tab if its last active timestamp is not the same as the stored
+    // last active timestamp in the model wide hashmap.
+    private boolean isDuplicateTab(HashMap<GURL, Long> tabUrlToLastActiveTimestampMap, Tab tab) {
+        GURL url = tab.getUrl();
+
+        // If the tab URL does not exist in the map or the tab is part of a group, no op.
+        if (!tabUrlToLastActiveTimestampMap.containsKey(url) || tab.getTabGroupId() != null) {
+            return false;
+        }
+
+        long tabLastActiveTimestamp = tab.getTimestampMillis();
+        long currentUrlLastActiveTimestamp = tabUrlToLastActiveTimestampMap.get(url);
+
+        return currentUrlLastActiveTimestamp > tabLastActiveTimestamp;
+    }
+
+    // Check all tabs in the tab model and record unique URLs and the latest last active timestamp.
+    private void recordTabUrlLastActiveTimestamps(
+            HashMap<GURL, Long> tabUrlToLastActiveTimestampMap, TabModel model) {
+        for (int i = 0; i < model.getCount(); i++) {
+            Tab tab = model.getTabAt(i);
+            GURL url = tab.getUrl();
+            long tabLastActiveTimestamp = tab.getTimestampMillis();
+
+            // Only record tabs that are not part of a tab group to avoid deduplicating them.
+            if (tab.getTabGroupId() == null) {
+                if (tabUrlToLastActiveTimestampMap.containsKey(url)) {
+                    long currentUrlLastActiveTimestamp = tabUrlToLastActiveTimestampMap.get(url);
+                    if (tabLastActiveTimestamp <= currentUrlLastActiveTimestamp) {
+                        continue;
+                    }
+                }
+                tabUrlToLastActiveTimestampMap.put(url, tabLastActiveTimestamp);
+            }
+        }
     }
 
     private boolean isTimestampWithinTargetHours(long timestampMillis, int targetHours) {
@@ -425,6 +480,10 @@ public class TabArchiver implements TabWindowManager.Observer {
         // Strip the root id to avoid re-using the old rootId from the tab state file.
         tabState.rootId = Tab.INVALID_TAB_ID;
         return tabState;
+    }
+
+    private boolean shouldArchiveDuplicateTabs() {
+        return ChromeFeatureList.sAndroidTabDeclutterArchiveDuplicateTabs.isEnabled();
     }
 
     @VisibleForTesting
