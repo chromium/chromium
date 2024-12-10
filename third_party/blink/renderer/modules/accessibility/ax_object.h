@@ -1251,11 +1251,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // highlighted via a "*" notation.
   std::string GetAXTreeForThis() const;
   void ShowAXTreeForThis() const;
-
-  // Starting from |this|, make sure there is an included parent path
-  // to the root, and that it's also possible to reach the included object
-  // by traversing downwards through included children.
-  void CheckIncludedObjectConnectedToRoot() const;
 #endif
 
 #if EXPENSIVE_DCHECKS_ARE_ON()

@@ -6476,44 +6476,6 @@ bool AXObject::NeedsToUpdateChildren() const {
   return children_dirty_;
 }
 
-#if DCHECK_IS_ON()
-void AXObject::CheckIncludedObjectConnectedToRoot() const {
-  if (!IsIncludedInTree() || IsRoot()) {
-    return;
-  }
-
-  const AXObject* included_child = this;
-  const AXObject* ancestor = nullptr;
-  const AXObject* included_parent = nullptr;
-  for (ancestor = ParentObject(); ancestor;
-       ancestor = ancestor->ParentObject()) {
-    if (ancestor->IsIncludedInTree()) {
-      included_parent = ancestor;
-      if (included_parent->CachedChildrenIncludingIgnored().Find(
-              included_child) == kNotFound) {
-        if (AXObject* parent_for_repair = ComputeParent()) {
-          parent_for_repair->CheckIncludedObjectConnectedToRoot();
-        }
-
-        NOTREACHED() << "Cannot find included child in parents children:\n"
-                     << "\n* Child: " << included_child
-                     << "\n* Parent:  " << included_parent
-                     << "\n--------------\n"
-                     << included_parent->GetAXTreeForThis();
-      }
-      if (included_parent->IsRoot()) {
-        return;
-      }
-      included_child = included_parent;
-    }
-  }
-
-  NOTREACHED() << "Did not find included parent path to root:"
-               << "\n* Last found included parent: " << included_parent
-               << "\n* Current object in tree: " << GetAXTreeForThis();
-}
-#endif
-
 void AXObject::SetNeedsToUpdateChildren(bool update) {
   CHECK(AXObjectCache().lifecycle().StateAllowsAXObjectsToBeDirtied())
       << AXObjectCache();
