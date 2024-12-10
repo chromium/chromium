@@ -480,6 +480,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Fingerprint.UploadTemplate.Success"
+    enum="UploadTemplateResStatus" expires_after="2025-12-09">
+  <owner>fsammoura@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Reports the result of uploading a fingerprint template to the Fingerprint
+    Microcontroller (FPMCU). Returns an EC result code with the following
+    possible values: -1: Command failure; 0: Success; 1 to 20: Specific error
+    codes (see EC result code documentation for details).
+  </summary>
+</histogram>
+
 <histogram name="Fingerprint.{ContextFunction}" enum="FingerprintSensorMode"
     expires_after="2025-05-29">
   <owner>tomhughes@chromium.org</owner>
