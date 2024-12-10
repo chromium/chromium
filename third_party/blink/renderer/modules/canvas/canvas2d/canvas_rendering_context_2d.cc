@@ -904,7 +904,6 @@ void CanvasRenderingContext2D::PageVisibilityChanged() {
 void CanvasRenderingContext2D::OnPageVisibilityChangeWhenPaintable() {
   CHECK(IsPaintable());
   HTMLCanvasElement* const element = canvas();
-  Canvas2DLayerBridge* bridge = canvas()->GetCanvas2DLayerBridge();
 
   bool page_is_visible = element->IsPageVisible();
   if (element->ResourceProvider()) {
@@ -918,7 +917,7 @@ void CanvasRenderingContext2D::OnPageVisibilityChangeWhenPaintable() {
 
   if (features::IsCanvas2DHibernationEnabled() && element->ResourceProvider() &&
       element->GetRasterMode() == RasterMode::kGPU && !page_is_visible) {
-    bridge->GetHibernationHandler().InitiateHibernationIfNecessary();
+    element->GetHibernationHandler()->InitiateHibernationIfNecessary();
   }
 
   // The impl tree may have dropped the transferable resource for this canvas
@@ -945,7 +944,7 @@ void CanvasRenderingContext2D::OnPageVisibilityChangeWhenPaintable() {
     element->SetNeedsPushProperties();
   }
 
-  if (page_is_visible && bridge->GetHibernationHandler().IsHibernating()) {
+  if (page_is_visible && element->IsHibernating()) {
     element
         ->GetOrCreateResourceProviderWithCurrentRasterModeHint();  // Rude
                                                                    // awakening
