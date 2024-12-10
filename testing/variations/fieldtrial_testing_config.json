@@ -21823,6 +21823,28 @@
             ]
         }
     ],
+    "SimdutfBase64Support": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_SimdutfWithFurtherOptimization",
+                    "enable_features": [
+                        "FurtherOptimizeParsingDataUrls",
+                        "SimdutfBase64Support"
+                    ]
+                }
+            ]
+        }
+    ],
     "SingleNTPRemoveExtraNTPs": [
         {
             "platforms": [
