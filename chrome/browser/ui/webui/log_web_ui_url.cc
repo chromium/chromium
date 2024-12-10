@@ -11,41 +11,22 @@
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
 
-namespace {
-
-bool ShouldLogUrl(const GURL& web_ui_url) {
-  return web_ui_url.SchemeIs(content::kChromeUIScheme) ||
-         web_ui_url.SchemeIs(content::kChromeUIUntrustedScheme) ||
-         web_ui_url.SchemeIs(content::kChromeDevToolsScheme);
-}
-
-}  // namespace
-
 namespace webui {
 
 const char kWebUICreatedForUrl[] = "WebUI.CreatedForUrl";
-const char kWebUIShownUrl[] = "WebUI.ShownUrl";
 
-bool LogWebUICreated(const GURL& web_ui_url) {
-  if (!ShouldLogUrl(web_ui_url)) {
-    return false;
+bool LogWebUIUrl(const GURL& web_ui_url) {
+  bool should_log = web_ui_url.SchemeIs(content::kChromeUIScheme) ||
+                    web_ui_url.SchemeIs(content::kChromeUIUntrustedScheme) ||
+                    web_ui_url.SchemeIs(content::kChromeDevToolsScheme);
+
+  if (should_log) {
+    uint32_t hash = base::Hash(web_ui_url.DeprecatedGetOriginAsURL().spec());
+    base::UmaHistogramSparse(kWebUICreatedForUrl,
+                             static_cast<base::HistogramBase::Sample>(hash));
   }
 
-  uint32_t hash = base::Hash(web_ui_url.DeprecatedGetOriginAsURL().spec());
-  base::UmaHistogramSparse(kWebUICreatedForUrl,
-                           static_cast<base::HistogramBase::Sample>(hash));
-  return true;
-}
-
-bool LogWebUIShown(const GURL& web_ui_url) {
-  if (!ShouldLogUrl(web_ui_url)) {
-    return false;
-  }
-
-  uint32_t hash = base::Hash(web_ui_url.DeprecatedGetOriginAsURL().spec());
-  base::UmaHistogramSparse(kWebUIShownUrl,
-                           static_cast<base::HistogramBase::Sample>(hash));
-  return true;
+  return should_log;
 }
 
 }  // namespace webui

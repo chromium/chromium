@@ -21,10 +21,7 @@ void StartNetworkErrorsURLLoader(
   int net_error = net::ERR_INVALID_URL;
   if (request.url.host() == kChromeUIDinoHost) {
     net_error = net::Error::ERR_INTERNET_DISCONNECTED;
-    GetContentClient()->browser()->LogWebUICreated(request.url);
-    // TODO(crbug.com/375209495): this currently assumes the Dino page
-    // is always shown after loaded, which could be wrong.
-    GetContentClient()->browser()->LogWebUIShown(request.url);
+    GetContentClient()->browser()->LogWebUIUrl(request.url);
   } else {
     std::string error_code_string = request.url.path().substr(1);
 

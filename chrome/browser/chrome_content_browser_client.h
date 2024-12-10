@@ -226,8 +226,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       std::vector<std::string>* additional_schemes) override;
   network::mojom::IPAddressSpace DetermineAddressSpaceFromURL(
       const GURL& url) override;
-  bool LogWebUICreated(const GURL& web_ui_url) override;
-  bool LogWebUIShown(const GURL& web_ui_url) override;
+  bool LogWebUIUrl(const GURL& web_ui_url) override;
   bool IsWebUIAllowedToMakeNetworkRequests(const url::Origin& origin) override;
   bool IsHandledURL(const GURL& url) override;
   bool HasCustomSchemeHandler(content::BrowserContext* browser_context,
