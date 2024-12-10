@@ -764,6 +764,12 @@ def main():
     ninja_dir = os.path.join(THIRD_PARTY_DIR, 'ninja')
     os.environ['PATH'] = ninja_dir + os.pathsep + os.environ.get('PATH', '')
 
+  if sys.platform.startswith('linux'):
+    sysroot_amd64 = DownloadDebianSysroot('amd64', args.skip_checkout)
+    sysroot_i386 = DownloadDebianSysroot('i386', args.skip_checkout)
+    sysroot_arm = DownloadDebianSysroot('arm', args.skip_checkout)
+    sysroot_arm64 = DownloadDebianSysroot('arm64', args.skip_checkout)
+
   if args.skip_build:
     return 0
 
@@ -845,8 +851,7 @@ def main():
     cc = args.host_cc
     cxx = args.host_cxx
   else:
-    if not args.skip_checkout:
-      DownloadPinnedClang()
+    DownloadPinnedClang()
     if sys.platform == 'win32':
       cc = os.path.join(PINNED_CLANG_DIR, 'bin', 'clang-cl.exe')
       cxx = os.path.join(PINNED_CLANG_DIR, 'bin', 'clang-cl.exe')
@@ -864,11 +869,6 @@ def main():
       base_cmake_args += [ '-DLLVM_STATIC_LINK_CXX_STDLIB=ON' ]
 
   if sys.platform.startswith('linux'):
-    sysroot_amd64 = DownloadDebianSysroot('amd64', args.skip_checkout)
-    sysroot_i386 = DownloadDebianSysroot('i386', args.skip_checkout)
-    sysroot_arm = DownloadDebianSysroot('arm', args.skip_checkout)
-    sysroot_arm64 = DownloadDebianSysroot('arm64', args.skip_checkout)
-
     # Add the sysroot to base_cmake_args.
     if platform.machine() == 'aarch64':
       base_cmake_args.append('-DCMAKE_SYSROOT=' + sysroot_arm64)
