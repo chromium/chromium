@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
+using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 
 namespace blink {
@@ -919,6 +920,77 @@ TEST(RuleSetTest, ScopePseudoBucketing_NestedDeclarations) {
   RuleSet& rule_set = sheet.GetRuleSet();
   EXPECT_EQ(0u, rule_set.UniversalRules().size());
   EXPECT_EQ(2u, rule_set.ClassRules(AtomicString("a")).size());
+}
+
+class RuleDataBloomFilterTest : public ::testing::Test {
+ protected:
+  RuleData ComputeHashFor(const String& selector, Vector<uint16_t>& backing) {
+    css_test_helpers::TestStyleSheet sheet;
+    sheet.AddCSSRules(selector + " { color: green; }");
+    RuleSet& rule_set = sheet.GetRuleSet();
+    RuleData rule_data = rule_set.UniversalRules()[0];
+    rule_data.ComputeBloomFilterHashes(/*style_scope=*/nullptr, backing);
+    return rule_data;
+  }
+
+  // All of these are arbitrary and can be changed if the hash function
+  // should change.
+  static constexpr uint16_t kAClassHash = 52501;
+  static constexpr uint16_t kBClassHash = 19419;
+  static constexpr uint16_t kAIdHash = 57715;
+
+ private:
+  test::TaskEnvironment task_environment;
+};
+
+TEST_F(RuleDataBloomFilterTest, Simple) {
+  Vector<uint16_t> backing;
+  RuleData rule_data = ComputeHashFor(".a .b :where(#a) *", backing);
+  EXPECT_THAT(backing, ElementsAre(kAIdHash, kBClassHash, kAClassHash));
+  EXPECT_THAT(rule_data.DescendantSelectorIdentifierHashes(backing),
+              ElementsAre(kAIdHash, kBClassHash, kAClassHash));
+}
+
+TEST_F(RuleDataBloomFilterTest, InternalDeduplication) {
+  Vector<uint16_t> backing;
+  RuleData rule_data = ComputeHashFor(".a .b .a .b .b .a .a .b *", backing);
+  EXPECT_THAT(backing, ElementsAre(kBClassHash, kAClassHash));
+  EXPECT_THAT(rule_data.DescendantSelectorIdentifierHashes(backing),
+              ElementsAre(kBClassHash, kAClassHash));
+}
+
+TEST_F(RuleDataBloomFilterTest, DeduplicateAgainstPreviousSingle) {
+  Vector<uint16_t> backing{55, kBClassHash, kAClassHash, 1, 2, 3, 4};
+  RuleData rule_data = ComputeHashFor(".a *", backing);
+  EXPECT_THAT(backing, ElementsAre(55, kBClassHash, kAClassHash, 1, 2, 3, 4));
+  EXPECT_THAT(rule_data.DescendantSelectorIdentifierHashes(backing),
+              ElementsAre(kAClassHash));
+}
+
+TEST_F(RuleDataBloomFilterTest, DeduplicateAgainstPrevious) {
+  Vector<uint16_t> backing{55, kBClassHash, kAClassHash, 1, 2, 3, 4};
+  RuleData rule_data = ComputeHashFor(".a .b *", backing);
+  EXPECT_THAT(backing, ElementsAre(55, kBClassHash, kAClassHash, 1, 2, 3, 4));
+  EXPECT_THAT(rule_data.DescendantSelectorIdentifierHashes(backing),
+              ElementsAre(kBClassHash, kAClassHash));
+}
+
+TEST_F(RuleDataBloomFilterTest, PartialDeduplication) {
+  Vector<uint16_t> backing{55, kAClassHash, kAIdHash};
+  RuleData rule_data = ComputeHashFor("#a .b .a *", backing);
+  EXPECT_THAT(backing, ElementsAre(55, kAClassHash, kAIdHash, kBClassHash));
+  // Note the different ordering.
+  EXPECT_THAT(rule_data.DescendantSelectorIdentifierHashes(backing),
+              ElementsAre(kAClassHash, kAIdHash, kBClassHash));
+}
+
+TEST_F(RuleDataBloomFilterTest, PartialDeduplication2) {
+  Vector<uint16_t> backing{kBClassHash, kAClassHash, kBClassHash, kAIdHash};
+  RuleData rule_data = ComputeHashFor(".a .b #a *", backing);
+  EXPECT_THAT(backing,
+              ElementsAre(kBClassHash, kAClassHash, kBClassHash, kAIdHash));
+  EXPECT_THAT(rule_data.DescendantSelectorIdentifierHashes(backing),
+              ElementsAre(kAClassHash, kBClassHash, kAIdHash));
 }
 
 class RuleSetCascadeLayerTest : public SimTest {
