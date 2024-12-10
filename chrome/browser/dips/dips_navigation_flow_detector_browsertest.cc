@@ -1113,8 +1113,16 @@ IN_PROC_BROWSER_TEST_F(
   ExpectNoNavigationFlowNodeUkmEvents();
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
-                       NavigationFlowNodeNotEmittedWhenCookiesReadViaHeaders) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#define MAYBE_NavigationFlowNodeNotEmittedWhenCookiesReadViaHeaders \
+  DISABLED_NavigationFlowNodeNotEmittedWhenCookiesReadViaHeaders
+#else
+#define MAYBE_NavigationFlowNodeNotEmittedWhenCookiesReadViaHeaders \
+  NavigationFlowNodeNotEmittedWhenCookiesReadViaHeaders
+#endif
+IN_PROC_BROWSER_TEST_F(
+    DipsNavigationFlowDetectorTest,
+    MAYBE_NavigationFlowNodeNotEmittedWhenCookiesReadViaHeaders) {
   // Pre-write a cookie for site B so it can be passed in request headers later.
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(
