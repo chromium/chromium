@@ -44,7 +44,7 @@ public class PowerSavingModeMonitor {
     private volatile boolean mBroadcastReceiverRegistered;
 
     private static final TaskRunner sSequencedTaskRunner =
-            PostTask.createSequencedTaskRunner(TaskTraits.BEST_EFFORT_MAY_BLOCK);
+            PostTask.createSequencedTaskRunner(TaskTraits.USER_VISIBLE);
 
     /** Returns whether power saving mode is currently on. */
     public boolean powerSavingIsOn() {
@@ -104,7 +104,7 @@ public class PowerSavingModeMonitor {
 
     private void registerPowerSavingModeMonitorBroadcastReceiver() {
         if (ChromeFeatureList.sPowerSavingModeBroadcastReceiverInBackground.isEnabled()) {
-            updatePowerSaveMode();
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> updatePowerSaveMode());
             // If #stop is called before we're able to register the receiver, return early.
             if (mPowerModeReceiver == null) return;
         }
