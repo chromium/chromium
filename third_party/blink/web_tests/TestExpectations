@@ -2689,6 +2689,7 @@ crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attribut
 crbug.com/343720396 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?1-2 [ Crash Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win10.20h2 ] external/wpt/png/apng/fdAT-16bit.html [ Failure ]
 crbug.com/383194996 [ Mac13 ] external/wpt/webrtc/RTCPeerConnection-setLocalDescription-pranswer.html [ Timeout ]
 crbug.com/382988706 external/wpt/css/css-rhythm/replaced-elements/block-level-canvas-margins-affected-by-block-step-size.html [ Failure ]
 crbug.com/382988706 external/wpt/css/css-rhythm/replaced-elements/block-level-embed-margins-affected-by-block-step-size.html [ Failure ]
@@ -2944,8 +2945,10 @@ crbug.com/371233767 [ Mac13 ] external/wpt/webrtc/RTCConfiguration-rtcpMuxPolicy
 crbug.com/371233767 [ Mac14 ] external/wpt/webrtc/RTCConfiguration-rtcpMuxPolicy.html [ Timeout ]
 crbug.com/371233767 [ Mac15 ] external/wpt/webrtc/RTCConfiguration-rtcpMuxPolicy.html [ Timeout ]
 crbug.com/371233767 [ Mac13 ] external/wpt/webrtc/RTCPeerConnection-canTrickleIceCandidates.html [ Timeout ]
+crbug.com/371233767 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-canTrickleIceCandidates.html [ Timeout ]
 crbug.com/371233767 [ Mac13 ] external/wpt/webrtc/RTCRtpSender.https.html [ Timeout ]
 crbug.com/371233767 [ Mac14 ] external/wpt/webrtc/RTCRtpSender.https.html [ Timeout ]
+crbug.com/371233767 [ Mac15 ] external/wpt/webrtc/RTCRtpSender.https.html [ Timeout ]
 crbug.com/371233767 [ Mac13 ] external/wpt/webrtc/back-forward-cache-with-closed-webrtc-connection.https.window.html [ Timeout ]
 crbug.com/371233767 [ Mac15 ] external/wpt/webrtc/back-forward-cache-with-closed-webrtc-connection.https.window.html [ Timeout ]
 crbug.com/371068262 [ Mac14 ] external/wpt/media-capabilities/encodingInfo.webrtc.html [ Timeout ]
