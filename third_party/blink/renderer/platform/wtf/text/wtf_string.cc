@@ -64,9 +64,10 @@ String::String(base::span<const UChar> utf16_data)
 
 // Construct a string with UTF-16 data, from a null-terminated source.
 String::String(const UChar* str) {
-  if (!str)
+  if (!str) {
     return;
-  impl_ = StringImpl::Create({str, LengthOfNullTerminatedString(str)});
+  }
+  impl_ = StringImpl::Create(std::u16string_view(str));
 }
 
 // Construct a string with latin1 data.
