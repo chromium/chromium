@@ -454,6 +454,10 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   // Should only be called during layout as it inspects DOM.
   bool IsImplicitAnchor() const;
 
+  bool IsExplicitAnchor() const { return IsCSSBox() && Style().AnchorName(); }
+
+  bool IsAnchor() const { return IsExplicitAnchor() || IsImplicitAnchor(); }
+
   // GetLayoutObject should only be used when necessary for compatibility
   // with LegacyLayout.
   //
@@ -714,7 +718,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     return oof_data_ && !oof_data_->AnchorQuery().IsEmpty();
   }
   bool HasAnchorQueryToPropagate() const {
-    return HasAnchorQuery() || Style().AnchorName() || IsImplicitAnchor();
+    return HasAnchorQuery() || IsAnchor();
   }
   const PhysicalAnchorQuery* AnchorQuery() const {
     if (!HasAnchorQuery())

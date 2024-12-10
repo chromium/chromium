@@ -206,8 +206,7 @@ void FragmentBuilder::PropagateChildAnchors(const PhysicalFragment& child,
       }
     }
   }
-  if (child.IsCSSBox() &&
-      (child.Style().AnchorName() || child.IsImplicitAnchor())) {
+  if (child.IsAnchor()) {
     DCHECK(child.GetLayoutObject());
     // Set the child's `anchor-name` before propagating its descendants', so
     // that ancestors have precedence over their descendants.
@@ -215,7 +214,7 @@ void FragmentBuilder::PropagateChildAnchors(const PhysicalFragment& child,
                      child.Size().ConvertToLogical(GetWritingMode())};
     options = AnchorQuerySetOptions(
         child, node_, IsBlockFragmentationContextRoot() || HasItems());
-    if (child.Style().AnchorName()) {
+    if (child.IsExplicitAnchor()) {
       for (const ScopedCSSName* name : child.Style().AnchorName()->GetNames()) {
         EnsureAnchorQuery().Set(name, *child.GetLayoutObject(), rect, *options,
                                 context);

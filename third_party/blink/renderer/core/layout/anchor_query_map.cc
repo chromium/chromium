@@ -295,8 +295,7 @@ struct StitchedAnchorQueries {
                          const PhysicalOffset& offset_from_fragmentainer,
                          const FragmentainerContext& fragmentainer) {
     DCHECK(fragment.IsOutOfFlowPositioned());
-    if (!fragment.Style().AnchorName() && !fragment.IsImplicitAnchor() &&
-        !fragment.AnchorQuery()) {
+    if (!fragment.HasAnchorQueryToPropagate()) {
       return;
     }
     // OOF fragments in block-fragmentation context are children of the
@@ -321,7 +320,7 @@ struct StitchedAnchorQueries {
     while (containing_block && containing_block != root_ &&
            !skip_info.AncestorSkipped()) {
       StitchedAnchorQuery& query = EnsureStitchedAnchorQuery(*containing_block);
-      if (fragment.Style().AnchorName()) {
+      if (fragment.IsExplicitAnchor()) {
         for (const ScopedCSSName* name :
              fragment.Style().AnchorName()->GetNames()) {
           query.AddAnchorReference(
