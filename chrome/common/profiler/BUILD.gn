@@ -44,6 +44,7 @@ source_set("profiler") {
 
   if (is_android) {
     deps += [
+      "//base:native_unwinder_android",
       "//chrome/android/features/stack_unwinder/public:native",
       "//chrome/android/modules/stack_unwinder/public:module",
     ]
