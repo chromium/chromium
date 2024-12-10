@@ -49,7 +49,9 @@ import org.chromium.chrome.browser.safety_check.PasswordsCheckPreferenceProperti
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
@@ -610,21 +612,22 @@ class SafetyCheckMediator {
                                                     R.string
                                                             .safety_check_passwords_error_signed_out)
                                             .build();
+                            BottomSheetSigninAndHistorySyncConfig config =
+                                    new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                                    strings,
+                                                    NoAccountSigninMode.BOTTOM_SHEET,
+                                                    WithAccountSigninMode
+                                                            .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                                    HistorySyncConfig.OptInMode.NONE)
+                                            .build();
                             // Open the sign-in page.
                             @Nullable
                             Intent intent =
                                     mSigninLauncher.createBottomSheetSigninIntentOrShowError(
                                             p.getContext(),
                                             mProfile,
-                                            strings,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .NoAccountSigninMode.ADD_ACCOUNT,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .WithAccountSigninMode
-                                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            HistorySyncConfig.OptInMode.NONE,
-                                            SigninAccessPoint.SAFETY_CHECK,
-                                            /* selectedCoreAccountId= */ null);
+                                            config,
+                                            SigninAccessPoint.SAFETY_CHECK);
                             if (intent != null) {
                                 p.getContext().startActivity(intent);
                             }

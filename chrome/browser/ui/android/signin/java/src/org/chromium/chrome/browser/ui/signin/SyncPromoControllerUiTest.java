@@ -15,7 +15,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -54,8 +53,8 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
@@ -205,16 +204,19 @@ public class SyncPromoControllerUiTest {
 
         onView(withId(R.id.sync_promo_signin_button)).perform(click());
 
+        BottomSheetSigninAndHistorySyncConfig expectedConfig =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                BOTTOM_SHEET_STRINGS,
+                                NoAccountSigninMode.BOTTOM_SHEET,
+                                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                HistorySyncConfig.OptInMode.NONE)
+                        .build();
         verify(mSigninAndHistorySyncActivityLauncher)
                 .createBottomSheetSigninIntentOrShowError(
                         any(Context.class),
                         any(Profile.class),
-                        eq(BOTTOM_SHEET_STRINGS),
-                        eq(NoAccountSigninMode.BOTTOM_SHEET),
-                        eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(HistorySyncConfig.OptInMode.NONE),
-                        eq(SigninAccessPoint.BOOKMARK_MANAGER),
-                        isNull());
+                        eq(expectedConfig),
+                        eq(SigninAccessPoint.BOOKMARK_MANAGER));
     }
 
     @Test
@@ -235,16 +237,19 @@ public class SyncPromoControllerUiTest {
 
         onView(withId(R.id.sync_promo_choose_account_button)).perform(click());
 
+        BottomSheetSigninAndHistorySyncConfig expectedConfig =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                BOTTOM_SHEET_STRINGS,
+                                NoAccountSigninMode.BOTTOM_SHEET,
+                                WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
+                                HistorySyncConfig.OptInMode.NONE)
+                        .build();
         verify(mSigninAndHistorySyncActivityLauncher)
                 .createBottomSheetSigninIntentOrShowError(
                         any(Context.class),
                         any(Profile.class),
-                        eq(BOTTOM_SHEET_STRINGS),
-                        eq(NoAccountSigninMode.BOTTOM_SHEET),
-                        eq(WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET),
-                        eq(HistorySyncConfig.OptInMode.NONE),
-                        eq(SigninAccessPoint.BOOKMARK_MANAGER),
-                        isNull());
+                        eq(expectedConfig),
+                        eq(SigninAccessPoint.BOOKMARK_MANAGER));
     }
 
     @Test
@@ -269,16 +274,19 @@ public class SyncPromoControllerUiTest {
 
         onView(withText(R.string.signin_promo_turn_on)).perform(click());
 
+        BottomSheetSigninAndHistorySyncConfig expectedConfig =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                BOTTOM_SHEET_STRINGS,
+                                NoAccountSigninMode.BOTTOM_SHEET,
+                                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                HistorySyncConfig.OptInMode.REQUIRED)
+                        .build();
         verify(mSigninAndHistorySyncActivityLauncher)
                 .createBottomSheetSigninIntentOrShowError(
                         any(Context.class),
                         any(Profile.class),
-                        eq(BOTTOM_SHEET_STRINGS),
-                        eq(NoAccountSigninMode.BOTTOM_SHEET),
-                        eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(HistorySyncConfig.OptInMode.REQUIRED),
-                        eq(SigninAccessPoint.RECENT_TABS),
-                        isNull());
+                        eq(expectedConfig),
+                        eq(SigninAccessPoint.RECENT_TABS));
     }
 
     @Test
@@ -299,16 +307,19 @@ public class SyncPromoControllerUiTest {
 
         onView(withText(R.string.signin_promo_turn_on)).perform(click());
 
+        BottomSheetSigninAndHistorySyncConfig expectedConfig =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                BOTTOM_SHEET_STRINGS,
+                                NoAccountSigninMode.BOTTOM_SHEET,
+                                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                HistorySyncConfig.OptInMode.REQUIRED)
+                        .build();
         verify(mSigninAndHistorySyncActivityLauncher)
                 .createBottomSheetSigninIntentOrShowError(
                         any(Context.class),
                         any(Profile.class),
-                        eq(BOTTOM_SHEET_STRINGS),
-                        eq(NoAccountSigninMode.BOTTOM_SHEET),
-                        eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(HistorySyncConfig.OptInMode.REQUIRED),
-                        eq(SigninAccessPoint.RECENT_TABS),
-                        isNull());
+                        eq(expectedConfig),
+                        eq(SigninAccessPoint.RECENT_TABS));
     }
 
     @Test
@@ -329,16 +340,19 @@ public class SyncPromoControllerUiTest {
 
         onView(withText(R.string.signin_promo_turn_on)).perform(click());
 
+        BottomSheetSigninAndHistorySyncConfig expectedConfig =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                BOTTOM_SHEET_STRINGS,
+                                NoAccountSigninMode.BOTTOM_SHEET,
+                                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                HistorySyncConfig.OptInMode.REQUIRED)
+                        .build();
         verify(mSigninAndHistorySyncActivityLauncher)
                 .createBottomSheetSigninIntentOrShowError(
                         any(Context.class),
                         any(Profile.class),
-                        eq(BOTTOM_SHEET_STRINGS),
-                        eq(NoAccountSigninMode.BOTTOM_SHEET),
-                        eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(HistorySyncConfig.OptInMode.REQUIRED),
-                        eq(SigninAccessPoint.RECENT_TABS),
-                        isNull());
+                        eq(expectedConfig),
+                        eq(SigninAccessPoint.RECENT_TABS));
     }
 
     @Test

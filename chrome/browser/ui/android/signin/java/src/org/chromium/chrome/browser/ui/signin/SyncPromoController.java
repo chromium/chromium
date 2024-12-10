@@ -35,6 +35,8 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
@@ -663,19 +665,17 @@ public class SyncPromoController {
     private void signinWithNewAccount(Context context, boolean launchSigninFlow) {
         recordShowCountHistogram(UserAction.CONTINUED);
         if (launchSigninFlow) {
+            BottomSheetSigninAndHistorySyncConfig config =
+                    new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                    mBottomSheetStrings,
+                                    NoAccountSigninMode.BOTTOM_SHEET,
+                                    WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                    mHistoryOptInMode)
+                            .build();
             @Nullable
             Intent intent =
                     mSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
-                            context,
-                            mProfile,
-                            mBottomSheetStrings,
-                            BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
-                                    .BOTTOM_SHEET,
-                            BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                            mHistoryOptInMode,
-                            mAccessPoint,
-                            /* selectedCoreAccountId= */ null);
+                            context, mProfile, config, mAccessPoint);
             if (intent != null) {
                 context.startActivity(intent);
             }
@@ -688,19 +688,17 @@ public class SyncPromoController {
     private void signinWithDefaultAccount(Context context, boolean launchSigninFlow) {
         recordShowCountHistogram(UserAction.CONTINUED);
         if (launchSigninFlow) {
+            BottomSheetSigninAndHistorySyncConfig config =
+                    new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                    mBottomSheetStrings,
+                                    NoAccountSigninMode.BOTTOM_SHEET,
+                                    WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                    mHistoryOptInMode)
+                            .build();
             @Nullable
             Intent intent =
                     mSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
-                            context,
-                            mProfile,
-                            mBottomSheetStrings,
-                            BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
-                                    .BOTTOM_SHEET,
-                            BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                            mHistoryOptInMode,
-                            mAccessPoint,
-                            /* selectedCoreAccountId= */ null);
+                            context, mProfile, config, mAccessPoint);
             if (intent != null) {
                 context.startActivity(intent);
             }
@@ -713,19 +711,17 @@ public class SyncPromoController {
     private void signinWithNotDefaultAccount(Context context, boolean launchSigninFlow) {
         recordShowCountHistogram(UserAction.CONTINUED);
         if (launchSigninFlow) {
+            BottomSheetSigninAndHistorySyncConfig config =
+                    new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                    mBottomSheetStrings,
+                                    NoAccountSigninMode.BOTTOM_SHEET,
+                                    WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
+                                    mHistoryOptInMode)
+                            .build();
             @Nullable
             Intent intent =
                     mSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
-                            context,
-                            mProfile,
-                            mBottomSheetStrings,
-                            BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
-                                    .BOTTOM_SHEET,
-                            BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                    .CHOOSE_ACCOUNT_BOTTOM_SHEET,
-                            mHistoryOptInMode,
-                            mAccessPoint,
-                            /* selectedCoreAccountId= */ null);
+                            context, mProfile, config, mAccessPoint);
             if (intent != null) {
                 context.startActivity(intent);
             }

@@ -20,7 +20,9 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
@@ -99,19 +101,18 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
                                 R.string.signin_account_picker_bottom_sheet_title)
                         .setSubtitleStringId(R.string.safety_check_passwords_error_signed_out)
                         .build();
+        BottomSheetSigninAndHistorySyncConfig config =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                strings,
+                                NoAccountSigninMode.BOTTOM_SHEET,
+                                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                HistorySyncConfig.OptInMode.NONE)
+                        .build();
         // Open the sign-in page.
         @Nullable
         Intent intent =
                 mSigninLauncher.createBottomSheetSigninIntentOrShowError(
-                        context,
-                        mProfile,
-                        strings,
-                        BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                        HistorySyncConfig.OptInMode.NONE,
-                        SigninAccessPoint.SAFETY_CHECK,
-                        /* selectedCoreAccountId= */ null);
+                        context, mProfile, config, SigninAccessPoint.SAFETY_CHECK);
         if (intent != null) {
             context.startActivity(intent);
         }

@@ -11,7 +11,9 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
@@ -96,18 +98,17 @@ public abstract class SigninPromoDelegate {
     }
 
     void onPrimaryButtonClicked() {
+        BottomSheetSigninAndHistorySyncConfig config =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                mBottomSheetStrings,
+                                NoAccountSigninMode.BOTTOM_SHEET,
+                                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                getHistoryOptInMode())
+                        .build();
         @Nullable
         Intent intent =
                 mLauncher.createBottomSheetSigninIntentOrShowError(
-                        mContext,
-                        mProfile,
-                        mBottomSheetStrings,
-                        BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                        getHistoryOptInMode(),
-                        getAccessPoint(),
-                        /* selectedCoreAccountId= */ null);
+                        mContext, mProfile, config, getAccessPoint());
         if (intent != null) {
             mContext.startActivity(intent);
         }
@@ -115,18 +116,18 @@ public abstract class SigninPromoDelegate {
 
     void onSecondaryButtonClicked() {
         assert !shouldHideSecondaryButton();
+
+        BottomSheetSigninAndHistorySyncConfig config =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                mBottomSheetStrings,
+                                NoAccountSigninMode.BOTTOM_SHEET,
+                                WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
+                                getHistoryOptInMode())
+                        .build();
         @Nullable
         Intent intent =
                 mLauncher.createBottomSheetSigninIntentOrShowError(
-                        mContext,
-                        mProfile,
-                        mBottomSheetStrings,
-                        BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                .CHOOSE_ACCOUNT_BOTTOM_SHEET,
-                        getHistoryOptInMode(),
-                        getAccessPoint(),
-                        /* selectedCoreAccountId= */ null);
+                        mContext, mProfile, config, getAccessPoint());
         if (intent != null) {
             mContext.startActivity(intent);
         }

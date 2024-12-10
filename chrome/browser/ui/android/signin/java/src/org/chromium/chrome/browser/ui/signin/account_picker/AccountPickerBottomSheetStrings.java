@@ -6,26 +6,16 @@ package org.chromium.chrome.browser.ui.signin.account_picker;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+
+import java.util.Objects;
 
 /* Class containing string resource ids for the sign-in account picker bottom sheet. */
 public final class AccountPickerBottomSheetStrings implements Parcelable {
     public final @StringRes int titleStringId;
     public final @StringRes int subtitleStringId;
     public final @StringRes int dismissButtonStringId;
-
-    public static final Parcelable.Creator<AccountPickerBottomSheetStrings> CREATOR =
-            new Parcelable.Creator<AccountPickerBottomSheetStrings>() {
-                @Override
-                public AccountPickerBottomSheetStrings createFromParcel(Parcel in) {
-                    return new AccountPickerBottomSheetStrings(in);
-                }
-
-                @Override
-                public AccountPickerBottomSheetStrings[] newArray(int size) {
-                    return new AccountPickerBottomSheetStrings[size];
-                }
-            };
 
     /**
      * Builder for {@link AccountPickerBottomSheetStrings} which contains string IDs for the sign-in
@@ -90,6 +80,22 @@ public final class AccountPickerBottomSheetStrings implements Parcelable {
                 /* dismissButtonStringId= */ in.readInt());
     }
 
+    @Override
+    public boolean equals(@Nullable Object object) {
+        if (!(object instanceof AccountPickerBottomSheetStrings)) {
+            return false;
+        }
+        AccountPickerBottomSheetStrings other = (AccountPickerBottomSheetStrings) object;
+        return titleStringId == other.titleStringId
+                && subtitleStringId == other.subtitleStringId
+                && dismissButtonStringId == other.dismissButtonStringId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(titleStringId, subtitleStringId, dismissButtonStringId);
+    }
+
     /** Implements {@link Parcelable} */
     @Override
     public int describeContents() {
@@ -103,4 +109,17 @@ public final class AccountPickerBottomSheetStrings implements Parcelable {
         out.writeInt(subtitleStringId);
         out.writeInt(dismissButtonStringId);
     }
+
+    public static final Parcelable.Creator<AccountPickerBottomSheetStrings> CREATOR =
+            new Parcelable.Creator<AccountPickerBottomSheetStrings>() {
+                @Override
+                public AccountPickerBottomSheetStrings createFromParcel(Parcel in) {
+                    return new AccountPickerBottomSheetStrings(in);
+                }
+
+                @Override
+                public AccountPickerBottomSheetStrings[] newArray(int size) {
+                    return new AccountPickerBottomSheetStrings[size];
+                }
+            };
 }

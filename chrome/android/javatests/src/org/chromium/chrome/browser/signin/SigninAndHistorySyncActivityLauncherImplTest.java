@@ -44,7 +44,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
@@ -98,21 +100,21 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    BottomSheetSigninAndHistorySyncConfig config =
+                            new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                            BOTTOM_SHEET_STRINGS,
+                                            NoAccountSigninMode.BOTTOM_SHEET,
+                                            WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                            HistorySyncConfig.OptInMode.NONE)
+                                    .build();
                     @Nullable
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createBottomSheetSigninIntentOrShowError(
                                             mContextMock,
                                             mProfileMock,
-                                            BOTTOM_SHEET_STRINGS,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .NoAccountSigninMode.BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .WithAccountSigninMode
-                                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            HistorySyncConfig.OptInMode.NONE,
-                                            SigninAccessPoint.NTP_SIGNED_OUT_ICON,
-                                            /* selectedCoreAccountId= */ null);
+                                            config,
+                                            SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                     assertNotNull(intent);
                 });
     }
@@ -124,21 +126,22 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    BottomSheetSigninAndHistorySyncConfig config =
+                            new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                            BOTTOM_SHEET_STRINGS,
+                                            NoAccountSigninMode.BOTTOM_SHEET,
+                                            WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                            HistorySyncConfig.OptInMode.NONE)
+                                    .selectedCoreAccountId(TestAccounts.ACCOUNT1.getId())
+                                    .build();
                     @Nullable
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createBottomSheetSigninIntentOrShowError(
                                             mContextMock,
                                             mProfileMock,
-                                            BOTTOM_SHEET_STRINGS,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .NoAccountSigninMode.BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .WithAccountSigninMode
-                                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            HistorySyncConfig.OptInMode.NONE,
-                                            SigninAccessPoint.NTP_SIGNED_OUT_ICON,
-                                            TestAccounts.ACCOUNT1.getId());
+                                            config,
+                                            SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                     assertNotNull(intent);
                 });
     }
@@ -153,21 +156,21 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    BottomSheetSigninAndHistorySyncConfig config =
+                            new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                            BOTTOM_SHEET_STRINGS,
+                                            NoAccountSigninMode.BOTTOM_SHEET,
+                                            WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                            HistorySyncConfig.OptInMode.REQUIRED)
+                                    .build();
                     @Nullable
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createBottomSheetSigninIntentOrShowError(
                                             mContextMock,
                                             mProfileMock,
-                                            BOTTOM_SHEET_STRINGS,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .NoAccountSigninMode.BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .WithAccountSigninMode
-                                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            HistorySyncConfig.OptInMode.REQUIRED,
-                                            SigninAccessPoint.NTP_SIGNED_OUT_ICON,
-                                            /* selectedCoreAccountId= */ null);
+                                            config,
+                                            SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                     assertNotNull(intent);
                 });
     }
@@ -179,21 +182,21 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    BottomSheetSigninAndHistorySyncConfig config =
+                            new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                            BOTTOM_SHEET_STRINGS,
+                                            NoAccountSigninMode.BOTTOM_SHEET,
+                                            WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                            HistorySyncConfig.OptInMode.REQUIRED)
+                                    .build();
                     @Nullable
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createBottomSheetSigninIntentOrShowError(
                                             mContextMock,
                                             mProfileMock,
-                                            BOTTOM_SHEET_STRINGS,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .NoAccountSigninMode.BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .WithAccountSigninMode
-                                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            HistorySyncConfig.OptInMode.REQUIRED,
-                                            SigninAccessPoint.RECENT_TABS,
-                                            null);
+                                            config,
+                                            SigninAccessPoint.RECENT_TABS);
                     assertNotNull(intent);
                 });
     }
@@ -208,21 +211,21 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    BottomSheetSigninAndHistorySyncConfig config =
+                            new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                            BOTTOM_SHEET_STRINGS,
+                                            NoAccountSigninMode.BOTTOM_SHEET,
+                                            WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                            HistorySyncConfig.OptInMode.REQUIRED)
+                                    .build();
                     @Nullable
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createBottomSheetSigninIntentOrShowError(
                                             mContextMock,
                                             mProfileMock,
-                                            BOTTOM_SHEET_STRINGS,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .NoAccountSigninMode.BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .WithAccountSigninMode
-                                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            HistorySyncConfig.OptInMode.REQUIRED,
-                                            SigninAccessPoint.NTP_SIGNED_OUT_ICON,
-                                            /* selectedCoreAccountId= */ null);
+                                            config,
+                                            SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                     assertNull(intent);
                 });
         // TODO(crbug.com/376251506): Verify that error UI is shown.
@@ -239,21 +242,21 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    BottomSheetSigninAndHistorySyncConfig config =
+                            new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                            BOTTOM_SHEET_STRINGS,
+                                            NoAccountSigninMode.BOTTOM_SHEET,
+                                            WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                            HistorySyncConfig.OptInMode.REQUIRED)
+                                    .build();
                     @Nullable
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createBottomSheetSigninIntentOrShowError(
                                             mContextMock,
                                             mProfileMock,
-                                            BOTTOM_SHEET_STRINGS,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .NoAccountSigninMode.BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .WithAccountSigninMode
-                                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            HistorySyncConfig.OptInMode.REQUIRED,
-                                            SigninAccessPoint.NTP_SIGNED_OUT_ICON,
-                                            /* selectedCoreAccountId= */ null);
+                                            config,
+                                            SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                     assertNull(intent);
                 });
         // TODO(crbug.com/376251506): Verify that error UI is shown.
@@ -271,21 +274,21 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    BottomSheetSigninAndHistorySyncConfig config =
+                            new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                            BOTTOM_SHEET_STRINGS,
+                                            NoAccountSigninMode.BOTTOM_SHEET,
+                                            WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                            HistorySyncConfig.OptInMode.NONE)
+                                    .build();
                     @Nullable
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createBottomSheetSigninIntentOrShowError(
                                             mContextMock,
                                             mProfileMock,
-                                            BOTTOM_SHEET_STRINGS,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .NoAccountSigninMode.BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .WithAccountSigninMode
-                                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            HistorySyncConfig.OptInMode.NONE,
-                                            SigninAccessPoint.NTP_SIGNED_OUT_ICON,
-                                            /* selectedCoreAccountId= */ null);
+                                            config,
+                                            SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                     assertNull(intent);
                 });
         // TODO(crbug.com/376251506): Verify that error UI is shown.
@@ -301,21 +304,21 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    BottomSheetSigninAndHistorySyncConfig config =
+                            new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                            BOTTOM_SHEET_STRINGS,
+                                            NoAccountSigninMode.BOTTOM_SHEET,
+                                            WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                            HistorySyncConfig.OptInMode.REQUIRED)
+                                    .build();
                     @Nullable
                     Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createBottomSheetSigninIntentOrShowError(
                                             mContextMock,
                                             mProfileMock,
-                                            BOTTOM_SHEET_STRINGS,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .NoAccountSigninMode.BOTTOM_SHEET,
-                                            BottomSheetSigninAndHistorySyncCoordinator
-                                                    .WithAccountSigninMode
-                                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            HistorySyncConfig.OptInMode.REQUIRED,
-                                            SigninAccessPoint.RECENT_TABS,
-                                            null);
+                                            config,
+                                            SigninAccessPoint.RECENT_TABS);
                     assertNull(intent);
                 });
         // TODO(crbug.com/376251506): Verify that error UI is shown.
@@ -335,18 +338,19 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    BottomSheetSigninAndHistorySyncConfig config =
+                            new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                            BOTTOM_SHEET_STRINGS,
+                                            NoAccountSigninMode.BOTTOM_SHEET,
+                                            WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                            HistorySyncConfig.OptInMode.NONE)
+                                    .build();
                     SigninAndHistorySyncActivityLauncherImpl.get()
                             .createBottomSheetSigninIntentOrShowError(
                                     mActivityTestRule.getActivity(),
                                     mProfileMock,
-                                    BOTTOM_SHEET_STRINGS,
-                                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
-                                            .BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                            .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    HistorySyncConfig.OptInMode.NONE,
-                                    SigninAccessPoint.NTP_SIGNED_OUT_ICON,
-                                    /* selectedCoreAccountId= */ null);
+                                    config,
+                                    SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                 });
 
         onView(withText(R.string.managed_by_your_organization))
@@ -371,18 +375,19 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    BottomSheetSigninAndHistorySyncConfig config =
+                            new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                            BOTTOM_SHEET_STRINGS,
+                                            NoAccountSigninMode.BOTTOM_SHEET,
+                                            WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                            HistorySyncConfig.OptInMode.REQUIRED)
+                                    .build();
                     SigninAndHistorySyncActivityLauncherImpl.get()
                             .createBottomSheetSigninIntentOrShowError(
                                     mActivityTestRule.getActivity(),
                                     mProfileMock,
-                                    BOTTOM_SHEET_STRINGS,
-                                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
-                                            .BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                            .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    HistorySyncConfig.OptInMode.REQUIRED,
-                                    SigninAccessPoint.RECENT_TABS,
-                                    null);
+                                    config,
+                                    SigninAccessPoint.RECENT_TABS);
                 });
 
         onView(withText(R.string.managed_by_your_organization))

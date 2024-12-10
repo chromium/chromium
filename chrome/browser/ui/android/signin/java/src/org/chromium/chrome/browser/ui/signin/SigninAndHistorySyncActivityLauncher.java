@@ -13,9 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
-import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
-import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 import java.lang.annotation.Retention;
@@ -39,40 +36,6 @@ public interface SigninAndHistorySyncActivityLauncher {
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface AccessPoint {}
-
-    /**
-     * TODO(crbug.com/373334210): Delete this method once all implementations are updated. Create
-     * {@Intent} for the {@link SigninAndHistorySyncActivity} from an eligible access point, Show an
-     * error if the intent can't be created.
-     *
-     * @param profile the current profile.
-     * @param bottomSheetStrings the strings shown in the sign-in bottom sheet.
-     * @param noAccountSigninMode The type of UI that should be shown for the sign-in step if
-     *     there's no account on the device.
-     * @param withAccountSigninMode The type of UI that should be shown for the sign-in step if
-     *     there are 1+ accounts on the device.
-     * @param historyOptInMode Whether the history opt-in should be always, optionally or never
-     *     shown.
-     * @param accessPoint The access point from which the sign-in was triggered.
-     * @param selectedCoreAccountId The account that should be displayed in the sign-in bottom
-     *     sheet. If null, the default account will be displayed.
-     */
-    @Deprecated(
-            since =
-                    "Use the overloaded version accepting BottomSheetSigninAndHistorySyncConfig"
-                            + " instead.")
-    @MainThread
-    @Nullable
-    Intent createBottomSheetSigninIntentOrShowError(
-            Context context,
-            Profile profile,
-            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
-            @BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode int noAccountSigninMode,
-            @BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                    int withAccountSigninMode,
-            @HistorySyncConfig.OptInMode int historyOptInMode,
-            @AccessPoint int accessPoint,
-            @Nullable CoreAccountId selectedCoreAccountId);
 
     /**
      * Create {@Intent} for the {@link SigninAndHistorySyncActivity} from an eligible access point,

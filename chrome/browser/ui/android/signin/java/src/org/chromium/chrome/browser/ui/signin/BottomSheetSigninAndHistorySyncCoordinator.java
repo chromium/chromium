@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import androidx.activity.ComponentActivity;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.ColorInt;
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.OneshotSupplier;
@@ -23,6 +22,8 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
@@ -45,8 +46,6 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /** Responsible of showing the correct sub-component of the sign-in and history opt-in flow. */
@@ -87,38 +86,6 @@ public class BottomSheetSigninAndHistorySyncCoordinator
 
         /** Called to change the status bar color. */
         void setStatusBarColor(int statusBarColor);
-    }
-
-    /** The sign-in step that should be shown to the user when there's no account on the device. */
-    @IntDef({
-        NoAccountSigninMode.BOTTOM_SHEET,
-        NoAccountSigninMode.ADD_ACCOUNT,
-        NoAccountSigninMode.NO_SIGNIN
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface NoAccountSigninMode {
-        /** Show the 0-account version of the sign-in bottom sheet. */
-        int BOTTOM_SHEET = 0;
-
-        /** Bring the user to GMS Core to add an account, then sign-in with the new account. */
-        int ADD_ACCOUNT = 1;
-
-        /** No sign-in should be done, the entry point should not be visible to the user. */
-        int NO_SIGNIN = 2;
-    }
-
-    /** The sign-in step that should be shown to the user when there's 1+ accounts on the device. */
-    @IntDef({
-        WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-        WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface WithAccountSigninMode {
-        /** Show the "collapsed" sign-in bottom sheet containing the default account. */
-        int DEFAULT_ACCOUNT_BOTTOM_SHEET = 0;
-
-        /** Show the "expanded" sign-in bottom sheet containing the accounts list. */
-        int CHOOSE_ACCOUNT_BOTTOM_SHEET = 1;
     }
 
     /**

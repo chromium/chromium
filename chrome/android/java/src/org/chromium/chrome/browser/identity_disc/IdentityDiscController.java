@@ -37,7 +37,9 @@ import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
@@ -368,20 +370,21 @@ public class IdentityDiscController
                                         R.string
                                                 .signin_account_picker_bottom_sheet_benefits_subtitle)
                                 .build();
+                BottomSheetSigninAndHistorySyncConfig config =
+                        new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                        bottomSheetStrings,
+                                        NoAccountSigninMode.BOTTOM_SHEET,
+                                        WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                        HistorySyncConfig.OptInMode.OPTIONAL)
+                                .build();
                 @Nullable
                 Intent intent =
                         SigninAndHistorySyncActivityLauncherImpl.get()
                                 .createBottomSheetSigninIntentOrShowError(
                                         mContext,
                                         mProfileSupplier.get().getOriginalProfile(),
-                                        bottomSheetStrings,
-                                        BottomSheetSigninAndHistorySyncCoordinator
-                                                .NoAccountSigninMode.BOTTOM_SHEET,
-                                        BottomSheetSigninAndHistorySyncCoordinator
-                                                .WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                        HistorySyncConfig.OptInMode.OPTIONAL,
-                                        SigninAccessPoint.NTP_SIGNED_OUT_ICON,
-                                        /* selectedCoreAccountId= */ null);
+                                        config,
+                                        SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                 if (intent != null) {
                     mContext.startActivity(intent);
                 }

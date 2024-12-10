@@ -19,7 +19,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
@@ -163,19 +165,22 @@ public class MismatchNotificationController
                                 org.chromium.chrome.browser.ui.signin.R.string
                                         .signin_account_picker_bottom_sheet_benefits_subtitle)
                         .build();
+        BottomSheetSigninAndHistorySyncConfig config =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                bottomSheetStrings,
+                                NoAccountSigninMode.NO_SIGNIN,
+                                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                HistorySyncConfig.OptInMode.NONE)
+                        .selectedCoreAccountId(mAppAccountId)
+                        .build();
 
         @Nullable
         Intent intent =
                 signinAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
                         context,
                         mProfile,
-                        bottomSheetStrings,
-                        BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.NO_SIGNIN,
-                        BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                        HistorySyncConfig.OptInMode.NONE,
-                        SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION,
-                        mAppAccountId);
+                        config,
+                        SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION);
         if (intent != null) {
             context.startActivity(intent);
         }
