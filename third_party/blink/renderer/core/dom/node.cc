@@ -857,13 +857,11 @@ Node* Node::moveBefore(Node* new_child,
       // shadow-including root, then..."
       GetDocument() == new_child->GetDocument() &&
       // "If node is not an Element or a CharacterData node, then ..."
-      (new_child->IsElementNode() || new_child->IsCharacterDataNode()) &&
-      // "If parent is not an Element or DocumentFragment node, then throw a
-      // "HierarchyRequestError" DOMException."
-      (IsElementNode() || IsDocumentFragment());
-  // These two conditions below are caught by `EnsurePreInsertionValidity()`
+      (new_child->IsElementNode() || new_child->IsCharacterDataNode());
+  // These three conditions below are caught by `EnsurePreInsertionValidity()`
   // that gets invoked in `insertBefore()`:
   //
+  // "If parent is not a Document, DocumentFragment, or Element node, then...
   // "If node is a host-including inclusive ancestor of parent, then...
   // "If child is non-null and its parent is not parent, then..."
 
