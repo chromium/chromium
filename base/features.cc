@@ -131,7 +131,6 @@ void Init(EmitThreadControllerProfilerMetadata
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-  ConditionVariable::InitializeFeatures();
   File::InitializeFeatures();
   MessagePumpCFRunLoopBase::InitializeFeatures();
   MessagePumpKqueue::InitializeFeatures();

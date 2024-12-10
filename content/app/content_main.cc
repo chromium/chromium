@@ -307,7 +307,6 @@ NO_STACK_PROTECTOR int RunContentProcess(
 #endif
 
 #if BUILDFLAG(IS_IOS)
-    base::ConditionVariable::InitializeFeatures();
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitch(switches::kEnableViewport);
     command_line->AppendSwitch(switches::kUseMobileUserAgent);

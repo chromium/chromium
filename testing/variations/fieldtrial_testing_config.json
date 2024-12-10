@@ -3933,7 +3933,6 @@
                         "QuickIntensiveWakeUpThrottlingAfterLoading",
                         "ReduceCookieIPCs",
                         "RunTasksByBatches",
-                        "SkipConditionVariableWakeupHack",
                         "UseCompositorJob"
                     ],
                     "disable_features": [
