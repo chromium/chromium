@@ -345,7 +345,8 @@ SkAlphaType CanvasRenderingContextHost::GetRenderingContextAlphaType() const {
 }
 
 SkColorType CanvasRenderingContextHost::GetRenderingContextSkColorType() const {
-  return GetRenderingContextSkColorInfo().colorType();
+  return RenderingContext() ? RenderingContext()->GetSkColorType()
+                            : kN32_SkColorType;
 }
 
 sk_sp<SkColorSpace>
