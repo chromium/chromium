@@ -137,6 +137,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kGenericSensorExtraClasses,
     &features::kBackForwardCache,
     &features::kBoardingPassDetector,
+    &features::kHttpsFirstBalancedMode,
     &features::kNetworkServiceInProcess,
     &features::kChangeUnfocusedPriority,
     &features::kElasticOverscroll,
