@@ -229,7 +229,7 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   }
 
   TableViewModel* model = self.tableViewModel;
-  const std::vector<autofill::CreditCard*>& creditCards =
+  const std::vector<const autofill::CreditCard*>& creditCards =
       _personalDataManager->payments_data_manager().GetCreditCards();
   if (!creditCards.empty()) {
     [model addSectionWithIdentifier:SectionIdentifierCards];
@@ -618,7 +618,7 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
     return;
   }
 
-  const std::vector<autofill::CreditCard*>& creditCards =
+  const std::vector<const autofill::CreditCard*>& creditCards =
       _personalDataManager->payments_data_manager().GetCreditCards();
   autofill::CreditCard selectedCard = *creditCards[indexPath.item];
   if (autofill::IsCreditCardLocal(selectedCard) &&

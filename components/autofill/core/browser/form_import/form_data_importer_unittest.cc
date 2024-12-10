@@ -2143,7 +2143,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_SameCreditCardWithConflict) {
   CreditCard expected2 = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2999",
       "");  // Imported cards have no billing info.
-  const std::vector<CreditCard*>& results2 =
+  const std::vector<const CreditCard*>& results2 =
       personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results2.size());
   EXPECT_THAT(*results2[0], ComparesEqual(expected2));
@@ -2190,7 +2190,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_ShouldReturnLocalCard) {
   CreditCard expected2 = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2999",
       "");  // Imported cards have no billing info.
-  const std::vector<CreditCard*>& results2 =
+  const std::vector<const CreditCard*>& results2 =
       personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results2.size());
   EXPECT_THAT(*results2[0], ComparesEqual(expected2));
@@ -2276,7 +2276,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_EmptyCardWithConflict) {
   // No change is expected.
   CreditCard expected2 = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2998", "");
-  const std::vector<CreditCard*>& results2 =
+  const std::vector<const CreditCard*>& results2 =
       personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results2.size());
   EXPECT_THAT(*results2[0], ComparesEqual(expected2));
@@ -2314,7 +2314,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MissingInfoInNew) {
   // No change is expected.
   CreditCard expected2 = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2999", "");
-  const std::vector<CreditCard*>& results2 =
+  const std::vector<const CreditCard*>& results2 =
       personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results2.size());
   EXPECT_THAT(*results2[0], ComparesEqual(expected2));
@@ -2334,7 +2334,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MissingInfoInNew) {
   // No change is expected.
   CreditCard expected3 = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2999", "");
-  const std::vector<CreditCard*>& results3 =
+  const std::vector<const CreditCard*>& results3 =
       personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results3.size());
   EXPECT_THAT(*results3[0], ComparesEqual(expected3));
@@ -2350,7 +2350,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MissingInfoInOld) {
   personal_data_manager_->payments_data_manager().AddCreditCard(
       saved_credit_card);
 
-  const std::vector<CreditCard*>& results1 =
+  const std::vector<const CreditCard*>& results1 =
       personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results1.size());
   EXPECT_EQ(saved_credit_card, *results1[0]);
@@ -2371,7 +2371,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MissingInfoInOld) {
   // added to the existing credit card.
   CreditCard expected2 = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2999", "1");
-  const std::vector<CreditCard*>& results2 =
+  const std::vector<const CreditCard*>& results2 =
       personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results2.size());
   EXPECT_THAT(*results2[0], ComparesEqual(expected2));
@@ -2389,7 +2389,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_SameCardWithSeparators) {
   personal_data_manager_->payments_data_manager().AddCreditCard(
       saved_credit_card);
 
-  const std::vector<CreditCard*>& results1 =
+  const std::vector<const CreditCard*>& results1 =
       personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results1.size());
   EXPECT_THAT(*results1[0], ComparesEqual(saved_credit_card));
@@ -2405,7 +2405,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_SameCardWithSeparators) {
   EXPECT_TRUE(extracted_credit_card);
 
   // Expect that no new card is saved.
-  const std::vector<CreditCard*>& results2 =
+  const std::vector<const CreditCard*>& results2 =
       personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results2.size());
   EXPECT_THAT(*results2[0], ComparesEqual(saved_credit_card));
@@ -2439,7 +2439,7 @@ TEST_F(FormDataImporterTest,
   EXPECT_TRUE(extracted_credit_card);
 
   // Expect that the saved credit card is not modified.
-  const std::vector<CreditCard*>& results =
+  const std::vector<const CreditCard*>& results =
       personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results.size());
   EXPECT_THAT(*results[0], ComparesEqual(credit_card));
@@ -2458,7 +2458,7 @@ TEST_F(FormDataImporterTest,
   personal_data_manager_->payments_data_manager().AddCreditCard(
       saved_credit_card);
 
-  const std::vector<CreditCard*>& results =
+  const std::vector<const CreditCard*>& results =
       personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results.size());
   EXPECT_THAT(*results[0], ComparesEqual(saved_credit_card));
@@ -2560,7 +2560,7 @@ TEST_F(FormDataImporterTest,
   personal_data_manager_->payments_data_manager().AddCreditCard(
       saved_credit_card);
 
-  const std::vector<CreditCard*>& results =
+  const std::vector<const CreditCard*>& results =
       personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results.size());
   EXPECT_THAT(*results[0], ComparesEqual(saved_credit_card));
@@ -2921,7 +2921,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_OneAddressOneCreditCard) {
   // Test that the credit card has also been saved.
   CreditCard expected_card = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2999", "");
-  const std::vector<CreditCard*>& results_cards =
+  const std::vector<const CreditCard*>& results_cards =
       personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results_cards.size());
   EXPECT_THAT(*results_cards[0], ComparesEqual(expected_card));
@@ -2953,7 +2953,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_TwoAddressesOneCreditCard) {
   // Test that the credit card has been saved.
   CreditCard expected_card = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2999", "");
-  const std::vector<CreditCard*>& results =
+  const std::vector<const CreditCard*>& results =
       personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results.size());
   EXPECT_THAT(*results[0], ComparesEqual(expected_card));
@@ -3085,7 +3085,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_AddressesDisabledOneCreditCard) {
   // Test that the credit card has been saved.
   CreditCard expected_card = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2999", "");
-  const std::vector<CreditCard*>& results =
+  const std::vector<const CreditCard*>& results =
       personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results.size());
   EXPECT_THAT(*results[0], ComparesEqual(expected_card));
@@ -3113,7 +3113,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_OneAddressCreditCardDisabled) {
   EXPECT_THAT(*results_addr[0], ComparesEqual(expected_address));
 
   // Test that the credit card was not saved.
-  const std::vector<CreditCard*>& results_cards =
+  const std::vector<const CreditCard*>& results_cards =
       personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(0U, results_cards.size());
 }
@@ -3137,7 +3137,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_AddressCreditCardDisabled) {
       0U, personal_data_manager_->address_data_manager().GetProfiles().size());
 
   // Test that the credit card was not saved.
-  const std::vector<CreditCard*>& results_cards =
+  const std::vector<const CreditCard*>& results_cards =
       personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(0U, results_cards.size());
 }
@@ -3212,7 +3212,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_HiddenCreditCardFormAfterEntered) {
   // Test that the credit card has been saved.
   CreditCard expected_card = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2999", "");
-  const std::vector<CreditCard*>& results =
+  const std::vector<const CreditCard*>& results =
       personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results.size());
   EXPECT_THAT(*results[0], ComparesEqual(expected_card));

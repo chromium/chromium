@@ -829,10 +829,10 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     std::vector<const AutofillProfile*> profiles =
         client().GetPersonalDataManager().address_data_manager().GetProfiles(
             AddressDataManager::ProfileOrder::kHighestFrecencyDesc);
-    std::vector<CreditCard*> credit_cards = client()
-                                                .GetPersonalDataManager()
-                                                .payments_data_manager()
-                                                .GetCreditCards();
+    std::vector<const CreditCard*> credit_cards = client()
+                                                      .GetPersonalDataManager()
+                                                      .payments_data_manager()
+                                                      .GetCreditCards();
     // Shrink the maximum size of the vectors for performance reasons.
     profiles.resize(
         std::min(profiles.size(), kMaxDataConsideredForPossibleTypes));

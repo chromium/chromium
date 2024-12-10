@@ -183,11 +183,13 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
       const AutofillOptimizationGuide* optimization_guide) const;
 
   // Returns just LOCAL_CARD cards.
+  // TODO(crbug.com/367998817): Return std::vector<const CreditCard*> instead.
   virtual std::vector<CreditCard*> GetLocalCreditCards() const;
   // Returns just server cards.
+  // TODO(crbug.com/367998817): Return std::vector<const CreditCard*> instead.
   virtual std::vector<CreditCard*> GetServerCreditCards() const;
   // Returns all credit cards, server and local.
-  virtual std::vector<CreditCard*> GetCreditCards() const;
+  virtual std::vector<const CreditCard*> GetCreditCards() const;
 
   // Returns local IBANs.
   virtual std::vector<const Iban*> GetLocalIbans() const;

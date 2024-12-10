@@ -345,13 +345,8 @@ PersonalDataManagerAndroid::GetShippingAddressLabelForPaymentRequest(
 
 ScopedJavaLocalRef<jobjectArray>
 PersonalDataManagerAndroid::GetCreditCardGUIDsForSettings(JNIEnv* env) {
-    std::vector<const CreditCard*> credit_cards;
-  for (const CreditCard* credit_card :
-       personal_data_manager_->payments_data_manager()
-           .GetCreditCards()) {
-    credit_cards.push_back(credit_card);
-  }
-  return GetCreditCardGUIDs(env, credit_cards);
+  return GetCreditCardGUIDs(env, personal_data_manager_->payments_data_manager()
+                                     .GetCreditCards());
 }
 
 ScopedJavaLocalRef<jobjectArray>

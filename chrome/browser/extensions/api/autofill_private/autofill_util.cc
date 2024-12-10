@@ -167,8 +167,9 @@ autofill_private::IbanEntry IbanToIbanEntry(
   } else {
     iban_entry.instrument_id = base::NumberToString(iban.instrument_id());
   }
-  if (!iban.nickname().empty())
+  if (!iban.nickname().empty()) {
     iban_entry.nickname = base::UTF16ToUTF8(iban.nickname());
+  }
 
   iban_entry.value = base::UTF16ToUTF8(iban.value());
 
@@ -198,8 +199,9 @@ AddressEntryList GenerateAddressList(
   DCHECK_EQ(labels.size(), profiles.size());
 
   AddressEntryList list;
-  for (size_t i = 0; i < profiles.size(); ++i)
+  for (size_t i = 0; i < profiles.size(); ++i) {
     list.push_back(ProfileToAddressEntry(*profiles[i], labels[i]));
+  }
 
   return list;
 }
@@ -237,7 +239,7 @@ CountryEntryList GenerateCountryList(
 
 CreditCardEntryList GenerateCreditCardList(
     const autofill::PersonalDataManager& personal_data) {
-  const std::vector<autofill::CreditCard*>& cards =
+  const std::vector<const autofill::CreditCard*>& cards =
       personal_data.payments_data_manager().GetCreditCards();
 
   CreditCardEntryList list;

@@ -566,10 +566,9 @@ TEST_F(PaymentsDataManagerTest, AddUpdateRemoveCreditCards) {
 
   WaitForOnPaymentsDataChanged();
 
-  std::vector<CreditCard*> cards;
-  cards.push_back(&credit_card0);
-  cards.push_back(&credit_card1);
-  ExpectSameElements(cards, payments_data_manager().GetCreditCards());
+  EXPECT_THAT(payments_data_manager().GetCreditCards(),
+              testing::UnorderedElementsAre(Pointee(credit_card0),
+                                            Pointee(credit_card1)));
 
   // Update, remove, and add.
   credit_card0.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Joe");
@@ -580,10 +579,9 @@ TEST_F(PaymentsDataManagerTest, AddUpdateRemoveCreditCards) {
 
   WaitForOnPaymentsDataChanged();
 
-  cards.clear();
-  cards.push_back(&credit_card0);
-  cards.push_back(&credit_card2);
-  ExpectSameElements(cards, payments_data_manager().GetCreditCards());
+  EXPECT_THAT(payments_data_manager().GetCreditCards(),
+              testing::UnorderedElementsAre(Pointee(credit_card0),
+                                            Pointee(credit_card2)));
 
   // Reset the PaymentsDataManager.  This tests that the personal data was saved
   // to the web database, and that we can load the credit cards from the web
@@ -591,10 +589,9 @@ TEST_F(PaymentsDataManagerTest, AddUpdateRemoveCreditCards) {
   ResetPaymentsDataManager();
 
   // Verify that we've loaded the credit cards from the web database.
-  cards.clear();
-  cards.push_back(&credit_card0);
-  cards.push_back(&credit_card2);
-  ExpectSameElements(cards, payments_data_manager().GetCreditCards());
+  EXPECT_THAT(payments_data_manager().GetCreditCards(),
+              testing::UnorderedElementsAre(Pointee(credit_card0),
+                                            Pointee(credit_card2)));
 
   // Add a server card.
   CreditCard credit_card3(base::Uuid::GenerateRandomV4().AsLowercaseString(),
@@ -607,8 +604,8 @@ TEST_F(PaymentsDataManagerTest, AddUpdateRemoveCreditCards) {
   test_api(payments_data_manager()).AddServerCreditCard(credit_card3);
   WaitForOnPaymentsDataChanged();
 
-  cards.push_back(&credit_card3);
-  ExpectSameElements(cards, payments_data_manager().GetCreditCards());
+  EXPECT_EQ(payments_data_manager().GetCreditCards()[2]->Compare(credit_card3),
+            0);
 
   // Must not add a duplicate server card with same GUID.
   MockPaymentsDataManagerObserver observer;
@@ -617,14 +614,18 @@ TEST_F(PaymentsDataManagerTest, AddUpdateRemoveCreditCards) {
       observeration{&observer};
   observeration.Observe(&payments_data_manager());
   test_api(payments_data_manager()).AddServerCreditCard(credit_card3);
-  ExpectSameElements(cards, payments_data_manager().GetCreditCards());
+  ASSERT_EQ(payments_data_manager().GetCreditCards().size(), 3U);
+  EXPECT_EQ(payments_data_manager().GetCreditCards()[2]->Compare(credit_card3),
+            0);
 
   // Must not add a duplicate card with same contents as another server card.
   CreditCard duplicate_server_card(credit_card3);
   duplicate_server_card.set_guid(
       base::Uuid::GenerateRandomV4().AsLowercaseString());
   test_api(payments_data_manager()).AddServerCreditCard(duplicate_server_card);
-  ExpectSameElements(cards, payments_data_manager().GetCreditCards());
+  ASSERT_EQ(payments_data_manager().GetCreditCards().size(), 3U);
+  EXPECT_EQ(payments_data_manager().GetCreditCards()[2]->Compare(credit_card3),
+            0);
 }
 
 // Adds two local cards and one server cards with different modification dates.
@@ -779,7 +780,7 @@ TEST_F(PaymentsDataManagerTest, AddCreditCard_BasicInformation) {
   ResetPaymentsDataManager();
 
   // Verify the addition.
-  const std::vector<CreditCard*>& results =
+  const std::vector<const CreditCard*>& results =
       payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results.size());
   EXPECT_EQ(0, credit_card.Compare(*results[0]));
@@ -938,14 +939,11 @@ TEST_F(PaymentsDataManagerTest, SetUniqueCreditCardLabels) {
   // database.
   ResetPaymentsDataManager();
 
-  std::vector<CreditCard*> cards;
-  cards.push_back(&credit_card0);
-  cards.push_back(&credit_card1);
-  cards.push_back(&credit_card2);
-  cards.push_back(&credit_card3);
-  cards.push_back(&credit_card4);
-  cards.push_back(&credit_card5);
-  ExpectSameElements(cards, payments_data_manager().GetCreditCards());
+  EXPECT_THAT(
+      payments_data_manager().GetCreditCards(),
+      testing::UnorderedElementsAre(
+          Pointee(credit_card0), Pointee(credit_card1), Pointee(credit_card2),
+          Pointee(credit_card3), Pointee(credit_card4), Pointee(credit_card5)));
 }
 
 TEST_F(PaymentsDataManagerTest, SetEmptyCreditCard) {
@@ -2622,7 +2620,7 @@ TEST_F(PaymentsDataManagerTest, OnAcceptedLocalCreditCardSaveWithVerifiedData) {
   WaitForOnPaymentsDataChanged();
 
   // Expect that the saved credit card is updated.
-  const std::vector<CreditCard*>& results =
+  const std::vector<const CreditCard*>& results =
       payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results.size());
   EXPECT_EQ(u"B. Small", results[0]->GetRawInfo(CREDIT_CARD_NAME_FULL));

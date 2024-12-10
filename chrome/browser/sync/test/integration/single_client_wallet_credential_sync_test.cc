@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
 
-  std::vector<autofill::CreditCard*> cards =
+  std::vector<const autofill::CreditCard*> cards =
       pdm->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
   EXPECT_FALSE(cards[0]->cvc().empty());
@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
 
-  std::vector<autofill::CreditCard*> cards =
+  std::vector<const autofill::CreditCard*> cards =
       pdm->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
   EXPECT_FALSE(cards[0]->cvc().empty());
@@ -346,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
   // Check that one card is stored in the account storage.
   EXPECT_EQ(1U, GetServerCards(account_data_2).size());
 
-  std::vector<autofill::CreditCard*> cards_2 =
+  std::vector<const autofill::CreditCard*> cards_2 =
       pdm->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1uL, cards_2.size());
 
@@ -394,7 +394,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
 
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
-  std::vector<autofill::CreditCard*> cards =
+  std::vector<const autofill::CreditCard*> cards =
       pdm->payments_data_manager().GetCreditCards();
   ASSERT_EQ(2uL, cards.size());
 
@@ -552,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
 
-  std::vector<autofill::CreditCard*> cards =
+  std::vector<const autofill::CreditCard*> cards =
       pdm->payments_data_manager().GetCreditCards();
   ASSERT_EQ(2uL, cards.size());
 

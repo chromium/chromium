@@ -954,7 +954,7 @@ TEST_F(AutofillControllerTest, CreditCardImport) {
   confirm_infobar->Accept();
   std::move(waiter).Wait();
 
-  const std::vector<CreditCard*>& credit_cards =
+  const std::vector<const CreditCard*>& credit_cards =
       personal_data_manager->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, credit_cards.size());
   const CreditCard& credit_card = *credit_cards[0];
@@ -1021,7 +1021,7 @@ TEST_F(AutofillControllerTest, CreditCardImportAfterFormRemoval) {
   confirm_infobar->Accept();
   std::move(waiter).Wait();
 
-  const std::vector<CreditCard*>& credit_cards =
+  const std::vector<const CreditCard*>& credit_cards =
       personal_data_manager->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, credit_cards.size());
   const CreditCard& credit_card = *credit_cards[0];
@@ -1115,7 +1115,7 @@ TEST_F(AutofillControllerTest,
   confirm_infobar->Accept();
   std::move(waiter).Wait();
 
-  const std::vector<CreditCard*>& credit_cards =
+  const std::vector<const CreditCard*>& credit_cards =
       personal_data_manager->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, credit_cards.size());
   const CreditCard& credit_card = *credit_cards[0];

@@ -544,7 +544,7 @@ const Iban* PaymentsDataManager::GetIbanByInstrumentId(
 
 const CreditCard* PaymentsDataManager::GetCreditCardByGUID(
     const std::string& guid) const {
-  const std::vector<CreditCard*>& credit_cards = GetCreditCards();
+  const std::vector<const CreditCard*>& credit_cards = GetCreditCards();
   auto iter = FindElementByGUID(credit_cards, guid);
   return iter != credit_cards.end() ? *iter : nullptr;
 }
@@ -558,7 +558,7 @@ const CreditCard* PaymentsDataManager::GetCreditCardByNumber(
     const std::string& number) const {
   CreditCard numbered_card;
   numbered_card.SetNumber(base::ASCIIToUTF16(number));
-  for (CreditCard* credit_card : GetCreditCards()) {
+  for (const CreditCard* credit_card : GetCreditCards()) {
     DCHECK(credit_card);
     if (credit_card->MatchingCardDetails(numbered_card)) {
       return credit_card;
@@ -569,8 +569,8 @@ const CreditCard* PaymentsDataManager::GetCreditCardByNumber(
 
 const CreditCard* PaymentsDataManager::GetCreditCardByInstrumentId(
     int64_t instrument_id) const {
-  const std::vector<CreditCard*> credit_cards = GetCreditCards();
-  for (CreditCard* credit_card : credit_cards) {
+  const std::vector<const CreditCard*> credit_cards = GetCreditCards();
+  for (const CreditCard* credit_card : credit_cards) {
     if (credit_card->instrument_id() == instrument_id) {
       return credit_card;
     }
@@ -701,8 +701,8 @@ std::vector<CreditCard*> PaymentsDataManager::GetServerCreditCards() const {
                         &std::unique_ptr<CreditCard>::get);
 }
 
-std::vector<CreditCard*> PaymentsDataManager::GetCreditCards() const {
-  std::vector<CreditCard*> result;
+std::vector<const CreditCard*> PaymentsDataManager::GetCreditCards() const {
+  std::vector<const CreditCard*> result;
   result.reserve(local_credit_cards_.size() + server_credit_cards_.size());
   for (const auto& card : local_credit_cards_) {
     result.push_back(card.get());
@@ -1257,11 +1257,15 @@ std::vector<const CreditCard*> PaymentsDataManager::GetCreditCardsToSuggest(
   if (!IsAutofillPaymentMethodsEnabled()) {
     return {};
   }
-  std::vector<CreditCard*> credit_cards;
+  std::vector<const CreditCard*> credit_cards;
   if (ShouldSuggestServerPaymentMethods()) {
     credit_cards = GetCreditCards();
   } else {
-    credit_cards = GetLocalCreditCards();
+    // TODO(crbug.com/367998817): Make `GetLocalCreditCards()` return an
+    // `std::vector<const CreditCard *>` to avoid creating a copy.
+    for (const CreditCard* card_from_list : GetLocalCreditCards()) {
+      credit_cards.push_back(card_from_list);
+    }
   }
 
   std::vector<const CreditCard*> cards_to_suggest =

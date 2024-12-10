@@ -202,7 +202,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
         profiles.size());
   }
 
-  const std::vector<CreditCard*>& credit_cards =
+  const std::vector<const CreditCard*>& credit_cards =
       client_->GetPersonalDataManager()
           .payments_data_manager()
           .GetCreditCards();

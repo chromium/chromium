@@ -389,7 +389,7 @@ class WebViewPasswordStoreObserver
 
 - (NSArray<CWVCreditCard*>*)creditCards {
   NSMutableArray* creditCards = [NSMutableArray array];
-  for (autofill::CreditCard* internalCard :
+  for (const autofill::CreditCard* internalCard :
        _personalDataManager->payments_data_manager().GetCreditCards()) {
     CWVCreditCard* creditCard =
         [[CWVCreditCard alloc] initWithCreditCard:*internalCard];

@@ -50,7 +50,7 @@ AutofillOfferManager::GetCardLinkedOffersMap(
 
   const std::vector<AutofillOfferData*> offers =
       personal_data_->payments_data_manager().GetAutofillOffers();
-  const std::vector<CreditCard*> cards =
+  const std::vector<const CreditCard*> cards =
       personal_data_->payments_data_manager().GetCreditCards();
   AutofillOfferManager::CardLinkedOffersMap card_linked_offers_map;
 
