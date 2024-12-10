@@ -53,20 +53,6 @@ history::HistoryService* HistoryServiceFactory::GetForProfile(
 }
 
 // static
-history::HistoryService* HistoryServiceFactory::GetForProfileIfExists(
-    ProfileIOS* profile,
-    ServiceAccessType access_type) {
-  // If saving history is disabled, only allow explicit access.
-  if (access_type != ServiceAccessType::EXPLICIT_ACCESS &&
-      profile->GetPrefs()->GetBoolean(prefs::kSavingBrowserHistoryDisabled)) {
-    return nullptr;
-  }
-  // TODO(crbug.com/382198655): Create should be false.
-  return GetInstance()->GetServiceForProfileAs<history::HistoryService>(
-      profile, /*create=*/true);
-}
-
-// static
 HistoryServiceFactory* HistoryServiceFactory::GetInstance() {
   static base::NoDestructor<HistoryServiceFactory> instance;
   return instance.get();

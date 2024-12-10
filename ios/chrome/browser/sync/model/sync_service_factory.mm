@@ -205,7 +205,7 @@ std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
   // PrivacySandboxSettingsFactory correctly declares its KeyedServices
   // dependencies.
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForProfileIfExists(
+      ios::HistoryServiceFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS);
 
   syncer::DeviceInfoSyncService* device_info_sync_service =
