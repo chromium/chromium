@@ -10,7 +10,8 @@
 
 namespace performance_manager {
 
-// A strongly typed wrapper for the id returned by RenderProcessHost::GetID().
+// A strongly typed wrapper for the id returned by
+// RenderProcessHost::GetDeprecatedID().
 //
 // This uses ChildProcessHost::kInvalidUniqueId (-1) as the default invalid id,
 // but also recognizes 0 as an invalid id because there is existing code that

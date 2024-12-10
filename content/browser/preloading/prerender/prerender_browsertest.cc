@@ -5419,7 +5419,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest, SuppressOpenURL) {
   params.initiator_origin =
       prerendered_render_frame_host->GetLastCommittedOrigin();
   params.source_render_process_id =
-      prerendered_render_frame_host->GetProcess()->GetID();
+      prerendered_render_frame_host->GetProcess()->GetDeprecatedID();
   params.source_render_frame_id = prerendered_render_frame_host->GetRoutingID();
   auto* new_web_contents = prerender_web_contents->OpenURL(
       params, /*navigation_handle_callback=*/{});

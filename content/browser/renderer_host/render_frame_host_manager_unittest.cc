@@ -177,7 +177,7 @@ class RenderViewHostDeletedObserver : public WebContentsObserver {
  public:
   explicit RenderViewHostDeletedObserver(RenderViewHost* rvh)
       : WebContentsObserver(WebContents::FromRenderViewHost(rvh)),
-        process_id_(rvh->GetProcess()->GetID()),
+        process_id_(rvh->GetProcess()->GetDeprecatedID()),
         routing_id_(rvh->GetRoutingID()),
         deleted_(false) {}
 
@@ -186,7 +186,7 @@ class RenderViewHostDeletedObserver : public WebContentsObserver {
       const RenderViewHostDeletedObserver&) = delete;
 
   void RenderViewDeleted(RenderViewHost* render_view_host) override {
-    if (render_view_host->GetProcess()->GetID() == process_id_ &&
+    if (render_view_host->GetProcess()->GetDeprecatedID() == process_id_ &&
         render_view_host->GetRoutingID() == routing_id_) {
       deleted_ = true;
     }
@@ -2658,7 +2658,7 @@ TEST_P(RenderFrameHostManagerTest, TraverseComplexOpenerChain) {
   contents()->NavigateAndCommit(GURL("http://tab1.com"));
   FrameTree* tree1 = &contents()->GetPrimaryFrameTree();
   FrameTreeNode* root1 = tree1->root();
-  int process_id = root1->current_frame_host()->GetProcess()->GetID();
+  int process_id = root1->current_frame_host()->GetProcess()->GetDeprecatedID();
   constexpr auto kOwnerType = blink::FrameOwnerElementType::kIframe;
   const bool is_dummy_frame_for_inner_tree = false;
   tree1->AddFrame(
@@ -2689,7 +2689,7 @@ TEST_P(RenderFrameHostManagerTest, TraverseComplexOpenerChain) {
   tab2->NavigateAndCommit(GURL("http://tab2.com"));
   FrameTree* tree2 = &tab2->GetPrimaryFrameTree();
   FrameTreeNode* root2 = tree2->root();
-  process_id = root2->current_frame_host()->GetProcess()->GetID();
+  process_id = root2->current_frame_host()->GetProcess()->GetDeprecatedID();
   tree2->AddFrame(
       root2->current_frame_host(), process_id, 22,
       TestRenderFrameHost::CreateStubFrameRemote(),
@@ -2723,7 +2723,7 @@ TEST_P(RenderFrameHostManagerTest, TraverseComplexOpenerChain) {
   tab4->NavigateAndCommit(GURL("http://tab4.com"));
   FrameTree* tree4 = &tab4->GetPrimaryFrameTree();
   FrameTreeNode* root4 = tree4->root();
-  process_id = root4->current_frame_host()->GetProcess()->GetID();
+  process_id = root4->current_frame_host()->GetProcess()->GetDeprecatedID();
   tree4->AddFrame(
       root4->current_frame_host(), process_id, 42,
       TestRenderFrameHost::CreateStubFrameRemote(),

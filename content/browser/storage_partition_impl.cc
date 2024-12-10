@@ -2275,7 +2275,7 @@ void StoragePartitionImpl::OnCertificateRequested(
     if (context.navigation_or_document()) {
       auto* render_frame_host = context.navigation_or_document()->GetDocument();
       if (render_frame_host) {
-        process_id = render_frame_host->GetProcess()->GetID();
+        process_id = render_frame_host->GetProcess()->GetDeprecatedID();
       }
     }
   }

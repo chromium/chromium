@@ -56,7 +56,7 @@ namespace v8_memory {
 //         // Process was deleted after measurement arrived on the PM sequence.
 //         return;
 //       }
-//       LOG(INFO) << "Process " << process->GetID() <<
+//       LOG(INFO) << "Process " << process->GetDeprecatedID() <<
 //           " reported " << process_data.detached_v8_bytes_used() <<
 //           " bytes of V8 memory that wasn't associated with a frame.";
 //       LOG(INFO) << "Process " << process_node->GetProcessId() <<

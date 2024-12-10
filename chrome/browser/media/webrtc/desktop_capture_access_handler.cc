@@ -414,7 +414,8 @@ void DesktopCaptureAccessHandler::HandleRequest(
     media_id =
         content::DesktopStreamsRegistry::GetInstance()->RequestMediaForStreamId(
             request.requested_video_device_ids.front(),
-            main_frame->GetProcess()->GetID(), main_frame->GetRoutingID(),
+            main_frame->GetProcess()->GetDeprecatedID(),
+            main_frame->GetRoutingID(),
             url::Origin::Create(request.security_origin),
             content::kRegistryStreamTypeDesktop);
   }

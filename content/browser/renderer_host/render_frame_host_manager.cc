@@ -978,7 +978,8 @@ void RenderFrameHostManager::DidChangeOpener(
   FrameTreeNode* opener = nullptr;
   if (opener_frame_token) {
     RenderFrameHostImpl* opener_rfhi = RenderFrameHostImpl::FromFrameToken(
-        source_site_instance_group->process()->GetID(), *opener_frame_token);
+        source_site_instance_group->process()->GetDeprecatedID(),
+        *opener_frame_token);
     // If |opener_rfhi| is null, the opener RFH has already disappeared.  In
     // this case, clear the opener rather than keeping the old opener around.
     if (opener_rfhi)
@@ -2045,7 +2046,7 @@ RenderFrameHostManager::GetFrameHostForNavigation(
             ? request->GetOriginToCommit().value()
             : request->GetTentativeOriginAtRequestTime();
     if (!policy->CanAccessOrigin(
-            navigation_rfh->GetProcess()->GetID(), origin_to_commit,
+            navigation_rfh->GetProcess()->GetDeprecatedID(), origin_to_commit,
             ChildProcessSecurityPolicyImpl::AccessType::kCanCommitNewOrigin)) {
       SCOPED_CRASH_KEY_STRING256("GetFrameHostForNav", "lock_url",
                                  process_lock.ToString());
@@ -2546,7 +2547,7 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
   // For security, we should transition between processes when one is a Web UI
   // page and one isn't, or if the WebUI types differ.
   if (ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-          render_frame_host_->GetProcess()->GetID()) ||
+          render_frame_host_->GetProcess()->GetDeprecatedID()) ||
       WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
           browser_context, current_effective_url)) {
     // If so, force a swap if destination is not an acceptable URL for Web UI.
@@ -5747,8 +5748,9 @@ void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {
 void RenderFrameHostManager::NotifyPrepareForInnerDelegateAttachComplete(
     bool success) {
   DCHECK(is_attaching_inner_delegate());
-  int32_t process_id = success ? render_frame_host_->GetProcess()->GetID()
-                               : ChildProcessHost::kInvalidUniqueID;
+  int32_t process_id = success
+                           ? render_frame_host_->GetProcess()->GetDeprecatedID()
+                           : ChildProcessHost::kInvalidUniqueID;
   int32_t routing_id =
       success ? render_frame_host_->GetRoutingID() : MSG_ROUTING_NONE;
   // Invoking the callback asynchronously to meet the APIs promise.

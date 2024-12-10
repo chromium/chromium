@@ -520,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       EXPECT_EQ(current_frame_host(), initial_rfh);
       EXPECT_EQ(current_frame_host()->GetFrameToken(),
                 observer.last_initiator_frame_token().value());
-      EXPECT_EQ(current_frame_host()->GetProcess()->GetID(),
+      EXPECT_EQ(current_frame_host()->GetProcess()->GetDeprecatedID(),
                 observer.last_initiator_process_id());
     }
   }
@@ -784,7 +784,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, PostUploadIllegalFilePath) {
   // Ensure that the process is allowed to access to the chosen file and
   // does not have access to the other file name.
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
-      current_frame_host()->GetProcess()->GetID(), file_path));
+      current_frame_host()->GetProcess()->GetDeprecatedID(), file_path));
 
   // Revoke the access to the file and submit the form. The renderer process
   // should be terminated.
@@ -793,7 +793,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, PostUploadIllegalFilePath) {
   ChildProcessSecurityPolicyImpl* security_policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
   security_policy->RevokeAllPermissionsForFile(
-      current_frame_host()->GetProcess()->GetID(), file_path);
+      current_frame_host()->GetProcess()->GetDeprecatedID(), file_path);
 
   // Use EvalJs and respond back to the browser process before doing the actual
   // submission. This will ensure that the process termination is guaranteed to
@@ -3660,7 +3660,7 @@ class GetEffectiveUrlClient : public ContentBrowserTestContentBrowserClient {
                       const GURL& site_url) override {
     if (!disallowed_process_id_)
       return true;
-    return process_host->GetID() != disallowed_process_id_;
+    return process_host->GetDeprecatedID() != disallowed_process_id_;
   }
 
   void set_effective_url(const GURL& url) { effective_url_ = url; }
@@ -3699,7 +3699,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   GURL modified_url0 =
       embedded_test_server()->GetURL("c.com", "/title1.html#ref1");
   new_client.set_effective_url(modified_url0);
-  new_client.set_disallowed_process(main_frame_process_host->GetID());
+  new_client.set_disallowed_process(main_frame_process_host->GetDeprecatedID());
 
   NavigationHandleCommitObserver navigation_1(wc, url1);
   EXPECT_TRUE(NavigateToURL(shell(), url1));
@@ -3743,7 +3743,7 @@ IN_PROC_BROWSER_TEST_F(
   GURL modified_url0 =
       embedded_test_server()->GetURL("c.com", "/title1.html#ref1");
   new_client.set_effective_url(modified_url0);
-  new_client.set_disallowed_process(main_frame_process_host->GetID());
+  new_client.set_disallowed_process(main_frame_process_host->GetDeprecatedID());
 
   // Navigates to the same-document. Since the SiteInstance changed, we would
   // normally try isolate this navigation by using a different RenderProcessHost
@@ -5799,7 +5799,8 @@ IN_PROC_BROWSER_TEST_F(
   // frame.
   RenderFrameHost* main_frame = shell()->web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* subframe = ChildFrameAt(main_frame, 0);
-  EXPECT_EQ(main_frame->GetProcess()->GetID(), subframe->GetProcess()->GetID());
+  EXPECT_EQ(main_frame->GetProcess()->GetDeprecatedID(),
+            subframe->GetProcess()->GetDeprecatedID());
 
   // Ask the parent to script the same-origin subframe and trigger some HTTP
   // subresource loads within the subframe.
@@ -5837,8 +5838,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHost* opener_frame =
       shell()->web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* popup_frame = popup->GetPrimaryMainFrame();
-  EXPECT_EQ(opener_frame->GetProcess()->GetID(),
-            popup_frame->GetProcess()->GetID());
+  EXPECT_EQ(opener_frame->GetProcess()->GetDeprecatedID(),
+            popup_frame->GetProcess()->GetDeprecatedID());
 
   // Ask the opener to script the (same-origin) popup window and trigger some
   // HTTP subresource loads within the popup.
@@ -5890,8 +5891,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHost* opener_frame =
       shell()->web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* popup_frame = popup->GetPrimaryMainFrame();
-  EXPECT_EQ(opener_frame->GetProcess()->GetID(),
-            popup_frame->GetProcess()->GetID());
+  EXPECT_EQ(opener_frame->GetProcess()->GetDeprecatedID(),
+            popup_frame->GetProcess()->GetDeprecatedID());
 
   // Double-check that the popup didn't commit any navigation and that it has
   // an the same origin as the initial opener.
@@ -5960,8 +5961,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceLoadingTest,
   RenderFrameHost* opener_frame =
       shell()->web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* popup_frame = popup->GetPrimaryMainFrame();
-  EXPECT_NE(opener_frame->GetProcess()->GetID(),
-            popup_frame->GetProcess()->GetID());
+  EXPECT_NE(opener_frame->GetProcess()->GetDeprecatedID(),
+            popup_frame->GetProcess()->GetDeprecatedID());
 
   // Inject Javascript that triggers some subresource loads over HTTP.
   //

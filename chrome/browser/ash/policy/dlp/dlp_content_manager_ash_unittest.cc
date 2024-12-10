@@ -1180,7 +1180,7 @@ TEST_F(DlpContentManagerAshTest, ScreenShareRestricted) {
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
           web_contents->GetPrimaryMainFrame()->GetRoutingID()));
   GetManager()->CheckScreenShareRestriction(media_id, kApplicationName,
                                             cb.Get());
@@ -1239,7 +1239,7 @@ TEST_F(DlpContentManagerAshTest, ScreenShareWarnedContinued) {
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
           web_contents->GetPrimaryMainFrame()->GetRoutingID()));
 
   // Warn restriction is enforced: allow and remember that the user proceeded.
@@ -1293,7 +1293,7 @@ TEST_F(DlpContentManagerAshTest, ScreenShareWarnedCancelled) {
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
           web_contents->GetPrimaryMainFrame()->GetRoutingID()));
 
   // Warn restriction is enforced: reject since the user canceled.

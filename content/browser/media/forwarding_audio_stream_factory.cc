@@ -287,10 +287,11 @@ void ForwardingAudioStreamFactory::RenderFrameDeleted(
   // Unretained is safe since the destruction of |core_| will be posted to the
   // IO thread later.
   GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&Core::CleanupStreamsBelongingTo,
-                                base::Unretained(core_.get()),
-                                render_frame_host->GetProcess()->GetID(),
-                                render_frame_host->GetRoutingID()));
+      FROM_HERE,
+      base::BindOnce(&Core::CleanupStreamsBelongingTo,
+                     base::Unretained(core_.get()),
+                     render_frame_host->GetProcess()->GetDeprecatedID(),
+                     render_frame_host->GetRoutingID()));
 }
 
 void ForwardingAudioStreamFactory::OverrideAudioStreamFactoryBinderForTesting(

@@ -204,7 +204,7 @@ std::vector<int> SpareRenderProcessHostManagerImpl::GetSpareIds() {
   std::vector<int> spare_ids;
   spare_ids.reserve(spare_rphs_.size());
   for (RenderProcessHost* spare_rph : spare_rphs_) {
-    spare_ids.push_back(spare_rph->GetID());
+    spare_ids.push_back(spare_rph->GetDeprecatedID());
   }
   return spare_ids;
 }

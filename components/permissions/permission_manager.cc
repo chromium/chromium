@@ -70,7 +70,7 @@ class PermissionManager::PendingRequest {
       content::RenderFrameHost* render_frame_host,
       const std::vector<ContentSettingsType>& permissions,
       base::OnceCallback<void(const std::vector<ContentSetting>&)> callback)
-      : render_process_id_(render_frame_host->GetProcess()->GetID()),
+      : render_process_id_(render_frame_host->GetProcess()->GetDeprecatedID()),
         render_frame_id_(render_frame_host->GetRoutingID()),
         callback_(std::move(callback)),
         permissions_(permissions),

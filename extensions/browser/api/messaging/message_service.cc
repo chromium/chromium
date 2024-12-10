@@ -357,7 +357,7 @@ class MessageServiceFactory
             },
             [&](const content::RenderFrameHost* render_frame_host) {
               return ChannelEndpoint(
-                  context, render_frame_host->GetProcess()->GetID(),
+                  context, render_frame_host->GetProcess()->GetDeprecatedID(),
                   PortContext::ForFrame(render_frame_host->GetRoutingID()));
             }},
         source);

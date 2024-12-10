@@ -224,7 +224,7 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
         base::BindRepeating(
             &NetBenchmarking::Create,
             loading_predictor ? loading_predictor->GetWeakPtr() : nullptr,
-            render_process_host->GetID()),
+            render_process_host->GetDeprecatedID()),
         ui_task_runner);
   }
 
@@ -232,7 +232,8 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
   if (safe_browsing_service_) {
     registry->AddInterface<safe_browsing::mojom::SafeBrowsing>(
         base::BindRepeating(
-            &MaybeCreateSafeBrowsingForRenderer, render_process_host->GetID(),
+            &MaybeCreateSafeBrowsingForRenderer,
+            render_process_host->GetDeprecatedID(),
             base::BindRepeating(
                 &ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
                 base::Unretained(this))),
@@ -240,7 +241,7 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     registry->AddInterface<safe_browsing::mojom::ExtensionWebRequestReporter>(
         base::BindRepeating(&MaybeCreateExtensionWebRequestReporterForRenderer,
-                            render_process_host->GetID()),
+                            render_process_host->GetDeprecatedID()),
         ui_task_runner);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   }
@@ -259,7 +260,7 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
           return host->GetProcess().Duplicate();
         return base::Process();
       },
-      render_process_host->GetID());
+      render_process_host->GetDeprecatedID());
   registry->AddInterface<mojom::ModuleEventSink>(
       base::BindRepeating(
           &ModuleEventSinkImpl::Create, std::move(get_process),
@@ -276,7 +277,7 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
             base::BindRepeating(
                 &performance_manager::mechanism::userspace_swap::
                     UserspaceSwapInitializationImpl::Create,
-                render_process_host->GetID()),
+                render_process_host->GetDeprecatedID()),
             performance_manager::PerformanceManager::GetTaskRunner());
   }
 #endif  // BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
@@ -329,8 +330,8 @@ void ChromeContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   map->Add<spellcheck::mojom::SpellCheckHost>(base::BindRepeating(
       [](content::RenderFrameHost* frame_host,
          mojo::PendingReceiver<spellcheck::mojom::SpellCheckHost> receiver) {
-        SpellCheckHostChromeImpl::Create(frame_host->GetProcess()->GetID(),
-                                         std::move(receiver));
+        SpellCheckHostChromeImpl::Create(
+            frame_host->GetProcess()->GetDeprecatedID(), std::move(receiver));
       }));
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
@@ -669,15 +670,15 @@ void ChromeContentBrowserClient::BindHostReceiverForRenderer(
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   if (auto host_receiver =
           receiver.As<spellcheck::mojom::SpellCheckInitializationHost>()) {
-    SpellCheckInitializationHostImpl::Create(render_process_host->GetID(),
-                                             std::move(host_receiver));
+    SpellCheckInitializationHostImpl::Create(
+        render_process_host->GetDeprecatedID(), std::move(host_receiver));
     return;
   }
 
 #if BUILDFLAG(HAS_SPELLCHECK_PANEL)
   if (auto host_receiver =
           receiver.As<spellcheck::mojom::SpellCheckPanelHost>()) {
-    SpellCheckPanelHostImpl::Create(render_process_host->GetID(),
+    SpellCheckPanelHostImpl::Create(render_process_host->GetDeprecatedID(),
                                     std::move(host_receiver));
     return;
   }

@@ -69,9 +69,11 @@ class MostVisitedIframeSourceTest : public testing::Test {
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         response_(nullptr) {}
 
-  int GetInstantRendererPID() const { return mock_host_.GetID(); }
-  int GetNonInstantRendererPID() const { return mock_host_.GetID() + 1; }
-  int GetInvalidRendererPID() const { return mock_host_.GetID() + 2; }
+  int GetInstantRendererPID() const { return mock_host_.GetDeprecatedID(); }
+  int GetNonInstantRendererPID() const {
+    return mock_host_.GetDeprecatedID() + 1;
+  }
+  int GetInvalidRendererPID() const { return mock_host_.GetDeprecatedID() + 2; }
 
   TestMostVisitedIframeSource* source() { return source_.get(); }
 

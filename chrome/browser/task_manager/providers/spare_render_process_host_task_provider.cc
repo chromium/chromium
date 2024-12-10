@@ -57,12 +57,12 @@ void SpareRenderProcessHostTaskProvider::OnSpareRenderProcessHostReady(
     RenderProcessHost* host) {
   ChildProcessData data(content::PROCESS_TYPE_RENDERER);
   data.SetProcess(host->GetProcess().Duplicate());
-  data.id = host->GetID();
+  data.id = host->GetDeprecatedID();
   auto task = std::make_unique<ChildProcessTask>(
       data, ChildProcessTask::ProcessSubtype::kSpareRenderProcess);
 
   auto [it, inserted] =
-      tasks_by_rph_id_.emplace(host->GetID(), std::move(task));
+      tasks_by_rph_id_.emplace(host->GetDeprecatedID(), std::move(task));
   CHECK(inserted);
 
   NotifyObserverTaskAdded(it->second.get());
@@ -70,7 +70,7 @@ void SpareRenderProcessHostTaskProvider::OnSpareRenderProcessHostReady(
 
 void SpareRenderProcessHostTaskProvider::OnSpareRenderProcessHostRemoved(
     RenderProcessHost* host) {
-  auto it = tasks_by_rph_id_.find(host->GetID());
+  auto it = tasks_by_rph_id_.find(host->GetDeprecatedID());
   if (it == tasks_by_rph_id_.end()) {
     // This can happen when a spare RenderProcessHost was created but never
     // reached the "ready" state.

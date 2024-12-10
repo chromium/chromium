@@ -2634,7 +2634,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   content::RenderFrameHost* frame = temp_web_contents->GetPrimaryMainFrame();
   EXPECT_TRUE(api->MaybeProxyURLLoaderFactory(
       frame->GetProcess()->GetBrowserContext(), frame,
-      frame->GetProcess()->GetID(),
+      frame->GetProcess()->GetDeprecatedID(),
       content::ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
       std::nullopt, ukm::kInvalidSourceIdObj, factory_builder, nullptr,
       nullptr));

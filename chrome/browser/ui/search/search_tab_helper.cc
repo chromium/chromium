@@ -89,7 +89,7 @@ bool InInstantProcess(const InstantService* instant_service,
     return false;
 
   return instant_service->IsInstantProcess(
-      contents->GetPrimaryMainFrame()->GetProcess()->GetID());
+      contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
 }
 
 // Called when an NTP finishes loading. If the load start time was noted,

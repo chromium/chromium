@@ -121,7 +121,7 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
             std::make_unique<RenderMessageFilter>(rph_id, helper.get()),
             std::move(receiver));
       },
-      GetID(), widget_helper_));
+      GetDeprecatedID(), widget_helper_));
 
   AddUIThreadInterface(
       registry.get(),
@@ -220,7 +220,7 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
 #endif
 
   file_system_manager_impl_.reset(new FileSystemManagerImpl(
-      GetID(), storage_partition_impl_->GetFileSystemContext(),
+      GetDeprecatedID(), storage_partition_impl_->GetFileSystemContext(),
       ChromeBlobStorageContext::GetFor(GetBrowserContext())));
 
   AddUIThreadInterface(
@@ -260,15 +260,15 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
   associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
       &RenderProcessHostImpl::CreateRendererHost, base::Unretained(this)));
 
-  registry->AddInterface(
-      base::BindRepeating(&BlobRegistryWrapper::Bind,
-                          storage_partition_impl_->GetBlobRegistry(), GetID()));
+  registry->AddInterface(base::BindRepeating(
+      &BlobRegistryWrapper::Bind, storage_partition_impl_->GetBlobRegistry(),
+      GetDeprecatedID()));
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   // Initialization can happen more than once (in the case of a child process
   // crash), but we don't want to lose the plugin registry in this case.
   if (!plugin_registry_) {
-    plugin_registry_ = std::make_unique<PluginRegistryImpl>(GetID());
+    plugin_registry_ = std::make_unique<PluginRegistryImpl>(GetDeprecatedID());
   }
   AddUIThreadInterface(
       registry.get(),
@@ -315,9 +315,10 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
       registry.get(), associated_interfaces_.get(), this);
 
   DCHECK(child_host_pending_receiver_);
-  io_thread_host_impl_.emplace(
-      GetIOThreadTaskRunner({}), GetID(), instance_weak_factory_.GetWeakPtr(),
-      std::move(registry), std::move(child_host_pending_receiver_));
+  io_thread_host_impl_.emplace(GetIOThreadTaskRunner({}), GetDeprecatedID(),
+                               instance_weak_factory_.GetWeakPtr(),
+                               std::move(registry),
+                               std::move(child_host_pending_receiver_));
 }
 
 void RenderProcessHostImpl::IOThreadHostImpl::BindHostReceiver(

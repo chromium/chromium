@@ -165,8 +165,8 @@ base::Value::Dict BuildTargetDescriptor(content::RenderViewHost* rvh) {
   }
 
   return BuildTargetDescriptor(url, title, favicon_url,
-                               rvh->GetProcess()->GetID(), rvh->GetRoutingID(),
-                               accessibility_mode);
+                               rvh->GetProcess()->GetDeprecatedID(),
+                               rvh->GetRoutingID(), accessibility_mode);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -437,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectOffscreenDocument) {
   content::WebContents* offscreen_contents =
       offscreen_document->host_contents();
   EXPECT_EQ(offscreen_url.spec(), view.url);
-  EXPECT_EQ(offscreen_document->render_process_host()->GetID(),
+  EXPECT_EQ(offscreen_document->render_process_host()->GetDeprecatedID(),
             view.render_process_id);
   EXPECT_EQ(offscreen_contents->GetPrimaryMainFrame()->GetRoutingID(),
             view.render_view_id);

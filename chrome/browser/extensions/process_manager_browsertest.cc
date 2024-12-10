@@ -750,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, ExtensionProcessReuse) {
     EXPECT_EQ(extension->url(),
               extension_host->host_contents()->GetSiteInstance()->GetSiteURL());
 
-    processes.insert(extension_host->render_process_host()->GetID());
+    processes.insert(extension_host->render_process_host()->GetDeprecatedID());
   }
 
   EXPECT_EQ(kNumExtensions, installed_extensions.size());
@@ -831,23 +831,23 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   // to the process of the extension iframe.
   content::ChildProcessSecurityPolicy* policy =
       content::ChildProcessSecurityPolicy::GetInstance();
-  EXPECT_TRUE(policy->CanRequestURL(extension_frame->GetProcess()->GetID(),
+  EXPECT_TRUE(policy->CanRequestURL(
+      extension_frame->GetProcess()->GetDeprecatedID(), extension_blob_url));
+  EXPECT_TRUE(policy->CanRequestURL(main_frame->GetProcess()->GetDeprecatedID(),
                                     extension_blob_url));
-  EXPECT_TRUE(policy->CanRequestURL(main_frame->GetProcess()->GetID(),
-                                    extension_blob_url));
-  EXPECT_TRUE(policy->CanRequestURL(extension_frame->GetProcess()->GetID(),
+  EXPECT_TRUE(policy->CanRequestURL(
+      extension_frame->GetProcess()->GetDeprecatedID(), extension_url));
+  EXPECT_TRUE(policy->CanRequestURL(main_frame->GetProcess()->GetDeprecatedID(),
                                     extension_url));
-  EXPECT_TRUE(
-      policy->CanRequestURL(main_frame->GetProcess()->GetID(), extension_url));
 
   EXPECT_TRUE(content::CanCommitURLForTesting(
-      extension_frame->GetProcess()->GetID(), extension_blob_url));
+      extension_frame->GetProcess()->GetDeprecatedID(), extension_blob_url));
   EXPECT_FALSE(content::CanCommitURLForTesting(
-      main_frame->GetProcess()->GetID(), extension_blob_url));
+      main_frame->GetProcess()->GetDeprecatedID(), extension_blob_url));
   EXPECT_TRUE(content::CanCommitURLForTesting(
-      extension_frame->GetProcess()->GetID(), extension_url));
+      extension_frame->GetProcess()->GetDeprecatedID(), extension_url));
   EXPECT_FALSE(content::CanCommitURLForTesting(
-      main_frame->GetProcess()->GetID(), extension_url));
+      main_frame->GetProcess()->GetDeprecatedID(), extension_url));
 
   // Open a new about:blank popup from main frame.  This should stay in the web
   // process.
@@ -1180,10 +1180,11 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   content::ChildProcessSecurityPolicy* policy =
       content::ChildProcessSecurityPolicy::GetInstance();
   EXPECT_FALSE(policy->CanRequestURL(
-      web_tab->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      web_tab->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
       app_origin.GetURL()));
   EXPECT_TRUE(policy->CanRequestURL(
-      guest_render_frame_host->GetProcess()->GetID(), app_origin.GetURL()));
+      guest_render_frame_host->GetProcess()->GetDeprecatedID(),
+      app_origin.GetURL()));
 
   // Try navigating the web tab to each nested URL with the app's origin.  This
   // should be blocked.

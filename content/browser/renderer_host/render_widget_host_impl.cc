@@ -197,7 +197,8 @@ class RenderWidgetHostIteratorImpl : public RenderWidgetHostIterator,
   ~RenderWidgetHostIteratorImpl() override = default;
 
   void Add(RenderWidgetHost* host) {
-    hosts_.emplace_back(host->GetProcess()->GetID(), host->GetRoutingID());
+    hosts_.emplace_back(host->GetProcess()->GetDeprecatedID(),
+                        host->GetRoutingID());
   }
 
   // RenderWidgetHostIterator:
@@ -435,8 +436,9 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
 
   std::pair<RoutingIDWidgetMap::iterator, bool> result =
       g_routing_id_widget_map.Get().insert(std::make_pair(
-          RenderWidgetHostID(agent_scheduling_group_->GetProcess()->GetID(),
-                             routing_id_),
+          RenderWidgetHostID(
+              agent_scheduling_group_->GetProcess()->GetDeprecatedID(),
+              routing_id_),
           this));
   CHECK(result.second) << "Inserting a duplicate item!";
 
@@ -541,7 +543,7 @@ viz::FrameSinkId RenderWidgetHostImpl::DefaultFrameSinkId(
     const SiteInstanceGroup& group,
     int routing_id) {
   return viz::FrameSinkId(
-      base::checked_cast<uint32_t>(group.process()->GetID()),
+      base::checked_cast<uint32_t>(group.process()->GetDeprecatedID()),
       base::checked_cast<uint32_t>(routing_id));
 }
 
@@ -1934,7 +1936,7 @@ void RenderWidgetHostImpl::DragTargetDrop(const DropData& drop_data,
     blink_frame_widget_->DragTargetDrop(
         DropDataToDragData(drop_data_with_permissions,
                            storage_partition->GetFileSystemAccessManager(),
-                           GetProcess()->GetID(),
+                           GetProcess()->GetDeprecatedID(),
                            ChromeBlobStorageContext::GetFor(
                                GetProcess()->GetBrowserContext())),
         ConvertWindowPointToViewport(client_point), screen_point, key_modifiers,
@@ -2342,7 +2344,7 @@ void RenderWidgetHostImpl::Destroy(bool also_delete) {
   GetProcess()->RemovePriorityClient(this);
   GetProcess()->RemoveObserver(this);
   g_routing_id_widget_map.Get().erase(
-      RenderWidgetHostID(GetProcess()->GetID(), routing_id_));
+      RenderWidgetHostID(GetProcess()->GetDeprecatedID(), routing_id_));
 
   // The |delegate_| may have been destroyed (or is in the process of being
   // destroyed) and detached first.
@@ -2583,8 +2585,9 @@ void RenderWidgetHostImpl::ShowPopup(const gfx::Rect& initial_screen_rect,
   // `delegate_` may be null since this message may be received from when
   // the delegate shutdown but this widget is not yet destroyed.
   if (delegate_) {
-    delegate_->ShowCreatedWidget(GetProcess()->GetID(), GetRoutingID(),
-                                 initial_screen_rect, anchor_screen_rect);
+    delegate_->ShowCreatedWidget(GetProcess()->GetDeprecatedID(),
+                                 GetRoutingID(), initial_screen_rect,
+                                 anchor_screen_rect);
   }
   std::move(callback).Run();
 }
@@ -2719,7 +2722,7 @@ void RenderWidgetHostImpl::StartDragging(
   //    renderer for any file paths in the drop.
   filtered_data.filenames.clear();
   for (const auto& file_info : drop_data.filenames) {
-    if (policy->CanReadFile(GetProcess()->GetID(), file_info.path)) {
+    if (policy->CanReadFile(GetProcess()->GetDeprecatedID(), file_info.path)) {
       filtered_data.filenames.push_back(file_info);
     }
   }
@@ -2742,7 +2745,8 @@ void RenderWidgetHostImpl::StartDragging(
       continue;
     }
 
-    if (policy->CanReadFileSystemFile(GetProcess()->GetID(), file_system_url)) {
+    if (policy->CanReadFileSystemFile(GetProcess()->GetDeprecatedID(),
+                                      file_system_url)) {
       filtered_data.file_system_files.push_back(file_system_file);
     }
   }
@@ -3547,7 +3551,8 @@ void RenderWidgetHostImpl::GrantFileAccessFromDropData(DropData* drop_data) {
   RenderProcessHost* process = GetProcess();
   PrepareDropDataForChildProcess(
       drop_data, ChildProcessSecurityPolicyImpl::GetInstance(),
-      process->GetID(), process->GetStoragePartition()->GetFileSystemContext());
+      process->GetDeprecatedID(),
+      process->GetStoragePartition()->GetFileSystemContext());
 }
 
 void RenderWidgetHostImpl::RequestCompositionUpdates(bool immediate_request,

@@ -155,7 +155,7 @@ void SupervisedUserNavigationObserver::DidFinishNavigation(
   if (navigation_handle->IsSameDocument() &&
       navigation_handle->IsInPrimaryMainFrame()) {
     auto* render_frame_host = web_contents()->GetPrimaryMainFrame();
-    int process_id = render_frame_host->GetProcess()->GetID();
+    int process_id = render_frame_host->GetProcess()->GetDeprecatedID();
     int routing_id = render_frame_host->GetRoutingID();
     bool skip_manual_parent_filter =
         supervised_user::ShouldContentSkipParentAllowlistFiltering(
@@ -235,7 +235,7 @@ void SupervisedUserNavigationObserver::RecordPageLoadUKM(
 
 void SupervisedUserNavigationObserver::OnURLFilterChanged() {
   auto* main_frame = web_contents()->GetPrimaryMainFrame();
-  int main_frame_process_id = main_frame->GetProcess()->GetID();
+  int main_frame_process_id = main_frame->GetProcess()->GetDeprecatedID();
   int routing_id = main_frame->GetRoutingID();
   bool skip_manual_parent_filter =
       supervised_user::ShouldContentSkipParentAllowlistFiltering(
@@ -395,7 +395,7 @@ void SupervisedUserNavigationObserver::FilterRenderFrame(
       last_committed_url, web_contents()->GetLastCommittedURL(),
       base::BindOnce(&SupervisedUserNavigationObserver::URLFilterCheckCallback,
                      weak_ptr_factory_.GetWeakPtr(), last_committed_url,
-                     render_frame_host->GetProcess()->GetID(),
+                     render_frame_host->GetProcess()->GetDeprecatedID(),
                      render_frame_host->GetRoutingID()));
 }
 

@@ -45,7 +45,7 @@ void WebRtcLoggingController::AttachToRenderProcessHost(
   host->SetUserData(
       kRenderProcessHostKey,
       std::make_unique<base::UserDataAdapter<WebRtcLoggingController>>(
-          new WebRtcLoggingController(host->GetID(),
+          new WebRtcLoggingController(host->GetDeprecatedID(),
                                       host->GetBrowserContext())));
 }
 

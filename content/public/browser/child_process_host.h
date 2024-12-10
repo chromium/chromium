@@ -50,7 +50,8 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   ~ChildProcessHost() override;
 
   // This is a value never returned as the unique id of any child processes of
-  // any kind, including the values returned by RenderProcessHost::GetID().
+  // any kind, including the values returned by
+  // RenderProcessHost::GetDeprecatedID().
   enum : int { kInvalidUniqueID = kInvalidChildProcessUniqueId };
 
   // Every ChildProcessHost provides a single primordial Mojo message pipe to

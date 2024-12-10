@@ -264,7 +264,7 @@ void SSLManager::DidRunMixedContent(const GURL& security_origin) {
 
   if (ssl_host_state_delegate_) {
     ssl_host_state_delegate_->HostRanInsecureContent(
-        security_origin.host(), site_instance->GetProcess()->GetID(),
+        security_origin.host(), site_instance->GetProcess()->GetDeprecatedID(),
         SSLHostStateDelegate::MIXED_CONTENT);
   }
   // TODO(crbug.com/40223471): Ensure proper notify_changes is passed to
@@ -284,7 +284,7 @@ void SSLManager::DidRunContentWithCertErrors(const GURL& security_origin) {
 
   if (ssl_host_state_delegate_) {
     ssl_host_state_delegate_->HostRanInsecureContent(
-        security_origin.host(), site_instance->GetProcess()->GetID(),
+        security_origin.host(), site_instance->GetProcess()->GetDeprecatedID(),
         SSLHostStateDelegate::CERT_ERRORS_CONTENT);
   }
   // TODO(crbug.com/40223471): Ensure proper notify_changes is passed to
@@ -409,7 +409,7 @@ bool SSLManager::UpdateEntry(NavigationEntryImpl* entry,
     // those cases.
     if (entry_origin.has_value()) {
       const std::string& host = entry_origin->host();
-      int process_id = site_instance->GetProcess()->GetID();
+      int process_id = site_instance->GetProcess()->GetDeprecatedID();
       if (ssl_host_state_delegate_->DidHostRunInsecureContent(
               host, process_id, SSLHostStateDelegate::MIXED_CONTENT)) {
         entry->GetSSL().content_status |= SSLStatus::RAN_INSECURE_CONTENT;

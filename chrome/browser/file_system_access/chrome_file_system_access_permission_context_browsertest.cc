@@ -340,11 +340,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChromeAppTest,
       content::FileSystemAccessPermissionGrant::PermissionRequestOutcome>
       future;
   auto* rfh = web_contents->GetPrimaryMainFrame();
-  grant->RequestPermission(content::GlobalRenderFrameHostId(
-                               rfh->GetProcess()->GetID(), rfh->GetRoutingID()),
-                           content::FileSystemAccessPermissionGrant::
-                               UserActivationState::kNotRequired,
-                           future.GetCallback());
+  grant->RequestPermission(
+      content::GlobalRenderFrameHostId(rfh->GetProcess()->GetDeprecatedID(),
+                                       rfh->GetRoutingID()),
+      content::FileSystemAccessPermissionGrant::UserActivationState::
+          kNotRequired,
+      future.GetCallback());
   auto result = future.Get();
   EXPECT_NE(result, content::FileSystemAccessPermissionGrant::
                         PermissionRequestOutcome::kGrantedByRestorePrompt);

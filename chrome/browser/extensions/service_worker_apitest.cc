@@ -223,7 +223,8 @@ bool ServiceWorkerBasedBackgroundTest::ExtensionHasRenderProcessHost(
   content::RenderProcessHost::iterator it =
       content::RenderProcessHost::AllHostsIterator();
   while (!it.IsAtEnd()) {
-    if (process_map->Contains(extension_id, it.GetCurrentValue()->GetID())) {
+    if (process_map->Contains(extension_id,
+                              it.GetCurrentValue()->GetDeprecatedID())) {
       return true;
     }
     it.Advance();

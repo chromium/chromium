@@ -5962,7 +5962,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, MAYBE_PopupMenuTest) {
   // Android use native widgets. Windows does not support this as UI
   // convention (it requires separate clicks to open the menu and select an
   // option). See https://crbug.com/703191.
-  int process_id = child_node->current_frame_host()->GetProcess()->GetID();
+  int process_id =
+      child_node->current_frame_host()->GetProcess()->GetDeprecatedID();
   popup_waiter.emplace(web_contents(), child_node->current_frame_host());
   input::RenderWidgetHostInputEventRouter* router =
       static_cast<WebContentsImpl*>(shell()->web_contents())

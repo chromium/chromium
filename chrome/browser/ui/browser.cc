@@ -2422,7 +2422,8 @@ blink::ProtocolHandlerSecurityLevel Browser::GetProtocolHandlerSecurityLevel(
           requesting_frame);
   if (owner_extension &&
       process_map->IsPrivilegedExtensionProcess(
-          *owner_extension, requesting_frame->GetProcess()->GetID())) {
+          *owner_extension,
+          requesting_frame->GetProcess()->GetDeprecatedID())) {
     return blink::ProtocolHandlerSecurityLevel::kExtensionFeatures;
   }
   return blink::ProtocolHandlerSecurityLevel::kStrict;
@@ -3543,8 +3544,9 @@ bool Browser::ShouldCreateBackgroundContents(
   // Ensure that we're trying to open this from the extension's process.
   extensions::ProcessMap* process_map = extensions::ProcessMap::Get(profile_);
   if (!source_site_instance->GetProcess() ||
-      !process_map->Contains(extension->id(),
-                             source_site_instance->GetProcess()->GetID())) {
+      !process_map->Contains(
+          extension->id(),
+          source_site_instance->GetProcess()->GetDeprecatedID())) {
     return false;
   }
 

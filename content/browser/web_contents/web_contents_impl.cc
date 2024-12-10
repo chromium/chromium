@@ -3428,7 +3428,7 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
   prefs.inverted_colors = inverted_colors_;
 
   if (ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-          GetRenderViewHost()->GetProcess()->GetID())) {
+          GetRenderViewHost()->GetProcess()->GetDeprecatedID())) {
     prefs.loads_images_automatically = true;
     prefs.javascript_enabled = true;
   }
@@ -4802,7 +4802,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
     return nullptr;
   }
 
-  int render_process_id = opener->GetProcess()->GetID();
+  int render_process_id = opener->GetProcess()->GetDeprecatedID();
   SiteInstanceImpl* source_site_instance = opener->GetSiteInstance();
   const auto& partition_config =
       source_site_instance->GetStoragePartitionConfig();
@@ -5019,7 +5019,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
         std::make_unique<NavigationController::LoadURLParams>(
             params.target_url);
     load_params->initiator_origin = opener->GetLastCommittedOrigin();
-    load_params->initiator_process_id = opener->GetProcess()->GetID();
+    load_params->initiator_process_id = opener->GetProcess()->GetDeprecatedID();
     load_params->initiator_frame_token = opener->GetFrameToken();
     // Avoiding setting |load_params->source_site_instance| when
     // |opener_suppressed| is true, because in that case we do not want to use
@@ -5095,7 +5095,8 @@ RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(
 
   // Save the created widget associated with the route so we can show it later.
   pending_widgets_.insert(
-      {GlobalRoutingID(site_instance_group->process()->GetID(), route_id),
+      {GlobalRoutingID(site_instance_group->process()->GetDeprecatedID(),
+                       route_id),
        widget_host});
   AddRenderWidgetHostDestructionObserver(widget_host);
 
@@ -5146,7 +5147,7 @@ void WebContentsImpl::ShowCreatedWindow(
   // when it will always do so. What needs to happen in the renderer before we
   // reach here?
   std::optional<CreatedWindow> owned_created = GetCreatedWindow(
-      opener->GetProcess()->GetID(), main_frame_widget_route_id);
+      opener->GetProcess()->GetDeprecatedID(), main_frame_widget_route_id);
 
   // The browser may have rejected the request to make a new window, or the
   // renderer could be requesting to show a previously shown window (occurs when
@@ -6252,7 +6253,8 @@ void WebContentsImpl::SaveFrameWithHeaders(
           policy_exception_justification: "Not implemented."
         })");
   auto params = std::make_unique<download::DownloadUrlParameters>(
-      url, rfh->GetProcess()->GetID(), rfh->GetRoutingID(), traffic_annotation);
+      url, rfh->GetProcess()->GetDeprecatedID(), rfh->GetRoutingID(),
+      traffic_annotation);
   params->set_referrer(referrer.url);
   params->set_referrer_policy(
       Referrer::ReferrerPolicyForUrlRequest(referrer.policy));
@@ -8294,7 +8296,7 @@ void WebContentsImpl::RunJavaScriptDialog(
 
   auto callback = base::BindOnce(
       &WebContentsImpl::OnDialogClosed, weak_factory_.GetWeakPtr(),
-      render_frame_host->GetProcess()->GetID(),
+      render_frame_host->GetProcess()->GetDeprecatedID(),
       render_frame_host->GetRoutingID(), std::move(response_callback),
       std::move(fullscreen_block));
 
@@ -8415,7 +8417,7 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
 
   auto callback = base::BindOnce(
       &WebContentsImpl::OnDialogClosed, weak_factory_.GetWeakPtr(),
-      render_frame_host->GetProcess()->GetID(),
+      render_frame_host->GetProcess()->GetDeprecatedID(),
       render_frame_host->GetRoutingID(), std::move(response_callback),
       std::move(fullscreen_block));
 
@@ -8764,7 +8766,8 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
   // Cancel any visible dialogs so they are not left dangling over the sad tab.
   CancelActiveAndPendingDialogs();
 
-  audio_stream_monitor_.RenderProcessGone(rvh_impl->GetProcess()->GetID());
+  audio_stream_monitor_.RenderProcessGone(
+      rvh_impl->GetProcess()->GetDeprecatedID());
 
   // Reset the loading progress. TODO(avi): What does it mean to have a
   // "renderer crash" when there is more than one renderer process serving a

@@ -101,7 +101,8 @@ void ChromePluginServiceFilter::AuthorizeAllPlugins(
   web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       [](content::RenderFrameHost* render_frame_host) {
         ChromePluginServiceFilter::GetInstance()->AuthorizePlugin(
-            render_frame_host->GetProcess()->GetID(), base::FilePath());
+            render_frame_host->GetProcess()->GetDeprecatedID(),
+            base::FilePath());
       });
 
   if (load_blocked) {
@@ -158,7 +159,7 @@ void ChromePluginServiceFilter::RenderProcessExited(
     const content::ChildProcessTerminationInfo& info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::AutoLock auto_lock(lock_);
-  plugin_details_.erase(host->GetID());
+  plugin_details_.erase(host->GetDeprecatedID());
   host_observation_.RemoveObservation(host);
 }
 

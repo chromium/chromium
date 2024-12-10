@@ -144,7 +144,7 @@ void ExtensionWebContentsObserver::InitializeRenderFrame(
   // to request pages from the extension's origin.
   content::ChildProcessSecurityPolicy* security_policy =
       content::ChildProcessSecurityPolicy::GetInstance();
-  int process_id = render_frame_host->GetProcess()->GetID();
+  int process_id = render_frame_host->GetProcess()->GetDeprecatedID();
   security_policy->GrantRequestOrigin(process_id, frame_extension->origin());
 
   // Notify the render frame of the view type.
@@ -179,7 +179,7 @@ void ExtensionWebContentsObserver::SetUpRenderFrameHost(
   if (type == Manifest::TYPE_EXTENSION ||
       type == Manifest::TYPE_LEGACY_PACKAGED_APP) {
     util::InitializeFileSchemeAccessForExtension(
-        render_frame_host->GetProcess()->GetID(), extension->id(),
+        render_frame_host->GetProcess()->GetDeprecatedID(), extension->id(),
         browser_context_);
   }
 

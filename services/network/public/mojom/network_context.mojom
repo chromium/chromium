@@ -773,7 +773,8 @@ struct URLLoaderFactoryParams {
   // SECURITY NOTE: Factories with kBrowserProcessId should not be sent
   // to untrustworthy processes.
   //
-  // Set to RenderProcessHost::GetID() to indicate a renderer process.
+  // Set to RenderProcessHost::GetDeprecatedID() to indicate a renderer
+  // process.
   // SECURITY NOTE: Factories should not be shared among multiple renderer
   // processes (e.g. |request_initiator_origin_lock| is specific to a single
   // renderer process).

@@ -3515,7 +3515,7 @@ CreateNetworkFactoryForDevTools(
     GetContentClient()
         ->browser()
         ->RegisterNonNetworkSubresourceURLLoaderFactories(
-            host->GetID(), routing_id, origin, &factories);
+            host->GetDeprecatedID(), routing_id, origin, &factories);
     auto i = factories.find(std::string(scheme));
     if (i == factories.end()) {
       return {};

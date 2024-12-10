@@ -540,7 +540,7 @@ void WebRequestAPI::ProxyWebSocket(
   WebRequestProxyingWebSocket::StartProxying(
       std::move(factory), url, site_for_cookies, user_agent,
       std::move(handshake_client), has_extra_headers,
-      frame->GetProcess()->GetID(), frame->GetRoutingID(),
+      frame->GetProcess()->GetDeprecatedID(), frame->GetRoutingID(),
       &request_id_generator_, frame->GetLastCommittedOrigin(),
       frame->GetProcess()->GetBrowserContext(), proxies_.get());
 }
@@ -556,7 +556,7 @@ void WebRequestAPI::ProxyWebTransport(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!MayHaveProxies()) {
     auto* render_frame_host = content::RenderFrameHost::FromID(
-        render_process_host.GetID(), frame_routing_id);
+        render_process_host.GetDeprecatedID(), frame_routing_id);
     if (!IsAvailableToWebViewEmbedderFrame(render_frame_host)) {
       std::move(callback).Run(std::move(handshake_client), std::nullopt);
       return;

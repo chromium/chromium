@@ -107,7 +107,8 @@ class ExtensionCrashRecoveryTest : public extensions::ExtensionBrowserTest {
     extensions::ProcessMap* process_map =
         extensions::ProcessMap::Get(browser()->profile());
     ASSERT_TRUE(process_map->Contains(
-        extension_id, extension_host->render_process_host()->GetID()));
+        extension_id,
+        extension_host->render_process_host()->GetDeprecatedID()));
   }
 
   void LoadTestExtension() {

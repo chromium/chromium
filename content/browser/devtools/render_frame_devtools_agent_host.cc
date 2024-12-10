@@ -263,7 +263,7 @@ void RenderFrameDevToolsAgentHost::UpdateRawHeadersAccess(
       process_origins.insert(frame_host->GetLastCommittedOrigin());
   }
   GetNetworkService()->SetRawHeadersAccess(
-      rph->GetID(),
+      rph->GetDeprecatedID(),
       std::vector<url::Origin>(process_origins.begin(), process_origins.end()));
 }
 
@@ -881,7 +881,7 @@ void RenderFrameDevToolsAgentHost::UpdateRendererChannel(bool force) {
         std::move(host_remote),
         agent_remote.InitWithNewEndpointAndPassReceiver());
   }
-  int process_id = frame_host_ ? frame_host_->GetProcess()->GetID()
+  int process_id = frame_host_ ? frame_host_->GetProcess()->GetDeprecatedID()
                                : ChildProcessHost::kInvalidUniqueID;
   GetRendererChannel()->SetRendererAssociated(std::move(agent_remote),
                                               std::move(host_receiver),

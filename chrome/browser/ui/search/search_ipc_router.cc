@@ -32,7 +32,7 @@ bool IsInInstantProcess(content::RenderFrameHost* render_frame) {
   if (!instant_service)
     return false;
 
-  return instant_service->IsInstantProcess(process_host->GetID());
+  return instant_service->IsInstantProcess(process_host->GetDeprecatedID());
 }
 
 }  // namespace

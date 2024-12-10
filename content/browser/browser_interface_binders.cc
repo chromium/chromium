@@ -807,7 +807,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   if (BrowserMainLoop::GetInstance()) {
     map->Add<midi::mojom::MidiSessionProvider>(
         base::BindRepeating(&MidiHost::BindReceiver,
-                            host->GetProcess()->GetID(),
+                            host->GetProcess()->GetDeprecatedID(),
                             BrowserMainLoop::GetInstance()->midi_service()),
         GetIOThreadTaskRunner({}));
   }
@@ -851,7 +851,8 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 
   map->Add<media::mojom::SpeechRecognizer>(
       base::BindRepeating(&SpeechRecognitionDispatcherHost::Create,
-                          host->GetProcess()->GetID(), host->GetRoutingID()),
+                          host->GetProcess()->GetDeprecatedID(),
+                          host->GetRoutingID()),
       GetIOThreadTaskRunner({}));
 
   map->Add<blink::mojom::SpeechSynthesis>(base::BindRepeating(
@@ -899,7 +900,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 
   map->Add<blink::mojom::FileUtilitiesHost>(
       base::BindRepeating(FileUtilitiesHostImpl::Create,
-                          host->GetProcess()->GetID()),
+                          host->GetProcess()->GetDeprecatedID()),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
 
@@ -1330,7 +1331,7 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
 
   map->Add<blink::mojom::FileUtilitiesHost>(
       base::BindRepeating(FileUtilitiesHostImpl::Create,
-                          host->GetProcessHost()->GetID()),
+                          host->GetProcessHost()->GetDeprecatedID()),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
 
@@ -1479,7 +1480,7 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
   // |SharedWorkerHost::broker_|.
   map->Add<blink::mojom::FileUtilitiesHost>(
       base::BindRepeating(FileUtilitiesHostImpl::Create,
-                          host->GetProcessHost()->GetID()),
+                          host->GetProcessHost()->GetDeprecatedID()),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
 

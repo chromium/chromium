@@ -772,11 +772,11 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   RenderProcessHost* new_process = new_instance->GetProcess();
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   EXPECT_TRUE(policy->CanAccessOrigin(
-      new_process->GetID(),
+      new_process->GetDeprecatedID(),
       url::Origin::Create(embedder_defined_unassigned_url()),
       ChildProcessSecurityPolicyImpl::AccessType::kCanCommitNewOrigin));
   EXPECT_TRUE(policy->CanAccessOrigin(
-      new_process->GetID(), url::Origin::Create(regular_url()),
+      new_process->GetDeprecatedID(), url::Origin::Create(regular_url()),
       ChildProcessSecurityPolicyImpl::AccessType::kCanCommitNewOrigin));
 }
 
@@ -904,7 +904,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
       web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL());
   EXPECT_EQ(ProcessLock::FromSiteInfo(SiteInfo::CreateForTesting(
                 IsolationContext(browser_context), regular_url())),
-            policy->GetProcessLock(process2->GetID()));
+            policy->GetProcessLock(process2->GetDeprecatedID()));
 
   // Ensure also that the regular url process didn't change midway through the
   // navigation.

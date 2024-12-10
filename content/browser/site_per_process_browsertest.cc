@@ -1104,7 +1104,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, CleanupCrossSiteIframe) {
                                 ->current_frame_host()
                                 ->GetSiteInstance()
                                 ->GetProcess()
-                                ->GetID();
+                                ->GetDeprecatedID();
   int subframe_rvh_id = root->child_at(0)
                             ->current_frame_host()
                             ->render_view_host()
@@ -4124,7 +4124,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   RenderFrameHostImpl* rfh = root->current_frame_host();
   RenderViewHostImpl* rvh = rfh->render_view_host();
   int rvh_routing_id = rvh->GetRoutingID();
-  int rvh_process_id = rvh->GetProcess()->GetID();
+  int rvh_process_id = rvh->GetProcess()->GetDeprecatedID();
   SiteInstanceImpl* site_instance = rfh->GetSiteInstance();
   RenderFrameDeletedObserver deleted_observer(rfh);
 
@@ -4186,7 +4186,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     EXPECT_EQ(site_instance, pending_rfh->GetSiteInstance());
 
   EXPECT_FALSE(rvh_routing_id == pending_rvh->GetRoutingID() &&
-               rvh_process_id == pending_rvh->GetProcess()->GetID());
+               rvh_process_id == pending_rvh->GetProcess()->GetDeprecatedID());
 
   // Make sure the last navigation finishes without crashing.
   ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
@@ -6330,10 +6330,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   run_loop2.Run();
 
   // At this point, we should have two pending WebContents.
-  EXPECT_TRUE(base::Contains(web_contents()->pending_contents_,
-                             GlobalRoutingID(process1->GetID(), routing_id1)));
-  EXPECT_TRUE(base::Contains(web_contents()->pending_contents_,
-                             GlobalRoutingID(process2->GetID(), routing_id2)));
+  EXPECT_TRUE(base::Contains(
+      web_contents()->pending_contents_,
+      GlobalRoutingID(process1->GetDeprecatedID(), routing_id1)));
+  EXPECT_TRUE(base::Contains(
+      web_contents()->pending_contents_,
+      GlobalRoutingID(process2->GetDeprecatedID(), routing_id2)));
 
   // Both subframes were set up in the same way, so the next routing ID for the
   // new popup windows should match up (this led to the collision in the
@@ -6508,7 +6510,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       event);
   run_loop1.Run();
 
-  auto first_popup_global_id = GlobalRoutingID(process1->GetID(), routing_id1);
+  auto first_popup_global_id =
+      GlobalRoutingID(process1->GetDeprecatedID(), routing_id1);
   // Add an interceptor for first popup widget so it doesn't get closed
   // immediately while the other one is being opened.
   EXPECT_TRUE(
@@ -6534,8 +6537,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // At this point, we should have two pending widgets.
   EXPECT_TRUE(
       base::Contains(web_contents()->pending_widgets_, first_popup_global_id));
-  EXPECT_TRUE(base::Contains(web_contents()->pending_widgets_,
-                             GlobalRoutingID(process2->GetID(), routing_id2)));
+  EXPECT_TRUE(base::Contains(
+      web_contents()->pending_widgets_,
+      GlobalRoutingID(process2->GetDeprecatedID(), routing_id2)));
 
   // Both subframes were set up in the same way, so the next routing ID for the
   // new popup widgets should match up (this led to the collision in the
@@ -6545,10 +6549,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Now simulate both widgets being shown.
   interceptor1.ResumeShowPopupWidget();
   interceptor2.ResumeShowPopupWidget();
-  EXPECT_FALSE(base::Contains(web_contents()->pending_widgets_,
-                              GlobalRoutingID(process1->GetID(), routing_id1)));
-  EXPECT_FALSE(base::Contains(web_contents()->pending_widgets_,
-                              GlobalRoutingID(process2->GetID(), routing_id2)));
+  EXPECT_FALSE(base::Contains(
+      web_contents()->pending_widgets_,
+      GlobalRoutingID(process1->GetDeprecatedID(), routing_id1)));
+  EXPECT_FALSE(base::Contains(
+      web_contents()->pending_widgets_,
+      GlobalRoutingID(process2->GetDeprecatedID(), routing_id2)));
 
   // There are posted tasks that must be run before the test shuts down, lest
   // they access deleted state.
@@ -9473,10 +9479,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TestChildProcessImportance) {
       child->current_frame_host()->GetProcess()->GetEffectiveImportance());
 
   // Check importance is maintained if child navigates to new domain.
-  int old_child_process_id = child->current_frame_host()->GetProcess()->GetID();
+  int old_child_process_id =
+      child->current_frame_host()->GetProcess()->GetDeprecatedID();
   GURL url = embedded_test_server()->GetURL("foo.com", "/title2.html");
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), url));
-  int new_child_process_id = child->current_frame_host()->GetProcess()->GetID();
+  int new_child_process_id =
+      child->current_frame_host()->GetProcess()->GetDeprecatedID();
   EXPECT_NE(old_child_process_id, new_child_process_id);
   EXPECT_EQ(
       ChildProcessImportance::NORMAL,
@@ -9485,11 +9493,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TestChildProcessImportance) {
             root->current_frame_host()->GetProcess()->GetEffectiveImportance());
 
   // Check importance is maintained if root navigates to new domain.
-  int old_root_process_id = root->current_frame_host()->GetProcess()->GetID();
+  int old_root_process_id =
+      root->current_frame_host()->GetProcess()->GetDeprecatedID();
   child = nullptr;  // Going to navigate root to page without any child.
   EXPECT_TRUE(NavigateToURLFromRenderer(root, url));
   EXPECT_EQ(0u, root->child_count());
-  int new_root_process_id = root->current_frame_host()->GetProcess()->GetID();
+  int new_root_process_id =
+      root->current_frame_host()->GetProcess()->GetDeprecatedID();
   EXPECT_NE(old_root_process_id, new_root_process_id);
   EXPECT_EQ(ChildProcessImportance::IMPORTANT,
             root->current_frame_host()->GetProcess()->GetEffectiveImportance());

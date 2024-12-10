@@ -79,7 +79,7 @@ RendererTask::RendererTask(const std::u16string& title,
       render_process_host_(render_process_host),
       renderer_resources_sampler_(
           CreateRendererResourcesSampler(render_process_host_)),
-      render_process_id_(render_process_host_->GetID()),
+      render_process_id_(render_process_host_->GetDeprecatedID()),
       v8_memory_allocated_(0),
       v8_memory_used_(0),
       webcache_stats_(blink::WebCacheResourceTypeStats()),

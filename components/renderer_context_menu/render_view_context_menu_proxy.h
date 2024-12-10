@@ -53,7 +53,7 @@ class MenuModel;
 //       content::AssociateURLFetcherWithRenderView(
 //           fetcher_.get(),
 //           proxy_->GetRenderFrameHost()->GetSiteInstance()->GetSite(),
-//           proxy_->GetRenderFrameHost()->GetProcess()->GetID(),
+//           proxy_->GetRenderFrameHost()->GetProcess()->GetDeprecatedID(),
 //           proxy_->GetRenderFrameHost()->GetRoutingID());
 //       fetcher_->Start();
 //     }

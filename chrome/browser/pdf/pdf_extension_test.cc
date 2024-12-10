@@ -270,7 +270,7 @@ class InnerWebContentsAttachDelayer {
       content::RenderFrameHost* outer_frame) {
     auto* mime_handler_view_helper =
         extensions::MimeHandlerViewAttachHelper::Get(
-            outer_frame->GetProcess()->GetID());
+            outer_frame->GetProcess()->GetDeprecatedID());
     mime_handler_view_helper->set_resume_attach_callback_for_testing(
         base::BindOnce(&InnerWebContentsAttachDelayer::ResumeAttachCallback,
                        base::Unretained(this)));

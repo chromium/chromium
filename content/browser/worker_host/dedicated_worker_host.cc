@@ -340,7 +340,7 @@ void DedicatedWorkerHost::StartScriptLoad(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "loading", "WorkerScriptFetcher CreateAndStart", TRACE_ID_LOCAL(this));
   WorkerScriptFetcher::CreateAndStart(
-      worker_process_host_->GetID(), token_, script_url,
+      worker_process_host_->GetDeprecatedID(), token_, script_url,
       *nearest_ancestor_render_frame_host, creator_render_frame_host,
       nearest_ancestor_render_frame_host->ComputeSiteForCookies(),
       creator_origin_, storage_key_,
@@ -576,7 +576,7 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
           url_loader_factory::FactoryOverrideOption::kAllow),
       url_loader_factory::ContentClientParams(
           worker_process_host_->GetBrowserContext(), frame,
-          worker_process_host_->GetID(), GetStorageKey().origin(),
+          worker_process_host_->GetDeprecatedID(), GetStorageKey().origin(),
           isolation_info_,
           ukm::SourceIdObj::FromInt64(
               ancestor_render_frame_host->GetPageUkmSourceId()),
@@ -711,7 +711,7 @@ void DedicatedWorkerHost::CreateWebTransportConnector(
   }
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebTransportConnectorImpl>(
-          worker_process_host_->GetID(),
+          worker_process_host_->GetDeprecatedID(),
           ancestor_render_frame_host->GetWeakPtr(), GetStorageKey().origin(),
           isolation_info_.network_anonymization_key()),
       std::move(receiver));
@@ -746,7 +746,7 @@ void DedicatedWorkerHost::CreateNestedDedicatedWorker(
 
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<DedicatedWorkerHostFactoryImpl>(
-          worker_process_host_->GetID(), /*creator=*/token_,
+          worker_process_host_->GetDeprecatedID(), /*creator=*/token_,
           ancestor_render_frame_host_id_, GetStorageKey(), isolation_info_,
           worker_client_security_state_->Clone(), creator_coep_reporter,
           ancestor_coep_reporter_),
@@ -789,7 +789,7 @@ void DedicatedWorkerHost::CreateBlobUrlStoreProvider(
       GetProcessHost()->GetStoragePartition());
 
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
-      GetStorageKey(), renderer_origin_, GetProcessHost()->GetID(),
+      GetStorageKey(), renderer_origin_, GetProcessHost()->GetDeprecatedID(),
       std::move(receiver),
       storage::BlobURLValidityCheckBehavior::
           ALLOW_OPAQUE_ORIGIN_STORAGE_KEY_MISMATCH);
@@ -799,7 +799,7 @@ void DedicatedWorkerHost::CreateCodeCacheHost(
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
   RenderProcessHost* rph = GetProcessHost();
-  code_cache_host_receivers_.Add(rph->GetID(),
+  code_cache_host_receivers_.Add(rph->GetDeprecatedID(),
                                  isolation_info_.network_isolation_key(),
                                  GetStorageKey(), std::move(receiver));
 }
@@ -898,7 +898,7 @@ void DedicatedWorkerHost::ObserveNetworkServiceCrash(
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
 
   auto params = network::mojom::URLLoaderFactoryParams::New();
-  params->process_id = worker_process_host_->GetID();
+  params->process_id = worker_process_host_->GetDeprecatedID();
   params->debug_tag = "DedicatedWorkerHost::ObserveNetworkServiceCrash";
   network_service_connection_error_handler_holder_.reset();
   storage_partition_impl->GetNetworkContext()->CreateURLLoaderFactory(
@@ -958,7 +958,7 @@ void DedicatedWorkerHost::UpdateSubresourceLoaderFactories() {
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
       subresource_loader_factories = WorkerScriptFetcher::CreateFactoryBundle(
           WorkerScriptFetcher::LoaderType::kSubResource,
-          worker_process_host_->GetID(), storage_partition_impl,
+          worker_process_host_->GetDeprecatedID(), storage_partition_impl,
           partition_domain, file_url_support_,
           /*filesystem_url_support=*/true, creator_render_frame_host,
           storage_key_);
@@ -1155,7 +1155,7 @@ storage::BucketClientInfo DedicatedWorkerHost::GetBucketClientInfo() const {
   const auto* ancestor_rfh =
       RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
   return storage::BucketClientInfo{
-      worker_process_host_->GetID(), GetToken(),
+      worker_process_host_->GetDeprecatedID(), GetToken(),
       ancestor_rfh ? std::optional(ancestor_rfh->GetDocumentToken())
                    : std::nullopt};
 }

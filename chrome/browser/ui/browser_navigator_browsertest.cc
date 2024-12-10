@@ -1152,8 +1152,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
       params.contents_to_insert->GetPrimaryMainFrame()->IsRenderFrameLive());
   EXPECT_TRUE(
       params.contents_to_insert->GetController().IsInitialBlankNavigation());
-  int renderer_id =
-      params.contents_to_insert->GetPrimaryMainFrame()->GetProcess()->GetID();
+  int renderer_id = params.contents_to_insert->GetPrimaryMainFrame()
+                        ->GetProcess()
+                        ->GetDeprecatedID();
 
   // We should have one window, with one tab of WebContents differ from
   // params.target_contents.
@@ -1172,7 +1173,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   EXPECT_EQ(renderer_id,
             params.navigated_or_inserted_contents->GetPrimaryMainFrame()
                 ->GetProcess()
-                ->GetID());
+                ->GetDeprecatedID());
 
   // We should have one window, with two tabs.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());

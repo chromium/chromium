@@ -136,7 +136,7 @@ void AwWebContentsDelegate::RunFileChooser(
       << "Multiple concurrent FileChooser requests are not supported.";
   file_select_listener_ = std::move(listener);
   Java_AwWebContentsDelegate_runFileChooser(
-      env, java_delegate, render_frame_host->GetProcess()->GetID(),
+      env, java_delegate, render_frame_host->GetProcess()->GetDeprecatedID(),
       render_frame_host->GetRoutingID(), params.mode, params.open_writable,
       ConvertUTF16ToJavaString(env,
                                base::JoinString(params.accept_types, u",")),

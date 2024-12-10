@@ -1877,22 +1877,22 @@ TEST_P(SharedRendererInRendererAuctionProcessManagerTest,
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
       GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginA,
                                     site_instance1_);
-  int id_a1 = handle_a1->GetRenderProcessHostForTesting()->GetID();
+  int id_a1 = handle_a1->GetRenderProcessHostForTesting()->GetDeprecatedID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a2 =
       GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginA,
                                     site_instance2_);
-  int id_a2 = handle_a2->GetRenderProcessHostForTesting()->GetID();
+  int id_a2 = handle_a2->GetRenderProcessHostForTesting()->GetDeprecatedID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_b1 =
       GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginB,
                                     site_instance1_);
-  int id_b1 = handle_b1->GetRenderProcessHostForTesting()->GetID();
+  int id_b1 = handle_b1->GetRenderProcessHostForTesting()->GetDeprecatedID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_b2 =
       GetServiceOfTypeExpectSuccess(GetWorkletType(), kOriginB,
                                     site_instance2_);
-  int id_b2 = handle_b2->GetRenderProcessHostForTesting()->GetID();
+  int id_b2 = handle_b2->GetRenderProcessHostForTesting()->GetDeprecatedID();
 
   // Non-site-isolation requiring origins can share processes, but not across
   // different browsing instances.
@@ -1911,12 +1911,12 @@ TEST_P(SharedRendererInRendererAuctionProcessManagerTest,
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_i1 =
       GetServiceOfTypeExpectSuccess(GetWorkletType(), kIsolatedOrigin,
                                     site_instance1_);
-  int id_i1 = handle_i1->GetRenderProcessHostForTesting()->GetID();
+  int id_i1 = handle_i1->GetRenderProcessHostForTesting()->GetDeprecatedID();
 
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_i2 =
       GetServiceOfTypeExpectSuccess(GetWorkletType(), kIsolatedOrigin,
                                     site_instance2_);
-  int id_i2 = handle_i2->GetRenderProcessHostForTesting()->GetID();
+  int id_i2 = handle_i2->GetRenderProcessHostForTesting()->GetDeprecatedID();
 
   EXPECT_EQ(id_i1, id_i2);
   EXPECT_NE(id_i1, id_a1);
@@ -1997,8 +1997,8 @@ TEST_P(SitePerProcessAuctionProcessManagerTest, MultipleSiteInstances) {
 
   // If using InRendererMode, they should also use different RenderProcessHosts.
   if (GetProcessMode() != ProcessMode::kDedicated) {
-    EXPECT_NE(handle_a1->GetRenderProcessHostForTesting()->GetID(),
-              handle_b1->GetRenderProcessHostForTesting()->GetID());
+    EXPECT_NE(handle_a1->GetRenderProcessHostForTesting()->GetDeprecatedID(),
+              handle_b1->GetRenderProcessHostForTesting()->GetDeprecatedID());
   }
 
   histogram_tester.ExpectBucketCount(
@@ -2021,10 +2021,10 @@ TEST_P(SitePerProcessAuctionProcessManagerTest, MultipleSiteInstances) {
 
   // If using InRendererMode, they should also use different RenderProcessHosts.
   if (GetProcessMode() != ProcessMode::kDedicated) {
-    EXPECT_NE(handle_i1->GetRenderProcessHostForTesting()->GetID(),
-              handle_a1->GetRenderProcessHostForTesting()->GetID());
-    EXPECT_NE(handle_i1->GetRenderProcessHostForTesting()->GetID(),
-              handle_b1->GetRenderProcessHostForTesting()->GetID());
+    EXPECT_NE(handle_i1->GetRenderProcessHostForTesting()->GetDeprecatedID(),
+              handle_a1->GetRenderProcessHostForTesting()->GetDeprecatedID());
+    EXPECT_NE(handle_i1->GetRenderProcessHostForTesting()->GetDeprecatedID(),
+              handle_b1->GetRenderProcessHostForTesting()->GetDeprecatedID());
   }
 
   histogram_tester.ExpectBucketCount(

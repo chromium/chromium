@@ -290,7 +290,7 @@ void EventRouter::DispatchEventToSender(
     callback = base::BindOnce(
         &EventRouter::DecrementInFlightEventsForServiceWorker,
         weak_factory_.GetWeakPtr(),
-        WorkerId{GenerateExtensionIdFromHostId(host_id), rph->GetID(),
+        WorkerId{GenerateExtensionIdFromHostId(host_id), rph->GetDeprecatedID(),
                  service_worker_version_id, worker_thread_id},
         event_id);
   } else if (BackgroundInfo::HasBackgroundPage(extension)) {
@@ -299,9 +299,10 @@ void EventRouter::DispatchEventToSender(
     // background pages.
     // Although it's unnecessary to decrement in-flight events for non-lazy
     // background pages, we use the logic for event tracking/metrics purposes.
-    callback = base::BindOnce(
-        &EventRouter::DecrementInFlightEventsForRenderFrameHost,
-        weak_factory_.GetWeakPtr(), rph->GetID(), host_id.id, event_id);
+    callback =
+        base::BindOnce(&EventRouter::DecrementInFlightEventsForRenderFrameHost,
+                       weak_factory_.GetWeakPtr(), rph->GetDeprecatedID(),
+                       host_id.id, event_id);
   } else {
     callback = base::DoNothing();
   }
@@ -724,7 +725,7 @@ void EventRouter::RenderProcessExited(
     RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
   listeners_.RemoveListenersForProcess(host);
-  event_ack_data_.ClearUnackedEventsForRenderProcess(host->GetID());
+  event_ack_data_.ClearUnackedEventsForRenderProcess(host->GetDeprecatedID());
   observed_process_set_.erase(host);
   rph_dispatcher_map_.erase(host);
   host->RemoveObserver(this);
@@ -732,7 +733,7 @@ void EventRouter::RenderProcessExited(
 
 void EventRouter::RenderProcessHostDestroyed(RenderProcessHost* host) {
   listeners_.RemoveListenersForProcess(host);
-  event_ack_data_.ClearUnackedEventsForRenderProcess(host->GetID());
+  event_ack_data_.ClearUnackedEventsForRenderProcess(host->GetDeprecatedID());
   observed_process_set_.erase(host);
   rph_dispatcher_map_.erase(host);
   host->RemoveObserver(this);
@@ -1127,8 +1128,8 @@ void EventRouter::DispatchEventToProcess(
       service_worker_version_id == blink::mojom::kInvalidServiceWorkerVersionId
           ? &listener_url
           : nullptr;
-  mojom::ContextType target_context =
-      process_map->GetMostLikelyContextType(extension, process->GetID(), url);
+  mojom::ContextType target_context = process_map->GetMostLikelyContextType(
+      extension, process->GetDeprecatedID(), url);
 
   // Don't dispach an event when target context doesn't match the restricted
   // context type.
@@ -1199,15 +1200,16 @@ void EventRouter::DispatchEventToProcess(
     callback =
         base::BindOnce(&EventRouter::DecrementInFlightEventsForServiceWorker,
                        weak_factory_.GetWeakPtr(),
-                       WorkerId{extension_id, process->GetID(),
+                       WorkerId{extension_id, process->GetDeprecatedID(),
                                 service_worker_version_id, worker_thread_id},
                        event_id);
   } else if (BackgroundInfo::HasBackgroundPage(extension)) {
     // Although it's unnecessary to decrement in-flight events for non-lazy
     // background pages, we use the logic for event tracking/metrics purposes.
-    callback = base::BindOnce(
-        &EventRouter::DecrementInFlightEventsForRenderFrameHost,
-        weak_factory_.GetWeakPtr(), process->GetID(), extension_id, event_id);
+    callback =
+        base::BindOnce(&EventRouter::DecrementInFlightEventsForRenderFrameHost,
+                       weak_factory_.GetWeakPtr(), process->GetDeprecatedID(),
+                       extension_id, event_id);
   } else {
     callback = base::DoNothing();
   }
@@ -1219,13 +1221,13 @@ void EventRouter::DispatchEventToProcess(
                            std::move(filter_info), std::move(callback));
 
   if (!event.did_dispatch_callback.is_null()) {
-    event.did_dispatch_callback.Run(EventTarget{extension_id, process->GetID(),
-                                                service_worker_version_id,
-                                                worker_thread_id});
+    event.did_dispatch_callback.Run(
+        EventTarget{extension_id, process->GetDeprecatedID(),
+                    service_worker_version_id, worker_thread_id});
   }
 
   for (TestObserver& observer : test_observers_) {
-    observer.OnDidDispatchEventToProcess(event, process->GetID());
+    observer.OnDidDispatchEventToProcess(event, process->GetDeprecatedID());
   }
 
   // TODO(lazyboy): This is wrong for extensions SW events. We need to:
@@ -1265,8 +1267,8 @@ void EventRouter::DecrementInFlightEventsForServiceWorker(
   content::ServiceWorkerContext* service_worker_context =
       process->GetStoragePartition()->GetServiceWorkerContext();
   event_ack_data_.DecrementInflightEvent(
-      service_worker_context, process->GetID(), worker_id.version_id, event_id,
-      worker_stopped,
+      service_worker_context, process->GetDeprecatedID(), worker_id.version_id,
+      event_id, worker_stopped,
       base::BindOnce(
           [](RenderProcessHost* process) {
             bad_message::ReceivedBadMessage(process,
@@ -1329,9 +1331,9 @@ void EventRouter::IncrementInFlightEvents(
       content::ServiceWorkerContext* service_worker_context =
           process->GetStoragePartition()->GetServiceWorkerContext();
       event_ack_data_.IncrementInflightEvent(
-          service_worker_context, process->GetID(), service_worker_version_id,
-          event_id, dispatch_start_time, dispatch_source,
-          lazy_background_active_on_dispatch, histogram_value);
+          service_worker_context, process->GetDeprecatedID(),
+          service_worker_version_id, event_id, dispatch_start_time,
+          dispatch_source, lazy_background_active_on_dispatch, histogram_value);
     }
   }
 }

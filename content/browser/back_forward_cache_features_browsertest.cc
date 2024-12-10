@@ -3923,7 +3923,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothForwardCacheBrowserTest, WebBluetooth) {
   auto reason = BackForwardCacheDisable::DisabledReason(
       BackForwardCacheDisable::DisabledReasonId::kWebBluetooth);
   EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
-      current_frame_host()->GetProcess()->GetID(),
+      current_frame_host()->GetProcess()->GetDeprecatedID(),
       current_frame_host()->GetRoutingID(), reason));
 
   ASSERT_TRUE(NavigateToURL(web_contents(),
@@ -4048,7 +4048,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserWebUsbTest, Serials) {
           ? BackForwardCacheDisable::DisabledReasonId::kSerial
           : BackForwardCacheDisable::DisabledReasonId::kWebUSB;
   EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
-      main_rfh->GetProcess()->GetID(), main_rfh->GetRoutingID(),
+      main_rfh->GetProcess()->GetDeprecatedID(), main_rfh->GetRoutingID(),
       BackForwardCacheDisable::DisabledReason(expected_reason)));
 }
 
@@ -5150,7 +5150,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   auto reason = BackForwardCacheDisable::DisabledReason(
       BackForwardCacheDisable::DisabledReasonId::kFileChooser);
   EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
-      rfh_a->GetProcess()->GetID(), rfh_a->GetRoutingID(), reason));
+      rfh_a->GetProcess()->GetDeprecatedID(), rfh_a->GetRoutingID(), reason));
 
   // 5) Navigate to B having the file chooser open.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));

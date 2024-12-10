@@ -67,7 +67,7 @@ PresentationServiceImpl::PresentationServiceImpl(
       receiver_delegate_(receiver_delegate),
       start_presentation_request_id_(kInvalidRequestId),
       // TODO(imcheng): Consider using RenderFrameHost* directly instead of IDs.
-      render_process_id_(render_frame_host->GetProcess()->GetID()),
+      render_process_id_(render_frame_host->GetProcess()->GetDeprecatedID()),
       render_frame_id_(render_frame_host->GetRoutingID()),
       is_outermost_document_(!render_frame_host->GetParentOrOuterDocument()) {
   DCHECK(render_frame_host_);
@@ -96,8 +96,9 @@ PresentationServiceImpl::~PresentationServiceImpl() {
 // static
 std::unique_ptr<PresentationServiceImpl> PresentationServiceImpl::Create(
     RenderFrameHost* render_frame_host) {
-  DVLOG(2) << __func__ << ": " << render_frame_host->GetProcess()->GetID()
-           << ", " << render_frame_host->GetRoutingID();
+  DVLOG(2) << __func__ << ": "
+           << render_frame_host->GetProcess()->GetDeprecatedID() << ", "
+           << render_frame_host->GetRoutingID();
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(render_frame_host);
   DCHECK(web_contents);
@@ -431,7 +432,8 @@ bool PresentationServiceImpl::FrameMatches(
   if (!render_frame_host)
     return false;
 
-  return render_frame_host->GetProcess()->GetID() == render_process_id_ &&
+  return render_frame_host->GetProcess()->GetDeprecatedID() ==
+             render_process_id_ &&
          render_frame_host->GetRoutingID() == render_frame_id_;
 }
 

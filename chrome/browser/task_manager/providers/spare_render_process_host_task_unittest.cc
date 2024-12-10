@@ -81,16 +81,22 @@ TEST_F(SpareRenderProcessHostTaskTest, Basic) {
   EXPECT_TRUE(provided_tasks().empty());
 
   OnSpareRenderProcessHostReady(&provider, render_process1.get());
-  EXPECT_THAT(provided_tasks(), ContainsRphId(render_process1->GetID()));
-  EXPECT_THAT(provided_tasks(), Not(ContainsRphId(render_process2->GetID())));
+  EXPECT_THAT(provided_tasks(),
+              ContainsRphId(render_process1->GetDeprecatedID()));
+  EXPECT_THAT(provided_tasks(),
+              Not(ContainsRphId(render_process2->GetDeprecatedID())));
 
   OnSpareRenderProcessHostReady(&provider, render_process2.get());
-  EXPECT_THAT(provided_tasks(), ContainsRphId(render_process1->GetID()));
-  EXPECT_THAT(provided_tasks(), ContainsRphId(render_process2->GetID()));
+  EXPECT_THAT(provided_tasks(),
+              ContainsRphId(render_process1->GetDeprecatedID()));
+  EXPECT_THAT(provided_tasks(),
+              ContainsRphId(render_process2->GetDeprecatedID()));
 
   OnSpareRenderProcessHostRemoved(&provider, render_process1.get());
-  EXPECT_THAT(provided_tasks(), Not(ContainsRphId(render_process1->GetID())));
-  EXPECT_THAT(provided_tasks(), ContainsRphId(render_process2->GetID()));
+  EXPECT_THAT(provided_tasks(),
+              Not(ContainsRphId(render_process1->GetDeprecatedID())));
+  EXPECT_THAT(provided_tasks(),
+              ContainsRphId(render_process2->GetDeprecatedID()));
 
   OnSpareRenderProcessHostRemoved(&provider, render_process2.get());
   EXPECT_TRUE(provided_tasks().empty());

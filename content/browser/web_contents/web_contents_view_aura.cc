@@ -350,7 +350,8 @@ blink::DragOperationsMask ConvertToDragOperationsMask(int drag_op) {
 }
 
 GlobalRoutingID GetRenderViewHostID(RenderViewHost* rvh) {
-  return GlobalRoutingID(rvh->GetProcess()->GetID(), rvh->GetRoutingID());
+  return GlobalRoutingID(rvh->GetProcess()->GetDeprecatedID(),
+                         rvh->GetRoutingID());
 }
 
 // Returns the host window for |window|, or nullpr if it has no host window.

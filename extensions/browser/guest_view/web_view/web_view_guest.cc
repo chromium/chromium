@@ -298,7 +298,7 @@ std::unique_ptr<GuestViewBase> WebViewGuest::Create(
 std::string WebViewGuest::GetPartitionID(
     RenderProcessHost* render_process_host) {
   WebViewRendererState* renderer_state = WebViewRendererState::GetInstance();
-  int process_id = render_process_host->GetID();
+  int process_id = render_process_host->GetDeprecatedID();
   std::string partition_id;
   if (renderer_state->IsGuest(process_id))
     renderer_state->GetPartitionID(process_id, &partition_id);
@@ -394,7 +394,7 @@ void WebViewGuest::CreateInnerPageWithStoragePartition(
     // TODO(dcheng): Is granting commit origin really the right thing to do
     // here?
     content::ChildProcessSecurityPolicy::GetInstance()->GrantCommitOrigin(
-        guest_main_frame->GetProcess()->GetID(),
+        guest_main_frame->GetProcess()->GetDeprecatedID(),
         url::Origin::Create(GetOwnerSiteURL()));
   };
 
@@ -439,7 +439,7 @@ void WebViewGuest::DidInitialize(const base::Value::Dict& create_params) {
   web_view_permission_helper_ = std::make_unique<WebViewPermissionHelper>(this);
 
   rules_registry_id_ = GetOrGenerateRulesRegistryID(
-      owner_rfh()->GetProcess()->GetID(), view_instance_id());
+      owner_rfh()->GetProcess()->GetDeprecatedID(), view_instance_id());
 
   // We must install the mapping from guests to WebViews prior to resuming
   // suspended resource loads so that the WebRequest API will catch resource
@@ -588,7 +588,7 @@ void WebViewGuest::WebContentsDestroyed() {
   // had a RenderFrame created.
   // TODO(crbug.com/40202416): Implement an MPArch equivalent of this.
   WebViewRendererState::GetInstance()->RemoveGuest(
-      GetGuestMainFrame()->GetProcess()->GetID(),
+      GetGuestMainFrame()->GetProcess()->GetDeprecatedID(),
       GetGuestMainFrame()->GetRoutingID());
   // The following call may destroy `this`.
   GuestViewBase::WebContentsDestroyed();
@@ -740,7 +740,8 @@ void WebViewGuest::RendererResponsive(
   CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
 
   base::Value::Dict args;
-  args.Set(webview::kProcessId, render_widget_host->GetProcess()->GetID());
+  args.Set(webview::kProcessId,
+           render_widget_host->GetProcess()->GetDeprecatedID());
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventResponsive, std::move(args)));
 }
@@ -752,7 +753,8 @@ void WebViewGuest::RendererUnresponsive(
   CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
 
   base::Value::Dict args;
-  args.Set(webview::kProcessId, render_widget_host->GetProcess()->GetID());
+  args.Set(webview::kProcessId,
+           render_widget_host->GetProcess()->GetDeprecatedID());
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventUnresponsive, std::move(args)));
 }
@@ -919,7 +921,7 @@ bool WebViewGuest::ClearData(base::Time remove_since,
   if (removal_mask & webview::WEB_VIEW_REMOVE_DATA_MASK_CACHE) {
     // First clear http cache data and then clear the code cache in
     // |ClearCodeCache| and the rest is cleared in |ClearDataInternal|.
-    int render_process_id = guest_main_frame->GetProcess()->GetID();
+    int render_process_id = guest_main_frame->GetProcess()->GetDeprecatedID();
     // We need to clear renderer cache separately for our process because
     // StoragePartitionHttpCacheDataRemover::ClearData() does not clear that.
     web_cache::WebCacheManager::GetInstance()->ClearCacheForProcess(
@@ -1015,7 +1017,8 @@ void WebViewGuest::DidFinishNavigation(
       GetController().GetLastCommittedEntry()->GetBaseURLForDataURL().spec());
   args.Set(kInternalCurrentEntryIndex, GetController().GetCurrentEntryIndex());
   args.Set(kInternalEntryCount, GetController().GetEntryCount());
-  args.Set(kInternalProcessId, GetGuestMainFrame()->GetProcess()->GetID());
+  args.Set(kInternalProcessId,
+           GetGuestMainFrame()->GetProcess()->GetDeprecatedID());
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventLoadCommit, std::move(args)));
 
@@ -1087,7 +1090,8 @@ void WebViewGuest::GuestViewMainFrameProcessGone(
   find_helper_.CancelAllFindSessions();
 
   base::Value::Dict args;
-  args.Set(webview::kProcessId, GetGuestMainFrame()->GetProcess()->GetID());
+  args.Set(webview::kProcessId,
+           GetGuestMainFrame()->GetProcess()->GetDeprecatedID());
   args.Set(webview::kReason, TerminationStatusToString(status));
   DispatchEventToView(
       std::make_unique<GuestViewEvent>(webview::kEventExit, std::move(args)));
@@ -1205,7 +1209,7 @@ void WebViewGuest::RenderFrameDeleted(
   }
 
   WebViewRendererState::GetInstance()->RemoveGuest(
-      render_frame_host->GetProcess()->GetID(),
+      render_frame_host->GetProcess()->GetDeprecatedID(),
       render_frame_host->GetRoutingID());
 }
 
@@ -1229,7 +1233,7 @@ void WebViewGuest::RenderFrameHostChanged(content::RenderFrameHost* old_host,
   // cases, we rely on calling RemoveGuest() from RenderFrameDeleted().
   if (!old_host->IsRenderFrameLive()) {
     WebViewRendererState::GetInstance()->RemoveGuest(
-        old_host->GetProcess()->GetID(), old_host->GetRoutingID());
+        old_host->GetProcess()->GetDeprecatedID(), old_host->GetRoutingID());
   }
 }
 
@@ -1250,7 +1254,8 @@ void WebViewGuest::PushWebViewStateToIOThread(
       guest_host->GetSiteInstance()->GetStoragePartitionConfig();
 
   WebViewRendererState::WebViewInfo web_view_info;
-  web_view_info.embedder_process_id = owner_rfh()->GetProcess()->GetID();
+  web_view_info.embedder_process_id =
+      owner_rfh()->GetProcess()->GetDeprecatedID();
   web_view_info.instance_id = view_instance_id();
   web_view_info.partition_id = storage_partition_config.partition_name();
   web_view_info.owner_host = owner_host();
@@ -1264,7 +1269,7 @@ void WebViewGuest::PushWebViewStateToIOThread(
       web_view_info.embedder_process_id, web_view_info.instance_id);
 
   WebViewRendererState::GetInstance()->AddGuest(
-      guest_host->GetProcess()->GetID(), guest_host->GetRoutingID(),
+      guest_host->GetProcess()->GetDeprecatedID(), guest_host->GetRoutingID(),
       web_view_info);
 }
 
@@ -1329,7 +1334,7 @@ void WebViewGuest::SignalWhenReady(base::OnceClosure callback) {
 
 void WebViewGuest::WillAttachToEmbedder() {
   rules_registry_id_ = GetOrGenerateRulesRegistryID(
-      owner_rfh()->GetProcess()->GetID(), view_instance_id());
+      owner_rfh()->GetProcess()->GetDeprecatedID(), view_instance_id());
 
   // We must install the mapping from guests to WebViews prior to resuming
   // suspended resource loads so that the WebRequest API will catch resource
@@ -1940,8 +1945,8 @@ GURL WebViewGuest::ResolveURL(const std::string& src) {
 void WebViewGuest::OnWebViewNewWindowResponse(int new_window_instance_id,
                                               bool allow,
                                               const std::string& user_input) {
-  auto* guest = WebViewGuest::FromInstanceID(owner_rfh()->GetProcess()->GetID(),
-                                             new_window_instance_id);
+  auto* guest = WebViewGuest::FromInstanceID(
+      owner_rfh()->GetProcess()->GetDeprecatedID(), new_window_instance_id);
   if (!guest)
     return;
 

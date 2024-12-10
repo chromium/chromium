@@ -723,7 +723,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
       function->set_extension(extension);
       function->SetRenderFrameHost(tab->GetPrimaryMainFrame());
       function->set_source_process_id(
-          tab->GetPrimaryMainFrame()->GetProcess()->GetID());
+          tab->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
     }
   }
 

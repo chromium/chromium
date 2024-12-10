@@ -618,7 +618,7 @@ class MediaStreamUIProxyPermissionsPolicyTest
       blink::mojom::MediaStreamType mic_type,
       blink::mojom::MediaStreamType cam_type) {
     return std::make_unique<MediaStreamRequest>(
-        rfh->GetProcess()->GetID(), rfh->GetRoutingID(), 0,
+        rfh->GetProcess()->GetDeprecatedID(), rfh->GetRoutingID(), 0,
         url::Origin::Create(rfh->GetLastCommittedURL()), false,
         blink::MEDIA_GENERATE_STREAM,
         /*requested_audio_device_ids=*/std::vector<std::string>{},

@@ -133,7 +133,7 @@ class WebDatabaseHostImplTest : public ::testing::Test {
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   WebDatabaseHostImpl* host() { return host_.get(); }
-  int process_id() const { return render_process_host_->GetID(); }
+  int process_id() const { return render_process_host_->GetDeprecatedID(); }
   BrowserContext* browser_context() { return &browser_context_; }
   base::SequencedTaskRunner* task_runner() { return task_runner_.get(); }
 

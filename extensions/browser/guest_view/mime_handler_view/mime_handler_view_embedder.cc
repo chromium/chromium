@@ -219,7 +219,7 @@ void MimeHandlerViewEmbedder::DidCreateMimeHandlerViewGuest(
             render_frame_host_);
 
   const int embedder_frame_process_id =
-      render_frame_host_->GetProcess()->GetID();
+      render_frame_host_->GetProcess()->GetDeprecatedID();
   const int element_instance_id =
       placeholder_render_frame_host_for_inner_contents_->GetRoutingID();
   const int guest_instance_id = guest_view->guest_instance_id();

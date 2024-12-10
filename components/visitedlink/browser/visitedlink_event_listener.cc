@@ -291,8 +291,9 @@ void VisitedLinkEventListener::OnRenderProcessHostCreated(
     }
   }
 
-  updaters_[rph->GetID()] = std::make_unique<VisitedLinkUpdater>(rph->GetID());
-  updaters_[rph->GetID()]->SendVisitedLinkTable(&table_region_);
+  updaters_[rph->GetDeprecatedID()] =
+      std::make_unique<VisitedLinkUpdater>(rph->GetDeprecatedID());
+  updaters_[rph->GetDeprecatedID()]->SendVisitedLinkTable(&table_region_);
 
   if (!host_observation_.IsObservingSource(rph)) {
     host_observation_.AddObservation(rph);
@@ -302,7 +303,7 @@ void VisitedLinkEventListener::OnRenderProcessHostCreated(
 void VisitedLinkEventListener::RenderProcessHostDestroyed(
     content::RenderProcessHost* host) {
   if (host_observation_.IsObservingSource(host)) {
-    updaters_.erase(host->GetID());
+    updaters_.erase(host->GetDeprecatedID());
     host_observation_.RemoveObservation(host);
   }
 }
@@ -310,7 +311,7 @@ void VisitedLinkEventListener::RenderProcessHostDestroyed(
 void VisitedLinkEventListener::RenderWidgetHostVisibilityChanged(
     content::RenderWidgetHost* rwh,
     bool became_visible) {
-  int child_id = rwh->GetProcess()->GetID();
+  int child_id = rwh->GetProcess()->GetDeprecatedID();
   if (updaters_.count(child_id)) {
     updaters_[child_id]->Update();
   }

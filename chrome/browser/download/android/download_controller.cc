@@ -591,7 +591,8 @@ void DownloadController::StartContextMenuDownload(
     const ContextMenuParams& params,
     WebContents* web_contents,
     bool is_link) {
-  int process_id = web_contents->GetRenderViewHost()->GetProcess()->GetID();
+  int process_id =
+      web_contents->GetRenderViewHost()->GetProcess()->GetDeprecatedID();
   int routing_id = web_contents->GetRenderViewHost()->GetRoutingID();
 
   const content::WebContents::Getter& wc_getter(

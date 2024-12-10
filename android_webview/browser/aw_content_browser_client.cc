@@ -339,7 +339,7 @@ void AwContentBrowserClient::RenderProcessWillLaunch(
   // per-view access checks, and access is granted by default (see
   // AwSettings.mAllowContentUrlAccess).
   content::ChildProcessSecurityPolicy::GetInstance()->GrantRequestScheme(
-      host->GetID(), url::kContentScheme);
+      host->GetDeprecatedID(), url::kContentScheme);
 }
 
 bool AwContentBrowserClient::IsExplicitNavigation(

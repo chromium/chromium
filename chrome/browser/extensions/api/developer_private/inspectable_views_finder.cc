@@ -191,9 +191,9 @@ void InspectableViewsFinder::GetViewsForExtensionProcess(
     }
 
     content::RenderProcessHost* process = host->GetProcess();
-    result->push_back(ConstructView(url, process->GetID(), host->GetRoutingID(),
-                                    is_incognito, !host->IsInPrimaryMainFrame(),
-                                    ConvertViewType(host_type)));
+    result->push_back(ConstructView(
+        url, process->GetDeprecatedID(), host->GetRoutingID(), is_incognito,
+        !host->IsInPrimaryMainFrame(), ConvertViewType(host_type)));
   }
 
   std::vector<WorkerId> service_worker_ids =
@@ -227,9 +227,10 @@ void InspectableViewsFinder::GetAppWindowViewsForExtension(
       url = window->initial_url();
 
     content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
-    result->push_back(ConstructView(
-        url, main_frame->GetProcess()->GetID(), main_frame->GetRoutingID(),
-        false, false, ConvertViewType(GetViewType(web_contents))));
+    result->push_back(
+        ConstructView(url, main_frame->GetProcess()->GetDeprecatedID(),
+                      main_frame->GetRoutingID(), false, false,
+                      ConvertViewType(GetViewType(web_contents))));
   }
 }
 

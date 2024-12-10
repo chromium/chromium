@@ -192,7 +192,7 @@ RenderViewContextMenuBase::RenderViewContextMenuBase(
       menu_model_(this),
       render_frame_id_(render_frame_host.GetRoutingID()),
       render_frame_token_(render_frame_host.GetFrameToken()),
-      render_process_id_(render_frame_host.GetProcess()->GetID()),
+      render_process_id_(render_frame_host.GetProcess()->GetDeprecatedID()),
       site_instance_(render_frame_host.GetSiteInstance()),
       command_executed_(false) {}
 

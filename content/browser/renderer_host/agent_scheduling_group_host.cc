@@ -376,8 +376,8 @@ void AgentSchedulingGroupHost::DidUnloadRenderFrame(
     const blink::LocalFrameToken& frame_token) {
   // |frame_host| could be null if we decided to remove the RenderFrameHostImpl
   // because the Unload request took too long.
-  if (auto* frame_host =
-          RenderFrameHostImpl::FromFrameToken(process_->GetID(), frame_token)) {
+  if (auto* frame_host = RenderFrameHostImpl::FromFrameToken(
+          process_->GetDeprecatedID(), frame_token)) {
     frame_host->OnUnloadACK();
   }
 }

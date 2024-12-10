@@ -409,7 +409,7 @@ FrameTreeNode* FrameTree::AddFrame(
   // it is in the same SiteInstance as the parent frame. Ensure that the process
   // which requested a child frame to be added is the same as the process of the
   // parent node.
-  CHECK_EQ(parent->GetProcess()->GetID(), process_id);
+  CHECK_EQ(parent->GetProcess()->GetDeprecatedID(), process_id);
 
   std::unique_ptr<FrameTreeNode> new_node = base::WrapUnique(
       new FrameTreeNode(*this, parent, scope, is_created_by_script,

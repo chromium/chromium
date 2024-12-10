@@ -976,7 +976,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventAckBrowserTest,
       content::RenderProcessHost::FromID(unacked_event_info->render_process_id);
   ASSERT_TRUE(worker_render_process_host);
   ASSERT_EQ(unacked_event_info->render_process_id,
-            worker_render_process_host->GetID());
+            worker_render_process_host->GetDeprecatedID());
 
   // Terminate worker's RenderProcessHost which triggers the cleanup logic.
   content::RenderProcessHostWatcher process_exit_observer(

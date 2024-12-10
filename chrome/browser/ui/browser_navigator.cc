@@ -532,7 +532,7 @@ std::unique_ptr<content::WebContents> CreateTargetContents(
   if (params.opener) {
     create_params.opener_render_frame_id = params.opener->GetRoutingID();
     create_params.opener_render_process_id =
-        params.opener->GetProcess()->GetID();
+        params.opener->GetProcess()->GetDeprecatedID();
   }
 
   create_params.opened_by_another_window = params.opened_by_another_window;

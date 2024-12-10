@@ -1398,7 +1398,8 @@ class ChromeContentBrowserClientSwitchTest
     command_line.AppendSwitchASCII(switches::kProcessType,
                                    switches::kRendererProcess);
 
-    client_.AppendExtraCommandLineSwitches(&command_line, process()->GetID());
+    client_.AppendExtraCommandLineSwitches(&command_line,
+                                           process()->GetDeprecatedID());
     return command_line;
   }
 

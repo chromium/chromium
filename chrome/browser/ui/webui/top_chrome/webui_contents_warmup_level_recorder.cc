@@ -70,9 +70,10 @@ void WebUIContentsWarmupLevelRecorder::AfterContentsCreation(
   CHECK(pre_condition_) << "You must call BeforeContentsCreation()";
   CHECK(web_contents);
 
-  if (base::Contains(
-          pre_condition_->spare_process_ids,
-          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID())) {
+  if (base::Contains(pre_condition_->spare_process_ids,
+                     web_contents->GetPrimaryMainFrame()
+                         ->GetProcess()
+                         ->GetDeprecatedID())) {
     level_ = WebUIContentsWarmupLevel::kSpareRenderer;
     return;
   }

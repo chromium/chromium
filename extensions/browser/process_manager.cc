@@ -989,7 +989,7 @@ void ProcessManager::RenderProcessExited(
     const content::ChildProcessTerminationInfo& info) {
   DCHECK(process_observations_.IsObservingSource(host));
   process_observations_.RemoveObservation(host);
-  const int render_process_id = host->GetID();
+  const int render_process_id = host->GetDeprecatedID();
   // Look up and then clean up the entries that are affected by
   // |render_process_id| destruction.
   //

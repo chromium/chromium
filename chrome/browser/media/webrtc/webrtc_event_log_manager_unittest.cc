@@ -143,7 +143,8 @@ constexpr int kFrameId = 57;
 PeerConnectionKey GetPeerConnectionKey(RenderProcessHost* rph, int lid) {
   const BrowserContext* browser_context = rph->GetBrowserContext();
   const auto browser_context_id = GetBrowserContextId(browser_context);
-  return PeerConnectionKey(rph->GetID(), lid, browser_context_id, kFrameId);
+  return PeerConnectionKey(rph->GetDeprecatedID(), lid, browser_context_id,
+                           kFrameId);
 }
 
 bool CreateRemoteBoundLogFile(const base::FilePath& dir,
@@ -1799,7 +1800,7 @@ TEST_F(WebRtcEventLogManagerTest, LocalLogMultipleActiveFiles) {
 
   std::vector<std::string> logs;
   for (size_t i = 0; i < keys.size(); ++i) {
-    logs.emplace_back(base::NumberToString(rph_->GetID()) +
+    logs.emplace_back(base::NumberToString(rph_->GetDeprecatedID()) +
                       base::NumberToString(kLid));
     ASSERT_EQ(OnWebRtcEventLogWrite(keys[i], logs[i]),
               std::make_pair(true, false));
@@ -1984,7 +1985,7 @@ TEST_F(WebRtcEventLogManagerTest, LocalLogFilenameMatchesExpectedFormat) {
   base::FilePath expected_path = local_logs_base_path;
   expected_path = local_logs_base_path.InsertBeforeExtension(
       FILE_PATH_LITERAL("_") + date + FILE_PATH_LITERAL("_") + time +
-      FILE_PATH_LITERAL("_") + NumberToStringType(rph_->GetID()) +
+      FILE_PATH_LITERAL("_") + NumberToStringType(rph_->GetDeprecatedID()) +
       FILE_PATH_LITERAL("_") + NumberToStringType(kLid));
   expected_path = expected_path.AddExtension(local_log_extension_);
 
@@ -2028,7 +2029,7 @@ TEST_F(WebRtcEventLogManagerTest,
   base::FilePath expected_path_1 = local_logs_base_path;
   expected_path_1 = local_logs_base_path.InsertBeforeExtension(
       FILE_PATH_LITERAL("_") + date + FILE_PATH_LITERAL("_") + time +
-      FILE_PATH_LITERAL("_") + NumberToStringType(rph_->GetID()) +
+      FILE_PATH_LITERAL("_") + NumberToStringType(rph_->GetDeprecatedID()) +
       FILE_PATH_LITERAL("_") + NumberToStringType(kLid));
   expected_path_1 = expected_path_1.AddExtension(local_log_extension_);
 
@@ -2499,7 +2500,7 @@ TEST_F(WebRtcEventLogManagerTest,
 
   std::vector<std::string> logs;
   for (size_t i = 0; i < keys.size(); ++i) {
-    logs.emplace_back(base::NumberToString(rph_->GetID()) +
+    logs.emplace_back(base::NumberToString(rph_->GetDeprecatedID()) +
                       base::NumberToString(i));
     ASSERT_EQ(OnWebRtcEventLogWrite(keys[i], logs[i]),
               std::make_pair(false, true));
@@ -2545,7 +2546,7 @@ TEST_F(WebRtcEventLogManagerTest,
 
   std::vector<std::string> logs;
   for (size_t i = 0; i < keys.size(); ++i) {
-    logs.emplace_back(base::NumberToString(rph_->GetID()) +
+    logs.emplace_back(base::NumberToString(rph_->GetDeprecatedID()) +
                       base::NumberToString(i));
     ASSERT_EQ(OnWebRtcEventLogWrite(keys[i], logs[i]),
               std::make_pair(false, true));

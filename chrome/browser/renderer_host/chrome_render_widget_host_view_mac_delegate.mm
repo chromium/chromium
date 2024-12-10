@@ -56,7 +56,7 @@
     (content::RenderWidgetHost*)renderWidgetHost {
   self = [super init];
   if (self) {
-    _widgetProcessId = renderWidgetHost->GetProcess()->GetID();
+    _widgetProcessId = renderWidgetHost->GetProcess()->GetDeprecatedID();
     _widgetRoutingId = renderWidgetHost->GetRoutingID();
     _historySwiper = [[HistorySwiper alloc] initWithDelegate:self];
   }

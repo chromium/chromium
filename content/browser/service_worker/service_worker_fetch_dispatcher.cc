@@ -336,7 +336,7 @@ CreateNetworkFactoryForNavigationPreload(FrameTreeNode& frame_tree_node,
   // for navigations.
   GetContentClient()->browser()->WillCreateURLLoaderFactory(
       partition.browser_context(), frame_tree_node.current_frame_host(),
-      frame_tree_node.current_frame_host()->GetProcess()->GetID(),
+      frame_tree_node.current_frame_host()->GetProcess()->GetDeprecatedID(),
       ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
       net::IsolationInfo(),
       frame_tree_node.navigation_request()->GetNavigationId(),

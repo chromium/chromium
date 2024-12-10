@@ -847,7 +847,7 @@ void AwPermissionManager::ClearEnumerateDevicesCachedPermission(
 
 int AwPermissionManager::GetRenderProcessID(
     content::RenderFrameHost* render_frame_host) {
-  return render_frame_host->GetProcess()->GetID();
+  return render_frame_host->GetProcess()->GetDeprecatedID();
 }
 
 int AwPermissionManager::GetRenderFrameID(

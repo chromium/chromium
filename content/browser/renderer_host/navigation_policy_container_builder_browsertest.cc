@@ -463,9 +463,9 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   // Force implicit conversion from LocalFrameToken to UnguessableToken.
   const blink::LocalFrameToken& token = initiator->GetFrameToken();
-  NavigationPolicyContainerBuilder builder(nullptr, &token,
-                                           initiator->GetProcess()->GetID(),
-                                           root_storage_partition(), nullptr);
+  NavigationPolicyContainerBuilder builder(
+      nullptr, &token, initiator->GetProcess()->GetDeprecatedID(),
+      root_storage_partition(), nullptr);
 
   EXPECT_THAT(builder.InitiatorPolicies(),
               Pointee(Eq(ByRef(initiator_policies))));
@@ -481,9 +481,9 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   // Force implicit conversion from LocalFrameToken to UnguessableToken.
   const blink::LocalFrameToken& token = initiator->GetFrameToken();
-  NavigationPolicyContainerBuilder builder(nullptr, &token,
-                                           initiator->GetProcess()->GetID(),
-                                           root_storage_partition(), nullptr);
+  NavigationPolicyContainerBuilder builder(
+      nullptr, &token, initiator->GetProcess()->GetDeprecatedID(),
+      root_storage_partition(), nullptr);
   builder.ComputePolicies(AboutBlankUrl(), false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_credentialless=*/false);
@@ -501,9 +501,9 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   // Force implicit conversion from LocalFrameToken to UnguessableToken.
   const blink::LocalFrameToken& token = initiator->GetFrameToken();
-  NavigationPolicyContainerBuilder builder(nullptr, &token,
-                                           initiator->GetProcess()->GetID(),
-                                           root_storage_partition(), nullptr);
+  NavigationPolicyContainerBuilder builder(
+      nullptr, &token, initiator->GetProcess()->GetDeprecatedID(),
+      root_storage_partition(), nullptr);
 
   builder.ComputePolicies(
       GURL("blob:https://example.com/016ece86-b7f9-4b07-88c2-a0e36b7f1dd6"),
@@ -524,9 +524,9 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   // Force implicit conversion from LocalFrameToken to UnguessableToken.
   const blink::LocalFrameToken& token = initiator->GetFrameToken();
-  NavigationPolicyContainerBuilder builder(nullptr, &token,
-                                           initiator->GetProcess()->GetID(),
-                                           root_storage_partition(), nullptr);
+  NavigationPolicyContainerBuilder builder(
+      nullptr, &token, initiator->GetProcess()->GetDeprecatedID(),
+      root_storage_partition(), nullptr);
 
   // Add some CSP.
   network::mojom::ContentSecurityPolicyPtr test_csp = MakeTestCSP();
@@ -549,9 +549,9 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   // Force implicit conversion from LocalFrameToken to UnguessableToken.
   const blink::LocalFrameToken& token = initiator->GetFrameToken();
-  NavigationPolicyContainerBuilder builder(nullptr, &token,
-                                           initiator->GetProcess()->GetID(),
-                                           root_storage_partition(), nullptr);
+  NavigationPolicyContainerBuilder builder(
+      nullptr, &token, initiator->GetProcess()->GetDeprecatedID(),
+      root_storage_partition(), nullptr);
 
   EXPECT_THAT(builder.InitiatorPolicies(),
               Pointee(Eq(ByRef(initiator_policies))));
@@ -575,9 +575,9 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   // Force implicit conversion from LocalFrameToken to UnguessableToken.
   const blink::LocalFrameToken& token = initiator->GetFrameToken();
-  NavigationPolicyContainerBuilder builder(nullptr, &token,
-                                           initiator->GetProcess()->GetID(),
-                                           root_storage_partition(), nullptr);
+  NavigationPolicyContainerBuilder builder(
+      nullptr, &token, initiator->GetProcess()->GetDeprecatedID(),
+      root_storage_partition(), nullptr);
 
   builder.ComputePolicies(GURL("https://foo.test"), false,
                           network::mojom::WebSandboxFlags::kNone,

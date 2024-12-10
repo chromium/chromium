@@ -1309,7 +1309,7 @@ void PrintViewManagerBase::CompleteScriptedPrint(
   content::RenderProcessHost* render_process_host = rfh->GetProcess();
   auto callback_wrapper = base::BindOnce(
       &PrintViewManagerBase::ScriptedPrintReply, weak_ptr_factory_.GetWeakPtr(),
-      std::move(callback), render_process_host->GetID());
+      std::move(callback), render_process_host->GetDeprecatedID());
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   DisableThirdPartyBlocking();
 #endif

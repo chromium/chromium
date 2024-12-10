@@ -23,7 +23,8 @@ namespace {
 FrameTreeNode* CreateDelegateFrameTreeNode(
     RenderFrameHostImpl* owner_render_frame_host) {
   return owner_render_frame_host->frame_tree()->AddFrame(
-      &*owner_render_frame_host, owner_render_frame_host->GetProcess()->GetID(),
+      &*owner_render_frame_host,
+      owner_render_frame_host->GetProcess()->GetDeprecatedID(),
       owner_render_frame_host->GetProcess()->GetNextRoutingID(),
       // We're creating an dummy outer delegate node which will never have a
       // corresponding `RenderFrameImpl`, and therefore we pass null

@@ -63,7 +63,8 @@ class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
 
   content::WebContentsMediaCaptureId GetWebContentsMediaCaptureId() {
     return content::WebContentsMediaCaptureId(
-        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(), 1);
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
+        1);
   }
 
   FakeDesktopMediaPickerFactory::TestFlags MakePickerTestFlags(
@@ -81,7 +82,7 @@ class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
 
   content::MediaStreamRequest MakeRequest(bool request_audio) {
     return content::MediaStreamRequest(
-        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
         web_contents()->GetPrimaryMainFrame()->GetRoutingID(), 0,
         url::Origin::Create(GURL("http://origin/")), false,
         blink::MEDIA_GENERATE_STREAM, /*requested_audio_device_ids=*/{},
@@ -402,7 +403,7 @@ TEST_F(DisplayMediaAccessHandlerTest, DlpWebContentsDestroyed) {
 
 TEST_F(DisplayMediaAccessHandlerTest, UpdateMediaRequestStateWithClosing) {
   const int render_process_id =
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
   const int render_frame_id =
       web_contents()->GetPrimaryMainFrame()->GetRoutingID();
   const int page_request_id = 0;
@@ -442,7 +443,7 @@ TEST_F(DisplayMediaAccessHandlerTest, UpdateMediaRequestStateWithClosing) {
 
 TEST_F(DisplayMediaAccessHandlerTest, CorrectHostAsksForPermissions) {
   const int render_process_id =
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
   const int render_frame_id =
       web_contents()->GetPrimaryMainFrame()->GetRoutingID();
   const int page_request_id = 0;
@@ -479,7 +480,7 @@ TEST_F(DisplayMediaAccessHandlerTest, CorrectHostAsksForPermissions) {
 
 TEST_F(DisplayMediaAccessHandlerTest, CorrectHostAsksForPermissionsNormalURLs) {
   const int render_process_id =
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
   const int render_frame_id =
       web_contents()->GetPrimaryMainFrame()->GetRoutingID();
   const int page_request_id = 0;
@@ -535,7 +536,7 @@ TEST_F(DisplayMediaAccessHandlerTest, IsolatedWebAppNameAsksForPermissions) {
                                             url_info.origin().GetURL());
 
   const int render_process_id =
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
   const int render_frame_id =
       web_contents()->GetPrimaryMainFrame()->GetRoutingID();
   const int page_request_id = 0;
@@ -571,7 +572,7 @@ TEST_F(DisplayMediaAccessHandlerTest, WebContentsDestroyed) {
                  false /* expect_audio */, content::DesktopMediaID(),
                  true /* cancelled */}});
   content::MediaStreamRequest request(
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
       web_contents()->GetPrimaryMainFrame()->GetRoutingID(), 0,
       url::Origin::Create(GURL("http://origin/")), false,
       blink::MEDIA_GENERATE_STREAM, /*requested_audio_device_ids=*/{},
@@ -613,7 +614,7 @@ TEST_F(DisplayMediaAccessHandlerTest, MultipleRequests) {
   std::array<base::RunLoop, kTestFlagCount> wait_loop;
   for (size_t i = 0; i < kTestFlagCount; ++i) {
     content::MediaStreamRequest request(
-        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
         web_contents()->GetPrimaryMainFrame()->GetRoutingID(), 0,
         url::Origin::Create(GURL("http://origin/")), false,
         blink::MEDIA_GENERATE_STREAM, /*requested_audio_device_ids=*/{},

@@ -70,7 +70,7 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
         features::kMacSystemScreenCapturePermissionCheck);
 #endif
     content::MediaStreamRequest request(
-        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
         web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
         /*page_request_id=*/0, url::Origin::Create(origin),
         /*user_gesture=*/false, blink::MEDIA_GENERATE_STREAM,
@@ -365,7 +365,10 @@ TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamSuccess) {
   const GURL origin(kOrigin);
   const std::string id =
       content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
-          web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents()
+              ->GetPrimaryMainFrame()
+              ->GetProcess()
+              ->GetDeprecatedID(),
           web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
           url::Origin::Create(origin),
           content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
@@ -527,7 +530,10 @@ TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamDlpRestricted) {
 
   const std::string id =
       content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
-          web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents()
+              ->GetPrimaryMainFrame()
+              ->GetProcess()
+              ->GetDeprecatedID(),
           web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
           url::Origin::Create(GURL(kOrigin)),
           content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
@@ -559,7 +565,10 @@ TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamDlpNotRestricted) {
 
   const std::string id =
       content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
-          web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents()
+              ->GetPrimaryMainFrame()
+              ->GetProcess()
+              ->GetDeprecatedID(),
           web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
           url::Origin::Create(GURL(kOrigin)),
           content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,

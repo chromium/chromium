@@ -5278,7 +5278,7 @@ IN_PROC_BROWSER_TEST_F(DownloadPrerenderTest, DiscardNonNavigationDownload) {
   // prerendered page and mark it as rendered-initiated, otherwise the download
   // won't be checked.
   auto download_parameters = std::make_unique<download::DownloadUrlParameters>(
-      kDownloadUrl, render_frame_host->GetProcess()->GetID(),
+      kDownloadUrl, render_frame_host->GetProcess()->GetDeprecatedID(),
       render_frame_host->GetRoutingID(), TRAFFIC_ANNOTATION_FOR_TESTS);
   download_parameters->set_content_initiated(true);
   download_manager->DownloadUrl(std::move(download_parameters));

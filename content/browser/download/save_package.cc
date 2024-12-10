@@ -336,7 +336,7 @@ bool SavePackage::Init(
   RenderFrameHost& frame_host = page_->GetMainDocument();
   download_manager_->CreateSavePackageDownloadItem(
       saved_main_file_path_, page_url_, GetMimeTypeForSaveType(save_type_),
-      frame_host.GetProcess()->GetID(), frame_host.GetRoutingID(),
+      frame_host.GetProcess()->GetDeprecatedID(), frame_host.GetRoutingID(),
       base::BindOnce(&CancelSavePackage, weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&SavePackage::InitWithDownloadItem,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -772,10 +772,11 @@ void SavePackage::RenameIfAllowed(bool allowed) {
     final_names.insert(std::make_pair(it.first, it.second->full_path()));
 
   download::GetDownloadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&SaveFileManager::RenameAllFiles, file_manager_,
-                                final_names, dir,
-                                page_->GetMainDocument().GetProcess()->GetID(),
-                                page_->GetMainDocument().GetRoutingID(), id()));
+      FROM_HERE,
+      base::BindOnce(&SaveFileManager::RenameAllFiles, file_manager_,
+                     final_names, dir,
+                     page_->GetMainDocument().GetProcess()->GetDeprecatedID(),
+                     page_->GetMainDocument().GetRoutingID(), id()));
 }
 
 // Successfully finished all items of this SavePackage.
@@ -937,7 +938,7 @@ void SavePackage::SaveNextFile(bool process_all_remaining_items) {
         save_item_ptr->id(), save_item_ptr->url(), save_item_ptr->referrer(),
         save_item_ptr->isolation_info(), save_item_ptr->request_mode(),
         save_item_ptr->is_outermost_main_frame(),
-        requester_frame->GetProcess()->GetID(),
+        requester_frame->GetProcess()->GetDeprecatedID(),
         requester_frame->render_view_host()->GetRoutingID(),
         requester_frame->GetRoutingID(), save_item_ptr->save_source(),
         save_item_ptr->full_path(),

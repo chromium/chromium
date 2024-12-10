@@ -792,7 +792,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PopupsDisableBackForwardCache) {
                                           ->tab_strip_model()
                                           ->GetActiveWebContents()
                                           ->GetPrimaryMainFrame());
-  int process_id = rfh->GetProcess()->GetID();
+  int process_id = rfh->GetProcess()->GetDeprecatedID();
   int frame_routing_id = rfh->GetRoutingID();
 
   // Navigate to another page on the same domain. This will trigger a check on

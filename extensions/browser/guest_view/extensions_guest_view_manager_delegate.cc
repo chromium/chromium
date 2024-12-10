@@ -84,7 +84,7 @@ bool ExtensionsGuestViewManagerDelegate::IsGuestAvailableToContextWithFeature(
   Feature::Availability availability = feature->IsAvailableToContext(
       owner_extension,
       process_map->GetMostLikelyContextType(
-          owner_extension, guest->owner_rfh()->GetProcess()->GetID(),
+          owner_extension, guest->owner_rfh()->GetProcess()->GetDeprecatedID(),
           &owner_site_url),
       owner_site_url, util::GetBrowserContextId(context),
       BrowserFrameContextData(guest->owner_rfh()));

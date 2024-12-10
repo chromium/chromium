@@ -495,7 +495,7 @@ void SiteInstanceImpl::SetProcessInternal(RenderProcessHost* process) {
 
   TRACE_EVENT2("navigation", "SiteInstanceImpl::SetProcessInternal", "site id",
                id_.value(), "process id",
-               site_instance_group_->process()->GetID());
+               site_instance_group_->process()->GetDeprecatedID());
 
   // Inform the embedder if the SiteInstance now has both the process and the
   // site assigned. Note that this can be called either here or when setting
@@ -1434,7 +1434,8 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
     } else {
       CHECK(process_lock.allows_any_site())
           << "Unexpected process lock " << process_lock.ToString();
-      policy->IncludeIsolationContext(process->GetID(), GetIsolationContext());
+      policy->IncludeIsolationContext(process->GetDeprecatedID(),
+                                      GetIsolationContext());
     }
     return;
   }
@@ -1460,7 +1461,7 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
       // process.
       base::debug::SetCrashKeyString(bad_message::GetRequestedSiteInfoKey(),
                                      site_info_.GetDebugString());
-      policy->LogKilledProcessOriginLock(process->GetID());
+      policy->LogKilledProcessOriginLock(process->GetDeprecatedID());
       NOTREACHED() << "Trying to lock a process to " << lock_to_set.ToString()
                    << " but the process is already locked to "
                    << process_lock.ToString();
@@ -1474,7 +1475,7 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
       // process, but it has been put in a process for a site that does.
       base::debug::SetCrashKeyString(bad_message::GetRequestedSiteInfoKey(),
                                      site_info_.GetDebugString());
-      policy->LogKilledProcessOriginLock(process->GetID());
+      policy->LogKilledProcessOriginLock(process->GetDeprecatedID());
       NOTREACHED() << "Trying to commit non-isolated site " << site_info_
                    << " in process locked to " << process_lock.ToString();
     } else if (process_lock.is_invalid()) {
@@ -1505,7 +1506,8 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
   // ChildProcessSecurityPolicyImpl (e.g. CanAccessDataForOrigin) determine
   // whether a given URL should require a lock or not (a dynamically isolated
   // origin may require a lock in some isolation contexts but not in others).
-  policy->IncludeIsolationContext(process->GetID(), GetIsolationContext());
+  policy->IncludeIsolationContext(process->GetDeprecatedID(),
+                                  GetIsolationContext());
 }
 
 const WebExposedIsolationInfo& SiteInstanceImpl::GetWebExposedIsolationInfo()

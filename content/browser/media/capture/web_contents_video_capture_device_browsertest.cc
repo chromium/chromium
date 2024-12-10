@@ -250,8 +250,9 @@ class WebContentsVideoCaptureDeviceBrowserTest
 
   std::unique_ptr<FrameSinkVideoCaptureDevice> CreateDevice() final {
     auto* const main_frame = shell()->web_contents()->GetPrimaryMainFrame();
-    const GlobalRenderFrameHostId id(main_frame->GetProcess()->GetID(),
-                                     main_frame->GetRoutingID());
+    const GlobalRenderFrameHostId id(
+        main_frame->GetProcess()->GetDeprecatedID(),
+        main_frame->GetRoutingID());
     return std::make_unique<WebContentsVideoCaptureDevice>(id);
   }
 
@@ -279,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
   auto* const main_frame = shell()->web_contents()->GetPrimaryMainFrame();
   const auto capture_params = SnapshotCaptureParams();
 
-  const GlobalRenderFrameHostId id(main_frame->GetProcess()->GetID(),
+  const GlobalRenderFrameHostId id(main_frame->GetProcess()->GetDeprecatedID(),
                                    main_frame->GetRoutingID());
   // Delete the WebContents instance and the Shell. This makes the
   // render_frame_id invalid.

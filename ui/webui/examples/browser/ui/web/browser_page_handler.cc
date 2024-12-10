@@ -48,14 +48,14 @@ void BrowserPageHandler::CreateGuestView(base::Value::Dict create_params,
 
 void BrowserPageHandler::Navigate(int32_t guest_instance_id, const GURL& src) {
   auto* guest_view = WebView::FromInstanceID(
-      render_frame_host().GetProcess()->GetID(), guest_instance_id);
+      render_frame_host().GetProcess()->GetDeprecatedID(), guest_instance_id);
   content::NavigationController::LoadURLParams load_url_params(src);
   guest_view->GetController().LoadURLWithParams(load_url_params);
 }
 
 void BrowserPageHandler::GoBack(int32_t guest_instance_id) {
   auto* guest_view = WebView::FromInstanceID(
-      render_frame_host().GetProcess()->GetID(), guest_instance_id);
+      render_frame_host().GetProcess()->GetDeprecatedID(), guest_instance_id);
   auto& navigation_controller = guest_view->GetController();
   if (navigation_controller.CanGoBack()) {
     navigation_controller.GoBack();
@@ -64,7 +64,7 @@ void BrowserPageHandler::GoBack(int32_t guest_instance_id) {
 
 void BrowserPageHandler::GoForward(int32_t guest_instance_id) {
   auto* guest_view = WebView::FromInstanceID(
-      render_frame_host().GetProcess()->GetID(), guest_instance_id);
+      render_frame_host().GetProcess()->GetDeprecatedID(), guest_instance_id);
   auto& navigation_controller = guest_view->GetController();
   if (navigation_controller.CanGoForward()) {
     navigation_controller.GoForward();

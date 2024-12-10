@@ -1321,9 +1321,9 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackOldNavigationIgnored) {
   RenderProcessHost* new_process =
       contents()->GetPrimaryMainFrame()->GetProcess();
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-  EXPECT_TRUE(policy->CanAccessDataForOrigin(new_process->GetID(),
+  EXPECT_TRUE(policy->CanAccessDataForOrigin(new_process->GetDeprecatedID(),
                                              url::Origin::Create(url1)));
-  EXPECT_FALSE(policy->CanAccessDataForOrigin(new_process->GetID(),
+  EXPECT_FALSE(policy->CanAccessDataForOrigin(new_process->GetDeprecatedID(),
                                               url::Origin::Create(url2)));
 }
 
@@ -1680,7 +1680,7 @@ TEST_F(WebContentsImplTest, PendingContentsDestroyed) {
   contents()->AddPendingContents(std::move(other_contents), GURL());
   RenderWidgetHost* widget =
       test_web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost();
-  int process_id = widget->GetProcess()->GetID();
+  int process_id = widget->GetProcess()->GetDeprecatedID();
   int widget_id = widget->GetRoutingID();
 
   // TODO(erikchen): Fix ownership semantics of WebContents. Nothing should be
@@ -1698,7 +1698,7 @@ TEST_F(WebContentsImplTest, PendingContentsShown) {
 
   RenderWidgetHost* widget =
       test_web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost();
-  int process_id = widget->GetProcess()->GetID();
+  int process_id = widget->GetProcess()->GetDeprecatedID();
   int widget_id = widget->GetRoutingID();
 
   // The first call to GetCreatedWindow pops it off the pending list.

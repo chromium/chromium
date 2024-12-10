@@ -307,7 +307,8 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // plugins, etc.
   //
   // This will never return ChildProcessHost::kInvalidUniqueID.
-  virtual int GetID() const = 0;
+  // TODO(crbug.com/379869738): Add ChildProcessId GetID().
+  virtual int GetDeprecatedID() const = 0;
 
   // Returns a SafeRef to `this`. It should only be used in non-owning cases,
   // where the caller is not expected to outlive `this`.

@@ -778,7 +778,7 @@ void ShowPopupWidgetWaiter::ShowPopup(const gfx::Rect& initial_rect,
 
 void ShowPopupWidgetWaiter::DidCreatePopupWidget(
     RenderWidgetHostImpl* render_widget_host) {
-  process_id_ = render_widget_host->GetProcess()->GetID();
+  process_id_ = render_widget_host->GetProcess()->GetDeprecatedID();
   routing_id_ = render_widget_host->GetRoutingID();
   // Swapped back in destructor from process_id_ and routing_id_ lookup.
   std::ignore = render_widget_host->popup_widget_host_receiver_for_testing()

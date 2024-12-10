@@ -1134,7 +1134,7 @@ void PageLoadTracker::SetUpSharedMemoryForSmoothness(
 void PageLoadTracker::UpdateResourceDataUse(
     content::RenderFrameHost* rfh,
     const std::vector<mojom::ResourceDataUpdatePtr>& resources) {
-  resource_tracker_.UpdateResourceDataUse(rfh->GetProcess()->GetID(),
+  resource_tracker_.UpdateResourceDataUse(rfh->GetProcess()->GetDeprecatedID(),
                                           resources);
   for (const auto& observer : observers_) {
     observer->OnResourceDataUseObserved(rfh, resources);

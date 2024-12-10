@@ -1568,7 +1568,7 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
 
     mojo::PendingRemote<blink::mojom::CodeCacheHost> actual_code_cache_host;
     code_cache_host_receivers_->Add(
-        rfh.GetProcess()->GetID(), rfh.GetNetworkIsolationKey(),
+        rfh.GetProcess()->GetDeprecatedID(), rfh.GetNetworkIsolationKey(),
         rfh.GetStorageKey(),
         actual_code_cache_host.InitWithNewPipeAndPassReceiver());
 

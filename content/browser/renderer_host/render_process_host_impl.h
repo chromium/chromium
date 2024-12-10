@@ -253,7 +253,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   bool IsReady() override;
   BrowserContext* GetBrowserContext() override;
   bool InSameStoragePartition(StoragePartition* partition) override;
-  int GetID() const override;
+  // TODO(crbug.com/379869738): Add ChildProcessId GetID().
+  int GetDeprecatedID() const override;
   base::SafeRef<RenderProcessHost> GetSafeRef() const override;
   bool IsInitializedAndNotDead() override;
   bool IsDeletingSoon() override;

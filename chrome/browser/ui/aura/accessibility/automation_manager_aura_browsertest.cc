@@ -68,7 +68,7 @@ void FindAllHostsOfWebContentsWithAXTreeID(
 ui::AXTreeID GetAXTreeIDFromRenderFrameHost(content::RenderFrameHost* rfh) {
   auto* registry = ui::AXActionHandlerRegistry::GetInstance();
   return registry->GetAXTreeID(ui::AXActionHandlerRegistry::FrameID(
-      rfh->GetProcess()->GetID(), rfh->GetRoutingID()));
+      rfh->GetProcess()->GetDeprecatedID(), rfh->GetRoutingID()));
 }
 
 // A class that installs itself as the sink to handle automation event bundles

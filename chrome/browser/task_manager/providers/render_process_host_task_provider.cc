@@ -45,7 +45,7 @@ void RenderProcessHostTaskProvider::StartUpdating() {
     RenderProcessHost* host = it.GetCurrentValue();
     host_observation_.AddObservation(host);
     if (host->GetProcess().IsValid()) {
-      CreateTask(host->GetID());
+      CreateTask(host->GetDeprecatedID());
     } else {
       // If the host isn't ready, do nothing and wait for the
       // OnRenderProcessHostCreated() notification.
@@ -79,7 +79,7 @@ void RenderProcessHostTaskProvider::CreateTask(
   // Create the task and notify the observer.
   ChildProcessData data(content::PROCESS_TYPE_RENDERER);
   data.SetProcess(host->GetProcess().Duplicate());
-  data.id = host->GetID();
+  data.id = host->GetDeprecatedID();
   task = std::make_unique<ChildProcessTask>(
       data, ChildProcessTask::ProcessSubtype::kUnknownRenderProcess);
   NotifyObserverTaskAdded(task.get());
@@ -102,7 +102,7 @@ void RenderProcessHostTaskProvider::DeleteTask(
 void RenderProcessHostTaskProvider::OnRenderProcessHostCreated(
     content::RenderProcessHost* host) {
   if (is_updating_) {
-    CreateTask(host->GetID());
+    CreateTask(host->GetDeprecatedID());
     // If the host is reused after the process exited, it is possible to get a
     // second created notification for the same host.
     if (!host_observation_.IsObservingSource(host)) {
@@ -114,13 +114,13 @@ void RenderProcessHostTaskProvider::OnRenderProcessHostCreated(
 void RenderProcessHostTaskProvider::RenderProcessExited(
     content::RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
-  DeleteTask(host->GetID());
+  DeleteTask(host->GetDeprecatedID());
   host_observation_.RemoveObservation(host);
 }
 
 void RenderProcessHostTaskProvider::RenderProcessHostDestroyed(
     content::RenderProcessHost* host) {
-  DeleteTask(host->GetID());
+  DeleteTask(host->GetDeprecatedID());
   host_observation_.RemoveObservation(host);
 }
 

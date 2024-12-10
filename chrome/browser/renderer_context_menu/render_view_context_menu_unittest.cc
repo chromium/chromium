@@ -978,7 +978,7 @@ TEST_F(RenderViewContextMenuPrefsTest, OpenLinkNavigationParamsSet) {
   // initiator.
   EXPECT_EQ(main_frame.GetFrameToken(),
             delegate.last_navigation_params()->initiator_frame_token);
-  EXPECT_EQ(main_frame.GetProcess()->GetID(),
+  EXPECT_EQ(main_frame.GetProcess()->GetDeprecatedID(),
             delegate.last_navigation_params()->initiator_process_id);
 
   // Verify that the impression is attached to the navigation.

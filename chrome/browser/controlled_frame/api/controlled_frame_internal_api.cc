@@ -34,7 +34,7 @@ ControlledFrameInternalContextMenusCreateFunction::Run() {
       Profile::FromBrowserContext(browser_context())->IsOffTheRecord(),
       extensions::MenuItem::ExtensionKey(
           /*extension_id=*/std::string(),
-          render_frame_host()->GetProcess()->GetID(),
+          render_frame_host()->GetProcess()->GetDeprecatedID(),
           render_frame_host()->GetRoutingID(), params->instance_id));
 
   auto* menu_manager = extensions::MenuManager::Get(browser_context());

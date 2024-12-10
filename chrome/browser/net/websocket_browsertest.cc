@@ -157,12 +157,12 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
     process->GetStoragePartition()->GetNetworkContext()->CreateWebSocket(
         url, requested_protocols, site_for_cookies,
         net::StorageAccessApiStatus::kNone, isolation_info,
-        std::move(additional_headers), process->GetID(), origin,
+        std::move(additional_headers), process->GetDeprecatedID(), origin,
         network::mojom::kWebSocketOptionNone,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         std::move(handshake_client),
         process->GetStoragePartition()->CreateURLLoaderNetworkObserverForFrame(
-            process->GetID(), frame->GetRoutingID()),
+            process->GetDeprecatedID(), frame->GetRoutingID()),
         /*auth_handler=*/mojo::NullRemote(),
         /*header_client=*/mojo::NullRemote(),
         /*throttling_profile_id=*/std::nullopt);

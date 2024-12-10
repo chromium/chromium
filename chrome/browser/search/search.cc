@@ -229,7 +229,7 @@ bool IsRenderedInInstantProcess(content::WebContents* contents,
     return false;
   }
 
-  return instant_service->IsInstantProcess(process_host->GetID());
+  return instant_service->IsInstantProcess(process_host->GetDeprecatedID());
 #endif
 }
 

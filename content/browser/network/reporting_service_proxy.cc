@@ -211,7 +211,7 @@ void CreateReportingServiceProxyForFrame(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<ReportingServiceProxyImpl>(
-          render_frame_host->GetProcess()->GetID(),
+          render_frame_host->GetProcess()->GetDeprecatedID(),
           render_frame_host->GetReportingSource(),
           render_frame_host->GetIsolationInfoForSubresources()
               .network_anonymization_key()),
@@ -236,7 +236,7 @@ void CreateReportingServiceProxyForSharedWorker(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<ReportingServiceProxyImpl>(
-          shared_worker_host->GetProcessHost()->GetID(),
+          shared_worker_host->GetProcessHost()->GetDeprecatedID(),
           shared_worker_host->GetReportingSource(),
           shared_worker_host->GetNetworkAnonymizationKey()),
       std::move(receiver));
@@ -248,7 +248,7 @@ void CreateReportingServiceProxyForDedicatedWorker(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<ReportingServiceProxyImpl>(
-          dedicated_worker_host->GetProcessHost()->GetID(),
+          dedicated_worker_host->GetProcessHost()->GetDeprecatedID(),
           dedicated_worker_host->GetReportingSource(),
           dedicated_worker_host->GetNetworkAnonymizationKey()),
       std::move(receiver));

@@ -385,7 +385,7 @@ void WebTestContentBrowserClient::
   associated_registry.AddInterface<mojom::WebTestControlHost>(
       base::BindRepeating(&WebTestContentBrowserClient::BindWebTestControlHost,
                           base::Unretained(this),
-                          render_frame_host.GetProcess()->GetID()));
+                          render_frame_host.GetProcess()->GetDeprecatedID()));
 }
 
 void WebTestContentBrowserClient::BindPermissionAutomation(

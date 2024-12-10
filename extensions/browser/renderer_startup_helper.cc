@@ -209,7 +209,8 @@ void RendererStartupHelper::InitializeProcess(
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   // If the new render process is a WebView guest process, propagate the WebView
   // partition ID to it.
-  if (WebViewRendererState::GetInstance()->IsGuest(process->GetID())) {
+  if (WebViewRendererState::GetInstance()->IsGuest(
+          process->GetDeprecatedID())) {
     std::string webview_partition_id = WebViewGuest::GetPartitionID(process);
     renderer->SetWebViewPartitionID(webview_partition_id);
   }

@@ -158,7 +158,7 @@ SharedWorkerHost::SharedWorkerHost(
   // when two clients call new SharedWorker() at around the same time.
   worker_receiver_ = worker_.BindNewPipeAndPassReceiver();
 
-  service_->NotifyWorkerCreated(token_, GetProcessHost()->GetID(),
+  service_->NotifyWorkerCreated(token_, GetProcessHost()->GetDeprecatedID(),
                                 instance_.storage_key().origin(),
                                 devtools_handle_->dev_tools_token());
 }
@@ -404,7 +404,7 @@ SharedWorkerHost::CreateNetworkFactoryForSubresources(
           url_loader_factory::FactoryOverrideOption::kAllow),
       url_loader_factory::ContentClientParams(
           GetProcessHost()->GetBrowserContext(),
-          /*frame=*/nullptr, GetProcessHost()->GetID(), origin,
+          /*frame=*/nullptr, GetProcessHost()->GetDeprecatedID(), origin,
           GetStorageKey().ToPartialNetIsolationInfo(),
           ukm::SourceIdObj::FromInt64(ukm_source_id_), bypass_redirect_checks),
       devtools_instrumentation::WillCreateURLLoaderFactoryParams::
@@ -476,7 +476,8 @@ void SharedWorkerHost::GetSandboxedFileSystemForBucket(
 }
 
 storage::BucketClientInfo SharedWorkerHost::GetBucketClientInfo() const {
-  return storage::BucketClientInfo{GetProcessHost()->GetID(), token()};
+  return storage::BucketClientInfo{GetProcessHost()->GetDeprecatedID(),
+                                   token()};
 }
 
 void SharedWorkerHost::AllowFileSystem(
@@ -514,10 +515,11 @@ void SharedWorkerHost::CreateWebTransportConnector(
     mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const url::Origin origin = url::Origin::Create(instance().url());
-  mojo::MakeSelfOwnedReceiver(std::make_unique<WebTransportConnectorImpl>(
-                                  GetProcessHost()->GetID(), /*frame=*/nullptr,
-                                  origin, GetNetworkAnonymizationKey()),
-                              std::move(receiver));
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<WebTransportConnectorImpl>(
+          GetProcessHost()->GetDeprecatedID(), /*frame=*/nullptr, origin,
+          GetNetworkAnonymizationKey()),
+      std::move(receiver));
 }
 
 void SharedWorkerHost::BindCacheStorage(
@@ -551,8 +553,8 @@ void SharedWorkerHost::CreateBlobUrlStoreProvider(
       GetProcessHost()->GetStoragePartition());
 
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
-      GetStorageKey(), instance().renderer_origin(), GetProcessHost()->GetID(),
-      std::move(receiver),
+      GetStorageKey(), instance().renderer_origin(),
+      GetProcessHost()->GetDeprecatedID(), std::move(receiver),
       storage::BlobURLValidityCheckBehavior::
           ALLOW_OPAQUE_ORIGIN_STORAGE_KEY_MISMATCH);
 }
@@ -616,7 +618,7 @@ void SharedWorkerHost::BindPressureService(
 void SharedWorkerHost::CreateCodeCacheHost(
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
-  code_cache_host_receivers_.Add(GetProcessHost()->GetID(),
+  code_cache_host_receivers_.Add(GetProcessHost()->GetDeprecatedID(),
                                  GetNetworkIsolationKey(), GetStorageKey(),
                                  std::move(receiver));
 }

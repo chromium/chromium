@@ -728,7 +728,7 @@ void VRServiceImpl::EnsureRuntimeInstalled(SessionRequestData request,
   }
 
   runtime->EnsureInstalled(
-      render_frame_host_->GetProcess()->GetID(),
+      render_frame_host_->GetProcess()->GetDeprecatedID(),
       render_frame_host_->GetRoutingID(),
       base::BindOnce(&VRServiceImpl::OnInstallResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(request)));
@@ -804,7 +804,7 @@ void VRServiceImpl::DoRequestSession(SessionRequestData request) {
 #endif
     if (send_renderer_information) {
       runtime_options->render_process_id =
-          render_frame_host_->GetProcess()->GetID();
+          render_frame_host_->GetProcess()->GetDeprecatedID();
       runtime_options->render_frame_id = render_frame_host_->GetRoutingID();
     }
   }

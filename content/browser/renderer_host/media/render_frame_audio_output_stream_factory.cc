@@ -230,7 +230,7 @@ RenderFrameAudioOutputStreamFactory::Core::Core(
     MediaStreamManager* media_stream_manager,
     mojo::PendingReceiver<blink::mojom::RendererAudioOutputStreamFactory>
         receiver)
-    : process_id_(frame->GetProcess()->GetID()),
+    : process_id_(frame->GetProcess()->GetDeprecatedID()),
       global_render_frame_host_id_(frame->GetGlobalId()),
       main_frame_id_(frame->GetMainFrame()->GetGlobalId()),
       authorization_handler_(audio_system, media_stream_manager, process_id_) {

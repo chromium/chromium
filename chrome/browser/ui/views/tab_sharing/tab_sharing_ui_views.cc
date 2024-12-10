@@ -275,11 +275,11 @@ void TabSharingUIViews::StartSharing(infobars::InfoBar* infobar) {
   RenderFrameHost* main_frame = shared_tab->GetPrimaryMainFrame();
   DCHECK(main_frame);
   source_callback_.Run(
-      content::DesktopMediaID(
-          content::DesktopMediaID::TYPE_WEB_CONTENTS,
-          content::DesktopMediaID::kNullId,
-          content::WebContentsMediaCaptureId(main_frame->GetProcess()->GetID(),
-                                             main_frame->GetRoutingID())),
+      content::DesktopMediaID(content::DesktopMediaID::TYPE_WEB_CONTENTS,
+                              content::DesktopMediaID::kNullId,
+                              content::WebContentsMediaCaptureId(
+                                  main_frame->GetProcess()->GetDeprecatedID(),
+                                  main_frame->GetRoutingID())),
       captured_surface_control_active_);
 }
 

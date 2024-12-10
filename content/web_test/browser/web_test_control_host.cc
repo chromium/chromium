@@ -2190,7 +2190,7 @@ void WebTestControlHost::BindNonAssociatedWebTestControlHost(
 
 mojo::AssociatedRemote<mojom::WebTestRenderFrame>&
 WebTestControlHost::GetWebTestRenderFrameRemote(RenderFrameHost* frame) {
-  GlobalRenderFrameHostId key(frame->GetProcess()->GetID(),
+  GlobalRenderFrameHostId key(frame->GetProcess()->GetDeprecatedID(),
                               frame->GetRoutingID());
   if (!base::Contains(web_test_render_frame_map_, key)) {
     mojo::AssociatedRemote<mojom::WebTestRenderFrame>& new_ptr =
@@ -2211,7 +2211,8 @@ void WebTestControlHost::HandleWebTestRenderFrameRemoteError(
 
 WebTestControlHost::Node::Node(RenderFrameHost* host)
     : render_frame_host(host),
-      render_frame_host_id(host->GetProcess()->GetID(), host->GetRoutingID()) {}
+      render_frame_host_id(host->GetProcess()->GetDeprecatedID(),
+                           host->GetRoutingID()) {}
 
 WebTestControlHost::Node::Node(Node&& other) = default;
 WebTestControlHost::Node& WebTestControlHost::Node::operator=(Node&& other) =

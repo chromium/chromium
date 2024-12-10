@@ -135,7 +135,7 @@ bindings](#bindings) via the child security policy.
 // RenderFrameHostImpl::AllowBindings():
 if (bindings_flags.Has(BindingsPolicyValue::kWebUi)) {
   ChildProcessSecurityPolicyImpl::GetInstance()->GrantWebUIBindings(
-      GetProcess()->GetID());
+      GetProcess()->GetDeprecatedID());
 }
 ```
 

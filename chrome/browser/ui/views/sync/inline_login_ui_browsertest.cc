@@ -113,7 +113,7 @@ ContentInfo NavigateAndGetInfo(Browser* browser,
       browser->tab_strip_model()->GetActiveWebContents();
   content::RenderProcessHost* process =
       contents->GetPrimaryMainFrame()->GetProcess();
-  return ContentInfo(contents, process->GetID(),
+  return ContentInfo(contents, process->GetDeprecatedID(),
                      process->GetStoragePartition());
 }
 
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, MAYBE_DifferentStorageId) {
   content::WebContents* webview_contents = *set.begin();
   content::RenderProcessHost* process =
       webview_contents->GetPrimaryMainFrame()->GetProcess();
-  ASSERT_NE(info.pid, process->GetID());
+  ASSERT_NE(info.pid, process->GetDeprecatedID());
   ASSERT_NE(info.storage_partition, process->GetStoragePartition());
 }
 

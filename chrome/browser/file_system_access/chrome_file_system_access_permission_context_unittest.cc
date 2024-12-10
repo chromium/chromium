@@ -449,7 +449,10 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
   WebContents* web_contents() { return web_contents_.get(); }
 
   int process_id() {
-    return web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+    return web_contents()
+        ->GetPrimaryMainFrame()
+        ->GetProcess()
+        ->GetDeprecatedID();
   }
 
   content::GlobalRenderFrameHostId frame_id() {

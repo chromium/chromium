@@ -62,7 +62,7 @@ class MediaStreamDevicesControllerBrowserTest
     EXPECT_EQ(request_url_,
               web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
     int render_process_id =
-        web_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
+        web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
     int render_frame_id = web_contents->GetPrimaryMainFrame()->GetRoutingID();
     return content::MediaStreamRequest(
         render_process_id, render_frame_id, 0,

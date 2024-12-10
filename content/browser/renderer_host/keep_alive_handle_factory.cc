@@ -96,7 +96,7 @@ class KeepAliveHandleFactory::Context
 
 KeepAliveHandleFactory::KeepAliveHandleFactory(RenderProcessHost* process_host,
                                                base::TimeDelta timeout)
-    : context_(std::make_unique<Context>(process_host->GetID())),
+    : context_(std::make_unique<Context>(process_host->GetDeprecatedID())),
       timeout_(timeout) {}
 
 KeepAliveHandleFactory::~KeepAliveHandleFactory() {

@@ -4425,14 +4425,14 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestLoadDataAPI) {
   url::Origin base_origin =
       url::Origin::Create(embedded_test_server()->GetURL("localhost", "/"));
   EXPECT_TRUE(security_policy->CanAccessDataForOrigin(
-      guest_main_frame->GetProcess()->GetID(), base_origin));
+      guest_main_frame->GetProcess()->GetDeprecatedID(), base_origin));
 
   // Ensure the process doesn't have access to some other origin. This
   // verifies that site isolation is enforced.
   url::Origin another_origin =
       url::Origin::Create(embedded_test_server()->GetURL("foo.com", "/"));
   EXPECT_FALSE(security_policy->CanAccessDataForOrigin(
-      guest_main_frame->GetProcess()->GetID(), another_origin));
+      guest_main_frame->GetProcess()->GetDeprecatedID(), another_origin));
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestLoadDataAPIAccessibleResources) {
@@ -4813,7 +4813,7 @@ IN_PROC_BROWSER_TEST_P(
   Profile* profile = browser()->profile();
   int rules_registry_id =
       extensions::WebViewGuest::GetOrGenerateRulesRegistryID(
-          guest_view->owner_rfh()->GetProcess()->GetID(),
+          guest_view->owner_rfh()->GetProcess()->GetDeprecatedID(),
           guest_view->view_instance_id());
 
   extensions::RulesRegistryService* registry_service =
@@ -4853,7 +4853,7 @@ IN_PROC_BROWSER_TEST_P(WebViewChannelTest,
       extensions::RulesRegistryService::Get(profile);
   int rules_registry_id =
       extensions::WebViewGuest::GetOrGenerateRulesRegistryID(
-          guest_view->owner_rfh()->GetProcess()->GetID(),
+          guest_view->owner_rfh()->GetProcess()->GetDeprecatedID(),
           guest_view->view_instance_id());
 
   // Get an existing registered rule for the guest.
@@ -5145,8 +5145,9 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, NavigateGuestToWebviewAccessibleResource) {
 
   auto* process_map = extensions::ProcessMap::Get(guest->GetBrowserContext());
   auto* guest_process = guest->GetProcess();
-  EXPECT_FALSE(process_map->Contains(guest_process->GetID()));
-  EXPECT_FALSE(process_map->GetExtensionIdForProcess(guest_process->GetID()));
+  EXPECT_FALSE(process_map->Contains(guest_process->GetDeprecatedID()));
+  EXPECT_FALSE(
+      process_map->GetExtensionIdForProcess(guest_process->GetDeprecatedID()));
 
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(browser()->profile());
@@ -5154,7 +5155,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, NavigateGuestToWebviewAccessibleResource) {
       registry->enabled_extensions().GetByID(guest_url.host());
   EXPECT_EQ(extensions::mojom::ContextType::kUnprivilegedExtension,
             process_map->GetMostLikelyContextType(
-                extension, guest_process->GetID(), &guest_url));
+                extension, guest_process->GetDeprecatedID(), &guest_url));
 }
 
 // Tests that a WebView can reload a WebView accessible resource. See
@@ -6626,9 +6627,9 @@ IN_PROC_BROWSER_TEST_P(WebstoreWebViewTest, NoRendererKillWithChromeWebStore) {
   // considered an extension process and does not have the privileged webstore
   // API.
   auto* process_map = extensions::ProcessMap::Get(guest->GetBrowserContext());
-  EXPECT_FALSE(process_map->Contains(guest->GetProcess()->GetID()));
-  EXPECT_FALSE(
-      process_map->GetExtensionIdForProcess(guest->GetProcess()->GetID()));
+  EXPECT_FALSE(process_map->Contains(guest->GetProcess()->GetDeprecatedID()));
+  EXPECT_FALSE(process_map->GetExtensionIdForProcess(
+      guest->GetProcess()->GetDeprecatedID()));
   EXPECT_EQ(false, content::EvalJs(guest, "!!chrome.webstorePrivate"));
 }
 
@@ -6845,7 +6846,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, ErrorPageInSubframe) {
   // crash the browser.
   content::RenderFrameHost* guest_subframe =
       ChildFrameAt(GetGuestRenderFrameHost(), 0);
-  int initial_process_id = guest_subframe->GetProcess()->GetID();
+  int initial_process_id = guest_subframe->GetProcess()->GetDeprecatedID();
   const GURL error_url = GURL("unknownscheme:foo");
   {
     content::TestFrameNavigationObserver load_observer(guest_subframe);
@@ -6863,7 +6864,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, ErrorPageInSubframe) {
     EXPECT_FALSE(error_origin.GetTupleOrPrecursorTupleIfOpaque().IsValid());
 
     // The error page should not load in the initiator's process.
-    EXPECT_NE(initial_process_id, error_rfh->GetProcess()->GetID());
+    EXPECT_NE(initial_process_id, error_rfh->GetProcess()->GetDeprecatedID());
   }
 }
 
@@ -7051,7 +7052,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, ContentScript) {
   {
     extensions::WebViewRendererState::WebViewInfo info;
     ASSERT_TRUE(web_view_renderer_state->GetInfo(
-        main_frame->GetProcess()->GetID(), main_frame->GetRoutingID(), &info));
+        main_frame->GetProcess()->GetDeprecatedID(), main_frame->GetRoutingID(),
+        &info));
     EXPECT_TRUE(info.content_script_ids.empty());
   }
 
@@ -7092,9 +7094,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, ContentScript) {
     main_frame = GetGuestRenderFrameHost();
     {
       extensions::WebViewRendererState::WebViewInfo info;
-      ASSERT_TRUE(
-          web_view_renderer_state->GetInfo(main_frame->GetProcess()->GetID(),
-                                           main_frame->GetRoutingID(), &info));
+      ASSERT_TRUE(web_view_renderer_state->GetInfo(
+          main_frame->GetProcess()->GetDeprecatedID(),
+          main_frame->GetRoutingID(), &info));
       EXPECT_EQ(1U, info.content_script_ids.size());
     }
   }
@@ -7118,7 +7120,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, ContentScript) {
   {
     extensions::WebViewRendererState::WebViewInfo info;
     ASSERT_TRUE(web_view_renderer_state->GetInfo(
-        main_frame->GetProcess()->GetID(), main_frame->GetRoutingID(), &info));
+        main_frame->GetProcess()->GetDeprecatedID(), main_frame->GetRoutingID(),
+        &info));
     EXPECT_EQ(1U, info.content_script_ids.size());
   }
 

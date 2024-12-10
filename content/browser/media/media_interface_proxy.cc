@@ -392,7 +392,7 @@ void MediaInterfaceProxy::CreateMediaPlayerRenderer(
   media::MojoRendererService::Create(
       nullptr,
       std::make_unique<MediaPlayerRenderer>(
-          render_frame_host().GetProcess()->GetID(),
+          render_frame_host().GetProcess()->GetDeprecatedID(),
           render_frame_host().GetRoutingID(),
           WebContents::FromRenderFrameHost(&render_frame_host()),
           std::move(renderer_extension_receiver),

@@ -468,7 +468,7 @@ void PaintPreviewClient::CapturePaintPreviewInternal(
       base::BindOnce(&PaintPreviewClient::RequestCaptureOnUIThread,
                      weak_ptr_factory_.GetWeakPtr(), frame_guid, params,
                      content::GlobalRenderFrameHostId(
-                         render_frame_host->GetProcess()->GetID(),
+                         render_frame_host->GetProcess()->GetDeprecatedID(),
                          render_frame_host->GetRoutingID())));
 }
 

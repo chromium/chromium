@@ -63,7 +63,7 @@ void BrowserInstantController::OnSearchEngineBaseURLChanged(
       if (instant_service) {
         content::RenderProcessHost* rph =
             contents->GetPrimaryMainFrame()->GetProcess();
-        is_ntp = instant_service->IsInstantProcess(rph->GetID());
+        is_ntp = instant_service->IsInstantProcess(rph->GetDeprecatedID());
       }
     }
 

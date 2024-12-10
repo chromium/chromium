@@ -188,7 +188,7 @@ PrefetchNetworkContext::CreateNewURLLoaderFactory(
         RenderFrameHost::LifecycleState::kPrerendering));
 
     referring_render_process_id =
-        referring_render_frame_host->GetProcess()->GetID();
+        referring_render_frame_host->GetProcess()->GetDeprecatedID();
     ukm_source_id = ukm::SourceIdObj::FromInt64(
         referring_render_frame_host->GetPageUkmSourceId());
   } else {

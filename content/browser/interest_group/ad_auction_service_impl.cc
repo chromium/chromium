@@ -717,8 +717,9 @@ void AdAuctionServiceImpl::CreateUnderlyingTrustedURLLoaderFactory(
               .GetStoragePartition()),
       url_loader_factory::ContentClientParams(
           render_frame_host().GetSiteInstance()->GetBrowserContext(),
-          &render_frame_host(), render_frame_host().GetProcess()->GetID(),
-          url::Origin(), net::IsolationInfo(),
+          &render_frame_host(),
+          render_frame_host().GetProcess()->GetDeprecatedID(), url::Origin(),
+          net::IsolationInfo(),
           ukm::SourceIdObj::FromInt64(
               render_frame_host().GetPageUkmSourceId())));
 }

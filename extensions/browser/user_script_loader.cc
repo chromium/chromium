@@ -452,7 +452,7 @@ void UserScriptLoader::OnScriptsLoaded(
     content::RenderProcessHost* process = i.GetCurrentValue();
     SendUpdateResult update_result = SendUpdate(process, shared_memory_);
     if (update_result == SendUpdateResult::kRendererHasBeenNotified) {
-      ids_of_newly_notified_processes.push_back(process->GetID());
+      ids_of_newly_notified_processes.push_back(process->GetDeprecatedID());
     }
   }
 
@@ -512,11 +512,12 @@ UserScriptLoader::SendUpdateResult UserScriptLoader::SendUpdate(
   // other extensions are injected into webviews.
   if (process->IsForGuestsOnly() &&
       !CanExecuteScriptEverywhere(browser_context_, host_id())) {
-    DCHECK(WebViewRendererState::GetInstance()->IsGuest(process->GetID()));
+    DCHECK(WebViewRendererState::GetInstance()->IsGuest(
+        process->GetDeprecatedID()));
 
     std::string owner_host;
     bool found_owner = WebViewRendererState::GetInstance()->GetOwnerInfo(
-        process->GetID(), /*owner_process_id=*/nullptr, &owner_host);
+        process->GetDeprecatedID(), /*owner_process_id=*/nullptr, &owner_host);
     DCHECK(found_owner);
 
     // Keep this check in sync with the approach and formatting in:

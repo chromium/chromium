@@ -198,7 +198,7 @@ RenderFrameAudioInputStreamFactory::Core::Core(
     MediaStreamManager* media_stream_manager,
     RenderFrameHost* render_frame_host)
     : media_stream_manager_(media_stream_manager),
-      process_id_(render_frame_host->GetProcess()->GetID()),
+      process_id_(render_frame_host->GetProcess()->GetDeprecatedID()),
       frame_id_(render_frame_host->GetRoutingID()),
       main_frame_id_(render_frame_host->GetMainFrame()->GetGlobalId()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

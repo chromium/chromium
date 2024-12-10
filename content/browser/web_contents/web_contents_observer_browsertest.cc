@@ -304,7 +304,7 @@ class CookieTracker : public WebContentsObserver {
       cookie_accesses_.push_back({
           details.type,
           ContextType::kFrame,
-          {rfh->GetProcess()->GetID(), rfh->GetRoutingID()},
+          {rfh->GetProcess()->GetDeprecatedID(), rfh->GetRoutingID()},
           -1,
           details.url,
           details.first_party_url,
@@ -353,7 +353,8 @@ class CookieTracker : public WebContentsObserver {
   }
 
   void RenderFrameCreated(RenderFrameHost* rfh) override {
-    frame_ids_.emplace_back(rfh->GetProcess()->GetID(), rfh->GetRoutingID());
+    frame_ids_.emplace_back(rfh->GetProcess()->GetDeprecatedID(),
+                            rfh->GetRoutingID());
   }
 
  private:

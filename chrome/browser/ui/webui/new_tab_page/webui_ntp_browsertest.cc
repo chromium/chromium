@@ -119,9 +119,9 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, SpareRenderer) {
   ExpectIsWebUiNtp(ntp);
 
   // Check spare was taken.
-  EXPECT_TRUE(
-      base::Contains(spare_ids_before_navigation,
-                     ntp->GetPrimaryMainFrame()->GetProcess()->GetID()));
+  EXPECT_TRUE(base::Contains(
+      spare_ids_before_navigation,
+      ntp->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
 
   // No processes should be unnecessarily terminated.
   const std::set<int> ending_rph_ids = LiveRenderProcessHostIds();

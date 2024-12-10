@@ -102,7 +102,7 @@ class SearchTest : public BrowserWithTestWindowTest {
     InstantService* instant_service =
         InstantServiceFactory::GetForProfile(profile());
     return instant_service->IsInstantProcess(
-        contents->GetPrimaryMainFrame()->GetProcess()->GetID());
+        contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
   }
 
   // Each test case represents a navigation to |start_url| followed by a

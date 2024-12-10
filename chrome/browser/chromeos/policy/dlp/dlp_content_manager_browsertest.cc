@@ -644,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
           web_contents->GetPrimaryMainFrame()->GetRoutingID()));
 
   DlpContentManager* manager = helper_->GetContentManager();

@@ -465,7 +465,7 @@ void WebContentsTaskProvider::WebContentsEntry::CreateTaskForFrame(
       render_frame_host->GetProcess()->PostTaskWhenProcessIsReady(
           base::BindOnce(&WebContentsEntry::RenderFrameReady,
                          weak_factory_.GetWeakPtr(),
-                         render_frame_host->GetProcess()->GetID(),
+                         render_frame_host->GetProcess()->GetDeprecatedID(),
                          render_frame_host->GetRoutingID()));
     }
   }

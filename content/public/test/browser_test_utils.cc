@@ -2572,7 +2572,7 @@ std::optional<int> RenderProcessHostKillWaiter::Wait() {
 
 RenderProcessHostBadMojoMessageWaiter::RenderProcessHostBadMojoMessageWaiter(
     RenderProcessHost* render_process_host)
-    : monitored_render_process_id_(render_process_host->GetID()),
+    : monitored_render_process_id_(render_process_host->GetDeprecatedID()),
       kill_waiter_(render_process_host,
                    "Stability.BadMessageTerminated.Content") {
   // base::Unretained is safe below, because the destructor unregisters the

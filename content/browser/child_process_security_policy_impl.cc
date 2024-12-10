@@ -1571,8 +1571,8 @@ bool ChildProcessSecurityPolicyImpl::CanReadRequestBody(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   return CanReadRequestBody(
-      process->GetID(), process->GetStoragePartition()->GetFileSystemContext(),
-      body);
+      process->GetDeprecatedID(),
+      process->GetStoragePartition()->GetFileSystemContext(), body);
 }
 
 bool ChildProcessSecurityPolicyImpl::CanCreateReadWriteFile(

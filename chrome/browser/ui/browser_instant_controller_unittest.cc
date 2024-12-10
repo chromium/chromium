@@ -115,9 +115,10 @@ TEST_F(BrowserInstantControllerTest, DefaultSearchProviderChanged) {
         browser()->tab_strip_model()->GetActiveWebContents();
 
     // Validate initial instant state.
-    EXPECT_EQ(test.start_in_instant_process,
-              instant_service_->IsInstantProcess(
-                  contents->GetPrimaryMainFrame()->GetProcess()->GetID()))
+    EXPECT_EQ(
+        test.start_in_instant_process,
+        instant_service_->IsInstantProcess(
+            contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()))
         << test.description;
 
     // Setup an observer to verify reload or absence thereof.

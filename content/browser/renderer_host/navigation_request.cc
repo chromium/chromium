@@ -564,8 +564,8 @@ void RecordReadyToCommitMetrics(
         origin_agent_cluster_end_result,
     bool did_receive_early_hints_before_cross_origin_redirect) {
   bool is_main_frame = !new_rfh->GetParent();
-  bool is_same_process =
-      old_rfh->GetProcess()->GetID() == new_rfh->GetProcess()->GetID();
+  bool is_same_process = old_rfh->GetProcess()->GetDeprecatedID() ==
+                         new_rfh->GetProcess()->GetDeprecatedID();
 
   // Navigation.IsSameBrowsingInstance
   if (is_main_frame) {
@@ -1442,7 +1442,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
   // TODO(crbug.com/40686861): Find a way to DCHECK that the routing ID
   // is from the current RFH.
   int initiator_process_id =
-      frame_tree_node->current_frame_host()->GetProcess()->GetID();
+      frame_tree_node->current_frame_host()->GetProcess()->GetDeprecatedID();
 
   // `was_opener_suppressed` can be true for renderer initiated navigations, but
   // only in cases which get routed through `CreateBrowserInitiated()` instead.
@@ -3358,7 +3358,7 @@ void NavigationRequest::OnRequestRedirected(
   // |CanRedirectToURL| test above.
   if (!commit_params_->is_browser_initiated && GetSourceSiteInstance() &&
       !ChildProcessSecurityPolicyImpl::GetInstance()->CanRequestURL(
-          GetSourceSiteInstance()->GetProcess()->GetID(),
+          GetSourceSiteInstance()->GetProcess()->GetDeprecatedID(),
           redirect_info.new_url)) {
     DVLOG(1) << "Denied unauthorized redirect for "
              << redirect_info.new_url.possibly_invalid_spec();
@@ -6550,7 +6550,7 @@ void NavigationRequest::CommitPageActivation() {
 void NavigationRequest::SetExpectedProcess(
     RenderProcessHost* expected_process) {
   if (expected_process &&
-      expected_process->GetID() == expected_render_process_host_id_) {
+      expected_process->GetDeprecatedID() == expected_render_process_host_id_) {
     // This |expected_process| has already been informed of the navigation,
     // no need to update it again.
     return;
@@ -6563,7 +6563,7 @@ void NavigationRequest::SetExpectedProcess(
 
   // Keep track of the speculative RenderProcessHost and tell it to expect a
   // navigation to |site_info_|.
-  expected_render_process_host_id_ = expected_process->GetID();
+  expected_render_process_host_id_ = expected_process->GetDeprecatedID();
   expected_process->AddObserver(this);
   RenderProcessHostImpl::AddExpectedNavigationToSite(
       frame_tree_node()->navigator().controller().GetBrowserContext(),
@@ -6597,7 +6597,7 @@ void NavigationRequest::ResetExpectedProcess() {
 }
 
 void NavigationRequest::RenderProcessHostDestroyed(RenderProcessHost* host) {
-  DCHECK_EQ(host->GetID(), expected_render_process_host_id_);
+  DCHECK_EQ(host->GetDeprecatedID(), expected_render_process_host_id_);
   ResetExpectedProcess();
 }
 
@@ -6679,7 +6679,7 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnCommitSent() {
 void NavigationRequest::UpdateSiteInfo(
     RenderProcessHost* post_redirect_process) {
   int post_redirect_process_id = post_redirect_process
-                                     ? post_redirect_process->GetID()
+                                     ? post_redirect_process->GetDeprecatedID()
                                      : ChildProcessHost::kInvalidUniqueID;
 
   SiteInfo new_site_info = GetSiteInfoForCommonParamsURL();
@@ -8080,8 +8080,9 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   // Record metrics for the time it takes to get to this state from the
   // beginning of the navigation.
   if (!IsSameDocument() && !is_error) {
-    is_same_process_ = GetRenderFrameHost()->GetProcess()->GetID() ==
-                       previous_render_frame_host->GetProcess()->GetID();
+    is_same_process_ =
+        GetRenderFrameHost()->GetProcess()->GetDeprecatedID() ==
+        previous_render_frame_host->GetProcess()->GetDeprecatedID();
 
     RecordReadyToCommitMetrics(
         previous_render_frame_host, GetRenderFrameHost(), *common_params_.get(),
@@ -8376,7 +8377,7 @@ NavigationRequest::GetOriginForURLLoaderFactoryAfterResponseWithDebugInfo() {
   if (HasRenderFrameHost() &&
       !GetRenderFrameHost()->ShouldBypassSecurityChecksForErrorPage(this) &&
       !IsForMhtmlSubframe()) {
-    int process_id = GetRenderFrameHost()->GetProcess()->GetID();
+    int process_id = GetRenderFrameHost()->GetProcess()->GetDeprecatedID();
     auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
     CHECK(policy->CanAccessOrigin(
         process_id, origin_with_debug_info.first,
@@ -10817,7 +10818,7 @@ NavigationRequest::GetOriginForURLLoaderFactoryUncheckedWithDebugInfo() {
     // URL -> origin mapping for it saved in the BlobURLRegistry.
     std::optional<int> target_rph_id;
     if (HasRenderFrameHost() && GetRenderFrameHost()->GetProcess()) {
-      target_rph_id = GetRenderFrameHost()->GetProcess()->GetID();
+      target_rph_id = GetRenderFrameHost()->GetProcess()->GetDeprecatedID();
     }
     return std::make_pair(
         static_cast<StoragePartitionImpl*>(

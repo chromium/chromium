@@ -235,8 +235,8 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
       main_rfh());
 
   RenderFrameHost* main_frame = source_contents->GetPrimaryMainFrame();
-  WebContentsMediaCaptureId capture_id(main_frame->GetProcess()->GetID(),
-                                       main_frame->GetRoutingID());
+  WebContentsMediaCaptureId capture_id(
+      main_frame->GetProcess()->GetDeprecatedID(), main_frame->GetRoutingID());
   base::UnguessableToken session_id =
       audio_input_device_manager()->Open(blink::MediaStreamDevice(
           blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE,
@@ -263,8 +263,8 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
       main_rfh());
 
   RenderFrameHost* main_frame = source_contents->GetPrimaryMainFrame();
-  WebContentsMediaCaptureId capture_id(main_frame->GetProcess()->GetID(),
-                                       main_frame->GetRoutingID());
+  WebContentsMediaCaptureId capture_id(
+      main_frame->GetProcess()->GetDeprecatedID(), main_frame->GetRoutingID());
   base::UnguessableToken session_id =
       audio_input_device_manager()->Open(blink::MediaStreamDevice(
           blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE,

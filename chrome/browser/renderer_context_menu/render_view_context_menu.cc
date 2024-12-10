@@ -1083,7 +1083,8 @@ void RenderViewContextMenu::AppendCurrentExtensionItems() {
     title = extension ? base::UTF8ToUTF16(extension->name())
                       : web_view_guest->owner_web_contents()->GetTitle();
     key = MenuItem::ExtensionKey(
-        extension_id, web_view_guest->owner_rfh()->GetProcess()->GetID(),
+        extension_id,
+        web_view_guest->owner_rfh()->GetProcess()->GetDeprecatedID(),
         web_view_guest->owner_rfh()->GetRoutingID(),
         web_view_guest->view_instance_id());
   } else {
@@ -4265,7 +4266,7 @@ void RenderViewContextMenu::ExecSaveLinkAs() {
         })");
 
   auto dl_params = std::make_unique<DownloadUrlParameters>(
-      url, render_frame_host->GetProcess()->GetID(),
+      url, render_frame_host->GetProcess()->GetDeprecatedID(),
       render_frame_host->GetRoutingID(), traffic_annotation);
   content::Referrer referrer = CreateReferrer(url, params_);
   dl_params->set_referrer(referrer.url);

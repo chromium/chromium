@@ -93,7 +93,7 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
 
-  params->process_id = process->GetID();
+  params->process_id = process->GetDeprecatedID();
   params->request_initiator_origin_lock = request_initiator_origin_lock;
 
   params->is_trusted = is_trusted;

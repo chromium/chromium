@@ -306,7 +306,7 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
       extensions::ProcessMap* process_map =
           extensions::ProcessMap::Get(context);
       DCHECK(process_map);
-      int rph_id = render_process_host->GetID();
+      int rph_id = render_process_host->GetDeprecatedID();
       process_is_for_extensions = process_map->Contains(rph_id);
 
       // For our purposes, don't count processes running hosted apps as

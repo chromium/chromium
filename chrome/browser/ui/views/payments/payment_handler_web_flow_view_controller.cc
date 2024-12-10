@@ -473,7 +473,11 @@ void PaymentHandlerWebFlowViewController::DidFinishNavigation(
 
   if (first_navigation_complete_callback_) {
     std::move(first_navigation_complete_callback_)
-        .Run(true, web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+        .Run(true,
+             web_contents()
+                 ->GetPrimaryMainFrame()
+                 ->GetProcess()
+                 ->GetDeprecatedID(),
              web_contents()->GetPrimaryMainFrame()->GetRoutingID());
   }
 

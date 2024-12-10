@@ -351,7 +351,7 @@ void TestWebContents::AddPendingContents(
     const GURL& target_url) {
   // This is normally only done in WebContentsImpl::CreateNewWindow.
   GlobalRoutingID key(
-      contents->GetRenderViewHost()->GetProcess()->GetID(),
+      contents->GetRenderViewHost()->GetProcess()->GetDeprecatedID(),
       contents->GetRenderViewHost()->GetWidget()->GetRoutingID());
   AddWebContentsDestructionObserver(contents.get());
   pending_contents_[key] = CreatedWindow(std::move(contents), target_url);

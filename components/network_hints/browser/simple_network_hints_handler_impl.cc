@@ -132,7 +132,7 @@ SimpleNetworkHintsHandlerImpl::~SimpleNetworkHintsHandlerImpl() = default;
 void SimpleNetworkHintsHandlerImpl::Create(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<mojom::NetworkHintsHandler> receiver) {
-  int render_process_id = frame_host->GetProcess()->GetID();
+  int render_process_id = frame_host->GetProcess()->GetDeprecatedID();
   int render_frame_id = frame_host->GetRoutingID();
   mojo::MakeSelfOwnedReceiver(
       base::WrapUnique(new SimpleNetworkHintsHandlerImpl(render_process_id,

@@ -192,7 +192,7 @@ void SynchronousCompositorHost::InitMojo() {
 
   SynchronousCompositorControlHost::Create(
       host_control.InitWithNewPipeAndPassReceiver(), bridge_,
-      rwhva_->GetRenderWidgetHost()->GetProcess()->GetID());
+      rwhva_->GetRenderWidgetHost()->GetProcess()->GetDeprecatedID());
   rwhva_->host()->GetWidgetInputHandler()->AttachSynchronousCompositor(
       std::move(host_control), host_receiver_.BindNewEndpointAndPassRemote(),
       sync_compositor_.BindNewEndpointAndPassReceiver());
@@ -286,7 +286,7 @@ SynchronousCompositor::Frame SynchronousCompositorHost::DemandDrawHw(
   if (compositor_frame) {
     if (!local_surface_id || !local_surface_id->is_valid()) {
       bad_message::ReceivedBadMessage(
-          rwhva_->GetRenderWidgetHost()->GetProcess()->GetID(),
+          rwhva_->GetRenderWidgetHost()->GetProcess()->GetDeprecatedID(),
           bad_message::SYNC_COMPOSITOR_NO_LOCAL_SURFACE_ID);
       return SynchronousCompositor::Frame();
     }

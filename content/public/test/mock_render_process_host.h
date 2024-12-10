@@ -117,7 +117,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool FastShutdownStarted() override;
   const base::Process& GetProcess() override;
   bool IsReady() override;
-  int GetID() const override;
+  int GetDeprecatedID() const override;
   base::SafeRef<RenderProcessHost> GetSafeRef() const override;
   bool IsInitializedAndNotDead() override;
   bool IsDeletingSoon() override;

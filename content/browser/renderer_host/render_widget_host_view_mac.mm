@@ -1787,7 +1787,8 @@ void RenderWidgetHostViewMac::BeginKeyboardEvent() {
         widget_host->delegate()->GetFocusedRenderWidgetHost(widget_host);
   }
   if (widget_host) {
-    keyboard_event_widget_process_id_ = widget_host->GetProcess()->GetID();
+    keyboard_event_widget_process_id_ =
+        widget_host->GetProcess()->GetDeprecatedID();
     keyboard_event_widget_routing_id_ = widget_host->GetRoutingID();
   }
 }
@@ -1990,7 +1991,8 @@ void RenderWidgetHostViewMac::LookUpDictionaryOverlayFromRange(
   if (!widget_host)
     return;
 
-  int32_t target_widget_process_id = widget_host->GetProcess()->GetID();
+  int32_t target_widget_process_id =
+      widget_host->GetProcess()->GetDeprecatedID();
   int32_t target_widget_routing_id = widget_host->GetRoutingID();
   TextInputClientMac::GetInstance()->GetStringFromRange(
       widget_host, range,
@@ -2029,7 +2031,8 @@ void RenderWidgetHostViewMac::LookUpDictionaryOverlayAtPoint(
   if (popup_parent_host_view_)
     return;
 
-  int32_t target_widget_process_id = widget_host->GetProcess()->GetID();
+  int32_t target_widget_process_id =
+      widget_host->GetProcess()->GetDeprecatedID();
   int32_t target_widget_routing_id = widget_host->GetRoutingID();
   TextInputClientMac::GetInstance()->GetStringAtPoint(
       widget_host, gfx::ToFlooredPoint(transformed_point),

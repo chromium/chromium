@@ -65,7 +65,9 @@ void MediaCapturePickerDialogBridge::OnResult(
         content::DesktopMediaID::TYPE_WEB_CONTENTS,
         content::DesktopMediaID::kNullId,
         content::WebContentsMediaCaptureId(
-            web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+            web_contents->GetPrimaryMainFrame()
+                ->GetProcess()
+                ->GetDeprecatedID(),
             web_contents->GetPrimaryMainFrame()->GetRoutingID()));
   }
   std::move(callback_).Run(desktop_media_id);

@@ -528,7 +528,9 @@ void NavigationURLLoaderImpl::Start() {
                   network::mojom::kBrowserProcessId),
               url_loader_factory::ContentClientParams(
                   browser_context_, frame_tree_node->current_frame_host(),
-                  frame_tree_node->current_frame_host()->GetProcess()->GetID(),
+                  frame_tree_node->current_frame_host()
+                      ->GetProcess()
+                      ->GetDeprecatedID(),
                   resource_request_->request_initiator.value_or(url::Origin()),
                   net::IsolationInfo(),
                   ukm::SourceIdObj::FromInt64(ukm_source_id_),
@@ -839,7 +841,7 @@ NavigationURLLoaderImpl::CreateNonNetworkLoaderFactory(
                 std::move(terminal), network::mojom::kBrowserProcessId),
             url_loader_factory::ContentClientParams(
                 frame->GetSiteInstance()->GetBrowserContext(), frame,
-                frame->GetProcess()->GetID(), url::Origin(),
+                frame->GetProcess()->GetDeprecatedID(), url::Origin(),
                 net::IsolationInfo(), ukm_id,
                 /*bypass_redirect_checks=*/nullptr,
                 frame_tree_node->navigation_request()->GetNavigationId(),
@@ -1637,7 +1639,7 @@ NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
   // navigations.
   GetContentClient()->browser()->WillCreateURLLoaderFactory(
       browser_context, frame_tree_node->current_frame_host(),
-      frame_tree_node->current_frame_host()->GetProcess()->GetID(),
+      frame_tree_node->current_frame_host()->GetProcess()->GetDeprecatedID(),
       ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
       net::IsolationInfo(),
       frame_tree_node->navigation_request()->GetNavigationId(), ukm_id,

@@ -255,7 +255,7 @@ content::DesktopMediaID CastMirroringServiceHost::BuildMediaIdForWebContents(
   }
   media_id.type = content::DesktopMediaID::TYPE_WEB_CONTENTS;
   media_id.web_contents_id = content::WebContentsMediaCaptureId(
-      contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
       contents->GetPrimaryMainFrame()->GetRoutingID(),
       true /* disable_local_echo */);
   return media_id;

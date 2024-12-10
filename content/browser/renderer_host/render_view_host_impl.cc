@@ -342,7 +342,7 @@ RenderViewHostImpl::RenderViewHostImpl(
 
   std::pair<RoutingIDViewMap::iterator, bool> result =
       g_routing_id_view_map.Get().emplace(
-          RenderViewHostID(GetProcess()->GetID(), routing_id_), this);
+          RenderViewHostID(GetProcess()->GetDeprecatedID(), routing_id_), this);
   CHECK(result.second) << "Inserting a duplicate item!";
   GetAgentSchedulingGroup().AddRoute(routing_id_, this);
 
@@ -381,7 +381,7 @@ RenderViewHostImpl::~RenderViewHostImpl() {
   // Detach the routing ID as the object is going away.
   GetAgentSchedulingGroup().RemoveRoute(GetRoutingID());
   g_routing_id_view_map.Get().erase(
-      RenderViewHostID(GetProcess()->GetID(), GetRoutingID()));
+      RenderViewHostID(GetProcess()->GetDeprecatedID(), GetRoutingID()));
 
   delegate_->RenderViewDeleted(this);
   GetProcess()->RemoveObserver(this);
@@ -436,12 +436,12 @@ bool RenderViewHostImpl::CreateRenderView(
   RenderFrameHostImpl* main_rfh = nullptr;
   RenderFrameProxyHost* main_rfph = nullptr;
   if (main_frame_routing_id_ != MSG_ROUTING_NONE) {
-    main_rfh = RenderFrameHostImpl::FromID(GetProcess()->GetID(),
+    main_rfh = RenderFrameHostImpl::FromID(GetProcess()->GetDeprecatedID(),
                                            main_frame_routing_id_);
     DCHECK(main_rfh);
   } else {
-    main_rfph =
-        RenderFrameProxyHost::FromID(GetProcess()->GetID(), proxy_route_id);
+    main_rfph = RenderFrameProxyHost::FromID(GetProcess()->GetDeprecatedID(),
+                                             proxy_route_id);
     DCHECK(main_rfph);
   }
   FrameTreeNode* const frame_tree_node =
@@ -788,7 +788,7 @@ RenderFrameHostImpl* RenderViewHostImpl::GetMainRenderFrameHost() {
     return nullptr;
   }
 
-  return RenderFrameHostImpl::FromID(GetProcess()->GetID(),
+  return RenderFrameHostImpl::FromID(GetProcess()->GetDeprecatedID(),
                                      main_frame_routing_id_);
 }
 

@@ -57,7 +57,7 @@ class GuestViewManager::EmbedderRenderProcessHostObserver
       RenderProcessHost* host,
       const content::ChildProcessTerminationInfo& info) override {
     if (guest_view_manager_)
-      guest_view_manager_->EmbedderProcessDestroyed(host->GetID());
+      guest_view_manager_->EmbedderProcessDestroyed(host->GetDeprecatedID());
   }
 
   void RenderProcessHostDestroyed(RenderProcessHost* host) override {
@@ -212,7 +212,7 @@ void GuestViewManager::ManageOwnership(std::unique_ptr<GuestViewBase> guest) {
   RenderProcessHost* owner_process = guest->owner_rfh()->GetProcess();
   DCHECK(owner_process);
   ObserveEmbedderLifetime(owner_process);
-  owned_guests_.insert({owner_process->GetID(), std::move(guest)});
+  owned_guests_.insert({owner_process->GetDeprecatedID(), std::move(guest)});
 }
 
 std::unique_ptr<content::WebContents>
@@ -569,8 +569,8 @@ void GuestViewManager::RegisterViewDestructionCallback(
 
 void GuestViewManager::ObserveEmbedderLifetime(
     RenderProcessHost* embedder_process) {
-  if (!embedders_observed_.count(embedder_process->GetID())) {
-    embedders_observed_.insert(embedder_process->GetID());
+  if (!embedders_observed_.count(embedder_process->GetDeprecatedID())) {
+    embedders_observed_.insert(embedder_process->GetDeprecatedID());
     // EmbedderRenderProcessHostObserver owns itself.
     new EmbedderRenderProcessHostObserver(weak_ptr_factory_.GetWeakPtr(),
                                           embedder_process);
@@ -650,8 +650,11 @@ bool GuestViewManager::CanEmbedderAccessInstanceID(
   // to run in the main frame or its local subframes.
   const int allowed_embedder_render_process_id =
       guest_view->CanBeEmbeddedInsideCrossProcessFrames()
-          ? guest_view->owner_rfh()->GetProcess()->GetID()
-          : guest_view->owner_rfh()->GetMainFrame()->GetProcess()->GetID();
+          ? guest_view->owner_rfh()->GetProcess()->GetDeprecatedID()
+          : guest_view->owner_rfh()
+                ->GetMainFrame()
+                ->GetProcess()
+                ->GetDeprecatedID();
 
   if (embedder_render_process_id != allowed_embedder_render_process_id) {
     bad_access_key.Set("Bad embedder process");

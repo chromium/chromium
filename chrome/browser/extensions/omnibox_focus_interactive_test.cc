@@ -418,7 +418,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, TabFocusStealingFromOopif) {
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   EXPECT_NE(subframe->GetLastCommittedURL().scheme(),
             main_frame->GetLastCommittedURL().scheme());
-  EXPECT_NE(subframe->GetProcess()->GetID(), main_frame->GetProcess()->GetID());
+  EXPECT_NE(subframe->GetProcess()->GetDeprecatedID(),
+            main_frame->GetProcess()->GetDeprecatedID());
 
   // Trigger a subframe-initiated navigation of the main frame.
   const char kLinkClickingScriptTemplate[] = R"(

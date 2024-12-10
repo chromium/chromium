@@ -240,7 +240,7 @@ void AwContentBrowserClient::ExposeInterfacesToRenderer(
     content::RenderProcessHost* render_process_host) {
   registry->AddInterface<safe_browsing::mojom::SafeBrowsing>(
       base::BindRepeating(
-          &MaybeCreateSafeBrowsing, render_process_host->GetID(),
+          &MaybeCreateSafeBrowsing, render_process_host->GetDeprecatedID(),
           base::BindRepeating(
               &AwContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
               base::Unretained(this))),
@@ -249,7 +249,7 @@ void AwContentBrowserClient::ExposeInterfacesToRenderer(
   // Add the RenderMessageFilter creation callback, the callbkack will happen on
   // the IO thread.
   registry->AddInterface<mojom::RenderMessageFilter>(base::BindRepeating(
-      &CreateRenderMessageFilter, render_process_host->GetID()));
+      &CreateRenderMessageFilter, render_process_host->GetDeprecatedID()));
 }
 
 void AwContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(

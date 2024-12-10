@@ -640,7 +640,7 @@ class PrefetchServiceTestBase : public RenderViewHostTestHarness {
   }
 
   void NavigateInitiatedByRenderer(const GURL& url) {
-    Navigate(url, main_rfh()->GetProcess()->GetID(),
+    Navigate(url, main_rfh()->GetProcess()->GetDeprecatedID(),
              main_rfh()->GetFrameToken(), MainDocumentToken());
   }
 
@@ -755,7 +755,8 @@ class PrefetchServiceTestBase : public RenderViewHostTestHarness {
       bool is_nav_prerender) {
     return is_renderer_initiated
                ? SimulatePartOfNavigation(
-                     url, is_nav_prerender, main_rfh()->GetProcess()->GetID(),
+                     url, is_nav_prerender,
+                     main_rfh()->GetProcess()->GetDeprecatedID(),
                      main_rfh()->GetFrameToken(), MainDocumentToken())
                : SimulatePartOfNavigation(url, is_nav_prerender,
                                           ChildProcessHost::kInvalidUniqueID,
@@ -2686,8 +2687,9 @@ TEST_P(PrefetchServiceTest, NotServeableNavigationInDifferentRenderFrameHost) {
   ASSERT_NE(other_token, main_rfh()->GetFrameToken());
   blink::DocumentToken different_document_token;
   ASSERT_NE(different_document_token, MainDocumentToken());
-  Navigate(GURL("https://example.com"), main_rfh()->GetProcess()->GetID(),
-           other_token, different_document_token);
+  Navigate(GURL("https://example.com"),
+           main_rfh()->GetProcess()->GetDeprecatedID(), other_token,
+           different_document_token);
 
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com"),

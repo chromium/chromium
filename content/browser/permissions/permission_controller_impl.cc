@@ -746,12 +746,13 @@ PermissionControllerImpl::SubscribeToPermissionStatusChange(
         PermissionUtil::GetLastCommittedOriginAsURL(
             render_frame_host->GetMainFrame());
     subscription->render_frame_id = render_frame_host->GetRoutingID();
-    subscription->render_process_id = render_frame_host->GetProcess()->GetID();
+    subscription->render_process_id =
+        render_frame_host->GetProcess()->GetDeprecatedID();
   } else {
     subscription->embedding_origin = requesting_origin;
     subscription->render_frame_id = -1;
     subscription->render_process_id =
-        render_process_host ? render_process_host->GetID() : -1;
+        render_process_host ? render_process_host->GetDeprecatedID() : -1;
   }
   subscriptions_.AddWithID(std::move(subscription), id);
 

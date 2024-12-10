@@ -4403,11 +4403,11 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   GURL url_3(https_server()->GetURL("a.test", "/empty.html?3"));
 
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
-  int rph_id_1 = current_frame_host()->GetProcess()->GetID();
+  int rph_id_1 = current_frame_host()->GetProcess()->GetDeprecatedID();
   EXPECT_TRUE(NavigateToURL(shell(), url_2));
-  int rph_id_2 = current_frame_host()->GetProcess()->GetID();
+  int rph_id_2 = current_frame_host()->GetProcess()->GetDeprecatedID();
   EXPECT_TRUE(NavigateToURL(shell(), url_3));
-  int rph_id_3 = current_frame_host()->GetProcess()->GetID();
+  int rph_id_3 = current_frame_host()->GetProcess()->GetDeprecatedID();
 
   EXPECT_EQ(rph_id_1, rph_id_2);
   EXPECT_EQ(rph_id_2, rph_id_3);
@@ -4426,11 +4426,11 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
       "a.test", "/set-header?Cross-Origin-Opener-Policy: same-origin&3"));
 
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
-  int rph_id_1 = current_frame_host()->GetProcess()->GetID();
+  int rph_id_1 = current_frame_host()->GetProcess()->GetDeprecatedID();
   EXPECT_TRUE(NavigateToURL(shell(), url_2));
-  int rph_id_2 = current_frame_host()->GetProcess()->GetID();
+  int rph_id_2 = current_frame_host()->GetProcess()->GetDeprecatedID();
   EXPECT_TRUE(NavigateToURL(shell(), url_3));
-  int rph_id_3 = current_frame_host()->GetProcess()->GetID();
+  int rph_id_3 = current_frame_host()->GetProcess()->GetDeprecatedID();
 
   EXPECT_EQ(rph_id_1, rph_id_2);
   EXPECT_EQ(rph_id_2, rph_id_3);
@@ -4448,11 +4448,11 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   GURL url_3(https_server()->GetURL("a.test", "/empty.html"));
 
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
-  int rph_id_1 = current_frame_host()->GetProcess()->GetID();
+  int rph_id_1 = current_frame_host()->GetProcess()->GetDeprecatedID();
   EXPECT_TRUE(NavigateToURL(shell(), url_2));
-  int rph_id_2 = current_frame_host()->GetProcess()->GetID();
+  int rph_id_2 = current_frame_host()->GetProcess()->GetDeprecatedID();
   EXPECT_TRUE(NavigateToURL(shell(), url_3));
-  int rph_id_3 = current_frame_host()->GetProcess()->GetID();
+  int rph_id_3 = current_frame_host()->GetProcess()->GetDeprecatedID();
 
   // If we're using the COOP site isolation heuristic (e.g., on Android), we
   // have to swap processes since we're going from an unlocked process to a
@@ -4481,11 +4481,11 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   GURL url_3(https_server()->GetURL("c.a.test", "/empty.html"));
 
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
-  int rph_id_1 = current_frame_host()->GetProcess()->GetID();
+  int rph_id_1 = current_frame_host()->GetProcess()->GetDeprecatedID();
   EXPECT_TRUE(NavigateToURL(shell(), url_2));
-  int rph_id_2 = current_frame_host()->GetProcess()->GetID();
+  int rph_id_2 = current_frame_host()->GetProcess()->GetDeprecatedID();
   EXPECT_TRUE(NavigateToURL(shell(), url_3));
-  int rph_id_3 = current_frame_host()->GetProcess()->GetID();
+  int rph_id_3 = current_frame_host()->GetProcess()->GetDeprecatedID();
 
   // If we're using the COOP site isolation heuristic (e.g., on Android), we
   // have to swap processes since we're going from an unlocked process to a
@@ -4520,11 +4520,11 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   GURL url_3(https_server()->GetURL("c.test", "/empty.html"));
 
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
-  int rph_id_1 = current_frame_host()->GetProcess()->GetID();
+  int rph_id_1 = current_frame_host()->GetProcess()->GetDeprecatedID();
   EXPECT_TRUE(NavigateToURL(shell(), url_2));
-  int rph_id_2 = current_frame_host()->GetProcess()->GetID();
+  int rph_id_2 = current_frame_host()->GetProcess()->GetDeprecatedID();
   EXPECT_TRUE(NavigateToURL(shell(), url_3));
-  int rph_id_3 = current_frame_host()->GetProcess()->GetID();
+  int rph_id_3 = current_frame_host()->GetProcess()->GetDeprecatedID();
 
   EXPECT_NE(rph_id_1, rph_id_2);
   EXPECT_NE(rph_id_2, rph_id_3);
@@ -4593,7 +4593,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   // site, and on desktop it'll be in a process that's locked to a.test.  We're
   // interested in covering both cases.
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
-  int rph_id_1 = current_frame_host()->GetProcess()->GetID();
+  int rph_id_1 = current_frame_host()->GetProcess()->GetDeprecatedID();
 
   // Start a navigation to b.test, which will have COOP headers, but this isn't
   // known until response time.  This creates a speculative RFH and process
@@ -4607,7 +4607,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                                              ->render_manager()
                                              ->speculative_frame_host());
   ASSERT_TRUE(speculative_rfh.get());
-  int rph_id_2 = speculative_rfh->GetProcess()->GetID();
+  int rph_id_2 = speculative_rfh->GetProcess()->GetDeprecatedID();
   EXPECT_NE(rph_id_1, rph_id_2);
 
   // Allow the navigation to receive the response and commit.
@@ -4622,7 +4622,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   // process locked to b.test, which is exactly the process that we created for
   // the original speculative RFH. Ensure that this process gets reused and not
   // wasted.
-  int rph_id_3 = current_frame_host()->GetProcess()->GetID();
+  int rph_id_3 = current_frame_host()->GetProcess()->GetDeprecatedID();
   EXPECT_EQ(rph_id_2, rph_id_3);
 
   // The original speculative RFH should always be destroyed.
@@ -4650,7 +4650,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
   // Navigate to a non-COOP URL.
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
-  int rph_id_1 = current_frame_host()->GetProcess()->GetID();
+  int rph_id_1 = current_frame_host()->GetProcess()->GetDeprecatedID();
   bool rph_1_is_locked =
       current_frame_host()->GetProcess()->GetProcessLock().is_locked_to_site();
 
@@ -4672,7 +4672,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                                            ->render_manager()
                                            ->speculative_frame_host();
     ASSERT_TRUE(speculative_rfh);
-    rph_id_2 = speculative_rfh->GetProcess()->GetID();
+    rph_id_2 = speculative_rfh->GetProcess()->GetDeprecatedID();
     EXPECT_EQ(rph_id_1, rph_id_2);
   } else {
     ASSERT_FALSE(web_contents()
@@ -4696,7 +4696,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   // and the old process wasn't already locked to a.test.  In that case, a
   // process swap is required, since we are going from an unlocked process to a
   // locked process.
-  int rph_id_3 = current_frame_host()->GetProcess()->GetID();
+  int rph_id_3 = current_frame_host()->GetProcess()->GetDeprecatedID();
   if (SiteIsolationPolicy::IsSiteIsolationForCOOPEnabled()) {
     EXPECT_NE(rph_id_2, rph_id_3);
     EXPECT_FALSE(rph_1_is_locked);
@@ -4720,7 +4720,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
   // Navigate to a COOP URL.
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
-  int rph_id_1 = current_frame_host()->GetProcess()->GetID();
+  int rph_id_1 = current_frame_host()->GetProcess()->GetDeprecatedID();
 
   // Start a navigation to another same-site COOP URL.
   TestNavigationManager navigation(web_contents(), url_2);
@@ -4745,7 +4745,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   int rph_id_2;
   if (IsBackForwardCacheEnabled() || ShouldCreateNewHostForAllFrames()) {
     ASSERT_TRUE(speculative_rfh);
-    rph_id_2 = speculative_rfh->GetProcess()->GetID();
+    rph_id_2 = speculative_rfh->GetProcess()->GetDeprecatedID();
     EXPECT_EQ(rph_id_1, rph_id_2);
   } else {
     ASSERT_FALSE(speculative_rfh);
@@ -4760,7 +4760,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   // When the response for `url_2` was received, we should verify that COOP
   // status hasn't changed, so no BrowsingInstance swap is needed, and we
   // should stay in the same process.
-  int rph_id_3 = current_frame_host()->GetProcess()->GetID();
+  int rph_id_3 = current_frame_host()->GetProcess()->GetDeprecatedID();
   EXPECT_EQ(rph_id_2, rph_id_3);
 }
 
@@ -4778,7 +4778,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
   // Navigate to a non-COOP URL.
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
-  int rph_id_1 = current_frame_host()->GetProcess()->GetID();
+  int rph_id_1 = current_frame_host()->GetProcess()->GetDeprecatedID();
 
   // Open a same-site popup with COOP.
   Shell* new_shell = OpenPopup(web_contents(), url_2, "");
@@ -4791,7 +4791,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   // new speculative RFH in a new SiteInstance/BrowsingInstance, and it should
   // create a fresh process rather than reuse the old a.com process, since
   // there was more than one active window in the old BrowsingInstance.
-  int rph_id_2 = popup_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
+  int rph_id_2 =
+      popup_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
   EXPECT_NE(rph_id_1, rph_id_2);
 }
 
@@ -4810,7 +4811,7 @@ IN_PROC_BROWSER_TEST_P(ProcessReuseOnPrerenderCOOPSwapBrowserTest,
   scoped_refptr<SiteInstanceImpl> si_1 = rfh_1->GetSiteInstance();
   base::UnguessableToken bi_token_1 =
       rfh_1->GetSiteInstance()->browsing_instance_token();
-  int rph_id_1 = rfh_1->GetProcess()->GetID();
+  int rph_id_1 = rfh_1->GetProcess()->GetDeprecatedID();
 
   // Start prerendering a COOP page.
   TestNavigationManager navigation_manager(web_contents(), prerender_page);
@@ -4829,7 +4830,7 @@ IN_PROC_BROWSER_TEST_P(ProcessReuseOnPrerenderCOOPSwapBrowserTest,
   scoped_refptr<SiteInstanceImpl> si_2 = rfh_2->GetSiteInstance();
   base::UnguessableToken bi_token_2 =
       rfh_2->GetSiteInstance()->browsing_instance_token();
-  int rph_id_2 = rfh_2->GetProcess()->GetID();
+  int rph_id_2 = rfh_2->GetProcess()->GetDeprecatedID();
   ASSERT_NE(rfh_1, rfh_2);
   ASSERT_NE(si_1, si_2);
   ASSERT_NE(bi_token_1, bi_token_2);
@@ -4849,7 +4850,7 @@ IN_PROC_BROWSER_TEST_P(ProcessReuseOnPrerenderCOOPSwapBrowserTest,
   scoped_refptr<SiteInstanceImpl> si_3 = rfh_3->GetSiteInstance();
   base::UnguessableToken bi_token_3 =
       rfh_3->GetSiteInstance()->browsing_instance_token();
-  int rph_id_3 = rfh_3->GetProcess()->GetID();
+  int rph_id_3 = rfh_3->GetProcess()->GetDeprecatedID();
   EXPECT_NE(rfh_2, rfh_3);
   EXPECT_NE(si_2, si_3);
   EXPECT_NE(bi_token_2, bi_token_3);

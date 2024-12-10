@@ -6039,7 +6039,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplSubframeReuseBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
   RenderFrameHostImpl* rfh_b =
       root_frame_host()->child_at(0)->current_frame_host();
-  int subframe_process_id = rfh_b->GetProcess()->GetID();
+  int subframe_process_id = rfh_b->GetProcess()->GetDeprecatedID();
   RenderFrameDeletedObserver delete_rfh_b(rfh_b);
   TestFrameNavigationObserver commit_observer(
       web_contents()->GetPrimaryFrameTree().root());
@@ -6074,7 +6074,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplSubframeReuseBrowserTest,
   RenderFrameHostImpl* new_rfh_b =
       root_frame_host()->child_at(0)->current_frame_host();
   ASSERT_EQ(RenderProcessHostImpl::ShouldDelayProcessShutdown(),
-            subframe_process_id == new_rfh_b->GetProcess()->GetID());
+            subframe_process_id == new_rfh_b->GetProcess()->GetDeprecatedID());
 
   // The process should no longer be in the pending-delete tracker, as it has
   // been reused.

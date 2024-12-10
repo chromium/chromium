@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyNTPBrowserTest, EmbeddedMostVisitedIframe) {
   InstantService* instant_service =
       InstantServiceFactory::GetForProfile(browser()->profile());
   EXPECT_TRUE(instant_service->IsInstantProcess(
-      contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
+      contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
 
   // Add a chrome-search://most-visited/title.html?rid=1&fs=0 subframe and
   // verify that navigation completes successfully, with no kills.

@@ -137,8 +137,9 @@ class ProcessNode : public TypedNode<ProcessNode> {
   // only be non-zero on Linux, ChromeOS, and Android.
   virtual uint64_t GetPrivateSwapKb() const = 0;
 
-  // Returns the render process id (equivalent to RenderProcessHost::GetID()),
-  // or ChildProcessHost::kInvalidUniqueID if this is not a renderer.
+  // Returns the render process id (equivalent to
+  // RenderProcessHost::GetDeprecatedID()), or
+  // ChildProcessHost::kInvalidUniqueID if this is not a renderer.
   virtual RenderProcessHostId GetRenderProcessHostId() const = 0;
 
   // Returns a proxy to the RenderProcessHost associated with this node. The

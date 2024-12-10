@@ -2185,7 +2185,7 @@ void ExtensionService::RenderProcessHostDestroyed(
   // An extension process was terminated, this might have resulted in an
   // app or extension becoming idle.
   if (std::optional<std::string> extension_id =
-          process_map->GetExtensionIdForProcess(host->GetID())) {
+          process_map->GetExtensionIdForProcess(host->GetDeprecatedID())) {
     // The extension running in this process might also be referencing a shared
     // module which is waiting for idle to update. Check all imports of this
     // extension too.
@@ -2213,7 +2213,7 @@ void ExtensionService::RenderProcessHostDestroyed(
       }
     }
   }
-  process_map->Remove(host->GetID());
+  process_map->Remove(host->GetDeprecatedID());
 }
 
 int ExtensionService::GetDisableReasonsOnInstalled(const Extension* extension) {

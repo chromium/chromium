@@ -576,7 +576,8 @@ void AuctionWorkletManager::WorkletOwner::LoadWorkletIfReady(
       worklet_manager_->top_window_origin(), worklet_manager_->frame_origin(),
       // NOTE: `rfh` can be null in tests.
       /*renderer_process_id=*/
-      rfh ? std::optional<int>(rfh->GetProcess()->GetID()) : std::nullopt,
+      rfh ? std::optional<int>(rfh->GetProcess()->GetDeprecatedID())
+          : std::nullopt,
       /*is_for_seller_=*/worklet_info_.type == WorkletType::kSeller,
       delegate->GetClientSecurityState(), worklet_info_.script_url,
       worklet_info_.wasm_url, worklet_info_.signals_url,

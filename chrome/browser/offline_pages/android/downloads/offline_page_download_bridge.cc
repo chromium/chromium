@@ -266,7 +266,7 @@ content::WebContents::Getter GetWebContentsGetter(
   // the WebContents.
   return base::BindRepeating(
       &GetWebContentsByFrameID,
-      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
       web_contents->GetPrimaryMainFrame()->GetRoutingID());
 }
 

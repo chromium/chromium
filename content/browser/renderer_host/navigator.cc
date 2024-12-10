@@ -402,7 +402,7 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
     // TODO(nasko): Convert to CHECK() once it is confirmed this is not
     // violated in reality.
     if (!ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-            render_frame_host->GetProcess()->GetID())) {
+            render_frame_host->GetProcess()->GetDeprecatedID())) {
       base::debug::DumpWithoutCrashing();
     }
 
@@ -1022,7 +1022,8 @@ void Navigator::RequestOpenURL(
   params.source_site_instance = current_site_instance;
 
   params.source_render_frame_id = render_frame_host->GetRoutingID();
-  params.source_render_process_id = render_frame_host->GetProcess()->GetID();
+  params.source_render_process_id =
+      render_frame_host->GetProcess()->GetDeprecatedID();
 
   if (render_frame_host->web_ui()) {
     // Note that we hide the referrer for Web UI pages. We don't really want

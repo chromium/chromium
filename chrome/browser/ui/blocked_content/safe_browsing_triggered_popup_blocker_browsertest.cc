@@ -665,7 +665,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                                              ->tab_strip_model()
                                              ->GetActiveWebContents()
                                              ->GetPrimaryMainFrame();
-  int main_frame_process_id = main_frame->GetProcess()->GetID();
+  int main_frame_process_id = main_frame->GetProcess()->GetDeprecatedID();
   int main_frame_routing_id = main_frame->GetRoutingID();
 
   // Navigate away from the abusive page. This should block bfcache.

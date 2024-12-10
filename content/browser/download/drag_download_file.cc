@@ -198,7 +198,7 @@ DragDownloadFile::DragDownloadFile(const base::FilePath& file_path,
   RenderFrameHost* host = web_contents->GetPrimaryMainFrame();
   drag_ui_ = new DragDownloadFileUI(
       url, referrer, referrer_encoding, initiator_origin,
-      host->GetProcess()->GetID(), host->GetRoutingID(),
+      host->GetProcess()->GetDeprecatedID(), host->GetRoutingID(),
       base::BindOnce(&DragDownloadFile::DownloadCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
   DCHECK(!file_path_.empty());

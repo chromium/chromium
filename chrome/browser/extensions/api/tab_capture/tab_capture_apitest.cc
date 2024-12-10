@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, GetUserMediaTest) {
       web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(main_frame);
   listener.Reply(base::StringPrintf("web-contents-media-stream://%i:%i",
-                                    main_frame->GetProcess()->GetID(),
+                                    main_frame->GetProcess()->GetDeprecatedID(),
                                     main_frame->GetRoutingID()));
 
   ResultCatcher catcher;

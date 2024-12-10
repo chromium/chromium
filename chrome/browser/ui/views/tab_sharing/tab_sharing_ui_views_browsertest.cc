@@ -156,8 +156,9 @@ content::DesktopMediaID GetDesktopMediaID(Browser* browser, int tab) {
   return content::DesktopMediaID(
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
-      content::WebContentsMediaCaptureId(main_frame->GetProcess()->GetID(),
-                                         main_frame->GetRoutingID()));
+      content::WebContentsMediaCaptureId(
+          main_frame->GetProcess()->GetDeprecatedID(),
+          main_frame->GetRoutingID()));
 }
 
 views::Widget* GetContentsBorder(Browser* browser) {

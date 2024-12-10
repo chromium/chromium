@@ -1937,8 +1937,9 @@ void ChromeContentBrowserClient::RenderProcessWillLaunch(
 
 #if BUILDFLAG(ENABLE_NACL)
   if (IsNaclAllowed() && !profile->IsSystemProfile()) {
-    host->AddFilter(new nacl::NaClHostMessageFilter(
-        host->GetID(), profile->IsOffTheRecord(), profile->GetPath()));
+    host->AddFilter(new nacl::NaClHostMessageFilter(host->GetDeprecatedID(),
+                                                    profile->IsOffTheRecord(),
+                                                    profile->GetPath()));
   }
 #endif
 
@@ -2374,7 +2375,7 @@ bool ChromeContentBrowserClient::IsSuitableHost(
       InstantServiceFactory::GetForProfile(profile);
   if (instant_service) {
     bool is_instant_process =
-        instant_service->IsInstantProcess(process_host->GetID());
+        instant_service->IsInstantProcess(process_host->GetDeprecatedID());
     bool should_be_in_instant_process =
         search::ShouldAssignURLToInstantRenderer(site_url, profile);
     if (is_instant_process || should_be_in_instant_process)
@@ -2823,7 +2824,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       InstantService* instant_service =
           InstantServiceFactory::GetForProfile(profile);
       if (instant_service &&
-          instant_service->IsInstantProcess(process->GetID())) {
+          instant_service->IsInstantProcess(process->GetDeprecatedID())) {
         command_line->AppendSwitch(switches::kInstantProcess);
       }
 
@@ -4236,7 +4237,7 @@ bool ChromeContentBrowserClient::CanCreateWindow(
     auto* process_map = extensions::ProcessMap::Get(profile);
     auto* registry = extensions::ExtensionRegistry::Get(profile);
     if (!URLHasExtensionPermission(process_map, registry, opener_url,
-                                   opener->GetProcess()->GetID(),
+                                   opener->GetProcess()->GetDeprecatedID(),
                                    APIPermissionID::kBackground)) {
       return false;
     }
@@ -4258,7 +4259,7 @@ bool ChromeContentBrowserClient::CanCreateWindow(
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   if (extensions::WebViewRendererState::GetInstance()->IsGuest(
-          opener->GetProcess()->GetID())) {
+          opener->GetProcess()->GetDeprecatedID())) {
     return true;
   }
 #endif
@@ -7688,10 +7689,10 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
       render_frame_host->GetMainFrame()->GetLastCommittedOrigin().GetURL();
   auto* registry = extensions::ExtensionRegistry::Get(profile);
   if (url.SchemeIs(extensions::kExtensionScheme)) {
-    return URLHasExtensionPermission(extensions::ProcessMap::Get(profile),
-                                     registry, url,
-                                     render_frame_host->GetProcess()->GetID(),
-                                     APIPermissionID::kClipboardRead);
+    return URLHasExtensionPermission(
+        extensions::ProcessMap::Get(profile), registry, url,
+        render_frame_host->GetProcess()->GetDeprecatedID(),
+        APIPermissionID::kClipboardRead);
   }
 
   // or (4) origination from a process that at least might be running a

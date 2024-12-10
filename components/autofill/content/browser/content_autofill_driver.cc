@@ -387,7 +387,7 @@ std::optional<LocalFrameToken> ContentAutofillDriver::Resolve(
   blink::RemoteFrameToken blink_remote_token(
       absl::get<RemoteFrameToken>(query).value());
   content::RenderFrameHost* remote_rfh =
-      content::RenderFrameHost::FromPlaceholderToken(rph->GetID(),
+      content::RenderFrameHost::FromPlaceholderToken(rph->GetDeprecatedID(),
                                                      blink_remote_token);
   if (!remote_rfh) {
     return std::nullopt;

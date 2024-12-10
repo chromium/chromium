@@ -1333,7 +1333,7 @@ IN_PROC_BROWSER_TEST_F(
   // Destroy the RenderWidgetHost from the browser side right after the
   // dictionary message is received. The destruction is post tasked to UI
   // thread.
-  int32_t child_process_id = child_frame->GetProcess()->GetID();
+  int32_t child_process_id = child_frame->GetProcess()->GetDeprecatedID();
   int32_t child_frame_routing_id = child_frame->GetRoutingID();
 
   text_input_local_frame.SetStringForRangeCallback(base::BindRepeating(
@@ -1402,7 +1402,7 @@ IN_PROC_BROWSER_TEST_F(
   // Destroy the RenderWidgetHost from the browser side right after the
   // dictionary message is received. The destruction is post tasked to UI
   // thread.
-  int32_t main_frame_process_id = main_frame->GetProcess()->GetID();
+  int32_t main_frame_process_id = main_frame->GetProcess()->GetDeprecatedID();
   int32_t main_frame_routing_id = main_frame->GetRoutingID();
   text_input_local_frame.SetStringForRangeCallback(base::BindRepeating(
       [](int32_t process_id, int32_t routing_id,

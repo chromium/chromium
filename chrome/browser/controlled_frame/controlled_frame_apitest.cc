@@ -262,7 +262,8 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ContextMenusCreate) {
   auto* menu_manager = extensions::MenuManager::Get(profile());
 
   const extensions::MenuItem::ExtensionKey extension_key(
-      /*extension_id=*/"", web_view_guest->owner_rfh()->GetProcess()->GetID(),
+      /*extension_id=*/"",
+      web_view_guest->owner_rfh()->GetProcess()->GetDeprecatedID(),
       web_view_guest->owner_rfh()->GetRoutingID(),
       web_view_guest->view_instance_id());
   EXPECT_EQ(0u, menu_manager->MenuItemsSize(extension_key));
@@ -305,7 +306,8 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ContextMenusUpdate) {
             CreateContextMenuItem(app_frame, kItem1ID, kItem1Title));
 
   const extensions::MenuItem::ExtensionKey extension_key(
-      /*extension_id=*/"", web_view_guest->owner_rfh()->GetProcess()->GetID(),
+      /*extension_id=*/"",
+      web_view_guest->owner_rfh()->GetProcess()->GetDeprecatedID(),
       web_view_guest->owner_rfh()->GetRoutingID(),
       web_view_guest->view_instance_id());
   ASSERT_EQ(1u, menu_manager->MenuItemsSize(extension_key));
@@ -339,7 +341,8 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ContextMenusRemove) {
   EXPECT_EQ(kEvalSuccessStr, RemoveContextMenuItem(app_frame, kItem1ID));
 
   const extensions::MenuItem::ExtensionKey extension_key(
-      /*extension_id=*/"", web_view_guest->owner_rfh()->GetProcess()->GetID(),
+      /*extension_id=*/"",
+      web_view_guest->owner_rfh()->GetProcess()->GetDeprecatedID(),
       web_view_guest->owner_rfh()->GetRoutingID(),
       web_view_guest->view_instance_id());
   ASSERT_EQ(1u, menu_manager->MenuItemsSize(extension_key));
@@ -367,7 +370,8 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ContextMenusRemoveAll) {
   EXPECT_EQ(kEvalSuccessStr, RemoveAllContextMenuItems(app_frame));
 
   const extensions::MenuItem::ExtensionKey extension_key(
-      /*extension_id=*/"", web_view_guest->owner_rfh()->GetProcess()->GetID(),
+      /*extension_id=*/"",
+      web_view_guest->owner_rfh()->GetProcess()->GetDeprecatedID(),
       web_view_guest->owner_rfh()->GetRoutingID(),
       web_view_guest->view_instance_id());
   ASSERT_EQ(0u, menu_manager->MenuItemsSize(extension_key));

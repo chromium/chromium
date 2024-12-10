@@ -503,7 +503,7 @@ void ExtensionMessagePort::DispatchOnConnect(
         &ExtensionMessagePort::Prune, base::Unretained(this), port_context,
         open_channel_dispatch_for_frame_tracking_id));
     AddReceiver(message_port_host.InitWithNewEndpointAndPassReceiver(),
-                frame->GetProcess()->GetID(), port_context);
+                frame->GetProcess()->GetDeprecatedID(), port_context);
 
     pending_contexts_to_respond_.insert(port_context);
 

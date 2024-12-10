@@ -138,8 +138,8 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
   if (rph->GetProcessLock().MatchesOrigin(url::Origin::Create(script_url))) {
     GetContentClient()
         ->browser()
-        ->GrantAdditionalRequestPrivilegesToWorkerProcess(rph->GetID(),
-                                                          script_url);
+        ->GrantAdditionalRequestPrivilegesToWorkerProcess(
+            rph->GetDeprecatedID(), script_url);
   }
 
   ServiceWorkerMetrics::StartSituation start_situation;
@@ -163,7 +163,7 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
   worker_process_map_.emplace(embedded_worker_id, std::move(site_instance));
   if (!rph->AreRefCountsDisabled())
     rph->IncrementWorkerRefCount();
-  out_info->process_id = rph->GetID();
+  out_info->process_id = rph->GetDeprecatedID();
   out_info->start_situation = start_situation;
   return blink::ServiceWorkerStatusCode::kOk;
 }
