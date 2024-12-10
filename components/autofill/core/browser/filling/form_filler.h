@@ -142,13 +142,15 @@ class FormFiller {
 
   // Fills or previews the data from `filling_payload` into `form`.
   // TODO(crbug.com/40227071): Clean up the API.
-  void FillOrPreviewForm(mojom::ActionPersistence action_persistence,
-                         const FormData& form,
-                         const FillingPayload& filling_payload,
-                         FormStructure& form_structure,
-                         AutofillField& autofill_field,
-                         AutofillTriggerSource trigger_source,
-                         bool is_refill = false);
+  void FillOrPreviewForm(
+      mojom::ActionPersistence action_persistence,
+      const FormData& form,
+      const FillingPayload& filling_payload,
+      FormStructure& form_structure,
+      AutofillField& autofill_field,
+      DenseSet<FieldFillingSkipReason> ignorable_skip_reasons,
+      AutofillTriggerSource trigger_source,
+      bool is_refill = false);
 
   // Whether there should be an attempts to refill the form. Returns true if all
   // the following are satisfied:

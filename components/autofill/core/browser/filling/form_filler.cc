@@ -50,6 +50,25 @@ namespace {
 // This is used for sites that change multiple things consecutively.
 constexpr base::TimeDelta kWaitTimeForDynamicForms = base::Milliseconds(200);
 
+bool FillingProductSupportsRefills(FillingProduct filling_product) {
+  switch (filling_product) {
+    case FillingProduct::kAddress:
+    case FillingProduct::kCreditCard:
+      return true;
+    case FillingProduct::kAutofillAi:
+    case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kIban:
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kCompose:
+    case FillingProduct::kPlusAddresses:
+    case FillingProduct::kStandaloneCvc:
+      return false;
+    case FillingProduct::kPassword:
+    case FillingProduct::kNone:
+      NOTREACHED();
+  }
+}
+
 FillingProduct GetFillingProductFromFillingPayload(
     const FillingPayload& filling_payload) {
   return absl::visit(
@@ -581,13 +600,15 @@ void FormFiller::FillOrPreviewFormWithPredictionImprovements(
       trigger_field.origin(), {});
 }
 
-void FormFiller::FillOrPreviewForm(mojom::ActionPersistence action_persistence,
-                                   const FormData& form,
-                                   const FillingPayload& filling_payload,
-                                   FormStructure& form_structure,
-                                   AutofillField& autofill_trigger_field,
-                                   AutofillTriggerSource trigger_source,
-                                   bool is_refill) {
+void FormFiller::FillOrPreviewForm(
+    mojom::ActionPersistence action_persistence,
+    const FormData& form,
+    const FillingPayload& filling_payload,
+    FormStructure& form_structure,
+    AutofillField& autofill_trigger_field,
+    DenseSet<FieldFillingSkipReason> ignorable_skip_reasons,
+    AutofillTriggerSource trigger_source,
+    bool is_refill) {
   FillingProduct filling_product =
       GetFillingProductFromFillingPayload(filling_payload);
 
@@ -622,19 +643,17 @@ void FormFiller::FillOrPreviewForm(mojom::ActionPersistence action_persistence,
 
   if (action_persistence == mojom::ActionPersistence::kFill && !is_refill) {
     form_structure.set_last_filling_timestamp(base::TimeTicks::Now());
-    SetFillingContext(form_structure.global_id(),
-                      std::make_unique<FillingContext>(autofill_trigger_field,
-                                                       filling_payload));
+    if (FillingProductSupportsRefills(filling_product)) {
+      SetFillingContext(form_structure.global_id(),
+                        std::make_unique<FillingContext>(autofill_trigger_field,
+                                                         filling_payload));
+    }
   }
 
-  // Only record the types that are filled for an eventual refill if all the
-  // following are satisfied:
-  //  The form is already filled.
-  //  A refill has not been attempted for that form yet.
-  //  This fill is not a refill attempt.
   FillingContext* filling_context =
       GetFillingContext(form_structure.global_id());
-  bool could_attempt_refill = filling_context != nullptr &&
+  bool could_attempt_refill = FillingProductSupportsRefills(filling_product) &&
+                              filling_context != nullptr &&
                               !filling_context->attempted_refill && !is_refill;
 
   std::vector<FormFieldData> result_fields = form.fields();
@@ -645,12 +664,25 @@ void FormFiller::FillOrPreviewForm(mojom::ActionPersistence action_persistence,
     result_fields[i].set_section(form_structure.field(i)->section());
   }
 
+  // `FormFiller::GetFieldFillingSkipReasons` returns for each field a generic
+  // list of reason for skipping each field. Some of these reasons might not be
+  // relevant for the current context (given `ignorable_skip_reasons`) so we
+  // filter them out from the start.
   base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>> skip_reasons =
-      GetFieldFillingSkipReasons(
-          result_fields, form_structure, autofill_trigger_field,
-          filling_context ? filling_context->type_groups_originally_filled
-                          : std::optional<DenseSet<FieldTypeGroup>>(),
-          filling_product, is_refill);
+      base::MakeFlatMap<FieldGlobalId, DenseSet<FieldFillingSkipReason>>(
+          GetFieldFillingSkipReasons(
+              result_fields, form_structure, autofill_trigger_field,
+              filling_context ? filling_context->type_groups_originally_filled
+                              : std::optional<DenseSet<FieldTypeGroup>>(),
+              filling_product, is_refill),
+          {},
+          [&ignorable_skip_reasons](
+              const std::pair<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
+                  field_id_and_skip_reasons) {
+            auto [field_id, field_skip_reasons] = field_id_and_skip_reasons;
+            field_skip_reasons.erase_all(ignorable_skip_reasons);
+            return std::make_pair(field_id, field_skip_reasons);
+          });
 
   // This loop sets the values to fill in the `result_fields`. The
   // `result_fields` are sent to the renderer, whereas the very similar
@@ -730,11 +762,6 @@ void FormFiller::FillOrPreviewForm(mojom::ActionPersistence action_persistence,
     filling_context->filled_form = form;
     filling_context->filled_form->set_fields(result_fields);
   }
-  auto field_types = base::MakeFlatMap<FieldGlobalId, FieldType>(
-      form_structure, {}, [](const auto& field) {
-        return std::make_pair(field->global_id(),
-                              field->Type().GetStorableType());
-      });
   // Remove fields that won't be filled. This includes:
   // - Fields that have a skip reason.
   // - Fields that don't have a cached equivalent, because those fields don't
@@ -747,7 +774,12 @@ void FormFiller::FillOrPreviewForm(mojom::ActionPersistence action_persistence,
   base::flat_set<FieldGlobalId> safe_filled_field_ids =
       manager_->driver().ApplyFormAction(
           mojom::FormActionType::kFill, action_persistence, result_fields,
-          autofill_trigger_field.origin(), field_types);
+          autofill_trigger_field.origin(),
+          base::MakeFlatMap<FieldGlobalId, FieldType>(
+              form_structure, {}, [](const auto& field) {
+                return std::make_pair(field->global_id(),
+                                      field->Type().GetStorableType());
+              }));
 
   // This will hold the subset of fields of `result_fields` whose ids are in
   // `safe_filled_field_ids`
@@ -785,7 +817,8 @@ void FormFiller::FillOrPreviewForm(mojom::ActionPersistence action_persistence,
   }
 
   // Save filling history to support undoing it later if needed.
-  if (action_persistence == mojom::ActionPersistence::kFill) {
+  if (action_persistence == mojom::ActionPersistence::kFill &&
+      ShouldRecordFillingHistory(filling_product)) {
     form_autofill_history_.AddFormFillEntry(safe_filled_fields.old_values,
                                             safe_filled_fields.cached,
                                             filling_product, is_refill);
@@ -915,7 +948,8 @@ void FormFiller::TriggerRefill(const FormData& form,
       [&](const auto& profile_or_credit_card) {
         FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
                           &profile_or_credit_card, *form_structure,
-                          *autofill_field, trigger_source,
+                          *autofill_field, /*ignorable_skip_reasons=*/{},
+                          trigger_source,
                           /*is_refill=*/true);
       },
       filling_context->profile_or_credit_card);

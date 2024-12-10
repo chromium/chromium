@@ -196,11 +196,11 @@ class FormFillerTest : public testing::Test {
     EXPECT_CALL(autofill_driver_, ApplyFormAction)
         .WillOnce(
             DoAll(SaveArgElementsTo<2>(&filled_fields), Return(global_ids)));
-    form_filler().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
-                                    filling_payload, *GetFormStructure(form),
-                                    *GetAutofillField(form, trigger_field),
-                                    trigger_source,
-                                    /*is_refill=*/false);
+    form_filler().FillOrPreviewForm(
+        mojom::ActionPersistence::kFill, form, filling_payload,
+        *GetFormStructure(form), *GetAutofillField(form, trigger_field),
+        /*ignorable_skip_reasons=*/{}, trigger_source,
+        /*is_refill=*/false);
     // Copy the filled data into the form.
     for (FormFieldData& field : test_api(form).fields()) {
       if (auto it = base::ranges::find(filled_fields, field.global_id(),
@@ -223,7 +223,8 @@ class FormFillerTest : public testing::Test {
     form_filler().FillOrPreviewForm(
         mojom::ActionPersistence::kPreview, form, &virtual_card,
         *GetFormStructure(form), *GetAutofillField(form, field),
-        AutofillTriggerSource::kPopup, /*is_refill=*/false);
+        /*ignorable_skip_reasons=*/{}, AutofillTriggerSource::kPopup,
+        /*is_refill=*/false);
     return filled_fields;
   }
 
@@ -296,7 +297,7 @@ TEST_F(FormFillerTest, DoNotFillIfFormChanged) {
   form_filler().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form, &profile, *GetFormStructure(form),
       *GetAutofillField(form, form.fields().front()),
-      AutofillTriggerSource::kPopup,
+      /*ignorable_skip_reasons=*/{}, AutofillTriggerSource::kPopup,
       /*is_refill=*/false);
 }
 
@@ -402,7 +403,7 @@ TEST_F(FormFillerTest, UndoSavesFormFillingData) {
   form_filler().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form, &profile, *GetFormStructure(form),
       *GetAutofillField(form, form.fields().front()),
-      AutofillTriggerSource::kPopup,
+      /*ignorable_skip_reasons=*/{}, AutofillTriggerSource::kPopup,
       /*is_refill=*/false);
   // Undo early returns if it has no filling history for the trigger field,
   // which is initially empty, therefore calling the driver is proof that data
