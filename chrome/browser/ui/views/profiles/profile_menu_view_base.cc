@@ -172,8 +172,9 @@ gfx::ImageSkia CropCircle(const gfx::ImageSkia& image) {
 gfx::ImageSkia AddCircularBackground(const gfx::ImageSkia& image,
                                      SkColor bg_color,
                                      int size) {
-  if (image.isNull())
+  if (image.isNull()) {
     return gfx::ImageSkia();
+  }
 
   return gfx::ImageSkiaOperations::CreateSuperimposedImage(
       CreateCircle(size, bg_color), image);
@@ -691,6 +692,9 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   // Empty space between the rounded rectangle (outside) and menu edge.
   constexpr int kIdentityContainerMargin = 12;
 
+  constexpr int kHeaderVerticalMargin = 10;
+  constexpr int kHeaderHorizontalSpacing = 4;
+  constexpr int kHeaderImageSize = 16;
   constexpr int kIdentityContainerHorizontalPadding = 24;
   constexpr int kAvatarTopMargin = 24;
   constexpr int kTitleTopMargin = 8;
@@ -702,6 +706,11 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   // Vertical view structure when all elements are present. Square brackets []
   // represent empty space:
   //
+  // Optional header:
+  //     [kHeaderVerticalMargin]
+  //     Horizontal Box: Image (size kHeaderImageSize) + Label
+  //     [kHeaderVerticalMargin]
+  //     Horizontal Separator
   // [kAvatarTopMargin]
   // Image: Avatar (size: kIdentityInfoImageSize)
   // [kTitleTopMargin]
@@ -734,6 +743,34 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   // Space around the rectangle, between the rectangle and the menu edge.
   identity_info_container_->SetProperty(views::kMarginsKey,
                                         gfx::Insets(kIdentityContainerMargin));
+
+  if (!params.header_string.empty() && !params.header_image.IsEmpty()) {
+    // Header.
+    identity_info_container_->AddChildView(
+        views::Builder<views::BoxLayoutView>()
+            .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+            .SetBetweenChildSpacing(kHeaderHorizontalSpacing)
+            .SetInsideBorderInsets(gfx::Insets::TLBR(
+                kHeaderVerticalMargin, kIdentityContainerHorizontalPadding,
+                kHeaderVerticalMargin, kIdentityContainerHorizontalPadding))
+            .AddChildren(
+                views::Builder<views::ImageView>().SetImage(
+                    SizeImageModel(params.header_image, kHeaderImageSize)),
+                views::Builder<views::Label>()
+                    .SetText(params.header_string)
+                    .CopyAddressTo(&heading_label_)
+                    .SetTextContext(views::style::CONTEXT_LABEL)
+                    .SetTextStyle(views::style::STYLE_BODY_5)
+                    .SetElideBehavior(gfx::ELIDE_TAIL))
+            .Build());
+    // Separator.
+    identity_info_container_->AddChildView(
+        views::Builder<views::Separator>()
+            .SetColorId(kColorProfileMenuBackground)
+            .SetPreferredSize(
+                gfx::Size(kMenuWidth, views::Separator::kThickness))
+            .Build());
+  }
 
   // Avatar.
   identity_info_container_->AddChildView(
@@ -1077,8 +1114,9 @@ void ProfileMenuViewBase::AddAvailableProfile(const ui::ImageModel& image_model,
                               base::Unretained(this), std::move(action)),
           sized_image, name));
 
-  if (!is_guest && !first_profile_button_)
+  if (!is_guest && !first_profile_button_) {
     first_profile_button_ = button;
+  }
 }
 
 void ProfileMenuViewBase::AddProfileManagementShortcutFeatureButton(
@@ -1236,8 +1274,9 @@ void ProfileMenuViewBase::Reset() {
 }
 
 void ProfileMenuViewBase::FocusFirstProfileButton() {
-  if (first_profile_button_)
+  if (first_profile_button_) {
     first_profile_button_->RequestFocus();
+  }
 }
 
 void ProfileMenuViewBase::BuildIdentityInfoColorCallback(
@@ -1255,6 +1294,10 @@ void ProfileMenuViewBase::BuildIdentityInfoColorCallback(
     if (subtitle_label_) {
       subtitle_label_->SetEnabledColor(
           color_provider->GetColor(kColorProfileMenuIdentityInfoSubtitle));
+    }
+    if (heading_label_) {
+      subtitle_label_->SetEnabledColor(
+          color_provider->GetColor(kColorProfileMenuIdentityInfoTitle));
     }
     return;
   }
@@ -1298,8 +1341,9 @@ void ProfileMenuViewBase::OnThemeChanged() {
 }
 
 void ProfileMenuViewBase::OnWindowClosing() {
-  if (!anchor_button())
+  if (!anchor_button()) {
     return;
+  }
 
   views::InkDrop::Get(anchor_button())
       ->AnimateToState(views::InkDropState::DEACTIVATED, nullptr);

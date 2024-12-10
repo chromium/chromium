@@ -106,6 +106,12 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     IdentitySectionParams(IdentitySectionParams&&);
     IdentitySectionParams& operator=(IdentitySectionParams&&);
 
+    // Optional header displayed at the top (e.g. for management notice).
+    // `header_string` and `header_image` must both be non-empty for the header
+    // to be shown.
+    std::u16string header_string;
+    ui::ImageModel header_image;
+
     // Must not be empty.
     ui::ImageModel profile_image;
 
@@ -138,8 +144,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   // Size of the small identity image shown inside the signin button.
   static constexpr int kIdentityImageSizeForButton = 22;
 
-  ProfileMenuViewBase(views::Button* anchor_button,
-                      Browser* browser);
+  ProfileMenuViewBase(views::Button* anchor_button, Browser* browser);
   ~ProfileMenuViewBase() override;
 
   ProfileMenuViewBase(const ProfileMenuViewBase&) = delete;

@@ -832,6 +832,19 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
                                 /*use_high_res_file=*/true, icon_params)
           : primary_extended_account_info.account_image);
 
+  if (enterprise_util::CanShowEnterpriseBadgingForMenu(profile)) {
+    params.header_string =
+        l10n_util::GetStringUTF16(IDS_PROFILE_MENU_BROWSER_MANAGED_HEADER);
+    ui::ImageModel* custom_management_image =
+        policy::ManagementServiceFactory::GetForProfile(profile)
+            ->GetManagementIcon();
+    params.header_image =
+        custom_management_image
+            ? *custom_management_image
+            : ui::ImageModel::FromVectorIcon(
+                  vector_icons::kBusinessChromeRefreshIcon, ui::kColorIcon);
+  }
+
   // Sync error.
   if (error.has_value()) {
     params.subtitle =
