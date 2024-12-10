@@ -911,12 +911,11 @@ bool ExternalCanvasResource::
   TRACE_EVENT0(
       "blink",
       "ExternalCanvasResource::PrepareAcceleratedTransferableResource");
-  GenOrFlushSyncToken();
 
   *out_resource = viz::TransferableResource::MakeGpu(
-      client_si_, client_si_->GetTextureTarget(), sync_token_,
-      client_si_->size(), client_si_->format(), is_overlay_candidate_,
-      resource_source_);
+      client_si_, client_si_->GetTextureTarget(),
+      GetSyncTokenWithOptionalVerification(false), client_si_->size(),
+      client_si_->format(), IsOverlayCandidate(), resource_source_);
   out_resource->color_space = client_si_->color_space();
   out_resource->hdr_metadata = hdr_metadata_;
   out_resource->origin = client_si_->surface_origin();
