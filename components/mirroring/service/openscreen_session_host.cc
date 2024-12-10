@@ -902,9 +902,6 @@ void OpenscreenSessionHost::SetConstraints(
     // TODO(crbug.com/1363512): Remove support for sender side letterboxing.
     if (session_params_.force_letterboxing) {
       mirror_settings_.SetSenderSideLetterboxingEnabled(true);
-    } else if (base::FeatureList::IsEnabled(
-                   features::kCastDisableLetterboxing)) {
-      mirror_settings_.SetSenderSideLetterboxingEnabled(false);
     } else {
       // Enable sender-side letterboxing if the receiver specifically does not
       // opt-in to variable aspect ratio video.
