@@ -10,15 +10,10 @@ namespace webapps {
 namespace features {
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kAddToHomescreenMessaging,
-             "AddToHomescreenMessaging",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables WebAPK Install Failure Notification.
 BASE_FEATURE(kWebApkInstallFailureNotification,
              "WebApkInstallFailureNotification",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Keys to use when querying the variations params.

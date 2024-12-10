@@ -31,8 +31,6 @@ inline constexpr int kTotalDaysToStoreMLGuardrails = 180;
 inline constexpr int kMinimumFaviconSize = 48;
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kAddToHomescreenMessaging);
-
 BASE_DECLARE_FEATURE(kWebApkInstallFailureNotification);
 #endif  // BUILDFLAG(IS_ANDROID)
 
