@@ -146,11 +146,6 @@ constexpr double kSelectURLOverallBitBudget = 12.0;
 
 constexpr double kSelectURLSiteBitBudget = 6.0;
 
-// kSelectURLOverallBitBudget % kSelectURLSiteBitBudget
-// TODO(https://crbug.com/378385004): As the value results in 0, the actual
-// test cases can be simplified if we assume this constant value.
-constexpr int kOverallBudgetRemaining = 0;
-
 constexpr char kGenerateURLsListScript[] = R"(
   function generateUrls(size) {
     return new Array(size).fill(0).map((e, i) => {
@@ -9939,15 +9934,6 @@ IN_PROC_BROWSER_TEST_P(
       base::StrCat({std::string(1, 'b' + num_site_limit), ".test"});
   GURL iframe_url = https_server()->GetURL(iframe_host, kSimplePagePath);
 
-  for (int j = 0; j < kOverallBudgetRemaining; j++) {
-    // Create a new iframe.
-    FrameTreeNode* iframe_node =
-        CreateIFrame(PrimaryFrameTreeNodeRoot(), iframe_url);
-
-    RunSuccessfulSelectURLInIframe(iframe_node,
-                                   /*num_urls=*/2, &console_observer);
-  }
-
   // Create a new iframe.
   FrameTreeNode* final_iframe_node =
       CreateIFrame(PrimaryFrameTreeNodeRoot(), iframe_url);
@@ -9984,31 +9970,28 @@ IN_PROC_BROWSER_TEST_P(
                      kSelectUrlBudgetStatusHistogram});
   histogram_tester_.ExpectTotalCount(
       kTimingSelectUrlExecutedInWorkletHistogram,
-      num_site_limit * (2 + per_site_input2_call_limit) +
-          kOverallBudgetRemaining + 1);
+      num_site_limit * (2 + per_site_input2_call_limit) + 1);
 
   if (LimitSelectURLCalls()) {
     histogram_tester_.ExpectBucketCount(
         kSelectUrlBudgetStatusHistogram,
         blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget,
-        num_site_limit * (1 + per_site_input2_call_limit) +
-            kOverallBudgetRemaining);
+        num_site_limit * (1 + per_site_input2_call_limit));
     histogram_tester_.ExpectBucketCount(
         kSelectUrlBudgetStatusHistogram,
         blink::SharedStorageSelectUrlBudgetStatus::
             kInsufficientSitePageloadBudget,
-        kOverallBudgetRemaining ? num_site_limit : num_site_limit - 1);
+        num_site_limit - 1);
     histogram_tester_.ExpectBucketCount(
         kSelectUrlBudgetStatusHistogram,
         blink::SharedStorageSelectUrlBudgetStatus::
             kInsufficientOverallPageloadBudget,
-        kOverallBudgetRemaining ? 1 : 2);
+        2);
   } else {
     histogram_tester_.ExpectUniqueSample(
         kSelectUrlBudgetStatusHistogram,
         blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget,
-        num_site_limit * (2 + per_site_input2_call_limit) +
-            kOverallBudgetRemaining + 1);
+        num_site_limit * (2 + per_site_input2_call_limit) + 1);
   }
 }
 
