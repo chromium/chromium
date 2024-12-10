@@ -2951,10 +2951,11 @@ namespace {
 
 class ContentsView : public View {
   METADATA_HEADER(ContentsView, View)
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->SetNameExplicitlyEmpty();
-    // Focusable Views need a valid role.
-    node_data->role = ax::mojom::Role::kDialog;
+ public:
+  ContentsView() {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+    GetViewAccessibility().SetName(
+        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   }
 };
 

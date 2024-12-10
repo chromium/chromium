@@ -745,6 +745,46 @@ void ViewAccessibility::SetTableColumnCount(int column_count) {
                         column_count);
 }
 
+void ViewAccessibility::SetAriaTableRowCount(int row_count) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kAriaRowCount, row_count);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kAriaRowCount, row_count);
+}
+
+void ViewAccessibility::SetAriaTableColumnCount(int column_count) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kAriaColumnCount,
+                        column_count);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kAriaColumnCount,
+                        column_count);
+}
+
+void ViewAccessibility::ClearTableRowCount() {
+  data_.RemoveIntAttribute(ax::mojom::IntAttribute::kTableRowCount);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kTableRowCount, std::nullopt);
+}
+
+void ViewAccessibility::ClearTableColumnCount() {
+  data_.RemoveIntAttribute(ax::mojom::IntAttribute::kTableColumnCount);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kTableColumnCount,
+                        std::nullopt);
+}
+
+void ViewAccessibility::ClearAriaTableRowCount() {
+  data_.RemoveIntAttribute(ax::mojom::IntAttribute::kAriaRowCount);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kAriaRowCount, std::nullopt);
+}
+
+void ViewAccessibility::ClearAriaTableColumnCount() {
+  data_.RemoveIntAttribute(ax::mojom::IntAttribute::kAriaColumnCount);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kAriaColumnCount,
+                        std::nullopt);
+}
+
 void ViewAccessibility::ClearDescriptionAndDescriptionFrom() {
   data_.SetDescriptionExplicitlyEmpty();
 
