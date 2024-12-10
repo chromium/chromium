@@ -5562,7 +5562,10 @@ bool AXObject::ComputeIsInMenuListSubtree() {
   if (IsRoot()) {
     return false;
   }
-  return IsMenuList() || ParentObject()->IsInMenuListSubtree();
+  if (IsMenuList()) {
+    return true;
+  }
+  return ParentObject() && ParentObject()->IsInMenuListSubtree();
 }
 
 bool AXObject::IsMenuList() const {
