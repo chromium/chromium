@@ -143,7 +143,7 @@ _BENCHMARKS = [
     Benchmark(
         name='chrome_java_nosig',
         from_string='super.onCreate();',
-        to_string='super.onCreate();String test = "Test";',
+        to_string='super.onCreate();super.onCreate();',
         change_file=
         'chrome/android/java/src/org/chromium/chrome/browser/ChromeApplicationImpl.java',  # pylint: disable=line-too-long
     ),
