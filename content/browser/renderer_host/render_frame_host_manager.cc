@@ -3205,8 +3205,8 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     std::string* reason) {
   TRACE_EVENT("navigation",
               "RenderFrameHostManager::DetermineSiteInstanceForURL",
-              ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_, "url",
-              dest_url_info.url);
+              ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_,
+              "url_info", dest_url_info);
 
   // Note that this function should return a SiteInstanceDescriptor with
   // SiteInstanceRelation::UNRELATED or

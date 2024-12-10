@@ -141,6 +141,8 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForUrlInfo(
     bool is_guest,
     bool is_fenced,
     bool is_fixed_storage_partition) {
+  TRACE_EVENT("navigation", "SiteInstanceImpl::CreateForUrlInfo", "url_info",
+              url_info);
   DCHECK(url_info.is_sandboxed ||
          url_info.unique_sandbox_id == UrlInfo::kInvalidUniqueSandboxId);
   CHECK(!is_guest || url_info.storage_partition_config.has_value());
@@ -523,7 +525,7 @@ void SiteInstanceImpl::SetSite(const UrlInfo& url_info) {
   // TODO(creis): Consider calling ShouldAssignSiteForURL internally, rather
   // than before multiple call sites.  See https://crbug.com/949220.
   TRACE_EVENT2("navigation", "SiteInstanceImpl::SetSite", "site id",
-               id_.value(), "url", url.possibly_invalid_spec());
+               id_.value(), "url_info", url_info);
   // A SiteInstance's site should not change.
   // TODO(creis): When following links or script navigations, we can currently
   // render pages from other sites in this SiteInstance.  This will eventually
@@ -804,6 +806,8 @@ bool SandboxConfigurationsMatch(const SiteInfo& site_info,
 }  // namespace
 
 bool SiteInstanceImpl::IsSuitableForUrlInfo(const UrlInfo& url_info) {
+  TRACE_EVENT2("navigation", "SiteInstanceImpl::IsSuitableForUrlInfo",
+               ChromeTrackEvent::kSiteInstance, this, "url_info", url_info);
   const GURL& url = url_info.url;
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // If the URL to navigate to can be associated with any site instance,

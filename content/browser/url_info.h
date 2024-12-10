@@ -7,10 +7,12 @@
 
 #include <optional>
 
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "content/browser/agent_cluster_key.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -124,6 +126,9 @@ struct CONTENT_EXPORT UrlInfo {
   // Returns whether this UrlInfo is for a page that should be cross-origin
   // isolated.
   bool IsIsolated() const;
+
+  using TraceProto = perfetto::protos::pbzero::UrlInfo;
+  void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const;
 
   GURL url;
 

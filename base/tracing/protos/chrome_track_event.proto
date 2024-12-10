@@ -383,6 +383,29 @@ message SiteInstanceGroup {
   repeated DebugAnnotation debug_annotations = 99;
 }
 
+// Describes the CrossOriginIsolated state of a page. See the definition of
+// WebExposedIsolationInfo for more information.
+message WebExposedIsolationInfo {
+  optional bool is_isolated = 1;
+  optional string origin = 2;
+  optional bool is_isolated_application = 3;
+}
+
+// Contains the URL and some additional information necessary to pick a
+// SiteInstance and process during a navigation. See the definition of UrlInfo
+// for more information about individual fields.
+message UrlInfo {
+  optional string url = 1;
+  optional string origin = 2;
+  optional bool is_sandboxed = 3;
+  optional bool is_pdf = 4;
+  optional bool is_coop_isolation_requested = 5;
+  optional int32 origin_isolation_request = 6;
+  optional bool is_prefetch_with_cross_site_contamination = 7;
+  optional WebExposedIsolationInfo web_exposed_isolation_info = 8;
+  optional string storage_partition_config = 9;
+}
+
 // Next ID: 7
 message RenderViewHost {
   // The RenderViewHostMapId for the RenderViewHost.
@@ -2450,5 +2473,9 @@ message ChromeTrackEvent {
         android_choreographer_frame_callback_data = 1070;
 
     optional CurrentTask current_task = 1071;
+
+    optional WebExposedIsolationInfo web_exposed_isolation_info = 1072;
+
+    optional UrlInfo url_info = 1073;
   }
 }
