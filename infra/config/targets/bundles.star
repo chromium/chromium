@@ -374,7 +374,6 @@ targets.bundle(
             swarming = targets.swarming(
                 shards = 2,
             ),
-            experiment_percentage = 100,
         ),
         "android_browsertests": targets.mixin(
             swarming = targets.swarming(
