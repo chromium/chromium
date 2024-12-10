@@ -115,15 +115,6 @@ unsigned CSSSelectorList::MaximumSpecificity() const {
   return specificity;
 }
 
-void CSSSelectorList::Reparent(CSSSelector* selector_list,
-                               StyleRule* new_parent) {
-  DCHECK(selector_list);
-  CSSSelector* current = selector_list;
-  do {
-    current->Reparent(new_parent);
-  } while (!(current++)->IsLastInSelectorList());
-}
-
 bool CSSSelectorList::Renest(const CSSSelector* selector_list,
                              StyleRule* new_parent,
                              HeapVector<CSSSelector>& result) {

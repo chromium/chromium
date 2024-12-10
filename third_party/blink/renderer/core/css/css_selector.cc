@@ -512,14 +512,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
   NOTREACHED();
 }
 
-void CSSSelector::Reparent(StyleRule* new_parent) {
-  if (GetPseudoType() == CSSSelector::kPseudoParent) {
-    data_.parent_rule_ = new_parent;
-  } else if (HasRareData() && data_.rare_data_->selector_list_) {
-    data_.rare_data_->selector_list_->Reparent(new_parent);
-  }
-}
-
 std::optional<CSSSelector> CSSSelector::Renest(StyleRule* new_parent) const {
   if (GetPseudoType() == CSSSelector::kPseudoParent &&
       data_.parent_rule_ != new_parent) {

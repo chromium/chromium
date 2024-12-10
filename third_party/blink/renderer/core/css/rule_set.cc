@@ -1112,8 +1112,7 @@ void RuleSet::AddStyleRule(StyleRule* style_rule,
                            CascadeLayer* cascade_layer,
                            const StyleScope* style_scope) {
   if (within_mixin) {
-    style_rule = style_rule->Copy();
-    style_rule->Reparent(parent_rule);
+    style_rule = To<StyleRule>(style_rule->Renest(parent_rule));
   }
   for (const CSSSelector* selector = style_rule->FirstSelector(); selector;
        selector = CSSSelectorList::Next(*selector)) {

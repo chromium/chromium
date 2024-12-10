@@ -309,4 +309,82 @@ TEST_F(StyleRuleTest, SetPreludeTextUnexpectedTrailingTokens) {
   EXPECT_EQ(after_rule, before_rule);
 }
 
+TEST_F(StyleRuleTest, RenestStyleRule) {
+  auto* a = To<StyleRule>(css_test_helpers::ParseRule(GetDocument(), ".a {}"));
+  auto* b = To<StyleRule>(css_test_helpers::ParseRule(GetDocument(), ".b {}"));
+  auto* nested = To<StyleRule>(css_test_helpers::ParseNestedRule(
+      GetDocument(), "& {}", CSSNestingType::kNesting,
+      /*parent_rule_for_nesting=*/a));
+
+  EXPECT_EQ(":is(.a)",
+            nested->FirstSelector()->SelectorTextExpandingPseudoParent());
+
+  auto* reparented = To<StyleRule>(nested->Renest(b));
+  EXPECT_NE(nested, reparented);
+  EXPECT_EQ(":is(.a)",
+            nested->FirstSelector()->SelectorTextExpandingPseudoParent());
+  EXPECT_EQ(":is(.b)",
+            reparented->FirstSelector()->SelectorTextExpandingPseudoParent());
+}
+
+TEST_F(StyleRuleTest, RenestStyleRuleNoOp) {
+  auto* a = To<StyleRule>(css_test_helpers::ParseRule(GetDocument(), ".a {}"));
+  auto* nested = To<StyleRule>(css_test_helpers::ParseNestedRule(
+      GetDocument(), "& {}", CSSNestingType::kNesting,
+      /*parent_rule_for_nesting=*/a));
+  EXPECT_EQ(":is(.a)",
+            nested->FirstSelector()->SelectorTextExpandingPseudoParent());
+  auto* reparented = To<StyleRule>(nested->Renest(a));
+  EXPECT_EQ(nested, reparented);
+}
+
+TEST_F(StyleRuleTest, RenestStyleRuleMedia) {
+  auto* a = To<StyleRule>(css_test_helpers::ParseRule(GetDocument(), ".a {}"));
+  auto* b = To<StyleRule>(css_test_helpers::ParseRule(GetDocument(), ".b {}"));
+  auto* media = To<StyleRuleMedia>(css_test_helpers::ParseNestedRule(
+      GetDocument(), "@media (width) { & {} }", CSSNestingType::kNesting,
+      /*parent_rule_for_nesting=*/a));
+
+  ASSERT_EQ(1u, media->ChildRules().size());
+  EXPECT_EQ(":is(.a)", To<StyleRule>(media->ChildRules().front().Get())
+                           ->FirstSelector()
+                           ->SelectorTextExpandingPseudoParent());
+
+  EXPECT_EQ(media->Renest(a), media);  // No-op.
+
+  auto* reparented = To<StyleRuleMedia>(media->Renest(b));
+  EXPECT_NE(media, reparented);
+  EXPECT_EQ(":is(.a)", To<StyleRule>(media->ChildRules().front().Get())
+                           ->FirstSelector()
+                           ->SelectorTextExpandingPseudoParent());
+  EXPECT_EQ(":is(.b)", To<StyleRule>(reparented->ChildRules().front().Get())
+                           ->FirstSelector()
+                           ->SelectorTextExpandingPseudoParent());
+}
+
+TEST_F(StyleRuleTest, RenestStyleRuleStartingStyle) {
+  auto* a = To<StyleRule>(css_test_helpers::ParseRule(GetDocument(), ".a {}"));
+  auto* b = To<StyleRule>(css_test_helpers::ParseRule(GetDocument(), ".b {}"));
+  auto* starting_style =
+      To<StyleRuleStartingStyle>(css_test_helpers::ParseNestedRule(
+          GetDocument(), "@starting-style { & {} }", CSSNestingType::kNesting,
+          /*parent_rule_for_nesting=*/a));
+
+  ASSERT_EQ(1u, starting_style->ChildRules().size());
+  EXPECT_EQ(":is(.a)", To<StyleRule>(starting_style->ChildRules().front().Get())
+                           ->FirstSelector()
+                           ->SelectorTextExpandingPseudoParent());
+
+  EXPECT_EQ(starting_style->Renest(a), starting_style);  // No-op.
+
+  auto* reparented = To<StyleRuleStartingStyle>(starting_style->Renest(b));
+  EXPECT_NE(starting_style, reparented);
+  EXPECT_EQ(":is(.a)", To<StyleRule>(starting_style->ChildRules().front().Get())
+                           ->FirstSelector()
+                           ->SelectorTextExpandingPseudoParent());
+  EXPECT_EQ(":is(.b)", To<StyleRule>(reparented->ChildRules().front().Get())
+                           ->FirstSelector()
+                           ->SelectorTextExpandingPseudoParent());
+}
+
 }  // namespace blink

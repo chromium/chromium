@@ -741,7 +741,6 @@ blink_core_sources_css = [
   "style_rule_keyframe.cc",
   "style_rule_keyframe.h",
   "style_rule_namespace.h",
-  "style_rule_nested_declarations.cc",
   "style_rule_nested_declarations.h",
   "style_scope.cc",
   "style_scope.h",

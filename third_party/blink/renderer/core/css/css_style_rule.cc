@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -98,21 +99,18 @@ void CSSStyleRule::setSelectorText(const ExecutionContext* execution_context,
     return;
   }
 
-  StyleRule* new_style_rule =
-      StyleRule::Create(selector_vector, std::move(*style_rule_));
+  StyleRule* new_style_rule = StyleRule::Create(
+      selector_vector, style_rule_->Properties().ImmutableCopyIfNeeded());
+  if (HeapVector<Member<StyleRuleBase>>* child_rules =
+          style_rule_->ChildRules()) {
+    for (StyleRuleBase* child_rule : *child_rules) {
+      new_style_rule->AddChildRule(child_rule->Renest(new_style_rule));
+    }
+  }
   if (parent_contents) {
     position_hint_ = parent_contents->ReplaceRuleIfExists(
         style_rule_, new_style_rule, position_hint_);
   }
-
-  // If we have any nested rules, update their parent selector(s) to point to
-  // our newly created StyleRule instead of the old one.
-  if (new_style_rule->ChildRules()) {
-    for (StyleRuleBase* child_rule : *new_style_rule->ChildRules()) {
-      child_rule->Reparent(new_style_rule);
-    }
-  }
-
   style_rule_ = new_style_rule;
 
   if (HasCachedSelectorText()) {

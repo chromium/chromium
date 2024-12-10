@@ -141,10 +141,8 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
                               CSSRule* parent_rule,
                               bool trigger_use_counters = false) const;
 
-  // Move this rule to being a child of new_parent, updating parent
-  // pointers in the selector. This happens only when we need to reallocate a
-  // StyleRule because its selector changed.
-  void Reparent(StyleRule* new_parent);
+  // See CSSSelector::Renest.
+  StyleRuleBase* Renest(StyleRule* new_parent);
 
   void Trace(Visitor*) const;
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
@@ -418,9 +416,10 @@ class CORE_EXPORT StyleRuleScope : public StyleRuleGroup {
 // https://www.w3.org/TR/css-cascade-5/#layer-block
 class CORE_EXPORT StyleRuleLayerBlock : public StyleRuleGroup {
  public:
-  StyleRuleLayerBlock(LayerName&& name,
-                      HeapVector<Member<StyleRuleBase>> rules);
+  StyleRuleLayerBlock(LayerName name, HeapVector<Member<StyleRuleBase>> rules);
   StyleRuleLayerBlock(const StyleRuleLayerBlock&);
+  StyleRuleLayerBlock(const StyleRuleLayerBlock&,
+                      HeapVector<Member<StyleRuleBase>> rules);
 
   const LayerName& GetName() const { return name_; }
   String GetNameAsString() const;
@@ -527,6 +526,8 @@ class CORE_EXPORT StyleRuleMedia : public StyleRuleCondition {
  public:
   StyleRuleMedia(const MediaQuerySet*, HeapVector<Member<StyleRuleBase>> rules);
   StyleRuleMedia(const StyleRuleMedia&) = default;
+  StyleRuleMedia(const StyleRuleMedia&,
+                 HeapVector<Member<StyleRuleBase>> rules);
 
   const MediaQuerySet* MediaQueries() const { return media_queries_.Get(); }
 
@@ -550,6 +551,8 @@ class StyleRuleSupports : public StyleRuleCondition {
                     bool condition_is_supported,
                     HeapVector<Member<StyleRuleBase>> rules);
   StyleRuleSupports(const StyleRuleSupports&);
+  StyleRuleSupports(const StyleRuleSupports&,
+                    HeapVector<Member<StyleRuleBase>> rules);
 
   bool ConditionIsSupported() const { return condition_is_supported_; }
   StyleRuleSupports* Copy() const {
@@ -570,6 +573,8 @@ class CORE_EXPORT StyleRuleContainer : public StyleRuleCondition {
  public:
   StyleRuleContainer(ContainerQuery&, HeapVector<Member<StyleRuleBase>> rules);
   StyleRuleContainer(const StyleRuleContainer&);
+  StyleRuleContainer(const StyleRuleContainer&,
+                     HeapVector<Member<StyleRuleBase>> rules);
 
   ContainerQuery& GetContainerQuery() const { return *container_query_; }
 

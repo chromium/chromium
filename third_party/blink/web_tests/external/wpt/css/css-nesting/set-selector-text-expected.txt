@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Outer selectorText text mutation with inner @scope rule
+  assert_equals: z-index of "ax" element after selectorText mutation expected "auto" but got "1"
+Harness: the test ran to completion.
+

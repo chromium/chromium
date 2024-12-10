@@ -140,13 +140,6 @@ class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
   // Return the specificity of the selector with the highest specificity.
   unsigned MaximumSpecificity() const;
 
-  // See CSSSelector::Reparent.
-  static void Reparent(CSSSelector* selector_list, StyleRule* new_parent);
-
-  void Reparent(StyleRule* new_parent) {
-    CSSSelectorList::Reparent(first_selector_, new_parent);
-  }
-
   // Re-nest each simple selector in `selector_list` into `result`,
   // falling back to the original simple selector when CSSSelector::Renest
   // returns no value, and returning 'true' if at least one simple selector
