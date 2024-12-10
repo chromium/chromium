@@ -19,7 +19,7 @@
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#include "components/password_manager/core/browser/ui/passwords_provider.h"
 
 namespace password_manager {
 
@@ -63,10 +63,10 @@ bool DefaultDeleteFunction(const base::FilePath& file) {
 }  // namespace
 
 PasswordManagerExporter::PasswordManagerExporter(
-    SavedPasswordsPresenter* presenter,
+    PasswordsProvider* provider,
     ProgressCallback on_progress,
     base::OnceClosure completion_callback)
-    : presenter_(presenter),
+    : provider_(provider),
       on_progress_(std::move(on_progress)),
       last_progress_status_(ExportProgressStatus::kNotStarted),
       write_function_(base::BindRepeating(&DefaultWriteFunction)),
@@ -87,18 +87,19 @@ PasswordManagerExporter::~PasswordManagerExporter() = default;
 void PasswordManagerExporter::PreparePasswordsForExport() {
   DCHECK_EQ(GetProgressStatus(), ExportProgressStatus::kNotStarted);
 
-  std::vector<CredentialUIEntry> credentials =
-      presenter_->GetSavedCredentials();
+  std::vector<CredentialUIEntry> credentials = provider_->GetSavedCredentials();
   // Clear blocked credentials.
   std::erase_if(credentials, [](const auto& credential) {
     return credential.blocked_by_user;
   });
 
+  size_t credentials_size = credentials.size();
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&PasswordCSVWriter::SerializePasswords, credentials),
+      base::BindOnce(&PasswordCSVWriter::SerializePasswords,
+                     std::move(credentials)),
       base::BindOnce(&PasswordManagerExporter::SetSerialisedPasswordList,
-                     weak_factory_.GetWeakPtr(), credentials.size()));
+                     weak_factory_.GetWeakPtr(), credentials_size));
 }
 
 void PasswordManagerExporter::SetDestination(

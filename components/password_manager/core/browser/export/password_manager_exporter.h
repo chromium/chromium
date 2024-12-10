@@ -17,7 +17,7 @@
 
 namespace password_manager {
 
-class SavedPasswordsPresenter;
+class PasswordsProvider;
 
 // Information about passwort export in progress.
 struct PasswordExportInfo {
@@ -45,7 +45,7 @@ class PasswordManagerExporter {
   using SetPosixFilePermissionsCallback =
       base::RepeatingCallback<bool(const base::FilePath&, int)>;
 
-  explicit PasswordManagerExporter(SavedPasswordsPresenter* presenter,
+  explicit PasswordManagerExporter(PasswordsProvider* provider,
                                    ProgressCallback on_progress,
                                    base::OnceClosure completion_callback);
 
@@ -108,7 +108,7 @@ class PasswordManagerExporter {
   void Cleanup();
 
   // The source of the password list which will be exported.
-  const raw_ptr<SavedPasswordsPresenter> presenter_;
+  const raw_ptr<PasswordsProvider> provider_;
 
   // Callback to the UI.
   ProgressCallback on_progress_;
