@@ -16,6 +16,7 @@ import androidx.preference.PreferenceCategory;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -24,6 +25,7 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.text.SpanApplier;
@@ -43,6 +45,7 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
     private static final String ACTIVE_TOPICS_PREFERENCE = "active_topics";
     private static final String BLOCKED_TOPICS_PREFERENCE = "blocked_topics";
     private static final String MANAGE_TOPICS_PREFERENCE = "manage_topics";
+    private static final String TOPICS_DISCLAIMER = "topics_page_disclaimer";
 
     private ChromeSwitchPreference mTopicsTogglePreference;
     private TextMessagePreference mTopicsExplanationPreference;
@@ -133,11 +136,55 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
                                         onManagingAdPrivacyClicked();
                                     }
                                 })));
+        maybeApplyAdsApiUxEnhancements();
     }
 
     @Override
     public ObservableSupplier<String> getPageTitle() {
         return mPageTitle;
+    }
+
+    private void maybeApplyAdsApiUxEnhancements() {
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)) {
+            return;
+        }
+        mTopicsPageFooterPreference.setSummary(
+                SpanApplier.applySpans(
+                        getResources().getString(R.string.settings_ad_topics_page_footer_v2),
+                        new SpanApplier.SpanInfo(
+                                "<link1>",
+                                "</link1>",
+                                new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        onFledgeSettingsLinkClicked();
+                                    }
+                                }),
+                        new SpanApplier.SpanInfo(
+                                "<link2>",
+                                "</link2>",
+                                new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        onCookieSettingsLink();
+                                    }
+                                })));
+        ClickableSpansTextMessagePreference disclaimerPreference =
+                findPreference(TOPICS_DISCLAIMER);
+        disclaimerPreference.setVisible(true);
+        disclaimerPreference.setSummary(
+                SpanApplier.applySpans(
+                        getResources().getString(R.string.settings_ad_topics_page_disclaimer_clank),
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        onPrivacyPolicyLinkClicked();
+                                    }
+                                })));
     }
 
     private void onManagingAdPrivacyClicked() {
@@ -151,6 +198,10 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
 
     private void onCookieSettingsLink() {
         launchCookieSettings();
+    }
+
+    private void onPrivacyPolicyLinkClicked() {
+        getCustomTabLauncher().openUrlInCct(getContext(), UrlConstants.GOOGLE_PRIVACY_POLICY);
     }
 
     @Override
