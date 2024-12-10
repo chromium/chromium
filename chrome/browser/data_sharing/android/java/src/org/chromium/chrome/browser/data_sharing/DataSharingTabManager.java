@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -30,7 +29,6 @@ import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -86,8 +84,8 @@ public class DataSharingTabManager {
     private final Map</*collaborationId*/ String, SyncObserver> mSyncObserversList =
             new HashMap<>();
     private final LinkedList<Runnable> mTasksToRunOnProfileAvailable = new LinkedList<>();
+    private final BulkFaviconUtil mBulkFaviconUtil = new BulkFaviconUtil();
 
-    private FaviconHelper mFaviconHelper;
     private @Nullable Profile mProfile;
     private @Nullable DataSharingService mDataSharingService;
     private @Nullable MessagingBackendService mMessagingBackendService;
@@ -181,6 +179,7 @@ public class DataSharingTabManager {
             entry.getValue().destroy();
         }
         mSyncObserversList.clear();
+        mBulkFaviconUtil.destroy();
     }
 
     /**
@@ -214,10 +213,6 @@ public class DataSharingTabManager {
         private boolean mJoinedTabGroupOpened;
         private String mSessionId;
         private DataSharingUIDelegate mUiDelegate;
-
-        private final Map<Integer, Bitmap> mFavicons = new HashMap<>();
-        private int mExpectedIcons;
-        private Callback<Map<Integer, Bitmap>> mFaviconCallback;
 
         JoinFlowTracker(DataSharingUIDelegate uiDelegate) {
             this.mUiDelegate = uiDelegate;
@@ -258,18 +253,6 @@ public class DataSharingTabManager {
                 mFinishJoinLoading.onResult(true);
                 mFinishJoinLoading = null;
                 mUiDelegate.destroyFlow(mSessionId);
-            }
-        }
-
-        void setPreviewFaviconCallback(Callback<Map<Integer, Bitmap>> callback, int expectedIcons) {
-            mFaviconCallback = callback;
-            mExpectedIcons = expectedIcons;
-        }
-
-        void onFaviconFetched(Integer index, Bitmap icon) {
-            mFavicons.put(index, icon);
-            if (mFavicons.size() == mExpectedIcons) {
-                mFaviconCallback.onResult(mFavicons);
             }
         }
     }
@@ -422,44 +405,34 @@ public class DataSharingTabManager {
                                         .build()));
 
         fetchFavicons(
+                activity,
                 joinFlowTracker,
                 preview,
                 /* fetchAll= */ false,
                 () -> {
-                    fetchFavicons(joinFlowTracker, preview, /* fetchAll= */ true, () -> {});
+                    fetchFavicons(
+                            activity, joinFlowTracker, preview, /* fetchAll= */ true, () -> {});
                 });
     }
 
     private void fetchFavicons(
+            Activity activity,
             JoinFlowTracker joinFlowTracker,
             SharedTabGroupPreview preview,
             boolean fetchAll,
             Runnable doneCallback) {
-        int expectedCount = 0;
         int maxNumToFetch = fetchAll ? preview.tabs.size() : 4;
-        for (int i = 0; i < preview.tabs.size() && i < maxNumToFetch; ++i) {
-            expectedCount++;
-            Integer index = i;
-            getFaviconHelper()
-                    .getForeignFaviconImageForURL(
-                            mProfile,
-                            preview.tabs.get(i).url,
-                            // TODO(haileywang): add this to resources when using it in service.
-                            72,
-                            (Bitmap bitmap, GURL url) -> {
-                                if (bitmap == null) {
-                                    // TODO(ssid): use favicon provider used for recent activity.
-                                    bitmap =
-                                            new FaviconHelper.DefaultFaviconHelper()
-                                                    .getDefaultFaviconBitmap(
-                                                            ContextUtils.getApplicationContext(),
-                                                            url,
-                                                            /* useDarkIcon= */ true);
-                                }
-                                joinFlowTracker.onFaviconFetched(index, bitmap);
-                            });
+        int numToFetch = Math.min(maxNumToFetch, preview.tabs.size());
+        List<GURL> urls = new ArrayList<>();
+        for (int i = 0; i < numToFetch; ++i) {
+            urls.add(preview.tabs.get(i).url);
         }
-        joinFlowTracker.setPreviewFaviconCallback(
+        mBulkFaviconUtil.fetchAsBitmap(
+                activity,
+                mProfile,
+                urls,
+                // TODO(haileywang): add this to resources when using it in service.
+                /* size= */ 72,
                 (favicons) -> {
                     if (fetchAll) {
                         updateAllFavicons(joinFlowTracker, preview, favicons);
@@ -467,14 +440,11 @@ public class DataSharingTabManager {
                         updatePreviewImage(joinFlowTracker, favicons);
                     }
                     doneCallback.run();
-                },
-                expectedCount);
+                });
     }
 
     private void updateAllFavicons(
-            JoinFlowTracker joinFlowTracker,
-            SharedTabGroupPreview preview,
-            Map<Integer, Bitmap> favicons) {
+            JoinFlowTracker joinFlowTracker, SharedTabGroupPreview preview, List<Bitmap> favicons) {
         List<DataSharingPreviewDetailsConfig.TabPreview> tabPreviews = new ArrayList<>();
         for (int i = 0; i < favicons.size(); ++i) {
             tabPreviews.add(
@@ -494,8 +464,7 @@ public class DataSharingTabManager {
                 .updateRuntimeData(joinFlowTracker.getSessionId(), runtimeConfig);
     }
 
-    private void updatePreviewImage(
-            JoinFlowTracker joinFlowTracker, Map<Integer, Bitmap> favicons) {
+    private void updatePreviewImage(JoinFlowTracker joinFlowTracker, List<Bitmap> favicons) {
         // TODO(ssid): Make bitmap of the grid view.
         Bitmap previewImage = favicons.get(0);
         DataSharingRuntimeDataConfig runtimeConfig =
@@ -521,17 +490,6 @@ public class DataSharingTabManager {
                 R.string.data_sharing_invitation_failure_title,
                 R.string.data_sharing_invitation_failure_description,
                 R.string.data_sharing_invitation_failure_button);
-    }
-
-    void setFaviconHelperForTesting(FaviconHelper helper) {
-        mFaviconHelper = helper;
-    }
-
-    private FaviconHelper getFaviconHelper() {
-        if (mFaviconHelper == null) {
-            mFaviconHelper = new FaviconHelper();
-        }
-        return mFaviconHelper;
     }
 
     /**
@@ -849,7 +807,7 @@ public class DataSharingTabManager {
                         activity,
                         mBottomSheetControllerSupplier.get(),
                         mMessagingBackendService,
-                        new DataSharingFaviconProvider(activity, mProfile, mFaviconHelper),
+                        new DataSharingFaviconProvider(activity, mProfile, mBulkFaviconUtil),
                         avatarProvider,
                         recentActivityActionHandler);
         recentActivityListCoordinator.requestShowUI(collaborationId);
@@ -875,5 +833,9 @@ public class DataSharingTabManager {
                     }
                 });
         return bottomSheetContent;
+    }
+
+    BulkFaviconUtil getBulkFaviconUtilForTesting() {
+        return mBulkFaviconUtil;
     }
 }

@@ -136,11 +136,15 @@ if (is_android) {
 
   android_library("favicon_java") {
     resources_package = "org.chromium.chrome.browser.data_sharing"
-    sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingFaviconProvider.java" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/data_sharing/BulkFaviconUtil.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingFaviconProvider.java",
+    ]
 
     deps = [
       "//base:callback_java",
       "//base:supplier_java",
+      "//base:tasks_java",
       "//chrome/browser/data_sharing:recent_activity_java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/ui/android/favicon:java",

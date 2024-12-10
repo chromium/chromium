@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.data_sharing;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -28,9 +28,10 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
-import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.url.GURL;
+
+import java.util.Arrays;
+import java.util.List;
 
 /** Unit tests for {@link DataSharingFaviconProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -41,9 +42,9 @@ public class DataSharingFaviconProviderUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
-    @Mock private FaviconHelper mFaviconHelper;
+    @Mock private BulkFaviconUtil mBulkFaviconUtil;
     @Mock private Callback<Drawable> mCallback;
-    private final Bitmap mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+    @Mock private Drawable mDrawable;
     private Context mContext;
 
     private DataSharingFaviconProvider mFaviconProvider;
@@ -51,24 +52,17 @@ public class DataSharingFaviconProviderUnitTest {
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
-        mFaviconProvider = new DataSharingFaviconProvider(mContext, mProfile, mFaviconHelper);
+        mFaviconProvider = new DataSharingFaviconProvider(mContext, mProfile, mBulkFaviconUtil);
     }
 
     @Test
     public void testBasic() {
         mFaviconProvider.fetchFavicon(TAB_URL, mCallback);
-        ArgumentCaptor<FaviconImageCallback> callbackCaptor =
-                ArgumentCaptor.forClass(FaviconImageCallback.class);
-        verify(mFaviconHelper)
-                .getForeignFaviconImageForURL(
-                        eq(mProfile), eq(TAB_URL), anyInt(), callbackCaptor.capture());
-        callbackCaptor.getValue().onFaviconAvailable(mBitmap, BITMAP_URL);
+        ArgumentCaptor<Callback<List<Drawable>>> callbackCaptor =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mBulkFaviconUtil)
+                .fetchAsDrawable(any(), eq(mProfile), any(), anyInt(), callbackCaptor.capture());
+        callbackCaptor.getValue().onResult(Arrays.asList(mDrawable));
         verify(mCallback).onResult(notNull());
-    }
-
-    @Test
-    public void testDestroy() {
-        mFaviconProvider.destroy();
-        verify(mFaviconHelper).destroy();
     }
 }

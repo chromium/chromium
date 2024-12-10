@@ -217,7 +217,9 @@ public class DataSharingTabManagerUnitTest {
     }
 
     private void mockPreviewApiFetch() {
-        mDataSharingTabManager.setFaviconHelperForTesting(mFaviconHelper);
+        mDataSharingTabManager
+                .getBulkFaviconUtilForTesting()
+                .setFaviconHelperForTesting(mFaviconHelper);
         ArgumentCaptor<Callback<DataSharingService.SharedDataPreviewOrFailureOutcome>>
                 previewCallbackCaptor = ArgumentCaptor.forClass(Callback.class);
         verify(mDataSharingService)
@@ -393,6 +395,9 @@ public class DataSharingTabManagerUnitTest {
     @Test
     @DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID_V2})
     public void testDestroy() {
+        mDataSharingTabManager
+                .getBulkFaviconUtilForTesting()
+                .setFaviconHelperForTesting(mFaviconHelper);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         mockSuccessfulParseDataSharingUrl();
         mSyncedGroupTestHelper.removeTabGroup(SYNC_GROUP_ID1);
@@ -402,6 +407,7 @@ public class DataSharingTabManagerUnitTest {
 
         mDataSharingTabManager.destroy();
         verify(mTabGroupSyncService).removeObserver(any());
+        verify(mFaviconHelper).destroy();
     }
 
     @Test
@@ -598,7 +604,7 @@ public class DataSharingTabManagerUnitTest {
     @DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID_V2})
     public void testShowRecentActivity() {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        mDataSharingTabManager.setFaviconHelperForTesting(mFaviconHelper);
+        // mDataSharingTabManager.setFaviconHelperForTesting(mFaviconHelper);
         doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_ID);
         setupActivityLogItemsOnTheBackend();
         mDataSharingTabManager.showRecentActivity(mActivity, COLLABORATION_ID1);
