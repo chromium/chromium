@@ -11,6 +11,8 @@
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_types.h"
 
+class GaiaId;
+
 namespace device_signals {
 
 // Delegate representing the user that is currently logged-in to the browser
@@ -34,7 +36,7 @@ class UserDelegate {
 
   // Returns true if `gaia_id` represents the same user as the one currently
   // logged-in to the browser.
-  virtual bool IsSameUser(const std::string& gaia_id) const = 0;
+  virtual bool IsSameUser(const GaiaId& gaia_id) const = 0;
 
   // Returns the currently enabled Scopes for policies known to require signals.
   virtual std::set<policy::PolicyScope> GetPolicyScopesNeedingSignals()

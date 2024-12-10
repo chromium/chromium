@@ -37,7 +37,7 @@ class UserDelegateImpl : public device_signals::UserDelegate {
 #endif  // BUILDFLAG(IS_CHROMEOS)
   bool IsAffiliated() const override;
   bool IsManagedUser() const override;
-  bool IsSameUser(const std::string& gaia_id) const override;
+  bool IsSameUser(const GaiaId& gaia_id) const override;
   std::set<policy::PolicyScope> GetPolicyScopesNeedingSignals() const override;
 
  private:

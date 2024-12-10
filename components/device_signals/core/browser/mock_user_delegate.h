@@ -21,7 +21,7 @@ class MockUserDelegate : public UserDelegate {
 #endif  // BUILDFLAG(IS_CHROMEOS)
   MOCK_METHOD(bool, IsAffiliated, (), (const, override));
   MOCK_METHOD(bool, IsManagedUser, (), (const, override));
-  MOCK_METHOD(bool, IsSameUser, (const std::string&), (const, override));
+  MOCK_METHOD(bool, IsSameUser, (const GaiaId&), (const, override));
   MOCK_METHOD(std::set<policy::PolicyScope>,
               GetPolicyScopesNeedingSignals,
               (),
