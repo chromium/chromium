@@ -306,7 +306,8 @@ class TestKeyboardDelegate : public WaylandKeyboard::Delegate {
     last_event_timestamp_ = timestamp;
     return 0;
   }
-  void OnSynthesizedKeyPressEvent(DomCode dom_code,
+  void OnSynthesizedKeyPressEvent(WaylandWindow* window,
+                                  DomCode dom_code,
                                   base::TimeTicks timestamp) override {}
 
   base::TimeTicks last_event_timestamp() const { return last_event_timestamp_; }

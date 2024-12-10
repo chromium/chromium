@@ -38,7 +38,7 @@ class WaylandWindowDragControllerTestApi {
   WaylandWindow* drag_target_window() { return impl_->drag_target_window_; }
   WaylandWindow* dragged_window() { return impl_->dragged_window_; }
   WaylandWindow* origin_window() { return impl_->origin_window_; }
-  WaylandWindow* pointer_grab_owner() { return impl_->pointer_grab_owner_; }
+  WaylandWindow* events_grabber() { return impl_->events_grabber_; }
   const gfx::Vector2d& drag_offset() const { return impl_->drag_offset_; }
   bool has_received_enter() const { return impl_->has_received_enter_; }
 

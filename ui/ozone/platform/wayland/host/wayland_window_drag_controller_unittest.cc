@@ -1295,8 +1295,7 @@ TEST_P(WaylandWindowDragControllerTest,
   // 4. Destroy the dragged window just after quitting move loop.
   const auto* dangling_window_ptr = window_.get();
   window_.reset();
-  EXPECT_NE(dangling_window_ptr,
-            TestApi(drag_controller()).pointer_grab_owner());
+  EXPECT_NE(dangling_window_ptr, TestApi(drag_controller()).events_grabber());
   EXPECT_EQ(State::kIdle, drag_controller_state());
 
   // 5. Ensure no events are dispatched for drop. Which indirectly means that
@@ -1579,7 +1578,7 @@ TEST_P(WaylandWindowDragControllerTest,
     // Destroy the target window (which at this point should be the origin
     // window, grab owner and the target window).
     EXPECT_EQ(window_.get(), TestApi(drag_controller()).drag_target_window());
-    EXPECT_EQ(window_.get(), TestApi(drag_controller()).pointer_grab_owner());
+    EXPECT_EQ(window_.get(), TestApi(drag_controller()).events_grabber());
     EXPECT_EQ(window_.get(), TestApi(drag_controller()).origin_window());
     window_.reset();
     EXPECT_FALSE(drag_controller()->IsActiveDragAndDropSession());
@@ -1641,7 +1640,7 @@ TEST_P(WaylandWindowDragControllerTest,
   // Destroy the target window (which at this point should be the origin window,
   // grab owner and the target window).
   EXPECT_EQ(window_.get(), TestApi(drag_controller()).drag_target_window());
-  EXPECT_EQ(window_.get(), TestApi(drag_controller()).pointer_grab_owner());
+  EXPECT_EQ(window_.get(), TestApi(drag_controller()).events_grabber());
   EXPECT_EQ(window_.get(), TestApi(drag_controller()).origin_window());
   window_.reset();
   EXPECT_FALSE(drag_controller()->IsActiveDragAndDropSession());

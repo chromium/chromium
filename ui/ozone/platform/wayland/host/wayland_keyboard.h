@@ -168,7 +168,10 @@ class WaylandKeyboard::Delegate {
                                       base::TimeTicks timestamp,
                                       int device_id,
                                       WaylandKeyboard::KeyEventKind kind) = 0;
-  virtual void OnSynthesizedKeyPressEvent(DomCode dom_code,
+  // Dispatches a synthesized key event for `dom_code` and `timestamp`. Keyboard
+  // focus is temporarily transferred to `window` during this function.
+  virtual void OnSynthesizedKeyPressEvent(WaylandWindow* window,
+                                          DomCode dom_code,
                                           base::TimeTicks timestamp) = 0;
 
  protected:
