@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/data_sharing/model/data_sharing_ui_delegate_ios.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/notimplemented.h"
 #import "components/collaboration/public/collaboration_service.h"
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
@@ -12,6 +13,8 @@
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios_share_url_interception_context.h"
 #import "url/gurl.h"
 
@@ -40,18 +43,26 @@ void DataSharingUIDelegateIOS::HandleShareURLIntercepted(
     return;
   }
 
-  UIViewController* baseViewController =
-      browser->GetSceneState().rootViewController;
+  id<ApplicationCommands> applicationHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
 
-  while (baseViewController.presentedViewController) {
-    baseViewController = baseViewController.presentedViewController;
-  }
+  [applicationHandler
+      dismissModalDialogsWithCompletion:
+          base::CallbackToBlock(base::BindOnce(
+              &DataSharingUIDelegateIOS::OnJoinFlowReadyToBePresented,
+              weak_ptr_factory_.GetWeakPtr(), url, browser))];
+}
+
+void DataSharingUIDelegateIOS::OnJoinFlowReadyToBePresented(GURL url,
+                                                            Browser* browser) {
+  UIViewController* base_view_controller =
+      browser->GetSceneState().rootViewController;
 
   std::unique_ptr<IOSCollaborationControllerDelegate> delegate =
       std::make_unique<IOSCollaborationControllerDelegate>(
           std::make_unique<CollaborationFlowConfigurationJoin>(
               share_kit_service_, url, browser->GetCommandDispatcher(),
-              baseViewController));
+              base_view_controller));
   collaboration_service_->StartJoinFlow(std::move(delegate), url);
 }
 
