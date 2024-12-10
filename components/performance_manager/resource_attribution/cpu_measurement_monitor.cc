@@ -377,13 +377,17 @@ void CPUMeasurementMonitor::RecordMemoryMetrics() {
       (total_live_estimate + total_dead_estimate) / 1024);
 }
 
-void CPUMeasurementMonitor::OnFrameNodeAdded(const FrameNode* frame_node) {
+void CPUMeasurementMonitor::OnBeforeFrameNodeAdded(
+    const FrameNode* frame_node,
+    const FrameNode* pending_parent_frame_node,
+    const PageNode* pending_page_node,
+    const ProcessNode* pending_process_node,
+    const FrameNode* pending_parent_or_outer_document_or_embedder) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Take a measurement of the process CPU usage *before* this node was added.
   // This is safe because frames should only be added after their containing
   // process has started.
-  UpdateCPUMeasurements(frame_node->GetProcessNode(),
-                        GraphChangeAddFrame(frame_node));
+  UpdateCPUMeasurements(pending_process_node);
 }
 
 void CPUMeasurementMonitor::OnBeforeFrameNodeRemoved(
@@ -445,13 +449,14 @@ void CPUMeasurementMonitor::OnPriorityChanged(
                                           process_node, previous_value));
 }
 
-void CPUMeasurementMonitor::OnWorkerNodeAdded(const WorkerNode* worker_node) {
+void CPUMeasurementMonitor::OnBeforeWorkerNodeAdded(
+    const WorkerNode* worker_node,
+    const ProcessNode* pending_process_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Take a measurement of the process CPU usage *before* this node was added.
   // This is safe because workers should only be added after their containing
   // process has started.
-  UpdateCPUMeasurements(worker_node->GetProcessNode(),
-                        GraphChangeAddWorker(worker_node));
+  UpdateCPUMeasurements(pending_process_node);
 }
 
 void CPUMeasurementMonitor::OnBeforeWorkerNodeRemoved(
@@ -1013,27 +1018,10 @@ void CPUMeasurementMonitor::MeasureAndDistributeCPUUsage(
     CHECK(inserted);
   };
 
-  // Don't distribute measurements to nodes that are being added to the graph.
-  // The current measurement covers the time before the node was added.
-  NodeSplitSet nodes_to_skip;
-
-  absl::visit(base::Overloaded{
-                  [&nodes_to_skip](GraphChangeAddFrame change) {
-                    nodes_to_skip.insert(change.frame_node.get());
-                  },
-                  [&nodes_to_skip](GraphChangeAddWorker change) {
-                    nodes_to_skip.insert(change.worker_node.get());
-                  },
-                  [](auto change) {
-                    // Do nothing.
-                  },
-              },
-              graph_change);
-
   record_cpu_deltas(process_node->GetResourceContext(), cumulative_cpu_delta,
                     MeasurementAlgorithm::kDirectMeasurement);
   resource_attribution::SplitResourceAmongFramesAndWorkers(
-      cumulative_cpu_delta, process_node, nodes_to_skip,
+      cumulative_cpu_delta, process_node,
       [&record_cpu_deltas](const FrameNode* f, base::TimeDelta cpu_delta) {
         record_cpu_deltas(f->GetResourceContext(), cpu_delta,
                           MeasurementAlgorithm::kSplit);

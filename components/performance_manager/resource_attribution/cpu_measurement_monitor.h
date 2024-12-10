@@ -20,7 +20,6 @@
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
-#include "components/performance_manager/public/resource_attribution/attribution_helpers.h"
 #include "components/performance_manager/public/resource_attribution/cpu_measurement_delegate.h"
 #include "components/performance_manager/public/resource_attribution/origin_in_browsing_instance_context.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
@@ -98,7 +97,12 @@ class CPUMeasurementMonitor
   void RecordMemoryMetrics();
 
   // FrameNode::Observer:
-  void OnFrameNodeAdded(const FrameNode* frame_node) override;
+  void OnBeforeFrameNodeAdded(
+      const FrameNode* frame_node,
+      const FrameNode* pending_parent_frame_node,
+      const PageNode* pending_page_node,
+      const ProcessNode* pending_process_node,
+      const FrameNode* pending_parent_or_outer_document_or_embedder) override;
   void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
   void OnOriginChanged(
       const FrameNode* frame_node,
@@ -114,7 +118,9 @@ class CPUMeasurementMonitor
                          base::TaskPriority previous_value) override;
 
   // WorkerNode::Observer:
-  void OnWorkerNodeAdded(const WorkerNode* worker_node) override;
+  void OnBeforeWorkerNodeAdded(
+      const WorkerNode* worker_node,
+      const ProcessNode* pending_process_node) override;
   void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) override;
   void OnBeforeClientFrameAdded(const WorkerNode* worker_node,
                                 const FrameNode* client_frame_node) override;
@@ -182,8 +188,7 @@ class CPUMeasurementMonitor
   // MeasureAndDistributeCPUUsage(). Adds the estimated CPU usage of each frame
   // and worker since the last time the process was measured to
   // `measurement_results_`. `graph_change` is the event that triggered the
-  // measurement or NoGraphChange if it wasn't triggered due to a graph topology
-  // change.
+  // measurement or NoGraphChange if it wasn't triggered due to a graph change.
   void UpdateCPUMeasurements(const ProcessNode* process_node,
                              GraphChange graph_change = NoGraphChange());
 
@@ -196,8 +201,7 @@ class CPUMeasurementMonitor
 
   // Adds the new measurements in `measurement_deltas` to
   // `measurement_results_`. `graph_change` is the event that triggered the
-  // measurement or NoGraphChange if it wasn't triggered due to a graph topology
-  // change.
+  // measurement or NoGraphChange if it wasn't triggered due to a graph change.
   void ApplyMeasurementDeltas(
       const std::map<ResourceContext, CPUTimeResult>& measurement_deltas,
       GraphChange graph_change = NoGraphChange());
