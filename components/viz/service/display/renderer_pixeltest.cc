@@ -4243,12 +4243,6 @@ TEST_P(GPURendererPixelTest, BlendingWithoutAntiAliasing) {
 }
 
 TEST_P(GPURendererPixelTest, TrilinearFiltering) {
-  // TODO(crbug.com/40266937): Enable test for Graphite once mipmap issue is
-  // fixed.
-  if (is_skia_graphite()) {
-    GTEST_SKIP();
-  }
-
   gfx::Rect viewport_rect(this->device_viewport_size_);
 
   AggregatedRenderPassId root_pass_id{1};
@@ -4297,13 +4291,13 @@ TEST_P(GPURendererPixelTest, TrilinearFiltering) {
   pass_list.push_back(std::move(child_pass));
   pass_list.push_back(std::move(root_pass));
 
-  // Skia is configured to bias the mipmap LOD by -0.5. However, the GLES 2
-  // implementation that this test runs against doesn't support the bias. So GL
-  // renderer and SkiaGL differ from SkiaVk.
-  if (renderer_type() == RendererType::kSkiaVk) {
+  if (is_skia_graphite()) {
+    // Rendering with Graphite results in a imperceptible, one-unit difference
+    // from the result when rendering with Skia's previous GPU backend.
     EXPECT_TRUE(this->RunPixelTest(
         &pass_list,
-        base::FilePath(FILE_PATH_LITERAL("trilinear_filtering_skia_vk.png")),
+        base::FilePath(
+            FILE_PATH_LITERAL("trilinear_filtering_skia_graphite.png")),
         cc::AlphaDiscardingExactPixelComparator()));
   } else {
     base::FilePath baseline =
