@@ -5,10 +5,9 @@
 #ifndef CHROMEOS_ASH_SERVICES_ASSISTANT_SERVICE_CONTEXT_H_
 #define CHROMEOS_ASH_SERVICES_ASSISTANT_SERVICE_CONTEXT_H_
 
-#include <string>
-
 #include "ash/public/cpp/assistant/controller/assistant_screen_context_controller.h"
 #include "base/memory/scoped_refptr.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -57,7 +56,7 @@ class ServiceContext {
 
   // Returns the Gaia ID of the primary account (which is used by the
   // Assistant).
-  virtual std::string primary_account_gaia_id() = 0;
+  virtual GaiaId primary_account_gaia_id() = 0;
 };
 }  // namespace assistant
 }  // namespace chromeos

@@ -35,7 +35,7 @@ RemoveStudentRequest ::~RemoveStudentRequest() = default;
 
 GURL RemoveStudentRequest::GetURL() const {
   auto url = GURL(url_base_).Resolve(base::ReplaceStringPlaceholders(
-      kRemoveStudentUrlTemplate, {gaia_id_, session_id_}, nullptr));
+      kRemoveStudentUrlTemplate, {gaia_id_.ToString(), session_id_}, nullptr));
   return url;
 }
 

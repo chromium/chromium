@@ -15,6 +15,7 @@
 #include "chromeos/ash/services/assistant/assistant_manager_service.h"
 #include "chromeos/ash/services/assistant/test_support/fake_assistant_settings_impl.h"
 #include "chromeos/ash/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -87,7 +88,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) FakeAssistantManagerServiceImpl
   // Return the access token that was passed to |SetUser|.
   std::optional<std::string> access_token() { return access_token_; }
   // Return the Gaia ID that was passed to |SetUser|.
-  std::optional<std::string> gaia_id() { return gaia_id_; }
+  const std::optional<GaiaId>& gaia_id() const { return gaia_id_; }
 
   void Disconnected();
 
@@ -97,7 +98,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) FakeAssistantManagerServiceImpl
   void MaybeSendStateChange(State state, State old_state, State target_state);
 
   State state_ = State::STOPPED;
-  std::optional<std::string> gaia_id_;
+  std::optional<GaiaId> gaia_id_;
   std::optional<std::string> access_token_;
   FakeAssistantSettingsImpl assistant_settings_;
   base::ObserverList<StateObserver> state_observers_;

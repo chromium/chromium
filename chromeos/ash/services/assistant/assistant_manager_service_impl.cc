@@ -72,7 +72,7 @@ std::vector<libassistant::mojom::AuthenticationTokenPtr> ToAuthenticationTokens(
     DCHECK(!user.value().gaia_id.empty());
     DCHECK(!user.value().access_token.empty());
     result.emplace_back(libassistant::mojom::AuthenticationToken::New(
-        /*gaia_id=*/user.value().gaia_id,
+        /*gaia_id=*/user.value().gaia_id.ToString(),
         /*access_token=*/user.value().access_token));
   }
 

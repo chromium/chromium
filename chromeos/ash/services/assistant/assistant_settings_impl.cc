@@ -63,7 +63,7 @@ void AssistantSettingsImpl::StartSpeakerIdEnrollment(
   DCHECK(speaker_id_enrollment_remote_.is_bound());
 
   speaker_id_enrollment_remote_->StartSpeakerIdEnrollment(
-      context_->primary_account_gaia_id(), skip_cloud_enrollment,
+      context_->primary_account_gaia_id().ToString(), skip_cloud_enrollment,
       client->BindNewPipeAndPassRemote());
 }
 
@@ -82,7 +82,7 @@ void AssistantSettingsImpl::SyncSpeakerIdEnrollmentStatus() {
   DCHECK(speaker_id_enrollment_remote_.is_bound());
 
   speaker_id_enrollment_remote_->GetSpeakerIdEnrollmentStatus(
-      context_->primary_account_gaia_id(),
+      context_->primary_account_gaia_id().ToString(),
       base::BindOnce(
           &AssistantSettingsImpl::HandleSpeakerIdEnrollmentStatusSync,
           weak_factory_.GetWeakPtr()));

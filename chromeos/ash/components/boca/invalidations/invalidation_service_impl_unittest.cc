@@ -17,6 +17,7 @@
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "google_apis/common/request_sender.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,9 +48,10 @@ class MockSessionClientImpl : public SessionClientImpl {
 class MockSessionManager : public BocaSessionManager {
  public:
   explicit MockSessionManager(SessionClientImpl* session_client_impl)
-      : BocaSessionManager(session_client_impl,
-                           AccountId::FromUserEmailGaiaId(kTestEmail, kGaiaId),
-                           /*is_producer=*/false) {}
+      : BocaSessionManager(
+            session_client_impl,
+            AccountId::FromUserEmailGaiaId(kTestEmail, GaiaId(kGaiaId)),
+            /*is_producer=*/false) {}
   MOCK_METHOD(void, LoadCurrentSession, (), (override));
   ~MockSessionManager() override = default;
 };

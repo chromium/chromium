@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_ASH_SERVICES_ASSISTANT_TEST_SUPPORT_FAKE_SERVICE_CONTEXT_H_
 #define CHROMEOS_ASH_SERVICES_ASSISTANT_TEST_SUPPORT_FAKE_SERVICE_CONTEXT_H_
 
-#include <string>
-
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -33,7 +31,7 @@ class FakeServiceContext : public ServiceContext {
   FakeServiceContext& set_main_task_runner(
       scoped_refptr<base::SingleThreadTaskRunner>);
   FakeServiceContext& set_power_manager_client(chromeos::PowerManagerClient*);
-  FakeServiceContext& set_primary_account_gaia_id(std::string);
+  FakeServiceContext& set_primary_account_gaia_id(const GaiaId&);
   FakeServiceContext& set_assistant_state(AssistantStateBase*);
   FakeServiceContext& set_assistant_notification_controller(
       AssistantNotificationController*);
@@ -50,14 +48,14 @@ class FakeServiceContext : public ServiceContext {
   DeviceActions* device_actions() override;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner() override;
   chromeos::PowerManagerClient* power_manager_client() override;
-  std::string primary_account_gaia_id() override;
+  GaiaId primary_account_gaia_id() override;
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   raw_ptr<AssistantStateBase> assistant_state_ = nullptr;
   raw_ptr<chromeos::PowerManagerClient, DanglingUntriaged>
       power_manager_client_ = nullptr;
-  GaiaId gaia_id_ = kGaiaId;
+  GaiaId gaia_id_ = GaiaId(kGaiaId);
   raw_ptr<AssistantAlarmTimerController> assistant_alarm_timer_controller_ =
       nullptr;
   raw_ptr<AssistantNotificationController> assistant_notification_controller_ =
