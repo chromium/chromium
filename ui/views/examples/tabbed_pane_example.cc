@@ -29,7 +29,7 @@ TabbedPaneExample::TabbedPaneExample()
 
 TabbedPaneExample::~TabbedPaneExample() {
   if (tabbed_pane_) {
-    tabbed_pane_->set_listener(nullptr);
+    tabbed_pane_->SetListener(nullptr);
   }
 }
 
@@ -84,7 +84,7 @@ void TabbedPaneExample::CreateTabbedPane(View* container,
 
   tabbed_pane_ = container->AddChildViewAt(
       std::make_unique<TabbedPane>(orientation, style), 0);
-  tabbed_pane_->set_listener(this);
+  tabbed_pane_->SetListener(this);
   toggle_highlighted_->SetEnabled(orientation ==
                                   TabbedPane::Orientation::kVertical);
   const auto full_flex = FlexSpecification(MinimumFlexSizeRule::kScaleToZero,

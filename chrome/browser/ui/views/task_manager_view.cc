@@ -400,20 +400,14 @@ void TaskManagerView::TabSelectedAt(int index) {
 }
 
 std::unique_ptr<views::View> TaskManagerView::CreateTabbedPane() {
-  auto tabs = std::make_unique<views::TabbedPane>(
+  auto tabs = std::make_unique<views::TabbedPaneTabStrip>(
       views::TabbedPane::Orientation::kHorizontal,
-      views::TabbedPane::TabStripStyle::kCompactWithIcon);
-  tabs->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  tabs->SetPreferredSize(
-      gfx::Size(kTaskManagerHeaderWidth, kTaskManagerHeaderHeight));
-  tabs->SetProperty(views::kFlexBehaviorKey,
-                    views::FlexSpecification(
-                        views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
-                        views::MaximumFlexSizeRule::kPreferred));
+      views::TabbedPane::TabStripStyle::kCompactWithIcon,
+      /*tabbed_pane=*/nullptr);
+  tabs->SetDefaultFlex(0);
 
   for (const auto& tab : kTabDefinitions) {
-    tabs->AddTab(l10n_util::GetStringUTF16(tab.title_id),
-                 std::make_unique<views::View>(), tab.icon);
+    tabs->AddTab(l10n_util::GetStringUTF16(tab.title_id), tab.icon);
   }
   tabs->set_listener(this);
 
@@ -447,8 +441,7 @@ void TaskManagerView::CreateHeader(const ChromeLayoutProvider* provider) {
       CreateSeparator(gfx::Insets::TLBR(0, 0, separator_spacing, 0));
 
   // Allow empty spacing and the search bar to flex freely.
-  header_layout->SetFlexForView(tabs.get(), 1);
-  header_layout->SetFlexForView(empty_view.get(), 1);
+  header_layout->SetFlexForView(empty_view.get(), 2);
   header_layout->SetFlexForView(search_bar.get(), 3);
 
   // Set the layout manager for the parent container to BoxLayout.

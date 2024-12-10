@@ -294,7 +294,7 @@ void EditorMenuView::AddTitleContainer() {
                          std::make_unique<views::View>());
     tabbed_pane_->AddTab(GetEditorMenuLobsterTitle(),
                          std::make_unique<views::View>());
-    tabbed_pane_->set_listener(this);
+    tabbed_pane_->SetListener(this);
   } else if (text_and_image_mode_ == TextAndImageMode::kEditorWriteOnly) {
     auto* title = title_container_->AddChildView(std::make_unique<views::Label>(
         GetEditorMenuWriteCardTitle(), views::style::CONTEXT_DIALOG_TITLE,

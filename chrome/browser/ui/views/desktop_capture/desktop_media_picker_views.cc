@@ -588,7 +588,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         break;
       }
     }
-    tabbed_pane->set_listener(this);
+    tabbed_pane->SetListener(this);
     tabbed_pane->SetFocusBehavior(views::View::FocusBehavior::NEVER);
     tabbed_pane_ = AddChildView(std::move(tabbed_pane));
   } else {

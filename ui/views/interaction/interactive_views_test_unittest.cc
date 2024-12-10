@@ -336,7 +336,7 @@ TEST_F(InteractiveViewsTestTest, NameViewRelative) {
       SelectTab(kTabbedPaneId, 1U, InputType::kTouch),
       NameViewRelative(kTabbedPaneId, kViewName,
                        base::BindRepeating([&](TabbedPane* tabs) {
-                         return tabs->GetTabAt(1U)->contents();
+                         return tabs->GetTabContentsForTesting(1);
                        })),
       WithElement(kViewName,
                   base::BindLambdaForTesting([&](ui::TrackedElement* el) {

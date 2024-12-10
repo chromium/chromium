@@ -216,7 +216,9 @@ class FocusTraversalTest : public FocusManagerTest {
     if (view)
       return view;
     if (style_tab_)
-      view = style_tab_->GetSelectedTabContentView()->GetViewByID(id);
+      view = style_tab_
+                 ->GetTabContentsForTesting(style_tab_->GetSelectedTabIndex())
+                 ->GetViewByID(id);
     if (view)
       return view;
     view = search_border_view_->GetContentsRootView()->GetViewByID(id);
@@ -335,9 +337,9 @@ void FocusTraversalTest::InitContentView() {
   //   NativeButton        * OK_BUTTON_ID
   //   NativeButton        * CANCEL_BUTTON_ID
   //   NativeButton        * HELP_BUTTON_ID
-  //   TabbedPane          * STYLE_CONTAINER_ID
+  //   TabbedPane
   //     TabStrip
-  //       Tab ("Style")
+  //       Tab ("Style")   * STYLE_CONTAINER_ID
   //       Tab ("Other")
   //     View
   //       View

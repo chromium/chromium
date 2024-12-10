@@ -170,7 +170,8 @@ class TabbedPaneWithWidgetTest : public ViewsTestBase {
   }
 
   View* GetSelectedTabContentView() {
-    return tabbed_pane_->GetSelectedTabContentView();
+    return tabbed_pane_->GetTabContentsForTesting(
+        tabbed_pane_->GetSelectedTabIndex());
   }
 
   void SendKeyPressToSelectedTab(ui::KeyboardCode keyboard_code) {

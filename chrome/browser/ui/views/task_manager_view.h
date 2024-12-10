@@ -57,9 +57,6 @@ class TaskManagerView : public TableViewDelegate,
   TaskManagerView& operator=(const TaskManagerView&) = delete;
   ~TaskManagerView() override;
 
-  static constexpr size_t kTaskManagerHeaderWidth = 250;
-  static constexpr size_t kTaskManagerHeaderHeight = 32;
-
   // Shows the Task Manager window, or re-activates an existing one.
   static task_manager::TaskManagerTableModel* Show(
       Browser* browser,
