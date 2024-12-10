@@ -20,7 +20,10 @@ const CGFloat kDotSize = 14;
 
 }  // namespace
 
-@implementation TabGroupsPanelCell
+@implementation TabGroupsPanelCell {
+  // The main stack view that contains subviews.
+  UIStackView* _stackView;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
@@ -30,62 +33,43 @@ const CGFloat kDotSize = 14;
     self.isAccessibilityElement = YES;
     self.accessibilityTraits |= UIAccessibilityTraitButton;
 
+    _stackView = [self setUpStackView];
+    [self addSubview:_stackView];
+
     _faviconsGrid = [[TabGroupFaviconsGrid alloc] init];
     _faviconsGrid.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.contentView addSubview:_faviconsGrid];
+    [_stackView addArrangedSubview:_faviconsGrid];
 
     _dot = [[UIView alloc] init];
     _dot.layer.cornerRadius = kDotSize / 2;
 
-    _titleLabel = [[UILabel alloc] init];
-    _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-    _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-    _titleLabel.adjustsFontForContentSizeCategory = YES;
-
-    _subtitleLabel = [[UILabel alloc] init];
-    _subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-    _subtitleLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-    _subtitleLabel.adjustsFontForContentSizeCategory = YES;
-    _subtitleLabel.maximumContentSizeCategory =
-        UIContentSizeCategoryAccessibilityMedium;
+    _titleLabel = [self setUpTitleLabel];
+    _subtitleLabel = [self setUpTitleLabel];
 
     UIStackView* titleLabelWithDot =
         [[UIStackView alloc] initWithArrangedSubviews:@[ _dot, _titleLabel ]];
     titleLabelWithDot.alignment = UIStackViewAlignmentCenter;
     titleLabelWithDot.spacing = kSpacing;
 
-    UIStackView* labels = [[UIStackView alloc]
+    UIStackView* labelsStackView = [[UIStackView alloc]
         initWithArrangedSubviews:@[ titleLabelWithDot, _subtitleLabel ]];
-    labels.axis = UILayoutConstraintAxisVertical;
-    labels.spacing = kSpacing;
-    labels.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.contentView addSubview:labels];
+    labelsStackView.axis = UILayoutConstraintAxisVertical;
+    labelsStackView.spacing = kSpacing;
+    [_stackView addArrangedSubview:labelsStackView];
 
     AddSquareConstraints(_dot, kDotSize);
     AddSameCenterYConstraint(_faviconsGrid, self.contentView);
-    AddSameCenterYConstraint(labels, self.contentView);
+    AddSameCenterYConstraint(labelsStackView, self.contentView);
+
     [NSLayoutConstraint activateConstraints:@[
-      [_faviconsGrid.leadingAnchor
-          constraintEqualToAnchor:self.contentView.leadingAnchor
-                         constant:kMargin],
-      [_faviconsGrid.topAnchor
-          constraintGreaterThanOrEqualToAnchor:self.contentView.topAnchor
-                                      constant:kMargin],
-      [_faviconsGrid.bottomAnchor
-          constraintLessThanOrEqualToAnchor:self.contentView.bottomAnchor
-                                   constant:-kMargin],
-      [labels.leadingAnchor constraintEqualToAnchor:_faviconsGrid.trailingAnchor
+      [_stackView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor
+                                               constant:kMargin],
+      [_stackView.topAnchor constraintEqualToAnchor:self.topAnchor
                                            constant:kMargin],
-      [labels.topAnchor
-          constraintGreaterThanOrEqualToAnchor:self.contentView.topAnchor
-                                      constant:kMargin],
-      [labels.trailingAnchor
-          constraintEqualToAnchor:self.contentView.trailingAnchor
-                         constant:-kMargin],
-      [labels.bottomAnchor
-          constraintLessThanOrEqualToAnchor:self.contentView.bottomAnchor
-                                   constant:-kMargin],
+      [_stackView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor
+                                              constant:-kMargin],
+      [_stackView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor
+                                                constant:-kMargin],
     ]];
   }
   return self;
@@ -108,6 +92,8 @@ const CGFloat kDotSize = 14;
   _faviconsGrid.favicon2 = nil;
   _faviconsGrid.favicon3 = nil;
   _faviconsGrid.favicon4 = nil;
+  self.facePileViewController = nil;
+  _facePileParentViewController = nil;
   self.item = nil;
 }
 
@@ -119,6 +105,67 @@ const CGFloat kDotSize = 14;
       base::SysNSStringToUTF16(_titleLabel.text),
       base::SysNSStringToUTF16(numberOfTabsString),
       base::SysNSStringToUTF16(_subtitleLabel.text));
+}
+
+#pragma mark - Private
+
+// Sets up the stack view.
+- (UIStackView*)setUpStackView {
+  UIStackView* stackView = [[UIStackView alloc] init];
+  stackView.axis = UILayoutConstraintAxisHorizontal;
+  stackView.translatesAutoresizingMaskIntoConstraints = NO;
+  stackView.alignment = UIStackViewAlignmentCenter;
+  stackView.spacing = kSpacing;
+  stackView.distribution = UIStackViewDistributionFill;
+  return stackView;
+}
+
+// Sets up the title label.
+- (UILabel*)setUpTitleLabel {
+  UILabel* titleLabel = [[UILabel alloc] init];
+  titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  titleLabel.adjustsFontForContentSizeCategory = YES;
+  return titleLabel;
+}
+
+// Sets up the subtitle label.
+- (UILabel*)setUpSubtitleLabel {
+  UILabel* subtitleLabel = [[UILabel alloc] init];
+  subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  subtitleLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  subtitleLabel.adjustsFontForContentSizeCategory = YES;
+  subtitleLabel.maximumContentSizeCategory =
+      UIContentSizeCategoryAccessibilityMedium;
+  return subtitleLabel;
+}
+
+#pragma mark - Setters
+
+- (void)setFacePileViewController:(UIViewController*)facePileViewController {
+  // TODO(crbug.com/375590170): Update the UI for the `facePileViewController's
+  // view` empty state.
+  if (!_facePileParentViewController ||
+      _facePileViewController == facePileViewController) {
+    return;
+  }
+
+  if (_facePileViewController) {
+    [_facePileViewController willMoveToParentViewController:nil];
+    [_facePileViewController.view removeFromSuperview];
+    [_facePileViewController removeFromParentViewController];
+  }
+
+  _facePileViewController = facePileViewController;
+  if (_facePileViewController) {
+    [_facePileParentViewController
+        addChildViewController:_facePileViewController];
+    UIView* facePileView = _facePileViewController.view;
+    [_stackView addArrangedSubview:facePileView];
+    [_facePileViewController
+        didMoveToParentViewController:_facePileParentViewController];
+  }
 }
 
 @end

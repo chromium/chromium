@@ -7,10 +7,12 @@
 #import "base/memory/weak_ptr.h"
 #import "components/prefs/pref_service.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_action_context.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -60,10 +62,10 @@
 - (void)start {
   [super start];
 
+  ProfileIOS* profile = self.browser->GetProfile();
   _gridContainerViewController = [[GridContainerViewController alloc] init];
 
-  BOOL regularModeDisabled =
-      IsIncognitoModeForced(self.browser->GetProfile()->GetPrefs());
+  BOOL regularModeDisabled = IsIncognitoModeForced(profile->GetPrefs());
   if (regularModeDisabled) {
     _disabledViewController =
         [[DisabledGridViewController alloc] initWithPage:TabGridPageTabGroups];
@@ -75,21 +77,17 @@
     _gridContainerViewController.containedViewController = _gridViewController;
   }
 
-  tab_groups::TabGroupSyncService* tabGroupSyncService =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          self.browser->GetProfile());
-  WebStateList* regularWebStateList = self.browser->GetWebStateList();
-  FaviconLoader* faviconLoader =
-      IOSChromeFaviconLoaderFactory::GetForProfile(self.browser->GetProfile());
-  BrowserList* browserList =
-      BrowserListFactory::GetForProfile(self.browser->GetProfile());
-
   _mediator = [[TabGroupsPanelMediator alloc]
-      initWithTabGroupSyncService:tabGroupSyncService
-              regularWebStateList:regularWebStateList
-                    faviconLoader:faviconLoader
+      initWithTabGroupSyncService:tab_groups::TabGroupSyncServiceFactory::
+                                      GetForProfile(profile)
+                  shareKitService:ShareKitServiceFactory::GetForProfile(profile)
+             collaborationService:collaboration::CollaborationServiceFactory::
+                                      GetForProfile(profile)
+              regularWebStateList:self.browser->GetWebStateList()
+                    faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                      profile)
                  disabledByPolicy:regularModeDisabled
-                      browserList:browserList];
+                      browserList:BrowserListFactory::GetForProfile(profile)];
 
   _mediator.toolbarsMutator = _toolbarsMutator;
   _mediator.tabGridHandler =

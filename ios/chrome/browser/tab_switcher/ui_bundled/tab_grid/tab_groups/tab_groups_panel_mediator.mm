@@ -12,11 +12,15 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/collaboration/public/collaboration_service.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/string_utils.h"
 #import "components/tab_groups/tab_group_color.h"
+#import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/saved_tab_groups/favicon/coordinator/tab_group_favicons_grid_configurator.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
@@ -39,6 +43,9 @@ using tab_groups::utils::GetLocalTabGroupInfo;
 using tab_groups::utils::LocalTabGroupInfo;
 
 namespace {
+
+// The preferred size in points for the avatar icons.
+constexpr CGFloat kFacePileAvatarSize = 24;
 
 using ScopedTabGroupSyncObservation =
     base::ScopedObservation<tab_groups::TabGroupSyncService,
@@ -82,6 +89,10 @@ NSString* CreationText(base::Time creation_date) {
 @implementation TabGroupsPanelMediator {
   // The service to observe.
   raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
+  // The share kit service.
+  raw_ptr<ShareKitService> _shareKitService;
+  // The collaboration service.
+  raw_ptr<collaboration::CollaborationService> _collaborationService;
   // The bridge between the service C++ observer and this Objective-C class.
   std::unique_ptr<TabGroupSyncServiceObserverBridge> _syncServiceObserver;
   std::unique_ptr<ScopedTabGroupSyncObservation> _scopedSyncServiceObservation;
@@ -102,6 +113,10 @@ NSString* CreationText(base::Time creation_date) {
 
 - (instancetype)initWithTabGroupSyncService:
                     (tab_groups::TabGroupSyncService*)tabGroupSyncService
+                            shareKitService:(ShareKitService*)shareKitService
+                       collaborationService:
+                           (collaboration::CollaborationService*)
+                               collaborationService
                         regularWebStateList:(WebStateList*)regularWebStateList
                               faviconLoader:(FaviconLoader*)faviconLoader
                            disabledByPolicy:(BOOL)disabled
@@ -109,6 +124,8 @@ NSString* CreationText(base::Time creation_date) {
   self = [super init];
   if (self) {
     _tabGroupSyncService = tabGroupSyncService;
+    _shareKitService = shareKitService;
+    _collaborationService = collaborationService;
     _syncServiceObserver =
         std::make_unique<TabGroupSyncServiceObserverBridge>(self);
     _scopedSyncServiceObservation =
@@ -157,6 +174,8 @@ NSString* CreationText(base::Time creation_date) {
   _scopedSyncServiceObservation.reset();
   _syncServiceObserver.reset();
   _tabGroupSyncService = nullptr;
+  _shareKitService = nullptr;
+  _collaborationService = nullptr;
   _regularWebStateList = nullptr;
   _faviconsGridConfigurator = nullptr;
 }
@@ -245,6 +264,29 @@ NSString* CreationText(base::Time creation_date) {
 - (void)fetchFaviconsForCell:(TabGroupsPanelCell*)cell {
   _faviconsGridConfigurator->ConfigureFaviconsGrid(cell.faviconsGrid,
                                                    cell.item.savedTabGroupID);
+}
+
+- (UIViewController*)facePileViewControllerForItem:(TabGroupsPanelItem*)item {
+  if (!_shareKitService || !_shareKitService->IsSupported() ||
+      !_collaborationService || !_tabGroupSyncService) {
+    return nil;
+  }
+
+  const auto group = _tabGroupSyncService->GetGroup(item.savedTabGroupID);
+  if (!group.has_value() || !group->collaboration_id().has_value()) {
+    return nil;
+  }
+  NSString* savedCollabID =
+      base::SysUTF8ToNSString(group->collaboration_id()->value());
+
+  // Configure the face pile.
+  ShareKitFacePileConfiguration* config =
+      [[ShareKitFacePileConfiguration alloc] init];
+  config.collabID = savedCollabID;
+  config.showsEmptyState = NO;
+  config.avatarSize = kFacePileAvatarSize;
+
+  return _shareKitService->FacePile(config);
 }
 
 #pragma mark TabGroupsPanelMutator

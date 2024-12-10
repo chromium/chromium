@@ -13,10 +13,16 @@
 
 namespace base {
 class Uuid;
-}
+}  // namespace base
+
+namespace collaboration {
+class CollaborationService;
+}  // namespace collaboration
+
 class BrowserList;
 class FaviconLoader;
 @protocol GridToolbarsMutator;
+class ShareKitService;
 @protocol TabGridCommands;
 @protocol TabGroupsPanelConsumer;
 @protocol TabGroupsPanelMediatorDelegate;
@@ -49,6 +55,10 @@ class TabGroupSyncService;
 //     configure the toolbars.
 - (instancetype)initWithTabGroupSyncService:
                     (tab_groups::TabGroupSyncService*)tabGroupSyncService
+                            shareKitService:(ShareKitService*)shareKitService
+                       collaborationService:
+                           (collaboration::CollaborationService*)
+                               collaborationService
                         regularWebStateList:(WebStateList*)regularWebStateList
                               faviconLoader:(FaviconLoader*)faviconLoader
                            disabledByPolicy:(BOOL)disabled

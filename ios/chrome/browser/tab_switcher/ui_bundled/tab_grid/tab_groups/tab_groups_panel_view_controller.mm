@@ -372,6 +372,10 @@ NSString* PanelCellAccessibilityIdentifier(NSUInteger index) {
   NSUInteger numberOfTabs = itemData.numberOfTabs;
   cell.faviconsGrid.numberOfTabs = numberOfTabs;
 
+  cell.facePileParentViewController = self;
+  cell.facePileViewController =
+      [_itemDataSource facePileViewControllerForItem:item];
+
   [_itemDataSource fetchFaviconsForCell:cell];
 }
 
