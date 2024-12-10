@@ -135,16 +135,15 @@ class ScrollMarkerGroupPseudoElement : public PseudoElement,
   void AddToFocusGroup(ScrollMarkerPseudoElement& scroll_marker);
   void RemoveFromFocusGroup(const ScrollMarkerPseudoElement& scroll_marker);
   void ClearFocusGroup();
-  ScrollMarkerPseudoElement* FindNextScrollMarker(const Element& current);
-  ScrollMarkerPseudoElement* FindPreviousScrollMarker(const Element& current);
   const HeapVector<Member<ScrollMarkerPseudoElement>>& ScrollMarkers() {
     return focus_group_;
   }
   // Set selected scroll marker. Returns true if the selected marker changed.
   CORE_EXPORT bool SetSelected(ScrollMarkerPseudoElement& scroll_marker);
   ScrollMarkerPseudoElement* Selected() { return selected_marker_; }
-  void ActivateNextScrollMarker(bool focus);
-  void ActivatePrevScrollMarker(bool focus);
+  void ActivateNextScrollMarker();
+  void ActivatePrevScrollMarker();
+  void ActivateScrollMarker(ScrollMarkerPseudoElement* scroll_marker);
 
   void DetachLayoutTree(bool performing_reattach) final;
   void Dispose() final;
@@ -158,15 +157,10 @@ class ScrollMarkerGroupPseudoElement : public PseudoElement,
   bool UpdateSelectedScrollMarker(const ScrollOffset& offset);
 
  private:
-  // `focus` arg controls if active scroll marker should be set as focused.
-  // When activation is coming from scroll button, the button should retain
-  // focus.
-  void ActivateScrollMarker(
-      ScrollMarkerPseudoElement* (ScrollMarkerGroupPseudoElement::*
-                                      find_scroll_marker_func)(const Element&),
-      bool focus);
-
   bool UpdateSnapshotInternal();
+
+  ScrollMarkerPseudoElement* FindNextScrollMarker(const Element* current);
+  ScrollMarkerPseudoElement* FindPreviousScrollMarker(const Element* current);
 
   ScrollMarkerPseudoElement* ChooseMarker(const ScrollOffset& scroll_offset,
                                           ScrollableArea* scrollable_area,
