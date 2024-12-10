@@ -678,9 +678,6 @@ AccessibilitySection::~AccessibilitySection() {
 
 void AccessibilitySection::AddLoadTimeData(
     content::WebUIDataSource* html_source) {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
   webui::LocalizedString kLocalizedStrings[] = {
       {"a11yExplanation", IDS_SETTINGS_ACCESSIBILITY_EXPLANATION},
       {"a11yPageTitle", IDS_SETTINGS_ACCESSIBILITY},
@@ -1470,11 +1467,8 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_A11Y_TABLET_MODE_SHELF_BUTTONS_DESCRIPTION},
       {"tabletModeShelfNavigationButtonsSettingLabel",
        IDS_SETTINGS_A11Y_TABLET_MODE_SHELF_BUTTONS_LABEL},
-      {"tapDraggingLabel", kIsRevampEnabled
-                               ? IDS_OS_SETTINGS_REVAMP_TAP_DRAGGING_LABEL
-                               : IDS_SETTINGS_TAP_DRAGGING_LABEL},
-      {"tapDraggingDescription",
-       IDS_OS_SETTINGS_REVAMP_TAP_DRAGGING_DESCRIPTION},
+      {"tapDraggingLabel", IDS_OS_SETTINGS_TAP_DRAGGING_LABEL},
+      {"tapDraggingDescription", IDS_OS_SETTINGS_TAP_DRAGGING_DESCRIPTION},
       {"textToSpeechEngines", IDS_SETTINGS_TEXT_TO_SPEECH_ENGINES},
       {"textToSpeechHeading",
        IDS_SETTINGS_ACCESSIBILITY_TEXT_TO_SPEECH_HEADING},

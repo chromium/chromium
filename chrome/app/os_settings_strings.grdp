@@ -2010,13 +2010,10 @@ Use Ctrl + Alt + Brightness down to zoom out.
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_ZOOM_20_X" desc="Desription of a 20x zoom level">
     20x
   </message>
-  <message name="IDS_SETTINGS_TAP_DRAGGING_LABEL" desc="Label for checkbox which enables tap dragging.">
-    Enable tap dragging
-  </message>
-  <message name="IDS_OS_SETTINGS_REVAMP_TAP_DRAGGING_LABEL" desc="Label for checkbox which enables tap dragging.">
+  <message name="IDS_OS_SETTINGS_TAP_DRAGGING_LABEL" desc="Label for checkbox which enables tap dragging.">
     Tap and drag to move items
   </message>
-  <message name="IDS_OS_SETTINGS_REVAMP_TAP_DRAGGING_DESCRIPTION" desc="Description for checkbox which enables tap dragging.">
+  <message name="IDS_OS_SETTINGS_TAP_DRAGGING_DESCRIPTION" desc="Description for checkbox which enables tap dragging.">
     Double-tap an item, hold down on the second tap, and then drag the item to move it
   </message>
   <message name="IDS_SETTINGS_CLICK_ON_STOP_LABEL" desc="Label for checkbox which enables automatically do a mouse action when the mouse cursor stops.">
