@@ -11812,6 +11812,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kEnablePolicyPromotionBanner)},
 #endif
 
+    {"privacy-sandbox-ads-api-ux-enhancements",
+     flag_descriptions::kPrivacySandboxAdsApiUxEnhancementsName,
+     flag_descriptions::kPrivacySandboxAdsApiUxEnhancementsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements)}
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

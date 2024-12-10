@@ -1801,6 +1801,9 @@ extern const char kPriceChangeModuleDescription[];
 extern const char kPrivacySandboxAdsAPIsOverrideName[];
 extern const char kPrivacySandboxAdsAPIsOverrideDescription[];
 
+extern const char kPrivacySandboxAdsApiUxEnhancementsName[];
+extern const char kPrivacySandboxAdsApiUxEnhancementsDescription[];
+
 extern const char kPrivacySandboxEnrollmentOverridesName[];
 extern const char kPrivacySandboxEnrollmentOverridesDescription[];
 

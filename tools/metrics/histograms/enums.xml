@@ -16375,6 +16375,7 @@ from previous Chrome versions.
   <int value="-1606215707" label="WebAppWindowControlsOverlay:enabled"/>
   <int value="-1605920602" label="AVFoundationCaptureV2:disabled"/>
   <int value="-1605567628" label="disable-overlay-scrollbar"/>
+  <int value="-1605385621" label="PrivacySandboxAdsApiUxEnhancements:disabled"/>
   <int value="-1604519960" label="SystemKoreanPhysicalTyping:enabled"/>
   <int value="-1604478217" label="QuickAnswersRichCard:disabled"/>
   <int value="-1604051051" label="SpecialLocale:disabled"/>
@@ -18306,6 +18307,7 @@ from previous Chrome versions.
   <int value="-831303896" label="TabStripGroupIndicatorsAndroid:enabled"/>
   <int value="-831066457" label="IncognitoBrandConsistencyForDesktop:disabled"/>
   <int value="-829665817" label="AltClickAndSixPackCustomization:enabled"/>
+  <int value="-829545582" label="PrivacySandboxAdsApiUxEnhancements:enabled"/>
   <int value="-829498062" label="HttpsFirstModeV2:disabled"/>
   <int value="-826848767" label="DataSharing:enabled"/>
   <int value="-826067311" label="MerchantTrust:disabled"/>

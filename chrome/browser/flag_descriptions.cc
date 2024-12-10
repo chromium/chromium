@@ -3137,6 +3137,12 @@ const char kPrivacySandboxAdsAPIsOverrideDescription[] =
     "Fenced Frames, Shared Storage, Private Aggregation, and their associated "
     "features.";
 
+const char kPrivacySandboxAdsApiUxEnhancementsName[] =
+    "Privacy Sandbox Ads API UX Enhancements";
+const char kPrivacySandboxAdsApiUxEnhancementsDescription[] =
+    "Enables UI and text updates to the Privacy Sandbox Ads APIs Notice and "
+    "Consent UX, and settings pages to improve user comprehension";
+
 const char kPrivacySandboxEnrollmentOverridesName[] =
     "Privacy Sandbox Enrollment Overrides";
 const char kPrivacySandboxEnrollmentOverridesDescription[] =
