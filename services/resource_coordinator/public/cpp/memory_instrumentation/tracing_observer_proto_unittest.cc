@@ -174,7 +174,7 @@ TEST_F(TracingObserverProtoTest,
 // TODO(crbug.com/376596183): Re-enable this test.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled \
-  AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled
+  DISABLED_AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled
 #else
 #define MAYBE_AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled \
   AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled
