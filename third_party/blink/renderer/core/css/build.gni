@@ -25,6 +25,7 @@ blink_core_sources_css = [
   "anchor_evaluator.h",
   "anchor_query.cc",
   "anchor_query.h",
+  "auto_registration.h",
   "background_color_paint_image_generator.cc",
   "background_color_paint_image_generator.h",
   "basic_shape_functions.cc",

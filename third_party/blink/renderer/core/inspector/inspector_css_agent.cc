@@ -25,11 +25,13 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_css_agent.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/auto_reset.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
+#include "third_party/blink/renderer/core/css/auto_registration.h"
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
@@ -75,6 +77,8 @@
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
+#include "third_party/blink/renderer/core/css/properties/longhands/custom_property.h"
+#include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_rule_usage_tracker.h"
@@ -232,6 +236,15 @@ void CollectPlatformFontsFromRunFontDataList(
       font_stats_it->value.first += run_font_data.glyph_count_;
     }
   }
+}
+
+CSSSyntaxDefinition CreateCombinedSyntax() {
+  CSSParserTokenStream stream(
+      "<number> | <length> | <percentage> | <angle> | <color> | <time>");
+  std::optional<CSSSyntaxDefinition> syntax_definition =
+      CSSSyntaxDefinition::Consume(stream);
+  DCHECK(syntax_definition.has_value());
+  return *syntax_definition;
 }
 
 }  // namespace
@@ -1877,7 +1890,7 @@ protocol::Response InspectorCSSAgent::getComputedStyleForNode(
 protocol::Response InspectorCSSAgent::resolveValues(
     std::unique_ptr<protocol::Array<String>> values,
     int node_id,
-    std::optional<String> property_name_optional,
+    std::optional<String> property_name_str,
     std::optional<protocol::DOM::PseudoType> pseudo_type,
     std::optional<String> pseudo_identifier,
     std::unique_ptr<protocol::Array<String>>* results) {
@@ -1915,16 +1928,31 @@ protocol::Response InspectorCSSAgent::resolveValues(
     }
   }
 
-  // TODO(moonira): Handle cases when property_name is null.
-  const String property_name_str = property_name_optional.has_value()
-                                       ? *property_name_optional
-                                       : g_empty_string;
+  std::optional<CSSPropertyName> property_name;
+  const AtomicString custom_property_name(
+      ("--" + base::UnguessableToken::Create().ToString()).c_str());
+  std::optional<AutoRegistration> auto_registration;
 
-  std::optional<CSSPropertyName> property_name =
-      CSSPropertyName::From(execution_context, property_name_str);
-  if (!property_name.has_value()) {
-    return protocol::Response::ServerError("Could not resolve property name.");
+  if (property_name_str.has_value()) {
+    property_name =
+        CSSPropertyName::From(execution_context, *property_name_str);
+
+    if (!property_name.has_value()) {
+      return protocol::Response::ServerError(
+          "Could not resolve property name.");
+    }
+  } else {
+    property_name = CSSPropertyName(custom_property_name);
+    CSSSyntaxDefinition syntax_definition = CreateCombinedSyntax();
+    PropertyRegistration* property_registration =
+        MakeGarbageCollected<PropertyRegistration>(
+            custom_property_name, syntax_definition, /* inherits */ false,
+            /* initial */ nullptr);
+    // Temporary register property with combined syntax.
+    auto_registration.emplace(document, custom_property_name,
+                              *property_registration);
   }
+  DCHECK(property_name.has_value());
 
   *results = std::make_unique<protocol::Array<String>>();
   for (auto value : *values) {
