@@ -171,7 +171,6 @@ source_set("unit_tests") {
     ":model",
     "//base",
     "//base/test:test_support",
-    "//components/keyed_service/core",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:test_support",
     "//components/prefs:test_support",

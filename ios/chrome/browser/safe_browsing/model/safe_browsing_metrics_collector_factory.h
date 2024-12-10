@@ -6,25 +6,17 @@
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_SAFE_BROWSING_METRICS_COLLECTOR_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class KeyedService;
-class ProfileIOS;
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace safe_browsing {
 class SafeBrowsingMetricsCollector;
 }
 
-namespace web {
-class BrowserState;
-}
-
 // Used to construct a SafeBrowsingMetricsCollector. Returns null for
 // incognito profiles.
 class SafeBrowsingMetricsCollectorFactory
-    : public BrowserStateKeyedServiceFactory {
+    : public ProfileKeyedServiceFactoryIOS {
  public:
-
   // Returns null if `profile` is in Incognito mode.
   static safe_browsing::SafeBrowsingMetricsCollector* GetForProfile(
       ProfileIOS* profile);
