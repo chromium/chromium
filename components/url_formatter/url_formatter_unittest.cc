@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <string.h>
 
+#include <array>
 #include <vector>
 
 #include "base/logging.h"
@@ -82,7 +83,7 @@ void CheckAdjustedOffsets(const std::string& url_string,
 TEST(UrlFormatterTest, FormatUrl) {
   FormatUrlTypes default_format_type = kFormatUrlOmitUsernamePassword;
   // clang-format off
-  const UrlTestData tests[] = {
+  const auto tests = std::to_array<UrlTestData>({
       {"Empty URL", "", default_format_type, base::UnescapeRule::NORMAL, L"", 0},
 
       {"Simple URL", "http://www.google.com/", default_format_type,
@@ -424,7 +425,7 @@ TEST(UrlFormatterTest, FormatUrl) {
        kFormatUrlOmitDefaults | kFormatUrlTrimAfterHost,
        base::UnescapeRule::NORMAL,
        L"file:///Users/homedirname/folder/file.pdf/", 7},
-  };
+  });
   // clang-format on
 
   for (size_t i = 0; i < std::size(tests); ++i) {

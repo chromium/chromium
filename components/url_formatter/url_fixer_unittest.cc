@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+#include <array>
 #include <string>
 
 #include "base/base_paths.h"
@@ -39,7 +40,7 @@ struct SegmentCase {
   const url::Component ref;
 };
 
-static const SegmentCase segment_cases[] = {
+const auto segment_cases = std::to_array<SegmentCase>({
     {
         "http://www.google.com/", "http", url::Component(0, 4),  // scheme
         url::Component(),                                        // username
@@ -268,7 +269,7 @@ static const SegmentCase segment_cases[] = {
         url::Component(43, 17),            // query
         url::Component(),                  // ref
     },
-};
+});
 
 typedef testing::Test URLFixerTest;
 
