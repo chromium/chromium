@@ -325,6 +325,7 @@ group("browser_tests") {
     "//chrome/browser/ash/policy/reporting/metrics_reporting/usb:browser_tests",
     "//chrome/browser/ash/policy/reporting/os_updates:browser_tests",
     "//chrome/browser/ash/policy/reporting/user_added_removed:browser_tests",
+    "//chrome/browser/ash/policy/reporting/user_session_activity:browser_tests",
     "//chrome/browser/ash/policy/skyvault:browser_tests",
     "//chrome/browser/ash/policy/status_collector:browser_tests",
     "//chrome/browser/ash/preferences:browser_tests",

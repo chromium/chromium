@@ -136,6 +136,10 @@ class UserSessionActivityReporter
   // Called when device is locked.
   void OnLocked() override;
 
+  // ManagedSessionService::Observer
+  // Called when device is unlocked.
+  void OnUnlocked() override;
+
  private:
   // Starts the user session. Called by OnLogin() and OnUnlocked().
   void OnSessionStart(reporting::SessionStartEvent::Reason reason,
