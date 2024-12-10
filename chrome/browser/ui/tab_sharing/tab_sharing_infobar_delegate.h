@@ -163,9 +163,6 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
   // Creates and removes delegate's infobar; outlives delegate.
   const raw_ptr<TabSharingUI, AcrossTasksDanglingUntriaged> ui_;
 
-  // TODO(crbug.com/40188004): Re-enable favicons by default or drop the code.
-  const bool favicons_used_for_switch_to_tab_button_;
-
   // Indicates whether this instance is used for casting or capturing.
   const TabShareType capture_type_;
 

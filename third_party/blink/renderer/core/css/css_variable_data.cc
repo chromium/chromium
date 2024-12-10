@@ -153,8 +153,7 @@ CSSVariableData::CSSVariableData(PassKey,
       is_8bit_(original_text.Is8Bit()),
       has_font_units_(has_font_units),
       has_root_font_units_(has_root_font_units),
-      has_line_height_units_(has_line_height_units),
-      unused_(0) {
+      has_line_height_units_(has_line_height_units) {
   if (is_8bit_) {
     base::ranges::copy(original_text.Span8(),
                        reinterpret_cast<LChar*>(this + 1));

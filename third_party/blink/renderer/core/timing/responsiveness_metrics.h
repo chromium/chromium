@@ -227,11 +227,6 @@ class CORE_EXPORT ResponsivenessMetrics
   HashMap<int, InteractionInfo, IntWithZeroKeyHashTraits<int>>
       key_code_to_interaction_info_map_;
 
-  // Whether we are composing or not. When we are not composing, we set
-  // interactionId for keydown and keyup events. When we are composing, we set
-  // interactionId for input events.
-  bool composition_started_ = false;
-
   enum CompositionState {
     kNonComposition,
     kCompositionContinueOngoingInteraction,

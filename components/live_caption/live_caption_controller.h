@@ -127,8 +127,10 @@ class LiveCaptionController : public KeyedService,
 
   const std::string application_locale_;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Tracks whether or not Live Caption has been enabled for babel orca.
   bool enabled_for_babel_orca_ = false;
+#endif
 
   // Whether Live Caption is enabled.
   bool enabled_ = false;

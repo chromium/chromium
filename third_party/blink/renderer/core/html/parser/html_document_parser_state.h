@@ -154,7 +154,6 @@ class HTMLDocumentParserState
   }
 
   DeferredParserState state_;
-  int seen_csp_counter_ = 0;
   ParserSynchronizationPolicy mode_;
   const PreloadProcessingMode preload_processing_mode_;
   unsigned end_if_delayed_forbidden_ = 0;

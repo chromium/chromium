@@ -36,9 +36,8 @@ class CloneLanguageModelClient
                            AILanguageModel* language_model,
                            ScriptPromiseResolver<AILanguageModel>* resolver,
                            AbortSignal* signal,
-                           base::PassKey<AILanguageModel> pass_key)
+                           base::PassKey<AILanguageModel>)
       : AIMojoClient(script_state, language_model, resolver, signal),
-        pass_key_(pass_key),
         language_model_(language_model),
         receiver_(this, language_model->GetExecutionContext()) {
     mojo::PendingRemote<mojom::blink::AIManagerCreateLanguageModelClient>
@@ -90,7 +89,6 @@ class CloneLanguageModelClient
   void ResetReceiver() override { receiver_.reset(); }
 
  private:
-  base::PassKey<AILanguageModel> pass_key_;
   Member<AILanguageModel> language_model_;
   HeapMojoReceiver<mojom::blink::AIManagerCreateLanguageModelClient,
                    CloneLanguageModelClient>

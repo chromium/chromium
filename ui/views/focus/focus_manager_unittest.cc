@@ -619,8 +619,6 @@ class FocusManagerArrowKeyTraversalTest
  private:
   // Restores the locale to default when the destructor is called.
   base::test::ScopedRestoreICUDefaultLocale restore_locale_;
-
-  bool previous_arrow_key_traversal_enabled_ = false;
 };
 
 // Instantiate the Boolean which is used to toggle RTL in

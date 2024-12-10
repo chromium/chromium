@@ -85,8 +85,11 @@ class SpeechRecognitionClientBrowserInterface
   void NotifyLiveCaptionObservers(bool enabled);
 
   bool waiting_on_live_caption_ = false;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool waiting_on_babel_orca_ = false;
   bool babel_orca_enabled_ = false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   mojo::RemoteSet<media::mojom::SpeechRecognitionBrowserObserver>
       live_caption_availibility_observers_;

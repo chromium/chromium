@@ -62,8 +62,7 @@ AutofillBubbleSignInPromoView::AutofillBubbleSignInPromoView(
     content::WebContents* web_contents,
     signin_metrics::AccessPoint access_point,
     base::OnceCallback<void(content::WebContents*)> move_callback)
-    : controller_(*web_contents, access_point, std::move(move_callback)),
-      access_point_(access_point) {
+    : controller_(*web_contents, access_point, std::move(move_callback)) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   Profile* profile =

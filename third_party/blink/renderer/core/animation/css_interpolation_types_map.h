@@ -31,7 +31,6 @@ class CORE_EXPORT CSSInterpolationTypesMap : public InterpolationTypesMap {
  private:
   const Document& document_;
   const PropertyRegistry* registry_;
-  bool allow_all_animations_;
 };
 
 }  // namespace blink

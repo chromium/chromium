@@ -250,9 +250,11 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
 
   std::unique_ptr<MockIbanAccessManager> mock_iban_access_manager_;
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Populated if name fix flow was offered. True if bubble was shown, false
   // otherwise.
   bool credit_card_name_fix_flow_bubble_was_shown_ = false;
+#endif
 
   ::testing::NiceMock<MockMerchantPromoCodeManager>
       mock_merchant_promo_code_manager_;

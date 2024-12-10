@@ -334,8 +334,6 @@ TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
       role_(role),
       capturer_name_(std::move(capturer_name)),
       ui_(ui),
-      favicons_used_for_switch_to_tab_button_(
-          favicons_used_for_switch_to_tab_button),
       capture_type_(capture_type) {
   stop_button_ = std::make_unique<StopButton>(ui_, capture_type_);
 

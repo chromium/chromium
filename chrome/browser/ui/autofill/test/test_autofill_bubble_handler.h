@@ -109,8 +109,6 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
   std::unique_ptr<TestAutofillBubble> mandatory_reauth_bubble_view_;
   std::unique_ptr<TestAutofillBubble> save_card_confirmation_bubble_view_;
   std::unique_ptr<TestAutofillBubble> save_iban_confirmation_bubble_view_;
-
-  int save_card_confirmation_bubble_shown_count_ = 0;
 };
 
 }  // namespace autofill

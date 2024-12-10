@@ -32,8 +32,7 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
         is_8bit_(true),
         has_font_units_(false),
         has_root_font_units_(false),
-        has_line_height_units_(false),
-        unused_(0) {}
+        has_line_height_units_(false) {}
 
   using PassKey = base::PassKey<CSSVariableData>;
   CSSVariableData(PassKey,
@@ -151,7 +150,7 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
   unsigned has_font_units_ : 1;                   // bool.
   unsigned has_root_font_units_ : 1;              // bool.
   unsigned has_line_height_units_ : 1;            // bool.
-  const unsigned unused_ : 3;
+  unsigned /* unused_ */ : 3;
 
   // The actual character data is stored after this.
 };

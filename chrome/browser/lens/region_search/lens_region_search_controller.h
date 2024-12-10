@@ -93,10 +93,6 @@ class LensRegionSearchController : public content::WebContentsObserver {
   // companion.
   lens::AmbientSearchEntryPoint entry_point_;
 
-  // Variable for tracking whether or not to force the region search to open
-  // results in a new tab, instead of the side panel.
-  bool force_open_in_new_tab_ = false;
-
   bool in_capture_mode_ = false;
 
   std::unique_ptr<image_editor::ScreenshotFlow> screenshot_flow_;

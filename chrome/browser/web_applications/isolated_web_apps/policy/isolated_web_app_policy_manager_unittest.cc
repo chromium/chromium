@@ -602,6 +602,9 @@ class IsolatedWebAppPolicyManagerTestBase : public WebAppTest {
       test_managed_guest_session_ =
           std::make_unique<profiles::testing::ScopedTestManagedGuestSession>();
     }
+#else
+    // Suppress -Wunused-private-field warning.
+    (void)is_user_session_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_NACL)

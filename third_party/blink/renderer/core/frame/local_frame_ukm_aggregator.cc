@@ -138,8 +138,7 @@ LocalFrameUkmAggregator::ScopedForcedLayoutTimer::ScopedForcedLayoutTimer(
       avoid_unnecessary_forced_layout_measurements_(
           avoid_unnecessary_forced_layout_measurements),
       should_report_uma_this_frame_(should_report_uma_this_frame),
-      is_pre_fcp_(is_pre_fcp),
-      record_ukm_for_current_frame_(record_ukm_for_current_frame) {
+      is_pre_fcp_(is_pre_fcp) {
   aggregator_->BeginForcedLayout();
 }
 

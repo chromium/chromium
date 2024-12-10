@@ -98,11 +98,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
   bool BlockForCopyRequests(const AggregatedRenderPassList* render_pass_list);
 
   DelegationStatus delegated_status_ = DelegationStatus::kCompositedOther;
-  bool supports_clip_rect_ = false;
-  bool supports_out_of_window_clip_rect_ = false;
   bool needs_background_image_ = false;
-  bool supports_affine_transform_ = false;
-  bool has_transformation_fix_ = false;
   gfx::RectF unassigned_damage_;
   // Used to count the number of frames we should wait until allowing delegation
   // again.
