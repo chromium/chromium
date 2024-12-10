@@ -179,13 +179,10 @@ void WebFramesManagerJavaScriptFeature::FrameAvailableMessageReceived(
 
   url::Origin message_frame_origin =
       web::OriginWithWKSecurityOrigin(message.frameInfo.securityOrigin);
-  GURL message_frame_origin_gurl =
-      web::GURLOriginWithWKSecurityOrigin(message.frameInfo.securityOrigin);
 
   auto new_frame = std::make_unique<web::WebFrameImpl>(
       message.frameInfo, frame_id, message.frameInfo.mainFrame,
-      message_frame_origin, message_frame_origin_gurl, web_state,
-      content_world_);
+      message_frame_origin, web_state, content_world_);
 
   web_frames_manager.AddFrame(std::move(new_frame));
 }

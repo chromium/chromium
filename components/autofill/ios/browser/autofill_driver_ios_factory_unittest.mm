@@ -120,7 +120,7 @@ class AutofillDriverIOSFactoryTest : public web::WebTest {
 
   std::unique_ptr<web::FakeWebFrame> CreateFrame(bool is_main_frame) {
     std::unique_ptr<web::FakeWebFrame> frame = web::FakeWebFrame::Create(
-        test::MakeLocalFrameToken().ToString(), is_main_frame, GURL());
+        test::MakeLocalFrameToken().ToString(), is_main_frame);
     frame->set_browser_state(GetBrowserState());
     return frame;
   }

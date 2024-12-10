@@ -70,8 +70,7 @@ class MojoFacadeTest : public WebTest {
     frames_manager_ = web_frames_manager.get();
     web_state_.SetWebFramesManager(std::move(web_frames_manager));
 
-    auto main_frame =
-        FakeWebFrame::Create("frameID", /*is_main_frame=*/true, GURL());
+    auto main_frame = FakeWebFrame::Create("frameID", /*is_main_frame=*/true);
 
     main_frame_ = main_frame.get();
     frames_manager_->AddWebFrame(std::move(main_frame));

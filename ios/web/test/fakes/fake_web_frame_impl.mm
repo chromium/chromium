@@ -25,12 +25,19 @@ const char kChildFakeFrameId[] = "1effd8f52a067c8d3a01762d3c41dfd2";
 const char kChildFakeFrameId2[] = "1effd8f52a067c8d3a01762d3c41dfd3";
 
 // static
+std::unique_ptr<FakeWebFrame> FakeWebFrame::Create(const std::string& frame_id,
+                                                   bool is_main_frame) {
+  return std::make_unique<FakeWebFrameImpl>(frame_id, is_main_frame,
+                                            url::Origin());
+}
+
+// static
 std::unique_ptr<FakeWebFrame> FakeWebFrame::Create(
     const std::string& frame_id,
     bool is_main_frame,
     url::Origin security_origin) {
   return std::make_unique<FakeWebFrameImpl>(frame_id, is_main_frame,
-                                            security_origin, GURL());
+                                            security_origin);
 }
 
 // static
@@ -38,21 +45,20 @@ std::unique_ptr<FakeWebFrame> FakeWebFrame::Create(const std::string& frame_id,
                                                    bool is_main_frame,
                                                    GURL security_origin) {
   return std::make_unique<FakeWebFrameImpl>(
-      frame_id, is_main_frame, url::Origin::Create(security_origin),
-      security_origin);
+      frame_id, is_main_frame, url::Origin::Create(security_origin));
 }
 
 // static
 std::unique_ptr<FakeWebFrame> FakeWebFrame::CreateMainWebFrame() {
   return std::make_unique<FakeWebFrameImpl>(
-      kMainFakeFrameId, /*is_main_frame=*/true, url::Origin(), GURL());
+      kMainFakeFrameId, /*is_main_frame=*/true, url::Origin());
 }
 
 // static
 std::unique_ptr<FakeWebFrame> FakeWebFrame::CreateMainWebFrame(
     url::Origin security_origin) {
   return std::make_unique<FakeWebFrameImpl>(
-      kMainFakeFrameId, /*is_main_frame=*/true, security_origin, GURL());
+      kMainFakeFrameId, /*is_main_frame=*/true, security_origin);
 }
 
 // static
@@ -60,20 +66,20 @@ std::unique_ptr<FakeWebFrame> FakeWebFrame::CreateMainWebFrame(
     GURL security_origin) {
   return std::make_unique<FakeWebFrameImpl>(
       kMainFakeFrameId, /*is_main_frame=*/true,
-      url::Origin::Create(security_origin), security_origin);
+      url::Origin::Create(security_origin));
 }
 
 // static
 std::unique_ptr<FakeWebFrame> FakeWebFrame::CreateChildWebFrame() {
   return std::make_unique<FakeWebFrameImpl>(
-      kChildFakeFrameId, /*is_main_frame=*/false, url::Origin(), GURL());
+      kChildFakeFrameId, /*is_main_frame=*/false, url::Origin());
 }
 
 // static
 std::unique_ptr<FakeWebFrame> FakeWebFrame::CreateChildWebFrame(
     url::Origin security_origin) {
   return std::make_unique<FakeWebFrameImpl>(
-      kChildFakeFrameId, /*is_main_frame=*/false, security_origin, GURL());
+      kChildFakeFrameId, /*is_main_frame=*/false, security_origin);
 }
 
 // static
@@ -81,17 +87,14 @@ std::unique_ptr<FakeWebFrame> FakeWebFrame::CreateChildWebFrame(
     GURL security_origin) {
   return std::make_unique<FakeWebFrameImpl>(
       kChildFakeFrameId,
-      /*is_main_frame=*/false, url::Origin::Create(security_origin),
-      security_origin);
+      /*is_main_frame=*/false, url::Origin::Create(security_origin));
 }
 
 FakeWebFrameImpl::FakeWebFrameImpl(const std::string& frame_id,
                                    bool is_main_frame,
-                                   url::Origin security_origin,
-                                   const GURL& security_origin_gurl)
+                                   url::Origin security_origin)
     : frame_id_(base::ToLowerASCII(frame_id)),
       is_main_frame_(is_main_frame),
-      security_origin_gurl_(security_origin_gurl),
       security_origin_(security_origin) {}
 
 FakeWebFrameImpl::~FakeWebFrameImpl() {}
@@ -108,9 +111,6 @@ bool FakeWebFrameImpl::IsMainFrame() const {
 }
 url::Origin FakeWebFrameImpl::GetSecurityOrigin() const {
   return security_origin_;
-}
-GURL FakeWebFrameImpl::GetSecurityOriginDeprecated() const {
-  return security_origin_gurl_;
 }
 
 BrowserState* FakeWebFrameImpl::GetBrowserState() {

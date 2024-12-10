@@ -62,14 +62,12 @@ WebFrameImpl::WebFrameImpl(WKFrameInfo* frame_info,
                            const std::string& frame_id,
                            bool is_main_frame,
                            url::Origin security_origin,
-                           GURL security_origin_gurl,
                            web::WebState* web_state,
                            ContentWorld content_world)
     : frame_info_(frame_info),
       frame_id_(base::ToLowerASCII(frame_id)),
       is_main_frame_(is_main_frame),
       security_origin_(security_origin),
-      security_origin_gurl_(security_origin_gurl),
       web_state_(web_state),
       content_world_(content_world) {
   DCHECK(frame_info_);
@@ -100,10 +98,6 @@ bool WebFrameImpl::IsMainFrame() const {
 
 url::Origin WebFrameImpl::GetSecurityOrigin() const {
   return security_origin_;
-}
-
-GURL WebFrameImpl::GetSecurityOriginDeprecated() const {
-  return security_origin_gurl_;
 }
 
 BrowserState* WebFrameImpl::GetBrowserState() {
