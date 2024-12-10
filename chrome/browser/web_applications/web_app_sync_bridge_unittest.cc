@@ -1423,11 +1423,9 @@ TEST_F(WebAppSyncBridgeTest, SpecificsProtoWithNewFieldPreserved) {
   // sync_proto.set_test_new_field("hello");
   // sync_proto.SerializeAsString();
   const char kStartUrl[] = "https://example.com/launchurl";
-  const std::string serialized_proto = {
-      10,  29,  104, 116, 116, 112, 115, 58,  47,  47,  101, 120, 97,  109,
-      112, 108, 101, 46,  99,  111, 109, 47,  108, 97,  117, 110, 99,  104,
-      117, 114, 108, 18,  9,   84,  101, 115, 116, 32,  110, 97,  109, 101,
-      24,  1,   -6,  -75, -65, 20,  5,   104, 101, 108, 108, 111};
+  const std::string serialized_proto =
+      "\n\035https://example.com/launchurl\022\tTest "
+      "name\030\001\372\265\277\024\005hello";
   const GURL start_url = GURL(kStartUrl);
   const webapps::AppId app_id =
       GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
