@@ -108,6 +108,7 @@ TEST_F(MagicBoostStateAshTest, UpdateMagicBoostEnabledState) {
   // Both HMR and Orca should be disabled when `kMagicBoostEnabled` is false.
   EXPECT_FALSE(MagicBoostState::Get()->hmr_enabled().value());
   EXPECT_FALSE(prefs()->GetBoolean(ash::prefs::kOrcaEnabled));
+  EXPECT_FALSE(prefs()->GetBoolean(ash::prefs::kLobsterEnabled));
 
   // The observer class should get a notification when the pref value
   // changes.
@@ -119,6 +120,7 @@ TEST_F(MagicBoostStateAshTest, UpdateMagicBoostEnabledState) {
   // Both HMR and Orca should be enabled when `kMagicBoostEnabled` is true.
   EXPECT_TRUE(MagicBoostState::Get()->hmr_enabled().value());
   EXPECT_TRUE(prefs()->GetBoolean(ash::prefs::kOrcaEnabled));
+  EXPECT_TRUE(prefs()->GetBoolean(ash::prefs::kLobsterEnabled));
 
   // The observer class should get a notification when the pref value
   // changes.
