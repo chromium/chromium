@@ -382,10 +382,9 @@ pass it along to / include someone who can direct it more precisely.
   CC drhsqlite@ for upstream issues.
 * **Fullscreen bugs** the Open Screen team is taking ownership of Full Screen
   issues, including security bugs. Please assign Full Screen security issues to
-  takumif@chromium.org and cc: atadres@chromium.org, muyaoxu@google.com, and
-  mfoltz@chromium.org. They are also working on holistic solutions to improving
-  the security of fullscreen, so please remember to look for potential
-  duplicates of ongoing work.
+  muyaoxu@ and cc: liberato@ and mfoltz@. The team is also currently working on
+  holistic changes to improve Full Screen security, so please remember to keep
+  a look out for potential duplicates of planned or ongoing work.
 * **BoringSSL** the BoringSSL project has moved into the Chromium tracker.
   BoringSSL is a library, so security bugs that do not impact Chrome may still
   be meaningful (e.g. server-side bugs). BoringSSL security issues should be
