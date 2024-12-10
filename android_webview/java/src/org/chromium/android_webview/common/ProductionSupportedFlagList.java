@@ -206,6 +206,12 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 NetFeatures.OPTIMIZE_PARSING_DATA_URLS, "Enables optimizing parsing data: URLs."),
         Flag.baseFeature(
+                NetFeatures.SIMDUTF_BASE64_SUPPORT,
+                "Use the simdutf library to base64 decode data: URLs."),
+        Flag.baseFeature(
+                NetFeatures.FURTHER_OPTIMIZE_PARSING_DATA_URLS,
+                "Further optimize parsing data: URLs."),
+        Flag.baseFeature(
                 AwFeatures.WEBVIEW_EXTRA_HEADERS_SAME_ORIGIN_ONLY,
                 "Only allow extra headers added via loadUrl() to be sent to the same origin "
                         + "as the original request."),
