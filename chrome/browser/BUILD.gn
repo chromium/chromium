@@ -6068,6 +6068,8 @@ static_library("browser") {
       "policy/annotations/annotation_control_provider.h",
       "policy/annotations/blocklist_handler.cc",
       "policy/annotations/blocklist_handler.h",
+      "policy/power_battery_charging_optimization_policy_handler.cc",
+      "policy/power_battery_charging_optimization_policy_handler.h",
       "policy/restricted_mgs_policy_provider.cc",
       "policy/restricted_mgs_policy_provider.h",
       "renderer_context_menu/read_write_card_observer.cc",

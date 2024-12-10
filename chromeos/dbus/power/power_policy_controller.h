@@ -119,6 +119,8 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerPolicyController
     std::optional<bool> send_feedback_if_undimmed;
     // Only set adaptive_charging_enabled in policy proto if this field is set.
     std::optional<bool> adaptive_charging_enabled;
+    // Only set charge_limit_enabled in policy proto if this field is set.
+    std::optional<bool> charge_limit_enabled;
 
     // Adaptive charging configs, only set when adaptive_charging_enabled.
     // Configurable via base::FeatureParam.

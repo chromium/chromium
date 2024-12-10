@@ -1,0 +1,47 @@
+caption: Battery Charging Optimization
+desc: |-
+  Battery health can be affected by factors like frequent full charges and extended charging durations. This policy provides three options to optimize charging behavior and mitigate these factors, ultimately prolonging battery lifespan.
+
+  Setting the policy to Standard, the battery charges normally to 100%. This disables adaptive and limited charging.
+
+  Setting the policy to Adaptive, the device learns your charging habits and delays charging to 100% until necessary. This helps prolong battery health.
+
+  Setting the policy to Limited, the battery charges only to around 80% to maximize its lifespan.
+
+  Leaving this policy unset applies the Standard option (where supported).
+
+  The DevicePowerBatteryChargingOptimization policy overrides the DevicePowerAdaptiveChargingEnabled policy.
+
+  DevicePowerAdaptiveChargingEnabled controls adaptive charging if DevicePowerBatteryChargingOptimization is unset.
+
+  The DevicePowerBatteryChargingOptimization and DevicePowerAdaptiveChargingEnabled policies always take precedence over user settings.
+
+device_only: true
+example_value: 1
+default: 1
+features:
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Fully charge battery at a standard rate. This mode disables adaptive and limited charging.
+  name: Standard
+  value: 1
+- caption: Adaptive charge battery using machine learning to predict the time you disconnect the charger and delays charging to 100% to extend battery life.
+  name: Adaptive
+  value: 2
+- caption: Charge battery to around 80% to maximize battery lifespan.
+  name: Limited
+  value: 3
+owners:
+- jingmuli@google.com
+- chromeos-power-team@google.com
+schema:
+  enum:
+  - 1
+  - 2
+  - 3
+  type: integer
+future_on:
+- chrome_os
+tags: []
+type: int-enum

@@ -2010,6 +2010,18 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
+  if (policy.has_devicepowerbatterychargingoptimization()) {
+    const em::IntegerPolicyProto& container(
+        policy.devicepowerbatterychargingoptimization());
+    if (container.has_value()) {
+      if (auto value = DecodeIntegerValue(container.value())) {
+        policies->Set(key::kDevicePowerBatteryChargingOptimization,
+                      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                      POLICY_SOURCE_CLOUD, std::move(*value), nullptr);
+      }
+    }
+  }
+
   if (policy.has_device_usb_power_share()) {
     const em::DeviceUsbPowerShareProto& container(
         policy.device_usb_power_share());

@@ -1284,6 +1284,9 @@ inline constexpr char kPowerAcIdleWarningDelayMs[] =
 // charge until necessary to extend battery life) is enabled.
 inline constexpr char kPowerAdaptiveChargingEnabled[] =
     "power.adaptive_charging_enabled";
+// Boolean pref of whether charge limit (i.e. holding battery at 80% charge to
+// extend battery life) is enabled.
+inline constexpr char kPowerChargeLimitEnabled[] = "power.charge_limit_enabled";
 // Boolean pref of whether adaptive charging educational nudge is shown to the
 // user.
 inline constexpr char kPowerAdaptiveChargingNudgeShown[] =

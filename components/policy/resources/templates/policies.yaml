@@ -1317,6 +1317,7 @@ policies:
   1316: PasswordManagerPasskeysEnabled
   1317: FilePickerChooseFromDriveSettings
   1318: LiveTranslateEnabled
+  1319: DevicePowerBatteryChargingOptimization
 
 atomic_groups:
   1: Homepage
