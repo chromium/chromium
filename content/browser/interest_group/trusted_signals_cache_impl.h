@@ -11,6 +11,7 @@
 #include <set>
 #include <string>
 
+#include "base/containers/lru_cache.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -159,6 +160,8 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
         base::UnguessableToken::Create()};
   };
 
+  static constexpr size_t kNonceCacheSize = 50;
+
   TrustedSignalsCacheImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       GetCoordinatorKeyCallback get_coordinator_key_callback);
@@ -245,6 +248,38 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
     url::Origin script_origin;
   };
 
+  // Values that prevent sharing network nonces used to distinghuish network
+  // partitions used to fetch the signals. Note that the network partition also
+  // uses the top frame site in addition to the nonce, so there's no need to
+  // include that.
+  //
+  // Since the `signals_url` is sent to the untrusted server in front of the
+  // TEE, using the same network partition for different signals URLs would leak
+  // data, so key on that.
+  //
+  // Sharing partitions for different owners or different signals types also
+  // seems potentially leaky, so include those as well.
+  struct NetworkPartitionNonceKey {
+    NetworkPartitionNonceKey();
+    NetworkPartitionNonceKey(const url::Origin& script_origin,
+                             SignalsType signals_type,
+                             const GURL& trusted_signals_url);
+    NetworkPartitionNonceKey(const NetworkPartitionNonceKey&);
+    NetworkPartitionNonceKey(NetworkPartitionNonceKey&&);
+    ~NetworkPartitionNonceKey();
+
+    NetworkPartitionNonceKey& operator=(const NetworkPartitionNonceKey&);
+    NetworkPartitionNonceKey& operator=(NetworkPartitionNonceKey&&);
+
+    bool operator<(const NetworkPartitionNonceKey& other) const;
+
+    // Values are roughly in order of what is expected to be most performant for
+    // comparisons.
+    url::Origin script_origin;
+    SignalsType signals_type;
+    GURL trusted_signals_url;
+  };
+
   // Key used for live or pending requests to a trusted server. Two request with
   // the same FetchKey can be merged together, but the requests themselves may
   // differ in other fields. Before the network request is started, any request
@@ -281,18 +316,26 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
 
     bool operator<(const FetchKey& other) const;
 
+    const url::Origin& script_origin() const {
+      return network_partition_nonce_key.script_origin;
+    }
+    SignalsType signals_type() const {
+      return network_partition_nonce_key.signals_type;
+    }
+    const GURL& trusted_signals_url() const {
+      return network_partition_nonce_key.trusted_signals_url;
+    }
+
     // Order here matches comparison order in operator<(), and is based on a
     // guess on what order will result in the most performant comparisons.
 
-    url::Origin script_origin;
-    SignalsType signals_type;
+    NetworkPartitionNonceKey network_partition_nonce_key;
 
     // The origin of the frame running the auction that needs the signals. This
     // could potentially be used to separate compression groups instead of
     // fetches, but best to be safe.
     url::Origin main_frame_origin;
 
-    GURL trusted_signals_url;
     url::Origin coordinator;
   };
 
@@ -508,6 +551,9 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   void DestroyBiddingCacheEntry(BiddingCacheEntryMap::iterator cache_entry_it);
   void DestroyScoringCacheEntry(ScoringCacheEntryMap::iterator cache_entry_it);
 
+  base::UnguessableToken GetNetworkPartitionNonce(
+      const NetworkPartitionNonceKey& network_partition_nonce_key);
+
   // Virtual for testing.
   virtual std::unique_ptr<TrustedSignalsFetcher> CreateFetcher();
 
@@ -539,9 +585,12 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
            raw_ptr<CompressionGroupData, CtnExperimental>>
       compression_group_data_map_;
 
-  // TODO(crbug.com/379844661): Switch to using an LRU cache of unguessable
-  // tokens keyed on script origin, signals URL, and bidder/seller bit.
-  base::UnguessableToken constant_token = base::UnguessableToken::Create();
+  // Cache of the most recently used network partition nonces. When a nonce is
+  // evicted, any network state cached in the network process associated with
+  // the nonce will no longer be usable, and if the key for the evicted entry is
+  // seen again, a new UnguessableToken will be created.
+  base::LRUCache<NetworkPartitionNonceKey, base::UnguessableToken>
+      network_partition_nonce_cache_;
 };
 
 }  // namespace content

@@ -7,6 +7,7 @@
 #include <list>
 #include <optional>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -124,6 +125,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
       GURL trusted_signals_url;
       BiddingAndAuctionServerKey bidding_and_auction_key;
       url::Origin main_frame_origin;
+      base::UnguessableToken network_partition_nonce;
       url::Origin script_origin;
       std::map<int, std::vector<FetcherBiddingPartitionArgs>>
           compression_groups;
@@ -138,6 +140,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
       GURL trusted_signals_url;
       BiddingAndAuctionServerKey bidding_and_auction_key;
       url::Origin main_frame_origin;
+      base::UnguessableToken network_partition_nonce;
       url::Origin script_origin;
       std::map<int, std::vector<FetcherScoringPartitionArgs>>
           compression_groups;
@@ -184,8 +187,9 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
 
       cache_->OnPendingBiddingSignalsFetch(PendingBiddingSignalsFetch(
           trusted_signals_url, bidding_and_auction_key, main_frame_origin,
-          script_origin, std::move(compression_groups_copy),
-          std::move(callback), weak_ptr_factory_.GetWeakPtr()));
+          network_partition_nonce, script_origin,
+          std::move(compression_groups_copy), std::move(callback),
+          weak_ptr_factory_.GetWeakPtr()));
     }
 
     void FetchScoringSignals(
@@ -218,8 +222,9 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
 
       cache_->OnPendingScoringSignalsFetch(PendingScoringSignalsFetch(
           trusted_signals_url, bidding_and_auction_key, main_frame_origin,
-          script_origin, std::move(compression_groups_copy),
-          std::move(callback), weak_ptr_factory_.GetWeakPtr()));
+          network_partition_nonce, script_origin,
+          std::move(compression_groups_copy), std::move(callback),
+          weak_ptr_factory_.GetWeakPtr()));
     }
 
     const raw_ptr<TestTrustedSignalsCache> cache_;
@@ -691,6 +696,11 @@ class TrustedSignalsCacheTest : public testing::Test {
     // Used for documentation + useful output on errors.
     const char* description;
     RequestRelation request_relation = RequestRelation::kDifferentFetches;
+    // This is primarily relevant for kDifferentFetches. If there's a single
+    // fetch, there's necessarily a single nonce. Default to true since in some
+    // tests with other RequestRelations, multiple network fetches end up being
+    // made, and they should use the same nonce.
+    bool expect_same_network_partition_nonce = true;
     ParamsType params1;
     ParamsType params2;
   };
@@ -762,31 +772,43 @@ class TrustedSignalsCacheTest : public testing::Test {
     }
   }
 
+  // Separate methods to create default bidding and scoring params, for the few
+  // tests that need both.
+
+  BiddingParams CreateDefaultBiddingParams() const {
+    BiddingParams out;
+    out.main_frame_origin = kMainFrameOrigin;
+    out.script_origin = kBidder;
+    out.interest_group_names = {kInterestGroupName};
+    out.execution_mode =
+        blink::mojom::InterestGroup_ExecutionMode::kCompatibilityMode;
+    out.joining_origin = kJoiningOrigin;
+    out.trusted_signals_url = kTrustedBiddingSignalsUrl;
+    out.coordinator = kCoordinator;
+    out.trusted_bidding_signals_keys = {{"key1", "key2"}};
+    return out;
+  }
+
+  ScoringParams CreateDefaultScoringParams() const {
+    ScoringParams out;
+    out.main_frame_origin = kMainFrameOrigin;
+    out.script_origin = kSeller;
+    out.trusted_signals_url = kTrustedScoringSignalsUrl;
+    out.coordinator = kCoordinator;
+    out.interest_group_owner = kBidder;
+    out.joining_origin = kJoiningOrigin;
+    out.render_url = kRenderUrl;
+    out.component_render_urls = kComponentRenderUrls;
+    return out;
+  }
+
+  // Creates the default parameters of ParamsType.
   ParamsType CreateDefaultParams() const {
     if constexpr (std::is_same<ParamsType, BiddingParams>::value) {
-      BiddingParams out;
-      out.main_frame_origin = kMainFrameOrigin;
-      out.script_origin = kBidder;
-      out.interest_group_names = {kInterestGroupName};
-      out.execution_mode =
-          blink::mojom::InterestGroup_ExecutionMode::kCompatibilityMode;
-      out.joining_origin = kJoiningOrigin;
-      out.trusted_signals_url = kTrustedBiddingSignalsUrl;
-      out.coordinator = kCoordinator;
-      out.trusted_bidding_signals_keys = {{"key1", "key2"}};
-      return out;
+      return CreateDefaultBiddingParams();
     }
     if constexpr (std::is_same<ParamsType, ScoringParams>::value) {
-      ScoringParams out;
-      out.main_frame_origin = kMainFrameOrigin;
-      out.script_origin = kSeller;
-      out.trusted_signals_url = kTrustedScoringSignalsUrl;
-      out.coordinator = kCoordinator;
-      out.interest_group_owner = kBidder;
-      out.joining_origin = kJoiningOrigin;
-      out.render_url = kRenderUrl;
-      out.component_render_urls = kComponentRenderUrls;
-      return out;
+      return CreateDefaultScoringParams();
     }
   }
 
@@ -811,6 +833,7 @@ class TrustedSignalsCacheTest : public testing::Test {
       out.emplace_back(CreateDefaultTestCase());
       out.back().description = "Different bidders";
       out.back().request_relation = RequestRelation::kDifferentFetches;
+      out.back().expect_same_network_partition_nonce = false;
       out.back().params2.script_origin =
           url::Origin::Create(GURL("https://other.bidder.test/"));
 
@@ -829,6 +852,7 @@ class TrustedSignalsCacheTest : public testing::Test {
       out.emplace_back(CreateDefaultTestCase());
       out.back().description = "Different trusted bidding signals URLs";
       out.back().request_relation = RequestRelation::kDifferentFetches;
+      out.back().expect_same_network_partition_nonce = false;
       out.back().params2.trusted_signals_url =
           GURL("https://other.bidder.test/signals");
 
@@ -975,12 +999,14 @@ class TrustedSignalsCacheTest : public testing::Test {
       out.emplace_back(CreateDefaultTestCase());
       out.back().description = "Different sellers";
       out.back().request_relation = RequestRelation::kDifferentFetches;
+      out.back().expect_same_network_partition_nonce = false;
       out.back().params2.script_origin =
           url::Origin::Create(GURL("https://other.seller.test/"));
 
       out.emplace_back(CreateDefaultTestCase());
       out.back().description = "Different trusted scoring signals URLs";
       out.back().request_relation = RequestRelation::kDifferentFetches;
+      out.back().expect_same_network_partition_nonce = false;
       out.back().params2.trusted_signals_url =
           GURL("https://seller.test/signals2");
 
@@ -2008,6 +2034,9 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsBeforeFetchStart) {
                             /*expected_compression_group_id=*/0, partition_id1);
         ValidateFetchParams(fetches[1], params2,
                             /*expected_compression_group_id=*/0, partition_id2);
+        EXPECT_EQ(fetches[0].network_partition_nonce ==
+                      fetches[1].network_partition_nonce,
+                  test_case.expect_same_network_partition_nonce);
 
         // Make both requests succeed with different bodies, and check that they
         // can be read.
@@ -2133,6 +2162,9 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsAfterFetchStart) {
         auto fetch2 = this->WaitForSignalsFetch();
         ValidateFetchParams(fetch2, params2,
                             /*expected_compression_group_id=*/0, partition_id2);
+        EXPECT_EQ(
+            fetch1.network_partition_nonce == fetch2.network_partition_nonce,
+            test_case.expect_same_network_partition_nonce);
 
         // Make both requests succeed with different bodies, and check that they
         // can be read.
@@ -2206,6 +2238,9 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsAfterFetchComplete) {
         auto fetch2 = this->WaitForSignalsFetch();
         ValidateFetchParams(fetch2, params2,
                             /*expected_compression_group_id=*/0, partition_id2);
+        EXPECT_EQ(
+            fetch1.network_partition_nonce == fetch2.network_partition_nonce,
+            test_case.expect_same_network_partition_nonce);
 
         RespondToFetchWithSuccess(
             fetch2,
@@ -2276,7 +2311,7 @@ TYPED_TEST(TrustedSignalsCacheTest,
       // both to the caller and to the created fetches.
       case RequestRelation::kDifferentFetches:
       case RequestRelation::kDifferentCompressionGroups: {
-        // Fetch should not be affected by the second bid.
+        // Fetch should not be affected by the second (now cancelled) fetch.
         ValidateFetchParams(fetch1, params1,
                             /*expected_compression_group_id=*/0, partition_id1);
         RespondToFetchWithSuccess(fetch1);
@@ -2290,6 +2325,9 @@ TYPED_TEST(TrustedSignalsCacheTest,
         auto fetch3 = this->WaitForSignalsFetch();
         ValidateFetchParams(fetch3, params2,
                             /*expected_compression_group_id=*/0, partition_id3);
+        EXPECT_EQ(
+            fetch1.network_partition_nonce == fetch3.network_partition_nonce,
+            test_case.expect_same_network_partition_nonce);
         RespondToFetchWithSuccess(
             fetch3,
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
@@ -2384,7 +2422,7 @@ TYPED_TEST(TrustedSignalsCacheTest,
         // same both to the caller and to the created fetches.
       case RequestRelation::kDifferentFetches:
       case RequestRelation::kDifferentCompressionGroups: {
-        // Fetch should not be affected by the first bid.
+        // Fetch should not be affected by the first (cancelled) fetch.
         ValidateFetchParams(fetch1, params2,
                             /*expected_compression_group_id=*/0, partition_id2);
         RespondToFetchWithSuccess(fetch1);
@@ -2399,6 +2437,9 @@ TYPED_TEST(TrustedSignalsCacheTest,
         auto fetch3 = this->WaitForSignalsFetch();
         ValidateFetchParams(fetch3, params1,
                             /*expected_compression_group_id=*/0, partition_id3);
+        EXPECT_EQ(
+            fetch1.network_partition_nonce == fetch3.network_partition_nonce,
+            test_case.expect_same_network_partition_nonce);
         RespondToFetchWithSuccess(
             fetch3,
             auction_worklet::mojom::TrustedSignalsCompressionScheme::kBrotli,
@@ -2506,6 +2547,9 @@ TYPED_TEST(TrustedSignalsCacheTest,
                             /*expected_compression_group_id=*/0, partition_id1);
         ValidateFetchParams(fetches[1], params2,
                             /*expected_compression_group_id=*/0, partition_id2);
+        EXPECT_EQ(fetches[0].network_partition_nonce ==
+                      fetches[1].network_partition_nonce,
+                  test_case.expect_same_network_partition_nonce);
 
         // Cancel the second request. Its fetcher should be destroyed.
         handle2.reset();
@@ -2514,6 +2558,10 @@ TYPED_TEST(TrustedSignalsCacheTest,
         // Reissue second request, which should start a new fetch.
         auto [handle3, partition_id3] = this->RequestTrustedSignals(params2);
         auto fetch3 = this->WaitForSignalsFetch();
+        ValidateFetchParams(fetch3, params2,
+                            /*expected_compression_group_id=*/0, partition_id3);
+        EXPECT_EQ(fetches[1].network_partition_nonce,
+                  fetch3.network_partition_nonce);
 
         // Make both requests succeed with different bodies, and check that they
         // can be read.
@@ -2562,6 +2610,10 @@ TYPED_TEST(TrustedSignalsCacheTest,
                   handle1->compression_group_token());
         EXPECT_NE(handle3->compression_group_token(), compression_group_token2);
         auto fetch3 = this->WaitForSignalsFetch();
+        ValidateFetchParams(fetch3, params2,
+                            /*expected_compression_group_id=*/0, partition_id3);
+        EXPECT_EQ(fetch1.network_partition_nonce,
+                  fetch3.network_partition_nonce);
 
         // Respond to requests with 3 different results. `fetch[0]` gets
         // responses of `kSuccessBody` and `kOtherSuccessBody` for its two
@@ -2599,7 +2651,7 @@ TYPED_TEST(TrustedSignalsCacheTest,
         const auto& partitions = fetch1.compression_groups.begin()->second;
         ASSERT_EQ(partitions.size(), 2u);
         ValidateFetchParamsForPartition(partitions[0], params1, partition_id1);
-        ValidateFetchParamsForPartition(partitions[0], params1, partition_id1);
+        ValidateFetchParamsForPartition(partitions[1], params2, partition_id2);
 
         // Cancel the second request. The shared fetcher should not be
         // destroyed.
@@ -2842,6 +2894,9 @@ TYPED_TEST(TrustedSignalsCacheTest,
                             /*expected_compression_group_id=*/0, partition_id1);
         ValidateFetchParams(fetches[1], params2,
                             /*expected_compression_group_id=*/0, partition_id2);
+        EXPECT_EQ(fetches[0].network_partition_nonce ==
+                      fetches[1].network_partition_nonce,
+                  test_case.expect_same_network_partition_nonce);
 
         // Make both requests succeed with different bodies, and check that they
         // can be read.
@@ -3054,6 +3109,122 @@ TEST_F(TrustedBiddingSignalsCacheTest, MultipleRequestsSameCacheKey) {
   client1.WaitForSuccess(
       auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
       kSomeOtherSuccessBody);
+}
+
+TYPED_TEST(TrustedSignalsCacheTest, NonceCache) {
+  auto params = this->CreateDefaultParams();
+  std::array<base::UnguessableToken, TrustedSignalsCacheImpl::kNonceCacheSize>
+      nonces;
+  // Fill nonce cache, make sure all nonces are unique.
+  for (uint32_t i = 0; i < TrustedSignalsCacheImpl::kNonceCacheSize; ++i) {
+    params.trusted_signals_url =
+        GURL(base::StringPrintf("https://%u.test/signals", i));
+    auto [handle, partition_id] = this->RequestTrustedSignals(params);
+    auto fetch = this->WaitForSignalsFetch();
+    ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                        partition_id);
+    nonces[i] = fetch.network_partition_nonce;
+    for (uint32_t j = 0; j < i; ++j) {
+      EXPECT_NE(nonces[j], nonces[i]);
+    }
+  }
+
+  // Create requests reusing signals URLs. Make sure all nonces are reused, as
+  // expected.
+  for (uint32_t i = 0; i < TrustedSignalsCacheImpl::kNonceCacheSize; ++i) {
+    params.trusted_signals_url =
+        GURL(base::StringPrintf("https://%u.test/signals", i));
+    auto [handle, partition_id] = this->RequestTrustedSignals(params);
+    auto fetch = this->WaitForSignalsFetch();
+    ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                        partition_id);
+    EXPECT_EQ(fetch.network_partition_nonce, nonces[i]);
+  }
+
+  // Make request with a unique trusted signals URL. It should not reuse any of
+  // the existing tokens. This should result in the oldest token (for
+  // https://0.test) being evicted.
+  params.trusted_signals_url = GURL("https://unique.test/signals");
+  auto [handle_unique, partition_id_unique] =
+      this->RequestTrustedSignals(params);
+  auto fetch_unique = this->WaitForSignalsFetch();
+  ValidateFetchParams(fetch_unique, params, /*expected_compression_group_id=*/0,
+                      partition_id_unique);
+  base::UnguessableToken nonce_unique = fetch_unique.network_partition_nonce;
+  for (auto nonce : nonces) {
+    EXPECT_NE(nonce_unique, nonce);
+  }
+
+  // Check all tokens but the first are still be in the cache.
+  for (uint32_t i = 1; i < TrustedSignalsCacheImpl::kNonceCacheSize; ++i) {
+    params.trusted_signals_url =
+        GURL(base::StringPrintf("https://%u.test/signals", i));
+    auto [handle, partition_id] = this->RequestTrustedSignals(params);
+    auto fetch = this->WaitForSignalsFetch();
+    ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                        partition_id);
+    EXPECT_EQ(fetch.network_partition_nonce, nonces[i]);
+  }
+
+  // Token for "https://0.test" should have been evicted. A new fetch for it
+  // should now use a new nonce.
+  params.trusted_signals_url = GURL("https://0.test/signals");
+  auto [handle0, partition_id0] = this->RequestTrustedSignals(params);
+  auto fetch0 = this->WaitForSignalsFetch();
+  ValidateFetchParams(fetch0, params, /*expected_compression_group_id=*/0,
+                      partition_id0);
+  EXPECT_NE(fetch0.network_partition_nonce, nonce_unique);
+  for (auto nonce : nonces) {
+    EXPECT_NE(fetch0.network_partition_nonce, nonce);
+  }
+}
+
+// Make sure bidding and scoring requests to the same URL don't share fetches,
+// and use their own nonces.
+TYPED_TEST(TrustedSignalsCacheTest, DifferentTypes) {
+  auto bidding_params = this->CreateDefaultBiddingParams();
+  auto scoring_params = this->CreateDefaultScoringParams();
+  // Use the same script origin, so the keys end up being largely the same,
+  // other than signals type.
+  scoring_params.script_origin = bidding_params.script_origin;
+  // By default, bidding and scoring parameters use different URLs, but need to
+  // use the same ones for this test.
+  scoring_params.trusted_signals_url = bidding_params.trusted_signals_url;
+
+  scoped_refptr<TestTrustedSignalsCache::Handle> bidding_handle;
+  int bidding_partition_id;
+  scoped_refptr<TestTrustedSignalsCache::Handle> scoring_handle;
+  int scoring_partition_id;
+  // Vary which request is made first depending on the templatization of the
+  // test.
+  if constexpr (std::is_same<TypeParam, BiddingParams>::value) {
+    std::tie(bidding_handle, bidding_partition_id) =
+        this->RequestTrustedSignals(bidding_params);
+    std::tie(scoring_handle, scoring_partition_id) =
+        this->RequestTrustedSignals(scoring_params);
+  } else {
+    std::tie(scoring_handle, scoring_partition_id) =
+        this->RequestTrustedSignals(scoring_params);
+    std::tie(bidding_handle, bidding_partition_id) =
+        this->RequestTrustedSignals(bidding_params);
+  }
+  EXPECT_NE(bidding_handle, scoring_handle);
+
+  // There should be two fetches.
+  auto bidding_fetch =
+      this->trusted_signals_cache_->WaitForBiddingSignalsFetch();
+  ValidateFetchParams(bidding_fetch, bidding_params,
+                      /*expected_compression_group_id=*/0,
+                      bidding_partition_id);
+  auto scoring_fetch =
+      this->trusted_signals_cache_->WaitForScoringSignalsFetch();
+  ValidateFetchParams(scoring_fetch, scoring_params,
+                      /*expected_compression_group_id=*/0,
+                      scoring_partition_id);
+
+  // And the fetches should not share nonces.
+  EXPECT_NE(bidding_fetch.network_partition_nonce,
+            scoring_fetch.network_partition_nonce);
 }
 
 }  // namespace

@@ -84,6 +84,41 @@ TrustedSignalsCacheImpl::Handle::Handle() = default;
 
 TrustedSignalsCacheImpl::Handle::~Handle() = default;
 
+TrustedSignalsCacheImpl::NetworkPartitionNonceKey::NetworkPartitionNonceKey() =
+    default;
+
+TrustedSignalsCacheImpl::NetworkPartitionNonceKey::NetworkPartitionNonceKey(
+    const url::Origin& script_origin,
+    SignalsType signals_type,
+    const GURL& trusted_signals_url)
+    : script_origin(script_origin),
+      signals_type(signals_type),
+      trusted_signals_url(trusted_signals_url) {}
+
+TrustedSignalsCacheImpl::NetworkPartitionNonceKey::NetworkPartitionNonceKey(
+    const NetworkPartitionNonceKey&) = default;
+
+TrustedSignalsCacheImpl::NetworkPartitionNonceKey::NetworkPartitionNonceKey(
+    NetworkPartitionNonceKey&&) = default;
+
+TrustedSignalsCacheImpl::NetworkPartitionNonceKey::~NetworkPartitionNonceKey() =
+    default;
+
+TrustedSignalsCacheImpl::NetworkPartitionNonceKey&
+TrustedSignalsCacheImpl::NetworkPartitionNonceKey::operator=(
+    const NetworkPartitionNonceKey&) = default;
+
+TrustedSignalsCacheImpl::NetworkPartitionNonceKey&
+TrustedSignalsCacheImpl::NetworkPartitionNonceKey::operator=(
+    NetworkPartitionNonceKey&&) = default;
+
+bool TrustedSignalsCacheImpl::NetworkPartitionNonceKey::operator<(
+    const NetworkPartitionNonceKey& other) const {
+  return std::tie(script_origin, signals_type, trusted_signals_url) <
+         std::tie(other.script_origin, other.signals_type,
+                  other.trusted_signals_url);
+}
+
 TrustedSignalsCacheImpl::FetchKey::FetchKey() = default;
 
 TrustedSignalsCacheImpl::FetchKey::FetchKey(
@@ -92,10 +127,10 @@ TrustedSignalsCacheImpl::FetchKey::FetchKey(
     const url::Origin& script_origin,
     const GURL& trusted_signals_url,
     const url::Origin& coordinator)
-    : script_origin(script_origin),
-      signals_type(signals_type),
+    : network_partition_nonce_key(script_origin,
+                                  signals_type,
+                                  trusted_signals_url),
       main_frame_origin(main_frame_origin),
-      trusted_signals_url(trusted_signals_url),
       coordinator(coordinator) {}
 
 TrustedSignalsCacheImpl::FetchKey::FetchKey(const FetchKey&) = default;
@@ -109,10 +144,8 @@ TrustedSignalsCacheImpl::FetchKey& TrustedSignalsCacheImpl::FetchKey::operator=(
 TrustedSignalsCacheImpl::FetchKey::~FetchKey() = default;
 
 bool TrustedSignalsCacheImpl::FetchKey::operator<(const FetchKey& other) const {
-  return std::tie(script_origin, signals_type, main_frame_origin,
-                  trusted_signals_url, coordinator) <
-         std::tie(other.script_origin, other.signals_type,
-                  other.main_frame_origin, other.trusted_signals_url,
+  return std::tie(network_partition_nonce_key, main_frame_origin, coordinator) <
+         std::tie(other.network_partition_nonce_key, other.main_frame_origin,
                   other.coordinator);
 }
 
@@ -588,7 +621,8 @@ TrustedSignalsCacheImpl::TrustedSignalsCacheImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     GetCoordinatorKeyCallback get_coordinator_key_callback)
     : url_loader_factory_(std::move(url_loader_factory)),
-      get_coordinator_key_callback_(std::move(get_coordinator_key_callback)) {}
+      get_coordinator_key_callback_(std::move(get_coordinator_key_callback)),
+      network_partition_nonce_cache_(kNonceCacheSize) {}
 
 TrustedSignalsCacheImpl::~TrustedSignalsCacheImpl() = default;
 
@@ -853,7 +887,8 @@ TrustedSignalsCacheImpl::FindOrCreateCompressionGroupDataAndQueueFetch(
   scoped_refptr<CompressionGroupData> compression_group_data =
       base::MakeRefCounted<CompressionGroupData>(
           this,
-          ReceiverRestrictions{fetch_key.signals_type, fetch_key.script_origin},
+          ReceiverRestrictions{fetch_key.signals_type(),
+                               fetch_key.script_origin()},
           fetch_it, compression_group_it);
   compression_group_it->second.compression_group_data =
       compression_group_data.get();
@@ -938,7 +973,7 @@ void TrustedSignalsCacheImpl::OnCoordinatorKeyReceived(
     return;
   }
 
-  if (fetch_it->first.signals_type == SignalsType::kBidding) {
+  if (fetch_it->first.signals_type() == SignalsType::kBidding) {
     StartBiddingSignalsFetch(fetch_it, bidding_and_auction_server_key.value());
   } else {
     StartScoringSignalsFetch(fetch_it, bidding_and_auction_server_key.value());
@@ -950,6 +985,7 @@ void TrustedSignalsCacheImpl::StartBiddingSignalsFetch(
     const BiddingAndAuctionServerKey& bidding_and_auction_key) {
   std::map<int, std::vector<TrustedSignalsFetcher::BiddingPartition>>
       bidding_partition_map;
+  const FetchKey* fetch_key = &fetch_it->first;
   Fetch* fetch = &fetch_it->second;
   fetch->fetcher = CreateFetcher();
 
@@ -977,10 +1013,10 @@ void TrustedSignalsCacheImpl::StartBiddingSignalsFetch(
     }
   }
   fetch->fetcher->FetchBiddingSignals(
-      url_loader_factory_.get(), fetch_it->first.main_frame_origin,
-      constant_token, fetch_it->first.script_origin,
-      fetch_it->first.trusted_signals_url, bidding_and_auction_key,
-      bidding_partition_map,
+      url_loader_factory_.get(), fetch_key->main_frame_origin,
+      GetNetworkPartitionNonce(fetch_key->network_partition_nonce_key),
+      fetch_key->script_origin(), fetch_key->trusted_signals_url(),
+      bidding_and_auction_key, bidding_partition_map,
       base::BindOnce(&TrustedSignalsCacheImpl::OnFetchComplete,
                      base::Unretained(this), fetch_it));
 }
@@ -990,6 +1026,7 @@ void TrustedSignalsCacheImpl::StartScoringSignalsFetch(
     const BiddingAndAuctionServerKey& bidding_and_auction_key) {
   std::map<int, std::vector<TrustedSignalsFetcher::ScoringPartition>>
       scoring_partition_map;
+  const FetchKey* fetch_key = &fetch_it->first;
   Fetch* fetch = &fetch_it->second;
   fetch->fetcher = CreateFetcher();
 
@@ -1018,10 +1055,10 @@ void TrustedSignalsCacheImpl::StartScoringSignalsFetch(
     }
   }
   fetch->fetcher->FetchScoringSignals(
-      url_loader_factory_.get(), fetch_it->first.main_frame_origin,
-      constant_token, fetch_it->first.script_origin,
-      fetch_it->first.trusted_signals_url, bidding_and_auction_key,
-      scoring_partition_map,
+      url_loader_factory_.get(), fetch_key->main_frame_origin,
+      GetNetworkPartitionNonce(fetch_key->network_partition_nonce_key),
+      fetch_key->script_origin(), fetch_key->trusted_signals_url(),
+      bidding_and_auction_key, scoring_partition_map,
       base::BindOnce(&TrustedSignalsCacheImpl::OnFetchComplete,
                      base::Unretained(this), fetch_it));
 }
@@ -1158,6 +1195,16 @@ void TrustedSignalsCacheImpl::DestroyScoringCacheEntry(
         compression_group_data->fetch()->second.fetcher);
   compression_group_data->RemoveScoringCacheEntry(&cache_entry_it->second);
   scoring_cache_entries_.erase(cache_entry_it);
+}
+
+base::UnguessableToken TrustedSignalsCacheImpl::GetNetworkPartitionNonce(
+    const NetworkPartitionNonceKey& network_partition_nonce_key) {
+  auto it = network_partition_nonce_cache_.Get(network_partition_nonce_key);
+  if (it == network_partition_nonce_cache_.end()) {
+    it = network_partition_nonce_cache_.Put(network_partition_nonce_key,
+                                            base::UnguessableToken::Create());
+  }
+  return it->second;
 }
 
 std::unique_ptr<TrustedSignalsFetcher>
