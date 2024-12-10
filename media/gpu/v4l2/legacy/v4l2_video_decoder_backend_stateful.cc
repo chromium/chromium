@@ -347,8 +347,7 @@ void V4L2StatefulVideoDecoderBackend::EnqueueOutputBuffers() {
         if (!frame) {
           return;
         }
-        buffer =
-            output_queue_->GetFreeBufferForFrame(frame->GetSharedMemoryId());
+        buffer = output_queue_->GetFreeBufferForFrame(frame->tracking_token());
         if (!buffer) {
           no_buffer = true;
           break;
