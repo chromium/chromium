@@ -10,6 +10,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
+#include "components/collaboration/internal/messaging/data_sharing_change_notifier.h"
 #include "components/collaboration/internal/messaging/tab_group_change_notifier.h"
 #include "components/collaboration/public/messaging/message.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
@@ -24,14 +26,17 @@ class TabGroupSyncService;
 }  // namespace tab_groups
 
 namespace collaboration::messaging {
+class DataSharingChangeNotifier;
 class MessagingBackendStore;
 
 // The implementation of the MessagingBackendService.
 class MessagingBackendServiceImpl : public MessagingBackendService,
-                                    public TabGroupChangeNotifier::Observer {
+                                    public TabGroupChangeNotifier::Observer,
+                                    public DataSharingChangeNotifier::Observer {
  public:
   MessagingBackendServiceImpl(
       std::unique_ptr<TabGroupChangeNotifier> tab_group_change_notifier,
+      std::unique_ptr<DataSharingChangeNotifier> data_sharing_change_notifier,
       std::unique_ptr<MessagingBackendStore> messaging_backend_store,
       tab_groups::TabGroupSyncService* tab_group_sync_service,
       data_sharing::DataSharingService* data_sharing_service);
@@ -70,16 +75,34 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
   void OnTabSelected(
       std::optional<tab_groups::SavedTabGroupTab> selected_tab) override;
 
+  // DataSharingChangeNotifier::Observer.
+  void OnDataSharingChangeNotifierInitialized() override;
+
  private:
   // Provides functionality to go from observing the TabGroupSyncService to
   // a delta based observer API.
   std::unique_ptr<TabGroupChangeNotifier> tab_group_change_notifier_;
 
+  // Provides functionality to go from observing the DataSharingService to a
+  // smaller API surface and delta observation.
+  std::unique_ptr<DataSharingChangeNotifier> data_sharing_change_notifier_;
+
   // Store for reading and writing messages:
   std::unique_ptr<MessagingBackendStore> store_;
 
+  // Scoped observers for our delta change notifiers.
+  base::ScopedObservation<TabGroupChangeNotifier,
+                          TabGroupChangeNotifier::Observer>
+      tab_group_change_notifier_observer_{this};
+  base::ScopedObservation<DataSharingChangeNotifier,
+                          DataSharingChangeNotifier::Observer>
+      data_sharing_change_notifier_observer_{this};
+
   // Whether the TabGroupChangeNotifier has been initialized.
   bool tab_group_change_notifier_initialized_ = false;
+
+  // Whether the DataSharingChangeNotifier has been initialized.
+  bool data_sharing_change_notifier_initialized_ = false;
 
   // Service providing information about tabs and tab groups.
   raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;

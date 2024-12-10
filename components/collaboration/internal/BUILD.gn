@@ -72,6 +72,10 @@ static_library("messaging_internal") {
   sources = [
     "messaging/configuration.cc",
     "messaging/configuration.h",
+    "messaging/data_sharing_change_notifier.cc",
+    "messaging/data_sharing_change_notifier.h",
+    "messaging/data_sharing_change_notifier_impl.cc",
+    "messaging/data_sharing_change_notifier_impl.h",
     "messaging/empty_messaging_backend_service.cc",
     "messaging/empty_messaging_backend_service.h",
     "messaging/messaging_backend_service_impl.cc",
@@ -91,7 +95,9 @@ static_library("messaging_internal") {
     "//base",
     "//components/collaboration/internal/messaging/storage/protocol",
     "//components/collaboration/public:messaging_public",
+    "//components/data_sharing/public",
     "//components/saved_tab_groups/public",
+    "//google_apis",
   ]
 
   if (is_android) {
@@ -149,6 +155,7 @@ source_set("core_unit_tests") {
 source_set("messaging_unit_tests") {
   testonly = true
   sources = [
+    "messaging/data_sharing_change_notifier_impl_unittest.cc",
     "messaging/messaging_backend_service_impl_unittest.cc",
     "messaging/storage/messaging_backend_store_impl_unittest.cc",
     "messaging/tab_group_change_notifier_impl_unittest.cc",
@@ -157,6 +164,8 @@ source_set("messaging_unit_tests") {
     ":messaging_internal",
     "//base",
     "//base/test:test_support",
+    "//components/data_sharing:test_support",
+    "//components/data_sharing/public",
     "//components/saved_tab_groups/public",
     "//components/saved_tab_groups/test_support:test_support",
     "//components/tab_groups",

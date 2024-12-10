@@ -1,0 +1,59 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_COLLABORATION_INTERNAL_MESSAGING_DATA_SHARING_CHANGE_NOTIFIER_H_
+#define COMPONENTS_COLLABORATION_INTERNAL_MESSAGING_DATA_SHARING_CHANGE_NOTIFIER_H_
+
+#include "components/data_sharing/public/data_sharing_service.h"
+#include "google_apis/gaia/gaia_id.h"
+
+namespace base {
+class Time;
+}  // namespace base
+
+namespace collaboration::messaging {
+
+class DataSharingChangeNotifier
+    : public data_sharing::DataSharingService::Observer {
+ public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the DataSharingServiceChangeNofitier has been initialized.
+    // Use DataSharingChangeNotifier::IsInitialized() to check whether it has
+    // already been initialized. If the service has already been initialized
+    // when an observer is added, this is invoked asynchronously.
+    virtual void OnDataSharingChangeNotifierInitialized() {}
+
+    // User either created a new group or has joined an existing one.
+    virtual void OnGroupAdded(const data_sharing::GroupData& group_data,
+                              const base::Time& event_time) {}
+    // Either group has been deleted or user has been removed from the group.
+    virtual void OnGroupRemoved(const data_sharing::GroupData& group_id,
+                                const base::Time& event_time) {}
+
+    // Called when a new member has been added to the group.
+    virtual void OnGroupMemberAdded(const data_sharing::GroupData& group_id,
+                                    const GaiaId& member_gaia_id,
+                                    const base::Time& event_time) {}
+    // Called when a member has been removed from the group.
+    virtual void OnGroupMemberRemoved(const data_sharing::GroupData& group_id,
+                                      const GaiaId& member_gaia_id,
+                                      const base::Time& event_time) {}
+  };
+
+  ~DataSharingChangeNotifier() override;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
+
+  // Kicks off the initialization of this component.
+  virtual void Initialize() = 0;
+
+  // Whether this instance has finished initialization.
+  virtual bool IsInitialized() = 0;
+};
+
+}  // namespace collaboration::messaging
+
+#endif  // COMPONENTS_COLLABORATION_INTERNAL_MESSAGING_DATA_SHARING_CHANGE_NOTIFIER_H_

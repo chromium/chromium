@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/feature_utils.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "components/collaboration/internal/messaging/data_sharing_change_notifier_impl.h"
 #include "components/collaboration/internal/messaging/empty_messaging_backend_service.h"
 #include "components/collaboration/internal/messaging/messaging_backend_service_impl.h"
 #include "components/collaboration/internal/messaging/storage/messaging_backend_store_impl.h"
@@ -71,11 +72,15 @@ MessagingBackendServiceFactory::BuildServiceInstanceForBrowserContext(
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
   auto tab_group_change_notifier =
       std::make_unique<TabGroupChangeNotifierImpl>(tab_group_sync_service);
+  auto data_sharing_change_notifier =
+      std::make_unique<DataSharingChangeNotifierImpl>(data_sharing_service);
   auto messaging_backend_store = std::make_unique<MessagingBackendStoreImpl>();
 
   auto service = std::make_unique<MessagingBackendServiceImpl>(
-      std::move(tab_group_change_notifier), std::move(messaging_backend_store),
-      tab_group_sync_service, data_sharing_service);
+      std::move(tab_group_change_notifier),
+      std::move(data_sharing_change_notifier),
+      std::move(messaging_backend_store), tab_group_sync_service,
+      data_sharing_service);
 
   return std::move(service);
 }

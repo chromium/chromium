@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "components/collaboration/internal/messaging/data_sharing_change_notifier_impl.h"
 #include "components/collaboration/internal/messaging/storage/messaging_backend_store.h"
 #include "components/collaboration/internal/messaging/tab_group_change_notifier.h"
 #include "components/collaboration/public/messaging/message.h"
@@ -21,20 +22,23 @@ namespace collaboration::messaging {
 
 MessagingBackendServiceImpl::MessagingBackendServiceImpl(
     std::unique_ptr<TabGroupChangeNotifier> tab_group_change_notifier,
+    std::unique_ptr<DataSharingChangeNotifier> data_sharing_change_notifier,
     std::unique_ptr<MessagingBackendStore> messaging_backend_store,
     tab_groups::TabGroupSyncService* tab_group_sync_service,
     data_sharing::DataSharingService* data_sharing_service)
     : tab_group_change_notifier_(std::move(tab_group_change_notifier)),
+      data_sharing_change_notifier_(std::move(data_sharing_change_notifier)),
       store_(std::move(messaging_backend_store)),
       tab_group_sync_service_(tab_group_sync_service),
       data_sharing_service_(data_sharing_service) {
-  tab_group_change_notifier_->AddObserver(this);
+  tab_group_change_notifier_observer_.Observe(tab_group_change_notifier_.get());
   tab_group_change_notifier_->Initialize();
+  data_sharing_change_notifier_observer_.Observe(
+      data_sharing_change_notifier_.get());
+  data_sharing_change_notifier_->Initialize();
 }
 
-MessagingBackendServiceImpl::~MessagingBackendServiceImpl() {
-  tab_group_change_notifier_->RemoveObserver(this);
-}
+MessagingBackendServiceImpl::~MessagingBackendServiceImpl() = default;
 
 void MessagingBackendServiceImpl::SetInstantMessageDelegate(
     InstantMessageDelegate* instant_message_delegate) {
@@ -54,7 +58,8 @@ void MessagingBackendServiceImpl::RemovePersistentMessageObserver(
 }
 
 bool MessagingBackendServiceImpl::IsInitialized() {
-  return tab_group_change_notifier_initialized_;
+  return tab_group_change_notifier_initialized_ &&
+         data_sharing_change_notifier_initialized_;
 }
 
 std::vector<PersistentMessage> MessagingBackendServiceImpl::GetMessagesForTab(
@@ -89,6 +94,10 @@ std::vector<ActivityLogItem> MessagingBackendServiceImpl::GetActivityLog(
 
 void MessagingBackendServiceImpl::OnTabGroupChangeNotifierInitialized() {
   tab_group_change_notifier_initialized_ = true;
+}
+
+void MessagingBackendServiceImpl::OnDataSharingChangeNotifierInitialized() {
+  data_sharing_change_notifier_initialized_ = true;
 }
 
 void MessagingBackendServiceImpl::OnTabGroupAdded(
