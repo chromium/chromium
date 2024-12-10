@@ -697,10 +697,10 @@ TEST_F(CanvasResourceProviderTest,
   tr.is_overlay_candidate = true;
 
   scoped_refptr<ExternalCanvasResource> resource =
-      ExternalCanvasResource::Create(client_si, tr, tr.resource_source,
-                                     tr.hdr_metadata, viz::ReleaseCallback(),
-                                     SharedGpuContext::ContextProviderWrapper(),
-                                     provider->CreateWeakPtr());
+      ExternalCanvasResource::Create(
+          client_si, tr.sync_token(), tr.resource_source, tr.hdr_metadata,
+          viz::ReleaseCallback(), SharedGpuContext::ContextProviderWrapper(),
+          provider->CreateWeakPtr());
 
   // NewOrRecycledResource() would return nullptr before an ImportResource().
   EXPECT_TRUE(provider->ImportResource(resource));

@@ -806,7 +806,7 @@ void CanvasResourceSharedImage::OnMemoryDump(
 //==============================================================================
 scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
     scoped_refptr<gpu::ClientSharedImage> client_si,
-    const viz::TransferableResource& transferable_resource,
+    const gpu::SyncToken& sync_token,
     viz::TransferableResource::ResourceSource resource_source,
     gfx::HDRMetadata hdr_metadata,
     viz::ReleaseCallback release_callback,
@@ -814,11 +814,10 @@ scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
     base::WeakPtr<CanvasResourceProvider> provider) {
   TRACE_EVENT0("blink", "ExternalCanvasResource::Create");
   CHECK(client_si);
-  CHECK(client_si->mailbox() == transferable_resource.mailbox());
   auto resource = AdoptRef(new ExternalCanvasResource(
-      std::move(client_si), transferable_resource, resource_source,
-      hdr_metadata, std::move(release_callback),
-      std::move(context_provider_wrapper), std::move(provider)));
+      std::move(client_si), sync_token, resource_source, hdr_metadata,
+      std::move(release_callback), std::move(context_provider_wrapper),
+      std::move(provider)));
   return resource->IsValid() ? resource : nullptr;
 }
 
@@ -876,27 +875,26 @@ const gpu::SyncToken
 ExternalCanvasResource::GetSyncTokenWithOptionalVerification(
     bool needs_verified_token) {
   GenOrFlushSyncToken();
-  return transferable_resource_.sync_token();
+  return sync_token_;
 }
 
 void ExternalCanvasResource::GenOrFlushSyncToken() {
   TRACE_EVENT0("blink", "ExternalCanvasResource::GenOrFlushSyncToken");
-  auto& sync_token = transferable_resource_.mutable_sync_token();
   // This method is expected to be used both in WebGL and WebGPU, that's why it
   // uses InterfaceBase.
-  if (!sync_token.HasData()) {
+  if (!sync_token_.HasData()) {
     auto* interface = InterfaceBase();
     if (interface)
-      interface->GenSyncTokenCHROMIUM(sync_token.GetData());
-  } else if (!sync_token.verified_flush()) {
+      interface->GenSyncTokenCHROMIUM(sync_token_.GetData());
+  } else if (!sync_token_.verified_flush()) {
     // The offscreencanvas usage needs the sync_token to be verified in order to
     // be able to use it by the compositor.
-    int8_t* token_data = sync_token.GetData();
+    int8_t* token_data = sync_token_.GetData();
     auto* interface = InterfaceBase();
     DCHECK(interface);
     interface->ShallowFlushCHROMIUM();
     interface->VerifySyncTokensCHROMIUM(&token_data, 1);
-    sync_token.SetVerifyFlush();
+    sync_token_.SetVerifyFlush();
   }
 }
 
@@ -916,9 +914,9 @@ bool ExternalCanvasResource::
   GenOrFlushSyncToken();
 
   *out_resource = viz::TransferableResource::MakeGpu(
-      client_si_, client_si_->GetTextureTarget(),
-      transferable_resource_.sync_token(), client_si_->size(),
-      client_si_->format(), is_overlay_candidate_, resource_source_);
+      client_si_, client_si_->GetTextureTarget(), sync_token_,
+      client_si_->size(), client_si_->format(), is_overlay_candidate_,
+      resource_source_);
   out_resource->color_space = client_si_->color_space();
   out_resource->hdr_metadata = hdr_metadata_;
   out_resource->origin = client_si_->surface_origin();
@@ -928,7 +926,7 @@ bool ExternalCanvasResource::
 
 ExternalCanvasResource::ExternalCanvasResource(
     scoped_refptr<gpu::ClientSharedImage> client_si,
-    const viz::TransferableResource& transferable_resource,
+    const gpu::SyncToken& sync_token,
     viz::TransferableResource::ResourceSource resource_source,
     gfx::HDRMetadata hdr_metadata,
     viz::ReleaseCallback out_callback,
@@ -941,15 +939,14 @@ ExternalCanvasResource::ExternalCanvasResource(
                      client_si->color_space()),
       client_si_(std::move(client_si)),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
-      transferable_resource_(transferable_resource),
+      sync_token_(sync_token),
       resource_source_(resource_source),
       hdr_metadata_(hdr_metadata),
       is_overlay_candidate_(
           client_si_->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)),
       release_callback_(std::move(out_callback)) {
   CHECK(client_si_);
-  CHECK(client_si_->mailbox() == transferable_resource_.mailbox());
-  DCHECK(!release_callback_ || transferable_resource_.sync_token().HasData());
+  DCHECK(!release_callback_ || sync_token_.HasData());
 }
 
 // CanvasResourceSwapChain

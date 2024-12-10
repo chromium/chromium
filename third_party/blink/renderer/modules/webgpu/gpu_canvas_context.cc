@@ -244,7 +244,7 @@ bool GPUCanvasContext::PushFrame() {
   // ClientSharedImage must also be valid.
   CHECK(client_si);
   auto canvas_resource = ExternalCanvasResource::Create(
-      std::move(client_si), transferable_resource,
+      std::move(client_si), transferable_resource.sync_token(),
       transferable_resource.resource_source, transferable_resource.hdr_metadata,
       std::move(release_callback), GetContextProviderWeakPtr(),
       /*resource_provider=*/nullptr);
