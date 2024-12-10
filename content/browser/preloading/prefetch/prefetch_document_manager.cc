@@ -377,6 +377,36 @@ void PrefetchDocumentManager::SetPrefetchServiceForTesting(
   g_prefetch_service_for_testing = prefetch_service;
 }
 
+void PrefetchDocumentManager::ResetPrefetchAheadOfPrerenderIfExist(
+    const GURL& url) {
+  auto it =
+      all_prefetches_.find(std::make_pair(url, PreloadingType::kPrerender));
+  if (it == all_prefetches_.end()) {
+    return;
+  }
+
+  base::WeakPtr<PrefetchContainer> prefetch = it->second;
+
+  if (!prefetch) {
+    return;
+  }
+
+  switch (prefetch->GetLoadState()) {
+    case PrefetchContainer::LoadState::kNotStarted:
+    case PrefetchContainer::LoadState::kEligible:
+    case PrefetchContainer::LoadState::kFailedIneligible:
+    case PrefetchContainer::LoadState::kFailedHeldback:
+      break;
+    case PrefetchContainer::LoadState::kStarted:
+      prefetch->SetPrefetchStatus(
+          PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved);
+      break;
+  }
+
+  GetPrefetchService()->ResetPrefetch(prefetch);
+  all_prefetches_.erase(it);
+}
+
 PrefetchService* PrefetchDocumentManager::GetPrefetchService() const {
   if (g_prefetch_service_for_testing) {
     return g_prefetch_service_for_testing;

@@ -120,6 +120,8 @@ class CONTENT_EXPORT PrefetchDocumentManager
 
   static void SetPrefetchServiceForTesting(PrefetchService* prefetch_service);
 
+  void ResetPrefetchAheadOfPrerenderIfExist(const GURL& url);
+
  private:
   explicit PrefetchDocumentManager(RenderFrameHost* rfh);
   friend DocumentUserData;
