@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/uuid.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/types.h"
@@ -196,6 +197,13 @@ class SavedTabGroupModel {
       const std::optional<std::string>& cache_guid,
       const LocalTabGroupID& group_id,
       const std::optional<LocalTabID>& tab_id);
+
+  // Updates the shared attribution for a given group. This method does not
+  // notify observers as this method should be called together with other
+  // changes which would notify observers anyway.
+  void UpdateSharedAttribution(const LocalTabGroupID& group_id,
+                               const std::optional<LocalTabID>& tab_id,
+                               GaiaId updated_by);
 
   // Loads the model from the storage. `tabs` must have a corresponding group in
   // `groups`.

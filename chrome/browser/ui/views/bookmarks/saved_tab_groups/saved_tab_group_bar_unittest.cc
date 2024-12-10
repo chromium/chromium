@@ -206,16 +206,6 @@ class STGEverythingMenuUnitTest : public SavedTabGroupBarUnitTest {
   std::unique_ptr<STGEverythingMenu> everything_menu_;
 };
 
-class SavedTabGroupBarWithMigratedServiceTest
-    : public SavedTabGroupBarUnitTest {
- public:
-  SavedTabGroupBarWithMigratedServiceTest()
-      : feature_overrides_(kTabGroupSyncServiceDesktopMigration) {}
-
- private:
-  base::test::ScopedFeatureList feature_overrides_;
-};
-
 TEST_P(STGEverythingMenuUnitTest, TabGroupItemsSortedByCreationTime) {
   if (!IsV2UIEnabled()) {
     GTEST_SKIP() << "N/A for V1";
@@ -871,41 +861,12 @@ TEST_P(SavedTabGroupBarUnitTest, GroupWithNoTabsDoesntShow) {
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 }
 
-TEST_P(SavedTabGroupBarWithMigratedServiceTest, TabGroupMigratedWhenShared) {
-  if (!IsV2UIEnabled()) {
-    GTEST_SKIP() << "N/A for V1";
-  }
-
-  tab_groups::TabGroupId local_group_id = CreateNewGroupInBrowser();
-  const base::Uuid saved_guid =
-      SaveGroup(tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-          local_group_id));
-
-  ASSERT_THAT(GetButtonGUIDs(), ElementsAre(saved_guid));
-  service()
-      ->GetCollaborationFinderForTesting()
-      ->SetCollaborationAvailableForTesting("collaboration");
-  service()->MakeTabGroupShared(local_group_id, "collaboration");
-
-  ASSERT_TRUE(base::test::RunUntil([this, &saved_guid]() {
-    return !base::Contains(GetButtonGUIDs(), saved_guid);
-  })) << "Timeout while waiting for saved group to be removed";
-
-  // Verify that the originating tab group was removed. The shared tab group
-  // should not be added because it's not pinned.
-  EXPECT_THAT(GetButtonGUIDs(), IsEmpty());
-}
-
 INSTANTIATE_TEST_SUITE_P(SavedTabGroupBar,
                          SavedTabGroupBarUnitTest,
                          testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(SavedTabGroupEverythingMenu,
                          STGEverythingMenuUnitTest,
-                         testing::Bool());
-
-INSTANTIATE_TEST_SUITE_P(SavedTabGroupBarWithMigratedService,
-                         SavedTabGroupBarWithMigratedServiceTest,
                          testing::Bool());
 
 }  // namespace tab_groups

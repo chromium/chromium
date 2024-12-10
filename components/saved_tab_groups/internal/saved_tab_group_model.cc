@@ -22,6 +22,7 @@
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -509,6 +510,27 @@ void SavedTabGroupModel::UpdateLastUpdaterCacheGuidForGroup(
   if (tab) {
     tab->SetLastUpdaterCacheGuid(cache_guid);
   }
+}
+
+void SavedTabGroupModel::UpdateSharedAttribution(
+    const LocalTabGroupID& group_id,
+    const std::optional<LocalTabID>& tab_id,
+    GaiaId updated_by) {
+  SavedTabGroup* group = GetMutableGroup(group_id);
+  CHECK(group);
+  if (!tab_id.has_value()) {
+    group->SetUpdatedByAttribution(std::move(updated_by));
+    return;
+  }
+
+  SavedTabGroupTab* tab = group->GetTab(tab_id.value());
+  if (tab) {
+    tab->SetUpdatedByAttribution(std::move(updated_by));
+  }
+
+  // Do not notify observers to avoid having too many updates because this
+  // method is called quite extensively and in most cases duplicates the other
+  // updates.
 }
 
 const SavedTabGroup* SavedTabGroupModel::MergeRemoteGroupMetadata(

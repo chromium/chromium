@@ -297,7 +297,10 @@ void TabGroupSyncServiceImpl::AddGroup(SavedTabGroup group) {
     std::optional<GaiaId> account_id =
         sync_bridge_mediator_->GetTrackingAccountIdForSharedBridge();
     if (account_id.has_value()) {
-      group.SetUpdatedByAttribution(std::move(account_id.value()));
+      group.SetUpdatedByAttribution(account_id.value());
+      for (SavedTabGroupTab& tab : group.saved_tabs()) {
+        tab.SetUpdatedByAttribution(account_id.value());
+      }
     }
   }
 
@@ -336,6 +339,7 @@ void TabGroupSyncServiceImpl::UpdateVisualData(
   VLOG(2) << __func__;
   model_->UpdateVisualDataLocally(local_group_id, visual_data);
   UpdateAttributions(local_group_id);
+  UpdateSharedAttributions(local_group_id);
   LogEvent(TabGroupEvent::kTabGroupVisualsChanged, local_group_id,
            std::nullopt);
   stats::RecordTabGroupVisualsMetrics(visual_data);
@@ -387,6 +391,13 @@ void TabGroupSyncServiceImpl::AddTab(const LocalTabGroupID& group_id,
                          stats::TitleSanitizationType::kAddTab);
 
   UpdateAttributions(group_id);
+  if (group->is_shared_tab_group()) {
+    std::optional<GaiaId> account_id =
+        sync_bridge_mediator_->GetTrackingAccountIdForSharedBridge();
+    if (account_id.has_value()) {
+      new_tab.SetUpdatedByAttribution(std::move(account_id.value()));
+    }
+  }
   model_->UpdateLastUserInteractionTimeLocally(group_id);
   model_->AddTabToGroupLocally(group->saved_guid(), std::move(new_tab));
   LogEvent(TabGroupEvent::kTabAdded, group_id, std::nullopt);
@@ -554,18 +565,24 @@ void TabGroupSyncServiceImpl::MakeTabGroupShared(
   CHECK(saved_group);
   CHECK(!saved_group->is_shared_tab_group());
 
+  // TODO(crbug.com/380088920): add CHECK to verify that the bridge is syncing.
+  std::optional<std::string> account_id =
+      sync_bridge_mediator_->GetTrackingAccountIdForSharedBridge();
+  if (!account_id.has_value()) {
+    // Do not share the group if the bridge is not syncing. This should not
+    // happen in practice but it's safer to early return in this case.
+    return;
+  }
+
   // Make a deep copy of the group without fields which are not used in shared
   // tab groups, and without migration of local IDs.
   SavedTabGroup shared_group = saved_group->CloneAsSharedTabGroup(
       CollaborationId(std::string(collaboration_id)));
-  std::optional<std::string> account_id =
-      sync_bridge_mediator_->GetTrackingAccountIdForSharedBridge();
-  if (account_id.has_value()) {
-    shared_group.SetUpdatedByAttribution(std::move(account_id.value()));
-  }
+  shared_group.SetUpdatedByAttribution(account_id.value());
   for (SavedTabGroupTab& tab : shared_group.saved_tabs()) {
     UpdateTabTitleIfNeeded(shared_group, tab, opt_guide_,
                            stats::TitleSanitizationType::kShareTabGroup);
+    tab.SetUpdatedByAttribution(account_id.value());
   }
 
   model_->AddedLocally(std::move(shared_group));
@@ -1180,6 +1197,24 @@ void TabGroupSyncServiceImpl::UpdateAttributions(
       tab_id);
 }
 
+void TabGroupSyncServiceImpl::UpdateSharedAttributions(
+    const LocalTabGroupID& group_id,
+    const std::optional<LocalTabID>& tab_id) {
+  const SavedTabGroup* group = model_->Get(group_id);
+  if (!group || !group->is_shared_tab_group()) {
+    return;
+  }
+
+  std::optional<GaiaId> account_id =
+      sync_bridge_mediator_->GetTrackingAccountIdForSharedBridge();
+  if (!account_id) {
+    return;
+  }
+
+  model_->UpdateSharedAttribution(group_id, tab_id,
+                                  std::move(account_id.value()));
+}
+
 void TabGroupSyncServiceImpl::
     StoreSharedTabGroupsAvailableAtStartupForMessaging() {
   shared_tab_groups_available_at_startup_for_messaging_ =
@@ -1322,6 +1357,7 @@ void TabGroupSyncServiceImpl::NavigateTabInternal(
 
   // Update attributions for the tab first.
   UpdateAttributions(group_id, tab_id);
+  UpdateSharedAttributions(group_id, tab_id);
 
   // Use the builder to create the updated tab.
   bool will_update_url = url.SchemeIsHTTPOrHTTPS() && url != tab->url();

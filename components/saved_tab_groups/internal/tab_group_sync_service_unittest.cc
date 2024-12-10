@@ -48,12 +48,14 @@ using testing::ByRef;
 using testing::ContainerEq;
 using testing::Contains;
 using testing::DoAll;
+using testing::Each;
 using testing::Eq;
 using testing::Invoke;
 using testing::IsEmpty;
 using testing::Matcher;
 using testing::Not;
 using testing::NotNull;
+using testing::Pointee;
 using testing::Return;
 using testing::Sequence;
 using testing::SetArgPointee;
@@ -63,7 +65,8 @@ using testing::WithArgs;
 namespace tab_groups {
 namespace {
 
-const char kTestCacheGuid[] = "test_cache_guid";
+constexpr char kTestCacheGuid[] = "test_cache_guid";
+constexpr char kDefaultGaiaId[] = "default_gaia_id";
 
 MATCHER_P(HasGuid, guid, "") {
   return arg.saved_guid() == guid;
@@ -71,6 +74,11 @@ MATCHER_P(HasGuid, guid, "") {
 
 MATCHER(IsSharedGroup, "") {
   return arg.is_shared_tab_group();
+}
+
+MATCHER_P2(HasSharedAttribution, created_by, updated_by, "") {
+  return arg.shared_attribution().created_by == GaiaId(created_by) &&
+         arg.shared_attribution().updated_by == GaiaId(updated_by);
 }
 
 optimization_guide::OptimizationMetadata GetPageEntitiesMetadata(
@@ -206,6 +214,8 @@ class TabGroupSyncServiceTest : public testing::Test {
         .WillByDefault(testing::Return(fake_controller_delegate_.GetWeakPtr()));
     ON_CALL(shared_processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
+    ON_CALL(shared_processor_, TrackedAccountId())
+        .WillByDefault(testing::Return(kDefaultGaiaId));
     ON_CALL(*collaboration_finder_, IsCollaborationAvailable(_))
         .WillByDefault(testing::Return(true));
 
@@ -224,8 +234,13 @@ class TabGroupSyncServiceTest : public testing::Test {
   }
 
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>*
-  mock_processor() {
+  mock_saved_processor() {
     return &saved_processor_;
+  }
+
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>*
+  mock_shared_processor() {
+    return &shared_processor_;
   }
 
   void TearDown() override {
@@ -510,6 +525,22 @@ TEST_F(TabGroupSyncServiceTest, UpdateVisualData) {
       "TabGroups.Sync.TabGroup.VisualsChanged.GroupCreateOrigin", 1u);
 }
 
+TEST_F(TabGroupSyncServiceTest, UpdateSharedAttributionsOnUpdateVisualData) {
+  tab_group_sync_service_->MakeTabGroupShared(local_group_id_1_,
+                                              "collaboration");
+  WaitForPostedTasks();
+
+  EXPECT_CALL(*mock_shared_processor(), TrackedAccountId())
+      .WillOnce(Return("new_gaia_id"));
+  tab_groups::TabGroupVisualData visual_data = test::CreateTabGroupVisualData();
+  tab_group_sync_service_->UpdateVisualData(local_group_id_1_, &visual_data);
+
+  std::optional<SavedTabGroup> group =
+      tab_group_sync_service_->GetGroup(local_group_id_1_);
+  ASSERT_TRUE(group.has_value());
+  EXPECT_THAT(*group, HasSharedAttribution(kDefaultGaiaId, "new_gaia_id"));
+}
+
 TEST_F(TabGroupSyncServiceTest, OpenTabGroup) {
   EXPECT_CALL(*coordinator_,
               HandleOpenTabGroupRequest(group_2_.saved_guid(), testing::_))
@@ -635,19 +666,27 @@ TEST_F(TabGroupSyncServiceTest, AddTabToSharedGroup) {
   ASSERT_TRUE(shared_group->is_shared_tab_group());
   ASSERT_EQ(shared_group->saved_tabs().size(), 1u);
 
-  auto local_tab_id_2 = test::GenerateRandomTabID();
+  LocalTabID local_tab_id_2 = test::GenerateRandomTabID();
   tab_group_sync_service_->AddTab(local_group_id_1_, local_tab_id_2, u"foo",
                                   GURL("https://www.google.com"), std::nullopt);
-  auto local_tab_id_3 = test::GenerateRandomTabID();
+  LocalTabID local_tab_id_3 = test::GenerateRandomTabID();
   tab_group_sync_service_->AddTab(local_group_id_1_, local_tab_id_3, u"foo2",
                                   GURL("www.google.com"), std::nullopt);
 
   shared_group = tab_group_sync_service_->GetGroup(local_group_id_1_);
-  EXPECT_EQ(shared_group->saved_tabs().size(), 3u);
+  ASSERT_TRUE(shared_group.has_value());
+  ASSERT_EQ(shared_group->saved_tabs().size(), 3u);
+
   // Only tab 2 has title sanitized as it is an HTTPS url.
   EXPECT_EQ(shared_group->saved_tabs()[0].title(), u"Only Tab");
   EXPECT_EQ(shared_group->saved_tabs()[1].title(), u"google.com");
   EXPECT_EQ(shared_group->saved_tabs()[2].title(), u"foo2");
+
+  // All tabs should have the same attribution metadata.
+  EXPECT_THAT(shared_group->saved_tabs(),
+              Each(HasSharedAttribution(kDefaultGaiaId, kDefaultGaiaId)));
+  EXPECT_THAT(*shared_group,
+              HasSharedAttribution(kDefaultGaiaId, kDefaultGaiaId));
 }
 
 TEST_F(TabGroupSyncServiceTest, AddUpdateRemoveTabWithUnknownGroupId) {
@@ -968,6 +1007,32 @@ TEST_F(TabGroupSyncServiceTest, NavigateTabBlockedDueToSameFragment) {
   EXPECT_TRUE(tab);
   EXPECT_EQ(title_1, tab->title());
   EXPECT_EQ(url_1, tab->url());
+}
+
+TEST_F(TabGroupSyncServiceTest, NavigateTabUpdatesAttributionForSharedGroup) {
+  tab_group_sync_service_->MakeTabGroupShared(local_group_id_1_, "colab");
+  // The new group replaces the originating one asynchronously.
+  WaitForPostedTasks();
+
+  LocalTabID local_tab_id = test::GenerateRandomTabID();
+  tab_group_sync_service_->AddTab(local_group_id_1_, local_tab_id, u"title",
+                                  GURL("http://www.google.com"), std::nullopt);
+
+  std::optional<SavedTabGroup> group =
+      tab_group_sync_service_->GetGroup(local_group_id_1_);
+  ASSERT_TRUE(group.has_value());
+  ASSERT_THAT(group->GetTab(local_tab_id),
+              Pointee(HasSharedAttribution(kDefaultGaiaId, kDefaultGaiaId)));
+
+  EXPECT_CALL(*mock_shared_processor(), TrackedAccountId())
+      .WillOnce(Return("other_gaia_id"));
+  tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id,
+                                       GURL("http://www.example.com"),
+                                       u"title 2");
+  group = tab_group_sync_service_->GetGroup(local_group_id_1_);
+  ASSERT_TRUE(group.has_value());
+  EXPECT_THAT(group->GetTab(local_tab_id),
+              Pointee(HasSharedAttribution(kDefaultGaiaId, "other_gaia_id")));
 }
 
 TEST_F(TabGroupSyncServiceTest, NavigateTabBlockedDueToSamePath) {

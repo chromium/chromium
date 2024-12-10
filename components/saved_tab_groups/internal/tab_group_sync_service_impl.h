@@ -232,6 +232,14 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       const LocalTabGroupID& group_id,
       const std::optional<LocalTabID>& tab_id = std::nullopt);
 
+  // Helper method to update shared attributions for a group or tab. When
+  // `tab_id` is provided, the shared attributions are updated for the tab only.
+  // This method updates the shared attributions while UpdateAttributions()
+  // updates attributions for the saved tab groups.
+  void UpdateSharedAttributions(
+      const LocalTabGroupID& group_id,
+      const std::optional<LocalTabID>& tab_id = std::nullopt);
+
   // Helper function to log a tab group event in histograms.
   void LogEvent(TabGroupEvent event,
                 LocalTabGroupID group_id,
