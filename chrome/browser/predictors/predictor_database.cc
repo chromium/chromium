@@ -117,7 +117,13 @@ PredictorDatabaseInternal::~PredictorDatabaseInternal() {
   }
   // The connection pointer needs to be deleted on the DB sequence since there
   // might be a task in progress on the DB sequence which uses this connection.
-  db_task_runner_->DeleteSoon(FROM_HERE, db_.release());
+  db_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&AutocompleteActionPredictorTable::ResetDB,
+                                autocomplete_table_));
+  db_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&ResourcePrefetchPredictorTables::ResetDB,
+                                resource_prefetch_tables_));
+  db_task_runner_->DeleteSoon(FROM_HERE, std::move(db_));
 }
 
 void PredictorDatabaseInternal::Initialize() {
