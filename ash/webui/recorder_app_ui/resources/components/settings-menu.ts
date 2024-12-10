@@ -39,6 +39,7 @@ import {
 } from '../core/state/settings.js';
 import {
   enableTranscription,
+  setTranscriptionLanguage,
   toggleTranscriptionEnabled,
 } from '../core/state/transcription.js';
 import {HELP_URL} from '../core/url_constants.js';
@@ -48,6 +49,7 @@ import {
   assertInstanceof,
   assertNotReached,
 } from '../core/utils/assert.js';
+import {stopPropagation} from '../core/utils/event_handler.js';
 
 import {CraDialog} from './cra/cra-dialog.js';
 import {SpeakerLabelConsentDialog} from './speaker-label-consent-dialog.js';
@@ -217,7 +219,12 @@ export class SettingsMenu extends ReactiveLitElement {
       return html`
         <span slot="description">
           ${i18n.settingsOptionsSummaryDescription}
-          <a href=${HELP_URL} target="_blank">
+          <a
+            href=${HELP_URL}
+            target="_blank"
+            @click=${stopPropagation}
+            aria-label=${i18n.settingsOptionsSummaryLearnMoreLinkAriaLabel}
+          >
             ${i18n.settingsOptionsSummaryLearnMoreLink}
           </a>
         </span>
@@ -226,6 +233,7 @@ export class SettingsMenu extends ReactiveLitElement {
           button-style="secondary"
           .label=${i18n.settingsOptionsSummaryDownloadButton}
           @click=${this.onDownloadSummaryClick}
+          aria-label=${i18n.settingsOptionsSummaryDownloadButtonAriaLabel}
         ></cra-button>
       `;
     }
@@ -437,13 +445,6 @@ export class SettingsMenu extends ReactiveLitElement {
     `;
   }
 
-  private onInstallSodaClick() {
-    if (!enableTranscription()) {
-      this.transcriptionConsentDialog.value?.show();
-      return;
-    }
-  }
-
   private get transcriptionEnabled() {
     return (
       settings.value.transcriptionEnabled === TranscriptionEnableState.ENABLED
@@ -453,12 +454,20 @@ export class SettingsMenu extends ReactiveLitElement {
   private renderTranscriptionDescriptionAndAction() {
     const defaultLang = LanguageCode.EN_US;
     const sodaState = this.platformHandler.getSodaState(defaultLang).value;
+    const onInstallSodaClick = () => {
+      if (!enableTranscription()) {
+        this.transcriptionConsentDialog.value?.show();
+        return;
+      }
+      setTranscriptionLanguage(defaultLang);
+    };
     const downloadButton = html`
       <cra-button
         slot="action"
         button-style="secondary"
         .label=${i18n.settingsOptionsTranscriptionDownloadButton}
-        @click=${this.onInstallSodaClick}
+        @click=${onInstallSodaClick}
+        aria-label=${i18n.settingsOptionsTranscriptionDownloadButtonAriaLabel}
       ></cra-button>
     `;
     if (sodaState.kind === 'notInstalled') {
