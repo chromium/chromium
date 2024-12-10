@@ -3159,6 +3159,30 @@ GraphBuilderCoreml::AddOperationForLayerNormalization(
   CHECK(context_properties_.data_type_limits.layer_normalization_input.Has(
       MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
+  // CoreML doesn't support empty axes. When axes is empty, the mean equals to
+  // input, output = bias + (scale * 0)
+  if (operation.axes.empty()) {
+    uint64_t zeros = operation.output_operand_id;
+    if (operation.bias_operand_id) {
+      ASSIGN_OR_RETURN(
+          zeros, GenerateInternalOperandInfo(input_operand_info.mil_data_type,
+                                             input_operand_info.dimensions));
+    }
+    // input-input is zero, no need to multiply scale then divide by
+    // sqrt(variance + epsilon).
+    RETURN_IF_ERROR(AddOperationForElementwiseBinary(
+        operation.input_operand_id, operation.input_operand_id, zeros,
+        mojom::ElementWiseBinary::Kind::kSub, block));
+
+    if (operation.bias_operand_id) {
+      RETURN_IF_ERROR(AddOperationForElementwiseBinary(
+          zeros, *operation.bias_operand_id, operation.output_operand_id,
+          mojom::ElementWiseBinary::Kind::kAdd, block));
+    }
+
+    return base::ok();
+  }
+
   // TODO: crbug.com/356905058: Figure out if unordered axes should be allowed.
   if (!base::ranges::is_sorted(operation.axes)) {
     return NewNotSupportedError("Axes must be ordered for layerNormalization.");
