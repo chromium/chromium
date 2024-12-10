@@ -6,7 +6,6 @@
 
 #include "base/no_destructor.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/password_manager/core/browser/affiliation/passkey_affiliation_source_adapter.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/data_type_store_service.h"
@@ -20,11 +19,8 @@
 // static
 webauthn::PasskeyModel* IOSPasskeyModelFactory::GetForProfile(
     ProfileIOS* profile) {
-  if (!syncer::IsWebauthnCredentialSyncEnabled()) {
-    return nullptr;
-  }
-  return static_cast<webauthn::PasskeyModel*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<webauthn::PasskeyModel>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -34,9 +30,7 @@ IOSPasskeyModelFactory* IOSPasskeyModelFactory::GetInstance() {
 }
 
 IOSPasskeyModelFactory::IOSPasskeyModelFactory()
-    : BrowserStateKeyedServiceFactory(
-          "PasskeyModel",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("PasskeyModel") {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(IOSChromeAffiliationServiceFactory::GetInstance());
 }
@@ -45,6 +39,10 @@ IOSPasskeyModelFactory::~IOSPasskeyModelFactory() {}
 
 std::unique_ptr<KeyedService> IOSPasskeyModelFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
+  if (!syncer::IsWebauthnCredentialSyncEnabled()) {
+    return nullptr;
+  }
+
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   auto sync_bridge = std::make_unique<webauthn::PasskeySyncBridge>(
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());

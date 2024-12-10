@@ -8,16 +8,14 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ProfileIOS;
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace webauthn {
 class PasskeyModel;
 }  // namespace webauthn
 
 // Singleton that associates PasskeyModel to Profiles.
-class IOSPasskeyModelFactory : public BrowserStateKeyedServiceFactory {
+class IOSPasskeyModelFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static webauthn::PasskeyModel* GetForProfile(ProfileIOS* profile);
 
