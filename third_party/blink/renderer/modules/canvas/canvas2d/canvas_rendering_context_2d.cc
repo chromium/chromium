@@ -351,7 +351,7 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
                                            size_t row_bytes,
                                            int x,
                                            int y) {
-  DCHECK(IsPaintable());
+  DCHECK(IsCanvas2DBufferValid());
   CanvasRenderingContextHost* host = Host();
   CHECK(host);
 
