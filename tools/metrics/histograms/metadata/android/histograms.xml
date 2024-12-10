@@ -815,6 +815,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.BrowserControls.OutstandingChangedOnFinish"
+    enum="BooleanChanged" expires_after="2025-02-23">
+  <owner>skym@chromium.org</owner>
+  <owner>pnoland@chromium.org</owner>
+  <summary>
+    Records if the outstanding navigations set changed when a navigation is
+    finished. This means the navigation id was not previously tracked, either
+    because it never started or it already finished once. When things are
+    working correctly, this should always be true. There are known tests and
+    likely some real scenarios that currently violate this.
+  </summary>
+</histogram>
+
+<histogram name="Android.BrowserControls.OutstandingChangedOnStart"
+    enum="BooleanChanged" expires_after="2025-02-23">
+  <owner>skym@chromium.org</owner>
+  <owner>pnoland@chromium.org</owner>
+  <summary>
+    Records if the outstanding navigations set changed when a navigation is
+    started. This means the navigation id was previously tracked and then the
+    same id was claimed to be started again. If things are working correctly,
+    this metric should always be true. No existing violations of this are
+    currently known.
+  </summary>
+</histogram>
+
+<histogram name="Android.BrowserControls.OutstandingNavigationsOnFinish"
+    units="navigations" expires_after="2025-02-23">
+  <owner>skym@chromium.org</owner>
+  <owner>pnoland@chromium.org</owner>
+  <summary>
+    Records the number of outstanding navigations that are blocking the browser
+    controls from being scrollable. Recorded when a navigation completes.
+    Typically the value should be 0 or maybe 1 for a very short amount of time.
+    Large numbers here indicate there's a bug that's keeping the controls
+    visible.
+  </summary>
+</histogram>
+
 <histogram name="Android.ChildProcessBinding.TotalConnections"
     units="connections" expires_after="2025-04-27">
   <owner>ckitagawa@chromium.org</owner>
