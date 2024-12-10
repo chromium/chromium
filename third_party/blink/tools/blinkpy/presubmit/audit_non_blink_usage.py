@@ -281,6 +281,9 @@ _CONFIG = [
             'base::StrAppend',
             'base::StrCat',
 
+            # //base/strings/string_split.h.
+            'base::SplitStringOnce',
+
             # Debugging helpers from //base/debug are allowed everywhere.
             'base::debug::.+',
 

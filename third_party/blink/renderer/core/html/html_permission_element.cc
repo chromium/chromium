@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_split.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
@@ -57,6 +58,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -151,28 +153,19 @@ Vector<PermissionDescriptorPtr> ParsePermissionDescriptorsFromString(
 int GetTranslatedMessageID(int message_id,
                            const AtomicString& language_string) {
   DCHECK(language_string.IsLowerASCII());
-  DEFINE_STATIC_LOCAL(GeneratedMessagesMap, generated_message_ids, ());
   if (language_string.empty()) {
     return message_id;
   }
 
-  if (generated_message_ids.empty()) {
-    FillInPermissionElementTranslationsMap(generated_message_ids);
+  StringUTF8Adaptor lang_adaptor(language_string);
+  std::string_view lang_utf8 = lang_adaptor.AsStringView();
+  if (auto mapped_id = GetPermissionElementMessageId(lang_utf8, message_id);
+      mapped_id.has_value()) {
+    return *mapped_id;
   }
 
-  const auto language_map_itr = generated_message_ids.find(language_string);
-  if (language_map_itr != generated_message_ids.end()) {
-    const auto& language_map = language_map_itr->value;
-    const auto translated_message_itr = language_map.find(message_id);
-    if (translated_message_itr != language_map.end()) {
-      return translated_message_itr->value;
-    }
-  }
-
-  Vector<String> parts;
-  language_string.GetString().Split('-', parts);
-
-  if (parts.size() == 0) {
+  auto parts = base::SplitStringOnce(lang_utf8, '-');
+  if (!parts) {
     return message_id;
   }
   // This is to support locales with unknown combination of languages and
@@ -181,13 +174,8 @@ int GetTranslatedMessageID(int message_id,
   // locale.
   // Eg: en-au is a unknown combination, in this case we will fall back to
   // en strings.
-  if (generated_message_ids.Contains(parts[0])) {
-    const auto& language_map = generated_message_ids.find(parts[0])->value;
-    if (language_map.Contains(message_id)) {
-      return language_map.find(message_id)->value;
-    }
-  }
-  return message_id;
+  return GetPermissionElementMessageId(parts->first, message_id)
+      .value_or(message_id);
 }
 
 // Helper to get permission text resource ID for the given map which has only

@@ -41,18 +41,43 @@ kStringMapHeaderPrefix = '''/// Copyright 2024 The Chromium Authors
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_PERMISSION_ELEMENT_STRINGS_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_PERMISSION_ELEMENT_STRINGS_MAP_H_
 
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include <iterator>
+#include <optional>
+#include <string_view>
+#include <utility>
+
+#include "base/containers/fixed_flat_map.h"
+#include "base/containers/fixed_flat_set.h"
 #include "third_party/blink/public/strings/grit/permission_element_generated_strings.h"
 #include "third_party/blink/public/strings/grit/permission_element_strings.h"
 
 namespace blink {
-  static void FillInPermissionElementTranslationsMap(HashMap<String, HashMap<int, int>>& strings_map) {
-'''
 
+inline std::optional<int> GetPermissionElementMessageId(
+    std::string_view language_code,
+    int base_message) {
+  // This is a separate table to reduce the number of relocations, with a small
+  // runtime cost due to the additional lookup.
+  static constexpr auto kLanguageIds = base::MakeFixedFlatSet<std::string_view>({
+'''
+kStringMapHeaderMidfix = '''
+  });
+  static constexpr auto kMessageIds = base::MakeFixedFlatMap<std::pair<int, int>, int>({
+'''
 kStringMapHeaderSuffix = '''
+  });
+
+  auto lang_id = kLanguageIds.find(language_code);
+  if (lang_id == kLanguageIds.end()) {
+    return std::nullopt;
+  }
+  auto message_id = kMessageIds.find({std::distance(kLanguageIds.begin(), lang_id), base_message});
+  if (message_id == kMessageIds.end()) {
+    return std::nullopt;
+  }
+  return message_id->second;
 }
+
 }  // namespace blink
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_PERMISSION_ELEMENT_STRINGS_MAP_H_
 '''
@@ -99,8 +124,6 @@ def generate_cpp_mapping(input_file_path, output_file_path):
     doc = parse(input_file_path)
     messages = doc.getElementsByTagName("message")
     with open(output_file_path, 'w') as output_file:
-        output_file.write(kStringMapHeaderPrefix)
-
         # This is to add language-only versions for the only three languages for
         # which we do not have language-only locales available in our translation
         # lists. The language only version of the string is needed for the case
@@ -108,6 +131,9 @@ def generate_cpp_mapping(input_file_path, output_file_path):
         # `pt-AO` (Portuguese Angola) lang setting, we will use `pt`, which via
         # this code will use `pt-pt` (Portuguese from Portugal).
         custom_locale_mappings = {"en-gb": "en", "pt-pt": "pt", "zh-cn": "zh"}
+
+        languages = []
+        message_mappings = []
         for message in messages:
             message_name = message.getAttribute('name')
             base_message = re.split('_[a-z]', message_name)[0]
@@ -115,12 +141,27 @@ def generate_cpp_mapping(input_file_path, output_file_path):
                 '_', 1)[1].lower().replace("_", "-")
             if locale in custom_locale_mappings:
                 locale = custom_locale_mappings[locale]
+
+            languages.append(locale)
+            message_mappings.append((locale, base_message, message_name))
+
+        # The map stores multiple (language, base message) mappings per
+        # language. To reduce the number of relocations, just store the
+        # language once and use its position in the flat set (which is
+        # sorted) as an implicit ID in the primary message mapping map.
+        # This reduces the number of relocations by a factor of 10x.
+        language_mappings = dict(
+            (language, i)
+            for (i, language) in enumerate(sorted(set(languages))))
+
+        output_file.write(kStringMapHeaderPrefix)
+        for (language, i) in sorted(list(language_mappings.items())):
+            output_file.write(f'      "{language}",  // {i}\n')
+        output_file.write(kStringMapHeaderMidfix)
+        for (language, base_message, message_name) in message_mappings:
             output_file.write(
-                "    if (!strings_map.Contains(String(\"{0}\"))) strings_map.insert(String(\"{0}\"), HashMap<int, int>());\n"
-                .format(locale))
-            output_file.write(
-                "    strings_map.find(String(\"{0}\"))->value.insert({1}, {2});\n"
-                .format(locale, base_message, message_name))
+                f'      {{{{{language_mappings[language]}, {base_message}}}, {message_name}}},\n'
+            )
         output_file.write(kStringMapHeaderSuffix)
 
 
