@@ -835,10 +835,10 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   EXPECT_FALSE(tab_helper->has_safe_url_);
   EXPECT_FALSE(tab_helper->has_sufficiently_visible_video_);
 
-  // Verify that `MeetsEngagementScore` returns false (even though the mock high
-  // engagement is set to return true), since the video element is within a
-  // remote iframe.
-  EXPECT_FALSE(tab_helper->MeetsEngagementScore());
+  // Verify that `MeetsMediaEngagementConditions` returns false (even though the
+  // mock high engagement is set to return true), since the video element is
+  // within a remote iframe.
+  EXPECT_FALSE(tab_helper->MeetsMediaEngagementConditions());
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
@@ -978,6 +978,30 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   ForceLifecycleUpdate(web_contents);
   WaitForWasRecentlyAudible(web_contents);
   SwitchToNewTabAndDontExpectAutopip();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AutoPictureInPictureWithVideoPlaybackBrowserTest,
+    DoesVideoAutopip_ContentSettingAllowAndLowEngagementScore) {
+  // Load a page that registers for autopip and start video playback.
+  LoadAutoVideoVisibilityPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+
+  AddOverlayToVideo(web_contents, /*should_occlude*/ false);
+  ForceLifecycleUpdate(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
+
+  // Set content setting to allow and has high media engagement to false.
+  SetContentSetting(web_contents, CONTENT_SETTING_ALLOW);
+  SetExpectedHasHighEngagement(false);
+
+  // Verify that we did enter pip, even though media engagement is low. This is
+  // because media engagement is ignored when content setting is set to allow.
+  SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
+                                        /*should_document_pip=*/false);
 }
 
 // TODO(crbug.com/40923043): Flaky on "Linux ASan LSan Tests (1)"

@@ -191,11 +191,12 @@ class AutoPictureInPictureTabHelper
   // recently.
   bool WasRecentlyAudible() const;
 
-  // Returns true if the tab has high media engagement, false otherwise.
+  // Returns true if the tab has high media engagement or content setting is set
+  // to `CONTENT_SETTING_ALLOW`, false otherwise.
   //
   // Among other cases, this method will also return false if the media session
-  // router frame either does not exist or is not in the primary main frame.
-  bool MeetsEngagementScore() const;
+  // routed frame either does not exist or is not in the primary main frame.
+  bool MeetsMediaEngagementConditions() const;
 
   // Returns the current state of the 'Auto Picture-in-Picture' content
   // setting for the current website of the observed WebContents.

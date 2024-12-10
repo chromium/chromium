@@ -311,7 +311,7 @@ bool AutoPictureInPictureTabHelper::MeetsVideoPlaybackConditions() const {
   }
 
   return has_audio_focus_ && is_playing_ && WasRecentlyAudible() &&
-         has_safe_url_ && MeetsEngagementScore() &&
+         has_safe_url_ && MeetsMediaEngagementConditions() &&
          has_sufficiently_visible_video_;
 }
 
@@ -330,7 +330,12 @@ bool AutoPictureInPictureTabHelper::WasRecentlyAudible() const {
   return audible_helper->WasRecentlyAudible();
 }
 
-bool AutoPictureInPictureTabHelper::MeetsEngagementScore() const {
+bool AutoPictureInPictureTabHelper::MeetsMediaEngagementConditions() const {
+  // Skip checking media engagement when content setting is set to allow.
+  if (GetCurrentContentSetting() == CONTENT_SETTING_ALLOW) {
+    return true;
+  }
+
   if (!media_engagement_service_) {
     return false;
   }
@@ -394,8 +399,8 @@ void AutoPictureInPictureTabHelper::ScheduleUrlSafetyCheck() {
   CHECK(g_browser_process);
   CHECK(g_browser_process->safe_browsing_service());
 
-  auto* rfh = content::MediaSession::Get(web_contents())->GetRoutedFrame();
-  if (!rfh || !rfh->IsInPrimaryMainFrame()) {
+  std::optional<content::RenderFrameHost*> rfh = GetPrimaryMainRoutedFrame();
+  if (!rfh) {
     return;
   }
 
@@ -410,7 +415,8 @@ void AutoPictureInPictureTabHelper::ScheduleUrlSafetyCheck() {
                             async_tasks_weak_factory_.GetWeakPtr()));
   }
 
-  safe_browsing_checker_client_->CheckUrlSafety(rfh->GetLastCommittedURL());
+  safe_browsing_checker_client_->CheckUrlSafety(
+      rfh.value()->GetLastCommittedURL());
 }
 
 void AutoPictureInPictureTabHelper::EnsureAutoPipSettingHelper() {
