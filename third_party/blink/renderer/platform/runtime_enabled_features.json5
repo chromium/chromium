@@ -4003,9 +4003,6 @@
     {
       name: "SpeculationRulesPrefetchWithSubresources",
     },
-    {
-      name: "SrcsetMaxDensity",
-    },
     // Kill switch for change to unify image-set and srcset selection logic.
     {
       name: "SrcsetSelectionMatchesImageSet",

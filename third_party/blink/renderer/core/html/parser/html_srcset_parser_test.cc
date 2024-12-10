@@ -361,30 +361,6 @@ INSTANTIATE_TEST_SUITE_P(
         {1.0, 700, "", "data:,a 0.5x, data:,b 1400w", "data:,a", 0.5, -1},
     }));
 
-class MaxDensityHTMLSrcsetParserTest : public HTMLSrcsetParserTest {};
-
-TEST_P(MaxDensityHTMLSrcsetParserTest, MaxDensityEnabled) {
-  test::TaskEnvironment task_environment;
-  ScopedSrcsetMaxDensityForTest srcset_max_density(true);
-  const SrcsetParserTestCase test = GetParam();
-  ImageCandidate candidate = BestFitSourceForImageAttributes(
-      test.device_scale_factor, test.effective_size, test.src_input,
-      test.srcset_input);
-
-  EXPECT_EQ(test.output_density, candidate.Density());
-  EXPECT_EQ(test.output_resource_width, candidate.GetResourceWidth());
-  EXPECT_EQ(test.output_url, candidate.ToString().Ascii());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    MaxDensityHTMLSrcsetParserTest,
-    testing::ValuesIn(std::vector<SrcsetParserTestCase>{
-        {10.0, -1, "src.gif", "2x.gif 2e1x", "2x.gif", 20.0, -1},
-        {2.5, -1, "src.gif", "1.5x.gif 1.5x, 3x.gif 3x", "3x.gif", 3.0, -1},
-        {4.0, 400, "", "400.gif 400w, 1000.gif 1000w", "1000.gif", 2.5, 1000},
-    }));
-
 class SrcsetSelectionMatchesImageSetDisabledHTMLSrcsetParserTest
     : public HTMLSrcsetParserTest {};
 
