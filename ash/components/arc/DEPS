@@ -11,6 +11,7 @@ include_rules = [
   "+components/user_manager",
   "+components/user_prefs",
   "+content/public/browser",
+  "+mojo/core",
   "+storage/browser/file_system",
 ]
 
