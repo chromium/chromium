@@ -180,9 +180,7 @@ bool CaptionBubbleModel::CanUseLiveTranslate() {
 }
 
 bool CaptionBubbleModel::SkipPrefChangeOnClose() {
-  return context_->GetSessionId() ==
-             std::string(kBocaWithTranslationSessionId) ||
-         context_->GetSessionId() == std::string(kBocaNoTranslationSessionId);
+  return context_->GetSessionId() == std::string(kBocaWithTranslationSessionId);
 }
 
 // static

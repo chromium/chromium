@@ -19,7 +19,12 @@ void FakeBabelOrcaTranslationDispatcher::GetTranslation(
     const std::string& target_language,
     captions::OnTranslateEventCallback callback) {
   ++num_translation_calls_;
-  std::move(callback).Run(result);
+  std::move(callback).Run(injected_result_.value_or(result));
+}
+
+void FakeBabelOrcaTranslationDispatcher::InjectTranslationResult(
+    const std::string& translation) {
+  injected_result_ = translation;
 }
 
 }  // namespace ash::babelorca

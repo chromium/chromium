@@ -12,17 +12,14 @@
 namespace ash::babelorca {
 class CaptionBubbleContextBoca : public ash::captions::CaptionBubbleContextAsh {
  public:
-  CaptionBubbleContextBoca(::captions::OpenCaptionSettingsCallback callback,
-                           bool translation_enabled);
+  explicit CaptionBubbleContextBoca(
+      ::captions::OpenCaptionSettingsCallback callback);
   ~CaptionBubbleContextBoca() override;
   CaptionBubbleContextBoca(const CaptionBubbleContextBoca&) = delete;
   CaptionBubbleContextBoca& operator=(const CaptionBubbleContextBoca&) = delete;
 
   // ::captions::CaptionBubbleContext:
   const std::string GetSessionId() const override;
-
- private:
-  bool translation_enabled_ = false;
 };
 
 }  // namespace ash::babelorca

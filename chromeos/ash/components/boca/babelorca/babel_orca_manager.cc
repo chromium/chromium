@@ -39,12 +39,15 @@ std::unique_ptr<BabelOrcaManager> BabelOrcaManager::CreateAsProducer(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     captions::LiveCaptionController* live_caption_controller,
     std::unique_ptr<captions::CaptionBubbleContext> caption_bubble_context,
-    std::unique_ptr<babelorca::BabelOrcaSpeechRecognizer> speech_recognizer) {
+    std::unique_ptr<babelorca::BabelOrcaSpeechRecognizer> speech_recognizer,
+    std::unique_ptr<babelorca::BabelOrcaCaptionTranslator> translator,
+    PrefService* pref_service) {
   ControllerFactory controller_factory = base::BindOnce(
       babelorca::BabelOrcaProducer::Create, url_loader_factory,
       std::move(speech_recognizer),
       std::make_unique<babelorca::LiveCaptionControllerWrapperImpl>(
-          live_caption_controller, std::move(caption_bubble_context)));
+          live_caption_controller, std::move(caption_bubble_context)),
+      std::move(translator), pref_service);
   return std::make_unique<BabelOrcaManager>(
       identity_manager, url_loader_factory, std::move(controller_factory));
 }

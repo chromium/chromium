@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/boca/babelorca/babel_orca_caption_translator.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_controller.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_speech_recognizer.h"
 #include "chromeos/ash/components/boca/babelorca/live_caption_controller_wrapper.h"
@@ -23,6 +24,9 @@
 #include "chromeos/ash/components/boca/babelorca/token_manager.h"
 #include "chromeos/ash/components/boca/babelorca/transcript_sender_impl.h"
 #include "chromeos/ash/components/boca/babelorca/transcript_sender_rate_limiter.h"
+#include "components/live_caption/pref_names.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "media/mojo/mojom/speech_recognition_result.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash::babelorca {
@@ -32,6 +36,8 @@ std::unique_ptr<BabelOrcaController> BabelOrcaProducer::Create(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<BabelOrcaSpeechRecognizer> speech_recognizer,
     std::unique_ptr<LiveCaptionControllerWrapper> caption_controller_wrapper,
+    std::unique_ptr<BabelOrcaCaptionTranslator> translator,
+    PrefService* pref_service,
     TokenManager* oauth_token_manager,
     TachyonRequestDataProvider* request_data_provider) {
   return std::make_unique<BabelOrcaProducer>(
@@ -40,20 +46,37 @@ std::unique_ptr<BabelOrcaController> BabelOrcaProducer::Create(
       std::make_unique<TachyonAuthedClientImpl>(
           std::make_unique<babelorca::TachyonClientImpl>(url_loader_factory),
           oauth_token_manager),
-      request_data_provider);
+      request_data_provider, std::move(translator), pref_service);
 }
 
-// TODO(373880912): implement translations for producer.
 BabelOrcaProducer::BabelOrcaProducer(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<BabelOrcaSpeechRecognizer> speech_recognizer,
     std::unique_ptr<LiveCaptionControllerWrapper> caption_controller_wrapper,
     std::unique_ptr<TachyonAuthedClient> authed_client,
-    TachyonRequestDataProvider* request_data_provider)
+    TachyonRequestDataProvider* request_data_provider,
+    std::unique_ptr<BabelOrcaCaptionTranslator> translator,
+    PrefService* pref_service)
     : speech_recognizer_(std::move(speech_recognizer)),
       caption_controller_wrapper_(std::move(caption_controller_wrapper)),
+      translator_(std::move(translator)),
+      pref_service_(pref_service),
+      pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()),
       authed_client_(std::move(authed_client)),
-      request_data_provider_(request_data_provider) {}
+      request_data_provider_(request_data_provider) {
+  pref_change_registrar_->Init(pref_service_);
+  pref_change_registrar_->Add(
+      prefs::kLiveTranslateTargetLanguageCode,
+      base::BindRepeating(&BabelOrcaProducer::OnTranslationPrefChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+
+  // TODO(377696975) re-factor translator.
+  translator_->InitTranslationAndSetCallback(
+      base::BindRepeating(&BabelOrcaProducer::OnTranslationCallback,
+                          weak_ptr_factory_.GetWeakPtr()),
+      pref_service_->GetString(prefs::kUserMicrophoneCaptionLanguageCode),
+      pref_service_->GetString(prefs::kLiveTranslateTargetLanguageCode));
+}
 
 BabelOrcaProducer::~BabelOrcaProducer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -127,6 +150,7 @@ void BabelOrcaProducer::OnLocalCaptionConfigUpdated(
   if (session_captions_enabled_ && rate_limited_sender_) {
     return;
   }
+
   speech_recognizer_->ObserveTranscriptionResult(
       base::BindRepeating(&BabelOrcaProducer::OnTranscriptionResult,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -166,20 +190,21 @@ void BabelOrcaProducer::OnTranscriptionResult(
     const media::SpeechRecognitionResult& result,
     const std::string& source_language) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (local_captions_enabled_) {
-    bool dispatch_success =
-        caption_controller_wrapper_->DispatchTranscription(result);
-    if (!dispatch_success) {
-      // Restart captions in case the bubble was closed.
-      caption_controller_wrapper_->RestartCaptions();
-      dispatch_success =
-          caption_controller_wrapper_->DispatchTranscription(result);
-    }
-    // TODO(crbug.com/373692250): add dispatch attempts error limit and report
-    // failure.
-    VLOG_IF(1, !dispatch_success)
-        << "Caption bubble transcription dispatch failed";
-  }
+  // If  the source and target languages for translation are the
+  // same then the translator will simply forward the result
+  // to the callback function which is set during construction and
+  // when the translation target language changes with the translator's
+  // `InitTranslationAndSetCallback` function.
+  //
+  // The callback we set here will then dispatch the result to the
+  // live caption bubble.
+  //
+  // This is confusing, but the next CL downstream of this one simplifies
+  // the translator's API and makes it clear what is happening here.
+  //
+  // TODO(377696975) re-factor translator.
+  translator_->Translate(result);
+
   // `session_captions_enabled_` can be enabled but `rate_limited_sender_` is
   // not initialized because signin is not complete.
   if (!session_captions_enabled_ || !rate_limited_sender_) {
@@ -206,6 +231,48 @@ void BabelOrcaProducer::StopRecognition() {
   // This should be a no-op if not currently observing.
   speech_recognizer_->RemoveTranscriptionResultObservation();
   rate_limited_sender_.reset();
+}
+
+void BabelOrcaProducer::OnTranslationPrefChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  translator_->InitTranslationAndSetCallback(
+      base::BindRepeating(&BabelOrcaProducer::OnTranslationCallback,
+                          weak_ptr_factory_.GetWeakPtr()),
+      pref_service_->GetString(prefs::kUserMicrophoneCaptionLanguageCode),
+      pref_service_->GetString(prefs::kLiveTranslateTargetLanguageCode));
+}
+
+void BabelOrcaProducer::OnTranslationCallback(
+    const std::optional<media::SpeechRecognitionResult>& result) {
+  if (!result) {
+    VLOG(1) << "Failed to recieve translation";
+    return;
+  }
+
+  DispatchToBubble(result.value());
+}
+
+void BabelOrcaProducer::DispatchToBubble(
+    const media::SpeechRecognitionResult& result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!local_captions_enabled_) {
+    return;
+  }
+
+  bool dispatch_success =
+      caption_controller_wrapper_->DispatchTranscription(result);
+  if (!dispatch_success) {
+    // Restart captions in case the bubble was closed.
+    caption_controller_wrapper_->RestartCaptions();
+    dispatch_success =
+        caption_controller_wrapper_->DispatchTranscription(result);
+  }
+
+  // TODO(crbug.com/373692250): add dispatch attempts error limit and report
+  // failure.
+  VLOG_IF(1, !dispatch_success)
+      << "Caption bubble transcription dispatch failed";
 }
 
 }  // namespace ash::babelorca
