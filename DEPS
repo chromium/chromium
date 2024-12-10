@@ -4520,12 +4520,6 @@ deps = {
       'condition': 'checkout_clusterfuzz_data and checkout_src_internal',
   },
 
-  'src/third_party/amd': {
-      'url': Var('chrome_git') + '/chrome/deps/amd.git' + '@' +
-        'cbd9811acb6d09f19b880fdbc6f0fc62901c9a5c',
-      'condition': 'checkout_win and checkout_src_internal',
-  },
-
   'src/third_party/android_tools_internal': {
       'url': Var('chrome_git') + '/clank/third_party/android_tools.git' + '@' +
         'ab59dfd133386420a319a194c9ac6f5cae802471',
