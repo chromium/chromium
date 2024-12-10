@@ -28,17 +28,6 @@ constexpr int kCurrentDesignLineHeight = 20;
 
 }  // namespace
 
-const gfx::FontList& GetCrosAnnotation1FontList() {
-  static const base::NoDestructor<gfx::FontList> annotation_1_font_list(
-      gfx::FontList({"Google Sans", "Roboto"}, gfx::Font::NORMAL, 12,
-                    gfx::Font::Weight::NORMAL));
-  return *annotation_1_font_list;
-}
-
-int GetCrosAnnotation1LineHeight() {
-  return 18;
-}
-
 const gfx::FontList GetFirstLineFontList(Design design) {
   switch (design) {
     case Design::kCurrent:
@@ -58,20 +47,21 @@ int GetFirstLineHeight(Design design) {
       return kCurrentDesignLineHeight;
     case Design::kRefresh:
     case Design::kMagicBoost:
-      // `ash::TypographyToken::kCrosHeadline1`
-      return 22;
+      return ash::TypographyProvider::Get()->ResolveLineHeight(
+          ash::TypographyToken::kCrosHeadline1);
   }
 
   NOTREACHED() << "Invalid design enum value provided";
 }
 
-const gfx::FontList& GetSecondLineFontList(Design design) {
+const gfx::FontList GetSecondLineFontList(Design design) {
   switch (design) {
     case Design::kCurrent:
       return GetCurrentDesignFontList();
     case Design::kRefresh:
     case Design::kMagicBoost:
-      return GetCrosAnnotation1FontList();
+      return ash::TypographyProvider::Get()->ResolveTypographyToken(
+          ash::TypographyToken::kCrosAnnotation1);
   }
 
   NOTREACHED() << "Invalid design enum value provided";
@@ -83,7 +73,8 @@ int GetSecondLineHeight(Design design) {
       return kCurrentDesignLineHeight;
     case Design::kRefresh:
     case Design::kMagicBoost:
-      return GetCrosAnnotation1LineHeight();
+      return ash::TypographyProvider::Get()->ResolveLineHeight(
+          ash::TypographyToken::kCrosAnnotation1);
   }
 
   NOTREACHED() << "Invalid design enum value provided";
