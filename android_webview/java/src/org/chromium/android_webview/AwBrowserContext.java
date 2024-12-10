@@ -291,24 +291,24 @@ public class AwBrowserContext implements BrowserContextHandle {
             @NonNull AwPrefetchCallback callback,
             @NonNull Executor callbackExecutor) {
         assert ThreadUtils.runningOnUiThread();
-        if (!UrlUtilities.isHttps(url)) {
-            callbackExecutor.execute(
-                    () ->
-                            callback.onError(
-                                    new IllegalArgumentException(
-                                            "URL must have HTTPS scheme for prefetch.")));
-        }
-
-        if (!AwFeatureMap.isEnabled(ContentFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS)) {
-            callbackExecutor.execute(
-                    () ->
-                            callback.onError(
-                                    new IllegalStateException(
-                                            "WebView initiated prefetching feature is not"
-                                                    + " enabled.")));
-        }
-
         try (TraceEvent event = TraceEvent.scoped("WebView.Profile.Prefetch.START")) {
+            if (!UrlUtilities.isHttps(url)) {
+                callbackExecutor.execute(
+                        () ->
+                                callback.onError(
+                                        new IllegalArgumentException(
+                                                "URL must have HTTPS scheme for prefetch.")));
+            }
+
+            if (!AwFeatureMap.isEnabled(ContentFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS)) {
+                callbackExecutor.execute(
+                        () ->
+                                callback.onError(
+                                        new IllegalStateException(
+                                                "WebView initiated prefetching feature is not"
+                                                        + " enabled.")));
+            }
+
             AwBrowserContextJni.get()
                     .startPrefetchRequest(
                             mNativeAwBrowserContext,

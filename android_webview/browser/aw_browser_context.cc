@@ -750,6 +750,7 @@ void AwBrowserContext::StartPrefetchRequest(
     const base::android::JavaParamRef<jobject>& callback,
     const base::android::JavaParamRef<jobject>& callback_executor) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  TRACE_EVENT0("android_webview", "AwBrowserContext::StartPrefetchRequest");
 
   GURL pf_url = GURL(url);
   net::HttpRequestHeaders additional_headers =

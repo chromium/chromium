@@ -25,7 +25,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
-#include "base/trace_event/typed_macros.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -197,6 +196,7 @@ void BrowserContext::StartBrowserPrefetchRequest(
     const net::HttpRequestHeaders& additional_headers,
     std::unique_ptr<PrefetchRequestStatusListener> request_status_listener) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  TRACE_EVENT0("loading", "BrowserContext::StartBrowserPrefetchRequest");
 
   PrefetchService* prefetch_service =
       BrowserContextImpl::From(this)->GetPrefetchService();
