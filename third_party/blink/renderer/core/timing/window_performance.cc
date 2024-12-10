@@ -558,11 +558,8 @@ void WindowPerformance::EventTimingProcessingStart(
       pending_pointer_down_start_time_ = reporting_info.creation_time;
     }
 
-    if (RuntimeEnabledFeaturesBase::
-            EventTimingTapStopScrollNoInteractionIdEnabled()) {
-      reporting_info.prevent_counting_as_interaction |=
-          pointer_event->GetPreventCountingAsInteraction();
-    }
+    reporting_info.prevent_counting_as_interaction =
+        pointer_event->GetPreventCountingAsInteraction();
   } else {
     reporting_info.creation_time = event.PlatformTimeStamp();
 
