@@ -291,7 +291,7 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
     case Suggestion::Icon::kCardGeneric:
       return get_icon(IDR_AUTOFILL_METADATA_CC_GENERIC,
                       IDR_AUTOFILL_CC_GENERIC);
-    case Suggestion::Icon::kAutofillPredictionImprovements:
+    case Suggestion::Icon::kAutofillAi:
 
     case Suggestion::Icon::kAccount:
     case Suggestion::Icon::kClear:

@@ -244,16 +244,14 @@ std::vector<autofill::Suggestion> CreateTriggerSuggestions() {
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_TRIGGER_SUGGESTION_MAIN_TEXT),
       autofill::SuggestionType::kRetrieveAutofillAi);
-  retrieve_suggestion.icon =
-      autofill::Suggestion::Icon::kAutofillPredictionImprovements;
+  retrieve_suggestion.icon = autofill::Suggestion::Icon::kAutofillAi;
   return {retrieve_suggestion};
 }
 
 std::vector<autofill::Suggestion> CreateLoadingSuggestions() {
   autofill::Suggestion loading_suggestion(
       autofill::SuggestionType::kAutofillAiLoadingState);
-  loading_suggestion.trailing_icon =
-      autofill::Suggestion::Icon::kAutofillPredictionImprovements;
+  loading_suggestion.trailing_icon = autofill::Suggestion::Icon::kAutofillAi;
   loading_suggestion.acceptability =
       autofill::Suggestion::Acceptability::kUnacceptable;
   return {loading_suggestion};
@@ -273,7 +271,7 @@ std::vector<autofill::Suggestion> CreateFillingSuggestions(
   auto payload = autofill::Suggestion::AutofillAiPayload(GetValuesToFill(cache),
                                                          kIgnorableSkipReasons);
   suggestion.payload = payload;
-  suggestion.icon = autofill::Suggestion::Icon::kAutofillPredictionImprovements;
+  suggestion.icon = autofill::Suggestion::Icon::kAutofillAi;
 
   // Add a `kFillPredictionImprovements` suggestion with a separator to
   // `suggestion.children` before the field-by-field filling entries.
