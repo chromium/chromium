@@ -38,8 +38,10 @@
 
 #include <algorithm>
 #include <memory>
+#include <type_traits>
 
 #include "base/auto_reset.h"
+#include "base/containers/heap_array.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/cdata_section.h"
@@ -99,13 +101,16 @@ static inline String ToString(const xmlChar* string, size_t length) {
   return String::FromUTF8(base::span(string, length));
 }
 
+static inline String ToString(base::span<const xmlChar> string) {
+  return String::FromUTF8(string);
+}
+
 static inline String ToString(const xmlChar* string) {
   return String::FromUTF8(reinterpret_cast<const char*>(string));
 }
 
-static inline AtomicString ToAtomicString(const xmlChar* string,
-                                          size_t length) {
-  return AtomicString::FromUTF8(base::span(string, length));
+static inline AtomicString ToAtomicString(base::span<const xmlChar> string) {
+  return AtomicString::FromUTF8(string);
 }
 
 static inline AtomicString ToAtomicString(const xmlChar* string) {
@@ -129,69 +134,110 @@ static inline bool HasNoStyleInformation(Document* document) {
   return true;
 }
 
+struct xmlSAX2Namespace {
+  xmlChar* prefix;
+  xmlChar* uri;
+
+  void CloneTo(xmlSAX2Namespace& to_ns) const {
+    to_ns.prefix = xmlStrdup(prefix);
+    to_ns.uri = xmlStrdup(uri);
+  }
+  void Free() {
+    xmlFree(prefix);
+    xmlFree(uri);
+  }
+};
+static_assert(std::is_trivial_v<xmlSAX2Namespace> &&
+                  std::is_standard_layout_v<xmlSAX2Namespace>,
+              "not castable");
+static_assert(sizeof(xmlSAX2Namespace) == sizeof(xmlChar*) * 2);
+
+struct xmlSAX2Attributes {
+  xmlChar* localname;
+  xmlChar* prefix;
+  xmlChar* uri;
+  xmlChar* value;
+  xmlChar* end;
+
+  base::span<const xmlChar> ValueSpan() const {
+    // SAFETY: ValueLength() returns the distance between `end` and
+    // `value`. libxml provides the attribute value as a sequence of xmlChars
+    // that start at `value` and end at `end`.
+    return UNSAFE_BUFFERS(base::span(value, ValueLength()));
+  }
+
+  size_t ValueLength() const { return static_cast<size_t>(end - value); }
+
+  void CloneTo(xmlSAX2Attributes& to_attr) const {
+    to_attr.localname = xmlStrdup(localname);
+    to_attr.prefix = xmlStrdup(prefix);
+    to_attr.uri = xmlStrdup(uri);
+
+    const size_t value_length = ValueLength();
+    to_attr.value = xmlStrndup(value, base::checked_cast<int>(value_length));
+    // SAFETY: ValueLength() returns the distance between `end` and
+    // `value`. libxml provides the attribute value as a sequence of xmlChars
+    // that start at `value` and end at `end`.
+    to_attr.end = UNSAFE_BUFFERS(to_attr.value + value_length);
+  }
+  void Free() {
+    xmlFree(localname);
+    xmlFree(prefix);
+    xmlFree(uri);
+    xmlFree(value);
+  }
+};
+static_assert(std::is_trivial_v<xmlSAX2Attributes> &&
+                  std::is_standard_layout_v<xmlSAX2Attributes>,
+              "not castable");
+static_assert(sizeof(xmlSAX2Attributes) == sizeof(xmlChar*) * 5);
+
 class PendingStartElementNSCallback final
     : public XMLDocumentParser::PendingCallback {
  public:
   PendingStartElementNSCallback(const AtomicString& local_name,
                                 const AtomicString& prefix,
                                 const AtomicString& uri,
-                                int namespace_count,
-                                const xmlChar** namespaces,
-                                int attribute_count,
+                                base::span<const xmlSAX2Namespace> namespaces,
+                                base::span<const xmlSAX2Attributes> attributes,
                                 int defaulted_count,
-                                const xmlChar** attributes,
                                 TextPosition text_position)
       : PendingCallback(text_position),
         local_name_(local_name),
         prefix_(prefix),
         uri_(uri),
-        namespace_count_(namespace_count),
-        attribute_count_(attribute_count),
         defaulted_count_(defaulted_count) {
-    namespaces_ = static_cast<xmlChar**>(
-        xmlMalloc(sizeof(xmlChar*) * namespace_count * 2));
-    for (int i = 0; i < namespace_count * 2; ++i)
-      namespaces_[i] = xmlStrdup(namespaces[i]);
-    attributes_ = static_cast<xmlChar**>(
-        xmlMalloc(sizeof(xmlChar*) * attribute_count * 5));
-    for (int i = 0; i < attribute_count; ++i) {
-      // Each attribute has 5 elements in the array:
-      // name, prefix, uri, value and an end pointer.
-      for (int j = 0; j < 3; ++j)
-        attributes_[i * 5 + j] = xmlStrdup(attributes[i * 5 + j]);
-      int length =
-          static_cast<int>(attributes[i * 5 + 4] - attributes[i * 5 + 3]);
-      attributes_[i * 5 + 3] = xmlStrndup(attributes[i * 5 + 3], length);
-      attributes_[i * 5 + 4] = attributes_[i * 5 + 3] + length;
+    namespaces_ = base::HeapArray<xmlSAX2Namespace>::Uninit(namespaces.size());
+    for (size_t i = 0; i < namespaces.size(); ++i) {
+      namespaces[i].CloneTo(namespaces_[i]);
+    }
+    attributes_ = base::HeapArray<xmlSAX2Attributes>::Uninit(attributes.size());
+    for (size_t i = 0; i < attributes.size(); ++i) {
+      attributes[i].CloneTo(attributes_[i]);
     }
   }
 
   ~PendingStartElementNSCallback() override {
-    for (int i = 0; i < namespace_count_ * 2; ++i)
-      xmlFree(namespaces_[i]);
-    xmlFree(namespaces_);
-    for (int i = 0; i < attribute_count_; ++i)
-      for (int j = 0; j < 4; ++j)
-        xmlFree(attributes_[i * 5 + j]);
-    xmlFree(attributes_);
+    for (size_t i = 0; i < namespaces_.size(); ++i) {
+      namespaces_[i].Free();
+    }
+    for (size_t i = 0; i < attributes_.size(); ++i) {
+      attributes_[i].Free();
+    }
   }
 
   void Call(XMLDocumentParser* parser) override {
-    parser->StartElementNs(local_name_, prefix_, uri_, namespace_count_,
-                           const_cast<const xmlChar**>(namespaces_),
-                           attribute_count_, defaulted_count_,
-                           const_cast<const xmlChar**>(attributes_));
+    parser->StartElementNs(local_name_, prefix_, uri_, namespaces_, attributes_,
+                           defaulted_count_);
   }
 
  private:
   AtomicString local_name_;
   AtomicString prefix_;
   AtomicString uri_;
-  int namespace_count_;
-  xmlChar** namespaces_;
-  int attribute_count_;
+  base::HeapArray<xmlSAX2Namespace> namespaces_;
+  base::HeapArray<xmlSAX2Attributes> attributes_;
   int defaulted_count_;
-  xmlChar** attributes_;
 };
 
 class PendingEndElementNSCallback final
@@ -898,25 +944,16 @@ void XMLDocumentParser::DoWrite(const String& parse_string) {
   }
 }
 
-struct xmlSAX2Namespace {
-  const xmlChar* prefix;
-  const xmlChar* uri;
-};
-
 static inline bool HandleNamespaceAttributes(
     Vector<Attribute, kAttributePrealloc>& prefixed_attributes,
-    const xmlChar** libxml_namespaces,
-    int nb_namespaces,
+    base::span<const xmlSAX2Namespace> namespaces,
     ExceptionState& exception_state) {
-  xmlSAX2Namespace* namespaces =
-      reinterpret_cast<xmlSAX2Namespace*>(libxml_namespaces);
-  for (int i = 0; i < nb_namespaces; ++i) {
+  for (const auto& ns : namespaces) {
     AtomicString namespace_q_name = g_xmlns_atom;
-    AtomicString namespace_uri = ToAtomicString(namespaces[i].uri);
-    if (namespaces[i].prefix)
-      namespace_q_name =
-          WTF::g_xmlns_with_colon + ToAtomicString(namespaces[i].prefix);
-
+    AtomicString namespace_uri = ToAtomicString(ns.uri);
+    if (ns.prefix) {
+      namespace_q_name = WTF::g_xmlns_with_colon + ToAtomicString(ns.prefix);
+    }
     std::optional<QualifiedName> parsed_name = Element::ParseAttributeName(
         xmlns_names::kNamespaceURI, namespace_q_name, exception_state);
     if (!parsed_name) {
@@ -928,27 +965,14 @@ static inline bool HandleNamespaceAttributes(
   return true;
 }
 
-struct xmlSAX2Attributes {
-  const xmlChar* localname;
-  const xmlChar* prefix;
-  const xmlChar* uri;
-  const xmlChar* value;
-  const xmlChar* end;
-};
-
 static inline bool HandleElementAttributes(
     Vector<Attribute, kAttributePrealloc>& prefixed_attributes,
-    const xmlChar** libxml_attributes,
-    int nb_attributes,
+    base::span<const xmlSAX2Attributes> attributes,
     const HashMap<AtomicString, AtomicString>& initial_prefix_to_namespace_map,
     ExceptionState& exception_state) {
-  xmlSAX2Attributes* attributes =
-      reinterpret_cast<xmlSAX2Attributes*>(libxml_attributes);
-  for (int i = 0; i < nb_attributes; ++i) {
-    int value_length =
-        static_cast<int>(attributes[i].end - attributes[i].value);
-    AtomicString attr_value = ToAtomicString(attributes[i].value, value_length);
-    AtomicString attr_prefix = ToAtomicString(attributes[i].prefix);
+  for (const auto& attr : attributes) {
+    AtomicString attr_value = ToAtomicString(attr.ValueSpan());
+    AtomicString attr_prefix = ToAtomicString(attr.prefix);
     AtomicString attr_uri;
     if (!attr_prefix.empty()) {
       // If provided, use the namespace URI from libxml2 because libxml2
@@ -956,8 +980,8 @@ static inline bool HandleElementAttributes(
       // initialPrefixToNamespaceMap is the initial map from namespace
       // prefixes to namespace URIs created by the XMLDocumentParser
       // constructor (in the case where we are parsing an XML fragment).
-      if (attributes[i].uri) {
-        attr_uri = ToAtomicString(attributes[i].uri);
+      if (attr.uri) {
+        attr_uri = ToAtomicString(attr.uri);
       } else {
         const HashMap<AtomicString, AtomicString>::const_iterator it =
             initial_prefix_to_namespace_map.find(attr_prefix);
@@ -973,28 +997,27 @@ static inline bool HandleElementAttributes(
       }
     }
     AtomicString attr_q_name =
-        attr_prefix.empty()
-            ? ToAtomicString(attributes[i].localname)
-            : attr_prefix + ":" + ToString(attributes[i].localname);
+        attr_prefix.empty() ? ToAtomicString(attr.localname)
+                            : attr_prefix + ":" + ToString(attr.localname);
 
     std::optional<QualifiedName> parsed_name =
         Element::ParseAttributeName(attr_uri, attr_q_name, exception_state);
     if (!parsed_name) {
       return false;
     }
-    prefixed_attributes.push_back(Attribute(*parsed_name, attr_value));
+    prefixed_attributes.push_back(
+        Attribute(std::move(*parsed_name), attr_value));
   }
   return true;
 }
 
-void XMLDocumentParser::StartElementNs(const AtomicString& local_name,
-                                       const AtomicString& prefix,
-                                       const AtomicString& uri,
-                                       int nb_namespaces,
-                                       const xmlChar** libxml_namespaces,
-                                       int nb_attributes,
-                                       int nb_defaulted,
-                                       const xmlChar** libxml_attributes) {
+void XMLDocumentParser::StartElementNs(
+    const AtomicString& local_name,
+    const AtomicString& prefix,
+    const AtomicString& uri,
+    base::span<const xmlSAX2Namespace> namespaces,
+    base::span<const xmlSAX2Attributes> attributes,
+    int nb_defaulted) {
   if (IsStopped())
     return;
 
@@ -1002,8 +1025,7 @@ void XMLDocumentParser::StartElementNs(const AtomicString& local_name,
     script_start_position_ = GetTextPosition();
     pending_callbacks_.push_back(
         std::make_unique<PendingStartElementNSCallback>(
-            local_name, prefix, uri, nb_namespaces, libxml_namespaces,
-            nb_attributes, nb_defaulted, libxml_attributes,
+            local_name, prefix, uri, namespaces, attributes, nb_defaulted,
             script_start_position_));
     return;
   }
@@ -1026,16 +1048,16 @@ void XMLDocumentParser::StartElementNs(const AtomicString& local_name,
   saw_first_element_ = true;
 
   Vector<Attribute, kAttributePrealloc> prefixed_attributes;
-  if (!HandleNamespaceAttributes(prefixed_attributes, libxml_namespaces,
-                                 nb_namespaces, IGNORE_EXCEPTION)) {
+  if (!HandleNamespaceAttributes(prefixed_attributes, namespaces,
+                                 IGNORE_EXCEPTION)) {
     StopParsing();
     return;
   }
 
   v8::Isolate* isolate = document_->GetAgent().isolate();
   v8::TryCatch try_catch(isolate);
-  if (!HandleElementAttributes(prefixed_attributes, libxml_attributes,
-                               nb_attributes, prefix_to_namespace_map_,
+  if (!HandleElementAttributes(prefixed_attributes, attributes,
+                               prefix_to_namespace_map_,
                                parsing_fragment_ ? PassThroughException(isolate)
                                                  : IGNORE_EXCEPTION)) {
     StopParsing();
@@ -1393,14 +1415,25 @@ static void StartElementNsHandler(void* closure,
                                   const xmlChar* prefix,
                                   const xmlChar* uri,
                                   int nb_namespaces,
-                                  const xmlChar** namespaces,
+                                  const xmlChar** libxml_namespaces,
                                   int nb_attributes,
                                   int nb_defaulted,
                                   const xmlChar** libxml_attributes) {
+  // SAFETY: libxml provides `libxml_namespaces` which points to 2 const
+  // xmlChar* for each 'nb_namespaces'. The xmlSAX2Namespace struct
+  // encapsulates these two pointers.
+  auto namespaces = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<const xmlSAX2Namespace*>(libxml_namespaces),
+                 base::checked_cast<size_t>(nb_namespaces)));
+  // SAFETY: libxml provides `libxml_attributes` which points to 5 const
+  // xmlChar* for each 'nb_attributes' . The xmlSAX2Attributes struct
+  // encapsulates these five pointers.
+  auto attributes = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<const xmlSAX2Attributes*>(libxml_attributes),
+                 base::checked_cast<size_t>(nb_attributes)));
   GetParser(closure)->StartElementNs(
       ToAtomicString(local_name), ToAtomicString(prefix), ToAtomicString(uri),
-      nb_namespaces, namespaces, nb_attributes, nb_defaulted,
-      libxml_attributes);
+      namespaces, attributes, nb_defaulted);
 }
 
 static void EndElementNsHandler(void* closure,
@@ -1837,18 +1870,20 @@ static void AttributesStartElementNsHandler(void* closure,
 
   state->got_attributes = true;
 
-  xmlSAX2Attributes* attributes =
-      reinterpret_cast<xmlSAX2Attributes*>(libxml_attributes);
-  for (int i = 0; i < nb_attributes; ++i) {
-    String attr_local_name = ToString(attributes[i].localname);
-    int value_length = (int)(attributes[i].end - attributes[i].value);
-    String attr_value = ToString(attributes[i].value, value_length);
-    String attr_prefix = ToString(attributes[i].prefix);
+  // SAFETY: libxml provides `libxml_attributes` which points to 5 const
+  // xmlChar* for each 'nb_attributes' . The xmlSAX2Attributes struct
+  // encapsulates these five pointers.
+  auto attributes = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<const xmlSAX2Attributes*>(libxml_attributes),
+                 base::checked_cast<size_t>(nb_attributes)));
+  for (const auto& attr : attributes) {
+    String attr_local_name = ToString(attr.localname);
+    String attr_prefix = ToString(attr.prefix);
     String attr_q_name = attr_prefix.empty()
                              ? attr_local_name
                              : attr_prefix + ":" + attr_local_name;
 
-    state->attributes.Set(attr_q_name, attr_value);
+    state->attributes.Set(attr_q_name, ToString(attr.ValueSpan()));
   }
 }
 
