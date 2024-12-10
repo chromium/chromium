@@ -58,6 +58,7 @@ struct GroupMemberPartialData {
   std::string display_name;
   std::string email;
   GURL avatar_url;
+  std::string given_name;
 };
 
 struct GroupToken {

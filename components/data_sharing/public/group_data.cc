@@ -27,6 +27,7 @@ GroupMemberPartialData GroupMemberPartialData::FromGroupMember(
   result.display_name = member.display_name;
   result.email = member.email;
   result.avatar_url = member.avatar_url;
+  result.given_name = member.given_name;
   return result;
 }
 
