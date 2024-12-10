@@ -2328,6 +2328,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.WasmDeoptsExecutedCount" units="deopts"
+    expires_after="2025-12-01">
+  <owner>mliedtke@chromium.org</owner>
+  <owner>dlehmann@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    The number of deopts executed by the wasm engine so far. At each deopt a
+    sample is added, so if there were 3 deopts in total, there will be one
+    sample for 1, one for 2 and one for 3 deopts.
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmDeoptsPerFunction" units="deopts"
+    expires_after="2025-12-01">
+  <owner>mliedtke@chromium.org</owner>
+  <owner>dlehmann@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    The number of deopts executed per function (meaning each function has a
+    separate counter). Similarly to V8.WasmDeoptsExecutedCount, this will add a
+    sample for each deoptimization of each function.
+  </summary>
+</histogram>
+
 <histogram name="V8.WasmDeserializationTimeMilliSeconds" units="ms"
     expires_after="2025-04-13">
   <owner>ahaas@chromium.org</owner>
