@@ -57,8 +57,6 @@ class CORE_EXPORT LogicalAnchorQueryMap {
   mutable const LayoutObject* computed_for_ = nullptr;
   const LayoutBox& root_box_;
   const LogicalFragmentLinkVector* children_ = nullptr;
-  const FragmentItemsBuilder::ItemWithOffsetList* items_ = nullptr;
-  std::optional<const WritingModeConverter> converter_;
   WritingDirectionMode writing_direction_;
   bool has_anchor_queries_ = false;
 };
