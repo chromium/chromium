@@ -32,8 +32,9 @@ message LensOverlaySuggestInputs {
 
   // Whether or not to include the request and search session ids
   // in Lens query flow suggest requests in the
-  // "gsessionid" and "vsrid" params.
-  optional bool send_gsession_vsrid_for_lens_suggest = 6;
+  // "gsessionid" and "vsrid" params. If the request was a multimodal request
+  // starting from a contextual search, the "vit" param will also be included.
+  optional bool send_gsession_vsrid_vit_for_lens_suggest = 6;
 
   // Whether or not to include the visual search interaction log data
   // in Lens query flow suggest requests in the "vsint" param.

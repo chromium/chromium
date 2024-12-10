@@ -605,7 +605,8 @@ TEST_F(LensOverlayQueryControllerTest,
 
   ASSERT_FALSE(
       latest_suggest_inputs_.send_gsession_vsrid_for_contextual_suggest());
-  ASSERT_FALSE(latest_suggest_inputs_.send_gsession_vsrid_for_lens_suggest());
+  ASSERT_FALSE(
+      latest_suggest_inputs_.send_gsession_vsrid_vit_for_lens_suggest());
   ASSERT_FALSE(latest_suggest_inputs_.send_vsint_for_lens_suggest());
 }
 

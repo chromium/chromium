@@ -307,9 +307,10 @@ extern std::string GetLensOverlayClusterInfoEndpointUrl();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetLensOverlaySendLensInputsForContextualSuggest();
 
-// Returns whether or not to send the search session and visual
-// search request ids in suggest requests from the Lens
-// search box.
+// Returns whether or not to send the search session, visual
+// search request id, and visual interaction type in suggest requests from the
+// Lens search box. These params replace the existing "iil" image signals
+// param.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetLensOverlaySendLensInputsForLensSuggest();
 

@@ -1657,7 +1657,7 @@ void LensOverlayQueryController::ResetRequestClusterInfoState() {
 void LensOverlayQueryController::RunSuggestInputsCallback() {
   suggest_inputs_.set_send_gsession_vsrid_for_contextual_suggest(
       lens::features::GetLensOverlaySendLensInputsForContextualSuggest());
-  suggest_inputs_.set_send_gsession_vsrid_for_lens_suggest(
+  suggest_inputs_.set_send_gsession_vsrid_vit_for_lens_suggest(
       lens::features::GetLensOverlaySendLensInputsForLensSuggest());
   suggest_inputs_.set_send_vsint_for_lens_suggest(
       lens::features::

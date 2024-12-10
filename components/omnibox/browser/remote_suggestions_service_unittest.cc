@@ -479,21 +479,32 @@ TEST_F(RemoteSuggestionsServiceTest,
       &google_template_url, search_terms_args, SearchTermsData());
 
   // No additional query params are appended for empty Lens suggest inputs
-  // because send_gsession_vsrid_for_lens_suggest and
+  // because send_gsession_vsrid_vit_for_lens_suggest and
   // send_vsint_for_lens_suggest are false.
   ASSERT_EQ(endpoint_url.spec(),
             "https://www.google.com/"
             "suggest?q=query&client=chrome-multimodal&iil=iil");
 
   search_terms_args.lens_overlay_suggest_inputs
-      ->set_send_gsession_vsrid_for_lens_suggest(true);
+      ->set_send_gsession_vsrid_vit_for_lens_suggest(true);
   endpoint_url = RemoteSuggestionsService::EndpointUrl(
       &google_template_url, search_terms_args, SearchTermsData());
 
-  // Appended gsessionid and vsrids.
+  // Appended gsessionid and vsrids. iil is removed.
   ASSERT_EQ(endpoint_url.spec(),
             "https://www.google.com/"
-            "suggest?q=query&client=chrome-multimodal&iil=iil&vsrid=vsrid&"
+            "suggest?q=query&client=chrome-multimodal&vsrid=vsrid&"
+            "gsessionid=gsessionid");
+
+  search_terms_args.lens_overlay_suggest_inputs
+      ->set_contextual_visual_input_type("vit");
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      &google_template_url, search_terms_args, SearchTermsData());
+
+  // Appended vit.
+  ASSERT_EQ(endpoint_url.spec(),
+            "https://www.google.com/"
+            "suggest?q=query&client=chrome-multimodal&vit=vit&vsrid=vsrid&"
             "gsessionid=gsessionid");
 
   search_terms_args.lens_overlay_suggest_inputs
@@ -504,7 +515,7 @@ TEST_F(RemoteSuggestionsServiceTest,
   // Appended vsint.
   ASSERT_EQ(endpoint_url.spec(),
             "https://www.google.com/"
-            "suggest?q=query&client=chrome-multimodal&iil=iil&vsint=vsint&"
+            "suggest?q=query&client=chrome-multimodal&vsint=vsint&vit=vit&"
             "vsrid=vsrid&gsessionid=gsessionid");
 }
 
@@ -539,7 +550,7 @@ TEST_F(RemoteSuggestionsServiceTest,
   search_terms_args.lens_overlay_suggest_inputs
       ->set_send_vsint_for_lens_suggest(true);
   search_terms_args.lens_overlay_suggest_inputs
-      ->set_send_gsession_vsrid_for_lens_suggest(true);
+      ->set_send_gsession_vsrid_vit_for_lens_suggest(true);
 
   GURL endpoint_url = RemoteSuggestionsService::EndpointUrl(
       &google_template_url, search_terms_args, SearchTermsData());
@@ -568,7 +579,8 @@ TEST_F(RemoteSuggestionsServiceTest,
   lens_overlay_suggest_inputs.set_send_gsession_vsrid_for_contextual_suggest(
       true);
   lens_overlay_suggest_inputs.set_send_vsint_for_lens_suggest(true);
-  lens_overlay_suggest_inputs.set_send_gsession_vsrid_for_lens_suggest(true);
+  lens_overlay_suggest_inputs.set_send_gsession_vsrid_vit_for_lens_suggest(
+      true);
   search_terms_args.lens_overlay_suggest_inputs = lens_overlay_suggest_inputs;
 
   search_terms_args.page_classification =
