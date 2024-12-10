@@ -768,7 +768,8 @@ TEST(ONCUtils, ParseAndValidateOncForImport_WithAdvancedOpenVPNSettings) {
 }
 
 struct MaskCredentialsTestCase {
-  // RAW_PTR_EXCLUSION: #global-scope
+  // This field is not a raw_ptr<> because it only ever points to statically-
+  // allocated memory that is never freed, so it can't possibly dangle.
   RAW_PTR_EXCLUSION const OncValueSignature* onc_signature;
   const char* onc;
   const char* expected_after_masking;
