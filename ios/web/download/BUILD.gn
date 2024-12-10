@@ -13,7 +13,7 @@ source_set("download") {
     "//ios/web/net/cookies",
     "//ios/web/public",
     "//ios/web/public/download",
-    "//ios/web/web_view:util",
+    "//ios/web/util",
     "//ui/base",
   ]
 

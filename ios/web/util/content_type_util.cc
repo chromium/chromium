@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/web_view/content_type_util.h"
+#include "ios/web/util/content_type_util.h"
 
 namespace web {
 

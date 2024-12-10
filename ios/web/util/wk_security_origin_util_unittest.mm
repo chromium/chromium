@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/web_view/wk_security_origin_util.h"
+#import "ios/web/util/wk_security_origin_util.h"
 
 #import <WebKit/WebKit.h>
 

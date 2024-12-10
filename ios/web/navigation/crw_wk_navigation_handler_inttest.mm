@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/navigation/crw_wk_navigation_handler.h"
-
 #import "base/scoped_observation.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/web/common/features.h"
+#import "ios/web/navigation/crw_wk_navigation_handler.h"
 #import "ios/web/public/navigation/https_upgrade_type.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -16,7 +15,7 @@
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/security/wk_web_view_security_util.h"
 #import "ios/web/test/web_int_test.h"
-#import "ios/web/web_view/error_translation_util.h"
+#import "ios/web/util/error_translation_util.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"

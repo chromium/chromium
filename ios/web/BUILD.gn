@@ -195,7 +195,7 @@ test("ios_web_unittests") {
     "//ios/web/security:unittests",
     "//ios/web/session:unittests",
     "//ios/web/test:packed_resources",
-    "//ios/web/web_view:unittests",
+    "//ios/web/util:unittests",
   ]
 
   assert_no_deps = ios_assert_no_deps
@@ -581,13 +581,13 @@ test("ios_web_inttests") {
     "//ios/web/test:test_constants",
     "//ios/web/test:test_support",
     "//ios/web/test/fakes",
+    "//ios/web/util",
     "//ios/web/web_state",
     "//ios/web/web_state:test_util",
     "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state/ui",
     "//ios/web/web_state/ui:crw_context_menu_controller",
     "//ios/web/web_state/ui:web_controller_header",
-    "//ios/web/web_view:util",
     "//mojo/core/embedder",
     "//net:test_support",
     "//services/network/public/cpp",

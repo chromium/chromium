@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/web_view/wk_web_view_util.h"
+#import "ios/web/util/wk_web_view_util.h"
 
 #import "base/functional/bind.h"
 #import "base/test/ios/wait_util.h"

@@ -9,7 +9,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "ios/net/protocol_handler_util.h"
 #import "ios/web/public/web_state.h"
-#import "ios/web/web_view/error_translation_util.h"
+#import "ios/web/util/error_translation_util.h"
 #import "net/base/net_errors.h"
 #import "url/gurl.h"
 

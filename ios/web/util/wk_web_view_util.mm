@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/web_view/wk_web_view_util.h"
+#import "ios/web/util/wk_web_view_util.h"
 
 #import "ios/web/public/web_client.h"
 
@@ -10,7 +10,6 @@ namespace web {
 
 void CreateFullPagePdf(WKWebView* web_view,
                        base::OnceCallback<void(NSData*)> callback) {
-
   if (!web_view) {
     std::move(callback).Run(nil);
     return;
