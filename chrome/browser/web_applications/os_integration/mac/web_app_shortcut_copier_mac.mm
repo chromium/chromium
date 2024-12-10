@@ -4,7 +4,12 @@
 //
 // Installs the native app shim for a web app to its final location.
 
+#import <Foundation/Foundation.h>
+
+#include <memory>
+
 #include "base/apple/bundle_locations.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/mach_port_rendezvous.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
@@ -22,6 +27,7 @@
 #include "base/task/single_thread_task_executor.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/web_applications/mojom/web_app_shortcut_copier.mojom.h"
+#include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_version.h"
 #include "mojo/core/embedder/configuration.h"
 #include "mojo/core/embedder/embedder.h"
@@ -118,6 +124,9 @@ int ChromeWebAppShortcutCopierMain(int argc, char** argv) {
       base::PathService::CheckedGet(base::FILE_EXE);
   base::apple::SetOverrideFrameworkBundlePath(
       executable_path.DirName().DirName());
+
+  NSBundle* base_bundle = chrome::OuterAppBundle();
+  base::apple::SetBaseBundleID(base_bundle.bundleIdentifier.UTF8String);
 
   auto requirement = CallerProcessRequirement();
   if (!requirement) {
