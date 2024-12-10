@@ -43,7 +43,6 @@ class ContentWebFrame : public WebFrame,
   WebFrameInternal* GetWebFrameInternal() override;
   std::string GetFrameId() const override;
   bool IsMainFrame() const override;
-  GURL GetSecurityOriginDeprecated() const override;
   url::Origin GetSecurityOrigin() const override;
   BrowserState* GetBrowserState() override;
   base::WeakPtr<WebFrame> AsWeakPtr() override;
