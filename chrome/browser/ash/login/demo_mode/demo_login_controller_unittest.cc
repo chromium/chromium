@@ -63,6 +63,9 @@ constexpr char kApiKeyParam[] = "key";
 
 constexpr char kPublicAccountUserId[] = "public_session_user@localhost";
 
+constexpr char kTestGaiaId[] = "123";
+constexpr char kTestEmail[] = "example@gmail.com";
+
 }  // namespace
 
 class DemoLoginControllerTest : public testing::Test {
@@ -95,6 +98,8 @@ class DemoLoginControllerTest : public testing::Test {
     accounts.Append(std::move(account));
     settings_helper_.Set(kAccountsPrefDeviceLocalAccounts,
                          base::Value(std::move(accounts)));
+
+    auth_events_recorder_ = ash::AuthEventsRecorder::CreateForTesting();
 
     login_screen_client_ = std::make_unique<LoginScreenClientImpl>();
     demo_login_controller_ =
@@ -156,6 +161,22 @@ class DemoLoginControllerTest : public testing::Test {
     return &existing_user_controller_;
   }
 
+  void AppendTestUserToUserList() {
+    EXPECT_EQ(1U, fake_user_manager_->GetUsers().size());
+    fake_user_manager_->AddUser(AccountId::FromNonCanonicalEmail(
+        kTestEmail, kTestGaiaId, AccountType::GOOGLE));
+    // Expect 2 users: test user with `kTestGaiaId` and public account user.
+    EXPECT_EQ(2U, fake_user_manager_->GetUsers().size());
+  }
+
+  void ExpectOnlyDeviceLocalAccountInUserList() {
+    const auto user_list = fake_user_manager_->GetUsers();
+    EXPECT_EQ(1U, user_list.size());
+    EXPECT_TRUE(user_list[0]->IsDeviceLocalAccount());
+  }
+
+  // FakeChromeUserManager* user_manager() { return fake_user_manager_.Get(); }
+
   network::TestURLLoaderFactory test_url_loader_factory_;
 
  private:
@@ -165,6 +186,9 @@ class DemoLoginControllerTest : public testing::Test {
   testing::NiceMock<ash::MockLoginDisplayHost> mock_login_display_host_;
   ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   system::FakeStatisticsProvider statistics_provider_;
+
+  // Required for `user_manager::UserList`:
+  std::unique_ptr<ash::AuthEventsRecorder> auth_events_recorder_;
 
   // Dependencies for `ExistingUserController`:
   FakeSessionManagerClient fake_session_manager_client_;
@@ -186,7 +210,7 @@ class DemoLoginControllerTest : public testing::Test {
 };
 
 TEST_F(DemoLoginControllerTest, OnSetupDemoAccountSuccessFirstTime) {
-  const GaiaId gaia_id("123");
+  const GaiaId gaia_id(kTestGaiaId);
   test_url_loader_factory_.AddResponse(
       GetSetupUrl().spec(),
       base::StringPrintf(kValidGaiaCreds, gaia_id.ToString()));
@@ -229,9 +253,10 @@ TEST_F(DemoLoginControllerTest, InValidGaia) {
   loop.Run();
 }
 
-TEST_F(DemoLoginControllerTest, CleanUpSuccess) {
+TEST_F(DemoLoginControllerTest, ServerCleanUpSuccess) {
+  AppendTestUserToUserList();
   auto* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kDemoAccountGaiaId, "123");
+  local_state->SetString(prefs::kDemoAccountGaiaId, kTestGaiaId);
   const std::string last_session_id = "device_id";
   local_state->SetString(prefs::kDemoModeSessionIdentifier, last_session_id);
   base::MockCallback<DemoLoginController::FailedRequestCallback>
@@ -251,9 +276,12 @@ TEST_F(DemoLoginControllerTest, CleanUpSuccess) {
   const auto new_session_id =
       local_state->GetString(prefs::kDemoModeSessionIdentifier);
   EXPECT_NE(new_session_id, last_session_id);
+
+  ExpectOnlyDeviceLocalAccountInUserList();
 }
 
-TEST_F(DemoLoginControllerTest, CleanUpFailed) {
+TEST_F(DemoLoginControllerTest, ServerCleanUpFailed) {
+  AppendTestUserToUserList();
   auto* local_state = g_browser_process->local_state();
   local_state->SetString(prefs::kDemoAccountGaiaId, "123");
   const std::string last_session_id = "device_id";
@@ -280,6 +308,9 @@ TEST_F(DemoLoginControllerTest, CleanUpFailed) {
   const auto new_session_id =
       local_state->GetString(prefs::kDemoModeSessionIdentifier);
   EXPECT_NE(new_session_id, last_session_id);
+
+  // Expect test account is removed from local even server clean up failed.
+  ExpectOnlyDeviceLocalAccountInUserList();
 }
 
 TEST_F(DemoLoginControllerTest, FallbackToMGS) {
