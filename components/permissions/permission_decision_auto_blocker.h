@@ -51,8 +51,7 @@ class PermissionDecisionAutoBlockerBase {
                                        bool dismissed_prompt_was_quiet) = 0;
 
   // Records that an ignore of a prompt for |permission| was made. If the
-  // total number of ignores exceeds a threshold and
-  // features::kBlockPromptsIfIgnoredOften is enabled, it will place |url|
+  // total number of ignores exceeds a threshold it will place |url|
   // under embargo for |permission|. |ignored_prompt_was_quiet| will inform
   // the decision of which threshold to pick, depending on whether the prompt
   // that was presented to the user was quiet or not.

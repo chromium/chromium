@@ -38,8 +38,7 @@ bool FilterAll(const GURL& url) {
 class PermissionDecisionAutoBlockerUnitTest : public testing::Test {
  protected:
   PermissionDecisionAutoBlockerUnitTest() {
-    feature_list_.InitWithFeatures({features::kBlockPromptsIfDismissedOften,
-                                    features::kBlockPromptsIfIgnoredOften},
+    feature_list_.InitWithFeatures({features::kBlockPromptsIfDismissedOften},
                                    {});
     last_embargoed_status_ = false;
     autoblocker()->SetClockForTesting(&clock_);
