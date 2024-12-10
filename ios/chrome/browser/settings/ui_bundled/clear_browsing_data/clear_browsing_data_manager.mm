@@ -210,10 +210,17 @@ BOOL UIIsBlocking(Browser* browser) {
 
 - (void)loadModel:(ListModel*)model {
   self.tableViewTimeRangeItem = [self timeRangeItem];
+  // TODO(crbug.com/335387869): When loading the model and the UI is up and
+  // running, the pref service should always be valid. We're unsure why this is
+  // not the case all the time. As this code path will soon be deprecated, we've
+  // added a workaround to only create the time range item if the pref service
+  // is valid.
+  if (self.tableViewTimeRangeItem) {
+    [model addSectionWithIdentifier:SectionIdentifierTimeRange];
+    [model addItem:self.tableViewTimeRangeItem
+        toSectionWithIdentifier:SectionIdentifierTimeRange];
+  }
 
-  [model addSectionWithIdentifier:SectionIdentifierTimeRange];
-  [model addItem:self.tableViewTimeRangeItem
-      toSectionWithIdentifier:SectionIdentifierTimeRange];
   [self addClearBrowsingDataItemsToModel:model];
   [self addSyncProfileItemsToModel:model];
 }
