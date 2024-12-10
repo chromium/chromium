@@ -104,6 +104,7 @@ public class HubManagerImplUnitTest {
         mReferenceButtonDataSupplier.set(mReferenceButtonData);
         mProfileProviderSupplier.set(mProfileProvider);
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
+        when(mTabSwitcherPane.getColorScheme()).thenReturn(HubColorScheme.DEFAULT);
         when(mTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mReferenceButtonDataSupplier);
         when(mTabSwitcherPane.getActionButtonDataSupplier()).thenReturn(mActionButtonDataSupplier);
@@ -112,6 +113,7 @@ public class HubManagerImplUnitTest {
                 .thenReturn(mTabSwitcherMenuOrKeyboardActionHandler);
 
         when(mIncognitoTabSwitcherPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
+        when(mIncognitoTabSwitcherPane.getColorScheme()).thenReturn(HubColorScheme.INCOGNITO);
         when(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mReferenceButtonDataSupplier);
         when(mIncognitoTabSwitcherPane.getActionButtonDataSupplier())

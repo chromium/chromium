@@ -97,7 +97,10 @@ public class HubPaneHostViewRenderTest {
                 () -> {
                     @ColorInt int defaultBgColor = SemanticColorUtils.getDefaultBgColor(mActivity);
                     View rootView = solidColorView(defaultBgColor);
-                    mPropertyModel.set(COLOR_SCHEME, HubColorScheme.DEFAULT);
+                    mPropertyModel.set(
+                            COLOR_SCHEME,
+                            new HubColorSchemeUpdate(
+                                    HubColorScheme.DEFAULT, HubColorScheme.DEFAULT));
                     mPropertyModel.set(HAIRLINE_VISIBILITY, true);
                     mPropertyModel.set(PANE_ROOT_VIEW, rootView);
                     mPropertyModel.set(ACTION_BUTTON_DATA, enabledButtonData);
@@ -111,7 +114,10 @@ public class HubPaneHostViewRenderTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPropertyModel.set(COLOR_SCHEME, HubColorScheme.INCOGNITO);
+                    mPropertyModel.set(
+                            COLOR_SCHEME,
+                            new HubColorSchemeUpdate(
+                                    HubColorScheme.INCOGNITO, HubColorScheme.INCOGNITO));
                     mPropertyModel.set(ACTION_BUTTON_DATA, enabledButtonData);
                 });
         mRenderTestRule.render(mPaneHost, prefix + "_incognitoButton");

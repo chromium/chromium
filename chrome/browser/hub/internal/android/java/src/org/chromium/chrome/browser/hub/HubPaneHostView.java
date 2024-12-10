@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_COLOR_BLEND_ANIMATION_DURATION_MS;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_FADE_ANIMATION_DURATION_MS;
 
 import android.animation.Animator;
@@ -27,6 +28,7 @@ import androidx.core.widget.TextViewCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.ui.animation.AnimationHandler;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -50,7 +52,7 @@ public class HubPaneHostView extends FrameLayout {
                         int oldTop,
                         int oldRight,
                         int oldBottom) {
-                    endFloatingActionButtonAnimation();
+                    mFloatingActionButtonAnimatorHandler.forceFinishAnimation();
 
                     int height = bottom - top;
                     int oldHeight = oldBottom - oldTop;
@@ -77,12 +79,10 @@ public class HubPaneHostView extends FrameLayout {
                                     mActionButton.setTranslationY(0);
                                     mSnackbarHeightForAnimation = height;
                                     updateFloatingButtonBottomMargin();
-                                    mFloatingActionButtonAnimator = null;
                                 }
                             });
 
-                    mFloatingActionButtonAnimator = animator;
-                    animator.start();
+                    mFloatingActionButtonAnimatorHandler.startAnimation(animator);
                 }
             };
 
@@ -91,8 +91,10 @@ public class HubPaneHostView extends FrameLayout {
     private ImageView mHairline;
     private ViewGroup mSnackbarContainer;
     private @Nullable View mCurrentViewRoot;
-    private @Nullable Animator mCurrentAnimator;
-    private @Nullable Animator mFloatingActionButtonAnimator;
+    private final AnimationHandler mFadeAnimatorHandler;
+    private final AnimationHandler mFloatingActionButtonAnimatorHandler;
+    private final AnimationHandler mColorBlendAnimatorHandler;
+    private final HubColorBlendAnimatorSetHelper mAnimatorSetBuilder;
 
     private int mFloatingActionButtonAnimatorDuration;
     private int mOriginalMargin;
@@ -102,6 +104,10 @@ public class HubPaneHostView extends FrameLayout {
     /** Default {@link FrameLayout} constructor called by inflation. */
     public HubPaneHostView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
+        mFadeAnimatorHandler = new AnimationHandler();
+        mFloatingActionButtonAnimatorHandler = new AnimationHandler();
+        mColorBlendAnimatorHandler = new AnimationHandler();
+        mAnimatorSetBuilder = new HubColorBlendAnimatorSetHelper();
     }
 
     @Override
@@ -122,16 +128,16 @@ public class HubPaneHostView extends FrameLayout {
         // this.
         mActionButton.setElevation(
                 res.getDimensionPixelSize(R.dimen.floating_action_button_elevation));
+
+        registerColorBlends();
     }
 
     void setRootView(@Nullable View newRootView) {
         final View oldRootView = mCurrentViewRoot;
         mCurrentViewRoot = newRootView;
-        if (mCurrentAnimator != null) {
-            mCurrentAnimator.end();
-            assert mCurrentAnimator == null;
-            endFloatingActionButtonAnimation();
-        }
+
+        mFadeAnimatorHandler.forceFinishAnimation();
+        mFloatingActionButtonAnimatorHandler.forceFinishAnimation();
 
         if (oldRootView != null && newRootView != null) {
             newRootView.setAlpha(0);
@@ -151,11 +157,9 @@ public class HubPaneHostView extends FrameLayout {
                         public void onAnimationEnd(Animator animation) {
                             mPaneFrame.removeView(oldRootView);
                             oldRootView.setAlpha(1);
-                            mCurrentAnimator = null;
                         }
                     });
-            mCurrentAnimator = animatorSet;
-            animatorSet.start();
+            mFadeAnimatorHandler.startAnimation(animatorSet);
         } else if (newRootView == null) {
             mPaneFrame.removeAllViews();
         } else { // oldRootView == null
@@ -163,38 +167,68 @@ public class HubPaneHostView extends FrameLayout {
         }
     }
 
+    void setColorScheme(HubColorSchemeUpdate colorSchemeUpdate) {
+        @HubColorScheme int newColorScheme = colorSchemeUpdate.newColorScheme;
+        @HubColorScheme int prevColorScheme = colorSchemeUpdate.previousColorScheme;
+
+        @StyleRes
+        int textAppearance =
+                HubFieldTrial.useAlternativeFabColor()
+                        ? HubColors.getTextAppearanceMediumOnPrimaryContainer(newColorScheme)
+                        : HubColors.getTextAppearanceMedium(newColorScheme);
+        mActionButton.setTextAppearance(textAppearance);
+
+        @ColorInt int hairlineColor = HubColors.getHairlineColor(getContext(), newColorScheme);
+        mHairline.setImageTintList(ColorStateList.valueOf(hairlineColor));
+
+        AnimatorSet animatorSet =
+                mAnimatorSetBuilder
+                        .setNewColorScheme(newColorScheme)
+                        .setPreviousColorScheme(prevColorScheme)
+                        .build();
+        mColorBlendAnimatorHandler.startAnimation(animatorSet);
+    }
+
+    private void registerColorBlends() {
+        Context context = getContext();
+
+        mAnimatorSetBuilder.registerBlend(
+                new SingleHubViewColorBlend(
+                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
+                        colorScheme -> HubColors.getBackgroundColor(context, colorScheme),
+                        mPaneFrame::setBackgroundColor));
+
+        boolean shouldUseAlternativeFabColor = HubFieldTrial.useAlternativeFabColor();
+        mAnimatorSetBuilder.registerBlend(
+                new SingleHubViewColorBlend(
+                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
+                        colorScheme ->
+                                HubColors.getContainerColor(
+                                        shouldUseAlternativeFabColor, context, colorScheme),
+                        interpolatedColor ->
+                                updateActionButtonColorInternal(context, interpolatedColor)));
+
+        mAnimatorSetBuilder.registerBlend(
+                new SingleHubViewColorBlend(
+                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
+                        colorScheme ->
+                                HubColors.getOnContainerColor(
+                                        shouldUseAlternativeFabColor, context, colorScheme),
+                        this::updateIconColorInternal));
+    }
+
     void setActionButtonData(@Nullable FullButtonData buttonData) {
         ApplyButtonData.apply(buttonData, mActionButton);
     }
 
-    void setColorScheme(@HubColorScheme int colorScheme) {
-        Context context = getContext();
+    private void updateIconColorInternal(@ColorInt int color) {
+        ColorStateList interpolatedIconColor = ColorStateList.valueOf(color);
+        TextViewCompat.setCompoundDrawableTintList(mActionButton, interpolatedIconColor);
+    }
 
-        @ColorInt int backgroundColor = HubColors.getBackgroundColor(context, colorScheme);
-        mPaneFrame.setBackgroundColor(backgroundColor);
-
-        ColorStateList iconColor;
-        ColorStateList buttonColor;
-        @StyleRes int textAppearance;
-        if (HubFieldTrial.useAlternativeFabColor()) {
-            iconColor =
-                    ColorStateList.valueOf(
-                            HubColors.getOnPrimaryContainerColor(context, colorScheme));
-            buttonColor = HubColors.getPrimaryContainerColorStateList(context, colorScheme);
-            textAppearance = HubColors.getTextAppearanceMediumOnPrimaryContainer(colorScheme);
-        } else {
-            iconColor =
-                    ColorStateList.valueOf(
-                            HubColors.getOnSecondaryContainerColor(context, colorScheme));
-            buttonColor = HubColors.getSecondaryContainerColorStateList(context, colorScheme);
-            textAppearance = HubColors.getTextAppearanceMedium(colorScheme);
-        }
-        TextViewCompat.setCompoundDrawableTintList(mActionButton, iconColor);
+    private void updateActionButtonColorInternal(Context context, @ColorInt int color) {
+        ColorStateList buttonColor = HubColors.getContainerColorStateList(context, color);
         mActionButton.setButtonColor(buttonColor);
-        mActionButton.setTextAppearance(textAppearance);
-
-        @ColorInt int hairlineColor = HubColors.getHairlineColor(context, colorScheme);
-        mHairline.setImageTintList(ColorStateList.valueOf(hairlineColor));
     }
 
     void setHairlineVisibility(boolean visible) {
@@ -211,7 +245,7 @@ public class HubPaneHostView extends FrameLayout {
 
     void setEdgeToEdgeBottomInsets(int bottomInsets) {
         mEdgeToEdgeBottomInset = bottomInsets;
-        endFloatingActionButtonAnimation();
+        mFloatingActionButtonAnimatorHandler.forceFinishAnimation();
         updateFloatingButtonBottomMargin();
     }
 
@@ -234,13 +268,6 @@ public class HubPaneHostView extends FrameLayout {
                 viewGroup.removeView(rootView);
             }
             mPaneFrame.addView(rootView);
-        }
-    }
-
-    private void endFloatingActionButtonAnimation() {
-        if (mFloatingActionButtonAnimator != null) {
-            mFloatingActionButtonAnimator.end();
-            assert mFloatingActionButtonAnimator == null;
         }
     }
 

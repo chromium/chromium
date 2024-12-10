@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.hub;
 
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_COLOR_BLEND_ANIMATION_DURATION_MS;
+import static org.chromium.ui.util.ColorBlendAnimationFactory.createMultiColorBlendAnimation;
+
+import android.animation.AnimatorSet;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
@@ -12,6 +16,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -19,6 +24,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.core.widget.ImageViewCompat;
 import androidx.core.widget.TextViewCompat;
 
 import com.google.android.material.tabs.TabLayout;
@@ -28,24 +34,31 @@ import com.google.android.material.tabs.TabLayout.Tab;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.ui.animation.AnimationHandler;
 
 import java.util.List;
 
 /** Toolbar for the Hub. May contain a single or multiple rows, of which this view is the parent. */
 public class HubToolbarView extends LinearLayout {
+
     private Button mActionButton;
     private TabLayout mPaneSwitcher;
     private LinearLayout mMenuButtonContainer;
+    private ImageButton mMenuButton;
     private View mSearchBoxLayout;
     private EditText mSearchBoxTextView;
     private ImageView mSearchLoupeView;
 
     private OnTabSelectedListener mOnTabSelectedListener;
     private boolean mBlockTabSelectionCallback;
+    private final AnimationHandler mColorBlendAnimatorHandler;
+    private final HubColorBlendAnimatorSetHelper mAnimatorSetBuilder;
 
     /** Default {@link LinearLayout} constructor called by inflation. */
     public HubToolbarView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
+        mColorBlendAnimatorHandler = new AnimationHandler();
+        mAnimatorSetBuilder = new HubColorBlendAnimatorSetHelper();
     }
 
     @Override
@@ -54,11 +67,18 @@ public class HubToolbarView extends LinearLayout {
         mActionButton = findViewById(R.id.toolbar_action_button);
         mPaneSwitcher = findViewById(R.id.pane_switcher);
         mMenuButtonContainer = findViewById(R.id.menu_button_container);
+        mMenuButton = mMenuButtonContainer.findViewById(R.id.menu_button);
 
         // SearchBoxLayout is GONE by default, and enabled via the mediator.
         mSearchBoxLayout = findViewById(R.id.search_box);
         mSearchBoxTextView = findViewById(R.id.search_box_text);
         mSearchLoupeView = findViewById(R.id.search_loupe);
+
+        registerColorBlends();
+
+        if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
+            registerSearchBoxColorBlends();
+        }
     }
 
     void setMenuButtonVisible(boolean visible) {
@@ -109,28 +129,113 @@ public class HubToolbarView extends LinearLayout {
         mBlockTabSelectionCallback = false;
     }
 
-    void setColorScheme(@HubColorScheme int colorScheme) {
-        Context context = getContext();
-        setBackgroundColor(HubColors.getBackgroundColor(context, colorScheme));
-        ColorStateList iconColor = HubColors.getIconColor(context, colorScheme);
-        @ColorInt int selectedIconColor = HubColors.getSelectedIconColor(context, colorScheme);
-        TextViewCompat.setCompoundDrawableTintList(mActionButton, iconColor);
-        mPaneSwitcher.setTabIconTint(
-                HubColors.getSelectableIconList(selectedIconColor, iconColor.getDefaultColor()));
-        mPaneSwitcher.setSelectedTabIndicatorColor(selectedIconColor);
+    void setColorScheme(HubColorSchemeUpdate colorSchemeUpdate) {
+        @HubColorScheme int newColorScheme = colorSchemeUpdate.newColorScheme;
+        @HubColorScheme int prevColorScheme = colorSchemeUpdate.previousColorScheme;
 
-        if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
-            @ColorInt int hintTextColor = HubColors.getSearchBoxHintTextColor(context, colorScheme);
-            mSearchBoxTextView.setHintTextColor(hintTextColor);
-            GradientDrawable backgroundDrawable =
-                    (GradientDrawable) mSearchBoxLayout.getBackground();
-            @ColorInt int searchBoxBgColor = HubColors.getSearchBoxBgColor(context, colorScheme);
-            backgroundDrawable.setColor(searchBoxBgColor);
-            mSearchLoupeView.setImageTintList(iconColor);
-        }
+        AnimatorSet animatorSet =
+                mAnimatorSetBuilder
+                        .setNewColorScheme(newColorScheme)
+                        .setPreviousColorScheme(prevColorScheme)
+                        .build();
+        mColorBlendAnimatorHandler.startAnimation(animatorSet);
 
         // TODO(crbug.com/40948541): Updating the app menu color here is more correct and
         // should be done for code health.
+    }
+
+    private void registerColorBlends() {
+        Context context = getContext();
+
+        mAnimatorSetBuilder.registerBlend(
+                new SingleHubViewColorBlend(
+                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
+                        colorScheme -> HubColors.getBackgroundColor(context, colorScheme),
+                        this::setBackgroundColor));
+
+        mAnimatorSetBuilder.registerBlend(
+                new SingleHubViewColorBlend(
+                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
+                        colorScheme -> HubColors.getSelectedIconColor(context, colorScheme),
+                        mPaneSwitcher::setSelectedTabIndicatorColor));
+
+        HubViewColorBlend multiColorBlend =
+                (prevColorScheme, newColorScheme) -> {
+                    @ColorInt int newIconColor = HubColors.getIconColor(context, newColorScheme);
+                    @ColorInt
+                    int newSelectedIconColor =
+                            HubColors.getSelectedIconColor(context, newColorScheme);
+                    @ColorInt int prevIconColor = HubColors.getIconColor(context, prevColorScheme);
+                    @ColorInt
+                    int prevSelectedIconColor =
+                            HubColors.getSelectedIconColor(context, prevColorScheme);
+                    return createMultiColorBlendAnimation(
+                            PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
+                            new int[] {prevIconColor, prevSelectedIconColor},
+                            new int[] {newIconColor, newSelectedIconColor},
+                            colorList -> {
+                                @ColorInt int interpolatedIconColor = colorList[0];
+                                @ColorInt int interpolatedSelectedIconColor = colorList[1];
+                                updateTabIconTintInternal(
+                                        interpolatedIconColor, interpolatedSelectedIconColor);
+                            });
+                };
+        mAnimatorSetBuilder.registerBlend(multiColorBlend);
+
+        mAnimatorSetBuilder.registerBlend(
+                new SingleHubViewColorBlend(
+                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
+                        colorScheme -> HubColors.getIconColor(context, colorScheme),
+                        interpolatedColor -> {
+                            updateActionButtonColorInternal(context, interpolatedColor);
+                            ColorStateList menuButtonColor =
+                                    ColorStateList.valueOf(interpolatedColor);
+                            ImageViewCompat.setImageTintList(mMenuButton, menuButtonColor);
+                        }));
+        // TODO(crbug.com/40948541): Updating the app menu color here is more correct and
+        // should be done for code health. Menu Button Color is also set by
+        // HubToolbarCoordinator.
+    }
+
+    private void registerSearchBoxColorBlends() {
+        Context context = getContext();
+
+        mAnimatorSetBuilder.registerBlend(
+                new SingleHubViewColorBlend(
+                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
+                        colorScheme -> HubColors.getSearchBoxHintTextColor(context, colorScheme),
+                        mSearchBoxTextView::setHintTextColor));
+
+        GradientDrawable backgroundDrawable =
+                (GradientDrawable) mSearchBoxLayout.getBackground().mutate();
+        mAnimatorSetBuilder.registerBlend(
+                new SingleHubViewColorBlend(
+                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
+                        colorScheme -> HubColors.getSearchBoxBgColor(context, colorScheme),
+                        backgroundDrawable::setColor));
+
+        mAnimatorSetBuilder.registerBlend(
+                new SingleHubViewColorBlend(
+                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
+                        colorScheme -> HubColors.getIconColor(context, colorScheme),
+                        this::updateSearchLoupeColor));
+    }
+
+    private void updateTabIconTintInternal(
+            @ColorInt int iconColor, @ColorInt int selectedIconColor) {
+        ColorStateList selectableIconList =
+                HubColors.getSelectableIconList(selectedIconColor, iconColor);
+        mPaneSwitcher.setTabIconTint(selectableIconList);
+    }
+
+    private void updateActionButtonColorInternal(Context context, @ColorInt int color) {
+        ColorStateList actionButtonColor = HubColors.getActionButtonColor(context, color);
+        TextViewCompat.setCompoundDrawableTintList(mActionButton, actionButtonColor);
+    }
+
+    private void updateSearchLoupeColor(@ColorInt int color) {
+        ColorStateList colorStateList = ColorStateList.valueOf(color);
+        mSearchLoupeView.setImageTintList(colorStateList);
     }
 
     void setButtonLookupConsumer(Callback<PaneButtonLookup> lookupConsumer) {

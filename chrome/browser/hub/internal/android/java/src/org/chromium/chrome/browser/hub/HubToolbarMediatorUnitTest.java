@@ -263,13 +263,19 @@ public class HubToolbarMediatorUnitTest {
     public void testHubColorScheme() {
         new HubToolbarMediator(mActivity, mModel, mPaneManager, mTracker, mSearchActivityClient);
         mFocusedPaneSupplier.set(mTabSwitcherPane);
-        assertEquals(HubColorScheme.DEFAULT, mModel.get(COLOR_SCHEME));
+        assertEquals(
+                new HubColorSchemeUpdate(HubColorScheme.DEFAULT, HubColorScheme.DEFAULT),
+                mModel.get(COLOR_SCHEME));
 
         mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
-        assertEquals(HubColorScheme.INCOGNITO, mModel.get(COLOR_SCHEME));
+        assertEquals(
+                new HubColorSchemeUpdate(HubColorScheme.INCOGNITO, HubColorScheme.DEFAULT),
+                mModel.get(COLOR_SCHEME));
 
         mFocusedPaneSupplier.set(null);
-        assertEquals(HubColorScheme.DEFAULT, mModel.get(COLOR_SCHEME));
+        assertEquals(
+                new HubColorSchemeUpdate(HubColorScheme.DEFAULT, HubColorScheme.DEFAULT),
+                mModel.get(COLOR_SCHEME));
     }
 
     @Test

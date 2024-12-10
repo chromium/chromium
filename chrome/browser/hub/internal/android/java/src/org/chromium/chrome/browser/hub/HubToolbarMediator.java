@@ -250,7 +250,14 @@ public class HubToolbarMediator {
     }
 
     private void onFocusedPaneChange(@Nullable Pane focusedPane) {
-        mPropertyModel.set(COLOR_SCHEME, HubColors.getColorSchemeSafe(focusedPane));
+        @HubColorScheme int newColorScheme = HubColors.getColorSchemeSafe(focusedPane);
+        @HubColorScheme
+        int prevColorScheme =
+                mPropertyModel.get(COLOR_SCHEME) == null
+                        ? newColorScheme
+                        : mPropertyModel.get(COLOR_SCHEME).previousColorScheme;
+
+        mPropertyModel.set(COLOR_SCHEME, new HubColorSchemeUpdate(newColorScheme, prevColorScheme));
 
         @Nullable Integer focusedPaneId = focusedPane == null ? null : focusedPane.getPaneId();
         if (focusedPaneId == null) {

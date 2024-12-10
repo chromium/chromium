@@ -296,7 +296,9 @@ public class HubToolbarViewUnitTest {
     @MediumTest
     @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testUpdateSearchBoxColorScheme() {
-        mPropertyModel.set(COLOR_SCHEME, HubColorScheme.INCOGNITO);
+        mPropertyModel.set(
+                COLOR_SCHEME,
+                new HubColorSchemeUpdate(HubColorScheme.INCOGNITO, HubColorScheme.INCOGNITO));
         assertEquals(
                 ContextCompat.getColor(mActivity, R.color.baseline_neutral_60),
                 mSearchBoxText.getCurrentHintTextColor());
@@ -307,7 +309,9 @@ public class HubToolbarViewUnitTest {
                         ContextCompat.getColor(mActivity, R.color.baseline_neutral_20)),
                 backgroundDrawable.getColor());
 
-        mPropertyModel.set(COLOR_SCHEME, HubColorScheme.DEFAULT);
+        mPropertyModel.set(
+                COLOR_SCHEME,
+                new HubColorSchemeUpdate(HubColorScheme.DEFAULT, HubColorScheme.DEFAULT));
         assertEquals(
                 SemanticColorUtils.getDefaultTextColor(mActivity),
                 mSearchBoxText.getCurrentHintTextColor());

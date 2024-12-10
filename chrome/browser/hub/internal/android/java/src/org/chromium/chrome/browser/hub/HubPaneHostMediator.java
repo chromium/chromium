@@ -118,7 +118,14 @@ public class HubPaneHostMediator {
     }
 
     private void onPaneChange(@Nullable Pane pane) {
-        mPropertyModel.set(COLOR_SCHEME, HubColors.getColorSchemeSafe(pane));
+        @HubColorScheme int newColorScheme = HubColors.getColorSchemeSafe(pane);
+        @HubColorScheme
+        int prevColorScheme =
+                mPropertyModel.get(COLOR_SCHEME) == null
+                        ? newColorScheme
+                        : mPropertyModel.get(COLOR_SCHEME).previousColorScheme;
+
+        mPropertyModel.set(COLOR_SCHEME, new HubColorSchemeUpdate(newColorScheme, prevColorScheme));
         View view = pane == null ? null : pane.getRootView();
         mPropertyModel.set(PANE_ROOT_VIEW, view);
     }

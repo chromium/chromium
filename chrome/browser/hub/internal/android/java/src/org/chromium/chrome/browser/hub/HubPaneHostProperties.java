@@ -27,8 +27,10 @@ class HubPaneHostProperties {
     public static final WritableObjectPropertyKey<FullButtonData> ACTION_BUTTON_DATA =
             new WritableObjectPropertyKey();
 
-    // Hold a value from @HubColorScheme.
-    public static final WritableIntPropertyKey COLOR_SCHEME = new WritableIntPropertyKey();
+    // Holds two values from @HubColorScheme. The first value holds the current color scheme. The
+    // second value holds the previous color scheme.
+    public static final WritableObjectPropertyKey<HubColorSchemeUpdate> COLOR_SCHEME =
+            new WritableObjectPropertyKey<>();
 
     public static final WritableBooleanPropertyKey HAIRLINE_VISIBILITY =
             new WritableBooleanPropertyKey();
