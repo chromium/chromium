@@ -159,7 +159,11 @@ void PreferredAudioOutputDeviceManagerImpl::RemoveSwitcher(
   CHECK(device_switcher);
 
   MainFramePreferredSinkIdConfig* config = FindSinkIdConfig(main_frame_id);
-  CHECK(config);
+  if (!config) {
+    // If the page refresh is done before the device switcher removal (race),
+    // then it would have no entry.
+    return;
+  }
 
   config->RemoveDeviceSwitcher(device_switcher);
 }

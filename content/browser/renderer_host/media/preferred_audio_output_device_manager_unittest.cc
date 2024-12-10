@@ -511,4 +511,29 @@ TEST_F(PreferredAudioOutputDeviceManagerImplTest, AddAfterRemovalAfterSetId) {
   AddSwitcher(preferred_device_manager, sub_frame_switcher.get());
 }
 
+TEST_F(PreferredAudioOutputDeviceManagerImplTest,
+       RemoveSwitcherAfterUnregisterMainFrameDoNotCrash) {
+  // RemoveSwitcher call after unregistering main frame should not crash.
+  PreferredAudioOutputDeviceManagerImpl preferred_device_manager;
+
+  std::unique_ptr<MockAudioOutputDeviceSwitcher> main_frame_switcher =
+      CreateMockSwitcherForMainframe(preferred_device_manager);
+
+  EXPECT_CALL(*main_frame_switcher.get(),
+              SwitchAudioOutputDeviceId(
+                  media::AudioDeviceDescription::kDefaultDeviceId))
+      .Times(1);
+  EXPECT_CALL(*main_frame_switcher.get(),
+              SwitchAudioOutputDeviceId(kRawDeviceId))
+      .Times(0);
+
+  AddSwitcher(preferred_device_manager, main_frame_switcher.get());
+
+  preferred_device_manager.UnregisterMainFrameOnUIThread(main_rfh());
+  base::RunLoop().RunUntilIdle();
+
+  // It does nothing(no crash) as main frame is unregistered.
+  RemoveSwitcher(preferred_device_manager, main_frame_switcher.get());
+}
+
 }  // namespace content
