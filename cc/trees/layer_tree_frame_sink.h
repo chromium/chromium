@@ -155,7 +155,6 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
                                const viz::SharedBitmapId& id) override = 0;
   void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override = 0;
 
- protected:
   class ContextLostForwarder;
 
   // viz::ContextLostObserver:
@@ -166,6 +165,10 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
 
   void GpuChannelLostOnClientThread();
 
+  // Causes gpu crash for testing.
+  void CrashGpuProcessForTesting();
+
+ protected:
   raw_ptr<LayerTreeFrameSinkClient> client_ = nullptr;
 
   scoped_refptr<viz::RasterContextProvider> context_provider_;

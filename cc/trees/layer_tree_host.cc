@@ -2139,4 +2139,10 @@ void LayerTreeHost::DropActiveScrollDeltaNextCommit(ElementId scroll_element) {
   SetNeedsCommit();
 }
 
+void LayerTreeHost::CrashGpuProcessForTesting() {
+  if (current_layer_tree_frame_sink_) {
+    current_layer_tree_frame_sink_->CrashGpuProcessForTesting();  // IN-TEST
+  }
+}
+
 }  // namespace cc

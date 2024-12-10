@@ -31,7 +31,6 @@ specific_include_rules = {
     "+content/public/test",
   ],
   "display_gpu_crash_browsertest\.cc": [
-    "+chrome/browser/ui/browser_navigator.h",
-    "+chrome/browser/ui/browser_navigator_params.h",
+     "+cc/trees",
   ],
 }
