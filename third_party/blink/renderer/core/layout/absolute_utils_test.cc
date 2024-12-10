@@ -106,21 +106,6 @@ class AbsoluteUtilsTest : public RenderingTest {
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInPerformLayout);
-    WritingModeConverter container_converter(
-        container_writing_direction,
-        ToPhysicalSize(space.AvailableSize(),
-                       container_writing_direction.GetWritingMode()));
-    LogicalAnchorQuery* anchor_query =
-        MakeGarbageCollected<LogicalAnchorQuery>();
-    AnchorEvaluatorImpl anchor_evaluator(
-        *node.GetLayoutBox(), *anchor_query,
-        /* implicit_anchor */ nullptr, container_converter,
-        /* self_writing_direction */
-        {WritingMode::kHorizontalTb, TextDirection::kLtr},
-        /* offset_to_padding_box */
-        PhysicalOffset(),
-        /* available_size */
-        PhysicalSize());
     WritingDirectionMode self_writing_direction =
         node.Style().GetWritingDirection();
     const LogicalOofInsets insets =
@@ -149,21 +134,6 @@ class AbsoluteUtilsTest : public RenderingTest {
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInPerformLayout);
-    WritingModeConverter container_converter(
-        container_writing_direction,
-        ToPhysicalSize(space.AvailableSize(),
-                       container_writing_direction.GetWritingMode()));
-    LogicalAnchorQuery* anchor_query =
-        MakeGarbageCollected<LogicalAnchorQuery>();
-    AnchorEvaluatorImpl anchor_evaluator(
-        *node.GetLayoutBox(), *anchor_query,
-        /* implicit_anchor */ nullptr, container_converter,
-        /* self_writing_direction */
-        {WritingMode::kHorizontalTb, TextDirection::kLtr},
-        /* offset_to_padding_box */
-        PhysicalOffset(),
-        /* available_size */
-        PhysicalSize());
     WritingDirectionMode self_writing_direction =
         node.Style().GetWritingDirection();
     const LogicalOofInsets insets =
