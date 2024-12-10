@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -119,6 +120,7 @@ class IdpTestServer {
     std::string accounts_endpoint_url;
     std::string client_metadata_endpoint_url;
     std::string id_assertion_endpoint_url;
+    std::string metrics_endpoint_url;
     std::string login_url;
     std::vector<std::string> types;
     std::map<std::string,
@@ -194,7 +196,8 @@ class IdpTestServer {
         {"accounts_endpoint", details.accounts_endpoint_url},
         {"client_metadata_endpoint", details.client_metadata_endpoint_url},
         {"id_assertion_endpoint", details.id_assertion_endpoint_url},
-        {"login_url", details.login_url}};
+        {"login_url", details.login_url},
+        {"metrics_endpoint", details.metrics_endpoint_url}};
     std::string content = ConvertToJsonDictionary(map, details.types);
     response.set_code(details.status_code);
     response.set_content(content);
@@ -361,6 +364,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
             accounts_endpoint_url,
             client_metadata_endpoint_url,
             id_assertion_endpoint_url,
+            /*metrics_endpoint_url=*/std::string(),
             login_url,
             /*types=*/{},
             servlets};
@@ -1790,6 +1794,120 @@ IN_PROC_BROWSER_TEST_F(WebIdModeBrowserTest, UseModeButtonInsteadOfActive) {
   EXPECT_TRUE(base::MatchPattern(console_observer.GetMessageAt(0u),
                                  "*The mode button*"));
   ASSERT_TRUE(console_observer.Wait());
+}
+
+class WebIdMetricsBrowserTest : public WebIdBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    scoped_feature_list_.InitAndEnableFeature(features::kFedCmMetricsEndpoint);
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  }
+
+ protected:
+  void SetMetricsConfigDetails(base::RunLoop* run_loop, bool success) {
+    IdpTestServer::ConfigDetails config_details = BuildValidConfigDetails();
+    if (!success) {
+      config_details.accounts_endpoint_url = "/404";
+    }
+    config_details.metrics_endpoint_url = "/metrics";
+    config_details.servlets["/metrics"] = base::BindRepeating(
+        [](WebIdMetricsBrowserTest* test, base::RunLoop* run_loop,
+           const HttpRequest& request) -> std::unique_ptr<HttpResponse> {
+          EXPECT_EQ(request.method, HttpMethod::METHOD_POST);
+          EXPECT_EQ(request.has_content, true);
+
+          if (request.headers.contains("Origin")) {
+            test->metrics_request_origin_ = request.headers.at("Origin");
+          } else {
+            test->metrics_request_origin_.reset();
+          }
+          auto parameters = base::SplitStringPiece(request.content, "&",
+                                                   base::TRIM_WHITESPACE,
+                                                   base::SPLIT_WANT_NONEMPTY);
+          for (const auto& param : parameters) {
+            auto pair = base::SplitStringOnce(param, '=');
+            if (pair) {
+              test->metrics_parameters_.emplace(*pair);
+            }
+          }
+
+          auto response = std::make_unique<BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);
+          response->set_content_type("text/json");
+          response->set_content("{}");
+
+          run_loop->Quit();
+          return response;
+        },
+        this, base::Unretained(run_loop));
+
+    idp_server()->SetConfigResponseDetails(config_details);
+  }
+
+  std::map<std::string, std::string> metrics_parameters_;
+  std::optional<std::string> metrics_request_origin_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebIdMetricsBrowserTest, Success) {
+  base::RunLoop run_loop;
+  SetMetricsConfigDetails(&run_loop, /*success=*/true);
+
+  std::string script = R"(
+        (async () => {
+          var x = (await navigator.credentials.get({
+            identity: {
+              providers: [{
+                configURL: ')" +
+                       BaseIdpUrl() + R"(',
+                clientId: 'client_id_1',
+                nonce: '12345'
+              }]
+            }
+          }));
+          return x.token;
+        }) ()
+    )";
+
+  EXPECT_EQ(std::string("[not a real token]"), EvalJs(shell(), script));
+  run_loop.Run();
+  ASSERT_TRUE(metrics_request_origin_);
+  EXPECT_TRUE(metrics_request_origin_->starts_with("https://rp.example:"));
+  EXPECT_EQ(1ul, metrics_parameters_.count("time_to_show_ui"));
+  EXPECT_EQ(1ul, metrics_parameters_.count("time_to_continue"));
+  EXPECT_EQ(1ul, metrics_parameters_.count("time_to_receive_token"));
+  EXPECT_EQ(1ul, metrics_parameters_.count("turnaround_time"));
+  EXPECT_EQ(0ul, metrics_parameters_.count("error_code"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebIdMetricsBrowserTest, Failure) {
+  base::RunLoop run_loop;
+  SetMetricsConfigDetails(&run_loop, /*success=*/false);
+
+  std::string script = R"(
+        (async () => {
+          var x = (await navigator.credentials.get({
+            identity: {
+              providers: [{
+                configURL: ')" +
+                       BaseIdpUrl() + R"(',
+                clientId: 'client_id_1',
+                nonce: '12345'
+              }]
+            }
+          }));
+          return x.token;
+        }) ()
+    )";
+
+  std::string expected_error = "NetworkError: Error retrieving a token.";
+  EXPECT_EQ(expected_error, ExtractJsError(EvalJs(shell(), script)));
+  run_loop.Run();
+  EXPECT_EQ("null", metrics_request_origin_);
+  EXPECT_EQ(0ul, metrics_parameters_.count("time_to_show_ui"));
+  EXPECT_EQ(0ul, metrics_parameters_.count("time_to_continue"));
+  EXPECT_EQ(0ul, metrics_parameters_.count("time_to_receive_token"));
+  EXPECT_EQ(0ul, metrics_parameters_.count("turnaround_time"));
+  EXPECT_EQ("301", metrics_parameters_["error_code"]);
 }
 
 }  // namespace content

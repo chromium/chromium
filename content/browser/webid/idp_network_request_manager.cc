@@ -1213,6 +1213,10 @@ void IdpNetworkRequestManager::OnDownloadedUrl(
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     IdpNetworkRequestManager::DownloadCallback callback,
     std::unique_ptr<std::string> response_body) {
+  if (!callback) {
+    // For the metrics endpoint, we do not care about the result.
+    return;
+  }
   auto* response_info = url_loader->ResponseInfo();
   // Use the HTTP response code, if available. If it is not available, use the
   // NetError(). Note that it is acceptable to put these in the same int because
