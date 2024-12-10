@@ -313,6 +313,18 @@ If the library will never be shipped as a part of Chrome (e.g. build-time tools,
 testing tools), make sure to set the "Shipped" field to "no" so that the license
 is not included in about:credits page ([more on this below](#credits)).
 
+When a dependency allows a choice of license, OWNERS should choose the least
+restrictive license that meets Chromium's needs and document only the chosen
+license(s) in the README.chromium file.
+
+Multiple licenses apply when there are dependencies bundled together, or
+different parts have different restrictions, these are inherently 'and'. This is
+very different to a project allowing multiple license options.
+
+The license field in README.chromium must use a _comma-separated list_ of licenses
+that are actively in use. Complex license expressions are not allowed or
+supported.
+
 ## Get a review
 
 All third party additions and substantive changes like re-licensing need the
