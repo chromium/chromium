@@ -680,56 +680,63 @@ uint32_t CalculateMaxFramerateFromMacroBlocksPerSecond(
 
 std::vector<FramerateAndResolution> GetMaxFramerateAndResolutionsFromMFT(
     VideoCodec codec,
-    IMFTransform* encoder) {
-  ComPtr<IMFMediaType> media_type;
+    IMFTransform* encoder,
+    bool allow_set_output_type) {
   std::vector<FramerateAndResolution> framerate_and_resolutions;
-  RETURN_ON_HR_FAILURE(MFCreateMediaType(&media_type),
-                       "Create media type failed", framerate_and_resolutions);
-  RETURN_ON_HR_FAILURE(media_type->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video),
-                       "Set major type failed", framerate_and_resolutions);
-  RETURN_ON_HR_FAILURE(
-      media_type->SetGUID(MF_MT_SUBTYPE, VideoCodecToMFSubtype(codec)),
-      "Set guid for sub type failed", framerate_and_resolutions);
-  RETURN_ON_HR_FAILURE(
-      MFSetAttributeSize(media_type.Get(), MF_MT_FRAME_SIZE,
-                         kDefaultMaxFramerateAndResolution.resoluion.width(),
-                         kDefaultMaxFramerateAndResolution.resoluion.height()),
-      "Set attribute size failed", framerate_and_resolutions);
-  // Frame rate,30, is dummy value for pass through.
-  RETURN_ON_HR_FAILURE(
-      MFSetAttributeRatio(
-          media_type.Get(), MF_MT_FRAME_RATE,
-          /*unNumerator=*/kDefaultMaxFramerateAndResolution.frame_rate,
-          /*unDenominator=*/1),
-      "Set attribute ratio failed", framerate_and_resolutions);
-  RETURN_ON_HR_FAILURE(media_type->SetUINT32(MF_MT_AVG_BITRATE, 9000000),
-                       "Set avg bitrate failed", framerate_and_resolutions);
-  RETURN_ON_HR_FAILURE(
-      media_type->SetUINT32(MF_MT_INTERLACE_MODE, MFVideoInterlace_Progressive),
-      "Set interlace mode failed", framerate_and_resolutions);
+  if (allow_set_output_type) {
+    ComPtr<IMFMediaType> media_type;
 
-  if (codec != VideoCodec::kVP9) {
-    UINT32 max_level;
-    switch (codec) {
-      case VideoCodec::kH264:
-        max_level = eAVEncH264VLevel5_2;
-        break;
-      case VideoCodec::kAV1:
-        max_level = eAVEncAV1VLevel6_3;
-        break;
-      case VideoCodec::kHEVC:
-        max_level = eAVEncH265VLevel6_2;
-        break;
-      default:
-        NOTREACHED();
+    RETURN_ON_HR_FAILURE(MFCreateMediaType(&media_type),
+                         "Create media type failed", framerate_and_resolutions);
+    RETURN_ON_HR_FAILURE(
+        media_type->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video),
+        "Set major type failed", framerate_and_resolutions);
+    RETURN_ON_HR_FAILURE(
+        media_type->SetGUID(MF_MT_SUBTYPE, VideoCodecToMFSubtype(codec)),
+        "Set guid for sub type failed", framerate_and_resolutions);
+    RETURN_ON_HR_FAILURE(
+        MFSetAttributeSize(
+            media_type.Get(), MF_MT_FRAME_SIZE,
+            kDefaultMaxFramerateAndResolution.resoluion.width(),
+            kDefaultMaxFramerateAndResolution.resoluion.height()),
+        "Set attribute size failed", framerate_and_resolutions);
+    // Frame rate,30, is dummy value for pass through.
+    RETURN_ON_HR_FAILURE(
+        MFSetAttributeRatio(
+            media_type.Get(), MF_MT_FRAME_RATE,
+            /*unNumerator=*/kDefaultMaxFramerateAndResolution.frame_rate,
+            /*unDenominator=*/1),
+        "Set attribute ratio failed", framerate_and_resolutions);
+    RETURN_ON_HR_FAILURE(media_type->SetUINT32(MF_MT_AVG_BITRATE, 9000000),
+                         "Set avg bitrate failed", framerate_and_resolutions);
+    RETURN_ON_HR_FAILURE(media_type->SetUINT32(MF_MT_INTERLACE_MODE,
+                                               MFVideoInterlace_Progressive),
+                         "Set interlace mode failed",
+                         framerate_and_resolutions);
+
+    if (codec != VideoCodec::kVP9) {
+      UINT32 max_level;
+      switch (codec) {
+        case VideoCodec::kH264:
+          max_level = eAVEncH264VLevel5_2;
+          break;
+        case VideoCodec::kAV1:
+          max_level = eAVEncAV1VLevel6_3;
+          break;
+        case VideoCodec::kHEVC:
+          max_level = eAVEncH265VLevel6_2;
+          break;
+        default:
+          NOTREACHED();
+      }
+      RETURN_ON_HR_FAILURE(media_type->SetUINT32(MF_MT_VIDEO_LEVEL, max_level),
+                           "Set video level failed", framerate_and_resolutions);
     }
-    RETURN_ON_HR_FAILURE(media_type->SetUINT32(MF_MT_VIDEO_LEVEL, max_level),
-                         "Set video level failed", framerate_and_resolutions);
-  }
 
-  RETURN_ON_HR_FAILURE(
-      encoder->SetOutputType(/*stream_id=*/0, media_type.Get(), 0),
-      "Set output type failed", framerate_and_resolutions);
+    RETURN_ON_HR_FAILURE(
+        encoder->SetOutputType(/*stream_id=*/0, media_type.Get(), 0),
+        "Set output type failed", framerate_and_resolutions);
+  }
 
   ComPtr<IMFAttributes> attributes;
   RETURN_ON_HR_FAILURE(encoder->GetAttributes(&attributes),
@@ -1107,8 +1114,8 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
       }
 
       CHECK(encoder);
-      max_framerate_and_resolutions =
-          GetMaxFramerateAndResolutionsFromMFT(codec, encoder.Get());
+      max_framerate_and_resolutions = GetMaxFramerateAndResolutionsFromMFT(
+          codec, encoder.Get(), /*allow_set_output_type=*/true);
       min_resolution = GetMinResolution(codec, GetDriverVendor(activate));
       activate->ShutdownObject();
     }
@@ -1304,6 +1311,39 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
                                        config.is_constrained_h264)) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
                        "Failed to set input/output param."});
+    return false;
+  }
+
+  // Get the max framerate and max/min resolutions of the given codec.
+  //
+  // NOTE:
+  // We use the actual encoder to retrieve max framerate and max/min
+  // resolutions. The property `MF_VIDEO_MAX_MB_PER_SEC`, which we use to
+  // calculate the resolution, is a static value stored in the encoder provided
+  // by the GPU driver. It doesn't change regardless of the parameters we set
+  // for `SetOutputType()` except for `MF_MT_MAJOR_TYPE` and `MF_MT_SUBTYPE`.
+  // So, as long as the actual encoder remains the same, the result should be
+  // unchanged.
+  //
+  // On a dual GPU system, the actual encoder selected might be different from
+  // the one used by "GetSupportedProfile". If that's the case, and if the
+  // actual encoder can't handle the incoming resolution, we can simply reject
+  // it without hesitation.
+  if (base::FeatureList::IsEnabled(kExpandMediaFoundationEncodingResolutions)) {
+    max_framerate_and_resolutions_ = GetMaxFramerateAndResolutionsFromMFT(
+        codec_, encoder_.Get(), /*allow_set_output_type=*/false);
+    min_resolution_ = GetMinResolution(codec_, vendor_);
+  } else {
+    max_framerate_and_resolutions_ = {kDefaultMaxFramerateAndResolution};
+    min_resolution_ = kDefaultMinResolution;
+  }
+  // Ideally, we should check size before `InitializeInputOutputParameters()`
+  // because it sets `MF_MT_FRAME_SIZE` when `SetOutputType()` is called.
+  // However, since we can only retrieve `MF_VIDEO_MAX_MB_PER_SEC` after calling
+  // `SetOutputType()`, we have to check the frame size at this point.
+  if (!IsFrameSizeAllowed(config.input_visible_size)) {
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                       "Unsupported frame size"});
     return false;
   }
 
@@ -1766,18 +1806,17 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
 }
 
 bool MediaFoundationVideoEncodeAccelerator::IsFrameSizeAllowed(gfx::Size size) {
-  if (max_framerate_and_resolutions_.empty() || min_resolution_.IsEmpty()) {
-    DCHECK(encoder_);
-    max_framerate_and_resolutions_ =
-        GetMaxFramerateAndResolutionsFromMFT(codec_, encoder_.Get());
-    min_resolution_ = GetMinResolution(codec_, vendor_);
-  }
+  // It's possible `max_framerate_and_resolutions_` is empty when we
+  // failed to retrieve `MF_VIDEO_MAX_MB_PER_SEC`.
+  DCHECK(!min_resolution_.IsEmpty());
 
   for (auto& [frame_rate, resolution] : max_framerate_and_resolutions_) {
+    // TODO(crbug.com/365813271): Add framerate check once we can make sure
+    // WebRTC check framerate before calling `RequestEncodingParametersChange`.
     if (size.width() >= min_resolution_.width() &&
         size.height() >= min_resolution_.height() &&
         size.width() <= resolution.width() &&
-        size.height() <= resolution.height() && frame_rate_ <= frame_rate) {
+        size.height() <= resolution.height()) {
       return true;
     }
 
@@ -1786,7 +1825,7 @@ bool MediaFoundationVideoEncodeAccelerator::IsFrameSizeAllowed(gfx::Size size) {
     if (size.height() >= min_resolution_.width() &&
         size.width() >= min_resolution_.height() &&
         size.width() <= resolution.width() &&
-        size.height() <= resolution.height() && frame_rate_ <= frame_rate) {
+        size.height() <= resolution.height()) {
       return true;
     }
 
