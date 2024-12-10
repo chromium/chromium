@@ -1297,7 +1297,7 @@ See your search engine’s instructions for deleting your search history, if app
         Delete and sign out
       </message>
       <message name="IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BUTTON" desc="Button of a dialog that is shown when the user starts to switch accounts; the user chooses to sync some or all data types, but some data hasn't been saved in their Google Account yet (for example, if there was an error). This string follows the heading 'Some data isn't saved yet' or the heading ‘Unsaved account data will be deleted’; the user can choose to tap on the buttons 'Cancel' or 'Delete and Switch'. If the user chooses to continue to switch accounts, then any of their data (such as bookmarks, passwords, history, settings, and more) that isn't saved in their account will be deleted. The tone should be helpful and instructive. [iOS only]">
-        Delete and Switch
+                Switch and Delete
       </message>
       <message name="IDS_IOS_DATA_NOT_UPLOADED_DIALOG_TITLE" desc="Title of a dialog that is shown when the user starts to sign out; the user chooses to sync some or all data types, but some data hasn't been saved in their Google Account yet (for example, if there was an error). This string precedes the body text 'Some of your Chrome data hasn't been saved to your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.', and the user can choose to tap on the buttons 'Cancel' or 'Delete and Sign Out'. If the user chooses to continue to sign out, then any of their data (such as bookmarks, passwords, history, settings, and more) that isn't saved in their account will be deleted. The tone should be helpful and instructive. [iOS only]">
         Some data isn't saved yet
@@ -5410,11 +5410,14 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SIGNOUT_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT" desc="Text to inform the managed user about why their their device data is being cleared on signout. [iOS only]">
           To protect your organization's security, unsaved data will be deleted from this device. This could include passwords, history, and more.
       </message>
-            <message name="IDS_IOS_SIGNOUT_CLOSES_TABS_AND_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT" desc="Text to inform the managed user about why their their device data is being cleared on signout. [iOS only]">
-          To protect your organization's security, tabs will be closed and unsaved account data will be deleted from this device. This could include passwords, history, and more.
+      <message name="IDS_IOS_SIGNOUT_CLOSES_TABS_AND_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT" desc="Text to inform the managed user about why their their device data is being cleared on signout. [iOS only]">
+      Tabs will be closed, and data deleted could include passwords, browsing history, cookies, and more.
       </message>
       <message name="IDS_IOS_SIGNOUT_CLEARS_DATA_DIALOG_TITLE_WITH_MANAGED_ACCOUNT" desc="The signout dialog title. This is the new dialog that is used when the user have a managed account (other than gmail account) [iOS only].">
-        Unsaved account data will be deleted
+        Sign out? Unsaved account data will be deleted.
+      </message>
+      <message name="IDS_IOS_SWITCH_CLEARS_DATA_DIALOG_TITLE_WITH_MANAGED_ACCOUNT" desc="The switch dialog title. This is the new dialog that is used when the user have a managed account (other than gmail account) [iOS only].">
+        Switch accounts? Unsaved account data will be deleted.
       </message>
       <message name="IDS_IOS_SIGNOUT_DIALOG_CLEAR_DATA_BUTTON" desc="This button signs the user out and delete all the data from the user device. The data remain in their Google account. Related to IDS_IOS_SIGNOUT_DIALOG_TITLE [iOS only].">
         Clear data
@@ -5433,6 +5436,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON" desc="This button signs the user out. Related to IDS_IOS_SIGNOUT_DIALOG_TITLE [iOS only].">
         Sign out
+      </message>
+      <message name="IDS_IOS_SIGNOUT_AND_DELETE_DIALOG_SIGN_OUT_BUTTON" desc="This button signs the user out. Related to IDS_IOS_SIGNOUT_DIALOG_TITLE [iOS only].">
+        Sign Out and Delete
       </message>
       <message name="IDS_IOS_SIGN_IN_AGAIN" desc="Title displayed when there is an authentication failure in sign-in and the user needs to attempt to sign in again. [Length: 20em] [iOS only]">
         Sign in again

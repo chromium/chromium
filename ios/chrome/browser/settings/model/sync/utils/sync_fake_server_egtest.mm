@@ -1081,9 +1081,9 @@ void ClearRelevantData() {
       performAction:grey_tap()];
 
   // Confirm "Sign Out" when alert dialog that data will be cleared is shown.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ButtonWithAccessibilityLabelId(
+                     IDS_IOS_SIGNOUT_AND_DELETE_DIALOG_SIGN_OUT_BUTTON)]
       performAction:grey_tap()];
 
   // Wait until the user is signed out. Use a longer timeout to give time for
@@ -1181,9 +1181,9 @@ void ClearRelevantData() {
       performAction:grey_tap()];
 
   // Confirm "Sign Out" when alert dialog that data will be cleared is shown.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ButtonWithAccessibilityLabelId(
+                     IDS_IOS_SIGNOUT_AND_DELETE_DIALOG_SIGN_OUT_BUTTON)]
       performAction:grey_tap()];
 
   // Wait until the user is signed out. Use a longer timeout to give time for

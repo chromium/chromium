@@ -170,7 +170,7 @@ void ClickSignOutInAccountSettings() {
   [[EarlGrey
       selectElementWithMatcher:
           grey_allOf(chrome_test_util::AlertAction(l10n_util::GetNSString(
-                         IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)),
+                         IDS_IOS_SIGNOUT_AND_DELETE_DIALOG_SIGN_OUT_BUTTON)),
                      grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   [SigninEarlGrey verifySignedOut];

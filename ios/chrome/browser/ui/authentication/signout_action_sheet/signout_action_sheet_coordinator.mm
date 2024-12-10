@@ -232,8 +232,12 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       break;
     }
     case SignedInUserStateWithManagedAccountClearsDataOnSignout: {
-      title = l10n_util::GetNSString(
-          IDS_IOS_SIGNOUT_CLEARS_DATA_DIALOG_TITLE_WITH_MANAGED_ACCOUNT);
+      title =
+          self.accountSwitch
+              ? l10n_util::GetNSString(
+                    IDS_IOS_SWITCH_CLEARS_DATA_DIALOG_TITLE_WITH_MANAGED_ACCOUNT)
+              : l10n_util::GetNSString(
+                    IDS_IOS_SIGNOUT_CLEARS_DATA_DIALOG_TITLE_WITH_MANAGED_ACCOUNT);
       break;
     }
     case SignedInUserStateWithNonManagedAccountAndSyncing: {
@@ -428,7 +432,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
           self.accountSwitch
               ? l10n_util::GetNSString(
                     IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BUTTON)
-              : l10n_util::GetNSString(IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON);
+              : l10n_util::GetNSString(
+                    IDS_IOS_SIGNOUT_AND_DELETE_DIALOG_SIGN_OUT_BUTTON);
       [self.actionSheetCoordinator
           addItemWithTitle:signOutButtonTitle
                     action:^{
