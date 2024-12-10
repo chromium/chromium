@@ -87,11 +87,6 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   GLuint CreateAndTexStorage2DSharedImageCHROMIUM(
       const GLbyte* mailbox) override;
 
-  void ResizeCHROMIUM(GLuint width,
-                      GLuint height,
-                      float device_scale,
-                      GLcolorSpace color_space,
-                      GLboolean has_alpha) override;
   void LoseContextCHROMIUM(GLenum current, GLenum other) override;
   GLenum GetGraphicsResetStatusKHR() override;
 
@@ -164,12 +159,6 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
     context_lost_callback_ = std::move(callback);
   }
 
-  int width() const { return width_; }
-  int height() const { return height_; }
-  bool reshape_called() const { return reshape_called_; }
-  void clear_reshape_called() { reshape_called_ = false; }
-  float scale_factor() const { return scale_factor_; }
-
   enum UpdateType { NO_UPDATE = 0, PREPARE_TEXTURE, POST_SUB_BUFFER };
 
   gfx::Rect update_rect() const { return update_rect_; }
@@ -205,10 +194,6 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   std::unordered_set<unsigned> framebuffer_set_;
   unsigned current_framebuffer_ = 0;
   std::vector<raw_ptr<TestGLES2Interface, VectorExperimental>> shared_contexts_;
-  bool reshape_called_ = false;
-  int width_ = 0;
-  int height_ = 0;
-  float scale_factor_ = -1.f;
   raw_ptr<TestContextSupport> test_support_ = nullptr;
   gfx::Rect update_rect_;
   UpdateType last_update_type_ = NO_UPDATE;

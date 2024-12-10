@@ -463,6 +463,4 @@ void GLES2CommandBufferStub::GetGpuFenceHandle(
   std::move(callback).Run(std::move(handle));
 }
 
-void GLES2CommandBufferStub::OnSwapBuffers(uint64_t swap_id, uint32_t flags) {}
-
 }  // namespace gpu

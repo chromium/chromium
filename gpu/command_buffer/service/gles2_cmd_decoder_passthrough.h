@@ -479,12 +479,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
   void ExitCommandProcessingEarly() override;
 
-  void CheckSwapBuffersAsyncResult(const char* function_name,
-                                   uint64_t swap_id,
-                                   gfx::SwapCompletionResult result);
-  error::Error CheckSwapBuffersResult(gfx::SwapResult result,
-                                      const char* function_name);
-
   bool OnlyHasPendingProgramCompletionQueries();
 
   PassthroughProgramCache* get_passthrough_program_cache() const;

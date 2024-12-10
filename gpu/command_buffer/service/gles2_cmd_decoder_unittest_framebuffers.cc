@@ -3133,41 +3133,6 @@ TEST_P(GLES2DecoderManualInitTest, InvalidateFramebufferBinding) {
       gl::MockGLInterface::GetGLProcAddress("glDiscardFramebufferEXT"));
 }
 
-TEST_P(GLES2DecoderTest, ClearBackbufferBitsOnFlipSwap) {
-  surface_->set_buffers_flipped(true);
-
-  EXPECT_EQ(0u, GetAndClearBackbufferClearBitsForTest());
-
-  auto& cmd = *GetImmediateAs<cmds::SwapBuffers>();
-  cmd.Init(1, 0);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_EQ(static_cast<uint32_t>(GL_COLOR_BUFFER_BIT),
-            GetAndClearBackbufferClearBitsForTest());
-
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_EQ(0u, GetAndClearBackbufferClearBitsForTest());
-
-  EXPECT_CALL(*gl_, Finish()).Times(AnyNumber());
-  auto& resize_cmd = *GetImmediateAs<cmds::ResizeCHROMIUM>();
-  resize_cmd.Init(1, 1, 1.0f, GL_TRUE, 0, 0, 0);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(resize_cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_EQ(static_cast<uint32_t>(GL_COLOR_BUFFER_BIT),
-            GetAndClearBackbufferClearBitsForTest());
-
-  cmd.Init(1, 0);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_EQ(static_cast<uint32_t>(GL_COLOR_BUFFER_BIT),
-            GetAndClearBackbufferClearBitsForTest());
-
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_EQ(0u, GetAndClearBackbufferClearBitsForTest());
-}
-
 TEST_P(GLES2DecoderManualInitTest, DiscardFramebufferEXT) {
   InitState init;
   init.extensions = "GL_EXT_discard_framebuffer";
@@ -3806,8 +3771,6 @@ TEST_P(GLES2DecoderManualInitTest, MESAFramebufferFlipYExtensionDisabled) {
 }
 
 // TODO(gman): PixelStorei
-
-// TODO(gman): SwapBuffers
 
 }  // namespace gles2
 }  // namespace gpu

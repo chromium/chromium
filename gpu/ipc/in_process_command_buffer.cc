@@ -856,10 +856,6 @@ void InProcessCommandBuffer::OnRescheduleAfterFinished() {
   NOTREACHED();
 }
 
-void InProcessCommandBuffer::OnSwapBuffers(uint64_t swap_id, uint32_t flags) {
-  NOTREACHED();
-}
-
 void InProcessCommandBuffer::ScheduleGrContextCleanup() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   context_state_->ScheduleSkiaCleanup();

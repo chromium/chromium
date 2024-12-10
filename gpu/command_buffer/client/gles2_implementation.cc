@@ -1595,27 +1595,6 @@ GLuint GLES2Implementation::GetLastFlushIdCHROMIUM() {
   return flush_id_;
 }
 
-void GLES2Implementation::SwapBuffers(uint64_t swap_id, GLbitfield flags) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glSwapBuffers()");
-  // TODO(piman): Strictly speaking we'd want to insert the token after the
-  // swap, but the state update with the updated token might not have happened
-  // by the time the SwapBuffer callback gets called, forcing us to synchronize
-  // with the GPU process more than needed. So instead, make it happen before.
-  // All it means is that we could be slightly looser on the kMaxSwapBuffers
-  // semantics if the client doesn't use the callback mechanism, and by chance
-  // the scheduler yields between the InsertToken and the SwapBuffers.
-  swap_buffers_tokens_.push(helper_->InsertToken());
-  helper_->SwapBuffers(swap_id, flags);
-  helper_->CommandBufferHelper::Flush();
-  // Wait if we added too many swap buffers. Add 1 to kMaxSwapBuffers to
-  // compensate for TODO above.
-  if (swap_buffers_tokens_.size() > kMaxSwapBuffers + 1) {
-    helper_->WaitForToken(swap_buffers_tokens_.front());
-    swap_buffers_tokens_.pop();
-  }
-}
-
 void GLES2Implementation::BindAttribLocation(GLuint program,
                                              GLuint index,
                                              const char* name) {
@@ -6191,40 +6170,6 @@ void GLES2Implementation::UnmapTexSubImage2DCHROMIUM(const void* mem) {
                          mt.shm_offset, GL_FALSE);
   mapped_memory_->FreePendingToken(mt.shm_memory, helper_->InsertToken());
   mapped_textures_.erase(it);
-  CheckGLError();
-}
-
-void GLES2Implementation::ResizeCHROMIUM(GLuint width,
-                                         GLuint height,
-                                         float scale_factor,
-                                         GLcolorSpace gl_color_space,
-                                         GLboolean alpha) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glResizeCHROMIUM(" << width << ", "
-                     << height << ", " << scale_factor << ", " << alpha << ")");
-  // Including gfx::ColorSpace would bring Skia and a lot of other code into
-  // NaCl's IRT, so just leave the color space unspecified.
-#if !defined(__native_client__) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
-  if (gl_color_space) {
-    gfx::ColorSpace gfx_color_space =
-        *reinterpret_cast<const gfx::ColorSpace*>(gl_color_space);
-    base::Pickle color_space_data;
-    IPC::ParamTraits<gfx::ColorSpace>::Write(&color_space_data,
-                                             gfx_color_space);
-    ScopedTransferBufferPtr buffer(color_space_data.size(), helper_,
-                                   transfer_buffer_);
-    if (!buffer.valid() || buffer.size() < color_space_data.size()) {
-      SetGLError(GL_OUT_OF_MEMORY, "GLES2::ResizeCHROMIUM", "out of memory");
-      return;
-    }
-    memcpy(buffer.address(), color_space_data.data(), color_space_data.size());
-    helper_->ResizeCHROMIUM(width, height, scale_factor, alpha, buffer.shm_id(),
-                            buffer.offset(), color_space_data.size());
-    CheckGLError();
-    return;
-  }
-#endif
-  helper_->ResizeCHROMIUM(width, height, scale_factor, alpha, 0, 0, 0);
   CheckGLError();
 }
 

@@ -157,7 +157,6 @@ void GLES2DecoderTestBase::CacheBlob(gpu::GpuDiskCacheType type,
 void GLES2DecoderTestBase::OnFenceSyncRelease(uint64_t release) {}
 void GLES2DecoderTestBase::OnDescheduleUntilFinished() {}
 void GLES2DecoderTestBase::OnRescheduleAfterFinished() {}
-void GLES2DecoderTestBase::OnSwapBuffers(uint64_t swap_id, uint32_t flags) {}
 bool GLES2DecoderTestBase::ShouldYield() {
   return false;
 }
@@ -2336,8 +2335,6 @@ void GLES2DecoderPassthroughTestBase::CacheBlob(gpu::GpuDiskCacheType type,
 void GLES2DecoderPassthroughTestBase::OnFenceSyncRelease(uint64_t release) {}
 void GLES2DecoderPassthroughTestBase::OnDescheduleUntilFinished() {}
 void GLES2DecoderPassthroughTestBase::OnRescheduleAfterFinished() {}
-void GLES2DecoderPassthroughTestBase::OnSwapBuffers(uint64_t swap_id,
-                                                    uint32_t flags) {}
 bool GLES2DecoderPassthroughTestBase::ShouldYield() {
   return false;
 }

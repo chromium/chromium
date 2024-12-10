@@ -4127,32 +4127,6 @@ error::Error GLES2DecoderPassthroughImpl::DoBindVertexArrayOES(GLuint array) {
   return error::kNoError;
 }
 
-error::Error GLES2DecoderPassthroughImpl::DoSwapBuffers(uint64_t swap_id,
-                                                        GLbitfield flags) {
-  if (offscreen_) {
-    // We don't support SwapBuffers on the offscreen contexts.
-    LOG(ERROR) << "SwapBuffers called for the offscreen context";
-    return error::kUnknownCommand;
-  }
-
-  client()->OnSwapBuffers(swap_id, flags);
-  if (surface_->SupportsAsyncSwap()) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        "gpu", "AsyncSwapBuffers",
-        TRACE_ID_WITH_SCOPE("AsyncSwapBuffers", swap_id));
-    surface_->SwapBuffersAsync(
-        base::BindOnce(
-            &GLES2DecoderPassthroughImpl::CheckSwapBuffersAsyncResult,
-            weak_ptr_factory_.GetWeakPtr(), "SwapBuffers", swap_id),
-        base::DoNothing(), gfx::FrameData());
-    return error::kNoError;
-  } else {
-    return CheckSwapBuffersResult(
-        surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()),
-        "SwapBuffers");
-  }
-}
-
 error::Error GLES2DecoderPassthroughImpl::DoGetMaxValueInBufferCHROMIUM(
     GLuint buffer_id,
     GLsizei count,
@@ -4275,38 +4249,6 @@ error::Error GLES2DecoderPassthroughImpl::DoUnmapBuffer(GLenum target) {
 
   resources_->mapped_buffer_map.erase(mapped_buffer_info_iter);
 
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderPassthroughImpl::DoResizeCHROMIUM(
-    GLuint width,
-    GLuint height,
-    GLfloat scale_factor,
-    gfx::ColorSpace color_space,
-    GLboolean alpha) {
-  // gfx::Size uses integers, make sure width and height do not overflow
-  static_assert(sizeof(GLuint) >= sizeof(int), "Unexpected GLuint size.");
-  static const GLuint kMaxDimension =
-      static_cast<GLuint>(std::numeric_limits<int>::max());
-  gfx::Size safe_size(std::clamp(width, 1U, kMaxDimension),
-                      std::clamp(height, 1U, kMaxDimension));
-  if (offscreen_) {
-    // We don't support resize of offscreen contexts.
-    LOG(ERROR) << "Resize called for the offscreen context";
-    return error::kUnknownCommand;
-  } else {
-    if (!surface_->Resize(safe_size, scale_factor, color_space, !!alpha)) {
-      LOG(ERROR)
-          << "GLES2DecoderPassthroughImpl: Context lost because resize failed.";
-      return error::kLostContext;
-    }
-    DCHECK(context_->IsCurrent(surface_.get()));
-    if (!context_->IsCurrent(surface_.get())) {
-      LOG(ERROR) << "GLES2DecoderPassthroughImpl: Context lost because context "
-                    "no longer current after resize callback.";
-      return error::kLostContext;
-    }
-  }
   return error::kNoError;
 }
 

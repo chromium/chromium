@@ -4132,20 +4132,6 @@ error::Error GLES2DecoderPassthroughImpl::HandleMemoryBarrierByRegion(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderPassthroughImpl::HandleSwapBuffers(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::SwapBuffers& c =
-      *static_cast<const volatile gles2::cmds::SwapBuffers*>(cmd_data);
-  GLuint64 swap_id = c.swap_id();
-  GLbitfield flags = static_cast<GLbitfield>(c.flags);
-  error::Error error = DoSwapBuffers(swap_id, flags);
-  if (error != error::kNoError) {
-    return error;
-  }
-  return error::kNoError;
-}
-
 error::Error GLES2DecoderPassthroughImpl::HandleGetMaxValueInBufferCHROMIUM(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

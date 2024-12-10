@@ -77,9 +77,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   static const GLuint kClientSideArrayId = 0xFEDCBA98u;
   static const GLuint kClientSideElementArrayId = 0xFEDCBA99u;
 
-  // Number of swap buffers allowed before waiting.
-  static const size_t kMaxSwapBuffers = 2;
-
   GLES2Implementation(GLES2CmdHelper* helper,
                       scoped_refptr<ShareGroup> share_group,
                       TransferBufferInterface* transfer_buffer,
@@ -689,8 +686,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   std::string last_error_;
   DebugMarkerManager debug_marker_manager_;
   std::string this_in_hex_;
-
-  base::queue<int32_t> swap_buffers_tokens_;
 
   ExtensionStatus chromium_framebuffer_multisample_;
 
