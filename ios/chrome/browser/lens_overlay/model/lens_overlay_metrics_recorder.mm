@@ -16,8 +16,7 @@
 namespace {
 
 /// Returns the `lens::MimeType` of the `web_state`.
-lens::MimeType MimeTypeFromWebState(
-    web::WebState* web_state) {
+lens::MimeType MimeTypeFromWebState(web::WebState* web_state) {
   if (!web_state) {
     return lens::MimeType::kUnknown;
   }
@@ -179,9 +178,9 @@ lens::MimeType MimeTypeFromWebState(
   lens::RecordGeneratedTabCount((int)generatedTabCount);
 
   // Session end UKM metrics.
-  lens::RecordUKMSessionEndMetrics(_sourceID, _invocationSource,
-                                   _searchPerformedInSession, sessionDuration,
-                                   _foregroundDuration, generatedTabCount);
+  lens::RecordUKMSessionEndMetrics(
+      _sourceID, _invocationSource, _searchPerformedInSession, sessionDuration,
+      _mimeType, _foregroundDuration, generatedTabCount);
 }
 
 @end

@@ -356,6 +356,7 @@ void RecordUKMSessionEndMetrics(
     LensOverlayInvocationSource invocation_source,
     bool search_performed_in_session,
     base::TimeDelta session_duration,
+    lens::MimeType document_content_type,
     std::optional<base::TimeDelta> session_foreground_duration,
     std::optional<int> generated_tab_count) {
   if (source_id == ukm::kInvalidSourceId) {
@@ -374,6 +375,7 @@ void RecordUKMSessionEndMetrics(
   event.SetInvocationSource(static_cast<int64_t>(invocation_source))
       .SetInvocationResultedInSearch(search_performed_in_session)
       .SetSessionDuration(session_duration.InMilliseconds())
+      .SetInvocationDocumentType(static_cast<int64_t>(document_content_type))
       .Record(ukm::UkmRecorder::Get());
 }
 

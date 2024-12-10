@@ -40,12 +40,16 @@ chromium-metrics-reviews@google.com.
   <variant name="Unknown"/>
 </variants>
 
+<!-- LINT.IfChange(LensOverlayMimeType) -->
+
 <variants name="MimeTypes">
   <variant name="Html"/>
   <variant name="Pdf"/>
   <variant name="PlainText"/>
-  <variant name="Unspecified"/>
+  <variant name="Unknown"/>
 </variants>
+
+<!-- LINT.ThenChange(//components/lens/lens_overlay_mime_type.h:LensOverlayMimeType) -->
 
 <histogram name="Lens.ImageClassification.ClassificationTime.EarlyTerminatedMs"
     units="ms" expires_after="2022-07-31">
