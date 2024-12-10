@@ -5232,11 +5232,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "ios-edit-menu-search-with",
-    "owners": [ "olivierrobin@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "ios-interruptible-coordinator-stop-synchronously",
     "owners": [
       "arthurmilchior@google.com",
