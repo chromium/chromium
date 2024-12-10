@@ -22,6 +22,9 @@ PrivacySandboxSurveyDesktopController::
 
 void PrivacySandboxSurveyDesktopController::MaybeShowSentimentSurvey(
     Profile* profile) {
+  if (!has_seen_ntp_) {
+    return;
+  }
   if (!survey_service_->ShouldShowSentimentSurvey()) {
     survey_service_->RecordSentimentSurveyStatus(
         PrivacySandboxSurveyService::PrivacySandboxSentimentSurveyStatus::
@@ -49,6 +52,10 @@ void PrivacySandboxSurveyDesktopController::MaybeShowSentimentSurvey(
           weak_ptr_factory_.GetWeakPtr()),
       /*product_specific_bits_data=*/survey_service_->GetSentimentSurveyPsb(),
       /*product_specific_string_data=*/{});
+}
+
+void PrivacySandboxSurveyDesktopController::OnNewTabPageSeen() {
+  has_seen_ntp_ = true;
 }
 
 void PrivacySandboxSurveyDesktopController::OnSentimentSurveyShown(

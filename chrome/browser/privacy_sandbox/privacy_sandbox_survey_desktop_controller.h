@@ -28,10 +28,15 @@ class PrivacySandboxSurveyDesktopController : public KeyedService {
   // Called to surface the sentiment survey if the conditions are met.
   void MaybeShowSentimentSurvey(Profile* profile);
 
+  // Called to denote that we've visited a new tab page.
+  void OnNewTabPageSeen();
+
  private:
   void OnSentimentSurveyShown(Profile* profile);
   void OnSentimentSurveyFailure();
 
+  // Tracks if a NTP has been seen within the current session.
+  bool has_seen_ntp_ = false;
   raw_ptr<PrivacySandboxSurveyService> survey_service_;
   base::WeakPtrFactory<PrivacySandboxSurveyDesktopController> weak_ptr_factory_{
       this};
