@@ -140,6 +140,12 @@ class MODULES_EXPORT CodecLogger final {
     return MakeEncodingError(error_msg, StatusImpl(code, error_msg, location));
   }
 
+  DOMException* MakeQuotaError(std::string error_msg, StatusImpl status) {
+    return MakeAndLogException(DOMExceptionCode::kQuotaExceededError,
+                               std::move(error_msg), std::move(status),
+                               /*can_log_status_message=*/false);
+  }
+
   // Similar to MakeEncodingError(), but since the error comes from a bundled
   // software codec the error message can include the status message.
   DOMException* MakeSoftwareCodecEncodingError(std::string error_msg,

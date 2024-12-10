@@ -815,6 +815,9 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
         case media::EncoderStatus::Codes::kEncoderUnsupportedConfig:
           error_message = "Unsupported configuration parameters.";
           break;
+        case media::EncoderStatus::Codes::kOutOfPlatformEncoders:
+          error_message = "The system ran out of platform encoders.";
+          break;
         default:
           error_message = "Encoder initialization error.";
           break;
@@ -907,12 +910,18 @@ void VideoEncoder::ReportError(const char* error_message,
     encoder_metrics_provider_->SetError(status);
   }
 
+  DOMException* error = nullptr;
+  if (status.code() == media::EncoderStatus::Codes::kOutOfPlatformEncoders) {
+    error = logger_->MakeQuotaError(error_message, status);
+  } else {
+    error =
+        is_error_message_from_software_codec
+            ? logger_->MakeSoftwareCodecOperationError(error_message, status)
+            : logger_->MakeOperationError(error_message, status);
+  }
   // We don't use `is_platform_encoder_` here since it may not match where the
   // error is coming from in the case of a pending configuration change.
-  HandleError(
-      is_error_message_from_software_codec
-          ? logger_->MakeSoftwareCodecOperationError(error_message, status)
-          : logger_->MakeOperationError(error_message, status));
+  HandleError(error);
 }
 
 bool VideoEncoder::ReadyToProcessNextRequest() {
