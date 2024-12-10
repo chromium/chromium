@@ -4452,6 +4452,13 @@
        ]
       ]
      },
+     "ruby-body-element-crash.html": [
+      "c1487ab6162935bf433fd36752142445e2b2d054",
+      [
+       null,
+       {}
+      ]
+     ],
      "ruby-dynamic-removal-004-crash.html": [
       "be7c28956f6d1b16e734ff34feef5ae3d2648157",
       [
@@ -311496,7 +311503,7 @@
       []
      ],
      "report-clips-sample.https-expected.txt": [
-      "da386120c5c5c00eca30a857a7b78780b21af577",
+      "a0b36164a1925dc3b0ff60e41813819cfe7fabc6",
       []
      ],
      "report-cross-origin-no-cookies.sub.html.sub.headers": [
@@ -338467,6 +338474,12 @@
       "a037967e493fa5eba3914db3c8f38914ee1d8729",
       []
      ],
+     "parsing": {
+      "grid-template-shorthand-composition-expected.txt": [
+       "f2f959a7933c5811850868f5af02ca49b7275bfb",
+       []
+      ]
+     },
      "reference": {
       "anonymous-grid-items-001-ref.html": [
        "20302c2f1aa48e45b0698ed42bca866cf8f6a58e",
@@ -349420,7 +349433,7 @@
       []
      ],
      "keyword-sizes-on-replaced-element-expected.txt": [
-      "0ac58540b78fb9c61a125654f3bd691adc3ee7ff",
+      "b113ea4f2e2cdb5aef18942b22cbb83e05188194",
       []
      ],
      "max-content-input-001-ref.html": [
@@ -407728,7 +407741,7 @@
       []
      ],
      "about-blank-replacement.https-expected.txt": [
-      "dff712091d7e4d2a7eea6cbd1f354fad1db29871",
+      "329f457fa2222f17c030be4aa02bb826a36f49a7",
       []
      ],
      "clients-matchall-client-types.https-expected.txt": [
@@ -459945,7 +459958,7 @@
       ]
      ],
      "report-clips-sample.https.html": [
-      "ae9e380bc2d142b95affcad0a63bf6dd1b466d15",
+      "fe6b457fc7b40fab610dbbd5655025fb53380e9f",
       [
        null,
        {}
@@ -471139,7 +471152,7 @@
       ]
      ],
      "scope-nesting.html": [
-      "2811bb4635d65fe4d6f2e6b181ae663a481ddd38",
+      "146a3f4ae2892d86d8964aa8d4110f9035d296a9",
       [
        null,
        {}
@@ -481240,7 +481253,7 @@
        ]
       ],
       "grid-template-shorthand-composition.html": [
-       "781410d51536ec2f6ebeca1315f03519f1967b88",
+       "2c19f737fdc6e50f77f1972cb8a9eb5623ee3004",
        [
         null,
         {}
@@ -486391,6 +486404,13 @@
         {}
        ]
       ],
+      "highlight-cascade-010.html": [
+       "bbfcffb16aa28091d063048a9b7c609fd1ec5409",
+       [
+        null,
+        {}
+       ]
+      ],
       "highlight-currentcolor-computed-inheritance.html": [
        "90bfc526227d9fb5f74298940c585078ca931257",
        [
@@ -490790,7 +490810,7 @@
       ]
      ],
      "keyword-sizes-on-replaced-element.html": [
-      "e26c1b7d6ac38858fd7a941a690ea01e6005c38c",
+      "8863ef491570c4d194bbb4b1d03a6e12367d4ff3",
       [
        null,
        {}
@@ -513353,7 +513373,7 @@
      "moveBefore": {
       "tentative": {
        "Node-moveBefore.html": [
-        "22586d169c0ba211deafa5a1b510bdbcab567803",
+        "732314d085baa898db8393276e632d24c7787296",
         [
          null,
          {}
@@ -513837,7 +513857,7 @@
        ]
       ],
       "observable-reduce.any.js": [
-       "7c54aa1e8ff9d80e27562fbfae19bc57b9f4a8ca",
+       "ec30f8bcf428df062bbc0e4bfd6023d30f1dbe42",
        [
         "dom/observable/tentative/observable-reduce.any.html",
         {}

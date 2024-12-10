@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+[FAIL] grid-template-rows: auto, grid-template-columns: auto, and "grid-template-areas: "a a a" "b b b";" should be valid.
+  assert_equals: expected "" but got "\\"a a a\\" \\"b b b\\" / auto"
+[FAIL] grid-template-rows: auto, grid-template-columns: auto auto, and "grid-template-areas: "a a a" "b b b";" should be valid.
+  assert_equals: expected "" but got "\\"a a a\\" \\"b b b\\" / auto auto"
+[FAIL] grid-template-rows: min-content, grid-template-columns: min-content, and "grid-template-areas: "a a a" "b b b" "c c c" "d d d";" should be valid.
+  assert_equals: expected "" but got "\\"a a a\\" min-content \\"b b b\\" \\"c c c\\" \\"d d d\\" / min-content"
+[FAIL] grid-template-rows: min-content, grid-template-columns: min-content auto auto auto, and "grid-template-areas: "a a a" "b b b" "c c c" "d d d";" should be valid.
+  assert_equals: expected "" but got "\\"a a a\\" min-content \\"b b b\\" \\"c c c\\" \\"d d d\\" / min-content auto auto auto"
+Harness: the test ran to completion.
