@@ -112,30 +112,19 @@ class FreezingPolicy : public PageNode::ObserverDefaultImpl,
     base::flat_map<url::Origin, uint64_t> per_origin_pmf_after_freezing_kb;
   };
 
-  // Returns pages connected to `page`, including `page` itself. If
-  // `frame_being_removed` is non-null, it's ignored when calculating the
-  // browsing instances of a page, because this is being called from
-  // OnBeforeFrameNodeRemoved(). See meta-comment above this class for a
-  // definition of "connected".
+  // Returns pages connected to `page`, including `page` itself. See
+  // meta-comment above this class for a definition of "connected".
   base::flat_set<raw_ptr<const PageNode>> GetConnectedPages(
-      const PageNode* page,
-      const FrameNode* frame_being_removed = nullptr);
+      const PageNode* page);
 
-  // Returns browsing instance id(s) for `page`. If`frame_being_removed` is
-  // non-null, it's ignored when calculating the browsing instances, because
-  // this is being called from OnBeforeFrameNodeRemoved().
+  // Returns browsing instance id(s) for `page`.
   base::flat_set<content::BrowsingInstanceId> GetBrowsingInstances(
-      const PageNode* page,
-      const FrameNode* frame_being_removed = nullptr) const;
+      const PageNode* page) const;
 
   // Update frozen state for all pages connected to `page`. Connected pages
   // (including `page_node`) are added to `connected_pages_out` if not nullptr.
-  // If `frame_being_removed` is non-null, it's ignored when calculating the
-  // browsing instances of a page, because this is being called from
-  // OnBeforeFrameNodeRemoved().
   void UpdateFrozenState(
       const PageNode* page_node,
-      const FrameNode* frame_being_removed = nullptr,
       base::flat_set<raw_ptr<const PageNode>>* connected_pages_out = nullptr);
 
   // Helper to add or remove a `CannotFreezeReason` for `page_node`.
@@ -166,7 +155,12 @@ class FreezingPolicy : public PageNode::ObserverDefaultImpl,
 
   // FrameNodeObserver implementation:
   void OnFrameNodeAdded(const FrameNode* frame_node) override;
-  void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
+  void OnFrameNodeRemoved(
+      const FrameNode* frame_node,
+      const FrameNode* previous_parent_frame_node,
+      const PageNode* previous_page_node,
+      const ProcessNode* previous_process_node,
+      const FrameNode* previous_parent_or_outer_document_or_embedder) override;
   void OnIsAudibleChanged(const FrameNode* frame_node) override;
 
   // PageLiveStateObserverDefaultImpl:

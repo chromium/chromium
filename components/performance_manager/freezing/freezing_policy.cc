@@ -144,7 +144,7 @@ void FreezingPolicy::ToggleFreezingOnBatterySaverMode(bool is_enabled) {
   base::flat_set<raw_ptr<const PageNode>> visited_pages;
   for (auto& [id, state] : browsing_instances_) {
     if (!base::Contains(visited_pages, *state.pages.begin())) {
-      UpdateFrozenState(*state.pages.begin(), nullptr, &visited_pages);
+      UpdateFrozenState(*state.pages.begin(), &visited_pages);
     }
   }
 }
@@ -217,8 +217,7 @@ bool FreezingPolicy::BrowsingInstanceState::AllPagesFrozen() const {
 }
 
 base::flat_set<raw_ptr<const PageNode>> FreezingPolicy::GetConnectedPages(
-    const PageNode* page,
-    const FrameNode* frame_being_removed) {
+    const PageNode* page) {
   base::flat_set<raw_ptr<const PageNode>> connected_pages;
   base::flat_set<raw_ptr<const PageNode>> pages_to_visit({page});
   while (!pages_to_visit.empty()) {
@@ -232,8 +231,7 @@ base::flat_set<raw_ptr<const PageNode>> FreezingPolicy::GetConnectedPages(
     auto [_, inserted] = connected_pages.insert(visited_page);
     CHECK(inserted);
 
-    for (auto browsing_instance_id :
-         GetBrowsingInstances(visited_page, frame_being_removed)) {
+    for (auto browsing_instance_id : GetBrowsingInstances(visited_page)) {
       auto it = browsing_instances_.find(browsing_instance_id);
       CHECK(it != browsing_instances_.end());
       const BrowsingInstanceState& browsing_instance_state = it->second;
@@ -249,24 +247,19 @@ base::flat_set<raw_ptr<const PageNode>> FreezingPolicy::GetConnectedPages(
 }
 
 base::flat_set<content::BrowsingInstanceId>
-FreezingPolicy::GetBrowsingInstances(
-    const PageNode* page,
-    const FrameNode* frame_being_removed) const {
+FreezingPolicy::GetBrowsingInstances(const PageNode* page) const {
   base::flat_set<content::BrowsingInstanceId> browsing_instances;
   for (const FrameNode* frame_node : page->GetMainFrameNodes()) {
-    if (frame_node != frame_being_removed) {
-      browsing_instances.insert(frame_node->GetBrowsingInstanceId());
-    }
+    browsing_instances.insert(frame_node->GetBrowsingInstanceId());
   }
   return browsing_instances;
 }
 
 void FreezingPolicy::UpdateFrozenState(
     const PageNode* page,
-    const FrameNode* frame_being_removed,
     base::flat_set<raw_ptr<const PageNode>>* connected_pages_out) {
   const base::flat_set<raw_ptr<const PageNode>> connected_pages =
-      GetConnectedPages(page, frame_being_removed);
+      GetConnectedPages(page);
 
   // Determine whether:
   // - Any connected page has a `CannotFreezeReason`.
@@ -285,8 +278,7 @@ void FreezingPolicy::UpdateFrozenState(
         !page_freezing_state.cannot_freeze_reasons.empty();
     all_pages_have_freeze_vote &= (page_freezing_state.num_freeze_votes > 0);
 
-    for (auto browsing_instance_id :
-         GetBrowsingInstances(visited_page, frame_being_removed)) {
+    for (auto browsing_instance_id : GetBrowsingInstances(visited_page)) {
       auto it = browsing_instances_.find(browsing_instance_id);
       CHECK(it != browsing_instances_.end());
       const BrowsingInstanceState& browsing_instance_state = it->second;
@@ -551,7 +543,12 @@ void FreezingPolicy::OnFrameNodeAdded(const FrameNode* frame_node) {
   UpdateFrozenState(frame_node->GetPageNode());
 }
 
-void FreezingPolicy::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
+void FreezingPolicy::OnFrameNodeRemoved(
+    const FrameNode* frame_node,
+    const FrameNode* previous_parent_frame_node,
+    const PageNode* previous_page_node,
+    const ProcessNode* previous_process_node,
+    const FrameNode* previous_parent_or_outer_document_or_embedder) {
   if (!frame_node->IsMainFrame()) {
     return;
   }
@@ -559,31 +556,25 @@ void FreezingPolicy::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
   // Early exit if another main frame is associated with the same browsing
   // instance (in other words, the set of browsing instances associated with the
   // removed frame's page doesn't change).
-  bool has_other_main_frames = false;
   for (const FrameNode* other_frame_node :
-       frame_node->GetPageNode()->GetMainFrameNodes()) {
-    if (other_frame_node != frame_node) {
-      has_other_main_frames = true;
-      if (other_frame_node->GetBrowsingInstanceId() ==
-          frame_node->GetBrowsingInstanceId()) {
-        return;
-      }
+       previous_page_node->GetMainFrameNodes()) {
+    CHECK_NE(other_frame_node, frame_node);
+    if (other_frame_node->GetBrowsingInstanceId() ==
+        frame_node->GetBrowsingInstanceId()) {
+      return;
     }
   }
 
   // Disassociate the frame's page from the frame's browsing instance.
   auto it = browsing_instances_.find(frame_node->GetBrowsingInstanceId());
   CHECK(it != browsing_instances_.end());
-  size_t num_pages_removed = it->second.pages.erase(frame_node->GetPageNode());
+  size_t num_pages_removed = it->second.pages.erase(previous_page_node);
   CHECK_EQ(num_pages_removed, 1U);
 
   // Update frozen state for pages connected to the frame's page, if it still
   // contains at least one frame.
-  if (has_other_main_frames) {
-    // `frame_node` is still connected to the page so it must be ignored.
-    // TODO(crbug.com/40640034): Add OnFrameNodeRemoved(frame_node,
-    // previous_page_node, ...) so this isn't needed.
-    UpdateFrozenState(frame_node->GetPageNode(), frame_node);
+  if (!previous_page_node->GetMainFrameNodes().empty()) {
+    UpdateFrozenState(previous_page_node);
   }
 
   // If pages remain in the deleted frame's browsing instance, update their
@@ -592,10 +583,7 @@ void FreezingPolicy::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
   if (it->second.pages.empty()) {
     browsing_instances_.erase(it);
   } else {
-    // `frame_node` is still connected to the page so it must be ignored.
-    // TODO(crbug.com/40640034): Add OnFrameNodeRemoved(frame_node,
-    // previous_page_node, ...) so this isn't needed.
-    UpdateFrozenState(*it->second.pages.begin(), frame_node);
+    UpdateFrozenState(*it->second.pages.begin());
   }
 }
 
