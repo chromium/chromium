@@ -442,8 +442,8 @@ void QuickInsertSectionView::AddTitleTrailingLink(
       views::Builder<views::Link>()
           .SetText(link_text)
           .SetCallback(link_callback)
-          .SetFontList(ash::TypographyProvider::Get()->ResolveTypographyToken(
-              ash::TypographyToken::kCrosAnnotation2))
+          .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+              TypographyToken::kCrosAnnotation2))
           .SetEnabledColorId(cros_tokens::kCrosSysPrimary)
           .SetForceUnderline(false)
           .SetProperty(views::kMarginsKey, kSectionTitleTrailingLinkMargins)

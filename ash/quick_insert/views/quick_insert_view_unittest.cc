@@ -3384,7 +3384,7 @@ TEST_F(QuickInsertViewTest, UncheckingGifButtonWithoutQueryShowsZeroState) {
 }
 
 TEST_F(QuickInsertViewTest, CheckingGifButtonDoesNotShowBackButton) {
-  base::test::ScopedFeatureList feature_list(ash::features::kPickerGifs);
+  base::test::ScopedFeatureList feature_list(features::kPickerGifs);
   FakeQuickInsertViewDelegate delegate({
       .available_categories = {QuickInsertCategory::kEmojisGifs,
                                QuickInsertCategory::kGifs},
@@ -3404,7 +3404,7 @@ TEST_F(QuickInsertViewTest, CheckingGifButtonDoesNotShowBackButton) {
 }
 
 TEST_F(QuickInsertViewTest, CheckingGifButtonKeepsEmojiBarVisible) {
-  base::test::ScopedFeatureList feature_list(ash::features::kPickerGifs);
+  base::test::ScopedFeatureList feature_list(features::kPickerGifs);
   FakeQuickInsertViewDelegate delegate({
       .available_categories = {QuickInsertCategory::kEmojisGifs,
                                QuickInsertCategory::kGifs},

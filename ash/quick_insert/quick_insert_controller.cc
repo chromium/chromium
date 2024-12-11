@@ -222,13 +222,13 @@ std::u16string TransformText(std::u16string_view text,
 }
 
 void OpenLink(const GURL& url) {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-      url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void OpenFile(const base::FilePath& path) {
-  ash::NewWindowDelegate::GetPrimary()->OpenFile(path);
+  NewWindowDelegate::GetPrimary()->OpenFile(path);
 }
 
 GURL GetUrlForNewWindow(QuickInsertNewWindowResult::Type type) {

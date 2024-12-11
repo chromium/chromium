@@ -126,7 +126,7 @@ std::vector<QuickInsertSearchResult> ConvertGifResponse(
     return {};
   }
 
-  std::vector<ash::QuickInsertGifResult> gif_results;
+  std::vector<QuickInsertGifResult> gif_results;
   return base::ToVector(
       (*response)->results, [](const tenor::mojom::GifResponsePtr& result) {
         CHECK(result);
@@ -317,7 +317,7 @@ void QuickInsertSearchRequest::HandleActionSearchResults(
 }
 
 void QuickInsertSearchRequest::HandleCrosSearchResults(
-    ash::AppListSearchResultType type,
+    AppListSearchResultType type,
     std::vector<QuickInsertSearchResult> results) {
   switch (type) {
     case AppListSearchResultType::kOmnibox: {

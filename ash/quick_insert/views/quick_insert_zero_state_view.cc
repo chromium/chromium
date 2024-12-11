@@ -118,8 +118,7 @@ QuickInsertZeroStateView::QuickInsertZeroStateView(
       continue;
     }
 
-    if (!base::FeatureList::IsEnabled(
-            ash::features::kLobsterQuickInsertZeroState) &&
+    if (!base::FeatureList::IsEnabled(features::kLobsterQuickInsertZeroState) &&
         category == QuickInsertCategory::kLobsterWithNoSelectedText) {
       continue;
     }

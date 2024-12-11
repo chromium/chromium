@@ -162,8 +162,8 @@ class GifsButton : public views::LabelButton {
         .BuildChildren();
     label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
         TypographyToken::kCrosLabel1));
-    label()->SetLineHeight(ash::TypographyProvider::Get()->ResolveLineHeight(
-        ash::TypographyToken::kCrosLabel1));
+    label()->SetLineHeight(TypographyProvider::Get()->ResolveLineHeight(
+        TypographyToken::kCrosLabel1));
     label()->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
     StyleUtil::SetUpInkDropForButton(this);
     StyleUtil::InstallRoundedCornerHighlightPathGenerator(
@@ -197,7 +197,7 @@ class GifsButton : public views::LabelButton {
 
   // Returns whether the GIFs button is checked or not after the button press.
   bool OnButtonPressed() {
-    if (!base::FeatureList::IsEnabled(ash::features::kPickerGifs)) {
+    if (!base::FeatureList::IsEnabled(features::kPickerGifs)) {
       return false;
     }
 

@@ -88,8 +88,8 @@ ui::KeyEvent SyntheticCtrl(ui::EventType type) {
 std::unique_ptr<ui::ClipboardData> ReplaceClipboard(
     std::unique_ptr<ui::ClipboardData> data) {
   // Pause changes to clipboard history while manipulating the clipboard.
-  std::unique_ptr<ash::ScopedClipboardHistoryPause> pause_history =
-      CHECK_DEREF(ash::ClipboardHistoryController::Get()).CreateScopedPause();
+  std::unique_ptr<ScopedClipboardHistoryPause> pause_history =
+      CHECK_DEREF(ClipboardHistoryController::Get()).CreateScopedPause();
   return CHECK_DEREF(ui::ClipboardNonBacked::GetForCurrentThread())
       .WriteClipboardData(std::move(data));
 }

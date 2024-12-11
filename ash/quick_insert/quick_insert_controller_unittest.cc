@@ -360,7 +360,7 @@ TEST_F(QuickInsertControllerTest,
 TEST_F(QuickInsertControllerTest,
        ToggleWidgetShowsWidgetAfterCompletingFeatureTourWithoutFocus) {
   std::unique_ptr<views::Widget> test_widget =
-      ash::TestWidgetBuilder()
+      TestWidgetBuilder()
           .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
           .SetShow(true)
           .BuildClientOwnsWidget();
@@ -407,7 +407,7 @@ TEST_F(QuickInsertControllerTest,
 TEST_F(QuickInsertControllerTest,
        ToggleWidgetShowsWidgetAfterCompletingFeatureTourWithFocus) {
   std::unique_ptr<views::Widget> textfield_widget =
-      ash::TestWidgetBuilder()
+      TestWidgetBuilder()
           .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
           .SetShow(true)
           .BuildClientOwnsWidget();
@@ -600,7 +600,7 @@ TEST_F(QuickInsertControllerTest,
       ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),
       uR"html(<img src="http://foo.com/" referrerpolicy="no-referrer" alt="a gif" width="60" height="40"/>)html");
   EXPECT_TRUE(
-      ash::ToastManager::Get()->IsToastShown("quick_insert_copy_to_clipboard"));
+      ToastManager::Get()->IsToastShown("quick_insert_copy_to_clipboard"));
 }
 
 TEST_F(QuickInsertControllerTest,

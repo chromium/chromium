@@ -46,7 +46,7 @@ namespace ash {
 class ASH_EXPORT QuickInsertClient {
  public:
   using CrosSearchResultsCallback = base::RepeatingCallback<void(
-      ash::AppListSearchResultType result_type,
+      AppListSearchResultType result_type,
       std::vector<QuickInsertSearchResult> results)>;
   using ShowEditorCallback =
       base::OnceCallback<void(std::optional<std::string> preset_query_id,
