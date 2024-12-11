@@ -166,7 +166,7 @@ ScriptPromise<IDLBoolean> DocumentStorageAccess::hasStorageAccess(
     }
 
     // #5: if global is not a secure context, return false.
-    if (!GetSupplementable()->dom_window_->isSecureContext()) {
+    if (!GetSupplementable()->dom_window_->IsSecureContext()) {
       return false;
     }
 
@@ -269,7 +269,7 @@ ScriptPromise<T> DocumentStorageAccess::RequestStorageAccessImpl(
   // can be changed when it is resolved or rejected.
   auto promise = resolver->Promise();
 
-  if (!GetSupplementable()->dom_window_->isSecureContext()) {
+  if (!GetSupplementable()->dom_window_->IsSecureContext()) {
     GetSupplementable()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
         "requestStorageAccess: May not be used in an insecure context."));
@@ -461,7 +461,7 @@ ScriptPromise<IDLUndefined> DocumentStorageAccess::requestStorageAccessFor(
   // particular, it must have been rejected by credentialless iframes:
   CHECK(!GetSupplementable()->dom_window_->credentialless());
 
-  if (!GetSupplementable()->dom_window_->isSecureContext()) {
+  if (!GetSupplementable()->dom_window_->IsSecureContext()) {
     GetSupplementable()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kError,
         "requestStorageAccessFor: May not be used in an insecure "

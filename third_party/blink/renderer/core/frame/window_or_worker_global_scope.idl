@@ -29,14 +29,7 @@
 [
     Exposed=(Window,Worker)
 ] interface mixin WindowOrWorkerGlobalScope {
-    [CallWith=ScriptState] void reportError(any e);
-
-    // base64 utility methods
-    [RaisesException] DOMString btoa(DOMString btoa);
-    [RaisesException] DOMString atob(DOMString atob);
     readonly attribute boolean crossOriginIsolated;
     [RuntimeEnabled=CoepReflection]
         readonly attribute DOMString crossOriginEmbedderPolicy;
-
-    [RaisesException, CallWith=ScriptState, MeasureAs=StructuredCloneMethod] any structuredClone(any value, optional StructuredSerializeOptions options = {});
 };

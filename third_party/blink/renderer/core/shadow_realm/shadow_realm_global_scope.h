@@ -8,12 +8,14 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/universal_global_scope.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
 class CORE_EXPORT ShadowRealmGlobalScope final : public EventTarget,
+                                                 public UniversalGlobalScope,
                                                  public ExecutionContext {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -60,6 +62,7 @@ class CORE_EXPORT ShadowRealmGlobalScope final : public EventTarget,
   ukm::UkmRecorder* UkmRecorder() override;
   ukm::SourceId UkmSourceID() const override;
   ExecutionContextToken GetExecutionContextToken() const override;
+  bool IsSecureContext() const override;
 
  private:
   void AddConsoleMessageImpl(ConsoleMessage* message,

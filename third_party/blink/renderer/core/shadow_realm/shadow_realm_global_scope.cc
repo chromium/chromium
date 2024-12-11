@@ -28,6 +28,7 @@ ExecutionContext* ShadowRealmGlobalScope::GetRootInitiatorExecutionContext()
 void ShadowRealmGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(initiator_execution_context_);
   EventTarget::Trace(visitor);
+  UniversalGlobalScope::Trace(visitor);
   ExecutionContext::Trace(visitor);
 }
 
@@ -133,6 +134,10 @@ ExecutionContextToken ShadowRealmGlobalScope::GetExecutionContextToken() const {
 void ShadowRealmGlobalScope::AddConsoleMessageImpl(ConsoleMessage* message,
                                                    bool discard_duplicates) {
   NOTREACHED();
+}
+
+bool ShadowRealmGlobalScope::IsSecureContext() const {
+  return GetRootInitiatorExecutionContext()->IsSecureContext();
 }
 
 }  // namespace blink

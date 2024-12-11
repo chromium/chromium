@@ -45,7 +45,7 @@ MediaDevices* SubCaptureTarget::GetMediaDevices(
   }
 
   LocalDOMWindow* const window = To<LocalDOMWindow>(context);
-  if (!window || !window->GetFrame() || !window->isSecureContext()) {
+  if (!window || !window->GetFrame() || !window->IsSecureContext()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid state.");
     return nullptr;

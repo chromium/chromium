@@ -226,6 +226,8 @@ blink_core_sources_frame = [
   "web_frame_serializer_impl.h",
   "local_frame_client_impl.cc",
   "local_frame_client_impl.h",
+  "universal_global_scope.cc",
+  "universal_global_scope.h",
   "web_frame.cc",
   "web_frame_widget_impl.cc",
   "web_frame_widget_impl.h",
