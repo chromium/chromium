@@ -1295,14 +1295,12 @@ void View::Paint(const PaintInfo& parent_paint_info) {
 
   PaintInfo paint_info = PaintInfo::CreateChildPaintInfo(
       parent_paint_info, GetMirroredBounds(), parent_bounds.size(),
-      GetPaintScaleType(), !!layer(), needs_paint_);
-
+      GetPaintScaleType(), !!layer());
   needs_paint_ = false;
 
   const ui::PaintContext& context = paint_info.context();
   bool is_invalidated = true;
-  if (paint_info.context().CanCheckInvalid() ||
-      base::FeatureList::IsEnabled(features::kEnableViewPaintOptimization)) {
+  if (paint_info.context().CanCheckInvalid()) {
     // For View paint optimization, do not default to repainting every View in
     // the View hierarchy if the invalidation rect is empty. Repainting does not
     // depend on the invalidation rect for View paint optimization.

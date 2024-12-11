@@ -70,10 +70,9 @@ PaintInfo PaintInfo::CreateChildPaintInfo(const PaintInfo& parent_paint_info,
                                           const gfx::Rect& bounds,
                                           const gfx::Size& parent_size,
                                           ScaleType scale_type,
-                                          bool is_layer,
-                                          bool needs_paint) {
-  return PaintInfo(parent_paint_info, bounds, parent_size, scale_type, is_layer,
-                   needs_paint);
+                                          bool is_layer) {
+  return PaintInfo(parent_paint_info, bounds, parent_size, scale_type,
+                   is_layer);
 }
 
 PaintInfo::~PaintInfo() = default;
@@ -83,9 +82,6 @@ bool PaintInfo::IsPixelCanvas() const {
 }
 
 bool PaintInfo::ShouldPaint() const {
-  if (base::FeatureList::IsEnabled(features::kEnableViewPaintOptimization))
-    return needs_paint_;
-
   return context().IsRectInvalid(gfx::Rect(paint_recording_size()));
 }
 
@@ -114,8 +110,7 @@ PaintInfo::PaintInfo(const PaintInfo& parent_paint_info,
                      const gfx::Rect& bounds,
                      const gfx::Size& parent_size,
                      ScaleType scale_type,
-                     bool is_layer,
-                     bool needs_paint)
+                     bool is_layer)
     : paint_recording_scale_x_(1.f),
       paint_recording_scale_y_(1.f),
       paint_recording_bounds_(
@@ -127,8 +122,7 @@ PaintInfo::PaintInfo(const PaintInfo& parent_paint_info,
           paint_recording_bounds_.OffsetFromOrigin() -
           parent_paint_info.paint_recording_bounds_.OffsetFromOrigin()),
       context_(parent_paint_info.context(), offset_from_parent_),
-      root_context_(nullptr),
-      needs_paint_(needs_paint) {
+      root_context_(nullptr) {
   if (IsPixelCanvas()) {
     if (scale_type == ScaleType::kUniformScaling) {
       paint_recording_scale_x_ = paint_recording_scale_y_ =

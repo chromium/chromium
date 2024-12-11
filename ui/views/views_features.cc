@@ -25,13 +25,6 @@ BASE_FEATURE(kEnableTouchDragCursorSync,
              "EnableTouchDragCursorSync",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Only paint views that are invalidated/dirty (i.e. a paint was directly
-// scheduled on those views) as opposed to painting all views that intersect
-// an invalid rectangle on the layer.
-BASE_FEATURE(kEnableViewPaintOptimization,
-             "EnableViewPaintOptimization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Used to enable keyboard-accessible tooltips in Views UI, as opposed
 // to kKeyboardAccessibleTooltip in //ui/base/ui_base_features.cc.
 BASE_FEATURE(kKeyboardAccessibleTooltipInViews,
