@@ -505,9 +505,13 @@ void PrivacySandboxServiceImpl::MaybeInitIdentityManager() {
 
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     primary_account_state_ = PrimaryAccountUserGroups::kSignedOut;
+  } else {
+    primary_account_state_ =
+        PrimaryAccountUserGroups::kSignedInCapabilityUnknown;
   }
-  // Account capabilities are updated asynchronously, so metrics relating to
-  // those will be recorded once in `OnExtendedAccountInfoUpdated`.
+  // Account capabilities are not available immediately at startup and are
+  // updated asynchronously, so metrics relating to those will be recorded once
+  // in `OnExtendedAccountInfoUpdated`.
 }
 
 void PrivacySandboxServiceImpl::OnPrimaryAccountChanged(
