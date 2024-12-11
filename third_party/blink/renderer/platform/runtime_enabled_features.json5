@@ -3466,6 +3466,7 @@
     },
     {
       name: "RelOpenerBcgDependencyHint",
+      status: "experimental",
     },
     {
       name: "RemotePlayback",
