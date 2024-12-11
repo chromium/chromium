@@ -115,6 +115,59 @@ chromium-metrics-reviews@google.com.
   <token key="Process" variants="ProfiledProcess"/>
 </histogram>
 
+<histogram name="HeapProfiling.InProcess.SampledAddressCacheHitCount{Process}"
+    units="hits" expires_after="2025-04-13">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    The number of calls to PoissonAllocationSampler::OnFree in {Process} with a
+    pointer that was in the sampled addresses hash set, since the last heap
+    snapshot was taken. Emitted once per snapshot when the in-process heap
+    profiler is enabled.
+  </summary>
+  <token key="Process" variants="ProfiledProcess"/>
+</histogram>
+
+<histogram name="HeapProfiling.InProcess.SampledAddressCacheHitRate{Process}"
+    units="1/100 %" expires_after="2025-04-13">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    The proportion of calls to PoissonAllocationSampler::OnFree in {Process}
+    with a pointer that was in the sampled addresses hash set, since the last
+    heap snapshot was taken. Emitted once per snapshot when the in-process heap
+    profiler is enabled. Recorded in hundredths of a percent since the number of
+    sampled allocations is expected to be very small compared to the total
+    number of allocations and deallocations.
+  </summary>
+  <token key="Process" variants="ProfiledProcess"/>
+</histogram>
+
+<histogram
+    name="HeapProfiling.InProcess.SampledAddressCacheMaxLoadFactor{Process}"
+    units="%" expires_after="2025-04-13">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    The highest load factor of PoissonAllocationSampler's sampled addresses hash
+    set in {Process}, since the last heap snapshot was taken. Emitted once per
+    snapshot when the in-process heap profiler is enabled.
+  </summary>
+  <token key="Process" variants="ProfiledProcess"/>
+</histogram>
+
+<histogram name="HeapProfiling.InProcess.SampledAddressCacheMaxSize{Process}"
+    units="entries" expires_after="2025-04-13">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    The highest number of entries PoissonAllocationSampler's sampled addresses
+    hash set in {Process}, since the last heap snapshot was taken. Emitted once
+    per snapshot when the in-process heap profiler is enabled.
+  </summary>
+  <token key="Process" variants="ProfiledProcess"/>
+</histogram>
+
 <histogram name="HeapProfiling.InProcess.SamplesPerSnapshot{Process}"
     units="samples" expires_after="2025-04-13">
   <owner>joenotcharles@google.com</owner>

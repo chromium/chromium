@@ -4,6 +4,7 @@
 
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 
+#include <algorithm>
 #include <atomic>
 #include <cmath>
 #include <memory>
@@ -207,6 +208,19 @@ size_t PoissonAllocationSampler::SamplingInterval() const {
   return g_sampling_interval.load(std::memory_order_relaxed);
 }
 
+PoissonAllocationSamplerStats PoissonAllocationSampler::GetAndResetStats() {
+  AutoLock lock(mutex_);
+  return PoissonAllocationSamplerStats{
+      .address_cache_hits =
+          address_cache_hits_.exchange(0, std::memory_order_relaxed),
+      .address_cache_misses =
+          address_cache_misses_.exchange(0, std::memory_order_relaxed),
+      .address_cache_max_size = std::exchange(address_cache_max_size_, 0),
+      .address_cache_max_load_factor =
+          std::exchange(address_cache_max_load_factor_, 0.0),
+  };
+}
+
 // static
 size_t PoissonAllocationSampler::GetNextSampleInterval(size_t interval) {
   if (g_deterministic) [[unlikely]] {
@@ -312,6 +326,12 @@ void PoissonAllocationSampler::DoRecordAllocation(
     }
     sampled_addresses_set().Insert(address);
     BalanceAddressesHashSet();
+    // Record the load factor after balancing gets a chance to reduce it.
+    // Balancing won't change the size.
+    address_cache_max_size_ =
+        std::max(address_cache_max_size_, sampled_addresses_set().size());
+    address_cache_max_load_factor_ = std::max(
+        address_cache_max_load_factor_, sampled_addresses_set().load_factor());
     observers_copy = observers_;
   }
 

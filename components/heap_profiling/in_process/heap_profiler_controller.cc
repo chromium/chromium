@@ -31,6 +31,7 @@
 #include "base/profiler/metadata_recorder.h"
 #include "base/profiler/module_cache.h"
 #include "base/rand_util.h"
+#include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
@@ -447,13 +448,48 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
 
   std::vector<Sample> samples =
       base::SamplingHeapProfiler::Get()->GetSamples(0);
+
+  // Log statistics about the sampling profiler.
+  const base::PoissonAllocationSamplerStats profiler_stats =
+      base::PoissonAllocationSampler::Get()->GetAndResetStats();
+  const double hit_rate =
+      static_cast<double>(profiler_stats.address_cache_hits) /
+      (profiler_stats.address_cache_hits + profiler_stats.address_cache_misses);
   base::UmaHistogramCounts100000(
       ProcessHistogramName("HeapProfiling.InProcess.SamplesPerSnapshot",
                            process_type),
       samples.size());
+  base::UmaHistogramCounts1M(
+      ProcessHistogramName(
+          "HeapProfiling.InProcess.SampledAddressCacheHitCount", process_type),
+      profiler_stats.address_cache_hits);
+  base::UmaHistogramCounts10000(
+      ProcessHistogramName("HeapProfiling.InProcess.SampledAddressCacheHitRate",
+                           process_type),
+      hit_rate * 10000);
+  base::UmaHistogramCounts1M(
+      ProcessHistogramName("HeapProfiling.InProcess.SampledAddressCacheMaxSize",
+                           process_type),
+      profiler_stats.address_cache_max_size);
+  base::UmaHistogramPercentage(
+      ProcessHistogramName(
+          "HeapProfiling.InProcess.SampledAddressCacheMaxLoadFactor",
+          process_type),
+      100 * profiler_stats.address_cache_max_load_factor);
   // Also summarize over all process types.
   base::UmaHistogramCounts100000("HeapProfiling.InProcess.SamplesPerSnapshot",
                                  samples.size());
+  base::UmaHistogramCounts1M(
+      "HeapProfiling.InProcess.SampledAddressCacheHitCount",
+      profiler_stats.address_cache_hits);
+  base::UmaHistogramCounts10000(
+      "HeapProfiling.InProcess.SampledAddressCacheHitRate", hit_rate * 10000);
+  base::UmaHistogramCounts1M(
+      "HeapProfiling.InProcess.SampledAddressCacheMaxSize",
+      profiler_stats.address_cache_max_size);
+  base::UmaHistogramPercentage(
+      "HeapProfiling.InProcess.SampledAddressCacheMaxLoadFactor",
+      100 * profiler_stats.address_cache_max_load_factor);
 
   base::ModuleCache module_cache;
   sampling_profiler::CallStackProfileParams params(
