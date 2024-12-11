@@ -3197,7 +3197,6 @@ gpu_fyi_windows_builder(
         category = "Windows|Builder|Release",
         short_name = "x86",
     ),
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 gpu_fyi_windows_builder(
@@ -3233,7 +3232,6 @@ gpu_fyi_windows_builder(
         category = "Windows|Builder|Release",
         short_name = "x64",
     ),
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 gpu_fyi_windows_builder(
@@ -3266,7 +3264,6 @@ gpu_fyi_windows_builder(
         category = "Windows|Builder|Debug",
         short_name = "x64",
     ),
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 gpu_fyi_windows_builder(
@@ -3301,7 +3298,6 @@ gpu_fyi_windows_builder(
         category = "Windows|Builder|dx12vk",
         short_name = "rel",
     ),
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 gpu_fyi_windows_builder(
@@ -3335,7 +3331,6 @@ gpu_fyi_windows_builder(
         category = "Windows|Builder|dx12vk",
         short_name = "dbg",
     ),
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 gpu_fyi_windows_builder(
@@ -3375,5 +3370,4 @@ gpu_fyi_windows_builder(
         category = "Windows|Builder|XR",
         short_name = "x64",
     ),
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
