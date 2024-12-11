@@ -165,7 +165,10 @@ FillDataType GetFillDataTypeFromFillingPayload(
   return absl::visit(
       base::Overloaded{
           [](const AutofillProfile*) { return FillDataType::kAutofillProfile; },
-          [](const CreditCard*) { return FillDataType::kCreditCard; }},
+          [](const CreditCard*) { return FillDataType::kCreditCard; },
+          [](const AutofillAiFillingPayload&) {
+            return FillDataType::kAutofillAi;
+          }},
       filling_payload);
 }
 
@@ -1660,12 +1663,10 @@ void BrowserAutofillManager::FillOrPreviewFormWithAutofillAiData(
                              &form_structure, &autofill_trigger_field)) {
     return;
   }
-  form_filler_->FillOrPreviewFormWithAutofillAiData(
-      action_persistence, ignorable_skip_reasons, form, trigger_field,
-      *form_structure, *autofill_trigger_field, values_to_fill);
-  if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate()) {
-    delegate->OnDidFillSuggestion(form.global_id());
-  }
+  form_filler_->FillOrPreviewForm(action_persistence, form, values_to_fill,
+                                  *form_structure, *autofill_trigger_field,
+                                  ignorable_skip_reasons,
+                                  AutofillTriggerSource::kAutofillAi);
 }
 
 void BrowserAutofillManager::FillOrPreviewField(
@@ -2247,6 +2248,12 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
                              safe_filled_fields, safe_filled_autofill_fields,
                              filled_field_ids, safe_field_ids, *credit_card,
                              trigger_source, is_refill);
+                       },
+                       [&](const AutofillAiFillingPayload&) {
+                         if (AutofillAiDelegate* delegate =
+                                 client().GetAutofillAiDelegate()) {
+                           delegate->OnDidFillSuggestion(form.global_id());
+                         }
                        }},
       filling_payload);
 }

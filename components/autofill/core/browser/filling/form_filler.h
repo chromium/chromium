@@ -31,7 +31,10 @@ enum class RefillTriggerReason {
   kExpirationDateFormatted,
 };
 
-using FillingPayload = absl::variant<const AutofillProfile*, const CreditCard*>;
+using AutofillAiFillingPayload = base::flat_map<FieldGlobalId, std::u16string>;
+using FillingPayload = absl::variant<const AutofillProfile*,
+                                     const CreditCard*,
+                                     AutofillAiFillingPayload>;
 
 // Helper class responsible for [re]filling forms and fields.
 //
@@ -119,23 +122,6 @@ class FormFiller {
                           const std::u16string& value,
                           FillingProduct filling_product,
                           std::optional<FieldType> field_type_used);
-
-  /////////////////
-  // DO NOT USE! //
-  /////////////////
-  // Fills or previews `values_to_fill` in the `form`. Called only by
-  // `AutofillAiManager`.
-  // Minimal version of `FillOrPreviewForm()` that misses every feature besides
-  // filling / preview. E.g. does not handle refill, undo, or any metrics.
-  // TODO(crbug.com/40227071): Clean up the generic API and remove this.
-  void FillOrPreviewFormWithAutofillAiData(
-      mojom::ActionPersistence action_persistence,
-      const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons,
-      const FormData& form,
-      const FormFieldData& trigger_field,
-      FormStructure& form_structure,
-      const AutofillField& autofill_trigger_field,
-      const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill);
 
   // Fills or previews the data from `filling_payload` into `form`.
   // TODO(crbug.com/40227071): Clean up the API.
@@ -236,7 +222,7 @@ class FormFiller {
   // if it's an override.
   struct FieldFillingData {
     std::u16string value_to_fill;
-    FieldType field_type;
+    std::optional<FieldType> field_type;
     bool value_is_an_override;
   };
 

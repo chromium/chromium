@@ -199,8 +199,7 @@ class FormFillerTest : public testing::Test {
     form_filler().FillOrPreviewForm(
         mojom::ActionPersistence::kFill, form, filling_payload,
         *GetFormStructure(form), *GetAutofillField(form, trigger_field),
-        /*ignorable_skip_reasons=*/{}, trigger_source,
-        /*is_refill=*/false);
+        /*ignorable_skip_reasons=*/{}, trigger_source);
     // Copy the filled data into the form.
     for (FormFieldData& field : test_api(form).fields()) {
       if (auto it = base::ranges::find(filled_fields, field.global_id(),
@@ -223,8 +222,7 @@ class FormFillerTest : public testing::Test {
     form_filler().FillOrPreviewForm(
         mojom::ActionPersistence::kPreview, form, &virtual_card,
         *GetFormStructure(form), *GetAutofillField(form, field),
-        /*ignorable_skip_reasons=*/{}, AutofillTriggerSource::kPopup,
-        /*is_refill=*/false);
+        /*ignorable_skip_reasons=*/{}, AutofillTriggerSource::kPopup);
     return filled_fields;
   }
 
@@ -297,8 +295,7 @@ TEST_F(FormFillerTest, DoNotFillIfFormChanged) {
   form_filler().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form, &profile, *GetFormStructure(form),
       *GetAutofillField(form, form.fields().front()),
-      /*ignorable_skip_reasons=*/{}, AutofillTriggerSource::kPopup,
-      /*is_refill=*/false);
+      /*ignorable_skip_reasons=*/{}, AutofillTriggerSource::kPopup);
 }
 
 TEST_F(FormFillerTest, SkipFillIfFieldIsMeaningfullyPreFilled) {
@@ -403,8 +400,7 @@ TEST_F(FormFillerTest, UndoSavesFormFillingData) {
   form_filler().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form, &profile, *GetFormStructure(form),
       *GetAutofillField(form, form.fields().front()),
-      /*ignorable_skip_reasons=*/{}, AutofillTriggerSource::kPopup,
-      /*is_refill=*/false);
+      /*ignorable_skip_reasons=*/{}, AutofillTriggerSource::kPopup);
   // Undo early returns if it has no filling history for the trigger field,
   // which is initially empty, therefore calling the driver is proof that data
   // was successfully stored.
@@ -1642,7 +1638,7 @@ TEST_F(FormFillerTest, PreFilledCCFieldInAddressFormDoesNotCauseCrash) {
   // Expect that this test doesn't cause a crash.
 }
 
-TEST_F(FormFillerTest, FillOrPreviewFormWithPredictionImprovements) {
+TEST_F(FormFillerTest, FillOrPreviewFormWithAutofillAi) {
   test::FormDescription form_description = {
       .fields = {{.role = NAME_FIRST, .heuristic_type = NAME_FIRST},
                  {.role = NAME_LAST, .heuristic_type = NAME_LAST},
@@ -1665,10 +1661,10 @@ TEST_F(FormFillerTest, FillOrPreviewFormWithPredictionImprovements) {
   EXPECT_CALL(autofill_driver_, ApplyFormAction)
       .WillOnce(DoAll(SaveArgElementsTo<2>(&filled_fields),
                       Return(std::vector<FieldGlobalId>())));
-  browser_autofill_manager_->FillOrPreviewFormWithAutofillAiData(
-      mojom::ActionPersistence::kFill,
-      /*ignorable_skip_reasons=*/{}, form, form.fields().front(),
-      values_to_fill);
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, values_to_fill,
+      *GetFormStructure(form), *GetAutofillField(form, form.fields().front()),
+      /*ignorable_skip_reasons=*/{}, AutofillTriggerSource::kAutofillAi);
   ASSERT_EQ(filled_fields.size(), 2u);
   EXPECT_EQ(filled_fields[0].value(), u"Doe");
   EXPECT_EQ(filled_fields[1].value(), u"100 John Doe Rd");
