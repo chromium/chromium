@@ -8,8 +8,8 @@
 
 #include "base/notreached.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
+#include "url/gurl.h"
 
 namespace optimization_guide {
 
@@ -134,27 +134,22 @@ void ConvertAttributes(
 }
 
 void ConvertIframeData(
-    const content::RenderFrameHost& render_frame_host,
+    const RenderFrameInfo& render_frame_info,
     const blink::mojom::AIPageContentIframeData& iframe_data,
     optimization_guide::proto::IframeData* proto_iframe_data) {
-  // We use the origin instead of last committed URL here to ensure the security
-  // origin for the iframe's content is accurately tracked.
-  // For example, for data URLs we need the source origin for the URL instead of
-  // the raw URL itself.
-  proto_iframe_data->set_url(render_frame_host.GetLastCommittedOrigin()
-                                 .GetTupleOrPrecursorTupleIfOpaque()
-                                 .Serialize());
+  proto_iframe_data->set_url(render_frame_info.source_origin.Serialize());
   proto_iframe_data->set_likely_ad_frame(iframe_data.likely_ad_frame);
 }
 
 bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
                  const blink::mojom::AIPageContentNode& mojom_node,
                  const AIPageContentMap& page_content_map,
+                 GetRenderFrameInfo get_render_frame_info,
                  optimization_guide::proto::ContentNode* proto_node) {
   const auto& mojom_attributes = *mojom_node.content_attributes;
   ConvertAttributes(mojom_attributes, proto_node->mutable_content_attributes());
 
-  content::RenderFrameHost* render_frame_host = nullptr;
+  std::optional<RenderFrameInfo> render_frame_info;
   if (mojom_attributes.attribute_type ==
       blink::mojom::AIPageContentAttributeType::kIframe) {
     if (!mojom_attributes.iframe_data) {
@@ -163,6 +158,14 @@ bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
 
     const auto& iframe_data = *mojom_attributes.iframe_data;
     const auto frame_token = iframe_data.frame_token;
+
+    // The frame may have been torn down or crashed before we got a response.
+    render_frame_info =
+        get_render_frame_info.Run(source_frame_token.child_id, frame_token);
+    if (!render_frame_info) {
+      return false;
+    }
+
     if (frame_token.Is<blink::RemoteFrameToken>()) {
       // RemoteFrame should have no child nodes since the content is out of
       // process.
@@ -170,50 +173,32 @@ bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
         return false;
       }
 
-      render_frame_host = content::RenderFrameHost::FromPlaceholderToken(
-          source_frame_token.child_id,
-          frame_token.GetAs<blink::RemoteFrameToken>());
-
-      // The OOPIF may have been torn down or crashed before we got a response.
-      if (!render_frame_host) {
-        return true;
-      }
-
-      auto it = page_content_map.find(render_frame_host->GetGlobalFrameToken());
+      auto it = page_content_map.find(render_frame_info->global_frame_token);
       if (it == page_content_map.end()) {
         return true;
       }
 
       const auto& frame_page_content = *it->second;
       auto* proto_child_frame_node = proto_node->add_children_nodes();
-      if (!ConvertNode(render_frame_host->GetGlobalFrameToken(),
+      if (!ConvertNode(render_frame_info->global_frame_token,
                        *frame_page_content.root_node, page_content_map,
-                       proto_child_frame_node)) {
+                       get_render_frame_info, proto_child_frame_node)) {
         return false;
-      }
-    } else {
-      render_frame_host = content::RenderFrameHost::FromFrameToken(
-          content::GlobalRenderFrameHostToken(
-              source_frame_token.child_id,
-              frame_token.GetAs<blink::LocalFrameToken>()));
-
-      if (!render_frame_host) {
-        return true;
       }
     }
 
     auto* proto_iframe_data =
         proto_node->mutable_content_attributes()->mutable_iframe_data();
-    ConvertIframeData(*render_frame_host, iframe_data, proto_iframe_data);
+    ConvertIframeData(*render_frame_info, iframe_data, proto_iframe_data);
   }
 
   const auto source_frame_for_children =
-      render_frame_host ? render_frame_host->GetGlobalFrameToken()
+      render_frame_info ? render_frame_info->global_frame_token
                         : source_frame_token;
   for (const auto& mojom_child : mojom_node.children_nodes) {
     auto* proto_child = proto_node->add_children_nodes();
     if (!ConvertNode(source_frame_for_children, *mojom_child, page_content_map,
-                     proto_child)) {
+                     get_render_frame_info, proto_child)) {
       return false;
     }
   }
@@ -226,6 +211,7 @@ bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
 bool ConvertAIPageContentToProto(
     content::GlobalRenderFrameHostToken main_frame_token,
     const AIPageContentMap& page_content_map,
+    GetRenderFrameInfo get_render_frame_info,
     optimization_guide::proto::AnnotatedPageContent* proto) {
   auto it = page_content_map.find(main_frame_token);
   if (it == page_content_map.end()) {
@@ -234,7 +220,8 @@ bool ConvertAIPageContentToProto(
 
   const auto& main_frame_page_content = *it->second;
   if (!ConvertNode(main_frame_token, *main_frame_page_content.root_node,
-                   page_content_map, proto->mutable_root_node())) {
+                   page_content_map, get_render_frame_info,
+                   proto->mutable_root_node())) {
     return false;
   }
 

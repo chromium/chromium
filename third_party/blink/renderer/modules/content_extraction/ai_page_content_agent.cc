@@ -357,7 +357,7 @@ mojom::blink::AIPageContentNodePtr AIPageContentAgent::MaybeGenerateContentNode(
   if (!attribute_type) {
     return nullptr;
   }
-  LOG(ERROR) << "Generated content node : " << object;
+
   auto content_node = mojom::blink::AIPageContentNode::New();
   content_node->content_attributes =
       mojom::blink::AIPageContentAttributes::New();
