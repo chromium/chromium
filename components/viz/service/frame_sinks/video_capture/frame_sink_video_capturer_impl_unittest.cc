@@ -323,7 +323,6 @@ class FakeGpuCopyResult : public CopyOutputResult {
                          CopyOutputResult::Destination::kNativeTextures,
                          rect,
                          false),
-        format_(format),
         result_(TextureResult(
             gpu::Mailbox{},
             GetColorSpaceForPixelFormat(
@@ -332,7 +331,6 @@ class FakeGpuCopyResult : public CopyOutputResult {
   const TextureResult* GetTextureResult() const final { return &result_; }
 
  private:
-  Format format_;
   TextureResult result_;
 };
 
