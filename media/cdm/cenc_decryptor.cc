@@ -72,6 +72,11 @@ void CopyExtraSettings(const DecoderBuffer& input, DecoderBuffer* output) {
 scoped_refptr<DecoderBuffer> DecryptCencBuffer(
     const DecoderBuffer& input,
     const crypto::SymmetricKey& wrapped_key) {
+  return DecryptCencBuffer(input, base::as_byte_span(wrapped_key.key()));
+}
+
+scoped_refptr<DecoderBuffer> DecryptCencBuffer(const DecoderBuffer& input,
+                                               base::span<const uint8_t> key) {
   base::span<const uint8_t> sample = input;
   DCHECK(!sample.empty()) << "No data to decrypt.";
 
@@ -79,16 +84,15 @@ scoped_refptr<DecoderBuffer> DecryptCencBuffer(
   DCHECK(decrypt_config) << "No need to call Decrypt() on unencrypted buffer.";
   DCHECK_EQ(EncryptionScheme::kCenc, decrypt_config->encryption_scheme());
 
+  if (key.size() != kRequiredKeyBytes) {
+    DVLOG(1) << "Supplied key is the wrong size for CENC";
+    return nullptr;
+  }
+
   auto iv = base::as_byte_span(decrypt_config->iv())
                 .to_fixed_extent<crypto::aes_ctr::kCounterSize>();
   if (!iv) {
     DVLOG(1) << "Supplied IV is the wrong size for CENC";
-    return nullptr;
-  }
-
-  const auto key = base::as_byte_span(wrapped_key.key());
-  if (key.size() != kRequiredKeyBytes) {
-    DVLOG(1) << "Supplied key is the wrong size for CENC";
     return nullptr;
   }
 
