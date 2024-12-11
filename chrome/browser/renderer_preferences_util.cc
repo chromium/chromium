@@ -29,6 +29,7 @@
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_policy.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/platform/ax_platform.h"
@@ -115,7 +116,6 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
           ->IsDoNotTrackEnabled();
   prefs->enable_encrypted_media =
       pref_service->GetBoolean(prefs::kEnableEncryptedMedia);
-  prefs->webrtc_ip_handling_policy = std::string();
 #if !BUILDFLAG(IS_ANDROID)
   prefs->caret_browsing_enabled =
       pref_service->GetBoolean(prefs::kCaretBrowsingEnabled);
@@ -123,10 +123,8 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
       prefs->caret_browsing_enabled);
 #endif
 
-  if (prefs->webrtc_ip_handling_policy.empty()) {
-    prefs->webrtc_ip_handling_policy =
-        pref_service->GetString(prefs::kWebRTCIPHandlingPolicy);
-  }
+  prefs->webrtc_ip_handling_policy = blink::ToWebRTCIPHandlingPolicy(
+      pref_service->GetString(prefs::kWebRTCIPHandlingPolicy));
   std::string webrtc_udp_port_range =
       pref_service->GetString(prefs::kWebRTCUDPPortRange);
   ParsePortRange(webrtc_udp_port_range, &prefs->webrtc_udp_min_port,

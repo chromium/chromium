@@ -450,6 +450,7 @@ source_set("common_unittests_sources") {
     "page/browsing_context_group_info_unittest.cc",
     "page/content_to_visible_time_reporter_unittest.cc",
     "page_state/page_state_serialization_unittest.cc",
+    "peerconnection/webrtc_ip_handling_policy_unittest.cc",
     "performance/performance_scenario_observer_unittest.cc",
     "performance/performance_scenarios_unittest.cc",
     "permissions_policy/document_policy_unittest.cc",

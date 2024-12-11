@@ -123,8 +123,8 @@ Shell* Shell::CreateShell(std::unique_ptr<WebContents> web_contents,
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kForceWebRtcIPHandlingPolicy)) {
     raw_web_contents->GetMutableRendererPrefs()->webrtc_ip_handling_policy =
-        command_line->GetSwitchValueASCII(
-            switches::kForceWebRtcIPHandlingPolicy);
+        blink::ToWebRTCIPHandlingPolicy(command_line->GetSwitchValueASCII(
+            switches::kForceWebRtcIPHandlingPolicy));
   }
 
   g_platform->SetContents(shell);

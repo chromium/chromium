@@ -37,6 +37,7 @@
 #include "net/net_buildflags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
+#include "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -105,23 +106,6 @@ namespace blink {
 namespace {
 
 using PassKey = base::PassKey<PeerConnectionDependencyFactory>;
-
-enum WebRTCIPHandlingPolicy {
-  kDefault,
-  kDefaultPublicAndPrivateInterfaces,
-  kDefaultPublicInterfaceOnly,
-  kDisableNonProxiedUdp,
-};
-
-WebRTCIPHandlingPolicy GetWebRTCIPHandlingPolicy(const String& preference) {
-  if (preference == kWebRTCIPHandlingDefaultPublicAndPrivateInterfaces)
-    return kDefaultPublicAndPrivateInterfaces;
-  if (preference == kWebRTCIPHandlingDefaultPublicInterfaceOnly)
-    return kDefaultPublicInterfaceOnly;
-  if (preference == kWebRTCIPHandlingDisableNonProxiedUdp)
-    return kDisableNonProxiedUdp;
-  return kDefault;
-}
 
 bool IsValidPortRange(uint16_t min_port, uint16_t max_port) {
   DCHECK(min_port <= max_port);
@@ -866,7 +850,7 @@ PeerConnectionDependencyFactory::CreatePortAllocator(
     VLOG(3) << "WebRTC routing preferences will not be enforced";
   } else {
     if (web_frame && web_frame->View()) {
-      WebString webrtc_ip_handling_policy;
+      mojom::blink::WebRtcIpHandlingPolicy webrtc_ip_handling_policy;
       Platform::Current()->GetWebRTCRendererPreferences(
           web_frame, &webrtc_ip_handling_policy, &min_port, &max_port,
           &allow_mdns_obfuscation);
@@ -875,30 +859,31 @@ PeerConnectionDependencyFactory::CreatePortAllocator(
       // |request_multiple_routes|. Whether local IP addresses could be
       // collected depends on if mic/camera permission is granted for this
       // origin.
-      WebRTCIPHandlingPolicy policy =
-          GetWebRTCIPHandlingPolicy(webrtc_ip_handling_policy);
-      switch (policy) {
+      switch (webrtc_ip_handling_policy) {
         // TODO(guoweis): specify the flag of disabling local candidate
         // collection when webrtc is updated.
-        case kDefaultPublicInterfaceOnly:
-        case kDefaultPublicAndPrivateInterfaces:
+        case mojom::blink::WebRtcIpHandlingPolicy::kDefaultPublicInterfaceOnly:
+        case mojom::blink::WebRtcIpHandlingPolicy::
+            kDefaultPublicAndPrivateInterfaces:
           port_config.enable_multiple_routes = false;
           port_config.enable_nonproxied_udp = true;
           port_config.enable_default_local_candidate =
-              (policy == kDefaultPublicAndPrivateInterfaces);
+              (webrtc_ip_handling_policy ==
+               mojom::blink::WebRtcIpHandlingPolicy::
+                   kDefaultPublicAndPrivateInterfaces);
           break;
-        case kDisableNonProxiedUdp:
+        case mojom::blink::WebRtcIpHandlingPolicy::kDisableNonProxiedUdp:
           port_config.enable_multiple_routes = false;
           port_config.enable_nonproxied_udp = false;
           break;
-        case kDefault:
+        case mojom::blink::WebRtcIpHandlingPolicy::kDefault:
           port_config.enable_multiple_routes = true;
           port_config.enable_nonproxied_udp = true;
           break;
       }
 
-      VLOG(3) << "WebRTC routing preferences: "
-              << "policy: " << policy
+      VLOG(3) << "WebRTC routing preferences: " << "policy: "
+              << ToString(webrtc_ip_handling_policy)
               << ", multiple_routes: " << port_config.enable_multiple_routes
               << ", nonproxied_udp: " << port_config.enable_nonproxied_udp
               << ", min_udp_port: " << min_port

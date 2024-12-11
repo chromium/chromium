@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_policy.mojom";
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
 import "ui/gfx/mojom/font_render_params.mojom";
 
@@ -97,10 +98,8 @@ struct RendererPreferences {
   // spec.
   bool enable_encrypted_media = true;
 
-  // This is the IP handling policy override for WebRTC. The value must be one
-  // of the strings defined in privacy.json. The allowed values are specified
-  // in webrtc_ip_handling_policy.h.
-  string webrtc_ip_handling_policy;
+  // This is the IP handling policy override for WebRTC.
+  WebRtcIpHandlingPolicy webrtc_ip_handling_policy;
 
   // This is the range of UDP ports allowed to be used by WebRTC. A value of
   // zero in both fields means all ports are allowed.

@@ -96,6 +96,7 @@
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
+#include "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_policy.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
@@ -612,7 +613,7 @@ media::MediaPermission* RendererBlinkPlatformImpl::GetWebRTCMediaPermission(
 
 void RendererBlinkPlatformImpl::GetWebRTCRendererPreferences(
     blink::WebLocalFrame* web_frame,
-    blink::WebString* ip_handling_policy,
+    blink::mojom::WebRtcIpHandlingPolicy* ip_handling_policy,
     uint16_t* udp_min_port,
     uint16_t* udp_max_port,
     bool* allow_mdns_obfuscation) {
@@ -625,8 +626,8 @@ void RendererBlinkPlatformImpl::GetWebRTCRendererPreferences(
   if (!render_frame)
     return;
 
-  *ip_handling_policy = blink::WebString::FromUTF8(
-      render_frame->GetRendererPreferences().webrtc_ip_handling_policy);
+  *ip_handling_policy =
+      render_frame->GetRendererPreferences().webrtc_ip_handling_policy;
   *udp_min_port = render_frame->GetRendererPreferences().webrtc_udp_min_port;
   *udp_max_port = render_frame->GetRendererPreferences().webrtc_udp_max_port;
   const std::vector<std::string>& allowed_urls =
