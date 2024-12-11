@@ -4054,7 +4054,7 @@ enum WebFeature {
   kV8ClipboardItem_Supports_Method = 4692,
   kThirdPartyCookieAccessBlockByExperiment = 4693,
   kCspWouldBlockIfWildcardDoesNotMatchWs = 4694,
-  kCspWouldBlockIfWildcardDoesNotMatchFtp = 4695,
+  kOBSOLETE_CspWouldBlockIfWildcardDoesNotMatchFtp = 4695,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies = 4696,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_all = 4697,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage = 4698,

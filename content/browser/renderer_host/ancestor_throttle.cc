@@ -375,11 +375,6 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateFrameAncestors(
           parent,
           blink::mojom::WebFeature::kCspWouldBlockIfWildcardDoesNotMatchWs);
     }
-    if (result.WouldBlockIfWildcardDoesNotMatchFtp()) {
-      GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-          parent,
-          blink::mojom::WebFeature::kCspWouldBlockIfWildcardDoesNotMatchFtp);
-    }
     if (!result) {
       return CheckResult::BLOCK;
     }

@@ -938,9 +938,6 @@ bool ContentSecurityPolicy::AllowFromSource(
   if (result.WouldBlockIfWildcardDoesNotMatchWs()) {
     Count(WebFeature::kCspWouldBlockIfWildcardDoesNotMatchWs);
   }
-  if (result.WouldBlockIfWildcardDoesNotMatchFtp()) {
-    Count(WebFeature::kCspWouldBlockIfWildcardDoesNotMatchFtp);
-  }
 
   return result.IsAllowed();
 }

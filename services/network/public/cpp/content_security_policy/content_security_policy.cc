@@ -1128,23 +1128,19 @@ std::pair<CSPDirectiveName, const mojom::CSPSourceList*> GetSourceList(
 }  // namespace
 
 CSPCheckResult::CSPCheckResult(bool allowed)
-    : CSPCheckResult(allowed, allowed, allowed) {}
+    : CSPCheckResult(allowed, allowed) {}
 
 CSPCheckResult& CSPCheckResult::operator&=(const CSPCheckResult& other) {
   allowed_ &= other.allowed_;
   allowed_if_wildcard_does_not_match_ws_ &=
       other.allowed_if_wildcard_does_not_match_ws_;
-  allowed_if_wildcard_does_not_match_ftp_ &=
-      other.allowed_if_wildcard_does_not_match_ftp_;
   return *this;
 }
 
 bool CSPCheckResult::operator==(const CSPCheckResult& other) const {
   return allowed_ == other.allowed_ &&
          allowed_if_wildcard_does_not_match_ws_ ==
-             other.allowed_if_wildcard_does_not_match_ws_ &&
-         allowed_if_wildcard_does_not_match_ftp_ ==
-             other.allowed_if_wildcard_does_not_match_ftp_;
+             other.allowed_if_wildcard_does_not_match_ws_;
 }
 
 CSPCheckResult::operator bool() const {
@@ -1160,19 +1156,11 @@ CSPCheckResult CSPCheckResult::Blocked() {
 }
 
 CSPCheckResult CSPCheckResult::AllowedOnlyIfWildcardMatchesWs() {
-  return CSPCheckResult(true, false, true);
-}
-
-CSPCheckResult CSPCheckResult::AllowedOnlyIfWildcardMatchesFtp() {
-  return CSPCheckResult(true, true, false);
+  return CSPCheckResult(true, false);
 }
 
 bool CSPCheckResult::WouldBlockIfWildcardDoesNotMatchWs() const {
   return allowed_ != allowed_if_wildcard_does_not_match_ws_;
-}
-
-bool CSPCheckResult::WouldBlockIfWildcardDoesNotMatchFtp() const {
-  return allowed_ != allowed_if_wildcard_does_not_match_ftp_;
 }
 
 bool CSPCheckResult::IsAllowed() const {
@@ -1180,13 +1168,10 @@ bool CSPCheckResult::IsAllowed() const {
 }
 
 CSPCheckResult::CSPCheckResult(bool allowed,
-                               bool allowed_if_wildcard_does_not_match_ws,
-                               bool allowed_if_wildcard_does_not_match_ftp)
+                               bool allowed_if_wildcard_does_not_match_ws)
     : allowed_(allowed),
       allowed_if_wildcard_does_not_match_ws_(
-          allowed_if_wildcard_does_not_match_ws),
-      allowed_if_wildcard_does_not_match_ftp_(
-          allowed_if_wildcard_does_not_match_ftp) {}
+          allowed_if_wildcard_does_not_match_ws) {}
 
 CSPDirectiveName CSPFallbackDirective(CSPDirectiveName directive,
                                       CSPDirectiveName original_directive) {

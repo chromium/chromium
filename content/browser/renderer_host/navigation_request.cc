@@ -6727,11 +6727,6 @@ bool NavigationRequest::IsAllowedByCSPDirective(
         GetParentFrame(),
         blink::mojom::WebFeature::kCspWouldBlockIfWildcardDoesNotMatchWs);
   }
-  if (result.WouldBlockIfWildcardDoesNotMatchFtp()) {
-    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-        GetParentFrame(),
-        blink::mojom::WebFeature::kCspWouldBlockIfWildcardDoesNotMatchFtp);
-  }
   return result.IsAllowed();
 }
 

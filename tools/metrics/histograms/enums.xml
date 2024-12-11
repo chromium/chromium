@@ -10330,7 +10330,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4692" label="V8ClipboardItem_Supports_Method"/>
   <int value="4693" label="ThirdPartyCookieAccessBlockByExperiment"/>
   <int value="4694" label="CspWouldBlockIfWildcardDoesNotMatchWs"/>
-  <int value="4695" label="CspWouldBlockIfWildcardDoesNotMatchFtp"/>
+  <int value="4695" label="OBSOLETE_CspWouldBlockIfWildcardDoesNotMatchFtp"/>
   <int value="4696"
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies"/>
   <int value="4697"
