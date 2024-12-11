@@ -114,9 +114,6 @@ crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-e
 crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.sharedworker.html [ Timeout ]
 crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.worker.html [ Timeout ]
 
-
-crbug.com/1457275 [ Linux ] external/wpt/dom/ranges/Range-surroundContents.html [ Skip ]
-
 # Gardener 2024-04-04
 crbug.com/331926164 [ Linux ] http/tests/inspector-protocol/accessibility/accessibility-query-axtree.js [ Crash ]
 
