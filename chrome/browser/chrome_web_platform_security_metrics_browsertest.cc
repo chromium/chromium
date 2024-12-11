@@ -624,10 +624,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
           "*",
           "ftp://example.com",
           0,
-          base::FeatureList::IsEnabled(
-              network::features::kCspStopMatchingWildcardDirectivesToFtp)
-              ? 0
-              : 1,
+          0,
       },
       {"*", "ws://example.com", 1, 0},
       {"*", "wss://example.com", 1, 0},

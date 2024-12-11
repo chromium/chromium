@@ -23,12 +23,6 @@ class HttpResponseHeaders;
 namespace network {
 class CSPContext;
 
-namespace features {
-// TODO(crbug.com/40070927): This feature flag can be removed after M126.
-COMPONENT_EXPORT(NETWORK_CPP)
-BASE_DECLARE_FEATURE(kCspStopMatchingWildcardDirectivesToFtp);
-}  // namespace features
-
 // The field |allowed_if_wildcard_does_not_match_ws| is the result assuming '*'
 // doesn't match ws or wss, and |allowed_if_wildcard_does_not_match_ftp| is the
 // result assuming '*' doesn't match ftp. These two are only for logging.
