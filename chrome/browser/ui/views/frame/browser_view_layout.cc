@@ -777,12 +777,10 @@ void BrowserViewLayout::LayoutSidePanelView(
   // minimum.
   gfx::Rect side_panel_bounds = contents_container_bounds;
 
-  // Cap the side panel width at 2/3rds of the contents container width as long
-  // as the side panel remains at or above its minimum width.
   side_panel_bounds.set_width(
-      std::max(std::min(side_panel->GetPreferredSize().width(),
-                        contents_container_bounds.width() * 2 / 3),
-               side_panel->GetMinimumSize().width()));
+      std::min(side_panel->GetPreferredSize().width(),
+               contents_container_bounds.width() - GetMinWebContentsWidth() -
+                   side_panel_separator->GetPreferredSize().width()));
 
   double side_panel_visible_width =
       side_panel_bounds.width() *
