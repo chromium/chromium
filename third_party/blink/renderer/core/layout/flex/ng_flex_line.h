@@ -20,6 +20,7 @@ struct NGFlexItem {
 
   void Trace(Visitor* visitor) const { visitor->Trace(ng_input_node); }
 
+  wtf_size_t item_index;
   LayoutUnit main_axis_final_size;
   LayoutUnit margin_block_end;
   // This will originally be set to the total block size of the item before

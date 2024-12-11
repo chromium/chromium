@@ -82,7 +82,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
       Vector<EBreakBetween>* row_break_between_outputs,
       FlexBreakTokenData::FlexBreakBeforeRow* break_before_row);
   LayoutResult::EStatus PropagateFlexItemInfo(
-      FlexItem* flex_item,
+      const FlexItem& flex_item,
       wtf_size_t flex_line_idx,
       LogicalOffset offset,
       PhysicalSize fragment_size,
@@ -173,10 +173,6 @@ class CORE_EXPORT FlexLayoutAlgorithm
   // Used to determine when to allow an item to expand as a result of
   // fragmentation.
   bool MinBlockSizeShouldEncompassIntrinsicSize(const NGFlexItem& item) const;
-
-#if DCHECK_IS_ON()
-  void CheckFlexLines(HeapVector<NGFlexLine>& flex_line_outputs) const;
-#endif
 
   // Used when determining the max-content width of a column-wrap flex
   // container.

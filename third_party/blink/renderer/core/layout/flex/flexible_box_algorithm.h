@@ -75,6 +75,7 @@ class FlexItem {
   //   |min_max_cross_sizes| does include cross_axis_border_padding.
   FlexItem(const FlexibleBoxAlgorithm*,
            const ComputedStyle& style,
+           wtf_size_t item_index,
            unsigned main_axis_auto_margin_count,
            LayoutUnit flex_base_content_size,
            MinMaxSizes min_max_main_sizes,
@@ -122,7 +123,8 @@ class FlexItem {
 
   LayoutUnit MarginBoxAscent(bool is_last_baseline, bool is_wrap_reverse) const;
 
-  LayoutUnit CrossAxisOffset(const NGFlexLine&, LayoutUnit cross_axis_size);
+  LayoutUnit CrossAxisOffset(const NGFlexLine&,
+                             LayoutUnit cross_axis_size) const;
 
   static LayoutUnit AlignmentOffset(LayoutUnit available_free_space,
                                     ItemPosition position,
@@ -133,6 +135,8 @@ class FlexItem {
 
   const FlexibleBoxAlgorithm* algorithm_;
   Member<const ComputedStyle> style_;
+
+  const wtf_size_t item_index_;
   const float flex_grow_;
   const float flex_shrink_;
   const unsigned main_axis_auto_margin_count_;
@@ -341,7 +345,7 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
       const StyleContentAlignmentData&,
       unsigned number_of_items);
 
-  FlexItem* FlexItemAtIndex(wtf_size_t line_index, wtf_size_t item_index) const;
+  const FlexItem& FlexItemAtIndex(wtf_size_t item_index) const;
 
   static LayoutUnit GapBetweenItems(const ComputedStyle& style,
                                     LogicalSize percent_resolution_sizes);

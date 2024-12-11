@@ -77,6 +77,7 @@ ContentDistributionType BoxPackToContentDistribution(EBoxPack box_pack) {
 
 FlexItem::FlexItem(const FlexibleBoxAlgorithm* algorithm,
                    const ComputedStyle& style,
+                   wtf_size_t item_index,
                    unsigned main_axis_auto_margin_count,
                    LayoutUnit flex_base_content_size,
                    MinMaxSizes min_max_main_sizes,
@@ -90,6 +91,7 @@ FlexItem::FlexItem(const FlexibleBoxAlgorithm* algorithm,
                    bool depends_on_min_max_sizes)
     : algorithm_(algorithm),
       style_(style),
+      item_index_(item_index),
       flex_grow_(style.ResolvedFlexGrow(algorithm_->StyleRef())),
       flex_shrink_(style.ResolvedFlexShrink(algorithm_->StyleRef())),
       main_axis_auto_margin_count_(main_axis_auto_margin_count),
@@ -174,7 +176,7 @@ ItemPosition FlexItem::Alignment() const {
 }
 
 LayoutUnit FlexItem::CrossAxisOffset(const NGFlexLine& line,
-                                     LayoutUnit cross_axis_size) {
+                                     LayoutUnit cross_axis_size) const {
   LayoutUnit available_space =
       line.line_cross_size - (CrossAxisMarginExtent() + cross_axis_size);
 
@@ -756,18 +758,9 @@ LayoutUnit FlexibleBoxAlgorithm::ContentDistributionSpaceBetweenChildren(
   return LayoutUnit();
 }
 
-FlexItem* FlexibleBoxAlgorithm::FlexItemAtIndex(wtf_size_t line_index,
-                                                wtf_size_t item_index) const {
-  DCHECK_LT(line_index, flex_lines_.size());
-  if (StyleRef().FlexWrap() == EFlexWrap::kWrapReverse)
-    line_index = flex_lines_.size() - line_index - 1;
-
-  DCHECK_LT(item_index, flex_lines_[line_index].line_items_.size());
-  if (Style()->ResolvedIsReverseFlexDirection()) {
-    item_index = flex_lines_[line_index].line_items_.size() - item_index - 1;
-  }
-  return const_cast<FlexItem*>(
-      &flex_lines_[line_index].line_items_[item_index]);
+const FlexItem& FlexibleBoxAlgorithm::FlexItemAtIndex(
+    wtf_size_t item_index) const {
+  return all_items_[item_index];
 }
 
 void FlexibleBoxAlgorithm::Trace(Visitor* visitor) const {
