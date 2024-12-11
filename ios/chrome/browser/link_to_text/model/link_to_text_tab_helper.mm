@@ -97,7 +97,6 @@ bool LinkToTextTabHelper::ShouldOffer() {
 
   if (!textInputView) {
     LogShouldOfferResult(ShouldOfferResult::kTextInputNotFound);
-    DUMP_WILL_BE_NOTREACHED();
     return false;
   }
 
