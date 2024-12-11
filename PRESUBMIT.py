@@ -1086,6 +1086,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             'services/on_device_model/ml/on_device_model_executor\.h',
             # Required to interop with interfaces from the third-party perfetto
             # library.
+            'components/tracing/common/etw_consumer_win_unittest\.cc',
             'services/tracing/public/cpp/perfetto/custom_event_recorder\.cc',
             'services/tracing/public/cpp/perfetto/perfetto_traced_process\.cc',
             'services/tracing/public/cpp/perfetto/perfetto_traced_process\.h',
