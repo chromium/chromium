@@ -30,11 +30,14 @@
 @property(nonatomic, copy) UIColor* groupColor;
 @property(nonatomic, copy) NSString* title;
 @property(nonatomic, assign) NSInteger tabsCount;
-@property(nonatomic, assign) BOOL titleHidden;
 // Sets to update and keep cell alpha in sync.
 @property(nonatomic, assign) CGFloat opacity;
 // The current state which the cell should display.
 @property(nonatomic, assign) GridCellState state;
+
+// The view controller on which the face pile is presented.
+@property(nonatomic, weak) UIViewController* facePileParentViewController;
+@property(nonatomic, strong) UIViewController* facePileViewController;
 
 // Configures every tab of the group with a given snapshot/favicon pairs and
 // passes the total tabs count to the bottomTrailingView.

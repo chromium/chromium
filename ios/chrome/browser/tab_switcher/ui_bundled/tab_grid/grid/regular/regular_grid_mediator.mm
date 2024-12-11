@@ -7,10 +7,17 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/scoped_observation.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/collaboration/public/collaboration_service.h"
 #import "components/collaboration/public/messaging/message.h"
 #import "components/collaboration/public/messaging/messaging_backend_service.h"
+#import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "components/sessions/core/tab_restore_service.h"
+#import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -18,13 +25,16 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/activity_label_data.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_consumer.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_toolbars_configuration_provider.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_idle_status_handler.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_mode_holder.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
 #import "ios/chrome/browser/tabs/model/tabs_closer.h"
 #import "ios/web/public/web_state.h"
 
@@ -32,7 +42,30 @@
 // refactored.
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_view_controller.h"
 
+namespace {
+
+using ScopedTabGroupSyncObservation =
+    base::ScopedObservation<tab_groups::TabGroupSyncService,
+                            tab_groups::TabGroupSyncService::Observer>;
+
+// The preferred size in points for the avatar icons.
+constexpr CGFloat kFacePileAvatarSize = 20;
+
+}  // namespace
+
+@interface RegularGridMediator () <TabGroupSyncServiceObserverDelegate>
+@end
+
 @implementation RegularGridMediator {
+  // The service to observe.
+  raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
+  // The share kit service.
+  raw_ptr<ShareKitService> _shareKitService;
+  // The collaboration service.
+  raw_ptr<collaboration::CollaborationService> _collaborationService;
+  // The bridge between the service C++ observer and this Objective-C class.
+  std::unique_ptr<TabGroupSyncServiceObserverBridge> _syncServiceObserver;
+  std::unique_ptr<ScopedTabGroupSyncObservation> _scopedSyncServiceObservation;
   // TabsClosed used to implement the "close all tabs" operation with support
   // for undoing the operation.
   std::unique_ptr<TabsCloser> _tabsCloser;
@@ -45,11 +78,30 @@
   std::set<tab_groups::LocalTabGroupID> _dirtyGroups;
 }
 
-- (instancetype)initWithModeHolder:(TabGridModeHolder*)modeHolder
-                  messagingService:
-                      (collaboration::messaging::MessagingBackendService*)
-                          messagingService {
+- (instancetype)
+      initWithModeHolder:(TabGridModeHolder*)modeHolder
+     tabGroupSyncService:(tab_groups::TabGroupSyncService*)tabGroupSyncService
+         shareKitService:(ShareKitService*)shareKitService
+    collaborationService:
+        (collaboration::CollaborationService*)collaborationService
+        messagingService:(collaboration::messaging::MessagingBackendService*)
+                             messagingService {
   if ((self = [super initWithModeHolder:modeHolder])) {
+    CHECK(collaborationService);
+    _tabGroupSyncService = tabGroupSyncService;
+    _shareKitService = shareKitService;
+    _collaborationService = collaborationService;
+    _syncServiceObserver =
+        std::make_unique<TabGroupSyncServiceObserverBridge>(self);
+
+    // The `_tabGroupSyncService` is `nullptr` in incognito.
+    if (_tabGroupSyncService) {
+      _scopedSyncServiceObservation =
+          std::make_unique<ScopedTabGroupSyncObservation>(
+              _syncServiceObserver.get());
+      _scopedSyncServiceObservation->Observe(_tabGroupSyncService);
+    }
+
     // TODO(crbug.com/375594684): Start observing the messaging backend service
     // and update _dirtyGroups.
     _messagingService = messagingService;
@@ -177,6 +229,11 @@
 
 - (void)disconnect {
   _tabsCloser.reset();
+  _scopedSyncServiceObservation.reset();
+  _syncServiceObserver.reset();
+  _tabGroupSyncService = nullptr;
+  _collaborationService = nullptr;
+  _shareKitService = nullptr;
   [super disconnect];
 }
 
@@ -238,7 +295,48 @@
   return data;
 }
 
+#pragma mark - TabGroupSyncServiceObserverDelegate
+
+- (void)tabGroupSyncServiceInitialized {
+  [self populateConsumerItems];
+}
+
+- (void)tabGroupSyncServiceTabGroupUpdated:
+            (const tab_groups::SavedTabGroup&)group
+                                fromSource:(tab_groups::TriggerSource)source {
+  [self updateCellForGroup:group];
+}
+
+- (void)tabGroupSyncServiceTabGroupMigrated:
+            (const tab_groups::SavedTabGroup&)newGroup
+                                  oldSyncID:(const base::Uuid&)oldSync
+                                 fromSource:(tab_groups::TriggerSource)source {
+  [self updateCellForGroup:newGroup];
+}
+
 #pragma mark - Private
+
+// Updates the cell corresponding to the given group if the group is present in
+// the current web state list.
+- (void)updateCellForGroup:(const tab_groups::SavedTabGroup&)savedGroup {
+  std::set<const TabGroup*> groups = self.webStateList->GetGroups();
+  const TabGroup* localGroup = nullptr;
+  for (const TabGroup* group : groups) {
+    if (group->tab_group_id() == savedGroup.local_group_id()) {
+      localGroup = group;
+      break;
+    }
+  }
+  if (!localGroup) {
+    return;
+  }
+
+  GridItemIdentifier* groupIdentifier =
+      [GridItemIdentifier groupIdentifier:localGroup
+                         withWebStateList:self.webStateList];
+  [self.consumer replaceItem:groupIdentifier
+         withReplacementItem:groupIdentifier];
+}
 
 // YES if there are regular tabs in the grid.
 - (BOOL)hasRegularTabs {
@@ -301,7 +399,7 @@
   }
 }
 
-#pragma mark - Properties
+#pragma mark - Setters
 
 - (void)setBrowser:(Browser*)browser {
   [super setBrowser:browser];
@@ -311,6 +409,34 @@
   } else {
     _tabsCloser.reset();
   }
+}
+
+#pragma mark - BaseGridMediatorItemProvider
+
+- (UIViewController*)facePileViewControllerForItem:(GridItemIdentifier*)itemID {
+  CHECK(itemID.type == GridItemType::kGroup);
+
+  if (!_shareKitService || !_shareKitService->IsSupported() ||
+      !_collaborationService || !_tabGroupSyncService) {
+    return nil;
+  }
+
+  const auto group = _tabGroupSyncService->GetGroup(
+      itemID.tabGroupItem.tabGroup->tab_group_id());
+  if (!group.has_value() || !group->collaboration_id().has_value()) {
+    return nil;
+  }
+  NSString* savedCollabID =
+      base::SysUTF8ToNSString(group->collaboration_id()->value());
+
+  // Configure the face pile.
+  ShareKitFacePileConfiguration* config =
+      [[ShareKitFacePileConfiguration alloc] init];
+  config.collabID = savedCollabID;
+  config.showsEmptyState = NO;
+  config.avatarSize = kFacePileAvatarSize;
+
+  return _shareKitService->FacePile(config);
 }
 
 @end

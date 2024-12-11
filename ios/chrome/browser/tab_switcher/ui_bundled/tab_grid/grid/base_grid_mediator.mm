@@ -1863,4 +1863,9 @@ void LogPriceDropMetrics(web::WebState* web_state) {
   }
 }
 
+- (UIViewController*)facePileViewControllerForItem:(GridItemIdentifier*)itemID {
+  // Only implemented by the "RegularGridMediator".
+  return nil;
+}
+
 @end

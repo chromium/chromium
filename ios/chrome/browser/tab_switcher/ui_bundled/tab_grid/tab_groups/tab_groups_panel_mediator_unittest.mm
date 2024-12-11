@@ -591,7 +591,7 @@ TEST_F(TabGroupsPanelMediatorTest, DeleteLocalGroup) {
 
 // Tests that `facePileViewControllerForItem` returns an UIViewController when
 // the group is shared.
-TEST_F(TabGroupsPanelMediatorTest, facePileViewControllerForItem) {
+TEST_F(TabGroupsPanelMediatorTest, FacePileViewControllerForItem) {
   auto sync_service = std::make_unique<tab_groups::FakeTabGroupSyncService>();
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:sync_service.get()
