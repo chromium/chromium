@@ -93,12 +93,6 @@ struct SerializedBiddersMap {
   // that bidder. This will be needed to reconstruct the bidding interest groups
   // for each bidder from the server response.
   base::flat_map<url::Origin, std::vector<std::string>> group_names;
-  // `uncompressed_size` is total uncompressed size of the values in the
-  // `bidders` map in bytes.
-  size_t uncompressed_size;
-  // `compressed_size` is total compressed size of the values in the `bidders`
-  // map in bytes (excluding the keys).
-  size_t compressed_size;
   // `num_groups` is the total number of interest groups included in all of the
   // values in the `bidders` map.
   size_t num_groups;
@@ -492,7 +486,7 @@ SerializedBiddersMap SerializeBidderGroupsWithConfig(
         all_bidders_full_compressed_groups[idx].data.size());
   }
 
-  SerializedBiddersMap result{{}, {}, 0, 0, 0, 0, {}};
+  SerializedBiddersMap result{{}, {}, 0, 0, {}};
   result.bidders.reserve(bidders_and_groups.size());
   result.group_names.reserve(bidders_and_groups.size());
   for (size_t idx = 0; idx < bidders_and_groups.size(); ++idx) {
@@ -580,8 +574,6 @@ SerializedBiddersMap SerializeBidderGroupsWithConfig(
     }
 
     result.num_groups += compressed_groups.num_groups;
-    result.compressed_size += compressed_groups.data.size();
-    result.uncompressed_size += compressed_groups.uncompressed_size;
     result.bidders_elements_size +=
         TaggedStringLength(bidder_origin.size()) +
         TaggedStringLength(compressed_groups.data.size());
@@ -1037,14 +1029,6 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
   message_obj[cbor::Value("interestGroups")] =
       cbor::Value(std::move(groups.bidders));
 
-  // UMA requires integers, so we scale the relative compressed size by 100.
-  if (groups.uncompressed_size > 0) {
-    int relative_compressed_size =
-        (100 * groups.compressed_size) / groups.uncompressed_size;
-    base::UmaHistogramPercentage(
-        "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize",
-        relative_compressed_size);
-  }
   base::UmaHistogramCounts1000(
       "Ads.InterestGroup.ServerAuction.Request.NumGroups", groups.num_groups);
 
