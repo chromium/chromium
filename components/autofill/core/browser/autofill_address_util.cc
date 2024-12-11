@@ -92,7 +92,7 @@ void ExtendAddressComponents(
           return component.literal.empty() &&
                  component.field == rule.placed_after;
         });
-    CHECK(prev_component != components.end(), base::NotFatalUntil::M130);
+    CHECK(prev_component != components.end());
 
     // Insert the separator and `rule.type` after `prev_component`.
     if (include_literals) {

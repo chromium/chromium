@@ -36,7 +36,7 @@ FormForest::FrameData* FormForest::GetOrCreateFrameData(LocalFrameToken frame) {
   if (it == frame_datas_.end()) {
     it = frame_datas_.insert(it, std::make_unique<FrameData>(frame));
   }
-  CHECK(it != frame_datas_.end(), base::NotFatalUntil::M130);
+  CHECK(it != frame_datas_.end());
   DCHECK(it->get());
   return it->get();
 }

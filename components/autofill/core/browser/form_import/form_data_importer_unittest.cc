@@ -255,7 +255,7 @@ void SetValueForType(TypeValuePairs& pairs,
                      const std::string& value) {
   auto it = base::ranges::find(pairs, type,
                                [](const auto& pair) { return pair.first; });
-  CHECK(it != pairs.end(), base::NotFatalUntil::M130);
+  CHECK(it != pairs.end());
   if (value.empty()) {
     pairs.erase(it);
   } else {
