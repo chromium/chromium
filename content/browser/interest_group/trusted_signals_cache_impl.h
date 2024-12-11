@@ -150,6 +150,15 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
       return compression_group_token_;
     }
 
+    // Attempts to start the network fetch, if it hasn't started already. Not
+    // guaranteed to immediately start the fetch, as it may currently be
+    // retrieving the coordinator key. Fetches will not start until this is
+    // invoked for at least one of the Handles that share a Fetch.
+    //
+    // Handles that share a `compression_group_token` always share a Fetch,
+    // though other Handles may share the fetch as well.
+    virtual void StartFetch() = 0;
+
    protected:
     friend class base::RefCounted<Handle>;
 
@@ -500,22 +509,27 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
           interest_group_owner_if_scoring_signals);
 
   // Starts retrieving the coordinator key for the specified fetch. Will invoke
-  // StartFetch() on complete, which may happen synchronously.
+  // StartFetchIfReady() on complete, which may happen synchronously.
   void GetCoordinatorKey(FetchMap::iterator fetch_it);
 
-  // If the key was successfully fetched, starts the corresponding Fetch.
+  // If the key was successfully fetched, sets `coordinator_key` and calls
+  // StartFetchIfReady(). On error, calls OnFetchComplete().
   void OnCoordinatorKeyReceived(
       FetchMap::iterator fetch_it,
       base::expected<BiddingAndAuctionServerKey, std::string>
           bidding_and_auction_server_key);
 
-  // Called by StartFetch() to request bidding/scoring signals.
-  void StartBiddingSignalsFetch(
-      FetchMap::iterator fetch_it,
-      const BiddingAndAuctionServerKey& bidding_and_auction_key);
-  void StartScoringSignalsFetch(
-      FetchMap::iterator fetch_it,
-      const BiddingAndAuctionServerKey& bidding_and_auction_key);
+  // Sets `can_start` to true for `fetch_it` and calls StartFetchIfReady(). Does
+  // nothing if `can_start` is already set.
+  void SetFetchCanStart(FetchMap::iterator fetch_it);
+
+  // Starts the fetch if it has a `coordinator_key` and its `can_start` field is
+  // true.
+  void StartFetchIfReady(FetchMap::iterator fetch_it);
+
+  // Called by StartFetchIfReady() to request bidding/scoring signals.
+  void StartBiddingSignalsFetch(FetchMap::iterator fetch_it);
+  void StartScoringSignalsFetch(FetchMap::iterator fetch_it);
 
   void OnFetchComplete(
       FetchMap::iterator fetch_it,

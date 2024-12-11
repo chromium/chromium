@@ -2267,6 +2267,7 @@ class InterestGroupAuction::BuyerHelper
                 *interest_group.trusted_bidding_signals_coordinator,
                 interest_group.trusted_bidding_signals_keys,
                 std::move(additional_params), partition_id);
+    bid_state.bidding_signals_handle->StartFetch();
     return auction_worklet::mojom::TrustedSignalsCacheKey::New(
         bid_state.bidding_signals_handle->compression_group_token(),
         partition_id);
@@ -5487,6 +5488,7 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
                 bid->interest_group->owner,
                 bid->bid_state->bidder->joining_origin, bid->ad_descriptor.url,
                 ad_component_urls, std::move(additional_params), partition_id);
+    cache_handle->StartFetch();
     cache_key = auction_worklet::mojom::TrustedSignalsCacheKey::New(
         cache_handle->compression_group_token(), partition_id);
   }
