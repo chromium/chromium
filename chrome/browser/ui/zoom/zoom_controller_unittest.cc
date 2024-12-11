@@ -28,7 +28,8 @@ class ZoomControllerTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    zoom_controller_.reset(new ZoomController(web_contents()));
+    zoom_controller_.reset(new ZoomController(
+        web_contents(), web_contents()->GetPrimaryMainFrame()));
 
     // This call is needed so that the RenderViewHost reports being alive. This
     // is only important for tests that call ZoomController::SetZoomLevel().
