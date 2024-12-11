@@ -189,105 +189,29 @@ void RuleData::ComputeBloomFilterHashes(const StyleScope* style_scope,
     // This won't fit into bloom_hash_pos_, so don't collect any hashes.
     return;
   }
-  unsigned pos = bloom_hash_backing.size();
+  bloom_hash_pos_ = bloom_hash_backing.size();
   SelectorFilter::CollectIdentifierHashes(Selector(), style_scope,
                                           bloom_hash_backing);
 
   // The clamp here is purely for safety; a real rule would never have
   // as many as 255 descendant selectors.
-  unsigned size = std::min<uint32_t>(bloom_hash_backing.size() - pos, 255);
+  bloom_hash_size_ =
+      std::min<uint32_t>(bloom_hash_backing.size() - bloom_hash_pos_, 255);
 
-  if (size > 0) {
-    // Alias for brevity.
-    auto& hashes = bloom_hash_backing;
-
-    // Deduplicate hashes for this selector, e.g., “.a > .b > .a > .c”
-    // would have the hash for “.a” twice. This is inherently O(n²),
-    // but n is typically less than 4 and never more than 255,
-    // so there's no point in using a fancy algorithm.
-    for (unsigned i = 0; i < size; ++i) {
-      for (unsigned j = i + 1; j < size;) {
-        if (hashes[pos + i] == hashes[pos + j]) {
-          hashes[pos + j] = hashes.back();
-          hashes.pop_back();
-          --size;
-
-          // NOTE: No break; keep on searching for more dups.
-        } else {
-          ++j;
-        }
-      }
-    }
-
-    // If we've already got the exact same set of hashes in the vector,
-    // we can simply reuse those, saving a bit of memory and cache space.
-    // We only check close to the end of what we've already added;
-    // we could go with something like a full suffix tree solution,
-    // but this is simple and captures most of the benefits. (It is
-    // fairly common, especially with nesting, to have the same sets
-    // of parents in consecutive rules.)
-    //
-    // Note that we don't do this order-invariant, to reduce complexity;
-    // we would have gotten that for free with sorting but that actually
-    // reduced deduplication a little bit.
-    bool deduped_away = false;
-    for (unsigned search_offs = 0; search_offs < 10; ++search_offs) {
-      if (pos < size + search_offs) {
-        break;
-      }
-      unsigned match_pos = pos - size - search_offs;
-      if (std::equal(hashes.begin() + match_pos,
-                     hashes.begin() + match_pos + size, hashes.begin() + pos)) {
-        hashes.resize(pos);
-        pos = match_pos;
-        deduped_away = true;
-        break;
-      }
-    }
-
-    if (!deduped_away) {
-      // Failing that, see if we can have a partial match against
-      // the tail. E.g., if the existing vector ends with 1 2 3 4,
-      // and we are trying to add 3 4 5 6, we don't need to end up
-      // with 1 2 3 4 3 4 5 6; we can just reuse the latter two
-      // elements and store 1 2 3 4 5 6.
-      //
-      // We are robust against ordering: If the existing vector ends
-      // with 1 2 3 4 and we are trying to add 5 4 6, we can deduplicate
-      // the 4 in the middle against the tail and just add 5 6, with
-      // the 4 overlapping. However, if the existing vector ends with
-      // 1 2 4 3 instead, we won't go back and reorder it even if that
-      // would be advantageous; it rapidly gets too complicated.
-      // This means that the example above becomes:
-      //
-      //   1 2 3 4 3 4 5 6  Initial state of the backing
-      //           -------
-      //
-      //   1 2 3 4 3 6 5    Removed 4; 6 takes its place
-      //         ----^--
-      //
-      //   1 2 3 4 5 6      Removed 3; 5 takes its place
-      //       ----^--
-      //
-      // and then no further deduplication is possible. We also need
-      // to stop if we have deduplicated away all of our elements.
-      unsigned old_end = pos;
-      while (pos > 0 && pos + size > old_end) {
-        auto it = std::find(hashes.begin() + pos, hashes.begin() + pos + size,
-                            hashes[pos - 1]);
-        if (it != hashes.end()) {
-          *it = hashes.back();
-          hashes.pop_back();
-          --pos;
-        } else {
-          break;
-        }
-      }
-    }
+  // If we've already got the exact same set of hashes in the vector,
+  // we can simply reuse those, saving a bit of memory and cache space.
+  // We only check the trivial case of a tail match; we could go with
+  // something like a full suffix tree solution, but this is simple and
+  // captures most of the benefits. (It is fairly common, especially with
+  // nesting, to have the same sets of parents in consecutive rules.)
+  if (bloom_hash_size_ > 0 && bloom_hash_pos_ >= bloom_hash_size_ &&
+      std::equal(
+          bloom_hash_backing.begin() + bloom_hash_pos_ - bloom_hash_size_,
+          bloom_hash_backing.begin() + bloom_hash_pos_,
+          bloom_hash_backing.begin() + bloom_hash_pos_)) {
+    bloom_hash_backing.resize(bloom_hash_pos_);
+    bloom_hash_pos_ -= bloom_hash_size_;
   }
-
-  bloom_hash_pos_ = pos;
-  bloom_hash_size_ = size;
 }
 
 void RuleData::MovedToDifferentRuleSet(const Vector<uint16_t>& old_backing,
