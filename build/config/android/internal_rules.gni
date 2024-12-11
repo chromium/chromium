@@ -4346,25 +4346,21 @@ if (enable_java_templates) {
       if (_requires_android || (_supports_android && _is_library)) {
         # For non-robolectric targets, depend on other java target's top-level
         # groups so that the __dex step gets depended on.
-        forward_variables_from(invoker,
-                               [
-                                 "deps",
-                                 "public_deps",
-                               ])
-        if (!defined(deps)) {
-          deps = []
+        deps = _default_deps
+        if (defined(invoker.deps)) {
+          deps += invoker.deps
+        }
+        public_deps = []
+        if (defined(invoker.public_deps)) {
+          public_deps += invoker.public_deps
         }
         if (is_cronet_build) {
           _abs_deps = []
-          if (defined(invoker.deps)) {
-            foreach(dep, invoker.deps) {
-              _abs_deps += [ get_label_info(dep, "label_no_toolchain") ]
-            }
+          foreach(dep, deps) {
+            _abs_deps += [ get_label_info(dep, "label_no_toolchain") ]
           }
-          if (defined(invoker.public_deps)) {
-            foreach(dep, invoker.public_deps) {
-              _abs_deps += [ get_label_info(dep, "label_no_toolchain") ]
-            }
+          foreach(dep, public_deps) {
+            _abs_deps += [ get_label_info(dep, "label_no_toolchain") ]
           }
           if (defined(invoker.srcjar_deps)) {
             foreach(dep, invoker.srcjar_deps) {
@@ -4396,9 +4392,6 @@ if (enable_java_templates) {
             target_type = [ _type ]
             sdk_version = [ _sdk_version ]
           }
-        }
-        if (!defined(public_deps)) {
-          public_deps = []
         }
       } else {
         # For robolectric targets, depend only on non-java deps and the specific
