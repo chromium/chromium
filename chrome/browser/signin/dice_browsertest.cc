@@ -1383,6 +1383,7 @@ IN_PROC_BROWSER_TEST_F(DiceExplicitSigninRollbackBrowserTest, PRE_Rollback) {
 IN_PROC_BROWSER_TEST_F(DiceExplicitSigninRollbackBrowserTest, Rollback) {
   Profile* profile = browser()->profile();
   // The user is now signed in implicitly.
+  signin::WaitForRefreshTokensLoaded(GetIdentityManager());
   ASSERT_EQ(signin::GetPrimaryAccountConsentLevel(GetIdentityManager()),
             signin::ConsentLevel::kSignin);
   ASSERT_TRUE(gaia::AreEmailsSame(
@@ -1436,6 +1437,8 @@ IN_PROC_BROWSER_TEST_F(DiceExplicitSigninRollbackBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DiceExplicitSigninRollbackBrowserTest,
                        RollbackSigninPending) {
+  // The account is signed out after tokens are loaded.
+  signin::WaitForRefreshTokensLoaded(GetIdentityManager());
   // After rollback, a signin pending state should transition to signed out.
   EXPECT_EQ(signin::GetPrimaryAccountConsentLevel(GetIdentityManager()),
             std::nullopt);
@@ -1468,6 +1471,7 @@ IN_PROC_BROWSER_TEST_F(DiceExplicitSigninRollbackBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DiceExplicitSigninRollbackBrowserTest,
                        RollbackWebSigninOnly) {
+  signin::WaitForRefreshTokensLoaded(GetIdentityManager());
   signin::TriggerListAccount(GetIdentityManager(), test_url_loader_factory());
   // After rollback, Chrome would be implicitly signed in.
   EXPECT_EQ(signin::GetPrimaryAccountConsentLevel(GetIdentityManager()),
