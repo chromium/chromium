@@ -1074,10 +1074,7 @@ media::GpuVideoAcceleratorFactories* RenderThreadImpl::GetGpuFactories() {
 #else
       cmd_line->HasSwitch(switches::kEnableGpuMemoryBufferVideoFrames);
 #endif
-  const bool enable_media_stream_gpu_memory_buffers =
-      enable_gpu_memory_buffers &&
-      base::FeatureList::IsEnabled(
-          features::kWebRtcUseGpuMemoryBufferVideoFrames);
+  const bool enable_media_stream_gpu_memory_buffers = enable_gpu_memory_buffers;
   bool enable_video_gpu_memory_buffers = enable_gpu_memory_buffers;
 #if BUILDFLAG(IS_WIN)
   enable_video_gpu_memory_buffers =
