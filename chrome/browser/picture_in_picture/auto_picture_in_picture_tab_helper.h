@@ -143,12 +143,6 @@ class AutoPictureInPictureTabHelper
   // any auto-pip window we have open, though there might also not be one.
   void OnTabBecameActive();
 
-  bool get_has_safe_url_for_testing() const { return has_safe_url_; }
-
-  bool get_has_sufficiently_visible_video_for_testing() const {
-    return has_sufficiently_visible_video_;
-  }
-
  private:
   explicit AutoPictureInPictureTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<AutoPictureInPictureTabHelper>;
@@ -159,15 +153,16 @@ class AutoPictureInPictureTabHelper
 
   void MaybeEnterAutoPictureInPicture();
 
-  // If needed, schedules the asynchronous tasks that get the video visibility
-  // and/or URL safety. When async tasks complete there may be a call to
+  // If needed, schedules the asynchronous task to get the URL safety. When
+  // async tasks complete there may be a call to
   // `MaybeEnterAutoPictureInPicture`. This method can safely be called multiple
   // times.
   void MaybeScheduleAsyncTasks();
 
-  // Stops any pending get video visibility and/or URL safety tasks. Also reset
-  // relevant member variables: `has_sufficiently_visible_video_` and
-  // `has_safe_url_`.
+  // Stops any pending URL safety task. Also reset relevant member variables:
+  //   * Sets `has_safe_url_` to false.
+  //   * Resets `safe_browsing_checker_client_`.
+  //   * Invalidates async tasks weak ptr factory.
   void StopAndResetAsyncTasks();
 
   void MaybeExitAutoPictureInPicture();
@@ -179,7 +174,6 @@ class AutoPictureInPictureTabHelper
   // Returns true if the tab:
   //   * Has audio focus
   //   * Is playing unmuted playback
-  //   * MediaSession reports that there exists a sufficiently visible video
   //   * Has a safe URL as reported by
   //   `AutoPictureInPictureSafeBrowsingCheckerClient`
   bool MeetsVideoPlaybackConditions() const;
@@ -201,18 +195,6 @@ class AutoPictureInPictureTabHelper
   // Returns the current state of the 'Auto Picture-in-Picture' content
   // setting for the current website of the observed WebContents.
   ContentSetting GetCurrentContentSetting() const;
-
-  // Asks MediaSession to `GetVisibility`, if there exists a media session and
-  // we are not currently in picture in picture.
-  void ScheduleAsyncVisibilityCheck();
-
-  // Gets the video visibility, and enters picture in picture if MediaSession
-  // reports that there exists a sufficiently visible video.
-  //
-  // For a video to be considered sufficiently visible, it must meet the video
-  // visibility threshold defined by `HTMLVideoElement` (kVisibilityThreshold)
-  // and tracked by the `MediaVideoVisibilityTracker`.
-  void OnVideoVisibilityResult(bool has_sufficiently_visible_video);
 
   // Called when the result of checking URL safety is known.
   // `MaybeEnterAutoPictureInPicture` will be called if the URL is safe.
@@ -290,10 +272,6 @@ class AutoPictureInPictureTabHelper
   // `AutoPictureInPictureSafeBrowsingCheckerClient`.
   bool has_safe_url_ = false;
 
-  // True if the media session associated with the observed WebContents has a
-  // sufficiently visible video.
-  bool has_sufficiently_visible_video_ = false;
-
   // Connections with the media session service to listen for audio focus
   // updates and control media sessions.
   mojo::Receiver<media_session::mojom::AudioFocusObserver>
@@ -316,15 +294,8 @@ class AutoPictureInPictureTabHelper
   // which outlives the WebContents (which `this` is tied to).
   raw_ptr<MediaEngagementService> media_engagement_service_ = nullptr;
 
-  // WeakPtrFactory used only for requesting video visibility. This weak ptr
-  // factory is invalidated before sending any new visibility requests to the
-  // `MediaSession`, and at the beginning of `MaybeExitAutoPictureInPicture`
-  // calls.
-  base::WeakPtrFactory<AutoPictureInPictureTabHelper>
-      get_visibility_weak_factory_{this};
-
-  // WeakPtrFactory used for requesting video visibility and URL safety. This
-  // weak ptr factory is invalidated during calls to `StopAndResetAsyncTasks`.
+  // WeakPtrFactory used only for requesting URL safety. This weak ptr factory
+  // is invalidated during calls to `StopAndResetAsyncTasks`.
   base::WeakPtrFactory<AutoPictureInPictureTabHelper> async_tasks_weak_factory_{
       this};
 

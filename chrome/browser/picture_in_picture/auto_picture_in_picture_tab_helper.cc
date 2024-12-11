@@ -211,7 +211,6 @@ void AutoPictureInPictureTabHelper::MaybeScheduleAsyncTasks() {
     return;
   }
 
-  ScheduleAsyncVisibilityCheck();
   ScheduleUrlSafetyCheck();
 }
 
@@ -225,7 +224,6 @@ void AutoPictureInPictureTabHelper::StopAndResetAsyncTasks() {
   safe_browsing_checker_client_.reset();
 
   has_safe_url_ = false;
-  has_sufficiently_visible_video_ = false;
 }
 
 void AutoPictureInPictureTabHelper::MaybeExitAutoPictureInPicture() {
@@ -311,8 +309,7 @@ bool AutoPictureInPictureTabHelper::MeetsVideoPlaybackConditions() const {
   }
 
   return has_audio_focus_ && is_playing_ && WasRecentlyAudible() &&
-         has_safe_url_ && MeetsMediaEngagementConditions() &&
-         has_sufficiently_visible_video_;
+         has_safe_url_ && MeetsMediaEngagementConditions();
 }
 
 bool AutoPictureInPictureTabHelper::IsUsingCameraOrMicrophone() const {
@@ -359,29 +356,6 @@ ContentSetting AutoPictureInPictureTabHelper::GetCurrentContentSetting() const {
     return CONTENT_SETTING_BLOCK;
   }
   return setting;
-}
-
-void AutoPictureInPictureTabHelper::ScheduleAsyncVisibilityCheck() {
-  CHECK(!is_in_picture_in_picture_);
-
-  content::MediaSession* media_session =
-      content::MediaSession::GetIfExists(web_contents());
-  CHECK(media_session);
-
-  media_session->GetVisibility(
-      base::BindOnce(&AutoPictureInPictureTabHelper::OnVideoVisibilityResult,
-                     async_tasks_weak_factory_.GetWeakPtr()));
-}
-
-void AutoPictureInPictureTabHelper::OnVideoVisibilityResult(
-    bool has_sufficiently_visible_video) {
-  has_sufficiently_visible_video_ = has_sufficiently_visible_video;
-
-  if (!has_sufficiently_visible_video_) {
-    return;
-  }
-
-  MaybeEnterAutoPictureInPicture();
 }
 
 void AutoPictureInPictureTabHelper::OnUrlSafetyResult(bool has_safe_url) {
