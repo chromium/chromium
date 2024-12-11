@@ -364,7 +364,8 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
   }
 
   size_t num_pending_fetches() const {
-    return trusted_bidding_signals_fetches_.size();
+    return trusted_bidding_signals_fetches_.size() +
+           trusted_scoring_signals_fetches_.size();
   }
 
  private:
@@ -1319,7 +1320,7 @@ TYPED_TEST(TrustedSignalsCacheTest, HandleDestroyedAfterGet) {
 
   TestTrustedSignalsCacheClient client(handle, this->cache_mojo_pipe_);
   // Wait fo the request to hit the cache.
-  base::RunLoop().RunUntilIdle();
+  this->task_environment_.RunUntilIdle();
 
   handle.reset();
   client.WaitForError(kRequestCancelledError);
@@ -1517,7 +1518,7 @@ TYPED_TEST(TrustedSignalsCacheTest, ReRequestSignalsNotReused) {
   EXPECT_NE(compression_group_token2, compression_group_token3);
   TestTrustedSignalsCacheClient client3(handle3, this->cache_mojo_pipe_);
   // Wait for the request from `client3` to make it to the cache.
-  base::RunLoop().RunUntilIdle();
+  this->task_environment_.RunUntilIdle();
 
   // Wait for another fetch request, send a response, and retrieve it over the
   // Mojo pipe.
@@ -1539,7 +1540,7 @@ TYPED_TEST(TrustedSignalsCacheTest, ReRequestSignalsNotReused) {
   EXPECT_NE(compression_group_token3, compression_group_token4);
   TestTrustedSignalsCacheClient client4(handle4, this->cache_mojo_pipe_);
   // Wait for the request from `client4` to make it to the cache.
-  base::RunLoop().RunUntilIdle();
+  this->task_environment_.RunUntilIdle();
   // Wait for the fetch.
   auto fetch4 = this->WaitForSignalsFetch();
   // Destroy the handle, which should fail the request.
@@ -2724,7 +2725,7 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsCancelBothBeforeFetchStart) {
     handle1.reset();
     handle2.reset();
 
-    base::RunLoop().RunUntilIdle();
+    this->task_environment_.RunUntilIdle();
     EXPECT_EQ(this->trusted_signals_cache_->num_pending_fetches(), 0u);
   }
 }
@@ -2838,7 +2839,7 @@ TYPED_TEST(TrustedSignalsCacheTest, CancelledDuringGetCoordinatorKey) {
     }
 
     // Let any pending async callbacks complete.
-    base::RunLoop().RunUntilIdle();
+    this->task_environment_.RunUntilIdle();
 
     // Teardown will check that the fetcher saw no unaccounted for requests.
   }
