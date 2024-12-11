@@ -31,6 +31,10 @@ class MockCollaborationService : public CollaborationService {
               GetCurrentUserRoleForGroup,
               (const data_sharing::GroupId& group_id),
               (override));
+  MOCK_METHOD(std::optional<data_sharing::GroupData>,
+              GetGroupData,
+              (const data_sharing::GroupId& group_id),
+              (override));
 };
 
 }  // namespace collaboration

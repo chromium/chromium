@@ -51,6 +51,7 @@ static_library("core_internal") {
     deps += [
       ":core_jni_headers",
       "//components/collaboration/public:core_jni_headers",
+      "//components/data_sharing/public:android_utils",
     ]
   }
 }

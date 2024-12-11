@@ -25,6 +25,8 @@ class EmptyCollaborationService : public CollaborationService {
   ServiceStatus GetServiceStatus() override;
   data_sharing::MemberRole GetCurrentUserRoleForGroup(
       const data_sharing::GroupId& group_id) override;
+  std::optional<data_sharing::GroupData> GetGroupData(
+      const data_sharing::GroupId& group_id) override;
 };
 
 }  // namespace collaboration

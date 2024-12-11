@@ -27,6 +27,9 @@ class CollaborationServiceAndroid : public base::SupportsUserData::Data {
   jint GetCurrentUserRoleForGroup(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& group_id);
+  jni_zero::ScopedJavaLocalRef<jobject> GetGroupData(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jstring>& group_id);
 
   // Returns the CollaborationServiceImpl java object.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();

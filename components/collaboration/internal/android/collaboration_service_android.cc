@@ -10,6 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "components/collaboration/internal/core_jni_headers/CollaborationServiceImpl_jni.h"
 #include "components/collaboration/public/collaboration_service.h"
+#include "components/data_sharing/public/android/conversion_utils.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/collaboration/public/core_jni_headers/ServiceStatus_jni.h"
@@ -87,6 +88,18 @@ jint CollaborationServiceAndroid::GetCurrentUserRoleForGroup(
           GroupId(ConvertJavaStringToUTF8(env, group_id)));
 
   return static_cast<jint>(role);
+}
+
+jni_zero::ScopedJavaLocalRef<jobject> CollaborationServiceAndroid::GetGroupData(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& group_id) {
+  const std::optional<GroupData> data = collaboration_service_->GetGroupData(
+      GroupId(ConvertJavaStringToUTF8(env, group_id)));
+  if (!data.has_value()) {
+    return nullptr;
+  }
+
+  return data_sharing::conversion::CreateJavaGroupData(env, data.value());
 }
 
 ScopedJavaLocalRef<jobject> CollaborationServiceAndroid::GetJavaObject() {

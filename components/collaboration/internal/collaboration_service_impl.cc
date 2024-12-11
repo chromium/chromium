@@ -118,6 +118,11 @@ MemberRole CollaborationServiceImpl::GetCurrentUserRoleForGroup(
   return MemberRole::kUnknown;
 }
 
+std::optional<data_sharing::GroupData> CollaborationServiceImpl::GetGroupData(
+    const data_sharing::GroupId& group_id) {
+  return data_sharing_service_->ReadGroup(group_id);
+}
+
 void CollaborationServiceImpl::OnStateChanged(syncer::SyncService* sync) {
   SyncStatus new_status = GetSyncStatus();
 

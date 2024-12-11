@@ -62,6 +62,12 @@ class CollaborationService : public KeyedService,
   // Get the group member information of the current user.
   virtual data_sharing::MemberRole GetCurrentUserRoleForGroup(
       const data_sharing::GroupId& group_id) = 0;
+
+  // Synchronously get the group data for the given group id. Returns nullopt if
+  // the group doesn't exist, it has not been fetched from the server yet, or
+  // the model is not loaded yet.
+  virtual std::optional<data_sharing::GroupData> GetGroupData(
+      const data_sharing::GroupId& group_id) = 0;
 };
 
 }  // namespace collaboration

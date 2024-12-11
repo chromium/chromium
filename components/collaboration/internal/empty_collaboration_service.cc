@@ -31,4 +31,9 @@ data_sharing::MemberRole EmptyCollaborationService::GetCurrentUserRoleForGroup(
   return data_sharing::MemberRole::kUnknown;
 }
 
+std::optional<data_sharing::GroupData> EmptyCollaborationService::GetGroupData(
+    const data_sharing::GroupId& group_id) {
+  return std::nullopt;
+}
+
 }  // namespace collaboration

@@ -5,8 +5,10 @@
 package org.chromium.components.collaboration;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 
 /**
@@ -31,10 +33,19 @@ public interface CollaborationService {
     /**
      * Get the member role of the current primary user for a collaboration group.
      *
-     * @param groupId The collaboration group id.
+     * @param collaborationId The collaboration group id.
      * @return The {@link MemberRole} of the current user. UNKNOWN is returned if no user or group
      *     found.
      */
     @MemberRole
-    int getCurrentUserRoleForGroup(String groupId);
+    int getCurrentUserRoleForGroup(String collaborationId);
+
+    /**
+     * Synchronously get group data for a given group id.
+     *
+     * @param collaborationId The collaboration group id.
+     * @return The {@link GroupData} of the group.
+     */
+    @Nullable
+    GroupData getGroupData(String collaborationId);
 }

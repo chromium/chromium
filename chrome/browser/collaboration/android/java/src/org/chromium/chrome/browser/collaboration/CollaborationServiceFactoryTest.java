@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.collaboration;
 
 import static org.chromium.base.test.util.Batch.PER_CLASS;
 
+import androidx.annotation.Nullable;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -29,6 +30,7 @@ import org.chromium.components.collaboration.CollaborationStatus;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.collaboration.SigninStatus;
 import org.chromium.components.collaboration.SyncStatus;
+import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 
 import java.util.concurrent.TimeoutException;
@@ -59,8 +61,13 @@ public class CollaborationServiceFactoryTest {
                     }
 
                     @Override
-                    public @MemberRole int getCurrentUserRoleForGroup(String groupId) {
+                    public @MemberRole int getCurrentUserRoleForGroup(String collaborationId) {
                         return MemberRole.UNKNOWN;
+                    }
+
+                    @Override
+                    public @Nullable GroupData getGroupData(String collaborationId) {
+                        return null;
                     }
                 };
 

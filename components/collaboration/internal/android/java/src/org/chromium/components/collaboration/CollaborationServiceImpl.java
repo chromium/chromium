@@ -8,6 +8,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 
 /**
@@ -38,8 +39,14 @@ public class CollaborationServiceImpl implements CollaborationService {
     }
 
     @Override
-    public @MemberRole int getCurrentUserRoleForGroup(String groupId) {
-        return CollaborationServiceImplJni.get().getCurrentUserRoleForGroup(mNativePtr, groupId);
+    public @MemberRole int getCurrentUserRoleForGroup(String collaborationId) {
+        return CollaborationServiceImplJni.get()
+                .getCurrentUserRoleForGroup(mNativePtr, collaborationId);
+    }
+
+    @Override
+    public GroupData getGroupData(String collaborationId) {
+        return CollaborationServiceImplJni.get().getGroupData(mNativePtr, collaborationId);
     }
 
     @CalledByNative
@@ -54,6 +61,9 @@ public class CollaborationServiceImpl implements CollaborationService {
 
         ServiceStatus getServiceStatus(long nativeCollaborationServiceAndroid);
 
-        int getCurrentUserRoleForGroup(long nativeCollaborationServiceAndroid, String groupId);
+        int getCurrentUserRoleForGroup(
+                long nativeCollaborationServiceAndroid, String collaborationId);
+
+        GroupData getGroupData(long nativeCollaborationServiceAndroid, String collaborationId);
     }
 }
