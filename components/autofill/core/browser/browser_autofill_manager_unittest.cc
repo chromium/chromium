@@ -6618,9 +6618,8 @@ TEST_F(BrowserAutofillManagerTest, ShowAutofillAiIPH) {
   ON_CALL(delegate, IsEligibleForAutofillAi).WillByDefault(Return(false));
   ON_CALL(delegate, ShouldDisplayIph).WillByDefault(Return(true));
 
-  EXPECT_CALL(client(),
-              ShowAutofillFieldIphForFeature(
-                  _, AutofillClient::IphFeature::kPredictionImprovements));
+  EXPECT_CALL(client(), ShowAutofillFieldIphForFeature(
+                            _, AutofillClient::IphFeature::kAutofillAi));
 
   OnAskForValuesToFill(form, form.fields().front(),
                        AutofillSuggestionTriggerSource::kAutofillAi);

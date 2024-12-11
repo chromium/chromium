@@ -135,7 +135,7 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
       group = GROUP_IBAN;
       break;
 
-    case FieldTypeGroup::kPredictionImprovements:
+    case FieldTypeGroup::kAutofillAi:
       group = GROUP_PREDICTION_IMPROVEMENTS;
       break;
 

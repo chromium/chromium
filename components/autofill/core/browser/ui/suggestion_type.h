@@ -144,9 +144,7 @@ enum class SuggestionType {
   // Suggestion that provides users the possibility to give feedback about
   // Autofill AI.
   kAutofillAiFeedback = 56,
-  // DEPRECATED due to UX changes.
-  // Allows the users to navigate to more details about Autofill AI.
-  // kPredictionImprovementsDetails = 58,
+  // kPredictionImprovementsDetails = 58, // DEPRECATED due to UX changes.
   // Suggestion displayed when there is an error with Autofill AI.
   kAutofillAiError = 59,
   // Suggestion for editing Autofill AI information.

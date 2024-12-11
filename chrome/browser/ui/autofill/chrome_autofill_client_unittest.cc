@@ -444,7 +444,7 @@ TEST_F(ChromeAutofillClientTest, AutofillFieldIPH_NotShownByPromoController) {
       .WillRepeatedly(Return(false));
 
   EXPECT_FALSE(client()->ShowAutofillFieldIphForFeature(
-      FormFieldData{}, AutofillClient::IphFeature::kPredictionImprovements));
+      FormFieldData{}, AutofillClient::IphFeature::kAutofillAi));
 }
 
 TEST_F(ChromeAutofillClientTest, AutofillFieldIPH_IsShown) {
@@ -459,7 +459,7 @@ TEST_F(ChromeAutofillClientTest, AutofillFieldIPH_IsShown) {
       .WillOnce(Return(true));
 
   EXPECT_TRUE(client()->ShowAutofillFieldIphForFeature(
-      FormFieldData{}, AutofillClient::IphFeature::kPredictionImprovements));
+      FormFieldData{}, AutofillClient::IphFeature::kAutofillAi));
 }
 
 TEST_F(ChromeAutofillClientTest, AutofillImprovedPredictionsIPH_IsShown) {
@@ -474,7 +474,7 @@ TEST_F(ChromeAutofillClientTest, AutofillImprovedPredictionsIPH_IsShown) {
       .WillOnce(Return(true));
 
   EXPECT_TRUE(client()->ShowAutofillFieldIphForFeature(
-      FormFieldData{}, AutofillClient::IphFeature::kPredictionImprovements));
+      FormFieldData{}, AutofillClient::IphFeature::kAutofillAi));
 }
 
 TEST_F(ChromeAutofillClientTest,
@@ -529,8 +529,7 @@ TEST_F(ChromeAutofillClientTestWithWindow, AutofillFieldIPH_NotifyFeatureUsed) {
       EndPromo(
           Ref(feature_engagement::kIPHAutofillPredictionImprovementsFeature),
           user_education::EndFeaturePromoReason::kFeatureEngaged));
-  client()->NotifyIphFeatureUsed(
-      AutofillClient::IphFeature::kPredictionImprovements);
+  client()->NotifyIphFeatureUsed(AutofillClient::IphFeature::kAutofillAi);
 }
 #endif
 }  // namespace

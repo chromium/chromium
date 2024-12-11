@@ -1147,7 +1147,7 @@ FormGroup* AutofillProfile::MutableFormGroupForType(FieldType type) {
     case FieldTypeGroup::kTransaction:
     case FieldTypeGroup::kStandaloneCvcField:
     case FieldTypeGroup::kUnfillable:
-    case FieldTypeGroup::kPredictionImprovements:
+    case FieldTypeGroup::kAutofillAi:
       return nullptr;
   }
   NOTREACHED();
@@ -1268,7 +1268,7 @@ AutofillType AutofillProfile::GetFillingType(AutofillType field_type) const {
     case FieldTypeGroup::kUnfillable:
     case FieldTypeGroup::kIban:
     case FieldTypeGroup::kStandaloneCvcField:
-    case FieldTypeGroup::kPredictionImprovements:
+    case FieldTypeGroup::kAutofillAi:
       NOTREACHED();
   }
   NOTREACHED();

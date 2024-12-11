@@ -29,7 +29,7 @@ bool HasTypeSensitiveGroup(AutofillType type) {
     case FieldTypeGroup::kAddress:
     case FieldTypeGroup::kPhone:
     case FieldTypeGroup::kUnfillable:
-    case FieldTypeGroup::kPredictionImprovements:
+    case FieldTypeGroup::kAutofillAi:
       return false;
     case FieldTypeGroup::kCreditCard:
     case FieldTypeGroup::kPasswordField:

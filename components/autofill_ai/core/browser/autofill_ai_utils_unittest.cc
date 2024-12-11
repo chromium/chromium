@@ -42,11 +42,10 @@ struct FieldEligibilityByTypeTestCase {
   FieldType autofill_type = autofill::UNKNOWN_TYPE;
 };
 
-class PredictionImprovementsFieldEligibilityByTypeTest
+class AutofillAiFieldEligibilityByTypeTest
     : public testing::TestWithParam<FieldEligibilityByTypeTestCase> {};
 
-TEST_P(PredictionImprovementsFieldEligibilityByTypeTest,
-       FieldEligibilityByType) {
+TEST_P(AutofillAiFieldEligibilityByTypeTest, FieldEligibilityByType) {
   FieldEligibilityByTypeTestCase test_case = GetParam();
 
   AutofillField field;
@@ -62,7 +61,7 @@ TEST_P(PredictionImprovementsFieldEligibilityByTypeTest,
 
 INSTANTIATE_TEST_SUITE_P(
     FieldEligibilityByTypeTest,
-    PredictionImprovementsFieldEligibilityByTypeTest,
+    AutofillAiFieldEligibilityByTypeTest,
     testing::Values(
         FieldEligibilityByTypeTestCase{.should_be_eligible = true,
                                        .has_prediction_improvement_type = true,
@@ -200,10 +199,8 @@ TEST(AutofillAiUtilsTest, SetFieldFillingEligibility) {
                                        autofill::CREDIT_CARD_NUMBER);
 
   SetFieldFillingEligibility(form);
-  EXPECT_EQ(form.fields()[0]->field_is_eligible_for_prediction_improvements(),
-            true);
-  EXPECT_EQ(form.fields()[1]->field_is_eligible_for_prediction_improvements(),
-            false);
+  EXPECT_EQ(form.fields()[0]->field_is_eligible_for_autofill_ai(), true);
+  EXPECT_EQ(form.fields()[1]->field_is_eligible_for_autofill_ai(), false);
 }
 
 struct IsFieldEligibleForFillingTestCase {

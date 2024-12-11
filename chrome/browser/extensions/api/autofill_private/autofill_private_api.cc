@@ -1292,7 +1292,7 @@ AutofillPrivatePredictionImprovementsIphFeatureUsedFunction::Run() {
   }
 
   client->NotifyIphFeatureUsed(
-      autofill::AutofillClient::IphFeature::kPredictionImprovements);
+      autofill::AutofillClient::IphFeature::kAutofillAi);
   return RespondNow(NoArguments());
 }
 

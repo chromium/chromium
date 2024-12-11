@@ -150,7 +150,7 @@ class AutofillClient {
 
   // Describes the types of Iph shown by Autofill and anchored to a field.
   enum class IphFeature {
-    kPredictionImprovements,
+    kAutofillAi,
   };
 
   // Required arguments to create a dropdown showing autofill suggestions.

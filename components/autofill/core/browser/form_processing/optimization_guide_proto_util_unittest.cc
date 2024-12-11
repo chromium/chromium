@@ -49,17 +49,17 @@ TEST(AutofillOptimizationGuideProtoUtilTest, ToFormDataProto) {
   // TODO(crbug.com/373776019): Restructure to remove and extend the
   // AddInputField method.
   AutofillField& field1 = AddInputField(form, u"label", u"name", u"val");
-  field1.set_field_is_eligible_for_prediction_improvements(true);
+  field1.set_field_is_eligible_for_autofill_ai(true);
   field1.set_is_visible(true);
   field1.set_is_focusable(true);
   field1.set_placeholder(u"placeholder");
   field1.set_form_control_ax_id(123);
-  field1.set_field_is_eligible_for_prediction_improvements(true);
+  field1.set_field_is_eligible_for_autofill_ai(true);
 
   AutofillField& field2 =
       AddInputField(form, u"label2", u"name2", u"sensitive_value",
                     /*is_sensitive=*/true);
-  field2.set_field_is_eligible_for_prediction_improvements(false);
+  field2.set_field_is_eligible_for_autofill_ai(false);
   field2.set_is_visible(true);
   field2.set_is_focusable(false);
   field2.set_placeholder(u"");
@@ -70,7 +70,7 @@ TEST(AutofillOptimizationGuideProtoUtilTest, ToFormDataProto) {
       form, u"select", u"", u"",
       {{.value = u"1", .text = u"text1"}, {.value = u"2", .text = u"text2"}},
       /*is_sensitive=*/false);
-  field3.set_field_is_eligible_for_prediction_improvements(false);
+  field3.set_field_is_eligible_for_autofill_ai(false);
 
   optimization_guide::proto::FormData form_data_proto = ToFormDataProto(form);
   EXPECT_EQ(form_data_proto.fields_size(), 3);

@@ -75,7 +75,7 @@ class AutofillAiClient {
   GetUserAnnotationsService() = 0;
 
   // Returns whether the feature is enabled in the prefs
-  // (`autofill::prefs::kAutofillAiEnabled`).
+  // (`autofill::prefs::kAutofillAisEnabled`).
   //
   // This is different from `IsAutofillAiSupported()`, which
   // checks if the user could enable the feature in the first case (if not, the

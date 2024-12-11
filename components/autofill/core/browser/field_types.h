@@ -492,8 +492,8 @@ enum class FieldTypeGroup {
   kUnfillable,
   kIban,
   kStandaloneCvcField,
-  kPredictionImprovements,
-  kMaxValue = kPredictionImprovements,
+  kAutofillAi,
+  kMaxValue = kAutofillAi,
 };
 
 template <>

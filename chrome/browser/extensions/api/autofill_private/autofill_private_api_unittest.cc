@@ -337,9 +337,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
       base::BindRepeating(&NotifyIphMockCallback::Call,
                           base::Unretained(&mock_callback)));
 
-  EXPECT_CALL(
-      mock_callback,
-      Call(autofill::AutofillClient::IphFeature::kPredictionImprovements));
+  EXPECT_CALL(mock_callback,
+              Call(autofill::AutofillClient::IphFeature::kAutofillAi));
 
   RunAutofillSubtest("predictionImprovementsIphFeatureUsed");
   EXPECT_TRUE(GetAllUserAnnotationsEntries().empty());

@@ -1326,7 +1326,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
   } else if (delegate && form_structure && autofill_field &&
              delegate->ShouldDisplayIph(*form_structure, *autofill_field) &&
              client().ShowAutofillFieldIphForFeature(
-                 field, AutofillClient::IphFeature::kPredictionImprovements)) {
+                 field, AutofillClient::IphFeature::kAutofillAi)) {
     return;
   }
 

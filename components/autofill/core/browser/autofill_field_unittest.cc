@@ -52,28 +52,24 @@ TEST_F(AutofillFieldTest, AssumedProfileValueSource) {
   EXPECT_FALSE(field.assumed_profile_value_source().has_value());
 }
 
-TEST_F(AutofillFieldTest, FieldIsEligableForPredictionImprovementsFlag) {
+TEST_F(AutofillFieldTest, FieldIsEligibleForAutofillAiFlag) {
   AutofillField field;
 
   // Initially the value should not be identified as sensitive.
-  EXPECT_FALSE(
-      field.field_is_eligible_for_prediction_improvements().has_value());
+  EXPECT_FALSE(field.field_is_eligible_for_autofill_ai().has_value());
 
   // Test that setting the value works.
-  field.set_field_is_eligible_for_prediction_improvements(true);
-  ASSERT_TRUE(
-      field.field_is_eligible_for_prediction_improvements().has_value());
-  EXPECT_TRUE(field.field_is_eligible_for_prediction_improvements().value());
+  field.set_field_is_eligible_for_autofill_ai(true);
+  ASSERT_TRUE(field.field_is_eligible_for_autofill_ai().has_value());
+  EXPECT_TRUE(field.field_is_eligible_for_autofill_ai().value());
 
-  field.set_field_is_eligible_for_prediction_improvements(false);
-  ASSERT_TRUE(
-      field.field_is_eligible_for_prediction_improvements().has_value());
-  EXPECT_FALSE(field.field_is_eligible_for_prediction_improvements().value());
+  field.set_field_is_eligible_for_autofill_ai(false);
+  ASSERT_TRUE(field.field_is_eligible_for_autofill_ai().has_value());
+  EXPECT_FALSE(field.field_is_eligible_for_autofill_ai().value());
 
   // Verify that the state can also be reset.
-  field.set_field_is_eligible_for_prediction_improvements(std::nullopt);
-  EXPECT_FALSE(
-      field.field_is_eligible_for_prediction_improvements().has_value());
+  field.set_field_is_eligible_for_autofill_ai(std::nullopt);
+  EXPECT_FALSE(field.field_is_eligible_for_autofill_ai().has_value());
 }
 
 // Tests that if both autocomplete attributes and server agree it's a phone

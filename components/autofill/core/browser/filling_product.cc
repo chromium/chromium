@@ -136,7 +136,7 @@ FillingProduct GetFillingProductFromFieldTypeGroup(
       return FillingProduct::kPassword;
     case kIban:
       return FillingProduct::kIban;
-    case kPredictionImprovements:
+    case kAutofillAi:
       return FillingProduct::kAutofillAi;
   }
   NOTREACHED();

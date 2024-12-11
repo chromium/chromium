@@ -580,7 +580,7 @@ FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
       return FieldTypeGroup::kCompany;
 
     case IMPROVED_PREDICTION:
-      return FieldTypeGroup::kPredictionImprovements;
+      return FieldTypeGroup::kAutofillAi;
 
     case PASSWORD:
     case ACCOUNT_CREATION_PASSWORD:
