@@ -21,6 +21,7 @@ import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {BiDiModule} from '../../../protocol/chromium-bidi.js';
 import type {ChromiumBidi, Session} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/Deferred.js';
+import {EventEmitter} from '../../../utils/EventEmitter.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import {LogType} from '../../../utils/log.js';
 import type {Result} from '../../../utils/result.js';
@@ -33,12 +34,15 @@ import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
+import {type TargetEventMap, TargetEvents} from './TargetEvents.js';
+
 interface FetchStages {
   request: boolean;
   response: boolean;
   auth: boolean;
 }
-export class CdpTarget {
+
+export class CdpTarget extends EventEmitter<TargetEventMap> {
   readonly #id: Protocol.Target.TargetID;
   readonly #cdpClient: CdpClient;
   readonly #browserCdpClient: CdpClient;
@@ -57,7 +61,6 @@ export class CdpTarget {
 
   #deviceAccessEnabled = false;
   #cacheDisableState = false;
-  #networkDomainEnabled = false;
   #fetchDomainStages: FetchStages = {
     request: false,
     response: false,
@@ -118,6 +121,7 @@ export class CdpTarget {
     unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn,
   ) {
+    super();
     this.#id = targetId;
     this.#cdpClient = cdpClient;
     this.#browserCdpClient = browserCdpClient;
@@ -192,7 +196,11 @@ export class CdpTarget {
             // prerendered pages. Generic catch, as the error can vary between CdpClient
             // implementations: Tab vs Puppeteer.
           }),
-        this.toggleNetworkIfNeeded(),
+        // Enabling CDP Network domain is required for navigation detection:
+        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856.
+        this.#cdpClient
+          .sendCommand('Network.enable')
+          .then(() => this.toggleNetworkIfNeeded()),
         this.#cdpClient.sendCommand('Target.setAutoAttach', {
           autoAttach: true,
           waitForDebuggerOnStart: true,
@@ -265,11 +273,9 @@ export class CdpTarget {
     const stages = this.#networkStorage.getInterceptionStages(this.topLevelId);
 
     if (
-      // Only toggle interception when Network is enabled
-      !this.#networkDomainEnabled ||
-      (this.#fetchDomainStages.request === stages.request &&
-        this.#fetchDomainStages.response === stages.response &&
-        this.#fetchDomainStages.auth === stages.auth)
+      this.#fetchDomainStages.request === stages.request &&
+      this.#fetchDomainStages.response === stages.response &&
+      this.#fetchDomainStages.auth === stages.auth
     ) {
       return;
     }
@@ -317,25 +323,18 @@ export class CdpTarget {
   }
 
   /**
-   * Toggles both Network and Fetch domains.
+   * Toggles CDP "Fetch" domain and enable/disable network cache.
    */
   async toggleNetworkIfNeeded(): Promise<void> {
-    const enabled = this.isSubscribedTo(BiDiModule.Network);
-    if (enabled === this.#networkDomainEnabled) {
-      return;
-    }
-
-    this.#networkDomainEnabled = enabled;
+    // Although the Network domain remains active, Fetch domain activation and caching
+    // settings should be managed dynamically.
     try {
       await Promise.all([
-        this.#cdpClient
-          .sendCommand(enabled ? 'Network.enable' : 'Network.disable')
-          .then(async () => await this.toggleSetCacheDisabled()),
+        this.toggleSetCacheDisabled(),
         this.toggleFetchIfNeeded(),
       ]);
     } catch (err) {
       this.#logger?.(LogType.debugError, err);
-      this.#networkDomainEnabled = !enabled;
       if (!this.#isExpectedError(err)) {
         throw err;
       }
@@ -347,10 +346,7 @@ export class CdpTarget {
       this.#networkStorage.defaultCacheBehavior === 'bypass';
     const cacheDisabled = disable ?? defaultCacheDisabled;
 
-    if (
-      !this.#networkDomainEnabled ||
-      this.#cacheDisableState === cacheDisabled
-    ) {
+    if (this.#cacheDisableState === cacheDisabled) {
       return;
     }
     this.#cacheDisableState = cacheDisabled;
@@ -401,6 +397,15 @@ export class CdpTarget {
   }
 
   #setEventListeners() {
+    this.#cdpClient.on('Network.requestWillBeSent', (eventParams) => {
+      if (eventParams.loaderId === eventParams.requestId) {
+        this.emit(TargetEvents.FrameStartedNavigating, {
+          loaderId: eventParams.loaderId,
+          url: eventParams.request.url,
+          frameId: eventParams.frameId,
+        });
+      }
+    });
     this.#cdpClient.on('*', (event, params) => {
       // We may encounter uses for EventEmitter other than CDP events,
       // which we want to skip.
@@ -436,17 +441,6 @@ export class CdpTarget {
     });
   }
 
-  async #toggleNetwork(enable: boolean): Promise<void> {
-    this.#networkDomainEnabled = enable;
-    try {
-      await this.#cdpClient.sendCommand(
-        enable ? 'Network.enable' : 'Network.disable',
-      );
-    } catch {
-      this.#networkDomainEnabled = !enable;
-    }
-  }
-
   async #enableFetch(stages: FetchStages) {
     const patterns: Protocol.Fetch.EnableRequest['patterns'] = [];
 
@@ -463,11 +457,7 @@ export class CdpTarget {
         requestStage: 'Response',
       });
     }
-    if (
-      // Only enable interception when Network is enabled
-      this.#networkDomainEnabled &&
-      patterns.length
-    ) {
+    if (patterns.length) {
       const oldStages = this.#fetchDomainStages;
       this.#fetchDomainStages = stages;
       try {
@@ -503,28 +493,18 @@ export class CdpTarget {
       this.#fetchDomainStages.request !== stages.request ||
       this.#fetchDomainStages.response !== stages.response ||
       this.#fetchDomainStages.auth !== stages.auth;
-    const networkEnable = this.isSubscribedTo(BiDiModule.Network);
-    const networkChanged = this.#networkDomainEnabled !== networkEnable;
 
     this.#logger?.(
       LogType.debugInfo,
       'Toggle Network',
       `Fetch (${fetchEnable}) ${fetchChanged}`,
-      `Network (${networkEnable}) ${networkChanged}`,
     );
 
-    if (networkEnable && networkChanged) {
-      await this.#toggleNetwork(true);
-    }
     if (fetchEnable && fetchChanged) {
       await this.#enableFetch(stages);
     }
     if (!fetchEnable && fetchChanged) {
       await this.#disableFetch();
-    }
-
-    if (!networkEnable && networkChanged && !fetchEnable && !fetchChanged) {
-      await this.#toggleNetwork(false);
     }
   }
 

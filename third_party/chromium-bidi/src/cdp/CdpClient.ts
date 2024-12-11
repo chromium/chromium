@@ -26,7 +26,7 @@ export type CdpEvents = {
   [Property in keyof ProtocolMapping.Events]: ProtocolMapping.Events[Property][0];
 };
 
-/** A error that will be thrown if/when the connection is closed. */
+/** An error that will be thrown if/when the connection is closed. */
 export class CloseError extends Error {}
 
 export interface CdpClient extends EventEmitter<CdpEvents> {
