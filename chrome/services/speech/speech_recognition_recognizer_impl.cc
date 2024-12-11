@@ -24,7 +24,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/services/speech/soda/proto/soda_api.pb.h"
 #include "chrome/services/speech/soda/soda_client_impl.h"
 #include "components/soda/constants.h"
 #include "google_apis/google_api_keys.h"
@@ -472,22 +471,22 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
       config_paths_[primary_language_name_].AsUTF8Unsafe();
 
   // Initialize the SODA instance with the serialized config.
-  soda::chrome::ExtendedSodaConfigMsg config_msg;
-  config_msg.set_channel_count(channel_count_);
-  config_msg.set_sample_rate(sample_rate_);
-  config_msg.set_api_key(api_key);
-  config_msg.set_language_pack_directory(language_pack_directory);
-  config_msg.set_simulate_realtime_testonly(false);
-  config_msg.set_enable_lang_id(false);
-  config_msg.set_recognition_mode(
+  config_msg_ = soda::chrome::ExtendedSodaConfigMsg();
+  config_msg_.set_channel_count(channel_count_);
+  config_msg_.set_sample_rate(sample_rate_);
+  config_msg_.set_api_key(api_key);
+  config_msg_.set_language_pack_directory(language_pack_directory);
+  config_msg_.set_simulate_realtime_testonly(false);
+  config_msg_.set_enable_lang_id(false);
+  config_msg_.set_recognition_mode(
       GetSodaSpeechRecognitionMode(options_->recognition_mode));
-  config_msg.set_enable_formatting(options_->enable_formatting);
-  config_msg.set_enable_speaker_change_detection(
+  config_msg_.set_enable_formatting(options_->enable_formatting);
+  config_msg_.set_enable_speaker_change_detection(
       base::FeatureList::IsEnabled(media::kSpeakerChangeDetection));
-  config_msg.set_mask_offensive_words(mask_offensive_words_);
+  config_msg_.set_mask_offensive_words(mask_offensive_words_);
   if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage) &&
       config_paths_.size() > 0) {
-    auto* multilang_config = config_msg.mutable_multilang_config();
+    auto* multilang_config = config_msg_.mutable_multilang_config();
     multilang_config->set_rewind_when_switching_language(true);
     auto& multilang_language_pack_directory =
         *(multilang_config->mutable_multilang_language_pack_directory());
@@ -501,7 +500,7 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
   }
   if (!options_->recognition_context.is_null()) {
     auto* context_input =
-        config_msg.mutable_recognition_context()->add_context();
+        config_msg_.mutable_recognition_context()->add_context();
     context_input->set_name(kContextInputName);
     for (const auto& phrase : options_->recognition_context->phrases) {
       auto* p = context_input->mutable_phrases()->add_phrase();
@@ -510,7 +509,7 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
     }
   }
 
-  auto serialized = config_msg.SerializeAsString();
+  auto serialized = config_msg_.SerializeAsString();
 
   SerializedSodaConfig config;
   config.soda_config = serialized.c_str();
@@ -519,6 +518,11 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
   config.callback_handle = this;
   CHECK(soda_client_);
   soda_client_->Reset(config, sample_rate_, channel_count_);
+}
+
+soda::chrome::ExtendedSodaConfigMsg*
+SpeechRecognitionRecognizerImpl::GetExtendedSodaConfigMsgForTesting() {
+  return &config_msg_;
 }
 
 }  // namespace speech

@@ -11,7 +11,6 @@
 
 using ::testing::_;
 using ::testing::NiceMock;
-using ::testing::Return;
 
 namespace speech {
 
@@ -41,41 +40,83 @@ class SpeechRecognitionRecognizerImplTest
   void OnLanguageIdentificationEvent(
       media::mojom::LanguageIdentificationEventPtr event) override {}
 
-  void SetUp() override {
-    auto remote = receiver_.BindNewPipeAndPassRemote();
-    media::mojom::SpeechRecognitionOptionsPtr options =
-        media::mojom::SpeechRecognitionOptions::New();
-    config_paths_[kPrimaryLanguageName] = base::FilePath();
+  void SetUp() override {}
 
-    recognizer_ = std::make_unique<SpeechRecognitionRecognizerImpl>(
-        std::move(remote), std::move(options), base::FilePath(), config_paths_,
-        kPrimaryLanguageName, /*mask_offensive_words=*/true);
-
-    auto soda_client = std::make_unique<NiceMock<::soda::MockSodaClient>>();
-    soda_client_ = soda_client.get();
-    recognizer_->SetSodaClientForTesting(std::move(soda_client));
+  std::unique_ptr<SpeechRecognitionRecognizerImpl> CreateRecognizer(
+      media::mojom::SpeechRecognitionOptionsPtr options) {
+    return std::make_unique<SpeechRecognitionRecognizerImpl>(
+        receiver_.BindNewPipeAndPassRemote(), std::move(options),
+        base::FilePath(), config_paths_, kPrimaryLanguageName,
+        /*mask_offensive_words=*/true);
   }
 
-  void TearDown() override { soda_client_ = nullptr; }
+  media::mojom::SpeechRecognitionOptionsPtr CreateOptions(
+      std::optional<media::mojom::SpeechRecognitionRecognitionContextPtr>
+          recognition_context = std::nullopt) {
+    media::mojom::SpeechRecognitionOptionsPtr options =
+        media::mojom::SpeechRecognitionOptions::New();
+    options->recognition_mode = media::mojom::SpeechRecognitionMode::kCaption;
+    options->enable_formatting = false;
+    options->recognizer_client_type =
+        media::mojom::RecognizerClientType::kLiveCaption;
+    options->skip_continuously_empty_audio = true;
+    if (recognition_context) {
+      options->recognition_context = std::move(*recognition_context);
+    }
+    return options;
+  }
 
   base::flat_map<std::string, base::FilePath> config_paths() {
     return config_paths_;
   }
-  SpeechRecognitionRecognizerImpl* recognizer() { return recognizer_.get(); }
-  ::soda::MockSodaClient* soda_client() { return soda_client_; }
 
  private:
   mojo::Receiver<media::mojom::SpeechRecognitionRecognizerClient> receiver_{
       this};
   base::flat_map<std::string, base::FilePath> config_paths_;
-  std::unique_ptr<SpeechRecognitionRecognizerImpl> recognizer_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-  raw_ptr<::soda::MockSodaClient> soda_client_;
 };
 
 TEST_F(SpeechRecognitionRecognizerImplTest, OnLanguagePackInstalledTest) {
-  EXPECT_CALL(*soda_client(), Reset(_, _, _));
-  recognizer()->OnLanguagePackInstalled(config_paths());
+  auto recognizer = CreateRecognizer(CreateOptions());
+  auto soda_client = std::make_unique<NiceMock<::soda::MockSodaClient>>();
+  auto* soda_client_ptr = soda_client.get();
+  recognizer->SetSodaClientForTesting(std::move(soda_client));
+
+  EXPECT_CALL(*soda_client_ptr, Reset(_, _, _));
+  recognizer->OnLanguagePackInstalled(config_paths());
+
+  auto* config = recognizer->GetExtendedSodaConfigMsgForTesting();
+  EXPECT_EQ(soda::chrome::ExtendedSodaConfigMsg::CAPTION,
+            config->recognition_mode());
+  EXPECT_FALSE(config->enable_formatting());
+  EXPECT_TRUE(config->mask_offensive_words());
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest,
+       SpeechRecognitionRecognitionContextTest) {
+  auto recognition_context =
+      media::mojom::SpeechRecognitionRecognitionContext::New();
+  std::vector<media::mojom::SpeechRecognitionPhrasePtr> phrases;
+  phrases.push_back(
+      media::mojom::SpeechRecognitionPhrase::New("test-phrase", 2.0));
+  recognition_context->phrases = std::move(phrases);
+
+  auto recognizer =
+      CreateRecognizer(CreateOptions(std::move(recognition_context)));
+  recognizer->SetSodaClientForTesting(
+      std::make_unique<NiceMock<::soda::MockSodaClient>>());
+  recognizer->OnLanguagePackInstalled(config_paths());
+
+  auto context =
+      recognizer->GetExtendedSodaConfigMsgForTesting()->recognition_context();
+  EXPECT_EQ(1, context.context().size());
+  auto context_input = context.context().Get(0);
+  EXPECT_EQ("android-speech-api-generic-phrases", context_input.name());
+  EXPECT_EQ(1, context_input.phrases().phrase().size());
+  auto phrase = context_input.phrases().phrase().Get(0);
+  EXPECT_EQ("test-phrase", phrase.phrase());
+  EXPECT_EQ(2.0, phrase.boost());
 }
 
 }  // namespace speech
