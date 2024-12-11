@@ -80,6 +80,7 @@ group("api_implementations") {
     if (is_chromeos) {
       public_deps += [
         "//extensions/browser/api/cec_private",
+        "//extensions/browser/api/clipboard",
         "//extensions/browser/api/diagnostics",
         "//extensions/browser/api/media_perception_private",
         "//extensions/browser/api/virtual_keyboard",
