@@ -191,12 +191,10 @@ std::map<std::string, std::string> AddStartTimeQueryParam(
   return additional_search_query_params;
 }
 
-std::map<std::string, std::string> AddVisualInputTypeQueryParam(
-    std::map<std::string, std::string> additional_search_query_params,
-    lens::MimeType content_type) {
+std::string VitQueryParamValueForMimeType(lens::MimeType mime_type) {
   // Default contextual visual input type.
   std::string vitValue = kContextualVisualInputTypeQueryParameterValue;
-  switch (content_type) {
+  switch (mime_type) {
     case lens::MimeType::kPdf:
       if (lens::features::UsePdfVitParam()) {
         vitValue = kPdfVisualInputTypeQueryParameterValue;
@@ -211,6 +209,13 @@ std::map<std::string, std::string> AddVisualInputTypeQueryParam(
     case lens::MimeType::kUnknown:
       break;
   }
+  return vitValue;
+}
+
+std::map<std::string, std::string> AddVisualInputTypeQueryParam(
+    std::map<std::string, std::string> additional_search_query_params,
+    lens::MimeType content_type) {
+  std::string vitValue = VitQueryParamValueForMimeType(content_type);
   additional_search_query_params.insert(
       {kVisualInputTypeQueryParameterKey, vitValue});
   return additional_search_query_params;
@@ -323,6 +328,12 @@ void LensOverlayQueryController::StartQueryFlow(
   gen204_controller_->OnQueryFlowStart(invocation_source_, profile_,
                                        gen204_id_);
 
+  if (underlying_content_type != lens::MimeType::kUnknown) {
+    suggest_inputs_.set_contextual_visual_input_type(
+        VitQueryParamValueForMimeType(underlying_content_type_));
+    RunSuggestInputsCallback();
+  }
+
   // Reset translation languages in case they were set in a previous request.
   translate_options_.reset();
 
@@ -373,6 +384,10 @@ void LensOverlayQueryController::SendPageContentUpdateRequest(
   underlying_content_bytes_ = new_content_bytes;
   underlying_content_type_ = new_content_type;
   page_url_ = new_page_url;
+
+  suggest_inputs_.set_contextual_visual_input_type(
+      VitQueryParamValueForMimeType(underlying_content_type_));
+  RunSuggestInputsCallback();
 
   // Since the page content uses the full image request ID, but this is a new
   // request, update the latest_full_image_request_data_ with a new request ID.

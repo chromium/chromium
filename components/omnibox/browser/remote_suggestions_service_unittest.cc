@@ -428,6 +428,17 @@ TEST_F(RemoteSuggestionsServiceTest,
             "https://www.google.com/"
             "suggest?q=query&client=chrome-contextual&vsrid=vsrid&gsessionid="
             "gsessionid");
+
+  search_terms_args.lens_overlay_suggest_inputs
+      ->set_contextual_visual_input_type("vit");
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      &google_template_url, search_terms_args, SearchTermsData());
+
+  // Appended vit.
+  ASSERT_EQ(endpoint_url.spec(),
+            "https://www.google.com/"
+            "suggest?q=query&client=chrome-contextual&vit=vit&vsrid=vsrid"
+            "&gsessionid=gsessionid");
 }
 
 TEST_F(RemoteSuggestionsServiceTest,
@@ -522,6 +533,8 @@ TEST_F(RemoteSuggestionsServiceTest,
   search_terms_args.lens_overlay_suggest_inputs
       ->set_encoded_visual_search_interaction_log_data("vsint");
   search_terms_args.lens_overlay_suggest_inputs
+      ->set_contextual_visual_input_type("vit");
+  search_terms_args.lens_overlay_suggest_inputs
       ->set_send_gsession_vsrid_for_contextual_suggest(true);
   search_terms_args.lens_overlay_suggest_inputs
       ->set_send_vsint_for_lens_suggest(true);
@@ -551,6 +564,7 @@ TEST_F(RemoteSuggestionsServiceTest,
   lens_overlay_suggest_inputs.set_search_session_id("gsessionid");
   lens_overlay_suggest_inputs.set_encoded_visual_search_interaction_log_data(
       "vsint");
+  lens_overlay_suggest_inputs.set_contextual_visual_input_type("vit");
   lens_overlay_suggest_inputs.set_send_gsession_vsrid_for_contextual_suggest(
       true);
   lens_overlay_suggest_inputs.set_send_vsint_for_lens_suggest(true);
