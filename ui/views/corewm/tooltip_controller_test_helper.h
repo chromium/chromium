@@ -88,14 +88,8 @@ class TooltipTestView : public views::View {
   ~TooltipTestView() override;
 
   void set_tooltip_text(std::u16string tooltip_text) {
-    tooltip_text_ = tooltip_text;
+    SetCachedTooltipText(tooltip_text);
   }
-
-  // Overridden from views::View
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
-
- private:
-  std::u16string tooltip_text_;
 };
 
 }  // namespace views::corewm::test

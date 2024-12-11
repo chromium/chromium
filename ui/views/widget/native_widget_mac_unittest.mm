@@ -278,8 +278,8 @@ class CustomTooltipView : public View, public ViewObserver {
   METADATA_HEADER(CustomTooltipView, View)
 
  public:
-  CustomTooltipView(const std::u16string& tooltip, View* tooltip_handler)
-      : tooltip_(tooltip) {
+  CustomTooltipView(const std::u16string& tooltip, View* tooltip_handler) {
+    SetCachedTooltipText(tooltip);
     if (tooltip_handler) {
       tooltip_handler_observation_.Observe(tooltip_handler);
     }
@@ -287,11 +287,6 @@ class CustomTooltipView : public View, public ViewObserver {
 
   CustomTooltipView(const CustomTooltipView&) = delete;
   CustomTooltipView& operator=(const CustomTooltipView&) = delete;
-
-  // View:
-  std::u16string GetTooltipText(const gfx::Point& p) const override {
-    return tooltip_;
-  }
 
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override {
     return tooltip_handler_observation_.IsObserving()
@@ -305,7 +300,6 @@ class CustomTooltipView : public View, public ViewObserver {
   }
 
  private:
-  std::u16string tooltip_;
   base::ScopedObservation<View, ViewObserver> tooltip_handler_observation_{
       this};
 };
