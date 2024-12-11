@@ -236,6 +236,7 @@ bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
 
   out_resource->color_space = client_shared_image->color_space();
   out_resource->hdr_metadata = GetHDRMetadata();
+  out_resource->origin = client_shared_image->surface_origin();
 
   // When a resource is returned by the display compositor, a sync token is
   // provided to indicate when the compositor's commands using the resource are
