@@ -1512,11 +1512,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIdleManager) {
   ui::test::ScopedIdleProviderForTest scoped_idle_provider(
       std::make_unique<FakeIdleTimeProvider>());
 
-  EXPECT_TRUE(ExecJs(rfh_a, R"(
+  EXPECT_EQ(42, EvalJs(rfh_a, R"(
     new Promise(async resolve => {
       let idleDetector = new IdleDetector();
-      idleDetector.start();
-      resolve();
+      await idleDetector.start();
+      resolve(42);
     });
   )"));
 
@@ -1610,12 +1610,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   RenderFrameDeletedObserver rfh_a_deleted(rfh_a);
 
   // Execute functionality that calls PaymentManager.
-  EXPECT_TRUE(ExecJs(rfh_a, R"(
+  EXPECT_EQ(42, EvalJs(rfh_a, R"(
     new Promise(async resolve => {
       const registration = await navigator.serviceWorker.getRegistration(
           '/payments/payment_app.js');
       await registration.paymentManager.enableDelegations(['shippingAddress']);
-      resolve();
+      resolve(42);
     });
   )"));
 
@@ -2380,11 +2380,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
   const char script[] = R"(
       new Promise(resolve => {
         const socket = new WebSocket($1);
-        socket.addEventListener('open', () => resolve());
+        socket.addEventListener('open', () => resolve(42));
       });)";
-  ASSERT_TRUE(
-      ExecJs(rfh_a.get(),
-             JsReplace(script, ws_server.GetURL("echo-with-no-extension"))));
+  ASSERT_EQ(42, EvalJs(rfh_a.get(),
+                       JsReplace(script,
+                                 ws_server.GetURL("echo-with-no-extension"))));
 
   // 3) Navigate away to `url_b`.
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
@@ -3160,11 +3160,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       }
       new Promise(resolve => {
         socket = new WebSocket($1);
-        socket.addEventListener('open', () => resolve());
+        socket.addEventListener('open', () => resolve(42));
       });)";
-  ASSERT_TRUE(
-      ExecJs(rfh_a.get(),
-             JsReplace(script, ws_server.GetURL("echo-with-no-extension"))));
+  ASSERT_EQ(42, EvalJs(rfh_a.get(),
+                       JsReplace(script,
+                                 ws_server.GetURL("echo-with-no-extension"))));
 
   // 2) Navigate to B.
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
@@ -3283,10 +3283,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, MAYBE_WebSocketNotCached) {
   const char script[] = R"(
       new Promise(resolve => {
         const socket = new WebSocket($1);
-        socket.addEventListener('open', () => resolve());
+        socket.addEventListener('open', () => resolve(42));
       });)";
-  ASSERT_TRUE(ExecJs(
-      rfh_a, JsReplace(script, ws_server.GetURL("echo-with-no-extension"))));
+  ASSERT_EQ(
+      42, EvalJs(rfh_a, JsReplace(script,
+                                  ws_server.GetURL("echo-with-no-extension"))));
 
   // 2) Navigate to B.
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
@@ -4109,12 +4110,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, AudioSuspendAndResume) {
     EXPECT_EQ(u"canplaythrough", title_watcher.WaitAndGetTitle());
   }
 
-  EXPECT_TRUE(ExecJs(rfh_a, R"(
+  EXPECT_EQ(42, EvalJs(rfh_a, R"(
     new Promise(async resolve => {
       audio.play();
-      while (audio.currentTime === 0)
+      while (audio.currentTime === 0) {
         await new Promise(r => setTimeout(r, 1));
-      resolve();
+      }
+      resolve(42);
     });
   )"));
 
@@ -4198,12 +4200,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, VideoSuspendAndResume) {
     EXPECT_EQ(u"canplaythrough", title_watcher.WaitAndGetTitle());
   }
 
-  EXPECT_TRUE(ExecJs(rfh_a, R"(
+  EXPECT_EQ(42, EvalJs(rfh_a, R"(
     new Promise(async resolve => {
       video.play();
       while (video.currentTime == 0)
         await new Promise(r => setTimeout(r, 1));
-      resolve();
+      resolve(42);
     });
   )"));
 
@@ -5025,11 +5027,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
 
   // 2) Start SpeechRecognition.
-  EXPECT_TRUE(ExecJs(rfh_a, R"(
+  EXPECT_EQ(42, EvalJs(rfh_a, R"(
     new Promise(async resolve => {
-    var r = new webkitSpeechRecognition();
-    r.start();
-    resolve();
+      var r = new webkitSpeechRecognition();
+      r.start();
+      resolve(42);
     });
   )"));
 
@@ -5059,10 +5061,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
 
   // 2) Initialise SpeechRecognition but don't start it yet.
-  EXPECT_TRUE(ExecJs(rfh_a, R"(
+  EXPECT_EQ(42, EvalJs(rfh_a, R"(
     new Promise(async resolve => {
-    var r = new webkitSpeechRecognition();
-    resolve();
+      var r = new webkitSpeechRecognition();
+      resolve(42);
     });
   )"));
 
@@ -5098,11 +5100,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
 
-  EXPECT_TRUE(ExecJs(rfh_a.get(), R"(
+  EXPECT_EQ(42, EvalJs(rfh_a.get(), R"(
     new Promise(async resolve => {
-    var u = new SpeechSynthesisUtterance(" ");
-    speechSynthesis.speak(u);
-    resolve();
+      var u = new SpeechSynthesisUtterance(" ");
+      speechSynthesis.speak(u);
+      resolve(42);
     });
   )"));
 

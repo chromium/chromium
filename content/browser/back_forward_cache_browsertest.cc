@@ -411,20 +411,20 @@ RenderFrameHostImpl* BackForwardCacheBrowserTest::NavigateToPageWithImage(
 
 void BackForwardCacheBrowserTest::AcquireKeyboardLock(
     RenderFrameHostImpl* rfh) {
-  EXPECT_TRUE(ExecJs(rfh, R"(
+  EXPECT_EQ(42, EvalJs(rfh, R"(
         new Promise(resolve => {
           navigator.keyboard.lock();
-          resolve();
+          resolve(42);
         });
       )"));
 }
 
 void BackForwardCacheBrowserTest::ReleaseKeyboardLock(
     RenderFrameHostImpl* rfh) {
-  EXPECT_TRUE(ExecJs(rfh, R"(
+  EXPECT_EQ(42, EvalJs(rfh, R"(
         new Promise(resolve => {
           navigator.keyboard.unlock();
-          resolve();
+          resolve(42);
         });
       )"));
 }
