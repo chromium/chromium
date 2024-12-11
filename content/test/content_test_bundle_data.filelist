@@ -6092,6 +6092,7 @@ data/attribution_reporting/interop/dedup_key_report_window_ordering.json
 data/attribution_reporting/interop/deduplication_sequence.json
 data/attribution_reporting/interop/default_config.json
 data/attribution_reporting/interop/destination_limit.json
+data/attribution_reporting/interop/destination_public_suffix.json
 data/attribution_reporting/interop/destination_rate_limit.json
 data/attribution_reporting/interop/destination_validation.json
 data/attribution_reporting/interop/event_level_attribution_rate_limit_replacement.json
