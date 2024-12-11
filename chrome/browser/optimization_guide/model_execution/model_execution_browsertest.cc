@@ -971,7 +971,8 @@ class ModelExecutionNewFeaturesEnabledAutomaticallyTest
 #if !BUILDFLAG(IS_ANDROID)
 
 class ModelExecutionEnterprisePolicyBrowserTest
-    : public ModelExecutionEnabledBrowserTest {
+    : public ModelExecutionEnabledBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
     policy_provider_.SetDefaultReturns(
@@ -983,12 +984,18 @@ class ModelExecutionEnterprisePolicyBrowserTest
   }
 
   void InitializeFeatureList() override {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kOptimizationGuideModelExecution,
+        features::kModelQualityLogging,
+        features::internal::kTabOrganizationSettingsVisibility,
+        features::internal::kWallpaperSearchSettingsVisibility};
+
+    if (ShowEnterpriseDisabledFeatures()) {
+      enabled_features.push_back(features::kAiSettingsPageEnterpriseDisabledUi);
+    }
+
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kOptimizationGuideModelExecution,
-         features::kModelQualityLogging,
-         features::internal::kTabOrganizationSettingsVisibility,
-         features::internal::kWallpaperSearchSettingsVisibility},
+        enabled_features,
         /*disabled_features=*/
         {features::internal::kComposeGraduated,
          features::internal::kComposeSettingsVisibility,
@@ -996,11 +1003,13 @@ class ModelExecutionEnterprisePolicyBrowserTest
          features::internal::kWallpaperSearchGraduated});
   }
 
+  bool ShowEnterpriseDisabledFeatures() { return GetParam(); }
+
  protected:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
-IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
+IN_PROC_BROWSER_TEST_P(ModelExecutionEnterprisePolicyBrowserTest,
                        DisableThenEnable) {
   EnableSignin();
 
@@ -1031,7 +1040,8 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
                nullptr);
   policy_provider_.UpdateChromePolicy(policies);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
+  EXPECT_EQ(ShowEnterpriseDisabledFeatures(),
+            IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kTabOrganization));
   EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
@@ -1062,7 +1072,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
       proto::LogAiDataRequest::FeatureCase::kCompose));
 }
 
-IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
+IN_PROC_BROWSER_TEST_P(ModelExecutionEnterprisePolicyBrowserTest,
                        DisableThenEnableCompose) {
   EnableSignin();
 
@@ -1140,7 +1150,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
+IN_PROC_BROWSER_TEST_P(ModelExecutionEnterprisePolicyBrowserTest,
                        EnableComposeWithoutLogging) {
   EnableSignin();
 
@@ -1210,7 +1220,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
+IN_PROC_BROWSER_TEST_P(ModelExecutionEnterprisePolicyBrowserTest,
                        DisableThenEnableWallpaperSearch) {
   EnableSignin();
 
@@ -1236,7 +1246,8 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
                nullptr);
   policy_provider_.UpdateChromePolicy(policies);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
+  EXPECT_EQ(ShowEnterpriseDisabledFeatures(),
+            IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kWallpaperSearch));
 
@@ -1257,7 +1268,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
       UserVisibleFeatureKey::kWallpaperSearch));
 }
 
-IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
+IN_PROC_BROWSER_TEST_P(ModelExecutionEnterprisePolicyBrowserTest,
                        EnableTabOrganizationWithoutLogging) {
   EnableSignin();
 
@@ -1290,6 +1301,10 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   EXPECT_TRUE(ShouldFeatureBeCurrentlyAllowedForLogging(
       proto::LogAiDataRequest::FeatureCase::kCompose));
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ModelExecutionEnterprisePolicyBrowserTest,
+                         ::testing::Bool());
 
 #endif  //  !BUILDFLAG(IS_ANDROID)
 

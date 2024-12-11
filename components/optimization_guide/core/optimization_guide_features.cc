@@ -198,6 +198,10 @@ BASE_FEATURE(kPrivacyGuideAiSettings,
              "PrivacyGuideAiSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAiSettingsPageEnterpriseDisabledUi,
+             "AiSettingsPageEnterpriseDisabledUi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<std::string> kPerformanceClassListForOnDeviceModel{
     &kOptimizationGuideOnDeviceModel,
     "compatible_on_device_performance_classes", "5,6"};
@@ -882,7 +886,8 @@ bool ShouldEnableOptimizationGuideIconView() {
 
 bool IsAiSettingsPageRefreshEnabled() {
   return base::FeatureList::IsEnabled(kAiSettingsPageRefresh) ||
-         base::FeatureList::IsEnabled(kPrivacyGuideAiSettings);
+         base::FeatureList::IsEnabled(kPrivacyGuideAiSettings) ||
+         base::FeatureList::IsEnabled(kAiSettingsPageEnterpriseDisabledUi);
 }
 
 bool IsPrivacyGuideAiSettingsEnabled() {
