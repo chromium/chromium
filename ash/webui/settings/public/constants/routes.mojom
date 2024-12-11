@@ -182,6 +182,7 @@ enum Subpage {
   kSelectToSpeak = 1510,
   kChromeVox = 1511,
   kFaceGazeSettings = 1512,
+  kMouseKeysSettings = 1513,
 
   // Note: Reset section has no subpages.
 
@@ -342,6 +343,8 @@ const string kSwitchAccessOptionsSubpagePath =
     "manageAccessibility/switchAccess";
 const string kFaceGazeSettingsSubpagePath =
     "manageAccessibility/faceGaze";
+const string kMouseKeysSettingsSubpagePath =
+    "manageAccessibility/mouseKeys";
 
 // Reset section.
 const string kResetSectionPath = "osReset";

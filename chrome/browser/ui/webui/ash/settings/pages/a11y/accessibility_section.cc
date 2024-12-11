@@ -61,6 +61,7 @@ using ::chromeos::settings::mojom::kDisplayAndMagnificationSubpagePath;
 using ::chromeos::settings::mojom::kFaceGazeSettingsSubpagePath;
 using ::chromeos::settings::mojom::kKeyboardAndTextInputSubpagePath;
 using ::chromeos::settings::mojom::kManageAccessibilitySubpagePath;
+using ::chromeos::settings::mojom::kMouseKeysSettingsSubpagePath;
 using ::chromeos::settings::mojom::kSelectToSpeakSubpagePath;
 using ::chromeos::settings::mojom::kSwitchAccessOptionsSubpagePath;
 using ::chromeos::settings::mojom::kTextToSpeechPagePath;
@@ -527,6 +528,18 @@ base::span<const SearchConcept> GetA11yFaceGazeSearchConcepts() {
         IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE_ALT2,
         IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE_ALT3,
         IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE_ALT4}},
+  });
+  return tags;
+}
+
+base::span<const SearchConcept> GetA11yMouseKeysSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
+      {IDS_OS_SETTINGS_TAG_A11Y_MOUSE_KEYS,
+       mojom::kMouseKeysSettingsSubpagePath,
+       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kMouseKeysEnabled}},
   });
   return tags;
 }
@@ -1929,6 +1942,13 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Subpage::kFaceGazeSettings, mojom::SearchResultIcon::kA11y,
       mojom::SearchResultDefaultRank::kMedium,
       mojom::kFaceGazeSettingsSubpagePath);
+
+  // Mouse keys settings.
+  generator->RegisterTopLevelSubpage(
+      IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_LABEL,
+      mojom::Subpage::kMouseKeysSettings, mojom::SearchResultIcon::kA11y,
+      mojom::SearchResultDefaultRank::kMedium,
+      mojom::kMouseKeysSettingsSubpagePath);
 }
 
 void AccessibilitySection::OnVoicesChanged() {
@@ -2028,6 +2048,10 @@ void AccessibilitySection::UpdateSearchTags() {
 
   if (IsAccessibilitySlowKeysEnabled()) {
     updater.AddSearchTags(GetA11ySlowKeysSearchConcepts());
+  }
+
+  if (IsAccessibilityMouseKeysEnabled()) {
+    updater.AddSearchTags(GetA11yMouseKeysSearchConcepts());
   }
 
   if (IsAccessibilityDisableTouchpadEnabled()) {

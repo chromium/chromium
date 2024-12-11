@@ -198,6 +198,7 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   MANAGE_ACCESSIBILITY: Route;
   MANAGE_FACEGAZE_SETTINGS: Route;
   MANAGE_ISOLATED_WEB_APPS: Route;
+  MANAGE_MOUSE_KEYS_SETTINGS: Route;
   MANAGE_SWITCH_ACCESS_SETTINGS: Route;
   MANAGE_TTS_SETTINGS: Route;
   MULTIDEVICE: Route;
@@ -499,6 +500,9 @@ export function createRoutes(): OsSettingsRoutes {
   r.MANAGE_FACEGAZE_SETTINGS = createSubpage(
       r.A11Y_CURSOR_AND_TOUCHPAD, routesMojom.FACE_GAZE_SETTINGS_SUBPAGE_PATH,
       Subpage.kFaceGazeSettings);
+  r.MANAGE_MOUSE_KEYS_SETTINGS = createSubpage(
+      r.A11Y_CURSOR_AND_TOUCHPAD, routesMojom.MOUSE_KEYS_SETTINGS_SUBPAGE_PATH,
+      Subpage.kMouseKeysSettings);
 
   // Privacy and Security section.
   r.OS_PRIVACY = createSection(

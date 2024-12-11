@@ -198,6 +198,7 @@ build_webui("build") {
     "os_a11y_page/text_to_speech_subpage.ts",
     "os_a11y_page/tts_voice_subpage.ts",
     "os_a11y_page/facegaze_subpage.ts",
+    "os_a11y_page/mouse_keys_subpage.ts",
     "os_a11y_page/facegaze_actions_add_dialog.ts",
     "os_a11y_page/facegaze_actions_card.ts",
     "os_a11y_page/facegaze_cursor_card.ts",

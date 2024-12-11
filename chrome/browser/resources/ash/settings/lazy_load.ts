@@ -233,6 +233,7 @@ export {SettingsFaceGazeSubpageElement} from './os_a11y_page/facegaze_subpage.js
 export {SettingsKeyboardAndTextInputPageElement} from './os_a11y_page/keyboard_and_text_input_page.js';
 export {SettingsLiveCaptionElement} from './os_a11y_page/live_caption_section.js';
 export {SettingsLiveTranslateElement} from './os_a11y_page/live_translate_section.js';
+export {SettingsMouseKeysSubpageElement} from './os_a11y_page/mouse_keys_subpage.js';
 export {HandlerVoice, SettingsSelectToSpeakSubpageElement} from './os_a11y_page/select_to_speak_subpage.js';
 export {SettingsSwitchAccessActionAssignmentDialogElement} from './os_a11y_page/switch_access_action_assignment_dialog.js';
 export {SettingsSwitchAccessActionAssignmentPaneElement} from './os_a11y_page/switch_access_action_assignment_pane.js';

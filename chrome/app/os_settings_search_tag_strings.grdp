@@ -1475,6 +1475,9 @@
   <message name="IDS_OS_SETTINGS_TAG_A11Y_AUTOMATICALLY_CLICK_ALT1" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable automatically clicking when the cursor stops. Alternate phrase for: 'Automatically click when cursor stops'">
     Auto clicks
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_MOUSE_KEYS" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable controlling the mouse via the keyboard">
+    Mouse keys
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable controlling the computer via facial gestures and movement.">
     Face control
   </message>

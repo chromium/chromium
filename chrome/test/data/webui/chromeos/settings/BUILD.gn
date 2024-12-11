@@ -195,6 +195,7 @@ build_webui_tests("build") {
     "os_a11y_page/change_dictation_locale_dialog_test.ts",
     "os_a11y_page/chromevox_subpage_test.ts",
     "os_a11y_page/cursor_and_touchpad_page_test.ts",
+    "os_a11y_page/mouse_keys_subpage_test.ts",
     "os_a11y_page/facegaze_cursor_card_test.ts",
     "os_a11y_page/facegaze_actions_card_test.ts",
     "os_a11y_page/facegaze_actions_add_dialog_test.ts",
