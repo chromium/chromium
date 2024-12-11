@@ -361,7 +361,8 @@ void InputManager::OnInvalidInputEventSource(const FrameSinkId& frame_sink_id,
 std::optional<bool> InputManager::IsDelegatedInkHovering(
     const FrameSinkId& frame_sink_id) {
   auto* support = frame_sink_manager_->GetFrameSinkForId(frame_sink_id);
-  if (!IsFrameMetadataAvailable(support)) {
+  if (!IsFrameMetadataAvailable(support) ||
+      !support->GetLastActivatedFrameMetadata()->delegated_ink_metadata) {
     return std::nullopt;
   }
   return support->GetLastActivatedFrameMetadata()
