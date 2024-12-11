@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 
 import android.text.TextUtils;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,6 +44,11 @@ public class HomeModulesConfigManagerUnitTest {
     @Before
     public void setUp() {
         mHomeModulesConfigManager = HomeModulesConfigManager.getInstance();
+    }
+
+    @After
+    public void tearDown() {
+        mHomeModulesConfigManager.cleanupForTesting();
     }
 
     @Test
