@@ -1593,6 +1593,12 @@ struct EnhancedSafeBrowsingActivePromoData
 
 #pragma mark - Private methods
 
+- (void)stopManageSyncSettingsCoordinator {
+  [_manageSyncSettingsCoordinator stop];
+  _manageSyncSettingsCoordinator.delegate = nil;
+  _manageSyncSettingsCoordinator = nil;
+}
+
 - (void)handleIdentityUpdated:(id<SystemIdentity>)identity {
   if ([_identity isEqual:identity]) {
     [self reloadAccountCell];
@@ -2262,8 +2268,7 @@ struct EnhancedSafeBrowsingActivePromoData
   [_privacyCoordinator stop];
   _privacyCoordinator = nil;
 
-  [_manageSyncSettingsCoordinator stop];
-  _manageSyncSettingsCoordinator = nil;
+  [self stopManageSyncSettingsCoordinator];
 
   [_tabsCoordinator stop];
   _tabsCoordinator = nil;
@@ -2628,8 +2633,7 @@ struct EnhancedSafeBrowsingActivePromoData
 - (void)manageSyncSettingsCoordinatorWasRemoved:
     (ManageSyncSettingsCoordinator*)coordinator {
   DCHECK_EQ(_manageSyncSettingsCoordinator, coordinator);
-  [_manageSyncSettingsCoordinator stop];
-  _manageSyncSettingsCoordinator = nil;
+  [self stopManageSyncSettingsCoordinator];
 }
 
 - (NSString*)manageSyncSettingsCoordinatorTitle {
