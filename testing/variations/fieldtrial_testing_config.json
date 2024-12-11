@@ -10360,6 +10360,33 @@
             ]
         }
     ],
+    "GranitePermissionsHaTS": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "GeoSurvey_20241211",
+                    "params": {
+                        "probability": "0.3",
+                        "prompt_disposition_filter": "AnchoredBubble",
+                        "prompt_disposition_reason_filter": "DefaultFallback",
+                        "request_type_filter": "Geolocation",
+                        "survey_display_time": "OnPromptResolved",
+                        "trigger_id": "gqeUMMLT20ugnJ3q1cK0NWHyGuSi"
+                    },
+                    "enable_features": [
+                        "PermissionsPromptSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "GroupedHistoryAllLocales": [
         {
             "platforms": [
@@ -16745,34 +16772,6 @@
                     },
                     "enable_features": [
                         "PermissionElementPromptPositioning"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PermissionsPEPCHaTS": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "RecoverySurveyDismiss_20240729",
-                    "params": {
-                        "action_filter": "Dismissed",
-                        "initial_permission_status_filter": "deny",
-                        "probability": "0.5",
-                        "probability_vector": "0.5,0.5",
-                        "prompt_disposition_filter": "ElementAnchoredBubble",
-                        "request_type_filter": "VideoCapture,AudioCapture",
-                        "survey_display_time": "OnPromptResolved",
-                        "trigger_id": "oqdSQ6wky0ugnJ3q1cK0WRpR8GW2,WCAaJD6T80ugnJ3q1cK0XaNn1zy3"
-                    },
-                    "enable_features": [
-                        "PermissionsPromptSurvey"
                     ]
                 }
             ]
