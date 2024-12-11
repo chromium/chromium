@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_entry.h"
 #include "url/gurl.h"
 
 namespace tabs {
@@ -219,8 +220,46 @@ void TabDeclutterController::DeclutterTabs(
   }
 
   for (GURL url : urls) {
-    // TODO(crbug.com/376880738): Close all tabs with the given URL except for
-    // the oldest.
+    // Sort the tabs with `url` based on the last committed navigation time and
+    // close all the tabs except the oldest tab.
+    std::vector<std::pair<tabs::TabInterface*, base::Time>> url_matching_tabs;
+
+    for (int tab_index = 0; tab_index < tab_strip_model_->GetTabCount();
+         ++tab_index) {
+      tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(tab_index);
+
+      if (tab->GetContents()->GetLastCommittedURL().GetWithoutRef() != url) {
+        continue;
+      }
+
+      // It is possible that the timestamp is not present. Prefer to delete this
+      // as a duplicate in that case. This can be due to
+      //   - The navigation was restored and for some reason the
+      //     timestamp wasn't available;
+      //   - or the navigation was copied from a foreign session.
+      auto* last_entry =
+          tab->GetContents()->GetController().GetLastCommittedEntry();
+      base::Time last_committed_time = last_entry->GetTimestamp().is_null()
+                                           ? base::Time::Max()
+                                           : last_entry->GetTimestamp();
+
+      url_matching_tabs.emplace_back(tab, last_committed_time);
+    }
+
+    std::sort(url_matching_tabs.begin(), url_matching_tabs.end(),
+              [](const std::pair<tabs::TabInterface*, base::Time>& a,
+                 const std::pair<tabs::TabInterface*, base::Time>& b) {
+                return a.second < b.second;
+              });
+
+    // Close all the tabs except the first tab which will be the oldest
+    // duplicate tab.
+    for (size_t i = 1; i < url_matching_tabs.size(); ++i) {
+      tabs::TabInterface* tab = url_matching_tabs[i].first;
+      tab_strip_model_->CloseWebContentsAt(
+          tab_strip_model_->GetIndexOfWebContents(tab->GetContents()),
+          TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+    }
   }
 
   excluded_tabs_.clear();
