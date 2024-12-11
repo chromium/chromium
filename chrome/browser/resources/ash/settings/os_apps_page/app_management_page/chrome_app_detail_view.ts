@@ -14,7 +14,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {AppManagementBrowserProxy} from '../../common/app_management/browser_proxy.js';
 import {AppManagementStoreMixin} from '../../common/app_management/store_mixin.js';
-import {isRevampWayfindingEnabled} from '../../common/load_time_booleans.js';
 
 import {getTemplate} from './chrome_app_detail_view.html.js';
 
@@ -38,21 +37,12 @@ export class AppManagementChromeAppDetailViewElement extends
         observer: 'onAppChanged_',
       },
 
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value() {
-          return isRevampWayfindingEnabled();
-        },
-        readOnly: true,
-      },
-
       messages_: Object,
     };
   }
 
   private app_: App;
   private messages_: ExtensionAppPermissionMessage[];
-  private isRevampWayfindingEnabled_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -89,12 +79,6 @@ export class AppManagementChromeAppDetailViewElement extends
 
   private hasPermissions_(messages: ExtensionAppPermissionMessage[]): boolean {
     return messages.length > 0;
-  }
-
-  private getAppManagementMorePermissionsLabel_(): string {
-    return this.isRevampWayfindingEnabled_ ?
-        this.i18n('appManagementMorePermissionsLabelChromeApp') :
-        this.i18n('appManagementMorePermissionsLabel');
   }
 }
 

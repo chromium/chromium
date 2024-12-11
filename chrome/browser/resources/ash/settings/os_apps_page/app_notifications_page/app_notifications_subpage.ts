@@ -8,7 +8,6 @@
  * notifications of all apps.
  */
 
-import './app_notification_row.js';
 import '../../controls/settings_toggle_button.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
@@ -17,7 +16,6 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../../common/deep_linking_mixin.js';
-import {isRevampWayfindingEnabled} from '../../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../../common/route_origin_mixin.js';
 import {recordSettingChange} from '../../metrics_recorder.js';
 import type {App, AppNotificationsHandlerInterface} from '../../mojom-webui/app_notification_handler.mojom-webui.js';
@@ -85,14 +83,6 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
           Setting.kAppBadgingOnOff,
         ]),
       },
-
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value() {
-          return isRevampWayfindingEnabled();
-        },
-        readOnly: true,
-      },
     };
   }
 
@@ -103,7 +93,6 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
   private isDndEnabled_: boolean;
   private mojoInterfaceProvider_: AppNotificationsHandlerInterface;
   private virtualDndPref_: chrome.settingsPrivate.PrefObject<boolean>;
-  private isRevampWayfindingEnabled_: boolean;
 
   constructor() {
     super();

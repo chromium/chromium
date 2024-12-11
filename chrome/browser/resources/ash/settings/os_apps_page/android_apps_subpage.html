@@ -1,34 +1,23 @@
 <style include="settings-shared"></style>
 
-<template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-  <cr-link-row id="openGooglePlayRow" label="$i18n{androidOpenGooglePlay}"
-      on-click="onOpenGooglePlayClick_"
-      external>
-  </cr-link-row>
-  <template is="dom-if" if="[[androidAppsInfo.settingsAppAvailable]]" restamp>
-    <cr-link-row id="manageApps" class="hr" label="$i18n{androidAppsManageApps}"
-        on-click="onManageAndroidAppsClick_"
-        external
-        deep-link-focus-id$="[[Setting.kManageAndroidPreferences]]">
-    </cr-link-row>
-  </template>
-</template>
+<cr-link-row id="openGooglePlayRow" label="$i18n{androidOpenGooglePlay}"
+    on-click="onOpenGooglePlayClick_"
+    external>
+</cr-link-row>
 
-<template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
-  <template is="dom-if" if="[[androidAppsInfo.settingsAppAvailable]]" restamp>
-    <cr-link-row id="manageApps" label="$i18n{androidAppsManageApps}"
-        on-click="onManageAndroidAppsClick_"
-        external
-        deep-link-focus-id$="[[Setting.kManageAndroidPreferences]]">
-    </cr-link-row>
-  </template>
+<template is="dom-if" if="[[androidAppsInfo.settingsAppAvailable]]" restamp>
+  <cr-link-row id="manageApps" class="hr" label="$i18n{androidAppsManageApps}"
+      on-click="onManageAndroidAppsClick_"
+      external
+      deep-link-focus-id$="[[Setting.kManageAndroidPreferences]]">
+  </cr-link-row>
 </template>
 
 <template is="dom-if" if="[[isArcVmManageUsbAvailable]]">
   <cr-link-row
       class="hr"
       label="$i18n{guestOsSharedUsbDevicesLabel}"
-      sub-label="[[getGuestOsSharedUsbDevicesSublabel_()]]"
+      sub-label="$i18n{guestOsSharedUsbDevicesDescription}"
       id="manageArcvmShareUsbDevices"
       on-click="onSharedUsbDevicesClick_"
       role-description="$i18n{subpageArrowRoleDescription}">

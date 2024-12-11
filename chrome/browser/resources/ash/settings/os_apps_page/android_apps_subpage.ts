@@ -20,7 +20,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import type {Route} from '../router.js';
@@ -85,14 +84,6 @@ export class SettingsAndroidAppsSubpageElement extends
           Setting.kRemovePlayStore,
         ]),
       },
-
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value() {
-          return isRevampWayfindingEnabled();
-        },
-        readOnly: true,
-      },
     };
   }
 
@@ -100,7 +91,6 @@ export class SettingsAndroidAppsSubpageElement extends
   isArcVmManageUsbAvailable: boolean;
   private dialogBody_: string;
   private playStoreEnabled_: boolean;
-  private isRevampWayfindingEnabled_: boolean;
 
   constructor() {
     super();
@@ -182,12 +172,6 @@ export class SettingsAndroidAppsSubpageElement extends
   private onSharedUsbDevicesClick_(): void {
     Router.getInstance().navigateTo(
         routes.ANDROID_APPS_DETAILS_ARC_VM_SHARED_USB_DEVICES);
-  }
-
-  private getGuestOsSharedUsbDevicesSublabel_(): string|null {
-    return this.isRevampWayfindingEnabled_ ?
-        this.i18n('guestOsSharedUsbDevicesDescription') :
-        null;
   }
 
   private onOpenGooglePlayClick_(): void {
