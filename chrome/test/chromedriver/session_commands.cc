@@ -13,12 +13,14 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
+#include "base/location.h"
 #include "base/logging.h"  // For CHECK macros.
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -41,6 +43,8 @@
 #include "chrome/test/chromedriver/command_listener.h"
 #include "chrome/test/chromedriver/constants/version.h"
 #include "chrome/test/chromedriver/logging.h"
+#include "chrome/test/chromedriver/net/sync_websocket.h"
+#include "chrome/test/chromedriver/net/sync_websocket_factory.h"
 #include "chrome/test/chromedriver/session.h"
 #include "chrome/test/chromedriver/util.h"
 #include "services/device/public/cpp/generic_sensor/orientation_util.h"
@@ -83,16 +87,6 @@ Status EvaluateScriptAndIgnoreResult(Session* session,
   return web_view->EvaluateScript(frame_id, expression, await_promise, &result);
 }
 
-base::RepeatingCallback<Status(bool*)> BidiResponseIsReceivedCallback(
-    Session* session) {
-  return base::BindRepeating(
-      [](Session* session, bool* condition_is_met) {
-        *condition_is_met = !session->awaiting_bidi_response;
-        return Status{kOk};
-      },
-      base::Unretained(session));
-}
-
 }  // namespace
 
 InitSessionParams::InitSessionParams(
@@ -100,12 +94,12 @@ InitSessionParams::InitSessionParams(
     const SyncWebSocketFactory& socket_factory,
     DeviceManager* device_manager,
     const scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
-    SessionConnectionMap* session_map)
+    TerminateSessionCallback terminate_on_cmd)
     : url_loader_factory(factory),
       socket_factory(socket_factory),
       device_manager(device_manager),
       cmd_task_runner(cmd_task_runner),
-      session_map(session_map) {}
+      terminate_on_cmd(terminate_on_cmd) {}
 
 InitSessionParams::InitSessionParams(const InitSessionParams& other) = default;
 
@@ -278,6 +272,10 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
                          Session* session,
                          const base::Value::Dict& params,
                          std::unique_ptr<base::Value>* value) {
+  session->cmd_task_runner = bound_params.cmd_task_runner;
+  session->terminate_on_cmd = base::BindPostTask(
+      session->cmd_task_runner,
+      base::BindOnce(bound_params.terminate_on_cmd, session->id), FROM_HERE);
   if (!bound_params.device_manager) {
     return Status{kSessionNotCreated, "device manager cannot be null"};
   }
@@ -310,8 +308,7 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
   if (session->web_socket_url) {
     // Suffixes used with the client channels.
     std::string client_suffixes[] = {Session::kChannelSuffix,
-                                     Session::kNoChannelSuffix,
-                                     Session::kBlockingChannelSuffix};
+                                     Session::kNoChannelSuffix};
     for (std::string suffix : client_suffixes) {
       BidiTracker* bidi_tracker = new BidiTracker();
       bidi_tracker->SetChannelSuffix(std::move(suffix));
@@ -321,11 +318,12 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     }
   }
 
-  status =
-      LaunchChrome(bound_params.url_loader_factory, bound_params.socket_factory,
-                   *bound_params.device_manager, capabilities,
-                   std::move(devtools_event_listeners), session->w3c_compliant,
-                   session->chrome);
+  status = LaunchChrome(
+      bound_params.url_loader_factory, bound_params.socket_factory,
+      *bound_params.device_manager, capabilities,
+      std::move(devtools_event_listeners),
+      base::BindRepeating(&Session::HandleMessagesAndTerminateIfNecessary),
+      session->w3c_compliant, session->chrome);
 
   if (status.IsError())
     return status;
@@ -1798,7 +1796,6 @@ Status ForwardBidiCommand(Session* session,
   }
 
   base::Value::Dict bidi_cmd = data->Clone();
-  std::string* method = bidi_cmd.FindString("method");
 
   std::string* user_channel = bidi_cmd.FindString("channel");
   std::string channel;
@@ -1810,47 +1807,8 @@ Status ForwardBidiCommand(Session* session,
         "/" + base::NumberToString(*connection_id) + Session::kNoChannelSuffix;
   }
 
-  if (*method == "browsingContext.close") {
-    bidi_cmd.Set("channel", channel + Session::kBlockingChannelSuffix);
-    // Closing of the context is handled in a blocking way.
-    // This simplifies us closing the browser if the last tab was closed.
-    session->awaiting_bidi_response = true;
-    status = web_view->PostBidiCommand(std::move(bidi_cmd));
-    if (status.IsError()) {
-      return status;
-    }
-
-    // The timeout is the same as in ChromeImpl::CloseTarget
-    status = web_view->HandleEventsUntil(
-        std::move(BidiResponseIsReceivedCallback(session)),
-        Timeout(base::Seconds(20)));
-    if (status.code() == kTimeout) {
-      // It looks like something is going wrong with the BiDiMapper.
-      // Terminating the session...
-      session->quit = true;
-      status = session->chrome->Quit();
-      return Status(kUnknownError, "failed to close window in 20 seconds");
-    }
-    if (status.IsError()) {
-      return status;
-    }
-
-    size_t web_view_count;
-    status = session->chrome->GetWebViewCount(&web_view_count,
-                                              session->w3c_compliant);
-    if (status.IsError()) {
-      return status;
-    }
-
-    bool is_last_web_view = web_view_count <= 1u;
-    if (is_last_web_view) {
-      session->quit = true;
-      status = session->chrome->Quit();
-    }
-  } else {
-    bidi_cmd.Set("channel", std::move(channel));
-    status = web_view->PostBidiCommand(std::move(bidi_cmd));
-  }
+  bidi_cmd.Set("channel", std::move(channel));
+  status = web_view->PostBidiCommand(std::move(bidi_cmd));
 
   return status;
 }

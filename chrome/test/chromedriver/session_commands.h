@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
@@ -20,13 +21,15 @@ class DeviceManager;
 struct Session;
 class Status;
 
+using TerminateSessionCallback = base::RepeatingCallback<void(std::string)>;
+
 struct InitSessionParams {
   InitSessionParams(
       network::mojom::URLLoaderFactory* factory,
       const SyncWebSocketFactory& socket_factory,
       DeviceManager* device_manager,
       const scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
-      SessionConnectionMap* session_map);
+      TerminateSessionCallback terminate_on_cmd);
   InitSessionParams(const InitSessionParams& other);
   ~InitSessionParams();
 
@@ -34,7 +37,7 @@ struct InitSessionParams {
   SyncWebSocketFactory socket_factory;
   raw_ptr<DeviceManager> device_manager;
   scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner;
-  raw_ptr<SessionConnectionMap> session_map;
+  TerminateSessionCallback terminate_on_cmd;
 };
 
 bool GetW3CSetting(const base::Value::Dict& params);

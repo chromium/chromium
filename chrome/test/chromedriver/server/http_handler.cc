@@ -274,13 +274,16 @@ HttpHandler::HttpHandler(
       url_loader_factory_owner_->GetURLLoaderFactory());
   session_connection_map_.emplace("", std::vector<int>());
 
+  auto terminate_on_cmd = base::BindRepeating(&HttpHandler::OnSessionTerminated,
+                                              weak_ptr_factory_.GetWeakPtr());
+
   Command init_session_cmd = WrapToCommand(
       "InitSession",
       base::BindRepeating(
           &ExecuteInitSession,
           InitSessionParams(wrapper_url_loader_factory_.get(), socket_factory_,
                             device_manager_.get(), cmd_task_runner,
-                            &session_connection_map_)));
+                            terminate_on_cmd)));
   Command create_and_init_session = base::BindRepeating(
       &ExecuteCreateSession, &session_thread_map_, init_session_cmd);
 
@@ -292,8 +295,7 @@ HttpHandler::HttpHandler(
                      WrapCreateNewSessionCommand(create_and_init_session)),
       CommandMapping(kDelete, "session/:sessionId",
                      base::BindRepeating(
-                         &ExecuteSessionCommand, &session_thread_map_,
-                         &session_connection_map_, "Quit",
+                         &ExecuteSessionCommand, &session_thread_map_, "Quit",
                          base::BindRepeating(&ExecuteQuit, false), true, true)),
       CommandMapping(kGet, "status", base::BindRepeating(&ExecuteGetStatus)),
       CommandMapping(kGet, "session/:sessionId/timeouts",
@@ -1222,8 +1224,7 @@ HttpHandler::HttpHandler(
 
   session_bidi_command_map_.emplace(
       "session.end",
-      base::BindRepeating(&ExecuteSessionCommand, &session_thread_map_,
-                          &session_connection_map_, "Quit",
+      base::BindRepeating(&ExecuteSessionCommand, &session_thread_map_, "Quit",
                           base::BindRepeating(&ExecuteBidiSessionEnd), true,
                           true));
 
@@ -1264,9 +1265,8 @@ base::WeakPtr<HttpHandler> HttpHandler::WeakPtr() {
 Command HttpHandler::WrapToCommand(const char* name,
                                    const SessionCommand& session_command,
                                    bool w3c_standard_command) {
-  return base::BindRepeating(&ExecuteSessionCommand, &session_thread_map_,
-                             &session_connection_map_, name, session_command,
-                             w3c_standard_command, false);
+  return base::BindRepeating(&ExecuteSessionCommand, &session_thread_map_, name,
+                             session_command, w3c_standard_command, false);
 }
 
 Command HttpHandler::WrapToCommand(const char* name,
@@ -1783,6 +1783,11 @@ void HttpHandler::OnNewSessionCreated(const CommandCallback& next_callback,
     session_connection_map_.emplace(session_id, std::vector<int>{});
   }
   next_callback.Run(status, std::move(result), session_id, w3c);
+}
+
+void HttpHandler::OnSessionTerminated(std::string session_id) {
+  session_thread_map_.erase(session_id);
+  session_connection_map_.erase(session_id);
 }
 
 void HttpHandler::OnNewBidiSessionOnCmdThread(

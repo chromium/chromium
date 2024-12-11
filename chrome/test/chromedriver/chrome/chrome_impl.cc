@@ -115,17 +115,8 @@ Status ChromeImpl::GetWebViewIdForFirstTab(std::string* web_view_id,
   return Status(kUnknownError, "unable to discover open window in chrome");
 }
 
-Status ChromeImpl::GetWebViewCount(size_t* web_view_count, bool w3c_compliant) {
-  WebViewsInfo views_info;
-  Status status = target_utils::GetTopLevelViewsInfo(
-      *devtools_websocket_client_, nullptr, views_info);
-  if (status.IsError()) {
-    return status;
-  }
-
-  *web_view_count = views_info.GetSize();
-
-  return Status(kOk);
+int ChromeImpl::GetWebViewCount() const {
+  return web_views_.size();
 }
 
 Status ChromeImpl::GetTopLevelWebViewIds(std::list<std::string>* web_view_ids,

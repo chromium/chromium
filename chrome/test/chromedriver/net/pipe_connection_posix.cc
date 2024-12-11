@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/callback_forward.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -185,7 +186,7 @@ class PipeReader {
     DetermineRecipient(message, &send_to_chromedriver);
     if (send_to_chromedriver) {
       notification_is_needed = received_queue_.empty();
-      received_queue_.push_back(message);
+      received_queue_.push_back(std::move(message));
     }
     on_update_event_.Signal();
 
@@ -407,6 +408,7 @@ PipeConnectionPosix::PipeConnectionPosix(base::ScopedPlatformFile read_file,
 }
 
 PipeConnectionPosix::~PipeConnectionPosix() {
+  notify_ = base::RepeatingClosure();
   Shutdown();
 }
 
@@ -476,6 +478,9 @@ void PipeConnectionPosix::Shutdown() {
   pipe_writer_ = std::unique_ptr<PipeWriter>();
   PipeReader::Shutdown(std::move(pipe_reader_));
   pipe_reader_ = std::unique_ptr<PipeReader>();
+  if (notify_) {
+    notify_.Run();
+  }
 }
 
 bool PipeConnectionPosix::IsNull() const {

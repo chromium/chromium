@@ -63,7 +63,7 @@ class ChromeImpl : public Chrome {
   Status GetAsDesktop(ChromeDesktopImpl** desktop) override;
   const BrowserInfo* GetBrowserInfo() const override;
   bool HasCrashedWebView() override;
-  Status GetWebViewCount(size_t* web_view_count, bool w3c_compliant) override;
+  int GetWebViewCount() const override;
   Status GetWebViewIdForFirstTab(std::string* web_view_id,
                                  bool w3c_complaint) override;
   Status GetTopLevelWebViewIds(std::list<std::string>* web_view_ids,
@@ -93,7 +93,7 @@ class ChromeImpl : public Chrome {
   bool HasTouchScreen() const override;
   std::string page_load_strategy() const override;
   Status Quit() override;
-  DevToolsClient* Client() const;
+  DevToolsClient* Client() const override;
 
  protected:
   ChromeImpl(BrowserInfo browser_info,
