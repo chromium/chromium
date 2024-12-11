@@ -195,12 +195,12 @@ void StaticBitmapImageToVideoFrameCopier::ReadARGBPixelsAsync(
                                      : kBottomLeft_GrSurfaceOrigin;
 
   gfx::Point src_point;
-  gpu::MailboxHolder mailbox_holder = image->GetMailboxHolder();
+  auto shared_image = image->GetSharedImage();
   DCHECK(context_provider->RasterInterface());
   context_provider->RasterInterface()->WaitSyncTokenCHROMIUM(
-      mailbox_holder.sync_token.GetConstData());
+      image->GetSyncToken().GetConstData());
   context_provider->RasterInterface()->ReadbackARGBPixelsAsync(
-      mailbox_holder.mailbox, mailbox_holder.texture_target, image_origin,
+      shared_image->mailbox(), shared_image->GetTextureTarget(), image_origin,
       image_size, src_point, info,
       temp_argb_frame->stride(media::VideoFrame::Plane::kARGB),
       temp_argb_frame->GetWritableVisibleData(media::VideoFrame::Plane::kARGB),
@@ -228,11 +228,11 @@ void StaticBitmapImageToVideoFrameCopier::ReadYUVPixelsAsync(
     return;
   }
 
-  gpu::MailboxHolder mailbox_holder = image->GetMailboxHolder();
+  auto shared_image = image->GetSharedImage();
   context_provider->RasterInterface()->WaitSyncTokenCHROMIUM(
-      mailbox_holder.sync_token.GetConstData());
+      image->GetSyncToken().GetConstData());
   context_provider->RasterInterface()->ReadbackYUVPixelsAsync(
-      mailbox_holder.mailbox, mailbox_holder.texture_target, image_size,
+      shared_image->mailbox(), shared_image->GetTextureTarget(), image_size,
       gfx::Rect(image_size), !image->IsOriginTopLeft(),
       output_frame->stride(media::VideoFrame::Plane::kY),
       output_frame->GetWritableVisibleData(media::VideoFrame::Plane::kY),

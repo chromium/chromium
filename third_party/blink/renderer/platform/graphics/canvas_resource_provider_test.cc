@@ -484,28 +484,24 @@ TEST_F(CanvasResourceProviderTest,
   auto image = provider->Snapshot(FlushReason::kTesting);
   ASSERT_TRUE(image);
   auto new_image = provider->Snapshot(FlushReason::kTesting);
-  EXPECT_EQ(image->GetMailboxHolder().mailbox,
-            new_image->GetMailboxHolder().mailbox);
+  EXPECT_EQ(image->GetSharedImage(), new_image->GetSharedImage());
   EXPECT_EQ(provider->ProduceCanvasResource(FlushReason::kTesting)
-                ->GetClientSharedImage()
-                ->mailbox(),
-            image->GetMailboxHolder().mailbox);
+                ->GetClientSharedImage(),
+            image->GetSharedImage());
 
   // Resource updated after draw.
   provider->Canvas().clear(SkColors::kWhite);
   provider->FlushCanvas(FlushReason::kTesting);
   new_image = provider->Snapshot(FlushReason::kTesting);
-  EXPECT_NE(new_image->GetMailboxHolder().mailbox,
-            image->GetMailboxHolder().mailbox);
+  EXPECT_NE(new_image->GetSharedImage(), image->GetSharedImage());
 
   // Resource recycled.
-  auto original_mailbox = image->GetMailboxHolder().mailbox;
+  auto original_shared_image = image->GetSharedImage();
   image.reset();
   provider->Canvas().clear(SkColors::kBlack);
   provider->FlushCanvas(FlushReason::kTesting);
-  EXPECT_EQ(
-      original_mailbox,
-      provider->Snapshot(FlushReason::kTesting)->GetMailboxHolder().mailbox);
+  EXPECT_EQ(original_shared_image,
+            provider->Snapshot(FlushReason::kTesting)->GetSharedImage());
 }
 
 TEST_F(CanvasResourceProviderTest, NoRecycleIfLastRefCallback) {
@@ -535,17 +531,16 @@ TEST_F(CanvasResourceProviderTest, NoRecycleIfLastRefCallback) {
   provider->FlushCanvas(FlushReason::kTesting);
   scoped_refptr<StaticBitmapImage> snapshot2 =
       provider->Snapshot(FlushReason::kTesting);
-  EXPECT_NE(snapshot2->GetMailboxHolder().mailbox,
-            snapshot1->GetMailboxHolder().mailbox);
+  EXPECT_NE(snapshot2->GetSharedImage(), snapshot1->GetSharedImage());
 
-  auto snapshot1_mailbox = snapshot1->GetMailboxHolder().mailbox;
+  auto snapshot1_shared_image = snapshot1->GetSharedImage();
   snapshot1.reset();  // resource not recycled due to LastUnrefCallback
   provider->Canvas().clear(SkColors::kBlack);
   provider->FlushCanvas(FlushReason::kTesting);
   scoped_refptr<StaticBitmapImage> snapshot3 =
       provider->Snapshot(FlushReason::kTesting);
   // confirm resource is not recycled.
-  EXPECT_NE(snapshot3->GetMailboxHolder().mailbox, snapshot1_mailbox);
+  EXPECT_NE(snapshot3->GetSharedImage(), snapshot1_shared_image);
 }
 
 TEST_F(CanvasResourceProviderTest,
