@@ -388,12 +388,6 @@ BASE_FEATURE(kWebContentsDiscard,
              "WebContentsDiscard",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables disconnecting the `ExtensionMessagePort` when the page using the port
-// enters BFCache.
-BASE_FEATURE(kDisconnectExtensionMessagePortWhenPageEntersBFCache,
-             "DisconnectExtensionMessagePortWhenPageEntersBFCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Origin Trial of Document-Isolation-Policy.
 BASE_FEATURE(kDocumentIsolationPolicyOriginTrial,
              "DocumentIsolationPolicyOriginTrial",
