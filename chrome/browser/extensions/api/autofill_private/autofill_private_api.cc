@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -30,8 +31,11 @@
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_constants.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/metrics/address_save_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
@@ -46,6 +50,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/autofill_regexes.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_branded_strings.h"
@@ -59,6 +64,7 @@
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui_component.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/localization.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill_private = extensions::api::autofill_private;
@@ -100,6 +106,13 @@ base::Value::Dict AddressUiComponentAsValueMap(
                autofill::AutofillAddressUIComponent::HINT_LONG);
   info.Set(kFieldRequired, address_ui_component.is_required);
   return info;
+}
+
+bool HasNameSeparator(const std::string& name) {
+  if (name.empty()) {
+    return false;
+  }
+  return re2::RE2::PartialMatch(name, autofill::kCjkNameSeperatorsRe);
 }
 
 autofill::BrowserAutofillManager* GetBrowserAutofillManager(
@@ -234,8 +247,27 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
     }
   }
 
-  if (address->language_code)
+  const std::u16string existing_alternative_name =
+      existing_profile
+          ? existing_profile->GetInfo(
+                autofill::ALTERNATIVE_FULL_NAME,
+                ExtensionsBrowserClient::Get()->GetApplicationLocale())
+          : std::u16string();
+
+  const std::u16string saved_alternative_name =
+      profile.GetInfo(autofill::ALTERNATIVE_FULL_NAME,
+                      ExtensionsBrowserClient::Get()->GetApplicationLocale());
+
+  if (!saved_alternative_name.empty() &&
+      saved_alternative_name != existing_alternative_name) {
+    base::UmaHistogramBoolean(
+        "Autofill.Settings.EditedAlternativeNameContainsASeparator",
+        HasNameSeparator(base::UTF16ToUTF8(saved_alternative_name)));
+  }
+
+  if (address->language_code) {
     profile.set_language_code(*address->language_code);
+  }
 
   if (use_existing_profile) {
     personal_data.address_data_manager().UpdateProfile(profile);

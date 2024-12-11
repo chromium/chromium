@@ -8,6 +8,8 @@
 
 // Constants for the tests.
 var NAME = 'Name';
+var ALTERNATIVE_FULL_NAME = 'NameAlternative';
+var ALTERNATIVE_FULL_NAME_SEPARATOR = 'Name Alternative';
 var COMPANY_NAME = 'Company name';
 var ADDRESS_LEVEL1 = 'Address level 1';
 var ADDRESS_LEVEL2 = 'Address level 2';
@@ -321,55 +323,123 @@ var availableTests = [
       return filteredAddress;
     }
 
+    chrome.autofillPrivate.getAddressList(chrome.test.callbackPass(function(
+        addressList) {
+      // The address from the addNewAddress function should still be there.
+      chrome.test.assertEq(1, addressList.length);
+      var addressGuid = addressList[0].guid;
+
+      // Setup the callback that verifies that the address was correctly
+      // updated.
+      chrome.test.listenOnce(
+          chrome.autofillPrivate.onPersonalDataChanged,
+          chrome.test.callbackPass(function(addressList, cardList) {
+            chrome.test.assertEq(1, addressList.length);
+            const expectedAddress = {
+              guid: addressGuid,
+              NAME_FULL: UPDATED_NAME,
+              ADDRESS_HOME_STATE: ADDRESS_LEVEL1,
+              ADDRESS_HOME_CITY: ADDRESS_LEVEL2,
+              ADDRESS_HOME_DEPENDENT_LOCALITY: ADDRESS_LEVEL3,
+              ADDRESS_HOME_ZIP: POSTAL_CODE,
+              ADDRESS_HOME_SORTING_CODE: SORTING_CODE,
+              ADDRESS_HOME_COUNTRY: COUNTRY_CODE,
+              PHONE_HOME_WHOLE_NUMBER: UPDATED_PHONE,
+              EMAIL_ADDRESS: EMAIL,
+            };
+            const actualAddress = filterAddressProperties(addressList[0]);
+            Object.keys(expectedAddress).forEach(prop => {
+              chrome.test.assertEq(expectedAddress[prop], actualAddress[prop]);
+            })
+          }));
+
+      // Update the address by saving an address with the same guid and
+      // using some different information.
+      chrome.autofillPrivate.saveAddress({
+        guid: addressGuid,
+        fields: [
+          {
+            type: chrome.autofillPrivate.FieldType.NAME_FULL,
+            value: UPDATED_NAME
+          },
+          {
+            type: chrome.autofillPrivate.FieldType.PHONE_HOME_WHOLE_NUMBER,
+            value: UPDATED_PHONE
+          },
+        ],
+      });
+    }));
+  },
+
+  function addAddressWithAlternativeNameForSeparatorMetric() {
     chrome.autofillPrivate.getAddressList(
         chrome.test.callbackPass(function(addressList) {
-          // The address from the addNewAddress function should still be there.
-          chrome.test.assertEq(1, addressList.length);
-          var addressGuid = addressList[0].guid;
+          chrome.test.assertEq([], addressList);
 
-          // Setup the callback that verifies that the address was correctly
-          // updated.
-          chrome.test.listenOnce(
-              chrome.autofillPrivate.onPersonalDataChanged,
-              chrome.test.callbackPass(function(addressList, cardList) {
-                chrome.test.assertEq(1, addressList.length);
-                const expectedAddress = {
-                  guid: addressGuid,
-                  NAME_FULL: UPDATED_NAME,
-                  ADDRESS_HOME_STATE: ADDRESS_LEVEL1,
-                  ADDRESS_HOME_CITY: ADDRESS_LEVEL2,
-                  ADDRESS_HOME_DEPENDENT_LOCALITY: ADDRESS_LEVEL3,
-                  ADDRESS_HOME_ZIP: POSTAL_CODE,
-                  ADDRESS_HOME_SORTING_CODE: SORTING_CODE,
-                  ADDRESS_HOME_COUNTRY: COUNTRY_CODE,
-                  PHONE_HOME_WHOLE_NUMBER: UPDATED_PHONE,
-                  EMAIL_ADDRESS: EMAIL,
-                };
-                const actualAddress = filterAddressProperties(addressList[0]);
-                Object.keys(expectedAddress).forEach(prop => {
-                  chrome.test.assertEq(
-                      expectedAddress[prop], actualAddress[prop]);
-                })
-              }));
-
-          // Update the address by saving an address with the same guid and
-          // using some different information.
+          // Alternative name set with no separator. Metric is emitted.
           chrome.autofillPrivate.saveAddress({
-            guid: addressGuid,
             fields: [
+              {type: chrome.autofillPrivate.FieldType.NAME_FULL, value: NAME},
               {
-                type: chrome.autofillPrivate.FieldType.NAME_FULL,
-                value: UPDATED_NAME
+                type: chrome.autofillPrivate.FieldType.ALTERNATIVE_FULL_NAME,
+                value: ALTERNATIVE_FULL_NAME
               },
+            ],
+          });
+          // Alternative name set with a separator. Metric is emitted.
+          chrome.autofillPrivate.saveAddress({
+            fields: [
+              {type: chrome.autofillPrivate.FieldType.NAME_FULL, value: NAME},
               {
-                type: chrome.autofillPrivate.FieldType
-                          .PHONE_HOME_WHOLE_NUMBER,
-                value: UPDATED_PHONE
+                type: chrome.autofillPrivate.FieldType.ALTERNATIVE_FULL_NAME,
+                value: ALTERNATIVE_FULL_NAME_SEPARATOR
               },
             ],
           });
         }));
   },
+
+  function updateExistingAddressWithAlternativeNameForSeparatorMetric() {
+    chrome.autofillPrivate.getAddressList(
+        chrome.test.callbackPass(function(addressList) {
+          chrome.test.assertEq(2, addressList.length);
+          var addressGuid0 = addressList[0].guid;
+          var addressGuid1 = addressList[1].guid;
+
+          // Address updated with the same information.
+          // Separator is preserved, but no metric is emitted.
+          chrome.autofillPrivate.saveAddress({
+            guid: addressGuid0,
+            fields: [
+              {type: chrome.autofillPrivate.FieldType.NAME_FULL, value: NAME},
+              {
+                type: chrome.autofillPrivate.FieldType.ALTERNATIVE_FULL_NAME,
+                value: ALTERNATIVE_FULL_NAME_SEPARATOR
+              },
+            ],
+          });
+          // Address updated without an alternative name.
+          // Separator is preserved and no metric is emitted.
+          chrome.autofillPrivate.saveAddress({
+            guid: addressGuid0,
+            fields: [
+              {type: chrome.autofillPrivate.FieldType.NAME_FULL, value: NAME},
+            ],
+          });
+          // Alternative name updated with new separator. Metric is emitted.
+          chrome.autofillPrivate.saveAddress({
+            guid: addressGuid1,
+            fields: [
+              {type: chrome.autofillPrivate.FieldType.NAME_FULL, value: NAME},
+              {
+                type: chrome.autofillPrivate.FieldType.ALTERNATIVE_FULL_NAME,
+                value: ALTERNATIVE_FULL_NAME_SEPARATOR
+              },
+            ],
+          });
+        }));
+  },
+
 
   function addNewCreditCard() {
     function filterCardProperties(cards) {
@@ -834,6 +904,10 @@ var availableTests = [
 /** @const */
 var TESTS_FOR_CONFIG = {
   'addAndUpdateAddress': ['addNewAddress', 'updateExistingAddress'],
+  'addAndUpdateAddressWithAlternativeName': [
+    'addAddressWithAlternativeNameForSeparatorMetric',
+    'updateExistingAddressWithAlternativeNameForSeparatorMetric'
+  ],
   'addAndUpdateCreditCard': [
     'addNewCreditCardWithoutCvc', 'noChangesToExistingCreditCard',
     'updateExistingCreditCard'

@@ -136,6 +136,16 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddAndUpdateAddress) {
          "test.";
 }
 
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddAndUpdateAddressWithName) {
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(RunAutofillSubtest("addAndUpdateAddressWithAlternativeName"))
+      << message_;
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.Settings.EditedAlternativeNameContainsASeparator"),
+              base::BucketsAre(base::Bucket(0, 1), base::Bucket(1, 2)));
+}
+
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddAndUpdateCreditCard) {
   EXPECT_TRUE(RunAutofillSubtest("addAndUpdateCreditCard")) << message_;
 }

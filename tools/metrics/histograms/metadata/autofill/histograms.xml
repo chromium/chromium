@@ -5354,6 +5354,18 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autofill.Settings.EditedAlternativeNameContainsASeparator"
+    enum="BooleanYesNo" expires_after="2025-07-01">
+  <owner>jsobiech@google.com</owner>
+  <owner>sygiet@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records whether the alternative name field saved from an address editor form
+    has a separator present. Recorded when the user saves or updates an existing
+    address in the autofill options settings. Only applicable on Desktop.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Settings.ToggleUseThirdPartyFilling" enum="Boolean"
     expires_after="2025-06-08">
   <owner>friedrichh@chromium.org</owner>
