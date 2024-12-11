@@ -6,6 +6,7 @@
 
 import argparse
 import os
+import shutil
 import sys
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -13,12 +14,25 @@ THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 SISO_PROJECT_CFG = "SISO_PROJECT"
 SISO_ENV = os.path.join(THIS_DIR, ".sisoenv")
 
+_BACKEND_STAR = os.path.join(THIS_DIR, "backend_config", "backend.star")
+
+_GOOGLE_STAR = os.path.join(THIS_DIR, "backend_config", "google.star")
+_KNOWN_GOOGLE_PROJECTS = (
+    'goma-foundry-experiments',
+    'rbe-chrome-official',
+    'rbe-chrome-trusted',
+    'rbe-chrome-untrusted',
+    'rbe-chromium-trusted',
+    'rbe-chromium-trusted-test',
+    'rbe-chromium-untrusted',
+    'rbe-chromium-untrusted-test',
+)
 
 def ReadConfig():
   entries = {}
   if not os.path.isfile(SISO_ENV):
-      print('The .sisoenv file has not been generated yet')
-      return entries
+    print('The .sisoenv file has not been generated yet')
+    return entries
   with open(SISO_ENV, 'r') as f:
     for line in f:
       parts = line.strip().split('=')
@@ -56,6 +70,15 @@ def main():
       f.write("%s=%s\n" % (SISO_PROJECT_CFG, project))
     if rbe_instance:
       f.write("SISO_REAPI_INSTANCE=%s\n" % rbe_instance)
+  if project in _KNOWN_GOOGLE_PROJECTS:
+    if os.path.exists(_BACKEND_STAR):
+      os.remove(_BACKEND_STAR)
+    shutil.copy2(_GOOGLE_STAR, _BACKEND_STAR)
+  if not os.path.exists(_BACKEND_STAR):
+    print('Need to provide {} for your backend {}'.format(
+        _BACKEND_STAR, args.rbe_instance),
+          file=sys.stderr)
+    return 1
   return 0
 
 
