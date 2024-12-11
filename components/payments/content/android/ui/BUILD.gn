@@ -1,0 +1,16 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("ui") {
+  sources = [
+    "currency_formatter_android.cc",
+    "currency_formatter_android.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/payments/content/android:jni_headers",
+    "//components/payments/core",
+  ]
+}

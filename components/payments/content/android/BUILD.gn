@@ -40,8 +40,6 @@ static_library("android") {
     "payment_request_web_contents_data_android.cc",
     "payment_validator_android.cc",
     "ssl_validity_checker_android.cc",
-    "ui/currency_formatter_android.cc",
-    "ui/currency_formatter_android.h",
     "url_util.cc",
   ]
 

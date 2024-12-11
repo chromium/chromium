@@ -3377,6 +3377,7 @@ static_library("browser") {
       "//components/password_manager/core/browser/leak_detection",
       "//components/payments/content",
       "//components/payments/content/android",
+      "//components/payments/content/android/ui",
       "//components/payments/content/android:jni_headers",
       "//components/permissions/android:native",
       "//components/plus_addresses:features",
