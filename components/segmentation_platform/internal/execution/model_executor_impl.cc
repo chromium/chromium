@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/internal/execution/model_executor_impl.h"
+
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -32,8 +34,7 @@ struct ModelExecutorImpl::ModelExecutionTraceEvent {
                            const ModelExecutorImpl::ExecutionState& state);
   ~ModelExecutionTraceEvent();
 
-  const raw_ref<const ModelExecutorImpl::ExecutionState, DanglingUntriaged>
-      state;
+  const raw_ref<const ModelExecutorImpl::ExecutionState> state;
 };
 
 struct ModelExecutorImpl::ExecutionState {
@@ -117,8 +118,8 @@ void ModelExecutorImpl::ExecuteModel(
   state->callback = std::move(request->callback);
   state->total_execution_start_time = clock_->Now();
 
-  ModelExecutionTraceEvent trace_event("ModelExecutorImpl::ExecuteModel",
-                                       *state);
+  std::optional<ModelExecutionTraceEvent> trace_event =
+      ModelExecutionTraceEvent("ModelExecutorImpl::ExecuteModel", *state);
 
   if (!segment_info || !request->model_provider ||
       !request->model_provider->ModelAvailable()) {
@@ -147,6 +148,7 @@ void ModelExecutorImpl::ExecuteModel(
 
   state->upload_tensors =
       SegmentationUkmHelper::GetInstance()->IsUploadRequested(*segment_info);
+  trace_event.reset();
   feature_list_query_processor_->ProcessFeatureList(
       segment_info->model_metadata(), request->input_context, segment_id,
       prediction_time, base::Time(),
@@ -175,8 +177,8 @@ void ModelExecutorImpl::OnProcessingFeatureListComplete(
 }
 
 void ModelExecutorImpl::ExecuteModel(std::unique_ptr<ExecutionState> state) {
-  ModelExecutionTraceEvent trace_event("ModelExecutorImpl::ExecuteModel",
-                                       *state);
+  std::optional<ModelExecutionTraceEvent> trace_event =
+      ModelExecutionTraceEvent("ModelExecutorImpl::ExecuteModel", *state);
   if (VLOG_IS_ON(1)) {
     std::stringstream log_input;
     for (unsigned i = 0; i < state->input_tensor.size(); ++i)
@@ -189,6 +191,7 @@ void ModelExecutorImpl::ExecuteModel(std::unique_ptr<ExecutionState> state) {
                                               const_input_tensor);
   state->model_execution_start_time = clock_->Now();
   ModelProvider* model = state->model_provider;
+  trace_event.reset();
   model->ExecuteModelWithInput(
       const_input_tensor,
       base::BindOnce(&ModelExecutorImpl::OnModelExecutionComplete,
