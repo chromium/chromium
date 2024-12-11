@@ -95,12 +95,17 @@ class ThrottleTestParam {
   }
 };
 
-bool IsBlockedUrlInterstitialBeingShown(content::WebContents* content) {
-  if (!content) {
-    return false;
-  }
+bool IsReauthenticationInterstitialBeingShown(content::WebContents* content) {
+  CHECK(content);
   std::string command =
-      "document.getElementsByClassName('supervised-user-block') != null";
+      "document.querySelector('.supervised-user-verify') != null";
+  return content::EvalJs(content, command).ExtractBool();
+}
+
+bool IsBlockedUrlInterstitialBeingShown(content::WebContents* content) {
+  CHECK(content);
+  std::string command =
+      "document.querySelector('.supervised-user-block') != null";
   return content::EvalJs(content, command).ExtractBool();
 }
 
@@ -163,6 +168,10 @@ class SupervisedUserPendingStateNavigationTest
                     ->GetGoogleAuthState() !=
                 supervised_user::ChildAccountService::AuthState::AUTHENTICATED);
 
+    // Before sign-in the user still sees the re-authentication interstitial.
+    ASSERT_TRUE(IsReauthenticationInterstitialBeingShown(content));
+    ASSERT_FALSE(IsBlockedUrlInterstitialBeingShown(content));
+
     content::TestNavigationObserver observer(url);
     observer.WatchWebContents(content);
     kids_management_api_mock().AllowSubsequentClassifyUrl();
@@ -182,6 +191,7 @@ class SupervisedUserPendingStateNavigationTest
 
     // Wait for the re-auth page to be asynchronously reloaded and replaced by
     // the blocked url interstitial.
+    ASSERT_FALSE(IsReauthenticationInterstitialBeingShown(content));
     ASSERT_TRUE(IsBlockedUrlInterstitialBeingShown(content));
   }
 
