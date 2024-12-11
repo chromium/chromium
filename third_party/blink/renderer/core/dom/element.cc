@@ -3337,10 +3337,6 @@ void Element::AttachLayoutTree(AttachContext& context) {
   }
 
   AttachPseudoElement(kPseudoIdScrollMarkerGroupBefore, context);
-  AttachPseudoElement(kPseudoIdScrollUpButton, context);
-  AttachPseudoElement(kPseudoIdScrollLeftButton, context);
-  AttachPseudoElement(kPseudoIdScrollRightButton, context);
-  AttachPseudoElement(kPseudoIdScrollDownButton, context);
 
   AttachContext children_context(context);
   LayoutObject* layout_object = nullptr;
@@ -3370,6 +3366,10 @@ void Element::AttachLayoutTree(AttachContext& context) {
   }
   children_context.use_previous_in_flow = true;
 
+  AttachPseudoElement(kPseudoIdScrollUpButton, context);
+  AttachPseudoElement(kPseudoIdScrollLeftButton, context);
+  AttachPseudoElement(kPseudoIdScrollRightButton, context);
+  AttachPseudoElement(kPseudoIdScrollDownButton, context);
   AttachPseudoElement(kPseudoIdScrollMarkerGroupAfter, context);
 
   if (skipped_container_descendants &&

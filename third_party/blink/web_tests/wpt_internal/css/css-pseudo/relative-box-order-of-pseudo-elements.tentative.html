@@ -10,8 +10,31 @@
     scroll-marker-group: after;
   }
 
-  div::scroll-button(up) {
+  div::before {
     background: red;
+    content: "";
+    height: 20px;
+    width: 100px;
+    display: flex;
+  }
+
+  div>li {
+    background: orange;
+    height: 20px;
+    width: 100px;
+    display: flex;
+  }
+
+  div::after {
+    background: yellow;
+    content: "";
+    height: 20px;
+    width: 100px;
+    display: flex;
+  }
+
+  div::scroll-button(up) {
+    background: green;
     border: none;
     content: "";
     height: 20px;
@@ -22,34 +45,12 @@
   div::scroll-button(right) {
     content: "";
     border: none;
-    background: orange;
-    height: 20px;
-    width: 100px;
-    display: flex;
-  }
-
-  div::before {
-    background: yellow;
-    content: "";
-    height: 20px;
-    width: 100px;
-    display: flex;
-  }
-
-  div>li {
-    background: green;
-    height: 20px;
-    width: 100px;
-    display: flex;
-  }
-
-  div::after {
     background: blue;
-    content: "";
     height: 20px;
     width: 100px;
     display: flex;
   }
+
 
   div::scroll-marker-group {
     background: purple;
