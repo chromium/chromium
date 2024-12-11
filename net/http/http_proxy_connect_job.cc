@@ -590,7 +590,7 @@ int HttpProxyConnectJob::DoTransportConnectComplete(int result) {
 
   // Establish a tunnel over the proxy by making a CONNECT request. HTTP/1.1 and
   // HTTP/2 handle CONNECT differently.
-  if (next_proto == kProtoHTTP2) {
+  if (next_proto == NextProto::kProtoHTTP2) {
     DCHECK_EQ(ProxyServer::SCHEME_HTTPS, scheme);
     next_state_ = STATE_SPDY_PROXY_CREATE_STREAM;
   } else {
@@ -932,15 +932,15 @@ void HttpProxyConnectJob::EmitConnectLatency(NextProto http_version,
                                              base::TimeDelta latency) {
   std::string_view http_version_piece;
   switch (http_version) {
-    case kProtoUnknown:
+    case NextProto::kProtoUnknown:
     // fall through to assume Http1
-    case kProtoHTTP11:
+    case NextProto::kProtoHTTP11:
       http_version_piece = "Http1";
       break;
-    case kProtoHTTP2:
+    case NextProto::kProtoHTTP2:
       http_version_piece = "Http2";
       break;
-    case kProtoQUIC:
+    case NextProto::kProtoQUIC:
       http_version_piece = "Http3";
       break;
     default:

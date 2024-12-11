@@ -168,7 +168,7 @@ class NET_EXPORT SharedDictionaryNetworkTransaction : public HttpTransaction {
   ConnectedCallback connected_callback_;
 
   bool cert_is_issued_by_known_root_ = false;
-  NextProto negotiated_protocol_ = kProtoUnknown;
+  NextProto negotiated_protocol_ = NextProto::kProtoUnknown;
 
   base::RepeatingCallback<scoped_refptr<SharedDictionary>()>
       shared_dictionary_getter_;

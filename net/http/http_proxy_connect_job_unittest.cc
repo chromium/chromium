@@ -411,7 +411,7 @@ class HttpProxyConnectJobTest : public HttpProxyConnectJobTestBase,
   }
 
   void InitializeSpdySsl(SSLSocketDataProvider* ssl_data) {
-    ssl_data->next_proto = kProtoHTTP2;
+    ssl_data->next_proto = NextProto::kProtoHTTP2;
   }
 
   // Return the timeout for establishing the lower layer connection. i.e., for

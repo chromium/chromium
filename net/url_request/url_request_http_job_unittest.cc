@@ -1698,7 +1698,7 @@ TEST_F(URLRequestHttpJobWithBrotliSupportTest, NoBrotliAdvertisementOverHttp) {
 
 TEST_F(URLRequestHttpJobWithBrotliSupportTest, BrotliAdvertisement) {
   net::SSLSocketDataProvider ssl_socket_data_provider(net::ASYNC, net::OK);
-  ssl_socket_data_provider.next_proto = kProtoHTTP11;
+  ssl_socket_data_provider.next_proto = NextProto::kProtoHTTP11;
   ssl_socket_data_provider.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "unittest.selfsigned.der");
   ASSERT_TRUE(ssl_socket_data_provider.ssl_info.cert);
@@ -1781,7 +1781,7 @@ TEST_F(URLRequestHttpJobWithBrotliSupportTest, DefaultAcceptEncodingOverriden) {
 
   for (auto test : kTestCases) {
     net::SSLSocketDataProvider ssl_socket_data_provider(net::ASYNC, net::OK);
-    ssl_socket_data_provider.next_proto = kProtoHTTP11;
+    ssl_socket_data_provider.next_proto = NextProto::kProtoHTTP11;
     ssl_socket_data_provider.ssl_info.cert =
         ImportCertFromFile(GetTestCertsDirectory(), "unittest.selfsigned.der");
     ASSERT_TRUE(ssl_socket_data_provider.ssl_info.cert);

@@ -232,7 +232,7 @@ bool FuzzedSocket::WasEverUsed() const {
 }
 
 NextProto FuzzedSocket::GetNegotiatedProtocol() const {
-  return kProtoUnknown;
+  return NextProto::kProtoUnknown;
 }
 
 bool FuzzedSocket::GetSSLInfo(SSLInfo* ssl_info) {

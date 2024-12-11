@@ -74,7 +74,7 @@ struct NET_EXPORT AlternativeService {
   // Output format: "protocol host:port", e.g. "h2 www.google.com:1234".
   std::string ToString() const;
 
-  NextProto protocol = kProtoUnknown;
+  NextProto protocol = NextProto::kProtoUnknown;
   std::string host;
   uint16_t port;
 };

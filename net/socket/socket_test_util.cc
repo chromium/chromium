@@ -1015,7 +1015,7 @@ const NetLogWithSource& MockClientSocket::NetLog() const {
 }
 
 NextProto MockClientSocket::GetNegotiatedProtocol() const {
-  return kProtoUnknown;
+  return NextProto::kProtoUnknown;
 }
 
 MockClientSocket::~MockClientSocket() = default;

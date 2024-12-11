@@ -1035,7 +1035,7 @@ TEST_F(SpdySessionPoolTest, IPPoolingClientCert) {
   ssl.ssl_info.cert = X509Certificate::CreateFromBytes(webkit_der);
   ASSERT_TRUE(ssl.ssl_info.cert);
   ssl.ssl_info.client_cert_sent = true;
-  ssl.next_proto = kProtoHTTP2;
+  ssl.next_proto = NextProto::kProtoHTTP2;
   RunIPPoolingDisabledTest(&ssl);
 }
 

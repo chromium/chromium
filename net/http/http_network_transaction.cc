@@ -169,13 +169,13 @@ void RecordWebSocketFallbackResult(int result,
 const std::string_view NegotiatedProtocolToHistogramSuffix(
     NextProto next_proto) {
   switch (next_proto) {
-    case kProtoHTTP11:
+    case NextProto::kProtoHTTP11:
       return "H1";
-    case kProtoHTTP2:
+    case NextProto::kProtoHTTP2:
       return "H2";
-    case kProtoQUIC:
+    case NextProto::kProtoQUIC:
       return "H3";
-    case kProtoUnknown:
+    case NextProto::kProtoUnknown:
       return "Unknown";
   }
 }
@@ -667,14 +667,14 @@ void HttpNetworkTransaction::OnStreamReady(const ProxyInfo& used_proxy_info,
   // TODO(crbug.com/40473589): Remove `was_alpn_negotiated` when we remove
   // chrome.loadTimes API.
   response_.was_alpn_negotiated =
-      stream_request_->negotiated_protocol() != kProtoUnknown;
+      stream_request_->negotiated_protocol() != NextProto::kProtoUnknown;
   response_.alpn_negotiated_protocol =
       NextProtoToString(stream_request_->negotiated_protocol());
   response_.alternate_protocol_usage =
       stream_request_->alternate_protocol_usage();
   // TODO(crbug.com/40815866): Stop using `was_fetched_via_spdy`.
   response_.was_fetched_via_spdy =
-      stream_request_->negotiated_protocol() == kProtoHTTP2;
+      stream_request_->negotiated_protocol() == NextProto::kProtoHTTP2;
   response_.dns_aliases = stream_->GetDnsAliases();
 
   dns_resolution_start_time_override_ =
@@ -1573,7 +1573,7 @@ int HttpNetworkTransaction::DoReadBodyComplete(int result) {
     // This transaction was successful. If it had been retried because of an
     // error with an alternative service, mark that alternative service broken.
     if (!enable_alternative_services_ &&
-        retried_alternative_service_.protocol != kProtoUnknown) {
+        retried_alternative_service_.protocol != NextProto::kProtoUnknown) {
       HistogramBrokenAlternateProtocolLocation(
           BROKEN_ALTERNATE_PROTOCOL_LOCATION_HTTP_NETWORK_TRANSACTION);
       session_->http_server_properties()->MarkAlternativeServiceBroken(
@@ -2223,8 +2223,7 @@ void HttpNetworkTransaction::RecordStreamRequestResult(int result) {
             "Net.NetworkTransaction.NegotiatedProtocol",
             IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : "",
         }),
-        negotiated_protocol_,
-        static_cast<NextProto>(NextProto::kProtoLast + 1));
+        negotiated_protocol_);
 
     IPEndPoint endpoint;
     int get_endpoint_result = stream_->GetRemoteEndpoint(&endpoint);

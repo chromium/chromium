@@ -225,7 +225,7 @@ bool BrokeredTcpClientSocket::WasEverUsed() const {
 }
 
 net::NextProto BrokeredTcpClientSocket::GetNegotiatedProtocol() const {
-  return net::kProtoUnknown;
+  return net::NextProto::kProtoUnknown;
 }
 
 bool BrokeredTcpClientSocket::GetSSLInfo(net::SSLInfo* ssl_info) {

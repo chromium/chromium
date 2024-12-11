@@ -198,7 +198,7 @@ bool FakeSocket::WasEverUsed() const {
 }
 
 net::NextProto FakeSocket::GetNegotiatedProtocol() const {
-  return net::kProtoUnknown;
+  return net::NextProto::kProtoUnknown;
 }
 
 bool FakeSocket::GetSSLInfo(net::SSLInfo* ssl_info) {

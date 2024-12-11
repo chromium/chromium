@@ -1891,8 +1891,8 @@ const base::TimeDelta* QuicSessionPool::GetServerNetworkStatsSmoothedRtt(
 bool QuicSessionPool::WasQuicRecentlyBroken(
     const QuicSessionKey& session_key) const {
   const AlternativeService alternative_service(
-      kProtoQUIC, HostPortPair(session_key.server_id().host(),
-                               session_key.server_id().port()));
+      NextProto::kProtoQUIC, HostPortPair(session_key.server_id().host(),
+                                          session_key.server_id().port()));
   return http_server_properties_->WasAlternativeServiceRecentlyBroken(
       alternative_service, session_key.network_anonymization_key());
 }
@@ -2010,7 +2010,7 @@ void QuicSessionPool::ProcessGoingAwaySession(
 
   const quic::QuicConnectionStats& stats = session->connection()->GetStats();
   const AlternativeService alternative_service(
-      kProtoQUIC, HostPortPair(server_id.host(), server_id.port()));
+      NextProto::kProtoQUIC, HostPortPair(server_id.host(), server_id.port()));
 
   url::SchemeHostPort server("https", server_id.host(), server_id.port());
   // Do nothing if QUIC is currently marked as broken.

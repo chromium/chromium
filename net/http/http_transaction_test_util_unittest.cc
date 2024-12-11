@@ -28,7 +28,7 @@ const MockTransaction kBasicTransaction = {
                                     IPEndPoint(IPAddress::IPv4Localhost(), 80),
                                     /*accept_ch_frame_arg=*/"",
                                     /*cert_is_issued_by_known_root=*/false,
-                                    kProtoUnknown),
+                                    NextProto::kProtoUnknown),
     .status = "HTTP/1.1 200 OK",
     .response_headers = "Cache-Control: max-age=10000\n",
     .response_time = base::Time(),

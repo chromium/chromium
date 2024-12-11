@@ -285,7 +285,9 @@ class FakeSocket : public StreamSocket {
 
   bool WasEverUsed() const override { return true; }
 
-  NextProto GetNegotiatedProtocol() const override { return kProtoUnknown; }
+  NextProto GetNegotiatedProtocol() const override {
+    return NextProto::kProtoUnknown;
+  }
 
   bool GetSSLInfo(SSLInfo* ssl_info) override { return false; }
 
@@ -1366,15 +1368,15 @@ TEST_P(SSLServerSocketAlpsTest, Alps) {
   const std::string server_data = "server sends some test data";
   const std::string client_data = "client also sends some data";
 
-  server_ssl_config_.alpn_protos = {kProtoHTTP2};
+  server_ssl_config_.alpn_protos = {NextProto::kProtoHTTP2};
   if (server_alps_enabled_) {
-    server_ssl_config_.application_settings[kProtoHTTP2] =
+    server_ssl_config_.application_settings[NextProto::kProtoHTTP2] =
         std::vector<uint8_t>(server_data.begin(), server_data.end());
   }
 
-  client_ssl_config_.alpn_protos = {kProtoHTTP2};
+  client_ssl_config_.alpn_protos = {NextProto::kProtoHTTP2};
   if (client_alps_enabled_) {
-    client_ssl_config_.application_settings[kProtoHTTP2] =
+    client_ssl_config_.application_settings[NextProto::kProtoHTTP2] =
         std::vector<uint8_t>(client_data.begin(), client_data.end());
   }
 

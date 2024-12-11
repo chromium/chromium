@@ -303,7 +303,7 @@ bool QuicHttpStream::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {
 
 bool QuicHttpStream::GetAlternativeService(
     AlternativeService* alternative_service) const {
-  alternative_service->protocol = kProtoQUIC;
+  alternative_service->protocol = NextProto::kProtoQUIC;
   const url::SchemeHostPort& destination = quic_session()->destination();
   alternative_service->host = destination.host();
   alternative_service->port = destination.port();

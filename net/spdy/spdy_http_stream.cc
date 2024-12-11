@@ -310,7 +310,7 @@ void SpdyHttpStream::OnHeadersReceived(
       stream_->response_time();
   // Don't store the SSLInfo in the response here, HttpNetworkTransaction
   // will take care of that part.
-  CHECK_EQ(stream_->GetNegotiatedProtocol(), kProtoHTTP2);
+  CHECK_EQ(stream_->GetNegotiatedProtocol(), NextProto::kProtoHTTP2);
   response_info_->was_alpn_negotiated = true;
   response_info_->request_time = stream_->GetRequestTime();
   response_info_->connection_info = HttpConnectionInfo::kHTTP2;

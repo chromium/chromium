@@ -1169,7 +1169,7 @@ TEST_P(QuicHttpStreamTest, GetAlternativeService) {
 
   AlternativeService alternative_service;
   EXPECT_TRUE(stream_->GetAlternativeService(&alternative_service));
-  EXPECT_EQ(AlternativeService(kProtoQUIC, "www.example.org", 443),
+  EXPECT_EQ(AlternativeService(NextProto::kProtoQUIC, "www.example.org", 443),
             alternative_service);
 
   session_->connection()->CloseConnection(
@@ -1177,7 +1177,7 @@ TEST_P(QuicHttpStreamTest, GetAlternativeService) {
 
   AlternativeService alternative_service2;
   EXPECT_TRUE(stream_->GetAlternativeService(&alternative_service2));
-  EXPECT_EQ(AlternativeService(kProtoQUIC, "www.example.org", 443),
+  EXPECT_EQ(AlternativeService(NextProto::kProtoQUIC, "www.example.org", 443),
             alternative_service2);
 }
 

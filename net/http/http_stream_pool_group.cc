@@ -25,7 +25,8 @@ namespace net {
 namespace {
 
 bool IsNegotiatedProtocolTextBased(NextProto next_proto) {
-  return next_proto == kProtoUnknown || next_proto == kProtoHTTP11;
+  return next_proto == NextProto::kProtoUnknown ||
+         next_proto == NextProto::kProtoHTTP11;
 }
 
 void RecordNetLogClosingSocket(const StreamSocket& stream_socket,

@@ -1578,7 +1578,7 @@ TEST_F(TransportClientSocketPoolTest, SpdyOneConnectJobTwoRequestsError) {
   SequencedSocketData socket_data(MockConnect(SYNCHRONOUS, OK), reads, writes);
   tagging_client_socket_factory_.AddSocketDataProvider(&socket_data);
   SSLSocketDataProvider ssl_data(SYNCHRONOUS, OK);
-  ssl_data.next_proto = kProtoHTTP2;
+  ssl_data.next_proto = NextProto::kProtoHTTP2;
   tagging_client_socket_factory_.AddSSLSocketDataProvider(&ssl_data);
 
   // Second connection also fails.  Not a vital part of this test, but allows
@@ -1681,7 +1681,7 @@ TEST_F(TransportClientSocketPoolTest, SpdyAuthOneConnectJobTwoRequests) {
   SequencedSocketData socket_data(MockConnect(SYNCHRONOUS, OK), reads, writes);
   tagging_client_socket_factory_.AddSocketDataProvider(&socket_data);
   SSLSocketDataProvider ssl_data(SYNCHRONOUS, OK);
-  ssl_data.next_proto = kProtoHTTP2;
+  ssl_data.next_proto = NextProto::kProtoHTTP2;
   tagging_client_socket_factory_.AddSSLSocketDataProvider(&ssl_data);
 
   // Second connection fails, and gets a different error.  Not a vital part of

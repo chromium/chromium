@@ -130,11 +130,12 @@ HttpStreamFactory::Job::Job(
       using_ssl_(origin_url_.SchemeIs(url::kHttpsScheme) ||
                  origin_url_.SchemeIs(url::kWssScheme)),
       using_quic_(
-          alternative_protocol == kProtoQUIC ||
+          alternative_protocol == NextProto::kProtoQUIC ||
           session->ShouldForceQuic(destination_, proxy_info, is_websocket_) ||
           job_type == DNS_ALPN_H3 || job_type == PRECONNECT_DNS_ALPN_H3),
       quic_version_(quic_version),
-      expect_spdy_(alternative_protocol == kProtoHTTP2 && !using_quic_),
+      expect_spdy_(alternative_protocol == NextProto::kProtoHTTP2 &&
+                   !using_quic_),
       quic_request_(session_->quic_session_pool()),
       spdy_session_key_(using_quic_
                             ? SpdySessionKey()
@@ -167,7 +168,7 @@ HttpStreamFactory::Job::Job(
   }
 
   DCHECK(session);
-  if (alternative_protocol != kProtoUnknown) {
+  if (alternative_protocol != NextProto::kProtoUnknown) {
     // If the alternative service protocol is specified, then the job type must
     // be either ALTERNATIVE or PRECONNECT.
     DCHECK(job_type_ == ALTERNATIVE || job_type_ == PRECONNECT);
@@ -349,7 +350,7 @@ NextProto HttpStreamFactory::Job::negotiated_protocol() const {
 }
 
 bool HttpStreamFactory::Job::using_spdy() const {
-  return negotiated_protocol_ == kProtoHTTP2;
+  return negotiated_protocol_ == NextProto::kProtoHTTP2;
 }
 
 bool HttpStreamFactory::Job::disable_cert_verification_network_fetches() const {
@@ -756,7 +757,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
       if (job_type_ == PRECONNECT) {
         return OK;
       }
-      negotiated_protocol_ = kProtoHTTP2;
+      negotiated_protocol_ = NextProto::kProtoHTTP2;
       next_state_ = STATE_CREATE_STREAM;
       return OK;
     }
@@ -930,10 +931,10 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
       // below. In the QUIC case, we only record it for origin connections. In
       // the TCP case, we also record it for non-tunneled, proxied requests.
       if (using_ssl_) {
-        negotiated_protocol_ = kProtoQUIC;
+        negotiated_protocol_ = NextProto::kProtoQUIC;
       }
     } else if (connection_->socket()->GetNegotiatedProtocol() !=
-               kProtoUnknown) {
+               NextProto::kProtoUnknown) {
       // Only connections that use TLS (either to the origin or via a GET to a
       // secure proxy) can negotiate ALPN.
       bool get_to_secure_proxy =
@@ -1203,7 +1204,7 @@ void HttpStreamFactory::Job::OnSpdySessionAvailable(
     return;
   }
 
-  negotiated_protocol_ = kProtoHTTP2;
+  negotiated_protocol_ = NextProto::kProtoHTTP2;
   existing_spdy_session_ = spdy_session;
   next_state_ = STATE_CREATE_STREAM;
 
