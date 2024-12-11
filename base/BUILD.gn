@@ -1044,8 +1044,8 @@ component("base") {
   # to provide the appropriate `#define` here.
   defines += [ "IS_RAW_PTR_IMPL" ]
 
-  # native_unwinder_android is split into a separate target to avoid pulling
-  # libunwindstack dependencies into cronet's base.
+  # native_unwinder_android is intended for use solely via a dynamic feature
+  # module, to avoid increasing Chrome's executable size.
   assert_no_deps = [ ":native_unwinder_android" ]
 
   public_deps = [
@@ -2978,6 +2978,14 @@ if (is_android && (current_cpu == "arm" || current_cpu == "arm64")) {
 
 if (is_android) {
   source_set("native_unwinder_android") {
+    # This target is intended to be used only within the stack_unwinder dynamic
+    # feature module, to avoid binary size increase in Chrome due to the
+    # libunwindstack dependency. The additional :* visibility is needed to allow
+    # use by base test targets.
+    visibility = [
+      ":*",
+      "//chrome/android/modules/stack_unwinder/internal:*",
+    ]
     sources = [
       "profiler/libunwindstack_unwinder_android.cc",
       "profiler/libunwindstack_unwinder_android.h",
@@ -3856,7 +3864,6 @@ test("base_unittests") {
         ":base_profiler_test_support_jni",
         ":base_profiler_test_support_library",
         ":native_unwinder_android",
-        "//third_party/libunwindstack",
       ]
     }
 

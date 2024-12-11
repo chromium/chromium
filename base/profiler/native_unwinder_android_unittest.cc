@@ -9,11 +9,11 @@
 
 #include "base/profiler/native_unwinder_android.h"
 
+#include <sys/mman.h>
+
 #include <inttypes.h>
 #include <stdio.h>  // For printf address.
 #include <string.h>
-#include <sys/mman.h>
-
 #include <algorithm>
 #include <iterator>
 #include <vector>

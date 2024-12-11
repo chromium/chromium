@@ -1677,6 +1677,9 @@ if (is_android) {
     if (enable_arm_cfi_table) {
       sources += [ "../common/profiler/thread_profiler_browsertest.cc" ]
 
+      # Cannot depend on the stack_unwinder/internal:java since it uses a custom
+      # GEN_JNI class via @NativeMethods("stack_unwinder").
+      deps += [ "//chrome/android/modules/stack_unwinder/internal:stack_unwinder_for_testing" ]
       configs -= [ "//build/config/compiler:default_symbols" ]
       if (symbol_level == 2) {
         configs += [ "//build/config/compiler:symbols" ]

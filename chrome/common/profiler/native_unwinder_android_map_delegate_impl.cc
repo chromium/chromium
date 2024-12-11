@@ -4,10 +4,11 @@
 
 #include "chrome/common/profiler/native_unwinder_android_map_delegate_impl.h"
 
-#include "base/profiler/native_unwinder_android.h"
-
-NativeUnwinderAndroidMapDelegateImpl::NativeUnwinderAndroidMapDelegateImpl() =
-    default;
+NativeUnwinderAndroidMapDelegateImpl::NativeUnwinderAndroidMapDelegateImpl(
+    stack_unwinder::Module* module)
+    : module_(module) {
+  DCHECK(module);
+}
 
 NativeUnwinderAndroidMapDelegateImpl::~NativeUnwinderAndroidMapDelegateImpl() {
   DCHECK_EQ(reference_count_, 0u);
@@ -18,7 +19,7 @@ base::NativeUnwinderAndroidMemoryRegionsMap*
 NativeUnwinderAndroidMapDelegateImpl::GetMapReference() {
   if (reference_count_ == 0) {
     DCHECK(!memory_regions_map_);
-    memory_regions_map_ = base::NativeUnwinderAndroid::CreateMemoryRegionsMap();
+    memory_regions_map_ = module_->CreateMemoryRegionsMap();
   }
   reference_count_++;
   return memory_regions_map_.get();
