@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/color/color_id.h"
@@ -61,11 +60,7 @@ class VIEWS_EXPORT Label : public View,
     // TODO(tapted): Change this to a size delta and font weight since that's
     // typically all the callers really care about, and would allow Label to
     // guarantee caching of the FontList in ResourceBundle.
-    //
-    // Exclude from `raw_ref` rewriter because there are usages (e.g.
-    // `indexed_suggestion_candidate_button.cc` that attempt to bind
-    // temporaries (`T&&`) to `font_list`, which `raw_ref` forbids.
-    RAW_PTR_EXCLUSION const gfx::FontList& font_list;
+    const gfx::FontList font_list;
   };
 
   // Create Labels with style::CONTEXT_CONTROL_LABEL and style::STYLE_PRIMARY.
