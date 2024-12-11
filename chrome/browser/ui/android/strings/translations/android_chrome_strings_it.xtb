@@ -388,7 +388,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2842985007712546952">Cartella principale</translation>
 <translation id="2853415089995957805">Chrome precarica le pagine che è probabile che visiterai, in modo che vengano caricate più rapidamente quando lo farai</translation>
 <translation id="2854916915045135148">Tocca e tieni premuto per passare alla navigazione in incognito</translation>
-<translation id="2855243985454069333">Consente di eliminare la cronologia da tutti i dispositivi sincronizzati</translation>
+<translation id="2855243985454069333">Consente di eliminare la cronologia da tutti i dispositivi sincronizzati.</translation>
 <translation id="2856503607207334158">Accesso non riuscito</translation>
 <translation id="2860954141821109167">Assicurati che su questo dispositivo ci sia un'app per telefono attiva</translation>
 <translation id="2861923151411510142">Alcune funzionalità di Chrome non saranno più disponibili</translation>
@@ -444,7 +444,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3029704984691124060">Le passphrase non corrispondono</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Richiedi assistenza<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Monitoraggio del prezzo</translation>
-<translation id="3037517125981011456">Vengono mostrate richieste di accesso a Chrome</translation>
+<translation id="3037517125981011456">Mostra le richieste di accesso a Chrome</translation>
 <translation id="3038272154009688107">Visualizza tutti i siti</translation>
 <translation id="3055841435094910999">A Google vengono inviate informazioni sul tuo utilizzo di Chrome, ma non sono riconducibili a te\n\nSe Chrome si arresta in modo anomalo, i dettagli su questo evento potrebbero includere alcune delle tue informazioni personali\n\nSe attivi la sincronizzazione, le metriche potrebbero includere anche informazioni sugli URL che visiti</translation>
 <translation id="3059531648236115056">Aggiungi riepilogo</translation>
@@ -800,7 +800,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4766678251456904326">Aggiungi un account al dispositivo</translation>
 <translation id="4767947714785277816">Stiamo lanciando una nuova funzionalità per la privacy degli annunci chiamata misurazione degli annunci. Chrome condivide soltanto informazioni molto limitate tra siti e app, ad esempio quando ti è stato mostrato un annuncio, per aiutare a misurare il rendimento degli annunci.</translation>
 <translation id="4769095993849849966">Nuovo nome file</translation>
-<translation id="4769632191812288342">Otterrai la Protezione standard</translation>
+<translation id="4769632191812288342">Stai utilizzando la Protezione standard</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" /> di dati eliminati</translation>
 <translation id="4778653490315793244">Nessun contenuto da mostrare</translation>
 <translation id="4787736314074622408">Eliminare il file <ph name="ITEM_TITLE" />?</translation>
@@ -1644,7 +1644,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8413126021676339697">Mostra cronologia completa</translation>
 <translation id="8413795581997394485">Protegge da siti, download ed estensioni noti per essere pericolosi. Quando visiti un sito, Chrome invia una parte offuscata dell'URL a Google tramite un server di tutela della privacy che nasconde il tuo indirizzo IP. Se un sito effettua attività sospette, vengono inviati anche URL completi e frammenti dei contenuti delle pagine.</translation>
 <translation id="8414396119627470038">Accedi a <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="8419144699778179708">Consente di eliminare la cronologia, anche nella casella di ricerca</translation>
+<translation id="8419144699778179708">Consente di eliminare la cronologia, anche nella casella di ricerca.</translation>
 <translation id="8419244640277402268">Includi</translation>
 <translation id="8422250855136581222">Nessuna scheda su questo dispositivo</translation>
 <translation id="842386925677997438">Strumenti per la sicurezza di Chrome</translation>
@@ -1735,7 +1735,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8816556050903368450">Link incluso: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">I contenuti della scheda di anteprima non sono visualizzabili.</translation>
 <translation id="8820817407110198400">Preferiti</translation>
-<translation id="8828624021816895617">Chrome rimuove automaticamente le autorizzazioni dei siti inutilizzati e con comportamenti illeciti</translation>
+<translation id="8828624021816895617">Chrome rimuove automaticamente le autorizzazioni dai siti illeciti e inutilizzati</translation>
 <translation id="8835786707922974220">Assicurati di poter accedere sempre alle password salvate</translation>
 <translation id="883806473910249246">Si è verificato un errore durante il download dei contenuti.</translation>
 <translation id="8840953339110955557">Questa pagina potrebbe essere diversa dalla versione online.</translation>

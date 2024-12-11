@@ -152,7 +152,7 @@
 <translation id="5389212809648216794">由于另一个应用正在使用您的相机，因此 Google Chrome 无法使用</translation>
 <translation id="5395376160638294582">请确保您可以一直使用 Google 账号中的 Chrome 数据</translation>
 <translation id="5404252374083197467">将 Chrome 设为默认浏览器？</translation>
-<translation id="5439191312780166229">通过比“标准保护”机制分析更多的网站数据，针对危险网站（甚至是 Google 未曾得知的网站）向您发出警告。您可以选择忽略 Chrome 警告。</translation>
+<translation id="5439191312780166229">基于比“标准保护”更全面的网站数据进行分析，针对危险网站（甚至是 Google 之前未知的网站）向您发出警告。您可以选择忽略 Chrome 警告。</translation>
 <translation id="5442013002200339429">如果您隐藏“<ph name="MODULE_NAME" />”，Chrome 将不再自动跟踪您的未来包裹，而是会删除您的所有过往包裹跟踪数据。</translation>
 <translation id="5460571915754665838">4. 选择“Chrome”</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome 将帮助您在“新标签页”页面中跟踪此包裹。}other{Chrome 将帮助您在“新标签页”页面中跟踪这些包裹。}}</translation>
@@ -160,7 +160,7 @@
 <translation id="5525095647255982834">若要将此标签页发送到另一设备，请在该设备上登录 Chrome。</translation>
 <translation id="5527026824954593399">点按“在 Chrome 上通过 Google 地图查看”。</translation>
 <translation id="5552137475244467770">Chrome 会定期检查您的密码是否已被列在网上发布的外泄密码列表内。当 Chrome 进行这项检查时，您的密码和用户名都会被加密，所以绝不会被任何人员/任何一方（包括 Google）读取。</translation>
-<translation id="5554520618550346933">当您使用某个密码时，如果发现它已被在线发布，Chrome 会向您发出警告。当 Chrome 进行这项检查时，您的密码和用户名都会被加密，所以绝不会被任何人员/任何一方（包括 Google）读取。</translation>
+<translation id="5554520618550346933">如果 Chrome 发现您使用的某个密码已被发布到网上，就会发出警告。在这个过程中，您的密码和用户名始终加密，任何人员/任何一方（包括 Google）都无法读取。</translation>
 <translation id="5601180634394228718">如需更多使用数据来提升 Chrome 体验的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />。</translation>
 <translation id="5639704535586432836">打开“设置”&gt;“隐私”&gt;“相机”&gt;“Google Chrome”，然后开启相机。</translation>
 <translation id="5642200033778930880">Google Chrome 无法在分割视图模式下使用您的相机</translation>

@@ -338,7 +338,7 @@
 <translation id="5120334927898581447">Ingresa a Chrome cuando accedas a otros servicios de Google</translation>
 <translation id="5126049312684316860">Chrome precarga más páginas que probablemente visites para que se carguen más rápido cuando lo hagas</translation>
 <translation id="5132929315877954718">Descubre aplicaciones, juegos, extensiones y temas geniales para Google Chrome.</translation>
-<translation id="5139423532931106058">Personaliza tu perfil de Chrome</translation>
+<translation id="5139423532931106058">Personalizar tu perfil de Chrome</translation>
 <translation id="5161361450770099246">Chrome puede desactivar esta pestaña para mejorar tu experiencia de navegación y liberar recursos.</translation>
 <translation id="5163087008893166964">Te damos la bienvenida a Chrome; se abrió una nueva ventana del navegador</translation>
 <translation id="5166439563123238795">Chrome necesita permiso para hacer un seguimiento de tus manos</translation>
@@ -497,7 +497,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="7113423803153683764">Chrome libera memoria de las pestañas inactivas. Esto brinda más recursos informáticos a las pestañas activas y a otras apps, y permite que Chrome siga funcionando rápido. Las pestañas inactivas se vuelven a activar automáticamente cuando regresas a ellas.</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Hay una nueva actualización disponible para Chrome que se aplicará cuando lo reinicies.}=1{Hay una nueva actualización disponible para Chrome que se aplicará cuando lo reinicies. No se volverá a abrir la ventana de incógnito.}other{Hay una nueva actualización disponible para Chrome que se aplicará cuando lo reinicies. No se volverán a abrir las # ventanas de incógnito.}}</translation>
 <translation id="7155997830309522122">En ese caso, edita la contraseña guardada en Chrome para que coincida con la nueva.</translation>
-<translation id="7161904924553537242">Bienvenido a Google Chrome</translation>
+<translation id="7161904924553537242">Te damos la bienvenida a Google Chrome</translation>
 <translation id="7177959540995930968">Puedes obtener más información sobre estas funciones en la configuración de Chrome.</translation>
 <translation id="7193885263065350793">Tu organización cierra Chrome cuando no se usa durante <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Estás por acceder con una cuenta administrada, lo que significa que proporcionarás al administrador el control sobre tu perfil de Google Chrome. Tus datos de Google Chrome, como las aplicaciones, los favoritos, el historial, las contraseñas y otros parámetros de configuración quedarán vinculados a <ph name="USER_NAME" /> de forma permanente. Podrás eliminar estos datos a través del Panel de control de Cuentas de Google, pero no podrás asociarlos a otra cuenta. También puedes crear un perfil para mantener separados tus datos de Chrome. <ph name="LEARN_MORE" /></translation>

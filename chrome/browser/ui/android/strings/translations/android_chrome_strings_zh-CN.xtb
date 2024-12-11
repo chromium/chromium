@@ -85,7 +85,7 @@
 <translation id="1355088659320425659">历史记录和标签页</translation>
 <translation id="1360432990279830238">退出账号并关闭同步功能？</translation>
 <translation id="1363028406613469049">跟踪</translation>
-<translation id="1366525380420346469">处于开启状态时</translation>
+<translation id="1366525380420346469">开启时</translation>
 <translation id="1373696734384179344">内存不足，无法下载所选内容。</translation>
 <translation id="1376578503827013741">正在计算…</translation>
 <translation id="1381838868249179644">为保护您的安全，Chrome 已撤消某些网站的权限</translation>
@@ -401,7 +401,7 @@
 <translation id="2888126860611144412">关于 Chrome</translation>
 <translation id="2891154217021530873">停止加载网页</translation>
 <translation id="2893180576842394309">Google 可能会利用您的历史记录为您提供个性化的 Google 搜索和其他 Google 服务</translation>
-<translation id="2894821468041866720">不会致使浏览器或设备的运行速度明显变慢。</translation>
+<translation id="2894821468041866720">不会显著减慢浏览器或设备的运行速度。</translation>
 <translation id="2895521649038438824">您可以聆听此页面</translation>
 <translation id="2899252057552912621">由于未安装 Google Play 服务，已保存的密码即将失效。在此之前，请复制这些密码。</translation>
 <translation id="2900528713135656174">创建活动</translation>
@@ -755,7 +755,7 @@
 <translation id="4587589328781138893">网站</translation>
 <translation id="4594952190837476234">此离线网页是在 <ph name="CREATION_TIME" />创建的，可能与在线版本有所不同。</translation>
 <translation id="4595805675102978678">Google 账号错误</translation>
-<translation id="4601095002996233687">针对可疑的下载内容进行深入扫描。</translation>
+<translation id="4601095002996233687">深入扫描可疑的下载内容。</translation>
 <translation id="4609429330876432068">您在 Chrome 和 <ph name="CHROME_CHANNEL" />中保存的密码的列表已合并。您仍可在这两个应用内自动填充所有已保存的密码。</translation>
 <translation id="4616150815774728855">打开<ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">请验证是您本人在操作</translation>
@@ -941,7 +941,7 @@
 <translation id="543338862236136125">修改密码</translation>
 <translation id="5433691172869980887">已复制用户名</translation>
 <translation id="5438292632479953702">再次下载</translation>
-<translation id="5439191312780166229">通过比“标准保护”机制分析更多的网站数据，针对危险网站（甚至是 Google 未曾得知的网站）向您发出警告。您可以选择忽略 Chrome 警告。</translation>
+<translation id="5439191312780166229">基于比“标准保护”更全面的网站数据进行分析，针对危险网站（甚至是 Google 之前未知的网站）向您发出警告。您可以选择忽略 Chrome 警告。</translation>
 <translation id="5441137934526263133">网站无法正常运行？这是因为第三方 Cookie 已被屏蔽</translation>
 <translation id="5441466871879044658">翻译成所选语言</translation>
 <translation id="5441522332038954058">跳转到地址栏</translation>
@@ -961,7 +961,7 @@
 <translation id="5528925345478618296">{MINUTES,plural, =1{# 分钟前}other{# 分钟前}}</translation>
 <translation id="5548606607480005320">安全检查</translation>
 <translation id="5551564597369878730"><ph name="GIVEN_NAME" />加入了“<ph name="TAB_GROUP_NAME" />”标签页分组</translation>
-<translation id="5554520618550346933">当您使用某个密码时，如果发现它已被在线发布，Chrome 会向您发出警告。当 Chrome 进行这项检查时，您的密码和用户名都会被加密，所以绝不会被任何人员/任何一方（包括 Google）读取。</translation>
+<translation id="5554520618550346933">如果 Chrome 发现您使用的某个密码已被发布到网上，就会发出警告。在这个过程中，您的密码和用户名始终加密，任何人员/任何一方（包括 Google）都无法读取。</translation>
 <translation id="5555525474779371165">选择所需的“安全浏览”功能保护级别</translation>
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="555671485580955310">同步历史记录和标签页</translation>
@@ -1541,7 +1541,7 @@
 <translation id="7968014550143838305">已添加到阅读清单</translation>
 <translation id="7971136598759319605">1 天前曾有活动</translation>
 <translation id="7975379999046275268">预览网页<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
-<translation id="7977451675950311423">如果发现您使用的密码已遭遇数据泄露，就会向您发出警告。</translation>
+<translation id="7977451675950311423">若您使用的密码遭遇了数据泄露，向您发出警告。</translation>
 <translation id="7986497153528221272">若要查看密码，请先在设备上设置屏幕锁定</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome 撤消了这些权限，因为您近期未访问过此网站</translation>
 <translation id="7995059495660416932">待内容可显示后，您即会看到相应内容</translation>
@@ -1727,7 +1727,7 @@
 <translation id="8790193082819560975">点按即可在新标签页中搜索该商品的购买选项。</translation>
 <translation id="879027982257117598">例如，如果您访问一个销售长程跑鞋的网站，该网站可能会推测您对跑马拉松感兴趣。之后，如果您访问别的网站，后者便可根据第一个网站的建议向您展示跑鞋广告。</translation>
 <translation id="8798449543960971550">已读</translation>
-<translation id="8803526663383843427">处于开启状态时</translation>
+<translation id="8803526663383843427">开启时</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{这项内容已保存到您的 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中。}other{这些内容已保存到您的 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中。}}</translation>
 <translation id="8812260976093120287">在某些网站上，您可以使用自己的设备通过上述支持的付款应用付款。</translation>
 <translation id="8816556050903368450">包含链接：<ph name="ORIGIN" /></translation>
@@ -1748,7 +1748,7 @@
 <translation id="8865415417596392024">您账号中的 Chrome 数据</translation>
 <translation id="8888527824584402177">连续 <ph name="DAYS_INACTIVE" /> 天未使用的标签页会移至此处<ph name="AUTODELETE_SECTION" />。您随时可在<ph name="SETTINGS_TITLE" />中更改此设置。</translation>
 <translation id="8890668505403261809">搜索无痕式标签页</translation>
-<translation id="8898822736010347272">向 Google 发送您访问的部分网页的网址、有限的系统信息以及部分网页内容，以协助我们发现新威胁并保护网络上的所有用户。</translation>
+<translation id="8898822736010347272">向 Google 发送您访问过的部分网页的网址、有限的系统信息以及部分网页内容，以便帮助我们发现新威胁并保护网络上的所有用户。</translation>
 <translation id="8909135823018751308">分享…</translation>
 <translation id="8921980840204105660">同步即可获取您在其他设备上保存的书签</translation>
 <translation id="8922289737868596582">通过“更多选项”按钮下载网页以供离线查看</translation>

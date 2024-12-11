@@ -958,7 +958,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1654580009054503925">A exibição de solicitações está bloqueada</translation>
 <translation id="1654713139320245449">Nenhum destino de transmissão encontrado. Precisa de ajuda?</translation>
 <translation id="1656528038316521561">Opacidade do plano de fundo</translation>
-<translation id="1657406563541664238">Ajudar a tornar o <ph name="PRODUCT_NAME" /> melhor enviando automaticamente estatísticas de uso e relatórios de problemas ao Google.</translation>
+<translation id="1657406563541664238">Ajudar a aprimorar o <ph name="PRODUCT_NAME" /> enviando automaticamente estatísticas de uso e relatórios de problemas ao Google.</translation>
 <translation id="1657937299377480641">Para fazer login novamente e ter acesso a recursos educacionais, peça permissão a um dos responsáveis</translation>
 <translation id="1658424621194652532">Esta página está acessando seu microfone.</translation>
 <translation id="1660763353352708040">Problema com o adaptador de energia</translation>
@@ -4493,7 +4493,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4150569944729499860">Contexto na tela</translation>
 <translation id="4151449637210235443">Conte sobre a jogabilidade na sua sessão mais recente</translation>
 <translation id="4151503145138736576">Não há armazenamento off-line para limpar</translation>
-<translation id="4152011295694446843">Você verá seus favoritos aqui</translation>
+<translation id="4152011295694446843">Seus favoritos aparecem aqui</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 guia}one{# guias}other{# guias}}</translation>
 <translation id="4154658846204884961">Cometa</translation>
 <translation id="4154664944169082762">Assinaturas digitais</translation>
@@ -4876,7 +4876,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4432621511648257259">Senha incorreta</translation>
 <translation id="4434611816075088065">Não há mais nada que precise da sua atenção no momento</translation>
 <translation id="443475966875174318">Atualizar ou remover aplicativos incompatíveis</translation>
-<translation id="443503224864902151">Desconecta você da maioria dos sites. Sua Conta do Google continuará conectada, seus dados sincronizados poderão ser excluídos.</translation>
+<translation id="443503224864902151">Desconecta você da maioria dos sites. Sua Conta do Google continuará conectada para que possa excluir seus dados sincronizados.</translation>
 <translation id="4436573279088520291">Fechar as guias não usadas</translation>
 <translation id="4437879751057074691">Oferecer para salvar senhas e chaves de acesso</translation>
 <translation id="4437947179446780764">Adicionar provedor de serviços de DNS personalizado</translation>
@@ -6431,7 +6431,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
     <ph name="BEGIN_PARAGRAPH4" />Se a configuração "Atividade na Web e de apps" adicional estiver ativada, esses dados poderão ser salvos na sua Conta do Google. Você pode ver seus dados, excluí-los e alterar as configurações da sua conta em account.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5585019845078534178">Cards</translation>
 <translation id="5585118885427931890">Não foi possível criar uma pasta de favoritos.</translation>
-<translation id="558563010977877295">Abrir uma página específica ou um conjunto de páginas.</translation>
+<translation id="558563010977877295">Abrir uma página específica ou um conjunto de páginas</translation>
 <translation id="5585898376467608182">O espaço de armazenamento do dispositivo está se esgotando. É necessário ter pelo menos <ph name="MINIMUM_SPACE" /> de espaço livre para usar o <ph name="APP_NAME" />. Para liberar espaço, exclua arquivos do dispositivo.</translation>
 <translation id="5585912436068747822">Falha na formatação</translation>
 <translation id="5587765208077583036">Para compartilhar, clique com o botão direito do mouse no app Arquivos e selecione "Compartilhar com o <ph name="SPECIFIC_NAME" />".</translation>
@@ -8953,7 +8953,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
     na parte superior da tela do painel do ChromeVox</translation>
 <translation id="7429568074268678162">O arquivo <ph name="FILENAME" /> pode ser perigoso. Adicione uma senha se quiser que o Chrome o verifique ou baixe de forma direta.</translation>
 <translation id="7431719494109538750">Nenhum dispositivo HID encontrado</translation>
-<translation id="7431991332293347422">Controlar como o histórico de navegação é usado para personalizar a Pesquisa e muito mais</translation>
+<translation id="7431991332293347422">Controlar como o histórico de navegação é usado para personalizar a Pesquisa e mais</translation>
 <translation id="7432200167665670017">Seu administrador bloqueou a extensão <ph name="EXTENSION_NAME" />: ID do app <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">Insira o cartão inteligente para continuar usando seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Manter assim</translation>

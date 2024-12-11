@@ -1248,7 +1248,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1865769994591826607">Alleen verbindingen binnen dezelfde site</translation>
 <translation id="186594096341696655">Samplingsnelheid verlagen</translation>
 <translation id="186612162884103683">'<ph name="EXTENSION" />' kan afbeeldingen, video- en geluidsbestanden lezen en schrijven op de gecontroleerde locaties.</translation>
-<translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> is klaar voor het voltooien van je installatie.</translation>
+<translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> is klaar om je installatie te voltooien.</translation>
 <translation id="1868553836791672080">Wachtwoordcheck is niet beschikbaar in Chromium</translation>
 <translation id="1868617395637139709">Gebruik locatie voor Android-apps en -services.</translation>
 <translation id="1869433484041798909">Knop voor bookmark</translation>
@@ -6311,7 +6311,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5499453227627332024">Er is een upgrade beschikbaar voor je Linux-container. Je kunt ook later upgraden via de app Instellingen.</translation>
 <translation id="5499476581866658341">Je kunt nu de recente foto's en media van je telefoon bekijken</translation>
 <translation id="549957179819296104">Nieuw icoon</translation>
-<translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Zoekgeschiedenis<ph name="END_LINK_SEARCH" /> en <ph name="BEGIN_LINK_GOOGLE" />andere vormen van activiteit<ph name="END_LINK_GOOGLE" /> kunnen worden opgeslagen op je Google-account als je bent ingelogd. Je kunt ze wanneer je wilt verwijderen.</translation>
+<translation id="5500168250243071806">Je <ph name="BEGIN_LINK_SEARCH" />zoekgeschiedenis<ph name="END_LINK_SEARCH" /> en <ph name="BEGIN_LINK_GOOGLE" />andere vormen van activiteit<ph name="END_LINK_GOOGLE" /> kunnen worden opgeslagen in je Google-account als je bent ingelogd. Je kunt ze altijd verwijderen.</translation>
 <translation id="5500709606820808700">Veiligheidscheck is vandaag uitgevoerd</translation>
 <translation id="5501322521654567960">Links uitgelijnd zijvenster</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Kan <ph name="ATTACHMENTS" /> van <ph name="DEVICE_NAME" /> niet ontvangen}other{Kan <ph name="ATTACHMENTS" /> van <ph name="DEVICE_NAME" /> niet ontvangen}}</translation>

@@ -288,7 +288,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1483493594462132177">Gönder</translation>
 <translation id="1484449009683144042">Bu, yapay zekadan yararlanarak yazım konusunda deneysel destek sunan bir özellik olduğundan her zaman düzgün çalışmayabilir.
     <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
-<translation id="1486096554574027028">Şifrelerde ara</translation>
+<translation id="1486096554574027028">Şifrelerde arayın</translation>
 <translation id="1492194039220927094">Politikalar aktarılabilir:</translation>
 <translation id="1495677929897281669">Sekmeye dön</translation>
 <translation id="1500286806237135498">Kameralar (<ph name="CAMERAS_COUNT" />)</translation>
@@ -2154,7 +2154,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4877422487531841831"><ph name="TEXT" /> araması</translation>
 <translation id="4877521229462766300">Yerleştirilmiş içeriğe izin verilsin mi?</translation>
 <translation id="4879491255372875719">Otomatik (varsayılan)</translation>
-<translation id="4880827082731008257">Geçmişte ara</translation>
+<translation id="4880827082731008257">Geçmişte arayın</translation>
 <translation id="4881695831933465202">Aç</translation>
 <translation id="4881808915112408168">24 x 31,5 inç</translation>
 <translation id="4882314601499260499">Hiçbir kullanıcı politikası uygulanmadı. Kullanıcı politikaları eklemek için kuruluşunuzun <ph name="LINK_BEGIN" />alanınızı doğrulaması<ph name="LINK_END" /> gerekir.</translation>
@@ -3039,7 +3039,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="647330291963761005">Güncellemeler yükleniyor</translation>
 <translation id="6474220430271405609">Politika Testleri</translation>
 <translation id="6475672344094591109">Ziyaret ettiğiniz siteler, reklamlarının performansını ölçmek için Chrome'dan bilgi isteyebilir. Chrome, sitelerin diğer sitelerle paylaşabileceği bilgileri sınırlandırarak gizliliğinizi korur.</translation>
-<translation id="6476284679642588870">Ödeme yöntemlerini yönet</translation>
+<translation id="6476284679642588870">Ödeme yöntemlerini yönetin</translation>
 <translation id="647881094269678013">Oyunculuk ve Tiyatro</translation>
 <translation id="6480864723214312258">Ev Tipi Piller</translation>
 <translation id="6487678699866233349">Dünya Müziği</translation>

@@ -565,7 +565,7 @@
 <translation id="3679163990085797665">删除已读项</translation>
 <translation id="368329460027487650">已退出账号。打开登录选项。</translation>
 <translation id="3695446226812920698">如何解决</translation>
-<translation id="3700134753671613714">登录后可获取您所有设备上保存的书签。</translation>
+<translation id="3700134753671613714">登录帐号即可将您的书签同步到您的所有设备上。</translation>
 <translation id="3706112388989951153">修改书签</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{有 {COUNT} 个密码会仅保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 {EMAIL}。}other{有 {COUNT} 个密码会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {EMAIL}。}}</translation>
 <translation id="371230970611282515">预测危险事件并在此类事件发生前向您发出警告。</translation>
@@ -746,7 +746,7 @@
 <translation id="4587589328781138893">网站</translation>
 <translation id="4592672037257622855">{count,plural, =1{此页面已添加到您的阅读清单中}other{{count} 个页面已添加到您的阅读清单中}}</translation>
 <translation id="459644946100970322">开启票价变更提醒？</translation>
-<translation id="4601095002996233687">针对可疑的下载内容进行深入扫描。</translation>
+<translation id="4601095002996233687">深入扫描可疑的下载内容。</translation>
 <translation id="4606247758155004938">您的浏览器由贵单位管理。</translation>
 <translation id="4611811151908969241">隐藏“取消关注‘<ph name="DOMAIN_NAME" />’”</translation>
 <translation id="461440297010471931">目前所用的搜索引擎是 Google</translation>
@@ -769,7 +769,7 @@
 <translation id="4669618761237477717">贵组织要求您进行私密浏览。在无痕模式下，系统不会同步标签页分组。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="467189612236587057">拨打电话联系商家</translation>
-<translation id="4682496302933121474">翻译网页？</translation>
+<translation id="4682496302933121474">翻译网页吗？</translation>
 <translation id="4682686630151240767">1. 打开 iPhone 设置</translation>
 <translation id="4684427112815847243">同步所有数据</translation>
 <translation id="4699172675775169585">缓存的图片和文件</translation>
@@ -1505,7 +1505,7 @@
 <translation id="7971136598759319605">1 天前曾有活动</translation>
 <translation id="7975036700432177008">试用</translation>
 <translation id="797588153137233716">菜单 → 历史记录 → 删除浏览数据</translation>
-<translation id="7977451675950311423">如果发现您使用的密码已遭遇数据泄露，就会向您发出警告。</translation>
+<translation id="7977451675950311423">若您使用的密码遭遇了数据泄露，向您发出警告。</translation>
 <translation id="797824194429476746">相应标签页将在此设备上保持打开状态，但分组将被永久删除。</translation>
 <translation id="7982789257301363584">网络</translation>
 <translation id="7987685713885608670">为了提高安全性，请先在设备上对密码进行加密，然后再将其保存到 Google 密码管理工具中。</translation>
@@ -1697,7 +1697,7 @@
 <translation id="8781834595282316166">在分组内添加新标签页</translation>
 <translation id="8786100550345425552">修改权限</translation>
 <translation id="8792626944327216835">麦克风</translation>
-<translation id="8803526663383843427">处于开启状态时</translation>
+<translation id="8803526663383843427">开启时</translation>
 <translation id="8803639129939845298">安全</translation>
 <translation id="8806823403540278281">贵单位要求您进行无痕浏览。在无痕模式下，系统不会保存标签页。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -1712,7 +1712,7 @@
 <translation id="8843129975935593190">贵单位限制了您可同步的内容。</translation>
 <translation id="8848286253339013170">正在将图片保存到 <ph name="USER_EMAIL" /> 所用的 Google 相册…</translation>
 <translation id="8849001918648564819">已隐藏</translation>
-<translation id="8855242995793521265">不会致使浏览器或设备的运行速度明显变慢。</translation>
+<translation id="8855242995793521265">不会显著减慢浏览器或设备的运行速度。</translation>
 <translation id="8856643812068084733">归档文件</translation>
 <translation id="8859598907209490382">显示设置</translation>
 <translation id="8863067612494559785">正在发送到<ph name="DEVICE_NAME" />…</translation>
@@ -1724,7 +1724,7 @@
 <translation id="8879952635974818770">个性化内容</translation>
 <translation id="8887595428614802520">关闭所有标签页和分组</translation>
 <translation id="8893208530912252670">视频</translation>
-<translation id="8898822736010347272">向 Google 发送您访问的部分网页的网址、有限的系统信息以及部分网页内容，以协助我们发现新威胁并保护网络上的所有用户。</translation>
+<translation id="8898822736010347272">向 Google 发送您访问过的部分网页的网址、有限的系统信息以及部分网页内容，以便帮助我们发现新威胁并保护网络上的所有用户。</translation>
 <translation id="890565330728586731">返回</translation>
 <translation id="8907722425137681851">在当前页面中查找…</translation>
 <translation id="8909135823018751308">分享…</translation>

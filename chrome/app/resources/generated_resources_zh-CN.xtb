@@ -5069,7 +5069,7 @@
 <translation id="4598776695426288251">可通过多部设备使用 Wi-Fi</translation>
 <translation id="4599323532350839656">不得捕获和使用您的键盘输入</translation>
 <translation id="4600071396330666617">建议数量</translation>
-<translation id="4601095002996233687">针对可疑的下载内容进行深入扫描。</translation>
+<translation id="4601095002996233687">深入扫描可疑的下载内容。</translation>
 <translation id="4601426376352205922">标记为未读</translation>
 <translation id="460190672235687855">查看密码</translation>
 <translation id="4602466770786743961">始终允许 <ph name="HOST" /> 使用您的摄像头和麦克风</translation>
@@ -9693,7 +9693,7 @@
 <translation id="7974936243149753750">过扫描</translation>
 <translation id="7975504106303186033">您必须将这部 Chrome 教育版设备注册到一个教育版账号。若要注册新账号，请访问 g.co/workspace/edusignup。</translation>
 <translation id="7977029776654598145">用途</translation>
-<translation id="7977451675950311423">如果发现您使用的密码已遭遇数据泄露，就会向您发出警告。</translation>
+<translation id="7977451675950311423">若您使用的密码遭遇了数据泄露，向您发出警告。</translation>
 <translation id="7978412674231730200">私有密钥</translation>
 <translation id="7978450511781612192">执行此操作会使您退出 Google 账号。您的书签、历史记录、密码及其他设置将不再保持同步。</translation>
 <translation id="7980066177668669492">Base64 编码的 ASCII，多个证书</translation>
@@ -10852,7 +10852,7 @@
 <translation id="8797459392481275117">一律不翻译此网站</translation>
 <translation id="8798099450830957504">默认</translation>
 <translation id="8800034312320686233">网站无法正常运行？</translation>
-<translation id="8803526663383843427">处于开启状态时</translation>
+<translation id="8803526663383843427">开启时</translation>
 <translation id="8803953437405899238">只需点击一下，即可打开一个新标签页</translation>
 <translation id="8803972455568900492"><ph name="BEGIN_PARAGRAPH1" />“位置信息精确度”设置处于开启状态时，系统将使用无线信号（例如 Wi-Fi 接入点、移动网络信号塔）的相关信息以及设备传感器数据（例如加速度计和陀螺仪）来更精确地推测设备位置，以便 Android 应用和服务使用这些位置信息提供基于地理位置的功能。为此，Google 会定期收集您附近的设备传感器和无线信号的相关信息，然后汇总根据无线信号识别的位置信息。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google 会在不识别您个人身份的情况下，使用这些信息来满足以下目的：提高位置信息精确度和改善基于地理位置的服务；以及改进、提供和维护 Google 服务。我们会根据 Google 和第三方的合法权益来处理这些信息，以满足用户的需求。<ph name="END_PARAGRAPH2" />
@@ -10927,7 +10927,7 @@
 <translation id="885246833287407341">API 函数参数</translation>
 <translation id="8853586775156634952">此卡的信息将仅保存到此设备上</translation>
 <translation id="8854745870658584490">“选择”快捷方式</translation>
-<translation id="8855242995793521265">不会致使浏览器或设备的运行速度明显变慢。</translation>
+<translation id="8855242995793521265">不会显著减慢浏览器或设备的运行速度。</translation>
 <translation id="8855977033756560989">该 Chromebook 企业版设备捆绑了 Chrome 企业版升级许可。要充分利用企业版功能，请使用 Google 管理控制台账号注册该设备。</translation>
 <translation id="8856028055086294840">恢复应用和网页</translation>
 <translation id="885701979325669005">存储数据</translation>
@@ -10998,7 +10998,7 @@
 <translation id="8896830132794747524">利用鼠标加速移动会使光标的移动幅度增大</translation>
 <translation id="8898786835233784856">选择下一个标签</translation>
 <translation id="8898790559170352647">添加您的 Microsoft 账号</translation>
-<translation id="8898822736010347272">向 Google 发送您访问的部分网页的网址、有限的系统信息以及部分网页内容，以协助我们发现新威胁并保护网络上的所有用户。</translation>
+<translation id="8898822736010347272">向 Google 发送您访问过的部分网页的网址、有限的系统信息以及部分网页内容，以便帮助我们发现新威胁并保护网络上的所有用户。</translation>
 <translation id="8899851313684471736">在新窗口中打开链接(&amp;W)</translation>
 <translation id="8900413463156971200">启用移动网络</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您备份自己的数据并在今天退还此 <ph name="DEVICE_TYPE" />。}other{<ph name="MANAGER" /> 要求您备份自己的数据并在截止日期前退还此 <ph name="DEVICE_TYPE" />。}}</translation>

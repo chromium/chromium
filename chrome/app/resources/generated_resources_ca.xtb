@@ -3671,7 +3671,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3607671391978830431">Per a un nen o nena</translation>
 <translation id="3607799000129481474"><ph name="SITE" /> vol verificar la teva identitat</translation>
 <translation id="3608460311600621471">Introdueix un motiu per imprimir aquestes dades:</translation>
-<translation id="3608730769702025110">Pas 3 de 4: revisa la informació d'identificació personal</translation>
+<translation id="3608730769702025110">Pas 3 de 4: revisa la informació personal identificable</translation>
 <translation id="3609277884604412258">Cerca ràpida</translation>
 <translation id="3610241585790874201">Sense permís per desar dades al dispositiu</translation>
 <translation id="3610369246614755442">Cal reparar el ventilador de la base</translation>
@@ -9895,7 +9895,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8101409298456377967">Crea, desa i gestiona les teves contrasenyes de manera que puguis iniciar la sessió fàcilment en llocs web i aplicacions. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Color personalitzat</translation>
 <translation id="8101987792947961127">Es requereix Powerwash la propera vegada que es reiniciï</translation>
-<translation id="8102139037507939978">Elimina la informació d'identificació personal del fitxer system_logs.txt.</translation>
+<translation id="8102139037507939978">Elimina la informació personal identificable del fitxer system_logs.txt.</translation>
 <translation id="810362914482827094">Cerca claus d'accés</translation>
 <translation id="8104088837833760645">Baixa el perfil de l'eSIM</translation>
 <translation id="8105273883928376822">Inicia la sessió per continuar.</translation>

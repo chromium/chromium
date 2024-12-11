@@ -1435,7 +1435,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="199191324030140441">Disattiva Non disturbare</translation>
 <translation id="1992397118740194946">Non impostata</translation>
 <translation id="1994173015038366702">URL sito</translation>
-<translation id="1995916364271252349">Consente di stabilire quali informazioni possono essere usate e mostrate dai siti (posizione, videocamera, popup e non solo)</translation>
+<translation id="1995916364271252349">Consente di stabilire quali informazioni possono essere usate e mostrate dai siti (posizione, videocamera, popup e non altro)</translation>
 <translation id="199610894463449797">{0,plural, =1{Chiudi questo profilo}other{Chiudi questo profilo (# finestre)}}</translation>
 <translation id="1997433994358798851">Chrome deve avere l'autorizzazione per utilizzare il Bluetooth per connettersi al dispositivo</translation>
 <translation id="1997616988432401742">I tuoi certificati</translation>
@@ -1932,7 +1932,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="233471714539944337">Contenuti sensibili</translation>
 <translation id="2335111415680198280">{0,plural, =1{Chiudi # finestra}other{Chiudi # finestre}}</translation>
 <translation id="2335758110242123814">Apri gruppo</translation>
-<translation id="2336228925368920074">Aggiungi tutte le schede ai Preferiti...</translation>
+<translation id="2336228925368920074">Aggiungi tutte le schede ai preferiti...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> sta stampando 1 pagina su <ph name="PRINTER_NAME" /></translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2340239562261172947">Impossibile scaricare <ph name="FILE_NAME" /> in modo sicuro</translation>
@@ -2670,7 +2670,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2850672011315104382">Stile punteggiatura</translation>
 <translation id="285237063405807022">(caricamento)</translation>
 <translation id="2853121255651601031">Password salvata</translation>
-<translation id="2855243985454069333">Consente di eliminare la cronologia da tutti i dispositivi sincronizzati</translation>
+<translation id="2855243985454069333">Consente di eliminare la cronologia da tutti i dispositivi sincronizzati.</translation>
 <translation id="2855812646048059450">Accedi con <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Crea un nuovo container</translation>
 <translation id="2856907950922663165">Disattivare la crittografia degli URL?</translation>
@@ -2755,7 +2755,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2912247081180973411">Chiudi finestre</translation>
 <translation id="2915102088417824677">Apri log delle attività</translation>
 <translation id="2915873080513663243">Scansione automatica</translation>
-<translation id="2916073183900451334">Se premi Tab in una pagina web vengono evidenziati i link, così come i campi dei moduli</translation>
+<translation id="2916073183900451334">I link e i campi dei moduli vengono evidenziati quando premi Tab in una pagina web</translation>
 <translation id="2916745397441987255">Cerca tra le estensioni</translation>
 <translation id="2918484639460781603">Passa alle impostazioni</translation>
 <translation id="2918484644467055090">Questo dispositivo non può essere registrato nell'organizzazione a cui appartiene il tuo account perché è contrassegnato per essere gestito da un'altra organizzazione.</translation>
@@ -4604,7 +4604,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4254813446494774748">Lingua della traduzione:</translation>
 <translation id="4255016471934258618">Apri la bocca</translation>
 <translation id="425573743389990240">Velocità di esaurimento della batteria in watt (un valore negativo indica che la batteria è in carica)</translation>
-<translation id="4255841059940367080">Protezione basata sull'AI in tempo reale da estensioni, siti e download pericolosi in base ai tuoi dati di navigazione inviati a Google</translation>
+<translation id="4255841059940367080">Protezione basata sull'AI in tempo reale da estensioni, siti e download pericolosi in base ai tuoi dati di navigazione inviati a Google.</translation>
 <translation id="4256316378292851214">Sal&amp;va video come...</translation>
 <translation id="4258348331913189841">File system</translation>
 <translation id="4259388776256904261">L'operazione potrebbe richiedere un po' di tempo</translation>
@@ -4720,7 +4720,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4340515029017875942"><ph name="ORIGIN" /> vuole comunicare con l'app "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4340799661701629185">Non consentire ai siti di inviare notifiche</translation>
 <translation id="4341280816303414009">Lo schermo potrebbe essere registrato</translation>
-<translation id="4341577178275615435">Per attivare o disattivare la navigazione con cursore, utilizza la scorciatoia F7</translation>
+<translation id="4341577178275615435">Per attivare o disattivare la navigazione con cursore, utilizza la scorciatoia F7.</translation>
 <translation id="4341905082470253054">Verifica dello stato TPM in corso…</translation>
 <translation id="434198521554309404">Veloce. Sicuro. Semplice.</translation>
 <translation id="4342417854108207000">Autorizzati a modificare file o cartelle sul dispositivo</translation>
@@ -4757,7 +4757,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4364830672918311045">Mostrare notifiche</translation>
 <translation id="4367513928820380646">Controlla le autorizzazioni rimosse</translation>
 <translation id="4367971618859387374">Nome visualizzato</translation>
-<translation id="4368960422722232719">Mostra l'utilizzo della memoria su una scheda di anteprima che appare quando passi il mouse sopra la scheda</translation>
+<translation id="4368960422722232719">Mostra utilizzo della memoria su una scheda popup quando passi il mouse sopra la scheda</translation>
 <translation id="4369215744064167350">Richiesta di accesso al sito web approvata</translation>
 <translation id="4369233657762989723">Dettatura on/off</translation>
 <translation id="436926121798828366">Puoi modificare questa impostazione in qualsiasi momento in <ph name="SETTINGS_LINK" /></translation>
@@ -4904,7 +4904,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4472575034687746823">Come iniziare</translation>
 <translation id="4473559657152613417">Fai clic con il tasto destro del mouse su una scheda e seleziona "Aggiungi scheda a nuovo gruppo"</translation>
 <translation id="4473996011558324141">Stima del tempo in corso…</translation>
-<translation id="4474155171896946103">Aggiungi tutte le schede ai Preferiti...</translation>
+<translation id="4474155171896946103">Aggiungi tutte le schede ai preferiti...</translation>
 <translation id="4475299370877036544">Questa azione potrebbe violare le norme della tua organizzazione</translation>
 <translation id="4476198534886170024">Autorizzazione consentita. Attiva l'<ph name="LINK_BEGIN" />accesso alla fotocamera del sistema<ph name="LINK_END" />.</translation>
 <translation id="4476590490540813026">Atleta</translation>
@@ -5296,7 +5296,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4766598565665644999">Tutte le estensioni possono leggere e modificare <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Scopri di più sulle estensioni disattivate.</translation>
 <translation id="4768332406694066911">Hai certificati da queste organizzazioni che ti identificano</translation>
-<translation id="4769632191812288342">Otterrai la Protezione standard</translation>
+<translation id="4769632191812288342">Stai utilizzando la Protezione standard</translation>
 <translation id="4770119228883592393">Autorizzazione richiesta, premi ⌘ + Opzione + Freccia giù per rispondere</translation>
 <translation id="4770755495532014179">Usa questa password sul tuo iPhone</translation>
 <translation id="4772914216048388646">Ordinato</translation>
@@ -5714,7 +5714,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5074761966806028321">Autorizzazione ancora necessaria per completare la configurazione</translation>
 <translation id="5075563999073408211">Controlla il tuo dispositivo con uno o più sensori. I sensori possono essere tasti della tastiera, pulsanti del gamepad o dispositivi dedicati.</translation>
 <translation id="5075910247684008552">I contenuti non sicuri vengono bloccati per impostazione predefinita sui siti protetti</translation>
-<translation id="5078638979202084724">Aggiungi tutte le schede ai Preferiti</translation>
+<translation id="5078638979202084724">Aggiungi tutte le schede ai preferiti</translation>
 <translation id="5078796286268621944">PIN errato</translation>
 <translation id="5079010647467150187">Aggiungi VPN integrata…</translation>
 <translation id="5079460277417557557">Ora puoi usare i gruppi di schede salvati sui computer fissi su cui hai eseguito l'accesso</translation>
@@ -8560,7 +8560,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7159953856712257647">Estensione installata per impostazione predefinita</translation>
 <translation id="7160182524506337403">Ora puoi visualizzare le notifiche del tuo telefono</translation>
 <translation id="7160911207516219534">Riquadri laterali</translation>
-<translation id="7165263843655074092">Otterrai la protezione di sicurezza standard su questo dispositivo</translation>
+<translation id="7165263843655074092">Stai utilizzando la protezione di sicurezza standard su questo dispositivo</translation>
 <translation id="716640248772308851">L'estensione "<ph name="EXTENSION" />" può leggere file di immagini, video e audio nelle posizioni selezionate.</translation>
 <translation id="7166815366658507447">Hotspot attivato</translation>
 <translation id="7167327771183668296">Clic automatici</translation>
@@ -8847,7 +8847,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="737728204345822099">Sul tuo token di sicurezza potrebbe essere memorizzato un record della tua visita a questo sito.</translation>
 <translation id="7377451353532943397">Continua a impedire l'accesso ai sensori</translation>
 <translation id="7377481913241237033">Connessione tramite codice</translation>
-<translation id="73786666777299047">Apri Chrome Web Store</translation>
+<translation id="73786666777299047">Apri Chrome Web Store.</translation>
 <translation id="7380272457268061606">Vuoi disattivare il recupero dei dati locali?</translation>
 <translation id="7380459290951585794">Assicurati che il tuo telefono sia nelle vicinanze, sbloccato e che il Bluetooth e il Wi-Fi siano attivi</translation>
 <translation id="7380622428988553498">Il nome del dispositivo contiene caratteri non validi</translation>
@@ -10331,7 +10331,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8418445294933751433">&amp;Mostra come scheda</translation>
 <translation id="8418675848396538775">Aggiungi <ph name="LANGUAGE_NAME" /></translation>
 <translation id="8419098111404128271">Risultati di ricerca per "<ph name="SEARCH_TEXT" />"</translation>
-<translation id="8419144699778179708">Consente di eliminare la cronologia, anche nella casella di ricerca</translation>
+<translation id="8419144699778179708">Consente di eliminare la cronologia, anche nella casella di ricerca.</translation>
 <translation id="8420308167132684745">Modifica voci dizionario</translation>
 <translation id="8421361468937925547">Sottotitoli in tempo reale (solo in inglese)</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -11033,7 +11033,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> di <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Installazione dell'app in corso…</translation>
 <translation id="891931289445130855">Elimina dati e autorizzazioni</translation>
-<translation id="8920133120839850939">Seleziona la scheda Altri gesti, quindi attiva l'opzione Scorri tra le pagine per andare avanti e indietro</translation>
+<translation id="8920133120839850939">Seleziona la scheda Altri gesti, quindi attiva l'opzione Scorri tra le pagine per andare avanti e indietro.</translation>
 <translation id="8922348435910470639">Doppia prenotazione</translation>
 <translation id="8922624386829239660">Sposta lo schermo quando il puntatore del mouse ne tocca i bordi</translation>
 <translation id="8923880975836399332">Verde petrolio</translation>

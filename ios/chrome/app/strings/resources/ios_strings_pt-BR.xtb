@@ -440,7 +440,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="3030138564564344289">Tentar fazer o download novamente</translation>
 <translation id="3037177537145227281">Monitorando preço</translation>
 <translation id="3039671569659952257">Excluir pasta</translation>
-<translation id="3053332585453689122">Envia os URLs que você visita e uma pequena amostra do conteúdo da página, dos downloads, das atividade da extensão e das informações do sistema para a Navegação segura do Google com o objetivo de verificar se eles são nocivos.</translation>
+<translation id="3053332585453689122">Envia os URLs que você visita e uma pequena amostra do conteúdo da página, dos downloads, da atividade da extensão e das informações do sistema para a Navegação segura do Google a fim de verificar se são nocivos.</translation>
 <translation id="3055102495753300780">Armazenamento de informações</translation>
 <translation id="3059270601560379555">Nova pesquisa</translation>
 <translation id="3072279342064724558">A senha já existe</translation>
@@ -655,7 +655,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4148023517926189160">Esse site quer fazer download e adicionar um arquivo à sua agenda.</translation>
-<translation id="4152011295694446843">Você verá seus favoritos aqui</translation>
+<translation id="4152011295694446843">Seus favoritos aparecem aqui</translation>
 <translation id="4158491215857439601">Gerenciador de senhas</translation>
 <translation id="4163699139741158298">{count,plural, =1{Favorito salvo em "{title}". Ele fica salvo apenas neste dispositivo.}one{{count} favorito salvo em "{title}". Ele fica salvo apenas neste dispositivo.}other{{count} favoritos salvos em "{title}". Eles ficam salvos apenas neste dispositivo.}}</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> com final <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -1201,7 +1201,7 @@ No entanto, eles não podem usar cookies para ver sua atividade de navegação e
 <translation id="6579867704846662339">Você pode abrir os URLs recebidos de outros apps no modo de navegação anônima.</translation>
 <translation id="6583087784430677195">Para desativar, abra <ph name="BEGIN_LINK" />Ajustes<ph name="END_LINK" /> e acesse "Preenchimento Automático de Senhas".</translation>
 <translation id="6585048665672348661">Excluir dados de navegação…</translation>
-<translation id="6585618849026997638">Você pode adicionar uma página importante aos favoritos para acessá-la com facilidade</translation>
+<translation id="6585618849026997638">Adicione uma página importante aos favoritos para acessá-la com facilidade</translation>
 <translation id="6596481460663245319">Pesquisar imagem com o Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 senha}one{# senha}other{# senhas}}</translation>
 <translation id="6601302169302852717">Imagem salva no Google Fotos de <ph name="USER_EMAIL" /></translation>
@@ -1375,7 +1375,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7419565702166471774">Sempre usar conexões seguras</translation>
 <translation id="7425053386765766120">Adicionar forma de pagamento…</translation>
 <translation id="7425346204213733349">Alterações feitas nos seus favoritos, histórico, senhas e outras configurações não serão mais sincronizadas com sua Conta do Google. No entanto, os dados já existentes permanecerão armazenados na Conta do Google.</translation>
-<translation id="7431991332293347422">Controlar como o histórico de navegação é usado para personalizar a Pesquisa e muito mais</translation>
+<translation id="7431991332293347422">Controlar como o histórico de navegação é usado para personalizar a Pesquisa e mais</translation>
 <translation id="7435356471928173109">Desativado pelo administrador</translation>
 <translation id="7438481509621345350">Agora, você verá stories de <ph name="CHANNEL_NAME" /> quando abrir uma nova guia.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Favorito salvo em "{title}"}one{Favorito salvo em "{title}"}other{Favoritos salvos em "{title}"}}</translation>
@@ -1513,7 +1513,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="7993619969781047893">Os recursos de alguns sites podem apresentar falhas</translation>
 <translation id="7996239959906074962">Configurar…</translation>
 <translation id="800361585186029508">Abre os URLs fornecidos no Google Chrome.</translation>
-<translation id="8005666035647241369">Para o Gerenciador de senhas do Google deste dispositivo</translation>
+<translation id="8005666035647241369">No Gerenciador de senhas do Google deste dispositivo</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="802154636333426148">Falha no download</translation>
 <translation id="8023878949384262191">Expande a seção.</translation>

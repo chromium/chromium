@@ -2822,7 +2822,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6108580855199168381">Detalles del certificado</translation>
 <translation id="6108702513636120202">Tu motor de búsqueda en Chromium</translation>
 <translation id="6108849843016142864">Reptiles y anfibios</translation>
-<translation id="610911394827799129">Es posible que tu cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
+<translation id="610911394827799129">Es posible que tu cuenta de Google tenga otras formas de historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="611018310643025551">Tus búsquedas, los resultados más relevantes y el contenido de sus páginas se envían a Google y es posible que los revisen personas para mejorar esta función.</translation>
 <translation id="6116338172782435947">Ver el texto y las imágenes copiados en el portapapeles</translation>
 <translation id="6117833587752089929">Foto (satinado)</translation>
@@ -3422,7 +3422,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="718872491229180389">Animación deportiva</translation>
 <translation id="7188840756966467339">Reiniciar y aplicar políticas</translation>
 <translation id="7192188280913829296">También se debe especificar el atributo "vendor_id".</translation>
-<translation id="7192203810768312527">Esta acción libera hasta <ph name="SIZE" />. Es posible que algunos sitios carguen más lento en tu próxima visita.</translation>
+<translation id="7192203810768312527">Esta acción libera <ph name="SIZE" />. Es posible que algunos sitios carguen más lento en tu próxima visita.</translation>
 <translation id="7192537357091279678">Unidades y almacenamiento para computadoras</translation>
 <translation id="7193661028827781021">Referencia</translation>
 <translation id="719464814642662924">Visa</translation>

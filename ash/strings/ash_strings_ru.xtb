@@ -1688,7 +1688,7 @@
 <translation id="6665545700722362599">Разрешать сайтам, приложениям и расширениям использовать геолокацию, микрофон, камеру и другие функции устройства.</translation>
 <translation id="6667908387435388584">Подключайте устройство к точке доступа на телефоне, отключайте звук телефона, определяйте его местоположение и просматривайте последние вкладки, открытые на нем.</translation>
 <translation id="6670153871843998651">Рабочий стол 3</translation>
-<translation id="6671495933530132209">Копировать изображение</translation>
+<translation id="6671495933530132209">Скопировать изображение</translation>
 <translation id="6671661918848783005">Не удалось разблокировать Chromebook.</translation>
 <translation id="6676552993057022464">Чтобы изменить размер разделенного экрана, используйте стрелки вверх и вниз</translation>
 <translation id="6682029141988159141">Вставить данные из буфера обмена</translation>
@@ -1755,7 +1755,7 @@
 <translation id="6884665277231944629">Вернуться к сегодняшней дате</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> может работать неэффективно. Используйте сертифицированный адаптер питания USB-C на <ph name="PREFERRED_MINIMUM_POWER" /> Вт или выше.</translation>
 <translation id="688631446150864480">Чтобы перейти к другому окну, нажмите клавишу со стрелкой вниз</translation>
-<translation id="6896758677409633944">Копировать</translation>
+<translation id="6896758677409633944">Скопировать</translation>
 <translation id="6912841030378044227">Перейти к адресной строке</translation>
 <translation id="6912901278692845878">Краткий обзор</translation>
 <translation id="6917259695595127329">Последнее изменение задач: <ph name="TIME" />.</translation>
@@ -2196,7 +2196,7 @@
 <translation id="8433186206711564395">Настройки сети</translation>
 <translation id="8433977262951327081">Быстрые клавиши для вызова всплывающего окна с параметрами ввода на панели запуска изменились. Используйте <ph name="NEW_SHORTCUT" /> вместо <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8437311513256731931">Открыть инструмент для отзывов</translation>
-<translation id="8443879455002739353">"Копировать"</translation>
+<translation id="8443879455002739353">"Скопировать"</translation>
 <translation id="8444246603146515890">Рабочий стол "<ph name="DESK_TITILE" />" активирован.</translation>
 <translation id="8446884382197647889">Подробнее...</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>

@@ -1130,7 +1130,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1780572199786401845">Report offensive/unsafe.</translation>
 <translation id="178092663238929451">Set up Nearby Share to receive and send files with people around you</translation>
 <translation id="1781291988450150470">Current PIN</translation>
-<translation id="1781502536226964113">Open the New Tab page</translation>
+<translation id="1781502536226964113">Open the New tab page</translation>
 <translation id="1781553166608855614">Spoken language</translation>
 <translation id="1781771911845953849">Accounts and sync</translation>
 <translation id="1782101999402987960">Updates are blocked by your administrator</translation>
@@ -6329,7 +6329,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5499453227627332024">An upgrade is available for your Linux container. You can also upgrade later from the Settings app.</translation>
 <translation id="5499476581866658341">You can now view your phone's recent photos and media</translation>
 <translation id="549957179819296104">New icon</translation>
-<translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Search history<ph name="END_LINK_SEARCH" /> and <ph name="BEGIN_LINK_GOOGLE" />other forms of activity<ph name="END_LINK_GOOGLE" /> may be saved in your Google Account when you're signed in. You can delete them at any time.</translation>
+<translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Search history<ph name="END_LINK_SEARCH" /> and <ph name="BEGIN_LINK_GOOGLE" />other forms of activity<ph name="END_LINK_GOOGLE" /> may be saved in your Google Account when you're signed in. You can delete them anytime.</translation>
 <translation id="5500709606820808700">Safety check ran today</translation>
 <translation id="5501322521654567960">Left-aligned side panel</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Failed to receive <ph name="ATTACHMENTS" /> from <ph name="DEVICE_NAME" />}other{Failed to receive <ph name="ATTACHMENTS" /> from <ph name="DEVICE_NAME" />}}</translation>
@@ -6969,7 +6969,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5979353814339191480">This option applies to Chromebooks with a data plan or mobile network dongle, or when tethering to a portable hotspot</translation>
 <translation id="5979421442488174909">&amp;Translate to <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">To bookmark pages, click the star in the address bar</translation>
-<translation id="5982578203375898585">Show downloads when they're done</translation>
+<translation id="5982578203375898585">Show downloads when they're complete</translation>
 <translation id="5983716913605894570">Generating…</translation>
 <translation id="5984222099446776634">Recently Visited</translation>
 <translation id="5985458664595100876">Invalid URL format. Supported formats are \\server\share and smb://server/share.</translation>
@@ -9966,7 +9966,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="814204052173971714">{COUNT,plural, =1{a video}other{# videos}}</translation>
 <translation id="8143442547342702591">Invalid application</translation>
 <translation id="8144429778087524791">Mark as done and hide</translation>
-<translation id="8145170459658034418">Memory saver</translation>
+<translation id="8145170459658034418">Memory Saver</translation>
 <translation id="8146177459103116374">If you've already registered on this device, you can <ph name="LINK2_START" />sign in as an existing user<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Add and rank your preferred languages. Websites will show in your preferred languages, when possible. These preferences are synced with your browser settings. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">Sign-in failed. Please contact your administrator or try again.</translation>

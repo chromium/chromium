@@ -241,7 +241,7 @@
 <translation id="1407135791313364759">全部打开</translation>
 <translation id="1408696301184924537">如需下次自动填充此 IBAN，请将其保存到您的 Google 账号中</translation>
 <translation id="1408787208417187241">三钉（顶部）</translation>
-<translation id="1410365862999780287">使用此设备的其他用户不会看到您的活动记录，因此您可以获得更私密的浏览体验。这不会改变您访问的网站及其所用服务（包括 Google）收集数据的方式。下载内容、书签和阅读清单项将会保存在此设备上。</translation>
+<translation id="1410365862999780287">与您共用设备的其他人不会看到您的活动记录，因此您可以获得更私密的浏览体验。这不会改变您访问的网站及其所用服务（包括 Google）收集数据的方式。下载内容、书签和阅读清单项将会保存在此设备上。</translation>
 <translation id="1410941016594047814">Invite 信封</translation>
 <translation id="1413809658975081374">隐私设置错误</translation>
 <translation id="1414134146594747368">学龄前教育</translation>
@@ -2037,7 +2037,7 @@
 <translation id="4677585247300749148"><ph name="URL" /> 想对无障碍事件做出响应</translation>
 <translation id="467809019005607715">Google 幻灯片</translation>
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="4682496302933121474">翻译网页？</translation>
+<translation id="4682496302933121474">翻译网页吗？</translation>
 <translation id="468314109939257734">查看您的虚拟卡号</translation>
 <translation id="4686942373615810936">创建时间：刚刚</translation>
 <translation id="4687718960473379118">网站建议的广告</translation>
@@ -2521,7 +2521,7 @@
 <translation id="555037537507405574">高级打印机功能</translation>
 <translation id="555128936272638662">手机和无线设备配件</translation>
 <translation id="5551890439174915351">100 x 200 毫米</translation>
-<translation id="5554520618550346933">当您使用某个密码时，如果发现它已被在线发布，Chrome 会向您发出警告。当 Chrome 进行这项检查时，您的密码和用户名都会被加密，所以绝不会被任何人员/任何一方（包括 Google）读取。</translation>
+<translation id="5554520618550346933">如果 Chrome 发现您使用的某个密码已被发布到网上，就会发出警告。在这个过程中，您的密码和用户名始终加密，任何人员/任何一方（包括 Google）都无法读取。</translation>
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="5558083606899411167">空调</translation>
 <translation id="5558125320634132440">此网站已被屏蔽，因为它可能含有少儿不宜的内容</translation>

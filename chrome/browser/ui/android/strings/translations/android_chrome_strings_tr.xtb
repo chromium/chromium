@@ -588,7 +588,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3771290962915251154">Ebeveyn denetimleri açık olduğu için bu ayar devre dışı bırakıldı</translation>
 <translation id="3771694256347217732">Google Hizmet Şartları</translation>
 <translation id="3775705724665058594">Cihazlarınıza gönderin</translation>
-<translation id="3777796259512476958">Çoğu sitedeki oturumunuz kapatılır</translation>
+<translation id="3777796259512476958">Çoğu sitedeki oturumunuz kapatılır.</translation>
 <translation id="379035798868314833">Google Şifre Yöneticisi bu cihazda çalışmayı durduracak</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 sekme}other{# sekme}}</translation>
 <translation id="3795154175078851242">Resmi bağlantıyla birlikte kopyala</translation>
@@ -1644,7 +1644,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8413126021676339697">Tüm geçmişi göster</translation>
 <translation id="8413795581997394485">Tehlikeli olduğu bilinen web siteleri, indirmeler ve uzantılara karşı koruma sağlar. Bir siteyi ziyaret ettiğinizde Chrome, IP adresinizi gizleyen bir gizlilik sunucusu aracılığıyla URL'nin kodu karartılmış bir kısmını Google'a gönderir. Site şüpheli bir işlem gerçekleştirirse tam URL'ler ve sayfa içeriğinin bir kısmı da gönderilir.</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> oturumunu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ile açın</translation>
-<translation id="8419144699778179708">Arama kutusu da dahil olmak üzere geçmişi siler</translation>
+<translation id="8419144699778179708">Arama kutusu da dahil olmak üzere geçmişi siler.</translation>
 <translation id="8419244640277402268">Dahil et</translation>
 <translation id="8422250855136581222">Bu cihazda sekme yok</translation>
 <translation id="842386925677997438">Chrome'un güvenlik araçları</translation>

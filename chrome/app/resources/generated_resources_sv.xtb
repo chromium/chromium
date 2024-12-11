@@ -1945,7 +1945,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="233471714539944337">Känsligt innehåll</translation>
 <translation id="2335111415680198280">{0,plural, =1{Stäng # fönster}other{Stäng # fönster}}</translation>
 <translation id="2335758110242123814">Öppna gruppen</translation>
-<translation id="2336228925368920074">Skapa bokmärken för alla flikar ...</translation>
+<translation id="2336228925368920074">Bokmärk alla flikar ...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> skriver ut 1 sida på <ph name="PRINTER_NAME" /></translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2340239562261172947">Det går inte att ladda ned <ph name="FILE_NAME" /> på ett säkert sätt</translation>
@@ -2683,7 +2683,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2850672011315104382">Skiljeteckenformat</translation>
 <translation id="285237063405807022">(läser in)</translation>
 <translation id="2853121255651601031">Lösenordet sparades</translation>
-<translation id="2855243985454069333">Raderar historiken från alla synkroniserade enheter</translation>
+<translation id="2855243985454069333">Raderar historiken från alla synkroniserade enheter.</translation>
 <translation id="2855812646048059450">Logga in med <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Skapa en ny behållare</translation>
 <translation id="2856907950922663165">Vill du inaktivera kryptering av webbadresser?</translation>
@@ -4917,7 +4917,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4472575034687746823">Kom igång</translation>
 <translation id="4473559657152613417">Högerklicka på en flik och välj Lägg till fliken i en ny grupp</translation>
 <translation id="4473996011558324141">uppskattar tid</translation>
-<translation id="4474155171896946103">Skapa bokmärken för alla flikar ...</translation>
+<translation id="4474155171896946103">Bokmärk alla flikar ...</translation>
 <translation id="4475299370877036544">Den här åtgärden kan bryta mot organisationens policyer</translation>
 <translation id="4476198534886170024">Tillåts. Aktivera <ph name="LINK_BEGIN" />systemets kameraåtkomst<ph name="LINK_END" />.</translation>
 <translation id="4476590490540813026">Idrottare</translation>
@@ -5728,7 +5728,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5074761966806028321">Behörighet krävs fortfarande för att slutföra konfigureringen</translation>
 <translation id="5075563999073408211">Styr enheten med en eller flera brytare. Du kan använda tangenter, gampad-knappar eller dedikerade enheter.</translation>
 <translation id="5075910247684008552">Osäkert innehåll blockeras som standard på säkra webbplatser</translation>
-<translation id="5078638979202084724">Skapa bokmärken för alla flikar</translation>
+<translation id="5078638979202084724">Bokmärk alla flikar</translation>
 <translation id="5078796286268621944">Fel pinkod</translation>
 <translation id="5079010647467150187">Lägg till inbyggt VPN …</translation>
 <translation id="5079460277417557557">Nu kan du använda sparade flikgrupper på alla inloggade stationära enheter</translation>
@@ -6243,7 +6243,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5448092089030025717">{NUM_REUSED,plural, =0{Inga återanvända lösenord}=1{1 återanvänt lösenord}other{{NUM_REUSED} återanvända lösenord}}</translation>
 <translation id="5448293924669608770">Det uppstod problem vid inloggningen</translation>
 <translation id="5449551289610225147">Ogiltigt lösenord</translation>
-<translation id="5449588825071916739">Skapa bokmärken för alla flikar</translation>
+<translation id="5449588825071916739">Bokmärk alla flikar</translation>
 <translation id="5449716055534515760">Stäng fön&amp;ster</translation>
 <translation id="5449932659532574495"><ph name="TURN_ON_BLUETOOTH_LINK" /> för att utforska Bluetooth-enheter</translation>
 <translation id="5450469615146335984">Välj ett kortkommando för varje åtgärd</translation>
@@ -11050,7 +11050,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> som tillhör <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Installerar appen …</translation>
 <translation id="891931289445130855">Radera data och behörigheter</translation>
-<translation id="8920133120839850939">Välj fliken för fler rörelser och aktivera Svep mellan sidor för att navigera framåt och framåt</translation>
+<translation id="8920133120839850939">Välj fliken för fler rörelser och aktivera Svep mellan sidor för att navigera framåt och bakåt</translation>
 <translation id="8922348435910470639">Dubbelbokad</translation>
 <translation id="8922624386829239660">Flytta skärmen när muspekaren når skärmens kanter</translation>
 <translation id="8923880975836399332">Mörkt blågrön</translation>

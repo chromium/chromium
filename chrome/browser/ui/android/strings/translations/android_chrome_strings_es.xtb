@@ -210,7 +210,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1969037871259811890">Al eliminar tus datos de navegación, no se cerrará la sesión de tu cuenta de Google. Para ello, <ph name="BEGIN_LINK1" />cierra sesión en Chrome<ph name="END_LINK1" />.</translation>
 <translation id="197288927597451399">Descargar</translation>
 <translation id="1973912524893600642">Conservar datos</translation>
-<translation id="1974060860693918893">Configuración avanzada</translation>
+<translation id="1974060860693918893">Avanzado</translation>
 <translation id="1984417487208496350">Sin protección (no recomendado)</translation>
 <translation id="1986685561493779662">El nombre ya existe</translation>
 <translation id="200114059308480249">¿Incluir texto cercano en las búsquedas de Google?</translation>
@@ -1673,7 +1673,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8497726226069778601">Aún no tienes contenido</translation>
 <translation id="8503559462189395349">Contraseñas de Chrome</translation>
 <translation id="8503813439785031346">Nombre de usuario</translation>
-<translation id="8505766168025405649">Consulta el estado de la descarga en la notificación</translation>
+<translation id="8505766168025405649">Consulta la notificación para ver el estado de la descarga</translation>
 <translation id="8506357771923193001">Aquí se mostrarán tus descargas</translation>
 <translation id="8512053371384421952">Dejarás de recibir notificaciones de <ph name="DOMAIN" />.</translation>
 <translation id="8514477925623180633">Exportar contraseñas almacenadas en Chrome</translation>

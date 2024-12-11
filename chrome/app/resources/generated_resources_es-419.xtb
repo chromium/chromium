@@ -953,7 +953,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1654580009054503925">No puede mostrar solicitudes</translation>
 <translation id="1654713139320245449">No se encontraron destinos de transmisión. ¿Necesitas ayuda?</translation>
 <translation id="1656528038316521561">Opacidad del fondo</translation>
-<translation id="1657406563541664238">Ayúdanos a <ph name="PRODUCT_NAME" /> mejorar enviando automáticamente estadísticas de uso e informes de fallos a Google.</translation>
+<translation id="1657406563541664238">Ayudar a mejorar <ph name="PRODUCT_NAME" /> enviando automáticamente estadísticas de uso e informes de fallos a Google</translation>
 <translation id="1657937299377480641">Pídele permiso a tu madre o padre para ingresar de nuevo a la cuenta que te permita acceder a recursos educativos</translation>
 <translation id="1658424621194652532">Esta página está accediendo al micrófono.</translation>
 <translation id="1660763353352708040">Problema en el adaptador de alimentación</translation>
@@ -4253,7 +4253,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="3984135167056005094">No incluir direcciones de correo electrónico</translation>
 <translation id="3984159763196946143">No se pudo iniciar el modo de demostración</translation>
 <translation id="3984536049089846927">Página siguiente</translation>
-<translation id="398477389655464998">Copiar el vínculo al texto destacado</translation>
+<translation id="398477389655464998">Copiar vínculo al texto destacado</translation>
 <translation id="3984862166739904574">Definición de Respuestas rápidas</translation>
 <translation id="3985022125189960801">Vuelve a agregar un sitio si quieres que aparezca en el grupo de sitios que pueden descubrir lo que te gusta</translation>
 <translation id="3986813315215454677">Bluetooth de ChromeOS</translation>
@@ -6939,7 +6939,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5972559880616357748">Más acciones para <ph name="SITE_GROUP" /></translation>
 <translation id="5972666587303800813">Servicio sin funcionamiento</translation>
 <translation id="5972708806901999743">Mover al principio</translation>
-<translation id="5972826969634861500">Comienzo <ph name="PRODUCT_NAME" /></translation>
+<translation id="5972826969634861500">Iniciar <ph name="PRODUCT_NAME" /></translation>
 <translation id="5973041996755340290">"<ph name="CLIENT_NAME" />" comenzó a depurar este navegador</translation>
 <translation id="5973605538625120605">Cambiar un PIN</translation>
 <translation id="5975056890546437204">{COUNT,plural, =0{Abrir todo en una ventana de &amp;incógnito}=1{Abrir en una ventana de &amp;incógnito}other{Abrir todo ({COUNT}) en una ventana de &amp;incógnito}}</translation>
@@ -10654,7 +10654,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="865936634714975126">Agrega un parámetro de consulta en la URL para seleccionar tipos en la carga de la página. Ejemplo: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Contactos de <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">La ventana se movió hacia abajo</translation>
-<translation id="8661290697478713397">Abrir el vínculo en una ventana de incó&amp;gnito</translation>
+<translation id="8661290697478713397">Abrir vínculo en una ventana de incó&amp;gnito</translation>
 <translation id="8662474268934425487">Accede a <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Unirse a la red <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Esta acción está tardando más de lo normal. Puedes omitirla o esperar a que se complete.</translation>
@@ -11202,7 +11202,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="9026393603776578602">dictado</translation>
 <translation id="9026731007018893674">descarga</translation>
 <translation id="9026852570893462412">Este proceso puede demorar unos minutos. Se está descargando la máquina virtual.</translation>
-<translation id="9027459031423301635">Abrir vínculo en la pes&amp;taña nueva</translation>
+<translation id="9027459031423301635">Abrir vínculo en una pes&amp;taña nueva</translation>
 <translation id="9030515284705930323">Tu organización no habilitó Google Play Store para tu cuenta. Comunícate con tu administrador para obtener más información.</translation>
 <translation id="9030754204056345429">Más rápida</translation>
 <translation id="9030785788945687215">Gmail</translation>

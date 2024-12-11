@@ -493,7 +493,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="7099479769133613710">Riavvia per aggiornare &amp;Chrome OS</translation>
 <translation id="7100085796996987445">Per condividere lo schermo, consenti la Registrazione dello schermo per Chrome nelle Preferenze di sistema</translation>
 <translation id="7106741999175697885">Task Manager - Google Chrome</translation>
-<translation id="7113423803153683764">Chrome libera la memoria dalle schede non attive. In questo modo, le schede attive e altre app hanno più risorse per il computer e mantengono Chrome veloce. Le schede inattive si riattivano automaticamente quando ci torni.</translation>
+<translation id="7113423803153683764">Chrome libera la memoria dalle schede non attive. In questo modo, le schede attive e altre app hanno più risorse per il computer e mantengono Chrome veloce. Le schede inattive si riattivano automaticamente quando le consulti di nuovo.</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{È disponibile un nuovo aggiornamento di Chrome che verrà installato appena eseguirai il riavvio.}=1{È disponibile un nuovo aggiornamento di Chrome che verrà installato appena eseguirai il riavvio. La finestra di navigazione in incognito non verrà riaperta.}other{È disponibile un nuovo aggiornamento di Chrome che verrà installato appena eseguirai il riavvio. Le # finestre di navigazione in incognito non verranno riaperte.}}</translation>
 <translation id="7155997830309522122">In questo caso, modifica la password salvata su Chrome in modo che corrisponda alla nuova password.</translation>
 <translation id="7161904924553537242">Ti diamo il benvenuto in Google Chrome</translation>
@@ -590,7 +590,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8162006532256575008">Utilizza Chrome senza un account</translation>
 <translation id="8255190535488645436">Google Chrome sta utilizzando videocamera e microfono.</translation>
 <translation id="8257796129973882597">Dal menu Chrome puoi aprire i preferiti, la modalità Lettura e altro ancora</translation>
-<translation id="8267953129876836456">Chrome ha trovato alcuni consigli per la sicurezza da farti esaminare</translation>
+<translation id="8267953129876836456">Chrome ha trovato alcuni consigli per la sicurezza che puoi esaminare</translation>
 <translation id="8270775718612349140">Certificati gestiti da Chrome</translation>
 <translation id="8286862437124483331">Google Chrome sta cercando di visualizzare le password. Per consentire la visualizzazione, digita la tua password Windows.</translation>
 <translation id="8290100596633877290">Spiacenti, si è verificato un arresto anomalo di Google Chrome. Riavviarlo ora?</translation>

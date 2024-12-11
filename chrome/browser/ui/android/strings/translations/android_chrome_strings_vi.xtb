@@ -734,7 +734,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4508528996305412043">Đã mở trình đơn thẻ nguồn cấp dữ liệu</translation>
 <translation id="4509741852167209430">Chỉ có một số loại dữ liệu được chia sẻ giữa các trang web để đo lường hiệu suất của quảng cáo mà các trang web đó hiển thị, chẳng hạn như dữ liệu cho biết bạn có mua hàng sau khi truy cập một trang web hay không</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# ngày trước}other{# ngày trước}}</translation>
-<translation id="451872707440238414">Tìm kiếm dấu trang</translation>
+<translation id="451872707440238414">Tìm dấu trang</translation>
 <translation id="4521489764227272523">Dữ liệu được chọn đã bị xóa khỏi Chrome và các thiết bị đã đồng bộ hóa của bạn.
 
 Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web khác, chẳng hạn như tìm kiếm và hoạt động từ các dịch vụ khác của Google tại <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -1177,7 +1177,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6482749332252372425">Tải xuống <ph name="FILE_NAME" /> không thành công do thiếu dung lượng bộ nhớ.</translation>
 <translation id="6486420406192123355">Tệp PDF này xuất phát từ một trang web sử dụng kết nối không an toàn</translation>
 <translation id="6495590690749880440">Bạn muốn mở nhóm thẻ?</translation>
-<translation id="650224091954855786">{FILE_COUNT,plural, =1{Đã tải tệp xuống}other{Đã tải xong # tệp xuống}}</translation>
+<translation id="650224091954855786">{FILE_COUNT,plural, =1{Đã tải tệp xuống}other{Đã tải # tệp xuống}}</translation>
 <translation id="6508722015517270189">Khởi động lại Chrome</translation>
 <translation id="6518133107902771759">Xác minh</translation>
 <translation id="6527303717912515753">Chia sẻ</translation>

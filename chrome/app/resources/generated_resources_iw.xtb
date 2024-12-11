@@ -865,7 +865,7 @@
 <translation id="1604567162047669454">זיהוי הסמנטיקה של הפריסה החזותית</translation>
 <translation id="1604774728851271529">‏כדי לשדרג את Linux צריך חיבור לרשת. יש להתחבר לאינטרנט ולנסות שוב.</translation>
 <translation id="1605148987885002237">מקלדת וקלט</translation>
-<translation id="1605744057217831567">הצגת כל הנתונים מאתרים וההרשאות</translation>
+<translation id="1605744057217831567">צפייה בנתונים ובהרשאות מכל האתרים</translation>
 <translation id="1606077700029460857">שינוי הגדרות העכבר</translation>
 <translation id="1606566847233779212">להסיר את האתרים הספציפיים שהוספת?</translation>
 <translation id="1607139524282324606">ניקוי רשומה</translation>
@@ -3462,7 +3462,7 @@
 <translation id="3443545121847471732">צריך להזין קוד אימות בן 6 ספרות</translation>
 <translation id="3443744348829035122">פג הזמן הקצוב במסגרת <ph name="BRAND" /></translation>
 <translation id="3443754338602062261">כבר שמרת סיסמאות לחשבונות האלה ב<ph name="BRAND" />. אם אחת מהסיסמאות הבאות תיובא, היא תחליף את הסיסמה הקיימת.</translation>
-<translation id="344449859752187052">‏קובצי cookie של צד שלישי חסומים</translation>
+<translation id="344449859752187052">‏קובצי Cookie של צד שלישי נחסמו</translation>
 <translation id="3444726579402183581">ל-<ph name="ORIGIN" /> תהיה הרשאה לצפות בקובץ <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">‏תשובות מהירות מ-Google Assistant</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> דק'</translation>

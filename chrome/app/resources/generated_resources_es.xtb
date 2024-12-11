@@ -1398,7 +1398,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="197288927597451399">Descargar</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Puntos de distribución de listas de revocación de certificados</translation>
-<translation id="1974060860693918893">Configuración avanzada</translation>
+<translation id="1974060860693918893">Avanzado</translation>
 <translation id="1974159333077206889">Mismo audio para todos los altavoces</translation>
 <translation id="1974216844776165821">Chrome ha guardado tu contraseña en este dispositivo, pero puedes guardarla en tu cuenta de Google. Así, todas las contraseñas y llaves de acceso guardadas en tu cuenta de Google también estarán disponibles cuando inicies sesión.</translation>
 <translation id="1975841812214822307">Quitar...</translation>
@@ -2575,7 +2575,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2782104745158847185">Error al instalar la aplicación de Linux</translation>
 <translation id="2783952358106015700">Usa tu llave de seguridad con <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Revisión de contraseñas</translation>
-<translation id="2785279781154577715">Aspecto de la tarjeta de vista previa que se muestra al colocar el cursor sobre una pestaña</translation>
+<translation id="2785279781154577715">Aspecto de la tarjeta de vista previa al colocar el cursor sobre una pestaña</translation>
 <translation id="2785873697295365461">Descriptores de archivo</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787354132612937472">—</translation>
@@ -2756,7 +2756,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2912247081180973411">Cerrar ventanas</translation>
 <translation id="2915102088417824677">Ver registro de actividad</translation>
 <translation id="2915873080513663243">Búsqueda automática</translation>
-<translation id="2916073183900451334">El tabulador permite destacar los enlaces de una página web, así como los campos de formulario.</translation>
+<translation id="2916073183900451334">El tabulador permite destacar los enlaces de una página web y los campos de formulario.</translation>
 <translation id="2916745397441987255">Buscar extensiones</translation>
 <translation id="2918484639460781603">Ir a Configuración</translation>
 <translation id="2918484644467055090">Este dispositivo no se puede registrar en la organización a la que pertenece tu cuenta porque está marcado para que lo administre otra organización.</translation>
@@ -3978,7 +3978,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3798449238516105146">Versión</translation>
 <translation id="3798632811625902122">El dispositivo Bluetooth <ph name="DEVICE" /> solicita permiso para emparejarse.</translation>
 <translation id="3798670284305777884">Altavoz (interno)</translation>
-<translation id="3799128412641261490">Ajustes de accesibilidad con interruptores</translation>
+<translation id="3799128412641261490">Ajustes de Accesibilidad con interruptores</translation>
 <translation id="3800828618615365228">Términos Adicionales de Google Chrome y Chrome OS</translation>
 <translation id="3800898876950197674">Para permitir esta extensión, introduce tu contraseña.</translation>
 <translation id="3801449494961771207">Voz de la conversión de texto a voz del sistema</translation>
@@ -4527,7 +4527,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4195001808989442226">No se puede abrir Steam para Chromebook (beta)</translation>
 <translation id="4195378859392041564">Haz clic en cualquier tecla con el ratón y, a continuación, pulsa una tecla del teclado para personalizarla</translation>
 <translation id="4195643157523330669">Abrir en una pestaña nueva</translation>
-<translation id="4195814663415092787">Continúa por donde lo dejaste</translation>
+<translation id="4195814663415092787">Continuar por donde lo dejaste</translation>
 <translation id="4198268995694216131">Más sitios</translation>
 <translation id="4200609364258658652">C&amp;opiar fotograma</translation>
 <translation id="4200689466366162458">Palabras personalizadas</translation>
@@ -4757,7 +4757,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4364830672918311045">Mostrar notificaciones</translation>
 <translation id="4367513928820380646">Revisar permisos quitados</translation>
 <translation id="4367971618859387374">Nombre visible</translation>
-<translation id="4368960422722232719">Mostrar uso de memoria en la tarjeta de vista previa que se muestra al colocar el cursor sobre una pestaña</translation>
+<translation id="4368960422722232719">Mostrar uso de memoria al colocar el cursor sobre una pestaña</translation>
 <translation id="4369215744064167350">Solicitud de sitio web aprobada</translation>
 <translation id="4369233657762989723">Activar o desactivar dictado</translation>
 <translation id="436926121798828366">Puedes cambiar esta opción en cualquier momento en <ph name="SETTINGS_LINK" /></translation>
@@ -7236,7 +7236,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
 <translation id="6196854373336333322">La extensión <ph name="EXTENSION_NAME" /> ahora controla la configuración del proxy, lo que significa que puede cambiar, deshacer o espiar cualquier acción que hagas online. Si no estás seguro de los motivos por los que se ha producido este cambio, probablemente no haya sido intencionado.</translation>
 <translation id="6197128521826316819">Crear código QR para esta página</translation>
-<translation id="6198223452299275399">Desliza de una página a otra</translation>
+<translation id="6198223452299275399">Deslizar de una página a otra</translation>
 <translation id="6198252989419008588">Cambiar PIN</translation>
 <translation id="61988015556954366">Flash de pantalla</translation>
 <translation id="6200047250927636406">Descartar archivo</translation>
@@ -7321,7 +7321,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6249200942125593849">Gestionar ajustes de accesibilidad</translation>
 <translation id="6250186368828697007">Los detalles se ocultan mientras compartes tu pantalla</translation>
 <translation id="6251870443722440887">GDI administra</translation>
-<translation id="6251924700383757765">Política de Privacidad</translation>
+<translation id="6251924700383757765">Política de privacidad</translation>
 <translation id="625369703868467034">Estado de la red</translation>
 <translation id="6253801023880399036">Las contraseñas se guardan en el <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">Compromiso de clave</translation>
@@ -8849,7 +8849,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="737728204345822099">Se guardará un registro de tu visita a este sitio web en tu llave de seguridad.</translation>
 <translation id="7377451353532943397">Seguir bloqueando el acceso a los sensores</translation>
 <translation id="7377481913241237033">Conectar con un código</translation>
-<translation id="73786666777299047">Abrir Chrome Web Store</translation>
+<translation id="73786666777299047">Abre Chrome Web Store</translation>
 <translation id="7380272457268061606">¿Inhabilitar la recuperación de datos locales?</translation>
 <translation id="7380459290951585794">Comprueba que tengas el teléfono cerca, que esté desbloqueado y que el Bluetooth y el Wi‑Fi estén activados</translation>
 <translation id="7380622428988553498">El nombre del dispositivo contiene caracteres no válidos</translation>
@@ -9590,7 +9590,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7904526211178107182">Permite que los puertos de Linux estén disponibles para otros dispositivos de tu red.</translation>
 <translation id="7906440585529721295">Los datos locales se eliminarán</translation>
 <translation id="7907502219904644296">Cambiar acceso</translation>
-<translation id="7907837847548254634">Destaca brevemente el objeto seleccionado</translation>
+<translation id="7907837847548254634">Destacar brevemente el objeto seleccionado</translation>
 <translation id="7908378463497120834">Lo sentimos, pero al menos una partición del dispositivo de almacenamiento externo no se ha podido montar.</translation>
 <translation id="7908835530772972485">Eliminar los datos al cerrar todas las ventanas</translation>
 <translation id="7909324225945368569">Cambiar el nombre de tu perfil</translation>
@@ -9728,7 +9728,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7988876720343145286">Más ajustes y permisos de Android</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Voz <ph name="COUNT" /></translation>
 <translation id="7990958035181555539">Transferir Wi-Fi automáticamente desde tu teléfono Android</translation>
-<translation id="7991296728590311172">Ajustes de accesibilidad con interruptores</translation>
+<translation id="7991296728590311172">Ajustes de Accesibilidad con interruptores</translation>
 <translation id="7992203134935383159">Síntesis de voz</translation>
 <translation id="7994515119120860317">Traducir el texto de la imagen con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">WebView</translation>
@@ -11035,7 +11035,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Instalando la aplicación...</translation>
 <translation id="891931289445130855">Eliminar datos y permisos</translation>
-<translation id="8920133120839850939">Selecciona la pestaña Más gestos y, a continuación, activa Desliza de una página a otra para retroceder y avanzar</translation>
+<translation id="8920133120839850939">Selecciona la pestaña Más gestos y, a continuación, activa Deslizar de una página a otra para retroceder y avanzar</translation>
 <translation id="8922348435910470639">Reserva doble</translation>
 <translation id="8922624386829239660">Mover la pantalla cuando el ratón toque los bordes de esta</translation>
 <translation id="8923880975836399332">Turquesa oscuro</translation>

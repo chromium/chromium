@@ -6337,7 +6337,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5521078259930077036">Est-ce la page d'accueil que vous attendiez ?</translation>
 <translation id="5522156646677899028">Cette extension contient une grave faille de sécurité.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Une extension a été installée par votre administrateur}one{# extension a été installée par votre administrateur}other{# extensions ont été installées par votre administrateur}}</translation>
-<translation id="5523532775593636291">Les sites que vous ajoutez restent toujours actifs et ne sont pas libérés de la mémoire</translation>
+<translation id="5523532775593636291">Les sites que vous ajoutez restent toujours actifs et sont conservés dans la mémoire</translation>
 <translation id="5523558474028191231">Le nom peut contenir des lettres, des chiffres et des caractères spéciaux, et ne doit pas dépasser <ph name="MAX_CHARACTER_COUNT" /> caractères</translation>
 <translation id="5526745900034778153">Connectez-vous de nouveau à votre compte pour reprendre la synchronisation</translation>
 <translation id="5527463195266282916">Tentative d'installation d'une version antérieure de l'extension.</translation>
