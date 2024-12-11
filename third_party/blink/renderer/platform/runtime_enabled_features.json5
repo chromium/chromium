@@ -3159,6 +3159,11 @@
       name: "PasswordReveal",
     },
     {
+      // https://crbug.com/41247646
+      name: "PasteListItemOutsidePreviousListItem",
+      status: "stable",
+    },
+    {
       name: "PaymentApp",
       depends_on: ["PaymentRequest"],
       public: true,

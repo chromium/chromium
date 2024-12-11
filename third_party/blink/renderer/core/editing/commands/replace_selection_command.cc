@@ -1422,18 +1422,27 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
 
   Element* block_start = EnclosingBlock(insertion_pos.AnchorNode());
   if ((IsHTMLListElement(inserted_nodes.RefNode()) ||
+       (RuntimeEnabledFeatures::PasteListItemOutsidePreviousListItemEnabled() &&
+        IsListItemTag(inserted_nodes.RefNode())) ||
        (IsHTMLListElement(inserted_nodes.RefNode()->firstChild()))) &&
       block_start && block_start->GetLayoutObject()->IsListItem() &&
       IsEditable(*block_start->parentNode())) {
     inserted_nodes.SetRefNode(InsertAsListItems(
         To<HTMLElement>(inserted_nodes.RefNode()), block_start, insertion_pos,
         inserted_nodes, editing_state));
-    if (editing_state->IsAborted())
+    if (RuntimeEnabledFeatures::PasteListItemOutsidePreviousListItemEnabled()) {
+      if (IsListItemTag(block_start) && !block_start->firstChild()) {
+        RemoveNode(block_start, editing_state);
+      }
+    }
+    if (editing_state->IsAborted()) {
       return;
+    }
   } else {
     InsertNodeAt(inserted_nodes.RefNode(), insertion_pos, editing_state);
-    if (editing_state->IsAborted())
+    if (editing_state->IsAborted()) {
       return;
+    }
     inserted_nodes.RespondToNodeInsertion(*inserted_nodes.RefNode());
   }
 
@@ -2030,9 +2039,19 @@ Node* ReplaceSelectionCommand::InsertAsListItems(HTMLElement* list_element,
                                                  const Position& insert_pos,
                                                  InsertedNodes& inserted_nodes,
                                                  EditingState* editing_state) {
-  while (list_element->HasOneChild() &&
-         IsHTMLListElement(list_element->firstChild()))
-    list_element = To<HTMLElement>(list_element->firstChild());
+  Node* list_item;
+  bool list_element_is_list_item_type =
+      RuntimeEnabledFeatures::PasteListItemOutsidePreviousListItemEnabled() &&
+      IsListItemTag(list_element);
+  if (list_element_is_list_item_type) {
+    list_item = list_element;
+  } else {
+    while (list_element->HasOneChild() &&
+           IsHTMLListElement(list_element->firstChild())) {
+      list_element = To<HTMLElement>(list_element->firstChild());
+    }
+    list_item = list_element->firstChild();
+  }
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   bool is_start = IsStartOfParagraph(CreateVisiblePosition(insert_pos));
@@ -2049,9 +2068,10 @@ Node* ReplaceSelectionCommand::InsertAsListItems(HTMLElement* list_element,
       SplitTextNode(text_node, text_node_offset);
     SplitTreeToNode(insert_pos.AnchorNode(), last_node, true);
   }
-
-  while (Node* list_item = list_element->firstChild()) {
-    list_element->RemoveChild(list_item, ASSERT_NO_EXCEPTION);
+  while (list_item) {
+    if (!list_element_is_list_item_type) {
+      list_element->RemoveChild(list_item, ASSERT_NO_EXCEPTION);
+    }
     if (is_start || is_middle) {
       InsertNodeBefore(list_item, last_node, editing_state);
       if (editing_state->IsAborted())
@@ -2065,6 +2085,11 @@ Node* ReplaceSelectionCommand::InsertAsListItems(HTMLElement* list_element,
       last_node = list_item;
     } else {
       NOTREACHED();
+    }
+    if (!list_element_is_list_item_type) {
+      list_item = list_element->firstChild();
+    } else {
+      break;
     }
   }
   if (is_start || is_middle) {
