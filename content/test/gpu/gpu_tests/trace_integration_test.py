@@ -5,6 +5,7 @@
 # TODO(dawn:549) Move WebGPU caching tests to a separate module to trim file.
 # pylint: disable=too-many-lines
 
+import datetime
 from enum import Enum
 import logging
 import os
@@ -27,6 +28,7 @@ import gpu_path_util
 
 from telemetry.timeline import model as model_module
 from telemetry.timeline import tracing_config
+from tracing.trace_data import trace_data
 
 gpu_data_relative_path = gpu_path_util.GPU_DATA_RELATIVE_PATH
 
@@ -481,6 +483,9 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Stop tracing.
     timeline_data = tab.browser.platform.tracing_controller.StopTracing()
 
+    # Save the trace as an artifact for debugging purposes.
+    self._MaybeSaveTraceDataAsArtifact(timeline_data)
+
     # Evaluate success.
     if args.success_eval_func:
       timeline_model = model_module.TimelineModel(timeline_data)
@@ -552,6 +557,28 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @staticmethod
   def _DisabledByDefaultTraceCategory(category: str) -> str:
     return 'disabled-by-default-%s' % category
+
+  def _MaybeSaveTraceDataAsArtifact(
+      self, trace_builder: trace_data.TraceDataBuilder) -> None:
+    if self.artifacts:
+      filename = f'trace-{datetime.datetime.now().isoformat()}.html'
+      # Necessary to not create an invalid path on Windows.
+      filename = filename.replace(':', '_')
+      filehandle, filepath = tempfile.mkstemp()
+      os.close(filehandle)
+      trace_builder.Serialize(filepath)
+      # We currently write to a temporary file and copy it because typ's
+      # artifact implementation does not currently support providing an empty
+      # artifact file that we can write into.
+      # TODO(crbug.com/383157190): Switch this to using the correct filepath
+      # directly once it is supported.
+      with open(filepath, 'rb') as infile:
+        self.artifacts.CreateArtifact(filename, filename, infile.read())
+      os.remove(filepath)
+    else:
+      logging.warning(
+          'Did not save trace as artifact due to not having an artifact '
+          'implementation set')
 
   #########################################
   # The test success evaluation functions
