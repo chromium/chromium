@@ -521,6 +521,8 @@ void FeaturePromoController25::AddPreconditionProviders(
            const FeaturePromoParams& params) {
           FeaturePromoPreconditionList list;
           if (auto* const ptr = controller.get()) {
+            list.AddPrecondition(
+                std::make_unique<FeatureEnabledPrecondition>(*params.feature));
             const bool for_demo =
                 ptr->demo_feature_name_ == spec.feature()->name;
             list.AddPrecondition(std::make_unique<LifecyclePrecondition>(

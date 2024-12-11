@@ -16,6 +16,7 @@
 
 namespace user_education {
 
+DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kFeatureEnabledPrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kFeatureEngagementTrackerInitializedPrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
@@ -23,6 +24,17 @@ DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kAnchorElementPrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kLifecyclePrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kSessionPolicyPrecondition);
+
+FeatureEnabledPrecondition::FeatureEnabledPrecondition(
+    const base::Feature& feature)
+    : CachingFeaturePromoPrecondition(
+          kFeatureEnabledPrecondition,
+          "Feature Enabled",
+          base::FeatureList::IsEnabled(feature)
+              ? FeaturePromoResult::Success()
+              : FeaturePromoResult::kFeatureDisabled) {}
+
+FeatureEnabledPrecondition::~FeatureEnabledPrecondition() = default;
 
 FeatureEngagementTrackerInitializedPrecondition::
     FeatureEngagementTrackerInitializedPrecondition(

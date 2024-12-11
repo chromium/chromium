@@ -6,6 +6,9 @@
 
 #include "base/feature_list.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/feature_list.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
@@ -416,6 +419,71 @@ TEST_P(FeaturePromoControllerQueueTest, DemoCancelsExistingPromo) {
       closed, Run, demo_result, Run(FeaturePromoResult::Success()), {
         promo_controller().MaybeShowPromoForDemoPage(std::move(demo_params));
       });
+}
+
+TEST_P(FeaturePromoControllerQueueTest, DisabledFeature) {
+  base::test::ScopedFeatureList list;
+  list.InitAndDisableFeature(kIPHTestLowPriorityToast);
+
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
+                         result);
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
+                         result2);
+  FeaturePromoParams params(kIPHTestLowPriorityToast);
+  params.show_promo_result_callback = result.Get();
+  FeaturePromoParams params2(kIPHTestLowPrioritySnooze);
+  params2.show_promo_result_callback = result2.Get();
+
+  // Disabled feature cannot show.
+  EXPECT_ASYNC_CALLS_IN_SCOPE_2(
+      result, Run(FeaturePromoResult(FeaturePromoResult::kFeatureDisabled)),
+      result2, Run(FeaturePromoResult::Success()), {
+        promo_controller().MaybeShowStartupPromo(std::move(params));
+        promo_controller().MaybeShowStartupPromo(std::move(params2));
+      });
+}
+
+TEST_P(FeaturePromoControllerQueueTest, DisabledFeatureInDemoMode) {
+  base::test::ScopedFeatureList list;
+  list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{feature_engagement::kIPHDemoMode,
+        {{feature_engagement::kIPHDemoModeFeatureChoiceParam,
+          kIPHTestLowPriorityToast.name}}}},
+      /*disabled_features=*/
+      {kIPHTestLowPriorityToast});
+
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
+                         result);
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
+                         result2);
+  FeaturePromoParams params(kIPHTestLowPriorityToast);
+  params.show_promo_result_callback = result.Get();
+  FeaturePromoParams params2(kIPHTestLowPrioritySnooze);
+  params2.show_promo_result_callback = result2.Get();
+
+  // Disabled feature cannot show EVEN IN DEMO MODE.
+  EXPECT_ASYNC_CALLS_IN_SCOPE_2(
+      result, Run(FeaturePromoResult(FeaturePromoResult::kFeatureDisabled)),
+      result2, Run(FeaturePromoResult::Success()), {
+        promo_controller().MaybeShowStartupPromo(std::move(params));
+        promo_controller().MaybeShowStartupPromo(std::move(params2));
+      });
+}
+
+TEST_P(FeaturePromoControllerQueueTest, DisabledFeatureShownFromDemoPage) {
+  base::test::ScopedFeatureList list;
+  list.InitAndDisableFeature(kIPHTestLowPriorityToast);
+
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
+                         result);
+  FeaturePromoParams params(kIPHTestLowPriorityToast);
+  params.show_promo_result_callback = result.Get();
+
+  // Disabled feature CAN be shown from demo page.
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      result, Run(FeaturePromoResult::Success()),
+      promo_controller().MaybeShowPromoForDemoPage(std::move(params)));
 }
 
 }  // namespace user_education

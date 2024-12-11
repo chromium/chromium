@@ -21,12 +21,21 @@
 namespace user_education {
 
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
+    kFeatureEnabledPrecondition);
+DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kFeatureEngagementTrackerInitializedPrecondition);
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kMeetsFeatureEngagementCriteriaPrecondition);
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kAnchorElementPrecondition);
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kLifecyclePrecondition);
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kSessionPolicyPrecondition);
+
+// Represents a precondition requiring a promo's feature to be enabled.
+class FeatureEnabledPrecondition : public CachingFeaturePromoPrecondition {
+ public:
+  explicit FeatureEnabledPrecondition(const base::Feature& iph_feature);
+  ~FeatureEnabledPrecondition() override;
+};
 
 // Represents a precondition requiring the Feature Engagement Tracker to be
 // initialized.
