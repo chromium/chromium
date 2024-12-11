@@ -1126,6 +1126,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DNS.DnsTask.HasValidCnameRecords" enum="BooleanSuccess"
+    expires_after="2025-06-09">
+  <owner>ciaramcmullin@google.com</owner>
+  <owner>src/net/dns/OWNERS</owner>
+  <summary>
+    Records whether valid CNAME aliases records were found and added to results
+    returned for a DnsTask.
+  </summary>
+</histogram>
+
 <histogram name="Net.DNS.DnsTask.SuccessTime" units="ms"
     expires_after="2025-04-13">
   <owner>horo@chromium.org</owner>
