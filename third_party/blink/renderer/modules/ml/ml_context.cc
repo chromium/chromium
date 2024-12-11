@@ -995,24 +995,40 @@ ScriptPromise<MLTensor> MLContext::createTensor(
   return resolver->Promise();
 }
 
-void MLContext::writeTensor(
-    ScriptState* script_state,
-    MLTensor* dst_tensor,
-    const MaybeShared<DOMArrayBufferView>& src_data_view,
-    ExceptionState& exception_state) {
-  WriteWebNNTensor(script_state, dst_tensor,
-                   src_data_view->ByteSpanMaybeShared(), exception_state);
-}
-
 void MLContext::writeTensor(ScriptState* script_state,
                             MLTensor* dst_tensor,
-                            const DOMArrayBufferBase* src_data_base,
+                            AllowSharedBufferSource* src_data,
                             ExceptionState& exception_state) {
-  WriteWebNNTensor(script_state, dst_tensor,
-                   src_data_base->IsDetached()
-                       ? base::span<const uint8_t>()
-                       : src_data_base->ByteSpanMaybeShared(),
-                   exception_state);
+  ScopedMLTrace scoped_trace("MLContext::writeTensor");
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid script state");
+    return;
+  }
+
+  if (dst_tensor->context() != this) {
+    exception_state.ThrowTypeError(
+        "The destination tensor wasn't created with this context.");
+    return;
+  }
+
+  if (!dst_tensor->Usage().Has(webnn::MLTensorUsageFlags::kWrite)) {
+    exception_state.ThrowTypeError(
+        "The destination tensor doesn't have write access.");
+    return;
+  }
+
+  // TODO(crbug.com/378604909): When `src_data` is an ArrayBufferView, check its
+  // element type being compatible with the MLTensor data type.
+
+  base::span<const uint8_t> bytes = AsByteSpan(*src_data);
+  if (bytes.size() != dst_tensor->PackedByteLength()) {
+    exception_state.ThrowTypeError(
+        "The sizes of the source buffer and destination tensor do not match.");
+    return;
+  }
+
+  dst_tensor->WriteTensorImpl(bytes, exception_state);
 }
 
 ScriptPromise<DOMArrayBuffer> MLContext::readTensor(
@@ -1045,7 +1061,7 @@ ScriptPromise<DOMArrayBuffer> MLContext::readTensor(
 ScriptPromise<IDLUndefined> MLContext::readTensor(
     ScriptState* script_state,
     MLTensor* src_tensor,
-    DOMArrayBufferBase* dst_data,
+    AllowSharedBufferSource* dst_data,
     ExceptionState& exception_state) {
   ScopedMLTrace scoped_trace("MLContext::readTensor");
   if (!script_state->ContextIsValid()) {
@@ -1059,63 +1075,12 @@ ScriptPromise<IDLUndefined> MLContext::readTensor(
         "The source tensor wasn't created with this context.");
     return EmptyPromise();
   }
+
+  // TODO(crbug.com/378604909): When `dst_data` is an ArrayBufferView, check its
+  // element type being compatible with the MLTensor data type.
 
   return src_tensor->ReadTensorImpl(std::move(scoped_trace), script_state,
                                     dst_data, exception_state);
-}
-
-ScriptPromise<IDLUndefined> MLContext::readTensor(
-    ScriptState* script_state,
-    MLTensor* src_tensor,
-    MaybeShared<DOMArrayBufferView> dst_data,
-    ExceptionState& exception_state) {
-  ScopedMLTrace scoped_trace("MLContext::readTensor");
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid script state");
-    return EmptyPromise();
-  }
-
-  if (src_tensor->context() != this) {
-    exception_state.ThrowTypeError(
-        "The source tensor wasn't created with this context.");
-    return EmptyPromise();
-  }
-
-  return src_tensor->ReadTensorImpl(std::move(scoped_trace), script_state,
-                                    dst_data.Get(), exception_state);
-}
-
-void MLContext::WriteWebNNTensor(ScriptState* script_state,
-                                 MLTensor* dst_tensor,
-                                 base::span<const uint8_t> src_data,
-                                 ExceptionState& exception_state) {
-  ScopedMLTrace scoped_trace("MLContext::writeTensor");
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid script state");
-    return;
-  }
-
-  if (dst_tensor->context() != this) {
-    exception_state.ThrowTypeError(
-        "The destination tensor wasn't created with this context.");
-    return;
-  }
-
-  if (!dst_tensor->Usage().Has(webnn::MLTensorUsageFlags::kWrite)) {
-    exception_state.ThrowTypeError(
-        "The destination tensor doesn't have write access.");
-    return;
-  }
-
-  if (src_data.size() != dst_tensor->PackedByteLength()) {
-    exception_state.ThrowTypeError(
-        "The sizes of the source buffer and destination tensor do not match.");
-    return;
-  }
-
-  dst_tensor->WriteTensorImpl(src_data, exception_state);
 }
 
 void MLContext::dispatch(ScriptState* script_state,
