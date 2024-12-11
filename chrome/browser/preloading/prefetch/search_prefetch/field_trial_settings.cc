@@ -98,7 +98,7 @@ bool PrefetchSearchHistorySuggestions() {
 
 BASE_FEATURE(kAutocompleteDictionaryPreload,
              "AutocompleteDictionaryPreload",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta>
     kAutocompletePreloadedDictionaryTimeout{
