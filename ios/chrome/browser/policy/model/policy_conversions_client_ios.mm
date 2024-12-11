@@ -10,14 +10,11 @@
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/profile_policy_connector.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-PolicyConversionsClientIOS::PolicyConversionsClientIOS(
-    web::BrowserState* browser_state) {
-  DCHECK(browser_state);
-  profile_ = ProfileIOS::FromBrowserState(
-      GetBrowserStateRedirectedInIncognito(browser_state));
+PolicyConversionsClientIOS::PolicyConversionsClientIOS(ProfileIOS* profile) {
+  profile_ = profile->GetOriginalProfile();
+  DCHECK(profile_);
 }
 
 PolicyConversionsClientIOS::~PolicyConversionsClientIOS() = default;
