@@ -2689,6 +2689,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Cannot use TCP-based protocols"/>
   <int value="5" label="SPDY session created"/>
   <int value="6" label="QUIC session created"/>
+  <int value="7" label="Using existing SPDY session"/>
+  <int value="8" label="Using existing QUIC session"/>
 </enum>
 
 <enum name="TPMSupport">

@@ -215,7 +215,7 @@ class HttpStreamPool::AttemptManager
   HttpStreamPool* pool();
   const HttpStreamPool* pool() const;
 
-  int WaitForSSLConfigReady(CompletionOnceCallback callback);
+  int WaitForSSLConfigReady();
 
   base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> GetSSLConfig(
       InFlightAttempt* attempt);
@@ -235,7 +235,7 @@ class HttpStreamPool::AttemptManager
   // Called when service endpoint results have changed or finished.
   void ProcessServiceEndpointChanges();
 
-  // Returns true when there is an active SPDY session that can be used for
+  // Returns true when there is an active SPDY/QUIC session that can be used for
   // on-going jobs after service endpoint results has changed. May notify jobs
   // of stream ready.
   bool CanUseExistingSessionAfterEndpointChanges();
@@ -324,11 +324,11 @@ class HttpStreamPool::AttemptManager
 
   // Called when a SPDY session is ready to use. Cancels in-flight attempts.
   // Closes idle streams. Completes preconnects.
-  void HandleSpdySessionReady();
+  void HandleSpdySessionReady(StreamCloseReason refresh_group_reason);
 
   // Called when a QUIC session is ready to use. Cancels in-flight attempts.
   // Closes idle streams. Completes preconnects.
-  void HandleQuicSessionReady();
+  void HandleQuicSessionReady(StreamCloseReason refresh_group_reason);
 
   // Extracts an entry from `jobs_` of which priority is highest. The ownership
   // of the entry is moved to `notified_jobs_`.
@@ -444,7 +444,6 @@ class HttpStreamPool::AttemptManager
   // TODO(crbug.com/40812426): We need to have separate SSLConfigs when we
   // support multiple HTTPS RR that have different service endpoints.
   std::optional<SSLConfig> ssl_config_;
-  std::vector<CompletionOnceCallback> ssl_config_waiting_callbacks_;
 
   std::set<std::unique_ptr<InFlightAttempt>, base::UniquePtrComparator>
       in_flight_attempts_;

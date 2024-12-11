@@ -63,7 +63,9 @@ class NET_EXPORT_PRIVATE HttpStreamPool
     kCannotUseTcpBasedProtocols = 4,
     kSpdySessionCreated = 5,
     kQuicSessionCreated = 6,
-    kMaxValue = kQuicSessionCreated,
+    kUsingExistingSpdySession = 7,
+    kUsingExistingQuicSession = 8,
+    kMaxValue = kUsingExistingQuicSession,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:StreamCloseReason)
 
