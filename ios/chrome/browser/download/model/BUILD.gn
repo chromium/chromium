@@ -45,8 +45,6 @@ source_set("model") {
 
   deps = [
     "//base",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/download/ui_bundled:features",
@@ -56,7 +54,6 @@ source_set("model") {
     "//ios/chrome/browser/overlays/model/public/common/confirmation",
     "//ios/chrome/browser/overlays/model/public/common/confirmation:util",
     "//ios/chrome/browser/prerender/model",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/url:constants",

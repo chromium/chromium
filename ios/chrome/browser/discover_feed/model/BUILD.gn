@@ -20,7 +20,6 @@ source_set("model") {
   ]
   deps = [
     "//components/feed/core/v2/public/ios:feed_ios_public",
-    "//components/keyed_service/core",
     "//components/search_engines",
     "//components/variations:variations",
     "//ios/chrome/browser/metrics/model:accessor",

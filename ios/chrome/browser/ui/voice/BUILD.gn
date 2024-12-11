@@ -11,8 +11,6 @@ source_set("voice") {
 
   deps = [
     "//base",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
   ]

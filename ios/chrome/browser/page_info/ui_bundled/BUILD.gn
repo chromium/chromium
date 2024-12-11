@@ -21,7 +21,6 @@ source_set("ui_bundled") {
     ":features",
     "//base",
     "//base:i18n",
-    "//components/keyed_service/core",
     "//components/security_state/core",
     "//components/ssl_errors",
     "//components/strings",

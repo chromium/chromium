@@ -12,8 +12,8 @@ source_set("model") {
   public_deps = [
     ":metrics",
     "//base",
-    "//components/keyed_service/core",
   ]
+  deps = [ "//components/keyed_service/core" ]
 }
 
 source_set("policy") {

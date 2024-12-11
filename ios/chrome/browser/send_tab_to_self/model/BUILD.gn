@@ -14,8 +14,6 @@ source_set("model") {
   deps = [
     "//base",
     "//components/infobars/core",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/send_tab_to_self",
     "//components/sync",
     "//components/sync_device_info",
@@ -58,7 +56,6 @@ source_set("unit_tests") {
     ":model",
     "//base",
     "//base/test:test_support",
-    "//components/keyed_service/ios",
     "//components/send_tab_to_self",
     "//components/send_tab_to_self:test_support",
     "//components/sync",

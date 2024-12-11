@@ -10,7 +10,7 @@ source_set("content_notification_service") {
     "content_notification_service.mm",
   ]
   deps = [
-    "//components/keyed_service/core:core",
+    "//components/keyed_service/core",
     "//url:url",
   ]
 }

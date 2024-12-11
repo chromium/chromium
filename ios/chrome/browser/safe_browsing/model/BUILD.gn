@@ -42,7 +42,6 @@ source_set("model") {
     "//base",
     "//build:branding_buildflags",
     "//components/feature_engagement/public",
-    "//components/keyed_service/ios",
     "//components/omnibox/common",
     "//components/password_manager/core/browser",
     "//components/prefs",

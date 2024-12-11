@@ -14,7 +14,6 @@ source_set("test") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/policy/core/common",
     "//components/profile_metrics",

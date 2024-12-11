@@ -19,7 +19,6 @@ source_set("bottom_sheet") {
     "//components/feature_engagement/public",
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",
-    "//components/keyed_service/core",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/ios",

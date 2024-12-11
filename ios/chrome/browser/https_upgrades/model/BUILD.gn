@@ -40,7 +40,6 @@ source_set("unit_tests") {
     ":model",
     "//base/test:test_support",
     "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/prefs:test_support",
     "//components/security_interstitials/core",
     "//ios/chrome/browser/prerender/model",

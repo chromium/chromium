@@ -8,7 +8,6 @@
 
 #import "base/no_destructor.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_impl.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static

@@ -12,7 +12,6 @@
 #import "components/collaboration/internal/messaging/storage/messaging_backend_store_impl.h"
 #import "components/collaboration/internal/messaging/tab_group_change_notifier_impl.h"
 #import "components/data_sharing/public/features.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"

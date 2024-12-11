@@ -94,7 +94,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/affiliations/core/browser:test_support",
-    "//components/keyed_service/core",
     "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/common",

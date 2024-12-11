@@ -19,7 +19,6 @@ source_set("google_logo") {
   deps = [
     "//base",
     "//components/image_fetcher/ios",
-    "//components/keyed_service/core",
     "//components/search_engines",
     "//components/search_provider_logos",
     "//ios/chrome/browser/search_engines/model",

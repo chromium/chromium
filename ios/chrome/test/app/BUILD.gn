@@ -42,7 +42,6 @@ source_set("test_support") {
     "//components/content_settings/core/common",
     "//components/crash/core/common:reporter_running_ios",
     "//components/history/core/browser",
-    "//components/keyed_service/core",
     "//components/metrics",
     "//components/metrics/demographics:test_support",
     "//components/prefs",

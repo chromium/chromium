@@ -9,8 +9,6 @@
 
 #import "components/collaboration/internal/collaboration_finder_impl.h"
 #import "components/data_sharing/public/features.h"
-#import "components/keyed_service/core/keyed_service.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service_factory_helper.h"
 #import "components/sync_device_info/device_info_sync_service.h"

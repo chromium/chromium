@@ -45,8 +45,6 @@ source_set("factory") {
   ]
   deps = [
     ":model",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/collaboration/model",
     "//ios/chrome/browser/collaboration/model:features",

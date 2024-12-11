@@ -17,7 +17,6 @@
 #import "components/sync/base/storage_type.h"
 #import "components/sync/model/data_type_store_service.h"
 #import "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"

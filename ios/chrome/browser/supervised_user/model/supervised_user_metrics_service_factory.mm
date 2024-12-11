@@ -6,7 +6,6 @@
 
 #import "base/no_destructor.h"
 #import "components/supervised_user/core/browser/supervised_user_metrics_service.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 

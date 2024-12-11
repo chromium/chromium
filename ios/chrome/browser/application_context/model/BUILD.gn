@@ -16,7 +16,6 @@ source_set("model") {
     "//components/component_updater",
     "//components/gcm_driver",
     "//components/history/core/browser",
-    "//components/keyed_service/core",
     "//components/metrics",
     "//components/metrics_services_manager",
     "//components/net_log",

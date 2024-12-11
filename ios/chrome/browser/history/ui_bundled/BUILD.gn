@@ -20,7 +20,6 @@ source_set("coordinator") {
     "//base",
     "//components/browser_sync",
     "//components/history/core/browser",
-    "//components/keyed_service/core",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/history/ui_bundled/public",

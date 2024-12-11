@@ -494,7 +494,6 @@ source_set("eg_app_support+eg2") {
     ":content_suggestions_ui",
     ":content_suggestions_ui_util",
     "//base/test:test_support",
-    "//components/keyed_service/ios",
     "//components/search_engines",
     "//ios/chrome/browser/ntp/model:set_up_list_item_type",
     "//ios/chrome/browser/ntp/model:set_up_list_prefs",

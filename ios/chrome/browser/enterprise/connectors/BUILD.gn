@@ -17,7 +17,6 @@ source_set("connectors") {
     "//components/enterprise",
     "//components/enterprise/connectors/core",
     "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
     "//ios/chrome/browser/shared/model/profile",
@@ -34,7 +33,6 @@ source_set("interstitials") {
 
   deps = [
     "//components/enterprise/connectors/core",
-    "//components/keyed_service/core",
     "//components/resources:components_resources_grit",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/security_interstitials/core",

@@ -14,7 +14,6 @@ source_set("model") {
   deps = [
     ":ukm_client",
     "//base",
-    "//components/keyed_service/core",
     "//components/leveldb_proto",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:features",
@@ -36,7 +35,6 @@ source_set("model") {
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/browser_state:incognito_session_tracker",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/profile",
@@ -62,7 +60,6 @@ source_set("ukm_client") {
     "//components/segmentation_platform/internal",
     "//components/ukm",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state:browser_state",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/profile",
     "//services/metrics/public/cpp:ukm_builders",

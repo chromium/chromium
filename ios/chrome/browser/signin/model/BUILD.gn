@@ -62,7 +62,6 @@ source_set("model") {
     "//components/content_settings/core/browser",
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",
-    "//components/keyed_service/ios",
     "//components/metrics",
     "//components/policy/core/common:common_constants",
     "//components/pref_registry",

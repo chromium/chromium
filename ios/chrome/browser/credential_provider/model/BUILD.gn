@@ -38,7 +38,6 @@ if (ios_enable_credential_provider_extension) {
       "//base",
       "//components/affiliations/core/browser:affiliations",
       "//components/autofill/core/common",
-      "//components/keyed_service/core",
       "//components/password_manager/core/browser",
       "//components/password_manager/core/browser/affiliation:affiliation_match_helper",
       "//components/password_manager/core/common",

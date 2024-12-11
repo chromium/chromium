@@ -57,7 +57,6 @@ source_set("coordinator") {
     "//components/download/public/background_service:public",
     "//components/download/resources/download_internals:resources",
     "//components/flags_ui",
-    "//components/keyed_service/core",
     "//components/local_state",
     "//components/metrics_services_manager",
     "//components/ntp_tiles",
