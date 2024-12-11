@@ -412,6 +412,7 @@ std::unique_ptr<views::View> TaskManagerView::CreateTabbedPane() {
       views::TabbedPane::TabStripStyle::kCompactWithIcon,
       /*tabbed_pane=*/nullptr);
   tabs->SetDefaultFlex(0);
+  tabs->SetDrawTabDivider(false);
 
   for (const auto& tab : kTabDefinitions) {
     tabs->AddTab(l10n_util::GetStringUTF16(tab.title_id), tab.icon);

@@ -125,6 +125,9 @@ class VIEWS_EXPORT TabbedPane : public FlexLayoutView {
   // title.
   void UpdateAccessibleName();
 
+  // Sets whether a divider will be drawn underneath the Tab Strip.
+  void SetDrawTabDivider(bool draw);
+
  private:
   friend class FocusTraversalTest;
   friend class TabbedPaneTab;
@@ -312,6 +315,9 @@ class VIEWS_EXPORT TabbedPaneTabStrip : public View,
   // UpdateAccessibleName method if |tabbed_pane_| is defined.
   void UpdateAccessibleName();
 
+  // Sets whether a divider will be drawn underneath the Tab Strip.
+  void SetDrawTabDivider(bool draw);
+
  protected:
   // View:
   void OnPaintBorder(gfx::Canvas* canvas) override;
@@ -358,6 +364,10 @@ class VIEWS_EXPORT TabbedPaneTabStrip : public View,
   // An optional parent container which connects Tabs in the TabStrip to
   // content views.
   raw_ptr<TabbedPane> tabbed_pane_;
+
+  // Whether to draw the unselected divider below the tabs. Useful for when
+  // the caller wants to use a custom divider instead.
+  bool draw_tab_divider_ = true;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, TabbedPane, FlexLayoutView)

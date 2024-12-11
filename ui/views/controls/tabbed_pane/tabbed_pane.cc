@@ -666,6 +666,11 @@ void TabbedPaneTabStrip::UpdateAccessibleName() {
   }
 }
 
+void TabbedPaneTabStrip::SetDrawTabDivider(bool draw) {
+  draw_tab_divider_ = draw;
+  SchedulePaint();
+}
+
 void TabbedPaneTabStrip::OnPaintBorder(gfx::Canvas* canvas) {
   // Do not draw border line in kHighlight mode.
   if (GetStyle() == TabbedPane::TabStripStyle::kHighlight) {
@@ -691,8 +696,11 @@ void TabbedPaneTabStrip::OnPaintBorder(gfx::Canvas* canvas) {
     rect = gfx::Rect(max_cross_axis - kUnselectedBorderThickness, 0,
                      kUnselectedBorderThickness, height());
   }
-  canvas->FillRect(rect,
-                   GetColorProvider()->GetColor(ui::kColorTabContentSeparator));
+
+  if (draw_tab_divider_) {
+    canvas->FillRect(
+        rect, GetColorProvider()->GetColor(ui::kColorTabContentSeparator));
+  }
 
   TabbedPaneTab* tab = GetSelectedTab();
   if (!tab) {
@@ -909,6 +917,10 @@ void TabbedPane::UpdateAccessibleName() {
   } else {
     GetViewAccessibility().RemoveName();
   }
+}
+
+void TabbedPane::SetDrawTabDivider(bool draw) {
+  tab_strip_->SetDrawTabDivider(draw);
 }
 
 TabbedPaneTab* TabbedPane::GetSelectedTab() {
