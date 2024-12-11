@@ -133,6 +133,60 @@ class PreFreezeBackgroundMemoryTrimmerTest : public testing::Test {
   test::ScopedFeatureList fl_;
 };
 
+class PreFreezeSelfCompactionTest : public testing::Test {
+ public:
+  void SetUp() override {
+    PreFreezeBackgroundMemoryTrimmer::
+        ResetSelfCompactionLastCancelledForTesting();
+  }
+
+  bool ShouldContinueSelfCompaction(base::TimeTicks compaction_started_at) {
+    base::AutoLock locker(PreFreezeBackgroundMemoryTrimmer::Instance().lock_);
+    return PreFreezeBackgroundMemoryTrimmer::Instance()
+        .ShouldContinueSelfCompaction(compaction_started_at);
+  }
+
+  // |size| is in bytes.
+  void* Map(size_t size) {
+    DCHECK_EQ(size % base::GetPageSize(), 0u);
+    void* addr = mmap(nullptr, size, PROT_WRITE | PROT_READ,
+                      MAP_PRIVATE | MAP_ANON, -1, 0);
+    debug::MappedMemoryRegion region;
+    region.permissions = debug::MappedMemoryRegion::WRITE |
+                         debug::MappedMemoryRegion::READ |
+                         debug::MappedMemoryRegion::PRIVATE;
+    region.inode = 0;
+    region.dev_major = 0;
+    region.dev_minor = 0;
+    region.start = reinterpret_cast<uintptr_t>(addr);
+    region.end = region.start + size;
+    mapped_regions_.push_back(region);
+    // We memset to guarantee that the memory we just allocated is resident.
+    memset(addr, 02, size);
+    return addr;
+  }
+
+  // |addr| must have been allocated using |Map|. |size| is in bytes.
+  void Unmap(void* addr, size_t size) {
+    munmap(addr, size);
+    std::erase_if(mapped_regions_,
+                  [&](const debug::MappedMemoryRegion& region) {
+                    return region.start == reinterpret_cast<uintptr_t>(addr);
+                  });
+  }
+
+  // Returns a copy of the regions that have been allocated via |Map|.
+  std::vector<debug::MappedMemoryRegion> GetMappedMemoryRegions() const {
+    return mapped_regions_;
+  }
+
+  test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+ private:
+  std::vector<debug::MappedMemoryRegion> mapped_regions_;
+};
+
 // We do not expect any tasks to be registered with
 // PreFreezeBackgroundMemoryTrimmer on Android versions before U.
 TEST_F(PreFreezeBackgroundMemoryTrimmerTest, PostTaskPreFreezeUnsupported) {
@@ -648,7 +702,7 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerBoolTaskRunFromPreFreeze) {
   EXPECT_EQ(called_task_type.value(), MemoryReductionTaskContext::kProactive);
 }
 
-TEST(PreFreezeSelfCompactionTest, Simple) {
+TEST_F(PreFreezeSelfCompactionTest, Simple) {
   // MADV_PAGEOUT is only supported starting from Linux 5.4. So, on devices
   // don't support it, we bail out early. This is a known problem on some 32
   // bit devices.
@@ -682,7 +736,7 @@ TEST(PreFreezeSelfCompactionTest, Simple) {
   munmap(addr, size);
 }
 
-TEST(PreFreezeSelfCompactionTest, File) {
+TEST_F(PreFreezeSelfCompactionTest, File) {
   // MADV_PAGEOUT is only supported starting from Linux 5.4. So, on devices
   // don't support it, we bail out early. This is a known problem on some 32
   // bit devices.
@@ -724,7 +778,7 @@ TEST(PreFreezeSelfCompactionTest, File) {
   munmap(addr, size);
 }
 
-TEST(PreFreezeSelfCompactionTest, Locked) {
+TEST_F(PreFreezeSelfCompactionTest, Locked) {
   // MADV_PAGEOUT is only supported starting from Linux 5.4. So, on devices
   // don't support it, we bail out early. This is a known problem on some 32
   // bit devices.
@@ -763,4 +817,93 @@ TEST(PreFreezeSelfCompactionTest, Locked) {
   munmap(addr, size);
 }
 
+TEST_F(PreFreezeSelfCompactionTest, SimpleCancel) {
+  auto started_at = base::TimeTicks::Now();
+
+  EXPECT_TRUE(ShouldContinueSelfCompaction(started_at));
+
+  PreFreezeBackgroundMemoryTrimmer::MaybeCancelSelfCompaction();
+
+  EXPECT_FALSE(ShouldContinueSelfCompaction(started_at));
+}
+
+TEST_F(PreFreezeSelfCompactionTest, Cancel) {
+  // MADV_PAGEOUT is only supported starting from Linux 5.4. So, on devices
+  // don't support it, we bail out early. This is a known problem on some 32
+  // bit devices.
+  if (!PreFreezeBackgroundMemoryTrimmer::SelfCompactionIsSupported()) {
+    GTEST_SKIP() << "No kernel support";
+  }
+
+  ASSERT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 0u);
+
+  std::array<void*, 5> addrs;
+  for (size_t i = 1; i < 5; i++) {
+    addrs[i] = Map(i * base::GetPageSize());
+    ASSERT_NE(addrs[i], MAP_FAILED);
+  }
+
+  std::vector<debug::MappedMemoryRegion> regions = GetMappedMemoryRegions();
+
+  ASSERT_EQ(regions.size(), 4u);
+
+  PreFreezeBackgroundMemoryTrimmer::Instance().StartSelfCompaction(
+      task_environment_.GetMainThreadTaskRunner(), std::move(regions), 1);
+
+  EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 1u);
+
+  task_environment_.FastForwardBy(
+      task_environment_.NextMainThreadPendingTaskDelay());
+
+  EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 1u);
+
+  PreFreezeBackgroundMemoryTrimmer::MaybeCancelSelfCompaction();
+
+  task_environment_.FastForwardBy(
+      task_environment_.NextMainThreadPendingTaskDelay());
+
+  EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 0u);
+
+  for (size_t i = 1; i < 5; i++) {
+    Unmap(addrs[i], i * base::GetPageSize());
+  }
+}
+
+TEST_F(PreFreezeSelfCompactionTest, NotCanceled) {
+  // MADV_PAGEOUT is only supported starting from Linux 5.4. So, on devices
+  // don't support it, we bail out early. This is a known problem on some 32
+  // bit devices.
+  if (!PreFreezeBackgroundMemoryTrimmer::SelfCompactionIsSupported()) {
+    GTEST_SKIP() << "No kernel support";
+  }
+
+  ASSERT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 0u);
+
+  std::array<void*, 5> addrs;
+  for (size_t i = 1; i < 5; i++) {
+    addrs[i] = Map(i * base::GetPageSize());
+    ASSERT_NE(addrs[i], MAP_FAILED);
+  }
+
+  std::vector<debug::MappedMemoryRegion> regions = GetMappedMemoryRegions();
+
+  ASSERT_EQ(regions.size(), 4u);
+
+  PreFreezeBackgroundMemoryTrimmer::Instance().StartSelfCompaction(
+      task_environment_.GetMainThreadTaskRunner(), std::move(regions), 1);
+
+  for (size_t i = 0; i < 4; i++) {
+    EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 1u);
+    task_environment_.FastForwardBy(
+        task_environment_.NextMainThreadPendingTaskDelay());
+  }
+
+  EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 0u);
+
+  for (size_t i = 1; i < 5; i++) {
+    size_t len = i * base::GetPageSize();
+    EXPECT_EQ(CountResidentPagesInRange(addrs[i], len), 0);
+    Unmap(addrs[i], len);
+  }
+}
 }  // namespace base::android

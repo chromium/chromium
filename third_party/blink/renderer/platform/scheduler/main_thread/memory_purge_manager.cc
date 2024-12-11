@@ -4,6 +4,11 @@
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/memory_purge_manager.h"
 
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/pre_freeze_background_memory_trimmer.h"
+#endif
 #include "base/feature_list.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/field_trial_params.h"
@@ -11,7 +16,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
 
 namespace blink {
@@ -91,6 +95,11 @@ void MemoryPurgeManager::OnPageResumed() {
   }
 
   base::MemoryPressureListener::SetNotificationsSuppressed(false);
+#if BUILDFLAG(IS_ANDROID)
+  // Cancel a pending self compaction, since we are resuming now, and will
+  // presumably touch most of that memory soon.
+  base::android::PreFreezeBackgroundMemoryTrimmer::MaybeCancelSelfCompaction();
+#endif
 }
 
 void MemoryPurgeManager::SetRendererBackgrounded(bool backgrounded) {
