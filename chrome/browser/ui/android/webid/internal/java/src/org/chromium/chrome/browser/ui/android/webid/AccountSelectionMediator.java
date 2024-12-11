@@ -931,9 +931,14 @@ class AccountSelectionMediator {
         }
 
         mHeaderType = mIsAutoReauthn ? HeaderType.VERIFY_AUTO_REAUTHN : HeaderType.SIGN_IN;
+        // We want the accounts to be clickable if there is no preselected account or if we're not
+        // going to show the disclosure text, which happens when the account is a signIn or when
+        // fields is empty.
         updateSheet(
                 mSelectedAccount != null ? Arrays.asList(mSelectedAccount) : mAccounts,
-                /* areAccountsClickable= */ mSelectedAccount == null);
+                /* areAccountsClickable= */ mSelectedAccount == null
+                        || mSelectedAccount.isSignIn()
+                        || mDisclosureFields.length == 0);
         updateBackPressBehavior();
 
         // This is a placeholder assuming the tab containing the account chooser will be closed.
@@ -995,7 +1000,6 @@ class AccountSelectionMediator {
 
         if (showUseDifferentAccountButton && isSingleAccountChooser && mRpMode == RpMode.ACTIVE) {
             assert !isDataSharingConsentVisible;
-            assert mSelectedAccount == null;
             mSelectedAccount = accounts.get(0);
             continueButtonCallback = this::onClickAccountSelected;
         }
