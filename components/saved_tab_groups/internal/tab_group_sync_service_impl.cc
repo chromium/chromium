@@ -588,6 +588,11 @@ void TabGroupSyncServiceImpl::MakeTabGroupShared(
   model_->AddedLocally(std::move(shared_group));
 }
 
+void TabGroupSyncServiceImpl::AboutToUnShareTabGroup(
+    const LocalTabGroupID& local_group_id) {
+  model_->SetIsTransitioningToSaved(local_group_id, true);
+}
+
 void TabGroupSyncServiceImpl::MakeTabGroupSharedForTesting(
     const LocalTabGroupID& local_group_id,
     std::string_view collaboration_id) {

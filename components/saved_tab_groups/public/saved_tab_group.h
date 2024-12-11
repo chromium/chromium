@@ -89,6 +89,7 @@ class SavedTabGroup {
 
   bool is_pinned() const { return position_.has_value(); }
   bool is_shared_tab_group() const { return collaboration_id_.has_value(); }
+  bool is_transitioning_to_saved() const { return is_transitioning_to_saved_; }
 
   std::vector<SavedTabGroupTab>& saved_tabs() { return saved_tabs_; }
 
@@ -128,6 +129,7 @@ class SavedTabGroup {
       std::optional<CollaborationId> collaboration_id);
   SavedTabGroup& SetOriginatingSavedTabGroupGuid(
       std::optional<base::Uuid> originating_saved_tab_group_guid);
+  SavedTabGroup& SetIsTransitioningToSaved(bool is_transitioning_to_saved);
 
   // Sets the updater of the tab group, and also the creator if it's the first
   // update. This method should be preferred over SetCreatedByAttribution() for
@@ -274,6 +276,10 @@ class SavedTabGroup {
 
   // Atribution data for the shared tab group.
   SharedAttribution shared_attribution_;
+
+  // Whether the tab group is transitioning from shared to private, but not yet
+  // completed. Can only be true if the tab group is currently shared.
+  bool is_transitioning_to_saved_ = false;
 };
 
 }  // namespace tab_groups

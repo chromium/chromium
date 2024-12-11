@@ -1820,6 +1820,26 @@ TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared) {
   }
 }
 
+TEST_F(TabGroupSyncServiceTest, AboutToUnShareTabGroup) {
+  std::optional<SavedTabGroup> group =
+      tab_group_sync_service_->GetGroup(local_group_id_1_);
+  tab_group_sync_service_->MakeTabGroupShared(local_group_id_1_,
+                                              "collaboration");
+
+  // The new group replaces the originating one asynchronously.
+  WaitForPostedTasks();
+
+  std::optional<SavedTabGroup> shared_group =
+      tab_group_sync_service_->GetGroup(local_group_id_1_);
+  ASSERT_TRUE(shared_group->is_shared_tab_group());
+  ASSERT_FALSE(shared_group->is_transitioning_to_saved());
+
+  tab_group_sync_service_->AboutToUnShareTabGroup(local_group_id_1_);
+  shared_group = tab_group_sync_service_->GetGroup(local_group_id_1_);
+  ASSERT_TRUE(shared_group->is_shared_tab_group());
+  ASSERT_TRUE(shared_group->is_transitioning_to_saved());
+}
+
 TEST_F(TabGroupSyncServiceTest, ShouldNotReturnOriginatingTabGroup) {
   ON_CALL(*collaboration_finder_, IsCollaborationAvailable)
       .WillByDefault(Return(false));

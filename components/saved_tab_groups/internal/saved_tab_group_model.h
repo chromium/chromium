@@ -98,6 +98,11 @@ class SavedTabGroupModel {
   void MakeTabGroupSharedForTesting(const LocalTabGroupID& local_group_id,
                                     CollaborationId collaboration_id);
 
+  // Mark whether the tab group identified by `local_group_id` is transitioning
+  // to a saved group.
+  void SetIsTransitioningToSaved(const LocalTabGroupID& local_group_id,
+                                 bool is_transitioning_to_saved);
+
   // Pin SavedTabGroup if it's unpinned. Unpin SavedTabGroup if it's pinned.
   void TogglePinState(base::Uuid id);
 

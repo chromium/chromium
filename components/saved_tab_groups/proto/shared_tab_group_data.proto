@@ -15,6 +15,10 @@ import "components/sync/protocol/shared_tab_group_data_specifics.proto";
 message LocalSharedTabGroupData {
   // Local tab group ID. Stored as a serialized base::Token.
   optional string local_group_id = 1;
+
+  // Whether the tab group is transitioning from shared to saved, but not
+  // yet completed.
+  optional bool is_transitioning_to_saved = 2;
 }
 
 // Message to store shared tab groups in DataTypeStore.

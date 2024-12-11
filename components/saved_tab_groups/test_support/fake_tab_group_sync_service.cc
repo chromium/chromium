@@ -245,6 +245,15 @@ void FakeTabGroupSyncService::MakeTabGroupShared(
   NotifyObserversOfTabGroupShared(group);
 }
 
+void FakeTabGroupSyncService::AboutToUnShareTabGroup(
+    const LocalTabGroupID& local_group_id) {
+  std::optional<int> index = GetIndexOf(local_group_id);
+  CHECK(index.has_value());
+  SavedTabGroup& group = groups_[index.value()];
+  group.SetIsTransitioningToSaved(true);
+  NotifyObserversOfTabGroupUpdated(group);
+}
+
 std::vector<SavedTabGroup> FakeTabGroupSyncService::GetAllGroups() const {
   std::vector<SavedTabGroup> groups;
   for (const SavedTabGroup& group : groups_) {

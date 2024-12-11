@@ -223,6 +223,17 @@ void SavedTabGroupModel::MakeTabGroupSharedForTesting(
   group->SetCollaborationId(std::move(collaboration_id));
 }
 
+void SavedTabGroupModel::SetIsTransitioningToSaved(
+    const LocalTabGroupID& local_group_id,
+    bool is_transitioning_to_saved) {
+  SavedTabGroup* const group = GetMutableGroup(local_group_id);
+  group->SetIsTransitioningToSaved(is_transitioning_to_saved);
+  for (auto& observer : observers_) {
+    observer.SavedTabGroupUpdatedLocally(group->saved_guid(),
+                                         /*tab_guid=*/std::nullopt);
+  }
+}
+
 void SavedTabGroupModel::AddedFromSync(SavedTabGroup saved_group) {
   base::Uuid group_guid = saved_group.saved_guid();
   if (Contains(group_guid)) {

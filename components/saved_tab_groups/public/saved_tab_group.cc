@@ -228,6 +228,13 @@ SavedTabGroup& SavedTabGroup::SetOriginatingSavedTabGroupGuid(
   return *this;
 }
 
+SavedTabGroup& SavedTabGroup::SetIsTransitioningToSaved(
+    bool is_transitioning_to_saved) {
+  DCHECK(is_shared_tab_group() || !is_transitioning_to_saved);
+  is_transitioning_to_saved_ = is_transitioning_to_saved;
+  return *this;
+}
+
 SavedTabGroup& SavedTabGroup::SetUpdatedByAttribution(GaiaId updated_by) {
   if (shared_attribution_.created_by.empty()) {
     shared_attribution_.created_by = updated_by;

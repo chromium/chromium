@@ -198,6 +198,14 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   virtual void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
                                   std::string_view collaboration_id) = 0;
 
+  // Mutator methods for shared tab groups.
+  // Starts the process of converting a shared tab group to saved tab group. Due
+  // to network, Chrome will need to wait for server confirmation before the
+  // conversion completes successfully. The tab group must be shared when
+  // calling this.
+  virtual void AboutToUnShareTabGroup(
+      const LocalTabGroupID& local_group_id) = 0;
+
   // Accessor methods.
   virtual std::vector<SavedTabGroup> GetAllGroups() const = 0;
   virtual std::optional<SavedTabGroup> GetGroup(

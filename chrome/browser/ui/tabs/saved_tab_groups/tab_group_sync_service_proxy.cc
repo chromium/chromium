@@ -216,6 +216,11 @@ void TabGroupSyncServiceProxy::MakeTabGroupShared(
   NOTIMPLEMENTED();
 }
 
+void TabGroupSyncServiceProxy::AboutToUnShareTabGroup(
+    const LocalTabGroupID& local_group_id) {
+  NOTIMPLEMENTED();
+}
+
 std::vector<SavedTabGroup> TabGroupSyncServiceProxy::GetAllGroups() const {
   return service_->model()->saved_tab_groups();
 }

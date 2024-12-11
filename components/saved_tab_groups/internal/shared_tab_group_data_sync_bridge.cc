@@ -358,15 +358,21 @@ std::vector<sync_pb::SharedTabGroupDataSpecifics> LoadStoredEntries(
           stats::SharedTabGroupDataLoadFromDiskResult::kMissingCollaborationId);
       continue;
     }
-    groups.emplace_back(SpecificsToSharedTabGroup(
+    SavedTabGroup group = SpecificsToSharedTabGroup(
         specifics, collaboration_metadata,
-        ExtractCreationTimeFromMetadata(sync_metadata, storage_key)));
+        ExtractCreationTimeFromMetadata(sync_metadata, storage_key));
     // Load remaining local-only fields.
     if (AreLocalIdsPersisted() &&
         proto.local_group_data().has_local_group_id()) {
-      groups.back().SetLocalGroupId(
+      group.SetLocalGroupId(
           LocalTabGroupIDFromString(proto.local_group_data().local_group_id()));
     }
+    if (proto.local_group_data().has_is_transitioning_to_saved()) {
+      group.SetIsTransitioningToSaved(
+          proto.local_group_data().is_transitioning_to_saved());
+    }
+    groups.emplace_back(std::move(group));
+
     // There should not be duplicate group GUIDs because they are used as
     // storage keys.
     group_guid_to_next_tab_position.emplace(specifics.guid(), 0);
@@ -443,6 +449,8 @@ proto::LocalSharedTabGroupData GroupToLocalOnlyData(
     local_group_data.set_local_group_id(
         LocalTabGroupIDToString(group.local_group_id().value()));
   }
+  local_group_data.set_is_transitioning_to_saved(
+      group.is_transitioning_to_saved());
   return local_group_data;
 }
 
