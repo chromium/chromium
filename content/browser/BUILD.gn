@@ -2337,6 +2337,8 @@ source_set("browser") {
     "webid/identity_registry.h",
     "webid/idp_network_request_manager.cc",
     "webid/idp_network_request_manager.h",
+    "webid/jwt_signer.cc",
+    "webid/jwt_signer.h",
     "webid/sd_jwt.cc",
     "webid/sd_jwt.h",
     "webid/webid_utils.cc",
