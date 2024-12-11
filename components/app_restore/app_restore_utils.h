@@ -81,13 +81,6 @@ int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id);
 COMPONENT_EXPORT(APP_RESTORE)
 std::string GetAppIdFromAppName(const std::string& app_name);
 
-// Returns the Lacros window id for `window`.
-const std::string GetLacrosWindowId(aura::Window* window);
-
-// Returns the restore window id for the Lacros window with `lacros_window_id`.
-COMPONENT_EXPORT(APP_RESTORE)
-int32_t GetLacrosRestoreWindowId(const std::string& lacros_window_id);
-
 // Returns a tuple containing the window count, tab count, and total count, in
 // that order. Note that tab count data is not saved for full restore, which
 // relies on session restore to restore tabs.

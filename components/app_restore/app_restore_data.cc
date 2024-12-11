@@ -43,7 +43,6 @@ constexpr char kTitleKey[] = "title";
 constexpr char kBoundsInRoot[] = "bounds_in_root";
 constexpr char kPrimaryColorKey[] = "primary_color";
 constexpr char kStatusBarColorKey[] = "status_bar_color";
-constexpr char kLacrosProfileIdKey[] = "lacros_profile_id";
 
 // Converts |size| to base::Value::List, e.g. { 100, 300 }.
 base::Value::List ConvertSizeToList(const gfx::Size& size) {
@@ -68,11 +67,6 @@ base::Value ConvertUintToValue(uint32_t number) {
   return base::Value(base::NumberToString(number));
 }
 
-// Converts `number` to base::Value in string, e.g. 123 to "123".
-base::Value ConvertUint64ToValue(uint64_t number) {
-  return base::Value(base::NumberToString(number));
-}
-
 // Gets bool value from base::Value::Dict, e.g. { "key": true } returns
 // true.
 std::optional<bool> GetBoolValueFromDict(const base::Value::Dict& dict,
@@ -93,18 +87,6 @@ std::optional<uint32_t> GetUIntValueFromDict(const base::Value::Dict& dict,
   uint32_t result = 0;
   const std::string* value = dict.FindString(key_name);
   if (!value || !base::StringToUint(*value, &result)) {
-    return std::nullopt;
-  }
-  return result;
-}
-
-// Gets uint64_t value from a base::Value::Dict where it is stored as a string,
-// e.g. { "key": "123" } returns 123.
-std::optional<uint64_t> GetUInt64ValueFromDict(const base::Value::Dict& dict,
-                                               std::string_view key_name) {
-  uint64_t result = 0;
-  const std::string* value = dict.FindString(key_name);
-  if (!value || !base::StringToUint64(*value, &result)) {
     return std::nullopt;
   }
   return result;
@@ -266,8 +248,6 @@ AppRestoreData::AppRestoreData(base::Value::Dict&& data) {
   browser_extra_info.app_type_browser =
       GetBoolValueFromDict(data, kAppTypeBrowserKey);
   browser_extra_info.app_name = GetStringValueFromDict(data, kAppNameKey);
-  browser_extra_info.lacros_profile_id =
-      GetUInt64ValueFromDict(data, kLacrosProfileIdKey);
 
   window_info.activation_index = GetIntValueFromDict(data, kActivationIndexKey);
   window_info.desk_id = GetIntValueFromDict(data, kDeskIdKey);
@@ -378,12 +358,6 @@ base::Value AppRestoreData::ConvertToValue() const {
   SetValueIntoDict(browser_extra_info.app_name, kAppNameKey, launch_info_dict);
   SetValueIntoDict(browser_extra_info.app_type_browser, kAppTypeBrowserKey,
                    launch_info_dict);
-
-  if (browser_extra_info.lacros_profile_id.has_value()) {
-    launch_info_dict.Set(
-        kLacrosProfileIdKey,
-        ConvertUint64ToValue(browser_extra_info.lacros_profile_id.value()));
-  }
 
   SetValueIntoDict(window_info.activation_index, kActivationIndexKey,
                    launch_info_dict);

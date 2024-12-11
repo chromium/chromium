@@ -8,7 +8,6 @@
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/desk_template_read_handler.h"
-#include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_read_handler.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/window_info.h"
@@ -55,24 +54,6 @@ void AddChromeBrowserLaunchInfoForTesting(const base::FilePath& profile_path) {
 
 std::string GetAppId(aura::Window* window) {
   return FullRestoreSaveHandler::GetInstance()->GetAppId(window);
-}
-
-void OnLacrosChromeAppWindowAdded(const std::string& app_id,
-                                  const std::string& window_id) {
-  if (!full_restore::features::IsFullRestoreForLacrosEnabled())
-    return;
-
-  FullRestoreSaveHandler::GetInstance()->OnLacrosChromeAppWindowAdded(
-      app_id, window_id);
-}
-
-void OnLacrosChromeAppWindowRemoved(const std::string& app_id,
-                                    const std::string& window_id) {
-  if (!full_restore::features::IsFullRestoreForLacrosEnabled())
-    return;
-
-  FullRestoreSaveHandler::GetInstance()->OnLacrosChromeAppWindowRemoved(
-      app_id, window_id);
 }
 
 void SaveRemovingDeskGuid(const base::Uuid& removing_desk_guid) {
