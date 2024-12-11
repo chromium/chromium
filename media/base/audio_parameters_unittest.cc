@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/audio_parameters.h"
 
 #include <stddef.h>
+
+#include <array>
 
 #include "base/strings/string_number_conversions.h"
 #include "media/base/channel_layout.h"
@@ -102,7 +99,7 @@ TEST(AudioParameters, GetBytesPerBuffer) {
 }
 
 TEST(AudioParameters, Compare) {
-  AudioParameters values[] = {
+  auto values = std::to_array<AudioParameters>({
       AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
                       ChannelLayoutConfig::Mono(), 1000, 100),
       AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
@@ -138,7 +135,7 @@ TEST(AudioParameters, Compare) {
                       ChannelLayoutConfig::Stereo(), 2000, 100),
       AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                       ChannelLayoutConfig::Stereo(), 2000, 200),
-  };
+  });
 
   for (size_t i = 0; i < std::size(values); ++i) {
     for (size_t j = 0; j < std::size(values); ++j) {

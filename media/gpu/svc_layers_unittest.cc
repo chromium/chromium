@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/gpu/svc_layers.h"
 
@@ -30,7 +26,7 @@ namespace media {
 namespace {
 
 constexpr gfx::Size kDefaultEncodeSize(1280, 720);
-constexpr int kSpatialLayerResolutionDenom[] = {4, 2, 1};
+constexpr auto kSpatialLayerResolutionDenom = std::to_array<int>({4, 2, 1});
 
 gfx::Size GetDefaultSVCResolution(size_t spatial_index) {
   const int denom = kSpatialLayerResolutionDenom[spatial_index];
@@ -59,11 +55,11 @@ SVCLayers::Config GetDefaultSVCLayersToConfig(
 }
 
 uint8_t GetTemporalIndex(size_t num_temporal_layers, size_t frame_num) {
-  constexpr uint8_t kTemporalIndices[][4] = {
+  constexpr auto kTemporalIndices = std::to_array<std::array<uint8_t, 4>>({
       {0, 0, 0, 0},
       {0, 1, 0, 1},
       {0, 2, 1, 2},
-  };
+  });
   CHECK(1 <= num_temporal_layers && num_temporal_layers <= 3);
   return kTemporalIndices[num_temporal_layers - 1][frame_num % 4];
 }

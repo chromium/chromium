@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/filters/audio_timestamp_validator.h"
 
+#include <array>
 #include <tuple>
 
 #include "base/time/time.h"
@@ -81,8 +77,8 @@ TEST_P(AudioTimestampValidatorTest, WarnForEraticTimes) {
 
   AudioTimestampValidator validator(decoder_config, &media_log_);
 
-  const base::TimeDelta kRandomOffsets[] = {base::Milliseconds(100),
-                                            base::Milliseconds(350)};
+  const auto kRandomOffsets = std::to_array<base::TimeDelta>(
+      {base::Milliseconds(100), base::Milliseconds(350)});
 
   for (int i = 0; i < 100; ++i) {
     // Each buffer's timestamp is kBufferDuration from the previous buffer.

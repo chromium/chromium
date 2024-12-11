@@ -10,6 +10,7 @@
 #include "media/muxers/mp4_muxer_delegate.h"
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <string_view>
 #include <vector>
@@ -174,8 +175,9 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
 
   base::TimeTicks base_time_ticks = base::TimeTicks::Now();
 
-  constexpr uint32_t kSampleDurations[] = {29, 32, 31, 30};
-  constexpr uint32_t kSampleDurationsAfterTimescale[] = {870, 960, 930, 999};
+  constexpr auto kSampleDurations = std::to_array<uint32_t>({29, 32, 31, 30});
+  constexpr auto kSampleDurationsAfterTimescale =
+      std::to_array<uint32_t>({870, 960, 930, 999});
 
   base::TimeDelta delta;
 

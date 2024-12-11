@@ -12,6 +12,8 @@
 #include <GLES3/gl3.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/aligned_memory.h"
@@ -984,7 +986,7 @@ TEST_F(PaintCanvasVideoRendererTest, CorrectFrameSizeToVisibleRect) {
   gfx::Size coded_size(fWidth, fHeight);
   gfx::Size visible_size(fWidth / 2, fHeight / 2);
 
-  uint8_t memory[fWidth * fHeight * 2] = {};
+  std::array<uint8_t, fWidth * fHeight * 2> memory = {};
 
   auto video_frame = media::VideoFrame::WrapExternalData(
       media::PIXEL_FORMAT_Y16, coded_size, gfx::Rect(visible_size),

@@ -9,6 +9,7 @@
 
 #include "media/gpu/test/video_test_helpers.h"
 
+#include <array>
 #include <limits>
 #include <numeric>
 
@@ -134,7 +135,7 @@ bool IvfWriter::WriteFileHeader(VideoCodec codec,
 bool IvfWriter::WriteFrame(uint32_t data_size,
                            uint64_t timestamp,
                            const uint8_t* data) {
-  char ivf_frame_header[kIvfFrameHeaderSize] = {};
+  std::array<char, kIvfFrameHeaderSize> ivf_frame_header = {};
   memcpy(&ivf_frame_header[0], &data_size, sizeof(data_size));
   memcpy(&ivf_frame_header[4], &timestamp, sizeof(timestamp));
   if (!output_file_.WriteAtCurrentPosAndCheck(
@@ -727,7 +728,7 @@ scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(
     }
     base::ReadOnlySharedMemoryMapping mapping = shmem_region.Map();
     uint8_t* buf = const_cast<uint8_t*>(mapping.GetMemoryAs<uint8_t>());
-    uint8_t* data[3] = {};
+    std::array<uint8_t*, 3> data = {};
     for (size_t i = 0; i < layout_->planes().size(); i++)
       data[i] = buf + layout_->planes()[i].offset;
 
@@ -810,7 +811,7 @@ RawDataHelper::~RawDataHelper() = default;
 scoped_refptr<const VideoFrame> RawDataHelper::GetFrame(size_t index) const {
   uint32_t read_frame_index =
       GetReadFrameIndex(index, reverse_, video_->NumFrames());
-  uint8_t* frame_data[VideoFrame::kMaxPlanes] = {};
+  std::array<uint8_t*, VideoFrame::kMaxPlanes> frame_data = {};
   const size_t num_planes = VideoFrame::NumPlanes(video_->PixelFormat());
   RawVideo::FrameData src_frame = video_->GetFrame(read_frame_index);
   for (size_t i = 0; i < num_planes; ++i) {

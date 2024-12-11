@@ -4,6 +4,8 @@
 
 #include "media/gpu/h264_rate_controller.h"
 
+#include <array>
+
 #include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -696,7 +698,8 @@ TEST_F(H264RateControllerTest,
 }
 
 TEST_F(H264RateControllerTest, RunH264RateControllerFramerateMeanTest) {
-  constexpr float kFrameRateExpectedValues[] = {29.9f, 30.1f};
+  constexpr auto kFrameRateExpectedValues =
+      std::to_array<float>({29.9f, 30.1f});
 
   rate_controller_ =
       std::make_unique<H264RateController>(rate_controller_settings_);

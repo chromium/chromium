@@ -9,6 +9,7 @@
 
 #include "media/gpu/test/video_encoder/video_encoder_test_environment.h"
 
+#include <array>
 #include <iterator>
 #include <utility>
 
@@ -72,13 +73,14 @@ uint32_t GetDefaultTargetBitrate(const VideoCodec codec,
                                  bool validation) {
   // For how these values are decided, see
   // https://docs.google.com/document/d/1Mlu-2mMOqswWaaivIWhn00dYkoTwKcjLrxxBXcWycug
-  constexpr struct {
+  struct BitrateTable {
     int area;
     // bitrate[0]: for speed and quality performance
     // bitrate[1]: for validation.
     // The three values are for H264/VP8, VP9 and AV1, respectively.
     double bitrate[2][3];
-  } kBitrateTable[] = {
+  };
+  constexpr auto kBitrateTable = std::to_array<BitrateTable>({
       {0, {{77.5, 65.0, 60.0}, {100.0, 100.0, 100.0}}},
       {240 * 160, {{77.5, 65.0, 60.0}, {115.0, 100.0, 100.0}}},
       {320 * 240, {{165.0, 105.0, 105.0}, {230.0, 180.0, 180.0}}},
@@ -86,7 +88,7 @@ uint32_t GetDefaultTargetBitrate(const VideoCodec codec,
       {640 * 480, {{550.0, 355.0, 342.5}, {690.0, 520, 520}}},
       {1280 * 720, {{1700.0, 990.0, 800.0}, {2500.0, 1500, 1200}}},
       {1920 * 1080, {{2480.0, 2060.0, 1500.0}, {4000.0, 3350.0, 2500.0}}},
-  };
+  });
   size_t codec_index = 0;
   switch (codec) {
     case VideoCodec::kH264:
@@ -127,11 +129,12 @@ uint32_t GetDefaultTargetBitrate(const VideoCodec codec,
   return bitrate_in_30fps_in_kbps * framerate_multiplier * 1000;
 }
 
-constexpr int kSpatialLayersResolutionScaleDenom[][3] = {
-    {1, 0, 0},  // For one spatial layer.
-    {2, 1, 0},  // For two spatial layers.
-    {4, 2, 1},  // For three spatial layers.
-};
+constexpr auto kSpatialLayersResolutionScaleDenom =
+    std::to_array<std::array<int, 3>>({
+        {1, 0, 0},  // For one spatial layer.
+        {2, 1, 0},  // For two spatial layers.
+        {4, 2, 1},  // For three spatial layers.
+    });
 
 VideoBitrateAllocation CreateBitrateAllocation(
     const VideoCodec codec,

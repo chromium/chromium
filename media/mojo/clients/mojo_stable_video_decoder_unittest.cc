@@ -11,6 +11,8 @@
 
 #include <sys/mman.h>
 
+#include <array>
+
 #include "base/posix/eintr_wrapper.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -740,13 +742,14 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
       CreateAndInitializeMojoStableVideoDecoder(config);
   ASSERT_TRUE(endpoints);
 
-  constexpr base::TimeDelta kRealTimestamps[] = {
+  constexpr auto kRealTimestamps = std::to_array<base::TimeDelta>({
       base::Milliseconds(128u),
       base::Milliseconds(144u),
       base::Milliseconds(160u),
       base::Milliseconds(176u),
-  };
-  base::TimeDelta received_fake_timestamps[std::size(kRealTimestamps)] = {};
+  });
+  std::array<base::TimeDelta, std::size(kRealTimestamps)>
+      received_fake_timestamps = {};
 
   // First there's the Decode() portion of the test. This just sends a Decode()
   // request for each frame and waits for the decode callback for each request

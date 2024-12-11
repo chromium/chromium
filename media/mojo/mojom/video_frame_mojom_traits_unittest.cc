@@ -10,6 +10,7 @@
 #include "media/mojo/mojom/video_frame_mojom_traits.h"
 
 #include <algorithm>
+#include <array>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
@@ -116,7 +117,7 @@ TEST_F(VideoFrameStructTraitsTest, MappableVideoFrame) {
         std::vector<size_t> strides =
             VideoFrame::ComputeStrides(format, kCodedSize);
         size_t aggregate_size = 0;
-        size_t sizes[3] = {};
+        std::array<size_t, 3> sizes = {};
         for (size_t i = 0; i < strides.size(); ++i) {
           sizes[i] = media::VideoFrame::Rows(i, format, kCodedSize.height()) *
                      strides[i];
@@ -125,7 +126,7 @@ TEST_F(VideoFrameStructTraitsTest, MappableVideoFrame) {
         region = base::ReadOnlySharedMemoryRegion::Create(aggregate_size);
         ASSERT_TRUE(region.IsValid());
 
-        uint8_t* data[3] = {};
+        std::array<uint8_t*, 3> data = {};
         data[0] = const_cast<uint8_t*>(region.mapping.GetMemoryAs<uint8_t>());
         for (size_t i = 1; i < strides.size(); ++i) {
           data[i] = data[i - 1] + sizes[i - 1];
@@ -176,7 +177,7 @@ TEST_F(VideoFrameStructTraitsTest, InterleavedPlanes) {
   ASSERT_EQ(strides[1], strides[2]);
 
   size_t aggregate_size = 0;
-  size_t sizes[3] = {};
+  std::array<size_t, 3> sizes = {};
   for (size_t i = 0; i < strides.size(); ++i) {
     sizes[i] =
         media::VideoFrame::Rows(i, format, kCodedSize.height()) * strides[i];
@@ -237,7 +238,7 @@ TEST_F(VideoFrameStructTraitsTest, InvalidOffsets) {
 
   auto strides = VideoFrame::ComputeStrides(kFormat, kSize);
   size_t aggregate_size = 0;
-  size_t sizes[3] = {};
+  std::array<size_t, 3> sizes = {};
   for (size_t i = 0; i < strides.size(); ++i) {
     sizes[i] = VideoFrame::Rows(i, kFormat, kSize.height()) * strides[i];
     aggregate_size += sizes[i];
@@ -246,7 +247,7 @@ TEST_F(VideoFrameStructTraitsTest, InvalidOffsets) {
   auto region = base::ReadOnlySharedMemoryRegion::Create(aggregate_size);
   ASSERT_TRUE(region.IsValid());
 
-  uint8_t* data[3] = {};
+  std::array<uint8_t*, 3> data = {};
   data[0] = const_cast<uint8_t*>(region.mapping.GetMemoryAs<uint8_t>());
   for (size_t i = 1; i < strides.size(); ++i) {
     data[i] = data[i - 1] + sizes[i];
