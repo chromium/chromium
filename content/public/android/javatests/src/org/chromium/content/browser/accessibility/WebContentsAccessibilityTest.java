@@ -50,6 +50,7 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sRangeInfoMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sTextMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sViewIdResourceNameMatcher;
+import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.ACCESSIBILITY_CREATE_ACCESSIBILITY_NODE_INFO_TOTAL_TIME;
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.ACCESSIBILITY_INLINE_TEXT_BOXES_BUNDLE;
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.ACCESSIBILITY_INLINE_TEXT_BOXES_COUNT;
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.AUTO_DISABLE_ACCESSIBILITY_DISABLED_TIME_INITIAL;
@@ -757,6 +758,49 @@ public class WebContentsAccessibilityTest {
 
         // Send end of test signal.
         mActivityTestRule.sendEndOfTestSignal();
+
+        // Assert that we recorded histograms and there was a count present.
+        histogramWatcher.assertExpected();
+    }
+
+    /**
+     * Test that UMA histograms are recorded for the total time an instance spends construction
+     * nodes in the createAccessibilityNodeInfo method.
+     */
+    @Test
+    @SmallTest
+    public void testUMAHistograms_createAccessibilityNodeInfoTotalTime() throws Throwable {
+        setupTestWithHTML("<p>This is a test</p><input type='text'/><div>Generic node</div>");
+
+        int paragraphId = waitForNodeMatching(sTextMatcher, "This is a test");
+        int inputId = waitForNodeMatching(sInputTypeMatcher, InputType.TYPE_CLASS_TEXT);
+        int divId = waitForNodeMatching(sTextMatcher, "Generic node");
+        mNodeInfo = createAccessibilityNodeInfo(paragraphId);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+        Assert.assertEquals(NODE_TIMEOUT_ERROR, "This is a test", mNodeInfo.getText());
+
+        // Set the relevant features and accessibility state.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityState.setIsScreenReaderEnabledForTesting(true);
+                    AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
+                });
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecordTimes(
+                                ACCESSIBILITY_CREATE_ACCESSIBILITY_NODE_INFO_TOTAL_TIME, 1)
+                        .build();
+
+        mNodeInfo = createAccessibilityNodeInfo(paragraphId);
+        mNodeInfo = createAccessibilityNodeInfo(inputId);
+        mNodeInfo = createAccessibilityNodeInfo(divId);
+
+        // Send end of test signal.
+        mActivityTestRule.sendEndOfTestSignal();
+
+        mActivityTestRule.mWcax
+                .forceRecordCreateAccessibilityNodeInfoTotalTimeHistogramsForTesting();
 
         // Assert that we recorded histograms and there was a count present.
         histogramWatcher.assertExpected();

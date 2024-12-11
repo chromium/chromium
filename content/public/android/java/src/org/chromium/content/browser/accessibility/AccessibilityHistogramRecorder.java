@@ -5,9 +5,11 @@
 package org.chromium.content.browser.accessibility;
 
 import android.os.SystemClock;
+import android.text.format.DateUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -110,6 +112,10 @@ public class AccessibilityHistogramRecorder {
     public static final String ACCESSIBILITY_INLINE_TEXT_BOXES_DUPLICATE_REQUEST =
             "Accessibility.Android.InlineTextBoxes.DuplicateRequest";
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String ACCESSIBILITY_CREATE_ACCESSIBILITY_NODE_INFO_TOTAL_TIME =
+            "Accessibility.Android.Performance.CreateAccessibilityNodeInfo.TotalTime";
+
     private static final int EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET = 1;
     private static final int EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET = 10000;
     private static final int EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT = 100;
@@ -143,6 +149,12 @@ public class AccessibilityHistogramRecorder {
     private long mTimeOfNativeInitialization = -1;
     private long mTimeOfLastDisabledCall = -1;
     private long mOngoingSumOfTimeDisabled;
+
+    // This tracks the total time spent in the createAccessibilityNodeInfo method across
+    // all node construction for the current instance. Any tree optimizations should show
+    // an overall decrease in this number on average.
+    private long mCurrentNodeConstructionStartTime;
+    private long mTotalTimeCreateAccessibilityNodeInfo;
 
     /** Record that the Auto-disable Accessibility feature has disabled accessibility. */
     public void onDisableCalled(boolean initialCall) {
@@ -261,11 +273,23 @@ public class AccessibilityHistogramRecorder {
         mOngoingSumOfTimeDisabled += SystemClock.elapsedRealtime() - mTimeOfLastDisabledCall;
     }
 
+    /** Notify the recorder that this instance has started constructing a new object. */
+    public void beginAccessibilityNodeInfoConstruction() {
+        mCurrentNodeConstructionStartTime = SystemClock.elapsedRealtime();
+    }
+
+    /** Notify the recorder that this instance has finished constructing an object. */
+    public void endAccessibilityNodeInfoConstruction() {
+        mTotalTimeCreateAccessibilityNodeInfo +=
+                (SystemClock.elapsedRealtime() - mCurrentNodeConstructionStartTime);
+    }
+
     /** Record UMA histograms for performance-related accessibility metrics. */
     public void recordAccessibilityPerformanceHistograms() {
         // Always track the histograms for events and cache usage statistics.
         recordEventsHistograms();
         recordCacheHistograms();
+        recordTotalTimeCreateAccessibilityNodeInfoHistogram();
     }
 
     /** Record UMA histograms for the event counts for the OnDemand feature. */
@@ -394,5 +418,21 @@ public class AccessibilityHistogramRecorder {
     public void recordInlineTextBoxesDuplicateRequestHistogram(boolean isDuplicate) {
         RecordHistogram.recordBooleanHistogram(
                 ACCESSIBILITY_INLINE_TEXT_BOXES_DUPLICATE_REQUEST, isDuplicate);
+    }
+
+    /** Record UMA histogram for the construction time of AccessibilityNodeInfo objects */
+    public void recordTotalTimeCreateAccessibilityNodeInfoHistogram() {
+        // Most instances do not initialize accessibility, so don't record zeros.
+        if (mTotalTimeCreateAccessibilityNodeInfo < MathUtils.EPSILON) {
+            return;
+        }
+
+        // TODO(mschillaci): This uses a 1 min max, check scale after initial data collection.
+        RecordHistogram.recordCustomTimesHistogram(
+                ACCESSIBILITY_CREATE_ACCESSIBILITY_NODE_INFO_TOTAL_TIME,
+                mTotalTimeCreateAccessibilityNodeInfo,
+                1,
+                DateUtils.MINUTE_IN_MILLIS,
+                80);
     }
 }

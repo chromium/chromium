@@ -386,6 +386,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Accessibility.Android.Performance.CreateAccessibilityNodeInfo.TotalTime"
+    units="ms" expires_after="2025-05-04">
+  <owner>mschillaci@google.com</owner>
+  <owner>lucasradaelli@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the total amount of time that an instance of
+    WebContentsAccessibilityImpl spends in the createAccessibilityNodeInfo
+    method. This timing only begins after the native code is initialized, which
+    happens when an AT interacts with the Android framework while Chrome is
+    open, and tracks the net time until the WebContentsAccessibilityImpl
+    instance for this tab is destroyed. The metric is recorded when the
+    WebContentsAccessibilityImpl object loses foreground focus (e.g. switching
+    tabs, closing tabs, sending Chrome to the background, etc).
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Android.UpdateAccessibilityServices.DidPoll"
     enum="BooleanHit" expires_after="2025-05-04">
   <owner>mschillaci@google.com</owner>

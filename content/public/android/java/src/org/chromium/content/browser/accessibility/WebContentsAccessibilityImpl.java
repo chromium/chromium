@@ -580,6 +580,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mHistogramRecorder.recordAccessibilityUsageHistograms();
     }
 
+    public void forceRecordCreateAccessibilityNodeInfoTotalTimeHistogramsForTesting() {
+        mHistogramRecorder.recordTotalTimeCreateAccessibilityNodeInfoHistogram();
+    }
+
     public boolean hasFinishedLatestAccessibilitySnapshotForTesting() {
         return mHasFinishedLatestAccessibilitySnapshot;
     }
@@ -945,6 +949,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (!isAccessibilityEnabled()) {
             return null;
         }
+
+        mHistogramRecorder.beginAccessibilityNodeInfoConstruction();
+
         if (mCurrentRootId == View.NO_ID) {
             mCurrentRootId = WebContentsAccessibilityImplJni.get().getRootId(mNativeObj);
         }
@@ -954,6 +961,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
 
         if (!isFrameInfoInitialized()) {
+            mHistogramRecorder.endAccessibilityNodeInfoConstruction();
             return null;
         }
 
@@ -983,11 +991,13 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 }
 
                 mHistogramRecorder.incrementNodeWasReturnedFromCache();
+                mHistogramRecorder.endAccessibilityNodeInfoConstruction();
                 return cachedNode;
             } else {
                 // If the node is no longer valid, wipe it from the cache and return null
                 mNodeInfoCache.get(virtualViewId).recycle();
                 mNodeInfoCache.remove(virtualViewId);
+                mHistogramRecorder.endAccessibilityNodeInfoConstruction();
                 return null;
             }
 
@@ -1006,9 +1016,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 // After successfully populating this node, add it to our cache then return.
                 mNodeInfoCache.put(virtualViewId, AccessibilityNodeInfoCompat.obtain(info));
                 mHistogramRecorder.incrementNodeWasCreatedFromScratch();
+                mHistogramRecorder.endAccessibilityNodeInfoConstruction();
                 return info;
             } else {
                 info.recycle();
+                mHistogramRecorder.endAccessibilityNodeInfoConstruction();
                 return null;
             }
         }
@@ -1844,6 +1856,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             result.addChild(mView, rootId);
         }
 
+        mHistogramRecorder.endAccessibilityNodeInfoConstruction();
         return result;
     }
 
