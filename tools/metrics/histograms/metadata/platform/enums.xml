@@ -972,6 +972,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <summary>ChromeOS Stateful Partition Format</summary>
   <int value="0" label="Raw partition"/>
   <int value="1" label="Logical volume"/>
+  <int value="2" label="DefaultKey volume"/>
 </enum>
 
 <enum name="ThinpoolMigrationResult">
