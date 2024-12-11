@@ -71,7 +71,7 @@ class HttpStreamPool::AttemptManager
 
   bool is_failing() const { return is_failing_; }
 
-  int error_to_notify() const { return error_to_notify_; }
+  int final_error_to_notify_jobs() const;
 
   bool is_service_endpoint_request_finished() const {
     return service_endpoint_request_finished_;
@@ -425,9 +425,10 @@ class HttpStreamPool::AttemptManager
   ResolveErrorInfo resolve_error_info_;
   ConnectionAttempts connection_attempts_;
 
-  // Set to an error from the latest stream attempt failure or network change
-  // events. Used to notify delegates when all attempts failed.
-  int error_to_notify_ = ERR_FAILED;
+  // An error code to notify jobs when `this` cannot make any further progress.
+  // Set to an error from service endpoint resolution failure, the last stream
+  // attempt failure, network change events, or QUIC task failure.
+  std::optional<int> final_error_to_notify_jobs_;
 
   // Set to a SSLInfo when an attempt has failed with a certificate error. Used
   // to notify jobs.

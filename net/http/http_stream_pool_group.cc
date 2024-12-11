@@ -157,7 +157,7 @@ int HttpStreamPool::Group::Preconnect(size_t num_streams,
   // TODO(crbug.com/381742472): Consider resuming this preconnect after the
   // current failing attempt manager completes.
   if (IsFailing()) {
-    return attempt_manager_->error_to_notify();
+    return attempt_manager_->final_error_to_notify_jobs();
   }
 
   EnsureAttemptManager();

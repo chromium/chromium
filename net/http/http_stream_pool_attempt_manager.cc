@@ -359,7 +359,7 @@ void HttpStreamPool::AttemptManager::OnServiceEndpointRequestFinished(int rv) {
       });
 
   if (rv != OK) {
-    error_to_notify_ = rv;
+    final_error_to_notify_jobs_ = rv;
     // If service endpoint resolution failed, record an empty endpoint and the
     // result.
     connection_attempts_.emplace_back(IPEndPoint(), rv);
@@ -480,7 +480,7 @@ void HttpStreamPool::AttemptManager::OnJobComplete(Job* job) {
 }
 
 void HttpStreamPool::AttemptManager::CancelJobs(int error) {
-  error_to_notify_ = error;
+  final_error_to_notify_jobs_ = error;
   is_canceling_jobs_ = true;
   NotifyFailure();
 }
@@ -535,6 +535,11 @@ HttpStreamPool* HttpStreamPool::AttemptManager::pool() {
 
 const HttpStreamPool* HttpStreamPool::AttemptManager::pool() const {
   return group_->pool();
+}
+
+int HttpStreamPool::AttemptManager::final_error_to_notify_jobs() const {
+  CHECK(final_error_to_notify_jobs_.has_value());
+  return *final_error_to_notify_jobs_;
 }
 
 const NetLogWithSource& HttpStreamPool::AttemptManager::net_log() {
@@ -621,7 +626,7 @@ void HttpStreamPool::AttemptManager::OnRequiredHttp11() {
   if (spdy_session_) {
     spdy_session_.reset();
     is_failing_ = true;
-    error_to_notify_ = ERR_HTTP_1_1_REQUIRED;
+    final_error_to_notify_jobs_ = ERR_HTTP_1_1_REQUIRED;
   }
 }
 
@@ -662,7 +667,7 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
   if (rv != OK &&
       (tcp_based_attempt_state_ == TcpBasedAttemptState::kAllAttemptsFailed ||
        group_->force_quic() || !CanUseTcpBasedProtocols())) {
-    error_to_notify_ = rv;
+    final_error_to_notify_jobs_ = rv;
     NotifyFailure();
     return;
   }
@@ -1280,11 +1285,11 @@ HttpStreamPool::AttemptManager::DetermineFailureKind() {
     return FailureKind::kStreamFailed;
   }
 
-  if (IsCertificateError(error_to_notify_)) {
+  if (IsCertificateError(final_error_to_notify_jobs())) {
     return FailureKind::kCertifcateError;
   }
 
-  if (error_to_notify_ == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
+  if (final_error_to_notify_jobs_ == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
     return FailureKind::kNeedsClientAuth;
   }
 
@@ -1293,7 +1298,14 @@ HttpStreamPool::AttemptManager::DetermineFailureKind() {
 
 void HttpStreamPool::AttemptManager::NotifyFailure() {
   is_failing_ = true;
-  NotifyPreconnectsComplete(error_to_notify_);
+  net_log_.AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_NOTIFY_FAILURE, [&] {
+        base::Value::Dict dict = GetStatesAsNetLogParams();
+        dict.Set("net_error", final_error_to_notify_jobs());
+        return dict;
+      });
+
+  NotifyPreconnectsComplete(final_error_to_notify_jobs());
   NotifyJobOfFailure();
   // `this` may be deleted.
 }
@@ -1316,12 +1328,13 @@ void HttpStreamPool::AttemptManager::NotifyJobOfFailure() {
   FailureKind kind = DetermineFailureKind();
   switch (kind) {
     case FailureKind::kStreamFailed:
-      job->OnStreamFailed(error_to_notify_, net_error_details_,
+      job->OnStreamFailed(final_error_to_notify_jobs(), net_error_details_,
                           resolve_error_info_);
       break;
     case FailureKind::kCertifcateError:
       CHECK(cert_error_ssl_info_.has_value());
-      job->OnCertificateError(error_to_notify_, *cert_error_ssl_info_);
+      job->OnCertificateError(final_error_to_notify_jobs(),
+                              *cert_error_ssl_info_);
       break;
     case FailureKind::kNeedsClientAuth:
       CHECK(client_auth_cert_info_.get());
@@ -1656,7 +1669,7 @@ void HttpStreamPool::AttemptManager::HandleAttemptFailure(
     return;
   }
 
-  error_to_notify_ = rv;
+  final_error_to_notify_jobs_ = rv;
 
   if (rv == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
     CHECK(UsingTls());
