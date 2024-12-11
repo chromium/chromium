@@ -4,6 +4,7 @@
 
 #include "cc/metrics/compositor_frame_reporter.h"
 
+#include <array>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -746,11 +747,11 @@ TEST_F(CompositorFrameReporterTest, PartialUpdateDependentQueues) {
   const size_t kMaxOwnedPartialUpdateDependents = 300u;
 
   // The first three dependent reporters for the front of the queue.
-  std::unique_ptr<CompositorFrameReporter> deps[] = {
+  auto deps = std::to_array<std::unique_ptr<CompositorFrameReporter>>({
       CreatePipelineReporter(),
       CreatePipelineReporter(),
       CreatePipelineReporter(),
-  };
+  });
 
   // Set `deps[0]` as a dependent of the main reporter and adopt it at the same
   // time. This should enqueue it in both non-owned and owned dependents queues.

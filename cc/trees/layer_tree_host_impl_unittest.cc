@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/trees/layer_tree_host_impl.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <cmath>
 #include <memory>
 #include <optional>
@@ -9221,13 +9217,13 @@ TEST_F(CommitToActiveTreeLayerTreeHostImplTest,
 
   std::unique_ptr<CompositorCommitData> commit_data;
 
-  gfx::Vector2dF gesture_scroll_deltas[4];
+  std::array<gfx::Vector2dF, 4> gesture_scroll_deltas;
   gesture_scroll_deltas[0] = gfx::Vector2dF(4, 10);
   gesture_scroll_deltas[1] = gfx::Vector2dF(4, 10);
   gesture_scroll_deltas[2] = gfx::Vector2dF(10, 0);
   gesture_scroll_deltas[3] = gfx::Vector2dF(10, 0);
 
-  gfx::Vector2dF expected_scroll_deltas[4];
+  std::array<gfx::Vector2dF, 4> expected_scroll_deltas;
   // Perspective affects the vertical delta by a different
   // amount depending on the vertical position of the |viewport_point|.
   expected_scroll_deltas[0] = gfx::Vector2dF(2, 9);

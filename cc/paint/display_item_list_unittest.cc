@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/display_item_list.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <vector>
 
 #include "base/logging.h"
@@ -575,10 +571,24 @@ TEST_F(DisplayItemListTest, AsValueWithOps) {
       ASSERT_NE(nullptr, items);
       ASSERT_EQ(7u, items->size());
 
-      const char* expected_names[] = {
-          "SaveOp",     "ConcatOp",  "SaveLayerOp", "TranslateOp",
-          "DrawRectOp", "RestoreOp", "RestoreOp"};
-      bool expected_has_skp[] = {false, true, true, true, true, false, false};
+      auto expected_names = std::to_array<const char*>({
+          "SaveOp",
+          "ConcatOp",
+          "SaveLayerOp",
+          "TranslateOp",
+          "DrawRectOp",
+          "RestoreOp",
+          "RestoreOp",
+      });
+      auto expected_has_skp = std::to_array<bool>({
+          false,
+          true,
+          true,
+          true,
+          true,
+          false,
+          false,
+      });
 
       for (int i = 0; i < 7; ++i) {
         const base::Value& item_value = (*items)[i];

@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/base/index_rect.h"
+
+#include <array>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,11 +18,14 @@ TEST(IndexRectTest, NumIndices) {
     int bottom;
     int num_indices_x;
     int num_indices_y;
-  } num_indices_cases[] = {{-10, 10, -10, 10, 21, 21},
-                           {0, 5, 0, 10, 6, 11},
-                           {1, 2, 3, 4, 2, 2},
-                           {0, 0, 0, 0, 1, 1},
-                           {10, 10, 10, 10, 1, 1}};
+  };
+  auto num_indices_cases = std::to_array<NumIndicesCase>({
+      {-10, 10, -10, 10, 21, 21},
+      {0, 5, 0, 10, 6, 11},
+      {1, 2, 3, 4, 2, 2},
+      {0, 0, 0, 0, 1, 1},
+      {10, 10, 10, 10, 1, 1},
+  });
 
   for (size_t i = 0; i < std::size(num_indices_cases); ++i) {
     const NumIndicesCase& value = num_indices_cases[i];
@@ -48,11 +48,14 @@ TEST(IndexRectTest, ClampTo) {
     Indices second;
     Indices expected;
     bool valid;
-  } clamp_to_cases[] = {{{0, 5, 0, 5}, {0, 5, 0, 5}, {0, 5, 0, 5}, true},
-                        {{0, 10, 0, 10}, {0, 5, 0, 5}, {0, 5, 0, 5}, true},
-                        {{0, 5, 0, 5}, {0, 10, 0, 10}, {0, 5, 0, 5}, true},
-                        {{-10, 5, -10, 5}, {0, 10, 0, 10}, {0, 5, 0, 5}, true},
-                        {{0, 5, 0, 5}, {10, 20, 10, 20}, {0, 0, 0, 0}, false}};
+  };
+  auto clamp_to_cases = std::to_array<ClampToCase>({
+      {{0, 5, 0, 5}, {0, 5, 0, 5}, {0, 5, 0, 5}, true},
+      {{0, 10, 0, 10}, {0, 5, 0, 5}, {0, 5, 0, 5}, true},
+      {{0, 5, 0, 5}, {0, 10, 0, 10}, {0, 5, 0, 5}, true},
+      {{-10, 5, -10, 5}, {0, 10, 0, 10}, {0, 5, 0, 5}, true},
+      {{0, 5, 0, 5}, {10, 20, 10, 20}, {0, 0, 0, 0}, false},
+  });
 
   for (size_t i = 0; i < std::size(clamp_to_cases); ++i) {
     const ClampToCase& value = clamp_to_cases[i];
@@ -80,12 +83,18 @@ TEST(IndexRectTest, Contains) {
     int index_x;
     int index_y;
     bool contained;
-  } contains_cases[] = {
-      {-10, 10, -10, 10, -10, -10, true}, {-10, 10, -10, 10, 0, 0, true},
-      {-10, 10, -10, 10, 10, 10, true},   {-10, 10, -10, 10, 5, 5, true},
-      {-10, 10, -10, 10, -5, -5, true},   {-10, 10, -10, 10, -20, -20, false},
-      {-10, 10, -10, 10, 20, 20, false},  {-10, 10, -10, 10, 20, 5, false},
-      {-10, 10, -10, 10, 5, 20, false}};
+  };
+  auto contains_cases = std::to_array<ContainsCase>({
+      {-10, 10, -10, 10, -10, -10, true},
+      {-10, 10, -10, 10, 0, 0, true},
+      {-10, 10, -10, 10, 10, 10, true},
+      {-10, 10, -10, 10, 5, 5, true},
+      {-10, 10, -10, 10, -5, -5, true},
+      {-10, 10, -10, 10, -20, -20, false},
+      {-10, 10, -10, 10, 20, 20, false},
+      {-10, 10, -10, 10, 20, 5, false},
+      {-10, 10, -10, 10, 5, 20, false},
+  });
 
   for (size_t i = 0; i < std::size(contains_cases); ++i) {
     const ContainsCase& value = contains_cases[i];

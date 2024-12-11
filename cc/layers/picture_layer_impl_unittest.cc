@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/layers/picture_layer_impl.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <memory>
 #include <set>
@@ -3677,7 +3673,7 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetEvictionQueue) {
       all_tiles);
 
   std::set<Tile*> unique_tiles;
-  float expected_scales[] = {low_res_factor, 1.f};
+  auto expected_scales = std::to_array<float>({low_res_factor, 1.f});
   size_t scale_index = 0;
   bool reached_visible = false;
   PrioritizedTile last_tile;
@@ -4970,9 +4966,12 @@ TEST_F(OcclusionTrackingPictureLayerImplTest,
 
   // The expected number of occluded tiles on each of the 2 tilings for each of
   // the 3 tree priorities.
-  size_t expected_occluded_tile_count_on_pending[] = {4u, 0u};
-  size_t expected_occluded_tile_count_on_active[] = {12u, 3u};
-  size_t total_expected_occluded_tile_count_on_trees[] = {15u, 4u};
+  auto expected_occluded_tile_count_on_pending =
+      std::to_array<size_t>({4u, 0u});
+  auto expected_occluded_tile_count_on_active =
+      std::to_array<size_t>({12u, 3u});
+  auto total_expected_occluded_tile_count_on_trees =
+      std::to_array<size_t>({15u, 4u});
 
   // Verify number of occluded tiles on the pending layer for each tiling.
   for (size_t i = 0; i < pending_layer()->num_tilings(); ++i) {

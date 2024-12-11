@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <vector>
 
 #include "cc/base/region.h"
@@ -23,7 +19,7 @@ namespace {
 
 TEST(RecordingSourceTest, DiscardableImagesWithTransform) {
   FakeRecordingSource recording_source(gfx::Size(256, 256));
-  PaintImage discardable_image[2][2];
+  std::array<std::array<PaintImage, 2>, 2> discardable_image;
   gfx::Transform identity_transform;
   discardable_image[0][0] = CreateDiscardablePaintImage(gfx::Size(32, 32));
   // Translate transform is equivalent to moving using point.
@@ -183,7 +179,7 @@ TEST(RecordingSourceTest, NoDiscardableImages) {
 TEST(RecordingSourceTest, DiscardableImages) {
   FakeRecordingSource recording_source(gfx::Size(256, 256));
 
-  PaintImage discardable_image[2][2];
+  std::array<std::array<PaintImage, 2>, 2> discardable_image;
   discardable_image[0][0] = CreateDiscardablePaintImage(gfx::Size(32, 32));
   discardable_image[1][0] = CreateDiscardablePaintImage(gfx::Size(32, 32));
   discardable_image[1][1] = CreateDiscardablePaintImage(gfx::Size(32, 32));
@@ -249,7 +245,7 @@ TEST(RecordingSourceTest, DiscardableImagesBaseNonDiscardable) {
   PaintImage non_discardable_image =
       CreateNonDiscardablePaintImage(gfx::Size(512, 512));
 
-  PaintImage discardable_image[2][2];
+  std::array<std::array<PaintImage, 2>, 2> discardable_image;
   discardable_image[0][0] = CreateDiscardablePaintImage(gfx::Size(128, 128));
   discardable_image[0][1] = CreateDiscardablePaintImage(gfx::Size(128, 128));
   discardable_image[1][1] = CreateDiscardablePaintImage(gfx::Size(128, 128));

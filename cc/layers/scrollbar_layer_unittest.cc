@@ -9,6 +9,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <unordered_map>
 
@@ -1178,8 +1179,8 @@ TEST_F(ScrollbarLayerSolidColorThumbTest, SolidColorThumbPosition) {
 }
 
 TEST_F(ScrollbarLayerSolidColorThumbTest, SolidColorThumbVerticalAdjust) {
-  SolidColorScrollbarLayerImpl* layers[2] =
-      { horizontal_scrollbar_layer_.get(), vertical_scrollbar_layer_.get() };
+  std::array<SolidColorScrollbarLayerImpl*, 2> layers = {
+      horizontal_scrollbar_layer_.get(), vertical_scrollbar_layer_.get()};
   for (size_t i = 0; i < 2; ++i) {
     layers[i]->SetCurrentPos(25.f);
     layers[i]->SetClipLayerLength(25.f);
@@ -1263,7 +1264,7 @@ class ScrollbarLayerTestResourceCreationAndRelease : public ScrollbarLayerTest {
 TEST_F(ScrollbarLayerTestResourceCreationAndRelease, ResourceUpload) {
   bool use_solid_color_scrollbars = false;
   TestResourceUpload(0, 0, 0, 0, use_solid_color_scrollbars);
-  int num_updates[3] = {1, 5, 10};
+  std::array<int, 3> num_updates = {1, 5, 10};
   int created = 0;
   int deleted = 0;
   for (int j = 0; j < 3; j++) {

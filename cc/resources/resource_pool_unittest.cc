@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <limits>
 #include <vector>
 
@@ -386,7 +387,7 @@ TEST_F(ResourcePoolTest, UpdateContentIdAndInvalidatedRect) {
   gfx::Size size(100, 100);
   viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space;
-  uint64_t content_ids[] = {42, 43, 44};
+  auto content_ids = std::to_array<uint64_t>({42, 43, 44});
   gfx::Rect invalidated_rect(20, 20, 10, 10);
   gfx::Rect second_invalidated_rect(25, 25, 10, 10);
   gfx::Rect expected_total_invalidated_rect(20, 20, 15, 15);
@@ -432,7 +433,7 @@ TEST_F(ResourcePoolTest, LargeInvalidatedRect) {
   gfx::Size size(100, 100);
   viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space;
-  uint64_t content_ids[] = {42, 43, 44};
+  auto content_ids = std::to_array<uint64_t>({42, 43, 44});
   // This rect is too large to take the area of it.
   gfx::Rect large_invalidated_rect(0, 0, std::numeric_limits<int>::max() / 2,
                                    std::numeric_limits<int>::max() / 2);

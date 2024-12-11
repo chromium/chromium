@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -249,12 +245,13 @@ TEST_F(SlimLayerTreeCompositorFrameTest, ChildOrder) {
   auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
   layer_tree_->SetRoot(root_layer);
 
-  scoped_refptr<SolidColorLayer> children[] = {
+  auto children = std::to_array<scoped_refptr<SolidColorLayer>>({
       CreateSolidColorLayer(gfx::Size(10, 10), SkColors::kBlue),
       CreateSolidColorLayer(gfx::Size(10, 10), SkColors::kGreen),
       CreateSolidColorLayer(gfx::Size(10, 10), SkColors::kMagenta),
       CreateSolidColorLayer(gfx::Size(10, 10), SkColors::kRed),
-      CreateSolidColorLayer(gfx::Size(10, 10), SkColors::kYellow)};
+      CreateSolidColorLayer(gfx::Size(10, 10), SkColors::kYellow),
+  });
 
   // Build tree such that quads appear in child order.
   // Quads are appended post order depth first, in reverse child order.
@@ -273,10 +270,13 @@ TEST_F(SlimLayerTreeCompositorFrameTest, ChildOrder) {
   children[1]->SetPosition(gfx::PointF(30.0f, 30.0f));
   children[0]->SetPosition(gfx::PointF(10.0f, 10.0f));
 
-  gfx::Point expected_origins[] = {
-      gfx::Point(40.0f, 40.0f), gfx::Point(30.0f, 30.0f),
-      gfx::Point(20.0f, 20.0f), gfx::Point(10.0f, 10.0f),
-      gfx::Point(00.0f, 00.0f)};
+  auto expected_origins = std::to_array<gfx::Point>({
+      gfx::Point(40.0f, 40.0f),
+      gfx::Point(30.0f, 30.0f),
+      gfx::Point(20.0f, 20.0f),
+      gfx::Point(10.0f, 10.0f),
+      gfx::Point(00.0f, 00.0f),
+  });
 
   viz::CompositorFrame frame = ProduceFrame();
   ASSERT_EQ(frame.render_pass_list.size(), 1u);
@@ -742,7 +742,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, NinePatchLayerAppendQuads) {
           // Center.
           AllOf(viz::IsTextureQuad(),
                 viz::HasRect(gfx::Rect(10, 10, 80, 80)))));
-  gfx::PointF expected_uv_top_left[] = {
+  auto expected_uv_top_left = std::to_array<gfx::PointF>({
       gfx::PointF(0.0f, 0.0f),  // Top left.
       gfx::PointF(0.8f, 0.0f),  // Top right.
       gfx::PointF(0.0f, 0.8f),  // Bottom left.
@@ -752,8 +752,8 @@ TEST_F(SlimLayerTreeCompositorFrameTest, NinePatchLayerAppendQuads) {
       gfx::PointF(0.8f, 0.2f),  // Right.
       gfx::PointF(0.2f, 0.8f),  // Bottom.
       gfx::PointF(0.2f, 0.2f),  // Center.
-  };
-  gfx::PointF expected_uv_bottom_right[] = {
+  });
+  auto expected_uv_bottom_right = std::to_array<gfx::PointF>({
       gfx::PointF(0.2f, 0.2f),  // Top left.
       gfx::PointF(1.0f, 0.2f),  // Top right.
       gfx::PointF(0.2f, 1.0f),  // Bottom left.
@@ -763,7 +763,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, NinePatchLayerAppendQuads) {
       gfx::PointF(1.0f, 0.8f),  // Right.
       gfx::PointF(0.8f, 1.0f),  // Bottom.
       gfx::PointF(0.8f, 0.8f),  // Center.
-  };
+  });
   for (size_t i = 0; i < std::size(expected_uv_top_left); ++i) {
     const viz::TextureDrawQuad* texture_quad =
         viz::TextureDrawQuad::MaterialCast(pass->quad_list.ElementAt(i));

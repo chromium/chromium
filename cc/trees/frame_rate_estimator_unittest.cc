@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/trees/frame_rate_estimator.h"
 
+#include <array>
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
@@ -90,11 +86,16 @@ TEST_F(FrameRateEstimatorTest, InputPriorityMode) {
 TEST_F(FrameRateEstimatorTest, RafAtHalfFps) {
   estimator_->SetVideoConferenceMode(true);
   // Recorded rAF intervals at 30 fps.
-  const base::TimeDelta kIntervals[] = {
-      base::Microseconds(33425), base::Microseconds(33298),
-      base::Microseconds(33396), base::Microseconds(33339),
-      base::Microseconds(33431), base::Microseconds(33320),
-      base::Microseconds(33364), base::Microseconds(33360)};
+  const auto kIntervals = std::to_array<base::TimeDelta>({
+      base::Microseconds(33425),
+      base::Microseconds(33298),
+      base::Microseconds(33396),
+      base::Microseconds(33339),
+      base::Microseconds(33431),
+      base::Microseconds(33320),
+      base::Microseconds(33364),
+      base::Microseconds(33360),
+  });
   const base::TimeDelta kIntervalForHalfFps =
       viz::BeginFrameArgs::DefaultInterval() * 2;
   base::TimeTicks time;

@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -1393,7 +1389,7 @@ TEST_F(TileManagerTilePriorityQueueTest,
     EXPECT_TRUE(queue);
 
     // There are 3 bins in TilePriority.
-    bool have_tiles[3] = {};
+    std::array<bool, 3> have_tiles = {};
 
     // On the third iteration, we should get no tiles since everything was
     // marked as ready to draw.
@@ -1497,7 +1493,7 @@ TEST_F(TileManagerTilePriorityQueueTest,
   soon_rect.Inset(-soon_border_outset);
 
   // There are 3 bins in TilePriority.
-  bool have_tiles[3] = {};
+  std::array<bool, 3> have_tiles = {};
   PrioritizedTile last_tile;
   int eventually_bin_order_correct_count = 0;
   int eventually_bin_order_incorrect_count = 0;
@@ -2099,7 +2095,8 @@ class PixelInspectTileManagerTest : public TileManagerTest {
 
 TEST_F(PixelInspectTileManagerTest, LowResHasNoImage) {
   gfx::Size size(10, 12);
-  TileResolution resolutions[] = {HIGH_RESOLUTION, LOW_RESOLUTION};
+  auto resolutions =
+      std::to_array<TileResolution>({HIGH_RESOLUTION, LOW_RESOLUTION});
   host_impl()->CreatePendingTree();
 
   for (size_t i = 0; i < std::size(resolutions); ++i) {

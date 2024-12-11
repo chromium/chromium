@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/metrics/predictor_jank_tracker.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -202,7 +198,7 @@ TEST_F(PredictorJankTrackerTest, JankyFramePercentageEmitted) {
   // a sequence of 50 frames, with 10 irregular jumps means 20%
   // of the frames were janky, and should be reported since frame count
   // is more than 50.
-  double pattern[5] = {50, 50, 50, 50, 10};
+  std::array<double, 5> pattern = {50, 50, 50, 50, 10};
   for (int i = 1; i <= 64; i++, base_presentation_ts_ += vsync_interval) {
     MockFrameProduction(pattern[i % 5], base_presentation_ts_);
   }
@@ -215,7 +211,7 @@ TEST_F(PredictorJankTrackerTest, JankyFramePercentageNotEmitted) {
   // a sequence of 49 frames with 20% janky jumps, but the percentage isn't
   // reported because we only report the percentage when more than 50 frames
   // exist in the sequence.
-  double pattern[5] = {50, 50, 50, 50, 10};
+  std::array<double, 5> pattern = {50, 50, 50, 50, 10};
   for (int i = 1; i <= 63; i++, base_presentation_ts_ += vsync_interval) {
     MockFrameProduction(pattern[i % 5], base_presentation_ts_);
   }
@@ -225,7 +221,7 @@ TEST_F(PredictorJankTrackerTest, JankyFramePercentageNotEmitted) {
 TEST_F(PredictorJankTrackerTest, JankyFramePercentageEmittedTwice) {
   // Janky frames percentage should be emitted twice, 20% each
   // since we have 100 frames with 20% jank in each scroll.
-  double pattern[5] = {50, 50, 50, 50, 10};
+  std::array<double, 5> pattern = {50, 50, 50, 50, 10};
   for (int i = 1; i <= 128; i++, base_presentation_ts_ += vsync_interval) {
     MockFrameProduction(pattern[i % 5], base_presentation_ts_);
   }
@@ -237,7 +233,7 @@ TEST_F(PredictorJankTrackerTest, JankyFramePercentageEmittedWhenReset) {
   // Janky sequence with 20% janky frames, reporting should happen even if
   // the scroll was reset to catch smaller scrolls and residue frames from
   // previous scrolls.
-  double pattern[5] = {50, 50, 50, 50, 10};
+  std::array<double, 5> pattern = {50, 50, 50, 50, 10};
   for (int i = 1; i <= 64; i++, base_presentation_ts_ += vsync_interval) {
     MockFrameProduction(pattern[i % 5], base_presentation_ts_);
     if (i == 25) {

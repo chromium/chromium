@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/discardable_image_map.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <memory>
 
@@ -153,7 +149,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectTest) {
   // |---|---|---|---|
   // | x |   | x |   |
   // |---|---|---|---|
-  PaintImage discardable_image[4][4];
+  std::array<std::array<PaintImage, 4>, 4> discardable_image;
   for (int y = 0; y < 4; ++y) {
     for (int x = 0; x < 4; ++x) {
       if ((x + y) & 1) {
@@ -223,7 +219,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectNonZeroLayer) {
   // |---|---|---|---|
   // | x |   | x |   |
   // |---|---|---|---|
-  PaintImage discardable_image[4][4];
+  std::array<std::array<PaintImage, 4>, 4> discardable_image;
   for (int y = 0; y < 4; ++y) {
     for (int x = 0; x < 4; ++x) {
       if ((x + y) & 1) {
@@ -323,7 +319,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectOnePixelQuery) {
   // |---|---|---|---|
   // | x |   | x |   |
   // |---|---|---|---|
-  PaintImage discardable_image[4][4];
+  std::array<std::array<PaintImage, 4>, 4> discardable_image;
   for (int y = 0; y < 4; ++y) {
     for (int x = 0; x < 4; ++x) {
       if ((x + y) & 1) {
@@ -628,7 +624,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInShader) {
   // |---|---|---|---|
   // | x |   | x |   |
   // |---|---|---|---|
-  PaintImage discardable_image[4][4];
+  std::array<std::array<PaintImage, 4>, 4> discardable_image;
 
   // Skia doesn't allow shader instantiation with non-invertible local
   // transforms, so we can't let the scale drop all the way to 0.

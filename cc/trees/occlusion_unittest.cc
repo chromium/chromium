@@ -11,6 +11,8 @@
 
 #include <stddef.h>
 
+#include <array>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -48,10 +50,12 @@ TEST(OcclusionTest, HasOcclusion) {
   }
 
 TEST(OcclusionTest, IsOccludedNoTransform) {
-  gfx::Rect rects[] = {gfx::Rect(10, 10),
-                       gfx::Rect(10, 0, 10, 10),
-                       gfx::Rect(0, 10, 10, 10),
-                       gfx::Rect(10, 10, 10, 10)};
+  auto rects = std::to_array<gfx::Rect>({
+      gfx::Rect(10, 10),
+      gfx::Rect(10, 0, 10, 10),
+      gfx::Rect(0, 10, 10, 10),
+      gfx::Rect(10, 10, 10, 10),
+  });
 
   Occlusion no_occlusion;
   EXPECT_OCCLUSION(no_occlusion, rects, false, false, false, false);
@@ -76,10 +80,12 @@ TEST(OcclusionTest, IsOccludedNoTransform) {
 }
 
 TEST(OcclusionTest, IsOccludedScaled) {
-  gfx::Rect rects[] = {gfx::Rect(10, 10),
-                       gfx::Rect(10, 0, 10, 10),
-                       gfx::Rect(0, 10, 10, 10),
-                       gfx::Rect(10, 10, 10, 10)};
+  auto rects = std::to_array<gfx::Rect>({
+      gfx::Rect(10, 10),
+      gfx::Rect(10, 0, 10, 10),
+      gfx::Rect(0, 10, 10, 10),
+      gfx::Rect(10, 10, 10, 10),
+  });
 
   gfx::Transform half_scale;
   half_scale.Scale(0.5, 0.5);
@@ -120,10 +126,12 @@ TEST(OcclusionTest, IsOccludedScaled) {
 }
 
 TEST(OcclusionTest, IsOccludedTranslated) {
-  gfx::Rect rects[] = {gfx::Rect(10, 10),
-                       gfx::Rect(10, 0, 10, 10),
-                       gfx::Rect(0, 10, 10, 10),
-                       gfx::Rect(10, 10, 10, 10)};
+  auto rects = std::to_array<gfx::Rect>({
+      gfx::Rect(10, 10),
+      gfx::Rect(10, 0, 10, 10),
+      gfx::Rect(0, 10, 10, 10),
+      gfx::Rect(10, 10, 10, 10),
+  });
 
   gfx::Transform move_left;
   move_left.Translate(-100, 0);
@@ -165,10 +173,12 @@ TEST(OcclusionTest, IsOccludedTranslated) {
 }
 
 TEST(OcclusionTest, IsOccludedScaledAfterConstruction) {
-  gfx::Rect rects[] = {gfx::Rect(10, 10),
-                       gfx::Rect(10, 0, 10, 10),
-                       gfx::Rect(0, 10, 10, 10),
-                       gfx::Rect(10, 10, 10, 10)};
+  auto rects = std::to_array<gfx::Rect>({
+      gfx::Rect(10, 10),
+      gfx::Rect(10, 0, 10, 10),
+      gfx::Rect(0, 10, 10, 10),
+      gfx::Rect(10, 10, 10, 10),
+  });
 
   gfx::Transform half_transform;
   half_transform.Scale(0.5, 0.5);
