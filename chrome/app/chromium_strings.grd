@@ -2593,6 +2593,11 @@ Permissions you've already given to websites and apps may apply to this account.
           To get your extensions on all your computers, sign in to Chromium
         </message>
       </if>
+
+      <!-- Internal debug pages disabled interstitial. -->
+      <message name="IDS_INTERNAL_DEBUG_PAGES_DISABLED_BODY" desc="This is the text, with a link, that appears below the heading for the page that appears when the user attempts to load an internal developer debugging page when such pages are disabled by a pref. It instructs the user on how to enable the pref if they wish.">
+        These pages are intended for use by Chromium developers, and may not be actively maintained or tested. To enable them, navigate to <ph name="BEGIN_LINK">&lt;a href="$1"&gt;</ph>chrome://chrome-urls<ph name="LINK_END">&lt;/a&gt;</ph>, click the button to enable debug pages, and then navigate to this page again.
+      </message>
     </messages>
   </release>
 </grit>
