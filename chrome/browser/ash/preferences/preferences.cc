@@ -33,7 +33,6 @@
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
@@ -189,7 +188,6 @@ void Preferences::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   // Some classes register their own prefs.
   input_method::InputMethodSyncer::RegisterProfilePrefs(registry);
-  crosapi::browser_util::RegisterProfilePrefs(registry);
   ::drive::DriveIntegrationService::RegisterProfilePrefs(registry);
 
   std::string hardware_keyboard_id;

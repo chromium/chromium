@@ -101,12 +101,6 @@ LacrosAvailability GetCachedLacrosAvailability() {
 
 }  // namespace
 
-const char kLaunchOnLoginPref[] = "lacros.launch_on_login";
-
-void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kLaunchOnLoginPref, /*default_value=*/false);
-}
-
 base::FilePath GetUserDataDir() {
   if (base::SysInfo::IsRunningOnChromeOS()) {
     // NOTE: On device this function is privacy/security sensitive. The
@@ -128,51 +122,11 @@ bool IsAshWebBrowserEnabled() {
   return true;
 }
 
-bool IsLacrosChromeAppsEnabled() {
-  return false;
-}
-
 bool IsLacrosWindow(const aura::Window* window) {
   const std::string* app_id = exo::GetShellApplicationId(window);
   if (!app_id)
     return false;
   return base::StartsWith(*app_id, kLacrosAppIdPrefix);
-}
-
-// Assuming the metadata exists, parse the version and check if it contains the
-// non-backwards-compatible account_manager change.
-// A typical format for metadata is:
-// {
-//   "content": {
-//     "version": "91.0.4469.5"
-//   },
-//   "metadata_version": 1
-// }
-bool DoesMetadataSupportNewAccountManager(base::Value* metadata) {
-  if (!metadata)
-    return false;
-
-  std::string* version_str =
-      metadata->GetDict().FindStringByDottedPath("content.version");
-  if (!version_str) {
-    return false;
-  }
-
-  std::vector<std::string> versions_str = base::SplitString(
-      *version_str, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (versions_str.size() != 4)
-    return false;
-
-  int major_version = 0;
-  int minor_version = 0;
-  if (!base::StringToInt(versions_str[0], &major_version))
-    return false;
-  if (!base::StringToInt(versions_str[2], &minor_version))
-    return false;
-
-  // TODO(crbug.com/40176822): Come up with more appropriate major/minor
-  // version numbers.
-  return major_version >= 1000 && minor_version >= 0;
 }
 
 base::Version GetRootfsLacrosVersionMayBlock(
@@ -224,14 +178,6 @@ void CacheLacrosAvailability(const policy::PolicyMap& map) {
   g_lacros_availability_cache =
       ash::standalone_browser::DetermineLacrosAvailabilityFromPolicyValue(
           GetPrimaryUser(), value ? value->GetString() : std::string_view());
-}
-
-LacrosAvailability GetCachedLacrosAvailabilityForTesting() {
-  return GetCachedLacrosAvailability();
-}
-
-void SetLacrosLaunchSwitchSourceForTest(LacrosAvailability test_value) {
-  g_lacros_availability_cache = test_value;
 }
 
 void ClearLacrosAvailabilityCacheForTest() {

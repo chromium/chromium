@@ -123,66 +123,6 @@ TEST_F(BrowserUtilTest, IsAshWebBrowserDisabled) {
   EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
 }
 
-TEST_F(BrowserUtilTest, MetadataMissing) {
-  EXPECT_FALSE(browser_util::DoesMetadataSupportNewAccountManager(nullptr));
-}
-
-TEST_F(BrowserUtilTest, MetadataMissingVersion) {
-  std::string json_string = R"###(
-   {
-     "content": {
-     },
-     "metadata_version": 1
-   }
-  )###";
-  std::optional<base::Value> value = base::JSONReader::Read(json_string);
-  EXPECT_FALSE(
-      browser_util::DoesMetadataSupportNewAccountManager(&value.value()));
-}
-
-TEST_F(BrowserUtilTest, MetadataVersionBadFormat) {
-  std::string json_string = R"###(
-   {
-     "content": {
-       "version": "91.0.4469"
-     },
-     "metadata_version": 1
-   }
-  )###";
-  std::optional<base::Value> value = base::JSONReader::Read(json_string);
-  EXPECT_FALSE(
-      browser_util::DoesMetadataSupportNewAccountManager(&value.value()));
-}
-
-TEST_F(BrowserUtilTest, MetadataOldVersion) {
-  std::string json_string = R"###(
-   {
-     "content": {
-       "version": "91.0.4469.5"
-     },
-     "metadata_version": 1
-   }
-  )###";
-  std::optional<base::Value> value = base::JSONReader::Read(json_string);
-  EXPECT_FALSE(
-      browser_util::DoesMetadataSupportNewAccountManager(&value.value()));
-}
-
-TEST_F(BrowserUtilTest, MetadataNewVersion) {
-  std::string json_string = R"###(
-   {
-     "content": {
-       "version": "9999.0.4469.5"
-     },
-     "metadata_version": 1
-   }
-  )###";
-  std::optional<base::Value> value = base::JSONReader::Read(json_string);
-  EXPECT_TRUE(
-      browser_util::DoesMetadataSupportNewAccountManager(&value.value()));
-}
-
-
 TEST_F(BrowserUtilTest, GetRootfsLacrosVersionMayBlock) {
   base::ScopedTempDir tmp_dir;
   ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());

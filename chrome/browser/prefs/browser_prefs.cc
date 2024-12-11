@@ -1168,6 +1168,7 @@ const char kCryptAuthEnrollmentUserPublicKey[] =
     "cryptauth.enrollment.user_public_key";
 const char kCryptAuthEnrollmentUserPrivateKey[] =
     "cryptauth.enrollment.user_private_key";
+const char kLacrosLaunchOnLogin[] = "lacros.launch_on_login";
 #endif
 
 // Register local state used only for migration (clearing or moving to a new
@@ -1660,6 +1661,7 @@ void RegisterProfilePrefsForMigration(
                                std::string());
   registry->RegisterStringPref(kCryptAuthEnrollmentUserPrivateKey,
                                std::string());
+  registry->RegisterBooleanPref(kLacrosLaunchOnLogin, false);
 #endif
 }
 
@@ -2993,6 +2995,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kCryptAuthEnrollmentReason);
   profile_prefs->ClearPref(kCryptAuthEnrollmentUserPublicKey);
   profile_prefs->ClearPref(kCryptAuthEnrollmentUserPrivateKey);
+  profile_prefs->ClearPref(kLacrosLaunchOnLogin);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
