@@ -6,9 +6,13 @@
 
 #include <windows.h>
 
+#include <psapi.h>
+
+#include <algorithm>
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -218,6 +222,12 @@ void SystemMemoryPressureEvaluator::CheckMemoryPressure() {
 
 base::MemoryPressureListener::MemoryPressureLevel
 SystemMemoryPressureEvaluator::CalculateCurrentPressureLevel() {
+  // First to try to collect commit limit histograms. Otherwise, there's a
+  // chance of an early exit from this function (e.g. if
+  // `GetSystemMemoryStatus` fails), which would cause us to miss collecting the
+  // histogram data.
+  RecordCommitHistograms();
+
   MEMORYSTATUSEX mem_status = {};
   if (!GetSystemMemoryStatus(&mem_status)) {
     return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
@@ -256,6 +266,53 @@ bool SystemMemoryPressureEvaluator::GetSystemMemoryStatus(
     return false;
   }
   return true;
+}
+
+void SystemMemoryPressureEvaluator::RecordCommitHistograms() {
+  PERFORMANCE_INFORMATION performance_info = {};
+  bool get_performance_info_result =
+      GetPerformanceInfoWrapper(&performance_info);
+  base::UmaHistogramBoolean("Memory.PerformanceInfoRetrievalSuccess",
+                            get_performance_info_result);
+
+  if (!get_performance_info_result) {
+    return;
+  }
+  // Calculate commit limit in MB.
+  uint64_t commit_limit_mb =
+      base::strict_cast<uint64_t>(performance_info.CommitLimit *
+                                  performance_info.PageSize) /
+      kMBBytes;
+  // Calculate amount of memory in MB currently committed by the system.
+  uint64_t commit_total_mb =
+      base::strict_cast<uint64_t>(performance_info.CommitTotal *
+                                  performance_info.PageSize) /
+      kMBBytes;
+
+  // Calculate remaining commit limit in MB.
+  uint64_t remaining_limit_mb = commit_limit_mb - commit_total_mb;
+
+  int commit_limit_int = std::clamp(static_cast<int>(commit_limit_mb), 0,
+                                    std::numeric_limits<int>::max());
+
+  int remaining_limit_int = std::clamp(static_cast<int>(remaining_limit_mb), 0,
+                                       std::numeric_limits<int>::max());
+
+  base::UmaHistogramCounts10M("Memory.CommitLimitMB", commit_limit_int);
+  base::UmaHistogramCounts10M("Memory.CommitRemainingMB", remaining_limit_int);
+
+  // Calculate percentage used
+  uint64_t temp_percentage = (commit_total_mb * 100) / commit_limit_mb;
+  int percentage_used = base::saturated_cast<int>(temp_percentage);
+
+  base::UmaHistogramPercentage("Memory.CommitPercentageUsed", percentage_used);
+}
+
+bool SystemMemoryPressureEvaluator::GetPerformanceInfoWrapper(
+    PERFORMANCE_INFORMATION* perf_info) {
+  DCHECK(perf_info);
+
+  return GetPerformanceInfo(perf_info, sizeof(perf_info));
 }
 
 }  // namespace win

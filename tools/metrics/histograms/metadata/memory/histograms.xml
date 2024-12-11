@@ -410,6 +410,45 @@ chromium-metrics-reviews@google.com.
   <summary>TBD.</summary>
 </histogram>
 
+<histogram name="Memory.CommitLimitMB" units="MB" expires_after="2025-04-06">
+  <owner>aattar@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Reported for Windows only. This represents the total amount of virtual
+    memory that can be committed on the system. Virtual memory includes both
+    physical RAM and the page file on disk. This metric essentially shows the
+    upper limit of memory the system can utilize. This value is recorded at the
+    same time as the current memory pressure signal. This value is recorded at
+    the same time as the current memory pressure signal.
+  </summary>
+</histogram>
+
+<histogram name="Memory.CommitPercentageUsed" units="%"
+    expires_after="2025-04-06">
+  <owner>aattar@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Reported for Windows only. This metric provides a clear picture of memory
+    utilization by expressing the currently committed memory as a percentage of
+    the CommitLimit. It helps assess how heavily the system is relying on its
+    virtual memory resources. This value is recorded at the same time as the
+    current memory pressure signal.
+  </summary>
+</histogram>
+
+<histogram name="Memory.CommitRemainingMB" units="MB"
+    expires_after="2025-04-06">
+  <owner>aattar@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Reported for Windows only. Calculated as CommitLimit - TotalCommit, this
+    metric indicates the amount of virtual memory still available for
+    commitment. It shows how much &quot;headroom&quot;; the system has before it
+    runs out of committable memory. This value is recorded at the same time as
+    the current memory pressure signal.
+  </summary>
+</histogram>
+
 <histogram name="Memory.Discardable.FreelistSize.Foreground" units="KiB"
     expires_after="2023-03-05">
   <owner>thiabaud@google.com</owner>
@@ -1682,6 +1721,18 @@ chromium-metrics-reviews@google.com.
 
     Note that clients without high-resolution clocks will report 0 for very
     short times.
+  </summary>
+</histogram>
+
+<histogram name="Memory.PerformanceInfoRetrievalSuccess" enum="Boolean"
+    expires_after="2025-04-06">
+  <owner>aattar@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Reported for Windows only. This status indicates whether the system
+    successfully collected memory performance information, such as
+    Memory.CommitLimitMB. This helps diagnose issues with memory metric
+    collection on Windows systems.
   </summary>
 </histogram>
 
