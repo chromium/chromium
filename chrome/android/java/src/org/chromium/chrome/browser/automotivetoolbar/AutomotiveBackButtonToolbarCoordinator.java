@@ -12,6 +12,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 
+import androidx.annotation.AnimRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar;
 
@@ -20,6 +21,7 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.util.AutomotiveUtils;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import org.chromium.ui.animation.EmptyAnimationListener;
 
@@ -56,6 +58,7 @@ public class AutomotiveBackButtonToolbarCoordinator {
     private Animation mShowOnSwipeToolbarAnimation;
     private Animation mHideOnSwipeToolbarAnimation;
     private boolean mIsFullscreen;
+    private boolean mIsVerticalToolbar;
 
     interface OnSwipeCallback {
         /** Handles actions required after a swipe occurs. */
@@ -105,6 +108,8 @@ public class AutomotiveBackButtonToolbarCoordinator {
         mFullscreenManager.addObserver(mFullscreenObserver);
         mBackButtonToolbarForAutomotive =
                 automotiveBaseFrameLayout.findViewById(R.id.back_button_toolbar);
+        // Check if back button toolbar is vertical
+        mIsVerticalToolbar = AutomotiveUtils.useVerticalAutomotiveBackButtonToolbar(context);
         setOnSwipeBackButtonToolbar(
                 automotiveBaseFrameLayout.findViewById(
                         R.id.automotive_on_swipe_back_button_toolbar_stub));
@@ -127,7 +132,12 @@ public class AutomotiveBackButtonToolbarCoordinator {
                 view -> {
                     mBackPressedManager.getCallback().handleOnBackPressed();
                 });
-        mShowOnSwipeToolbarAnimation = AnimationUtils.loadAnimation(mContext, R.anim.slide_in_left);
+
+        @AnimRes
+        int showOnSwipeTransition =
+                mIsVerticalToolbar ? R.anim.slide_in_left : R.anim.slide_in_down;
+        mShowOnSwipeToolbarAnimation =
+                AnimationUtils.loadAnimation(mContext, showOnSwipeTransition);
         mShowOnSwipeToolbarAnimation.setAnimationListener(
                 new EmptyAnimationListener() {
                     @Override
@@ -135,8 +145,12 @@ public class AutomotiveBackButtonToolbarCoordinator {
                         mOnSwipeAutomotiveToolbar.setVisibility(View.VISIBLE);
                     }
                 });
+
+        @AnimRes
+        int hideOnSwipeTransition =
+                mIsVerticalToolbar ? R.anim.slide_out_left : R.anim.slide_out_down;
         mHideOnSwipeToolbarAnimation =
-                AnimationUtils.loadAnimation(mContext, R.anim.slide_out_left);
+                AnimationUtils.loadAnimation(mContext, hideOnSwipeTransition);
         mHideOnSwipeToolbarAnimation.setAnimationListener(
                 new EmptyAnimationListener() {
                     @Override
