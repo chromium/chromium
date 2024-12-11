@@ -27,14 +27,9 @@
 #include "components/page_load_metrics/google/browser/google_url_util.h"
 #include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
 #include "components/page_load_metrics/google/browser/histogram_suffixes.h"
-#include "components/policy/core/browser/url_blocklist_policy_handler.h"
-#include "components/policy/core/common/policy_pref_names.h"
-#include "components/prefs/pref_service.h"
-#include "components/user_prefs/user_prefs.h"
-#include "content/public/browser/browser_context.h"
+#include "components/policy/content/policy_blocklist_metrics.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/site_instance.h"
-#include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -43,6 +38,8 @@ using page_load_metrics::PageAbortReason;
 namespace internal {
 
 #define HISTOGRAM_PREFIX "PageLoad.Clients.GoogleSearch."
+#define FINEGRAINED_HISTOGRAM_PREFIX \
+  "PageLoad.Clients.GoogleSearch.FineGrained."
 
 const char kHistogramGWSNavigationStartToFinalRequestStart[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFinalRequestStart";
@@ -86,6 +83,9 @@ const char kHistogramGWSFirstContentfulPaint[] =
     HISTOGRAM_PREFIX "PaintTiming.NavigationToFirstContentfulPaint";
 const char kHistogramGWSLargestContentfulPaint[] =
     HISTOGRAM_PREFIX "PaintTiming.NavigationToLargestContentfulPaint";
+const char kFineGrainedHistogramGWSLargestContentfulPaint[] =
+    FINEGRAINED_HISTOGRAM_PREFIX
+    "PaintTiming.NavigationToLargestContentfulPaint";
 const char kHistogramGWSParseStart[] =
     HISTOGRAM_PREFIX "ParseTiming.NavigationToParseStart";
 const char kHistogramGWSConnectStart[] =
@@ -125,6 +125,9 @@ const char kHistogramGWSHeaderMismatchType[] =
 }  // namespace internal
 
 namespace {
+
+constexpr char kSafeSitesFilterEnabledSuffix[] = ".SafeSitesFilterEnabled";
+constexpr char kSafeSitesFilterDisabledSuffix[] = ".SafeSitesFilterDisabled";
 
 // TODO(crbug.com/352578800): When this is enabled, the browser will log
 // response headers if those're unexpected to be in the navigation response.
@@ -166,14 +169,30 @@ GWSPageLoadMetricsObserver::NavigationSourceType GetBackgroundedState(
 void RecordPageLoadHistogramWithVariants(bool is_safesites_filter_enabled,
                                          std::string_view name,
                                          base::TimeDelta sample) {
-  constexpr char kSafeSitesFilterEnabledSuffix[] = ".SafeSitesFilterEnabled";
-  constexpr char kSafeSitesFilterDisabledSuffix[] = ".SafeSitesFilterDisabled";
   PAGE_LOAD_HISTOGRAM(name, sample);
   PAGE_LOAD_HISTOGRAM(
       base::StrCat({name, is_safesites_filter_enabled
                               ? kSafeSitesFilterEnabledSuffix
                               : kSafeSitesFilterDisabledSuffix}),
       sample);
+}
+
+void RecordFineGrainedPageLoadHistogramWithVariants(
+    bool is_safesites_filter_enabled,
+    std::string_view name,
+    base::TimeDelta sample) {
+  // Record variant metrics in a range from 10ms to 10s with 100 buckets.
+  // Current PAGE_LOAD_HISTOGRAM macro does it from 10ms to 10 minutes with 100
+  // buckets, but it would not be suitable to monitor much faster pages living
+  // in the real world today, as the bucket size for median value is about 50ms
+  // in the current config.
+  base::UmaHistogramCustomTimes(name, sample, base::Milliseconds(10),
+                                base::Seconds(10), 100);
+  base::UmaHistogramCustomTimes(
+      base::StrCat({name, is_safesites_filter_enabled
+                              ? kSafeSitesFilterEnabledSuffix
+                              : kSafeSitesFilterDisabledSuffix}),
+      sample, base::Milliseconds(10), base::Seconds(10), 100);
 }
 
 struct ExpectedHeaderInfo {
@@ -384,13 +403,6 @@ GWSPageLoadMetricsObserver::OnStart(
     source_type_ = GetBackgroundedState(source_type_);
   }
 
-  raw_ptr<PrefService> prefs = user_prefs::UserPrefs::Get(
-      navigation_handle->GetWebContents()->GetBrowserContext());
-  is_safesites_filter_enabled_ =
-      prefs && static_cast<policy::SafeSitesFilterBehavior>(prefs->GetInteger(
-                   policy::policy_prefs::kSafeSitesFilterBehavior)) ==
-                   policy::SafeSitesFilterBehavior::kSafeSitesFilterEnabled;
-
   return CONTINUE_OBSERVING;
 }
 
@@ -405,6 +417,29 @@ GWSPageLoadMetricsObserver::OnCommit(
   }
   if (!is_gws_url) {
     return STOP_OBSERVING;
+  }
+
+  if (const PolicyBlocklistMetrics* const metrics =
+      PolicyBlocklistMetrics::Get(*navigation_handle)) {
+    is_safesites_filter_enabled_ = true;
+    base::UmaHistogramCounts100(
+        "Navigation.Throttles.PolicyBlocklist.RedirectCount.GoogleSearch."
+        "SafeSitesFilterEnabled",
+        metrics->redirect_count);
+    base::UmaHistogramTimes(
+        "Navigation.Throttles.PolicyBlocklist.RequestToResponseTime2."
+        "GoogleSearch.SafeSitesFilterEnabled",
+        metrics->request_to_response_time);
+    base::UmaHistogramTimes(
+        "Navigation.Throttles.PolicyBlocklist.ResponseDeferDuration."
+        "GoogleSearch.SafeSitesFilterEnabled",
+        metrics->response_defer_duration);
+    if (metrics->cache_hit.has_value()) {
+      base::UmaHistogramBoolean(
+          "Navigation.Throttles.PolicyBlocklist.CacheHit.GoogleSearch."
+          "SafeSitesFilterEnabled",
+          *metrics->cache_hit);
+    }
   }
 
   navigation_handle_timing_ = navigation_handle->GetNavigationHandleTiming();
@@ -556,6 +591,10 @@ void GWSPageLoadMetricsObserver::LogMetricsOnComplete() {
   RecordPageLoadHistogramWithVariants(
       is_safesites_filter_enabled_,
       internal::kHistogramGWSLargestContentfulPaint,
+      all_frames_largest_contentful_paint.Time().value());
+  RecordFineGrainedPageLoadHistogramWithVariants(
+      is_safesites_filter_enabled_,
+      internal::kFineGrainedHistogramGWSLargestContentfulPaint,
       all_frames_largest_contentful_paint.Time().value());
 }
 
@@ -778,7 +817,6 @@ void GWSPageLoadMetricsObserver::RecordLatencyHitograms(
 
 void GWSPageLoadMetricsObserver::MaybeRecordUnexpectedHeaders(
     const net::HttpResponseHeaders* response_headers) {
-
   ReportedHeaders not_expected_headers;
   ReportedHeaders value_mismatched_headers;
   ReportedHeaders not_exist_headers;
