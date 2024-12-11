@@ -15,12 +15,6 @@
 #include "content/public/common/content_switches.h"
 #include "net/base/features.h"
 
-namespace features {
-BASE_FEATURE(kBackForwardCache_NoMemoryLimit_Trial,
-             "BackForwardCache_NoMemoryLimit_Trial",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-}
-
 namespace content {
 
 bool DeviceHasEnoughMemoryForBackForwardCache() {
@@ -66,13 +60,6 @@ bool IsBackForwardCacheEnabled() {
   if (!has_enough_memory) {
     // When the device does not have enough memory for BackForwardCache, return
     // false so we won't try to put things in the back/forward cache.
-    // Also, trigger the activation of the BackForwardCache_NoMemoryLimit_Trial
-    // field trial by querying the feature flag. With this, we guarantee that
-    // all devices that do not have enough memory for BackForwardCache will be
-    // included in that field trial. See case #1 in the comment for the
-    // BackForwardCache_NoMemoryLimit_Trial in the header file for more details.
-    base::FeatureList::IsEnabled(
-        features::kBackForwardCache_NoMemoryLimit_Trial);
     return false;
   }
 
@@ -86,15 +73,7 @@ bool IsBackForwardCacheEnabled() {
   // memory for BackForwardCache, and those devices only.
   if (base::FeatureList::IsEnabled(features::kBackForwardCache)) {
     // When the device does have enough memory for BackForwardCache, return
-    // true so we won't try to put things in the back/forward cache. Also,
-    // trigger the activation of the BackForwardCache_NoMemoryLimit_Trial field
-    // trial by querying the feature flag. With this, we guarantee that all
-    // devices that do have enough memory for BackForwardCache and have the
-    // BackForwardCache feature flag enabled will be included in that field
-    // trial. See case #2 in the comment for the
-    // BackForwardCache_NoMemoryLimit_Trial in the header file for more details.
-    base::FeatureList::IsEnabled(
-        features::kBackForwardCache_NoMemoryLimit_Trial);
+    // true so we won't try to put things in the back/forward cache.
     return true;
   }
   return false;

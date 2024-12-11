@@ -2938,21 +2938,6 @@
             ]
         }
     ],
-    "BackForwardCache_NoMemoryLimit_Trial": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BackForwardCache_NoMemoryLimit_Trial"
-                    ]
-                }
-            ]
-        }
-    ],
     "BackForwardTransitions": [
         {
             "platforms": [

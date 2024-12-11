@@ -1317,7 +1317,6 @@ class BackForwardCacheBrowserTestForLowMemoryDevices
         {{features::kBackForwardCacheMemoryControls,
           {{"memory_threshold_for_back_forward_cache_in_mb",
             memory_threshold}}},
-         {features::kBackForwardCache_NoMemoryLimit_Trial, {}},
          {blink::features::kLoadingTasksUnfreezable, {}}},
         {});
   }
@@ -1326,8 +1325,7 @@ class BackForwardCacheBrowserTestForLowMemoryDevices
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Ensure that the BackForwardCache trial is not activated and the
-// BackForwardCache_NoMemoryLimit_Trial trial got activated as expected on
+// Ensure that the BackForwardCache trial is not activated as expected on
 // low-memory devices.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForLowMemoryDevices,
                        DisableBFCacheForLowEndDevices) {
@@ -1335,27 +1333,17 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForLowMemoryDevices,
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
 
-  // Ensure that the BackForwardCache trial starts inactive, and the
-  // BackForwardCache_NoMemoryLimit_Trial trial starts active.
+  // Ensure that the BackForwardCache trial starts inactive.
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
       base::FeatureList::GetFieldTrial(features::kBackForwardCache)
-          ->trial_name()));
-  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
-      base::FeatureList::GetFieldTrial(
-          features::kBackForwardCache_NoMemoryLimit_Trial)
           ->trial_name()));
 
   EXPECT_FALSE(IsBackForwardCacheEnabled());
 
   // Ensure that we do not activate the BackForwardCache trial when querying
-  // bfcache status, and the BackForwardCache_NoMemoryLimit_Trial trial stays
-  // active.
+  // bfcache status.
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
       base::FeatureList::GetFieldTrial(features::kBackForwardCache)
-          ->trial_name()));
-  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
-      base::FeatureList::GetFieldTrial(
-          features::kBackForwardCache_NoMemoryLimit_Trial)
           ->trial_name()));
 
   // 1) Navigate to A.
@@ -1383,14 +1371,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForLowMemoryDevices,
       },
       {}, {}, {}, {}, FROM_HERE);
 
-  // Ensure that the BackForwardCache trial still hasn't been activated, and the
-  // BackForwardCache_NoMemoryLimit_Trial trial stays active.
+  // Ensure that the BackForwardCache trial still hasn't been activated.
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
       base::FeatureList::GetFieldTrial(features::kBackForwardCache)
-          ->trial_name()));
-  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
-      base::FeatureList::GetFieldTrial(
-          features::kBackForwardCache_NoMemoryLimit_Trial)
           ->trial_name()));
 }
 
@@ -1479,7 +1462,6 @@ class BackForwardCacheBrowserTestForHighMemoryDevices
         {{features::kBackForwardCacheMemoryControls,
           {{"memory_threshold_for_back_forward_cache_in_mb",
             memory_threshold}}},
-         {features::kBackForwardCache_NoMemoryLimit_Trial, {}},
          {blink::features::kLoadingTasksUnfreezable, {}}},
         {});
   }
@@ -1488,35 +1470,23 @@ class BackForwardCacheBrowserTestForHighMemoryDevices
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Ensure that the BackForwardCache_NoMemoryLimit_Trial and the
-// BackForwardCache trials got activated as expected on high-memory devices
-// when the BackForwardCache feature is enabled.
+// Ensure that the BackForwardCache trial got activated as expected on
+// high-memory devices when the BackForwardCache feature is enabled.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForHighMemoryDevices,
                        EnableBFCacheForHighMemoryDevices) {
-  // Ensure that the BackForwardCache and the
-  // BackForwardCache_NoMemoryLimit_Trial trials start active
-  // on high-memory devices when the BackForwardCache feature is enabled,
-  // because IsBackForwardCacheEnabled() got queried already before the test
-  // starts.
+  // Ensure that the BackForwardCache trial starts active on high-memory devices
+  // when the BackForwardCache feature is enabled, because
+  // IsBackForwardCacheEnabled() got queried already before the test starts.
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
       base::FeatureList::GetFieldTrial(features::kBackForwardCache)
-          ->trial_name()));
-  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
-      base::FeatureList::GetFieldTrial(
-          features::kBackForwardCache_NoMemoryLimit_Trial)
           ->trial_name()));
 
   EXPECT_TRUE(IsBackForwardCacheEnabled());
 
-  // Ensure that the BackForwardCache and the
-  // BackForwardCache_NoMemoryLimit_Trial trial stays active after
-  // querying IsBackForwardCacheEnabled().
+  // Ensure that the BackForwardCache trial stays active after querying
+  // IsBackForwardCacheEnabled().
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
       base::FeatureList::GetFieldTrial(features::kBackForwardCache)
-          ->trial_name()));
-  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
-      base::FeatureList::GetFieldTrial(
-          features::kBackForwardCache_NoMemoryLimit_Trial)
           ->trial_name()));
 
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1534,14 +1504,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForHighMemoryDevices,
   // greater than the memory threshold.
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
-  // Ensure that the BackForwardCache and the
-  // BackForwardCache_NoMemoryLimit_Trial trial stays active.
+  // Ensure that the BackForwardCache trial stays active.
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
       base::FeatureList::GetFieldTrial(features::kBackForwardCache)
-          ->trial_name()));
-  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
-      base::FeatureList::GetFieldTrial(
-          features::kBackForwardCache_NoMemoryLimit_Trial)
           ->trial_name()));
 }
 
@@ -1622,7 +1587,6 @@ class BackForwardCacheBrowserTestForHighMemoryDevicesWithBFCacheDisabled
         {{features::kBackForwardCacheMemoryControls,
           {{"memory_threshold_for_back_forward_cache_in_mb",
             memory_threshold}}},
-         {features::kBackForwardCache_NoMemoryLimit_Trial, {}},
          {blink::features::kLoadingTasksUnfreezable, {}}},
         /*disabled_features=*/
         {features::kBackForwardCache});
@@ -1632,28 +1596,12 @@ class BackForwardCacheBrowserTestForHighMemoryDevicesWithBFCacheDisabled
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Ensure that the BackForwardCache_NoMemoryLimit_Trial does not get activated
-// on high-memory devices that have the BackForwardCache feature disabled.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestForHighMemoryDevicesWithBFCacheDisabled,
     HighMemoryDevicesWithBFacheDisabled) {
-  // Ensure that BackForwardCache_NoMemoryLimit_Trial trials starts inactive
-  // on high-memory devices that have the BackForwardCache feature disabled.
-  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
-      base::FeatureList::GetFieldTrial(
-          features::kBackForwardCache_NoMemoryLimit_Trial)
-          ->trial_name()));
-
   // Ensure that IsBackForwardCacheEnabled() returns false, because the
   // BackForwardCache feature is disabled.
   EXPECT_FALSE(IsBackForwardCacheEnabled());
-
-  // Ensure that the BackForwardCache_NoMemoryLimit_Trial trial stays inactive
-  // after querying IsBackForwardCacheEnabled().
-  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
-      base::FeatureList::GetFieldTrial(
-          features::kBackForwardCache_NoMemoryLimit_Trial)
-          ->trial_name()));
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -1679,12 +1627,6 @@ IN_PROC_BROWSER_TEST_F(
           BackForwardCacheMetrics::NotRestoredReason::kBackForwardCacheDisabled,
       },
       {}, {}, {}, {}, FROM_HERE);
-
-  // Ensure that the BackForwardCache_NoMemoryLimit_Trial trial stays inactive.
-  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
-      base::FeatureList::GetFieldTrial(
-          features::kBackForwardCache_NoMemoryLimit_Trial)
-          ->trial_name()));
 }
 
 // Start an inifite dialogs in JS, yielding after each. The first dialog should
