@@ -326,34 +326,14 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
   }
 
   bool CreateDirectory(const base::FilePath& full_path) {
-    bool result = base::CreateDirectory(full_path);
-#if BUILDFLAG(IS_MAC)
-    // Wait so that the event for this operation is received by FSEvents before
-    // returning.
-    SpinEventLoopForABit();
-#endif
-    return result;
+    return base::CreateDirectory(full_path);
   }
 
   bool WriteFile(const base::FilePath& filename, std::string_view data) {
-    bool result = base::WriteFile(filename, data);
-#if BUILDFLAG(IS_MAC)
-    // Wait so that the event for this operation is received by FSEvents before
-    // returning.
-    SpinEventLoopForABit();
-#endif
-    return result;
+    return base::WriteFile(filename, data);
   }
 
-  bool DeleteFile(const base::FilePath& path) {
-    bool result = base::DeleteFile(path);
-#if BUILDFLAG(IS_MAC)
-    // Wait so that the event for this operation is received by FSEvents before
-    // returning.
-    SpinEventLoopForABit();
-#endif
-    return result;
-  }
+  bool DeleteFile(const base::FilePath& path) { return base::DeleteFile(path); }
 
   FileSystemAccessWatcherManager& watcher_manager() const {
     return manager_->watcher_manager();
@@ -601,6 +581,11 @@ TEST_F(FileSystemAccessWatcherManagerTest, IgnoreSwapFileChanges) {
   auto non_swap_file_path = dir_path.AppendASCII("bar.noncrswap");
   WriteFile(non_swap_file_path, "watch me and then report me");
 
+#if BUILDFLAG(IS_MAC)
+  // Flush setup events before observation begins.
+  SpinEventLoopForABit();
+#endif
+
   auto observation_or_error = ObserveDirectory(dir_url, /*is_recursive=*/false);
 
 // Watching the local file system is not supported on Android, iOS, or Fuchsia.
@@ -690,11 +675,6 @@ TEST_F(FileSystemAccessWatcherManagerTest, ObserveBucketFS) {
       base::FilePath::FromUTF8Unsafe("test/foo/bar"));
   test_file_url.SetBucket(default_bucket);
 
-#if BUILDFLAG(IS_MAC)
-  // Flush setup events before observation begins.
-  SpinEventLoopForABit();
-#endif
-
   // Attempting to observe the given file will succeed.
   ChangeAccumulator accumulator(ObserveFile(test_file_url));
 
@@ -722,11 +702,6 @@ TEST_F(FileSystemAccessWatcherManagerTest, UnsupportedScope) {
       base::FilePath::FromUTF8Unsafe(kTestMountPoint).AppendASCII("foo");
   auto external_url = manager_->CreateFileSystemURLFromPath(
       PathInfo(PathType::kExternal, test_external_path));
-
-#if BUILDFLAG(IS_MAC)
-  // Flush setup events before observation begins.
-  SpinEventLoopForABit();
-#endif
 
   // Attempting to observe the given file will fail.
   auto observation_or_error = ObserveFile(external_url);
@@ -954,6 +929,11 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectory) {
   auto file_path = dir_path.AppendASCII("foo");
   WriteFile(file_path, "watch me");
 
+#if BUILDFLAG(IS_MAC)
+  // Flush setup events before observation begins.
+  SpinEventLoopForABit();
+#endif
+
   auto observation_or_error = ObserveDirectory(dir_url,
                                                /*is_recursive=*/false);
 
@@ -998,6 +978,11 @@ TEST_F(FileSystemAccessWatcherManagerTest,
   CreateDirectory(dir_path.AppendASCII("subdir"));
   auto file_path = dir_path.AppendASCII("subdir").AppendASCII("foo");
   WriteFile(file_path, "watch me");
+
+#if BUILDFLAG(IS_MAC)
+  // Flush setup events before observation begins.
+  SpinEventLoopForABit();
+#endif
 
   auto observation_or_error = ObserveDirectory(dir_url,
                                                /*is_recursive=*/false);
