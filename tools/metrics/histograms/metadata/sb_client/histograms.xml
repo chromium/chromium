@@ -180,24 +180,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.DownloadRequestDuration" units="ms"
-    expires_after="2025-05-11">
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <owner>mattm@chromium.org</owner>
-  <summary>
-    Records the total time it takes for the SafeBrowsing download service to
-    check whether the content of a download is malicious or not, including file
-    feature extraction, allowlist checking, and server ping. This histogram only
-    includes checks that sent a ping to the SafeBrowsing server. It does not
-    include requests that were cancelled, but does include requests that
-    received a bad response.
-  </summary>
-</histogram>
-
-<histogram name="SBClientDownload.DownloadRequestDuration.{Analysis}"
-    units="ms" expires_after="2024-12-30">
-  <owner>drubery@chromium.org</owner>
+<histogram name="SBClientDownload.DownloadRequestDuration{Analysis}" units="ms"
+    expires_after="2025-12-10">
+  <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the total time it takes for the SafeBrowsing download service to
@@ -208,36 +193,12 @@ chromium-metrics-reviews@google.com.
     does include requests that received a bad response.
   </summary>
   <token key="Analysis">
-    <variant name="Dmg"/>
-    <variant name="None" summary="executable"/>
-    <variant name="Rar"/>
-    <variant name="SevenZip"/>
-    <variant name="Zip"/>
-  </token>
-</histogram>
-
-<histogram name="SBClientDownload.DownloadRequestDurationMedium.{Analysis}"
-    units="ms" expires_after="2025-03-16">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the total time it takes for the SafeBrowsing download service to
-    check whether the content of a download is malicious or not, including file
-    feature extraction, allowlist checking, and server ping. This histogram only
-    includes checks that sent a ping to the SafeBrowsing server. It does not
-    include requests that were cancelled, but does include requests that
-    received a bad response.
-
-    This histogram is a &quot;medium&quot; version of
-    SBClientDownload.DownloadRequestDuration. It has a maximum of 3 minutes to
-    help investigate long-tail downloads.
-  </summary>
-  <token key="Analysis">
-    <variant name="Dmg"/>
-    <variant name="None" summary="executable"/>
-    <variant name="Rar"/>
-    <variant name="SevenZip"/>
-    <variant name="Zip"/>
+    <variant name="" summary="any"/>
+    <variant name=".Dmg" summary="DMG archive"/>
+    <variant name=".None" summary="executable"/>
+    <variant name=".Rar" summary="RAR archive"/>
+    <variant name=".SevenZip" summary="7Z archive"/>
+    <variant name=".Zip" summary="ZIP archive"/>
   </token>
 </histogram>
 
