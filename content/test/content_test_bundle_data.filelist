@@ -7018,7 +7018,6 @@ data/gtk_key_bindings_test_gtkrc
 data/gzip-content.svgz
 data/gzip-content.svgz.mock-http-headers
 data/hang_before_unload.html
-data/has-ua-visual-transition.html
 data/hello.html
 data/hello.html.mock-http-headers
 data/https_upgrade_cross_site.html
@@ -7469,6 +7468,7 @@ data/mojo_bindings_web_test_types.test-mojom
 data/mojo_web_test_helper_test.mojom
 data/navigate_on_load.html
 data/navigate_opener.html
+data/navigate-has-ua-visual-transition.html
 data/navigation_controller/beforeunload_dialog.html
 data/navigation_controller/beforeunload_replacestate_1.html
 data/navigation_controller/beforeunload_replacestate_2.html
@@ -7607,6 +7607,7 @@ data/permissions-policy4.html
 data/plain.txt
 data/plain.txt.mock-http-headers
 data/pointerlock_on_dropped_elem.html
+data/popstate-has-ua-visual-transition.html
 data/popup.html
 data/post_message.html
 data/post_message2.html

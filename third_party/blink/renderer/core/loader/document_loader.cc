@@ -991,7 +991,8 @@ void DocumentLoader::RunURLAndHistoryUpdateSteps(
       type, fire_popstate, frame_->DomWindow()->GetSecurityOrigin(),
       is_browser_initiated, is_synchronously_committed,
       soft_navigation_heuristics_task_id,
-      LocalFrame::HasTransientUserActivation(frame_));
+      LocalFrame::HasTransientUserActivation(frame_),
+      /*has_ua_visual_transition*/ false);
 }
 
 void DocumentLoader::UpdateForSameDocumentNavigation(
@@ -1006,7 +1007,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     bool is_synchronously_committed,
     std::optional<scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id,
-    bool has_transient_user_activation) {
+    bool has_transient_user_activation,
+    bool has_ua_visual_transition) {
   CHECK_EQ(IsBackForwardOrRestore(type), !!history_item);
   TRACE_EVENT1("blink", "FrameLoader::updateForSameDocumentNavigation", "url",
                new_url.GetString().Ascii());
@@ -1172,7 +1174,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
           history_item ? history_item->StateObject()
                        : SerializedScriptValue::NullValue();
       frame_->DomWindow()->DispatchPopstateEvent(std::move(state_object),
-                                                 navigation_task_state);
+                                                 navigation_task_state,
+                                                 has_ua_visual_transition);
     }
   }
 
@@ -1804,7 +1807,8 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
       url, history_item, same_document_navigation_type, nullptr,
       frame_load_type, FirePopstate::kYes, initiator_origin,
       is_browser_initiated, is_synchronously_committed,
-      soft_navigation_heuristics_task_id, has_transient_user_activation);
+      soft_navigation_heuristics_task_id, has_transient_user_activation,
+      has_ua_visual_transition);
   if (!frame_)
     return;
 
