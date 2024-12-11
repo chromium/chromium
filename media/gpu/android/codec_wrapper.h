@@ -124,8 +124,7 @@ class MEDIA_GPU_EXPORT CodecWrapper {
                OutputReleasedCB output_buffer_release_cb,
                const gfx::Size& initial_expected_size,
                const gfx::ColorSpace& config_color_space,
-               std::optional<gfx::Size> coded_size_alignment,
-               bool use_block_model);
+               std::optional<gfx::Size> coded_size_alignment);
 
   CodecWrapper(const CodecWrapper&) = delete;
   CodecWrapper& operator=(const CodecWrapper&) = delete;

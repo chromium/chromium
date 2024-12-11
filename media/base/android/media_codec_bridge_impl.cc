@@ -376,7 +376,7 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateAudioDecoder(
 
   return base::WrapUnique(new MediaCodecBridgeImpl(
       CodecType::kAny, std::nullopt, std::move(j_bridge),
-      std::move(on_buffers_available_cb)));
+      /*use_block_model=*/false, std::move(on_buffers_available_cb)));
 }
 
 // static
@@ -415,7 +415,7 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoDecoder(
 
   return base::WrapUnique(new MediaCodecBridgeImpl(
       config.codec_type, config.codec, std::move(j_bridge),
-      config.on_buffers_available_cb));
+      config.use_block_model, config.on_buffers_available_cb));
 }
 
 // static
@@ -456,8 +456,10 @@ MediaCodecBridgeImpl::MediaCodecBridgeImpl(
     CodecType codec_type,
     std::optional<VideoCodec> video_decoder_codec,
     ScopedJavaGlobalRef<jobject> j_bridge,
+    bool use_block_model,
     base::RepeatingClosure on_buffers_available_cb)
-    : codec_type_(codec_type),
+    : use_block_model_(use_block_model),
+      codec_type_(codec_type),
       video_decoder_codec_(std::move(video_decoder_codec)),
       on_buffers_available_cb_(std::move(on_buffers_available_cb)),
       j_bridge_(std::move(j_bridge)) {
@@ -643,6 +645,9 @@ MediaCodecResult MediaCodecBridgeImpl::QueueInputBuffer(
     base::TimeDelta presentation_time) {
   DVLOG(3) << __func__ << " " << index << ": " << data.size();
   CHECK_LE(data.size(), size_t{std::numeric_limits<int32_t>::max()});
+  if (use_block_model_) {
+    return QueueInputBlock(index, data, presentation_time);
+  }
   if (!FillInputBuffer(index, data)) {
     return {MediaCodecResult::Codes::kError, "Unable to fill input buffer."};
   }
@@ -653,47 +658,13 @@ MediaCodecResult MediaCodecBridgeImpl::QueueFilledInputBuffer(
     int index,
     size_t data_size,
     base::TimeDelta presentation_time) {
+  DCHECK(!use_block_model_);
   DVLOG(3) << __func__ << " " << index << ": " << data_size;
   JNIEnv* env = AttachCurrentThread();
   auto status =
       static_cast<MediaCodecStatus>(Java_MediaCodecBridge_queueInputBuffer(
           env, j_bridge_, index, 0, data_size,
           presentation_time.InMicroseconds(), 0));
-  ReportAnyErrorToUMA(status);
-  return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
-}
-
-MediaCodecResult MediaCodecBridgeImpl::QueueInputBlock(
-    int index,
-    base::span<const uint8_t> data,
-    base::TimeDelta presentation_time,
-    bool is_eos) {
-  DVLOG(3) << __func__ << " " << index << ": " << data.size();
-  CHECK_LE(data.size(), size_t{std::numeric_limits<int32_t>::max()});
-
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> j_result =
-      Java_MediaCodecBridge_obtainBlock(env, j_bridge_, data.size());
-  ScopedJavaLocalRef<jobject> j_block =
-      Java_ObtainBlockResult_block(env, j_result);
-  ScopedJavaLocalRef<jobject> j_buffer =
-      Java_ObtainBlockResult_buffer(env, j_result);
-  if (j_buffer.is_null()) {
-    Java_ObtainBlockResult_recycle(env, j_result);
-    return {MediaCodecResult::Codes::kError, "Unable to obtain input block."};
-  }
-
-  if (!data.empty()) {
-    base::android::JavaByteBufferToMutableSpan(env, j_buffer.obj())
-        .copy_from_nonoverlapping(data);
-  }
-
-  MediaCodecStatus status =
-      static_cast<MediaCodecStatus>(Java_MediaCodecBridge_queueInputBlock(
-          env, j_bridge_, index, j_block, 0, data.size(),
-          presentation_time.InMicroseconds(),
-          is_eos ? kBufferFlagEndOfStream : 0));
-  Java_ObtainBlockResult_recycle(env, j_result);
   ReportAnyErrorToUMA(status);
   return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
 }
@@ -762,11 +733,32 @@ MediaCodecResult MediaCodecBridgeImpl::QueueSecureInputBuffer(
   return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
 }
 
-void MediaCodecBridgeImpl::QueueEOS(int input_buffer_index) {
+MediaCodecResult MediaCodecBridgeImpl::QueueEOS(int input_buffer_index) {
   DVLOG(3) << __func__ << ": " << input_buffer_index;
   JNIEnv* env = AttachCurrentThread();
-  Java_MediaCodecBridge_queueInputBuffer(env, j_bridge_, input_buffer_index, 0,
-                                         0, 0, kBufferFlagEndOfStream);
+
+  auto status = MediaCodecStatus::MEDIA_CODEC_OK;
+  if (use_block_model_) {
+    ScopedJavaLocalRef<jobject> j_result =
+        Java_MediaCodecBridge_obtainBlock(env, j_bridge_, 0);
+    ScopedJavaLocalRef<jobject> j_block =
+        Java_ObtainBlockResult_block(env, j_result);
+    status =
+        static_cast<MediaCodecStatus>(Java_MediaCodecBridge_queueInputBlock(
+            env, j_bridge_, input_buffer_index, j_block, 0, 0, 0,
+            kBufferFlagEndOfStream));
+    Java_ObtainBlockResult_recycle(env, j_result);
+  } else {
+    status =
+        static_cast<MediaCodecStatus>(Java_MediaCodecBridge_queueInputBuffer(
+            env, j_bridge_, input_buffer_index, 0, 0, 0,
+            kBufferFlagEndOfStream));
+  }
+  DVLOG(3) << __func__ << ": status: " << status
+           << ", index: " << input_buffer_index;
+
+  ReportAnyErrorToUMA(status);
+  return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
 }
 
 MediaCodecResult MediaCodecBridgeImpl::DequeueInputBuffer(
@@ -828,6 +820,7 @@ void MediaCodecBridgeImpl::ReleaseOutputBuffer(int index, bool render) {
 
 base::span<uint8_t> MediaCodecBridgeImpl::GetInputBuffer(
     int input_buffer_index) {
+  DCHECK(!use_block_model_);
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_buffer(
       Java_MediaCodecBridge_getInputBuffer(env, j_bridge_, input_buffer_index));
@@ -895,6 +888,7 @@ size_t MediaCodecBridgeImpl::GetMaxInputSize() {
 
 bool MediaCodecBridgeImpl::FillInputBuffer(int index,
                                            base::span<const uint8_t> data) {
+  DCHECK(!use_block_model_);
   auto dst = GetInputBuffer(index);
   if (dst.empty()) {
     LOG(ERROR) << "GetInputBuffer failed";
@@ -907,6 +901,40 @@ bool MediaCodecBridgeImpl::FillInputBuffer(int index,
   }
   dst.first(data.size()).copy_from_nonoverlapping(data);
   return true;
+}
+
+MediaCodecResult MediaCodecBridgeImpl::QueueInputBlock(
+    int index,
+    base::span<const uint8_t> data,
+    base::TimeDelta presentation_time) {
+  DVLOG(3) << __func__ << " " << index << ": " << data.size();
+  DCHECK(use_block_model_);
+  CHECK_LE(data.size(), size_t{std::numeric_limits<int32_t>::max()});
+
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> j_result =
+      Java_MediaCodecBridge_obtainBlock(env, j_bridge_, data.size());
+  ScopedJavaLocalRef<jobject> j_block =
+      Java_ObtainBlockResult_block(env, j_result);
+  ScopedJavaLocalRef<jobject> j_buffer =
+      Java_ObtainBlockResult_buffer(env, j_result);
+  if (j_buffer.is_null()) {
+    Java_ObtainBlockResult_recycle(env, j_result);
+    return {MediaCodecResult::Codes::kError, "Unable to obtain input block."};
+  }
+
+  if (!data.empty()) {
+    base::android::JavaByteBufferToMutableSpan(env, j_buffer.obj())
+        .copy_from_nonoverlapping(data);
+  }
+
+  auto status =
+      static_cast<MediaCodecStatus>(Java_MediaCodecBridge_queueInputBlock(
+          env, j_bridge_, index, j_block, 0, data.size(),
+          presentation_time.InMicroseconds(), 0));
+  Java_ObtainBlockResult_recycle(env, j_result);
+  ReportAnyErrorToUMA(status);
+  return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};
 }
 
 void MediaCodecBridgeImpl::ReportAnyErrorToUMA(MediaCodecStatus status) {

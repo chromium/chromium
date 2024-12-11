@@ -40,9 +40,10 @@ class MediaCodecBridgeBuilder {
         try {
             Log.i(
                     TAG,
-                    "create MediaCodec video decoder, mime %s, decoder name %s",
+                    "create MediaCodec video decoder, mime %s, decoder name %s, block_model=%b",
                     mime,
-                    decoderName);
+                    decoderName,
+                    useBlockModel);
             if (!decoderName.isEmpty()) {
                 info = MediaCodecUtil.createDecoderByName(mime, decoderName);
             } else {

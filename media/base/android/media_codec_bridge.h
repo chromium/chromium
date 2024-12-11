@@ -153,12 +153,6 @@ class MEDIA_EXPORT MediaCodecBridge {
       size_t data_size,
       base::TimeDelta presentation_time) = 0;
 
-  // Submits a byte array to the given input buffer, using LinearBlock.
-  virtual MediaCodecResult QueueInputBlock(int index,
-                                           base::span<const uint8_t> data,
-                                           base::TimeDelta presentation_time,
-                                           bool is_eos) = 0;
-
   // As above but for encrypted buffers. NULL |subsamples| indicates the
   // whole buffer is encrypted.
   virtual MediaCodecResult QueueSecureInputBuffer(
@@ -172,7 +166,7 @@ class MEDIA_EXPORT MediaCodecBridge {
       base::TimeDelta presentation_time) = 0;
 
   // Submits an empty buffer with the END_OF_STREAM flag set.
-  virtual void QueueEOS(int input_buffer_index) = 0;
+  virtual MediaCodecResult QueueEOS(int input_buffer_index) = 0;
 
   // Returns:
   // kOk if an input buffer is ready to be filled with valid data,
