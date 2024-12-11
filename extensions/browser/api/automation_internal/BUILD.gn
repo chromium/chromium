@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/ui.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions,
@@ -22,22 +21,16 @@ source_set("automation_internal") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
-    "//base",
-    "//content/public/browser",
     "//extensions/browser:browser_sources",
-    "//extensions/common",
-    "//extensions/common:mojom",
-    "//extensions/common/api",
+    "//extensions/browser/api/app_runtime:app_runtime",
     "//services/accessibility/public/mojom:automation",
-    "//ui/accessibility:ax_base",
   ]
 
   deps = [
     "//build:chromeos_buildflags",
-    "//third_party/blink/public/common",
+    "//components/prefs",
+    "//content/public/browser",
+    "//extensions/common",
+    "//extensions/common/api",
   ]
-
-  if (use_aura) {
-    deps += [ "//ui/aura" ]
-  }
 }
