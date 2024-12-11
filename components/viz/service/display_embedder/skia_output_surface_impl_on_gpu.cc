@@ -1652,7 +1652,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
       backing_representation =
           shared_image_representation_factory_->ProduceSkia(
               mailbox, context_state_.get());
-      DCHECK(backing_representation);
+      CHECK(backing_representation);
 
       SkSurfaceProps surface_props;
       // TODO(crbug.com/40776586): Use BeginScopedReadAccess instead
@@ -1660,6 +1660,10 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
           /*final_msaa_count=*/1, surface_props, &begin_semaphores,
           &end_semaphores,
           gpu::SharedImageRepresentation::AllowUnclearedAccess::kNo);
+      if (!scoped_access) {
+        DLOG(ERROR) << "Failed begin access to CopyOutputRequest source";
+        return;
+      }
       surface = scoped_access->surface();
       if (!begin_semaphores.empty()) {
         auto result =
