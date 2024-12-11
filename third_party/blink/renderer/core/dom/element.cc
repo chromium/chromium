@@ -4434,6 +4434,10 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     WhitespaceAttacher* child_attacher;
     RebuildPseudoElementLayoutTree(kPseudoIdScrollMarkerGroupAfter,
                                    local_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollDownButton, local_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollRightButton, local_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollLeftButton, local_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollUpButton, local_attacher);
     LayoutObject* layout_object = GetLayoutObject();
     if (layout_object || !HasDisplayContentsStyle()) {
       whitespace_attacher.DidVisitElement(this);
@@ -4455,10 +4459,6 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     RebuildPseudoElementLayoutTree(kPseudoIdCheckMark, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdBefore, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdMarker, *child_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollDownButton, local_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollRightButton, local_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollLeftButton, local_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollUpButton, local_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdScrollMarkerGroupBefore,
                                    local_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdBackdrop, *child_attacher);
