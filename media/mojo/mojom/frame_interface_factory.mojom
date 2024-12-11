@@ -46,6 +46,10 @@ interface FrameInterfaceFactory {
   [Sync]
   GetCdmOrigin() => (url.mojom.Origin cdm_origin);
 
+  // Gets the UKMSourceId of the frame associated with the CDM.
+  [Sync]
+  GetPageUkmSourceId() => (int64 ukm_source_id);
+
   // Binds a generic media frame-bound interface. This is to allow //content
   // embedders to provide additional interfaces.
   BindEmbedderReceiver(mojo_base.mojom.GenericPendingReceiver receiver);

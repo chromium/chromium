@@ -2435,6 +2435,8 @@ static_library("browser") {
     "//services/device/public/mojom:usb",
     "//services/image_annotation:service",
     "//services/media_session/public/mojom",
+    "//services/metrics",
+    "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network:network_service",
     "//services/network/public/cpp",

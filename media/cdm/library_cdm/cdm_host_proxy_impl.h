@@ -116,9 +116,19 @@ class CdmHostProxyImpl : public CdmHostProxy {
     host_->RequestStorageId(version);
   }
 
+  void ReportMetrics(cdm::MetricName metric_name, uint64_t value) final {
+    host_->ReportMetrics(metric_name, value);
+  }
+
  private:
   const raw_ptr<HostInterface> host_ = nullptr;
 };
+
+template <>
+void CdmHostProxyImpl<cdm::Host_10>::ReportMetrics(cdm::MetricName metric_name,
+                                                   uint64_t value) {
+  // cdm::ContentDecryptionModule_10 CDM should never call this.
+}
 
 }  // namespace media
 

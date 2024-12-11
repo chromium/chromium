@@ -208,6 +208,10 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
         render_frame_host_->GetLastCommittedOrigin());
   }
 
+  void GetPageUkmSourceId(GetPageUkmSourceIdCallback callback) override {
+    return std::move(callback).Run(render_frame_host_->GetPageUkmSourceId());
+  }
+
   void BindEmbedderReceiver(mojo::GenericPendingReceiver receiver) override {
     GetContentClient()->browser()->BindMediaServiceReceiver(
         render_frame_host_, std::move(receiver));

@@ -84,6 +84,7 @@
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #include "chrome/browser/media/output_protection_impl.h"
+#include "services/metrics/ukm_recorder_factory_impl.h"
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 #if BUILDFLAG(ENABLE_MOJO_CDM) && BUILDFLAG(IS_ANDROID)
@@ -301,6 +302,12 @@ void ChromeContentBrowserClient::BindMediaServiceReceiver(
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   if (auto r = receiver.As<media::mojom::OutputProtection>()) {
     OutputProtectionImpl::Create(render_frame_host, std::move(r));
+    return;
+  }
+
+  if (auto r = receiver.As<ukm::mojom::UkmRecorderFactory>()) {
+    metrics::UkmRecorderFactoryImpl::Create(ukm::UkmRecorder::Get(),
+                                            std::move(r));
     return;
   }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)

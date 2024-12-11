@@ -12692,6 +12692,46 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Media.EME.CdmMetrics">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Metrics reported by the CDM to the browser, collected in an utility process.
+    This metric is reported every time on the destruction of the CdmAdapter
+    object. Some fields of this metric can be left unset if the CDM does not
+    report them.
+  </summary>
+  <metric name="CertificateSerialNumber">
+    <summary>
+      The certificate serial number used by the main url given by the CDM server
+      certificate. Different Key systems will report the serial number in
+      different ways.
+    </summary>
+  </metric>
+  <metric name="DecoderBypassBlockCount">
+    <summary>
+      The number of blocks that can bypass the decoder present in an encrypted
+      playback.
+    </summary>
+  </metric>
+  <metric name="LicenseSdkVersion">
+    <summary>
+      The SDK version of the license server of the URL that communicates with
+      the CDM.
+    </summary>
+  </metric>
+  <metric name="NumberOfOnMessageEvents">
+    <summary>
+      The number of OnMessage events for the CDM.
+    </summary>
+  </metric>
+  <metric name="NumberOfUpdateCalls">
+    <summary>
+      The number of Update events for the CDM
+    </summary>
+  </metric>
+</event>
+
 <event name="Media.EME.CdmSystemCode">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>

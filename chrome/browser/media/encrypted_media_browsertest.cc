@@ -125,6 +125,7 @@ using testing::UnorderedElementsAre;
 using testing::Values;
 using testing::WithParamInterface;
 using ukm::builders::Media_EME_ApiPromiseRejection;
+using ukm::builders::Media_EME_CdmMetrics;
 using ukm::builders::Media_EME_CreateMediaKeys;
 using ukm::builders::Media_EME_RequestMediaKeySystemAccess;
 using ukm::builders::Media_EME_Usage;
@@ -494,6 +495,60 @@ class ECKEncryptedMediaFileIOTest : public EncryptedMediaTestBase,
         switches::kOverrideEnabledCdmInterfaceVersion,
         base::NumberToString(GetCdmInterfaceVersion()));
   }
+};
+
+class ECKEncryptedMediaReportMetricsTest : public EncryptedMediaTestBase,
+                                           public WithParamInterface<int> {
+ public:
+  int GetCdmInterfaceVersion() { return GetParam(); }
+
+  void SetUpOnMainThread() override {
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  }
+
+  void TearDown() override {
+    auto report_metric_entries = ukm_recorder_->GetEntries(
+        Media_EME_CdmMetrics::kEntryName,
+        {
+            Media_EME_CdmMetrics::kCertificateSerialNumberName,
+            Media_EME_CdmMetrics::kDecoderBypassBlockCountName,
+            Media_EME_CdmMetrics::kLicenseSdkVersionName,
+            Media_EME_CdmMetrics::kNumberOfOnMessageEventsName,
+            Media_EME_CdmMetrics::kNumberOfUpdateCallsName,
+        });
+
+    // The ReportMetrics functionality only works in v11 and onwards, but verify
+    // that in v10, RecordUkm is not called and the Ukm is not set.
+    if (GetCdmInterfaceVersion() > 10) {
+      EXPECT_EQ(report_metric_entries.size(), 1u);
+
+      // The ClearKey cdm does not report kCertificateSerialNumber or
+      // kDecoderBypassBlockCount, so the entries should not even be set in the
+      // ukm data.
+      EXPECT_THAT(
+          report_metric_entries[0].metrics,
+          UnorderedElementsAre(
+              Pair(Media_EME_CdmMetrics::kLicenseSdkVersionName, 12345),
+              Pair(Media_EME_CdmMetrics::kNumberOfOnMessageEventsName, 1),
+              Pair(Media_EME_CdmMetrics::kNumberOfUpdateCallsName, 1)));
+    } else {
+      EXPECT_EQ(report_metric_entries.size(), 0u);
+    }
+  }
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EncryptedMediaTestBase::SetUpCommandLine(command_line);
+
+    SetUpCommandLineForKeySystem(media::kExternalClearKeyKeySystem,
+                                 command_line);
+    // Override enabled CDM interface version for testing.
+    command_line->AppendSwitchASCII(
+        switches::kOverrideEnabledCdmInterfaceVersion,
+        base::NumberToString(GetCdmInterfaceVersion()));
+  }
+
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
 // Tests encrypted media playback with output protection using ExternalClearKey
@@ -1115,13 +1170,32 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-// Test CDM_10 through CDM_11.
-static_assert(media::CheckSupportedCdmInterfaceVersions(10, 11),
+// Test CDM_10 through CDM_12.
+static_assert(media::CheckSupportedCdmInterfaceVersions(10, 12),
               "Mismatch between implementation and test coverage");
 INSTANTIATE_TEST_SUITE_P(CDM_10, ECKEncryptedMediaTest, Values(10));
 INSTANTIATE_TEST_SUITE_P(CDM_11, ECKEncryptedMediaTest, Values(11));
+INSTANTIATE_TEST_SUITE_P(CDM_12, ECKEncryptedMediaTest, Values(12));
 INSTANTIATE_TEST_SUITE_P(CDM_10, ECKEncryptedMediaFileIOTest, Values(10));
-INSTANTIATE_TEST_SUITE_P(CDM_11, ECKEncryptedMediaFileIOTest, Values(10));
+INSTANTIATE_TEST_SUITE_P(CDM_11, ECKEncryptedMediaFileIOTest, Values(11));
+INSTANTIATE_TEST_SUITE_P(CDM_12, ECKEncryptedMediaFileIOTest, Values(12));
+
+INSTANTIATE_TEST_SUITE_P(CDM_10,
+                         ECKEncryptedMediaReportMetricsTest,
+                         Values(10));
+INSTANTIATE_TEST_SUITE_P(CDM_11,
+                         ECKEncryptedMediaReportMetricsTest,
+                         Values(11));
+INSTANTIATE_TEST_SUITE_P(CDM_12,
+                         ECKEncryptedMediaReportMetricsTest,
+                         Values(12));
+
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaReportMetricsTest, RecordUkmTest) {
+  RunSimpleEncryptedMediaTest("bear-320x240-av_enc-a.webm",
+                              media::kExternalClearKeyKeySystem, SrcType::SRC,
+                              PlayCount::ONCE);
+  base::RunLoop().RunUntilIdle();
+}
 
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, InitializeCDMFail) {
   TestNonPlaybackCases(kExternalClearKeyInitializeFailKeySystem,

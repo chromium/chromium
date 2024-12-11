@@ -37,14 +37,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::_;
 using ::testing::Invoke;
 using ::testing::IsNull;
 using ::testing::NotNull;
 using ::testing::Return;
-using ::testing::Values;
 using ::testing::SaveArg;
 using ::testing::StrictMock;
-using ::testing::_;
+using ::testing::Values;
 
 MATCHER(IsNotEmpty, "") {
   return !arg.empty();
@@ -59,6 +59,15 @@ MATCHER(IsNullPlatformChallengeResponse, "") {
   return !arg.signed_data;
 }
 
+MATCHER_P(HasLicenseSdkVersion, expected_version, "") {
+  return arg.license_sdk_version.has_value() &&
+         arg.license_sdk_version.value() == expected_version;
+}
+
+MATCHER(HasNoLicenseSdkVersion, "") {
+  return !arg.license_sdk_version.has_value();
+}
+
 // TODO(jrummell): These tests are a subset of those in aes_decryptor_unittest.
 // Refactor aes_decryptor_unittest.cc to handle AesDecryptor directly and
 // via CdmAdapter once CdmAdapter supports decrypting functionality. There
@@ -68,6 +77,8 @@ MATCHER(IsNullPlatformChallengeResponse, "") {
 namespace media {
 
 namespace {
+
+const uint64_t kExpectedLicenseSdkVersion = 12345;
 
 // Random key ID used to create a session.
 const uint8_t kKeyId[] = {
@@ -240,6 +251,15 @@ class CdmAdapterTestWithClearKeyCdm : public CdmAdapterTestBase {
       EXPECT_CALL(cdm_client_, OnSessionMessage(IsNotEmpty(), _, _));
     }
 
+    // The ClearKeyCdm records the LicenseSdkVersion in CreateSession.
+    if (GetCdmInterfaceVersion() > 10) {
+      EXPECT_CALL(*cdm_helper_,
+                  RecordUkm(HasLicenseSdkVersion(kExpectedLicenseSdkVersion)))
+          .Times(1);
+    } else {
+      EXPECT_CALL(*cdm_helper_, RecordUkm(_)).Times(0);
+    }
+
     cdm_->CreateSessionAndGenerateRequest(
         CdmSessionType::kTemporary, data_type, key_id,
         CreateSessionPromise(expected_result));
@@ -343,6 +363,19 @@ class CdmAdapterTestWithClearKeyCdm : public CdmAdapterTestBase {
 class CdmAdapterTestWithMockCdm : public CdmAdapterTestBase {
  public:
   ~CdmAdapterTestWithMockCdm() override {
+    // If the test is not a ukm test, no cdm values will be set, and
+    // RecordUkm should not be called at all. If it is a ukm test, and the
+    // interface version is greater than 10, verify that the license sdk
+    // reported is what we expect.
+    if (!is_ukm_test_) {
+      EXPECT_CALL(*cdm_helper_, RecordUkm(_)).Times(0);
+    } else if (GetCdmInterfaceVersion() > 10) {
+      EXPECT_CALL(*cdm_helper_,
+                  RecordUkm(HasLicenseSdkVersion(kExpectedLicenseSdkVersion)));
+    } else {
+      EXPECT_CALL(*cdm_helper_, RecordUkm(_)).Times(0);
+    }
+
     // Makes sure Destroy() is called on CdmAdapter destruction.
     EXPECT_CALL(*mock_library_cdm_, DestroyCalled());
   }
@@ -368,6 +401,8 @@ class CdmAdapterTestWithMockCdm : public CdmAdapterTestBase {
   // These are both owned by `cdm_`.
   raw_ptr<MockLibraryCdm> mock_library_cdm_ = nullptr;
   raw_ptr<CdmHostProxy> cdm_host_proxy_ = nullptr;
+
+  bool is_ukm_test_ = false;
 };
 
 // Instantiate test cases
@@ -569,6 +604,14 @@ TEST_P(CdmAdapterTestWithMockCdm, GetDecryptor) {
   auto* cdm_context = cdm_->GetCdmContext();
   ASSERT_TRUE(cdm_context);
   EXPECT_TRUE(cdm_context->GetDecryptor());
+}
+
+TEST_P(CdmAdapterTestWithMockCdm, RecordUkmCalled) {
+  is_ukm_test_ = true;
+  CdmConfig cdm_config = GetCdmConfig();
+  InitializeWithCdmConfig(cdm_config);
+
+  cdm_host_proxy_->ReportMetrics(cdm::kSdkVersion, 12345);
 }
 
 }  // namespace media
