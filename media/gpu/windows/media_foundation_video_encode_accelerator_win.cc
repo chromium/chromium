@@ -190,18 +190,6 @@ BASE_FEATURE(kMediaFoundationUseSWBRCForH264Desktop,
              "MediaFoundationUseSWBRCForH264Desktop",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// H.264 SW Bitrate Controller works in fixed delta QP mode by default. The QP
-// difference between base and enhancement layer can be controlled using a
-// feature parameter.
-BASE_FEATURE(kMediaFoundationSWBRCUseFixedDeltaQP,
-             "MediaFoundationSWBRCUseFixedDeltaQP",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(int,
-                   kMediaFoundationSWBRCFixedDeltaQPValue,
-                   &kMediaFoundationSWBRCUseFixedDeltaQP,
-                   "MediaFoundationSWBRCFixedDeltaQPValue",
-                   0);
-
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 // For H.265 encoding at L1T1/L1T2 we may use SW bitrate controller when
 // constant bitrate encoding is requested.
@@ -980,13 +968,6 @@ VideoRateControlWrapper::RateControlConfig CreateRateControllerConfig(
     config.ts_rate_decimator[tid] = 1u << (num_temporal_layers - tid - 1);
     config.min_quantizers[tid] = config.min_quantizer;
     config.max_quantizers[tid] = config.max_quantizer;
-  }
-  if ((codec == VideoCodec::kH264 || codec == VideoCodec::kHEVC) &&
-      num_temporal_layers > 1 &&
-      base::FeatureList::IsEnabled(kMediaFoundationSWBRCUseFixedDeltaQP)) {
-    // `fixed_delta_qp` is used by H.264 and H.265 SW BRCs only in temporal
-    // scalability video mode.
-    config.fixed_delta_qp = kMediaFoundationSWBRCFixedDeltaQPValue.Get();
   }
   return config;
 }

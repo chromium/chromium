@@ -62,11 +62,7 @@ struct MEDIA_GPU_EXPORT H264RateControllerSettings {
   gfx::Size frame_size;
 
   // Fixed delta QP between layers.
-  // When `fixed_delta_qp` is set and the video stream scalability mode is L1T2,
-  // the QP of the higher layer is always increased by `fixed_delta_qp` compared
-  // to the base layer. This parameter has no meaning in non scalable video
-  // encoding.
-  std::optional<int> fixed_delta_qp;
+  bool fixed_delta_qp = false;
 
   // Maximum source frame rate.
   float frame_rate_max = 0.0f;
@@ -580,9 +576,8 @@ class MEDIA_GPU_EXPORT H264RateController {
   // Frame size of the video stream.
   gfx::Size frame_size_;
 
-  // QP delta value in Fixed Delta QP mode. It's not defined in non Fixed Delta
-  // QP mode.
-  const std::optional<int> fixed_delta_qp_;
+  // Indicates whether the Fixed Delta QP mode is enabled.
+  const bool fixed_delta_qp_;
 
   // Indicates base QP should be raised due to upper layer HRD constraints.
   bool limit_base_qp_ = false;
