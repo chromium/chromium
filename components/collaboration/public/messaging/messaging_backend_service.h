@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation_traits.h"
 #include "base/supports_user_data.h"
 #include "components/collaboration/public/messaging/activity_log.h"
 #include "components/collaboration/public/messaging/message.h"
@@ -89,5 +90,26 @@ class MessagingBackendService : public KeyedService,
 };
 
 }  // namespace collaboration::messaging
+
+namespace base {
+template <>
+struct ScopedObservationTraits<
+    collaboration::messaging::MessagingBackendService,
+    collaboration::messaging::MessagingBackendService::
+        PersistentMessageObserver> {
+  static void AddObserver(
+      collaboration::messaging::MessagingBackendService* source,
+      collaboration::messaging::MessagingBackendService::
+          PersistentMessageObserver* observer) {
+    source->AddPersistentMessageObserver(observer);
+  }
+  static void RemoveObserver(
+      collaboration::messaging::MessagingBackendService* source,
+      collaboration::messaging::MessagingBackendService::
+          PersistentMessageObserver* observer) {
+    source->RemovePersistentMessageObserver(observer);
+  }
+};
+}  // namespace base
 
 #endif  // COMPONENTS_COLLABORATION_PUBLIC_MESSAGING_MESSAGING_BACKEND_SERVICE_H_
