@@ -9,7 +9,7 @@ namespace blink {
 double RTCRtpSent::time() {
   return time_;
 }
-uint64_t RTCRtpSent::ackId() {
+std::optional<uint64_t> RTCRtpSent::ackId() {
   return ackId_;
 }
 uint64_t RTCRtpSent::size() {
