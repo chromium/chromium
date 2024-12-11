@@ -153,8 +153,12 @@ String RTCIceCandidate::usernameFragment() const {
   return platform_candidate_->UsernameFragment();
 }
 
-std::optional<String> RTCIceCandidate::url() const {
-  return platform_candidate_->Url();
+String RTCIceCandidate::url() const {
+  const std::optional<String> url = platform_candidate_->Url();
+  if (!url) {
+    return g_null_atom;
+  }
+  return *url;
 }
 
 std::optional<V8RTCIceServerTransportProtocol> RTCIceCandidate::relayProtocol()
