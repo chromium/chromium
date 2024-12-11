@@ -70,7 +70,6 @@ static_library("android") {
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/payments/CSPCheckerBridge.java",
-    "java/src/org/chromium/components/payments/CurrencyFormatter.java",
     "java/src/org/chromium/components/payments/ErrorMessageUtil.java",
     "java/src/org/chromium/components/payments/HasEnrolledInstrumentQuery.java",
     "java/src/org/chromium/components/payments/JniPaymentApp.java",
@@ -85,6 +84,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/payments/PaymentValidator.java",
     "java/src/org/chromium/components/payments/SslValidityChecker.java",
     "java/src/org/chromium/components/payments/UrlUtil.java",
+    "java/src/org/chromium/components/payments/ui/CurrencyFormatter.java",
   ]
 }
 
@@ -169,7 +169,6 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/AndroidPaymentAppFinder.java",
     "java/src/org/chromium/components/payments/BrowserPaymentRequest.java",
     "java/src/org/chromium/components/payments/CSPCheckerBridge.java",
-    "java/src/org/chromium/components/payments/CurrencyFormatter.java",
     "java/src/org/chromium/components/payments/ErrorMessageUtil.java",
     "java/src/org/chromium/components/payments/HasEnrolledInstrumentQuery.java",
     "java/src/org/chromium/components/payments/InputProtector.java",
@@ -206,6 +205,7 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnViewBinder.java",
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredController.java",
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredView.java",
+    "java/src/org/chromium/components/payments/ui/CurrencyFormatter.java",
   ]
   resources_package = "org.chromium.components.payments"
   deps = [

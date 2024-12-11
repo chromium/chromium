@@ -1535,7 +1535,7 @@ if (current_toolchain == default_toolchain) {
       "javatests/src/org/chromium/chrome/browser/notifications/NotificationPlatformBridgeUnitTest.java",
       "javatests/src/org/chromium/chrome/browser/ntp/IncognitoDescriptionViewRenderTest.java",
       "javatests/src/org/chromium/chrome/browser/ntp/TitleUtilTest.java",
-      "javatests/src/org/chromium/chrome/browser/payments/CurrencyFormatterTest.java",
+      "javatests/src/org/chromium/chrome/browser/payments/ui/CurrencyFormatterTest.java",
       "javatests/src/org/chromium/chrome/browser/screenshot_monitor/ScreenshotMonitorTest.java",
       "javatests/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineSettingsRenderTest.java",
       "javatests/src/org/chromium/chrome/browser/share/ShareUrlTest.java",

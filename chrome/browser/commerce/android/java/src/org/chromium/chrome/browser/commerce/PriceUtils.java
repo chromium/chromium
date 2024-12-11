@@ -8,7 +8,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.components.payments.CurrencyFormatter;
+import org.chromium.components.payments.ui.CurrencyFormatter;
 
 import java.util.Locale;
 

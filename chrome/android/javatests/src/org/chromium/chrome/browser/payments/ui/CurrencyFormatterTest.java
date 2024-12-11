@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.payments;
+package org.chromium.chrome.browser.payments.ui;
 
 import androidx.test.filters.MediumTest;
 
@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.components.payments.CurrencyFormatter;
+import org.chromium.components.payments.ui.CurrencyFormatter;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.url.GURLJavaTestHelper;
 

@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.proto.ShoppingPersistedTabData.ShoppingPersistedTabDataProto;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.ProductInfo;
-import org.chromium.components.payments.CurrencyFormatter;
+import org.chromium.components.payments.ui.CurrencyFormatter;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;

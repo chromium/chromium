@@ -31,7 +31,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.ShoppingAccessoryViewProperties.PriceInfo;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.components.payments.CurrencyFormatter;
+import org.chromium.components.payments.ui.CurrencyFormatter;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
