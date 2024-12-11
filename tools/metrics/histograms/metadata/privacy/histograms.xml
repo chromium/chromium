@@ -83,8 +83,7 @@ reviewer.
 </variants>
 
 <!-- Each profile on a client is assigned a unique bucket, see go/profile-metrics.
-The guest profile has a profile bucket 0, regular profiles start at bucket 1.
-Incognito profiles count towards the original profile. -->
+Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <variants name="Profile">
   <variant name="Profile_1" summary="Profile bucket 1 for a client."/>
@@ -97,19 +96,9 @@ Incognito profiles count towards the original profile. -->
   <variant name="Profile_8" summary="Profile bucket 8 for a client."/>
   <variant name="Profile_9" summary="Profile bucket 9 for a client."/>
   <variant name="Profile_10" summary="Profile bucket 10 for a client."/>
-  <variant name="Profile_11" summary="Profile bucket 11 for a client."/>
-  <variant name="Profile_12" summary="Profile bucket 12 for a client."/>
-  <variant name="Profile_13" summary="Profile bucket 13 for a client."/>
-  <variant name="Profile_14" summary="Profile bucket 14 for a client."/>
-  <variant name="Profile_15" summary="Profile bucket 15 for a client."/>
-  <variant name="Profile_16" summary="Profile bucket 16 for a client."/>
-  <variant name="Profile_17" summary="Profile bucket 17 for a client."/>
-  <variant name="Profile_18" summary="Profile bucket 18 for a client."/>
-  <variant name="Profile_19" summary="Profile bucket 19 for a client."/>
-  <variant name="Profile_20" summary="Profile bucket 20 for a client."/>
-  <variant name="Profile_21+"
-      summary="All profiles with a bucket of 21+ will be bucketed here, 21
-               inclusive."/>
+  <variant name="Profile_11+"
+      summary="All profiles with a bucket greater than 10 will be bucketed
+               here."/>
 </variants>
 
 <variants name="PSNotice">
