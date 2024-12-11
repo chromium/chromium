@@ -680,6 +680,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // See RootView::GetContentsView().
   View* GetContentsView();
 
+  // This returns the client content view that corresponds to the view returned
+  // from WidgetDelegate::GetContentsView(). Alternatively, if
+  // Widget::SetContentView() was explicitly called, this will return that view.
+  View* GetClientContentsView();
+
   // Returns the bounds of the Widget in screen coordinates.
   gfx::Rect GetWindowBoundsInScreen() const;
 

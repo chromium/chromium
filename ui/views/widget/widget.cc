@@ -704,6 +704,13 @@ View* Widget::GetContentsView() {
   return root_view_->GetContentsView();
 }
 
+View* Widget::GetClientContentsView() {
+  if (non_client_view_) {
+    return non_client_view_->client_view()->children().front();
+  }
+  return GetContentsView();
+}
+
 gfx::Rect Widget::GetWindowBoundsInScreen() const {
   return native_widget_ ? native_widget_->GetWindowBoundsInScreen()
                         : gfx::Rect();
