@@ -31,6 +31,7 @@
 
 #include "base/auto_reset.h"
 #include "base/base_export.h"
+#include "base/functional/callback_forward.h"
 #include "base/strings/cstring_view.h"
 #include "base/win/windows_types.h"
 
@@ -121,11 +122,18 @@ BASE_EXPORT bool ShouldCrashOnProcessDetach();
 // process is aborted.
 BASE_EXPORT void SetAbortBehaviorForCrashReporting();
 
-// Checks whether the supplied |hwnd| is in Windows 10 tablet mode. Will return
-// false on versions below 10.
-// While tablet mode isn't officially supported in Windows 11, the function will
-// make an attempt to inspect other signals for tablet mode.
-BASE_EXPORT bool IsWindows10OrGreaterTabletMode(HWND hwnd);
+// Checks whether the supplied `hwnd` is in Windows 10 tablet mode. Will return
+// false on versions below 10. This function is deprecated; all new code should
+// use `IsDeviceInTabletMode()` and ensure it can support async content.
+BASE_EXPORT bool IsWindows10TabletMode(HWND hwnd);
+
+// Checks whether a device is in tablet mode and runs a callback that takes a
+// bit that represents whether the device is in tablet mode. Use this function
+// for accurate results on all platforms. A device is considered to be in tablet
+// mode when the internal display is on and not in extend mode, in addition to
+// being undocked.
+BASE_EXPORT void IsDeviceInTabletMode(HWND hwnd,
+                                      OnceCallback<void(bool)> callback);
 
 // The device convertibility functions below return references to cached data
 // to allow for complete test scenarios. See:
@@ -171,17 +179,7 @@ bool (*&HasCSMStateChanged(void))();
 // blocking (i.e., the UI thread). The steps to determine the convertibility are
 // based on the following publication:
 // https://learn.microsoft.com/en-us/windows-hardware/customize/desktop/settings-for-better-tablet-experiences?source=recommendations
-BASE_EXPORT BASE_EXPORT bool QueryDeviceConvertibility();
-
-// A tablet is a device that is touch enabled and also is being used
-// "like a tablet". This is used by the following:
-// 1. Metrics: To gain insight into how users use Chrome.
-// 2. Physical keyboard presence: If a device is in tablet mode, it means
-//    that there is no physical keyboard attached.
-// This function optionally sets the |reason| parameter to determine as to why
-// or why not a device was deemed to be a tablet.
-// Returns true if the user has set Windows 10 in tablet mode.
-BASE_EXPORT bool IsTabletDevice(std::string* reason, HWND hwnd);
+BASE_EXPORT bool QueryDeviceConvertibility();
 
 // Return true if the device is physically used as a tablet independently of
 // Windows tablet mode. It checks if the device:
@@ -192,14 +190,16 @@ BASE_EXPORT bool IsTabletDevice(std::string* reason, HWND hwnd);
 // - Is not in laptop mode,
 // - prefers the mobile or slate power management profile (per OEM choice), and
 // - Is in slate mode.
-// This function optionally sets the |reason| parameter to determine as to why
+// This function optionally sets the `reason` parameter to determine as to why
 // or why not a device was deemed to be a tablet.
 BASE_EXPORT bool IsDeviceUsedAsATablet(std::string* reason);
 
-// A slate is a touch device that may have a keyboard attached. This function
-// returns true if a keyboard is attached and optionally will set the |reason|
-// parameter to the detection method that was used to detect the keyboard.
-BASE_EXPORT bool IsKeyboardPresentOnSlate(HWND hwnd, std::string* reason);
+// Executes `callback` that takes as arguments, a bit that indicates whether
+// a keyboard is detected along with a reason string ptr that will be set to to
+// the detection method that was used to detect the keyboard.
+BASE_EXPORT void IsDeviceSlateWithKeyboard(
+    HWND hwnd,
+    OnceCallback<void(bool, std::string)> callback);
 
 // Get the size of a struct up to and including the specified member.
 // This is necessary to set compatible struct sizes for different versions

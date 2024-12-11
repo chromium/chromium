@@ -45,7 +45,6 @@ class ChromeInternalLogSource : public SystemLogsSource {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN)
-  void PopulateUsbKeyboardDetected(SystemLogsResponse* response);
   void PopulateEnrolledToDomain(SystemLogsResponse* response);
   void PopulateInstallerBrandCode(SystemLogsResponse* response);
   void PopulateLastUpdateState(SystemLogsResponse* response);

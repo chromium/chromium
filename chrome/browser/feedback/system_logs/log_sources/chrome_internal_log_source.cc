@@ -19,7 +19,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -359,7 +358,9 @@ std::string MacCpuArchAsString() {
       return "arm64";
   }
 }
-#elif BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN)
 std::string WinCpuArchAsString() {
 #if defined(ARCH_CPU_ARM64)
   return "arm64";
@@ -378,7 +379,23 @@ std::string WinCpuArchAsString() {
 #endif  // defined(ARCH_CPU_X86)
 #endif  // defined(ARCH_CPU_ARM64)
 }
-#endif
+
+void PopulateUsbKeyboardDetected(std::unique_ptr<SystemLogsResponse> response,
+                                 SysLogsSourceCallback callback) {
+  auto on_keyboard_check = [](std::unique_ptr<SystemLogsResponse> response,
+                              SysLogsSourceCallback callback, bool result,
+                              std::string reason) {
+    reason.insert(0, result ? "Keyboard Detected:\n" : "No Keyboard:\n");
+    response->emplace(kUsbKeyboardDetected, reason);
+    std::move(callback).Run(std::move(response));
+  };
+
+  base::win::IsDeviceSlateWithKeyboard(
+      ui::GetHiddenWindow(),
+      base::BindOnce(on_keyboard_check, std::move(response),
+                     std::move(callback)));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -418,7 +435,6 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
   }
 #endif
 #if BUILDFLAG(IS_WIN)
-  PopulateUsbKeyboardDetected(response.get());
   PopulateEnrolledToDomain(response.get());
   PopulateInstallerBrandCode(response.get());
   PopulateLastUpdateState(response.get());
@@ -471,6 +487,10 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
       cros_display_config_.get(), response.get(),
       base::BindOnce(&OnPopulateMonitorInfoAsync, std::move(response),
                      std::move(callback)));
+#elif BUILDFLAG(IS_WIN)
+  // Fetch keyboard info then run callback. Keyboard info may require some
+  // expensive WMI queries which should not run on the UI thread.
+  PopulateUsbKeyboardDetected(std::move(response), std::move(callback));
 #else
   // On other platforms, we're done. Invoke the callback.
   std::move(callback).Run(std::move(response));
@@ -619,15 +639,6 @@ void ChromeInternalLogSource::PopulateOnboardingTime(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN)
-void ChromeInternalLogSource::PopulateUsbKeyboardDetected(
-    SystemLogsResponse* response) {
-  std::string reason;
-  bool result =
-      base::win::IsKeyboardPresentOnSlate(ui::GetHiddenWindow(), &reason);
-  reason.insert(0, result ? "Keyboard Detected:\n" : "No Keyboard:\n");
-  response->emplace(kUsbKeyboardDetected, reason);
-}
-
 void ChromeInternalLogSource::PopulateEnrolledToDomain(
     SystemLogsResponse* response) {
   response->emplace(kIsEnrolledToDomain, base::win::IsEnrolledToDomain()

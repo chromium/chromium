@@ -62,6 +62,8 @@ class COMPONENT_EXPORT(UI_BASE) TouchUiController {
   TouchUiController& operator=(const TouchUiController&) = delete;
   virtual ~TouchUiController();
 
+  // The value is indeterminate at startup, ensure that all consumers of
+  // touch_ui state register a callback to get the correct initial value.
   bool touch_ui() const {
     return (touch_ui_state_ == TouchUiState::kEnabled) ||
            ((touch_ui_state_ == TouchUiState::kAuto) && tablet_mode_);
@@ -71,6 +73,11 @@ class COMPONENT_EXPORT(UI_BASE) TouchUiController {
       const base::RepeatingClosure& closure);
 
   void OnTabletModeToggled(bool enabled);
+#if BUILDFLAG(IS_WIN)
+  // Check whether a device is in tablet or desktop mode in a threadpool thread,
+  // and notify listeners.
+  void RefreshTabletMode();
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_BLINK)
   void OnPointerDeviceConnected(PointerDevice::Key key);
@@ -91,6 +98,9 @@ class COMPONENT_EXPORT(UI_BASE) TouchUiController {
 
  private:
   void TouchUiChanged();
+  // Records whether the user has entered touch mode and runs callbacks
+  // if touch mode has initially been detected.
+  void SetInitialTabletMode(bool enabled);
 
   bool tablet_mode_ = false;
   TouchUiState touch_ui_state_;
