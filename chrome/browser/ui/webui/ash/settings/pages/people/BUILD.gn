@@ -56,6 +56,7 @@ static_library("people") {
     "//chrome/browser:resources",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/child_accounts",
+    "//chrome/browser/ash/child_accounts/constants",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/profiles",
