@@ -1276,9 +1276,25 @@ bool RenderWidgetHostInputEventRouter::BubbleScrollEvent(
     // If target_view has unrelated gesture events in progress, do
     // not proceed. This could cause confusion between independent
     // scrolls.
-    if (target_view == touchscreen_gesture_target_.get() ||
-        target_view == touchpad_gesture_target_ ||
-        target_view == touch_target_) {
+    bool bubbling_collision_detected;
+    if (base::FeatureList::IsEnabled(
+            features::kIgnoreBubblingCollisionIfSourceDevicesMismatch)) {
+      // Only consider the bubbling to have collided if it hits the same target
+      // as the bubbling event's type.
+      bubbling_collision_detected =
+          (target_view == touchscreen_gesture_target_.get() &&
+           event.SourceDevice() == blink::WebGestureDevice::kTouchscreen) ||
+          (target_view == touchpad_gesture_target_ &&
+           event.SourceDevice() == blink::WebGestureDevice::kTouchpad) ||
+          (target_view == touch_target_ &&
+           event.SourceDevice() == blink::WebGestureDevice::kTouchscreen);
+    } else {
+      bubbling_collision_detected =
+          target_view == touchscreen_gesture_target_.get() ||
+          target_view == touchpad_gesture_target_ ||
+          target_view == touch_target_;
+    }
+    if (bubbling_collision_detected) {
       TRACE_EVENT_INSTANT("input", "EarlyOut-GestureInProgress", "target_view",
                           static_cast<void*>(target_view),
                           "touchscreen_gesture_target_",
