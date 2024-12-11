@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_ANDROID_REFERRING_APP_INFO_H_
-#define COMPONENTS_SAFE_BROWSING_ANDROID_REFERRING_APP_INFO_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_REFERRING_APP_INFO_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_REFERRING_APP_INFO_H_
 
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "url/gurl.h"
@@ -18,4 +18,4 @@ struct ReferringAppInfo {
 }  // namespace internal
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_ANDROID_REFERRING_APP_INFO_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_REFERRING_APP_INFO_H_

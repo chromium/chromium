@@ -229,6 +229,14 @@ source_set("download_check_result") {
   ]
 }
 
+source_set("referring_app_info") {
+  sources = [ "referring_app_info.h" ]
+  deps = [
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//url",
+  ]
+}
+
 source_set("safe_browsing_metrics_collector") {
   sources = [
     "safe_browsing_metrics_collector.cc",

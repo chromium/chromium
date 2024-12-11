@@ -21,14 +21,11 @@ source_set("safe_browsing_service") {
 
   deps = [
     "//base:base",
+    "//components/safe_browsing/core/browser:referring_app_info",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//content/public/browser",
   ]
-
-  if (is_android) {
-    deps += [ "//components/safe_browsing/android:referring_app_info" ]
-  }
 }
 
 # NOTE: This target is separated from :browser as

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_ANDROID_SAFE_BROWSING_REFERRING_APP_BRIDGE_ANDROID_H_
 #define CHROME_BROWSER_SAFE_BROWSING_ANDROID_SAFE_BROWSING_REFERRING_APP_BRIDGE_ANDROID_H_
 
-#include "components/safe_browsing/android/referring_app_info.h"
+#include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 namespace content {
