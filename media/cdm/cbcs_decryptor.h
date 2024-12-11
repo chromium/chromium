@@ -5,6 +5,7 @@
 #ifndef MEDIA_CDM_CBCS_DECRYPTOR_H_
 #define MEDIA_CDM_CBCS_DECRYPTOR_H_
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/media_export.h"
 
@@ -49,6 +50,9 @@ class DecoderBuffer;
 MEDIA_EXPORT scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(
     const DecoderBuffer& input,
     const crypto::SymmetricKey& key);
+MEDIA_EXPORT scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(
+    const DecoderBuffer& input,
+    base::span<const uint8_t> key);
 
 }  // namespace media
 

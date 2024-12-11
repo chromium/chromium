@@ -36,14 +36,14 @@ constexpr size_t kAesBlockSizeInBytes = 16;
 // |pattern|. |pattern| only applies to full blocks. Any partial block at
 // the end is considered unencrypted. |output_data| must have enough room to
 // hold |input_data|.size() bytes.
-bool DecryptWithPattern(const crypto::SymmetricKey& key,
+bool DecryptWithPattern(base::span<const uint8_t> key,
                         base::span<const uint8_t> iv,
                         const EncryptionPattern& pattern,
                         base::span<const uint8_t> input_data,
                         uint8_t* output_data) {
   // The AES_CBC decryption is reset for each subsample.
   AesCbcCrypto aes_cbc_crypto;
-  if (!aes_cbc_crypto.Initialize(base::as_byte_span(key.key()), iv)) {
+  if (!aes_cbc_crypto.Initialize(key, iv)) {
     return false;
   }
 
@@ -126,6 +126,11 @@ bool DecryptWithPattern(const crypto::SymmetricKey& key,
 scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(
     const DecoderBuffer& input,
     const crypto::SymmetricKey& key) {
+  return DecryptCbcsBuffer(input, base::as_byte_span(key.key()));
+}
+
+scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(const DecoderBuffer& input,
+                                               base::span<const uint8_t> key) {
   const size_t sample_size = input.size();
   DCHECK(sample_size) << "No data to decrypt.";
 
