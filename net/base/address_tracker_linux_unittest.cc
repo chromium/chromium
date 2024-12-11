@@ -371,6 +371,9 @@ TEST_F(AddressTrackerLinuxTest, IgnoredMessage) {
   // No address.
   MakeAddrMessage(RTM_NEWADDR, 0, AF_INET, kTestInterfaceEth, kEmpty, kEmpty,
                   &buffer);
+  // IPv6 random temporary address.
+  MakeAddrMessage(RTM_NEWADDR, IFA_F_TEMPORARY, AF_INET6, kTestInterfaceEth,
+                  kAddr3, kEmpty, &buffer);
   // Ignored type.
   MakeAddrMessage(RTM_DELROUTE, 0, AF_INET6, kTestInterfaceEth, kAddr3, kEmpty,
                   &buffer);

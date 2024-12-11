@@ -116,7 +116,7 @@ class NCNLinuxMockedNetlinkTestUtil {
 
   void BufferAddAddrMsg(const net::IPAddress address,
                         int interface = kTestInterfaceEth,
-                        uint8_t flags = IFA_F_TEMPORARY) {
+                        uint8_t flags = IFA_F_TENTATIVE) {
     net::test::MakeAddrMessage(RTM_NEWADDR, flags,
                                address.IsIPv4() ? AF_INET : AF_INET6, interface,
                                address, kEmpty, &buffer_);
@@ -366,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(AddressMapLinuxBrowserTest, CheckAddressMapDiffsApply) {
        .should_not_contain_links = {}});
 
   // Now change kAddr0's ifaddrmsg. Use flags = IFA_F_HOMEADDRESS rather than
-  // flags = IFA_F_TEMPORARY.
+  // flags = IFA_F_TENTATIVE.
   ncn_mocked_factory_->ncn_wrapper()->BufferAddAddrMsg(
       NCNLinuxMockedNetlinkTestUtil::kAddr0,
       NCNLinuxMockedNetlinkTestUtil::kTestInterfaceEth, IFA_F_HOMEADDRESS);
