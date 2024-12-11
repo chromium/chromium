@@ -6,7 +6,6 @@
 
 #include <ostream>
 
-#include "base/atomicops.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"

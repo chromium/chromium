@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
-#include "base/atomicops.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"

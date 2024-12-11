@@ -12,10 +12,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <atomic>
 #include <memory>
 #include <utility>
 
-#include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -106,10 +106,10 @@
 
 // Defines atomic operations used internally by the tracing system.
 // Acquire/release barriers are important here: crbug.com/1330114#c8.
-#define TRACE_EVENT_API_ATOMIC_WORD base::subtle::AtomicWord
-#define TRACE_EVENT_API_ATOMIC_LOAD(var) base::subtle::Acquire_Load(&(var))
+#define TRACE_EVENT_API_ATOMIC_WORD std::atomic<intptr_t>
+#define TRACE_EVENT_API_ATOMIC_LOAD(var) (var).load(std::memory_order_acquire)
 #define TRACE_EVENT_API_ATOMIC_STORE(var, value) \
-  base::subtle::Release_Store(&(var), (value))
+  (var).store((value), std::memory_order_release)
 
 // Defines visibility for classes in trace_event.h
 #define TRACE_EVENT_API_CLASS_EXPORT BASE_EXPORT
