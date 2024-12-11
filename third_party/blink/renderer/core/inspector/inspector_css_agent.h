@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_CSS_AGENT_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
@@ -156,6 +157,14 @@ class CORE_EXPORT InspectorCSSAgent final
 
   void enable(std::unique_ptr<EnableCallback>) override;
   protocol::Response disable() override;
+  protocol::Response getAnimatedStylesForNode(
+      int node_id,
+      std::unique_ptr<protocol::Array<protocol::CSS::CSSAnimationStyle>>*
+          animation_styles,
+      std::unique_ptr<protocol::CSS::CSSStyle>* transitions_style,
+      std::unique_ptr<
+          protocol::Array<protocol::CSS::InheritedAnimatedStyleEntry>>*
+          inherited) override;
   protocol::Response getMatchedStylesForNode(
       int node_id,
       std::unique_ptr<protocol::CSS::CSSStyle>* inline_style,
@@ -414,10 +423,14 @@ class CORE_EXPORT InspectorCSSAgent final
       const InspectorGhostRules&,
       PseudoId pseudo_id = kPseudoIdNone,
       const AtomicString& pseudo_argument = g_null_atom);
+  std::unique_ptr<protocol::Array<protocol::CSS::CSSAnimationStyle>>
+  BuildArrayForCSSAnimationStyleList(Element* element);
   std::unique_ptr<protocol::CSS::CSSStyle> BuildObjectForAttributesStyle(
       Element*);
   std::unique_ptr<protocol::Array<int>>
   BuildArrayForComputedStyleUpdatedNodes();
+  std::unique_ptr<protocol::CSS::CSSStyle> BuildObjectForTransitionsStyle(
+      Element*);
 
   // Container Queries implementation
   std::unique_ptr<protocol::CSS::CSSContainerQuery> BuildContainerQueryObject(

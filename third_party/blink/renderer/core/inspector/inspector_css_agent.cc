@@ -30,7 +30,11 @@
 
 #include "base/auto_reset.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
+#include "third_party/blink/renderer/core/animation/animation_utils.h"
+#include "third_party/blink/renderer/core/animation/css/css_animation.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
+#include "third_party/blink/renderer/core/animation/css/css_transition.h"
+#include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/auto_registration.h"
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
@@ -1217,6 +1221,62 @@ protocol::Response InspectorCSSAgent::getLocationForSelector(
     String message = "Failed to find selector '" + selector_text +
                      "' in style sheet " + style_sheet->FinalURL();
     return protocol::Response::InvalidParams(message.Utf8());
+  }
+
+  return protocol::Response::Success();
+}
+
+protocol::Response InspectorCSSAgent::getAnimatedStylesForNode(
+    int node_id,
+    std::unique_ptr<protocol::Array<protocol::CSS::CSSAnimationStyle>>*
+        animation_styles,
+    std::unique_ptr<protocol::CSS::CSSStyle>* transitions_style,
+    std::unique_ptr<
+        protocol::Array<protocol::CSS::InheritedAnimatedStyleEntry>>*
+        inherited) {
+  protocol::Response response = AssertEnabled();
+  Element* element = nullptr;
+  response = dom_agent_->AssertElement(node_id, element);
+  if (!response.IsSuccess()) {
+    return response;
+  }
+
+  Element* animating_element = element;
+  PseudoId element_pseudo_id = kPseudoIdNone;
+  AtomicString view_transition_name = g_null_atom;
+  PseudoElement* pseudo_element = nullptr;
+  // If the requested element is a pseudo element, `element` becomes
+  // the first non-pseudo parent element or shadow host element
+  // after `GetPseudoIdAndTag` call below.
+  element = GetPseudoIdAndTag(element, pseudo_element, element_pseudo_id,
+                              view_transition_name);
+  if (!element) {
+    return protocol::Response::ServerError("Pseudo element has no parent");
+  }
+
+  // `UpdateViewportSize` makes sure that while getting the values
+  // of the interpolated properties, we have the `viewport_size_` defined.
+  // Otherwise, when there is a resize is in progress and we try to
+  // get the values of the interpolated properties, call to `GetViewportSize()`
+  // causes a crash because `viewport_size_` is not defined.
+  animating_element->GetDocument().GetStyleEngine().UpdateViewportSize();
+  *animation_styles = BuildArrayForCSSAnimationStyleList(animating_element);
+  *transitions_style = BuildObjectForTransitionsStyle(animating_element);
+
+  // Inherited styles.
+  *inherited = std::make_unique<
+      protocol::Array<protocol::CSS::InheritedAnimatedStyleEntry>>();
+  Element* parent_element =
+      element_pseudo_id ? element : FlatTreeTraversal::ParentElement(*element);
+  while (parent_element) {
+    std::unique_ptr<protocol::CSS::InheritedAnimatedStyleEntry> entry =
+        protocol::CSS::InheritedAnimatedStyleEntry::create()
+            .setAnimationStyles(
+                BuildArrayForCSSAnimationStyleList(parent_element))
+            .setTransitionsStyle(BuildObjectForTransitionsStyle(parent_element))
+            .build();
+    (*inherited)->emplace_back(std::move(entry));
+    parent_element = FlatTreeTraversal::ParentElement(*parent_element);
   }
 
   return protocol::Response::Success();
@@ -3423,6 +3483,117 @@ InspectorCSSAgent::BuildObjectForAttributesStyle(Element* element) {
 
   InspectorStyle* inspector_style = MakeGarbageCollected<InspectorStyle>(
       mutable_attribute_style->EnsureCSSStyleDeclaration(
+          element->GetExecutionContext()),
+      nullptr, nullptr);
+  return inspector_style->BuildObjectForStyle();
+}
+
+std::unique_ptr<protocol::Array<protocol::CSS::CSSAnimationStyle>>
+InspectorCSSAgent::BuildArrayForCSSAnimationStyleList(Element* element) {
+  std::unique_ptr<protocol::Array<protocol::CSS::CSSAnimationStyle>>
+      animation_styles =
+          std::make_unique<protocol::Array<protocol::CSS::CSSAnimationStyle>>();
+  ElementAnimations* element_animations =
+      element->GetAnimationTarget()->GetElementAnimations();
+  if (!element_animations || element_animations->IsEmpty()) {
+    return animation_styles;
+  }
+
+  HeapVector<Member<Animation>> animations;
+  for (const auto& entry : element_animations->Animations()) {
+    Animation& animation = *entry.key;
+    // We only include CSS animations & WAAPI animations here.
+    if (animation.IsCSSTransition()) {
+      continue;
+    }
+
+    animations.push_back(animation);
+  }
+
+  // Sort animations based on their composite ordering so that
+  // the animations are in the order of their application.
+  std::sort(animations.begin(), animations.end(),
+            [](Animation* a, Animation* b) {
+              return Animation::HasLowerCompositeOrdering(
+                  b, a, Animation::CompareAnimationsOrdering::kPointerOrder);
+            });
+
+  for (auto& animation : animations) {
+    KeyframeEffect* effect = DynamicTo<KeyframeEffect>(animation->effect());
+    if (!effect) {
+      continue;
+    }
+
+    String name;
+    if (CSSAnimation* css_animation = DynamicTo<CSSAnimation>(*animation)) {
+      name = css_animation->animationName();
+    }
+
+    ActiveInterpolationsMap active_interpolations =
+        effect->InterpolationsForCommitStyles();
+    PropertyHandleSet animation_properties = effect->Model()->Properties();
+    MutableCSSPropertyValueSet* property_values =
+        MakeGarbageCollected<MutableCSSPropertyValueSet>(
+            CSSParserMode::kHTMLStandardMode);
+
+    AnimationUtils::ForEachInterpolatedPropertyValue(
+        element, animation_properties, active_interpolations,
+        [property_values](PropertyHandle property, const CSSValue* value) {
+          property_values->SetProperty(property.GetCSSPropertyName(), *value);
+        });
+
+    InspectorStyle* inspector_style = MakeGarbageCollected<InspectorStyle>(
+        property_values->EnsureCSSStyleDeclaration(
+            element->GetExecutionContext()),
+        nullptr, nullptr);
+
+    std::unique_ptr<protocol::CSS::CSSAnimationStyle> animation_style =
+        protocol::CSS::CSSAnimationStyle::create()
+            .setStyle(inspector_style->BuildObjectForStyle())
+            .build();
+
+    if (!name.IsNull()) {
+      animation_style->setName(name);
+    }
+
+    animation_styles->emplace_back(std::move(animation_style));
+  }
+  return animation_styles;
+}
+
+std::unique_ptr<protocol::CSS::CSSStyle>
+InspectorCSSAgent::BuildObjectForTransitionsStyle(Element* element) {
+  auto property_pass_filter = [](const PropertyHandle& property) {
+    return property.IsCSSProperty();
+  };
+
+  ElementAnimations* element_animations =
+      element->GetAnimationTarget()->GetElementAnimations();
+  if (!element_animations || element_animations->IsEmpty()) {
+    return nullptr;
+  }
+
+  EffectStack& effect_stack = element_animations->GetEffectStack();
+  HashSet<PropertyHandle> affected_properties = effect_stack.AffectedProperties(
+      KeyframeEffect::Priority::kTransitionPriority);
+  ActiveInterpolationsMap active_interpolations =
+      EffectStack::ActiveInterpolations(
+          &effect_stack,
+          /*new_animations=*/nullptr,
+          /*suppressed_animations=*/nullptr,
+          KeyframeEffect::Priority::kTransitionPriority, property_pass_filter,
+          nullptr);
+
+  MutableCSSPropertyValueSet* property_values =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(
+          CSSParserMode::kHTMLStandardMode);
+  AnimationUtils::ForEachInterpolatedPropertyValue(
+      element, affected_properties, active_interpolations,
+      [property_values](PropertyHandle property, const CSSValue* value) {
+        property_values->SetProperty(property.GetCSSPropertyName(), *value);
+      });
+  InspectorStyle* inspector_style = MakeGarbageCollected<InspectorStyle>(
+      property_values->EnsureCSSStyleDeclaration(
           element->GetExecutionContext()),
       nullptr, nullptr);
   return inspector_style->BuildObjectForStyle();

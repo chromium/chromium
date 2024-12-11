@@ -1701,6 +1701,14 @@ experimental domain CSS
       # Matches of CSS rules applicable to the pseudo style.
       array of RuleMatch matches
 
+  # CSS style coming from animations with the name of the animation.
+  type CSSAnimationStyle extends object
+    properties
+      # The name of the animation.
+      optional string name
+      # The style coming from the animation.
+      CSSStyle style
+
   # Inherited CSS rule collection from ancestor node.
   type InheritedStyleEntry extends object
     properties
@@ -1708,6 +1716,14 @@ experimental domain CSS
       optional CSSStyle inlineStyle
       # Matches of CSS rules matching the ancestor node in the style inheritance chain.
       array of RuleMatch matchedCSSRules
+
+  # Inherited CSS style collection for animated styles from ancestor node.
+  type InheritedAnimatedStyleEntry extends object
+    properties
+      # Styles coming from the animations of the ancestor, if any, in the style inheritance chain.
+      optional array of CSSAnimationStyle animationStyles
+      # The style coming from the transitions of the ancestor, if any, in the style inheritance chain.
+      optional CSSStyle transitionsStyle
 
   # Inherited pseudo element matches from pseudos of an ancestor node.
   type InheritedPseudoElementMatches extends object
@@ -2295,6 +2311,20 @@ experimental domain CSS
       optional CSSStyle inlineStyle
       # Attribute-defined element style (e.g. resulting from "width=20 height=100%").
       optional CSSStyle attributesStyle
+
+  # Returns the styles coming from animations & transitions
+  # including the animation & transition styles coming from inheritance chain.
+  experimental command getAnimatedStylesForNode
+    parameters
+      DOM.NodeId nodeId
+    returns
+      # Styles coming from animations.
+      optional array of CSSAnimationStyle animationStyles
+      # Style coming from transitions.
+      optional CSSStyle transitionsStyle
+      # Inherited style entries for animationsStyle and transitionsStyle from
+      # the inheritance chain of the element.
+      optional array of InheritedAnimatedStyleEntry inherited
 
   # Returns requested styles for a DOM node identified by `nodeId`.
   command getMatchedStylesForNode
