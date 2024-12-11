@@ -173,7 +173,7 @@ class VIEWS_EXPORT ElementTrackerViews {
 
   // We do not get notified at the View level if a view's widget has not yet
   // been shown. We need this notification to know when the view is actually
-  // visible to the user. So if a view is added to the trakcer or is added to
+  // visible to the user. So if a view is added to the tracker or is added to
   // a widget, and its widget is not visible, we watch it until it is (or it is
   // destroyed).
   void MaybeTrackWidget(Widget* widget);

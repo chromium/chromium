@@ -108,10 +108,11 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver,
   // When a widget we were previously watching because it had not yet been shown
   // becomes visible, we manually update the visibility of any view on that
   // widget.
-  void UpdateViewVisibilityForWidget(Widget* widget) {
+  void UpdateViewVisibilityForWidget(Widget* widget, bool visible) {
     for (auto& entry : view_data_) {
-      if (!entry.visible() && entry.view->GetWidget() == widget)
+      if (entry.visible() != visible && entry.view->GetWidget() == widget) {
         UpdateVisible(entry.view);
+      }
     }
   }
 
@@ -140,7 +141,7 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver,
   }
 
  private:
-  enum class UpdateReason { kGeneral, kVisbilityFromRoot, kRemoveFromWidget };
+  enum class UpdateReason { kGeneral, kVisibilityFromRoot, kRemoveFromWidget };
 
   struct ViewData {
     explicit ViewData(View* v, ui::ElementContext initial_context)
@@ -159,7 +160,7 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver,
                                View* starting_view) override {
     UpdateVisible(observed_view, starting_view->parent()
                                      ? UpdateReason::kGeneral
-                                     : UpdateReason::kVisbilityFromRoot);
+                                     : UpdateReason::kVisibilityFromRoot);
   }
 
   void OnViewAddedToWidget(View* observed_view) override {
@@ -209,7 +210,7 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver,
           data.element.get());
       data.element.reset();
     } else if (visible && old_context != data.context) {
-      CHECK(update_reason == UpdateReason::kVisbilityFromRoot)
+      CHECK(update_reason == UpdateReason::kVisibilityFromRoot)
           << "We should always get a removed-from-widget notification before "
              "an added-to-widget notification, the context should never "
              "change while a view is visible.";
@@ -254,11 +255,18 @@ class ElementTrackerViews::WidgetTracker : public WidgetObserver {
   void OnWidgetVisibilityChanged(Widget* widget, bool visible) override {
     // Need to save this for later in case |this| gets deleted.
     auto* const tracker = tracker_.get();
+    bool needs_update = visible;
 
-    if (!visible || widget->IsVisible()) {
+    if (widget->IsVisible()) {
       // We're in a state in which Widget::IsVisible() should accurately reflect
       // the state of the widget, and therefore do not need to track the Widget.
       Remove();
+    } else if (!visible) {
+      // Widget was hidden before native widget became visible. This is fine;
+      // the cached state returns to false and the tracker continues to observe
+      // the widget.
+      needs_update = visible_;
+      visible_ = false;
     } else {
       // We have been told the widget is visible, but the widget is not
       // reporting as visible; therefore we must note this since additional
@@ -268,9 +276,10 @@ class ElementTrackerViews::WidgetTracker : public WidgetObserver {
     }
 
     // We might be deleted here so don't use any local data!
-    if (visible) {
-      for (auto& [id, data] : tracker->element_data_)
-        data.UpdateViewVisibilityForWidget(widget);
+    if (needs_update) {
+      for (auto& [id, data] : tracker->element_data_) {
+        data.UpdateViewVisibilityForWidget(widget, visible);
+      }
     }
   }
 
