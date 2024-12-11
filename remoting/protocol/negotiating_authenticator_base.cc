@@ -69,6 +69,11 @@ Authenticator::RejectionReason NegotiatingAuthenticatorBase::rejection_reason()
   return rejection_reason_;
 }
 
+Authenticator::RejectionDetails
+NegotiatingAuthenticatorBase::rejection_details() const {
+  return rejection_details_;
+}
+
 void NegotiatingAuthenticatorBase::ProcessMessageInternal(
     const jingle_xmpp::XmlElement* message,
     base::OnceClosure resume_callback) {
@@ -103,6 +108,7 @@ void NegotiatingAuthenticatorBase::UpdateState(
 
   if (state_ == REJECTED) {
     rejection_reason_ = current_authenticator_->rejection_reason();
+    rejection_details_ = current_authenticator_->rejection_details();
   }
 
   std::move(resume_callback).Run();
@@ -130,6 +136,7 @@ void NegotiatingAuthenticatorBase::NotifyStateChangeAfterAccepted() {
   state_ = current_authenticator_->state();
   if (state_ == REJECTED) {
     rejection_reason_ = current_authenticator_->rejection_reason();
+    rejection_details_ = current_authenticator_->rejection_details();
   }
   Authenticator::NotifyStateChangeAfterAccepted();
 }

@@ -7,8 +7,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "remoting/base/session_policies.h"
 #include "remoting/protocol/credentials_type.h"
 
@@ -101,6 +103,39 @@ class Authenticator {
     NO_COMMON_AUTH_METHOD,
   };
 
+  // Details explaining why authentication was rejected.
+  struct RejectionDetails {
+    RejectionDetails();
+    RejectionDetails(RejectionDetails&&);
+    RejectionDetails(const RejectionDetails&);
+
+    // Creates a RejectionDetails object with the message and the location. If
+    // |location| is omitted, the current location where the object is
+    // constructed will be used.
+    explicit RejectionDetails(
+        std::string_view message,
+        // Current() takes location info with default parameters, which is
+        // filled when this constructor is called.
+        const base::Location& location = base::Location::Current());
+    ~RejectionDetails();
+
+    RejectionDetails& operator=(RejectionDetails&&);
+    RejectionDetails& operator=(const RejectionDetails&);
+
+    // Returns whether the RejectionDetails is null, i.e. there is no location
+    // info and no rejection message.
+    inline bool is_null() const {
+      return location.program_counter() == nullptr && message.empty();
+    }
+
+    // A free-form human-readable string that describes the reason for the
+    // rejection.
+    std::string message;
+
+    // Denotes where the error occurs in the code.
+    base::Location location;
+  };
+
   // Callback used for layered Authenticator implementations, particularly
   // third-party and pairing authenticators. They use this callback to create
   // base SPAKE2 authenticators.
@@ -145,6 +180,10 @@ class Authenticator {
 
   // Returns rejection reason. Can be called only when in REJECTED state.
   virtual RejectionReason rejection_reason() const = 0;
+
+  // Returns the rejection details, or null if no details are available.
+  // Can be called only when in REJECTED state.
+  virtual RejectionDetails rejection_details() const = 0;
 
   // Called in response to incoming message received from the peer.
   // Should only be called when in WAITING_MESSAGE state. Caller retains

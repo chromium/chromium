@@ -574,6 +574,41 @@ TEST(JingleMessageTest, RemotingErrorCode) {
   }
 }
 
+TEST(JingleMessageTest, ErrorDetails) {
+  static constexpr char kTestSessionTerminateMessage[] =
+      "<cli:iq from='user@gmail.com/chromoting016DBB07' "
+      "to='user@gmail.com/chromiumsy5C6A652D' type='set' "
+      "xmlns:cli='jabber:client'><jingle action='session-terminate' "
+      "sid='2227053353' xmlns='urn:xmpp:jingle:1'><reason><decline/></reason>"
+      "<gr:error-details xmlns:gr='google:remoting'>"
+      "These are the error details."
+      "</gr:error-details>"
+      "</jingle></cli:iq>";
+
+  JingleMessage message;
+  ParseFormatAndCompare(kTestSessionTerminateMessage, &message);
+
+  EXPECT_EQ(message.error_details, "These are the error details.");
+}
+
+TEST(JingleMessageTest, ErrorLocation) {
+  static constexpr char kTestSessionTerminateMessage[] =
+      "<cli:iq from='user@gmail.com/chromoting016DBB07' "
+      "to='user@gmail.com/chromiumsy5C6A652D' type='set' "
+      "xmlns:cli='jabber:client'><jingle action='session-terminate' "
+      "sid='2227053353' xmlns='urn:xmpp:jingle:1'><reason><decline/></reason>"
+      "<gr:error-location xmlns:gr='google:remoting'>"
+      "OnAuthenticated@remoting/protocol/jingle_session.cc:836"
+      "</gr:error-location>"
+      "</jingle></cli:iq>";
+
+  JingleMessage message;
+  ParseFormatAndCompare(kTestSessionTerminateMessage, &message);
+
+  EXPECT_EQ(message.error_location,
+            "OnAuthenticated@remoting/protocol/jingle_session.cc:836");
+}
+
 TEST(JingleMessageTest, AttachmentsMessage) {
   // Ordering of the "attachments" tag and other tags are irrelevant. But the
   // JingleMessage implementation always puts it before other tags, so we do the

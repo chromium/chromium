@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
@@ -49,12 +50,21 @@ void NegotiatingClientAuthenticator::ProcessMessage(
 
   // The host picked a method different from the one the client had selected.
   if (method != current_method_) {
-    // The host must pick a method that is valid and supported by the client,
-    // and it must not change methods after it has picked one.
-    if (method_set_by_host_ || method == AuthenticationMethod::INVALID ||
+    if (method_set_by_host_) {
+      state_ = REJECTED;
+      rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+      rejection_details_ = RejectionDetails(
+          "The host must not change methods after it has picked one.");
+      std::move(resume_callback).Run();
+      return;
+    }
+    if (method == AuthenticationMethod::INVALID ||
         !base::Contains(methods_, method)) {
       state_ = REJECTED;
       rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+      rejection_details_ = RejectionDetails(
+          "The host must pick a method that is valid and supported by the "
+          "client.");
       std::move(resume_callback).Run();
       return;
     }

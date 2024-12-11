@@ -9,10 +9,10 @@
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/host_authentication_config.h"
@@ -47,14 +47,19 @@ Me2MeHostAuthenticatorFactory::CreateAuthenticator(
   // Verify that the client's jid is an ASCII string.
   auto parts = base::SplitStringOnce(remote_jid, '/');
   if (!base::IsStringASCII(remote_jid) || !parts) {
-    LOG(ERROR) << "Rejecting incoming connection from " << remote_jid
-               << ": Invalid signaling id.";
-    return std::make_unique<RejectingAuthenticator>(INVALID_CREDENTIALS);
+    return std::make_unique<RejectingAuthenticator>(
+        INVALID_CREDENTIALS,
+        base::StringPrintf(
+            "Rejecting incoming connection from %s: Invalid signaling id.",
+            remote_jid));
   }
 
   auto [email_address, _] = *parts;
   if (!check_access_permission_callback_.Run(email_address)) {
-    return std::make_unique<RejectingAuthenticator>(INVALID_CREDENTIALS);
+    return std::make_unique<RejectingAuthenticator>(
+        INVALID_CREDENTIALS,
+        base::StringPrintf("Permission check failed for email %s.",
+                           email_address));
   }
 
   if (!config_->local_cert.empty() && config_->key_pair.get()) {
@@ -66,7 +71,8 @@ Me2MeHostAuthenticatorFactory::CreateAuthenticator(
         std::make_unique<HostAuthenticationConfig>(*config_));
   }
 
-  return std::make_unique<RejectingAuthenticator>(INVALID_CREDENTIALS);
+  return std::make_unique<RejectingAuthenticator>(
+      INVALID_CREDENTIALS, "Invalid HostAuthenticationConfig.");
 }
 
 }  // namespace remoting::protocol
