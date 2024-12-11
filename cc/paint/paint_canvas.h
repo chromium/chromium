@@ -184,12 +184,6 @@ class CC_PAINT_EXPORT PaintCanvas {
                              const SkSamplingOptions&,
                              const PaintFlags* flags,
                              SkCanvas::SrcRectConstraint constraint) = 0;
-  void drawImageRect(const PaintImage& image,
-                     const SkRect& src,
-                     const SkRect& dst,
-                     SkCanvas::SrcRectConstraint constraint) {
-    drawImageRect(image, src, dst, SkSamplingOptions(), nullptr, constraint);
-  }
 
   virtual void drawVertices(scoped_refptr<RefCountedBuffer<SkPoint>> vertices,
                             scoped_refptr<RefCountedBuffer<SkPoint>> uvs,
