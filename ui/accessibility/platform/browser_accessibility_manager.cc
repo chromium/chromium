@@ -940,7 +940,12 @@ void BrowserAccessibilityManager::Decrement(const BrowserAccessibility& node) {
 
 void BrowserAccessibilityManager::DoDefaultAction(
     const BrowserAccessibility& node) {
-  DCHECK(node.HasDefaultAction());
+  // AXPlatformNodeDelegate::GetSupportedActions adds kDoDefault unconditionally, but
+  // perhaps it should not. Return silently if the node doesn't have a default action.
+  // See crbug.com/348328060 for more details.
+  if (!node.HasDefaultAction()) {
+    return;
+  }
 
   if (!delegate_) {
     return;
