@@ -7,8 +7,10 @@
 #include "base/feature_list.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
@@ -485,5 +487,32 @@ TEST_P(FeaturePromoControllerQueueTest, DisabledFeatureShownFromDemoPage) {
       result, Run(FeaturePromoResult::Success()),
       promo_controller().MaybeShowPromoForDemoPage(std::move(params)));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+
+TEST_P(FeaturePromoControllerQueueTest, FeatureEngagementConfig) {
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
+                         result);
+  FeaturePromoParams params(kIPHTestLowPriorityToast);
+  params.show_promo_result_callback = result.Get();
+
+  // Create a config state that will block the promo.
+  feature_engagement::Tracker::EventList events;
+  events.emplace_back(
+      feature_engagement::EventConfig{
+          "foo",
+          feature_engagement::Comparator{
+              feature_engagement::ComparatorType::EQUAL, 0},
+          365, 365},
+      1);
+  EXPECT_CALL(tracker(), ListEvents(testing::Ref(kIPHTestLowPriorityToast)))
+      .WillOnce(testing::Return(events));
+
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      result, Run(FeaturePromoResult(FeaturePromoResult::kBlockedByConfig)),
+      promo_controller().MaybeShowStartupPromo(std::move(params)));
+}
+
+#endif
 
 }  // namespace user_education

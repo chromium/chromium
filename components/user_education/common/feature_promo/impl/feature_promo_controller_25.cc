@@ -523,6 +523,9 @@ void FeaturePromoController25::AddPreconditionProviders(
           if (auto* const ptr = controller.get()) {
             list.AddPrecondition(
                 std::make_unique<FeatureEnabledPrecondition>(*params.feature));
+            list.AddPrecondition(
+                std::make_unique<MeetsFeatureEngagementCriteriaPrecondition>(
+                    *params.feature, *ptr->feature_engagement_tracker()));
             const bool for_demo =
                 ptr->demo_feature_name_ == spec.feature()->name;
             list.AddPrecondition(std::make_unique<LifecyclePrecondition>(

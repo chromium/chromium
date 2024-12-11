@@ -59,6 +59,11 @@ class FeatureEngagementTrackerInitializedPrecondition
 
 // Represents the requirement that a feature is not excluded by the Feature
 // Engagement Tracker based on event counts.
+//
+// For example, if the FET config has:
+//   "button_clicked_event": LESS_THAN_OR_EQUAL, 3
+// ...then if "button_clicked_event" has happened 4 times this precondition
+// will fail, but if it has happened three or fewer times it will succeed.
 class MeetsFeatureEngagementCriteriaPrecondition
     : public FeaturePromoPreconditionBase {
  public:
