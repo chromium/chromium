@@ -83,6 +83,7 @@
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_lookup.h"
+#include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -2208,11 +2209,23 @@ void Browser::WebContentsCreated(WebContents* source_contents,
                                  const std::string& frame_name,
                                  const GURL& target_url,
                                  WebContents* new_contents) {
-  // Adopt the WebContents now, so all observers are in place, as the network
-  // requests for its initial navigation will start immediately. The WebContents
-  // will later be inserted into this browser using Browser::Navigate via
-  // AddNewContents.
-  TabHelpers::AttachTabHelpers(new_contents);
+  // Note: Consult owners before adding new code here.
+  // This method is called from WebContentsImpl::CreateNewWindow() for a created
+  // `new_contents`. This occurs before ownership of `new_contents` is
+  // transferred to Browser and `new_contents` is added to a TabModel. Tab
+  // specific initialization should be performed by TabModel and not added here.
+
+  // SafeBrowsingNavigationObserver relies on recording a precise sequence of
+  // navigation events, with tabs tracked via their SessionID, managed by
+  // SessionTabHelper. The current safe browsing implementation requires
+  // tracking new contents from the moment of creation, at which point TabModel
+  // and tab helpers have not yet been initialized for `new_contents`.
+  // Explicitly instantiate the SessionTabHelper here to ensure SessionIDs are
+  // available when needed.
+  // TODO(crbug.com/362038317): Once SafeBrowsingNavigationObserver is updated
+  // to track `new_contents` after it is added to its TabModel this override can
+  // be removed.
+  CreateSessionServiceTabHelper(new_contents);
 }
 
 void Browser::RendererUnresponsive(
