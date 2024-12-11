@@ -110,7 +110,7 @@ void ForwardingAudioStreamFactory::Core::AssociateInputAndOutputForAec(
 void ForwardingAudioStreamFactory::Core::CreateOutputStream(
     int render_process_id,
     int render_frame_id,
-    GlobalRenderFrameHostId main_frame_id,
+    const GlobalRenderFrameHostToken& main_frame_token,
     const std::string& device_id,
     const media::AudioParameters& params,
     mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient> client) {
@@ -119,7 +119,7 @@ void ForwardingAudioStreamFactory::Core::CreateOutputStream(
   // |this| owns |outputs_|, so Unretained is safe.
   outputs_
       .insert(broker_factory_->CreateAudioOutputStreamBroker(
-          render_process_id, render_frame_id, main_frame_id,
+          render_process_id, render_frame_id, main_frame_token,
           ++stream_id_counter_, device_id, params, group_id_,
           base::BindOnce(&ForwardingAudioStreamFactory::Core::RemoveOutput,
                          base::Unretained(this)),

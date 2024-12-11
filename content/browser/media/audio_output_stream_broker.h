@@ -35,7 +35,7 @@ class CONTENT_EXPORT AudioOutputStreamBroker final
   AudioOutputStreamBroker(
       int render_process_id,
       int render_frame_id,
-      GlobalRenderFrameHostId main_frame_id,
+      const GlobalRenderFrameHostToken& main_frame_token,
       int stream_id,
       const std::string& output_device_id,
       const media::AudioParameters& params,
@@ -78,7 +78,7 @@ class CONTENT_EXPORT AudioOutputStreamBroker final
 
   SEQUENCE_CHECKER(owning_sequence_);
 
-  GlobalRenderFrameHostId main_frame_id_;
+  const GlobalRenderFrameHostToken main_frame_token_;
   std::string output_device_id_;
   const media::AudioParameters params_;
   const base::UnguessableToken group_id_;

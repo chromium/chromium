@@ -34,9 +34,10 @@ class MediaStreamManager;
 class CONTENT_EXPORT MediaDevicesDispatcherHost
     : public blink::mojom::MediaDevicesDispatcherHost {
  public:
-  MediaDevicesDispatcherHost(GlobalRenderFrameHostId main_frame_host_id,
-                             GlobalRenderFrameHostId render_frame_host_id,
-                             MediaStreamManager* media_stream_manager);
+  MediaDevicesDispatcherHost(
+      const GlobalRenderFrameHostToken& main_frame_host_token,
+      GlobalRenderFrameHostId render_frame_host_id,
+      MediaStreamManager* media_stream_manager);
 
   MediaDevicesDispatcherHost(const MediaDevicesDispatcherHost&) = delete;
   MediaDevicesDispatcherHost& operator=(const MediaDevicesDispatcherHost&) =
@@ -45,7 +46,7 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
   ~MediaDevicesDispatcherHost() override;
 
   static void Create(
-      GlobalRenderFrameHostId main_frame_host_id,
+      const GlobalRenderFrameHostToken& main_frame_host_token,
       GlobalRenderFrameHostId render_frame_host_id,
       MediaStreamManager* media_stream_manager,
       mojo::PendingReceiver<blink::mojom::MediaDevicesDispatcherHost> receiver);
@@ -197,7 +198,7 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
       AuthorizationHandlerCreateFactoryCallback authorization_handler);
 
   // The following const fields can be accessed on any thread.
-  const GlobalRenderFrameHostId main_frame_host_id_;
+  const GlobalRenderFrameHostToken main_frame_host_token_;
 
   // The following const fields can be accessed on any thread.
   const GlobalRenderFrameHostId render_frame_host_id_;

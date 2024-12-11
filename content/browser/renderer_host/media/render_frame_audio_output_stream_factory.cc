@@ -121,7 +121,7 @@ class RenderFrameAudioOutputStreamFactory::Core final
         factory->CreateOutputStream(
             owner_->process_id_,
             owner_->global_render_frame_host_id_.frame_routing_id,
-            owner_->main_frame_id_, device_id_, params,
+            owner_->main_frame_token_, device_id_, params,
             std::move(provider_client));
       }
 
@@ -171,7 +171,7 @@ class RenderFrameAudioOutputStreamFactory::Core final
 
   const int process_id_;
   const GlobalRenderFrameHostId global_render_frame_host_id_;
-  const GlobalRenderFrameHostId main_frame_id_;
+  const GlobalRenderFrameHostToken main_frame_token_;
   AudioOutputAuthorizationHandler authorization_handler_;
 
   mojo::Receiver<blink::mojom::RendererAudioOutputStreamFactory> receiver_{
@@ -232,7 +232,7 @@ RenderFrameAudioOutputStreamFactory::Core::Core(
         receiver)
     : process_id_(frame->GetProcess()->GetDeprecatedID()),
       global_render_frame_host_id_(frame->GetGlobalId()),
-      main_frame_id_(frame->GetMainFrame()->GetGlobalId()),
+      main_frame_token_(frame->GetMainFrame()->GetGlobalFrameToken()),
       authorization_handler_(audio_system, media_stream_manager, process_id_) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

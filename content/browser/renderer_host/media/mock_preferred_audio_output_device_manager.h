@@ -18,23 +18,23 @@ class MockPreferredAudioOutputDeviceManager
 
   MOCK_METHOD(void,
               SetPreferredSinkId,
-              (GlobalRenderFrameHostId frame_id,
+              (const GlobalRenderFrameHostToken& main_frame_token,
                const std::string& raw_device_id,
                SetPreferredSinkIdCallback callback),
               (override));
   MOCK_METHOD(void,
               AddSwitcher,
-              (GlobalRenderFrameHostId main_frame_id,
+              (const GlobalRenderFrameHostToken& main_frame_token,
                AudioOutputDeviceSwitcher* device_switcher),
               (override));
   MOCK_METHOD(void,
               RemoveSwitcher,
-              (GlobalRenderFrameHostId main_frame_id,
+              (const GlobalRenderFrameHostToken& main_frame_token,
                AudioOutputDeviceSwitcher* device_switcher),
               (override));
   MOCK_METHOD(const std::string&,
               GetPreferredSinkId,
-              (GlobalRenderFrameHostId main_frame_id),
+              (const GlobalRenderFrameHostToken& main_frame_token),
               (override));
   MOCK_METHOD(void,
               UnregisterMainFrameOnUIThread,

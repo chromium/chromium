@@ -18,13 +18,13 @@ namespace content {
 // This class controls preferred sink id for all switchers registered as
 // belonging to a tree of a given main frame.
 // MainFramePreferredSinkIdConfig entry will be added during SetPreferredSinkId
-// or AddSwitcher whichever comes first for the given main frame id. It will be
-// removed by the UnregisterMainFrameOnUIThread call for the given main frame
-// id.
+// or AddSwitcher whichever comes first for the given main frame token. It will
+// be removed by the UnregisterMainFrameOnUIThread call for the given main frame
+// token.
 class PreferredAudioOutputDeviceManagerImpl::MainFramePreferredSinkIdConfig {
  public:
   explicit MainFramePreferredSinkIdConfig(
-      GlobalRenderFrameHostId main_frame_global_id,
+      const GlobalRenderFrameHostToken& main_frame_global_id,
       const std::string& sink_id);
   ~MainFramePreferredSinkIdConfig();
 
@@ -35,7 +35,7 @@ class PreferredAudioOutputDeviceManagerImpl::MainFramePreferredSinkIdConfig {
 
   const std::string& preferred_sink_id() const { return preferred_sink_id_; }
 
-  const GlobalRenderFrameHostId& main_frame_global_id() const {
+  const GlobalRenderFrameHostToken& main_frame_global_id() const {
     return main_frame_global_id_;
   }
 
@@ -75,8 +75,8 @@ class PreferredAudioOutputDeviceManagerImpl::MainFramePreferredSinkIdConfig {
   }
 
  private:
-  // The main frame's GlobalRenderFrameHostId.
-  const GlobalRenderFrameHostId main_frame_global_id_;
+  // The main frame's GlobalRenderFrameHostToken.
+  const GlobalRenderFrameHostToken main_frame_global_id_;
 
   // The preferred sink id for the top-level page as well as all the sub
   // frames.
@@ -88,8 +88,9 @@ class PreferredAudioOutputDeviceManagerImpl::MainFramePreferredSinkIdConfig {
 };
 
 PreferredAudioOutputDeviceManagerImpl::MainFramePreferredSinkIdConfig::
-    MainFramePreferredSinkIdConfig(GlobalRenderFrameHostId main_frame_global_id,
-                                   const std::string& sink_id)
+    MainFramePreferredSinkIdConfig(
+        const GlobalRenderFrameHostToken& main_frame_global_id,
+        const std::string& sink_id)
     : main_frame_global_id_(main_frame_global_id), preferred_sink_id_(sink_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 }
@@ -109,7 +110,7 @@ PreferredAudioOutputDeviceManagerImpl::
 }
 
 void PreferredAudioOutputDeviceManagerImpl::SetPreferredSinkId(
-    GlobalRenderFrameHostId main_frame_id,
+    const GlobalRenderFrameHostToken& main_frame_token,
     const std::string& raw_device_id,
     SetPreferredSinkIdCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -124,41 +125,41 @@ void PreferredAudioOutputDeviceManagerImpl::SetPreferredSinkId(
   // MainFramePreferredSinkIdConfig corresponds with the saved
   // MainFramePreferredSinkIdConfig.
 
-  MainFramePreferredSinkIdConfig* config = FindSinkIdConfig(main_frame_id);
+  MainFramePreferredSinkIdConfig* config = FindSinkIdConfig(main_frame_token);
   if (config) {
     config->SetPreferredSinkId(raw_device_id);
   } else {
-    AddNewConfigEntry(main_frame_id, raw_device_id, nullptr);
+    AddNewConfigEntry(main_frame_token, raw_device_id, nullptr);
   }
 
   std::move(callback).Run(media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK);
 }
 
 void PreferredAudioOutputDeviceManagerImpl::AddSwitcher(
-    GlobalRenderFrameHostId main_frame_id,
+    const GlobalRenderFrameHostToken& main_frame_token,
     AudioOutputDeviceSwitcher* device_switcher) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   CHECK(device_switcher);
 
   // The main frame is a key.
-  MainFramePreferredSinkIdConfig* config = FindSinkIdConfig(main_frame_id);
+  MainFramePreferredSinkIdConfig* config = FindSinkIdConfig(main_frame_token);
   if (config) {
     config->AddDeviceSwitcher(device_switcher);
   } else {
     // The default device is already set.
-    AddNewConfigEntry(main_frame_id,
+    AddNewConfigEntry(main_frame_token,
                       media::AudioDeviceDescription::kDefaultDeviceId,
                       device_switcher);
   }
 }
 
 void PreferredAudioOutputDeviceManagerImpl::RemoveSwitcher(
-    GlobalRenderFrameHostId main_frame_id,
+    const GlobalRenderFrameHostToken& main_frame_token,
     AudioOutputDeviceSwitcher* device_switcher) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   CHECK(device_switcher);
 
-  MainFramePreferredSinkIdConfig* config = FindSinkIdConfig(main_frame_id);
+  MainFramePreferredSinkIdConfig* config = FindSinkIdConfig(main_frame_token);
   if (!config) {
     // If the page refresh is done before the device switcher removal (race),
     // then it would have no entry.
@@ -169,11 +170,11 @@ void PreferredAudioOutputDeviceManagerImpl::RemoveSwitcher(
 }
 
 const std::string& PreferredAudioOutputDeviceManagerImpl::GetPreferredSinkId(
-    GlobalRenderFrameHostId main_frame_id) {
+    const GlobalRenderFrameHostToken& main_frame_token) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   // The main frame is a key.
-  MainFramePreferredSinkIdConfig* config = FindSinkIdConfig(main_frame_id);
+  MainFramePreferredSinkIdConfig* config = FindSinkIdConfig(main_frame_token);
   if (config) {
     return config->preferred_sink_id();
   }
@@ -196,28 +197,28 @@ void PreferredAudioOutputDeviceManagerImpl::UnregisterMainFrameOnUIThread(
       FROM_HERE,
       base::BindOnce(
           &PreferredAudioOutputDeviceManagerImpl::UnregisterMainFrameOnIOThread,
-          weak_ptr_factory_.GetWeakPtr(), main_frame->GetGlobalId()));
+          weak_ptr_factory_.GetWeakPtr(), main_frame->GetGlobalFrameToken()));
 }
 
 void PreferredAudioOutputDeviceManagerImpl::UnregisterMainFrameOnIOThread(
-    GlobalRenderFrameHostId main_frame_id) {
+    const GlobalRenderFrameHostToken& main_frame_token) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   std::erase_if(
       preferred_sink_id_configs_,
-      [main_frame_id](
+      [main_frame_token](
           const std::unique_ptr<MainFramePreferredSinkIdConfig>& item) {
-        return item->main_frame_global_id() == main_frame_id;
+        return item->main_frame_global_id() == main_frame_token;
       });
 }
 
 void PreferredAudioOutputDeviceManagerImpl::AddNewConfigEntry(
-    GlobalRenderFrameHostId main_frame_id,
+    const GlobalRenderFrameHostToken& main_frame_token,
     const std::string& sink_id,
     AudioOutputDeviceSwitcher* device_switcher) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  auto config =
-      std::make_unique<MainFramePreferredSinkIdConfig>(main_frame_id, sink_id);
+  auto config = std::make_unique<MainFramePreferredSinkIdConfig>(
+      main_frame_token, sink_id);
   if (device_switcher) {
     config->AddDeviceSwitcher(device_switcher);
   }
@@ -226,9 +227,9 @@ void PreferredAudioOutputDeviceManagerImpl::AddNewConfigEntry(
 
 PreferredAudioOutputDeviceManagerImpl::MainFramePreferredSinkIdConfig*
 PreferredAudioOutputDeviceManagerImpl::FindSinkIdConfig(
-    GlobalRenderFrameHostId main_frame_id) const {
+    const GlobalRenderFrameHostToken& main_frame_token) const {
   for (const auto& item : preferred_sink_id_configs_) {
-    if (item->main_frame_global_id() == main_frame_id) {
+    if (item->main_frame_global_id() == main_frame_token) {
       return item.get();
     }
   }

@@ -83,22 +83,22 @@ struct MediaDevicesDispatcherHost::AudioInputCapabilitiesRequest {
 
 // static
 void MediaDevicesDispatcherHost::Create(
-    GlobalRenderFrameHostId main_frame_host_id,
+    const GlobalRenderFrameHostToken& main_frame_host_token,
     GlobalRenderFrameHostId render_frame_host_id,
     MediaStreamManager* media_stream_manager,
     mojo::PendingReceiver<blink::mojom::MediaDevicesDispatcherHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   media_stream_manager->media_devices_manager()->RegisterDispatcherHost(
       std::make_unique<MediaDevicesDispatcherHost>(
-          main_frame_host_id, render_frame_host_id, media_stream_manager),
+          main_frame_host_token, render_frame_host_id, media_stream_manager),
       std::move(receiver));
 }
 
 MediaDevicesDispatcherHost::MediaDevicesDispatcherHost(
-    GlobalRenderFrameHostId main_frame_host_id,
+    const GlobalRenderFrameHostToken& main_frame_host_token,
     GlobalRenderFrameHostId render_frame_host_id,
     MediaStreamManager* media_stream_manager)
-    : main_frame_host_id_(main_frame_host_id),
+    : main_frame_host_token_(main_frame_host_token),
       render_frame_host_id_(render_frame_host_id),
       media_stream_manager_(media_stream_manager),
       num_pending_audio_input_parameters_(0),
@@ -408,7 +408,7 @@ void MediaDevicesDispatcherHost::AuthorizationCompleted(
   }
 
   media_stream_manager_->preferred_audio_output_device_manager()
-      ->SetPreferredSinkId(main_frame_host_id_, raw_device_id,
+      ->SetPreferredSinkId(main_frame_host_token_, raw_device_id,
                            std::move(callback));
 }
 

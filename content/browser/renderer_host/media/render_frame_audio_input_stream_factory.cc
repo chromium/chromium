@@ -162,7 +162,7 @@ class RenderFrameAudioInputStreamFactory::Core final
   const raw_ptr<MediaStreamManager> media_stream_manager_;
   const int process_id_;
   const int frame_id_;
-  const GlobalRenderFrameHostId main_frame_id_;
+  const GlobalRenderFrameHostToken main_frame_token_;
 
   mojo::Receiver<RendererAudioInputStreamFactory> receiver_{this};
   // Always null-check this weak pointer before dereferencing it.
@@ -200,7 +200,8 @@ RenderFrameAudioInputStreamFactory::Core::Core(
     : media_stream_manager_(media_stream_manager),
       process_id_(render_frame_host->GetProcess()->GetDeprecatedID()),
       frame_id_(render_frame_host->GetRoutingID()),
-      main_frame_id_(render_frame_host->GetMainFrame()->GetGlobalId()) {
+      main_frame_token_(
+          render_frame_host->GetMainFrame()->GetGlobalFrameToken()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   ForwardingAudioStreamFactory::Core* tmp_factory =
@@ -344,7 +345,7 @@ void RenderFrameAudioInputStreamFactory::Core::
     if (MediaStreamManager::GetPreferredOutputManagerInstance()) {
       override_device_id =
           MediaStreamManager::GetPreferredOutputManagerInstance()
-              ->GetPreferredSinkId(main_frame_id_);
+              ->GetPreferredSinkId(main_frame_token_);
     }
 
     forwarding_factory_->AssociateInputAndOutputForAec(

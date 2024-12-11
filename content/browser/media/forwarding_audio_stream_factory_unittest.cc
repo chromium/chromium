@@ -73,7 +73,7 @@ class MockBroker : public AudioStreamBroker {
   explicit MockBroker(RenderFrameHost* rfh)
       : AudioStreamBroker(rfh->GetProcess()->GetDeprecatedID(),
                           rfh->GetRoutingID()),
-        main_frame_id_(rfh->GetMainFrame()->GetGlobalId()) {}
+        main_frame_token_(rfh->GetMainFrame()->GetGlobalFrameToken()) {}
 
   MockBroker(const MockBroker&) = delete;
   MockBroker& operator=(const MockBroker&) = delete;
@@ -88,10 +88,12 @@ class MockBroker : public AudioStreamBroker {
   DeleterCallback deleter;
   media::mojom::AudioProcessingConfigPtr config_ptr;
 
-  GlobalRenderFrameHostId main_frame_id() const { return main_frame_id_; }
+  const GlobalRenderFrameHostToken& main_frame_token() const {
+    return main_frame_token_;
+  }
 
  private:
-  GlobalRenderFrameHostId main_frame_id_;
+  GlobalRenderFrameHostToken main_frame_token_;
   base::WeakPtrFactory<MockBroker> weak_factory_{this};
 };
 
@@ -146,7 +148,7 @@ class MockBrokerFactory final : public AudioStreamBrokerFactory {
   std::unique_ptr<AudioStreamBroker> CreateAudioOutputStreamBroker(
       int render_process_id,
       int render_frame_id,
-      GlobalRenderFrameHostId main_frame_id,
+      const GlobalRenderFrameHostToken& main_frame_token,
       int stream_id,
       const std::string& output_device_id,
       const media::AudioParameters& params,
@@ -160,7 +162,7 @@ class MockBrokerFactory final : public AudioStreamBrokerFactory {
     CHECK_NE(nullptr, prepared_broker.get());
     EXPECT_EQ(render_process_id, prepared_broker->render_process_id());
     EXPECT_EQ(render_frame_id, prepared_broker->render_frame_id());
-    EXPECT_EQ(main_frame_id, prepared_broker->main_frame_id());
+    EXPECT_EQ(main_frame_token, prepared_broker->main_frame_token());
     prepared_broker->deleter = std::move(deleter);
     return std::move(prepared_broker);
   }
@@ -339,7 +341,8 @@ TEST_F(ForwardingAudioStreamFactoryTest,
   std::ignore = client.InitWithNewPipeAndPassReceiver();
   factory.core()->CreateOutputStream(
       main_rfh()->GetProcess()->GetDeprecatedID(), main_rfh()->GetRoutingID(),
-      main_rfh()->GetGlobalId(), kOutputDeviceId, kParams, std::move(client));
+      main_rfh()->GetGlobalFrameToken(), kOutputDeviceId, kParams,
+      std::move(client));
 }
 
 TEST_F(ForwardingAudioStreamFactoryTest,
@@ -441,7 +444,8 @@ TEST_F(ForwardingAudioStreamFactoryTest,
     std::ignore = client.InitWithNewPipeAndPassReceiver();
     factory.core()->CreateOutputStream(
         main_rfh()->GetProcess()->GetDeprecatedID(), main_rfh()->GetRoutingID(),
-        main_rfh()->GetGlobalId(), kOutputDeviceId, kParams, std::move(client));
+        main_rfh()->GetGlobalFrameToken(), kOutputDeviceId, kParams,
+        std::move(client));
     testing::Mock::VerifyAndClear(&*main_rfh_broker);
   }
   {
@@ -450,8 +454,8 @@ TEST_F(ForwardingAudioStreamFactoryTest,
     std::ignore = client.InitWithNewPipeAndPassReceiver();
     factory.core()->CreateOutputStream(
         other_rfh()->GetProcess()->GetDeprecatedID(),
-        other_rfh()->GetRoutingID(), main_rfh()->GetGlobalId(), kOutputDeviceId,
-        kParams, std::move(client));
+        other_rfh()->GetRoutingID(), main_rfh()->GetGlobalFrameToken(),
+        kOutputDeviceId, kParams, std::move(client));
     testing::Mock::VerifyAndClear(&*other_rfh_broker);
   }
 
@@ -539,7 +543,7 @@ TEST_F(ForwardingAudioStreamFactoryTest, DestroyFrame_DestroysRelatedStreams) {
     std::ignore = output_client.InitWithNewPipeAndPassReceiver();
     factory.core()->CreateOutputStream(
         main_rfh()->GetProcess()->GetDeprecatedID(), main_rfh()->GetRoutingID(),
-        main_rfh()->GetGlobalId(), kOutputDeviceId, kParams,
+        main_rfh()->GetGlobalFrameToken(), kOutputDeviceId, kParams,
         std::move(output_client));
     testing::Mock::VerifyAndClear(&*main_rfh_output_broker);
   }
@@ -550,8 +554,8 @@ TEST_F(ForwardingAudioStreamFactoryTest, DestroyFrame_DestroysRelatedStreams) {
     std::ignore = output_client.InitWithNewPipeAndPassReceiver();
     factory.core()->CreateOutputStream(
         other_rfh()->GetProcess()->GetDeprecatedID(),
-        other_rfh()->GetRoutingID(), main_rfh()->GetGlobalId(), kOutputDeviceId,
-        kParams, std::move(output_client));
+        other_rfh()->GetRoutingID(), main_rfh()->GetGlobalFrameToken(),
+        kOutputDeviceId, kParams, std::move(output_client));
     testing::Mock::VerifyAndClear(&*other_rfh_output_broker);
   }
 
@@ -594,7 +598,7 @@ TEST_F(ForwardingAudioStreamFactoryTest, DestroyWebContents_DestroysStreams) {
   std::ignore = output_client.InitWithNewPipeAndPassReceiver();
   factory.core()->CreateOutputStream(
       main_rfh()->GetProcess()->GetDeprecatedID(), main_rfh()->GetRoutingID(),
-      main_rfh()->GetGlobalId(), kOutputDeviceId, kParams,
+      main_rfh()->GetGlobalFrameToken(), kOutputDeviceId, kParams,
       std::move(output_client));
 
   // We're about to reset the |TestWebContents|. As such we need to remove the
@@ -655,7 +659,7 @@ TEST_F(ForwardingAudioStreamFactoryTest, LastStreamDeleted_ClearsFactoryPtr) {
     std::ignore = output_client.InitWithNewPipeAndPassReceiver();
     factory.core()->CreateOutputStream(
         main_rfh()->GetProcess()->GetDeprecatedID(), main_rfh()->GetRoutingID(),
-        main_rfh()->GetGlobalId(), kOutputDeviceId, kParams,
+        main_rfh()->GetGlobalFrameToken(), kOutputDeviceId, kParams,
         std::move(output_client));
     testing::Mock::VerifyAndClear(&*main_rfh_output_broker);
   }
@@ -666,8 +670,8 @@ TEST_F(ForwardingAudioStreamFactoryTest, LastStreamDeleted_ClearsFactoryPtr) {
     std::ignore = output_client.InitWithNewPipeAndPassReceiver();
     factory.core()->CreateOutputStream(
         other_rfh()->GetProcess()->GetDeprecatedID(),
-        other_rfh()->GetRoutingID(), main_rfh()->GetGlobalId(), kOutputDeviceId,
-        kParams, std::move(output_client));
+        other_rfh()->GetRoutingID(), main_rfh()->GetGlobalFrameToken(),
+        kOutputDeviceId, kParams, std::move(output_client));
     testing::Mock::VerifyAndClear(&*other_rfh_output_broker);
   }
 
@@ -721,7 +725,8 @@ TEST_F(ForwardingAudioStreamFactoryTest, MuteWithOutputStream_ConnectsMuter) {
   std::ignore = client.InitWithNewPipeAndPassReceiver();
   factory.core()->CreateOutputStream(
       main_rfh()->GetProcess()->GetDeprecatedID(), main_rfh()->GetRoutingID(),
-      main_rfh()->GetGlobalId(), kOutputDeviceId, kParams, std::move(client));
+      main_rfh()->GetGlobalFrameToken(), kOutputDeviceId, kParams,
+      std::move(client));
   base::RunLoop().RunUntilIdle();
   testing::Mock::VerifyAndClear(&*broker);
 
@@ -761,7 +766,8 @@ TEST_F(ForwardingAudioStreamFactoryTest,
   std::ignore = client.InitWithNewPipeAndPassReceiver();
   factory.core()->CreateOutputStream(
       main_rfh()->GetProcess()->GetDeprecatedID(), main_rfh()->GetRoutingID(),
-      main_rfh()->GetGlobalId(), kOutputDeviceId, kParams, std::move(client));
+      main_rfh()->GetGlobalFrameToken(), kOutputDeviceId, kParams,
+      std::move(client));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(factory.IsMuted());
   EXPECT_TRUE(stream_factory_.IsConnected());
@@ -790,7 +796,8 @@ TEST_F(ForwardingAudioStreamFactoryTest,
     std::ignore = client.InitWithNewPipeAndPassReceiver();
     factory.core()->CreateOutputStream(
         main_rfh()->GetProcess()->GetDeprecatedID(), main_rfh()->GetRoutingID(),
-        main_rfh()->GetGlobalId(), kOutputDeviceId, kParams, std::move(client));
+        main_rfh()->GetGlobalFrameToken(), kOutputDeviceId, kParams,
+        std::move(client));
     base::RunLoop().RunUntilIdle();
     testing::Mock::VerifyAndClear(&*broker);
   }
@@ -809,7 +816,8 @@ TEST_F(ForwardingAudioStreamFactoryTest,
     std::ignore = client.InitWithNewPipeAndPassReceiver();
     factory.core()->CreateOutputStream(
         main_rfh()->GetProcess()->GetDeprecatedID(), main_rfh()->GetRoutingID(),
-        main_rfh()->GetGlobalId(), kOutputDeviceId, kParams, std::move(client));
+        main_rfh()->GetGlobalFrameToken(), kOutputDeviceId, kParams,
+        std::move(client));
     base::RunLoop().RunUntilIdle();
     testing::Mock::VerifyAndClear(&*another_broker);
   }
