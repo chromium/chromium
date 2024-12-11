@@ -1928,6 +1928,11 @@ void BrowserAutofillManager::DidShowSuggestions(
   if (std::ranges::any_of(shown_suggestion_types, [](SuggestionType type) {
         return type == SuggestionType::kAddressEntryOnTyping;
       })) {
+    // Assert that only the expected suggestion types exist.
+    CHECK(shown_suggestion_types ==
+          DenseSet<SuggestionType>({SuggestionType::kAddressEntryOnTyping,
+                                    SuggestionType::kSeparator,
+                                    SuggestionType::kManageAddress}));
     metrics_->address_form_event_logger.OnDidShownAutofillOnTyping(field_id);
     return;
   }

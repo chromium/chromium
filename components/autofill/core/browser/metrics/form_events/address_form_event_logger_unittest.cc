@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -248,14 +249,17 @@ TEST_F(AutofillAddressOnTypingMetricsTest, EmitMetrics) {
   FormData form = test::GetFormData({.fields = {{}, {}, {}}});
 
   // See and accept first suggestion.
-  autofill_manager().DidShowSuggestions({SuggestionType::kAddressEntryOnTyping},
-                                        form, form.fields()[0].global_id());
+  static constexpr DenseSet<SuggestionType> kShownSuggestionTypes = {
+      SuggestionType::kAddressEntryOnTyping, SuggestionType::kSeparator,
+      SuggestionType::kManageAddress};
+  autofill_manager().DidShowSuggestions(kShownSuggestionTypes, form,
+                                        form.fields()[0].global_id());
   autofill_manager().OnDidFillAddressOnTypingSuggestion(
       form.fields()[0].global_id());
 
   // Only see second suggestion.
-  autofill_manager().DidShowSuggestions({SuggestionType::kAddressEntryOnTyping},
-                                        form, form.fields()[1].global_id());
+  autofill_manager().DidShowSuggestions(kShownSuggestionTypes, form,
+                                        form.fields()[1].global_id());
 
   ResetDriverToCommitMetrics();
   EXPECT_THAT(histogram_tester_.GetAllSamples(
