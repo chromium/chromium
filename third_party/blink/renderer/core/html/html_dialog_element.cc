@@ -212,7 +212,7 @@ void HTMLDialogElement::requestClose(const String& return_value,
   CHECK(close_watcher_);
   close_watcher_->setEnabled(true);
   request_close_return_value_ = return_value;
-  close_watcher_->requestClose();
+  close_watcher_->RequestClose(CloseWatcher::AllowCancel::kAlways);
   SetCloseWatcherEnabledState();
 }
 

@@ -135,7 +135,7 @@ void CloseWatcher::WatcherStack::Signal() {
   if (!watcher_groups_.empty()) {
     auto& group = watcher_groups_.back();
     for (auto& watcher : base::Reversed(group)) {
-      if (!watcher->requestClose()) {
+      if (!watcher->RequestClose(AllowCancel::kWithUserActivation)) {
         break;
       }
     }
@@ -203,7 +203,14 @@ CloseWatcher* CloseWatcher::CreateInternal(LocalDOMWindow& window,
 CloseWatcher::CloseWatcher(LocalDOMWindow& window)
     : ExecutionContextClient(&window) {}
 
-bool CloseWatcher::requestClose() {
+void CloseWatcher::requestCloseForBinding() {
+  // TODO(crbug.com/383593252) There's a desire [1] to change this to kAlways,
+  // so that closeWatcher.requestClose() doesn't require user activation.
+  // [1] https://github.com/openui/open-ui/issues/1128#issuecomment-2530745592)
+  RequestClose(AllowCancel::kWithUserActivation);
+}
+
+bool CloseWatcher::RequestClose(AllowCancel allow_cancel) {
   if (IsClosed() || dispatching_cancel_ || !DomWindow()) {
     return true;
   }
@@ -211,10 +218,13 @@ bool CloseWatcher::requestClose() {
     CHECK(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
     return true;
   }
+  CHECK(allow_cancel == AllowCancel::kWithUserActivation ||
+        RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled());
 
   WatcherStack& stack = *DomWindow()->closewatcher_stack();
   Event& cancel_event =
-      stack.CancelEventCanBeCancelable()
+      (allow_cancel == AllowCancel::kAlways ||
+       stack.CancelEventCanBeCancelable())
           ? *Event::CreateCancelable(event_type_names::kCancel)
           : *Event::Create(event_type_names::kCancel);
 
