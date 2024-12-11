@@ -114,6 +114,11 @@
 -testing/iossim/
 -third_party/
 +third_party/blink/
++third_party/pdfium/core
++third_party/pdfium/fpdfsdk
++third_party/pdfium/fxbarcode
++third_party/pdfium/fxjs
++third_party/pdfium/xfa
 -tools/
 -url/third_party
 -v8/
