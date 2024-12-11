@@ -134,12 +134,6 @@ const int kExpectedExitAnimationCount = 2;
   /// Consent dialog presenter.
   LensOverlayConsentPresenter* _lensOverlayConsentPresenter;
 
-  /// Factory for the  actions in the overflow menu.
-  LensOverlayOverflowMenuFactory* _overflowMenuFactory;
-
-  /// Configuration factory.
-  LensOverlayConfigurationFactory* _lensConfigurationFactory;
-
   /// Network issue alert presenter.
   LensOverlayNetworkIssueAlertPresenter* _networkIssueAlertPresenter;
 
@@ -199,12 +193,18 @@ const int kExpectedExitAnimationCount = 2;
     return;
   }
 
-  LensConfiguration* config = [_lensConfigurationFactory
+  LensOverlayConfigurationFactory* lensConfigurationFactory =
+      [[LensOverlayConfigurationFactory alloc] init];
+  LensConfiguration* config = [lensConfigurationFactory
       configurationForEntrypoint:entrypoint
                          profile:self.browser->GetProfile()];
+
+  LensOverlayOverflowMenuFactory* overflowMenuFactory =
+      [[LensOverlayOverflowMenuFactory alloc] initWithBrowser:self.browser];
+
   NSArray<UIAction*>* additionalMenuItems = @[
-    [_overflowMenuFactory openUserActivityAction],
-    [_overflowMenuFactory learnMoreAction],
+    [overflowMenuFactory openUserActivityAction],
+    [overflowMenuFactory learnMoreAction],
   ];
 
   _selectionViewController = ios::provider::NewChromeLensOverlay(
@@ -285,16 +285,10 @@ const int kExpectedExitAnimationCount = 2;
            object:nil];
 
   _associatedTabHelper = [self activeTabHelper];
-  CHECK(_associatedTabHelper, kLensOverlayNotFatalUntil);
 
   _metricsRecorder = [[LensOverlayMetricsRecorder alloc]
       initWithEntrypoint:entrypoint
       associatedWebState:_associatedTabHelper->GetWebState()];
-
-  _overflowMenuFactory =
-      [[LensOverlayOverflowMenuFactory alloc] initWithBrowser:self.browser];
-
-  _lensConfigurationFactory = [[LensOverlayConfigurationFactory alloc] init];
 
   // The instance that creates the Lens UI designates itself as the command
   // handler for the associated tab.
