@@ -241,11 +241,13 @@ def _server():
     try:
         yield
     finally:
+        logging.debug('Terminating fast local dev server.')
         # Since Popen's default context manager just waits on exit, we need to
         # use our custom context manager to actually terminate the build server
         # when the current build is done to avoid skewing the next benchmark.
         server_proc.terminate()
         server_proc.wait()
+        logging.debug('Terminated fast local dev server.')
 
 
 def _detect_emulators() -> List[device_utils.DeviceUtils]:

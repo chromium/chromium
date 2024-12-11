@@ -389,7 +389,8 @@ def _RunLint(custom_lint_jar_path,
       shutil.rmtree(aar_root_dir, ignore_errors=True)
       shutil.rmtree(resource_root_dir, ignore_errors=True)
       shutil.rmtree(srcjar_root_dir, ignore_errors=True)
-      os.unlink(project_xml_path)
+      if os.path.exists(project_xml_path):
+        os.unlink(project_xml_path)
       shutil.rmtree(partials_dir, ignore_errors=True)
 
     if failed:
