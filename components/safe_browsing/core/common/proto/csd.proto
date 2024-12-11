@@ -155,6 +155,11 @@ message LlamaForcedTriggerInfo {
   optional bool intelligent_scan = 2;
 }
 
+message IntelligentScanInfo {
+  optional string brand = 1;
+  optional string intent = 2;
+}
+
 message ClientPhishingRequest {
   // URL that the client visited.  The CGI parameters are stripped by the
   // client.
@@ -284,7 +289,10 @@ message ClientPhishingRequest {
   // if client_side_detection_type = FORCE_REQUEST.
   optional LlamaForcedTriggerInfo llama_forced_trigger_info = 31;
 
-  // next available tag number: 32.
+  // Represents the on-device model LLM response.
+  optional IntelligentScanInfo intelligent_scan_info = 32;
+
+  // next available tag number: 33.
 }
 
 message ClientPhishingResponse {

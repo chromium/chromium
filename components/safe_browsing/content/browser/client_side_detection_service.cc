@@ -857,7 +857,7 @@ void ClientSideDetectionService::ModelExecutionCallback(
   }
 
   // This is a non-error response, but it's not completed, yet so we wait till
-  // it's complete.
+  // it's complete. We will not respond to the callback yet because of this.
   if (!result.response->is_complete) {
     return;
   }
@@ -871,6 +871,9 @@ void ClientSideDetectionService::ModelExecutionCallback(
 
   if (!scam_detection_response) {
     LogOnDeviceModelExecutionParse(false);
+    if (inquire_on_device_model_callback_) {
+      std::move(inquire_on_device_model_callback_).Run(std::nullopt);
+    }
     return;
   }
 

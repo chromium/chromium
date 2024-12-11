@@ -2205,7 +2205,7 @@ class ClientSideDetectionHostScamDetectionTest
 };
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
-       KeyboardLockRequestTriggersOnDeviceLLM) {
+       KeyboardLockRequestTriggersOnDeviceLLMWithEmptyResponse) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
@@ -2256,6 +2256,70 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       KeyboardLockRequestTriggersOnDeviceLLMWithFullResponse) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+
+  // Although the score is not phishy at all, we will still inquire the
+  // on-device model.
+  ClientPhishingRequest verdict;
+  verdict.set_url("http://example.com/");
+  verdict.set_client_score(0.0f);
+  verdict.set_is_phishing(false);
+
+  base::RunLoop run_loop_for_inquire_on_device_model;
+
+  // Because the client side detection type is KEYBOARD_LOCK_REQUESTED, we will
+  // call to inquire the on-device model.
+  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _, _))
+      .WillOnce(testing::Invoke(
+          [&](ClientPhishingRequest* verdict, std::string rendered_text,
+              base::OnceCallback<void(
+                  std::optional<
+                      optimization_guide::proto::ScamDetectionResponse>)>
+                  callback) {
+            run_loop_for_inquire_on_device_model.Quit();
+            optimization_guide::proto::ScamDetectionResponse
+                scam_detection_response;
+            scam_detection_response.set_brand("Example Brand");
+            scam_detection_response.set_intent("Example Intent");
+            std::move(callback).Run(scam_detection_response);
+          }));
+
+  // We can expect the token fetcher to occur as usual because the ESB
+  // preference is enabled.
+  std::unique_ptr<ClientPhishingRequest> verdict_sent;
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 PartiallyEqualVerdict(verdict), _,
+                                 "fake_access_token_keyboard_lock"))
+      .WillOnce(MoveArg<0>(&verdict_sent));
+
+  SafeBrowsingTokenFetcher::Callback cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_)).WillOnce(MoveArg<0>(&cb));
+
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict),
+                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
+
+  // First run the inquire on device function.
+  run_loop_for_inquire_on_device_model.Run();
+  // Token fetcher will run afterwards.
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+
+  ASSERT_FALSE(cb.is_null());
+  std::move(cb).Run("fake_access_token_keyboard_lock");
+
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+  IntelligentScanInfo intelligent_scan_info =
+      verdict_sent->intelligent_scan_info();
+  EXPECT_EQ(intelligent_scan_info.brand(), "Example Brand");
+  EXPECT_EQ(intelligent_scan_info.intent(), "Example Intent");
 }
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,

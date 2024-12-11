@@ -1105,7 +1105,13 @@ void ClientSideDetectionHost::OnInquireOnDeviceModelDone(
     std::unique_ptr<ClientPhishingRequest> verdict,
     std::optional<bool> did_match_high_confidence_allowlist,
     std::optional<optimization_guide::proto::ScamDetectionResponse> response) {
-  // Pass the response to the ping proto.
+  if (response.has_value()) {
+    IntelligentScanInfo intelligent_scan_info;
+    intelligent_scan_info.set_brand(response->brand());
+    intelligent_scan_info.set_intent(response->intent());
+    *verdict->mutable_intelligent_scan_info() =
+        std::move(intelligent_scan_info);
+  }
 
   MaybeGetAccessToken(std::move(verdict), did_match_high_confidence_allowlist);
 }

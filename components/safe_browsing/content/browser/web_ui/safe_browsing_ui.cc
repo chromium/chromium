@@ -820,6 +820,14 @@ base::Value::Dict SerializeImageFeatureEmbedding(
   return dict;
 }
 
+base::Value::Dict SerializeIntelligentScanInfo(
+    IntelligentScanInfo intelligent_scan_info) {
+  base::Value::Dict dict;
+  dict.Set("brand", intelligent_scan_info.brand());
+  dict.Set("intent", intelligent_scan_info.intent());
+  return dict;
+}
+
 base::Value::Dict SerializeClientReportingMetadata(
     const enterprise_connectors::ClientMetadata& client_metadata) {
   base::Value::Dict client_metadata_dict;
@@ -1224,6 +1232,11 @@ std::string SerializeClientPhishingRequest(
 
   if (cpr.has_visual_features()) {
     dict.Set("visual_features", SerializeVisualFeatures(cpr.visual_features()));
+  }
+
+  if (cpr.has_intelligent_scan_info()) {
+    dict.Set("intelligent_scan_info",
+             SerializeIntelligentScanInfo(cpr.intelligent_scan_info()));
   }
 
   std::string request_serialized;
