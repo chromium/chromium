@@ -14,6 +14,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -66,6 +67,10 @@ public class HubToolbarView extends LinearLayout {
         super.onFinishInflate();
         mActionButton = findViewById(R.id.toolbar_action_button);
         mPaneSwitcher = findViewById(R.id.pane_switcher);
+        ViewGroup slidingTabIndicator = (ViewGroup) mPaneSwitcher.getChildAt(0);
+        // Unclip children here to get unbounded ripple to work.
+        slidingTabIndicator.setClipToPadding(false);
+        slidingTabIndicator.setClipChildren(false);
         mMenuButtonContainer = findViewById(R.id.menu_button_container);
         mMenuButton = mMenuButtonContainer.findViewById(R.id.menu_button);
 
@@ -109,6 +114,9 @@ public class HubToolbarView extends LinearLayout {
                 Drawable drawable = buttonData.resolveIcon(context);
                 tab.setIcon(drawable);
                 tab.setContentDescription(buttonData.resolveContentDescription(context));
+                // Unclip children here to get unbounded ripple to work.
+                tab.view.setClipChildren(false);
+                tab.view.setClipToPadding(false);
                 mPaneSwitcher.addTab(tab);
             }
             mPaneSwitcher.setVisibility(View.VISIBLE);
