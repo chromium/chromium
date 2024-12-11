@@ -39,6 +39,8 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -522,7 +524,7 @@ TEST_P(AppSearchProviderOemAppTest, OemResultsOnFirstBoot) {
 
     service_->EnableExtension(internal_app_id);
 
-    EXPECT_TRUE(prefs->WasInstalledByOem(internal_app_id));
+    EXPECT_TRUE(WasInstalledByOem(prefs, internal_app_id));
   }
 
   // Allow OEM app install to finish.

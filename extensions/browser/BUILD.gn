@@ -315,6 +315,7 @@ source_set("browser_sources") {
     "extension_navigation_throttle.h",
     "extension_navigation_ui_data.cc",
     "extension_navigation_ui_data.h",
+    "extension_pref_names.h",
     "extension_pref_store.cc",
     "extension_pref_store.h",
     "extension_pref_value_map.cc",

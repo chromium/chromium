@@ -58,6 +58,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/path_util.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
@@ -1280,7 +1281,7 @@ ExtensionTelemetryService::GetExtensionInfoForReport(
     extension_info->set_install_timestamp_msec(0);
   } else {
     extension_info->set_install_timestamp_msec(
-        extension_prefs_->GetLastUpdateTime(extension.id())
+        GetLastUpdateTime(extension_prefs_, extension.id())
             .InMillisecondsSinceUnixEpoch());
   }
   extension_info->set_is_default_installed(

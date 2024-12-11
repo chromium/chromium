@@ -19,6 +19,7 @@
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_constants.h"
@@ -68,7 +69,7 @@ void PopulateExtensionInfo(
       extension.converted_from_user_script());
   extension_info->set_may_be_untrusted(extension.may_be_untrusted());
   extension_info->set_install_time_msec(
-      extension_prefs.GetLastUpdateTime(extension.id())
+      GetLastUpdateTime(&extension_prefs, extension.id())
           .InMillisecondsSinceUnixEpoch());
 
   std::unique_ptr<extensions::InstallSignature> signature_from_prefs =
@@ -122,7 +123,7 @@ void CollectExtensionData(ClientIncidentReport_ExtensionData* data) {
         extensions::ExtensionPrefsFactory::GetForBrowserContext(profile);
     for (const auto& extension : extensions) {
       base::Time install_time =
-          extension_prefs->GetLastUpdateTime(extension->id());
+          GetLastUpdateTime(extension_prefs, extension->id());
       if (install_time > last_install_time) {
         last_install_time = install_time;
         last_installed_extension = extension;

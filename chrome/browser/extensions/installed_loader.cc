@@ -42,6 +42,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/pref_types.h"
@@ -665,7 +666,7 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
       }
       // Report the days since the extension was installed.
       base::Time time_since_install =
-          extension_prefs_->GetFirstInstallTime(extension->id());
+          GetFirstInstallTime(extension_prefs_, extension->id());
       if (!time_since_install.is_null()) {
         int days_since_install =
             (base::Time::Now() - time_since_install).InDays();
@@ -674,7 +675,7 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
       }
       // Report the days since the extension was last updated.
       base::Time time_since_last_update =
-          extension_prefs_->GetLastUpdateTime(extension->id());
+          GetLastUpdateTime(extension_prefs_, extension->id());
       if (!time_since_last_update.is_null()) {
         int days_since_updated =
             (base::Time::Now() - time_since_last_update).InDays();

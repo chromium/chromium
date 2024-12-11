@@ -625,25 +625,6 @@ class ExtensionPrefs : public KeyedService {
   // Returns the creation flags mask for a delayed install extension.
   int GetDelayedInstallCreationFlags(const ExtensionId& extension_id) const;
 
-  // Returns true if the extension was installed from the Chrome Web Store.
-  bool IsFromWebStore(const ExtensionId& extension_id) const;
-
-  // Returns true if the extension was installed as a default app.
-  bool WasInstalledByDefault(const ExtensionId& extension_id) const;
-
-  // Returns true if the extension was installed as an oem app.
-  bool WasInstalledByOem(const ExtensionId& extension_id) const;
-
-  // Helper method to acquire the original installation time of an extension.
-  // Returns base::Time() if the installation time could not be parsed or
-  // found.
-  base::Time GetFirstInstallTime(const ExtensionId& extension_id) const;
-
-  // Helper method to acquire the installation/last update time of an extension.
-  // Returns base::Time() if the installation time could not be parsed or
-  // found.
-  base::Time GetLastUpdateTime(const ExtensionId& extension_id) const;
-
   // Returns true if the extension should not be synced.
   bool DoNotSync(const ExtensionId& extension_id) const;
 

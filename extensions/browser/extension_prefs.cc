@@ -36,12 +36,14 @@
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_pref_names.h"
 #include "extensions/browser/extension_pref_store.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/install_flag.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/api/types.h"
 #include "extensions/common/constants.h"
@@ -187,12 +189,6 @@ constexpr const char kPrefManifestPermissions[] = "manifest_permissions";
 constexpr const char kPrefExplicitHosts[] = "explicit_host";
 constexpr const char kPrefScriptableHosts[] = "scriptable_host";
 
-// A preference that indicates when an extension was first installed.
-// This preference is created when an extension is installed and deleted when
-// it is removed. It is NOT updated when the extension is updated.
-constexpr const char kPrefFirstInstallTime[] = "first_install_time";
-// A preference that indicates when an extension was last installed/updated.
-constexpr const char kPrefLastUpdateTime[] = "last_update_time";
 // A preference that indicates when an extension was installed/updated.
 // TODO(anunoy): DEPRECATED! Remove after M113.
 // Use kPrefLastUpdateTime instead.
@@ -201,26 +197,11 @@ constexpr const char kPrefDeprecatedInstallTime[] = "install_time";
 // A preference which saves the creation flags for extensions.
 constexpr const char kPrefCreationFlags[] = "creation_flags";
 
-// A preference that indicates whether the extension was installed from the
-// Chrome Web Store.
-constexpr const char kPrefFromWebStore[] = "from_webstore";
-
-// A preference that indicates whether the extension was installed as a
-// default app.
-constexpr const char kPrefWasInstalledByDefault[] = "was_installed_by_default";
-
-// A preference that indicates whether the extension was installed as an
-// OEM app.
-constexpr const char kPrefWasInstalledByOem[] = "was_installed_by_oem";
-
 // Key for Geometry Cache preference.
 constexpr const char kPrefGeometryCache[] = "geometry_cache";
 
 // A preference that indicates when an extension is last launched.
 constexpr const char kPrefLastLaunchTime[] = "last_launch_time";
-
-// An installation parameter bundled with an extension.
-constexpr const char kPrefInstallParam[] = "install_parameter";
 
 // A list of installed ids and a signature.
 constexpr const char kInstallSignature[] = "extensions.install_signature";
@@ -1698,24 +1679,20 @@ ExtensionPrefs::ExtensionsInfo ExtensionPrefs::GetAllDelayedInstallInfo()
   return extensions_info;
 }
 
-bool ExtensionPrefs::IsFromWebStore(const ExtensionId& extension_id) const {
-  const base::Value::Dict* dictionary = GetExtensionPref(extension_id);
-  if (dictionary)
-    return dictionary->FindBool(kPrefFromWebStore).value_or(false);
-  return false;
-}
-
 int ExtensionPrefs::GetCreationFlags(const ExtensionId& extension_id) const {
   int creation_flags = Extension::NO_FLAGS;
   if (!ReadPrefAsInteger(extension_id, kPrefCreationFlags, &creation_flags)) {
     // Since kPrefCreationFlags was added later, it will be missing for
     // previously installed extensions.
-    if (IsFromWebStore(extension_id))
+    if (IsFromWebStore(this, extension_id)) {
       creation_flags |= Extension::FROM_WEBSTORE;
-    if (WasInstalledByDefault(extension_id))
+    }
+    if (WasInstalledByDefault(this, extension_id)) {
       creation_flags |= Extension::WAS_INSTALLED_BY_DEFAULT;
-    if (WasInstalledByOem(extension_id))
+    }
+    if (WasInstalledByOem(this, extension_id)) {
       creation_flags |= Extension::WAS_INSTALLED_BY_OEM;
+    }
   }
   return creation_flags;
 }
@@ -1731,37 +1708,6 @@ int ExtensionPrefs::GetDelayedInstallCreationFlags(
     }
   }
   return creation_flags;
-}
-
-bool ExtensionPrefs::WasInstalledByDefault(
-    const ExtensionId& extension_id) const {
-  const base::Value::Dict* dictionary = GetExtensionPref(extension_id);
-  if (!dictionary)
-    return false;
-  return dictionary->FindBool(kPrefWasInstalledByDefault).value_or(false);
-}
-
-bool ExtensionPrefs::WasInstalledByOem(const ExtensionId& extension_id) const {
-  const base::Value::Dict* dictionary = GetExtensionPref(extension_id);
-  if (dictionary)
-    return dictionary->FindBool(kPrefWasInstalledByOem).value_or(false);
-  return false;
-}
-
-base::Time ExtensionPrefs::GetFirstInstallTime(
-    const ExtensionId& extension_id) const {
-  static constexpr PrefMap kMap = {kPrefFirstInstallTime, PrefType::kTime,
-                                   PrefScope::kExtensionSpecific};
-
-  return ReadPrefAsTime(extension_id, kMap);
-}
-
-base::Time ExtensionPrefs::GetLastUpdateTime(
-    const ExtensionId& extension_id) const {
-  static constexpr PrefMap kMap = {kPrefLastUpdateTime, PrefType::kTime,
-                                   PrefScope::kExtensionSpecific};
-
-  return ReadPrefAsTime(extension_id, kMap);
 }
 
 bool ExtensionPrefs::DoNotSync(const ExtensionId& extension_id) const {
@@ -2233,7 +2179,7 @@ void ExtensionPrefs::PopulateExtensionInfoPrefs(
   std::string path = MakePathRelative(install_directory_, extension->path());
   extension_dict->SetString(kPrefPath, path);
   if (!install_parameter.empty()) {
-    extension_dict->SetString(kPrefInstallParam, install_parameter);
+    extension_dict->SetString(kPrefInstallParameter, install_parameter);
   }
   // We store prefs about LOAD extensions, but don't cache their manifest
   // since it may change on disk.
@@ -2257,7 +2203,7 @@ void ExtensionPrefs::InitExtensionControlledPrefs(
   for (const auto& info : extensions_info) {
     const ExtensionId& extension_id = info.extension_id;
 
-    base::Time install_time = GetLastUpdateTime(extension_id);
+    base::Time install_time = GetLastUpdateTime(this, extension_id);
     bool is_enabled = !IsExtensionDisabled(extension_id);
     bool is_incognito_enabled = IsIncognitoEnabled(extension_id);
     extension_pref_value_map_->RegisterExtension(

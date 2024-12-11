@@ -84,6 +84,7 @@
 #include "extensions/browser/blocked_action_type.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/service_worker/service_worker_task_queue.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
@@ -3390,8 +3391,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestMockedClockTest,
   const ExtensionId extension_id_2 = extension_2->id();
 
   const ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
-  EXPECT_LT(prefs->GetLastUpdateTime(extension_id_1),
-            prefs->GetLastUpdateTime(extension_id_2));
+  EXPECT_LT(GetLastUpdateTime(prefs, extension_id_1),
+            GetLastUpdateTime(prefs, extension_id_2));
 
   // The extensions will notify the browser if their proposed redirect was
   // successful or not.
@@ -3427,8 +3428,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestMockedClockTest,
   ReloadExtension(extension_id_1);
   ASSERT_TRUE(ready_1_listener.WaitUntilSatisfied());
 
-  EXPECT_LT(prefs->GetLastUpdateTime(extension_id_2),
-            prefs->GetLastUpdateTime(extension_id_1));
+  EXPECT_LT(GetLastUpdateTime(prefs, extension_id_2),
+            GetLastUpdateTime(prefs, extension_id_1));
 
   redirect_ignored_listener.Reset();
   redirect_successful_listener.Reset();
