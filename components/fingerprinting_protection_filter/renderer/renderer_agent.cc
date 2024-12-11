@@ -173,11 +173,13 @@ void RendererAgent::DidCreateNewDocument() {
 }
 
 void RendererAgent::DidFailProvisionalLoad() {
-  // We know the document will change (or this agent will be deleted) since a
-  // navigation did not commit - set up to request new activation in
-  // `DidCreateNewDocument()`.
-  activation_state_ = subresource_filter::mojom::ActivationState();
-  pending_activation_ = true;
+  if (IsTopLevelMainFrame()) {
+    // We know the document will change (or this agent will be deleted) since a
+    // navigation did not commit - set up to request new activation in
+    // `DidCreateNewDocument()`.
+    activation_state_ = subresource_filter::mojom::ActivationState();
+    pending_activation_ = true;
+  }
 }
 
 void RendererAgent::DidFinishLoad() {
