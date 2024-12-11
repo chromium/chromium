@@ -1803,10 +1803,6 @@ const char kEnableWasmTieringDescription[] =
     "Enables tiered compilation of WebAssembly (will tier up to TurboFan if "
     "#enable-webassembly-baseline is enabled).";
 
-const char kEvDetailsInPageInfoName[] = "EV certificate details in Page Info.";
-const char kEvDetailsInPageInfoDescription[] =
-    "Shows the EV certificate details in the Page Info bubble.";
-
 const char kExperimentalWebPlatformFeaturesName[] =
     "Experimental Web Platform features";
 const char kExperimentalWebPlatformFeaturesDescription[] =

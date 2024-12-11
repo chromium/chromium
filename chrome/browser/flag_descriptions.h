@@ -1025,9 +1025,6 @@ extern const char kEnableWasmStringrefDescription[];
 extern const char kEnableWasmTieringName[];
 extern const char kEnableWasmTieringDescription[];
 
-extern const char kEvDetailsInPageInfoName[];
-extern const char kEvDetailsInPageInfoDescription[];
-
 extern const char kExperimentalWebPlatformFeaturesName[];
 extern const char kExperimentalWebPlatformFeaturesDescription[];
 
