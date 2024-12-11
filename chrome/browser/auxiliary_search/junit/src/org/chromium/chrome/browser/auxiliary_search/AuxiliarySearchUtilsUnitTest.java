@@ -152,9 +152,7 @@ public class AuxiliarySearchUtilsUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON + ":force_card_shown/false"
-    })
+    @EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MODULE + ":force_card_shown/false"})
     public void testCanShowCard() {
         assertTrue(AuxiliarySearchUtils.canShowCard(null));
         assertTrue(AuxiliarySearchUtils.canShowCard(false));
@@ -179,9 +177,7 @@ public class AuxiliarySearchUtilsUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON + ":force_card_shown/true"
-    })
+    @EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MODULE + ":force_card_shown/true"})
     public void testCanShowCard_ForceCardShown() {
         assertTrue(AuxiliarySearchUtils.FORCE_CARD_SHOWN.getValue());
 
@@ -224,8 +220,8 @@ public class AuxiliarySearchUtilsUnitTest {
     @Test
     @SmallTest
     @EnableFeatures({
-        ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON
-                + ":skip_device_check/true/show_third_party_card/true"
+        ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON + ":skip_device_check/true",
+        ChromeFeatureList.ANDROID_APP_INTEGRATION_MODULE + ":show_third_party_card/true"
     })
     public void testIsShareTabsWithOsDefaultEnabled_SkipDeviceCheck_NonPixelDevices() {
         assertTrue(AuxiliarySearchUtils.SKIP_DEVICE_CHECK.getValue());

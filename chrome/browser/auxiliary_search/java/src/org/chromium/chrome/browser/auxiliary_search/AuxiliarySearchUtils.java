@@ -35,11 +35,11 @@ public class AuxiliarySearchUtils {
 
     @VisibleForTesting
     static final BooleanCachedFeatureParam FORCE_CARD_SHOWN =
-            ChromeFeatureList.sAndroidAppIntegrationWithFaviconForceCardShow;
+            ChromeFeatureList.sAndroidAppIntegrationModuleForceCardShow;
 
     @VisibleForTesting
     static final BooleanCachedFeatureParam SHOW_THIRD_PARTY_CARD =
-            ChromeFeatureList.sAndroidAppIntegrationWithFaviconShowThirdPartyCard;
+            ChromeFeatureList.sAndroidAppIntegrationModuleShowThirdPartyCard;
 
     /** Convert a Bitmap instance to a byte array. */
     @Nullable

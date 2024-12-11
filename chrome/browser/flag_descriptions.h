@@ -74,6 +74,9 @@ extern const char kAllowLegacyMV2ExtensionsDescription[];
 extern const char kAndroidAppIntegrationName[];
 extern const char kAndroidAppIntegrationDescription[];
 
+extern const char kAndroidAppIntegrationModuleName[];
+extern const char kAndroidAppIntegrationModuleDescription[];
+
 extern const char kAndroidAppIntegrationV2Name[];
 extern const char kAndroidAppIntegrationV2Description[];
 

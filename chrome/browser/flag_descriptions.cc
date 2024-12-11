@@ -81,6 +81,12 @@ const char kAndroidAppIntegrationName[] = "Integrate with Android App Search";
 const char kAndroidAppIntegrationDescription[] =
     "If enabled, allows Chrome to integrate with the Android App Search.";
 
+const char kAndroidAppIntegrationModuleName[] =
+    "Integrate with Android App Search and shows a notice card";
+const char kAndroidAppIntegrationModuleDescription[] =
+    "If enabled, allows Chrome to show a notice card on the magic stack for "
+    "Android App Search integration";
+
 const char kAndroidAppIntegrationV2Name[] =
     "Integrate with Android App Search V2";
 const char kAndroidAppIntegrationV2Description[] =

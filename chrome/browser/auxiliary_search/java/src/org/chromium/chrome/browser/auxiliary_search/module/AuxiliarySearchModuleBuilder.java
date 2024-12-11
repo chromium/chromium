@@ -15,6 +15,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
 import org.chromium.chrome.browser.auxiliary_search.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.HomeModulesUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleConfigChecker;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
@@ -77,7 +78,8 @@ public class AuxiliarySearchModuleBuilder implements ModuleProviderBuilder, Modu
 
     @Override
     public boolean isEligible() {
-        return AuxiliarySearchControllerFactory.getInstance().isEnabled();
+        return ChromeFeatureList.sAndroidAppIntegrationModule.isEnabled()
+                && AuxiliarySearchControllerFactory.getInstance().isEnabled();
     }
 
     @Override

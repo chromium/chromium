@@ -155,6 +155,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-app-integration-module",
+    "owners": ["hanxi@chromium.org", "gangwu@chromium.org", "clank-start@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "android-app-integration-v2",
     "owners": ["hanxi@chromium.org", "gangwu@chromium.org", "clank-start@google.com" ],
     "expiry_milestone": 150

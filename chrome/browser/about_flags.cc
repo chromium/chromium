@@ -2679,29 +2679,9 @@ const FeatureEntry::FeatureParam
     kAndroidAppIntegrationWithFavicon_UseLargeFavicon[] = {
         {"use_large_favicon", "true"}};
 const FeatureEntry::FeatureParam
-    kAndroidAppIntegrationWithFavicon_UseLargeFavicon_ForceCardShown[] = {
-        {"force_card_shown", "true"},
-        {"use_large_favicon", "true"}};
-const FeatureEntry::FeatureParam
-    kAndroidAppIntegrationWithFavicon_UseLargeFavicon_ForceCardShown_NonPixel
-        [] = {{"force_card_shown", "true"},
-              {"show_third_party_card", "true"},
-              {"use_large_favicon", "true"}};
-const FeatureEntry::FeatureParam
     kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck[] = {
         {"skip_device_check", "true"},
         {"use_large_favicon", "true"}};
-const FeatureEntry::FeatureParam
-    kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck_ForceCardShown
-        [] = {{"force_card_shown", "true"},
-              {"skip_device_check", "true"},
-              {"use_large_favicon", "true"}};
-const FeatureEntry::FeatureParam
-    kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck_ForceCardShown_NonPixel
-        [] = {{"force_card_shown", "true"},
-              {"show_third_party_card", "true"},
-              {"skip_device_check", "true"},
-              {"use_large_favicon", "true"}};
 const FeatureEntry::FeatureParam
     kAndroidAppIntegrationWithFavicon_DelayTime200Ms[] = {
         {"schedule_delay_time_ms", "200"}};
@@ -2714,32 +2694,10 @@ const FeatureEntry::FeatureVariation kAndroidAppIntegrationWithFaviconVariations
     {"Use large favicon (no delay)",
      kAndroidAppIntegrationWithFavicon_UseLargeFavicon,
      std::size(kAndroidAppIntegrationWithFavicon_UseLargeFavicon), nullptr},
-    {"Use large favicon (no delay) + force card shown (Pixel devices)",
-     kAndroidAppIntegrationWithFavicon_UseLargeFavicon_ForceCardShown,
-     std::size(
-         kAndroidAppIntegrationWithFavicon_UseLargeFavicon_ForceCardShown),
-     nullptr},
-    {"Use large favicon (no delay) + force card shown (third party devices)",
-     kAndroidAppIntegrationWithFavicon_UseLargeFavicon_ForceCardShown_NonPixel,
-     std::size(
-         kAndroidAppIntegrationWithFavicon_UseLargeFavicon_ForceCardShown_NonPixel),
-     nullptr},
     {"Skip device check + use large favicon (no delay)",
      kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck,
      std::size(
          kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck),
-     nullptr},
-    {"Skip device check + use large favicon (no delay) + force card shown "
-     "(Pixel devices)",
-     kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck_ForceCardShown,
-     std::size(
-         kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck_ForceCardShown),
-     nullptr},
-    {"Skip device check + use large favicon (no delay) + force card shown "
-     "(third party devices)",
-     kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck_ForceCardShown_NonPixel,
-     std::size(
-         kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck_ForceCardShown),
      nullptr},
     {"200ms delay", kAndroidAppIntegrationWithFavicon_DelayTime200Ms,
      std::size(kAndroidAppIntegrationWithFavicon_DelayTime200Ms), nullptr},
@@ -2748,6 +2706,23 @@ const FeatureEntry::FeatureVariation kAndroidAppIntegrationWithFaviconVariations
      std::size(
          kAndroidAppIntegrationWithFavicon_DelayTime200Ms_UseLargeFavicon),
      nullptr}};
+
+const FeatureEntry::FeatureParam
+    kAndroidAppIntegrationModule_ForceCardShown_Pixel[] = {
+        {"force_card_shown", "true"}};
+const FeatureEntry::FeatureParam
+    kAndroidAppIntegrationModule_ForceCardShown_NonPixel[] = {
+        {"force_card_shown", "true"},
+        {"show_third_party_card", "true"}};
+
+const FeatureEntry::FeatureVariation kAndroidAppIntegrationModuleVariations[] =
+    {{"Force to show Pixel's notice card",
+      kAndroidAppIntegrationModule_ForceCardShown_Pixel,
+      std::size(kAndroidAppIntegrationModule_ForceCardShown_Pixel), nullptr},
+     {"Force to show opt in card",
+      kAndroidAppIntegrationModule_ForceCardShown_NonPixel,
+      std::size(kAndroidAppIntegrationModule_ForceCardShown_NonPixel),
+      nullptr}};
 
 const FeatureEntry::FeatureParam kAuxiliarySearchDonation_MaxDonation_20[] = {
     {chrome::android::kAuxiliarySearchMaxBookmarksCountParam.name, "20"},
@@ -6366,6 +6341,14 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-app-integration", flag_descriptions::kAndroidAppIntegrationName,
      flag_descriptions::kAndroidAppIntegrationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidAppIntegration)},
+
+    {"android-app-integration-module",
+     flag_descriptions::kAndroidAppIntegrationModuleName,
+     flag_descriptions::kAndroidAppIntegrationModuleDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kAndroidAppIntegrationModule,
+         kAndroidAppIntegrationModuleVariations,
+         "AndroidAppIntegrationModule")},
 
     {"android-app-integration-v2",
      flag_descriptions::kAndroidAppIntegrationV2Name,

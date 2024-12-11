@@ -184,6 +184,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRedirectExplicitCTAIntentsToExistingActivity,
     &kAllowNewIncognitoTabIntents,
     &kAndroidAppIntegration,
+    &kAndroidAppIntegrationModule,
     &kAndroidAppIntegrationV2,
     &kAndroidAppIntegrationWithFavicon,
     &kAndroidBookmarkBar,
@@ -459,6 +460,10 @@ BASE_FEATURE(kForceListTabSwitcher,
 BASE_FEATURE(kAndroidAppIntegration,
              "AndroidAppIntegration",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidAppIntegrationModule,
+             "AndroidAppIntegrationModule",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidAppIntegrationV2,
              "AndroidAppIntegrationV2",

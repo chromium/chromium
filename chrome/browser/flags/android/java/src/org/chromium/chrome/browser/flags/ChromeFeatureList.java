@@ -162,6 +162,7 @@ public abstract class ChromeFeatureList {
     public static final String ALLOW_NEW_INCOGNITO_TAB_INTENTS = "AllowNewIncognitoTabIntents";
     public static final String ALWAYS_BLOCK_3PCS_INCOGNITO = "AlwaysBlock3pcsIncognito";
     public static final String ANDROID_APP_INTEGRATION = "AndroidAppIntegration";
+    public static final String ANDROID_APP_INTEGRATION_MODULE = "AndroidAppIntegrationModule";
     public static final String ANDROID_APP_INTEGRATION_V2 = "AndroidAppIntegrationV2";
     public static final String ANDROID_APP_INTEGRATION_WITH_FAVICON =
             "AndroidAppIntegrationWithFavicon";
@@ -585,6 +586,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW, true);
     public static final CachedFlag sAndroidAppIntegration =
             newCachedFlag(ANDROID_APP_INTEGRATION, false);
+    public static final CachedFlag sAndroidAppIntegrationModule =
+            newCachedFlag(ANDROID_APP_INTEGRATION_MODULE, false);
     public static final CachedFlag sAndroidAppIntegrationV2 =
             newCachedFlag(ANDROID_APP_INTEGRATION_V2, false);
     public static final CachedFlag sAndroidAppIntegrationWithFavicon =
@@ -776,6 +779,7 @@ public abstract class ChromeFeatureList {
             List.of(
                     sAccountReauthenticationRecentTimeWindow,
                     sAndroidAppIntegration,
+                    sAndroidAppIntegrationModule,
                     sAndroidAppIntegrationV2,
                     sAndroidAppIntegrationWithFavicon,
                     sAndroidBottomToolbar,
@@ -952,14 +956,12 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sAndroidAppIntegrationWithFaviconSkipDeviceCheck =
             newBooleanCachedFeatureParam(
                     ANDROID_APP_INTEGRATION_WITH_FAVICON, "skip_device_check", false);
-    public static final BooleanCachedFeatureParam sAndroidAppIntegrationWithFaviconForceCardShow =
-            newBooleanCachedFeatureParam(
-                    ANDROID_APP_INTEGRATION_WITH_FAVICON, "force_card_shown", false);
+    public static final BooleanCachedFeatureParam sAndroidAppIntegrationModuleForceCardShow =
+            newBooleanCachedFeatureParam(ANDROID_APP_INTEGRATION_MODULE, "force_card_shown", false);
 
-    public static final BooleanCachedFeatureParam
-            sAndroidAppIntegrationWithFaviconShowThirdPartyCard =
-                    newBooleanCachedFeatureParam(
-                            ANDROID_APP_INTEGRATION_WITH_FAVICON, "show_third_party_card", false);
+    public static final BooleanCachedFeatureParam sAndroidAppIntegrationModuleShowThirdPartyCard =
+            newBooleanCachedFeatureParam(
+                    ANDROID_APP_INTEGRATION_MODULE, "show_third_party_card", false);
 
     public static final IntCachedFeatureParam sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs =
             newIntCachedFeatureParam(
@@ -1236,8 +1238,8 @@ public abstract class ChromeFeatureList {
             List.of(
                     sAndroidAppIntegrationV2ContentTtlHours,
                     sAndroidAppIntegrationWithFaviconSkipDeviceCheck,
-                    sAndroidAppIntegrationWithFaviconForceCardShow,
-                    sAndroidAppIntegrationWithFaviconShowThirdPartyCard,
+                    sAndroidAppIntegrationModuleForceCardShow,
+                    sAndroidAppIntegrationModuleShowThirdPartyCard,
                     sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs,
                     sAndroidAppIntegrationWithFaviconUseLargeFavicon,
                     sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber,
