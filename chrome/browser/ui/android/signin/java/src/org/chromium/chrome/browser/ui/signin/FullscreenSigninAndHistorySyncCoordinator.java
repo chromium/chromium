@@ -162,7 +162,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
     /** Implements {@link SigninAndHistorySyncCoordinator}. */
     @Override
     public void onAccountAdded(String accountName) {
-        mSigninCoordinator.onAccountSelected(accountName);
+        mSigninCoordinator.onAccountAdded(accountName);
     }
 
     /** Implements {@link SigninAndHistorySyncCoordinator}. */
@@ -239,6 +239,17 @@ public final class FullscreenSigninAndHistorySyncCoordinator
     @Override
     public void displayDeviceLockPage(Account selectedAccount) {
         // TODO(b/41496906): Maybe implement this method.
+    }
+
+    @Override
+    public void recordUserSignInHistograms(@AccountConsistencyPromoAction int promoAction) {
+        SigninMetricsUtils.logAccountConsistencyPromoAction(promoAction, mSigninAccessPoint);
+    }
+
+    @Override
+    public void recordSigninDismissedHistograms() {
+        SigninMetricsUtils.logAccountConsistencyPromoAction(
+                AccountConsistencyPromoAction.DISMISSED_BUTTON, mSigninAccessPoint);
     }
 
     /** Implements {@link FullscreenSigninCoordinator.Delegate} */

@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.browser.ui.signin.DialogWhenLargeContentLayout;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninMediator;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -798,10 +799,15 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     @Override
-    public void recordNativePolicyAndChildStatusLoadedHistogram() {
+    public void recordSlowestLoadPointHistogram(
+            @FullscreenSigninMediator.LoadPoint int slowestLoadPoint) {
         RecordHistogram.recordTimesHistogram(
                 "MobileFre.FromLaunch.NativePolicyAndChildStatusLoaded",
                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
+        RecordHistogram.recordEnumeratedHistogram(
+                "MobileFre.SlowestLoadPoint",
+                slowestLoadPoint,
+                FullscreenSigninMediator.LoadPoint.MAX);
     }
 
     @Override

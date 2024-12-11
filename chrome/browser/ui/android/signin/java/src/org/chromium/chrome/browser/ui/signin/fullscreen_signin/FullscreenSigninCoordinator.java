@@ -13,7 +13,6 @@ import androidx.annotation.StringRes;
 
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -45,21 +44,30 @@ public class FullscreenSigninCoordinator {
         void displayDeviceLockPage(Account selectedAccount);
 
         /**
-         * Records the FRE progress histogram MobileFre.Progress.*. Only implemented for the FRE.
+         * Records histograms corresponding to the user accepting sign-in.
          *
-         * @param state FRE state to record.
+         * @param promoAction the promo action corresponding to the account used to sign in.
          */
-        default void recordFreProgressHistogram(@MobileFreProgress int state) {}
+        void recordUserSignInHistograms(
+                @org.chromium.components.signin.metrics.AccountConsistencyPromoAction
+                        int promoAction);
+
+        /** Records histograms corresponding to the user dismissing the sign-in screen. */
+        void recordSigninDismissedHistograms();
 
         /**
-         * Records MobileFre.FromLaunch.NativeAndPoliciesLoaded histogram. Only implemented for the
-         * FRE.
+         * Records MobileFre.FromLaunch.NativeAndPoliciesLoaded and MobileFre.SlowestLoadPoint
+         * histograms. Only implemented for the FRE.
+         *
+         * @param slowestLoadPoint The slowest load point to be recorded.
          */
-        default void recordNativePolicyAndChildStatusLoadedHistogram() {}
+        default void recordNativePolicyAndChildStatusLoadedHistogram(
+                @FullscreenSigninMediator.LoadPoint int slowestLoadPoint) {}
 
         /**
          * Records MobileFre.FromLaunch.NativeInitialized histogram. Only implemented for the FRE.
          */
+        // TODO(crbug.com/351277737): Consider recording something similar for the re-FRE as well.
         default void recordNativeInitializedHistogram() {}
 
         /**
@@ -162,8 +170,8 @@ public class FullscreenSigninCoordinator {
         }
     }
 
-    public void onAccountSelected(String accountName) {
-        mMediator.onAccountSelected(accountName);
+    public void onAccountAdded(String accountName) {
+        mMediator.onAccountAdded(accountName);
     }
 
     /** Continue the sign-in process with the currently selected account. */

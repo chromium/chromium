@@ -40,7 +40,6 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.widget.ProgressBar;
 
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.test.espresso.ViewAction;
 import androidx.test.filters.MediumTest;
@@ -69,7 +68,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.ScalableTimeout;
@@ -81,7 +79,6 @@ import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.firstrun.FirstRunUtilsJni;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.firstrun.PolicyLoadListener;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -91,6 +88,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninChecker;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninMediator;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninMediator.LoadPoint;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -469,7 +467,10 @@ public class SigninFirstRunFragmentTest {
 
         launchActivityWithFragment();
 
-        checkFragmentWithSelectedAccount(TestAccounts.ACCOUNT1, /* shouldShowSubtitle= */ false);
+        checkFragmentWithSelectedAccount(
+                TestAccounts.ACCOUNT1,
+                /* shouldShowSubtitle= */ false,
+                LoadPoint.NATIVE_INITIALIZATION);
         onView(withId(R.id.fre_browser_managed_by)).check(matches(isDisplayed()));
     }
 
@@ -793,7 +794,6 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.S_V2,
             message = "Flaky, crbug.com/358148764")
@@ -834,7 +834,6 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @Features.EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.S_V2,
             message = "Flaky, crbug.com/358148764")
@@ -864,7 +863,6 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.S_V2,
             message = "Flaky, crbug.com/358148764")
@@ -950,7 +948,6 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testFragmentWhenClickingOnUmaDialogLink() {
         launchActivityWithFragment();
 
@@ -1153,16 +1150,10 @@ public class SigninFirstRunFragmentTest {
                 });
         launchActivityWithFragment();
         checkFragmentWhenLoading();
-        var slowestPointHistogram =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "MobileFre.SlowestLoadPoint", LoadPoint.NATIVE_INITIALIZATION);
 
         ThreadUtils.runOnUiThreadBlocking(() -> mNativeInitializationPromise.fulfill(null));
 
-        checkFragmentWithSelectedAccount(TestAccounts.ACCOUNT1);
-        slowestPointHistogram.assertExpected(
-                "Native initialization should be the slowest and "
-                        + "SlowestLoadPoint histogram should be counted only once");
+        checkFragmentWithSelectedAccount(TestAccounts.ACCOUNT1, LoadPoint.NATIVE_INITIALIZATION);
         verify(mFirstRunPageDelegateMock).recordNativeInitializedHistogram();
     }
 
@@ -1175,9 +1166,6 @@ public class SigninFirstRunFragmentTest {
         when(mChildAccountStatusListenerMock.get()).thenReturn(null);
         launchActivityWithFragment();
         checkFragmentWhenLoading();
-        var slowestPointHistogram =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "MobileFre.SlowestLoadPoint", LoadPoint.CHILD_STATUS_LOAD);
 
         // TODO(crbug.com/40232416): Use OneshotSupplierImpl instead.
         when(mChildAccountStatusListenerMock.get()).thenReturn(false);
@@ -1190,10 +1178,7 @@ public class SigninFirstRunFragmentTest {
                     }
                 });
 
-        checkFragmentWithSelectedAccount(TestAccounts.ACCOUNT1);
-        slowestPointHistogram.assertExpected(
-                "Child status loading should be the slowest and "
-                        + "SlowestLoadPoint histogram should be counted only once");
+        checkFragmentWithSelectedAccount(TestAccounts.ACCOUNT1, LoadPoint.CHILD_STATUS_LOAD);
     }
 
     @Test
@@ -1204,32 +1189,19 @@ public class SigninFirstRunFragmentTest {
                 mSigninTestRule.blockGetCoreAccountInfosUpdate(/* populateCache= */ false);
         launchActivityWithFragment();
         checkFragmentWhenLoading();
-        HistogramWatcher slowestPointHistogram =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "MobileFre.SlowestLoadPoint", LoadPoint.ACCOUNT_FETCHING);
 
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         blocker.close();
-        checkFragmentWithSelectedAccount(TestAccounts.ACCOUNT1);
-        slowestPointHistogram.assertExpected(
-                "Account fetching should be the slowest and "
-                        + "SlowestLoadPoint histogram should be counted only once");
+        checkFragmentWithSelectedAccount(TestAccounts.ACCOUNT1, LoadPoint.ACCOUNT_FETCHING);
     }
 
     @Test
     @MediumTest
     public void testNativePolicyAndChildStatusLoadMetricRecordedOnlyOnce() {
-        var slowestPointHistogram =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "MobileFre.SlowestLoadPoint", LoadPoint.NATIVE_INITIALIZATION);
         launchActivityWithFragment();
         verify(mFirstRunPageDelegateMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
-                .recordNativePolicyAndChildStatusLoadedHistogram();
+                .recordSlowestLoadPointHistogram(LoadPoint.NATIVE_INITIALIZATION);
         verify(mFirstRunPageDelegateMock).recordNativeInitializedHistogram();
-        slowestPointHistogram.assertExpected("Native initialization should be the slowest");
-
-        slowestPointHistogram =
-                HistogramWatcher.newBuilder().expectNoRecords("MobileFre.SlowestLoadPoint").build();
 
         // Changing the activity orientation will create FullscreenSigninCoordinator again and call
         // SigninFirstRunFragment.notifyCoordinatorWhenNativePolicyAndChildStatusAreLoaded()
@@ -1238,10 +1210,9 @@ public class SigninFirstRunFragmentTest {
 
         // These histograms should not be recorded again. The call count should be the same as
         // before as mockito does not reset invocation counts between consecutive verify calls.
-        verify(mFirstRunPageDelegateMock).recordNativePolicyAndChildStatusLoadedHistogram();
+        verify(mFirstRunPageDelegateMock)
+                .recordSlowestLoadPointHistogram(LoadPoint.NATIVE_INITIALIZATION);
         verify(mFirstRunPageDelegateMock).recordNativeInitializedHistogram();
-        slowestPointHistogram.assertExpected(
-                "SlowestLoadPoint histogram should not be recorded again");
     }
 
     @Test
@@ -1296,13 +1267,8 @@ public class SigninFirstRunFragmentTest {
 
         ThreadUtils.runOnUiThreadBlocking(() -> mNativeInitializationPromise.fulfill(null));
 
-        @StringRes
-        int titleStrId =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                        ? R.string.signin_fre_title
-                        : R.string.fre_welcome;
-        onView(allOf(withId(R.id.title), withText(titleStrId))).check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.title), withText(R.string.signin_fre_title)))
+                .check(matches(isDisplayed()));
         onView(allOf(withId(R.id.subtitle), withText(R.string.signin_fre_subtitle)))
                 .check(matches(isDisplayed()));
     }
@@ -1363,10 +1329,12 @@ public class SigninFirstRunFragmentTest {
     }
 
     private void checkFragmentWithSelectedAccount(
-            AccountInfo accountInfo, boolean shouldShowSubtitle) {
+            AccountInfo accountInfo,
+            boolean shouldShowSubtitle,
+            @FullscreenSigninMediator.LoadPoint int slowestLoadPoint) {
         CriteriaHelper.pollUiThread(
                 mFragment.getView().findViewById(R.id.signin_fre_selected_account)::isShown);
-        verify(mFirstRunPageDelegateMock).recordNativePolicyAndChildStatusLoadedHistogram();
+        verify(mFirstRunPageDelegateMock).recordSlowestLoadPointHistogram(slowestLoadPoint);
         final DisplayableProfileData profileData =
                 new DisplayableProfileData(
                         accountInfo.getEmail(),
@@ -1374,13 +1342,8 @@ public class SigninFirstRunFragmentTest {
                         accountInfo.getFullName(),
                         accountInfo.getGivenName(),
                         true);
-        @StringRes
-        int titleStrId =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                        ? R.string.signin_fre_title
-                        : R.string.fre_welcome;
-        onView(allOf(withId(R.id.title), withText(titleStrId))).check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.title), withText(R.string.signin_fre_title)))
+                .check(matches(isDisplayed()));
         if (shouldShowSubtitle) {
             onView(allOf(withId(R.id.subtitle), withText(R.string.signin_fre_subtitle)))
                     .check(matches(isDisplayed()));
@@ -1402,7 +1365,12 @@ public class SigninFirstRunFragmentTest {
     }
 
     private void checkFragmentWithSelectedAccount(AccountInfo accountInfo) {
-        checkFragmentWithSelectedAccount(accountInfo, true);
+        checkFragmentWithSelectedAccount(accountInfo, true, LoadPoint.NATIVE_INITIALIZATION);
+    }
+
+    private void checkFragmentWithSelectedAccount(
+            AccountInfo accountInfo, @FullscreenSigninMediator.LoadPoint int slowestLoadPoint) {
+        checkFragmentWithSelectedAccount(accountInfo, true, slowestLoadPoint);
     }
 
     private void checkFragmentWhenLoading() {
@@ -1423,14 +1391,10 @@ public class SigninFirstRunFragmentTest {
             boolean hasDisplayableFullName, boolean hasDisplayableEmail, AccountInfo accountInfo) {
         CriteriaHelper.pollUiThread(
                 mFragment.getView().findViewById(R.id.signin_fre_selected_account)::isShown);
-        verify(mFirstRunPageDelegateMock).recordNativePolicyAndChildStatusLoadedHistogram();
-        @StringRes
-        int titleStrId =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                        ? R.string.signin_fre_title
-                        : R.string.fre_welcome;
-        onView(allOf(withId(R.id.title), withText(titleStrId))).check(matches(isDisplayed()));
+        verify(mFirstRunPageDelegateMock)
+                .recordSlowestLoadPointHistogram(LoadPoint.NATIVE_INITIALIZATION);
+        onView(allOf(withId(R.id.title), withText(R.string.signin_fre_title)))
+                .check(matches(isDisplayed()));
         onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
         Assert.assertFalse(
                 mFragment.getView().findViewById(R.id.signin_fre_selected_account).isEnabled());
@@ -1505,13 +1469,8 @@ public class SigninFirstRunFragmentTest {
             onView(withId(R.id.fre_browser_managed_by)).check(matches(isDisplayed()));
             onView(withText(R.string.fre_browser_managed_by_parent)).check(matches(isDisplayed()));
         } else {
-            @StringRes
-            int titleStrId =
-                    ChromeFeatureList.isEnabled(
-                                    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                            ? R.string.signin_fre_title
-                            : R.string.fre_welcome;
-            onView(allOf(withId(R.id.title), withText(titleStrId))).check(matches(isDisplayed()));
+            onView(allOf(withId(R.id.title), withText(R.string.signin_fre_title)))
+                    .check(matches(isDisplayed()));
 
             onView(allOf(withId(R.id.subtitle), withText(R.string.signin_fre_subtitle)))
                     .check(matches(isDisplayed()));
@@ -1535,7 +1494,8 @@ public class SigninFirstRunFragmentTest {
                             .findViewById(R.id.signin_fre_selected_account)
                             .isShown();
                 });
-        verify(mFirstRunPageDelegateMock).recordNativePolicyAndChildStatusLoadedHistogram();
+        verify(mFirstRunPageDelegateMock)
+                .recordSlowestLoadPointHistogram(LoadPoint.NATIVE_INITIALIZATION);
         ViewUtils.waitForVisibleView(withId(R.id.fre_browser_managed_by));
         ViewUtils.waitForVisibleView(withText(R.string.continue_button));
         ViewUtils.waitForVisibleView(withId(R.id.signin_fre_footer));

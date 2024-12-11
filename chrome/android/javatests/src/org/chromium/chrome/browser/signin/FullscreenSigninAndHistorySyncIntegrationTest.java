@@ -51,11 +51,9 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
@@ -82,7 +80,6 @@ import org.chromium.ui.test.util.ViewUtils;
 /** Integration tests for the re-FRE. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "This test relies on native initialization")
-@Features.EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // The upgrade promo does not get displayed when Google Play Services are not available or on
 // Android Automotive.
@@ -129,6 +126,12 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
                                 AccountConsistencyPromoAction.SHOWN)
                         .expectIntRecord(
                                 "Signin.AccountConsistencyPromoAction.Shown", mSigninAccessPoint)
+                        .expectIntRecords(
+                                "Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.DISMISSED_BUTTON)
+                        .expectIntRecord(
+                                "Signin.AccountConsistencyPromoAction.DismissedButton",
+                                mSigninAccessPoint)
                         .build();
         HistogramWatcher accountStartedHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -153,6 +156,23 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingAccount_signIn_refuseHistorySync_historySyncOptional() {
+        HistogramWatcher accountConsistencyHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN)
+                        .expectIntRecord(
+                                "Signin.AccountConsistencyPromoAction.Shown", mSigninAccessPoint)
+                        .expectIntRecords(
+                                "Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT)
+                        .expectIntRecord(
+                                "Signin.AccountConsistencyPromoAction.SignedInWithDefaultAccount",
+                                mSigninAccessPoint)
+                        .build();
+        HistogramWatcher accountStartedHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SignIn.Started", mSigninAccessPoint);
         when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(false);
 
         launchActivity();
@@ -160,6 +180,8 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         // Verify that the fullscreen sign-in promo is shown and accept.
         onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_fre_continue_button)).perform(click());
+        accountConsistencyHistogram.assertExpected();
+        accountStartedHistogram.assertExpected();
 
         // Verify that the history opt-in dialog is shown and refuse.
         onView(withId(R.id.history_sync)).check(matches(isDisplayed()));
