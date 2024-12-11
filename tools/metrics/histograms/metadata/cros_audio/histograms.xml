@@ -23,7 +23,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="ChromeOS.AudioSelection" enum="AudioSelectionEvents"
-    expires_after="2025-06-08">
+    expires_after="2025-12-31">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -37,7 +37,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.AudioSelection.ExceptionRulesMet"
-    enum="AudioSelectionExceptionRules" expires_after="2025-03-31">
+    enum="AudioSelectionExceptionRules" expires_after="2025-12-31">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -47,7 +47,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.AudioSelection.Notification"
-    enum="AudioSelectionNotificationEvents" expires_after="2025-03-31">
+    enum="AudioSelectionNotificationEvents" expires_after="2025-12-31">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -60,7 +60,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.AudioSelection.{AudioType}.ConsecutiveDevicesChangeTimeElapsed.{ChangeType}"
-    units="seconds" expires_after="2025-02-25">
+    units="seconds" expires_after="2025-12-31">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -79,7 +79,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.AudioSelection.{AudioType}.SystemSwitchAudio"
-    enum="BooleanSwitched" expires_after="2025-01-05">
+    enum="BooleanSwitched" expires_after="2025-12-31">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -95,7 +95,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.AudioSelection.{AudioType}.SystemSwitchAudio.{IsChromeRestarts}"
-    enum="BooleanSwitched" expires_after="2025-02-25">
+    enum="BooleanSwitched" expires_after="2025-12-31">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -114,7 +114,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.AudioSelection.{AudioType}.System{SwitchDecision}Audio.AudioDeviceCount"
-    units="counts" expires_after="2025-05-04">
+    units="counts" expires_after="2025-12-31">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -134,7 +134,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.AudioSelection.{AudioType}.System{SwitchDecision}Audio.AudioDeviceCount.{IsChromeRestarts}"
-    units="counts" expires_after="2025-02-25">
+    units="counts" expires_after="2025-12-31">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -158,7 +158,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.AudioSelection.{AudioType}.System{SwitchDecision}Audio.AudioDeviceSet"
-    enum="AudioSelectionDeviceSet" expires_after="2025-04-27">
+    enum="AudioSelectionDeviceSet" expires_after="2025-12-31">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -178,7 +178,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.AudioSelection.{AudioType}.System{SwitchDecision}Audio.AudioDeviceSet.{IsChromeRestarts}"
-    enum="AudioSelectionDeviceSet" expires_after="2025-02-25">
+    enum="AudioSelectionDeviceSet" expires_after="2025-12-31">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -202,7 +202,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.AudioSelection.{AudioType}.System{SwitchDecision}Audio.BeforeAndAfterAudioDeviceSet"
-    enum="AudioSelectionBeforeAndAfterDeviceSet" expires_after="2025-04-27">
+    enum="AudioSelectionBeforeAndAfterDeviceSet" expires_after="2025-12-31">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -223,7 +223,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.AudioSelection.{AudioType}.System{SwitchDecision}Audio.BeforeAndAfterAudioDeviceSet.{IsChromeRestarts}"
-    enum="AudioSelectionBeforeAndAfterDeviceSet" expires_after="2025-02-25">
+    enum="AudioSelectionBeforeAndAfterDeviceSet" expires_after="2025-12-31">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -247,7 +247,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.AudioSelection.{AudioType}.UserOverrideSystem{SwitchDecision}Audio.BeforeAndAfterAudioDeviceSet"
-    enum="AudioSelectionBeforeAndAfterDeviceSet" expires_after="2025-04-27">
+    enum="AudioSelectionBeforeAndAfterDeviceSet" expires_after="2025-12-31">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -267,7 +267,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.AudioSelection.{AudioType}.UserOverrideSystem{SwitchDecision}TimeElapsed"
-    units="minutes" expires_after="2025-01-05">
+    units="minutes" expires_after="2025-12-31">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -289,7 +289,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.AudioSelection.{AudioType}.UserOverrideSystem{SwitchDecision}TimeElapsed.{IsChromeRestarts}"
-    units="minutes" expires_after="2025-02-25">
+    units="minutes" expires_after="2025-12-31">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
