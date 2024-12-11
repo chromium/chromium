@@ -24,11 +24,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
 
 #include <libxml/parser.h>
@@ -96,10 +91,6 @@ namespace blink {
 
 // FIXME: HTMLConstructionSite has a limit of 512, should these match?
 static const unsigned kMaxXMLTreeDepth = 5000;
-
-static inline String ToString(const xmlChar* string, size_t length) {
-  return String::FromUTF8(base::span(string, length));
-}
 
 static inline String ToString(base::span<const xmlChar> string) {
   return String::FromUTF8(string);
@@ -427,8 +418,7 @@ bool XMLDocumentParser::UpdateLeafTextNode() {
   if (!leaf_text_node_)
     return true;
 
-  leaf_text_node_->ParserAppendData(
-      ToString(buffered_text_.data(), buffered_text_.size()));
+  leaf_text_node_->ParserAppendData(ToString(buffered_text_));
   buffered_text_.clear();
   leaf_text_node_ = nullptr;
 
@@ -722,7 +712,9 @@ static int ReadFunc(void* context, char* buffer, int len) {
     return 0;
 
   SharedBufferReader* data = static_cast<SharedBufferReader*>(context);
-  auto buffer_span = base::span(buffer, base::checked_cast<size_t>(len));
+  // SAFETY: libxml provides `buffer` that points to at least `len` bytes.
+  auto buffer_span =
+      UNSAFE_BUFFERS(base::span(buffer, base::checked_cast<size_t>(len)));
   return base::checked_cast<int>(data->ReadData(buffer_span));
 }
 
@@ -1457,7 +1449,10 @@ static void ProcessingInstructionHandler(void* closure,
 }
 
 static void CdataBlockHandler(void* closure, const xmlChar* text, int length) {
-  GetParser(closure)->CdataBlock(ToString(text, length));
+  // SAFETY: libxml provides `text` that point at `length` xmlChars.
+  auto text_span =
+      UNSAFE_BUFFERS(base::span(text, base::checked_cast<size_t>(length)));
+  GetParser(closure)->CdataBlock(ToString(text_span));
 }
 
 static void CommentHandler(void* closure, const xmlChar* text) {
