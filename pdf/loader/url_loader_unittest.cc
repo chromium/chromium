@@ -254,8 +254,8 @@ TEST_F(UrlLoaderTest, OpenWithBody) {
 
   std::string data;
   element.data.ForEachSegment(
-      [&](const char* segment, size_t length, size_t pos) {
-        data.append(segment, length);
+      [&](base::span<const uint8_t> segment, size_t pos) {
+        data.append(base::as_string_view(segment));
         return true;
       });
   EXPECT_EQ("fake body", data);

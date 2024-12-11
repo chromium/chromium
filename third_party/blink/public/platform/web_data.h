@@ -69,30 +69,29 @@ class BLINK_PLATFORM_EXPORT WebData {
 
   size_t size() const;
 
-  // Returns the number of consecutive bytes after "position". "data"
-  // points to the first byte. Returns 0 when no more data is left.
-  size_t GetSomeData(const char*& data, size_t position) const;
+  // Returns a span of the consecutive bytes after "position". Returns an empty
+  // span when no more data is left.
+  base::span<const uint8_t> GetSomeData(size_t position) const;
 
   // Same as SharedBuffer::CopyAs, copies the segmented data into a
   // contiguous buffer.  Use GetSomeData() or ForEachSegment() whenever
   // possible, if a copy can be avoided.
   WebVector<uint8_t> Copy() const;
 
-  // Helper for applying a lambda to all data segments, sequentially:
+  // Helper for applying a lambda to all data segments sequentially:
   //
-  //   bool func(const char* segment, size_t segment_size,
-  //             size_t segment_offset);
+  //   bool func(base::span<const uint8_t> segment, size_t segment_offset);
   //
-  // The iterator stops early when the lambda returns |false|.
+  // The iterator stops early when the lambda returns false.
   template <typename Func>
   void ForEachSegment(Func&& func) const {
-    const char* segment;
     size_t pos = 0;
-
-    while (size_t length = GetSomeData(segment, pos)) {
-      if (!func(segment, length, pos))
+    for (base::span<const uint8_t> segment = GetSomeData(pos); !segment.empty();
+         segment = GetSomeData(pos)) {
+      if (!func(segment, pos)) {
         break;
-      pos += length;
+      }
+      pos += segment.size();
     }
   }
 

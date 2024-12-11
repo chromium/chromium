@@ -717,13 +717,9 @@ TEST_F(RenderViewImplTest, OnNavigationHttpPost) {
   EXPECT_EQ(blink::HTTPBodyElementType::kTypeData, element.type);
 
   auto flat_data = base::HeapArray<char>::Uninit(element.data.size());
-  element.data.ForEachSegment([&flat_data](const char* segment,
-                                           size_t segment_size,
+  element.data.ForEachSegment([&flat_data](base::span<const uint8_t> segment,
                                            size_t segment_offset) {
-    flat_data.subspan(segment_offset)
-        .copy_prefix_from(
-            // TODO(crbug.com/40284755): ForEachSegment should be given a span.
-            UNSAFE_TODO(base::span(segment, segment_size)));
+    flat_data.subspan(segment_offset).copy_prefix_from(base::as_chars(segment));
     return true;
   });
   EXPECT_EQ(base::span_with_nul_from_cstring(raw_data), flat_data.as_span());
