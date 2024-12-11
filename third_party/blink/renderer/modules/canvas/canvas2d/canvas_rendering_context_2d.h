@@ -195,7 +195,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
     return color_params_.GetSkColorInfo();
   }
   SkAlphaType GetAlphaType() const override {
-    return CanvasRenderingContextSkColorInfo().alphaType();
+    return color_params_.GetAlphaType();
   }
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) final;
 
