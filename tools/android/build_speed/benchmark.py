@@ -94,6 +94,10 @@ _INCREMENTAL_INSTALL = [
     'incremental_install=true',
 ]
 
+_NO_COMPONENT_BUILD = [
+    'is_component_build=false',
+]
+
 _TARGETS = {
     'bundle': 'monochrome_public_bundle',
     'apk': 'chrome_public_apk',
@@ -238,9 +242,21 @@ def _server(outdir: pathlib.Path):
     #     server cannot be started.
     server_proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL)
     logging.debug('Started fast local dev server.')
+    # Give the server 1 second to fail fast.
+    server_proc.wait(1)
+    returncode = server_proc.poll()
+    # Ensure that the server started correctly.
+    if returncode is not None:
+        raise Exception(f"Failed to start fast local dev server: {returncode}")
     try:
         yield
     finally:
+        # Ensure that the original server_proc is still running.
+        returncode = server_proc.poll()
+        if returncode is not None:
+            # The server failed to remain running.
+            raise Exception(f"The fast local dev server died: {returncode}")
+
         logging.debug('Terminating fast local dev server.')
         build_id = subprocess.run(cmd +
                                   ['--get-build-id-for-outdir',
@@ -492,6 +508,9 @@ def main():
     parser.add_argument('--no-incremental-install',
                         action='store_true',
                         help='Do not use incremental install.')
+    parser.add_argument('--no-component-build',
+                        action='store_true',
+                        help='Turn off component build.')
     parser.add_argument('-r',
                         '--repeat',
                         type=int,
@@ -530,10 +549,11 @@ def main():
     logging.basicConfig(
         level=level, format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
-    if args.no_incremental_install:
-        gn_args = _GN_ARGS
-    else:
-        gn_args = _GN_ARGS + _INCREMENTAL_INSTALL
+    gn_args = _GN_ARGS
+    if not args.no_incremental_install:
+        gn_args += _INCREMENTAL_INSTALL
+    if args.no_component_build:
+        gn_args += _NO_COMPONENT_BUILD
 
     if args.emulator:
         devil_chromium.Initialize()
