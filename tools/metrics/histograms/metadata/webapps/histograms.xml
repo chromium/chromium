@@ -105,8 +105,21 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the display mode (as defined in the Web App Manifest spec) at the
     launch of a web app that was created using &quot;Create Shortcut...&quot; on
-    desktop. This is only recorded if the launch was to a browwer tab context,
+    desktop. This is only recorded if the launch was to a browser tab context,
     not a standalone window.
+  </summary>
+</histogram>
+
+<histogram name="Launch.BrowserTab.DiyApp.WebAppDisplayMode"
+    enum="WebAppDisplayMode" expires_after="2025-12-10">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the display mode (as defined in the Web App Manifest spec) at the
+    launch of a web app that was created using &quot;Install Page as App&quot;
+    flow inside the three dot menu on desktop. This is only recorded if the
+    launch was to a browser tab context, not a standalone window. Note: This
+    display mode value is not necessarily used when launching the app.
   </summary>
 </histogram>
 
@@ -201,7 +214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Launch.Window.CreateShortcutApp.WebAppDisplayMode"
-    enum="WebAppDisplayMode" expires_after="2024-04-28">
+    enum="WebAppDisplayMode" expires_after="2025-10-12">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -209,6 +222,19 @@ chromium-metrics-reviews@google.com.
     launch of a shortcut created using &quot;Add to Homescreen&quot; on mobile,
     or a &quot;Create Shortcut...&quot; on desktop. This is only recorded if the
     launch was to a windowed context, not a browser tab.
+  </summary>
+</histogram>
+
+<histogram name="Launch.Window.DiyApp.WebAppDisplayMode"
+    enum="WebAppDisplayMode" expires_after="2025-04-28">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the display mode (as defined in the Web App Manifest spec) at the
+    launch of a PWA created using the &quot;Install Page as App&quot; option
+    from the three dot menu on desktop. This is only recorded if the launch was
+    to a windowed context, not a browser tab. Note: This display mode value is
+    not necessarily used when launching the app.
   </summary>
 </histogram>
 

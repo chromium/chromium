@@ -565,6 +565,12 @@ bool IsServiceWorkerClientOpenNavigation(const NavigateParams& params) {
          params.disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB;
 }
 
+void RecordDiyOrCraftedAppLaunch(const WebApp& web_app) {
+  base::UmaHistogramEnumeration(
+      "Launch.WebApp.DiyOrCrafted",
+      web_app.is_diy_app() ? LaunchedAppType::kDiy : LaunchedAppType::kCrafted);
+}
+
 }  // namespace
 
 // static
@@ -1229,6 +1235,10 @@ void RecordAppWindowLaunchMetric(Profile* profile,
       base::UmaHistogramEnumeration(
           "Launch.Window.CreateShortcutApp.WebAppDisplayMode", display);
     }
+    if (web_app->is_diy_app()) {
+      base::UmaHistogramEnumeration("Launch.Window.DiyApp.WebAppDisplayMode",
+                                    display);
+    }
   }
 
   // Reparenting launches don't respect the launch_handler setting.
@@ -1238,10 +1248,7 @@ void RecordAppWindowLaunchMetric(Profile* profile,
         web_app->launch_handler().value_or(LaunchHandler()).client_mode);
   }
 
-  base::UmaHistogramEnumeration("Launch.WebApp.DiyOrCrafted",
-                                web_app->is_diy_app()
-                                    ? LaunchedAppType::kDiy
-                                    : LaunchedAppType::kCrafted);
+  RecordDiyOrCraftedAppLaunch(*web_app);
 }
 
 void RecordAppTabLaunchMetric(Profile* profile,
@@ -1268,6 +1275,11 @@ void RecordAppTabLaunchMetric(Profile* profile,
       base::UmaHistogramEnumeration(
           "Launch.BrowserTab.CreateShortcutApp.WebAppDisplayMode", display);
     }
+
+    if (web_app->is_diy_app()) {
+      base::UmaHistogramEnumeration(
+          "Launch.BrowserTab.DiyApp.WebAppDisplayMode", display);
+    }
   }
 
   // Reparenting launches don't respect the launch_handler setting.
@@ -1276,6 +1288,8 @@ void RecordAppTabLaunchMetric(Profile* profile,
         "Launch.BrowserTab.WebAppLaunchHandlerClientMode",
         web_app->launch_handler().value_or(LaunchHandler()).client_mode);
   }
+
+  RecordDiyOrCraftedAppLaunch(*web_app);
 }
 
 void RecordLaunchMetrics(const webapps::AppId& app_id,
