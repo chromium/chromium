@@ -91,6 +91,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/event_router.mojom-test-utils.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -219,6 +220,50 @@ class NavigateTabMessageHandler {
 };
 
 #if !BUILDFLAG(IS_ANDROID)
+
+// A helper class that intercepts the
+// `EventRouter::RemoveListenerForServiceWorker()` mojom receiver method and
+// does *not* forward the call onto the real `EventRouter` browser
+// implementation.
+class EventRouterInterceptorForStopListenerRemoval
+    : public mojom::EventRouterInterceptorForTesting {
+ public:
+  EventRouterInterceptorForStopListenerRemoval(
+      content::BrowserContext* browser_context,
+      int worker_renderer_process_id)
+      : browser_context_(browser_context),
+        worker_renderer_process_id_(worker_renderer_process_id) {
+    auto* event_router = extensions::EventRouter::Get(browser_context_);
+    CHECK(event_router) << "There is no EventRouter for browser context when "
+                           "creating the event router interceptor.";
+    event_router->SwapReceiverForTesting(worker_renderer_process_id, this);
+  }
+
+  mojom::EventRouter* GetForwardingInterface() override {
+    // This should be non-null if this interface is still receiving events. This
+    // causes all methods other than `RemoveListenerForServiceWorker()` to be
+    // sent along to the real implementation.
+    auto* event_router = extensions::EventRouter::Get(browser_context_);
+    CHECK(event_router)
+        << "There is no `EventRouter` for browser context when attempting to "
+           "forward a mojom call to the real `EventRouter` implementation";
+    return event_router;
+  }
+
+ protected:
+  // mojom::EventRouter:
+  void RemoveListenerForServiceWorker(
+      mojom::EventListenerPtr event_listener) override {
+    // Don't call the real `EventRouter::RemoveListenerForServiceWorker()`
+    // method to simulate that the worker never finishing stopping and informing
+    // the browser to remove the listener.
+  }
+
+ private:
+  raw_ptr<content::BrowserContext> browser_context_;
+  int worker_renderer_process_id_;
+};
+
 // Sends an XHR request to the provided host, port, and path, and responds when
 // the request was sent.
 const char kPerformXhrJs[] =
@@ -6024,6 +6069,23 @@ class ManifestV3WebRequestApiTest : public ExtensionWebRequestApiTest {
   WebRequestEventRouter* web_request_router() {
     return WebRequestEventRouter::Get(profile());
   }
+
+  std::optional<WorkerId> GetWorkerIdForExtension(
+      const ExtensionId& extension_id) {
+    std::vector<WorkerId> service_workers_for_extension =
+        ProcessManager::Get(profile())->GetServiceWorkersForExtension(
+            extension_id);
+    if (service_workers_for_extension.size() > 1u) {
+      ADD_FAILURE() << "Expected only one worker for extension: "
+                    << extension_id
+                    << " But found incorrect number of workers: "
+                    << service_workers_for_extension.size();
+      return std::nullopt;
+    }
+    return service_workers_for_extension.empty()
+               ? std::nullopt
+               : std::optional<WorkerId>(service_workers_for_extension[0]);
+  }
 };
 
 // Tests a service worker-based extension intercepting requests with
@@ -6601,6 +6663,124 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   // Each listener should have fired exactly once.
   EXPECT_EQ(1, get_worker_event_count());
   EXPECT_EQ(1, get_page_event_count());
+}
+
+// Tests listeners in the extension (extension tab) and extension background
+// (service worker) contexts with lazy event dispatching. However, this
+// simulates the worker never stopping and notifying that the worker's active
+// listener should be removed. Regression test for crbug.com/331358156.
+IN_PROC_BROWSER_TEST_F(
+    ManifestV3WebRequestApiTest,
+    ListenersInMultipleContextsWithLazyDispatch_ButActiveListenerRemovalStalled) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  static constexpr char kManifest[] =
+      R"({
+           "name": "MV3 WebRequest",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["webRequest"],
+           "host_permissions": [ "http://example.com/*" ],
+           "background": {"service_worker": "background.js"}
+         })";
+  // The extension has two contexts: the background service worker and a
+  // separate page, each of which register an identical listener. Each should
+  // only be invoked once.
+  static constexpr char kBackgroundJs[] =
+      R"(self.eventCount = 0;
+         chrome.webRequest.onBeforeRequest.addListener(
+             async function() {
+               ++eventCount;
+               // Perform a round trip to ensure any events that are coming our
+               // way get dispatched, and then notify the test.
+               await chrome.test.waitForRoundTrip('test');
+               chrome.test.sendMessage('worker received');
+             },
+             {urls: ['http://example.com/*'], types: ['main_frame']}, []);)";
+  static constexpr char kPageHtml[] =
+      R"(<!doctype html>
+          <html>
+            Page
+            <script src="page.js"></script>
+          </html>)";
+  static constexpr char kPageJs[] =
+      R"(self.eventCount = 0;
+         chrome.webRequest.onBeforeRequest.addListener(
+             function() { ++eventCount; },
+             {urls: ['http://example.com/*'], types: ['main_frame']}, []);)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.js"), kPageJs);
+  const Extension* extension = LoadExtension(
+      test_dir.UnpackedPath(), {.wait_for_registration_stored = true});
+
+  ASSERT_TRUE(extension);
+
+  // Load the page with the extension listeners.
+  content::RenderFrameHost* page_host = ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("page.html"));
+  ASSERT_TRUE(page_host);
+
+  // At this point, 2 listeners should be registered.
+  EXPECT_EQ(2u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+
+  // Convenience lambdas for checking the count received in each listener.
+  auto get_worker_event_count = [this, extension]() {
+    return GetCountFromBackgroundScript(extension, profile(), "eventCount");
+  };
+  auto get_page_event_count = [page_host]() {
+    return content::EvalJs(page_host, "self.eventCount;").ExtractInt();
+  };
+
+  // Get the soon to be stopped ("previous") worker's `WorkerId`.
+  std::optional<WorkerId> previous_service_worker_id =
+      GetWorkerIdForExtension(extension->id());
+  ASSERT_TRUE(previous_service_worker_id);
+
+  // Setup intercept of `EventRouter::RemoveListenerForServiceWorker()` mojom
+  // call. This simulates the worker renderer thread being very slow/never
+  // informing the //extensions browser layer that the worker stopped and that
+  // it's active listeners should be removed.
+  EventRouterInterceptorForStopListenerRemoval
+      event_listener_removal_on_stop_interceptor(
+          profile(), previous_service_worker_id->render_process_id, );
+
+  // Stop the extension's service worker. The worker listener, due to the
+  // interceptor, will stay registered as an active listener. However,
+  // the worker task queue will catch when the worker begins stopping and remove
+  // the active listener.
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
+
+  EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+
+  {
+    ExtensionTestMessageListener listener("worker received");
+    // Navigate to example.com (this navigation needs to happen in a new tab so
+    // that we don't navigate the extension page).
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(),
+        embedded_test_server()->GetURL("example.com", "/title1.html"),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    EXPECT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  // Each listener should have fired exactly once.
+  EXPECT_EQ(1, get_worker_event_count());
+  EXPECT_EQ(1, get_page_event_count());
+
+  // Ensure the service worker that responded is a newly started instance.
+  std::optional<WorkerId> new_instance_service_worker_id =
+      GetWorkerIdForExtension(extension->id());
+  ASSERT_TRUE(new_instance_service_worker_id);
+  EXPECT_NE(*previous_service_worker_id, *new_instance_service_worker_id);
 }
 
 // Tests that an MV3 extension can use the `webRequestAuthProvider` permission

@@ -345,7 +345,7 @@ TEST_F(EventRouterTest, GetBaseEventName) {
 // Tests adding and removing observers from EventRouter.
 void EventRouterTest::RunEventRouterObserverTest(
     const EventListenerConstructor& constructor) {
-  EventRouter router(nullptr, nullptr);
+  EventRouter router(browser_context(), nullptr);
   std::unique_ptr<EventListener> listener =
       constructor.Run("event_name", render_process_host(), base::Value::Dict());
 
@@ -514,7 +514,7 @@ TEST_F(EventRouterTest, WebUIEventsDoNotCrossIncognitoBoundaries) {
 }
 
 TEST_F(EventRouterTest, MultipleEventRouterObserver) {
-  EventRouter router(nullptr, nullptr);
+  EventRouter router(browser_context(), nullptr);
   std::unique_ptr<EventListener> listener =
       EventListener::ForURL("event_name", GURL("http://google.com/path"),
                             render_process_host(), base::Value::Dict());
