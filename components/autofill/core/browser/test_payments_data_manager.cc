@@ -181,7 +181,7 @@ std::string TestPaymentsDataManager::SaveImportedCreditCard(
 }
 
 void TestPaymentsDataManager::ClearServerCvcs() {
-  for (CreditCard* card : GetServerCreditCards()) {
+  for (const std::unique_ptr<CreditCard>& card : server_credit_cards_) {
     if (!card->cvc().empty()) {
       card->clear_cvc();
     }
@@ -189,7 +189,7 @@ void TestPaymentsDataManager::ClearServerCvcs() {
 }
 
 void TestPaymentsDataManager::ClearLocalCvcs() {
-  for (CreditCard* card : GetLocalCreditCards()) {
+  for (const std::unique_ptr<CreditCard>& card : local_credit_cards_) {
     if (!card->cvc().empty()) {
       card->clear_cvc();
     }

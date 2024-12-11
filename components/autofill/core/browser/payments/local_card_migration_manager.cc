@@ -432,14 +432,11 @@ int LocalCardMigrationManager::GetDetectedValues() const {
 }
 
 void LocalCardMigrationManager::GetMigratableCreditCards() {
-  std::vector<CreditCard*> local_credit_cards =
-      payments_data_manager().GetLocalCreditCards();
-
   // Empty previous state.
   migratable_credit_cards_.clear();
-
   // Initialize the local credit card list and queue for showing and uploading.
-  for (const CreditCard* credit_card : local_credit_cards) {
+  for (const CreditCard* credit_card :
+       payments_data_manager().GetLocalCreditCards()) {
     // If the card is valid (has a valid card number, expiration date, and is
     // not expired) and is not a server card, add it to the list of migratable
     // cards.

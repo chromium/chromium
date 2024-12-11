@@ -117,7 +117,7 @@ void ExpectDefaultCreditCardValues(const autofill::CreditCard& card);
 void ExpectDefaultWalletCredentialValues(const autofill::CreditCard& card);
 
 // Load current data from the database of profile |profile|.
-std::vector<autofill::CreditCard*> GetServerCreditCards(int profile);
+std::vector<const autofill::CreditCard*> GetServerCreditCards(int profile);
 
 }  // namespace wallet_helper
 

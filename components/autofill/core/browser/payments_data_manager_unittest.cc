@@ -664,7 +664,7 @@ TEST_F(PaymentsDataManagerTest, RemoveLocalDataModifiedBetween) {
               testing::UnorderedElementsAre(Pointee(local_card1)));
   // TODO(crbug.com/40276087): `CreditCard::operator==()` compares GUIDs even
   // for server cards, which change after every load from the database.
-  std::vector<CreditCard*> server_cards =
+  std::vector<const CreditCard*> server_cards =
       payments_data_manager().GetServerCreditCards();
   ASSERT_EQ(server_cards.size(), 1u);
   EXPECT_EQ(server_cards[0]->Compare(server_card), 0);

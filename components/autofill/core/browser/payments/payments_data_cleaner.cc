@@ -24,10 +24,12 @@ void PaymentsDataCleaner::CleanupPaymentsData() {
 void PaymentsDataCleaner::ClearCreditCardNonSettingsOrigins() {
   bool has_updated = false;
 
-  for (CreditCard* card : payments_data_manager_->GetLocalCreditCards()) {
+  for (const CreditCard* card : payments_data_manager_->GetLocalCreditCards()) {
     if (card->origin() != kSettingsOrigin && !card->origin().empty()) {
-      card->set_origin(std::string());
-      payments_data_manager_->GetLocalDatabase()->UpdateCreditCard(*card);
+      CreditCard mutable_card = *card;
+      mutable_card.set_origin(std::string());
+      payments_data_manager_->GetLocalDatabase()->UpdateCreditCard(
+          mutable_card);
       has_updated = true;
     }
   }

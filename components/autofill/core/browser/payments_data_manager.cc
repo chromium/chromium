@@ -580,8 +580,7 @@ const CreditCard* PaymentsDataManager::GetCreditCardByInstrumentId(
 
 const CreditCard* PaymentsDataManager::GetCreditCardByServerId(
     const std::string& server_id) const {
-  const std::vector<CreditCard*> server_credit_cards = GetServerCreditCards();
-  for (CreditCard* credit_card : server_credit_cards) {
+  for (const CreditCard* credit_card : GetServerCreditCards()) {
     if (credit_card->server_id() == server_id) {
       return credit_card;
     }
@@ -689,16 +688,25 @@ PaymentsDataManager::GetApplicableBenefitDescriptionForCardAndOrigin(
   return std::u16string();
 }
 
-std::vector<CreditCard*> PaymentsDataManager::GetLocalCreditCards() const {
-  return base::ToVector(local_credit_cards_, &std::unique_ptr<CreditCard>::get);
+std::vector<const CreditCard*> PaymentsDataManager::GetLocalCreditCards()
+    const {
+  return base::ToVector(
+      local_credit_cards_,
+      [](const std::unique_ptr<CreditCard>& card) -> const CreditCard* {
+        return card.get();
+      });
 }
 
-std::vector<CreditCard*> PaymentsDataManager::GetServerCreditCards() const {
+std::vector<const CreditCard*> PaymentsDataManager::GetServerCreditCards()
+    const {
   if (!IsAutofillWalletImportEnabled()) {
     return {};
   }
-  return base::ToVector(server_credit_cards_,
-                        &std::unique_ptr<CreditCard>::get);
+  return base::ToVector(
+      server_credit_cards_,
+      [](const std::unique_ptr<CreditCard>& card) -> const CreditCard* {
+        return card.get();
+      });
 }
 
 std::vector<const CreditCard*> PaymentsDataManager::GetCreditCards() const {
@@ -1069,17 +1077,12 @@ const CreditCard* PaymentsDataManager::GetServerCardForLocalCard(
     return nullptr;
   }
 
-  std::vector<CreditCard*> server_cards = GetServerCreditCards();
+  std::vector<const CreditCard*> server_cards = GetServerCreditCards();
   auto it =
       base::ranges::find_if(server_cards, [&](const CreditCard* server_card) {
         return local_card->IsLocalOrServerDuplicateOf(*server_card);
       });
-
-  if (it != server_cards.end()) {
-    return *it;
-  }
-
-  return nullptr;
+  return it != server_cards.end() ? *it : nullptr;
 }
 
 std::string PaymentsDataManager::OnAcceptedLocalCreditCardSave(
@@ -1130,9 +1133,8 @@ bool PaymentsDataManager::IsServerCard(const CreditCard* credit_card) const {
     return true;
   }
 
-  std::vector<CreditCard*> server_credit_cards = GetServerCreditCards();
   // Check whether the current card is already uploaded.
-  for (const CreditCard* server_card : server_credit_cards) {
+  for (const CreditCard* server_card : GetServerCreditCards()) {
     if (credit_card->MatchingCardDetails(*server_card)) {
       return true;
     }
@@ -1257,20 +1259,10 @@ std::vector<const CreditCard*> PaymentsDataManager::GetCreditCardsToSuggest(
   if (!IsAutofillPaymentMethodsEnabled()) {
     return {};
   }
-  std::vector<const CreditCard*> credit_cards;
-  if (ShouldSuggestServerPaymentMethods()) {
-    credit_cards = GetCreditCards();
-  } else {
-    // TODO(crbug.com/367998817): Make `GetLocalCreditCards()` return an
-    // `std::vector<const CreditCard *>` to avoid creating a copy.
-    for (const CreditCard* card_from_list : GetLocalCreditCards()) {
-      credit_cards.push_back(card_from_list);
-    }
-  }
-
   std::vector<const CreditCard*> cards_to_suggest =
-      DeduplicatedCreditCardsForSuggestions(credit_cards);
-
+      DeduplicatedCreditCardsForSuggestions(ShouldSuggestServerPaymentMethods()
+                                                ? GetCreditCards()
+                                                : GetLocalCreditCards());
   // Rank the cards by ranking score (see AutofillDataModel for details). All
   // expired cards should be suggested last, also by ranking score.
   base::ranges::sort(
@@ -1389,14 +1381,11 @@ void PaymentsDataManager::DeleteLocalCreditCards(
 }
 
 void PaymentsDataManager::DeleteAllLocalCreditCards() {
-  std::vector<CreditCard*> credit_cards = GetLocalCreditCards();
-
   std::vector<CreditCard> cards_to_delete;
-  cards_to_delete.reserve(credit_cards.size());
-  for (const CreditCard* card : credit_cards) {
+  cards_to_delete.reserve(local_credit_cards_.size());
+  for (const CreditCard* card : GetLocalCreditCards()) {
     cards_to_delete.push_back(*card);
   }
-
   DeleteLocalCreditCards(cards_to_delete);
 }
 

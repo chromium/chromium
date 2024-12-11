@@ -882,7 +882,8 @@ std::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
   // `candidate`, and we treat it as a new card.
   bool same_last_four_but_different_expiration_date = false;
 
-  for (auto* server_card : payments_data_manager().GetServerCreditCards()) {
+  for (const CreditCard* server_card :
+       payments_data_manager().GetServerCreditCards()) {
     if (!server_card->HasSameNumberAs(candidate)) {
       continue;
     }
