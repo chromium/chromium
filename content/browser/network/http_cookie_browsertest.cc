@@ -918,17 +918,14 @@ IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
   // Navigate iframe with site B to A and confirm that cookie is present.
 
   // Set kSameSite cookie
-  net::CookiePartitionKey partition_key =
-      net::CookiePartitionKey::FromURLForTesting(
-          https_server()->GetURL(kHostA, "/"),
-          net::CookiePartitionKey::AncestorChainBit::kSameSite);
-
   ASSERT_TRUE(SetCookie(
       web_contents()->GetBrowserContext(), https_server()->GetURL(kHostA, "/"),
       base::StrCat(
           {kSameSiteNoneCookieName, "=1;Secure;SameSite=None;Partitioned"}),
       net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
-      &partition_key));
+      net::CookiePartitionKey::FromURLForTesting(
+          https_server()->GetURL(kHostA, "/"),
+          net::CookiePartitionKey::AncestorChainBit::kSameSite)));
 
   // Embed an iframe containing B in A to create initial frame tree A->B.
   ASSERT_EQ(content::ArrangeFramesAndGetContentFromLeaf(
@@ -980,13 +977,12 @@ IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
           {kSameSiteNoneCookieName, "=1;Secure;SameSite=None;partitioned"}),
       net::CookieOptions::SameSiteCookieContext(
           net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE),
-      &partition_key));
+      partition_key));
   // confirm that there is a cookie with kHostC url in the mojom cookie manager
   // and that the cookie is partitioned and third party.
   std::vector<net::CanonicalCookie> cookies = GetCanonicalCookies(
       web_contents()->GetBrowserContext(), https_server()->GetURL(kHostC, "/"),
-      net::CookiePartitionKeyCollection::FromOptional(
-          std::make_optional(partition_key)));
+      net::CookiePartitionKeyCollection(partition_key));
   ASSERT_EQ(cookies.size(), 1u);
   ASSERT_TRUE(cookies[0].IsPartitioned());
   ASSERT_TRUE(cookies[0].PartitionKey()->IsThirdParty());
@@ -1018,17 +1014,15 @@ IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
   // Check to make sure that there are no cookies set on kHostA.
   ASSERT_THAT(ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
               "None");
-  net::CookiePartitionKey partition_key =
-      net::CookiePartitionKey::FromURLForTesting(
-          https_server()->GetURL(kHostA, "/"),
-          net::CookiePartitionKey::AncestorChainBit::kSameSite);
 
   ASSERT_TRUE(SetCookie(
       web_contents()->GetBrowserContext(), https_server()->GetURL(kHostA, "/"),
       base::StrCat(
           {kSameSiteNoneCookieName, "=1;Secure;SameSite=None;partitioned"}),
       net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
-      &partition_key));
+      net::CookiePartitionKey::FromURLForTesting(
+          https_server()->GetURL(kHostA, "/"),
+          net::CookiePartitionKey::AncestorChainBit::kSameSite)));
 
   // Perform redirect from site A to site B and back to site A.
   ASSERT_TRUE(
@@ -1059,17 +1053,14 @@ IN_PROC_BROWSER_TEST_P(
                 FrameTreeForUrl(EchoCookiesUrl(kHostA)), {0}),
             "None");
 
-  net::CookiePartitionKey partition_key =
-      net::CookiePartitionKey::FromURLForTesting(
-          https_server()->GetURL(kHostA, "/"),
-          net::CookiePartitionKey::AncestorChainBit::kCrossSite);
-
   ASSERT_TRUE(SetCookie(
       web_contents()->GetBrowserContext(), https_server()->GetURL(kHostB, "/"),
       base::StrCat(
           {kSameSiteNoneCookieName, "=1;Secure;SameSite=None;Partitioned"}),
       net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
-      &partition_key));
+      net::CookiePartitionKey::FromURLForTesting(
+          https_server()->GetURL(kHostA, "/"),
+          net::CookiePartitionKey::AncestorChainBit::kCrossSite)));
 
   // Navigate embedded iframe A2 to B.
   ASSERT_TRUE(NavigateToURLFromRenderer(
@@ -1095,17 +1086,14 @@ IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
   // Navigate the iframe to a cross-domain (site B) and redirect back to A.
   // Confirm that cookie is accessible from the iframe.
 
-  net::CookiePartitionKey partition_key =
-      net::CookiePartitionKey::FromURLForTesting(
-          https_server()->GetURL(kHostA, "/"),
-          net::CookiePartitionKey::AncestorChainBit::kSameSite);
-
   ASSERT_TRUE(SetCookie(
       web_contents()->GetBrowserContext(), https_server()->GetURL(kHostA, "/"),
       base::StrCat(
           {kSameSiteNoneCookieName, "=1;Secure;SameSite=None;Partitioned"}),
       net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
-      &partition_key));
+      net::CookiePartitionKey::FromURLForTesting(
+          https_server()->GetURL(kHostA, "/"),
+          net::CookiePartitionKey::AncestorChainBit::kSameSite)));
 
   // Embed an iframe containing A in A to create initial frame tree A->A.
   // Confirm that partitioned cookie is accessible from the iframe.
@@ -1141,17 +1129,14 @@ IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
   // site. Confirm that cookie is accessible from the header in the final
   // redirect.
 
-  net::CookiePartitionKey partition_key =
-      net::CookiePartitionKey::FromURLForTesting(
-          https_server()->GetURL(kHostA, "/"),
-          net::CookiePartitionKey::AncestorChainBit::kSameSite);
-
   ASSERT_TRUE(SetCookie(
       web_contents()->GetBrowserContext(), https_server()->GetURL(kHostA, "/"),
       base::StrCat(
           {kSameSiteNoneCookieName, "=1;Secure;SameSite=None;Partitioned"}),
       net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
-      &partition_key));
+      net::CookiePartitionKey::FromURLForTesting(
+          https_server()->GetURL(kHostA, "/"),
+          net::CookiePartitionKey::AncestorChainBit::kSameSite)));
 
   // Embed an iframe containing A in A to create initial frame tree A->A.
   // Confirm that partitioned cookie is accessible from the iframe.
@@ -1188,17 +1173,14 @@ IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
   // Confirm that cookie is accessible from the header in the final
   // redirect.
 
-  net::CookiePartitionKey partition_key =
-      net::CookiePartitionKey::FromURLForTesting(
-          https_server()->GetURL(kHostA, "/"),
-          net::CookiePartitionKey::AncestorChainBit::kSameSite);
-
   ASSERT_TRUE(SetCookie(
       web_contents()->GetBrowserContext(), https_server()->GetURL(kHostA, "/"),
       base::StrCat(
           {kSameSiteNoneCookieName, "=1;Secure;SameSite=None;Partitioned"}),
       net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
-      &partition_key));
+      net::CookiePartitionKey::FromURLForTesting(
+          https_server()->GetURL(kHostA, "/"),
+          net::CookiePartitionKey::AncestorChainBit::kSameSite)));
 
   // Embed an iframe containing A in A to create initial frame tree A->A.
   // Confirm that partitioned cookie is accessible from the iframe.
@@ -1237,17 +1219,14 @@ IN_PROC_BROWSER_TEST_P(
   // Then navigate to site A again.
   // Confirm that cookie is accessible from the header in the final navigation.
 
-  net::CookiePartitionKey partition_key =
-      net::CookiePartitionKey::FromURLForTesting(
-          https_server()->GetURL(kHostA, "/"),
-          net::CookiePartitionKey::AncestorChainBit::kSameSite);
-
   ASSERT_TRUE(SetCookie(
       web_contents()->GetBrowserContext(), https_server()->GetURL(kHostA, "/"),
       base::StrCat(
           {kSameSiteNoneCookieName, "=1;Secure;SameSite=None;Partitioned"}),
       net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
-      &partition_key));
+      net::CookiePartitionKey::FromURLForTesting(
+          https_server()->GetURL(kHostA, "/"),
+          net::CookiePartitionKey::AncestorChainBit::kSameSite)));
 
   // Embed an iframe containing A in A to create initial frame tree A->A.
   // Confirm that partitioned cookie is accessible from the iframe.
@@ -1286,17 +1265,14 @@ IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
   // Then navigate the iframe back to site A.
   // Confirm that cookie is accessible from the iframe.
 
-  net::CookiePartitionKey partition_key =
-      net::CookiePartitionKey::FromURLForTesting(
-          https_server()->GetURL(kHostA, "/"),
-          net::CookiePartitionKey::AncestorChainBit::kSameSite);
-
   ASSERT_TRUE(SetCookie(
       web_contents()->GetBrowserContext(), https_server()->GetURL(kHostA, "/"),
       base::StrCat(
           {kSameSiteNoneCookieName, "=1;Secure;SameSite=None;Partitioned"}),
       net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
-      &partition_key));
+      net::CookiePartitionKey::FromURLForTesting(
+          https_server()->GetURL(kHostA, "/"),
+          net::CookiePartitionKey::AncestorChainBit::kSameSite)));
 
   // Embed an iframe containing A in A to create initial frame tree A->A.
   // Confirm that partitioned cookie is accessible from the iframe.
