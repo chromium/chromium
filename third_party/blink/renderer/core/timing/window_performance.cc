@@ -1231,27 +1231,22 @@ void WindowPerformance::AddLongAnimationFrameEntry(PerformanceEntry* entry) {
   NotifyObserversOfEntry(*entry);
 }
 
-void WindowPerformance::AddElementTiming(const AtomicString& name,
-                                         const String& url,
-                                         const gfx::RectF& rect,
-                                         base::TimeTicks start_time,
-                                         base::TimeTicks load_time,
-                                         const AtomicString& identifier,
-                                         const gfx::Size& intrinsic_size,
-                                         const AtomicString& id,
-                                         Element* element) {
+void WindowPerformance::AddElementTiming(
+    const AtomicString& name,
+    const String& url,
+    const gfx::RectF& rect,
+    const DOMPaintTimingInfo& paint_timing_info,
+    base::TimeTicks load_time,
+    const AtomicString& identifier,
+    const gfx::Size& intrinsic_size,
+    const AtomicString& id,
+    Element* element) {
   if (!DomWindow()) {
     return;
   }
 
   DOMHighResTimeStamp coarsened_load_time =
       MonotonicTimeToDOMHighResTimeStamp(load_time);
-
-  DOMPaintTimingInfo paint_timing_info{
-      // TODO: integrate PaintTimingMixin with element timing
-      .paint_time = RenderTimeToDOMHighResTimeStamp(start_time),
-      .presentation_time = RenderTimeToDOMHighResTimeStamp(start_time),
-  };
 
   PerformanceElementTiming* entry = PerformanceElementTiming::Create(
       name, url, rect, paint_timing_info.presentation_time, coarsened_load_time,
@@ -1260,20 +1255,13 @@ void WindowPerformance::AddElementTiming(const AtomicString& name,
   TRACE_EVENT2("loading", "PerformanceElementTiming", "data",
                entry->ToTracedValue(), "frame",
                GetFrameIdForTracing(DomWindow()->GetFrame()));
-
-  QueueEntryWithPaintTiming(
-      WTF::BindOnce(
-          [](Persistent<PerformanceElementTiming> entry,
-             WindowPerformance* performance, const DOMPaintTimingInfo&) {
-            if (performance->HasObserverFor(PerformanceEntry::kElement)) {
-              performance->NotifyObserversOfEntry(*entry);
-            }
-            if (!performance->IsElementTimingBufferFull()) {
-              performance->AddToElementTimingBuffer(*entry);
-            }
-          },
-          WrapPersistent(entry)),
-      paint_timing_info);
+  entry->SetPaintTimingInfo(paint_timing_info);
+  if (HasObserverFor(PerformanceEntry::kElement)) {
+    NotifyObserversOfEntry(*entry);
+  }
+  if (!IsElementTimingBufferFull()) {
+    AddToElementTimingBuffer(*entry);
+  }
 }
 
 void WindowPerformance::DispatchFirstInputTiming(

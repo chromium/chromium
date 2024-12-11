@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
-#include "third_party/blink/renderer/core/paint/timing/paint_timing_callback_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_visualizer.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
@@ -132,7 +131,7 @@ class CORE_EXPORT PaintTimingDetector
     return soft_navigation_lcp_details_for_metrics_;
   }
 
-  const LargestContentfulPaintDetails& LatestLcpDetailsForTest() const;
+  const LargestContentfulPaintDetails& LatestLcpDetailsForTest();
 
   base::TimeTicks FirstInputOrScrollNotifiedTimestamp() const {
     return first_input_or_scroll_notified_timestamp_;
@@ -175,8 +174,6 @@ class CORE_EXPORT PaintTimingDetector
   // the same time at which |largest_contentful_paint_calculator_| is set to
   // nullptr.
   base::TimeTicks first_input_or_scroll_notified_timestamp_;
-
-  Member<PaintTimingCallbackManagerImpl> callback_manager_;
 
   std::optional<PaintTimingVisualizer> visualizer_;
 

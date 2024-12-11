@@ -7199,6 +7199,8 @@ interface PerformanceElementTiming : PerformanceEntry
     getter loadTime
     getter naturalHeight
     getter naturalWidth
+    getter paintTime
+    getter presentationTime
     getter renderTime
     getter url
     method constructor

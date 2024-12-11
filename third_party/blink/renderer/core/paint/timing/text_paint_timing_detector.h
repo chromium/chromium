@@ -18,9 +18,11 @@
 namespace blink {
 class LayoutBoxModelObject;
 class LocalFrameView;
+class PaintTimingCallbackManager;
 class PropertyTreeStateOrAlias;
 class TextElementTiming;
 class TracedValue;
+struct DOMPaintTimingInfo;
 
 class TextRecord final : public GarbageCollected<TextRecord> {
  public:
@@ -132,9 +134,7 @@ class CORE_EXPORT TextPaintTimingDetector final
   friend class TextPaintTimingDetectorTest;
 
  public:
-  explicit TextPaintTimingDetector(LocalFrameView*,
-                                   PaintTimingDetector*,
-                                   PaintTimingCallbackManager*);
+  explicit TextPaintTimingDetector(LocalFrameView*, PaintTimingDetector*);
   TextPaintTimingDetector(const TextPaintTimingDetector&) = delete;
   TextPaintTimingDetector& operator=(const TextPaintTimingDetector&) = delete;
 
@@ -142,13 +142,16 @@ class CORE_EXPORT TextPaintTimingDetector final
   void RecordAggregatedText(const LayoutBoxModelObject& aggregator,
                             const gfx::Rect& aggregated_visual_rect,
                             const PropertyTreeStateOrAlias&);
-  void OnPaintFinished();
+  std::optional<base::OnceCallback<void(const base::TimeTicks&,
+                                        const DOMPaintTimingInfo&)>>
+  TakePaintTimingCallback();
   void LayoutObjectWillBeDestroyed(const LayoutObject&);
   void StopRecordingLargestTextPaint();
   void RestartRecordingLargestTextPaint();
   void ResetCallbackManager(PaintTimingCallbackManager* manager) {
     callback_manager_ = manager;
   }
+
   inline bool IsRecordingLargestTextPaint() const {
     return recording_largest_text_paint_;
   }
@@ -156,17 +159,14 @@ class CORE_EXPORT TextPaintTimingDetector final
     return ltp_manager_->UpdateMetricsCandidate();
   }
   void ReportLargestIgnoredText();
-  void ReportPresentationTime(uint32_t frame_index, base::TimeTicks timestamp);
   void Trace(Visitor*) const;
 
  private:
   friend class LargestContentfulPaintCalculatorTest;
 
-  void RegisterNotifyPresentationTime(
-      PaintTimingCallbackManager::LocalThreadCallback callback);
-
   void AssignPaintTimeToQueuedRecords(uint32_t frame_index,
-                                      const base::TimeTicks&);
+                                      const base::TimeTicks&,
+                                      const DOMPaintTimingInfo&);
   void MaybeRecordTextRecord(
       const LayoutObject& object,
       const uint64_t& visual_size,

@@ -11,6 +11,7 @@
 
 #include <optional>
 
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
@@ -19,7 +20,9 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
 #include "third_party/blink/renderer/core/paint/timing/media_record_id.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_callback_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_visualizer.h"
+#include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -38,6 +41,7 @@ class TracedValue;
 class Image;
 class PaintTimingCallbackManager;
 class StyleImage;
+struct DOMPaintTimingInfo;
 
 // TODO(crbug/960502): we should limit the access of these properties.
 // TODO(yoav): Rename all mentions of "image" to "media"
@@ -83,6 +87,7 @@ class ImageRecord : public GarbageCollected<ImageRecord> {
   base::TimeTicks paint_time = base::TimeTicks();
   base::TimeTicks load_time = base::TimeTicks();
   base::TimeTicks first_animated_frame_time = base::TimeTicks();
+  DOMPaintTimingInfo paint_timing_info;
   bool loaded = false;
   // An animated frame is queued for paint timing.
   bool queue_animated_paint = false;
@@ -172,6 +177,7 @@ class CORE_EXPORT ImageRecordsManager {
 
   void AssignPaintTimeToRegisteredQueuedRecords(
       const base::TimeTicks&,
+      const DOMPaintTimingInfo&,
       unsigned last_queued_frame_index);
 
   void AddPendingImage(ImageRecord* record);
@@ -256,7 +262,7 @@ class CORE_EXPORT ImageRecordsManager {
 class CORE_EXPORT ImagePaintTimingDetector final
     : public GarbageCollected<ImagePaintTimingDetector> {
  public:
-  ImagePaintTimingDetector(LocalFrameView*, PaintTimingCallbackManager*);
+  explicit ImagePaintTimingDetector(LocalFrameView*);
   // Record an image paint. This method covers both img and background image. In
   // the case of a normal img, the last parameter will be nullptr. This
   // parameter is needed only for the purposes of plumbing the correct loadTime
@@ -270,7 +276,6 @@ class CORE_EXPORT ImagePaintTimingDetector final
                    const StyleImage*,
                    const gfx::Rect& image_border);
   void NotifyImageFinished(const LayoutObject&, const MediaTiming*);
-  void OnPaintFinished();
   void NotifyImageRemoved(const LayoutObject&, const MediaTiming*);
   // After the method being called, the detector stops to recording new entries.
   // We manually clean up the |images_queued_for_paint_time_| since those may be
@@ -282,8 +287,12 @@ class CORE_EXPORT ImagePaintTimingDetector final
   void ResetCallbackManager(PaintTimingCallbackManager* manager) {
     callback_manager_ = manager;
   }
+
   void ReportPresentationTime(unsigned last_queued_frame_index,
                               base::TimeTicks);
+  std::optional<base::OnceCallback<void(const base::TimeTicks&,
+                                        const DOMPaintTimingInfo&)>>
+  TakePaintTimingCallback();
 
   // Return the image LCP candidate and whether the candidate has changed.
   std::pair<ImageRecord*, bool> UpdateMetricsCandidate();

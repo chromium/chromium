@@ -57,7 +57,9 @@ bool TextElementTiming::CanReportElements() const {
          !performance_->IsElementTimingBufferFull();
 }
 
-void TextElementTiming::OnTextObjectPainted(const TextRecord& record) {
+void TextElementTiming::OnTextObjectPainted(
+    const TextRecord& record,
+    const DOMPaintTimingInfo& paint_timing_info) {
   DCHECK(record.is_needed_for_element_timing_);
   Node* node = record.node_;
 
@@ -80,7 +82,7 @@ void TextElementTiming::OnTextObjectPainted(const TextRecord& record) {
   DEFINE_STATIC_LOCAL(const AtomicString, kTextPaint, ("text-paint"));
   performance_->AddElementTiming(
       kTextPaint, g_empty_string, record.element_timing_rect_,
-      record.paint_time, base::TimeTicks(),
+      paint_timing_info, base::TimeTicks(),
       element->FastGetAttribute(html_names::kElementtimingAttr), gfx::Size(),
       id, element);
 }

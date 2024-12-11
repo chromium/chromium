@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -14,8 +16,11 @@
 #include "third_party/blink/renderer/core/paint/timing/element_timing_utils.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -165,9 +170,8 @@ void ImageElementTiming::NotifyImagePaintedInternal(
             DOMWindowPerformance::performance(*GetSupplementable())) {
       // Create an entry with a |startTime| of 0.
       performance->AddElementTiming(
-          ImagePaintString(), url.GetString(), intersection_rect,
-          base::TimeTicks(), load_time, attr,
-          cached_image.IntrinsicSize(respect_orientation), id, element);
+          ImagePaintString(), url.GetString(), intersection_rect, {}, load_time,
+          attr, cached_image.IntrinsicSize(respect_orientation), id, element);
     }
     return;
   }
@@ -180,18 +184,40 @@ void ImageElementTiming::NotifyImagePaintedInternal(
   const String& image_url = url.ProtocolIsData()
                                 ? image_string.Left(kInlineImageMaxChars)
                                 : image_string;
-  element_timings_.emplace_back(MakeGarbageCollected<ElementTimingInfo>(
+  if (!element_timings_) {
+    element_timings_ =
+        MakeGarbageCollected<HeapVector<Member<ElementTimingInfo>>>();
+  }
+  element_timings_->emplace_back(MakeGarbageCollected<ElementTimingInfo>(
       image_url, intersection_rect, load_time, attr,
       cached_image.IntrinsicSize(respect_orientation), id, element));
-  // Only queue a presentation promise when |element_timings_| was empty. All of
-  // the records in |element_timings_| will be processed when the promise
-  // succeeds or fails, and at that time the vector is cleared.
-  if (element_timings_.size() == 1) {
-    frame->GetChromeClient().NotifyPresentationTime(
-        *frame,
-        WTF::BindOnce(&ImageElementTiming::ReportImagePaintPresentationTime,
-                      WrapWeakPersistent(this)));
+}
+
+std::optional<
+    base::OnceCallback<void(const base::TimeTicks&, const DOMPaintTimingInfo&)>>
+ImageElementTiming::TakePaintTimingCallback() {
+  if (!element_timings_) {
+    return std::nullopt;
   }
+
+  return BindOnce(
+      [](WindowPerformance* performance,
+         HeapVector<Member<ElementTimingInfo>>* images, const base::TimeTicks&,
+         const DOMPaintTimingInfo& paint_timing_info) {
+        if (!performance) {
+          return;
+        }
+        for (ElementTimingInfo* painted_image : *images) {
+          performance->AddElementTiming(
+              ImagePaintString(), painted_image->url, painted_image->rect,
+              paint_timing_info, painted_image->response_end,
+              painted_image->identifier, painted_image->intrinsic_size,
+              painted_image->id, painted_image->element);
+        }
+      },
+      WrapWeakPersistent(
+          DOMWindowPerformance::performance(*GetSupplementable())),
+      WrapPersistent(element_timings_.Release()));
 }
 
 void ImageElementTiming::NotifyBackgroundImagePainted(
@@ -230,24 +256,6 @@ void ImageElementTiming::NotifyBackgroundImagePainted(
                                current_paint_chunk_properties, it->value,
                                image_border);
   }
-}
-
-void ImageElementTiming::ReportImagePaintPresentationTime(
-    const viz::FrameTimingDetails& presentation_details) {
-  base::TimeTicks timestamp =
-      presentation_details.presentation_feedback.timestamp;
-  WindowPerformance* performance =
-      DOMWindowPerformance::performance(*GetSupplementable());
-  if (performance) {
-    for (const auto& element_timing : element_timings_) {
-      performance->AddElementTiming(
-          ImagePaintString(), element_timing->url, element_timing->rect,
-          timestamp, element_timing->response_end, element_timing->identifier,
-          element_timing->intrinsic_size, element_timing->id,
-          element_timing->element);
-    }
-  }
-  element_timings_.clear();
 }
 
 void ImageElementTiming::NotifyImageRemoved(const LayoutObject* layout_object,

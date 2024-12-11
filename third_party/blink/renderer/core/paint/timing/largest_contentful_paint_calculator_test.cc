@@ -101,15 +101,24 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
     return GetLargestContentfulPaintCalculator()->count_candidates_;
   }
 
+  void InvokePresentationPromise(
+      MockPaintTimingCallbackManager* callback_manager) {
+    base::TimeTicks presentation_time = simulated_clock_.NowTicks();
+    DOMHighResTimeStamp timestamp =
+        (presentation_time -
+         WindowPerformance::GetTimeOrigin(GetDocument().domWindow()))
+            .InMillisecondsF();
+    callback_manager->InvokePresentationTimeCallback(presentation_time,
+                                                     {timestamp, timestamp});
+  }
+
   void UpdateLargestContentfulPaintCandidate() {
     GetFrame().View()->GetPaintTimingDetector().UpdateLcpCandidate();
   }
 
   void SimulateContentPresentationPromise() {
-    mock_text_callback_manager_->InvokePresentationTimeCallback(
-        simulated_clock_.NowTicks());
-    mock_image_callback_manager_->InvokePresentationTimeCallback(
-        simulated_clock_.NowTicks());
+    InvokePresentationPromise(mock_text_callback_manager_.Get());
+    InvokePresentationPromise(mock_image_callback_manager_.Get());
     // Outside the tests, this is invoked by
     // |PaintTimingCallbackManagerImpl::ReportPaintTime|.
     UpdateLargestContentfulPaintCandidate();
@@ -118,8 +127,7 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
   // Outside the tests, the text callback and the image callback are run
   // together, as in |SimulateContentPresentationPromise|.
   void SimulateImagePresentationPromise() {
-    mock_image_callback_manager_->InvokePresentationTimeCallback(
-        simulated_clock_.NowTicks());
+    InvokePresentationPromise(mock_image_callback_manager_.Get());
     // Outside the tests, this is invoked by
     // |PaintTimingCallbackManagerImpl::ReportPaintTime|.
     UpdateLargestContentfulPaintCandidate();
@@ -128,8 +136,7 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
   // Outside the tests, the text callback and the image callback are run
   // together, as in |SimulateContentPresentationPromise|.
   void SimulateTextPresentationPromise() {
-    mock_text_callback_manager_->InvokePresentationTimeCallback(
-        simulated_clock_.NowTicks());
+    InvokePresentationPromise(mock_text_callback_manager_.Get());
     // Outside the tests, this is invoked by
     // |PaintTimingCallbackManagerImpl::ReportPaintTime|.
     UpdateLargestContentfulPaintCandidate();
