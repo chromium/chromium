@@ -14,19 +14,19 @@ source_set("cec_private") {
     "cec_private_api.cc",
     "cec_private_api.h",
     "cec_private_delegate.h",
+    "cec_private_delegate_ash.cc",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//extensions/common",
+  public_deps = [
+    "//base",
+    "//extensions/browser:browser_sources",
     "//extensions/common/api",
   ]
 
-  if (is_chromeos) {
-    sources += [ "cec_private_delegate_ash.cc" ]
-    deps += [ "//chromeos/ash/components/dbus/cec_service" ]
-  }
-
-  public_deps = [ "//extensions/browser:browser_sources" ]
+  deps = [
+    "//chromeos/ash/components/dbus/cec_service",
+    "//extensions/common",
+  ]
 }

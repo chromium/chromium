@@ -18,14 +18,18 @@ source_set("content_settings") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
+  public_deps = [
     "//base",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//extensions/common",
+    "//extensions/common/api",
+  ]
+
+  deps = [
     "//components/permissions:permissions_common",
     "//content/public/browser",
     "//content/public/common",
-    "//extensions/common",
-    "//extensions/common/api",
+    "//url",
   ]
 }
