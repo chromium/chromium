@@ -241,29 +241,20 @@ void BookmarkMenuDelegate::BuildFullMenu(MenuItemView* parent) {
   // menu that uses them.
   menu_uses_mnemonics_ = parent_menu_item_->GetRootMenuItem()->has_mnemonics();
 
-  BookmarkModel* model = GetBookmarkModel();
-  const BookmarkNode* managed_node =
-      GetManagedBookmarkService()->managed_node();
-  const bool should_build_managed_node = ShouldBuildPermanentNode(managed_node);
-  const bool bookmark_bar_has_children =
-      !model->bookmark_bar_node()->children().empty();
-  const bool should_add_bookmarks_title =
-      (bookmark_bar_has_children || should_build_managed_node) &&
-      !parent_menu_item_->GetSubmenu()->GetMenuItems().empty();
-  if (should_add_bookmarks_title) {
-    parent->AppendSeparator();
-    // Add a "Bookmarks" title.
-    parent->AppendTitle(l10n_util::GetStringUTF16(IDS_BOOKMARKS_LIST_TITLE));
+  if (ShouldHaveBookmarksTitle()) {
+    BuildBookmarksTitle();
   }
 
-  if (should_build_managed_node) {
+  const BookmarkNode* managed_node =
+      GetManagedBookmarkService()->managed_node();
+  if (ShouldBuildPermanentNode(managed_node)) {
     BuildMenuForFolder(
         managed_node,
         chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kManaged,
                                       ui::kColorMenuIcon),
         parent_menu_item_);
   }
-  BuildMenu(model->bookmark_bar_node(), 0, parent);
+  BuildMenu(GetBookmarkModel()->bookmark_bar_node(), 0, parent);
   BuildMenusForPermanentNodes();
 }
 
@@ -278,7 +269,7 @@ BookmarkMenuDelegate::GetManagedBookmarkService() {
 
 void BookmarkMenuDelegate::SetActiveMenu(const BookmarkNode* node,
                                          size_t start_index) {
-  DCHECK(!parent_menu_item_);
+  CHECK(!parent_menu_item_);
   if (!node_to_menu_map_[node]) {
     CreateMenu(node, start_index);
   }
@@ -553,15 +544,10 @@ void BookmarkMenuDelegate::WillRemoveBookmarks(
     auto node_to_menu = node_to_menu_map_.find(bookmark);
     if (node_to_menu != node_to_menu_map_.end()) {
       MenuItemView* menu = node_to_menu->second;
-      MenuItemView* parent = menu->GetParentMenuItem();
-      // |parent| is NULL when removing a root. This happens when right clicking
-      // to delete an empty folder.
-      if (parent) {
-        changed_parent_menus.insert(parent);
-        parent->RemoveMenuItem(menu);
+      RemoveBookmarkNode(bookmark, menu);
+      if (MenuItemView* parent_menu = menu->GetParentMenuItem()) {
+        changed_parent_menus.insert(parent_menu);
       }
-      node_to_menu_map_.erase(node_to_menu);
-      menu_id_to_node_map_.erase(menu->GetCommand());
     }
   }
 
@@ -571,25 +557,49 @@ void BookmarkMenuDelegate::WillRemoveBookmarks(
   // is the DCHECK.
   DCHECK_LE(changed_parent_menus.size(), 1U);
 
-  // Remove any descendants of the removed nodes in |node_to_menu_map_|.
-  for (auto i(node_to_menu_map_.begin()); i != node_to_menu_map_.end();) {
-    bool ancestor_removed = false;
-    for (const BookmarkNode* bookmark : bookmarks) {
-      if (i->first->HasAncestor(bookmark)) {
-        ancestor_removed = true;
-        break;
-      }
-    }
-    if (ancestor_removed) {
-      menu_id_to_node_map_.erase(i->second->GetCommand());
-      node_to_menu_map_.erase(i++);
-    } else {
-      ++i;
-    }
-  }
-
   for (MenuItemView* changed_parent_menu : changed_parent_menus) {
     changed_parent_menu->ChildrenChanged();
+  }
+}
+
+// E.g, the App menu should remove the "other bookmarks" menu item if this is
+// the last item being removed from it.
+void BookmarkMenuDelegate::RemoveBookmarkNode(const BookmarkNode* node,
+                                              MenuItemView* menu) {
+  // Remove any descendants of the removed nodes.
+  for (auto i = node_to_menu_map_.begin(); i != node_to_menu_map_.end();) {
+    if (!i->first->HasAncestor(node)) {
+      ++i;
+      continue;
+    }
+    menu_id_to_node_map_.erase(i->second->GetCommand());
+    i = node_to_menu_map_.erase(i);
+  }
+
+  // The parent menu is null when removing a root menu item.
+  if (MenuItemView* parent_menu = menu->GetParentMenuItem()) {
+    parent_menu->RemoveMenuItem(menu);
+  }
+}
+
+// TODO(crbug.com/382711086): This should be updated to also remove
+// empty permanent folders of the App menu.
+void BookmarkMenuDelegate::UpdateMenuArtifacts() {
+  if (bookmarks_title_ && !ShouldHaveBookmarksTitle()) {
+    RemoveBookmarksTitle();
+    parent_menu_item_->ChildrenChanged();
+  }
+
+  const BookmarkNode* other_node = GetBookmarkModel()->other_node();
+  auto node_to_menu = node_to_menu_map_.find(other_node);
+  if (other_node->children().empty() &&
+      node_to_menu != node_to_menu_map_.end()) {
+    // The other node has no children. Rebuild its menu to ensure artifacts are
+    // up to date.
+    MenuItemView* other_node_menu = node_to_menu->second;
+    other_node_menu->RemoveAllMenuItems();
+    BuildMenu(other_node, 0, other_node_menu);
+    other_node_menu->ChildrenChanged();
   }
 }
 
@@ -597,6 +607,9 @@ void BookmarkMenuDelegate::DidRemoveBookmarks() {
   // Balances remove in WillRemoveBookmarksImpl.
   bookmark_model_observation_.Observe(GetBookmarkModel());
   DCHECK(is_mutating_model_);
+
+  UpdateMenuArtifacts();
+
   is_mutating_model_ = false;
 }
 
@@ -832,4 +845,39 @@ int BookmarkMenuDelegate::GetAndIncrementNextMenuID() {
   const int current_id = next_menu_id_;
   next_menu_id_ += AppMenuModel::kNumUnboundedMenuTypes;
   return current_id;
+}
+
+bool BookmarkMenuDelegate::ShouldHaveBookmarksTitle() {
+  CHECK(parent_menu_item_);
+  BookmarkModel* model = GetBookmarkModel();
+  const BookmarkNode* managed_node =
+      GetManagedBookmarkService()->managed_node();
+  const bool bookmark_bar_has_children =
+      !model->bookmark_bar_node()->children().empty();
+  return (bookmark_bar_has_children ||
+          ShouldBuildPermanentNode(managed_node)) &&
+         !parent_menu_item_->GetSubmenu()->children().empty();
+}
+
+void BookmarkMenuDelegate::BuildBookmarksTitle() {
+  CHECK(parent_menu_item_);
+  CHECK(!bookmarks_title_);
+  CHECK(!bookmarks_title_separator_);
+  parent_menu_item_->AppendSeparator();
+  bookmarks_title_separator_ =
+      parent_menu_item_->GetSubmenu()->children().back().get();
+  bookmarks_title_ = parent_menu_item_->AppendTitle(
+      l10n_util::GetStringUTF16(IDS_BOOKMARKS_LIST_TITLE));
+}
+
+void BookmarkMenuDelegate::RemoveBookmarksTitle() {
+  CHECK(parent_menu_item_);
+  CHECK(bookmarks_title_);
+  CHECK(bookmarks_title_separator_);
+  views::View* title = bookmarks_title_.get();
+  views::View* separator = bookmarks_title_separator_.get();
+  bookmarks_title_ = nullptr;
+  bookmarks_title_separator_ = nullptr;
+  parent_menu_item_->RemoveMenuItem(title);
+  parent_menu_item_->RemoveMenuItem(separator);
 }

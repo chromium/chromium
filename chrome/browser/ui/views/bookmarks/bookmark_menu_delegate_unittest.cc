@@ -170,6 +170,10 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
   //   oa
   //   OF1
   //     of1a
+  // mobile node
+  //   ma
+  //   mF1
+  //     mf1a
   void AddTestData() {
     const BookmarkNode* bb_node = model()->bookmark_bar_node();
     std::string test_base(kBasePath);
@@ -243,7 +247,6 @@ TEST_F(BookmarkMenuDelegateTest, VerifyLazyLoad) {
 // Verifies WillRemoveBookmarks() doesn't attempt to access MenuItemViews that
 // have since been deleted.
 TEST_F(BookmarkMenuDelegateTest, RemoveBookmarks) {
-  views::MenuDelegate test_delegate;
   const BookmarkNode* node = model()->bookmark_bar_node()->children()[1].get();
   NewDelegate();
   bookmark_menu_delegate_->SetActiveMenu(node, 0);
@@ -260,7 +263,6 @@ TEST_F(BookmarkMenuDelegateTest, RemoveBookmarks) {
 // Verifies WillRemoveBookmarks() doesn't attempt to access MenuItemViews that
 // have since been deleted.
 TEST_F(BookmarkMenuDelegateTest, CloseOnRemove) {
-  views::MenuDelegate test_delegate;
   const BookmarkNode* node = model()->bookmark_bar_node()->children()[1].get();
   NewDelegate();
   bookmark_menu_delegate_->SetActiveMenu(node, 0);
@@ -289,8 +291,77 @@ TEST_F(BookmarkMenuDelegateTest, CloseOnRemove) {
   EXPECT_TRUE(ShouldCloseOnRemove(model()->other_node()->children()[0].get()));
 }
 
+// Tests that the "Bookmarks" title and separator are removed from the parent
+// menu when the children of the bookmark bar node are removed.
+TEST_F(BookmarkMenuDelegateTest, UpdateBookmarksTitleAfterNodeRemoved) {
+  // Remove the managed bookmarks node.
+  profile()->GetTestingPrefService()->SetManagedPref(
+      bookmarks::prefs::kManagedBookmarks, base::Value::List());
+  auto root_menu = std::make_unique<views::MenuItemView>();
+  root_menu->CreateSubmenu();
+  // Add a placeholder to ensure the bookmarks title is added.
+  root_menu->AppendTitle(std::u16string());
+  NewDelegate();
+  bookmark_menu_delegate_->BuildFullMenu(root_menu.get());
+
+  ASSERT_TRUE(root_menu->HasSubmenu());
+  EXPECT_EQ(7u, root_menu->GetSubmenu()->GetMenuItems().size());
+  EXPECT_EQ(9u, root_menu->GetSubmenu()->children().size());  // + separators
+
+  // Remove all bookmark bar nodes.
+  const BookmarkNode* bookmark_bar_node = model()->bookmark_bar_node();
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes_to_remove =
+      {};
+  for (const std::unique_ptr<BookmarkNode>& node :
+       bookmark_bar_node->children()) {
+    nodes_to_remove.emplace_back(node.get());
+  }
+  bookmark_menu_delegate_->WillRemoveBookmarks(nodes_to_remove);
+  nodes_to_remove.clear();
+  while (!bookmark_bar_node->children().empty()) {
+    model()->Remove(bookmark_bar_node->children()[0].get(),
+                    bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  }
+  bookmark_menu_delegate_->DidRemoveBookmarks();
+
+  // The placeholder, "other" and mobile bookmark folders, and their separator
+  // remain.
+  EXPECT_EQ(3u, root_menu->GetSubmenu()->GetMenuItems().size());
+  EXPECT_EQ(4u, root_menu->GetSubmenu()->children().size());  // separator
+
+  DestroyDelegate();
+}
+
+// Tests that the separator is removed from the "other" bookmarks menu item
+// when its child bookmarks are removed.
+TEST_F(BookmarkMenuDelegateTest, UpdateOtherNodeMenuAfterNodeRemoved) {
+  const BookmarkNode* other_node = model()->other_node();
+  NewDelegate();
+  bookmark_menu_delegate_->SetActiveMenu(other_node, 0);
+  views::MenuItemView* other_node_menu = menu();
+
+  ASSERT_TRUE(other_node_menu->HasSubmenu());
+  EXPECT_EQ(3u, other_node_menu->GetSubmenu()->GetMenuItems().size());
+  EXPECT_EQ(4u, other_node_menu->GetSubmenu()->children().size());  // separator
+
+  // Remove all "other" node children.
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes_to_remove =
+      {};
+  for (const std::unique_ptr<BookmarkNode>& node : other_node->children()) {
+    nodes_to_remove.emplace_back(node.get());
+  }
+  bookmark_menu_delegate_->WillRemoveBookmarks(nodes_to_remove);
+  nodes_to_remove.clear();
+  while (!other_node->children().empty()) {
+    model()->Remove(other_node->children()[0].get(),
+                    bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  }
+  bookmark_menu_delegate_->DidRemoveBookmarks();
+
+  EXPECT_EQ(1u, other_node_menu->GetSubmenu()->children().size());
+}
+
 TEST_F(BookmarkMenuDelegateTest, DragAndDropAfterNode) {
-  views::MenuDelegate test_delegate;
   const BookmarkNode* f1 = model()->bookmark_bar_node()->children()[1].get();
   NewDelegate();
   bookmark_menu_delegate_->SetActiveMenu(f1, 0);
@@ -327,7 +398,6 @@ TEST_F(BookmarkMenuDelegateTest, DragAndDropAfterNode) {
 }
 
 TEST_F(BookmarkMenuDelegateTest, DragAndDropOnNode) {
-  views::MenuDelegate test_delegate;
   const BookmarkNode* f1 = model()->bookmark_bar_node()->children()[1].get();
   NewDelegate();
   bookmark_menu_delegate_->SetActiveMenu(f1, 0);
@@ -365,7 +435,6 @@ TEST_F(BookmarkMenuDelegateTest, DragAndDropOnNode) {
 }
 
 TEST_F(BookmarkMenuDelegateTest, DragAndDropBeforeNode) {
-  views::MenuDelegate test_delegate;
   const BookmarkNode* f1 = model()->bookmark_bar_node()->children()[1].get();
   NewDelegate();
   bookmark_menu_delegate_->SetActiveMenu(f1, 0);
@@ -402,7 +471,6 @@ TEST_F(BookmarkMenuDelegateTest, DragAndDropBeforeNode) {
 }
 
 TEST_F(BookmarkMenuDelegateTest, DropCallbackModelChanged) {
-  views::MenuDelegate test_delegate;
   const BookmarkNode* node = model()->bookmark_bar_node()->children()[1].get();
   NewDelegate();
   bookmark_menu_delegate_->SetActiveMenu(node, 0);

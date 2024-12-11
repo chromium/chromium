@@ -45,6 +45,9 @@ class Widget;
 // MenuDelegate as its assumed another class is going to forward the appropriate
 // methods to this class. Doing so allows this class to be used for both menus
 // on the bookmark bar and the bookmarks in the app menu.
+// TODO(crbug.com/382749219): This class has some unnecessary complexity
+// stemming from the fact that it's trying to handle distinct requirements from
+// various clients. This client-specific logic should be split out.
 class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
                              public BookmarkContextMenuObserver {
  public:
@@ -222,6 +225,19 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   // an id.
   int GetAndIncrementNextMenuID();
 
+  // Removes `node` and its `menu`'s view. All descendants of the removed node
+  // are also removed.
+  void RemoveBookmarkNode(const bookmarks::BookmarkNode* node,
+                          views::MenuItemView* menu);
+  // Updates non-bookmark node menu items that are managed by this controller.
+  // E.g., removes the separator in the "other" bookmarks folder if there are no
+  // more child bookmarks.
+  void UpdateMenuArtifacts();
+
+  bool ShouldHaveBookmarksTitle();
+  void BuildBookmarksTitle();
+  void RemoveBookmarksTitle();
+
   const raw_ptr<Browser> browser_;
   raw_ptr<Profile> profile_;
 
@@ -243,6 +259,11 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   // If non-NULL this is the |parent| passed to BuildFullMenu and is NOT owned
   // by us.
   raw_ptr<views::MenuItemView> parent_menu_item_;
+
+  // Views built by this delegate, but not tracked by the maps.
+  // These are all owned by `parent_menu_item_`, if not null.
+  raw_ptr<views::View> bookmarks_title_;
+  raw_ptr<views::View> bookmarks_title_separator_;
 
   // Maps from node to menu.
   NodeToMenuMap node_to_menu_map_;
