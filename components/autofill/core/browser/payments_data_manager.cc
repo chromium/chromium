@@ -1972,6 +1972,10 @@ bool PaymentsDataManager::IsFacilitatedPaymentsPixUserPrefEnabled() const {
   return prefs::IsFacilitatedPaymentsPixEnabled(pref_service_);
 }
 
+bool PaymentsDataManager::IsFacilitatedPaymentsEwalletUserPrefEnabled() const {
+  return prefs::IsFacilitatedPaymentsEwalletEnabled(pref_service_);
+}
+
 bool PaymentsDataManager::HasPendingPaymentQueries() const {
   return pending_creditcards_query_ != 0 ||
          pending_server_creditcards_query_ != 0 ||

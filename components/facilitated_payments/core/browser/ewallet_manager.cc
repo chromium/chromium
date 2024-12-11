@@ -66,6 +66,10 @@ void EwalletManager::TriggerEwalletPushPayment(const GURL& payment_link_url,
     return;
   }
 
+  if (!payments_data_manager->IsFacilitatedPaymentsEwalletUserPrefEnabled()) {
+    return;
+  }
+
   base::span<const autofill::Ewallet> ewallet_accounts =
       payments_data_manager->GetEwalletAccounts();
   supported_ewallets_.reserve(ewallet_accounts.size());

@@ -200,6 +200,29 @@ TEST_F(EwalletManagerTest,
                                               GURL("https://www.example.com"));
 }
 
+// API availability is not invoked if the user has opted out of the eWallet
+// flow.
+TEST_F(EwalletManagerTest, UserOptedOut_ApiClientNotCheckedForAvailability) {
+  payments_data_manager_.AddEwalletForTest(
+      autofill::Ewallet(/*instrument_id=*/100, u"nickname",
+                        /*display_icon_url=*/GURL("http://www.example.com"),
+                        u"ewallet_name", u"account_display_name",
+                        /*supported_payment_link_uris=*/
+                        {u"^shopeepay:\\/\\/shopeepay\\.com\\.my\\?code=.*$",
+                         u"^tngd:\\/\\/tngdigital\\.com\\.my\\?code=.*$"},
+                        /*is_fido_enrolled=*/true));
+  GURL supportedPaymentLink(
+      "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
+      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
+  // Turn off eWallet pref.
+  autofill::prefs::SetFacilitatedPaymentsEwallet(pref_service_.get(), false);
+
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+
+  ewallet_manager_->TriggerEwalletPushPayment(supportedPaymentLink,
+                                              GURL("https://www.example.com"));
+}
+
 // If the facilitated payment API is available, then the manager shows the
 // eWallet payment prompt.
 TEST_F(EwalletManagerTest, ShowsEwalletPaymentPromptWhenApiClientAvailable) {

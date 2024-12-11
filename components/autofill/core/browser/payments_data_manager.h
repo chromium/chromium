@@ -496,6 +496,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Returns the value of the FacilitatedPaymentsPix user pref.
   bool IsFacilitatedPaymentsPixUserPrefEnabled() const;
 
+  // Returns the value of the FacilitatedPaymentsEwallet user pref.
+  bool IsFacilitatedPaymentsEwalletUserPrefEnabled() const;
+
  protected:
   friend class PaymentsDataManagerTestApi;
 
