@@ -13443,24 +13443,6 @@
             ]
         }
     ],
-    "MacWebContentsOcclusionV2": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "EnhancedWindowOcclusionDetection": "true"
-                    },
-                    "enable_features": [
-                        "MacWebContentsOcclusion"
-                    ]
-                }
-            ]
-        }
-    ],
     "MagicStackGradientView": [
         {
             "platforms": [

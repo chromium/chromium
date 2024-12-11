@@ -305,14 +305,6 @@ BASE_FEATURE(kIOSurfaceCapturer,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Feature that controls whether WebContentsOcclusionChecker should handle
-// occlusion notifications.
-#if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kMacWebContentsOcclusion,
-             "MacWebContentsOcclusion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // If this feature is enabled, media-device enumerations use a cache that is
 // invalidated upon notifications sent by base::SystemMonitor. If disabled, the
 // cache is considered invalid on every enumeration request.
