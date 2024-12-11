@@ -11,7 +11,7 @@
   "dependencies": {
     "@trevoreyre/autocomplete-vue": "^2.2.0",
     "d3": "^7.7.0",
-    "vue": "^2.6.11",
+    "vue": "^3.0.0",
     "vue-js-modal": "^2.0.1",
     "vue-material": "^1.0.0-beta-15"
   },
