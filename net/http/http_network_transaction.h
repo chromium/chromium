@@ -455,6 +455,10 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   base::TimeTicks send_start_time_;
   base::TimeTicks send_end_time_;
 
+  // When the connection and request headers are reset, and the request is
+  // resent.
+  base::TimeTicks reset_connection_and_request_for_resend_start_time_;
+
   // The next state in the state machine.
   State next_state_ = STATE_NONE;
 

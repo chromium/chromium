@@ -2611,6 +2611,18 @@ chromium-metrics-reviews@google.com.
   <token key="HostType" variants="HostType"/>
 </histogram>
 
+<histogram name="Net.NetworkTransaction.ResetConnectionAndResendRequestTime"
+    units="ms" expires_after="2025-03-11">
+  <owner>ciaramcmullin@google.com</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    The time taken for resetting the connection and request headers, and
+    creating a Stream. Recorded in
+    HttpNetworkTransaction::DoCreateStreamComplete when the stream creation
+    completes successfully.
+  </summary>
+</histogram>
+
 <histogram name="Net.NetworkTransaction.StreamAddressFamily"
     enum="AddressFamily" expires_after="2025-02-27">
   <owner>bashi@chromium.org</owner>
