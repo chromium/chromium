@@ -492,7 +492,7 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testFragmentWithChildAccountWithNonDisplayableAccountEmail() {
-        AccountInfo accountInfo = TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL;
+        AccountInfo accountInfo = TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL;
 
         mSigninTestRule.addAccount(accountInfo);
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
@@ -852,11 +852,11 @@ public class SigninFirstRunFragmentTest {
                             .thenReturn(mIdentityManagerMock);
                 });
 
-        mSigninTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
+        mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL);
 
         checkContinueButtonWithChildAccount(
                 /* hasFullNameInButtonText= */ true,
-                TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL,
+                TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL,
                 /* advancesDirectlyToNextPage= */ false);
     }
 

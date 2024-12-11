@@ -71,7 +71,7 @@ public class TestAccounts {
      * To be used in test cases where we want to test Signin flows for accounts that don't have a
      * displayable email.
      */
-    public static final AccountInfo TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL =
+    public static final AccountInfo CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL =
             new AccountInfo.Builder(
                             generateChildEmail("test@gmail.com"),
                             FakeAccountManagerFacade.toGaiaId("test@gmail.com"))

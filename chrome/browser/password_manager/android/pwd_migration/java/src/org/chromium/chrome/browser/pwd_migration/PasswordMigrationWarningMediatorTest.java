@@ -317,7 +317,7 @@ public class PasswordMigrationWarningMediatorTest {
 
     @Test
     public void testGetAccountDisplayNameReturnsFullName() {
-        AccountInfo account = TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL;
+        AccountInfo account = TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL;
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(account);
         when(mIdentityManager.findExtendedAccountInfoByEmailAddress(account.getEmail()))

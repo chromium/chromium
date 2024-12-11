@@ -109,7 +109,7 @@ public class SendTabToSelfBottomSheetRenderTest {
     @Test
     @MediumTest
     public void testDevicePickerBottomSheetWithNonDisplayableAccountEmail() throws Throwable {
-        AccountInfo account = TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL;
+        AccountInfo account = TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL;
         setUpAccountData(account);
         long todayTimestamp = Calendar.getInstance().getTimeInMillis();
         List<TargetDeviceInfo> devices =
@@ -154,7 +154,7 @@ public class SendTabToSelfBottomSheetRenderTest {
     @Test
     @MediumTest
     public void testNoTargetDeviceBottomSheetWithNonDisplayableAccountEmail() throws Throwable {
-        AccountInfo account = TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL;
+        AccountInfo account = TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL;
         setUpAccountData(account);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
