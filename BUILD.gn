@@ -898,7 +898,7 @@ group("all_rust") {
       "//mojo/public/rust:mojo_rust_unittests",
     ]
   }
-  if (enable_rust_png) {
+  if (enable_rust_png && !is_cronet_build) {
     deps += [ "//skia" ]
   }
 }
