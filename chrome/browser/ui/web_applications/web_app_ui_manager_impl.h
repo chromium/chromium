@@ -131,7 +131,9 @@ class WebAppUiManagerImpl : public BrowserListObserver,
   content::WebContents* CreateNewTab() override;
   bool IsWebContentsActiveTabInBrowser(
       content::WebContents* web_contents) override;
-  void TriggerInstallDialog(content::WebContents* web_contents) override;
+  void TriggerInstallDialog(content::WebContents* web_contents,
+                            webapps::WebappInstallSource source,
+                            InstallCallback callback) override;
 
   void PresentUserUninstallDialog(
       const webapps::AppId& app_id,

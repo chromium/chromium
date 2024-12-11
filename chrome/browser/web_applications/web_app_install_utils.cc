@@ -1031,6 +1031,7 @@ WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
     case webapps::WebappInstallSource::WEBAPK_RESTORE:
     case webapps::WebappInstallSource::OOBE_APP_RECOMMENDATIONS:
     case webapps::WebappInstallSource::WEB_INSTALL:
+    case webapps::WebappInstallSource::CHROMEOS_HELP_APP:
       if (base::FeatureList::IsEnabled(
               features::kWebAppDontAddExistingAppsToSync)) {
         return WebAppManagement::kUserInstalled;

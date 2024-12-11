@@ -404,12 +404,10 @@ bool WebAppUiManagerImpl::IsWebContentsActiveTabInBrowser(
 }
 
 void WebAppUiManagerImpl::TriggerInstallDialog(
-    content::WebContents* web_contents) {
-  web_app::CreateWebAppFromManifest(
-      web_contents,
-      // TODO(issuetracker.google.com/283034487): Consider passing in the
-      // install source from the caller.
-      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, base::DoNothing());
+    content::WebContents* web_contents,
+    webapps::WebappInstallSource source,
+    InstallCallback callback) {
+  web_app::CreateWebAppFromManifest(web_contents, source, std::move(callback));
 }
 
 void WebAppUiManagerImpl::PresentUserUninstallDialog(

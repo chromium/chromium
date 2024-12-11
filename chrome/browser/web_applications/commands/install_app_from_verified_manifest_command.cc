@@ -15,6 +15,7 @@
 #include "base/containers/flat_tree.h"
 #include "base/functional/bind.h"
 #include "base/strings/to_string.h"
+#include "chrome/browser/web_applications/commands/command_metrics.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
@@ -266,6 +267,9 @@ void InstallAppFromVerifiedManifestCommand::OnAppLockAcquired() {
 void InstallAppFromVerifiedManifestCommand::OnInstallFinalized(
     const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
+  GetMutableDebugValue().Set("error_code", base::ToString(code));
+  RecordInstallMetrics(InstallCommand::kInstallAppFromVerifiedManifest,
+                       WebAppType::kCraftedApp, code, install_source_);
   CompleteAndSelfDestruct(webapps::IsSuccess(code) ? CommandResult::kSuccess
                                                    : CommandResult::kFailure,
                           app_id, code);
@@ -275,6 +279,8 @@ void InstallAppFromVerifiedManifestCommand::Abort(
     CommandResult result,
     webapps::InstallResultCode code) {
   GetMutableDebugValue().Set("error_code", base::ToString(code));
+  RecordInstallMetrics(InstallCommand::kInstallAppFromVerifiedManifest,
+                       WebAppType::kCraftedApp, code, install_source_);
   CompleteAndSelfDestruct(result, webapps::AppId(), code);
 }
 

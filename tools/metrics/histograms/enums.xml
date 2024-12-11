@@ -33844,6 +33844,9 @@ others/histograms.xml -->
   <int value="34" label="WebAPK Backup and restore"/>
   <int value="35" label="OOBE Recommended Apps screen on ChromeOS"/>
   <int value="36" label="Installed from web content via Web Install API"/>
+  <int value="37"
+      label="Installed from the ChromeOS help app directing a user to a page
+             and showing the installation dialog."/>
 </enum>
 
 <enum name="WebAppPreinstalledWindowExperimentUserGroup">

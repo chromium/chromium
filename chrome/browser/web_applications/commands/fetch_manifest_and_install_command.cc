@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/commands/command_metrics.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -238,8 +239,10 @@ void FetchManifestAndInstallCommand::StartWithLock(
     webapps::InstallableMetrics::TrackInstallEvent(install_surface_);
   }
 
-  DCHECK(AreWebAppsUserInstallable(
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext())));
+  if (!AreWebAppsUserInstallable(
+          Profile::FromBrowserContext(web_contents_->GetBrowserContext()))) {
+    Abort(webapps::InstallResultCode::kWebAppDisabled);
+  }
 
   data_retriever_ = noop_lock_->web_contents_manager().CreateDataRetriever();
 
@@ -738,8 +741,14 @@ void FetchManifestAndInstallCommand::OnInstallCompleted(
 void FetchManifestAndInstallCommand::MeasureUserInstalledAppHistogram(
     webapps::InstallResultCode code) {
   if (!web_app_info_) {
+    RecordInstallMetrics(InstallCommand::kFetchManifestAndInstall,
+                         WebAppType::kUnknown, code, install_surface_);
     return;
   }
+  RecordInstallMetrics(
+      InstallCommand::kFetchManifestAndInstall,
+      web_app_info_->is_diy_app ? WebAppType::kDiyApp : WebAppType::kCraftedApp,
+      code, install_surface_);
 
   bool is_new_success_install = webapps::IsNewInstall(code);
   if (web_app_info_->is_diy_app) {

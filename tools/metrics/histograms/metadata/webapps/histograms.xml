@@ -22,6 +22,50 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="InstallCommand">
+<!-- These values must be kept in sync with the web_app::InstallCommand enum. -->
+
+  <variant name="" summary="an aggregation across all install commands"/>
+  <variant name=".FetchManifestAndInstall"
+      summary="an install triggered by the user via omnibox icon, 3-dot menu
+               in Chrome, or the beforeinstallprompt API (from an install
+               button on the site's page)"/>
+  <variant name=".InstallAppFromVerifiedManifest"
+      summary="an install via a custom WebAppInstallInfo object, which is
+               usually a backup install, but can occur for other reasons."/>
+  <variant name=".InstallFromInfo"
+      summary="an install via a custom WebAppInstallInfo object, which is
+               usually a backup install, but can occur for other reasons."/>
+  <variant name=".InstallIsolatedWebApp"
+      summary="an isolated web app install."/>
+  <variant name=".NavigateAndTriggerInstallDialog"
+      summary="an install triggered by the user via the ChromeOS help app
+               navigating the user to a page and displaying the install
+               dialog."/>
+  <variant name=".WebAppInstallFromUrl"
+      summary="an install triggered by the user via the web app install
+               javascript API, usually as a result of a user click"/>
+</variants>
+
+<variants name="WebAppType">
+<!-- These values must be kept in sync with the web_app::WebAppType enum. -->
+
+  <variant name=""
+      summary="an aggregation across Diy apps (apps for sites without a
+               manifest / not installable), Crafted apps (apps that are
+               installable / have a valid manifest), and packaged isolated
+               web apps"/>
+  <variant name=".Crafted"
+      summary="apps that are installable / have a valid manifest"/>
+  <variant name=".Diy"
+      summary="apps manually created for sites that didn't have a manifest /
+               weren't installable"/>
+  <variant name=".Isolated" summary="isolated web apps"/>
+  <variant name=".Unknown"
+      summary="an unknown app type, which means not enough information was
+               fetched to know if this was 'Crafted' or 'Diy'."/>
+</variants>
+
 <histogram name="AppBanners.BeforeInstallEvent"
     enum="AppBannersBeforeInstallEvent" expires_after="2025-05-11">
   <owner>dominickn@chromium.org</owner>
@@ -1027,6 +1071,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.InstallCommand{InstallCommand}{WebAppType}.ResultCode"
+    enum="WebAppInstallResultCode" expires_after="never">
+<!-- expires-never: The PWA team looks at this metric to determine what exactly happens for user installs. -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwa-team@chromium.org</owner>
+  <summary>
+    Records the WebAppInstallResult code for {InstallCommand}. This is
+    specifically for {WebAppType}.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.InstallCommand{InstallCommand}{WebAppType}.Surface"
+    enum="WebappInstallSource" expires_after="never">
+<!-- expires-never: The PWA team looks at this metric to determine where user installs come from. -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwa-team@chromium.org</owner>
+  <summary>
+    Records the source/surface that initiated {InstallCommand}. This is
+    specifically for {WebAppType}.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.InstallConfirmation.CloseReason"
     enum="WidgetClosedReason" expires_after="2025-05-11">
   <owner>dmurph@chromium.org</owner>
@@ -1103,7 +1171,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Webapp.InstallResult" enum="WebAppInstallResultCode"
     expires_after="2025-05-18">
-<!-- Name completed by histogram_suffixes name="WebAppType" -->
+<!-- Name completed by histogram_suffixes name="WebappType" -->
 
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>

@@ -249,10 +249,13 @@ void WebAppCommandScheduler::ScheduleNavigateAndTriggerInstallDialog(
     bool is_renderer_initiated,
     NavigateAndTriggerInstallDialogCommandCallback callback,
     const base::Location& location) {
+  // TODO(issuetracker.google.com/283034487): Pass the source in to this
+  // function.
   provider_->command_manager().ScheduleCommand(
       std::make_unique<NavigateAndTriggerInstallDialogCommand>(
-          install_url, origin, is_renderer_initiated, std::move(callback),
-          provider_->ui_manager().GetWeakPtr(),
+          install_url, origin, is_renderer_initiated,
+          /*source=*/webapps::WebappInstallSource::CHROMEOS_HELP_APP,
+          std::move(callback), provider_->ui_manager().GetWeakPtr(),
           std::make_unique<webapps::WebAppUrlLoader>(),
           std::make_unique<WebAppDataRetriever>(), &*profile_),
       location);

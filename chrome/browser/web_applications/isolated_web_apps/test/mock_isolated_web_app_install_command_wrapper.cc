@@ -19,9 +19,9 @@ namespace web_app {
 
 namespace {
 
-class MockInstallIsolatedWebAppCommand : public InstallIsolatedWebAppCommand {
+class MockInstallIsolatedWebApp : public InstallIsolatedWebAppCommand {
  public:
-  MockInstallIsolatedWebAppCommand(
+  MockInstallIsolatedWebApp(
       const IsolatedWebAppUrlInfo& url_info,
       const IsolatedWebAppInstallSource& install_source,
       const std::optional<base::Version>& expected_version,
@@ -112,7 +112,7 @@ void MockIsolatedWebAppInstallCommandWrapper::ScheduleCommand() {
   CHECK(callback_.has_value());
   command_was_scheduled_ = true;
   provider_->command_manager().ScheduleCommand(
-      std::make_unique<MockInstallIsolatedWebAppCommand>(
+      std::make_unique<MockInstallIsolatedWebApp>(
           *url_info_, *install_source_, *expected_version_,
           IsolatedWebAppInstallCommandHelper::CreateIsolatedWebAppWebContents(
               *profile_),

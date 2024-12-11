@@ -69,6 +69,7 @@ class InstallFromInfoCommand
   raw_ref<Profile> profile_;
 
   const webapps::AppId app_id_;
+  const bool diy_app_;
 
   std::unique_ptr<AppLock> lock_;
 

@@ -146,7 +146,9 @@ class InstallIsolatedWebAppCommand
     kMaxValue = kCantInstall
   };
 
-  void ReportFailure(InstallIwaError error, std::string_view message);
+  void ReportFailure(InstallIwaError error,
+                     webapps::InstallResultCode web_app_failure_code,
+                     std::string_view message);
   void ReportSuccess(const base::Version& installed_version);
 
   Profile& profile();
