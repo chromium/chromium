@@ -104,8 +104,8 @@ std::string ReadFileAndCollapseWhitespace(const base::FilePath& file_path) {
 // the SavePageAs logic.
 std::string WriteSavedFromPath(const std::string& file_contents,
                                const GURL& url) {
-  return base::StringPrintfNonConstexpr(
-      file_contents.c_str(), url.spec().length(), url.spec().c_str());
+  return base::StringPrintfNonConstexpr(file_contents.c_str(),
+                                        url.spec().size(), url.spec().c_str());
 }
 
 // Waits for an item record in the downloads database to match |filter|. See
@@ -352,12 +352,12 @@ class SavePageBrowserTest : public InProcessBrowserTest {
     if (items.empty())
       DownloadItemCreatedObserver(manager).WaitForDownloadItem(&items);
 
-    EXPECT_EQ(1u, items.size());
-    if (1u != items.size())
+    if (items.size() != 1) {
+      ADD_FAILURE();
       return false;
-    DownloadItem* download_item(items[0]);
+    }
 
-    return (expected_url == download_item->GetOriginalUrl());
+    return items[0]->GetOriginalUrl() == expected_url;
   }
 
   void SaveCurrentTab(const GURL& url,
@@ -397,8 +397,7 @@ class SavePageBrowserTest : public InProcessBrowserTest {
   // persisted.
 
   DownloadManager* GetDownloadManager() const {
-    DownloadManager* download_manager =
-        browser()->profile()->GetDownloadManager();
+    auto* download_manager = browser()->profile()->GetDownloadManager();
     EXPECT_TRUE(download_manager);
     return download_manager;
   }
@@ -561,8 +560,8 @@ class DelayingDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
 // Disabled on multiple platforms due to flakiness. crbug.com/580766
 IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, DISABLED_SaveHTMLOnlyTabDestroy) {
   GURL url = NavigateToMockURL("a");
-  std::unique_ptr<DelayingDownloadManagerDelegate> delaying_delegate(
-      new DelayingDownloadManagerDelegate(browser()->profile()));
+  auto delaying_delegate =
+      std::make_unique<DelayingDownloadManagerDelegate>(browser()->profile());
   delaying_delegate->GetDownloadIdReceiverCallback().Run(
       download::DownloadItem::kInvalidId + 1);
   DownloadCoreServiceFactory::GetForBrowserContext(browser()->profile())
@@ -790,8 +789,8 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, MAYBE_SavePageAsMHTML) {
   GURL url = NavigateToMockURL("b");
   base::FilePath download_dir = DownloadPrefs::FromDownloadManager(
       GetDownloadManager())->DownloadPath();
-  base::FilePath full_file_name = download_dir.AppendASCII(std::string(
-      "Test page for saving page feature.mhtml"));
+  base::FilePath full_file_name =
+      download_dir.AppendASCII("Test page for saving page feature.mhtml");
 
   SavePackageFilePicker::SetShouldPromptUser(true);
   DownloadPersistedObserver persisted(
@@ -1206,8 +1205,8 @@ class SavePageOriginalVsSavedComparisonTest
   void TestOriginalVsSavedPage(
       content::SavePageType save_page_type,
       const GURL& url,
-      int expected_number_of_frames_in_original_page,
-      int expected_number_of_frames_in_mhtml_page,
+      size_t expected_number_of_frames_in_original_page,
+      size_t expected_number_of_frames_in_mhtml_page,
       const std::vector<std::string>& expected_substrings) {
     // Navigate to the test page and verify if test expectations
     // are met (this is mostly a sanity check - a failure to meet
@@ -1241,10 +1240,10 @@ class SavePageOriginalVsSavedComparisonTest
     // Hidden elements, i.e., hidden frames, will be removed only from MHTML
     // page. They're still kept in other types of serialization, like saving
     // as a complete html page.
-    int expected_number_of_frames_in_saved_page =
-        (save_page_type == content::SAVE_PAGE_TYPE_AS_MHTML) ?
-        expected_number_of_frames_in_mhtml_page :
-        expected_number_of_frames_in_original_page;
+    size_t expected_number_of_frames_in_saved_page =
+        (save_page_type == content::SAVE_PAGE_TYPE_AS_MHTML)
+            ? expected_number_of_frames_in_mhtml_page
+            : expected_number_of_frames_in_original_page;
     AssertExpectationsAboutCurrentTab(expected_number_of_frames_in_saved_page,
                                       expected_substrings, save_page_type);
 
@@ -1254,8 +1253,7 @@ class SavePageOriginalVsSavedComparisonTest
           [&origins](content::RenderFrameHost* host) {
             CheckFrameForMHTML(host, origins);
           });
-      int unique_origins = origins.size();
-      EXPECT_EQ(expected_number_of_frames_in_saved_page, unique_origins)
+      EXPECT_EQ(expected_number_of_frames_in_saved_page, origins.size())
           << "All origins should be unique";
     }
 
@@ -1274,7 +1272,7 @@ class SavePageOriginalVsSavedComparisonTest
   void RunObjectElementsTest(GURL url) {
     content::SavePageType save_page_type = GetParam();
 
-    // The |expected_number_of_frames| comes from:
+    // The `kExpectedNumberOfFrames` comes from:
     // - main frame (frames-objects.htm)
     // - object with frame-nested.htm + 2 subframes (frames-nested2.htm + b.htm)
     // - iframe with a.htm
@@ -1283,7 +1281,7 @@ class SavePageOriginalVsSavedComparisonTest
     // - object with pdf.pdf is responsible for presence of 2 extra frames
     //   (about:blank + one frame for the actual pdf.pdf).  These frames are an
     //   implementation detail and are not web-exposed (e.g. via window.frames).
-    int expected_number_of_frames = 9;
+    static constexpr size_t kExpectedNumberOfFrames = 9;
 
     std::vector<std::string> expected_substrings = {
         "frames-objects.htm: 8da13db4-a512-4d9b-b1c5-dc1c134234b9",
@@ -1303,16 +1301,16 @@ class SavePageOriginalVsSavedComparisonTest
     if (save_page_type == content::SAVE_PAGE_TYPE_AS_MHTML)
       return;
 
-    TestOriginalVsSavedPage(save_page_type, url, expected_number_of_frames,
-                            expected_number_of_frames, expected_substrings);
+    TestOriginalVsSavedPage(save_page_type, url, kExpectedNumberOfFrames,
+                            kExpectedNumberOfFrames, expected_substrings);
   }
 
  private:
   void AssertExpectationsAboutCurrentTab(
-      int expected_number_of_frames,
+      size_t expected_number_of_frames,
       const std::vector<std::string>& expected_substrings,
       content::SavePageType save_page_type) {
-    int actual_number_of_frames =
+    size_t actual_number_of_frames =
         CollectAllRenderFrameHosts(GetCurrentTab(browser())->GetPrimaryPage())
             .size();
     EXPECT_EQ(expected_number_of_frames, actual_number_of_frames);
@@ -1731,7 +1729,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveHTMLWithDlp) {
   ASSERT_FALSE(HasFailure());
 
   auto request = std::get<0>(add_file_cb.Take());
-  EXPECT_EQ(1, request.add_file_requests().size());
+  ASSERT_EQ(1, request.add_file_requests().size());
   EXPECT_EQ(full_file_name.value(), request.add_file_requests(0).file_path());
   EXPECT_EQ(request.add_file_requests(0).source_url(), url.spec());
 
@@ -1760,7 +1758,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveMHTMLWithDlp) {
   ASSERT_FALSE(HasFailure());
 
   auto request = std::get<0>(add_file_cb.Take());
-  EXPECT_EQ(1, request.add_file_requests().size());
+  ASSERT_EQ(1, request.add_file_requests().size());
   EXPECT_EQ(full_file_name.value(), request.add_file_requests(0).file_path());
   EXPECT_EQ(request.add_file_requests(0).source_url(), url.spec());
 
