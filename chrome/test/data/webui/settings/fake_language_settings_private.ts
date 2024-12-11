@@ -28,6 +28,7 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
   constructor() {
     // List of method names expected to be tested with whenCalled()
     super([
+      'addSpellcheckWord',
       'getSpellcheckWords',
     ]);
 
@@ -374,6 +375,7 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
    * Adds a word to the custom dictionary.
    */
   addSpellcheckWord(word: string) {
+    this.methodCalled('addSpellcheckWord', word);
     this.onCustomDictionaryChanged.callListeners([word], []);
   }
 

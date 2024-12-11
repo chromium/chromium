@@ -17,9 +17,7 @@
         flex: 1;
       }
     </style>
-    <div class="cr-row first">
-      <iron-a11y-keys id="keys" keys="enter esc"
-          on-keys-pressed="onKeysPress_"></iron-a11y-keys>
+    <div class="cr-row first" on-keydown="onKeysPress_">
       <cr-input id="newWord" value="{{newWordValue_}}"
           placeholder="$i18n{addDictionaryWordLabel}"
           invalid="[[isWordInvalid_(newWordValue_, words_.*)]]"

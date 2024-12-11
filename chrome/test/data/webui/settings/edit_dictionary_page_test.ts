@@ -10,6 +10,8 @@ import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
+import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {FakeLanguageSettingsPrivate} from './fake_language_settings_private.js';
 import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
@@ -108,6 +110,25 @@ suite('settings-edit-dictionary-page', function() {
     languageSettingsPrivate.onCustomDictionaryChanged.callListeners([], [WORD]);
     flush();
     assertFalse(editDictPage.$.addWord.disabled);
+  });
+
+  test('Enter/Escape key event', async () => {
+    // Add a new word by pressing Enter.
+    const WORD = 'testEnter';
+    editDictPage.$.newWord.value = WORD;
+    await microtasksFinished();
+    keyDownOn(editDictPage.$.newWord, 0, [], 'Enter');
+    assertEquals(
+        WORD, await languageSettingsPrivate.whenCalled('addSpellcheckWord'));
+
+    flush();
+
+    // Clear input by pressing Escape.
+    editDictPage.$.newWord.value = 'testEscape';
+    await microtasksFinished();
+    keyDownOn(editDictPage.$.newWord, 0, [], 'Escape');
+    await microtasksFinished();
+    assertEquals('', editDictPage.$.newWord.value);
   });
 
   test('spellcheck edit dictionary page message when empty', async function() {
