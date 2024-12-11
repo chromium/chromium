@@ -6075,7 +6075,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Mojo.Channel.WriteReceiveMessageProcessType"
     enum="ShortProcessType" expires_after="2025-09-05">
   <owner>amanvr@chromium.org</owner>
-  <owner>carlscab@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
     Records the number of received Mojo IPCs, split per process. Emitted each
@@ -6086,7 +6085,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Mojo.Channel.WriteSendMessageProcessType"
     enum="ShortProcessType" expires_after="2025-09-01">
   <owner>amanvr@chromium.org</owner>
-  <owner>carlscab@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
     Records the number of sent Mojo IPCs, split per process. Emitted each time a

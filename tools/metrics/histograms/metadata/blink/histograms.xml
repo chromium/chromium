@@ -1097,7 +1097,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.Experimental.Cookies.CacheLookupResult2"
     enum="CookieCacheLookupResult" expires_after="2025-04-13">
-  <owner>carlscab@google.com</owner>
+  <owner>olivierli@chromium.org</owner>
   <owner>woa-performance@google</owner>
   <summary>
     Whether a GetCookiesString request for a document returned the same result

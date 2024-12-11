@@ -2668,7 +2668,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.OnTransferSizeUpdated.Experimental.OverridenBy"
     enum="OnTransferSizeUpdatedFrom" expires_after="2025-04-13">
   <owner>amanvr@chromium.org</owner>
-  <owner>carlscab@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
     Records the number of times OnTransferSizeUpdated is called from different
@@ -5131,7 +5130,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.RestrictedCookieManager.GetCookiesString.Count30Seconds"
     units="IPCs" expires_after="2025-06-08">
-  <owner>carlscab@google.com</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <summary>

@@ -478,7 +478,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Renderer.ReduceSubresourceResponseIPC.DidNotifyBrowser"
     enum="Boolean" expires_after="2025-03-09">
   <owner>amanvr@chromium.org</owner>
-  <owner>carlscab@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
     The histogram is being used to track the number of messages
