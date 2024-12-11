@@ -7,6 +7,10 @@
 
 #include "crypto/crypto_export.h"
 
+namespace ash {
+class CryptohomeTokenEncryptor;
+}
+
 namespace syncer {
 class Nigori;
 }
@@ -41,6 +45,10 @@ class CRYPTO_EXPORT SubtlePassKey final {
   // Deprecated: remove this once the DeriveKey*() methods are deleted from
   // SymmetricKey.
   friend class SymmetricKey;
+
+  // This class uses custom PBKDF2 parameters, and has to keep doing so for
+  // compatibility with persisted data on disk.
+  friend class ash::CryptohomeTokenEncryptor;
 
   // This class uses custom PBKDF2 parameters - the Nigori spec requires this.
   friend class syncer::Nigori;
