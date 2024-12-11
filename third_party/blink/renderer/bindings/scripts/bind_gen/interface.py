@@ -399,9 +399,8 @@ def bind_callback_local_vars(code_node, cg_context):
 
         init_args = ["${isolate}"]
         if cg_context.is_return_type_promise_type:
-            init_args.append("${exception_context_type}")
-            init_args.append("${class_like_name}")
-            init_args.append("${property_name}")
+            init_args.append("ExceptionContext(${exception_context_type}, "
+                             "${class_like_name}, ${property_name})")
         node.append(
             F("ExceptionState ${exception_state}({init_args});",
               init_args=", ".join(init_args)))

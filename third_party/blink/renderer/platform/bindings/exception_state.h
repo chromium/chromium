@@ -63,17 +63,10 @@ class PLATFORM_EXPORT ExceptionState {
 
   // If `isolate` is nullptr, this ExceptionState will ignore all exceptions.
   explicit ExceptionState(v8::Isolate* isolate)
-      : ExceptionState(isolate,
-                       v8::ExceptionContext::kUnknown,
-                       nullptr,
-                       nullptr) {}
+      : ExceptionState(isolate, kEmptyContext) {}
 
-  ExceptionState(v8::Isolate* isolate,
-                 v8::ExceptionContext context_type,
-                 const char* interface_name,
-                 const char* property_name)
-      : context_(context_type, interface_name, property_name),
-        isolate_(isolate) {}
+  ExceptionState(v8::Isolate* isolate, const ExceptionContext& context)
+      : context_(context), isolate_(isolate) {}
 
   ExceptionState(const ExceptionState&) = delete;
   ExceptionState& operator=(const ExceptionState&) = delete;
@@ -122,9 +115,7 @@ class PLATFORM_EXPORT ExceptionState {
   // Delegated constructor for NonThrowableExceptionState
   enum ForNonthrowable { kNonthrowable };
   ExceptionState(const char* file, int line, ForNonthrowable)
-      : context_(
-            ExceptionContext(v8::ExceptionContext::kUnknown, nullptr, nullptr)),
-        isolate_(nullptr) {
+      : context_(kEmptyContext), isolate_(nullptr) {
 #if DCHECK_IS_ON()
     file_ = file;
     line_ = line;
@@ -135,6 +126,8 @@ class PLATFORM_EXPORT ExceptionState {
   // Delegated constructor for DummyExceptionStateForTesting
   explicit ExceptionState(DummyExceptionStateForTesting& dummy_derived);
 
+  static constexpr ExceptionContext kEmptyContext;
+
  private:
   void SetExceptionInfo(ExceptionCode, const String&);
   // Since DOMException is defined in core/, we need a dependency injection in
@@ -142,6 +135,9 @@ class PLATFORM_EXPORT ExceptionState {
   static CreateDOMExceptionFunction s_create_dom_exception_func_;
 
   // The context represents what Web API is currently being executed.
+  // In most cases, this is `kEmptyContext`. In the cases where
+  // the generated bindings provide a non-empty context, the caller is
+  // responsible for ensuring `context_` outlives this object.
   ExceptionContext context_;
 
   v8::Isolate* isolate_;

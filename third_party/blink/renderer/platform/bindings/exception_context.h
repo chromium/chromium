@@ -61,6 +61,11 @@ class PLATFORM_EXPORT ExceptionContext final {
 #endif  // DCHECK_IS_ON()
   }
 
+  constexpr ExceptionContext()
+      : type_(v8::ExceptionContext::kUnknown),
+        class_name_(nullptr),
+        property_name_(nullptr) {}
+
   ExceptionContext(v8::ExceptionContext type, const char* class_name)
       : ExceptionContext(type, class_name, nullptr) {}
 
