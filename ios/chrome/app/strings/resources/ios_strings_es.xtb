@@ -209,7 +209,7 @@
 <translation id="1966313166384086081">datos de sitios</translation>
 <translation id="1967461193809857427">{count,plural, =1{¿Quieres retomar la pestaña que dejaste en Android?}other{¿Quieres retomar las pestañas que dejaste en Android?}}</translation>
 <translation id="1972325230031091483">Navegarás más rápido porque el contenido se carga de forma proactiva en función de la página web en la que estás</translation>
-<translation id="1974060860693918893">Configuración avanzada</translation>
+<translation id="1974060860693918893">Avanzado</translation>
 <translation id="1977621687170192347">Activa Solicitar abrir enlaces de otras aplicaciones en Incógnito.</translation>
 <translation id="1979188886349613713">Incluye extensiones de archivo no especificadas por el sitio web</translation>
 <translation id="1980417445547898121">{count,plural, =1{Accede en este iPhone a {count} pestaña activa recientemente de tu otro dispositivo}other{Accede en este iPhone a {count} pestañas activas recientemente de tu otro dispositivo}}</translation>
@@ -674,7 +674,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4304713468139749426">Gestor de contraseñas</translation>
 <translation id="4309403553630140242">Toca dos veces para consultar más información</translation>
 <translation id="4324735664183300693">Activar notificaciones</translation>
-<translation id="4328843285884395590">Mi unidad</translation>
+<translation id="4328843285884395590">Mi Drive</translation>
 <translation id="4331177082088332784">Puedes gestionar esto en BEGIN_LINKConfiguración de contenidoEND_LINK</translation>
 <translation id="4333100555184633720">Eliminar datos de navegación</translation>
 <translation id="4334428914252001502">1 artículo no leído.</translation>

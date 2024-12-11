@@ -1239,7 +1239,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1865769994591826607">Uniquement les connexions au même site</translation>
 <translation id="186594096341696655">Diminuer le taux</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" dispose d'un droit d'accès en lecture et en écriture sur les images, les vidéos et les fichiers audio figurant dans les dossiers sélectionnés.</translation>
-<translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> est prêt à terminer l'installation.</translation>
+<translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> est prêt à terminer l'installation</translation>
 <translation id="1868553836791672080">La fonctionnalité Check-up Mots de passe n'est pas disponible dans Chromium</translation>
 <translation id="1868617395637139709">Utilisez la position pour les applis et services Android.</translation>
 <translation id="1869433484041798909">Bouton de favori</translation>
@@ -2064,7 +2064,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2442916515643169563">Ombre du texte</translation>
 <translation id="2443487764245141020">Les sites peuvent aussi avoir besoin d'identifier votre appareil à l'aide d'un ID</translation>
 <translation id="244475495405467108">Fermer les onglets à gauche</translation>
-<translation id="2444874983932528148">Reprenez facilement là où vous vous étiez arrêté</translation>
+<translation id="2444874983932528148">Reprenez facilement là où vous en étiez</translation>
 <translation id="2445081178310039857">Le répertoire racine de l'extension doit être indiqué.</translation>
 <translation id="2445484935443597917">Créer un profil</translation>
 <translation id="2445726032315793326">Loupe partielle</translation>
@@ -4239,7 +4239,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />En savoir plus sur la précision de la localisation<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Importés</translation>
 <translation id="3992008114154328194">Téléchargement en cours de <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
-<translation id="3993259701827857030">Sauvegarder les données</translation>
+<translation id="3993259701827857030">Sauvegarde des données</translation>
 <translation id="3993887353483242788">Synchronisez votre <ph name="DEVICE_TYPE" /> pour que vos préférences soient appliquées sur n'importe quel appareil lorsque vous vous connectez avec votre compte Google. Les préférences regroupent les applis, les paramètres, les mots de passe Wi-Fi, les langues, le fond d'écran, les raccourcis clavier, etc.</translation>
 <translation id="3994318741694670028">Malheureusement, votre ordinateur est configuré avec un ID matériel incorrect. Cela empêche l'installation des derniers correctifs de sécurité sur ChromeOS Flex et rend votre ordinateur <ph name="BEGIN_BOLD" />potentiellement vulnérable aux attaques malveillantes<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Déverrouillez votre téléphone et rapprochez-le de votre <ph name="DEVICE_TYPE" /> pour le déverrouiller.</translation>
@@ -5550,7 +5550,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4979510648199782334">Configuration de Microsoft 365 terminée</translation>
 <translation id="4980805016576257426">Cette extension contient des logiciels malveillants.</translation>
 <translation id="4983159853748980742">Votre mot de passe n'a pas été partagé. Vérifiez votre connexion Internet et assurez-vous que vous êtes connecté à Chrome, puis réessayez.</translation>
-<translation id="4986706507552097681">Vous avez toujours la possibilité de sélectionner les éléments à synchroniser dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
+<translation id="4986706507552097681">Vous pourrez toujours choisir ce que vous voulez synchroniser dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="4986728572522335985">Cette opération supprimera toutes les données stockées sur la clé de sécurité, y compris son code</translation>
 <translation id="4987944280765486504">Votre Chromebook redémarrera une fois le téléchargement terminé, et vous pourrez poursuivre la configuration.</translation>
 <translation id="4988526792673242964">Pages</translation>
@@ -6284,7 +6284,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5521078259930077036">Est-ce la page d'accueil que vous attendiez ?</translation>
 <translation id="5522156646677899028">Cette extension contient une grave faille de sécurité.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Une extension a été installée par votre administrateur}one{# extension a été installée par votre administrateur}other{# extensions ont été installées par votre administrateur}}</translation>
-<translation id="5523532775593636291">Les sites que vous ajoutez restent toujours actifs et ne sont pas libérés de la mémoire</translation>
+<translation id="5523532775593636291">Les sites que vous ajoutez restent toujours actifs et sont conservés dans la mémoire</translation>
 <translation id="5523558474028191231">Le nom peut contenir des lettres, des chiffres et des caractères spéciaux, et ne doit pas dépasser <ph name="MAX_CHARACTER_COUNT" /> caractères</translation>
 <translation id="5526745900034778153">Connectez-vous de nouveau à votre compte pour reprendre la synchronisation</translation>
 <translation id="5527463195266282916">Tentative d'installation d'une version antérieure de l'extension.</translation>
@@ -7261,7 +7261,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" /> %</translation>
 <translation id="6247802389331535091">Système : <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="624789221780392884">Mise à jour prête</translation>
-<translation id="6248988683584659830">Rechercher</translation>
+<translation id="6248988683584659830">Rechercher dans les paramètres</translation>
 <translation id="6249200942125593849">Gérer les paramètres d'accessibilité</translation>
 <translation id="6250186368828697007">Les détails sont masqués lors du partage d'écran</translation>
 <translation id="6251870443722440887">Handles GDI</translation>

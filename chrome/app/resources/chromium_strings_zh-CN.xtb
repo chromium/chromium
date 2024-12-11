@@ -370,7 +370,7 @@
 <translation id="6524389414524528185">登录后，您可以在 Chromium 中使用 Google 账号中的密码等信息。您随时可在“设置”中更改此设置。</translation>
 <translation id="6539122709674868420">贵组织会在 Chromium 闲置 <ph name="TIMEOUT_DURATION" />后将其关闭。浏览数据已被删除，其中可能包括历史记录、自动填充和下载内容。</translation>
 <translation id="6542839706527980775">每份个人资料均包含自己的 Chromium 信息，例如书签、历史记录、密码等等</translation>
-<translation id="6550837808040845057">Chromium 会释放闲置标签页占用的内存。这可让使用中的标签页和其他应用获得更多计算机资源，并让 Chromium 保持快速运行。当您返回到闲置标签页时，它们会自动重新变为活动状态。</translation>
+<translation id="6550837808040845057">Chromium 会释放闲置标签页占用的内存。这可让使用中的标签页和其他应用获得更多计算机资源，并让 Chromium 保持快速运行。当您返回到闲置标签页时，它们会自动重新变为活跃状态。</translation>
 <translation id="6563921047760808519">详细了解 <ph name="BEGIN_LINK" />Chromium 如何确保您数据的私密性<ph name="END_LINK" /></translation>
 <translation id="656935081669708576">您可切换到另一份 Chromium 个人资料以查看其中的密码</translation>
 <translation id="6570579332384693436">为了修正拼写错误，Chromium 会将您在文本字段中输入的文字发送给 Google</translation>

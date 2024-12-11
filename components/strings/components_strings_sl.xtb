@@ -694,7 +694,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2229456043301340598">Prezrta bližnjica, ki ni enolična: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 zavihek}one{# zavihek}two{# zavihka}few{# zavihki}other{# zavihkov}}</translation>
 <translation id="2233745931693710080">Compact Disc</translation>
-<translation id="2235344399760031203">Piškotki drugih spletnih mest so blokirani</translation>
+<translation id="2235344399760031203">Piškotki tretjih oseb so blokirani</translation>
 <translation id="2239100178324503013">Pošlji</translation>
 <translation id="2241693394036365668">Datoteka je prenesena</translation>
 <translation id="2246264294482514010">10 x 12 palcev</translation>
@@ -1331,7 +1331,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3441653493275994384">Zaslon</translation>
 <translation id="3443504041532578451">Optical Disc (Satin)</translation>
 <translation id="344449859752187052">Piškotki tretjih oseb so blokirani</translation>
-<translation id="3447644283769633681">Blokiraj vse piškotke drugih spletnih mest</translation>
+<translation id="3447644283769633681">Blokiraj vse piškotke tretjih oseb</translation>
 <translation id="3447661539832366887">Lastnik te naprave je izklopil igro z dinozavri</translation>
 <translation id="3447884698081792621">Prikaz potrdila (izdal: <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Lahko zahteva nadzor in vnovično programiranje naprav MIDI</translation>
@@ -2816,7 +2816,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6195163219142236913">Piškotki tretjih oseb so omejeni</translation>
 <translation id="6195371403461054755">Geologija</translation>
 <translation id="6195418151868446719">Potrošniška elektronika</translation>
-<translation id="6196640612572343990">Blokiraj piškotke drugih spletnih mest</translation>
+<translation id="6196640612572343990">Blokiraj piškotke tretjih oseb</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Full Cut Tabs</translation>
 <translation id="6203231073485539293">Preverite internetno povezavo</translation>

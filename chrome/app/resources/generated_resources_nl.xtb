@@ -1238,7 +1238,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1865769994591826607">Alleen verbindingen binnen dezelfde site</translation>
 <translation id="186594096341696655">Samplingsnelheid verlagen</translation>
 <translation id="186612162884103683">'<ph name="EXTENSION" />' kan afbeeldingen, video- en geluidsbestanden lezen en schrijven op de gecontroleerde locaties.</translation>
-<translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> is klaar voor het voltooien van je installatie.</translation>
+<translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> is klaar om je installatie te voltooien.</translation>
 <translation id="1868553836791672080">Wachtwoordcheck is niet beschikbaar in Chromium</translation>
 <translation id="1868617395637139709">Gebruik locatie voor Android-apps en -services.</translation>
 <translation id="1869433484041798909">Knop voor bookmark</translation>
@@ -2553,7 +2553,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2783298271312924866">Gedownload</translation>
 <translation id="2783952358106015700">Je beveiligingssleutel gebruiken met <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Wachtwoordcheck</translation>
-<translation id="2785279781154577715">Weergave van voorbeelden voor pop-upkaarten voor tabbladen</translation>
+<translation id="2785279781154577715">Weergave van pop-upkaarten voor tabbladen</translation>
 <translation id="2785873697295365461">Bestandsdescriptors</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787354132612937472">—</translation>
@@ -2652,7 +2652,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2850672011315104382">Stijl van interpunctie</translation>
 <translation id="285237063405807022">(laden)</translation>
 <translation id="2853121255651601031">Wachtwoord opgeslagen</translation>
-<translation id="2855243985454069333">Hiermee wordt de geschiedenis van al je gesynchroniseerde apparaten verwijderd</translation>
+<translation id="2855243985454069333">Hiermee wordt de geschiedenis van al je gesynchroniseerde apparaten verwijderd.</translation>
 <translation id="2855812646048059450">Inloggen met <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Een nieuwe container maken</translation>
 <translation id="2856907950922663165">URL-versleuteling uitzetten?</translation>
@@ -4068,10 +4068,10 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="3875815154304214043">Er is ingesteld dat <ph name="APP_NAME" /> wordt geopend in een nieuw browsertabblad. Ondersteunde links worden ook geopend in de browser. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Vensters met gewijzigd formaat naar boven verplaatsen</translation>
 <translation id="3877075909000773256">Instellingen voor Dichtbij delen voor het apparaat van <ph name="USER_NAME" />, delen via het account <ph name="USER_EMAIL" />.</translation>
-<translation id="3877209288227498506">Kies of je geheugengebruik en afbeeldingen wilt tonen op voorbeelden voor pop-upkaarten voor tabbladen</translation>
+<translation id="3877209288227498506">Kies of je geheugengebruik en afbeeldingen wilt tonen op pop-upkaarten voor tabbladen</translation>
 <translation id="3878445208930547646">Kopiëren vanaf deze site is niet toegestaan</translation>
 <translation id="3879748587602334249">Downloadbeheer</translation>
-<translation id="3880513902716032002">Sommige pagina's die je bezoekt, zijn vooraf geladen</translation>
+<translation id="3880513902716032002">Sommige pagina's die je bezoekt, worden vooraf geladen</translation>
 <translation id="3884152383786131369">Voor webcontent die in meerdere talen beschikbaar is, wordt de eerste ondersteunde taal in deze lijst gebruikt. Deze voorkeuren worden gesynchroniseerd met je browserinstellingen. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Updates worden beheerd door je beheerder</translation>
 <translation id="3887022758415973389">Apparaatlijst bekijken</translation>
@@ -6258,7 +6258,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5499453227627332024">Er is een upgrade beschikbaar voor je Linux-container. Je kunt ook later upgraden via de app Instellingen.</translation>
 <translation id="5499476581866658341">Je kunt nu de recente foto's en media van je telefoon bekijken</translation>
 <translation id="549957179819296104">Nieuw icoon</translation>
-<translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Zoekgeschiedenis<ph name="END_LINK_SEARCH" /> en <ph name="BEGIN_LINK_GOOGLE" />andere vormen van activiteit<ph name="END_LINK_GOOGLE" /> kunnen worden opgeslagen op je Google-account als je bent ingelogd. Je kunt ze wanneer je wilt verwijderen.</translation>
+<translation id="5500168250243071806">Je <ph name="BEGIN_LINK_SEARCH" />zoekgeschiedenis<ph name="END_LINK_SEARCH" /> en <ph name="BEGIN_LINK_GOOGLE" />andere vormen van activiteit<ph name="END_LINK_GOOGLE" /> kunnen worden opgeslagen in je Google-account als je bent ingelogd. Je kunt ze altijd verwijderen.</translation>
 <translation id="5500709606820808700">Veiligheidscheck is vandaag uitgevoerd</translation>
 <translation id="5501322521654567960">Links uitgelijnd zijvenster</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Kan <ph name="ATTACHMENTS" /> van <ph name="DEVICE_NAME" /> niet ontvangen}other{Kan <ph name="ATTACHMENTS" /> van <ph name="DEVICE_NAME" /> niet ontvangen}}</translation>
@@ -6282,7 +6282,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5521078259930077036">Is dit de homepage die je had verwacht?</translation>
 <translation id="5522156646677899028">Deze extensie bevat een groot beveiligingsprobleem.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Je beheerder heeft een extensie geïnstalleerd}other{Je beheerder heeft # extensies geïnstalleerd}}</translation>
-<translation id="5523532775593636291">Sites die je toevoegt, blijven altijd actief en er wordt geen geheugen vrijgemaakt op basis van deze sites</translation>
+<translation id="5523532775593636291">Sites die je toevoegt, blijven altijd actief en er wordt geen geheugen van vrijgemaakt.</translation>
 <translation id="5523558474028191231">De naam mag letters, cijfers en speciale tekens bevatten en mag maximaal <ph name="MAX_CHARACTER_COUNT" /> tekens lang zijn</translation>
 <translation id="5526745900034778153">Log opnieuw in om door te gaan met synchroniseren</translation>
 <translation id="5527463195266282916">Je probeert een oudere versie van de extensie te installeren.</translation>
