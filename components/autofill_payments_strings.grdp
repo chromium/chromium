@@ -773,6 +773,12 @@
       Card number:
     </message>
   </if>
+  <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_ENROLLED_CARD_UNMASK_PROGRESS_DIALOG_TITLE" desc="Title for the progress dialog that occurs during card info retrieval enrolled card unmasking flows. It is shown after the user selects a card, and will be dismissed once we receive a server response that denotes we can continue to the next step. The main purpose of the dialog is to inform the user that something is happening in the background, but that task is not done yet.">
+    Verifying...
+  </message>
+  <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_ENROLLED_CARD_UNMASK_PROGRESS_BAR_MESSAGE" desc="Message displayed after tapping a card info retrieval enrolled card, and before any other verification steps.">
+    Connecting to your card provider...
+  </message>
   <!-- card info retrieval enrolled card related strings - end -->
 
   <!-- virtual cards related strings - start -->

@@ -1121,7 +1121,11 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
 #endif
 
     payments_autofill_client().ShowAutofillProgressDialog(
-        AutofillProgressDialogType::kServerCardUnmaskProgressDialog,
+        card_->card_info_retrieval_enrollment_state() ==
+                CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled
+            ? AutofillProgressDialogType::
+                  kCardInfoRetrievalEnrolledUnmaskProgressDialog
+            : AutofillProgressDialogType::kServerCardUnmaskProgressDialog,
         /*cancel_callback=*/base::BindOnce(
             &CreditCardRiskBasedAuthenticator::OnUnmaskCancelled,
             payments_autofill_client()

@@ -159,6 +159,10 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
            !legal_message_lines_.empty();
   }
 
+  AutofillProgressDialogType autofill_progress_dialog_type() const {
+    return autofill_progress_dialog_type_;
+  }
+
   const AutofillErrorDialogContext& autofill_error_dialog_context() {
     return autofill_error_dialog_context_;
   }
@@ -212,6 +216,9 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
 
   // True if LoadRiskData() was called, false otherwise.
   bool risk_data_loaded_ = false;
+
+  AutofillProgressDialogType autofill_progress_dialog_type_ =
+      AutofillProgressDialogType::kServerCardUnmaskProgressDialog;
 
   LegalMessageLines legal_message_lines_;
 

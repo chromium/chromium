@@ -287,6 +287,9 @@ std::string_view AutofillMetrics::GetDialogTypeStringForLogging(
       return "ServerCardUnmask";
     case AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
       return "ServerIbanUnmask";
+    case AutofillProgressDialogType::
+        kCardInfoRetrievalEnrolledUnmaskProgressDialog:
+      return "CardInfoRetrievalEnrolledUnmask";
     case AutofillProgressDialogType::k3dsFetchVcnProgressDialog:
       return "3dsFetchVirtualCard";
     case AutofillProgressDialogType::kUnspecified:

@@ -119,6 +119,7 @@ void TestPaymentsAutofillClient::ShowAutofillProgressDialog(
     AutofillProgressDialogType autofill_progress_dialog_type,
     base::OnceClosure cancel_callback) {
   autofill_progress_dialog_shown_ = true;
+  autofill_progress_dialog_type_ = autofill_progress_dialog_type;
 }
 
 void TestPaymentsAutofillClient::CloseAutofillProgressDialog(
