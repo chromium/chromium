@@ -43,19 +43,11 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/system_identity_util.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 
 using signin::constants::kNoHostedDomainFound;
 
 namespace {
-
-// Name of NSUserDefault key containing info about registered profiles to be
-// passed to widgets.
-NSString* const kAccountsOnDevice = @"ios.registered_accounts_on_devices";
-
-// Names of keys in dictionary saved in kAccountsOnDevice.
-NSString* const kHostedDomain = @"hosted_domain";
-NSString* const kPictureUrl = @"picture_url";
-NSString* const kEmail = @"email";
 
 // Enum for Signin.IOSDeviceRestoreSignedInState histogram.
 // Entries should not be renumbered and numeric values should never be reused.
@@ -84,20 +76,20 @@ void UpdateLoadedAccounts(std::vector<AccountInfo> accounts_on_device) {
   for (const AccountInfo& account_info : accounts_on_device) {
     NSMutableDictionary* account = [[NSMutableDictionary alloc] init];
     [account setObject:base::SysUTF8ToNSString(account_info.hosted_domain)
-                forKey:kHostedDomain];
+                forKey:app_group::kHostedDomain];
     [account setObject:base::SysUTF8ToNSString(account_info.email)
-                forKey:kEmail];
+                forKey:app_group::kEmail];
     // TODO(crbug.com/380847504): Find an alternative solution in case
     // picture_url is empty.
     [account setObject:base::SysUTF8ToNSString(account_info.picture_url)
-                forKey:kPictureUrl];
+                forKey:app_group::kPictureUrl];
 
     // Add the account to the dictionary of accounts.
     [accounts setObject:account
                  forKey:base::SysUTF8ToNSString(account_info.gaia)];
   }
-  NSUserDefaults* user_defaults = [NSUserDefaults standardUserDefaults];
-  [user_defaults setObject:accounts forKey:kAccountsOnDevice];
+  NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
+  [shared_defaults setObject:accounts forKey:app_group::kAccountsOnDevice];
 }
 
 }  // namespace

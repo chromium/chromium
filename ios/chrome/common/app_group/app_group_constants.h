@@ -190,6 +190,14 @@ extern NSString* const kOpenExtensionOutcomeFailureUnsupportedScheme;
 // the outcomes of the Open Extension.
 extern NSString* const kOpenExtensionOutcomes;
 
+// Name of NSUserDefault key containing info about registered profiles to be
+// passed to widgets.
+extern NSString* const kAccountsOnDevice;
+// Names of keys in dictionary saved in kAccountsOnDevice.
+extern NSString* const kHostedDomain;
+extern NSString* const kPictureUrl;
+extern NSString* const kEmail;
+
 // Conversion helpers between keys and OpenExtensionOutcome.
 NSString* KeyForOpenExtensionOutcomeType(OpenExtensionOutcome);
 OpenExtensionOutcome OutcomeTypeFromKey(NSString*);
