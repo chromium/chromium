@@ -81,6 +81,7 @@ component("android") {
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/compositor",
     "//ui/display",
+    "//ui/display/util:util",
     "//ui/events",
     "//ui/events/devices",
     "//ui/gfx",
@@ -685,6 +686,7 @@ test("ui_android_unittests") {
     # sharded. On other OSs these are run as part of interactive_ui_tests.
     "//ui/base/clipboard/clipboard_unittest.cc",
     "color_utils_android_unittest.cc",
+    "display_android_manager_unittest.cc",
     "modal_dialog_wrapper_unittest.cc",
     "overscroll_refresh_unittest.cc",
     "resources/resource_manager_impl_unittest.cc",
@@ -711,8 +713,11 @@ test("ui_android_unittests") {
     "//ui/base/clipboard",
     "//ui/base/clipboard:clipboard_test_support",
     "//ui/compositor",
+    "//ui/display",
+    "//ui/display/util:util",
     "//ui/events",
     "//ui/gfx",
+    "//ui/gfx/geometry",
     "//ui/resources:ui_test_pak",
   ]
 }

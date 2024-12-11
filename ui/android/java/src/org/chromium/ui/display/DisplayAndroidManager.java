@@ -9,6 +9,8 @@ import android.content.Context;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.DisplayManager.DisplayListener;
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.util.SparseArray;
 import android.view.Display;
 import android.view.WindowManager;
@@ -188,20 +190,28 @@ public class DisplayAndroidManager {
 
     /* package */ void updateDisplayOnNativeSide(DisplayAndroid displayAndroid) {
         if (mNativePointer == 0) return;
+
+        int[] insetsArray = new int[] {0, 0, 0, 0};
+        if (VERSION.SDK_INT >= VERSION_CODES.R) {
+            insetsArray = displayAndroid.getInsetsAsArray();
+        }
+
         DisplayAndroidManagerJni.get()
                 .updateDisplay(
                         mNativePointer,
                         DisplayAndroidManager.this,
                         displayAndroid.getDisplayId(),
-                        displayAndroid.getDisplayWidth(),
-                        displayAndroid.getDisplayHeight(),
+                        displayAndroid.getDisplayName(),
+                        displayAndroid.getBoundsAsArray(),
+                        insetsArray,
                         displayAndroid.getDipScale(),
                         displayAndroid.getRotationDegrees(),
                         displayAndroid.getBitsPerPixel(),
                         displayAndroid.getBitsPerComponent(),
                         displayAndroid.getIsWideColorGamut(),
                         displayAndroid.getIsHdr(),
-                        displayAndroid.getHdrMaxLuminanceRatio());
+                        displayAndroid.getHdrMaxLuminanceRatio(),
+                        displayAndroid.isInternal());
     }
 
     @NativeMethods
@@ -210,15 +220,17 @@ public class DisplayAndroidManager {
                 long nativeDisplayAndroidManager,
                 DisplayAndroidManager caller,
                 int sdkDisplayId,
-                int width,
-                int height,
+                String label,
+                int[] bounds, // the order is: left, top, right, bottom
+                int[] insets, // the order is: left, top, right, bottom
                 float dipScale,
                 int rotationDegrees,
                 int bitsPerPixel,
                 int bitsPerComponent,
                 boolean isWideColorGamut,
                 boolean isHdr,
-                float hdrMaxLuminanceRatio);
+                float hdrMaxLuminanceRatio,
+                boolean isInternal);
 
         void removeDisplay(
                 long nativeDisplayAndroidManager, DisplayAndroidManager caller, int sdkDisplayId);

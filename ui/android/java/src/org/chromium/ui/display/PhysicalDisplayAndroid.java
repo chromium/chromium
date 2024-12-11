@@ -7,13 +7,16 @@ package org.chromium.ui.display;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Insets;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.hardware.display.DeviceProductInfo;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 
 import androidx.annotation.RequiresApi;
@@ -198,12 +201,17 @@ import java.util.function.Consumer;
         return mWindowContext;
     }
 
-    @RequiresApi(api = VERSION_CODES.R)
+    @RequiresApi(VERSION_CODES.R)
     private void updateFromConfiguration() {
-        Point size = new Point();
         WindowManager windowManager = mWindowContext.getSystemService(WindowManager.class);
-        Rect rect = windowManager.getMaximumWindowMetrics().getBounds();
-        size.set(rect.width(), rect.height());
+        Rect bounds = windowManager.getMaximumWindowMetrics().getBounds();
+        int windowInsetsType = WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout();
+        Insets insets =
+                windowManager
+                        .getCurrentWindowMetrics()
+                        .getWindowInsets()
+                        .getInsetsIgnoringVisibility(windowInsetsType);
+
         DisplayMetrics displayMetrics = mWindowContext.getResources().getDisplayMetrics();
 
         if (BuildInfo.getInstance().isAutomotive
@@ -212,8 +220,10 @@ import java.util.function.Consumer;
             mDisplay.getRealMetrics(displayMetrics);
             DisplayUtil.scaleUpDisplayMetricsForAutomotive(mWindowContext, displayMetrics);
         }
+
         updateCommon(
-                size,
+                bounds,
+                insets,
                 displayMetrics.density,
                 displayMetrics.xdpi,
                 displayMetrics.ydpi,
@@ -250,30 +260,40 @@ import java.util.function.Consumer;
             DisplayUtil.scaleUpDisplayMetricsForAutomotive(
                     ContextUtils.getApplicationContext(), displayMetrics);
         }
+
         updateCommon(
-                size, displayMetrics.density, displayMetrics.xdpi, displayMetrics.ydpi, display);
+                new Rect(0, 0, size.x, size.y),
+                null,
+                displayMetrics.density,
+                displayMetrics.xdpi,
+                displayMetrics.ydpi,
+                display);
     }
 
     private void hdrSdrRatioChanged(Display display) {
         assert display.getDisplayId() == mDisplay.getDisplayId();
         super.update(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
+                /* name= */ null,
+                /* bounds= */ null,
+                /* insets= */ null,
+                /* dipScale= */ null,
+                /* xdpi= */ null,
+                /* ydpi= */ null,
+                /* bitsPerPixel= */ null,
+                /* bitsPerComponent= */ null,
+                /* rotation= */ null,
+                /* isDisplayWideColorGamut= */ null,
+                /* isDisplayServerWideColorGamut= */ null,
+                /* refreshRate= */ null,
+                /* currentMode= */ null,
+                /* supportedModes= */ null,
                 isHdr(mDisplay),
-                getHdrSdrRatio(mDisplay));
+                getHdrSdrRatio(mDisplay),
+                /* isInternal= */ null);
     }
 
-    private void updateCommon(Point size, float density, float xdpi, float ydpi, Display display) {
+    private void updateCommon(
+            Rect bounds, Insets insets, float density, float xdpi, float ydpi, Display display) {
         if (hasForcedDIPScale()) density = sForcedDIPScale.floatValue();
         boolean isWideColorGamut = false;
         // Although this API was added in Android O, it was buggy.
@@ -293,8 +313,20 @@ import java.util.function.Consumer;
             supportedModes = Arrays.asList(modes);
         }
 
+        boolean isInternal = false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            DeviceProductInfo deviceProductInfo = display.getDeviceProductInfo();
+            if (deviceProductInfo != null) {
+                isInternal =
+                        display.getDeviceProductInfo().getConnectionToSinkType()
+                                == DeviceProductInfo.CONNECTION_TO_SINK_BUILT_IN;
+            }
+        }
+
         super.update(
-                size,
+                display.getName(),
+                bounds,
+                insets,
                 density,
                 xdpi,
                 ydpi,
@@ -307,6 +339,7 @@ import java.util.function.Consumer;
                 currentMode,
                 supportedModes,
                 isHdr(display),
-                getHdrSdrRatio(display));
+                getHdrSdrRatio(display),
+                isInternal);
     }
 }

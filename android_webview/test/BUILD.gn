@@ -396,6 +396,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/metrics_proto:metrics_proto_java",
     "//ui/accessibility:ax_base_java",
+    "//ui/android:ui_android_features_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
     "//ui/base/mojom:ui_base_types_java",

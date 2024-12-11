@@ -251,6 +251,14 @@ void SetInternalDisplayIds(base::flat_set<int64_t> display_ids) {
   *internal_display_ids() = std::move(display_ids);
 }
 
+void AddInternalDisplayId(int64_t display_id) {
+  internal_display_ids()->insert(display_id);
+}
+
+void RemoveInternalDisplayId(int64_t display_id) {
+  internal_display_ids()->erase(display_id);
+}
+
 gfx::ColorSpace ForcedColorProfileStringToColorSpace(const std::string& value) {
   if (value == "srgb")
     return gfx::ColorSpace::CreateSRGB();

@@ -48,4 +48,8 @@ BASE_FEATURE(kCheckIntentCallerPermission,
 BASE_FEATURE(kDisablePhotoPickerForVideoCapture,
              "DisablePhotoPickerForVideoCapture",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUsingCorrectWorkArea,
+             "UsingCorrectWorkArea",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace ui
