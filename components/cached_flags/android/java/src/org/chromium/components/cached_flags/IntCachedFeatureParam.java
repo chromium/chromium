@@ -13,43 +13,43 @@ import org.chromium.base.FeatureMap;
 import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.supplier.Supplier;
 
-/** A double-type {@link CachedFieldTrialParameter}. */
-public class DoubleCachedFieldTrialParameter extends CachedFieldTrialParameter<Double> {
-    private Supplier<Double> mValueSupplier;
+/** An int-type {@link CachedFeatureParam}. */
+public class IntCachedFeatureParam extends CachedFeatureParam<Integer> {
+    private Supplier<Integer> mValueSupplier;
 
-    public DoubleCachedFieldTrialParameter(
-            FeatureMap featureMap, String featureName, String variationName, double defaultValue) {
-        super(featureMap, featureName, variationName, FieldTrialParameterType.DOUBLE, defaultValue);
+    public IntCachedFeatureParam(
+            FeatureMap featureMap, String featureName, String variationName, int defaultValue) {
+        super(featureMap, featureName, variationName, FeatureParamType.INT, defaultValue);
     }
 
     /**
-     * @return the value of the field trial parameter that should be used in this run.
+     * @return the value of the feature parameter that should be used in this run.
      */
     @AnyThread
-    public double getValue() {
+    public int getValue() {
         CachedFlagsSafeMode.getInstance().onFlagChecked();
 
         String testValue = FeatureList.getTestValueForFieldTrialParam(mFeatureName, mParamName);
         if (testValue != null) {
-            return Double.parseDouble(testValue);
+            return Integer.parseInt(testValue);
         }
 
-        return ValuesReturned.getReturnedOrNewDoubleValue(
+        return ValuesReturned.getReturnedOrNewIntValue(
                 getSharedPreferenceKey(), getValueSupplier());
     }
 
-    private Supplier<Double> getValueSupplier() {
+    private Supplier<Integer> getValueSupplier() {
         if (mValueSupplier == null) {
             mValueSupplier =
                     () -> {
                         String preferenceName = getSharedPreferenceKey();
-                        Double value =
+                        Integer value =
                                 CachedFlagsSafeMode.getInstance()
-                                        .getDoubleFieldTrialParam(preferenceName, mDefaultValue);
+                                        .getIntFeatureParam(preferenceName, mDefaultValue);
                         if (value == null) {
                             value =
                                     CachedFlagsSharedPreferences.getInstance()
-                                            .readDouble(preferenceName, mDefaultValue);
+                                            .readInt(preferenceName, mDefaultValue);
                         }
                         return value;
                     };
@@ -57,18 +57,16 @@ public class DoubleCachedFieldTrialParameter extends CachedFieldTrialParameter<D
         return mValueSupplier;
     }
 
-    public double getDefaultValue() {
+    public int getDefaultValue() {
         return mDefaultValue;
     }
 
     @Override
     void writeCacheValueToEditor(final SharedPreferences.Editor editor) {
-        // Matches the conversion used in SharedPreferencesManager#writeDouble().
-        final long value =
-                Double.doubleToRawLongBits(
-                        mFeatureMap.getFieldTrialParamByFeatureAsDouble(
-                                getFeatureName(), getName(), getDefaultValue()));
-        editor.putLong(getSharedPreferenceKey(), value);
+        final int value =
+                mFeatureMap.getFieldTrialParamByFeatureAsInt(
+                        getFeatureName(), getName(), getDefaultValue());
+        editor.putInt(getSharedPreferenceKey(), value);
     }
 
     /**
@@ -78,7 +76,7 @@ public class DoubleCachedFieldTrialParameter extends CachedFieldTrialParameter<D
      * @deprecated use <code>@EnableFeatures("Feature:param/value")</code> instead.
      */
     @Deprecated
-    public void setForTesting(double overrideValue) {
+    public void setForTesting(int overrideValue) {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFieldTrialParamOverride(this, String.valueOf(overrideValue));
         FeatureList.mergeTestValues(testValues, /* replace= */ true);

@@ -86,7 +86,7 @@ started. If that is not guaranteed, options analogous to feature flags are
 available:
 
 1.  Declare an
-    [IntCachedFieldTrialParameter](https://source.chromium.org/chromium/chromium/src/+/main:components/cached_flags/android/java/src/org/chromium/components/cached_flags/IntCachedFieldTrialParameter.java)
+    [IntCachedFeatureParam](https://source.chromium.org/chromium/chromium/src/+/main:components/cached_flags/android/java/src/org/chromium/components/cached_flags/IntCachedFeatureParam.java)
     in ChromeFeatureList, which returns a value cached from the previous run,
     and add it to `ChromeFeatureList.sParamsCached`.
 2.  Declare a

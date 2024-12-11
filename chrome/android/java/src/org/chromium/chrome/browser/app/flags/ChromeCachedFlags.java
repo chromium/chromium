@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogFeatureMap;
-import org.chromium.components.cached_flags.CachedFieldTrialParameter;
+import org.chromium.components.cached_flags.CachedFeatureParam;
 import org.chromium.components.cached_flags.CachedFlag;
 import org.chromium.components.cached_flags.CachedFlagUtils;
 import org.chromium.components.cached_flags.CachedFlagsSafeMode;
@@ -34,7 +34,7 @@ public class ChromeCachedFlags {
     static final List<List<CachedFlag>> LISTS_OF_CACHED_FLAGS_FULL_BROWSER =
             List.of(
                     ChromeFeatureList.sFlagsCachedFullBrowser,
-                    OmniboxFeatures.getFieldTrialsToCache(),
+                    OmniboxFeatures.getFlagsToCache(),
                     ModalDialogFeatureMap.sCachedFlags);
     static final List<List<CachedFlag>> LISTS_OF_CACHED_FLAGS_MINIMAL_BROWSER =
             List.of(ChromeFeatureList.sFlagsCachedInMinimalBrowser);
@@ -42,11 +42,10 @@ public class ChromeCachedFlags {
     private boolean mIsFinishedCachingNativeFlags;
 
     /**
-     * A list of field trial parameters that will be cached when starting minimal browser mode. See
+     * A list of feature parameters that will be cached when starting minimal browser mode. See
      * {@link #cacheMinimalBrowserFlags()}.
      */
-    private static final List<CachedFieldTrialParameter<?>> MINIMAL_BROWSER_FIELD_TRIALS =
-            List.of();
+    private static final List<CachedFeatureParam<?>> MINIMAL_BROWSER_FEATURE_PARAMS = List.of();
 
     /**
      * @return The {@link ChromeCachedFlags} singleton.
@@ -69,35 +68,34 @@ public class ChromeCachedFlags {
         cacheAdditionalNativeFlags();
 
         tryToCatchMissingParameters(
-                ChromeFeatureList.sParamsCached, OmniboxFeatures.getFieldTrialParamsToCache());
-        CachedFlagUtils.cacheFieldTrialParameters(
-                ChromeFeatureList.sParamsCached, OmniboxFeatures.getFieldTrialParamsToCache());
+                ChromeFeatureList.sParamsCached, OmniboxFeatures.getFeatureParamsToCache());
+        CachedFlagUtils.cacheFeatureParams(
+                ChromeFeatureList.sParamsCached, OmniboxFeatures.getFeatureParamsToCache());
 
         CachedFlagsSafeMode.getInstance().onEndCheckpoint();
         mIsFinishedCachingNativeFlags = true;
     }
 
-    private void tryToCatchMissingParameters(
-            List<CachedFieldTrialParameter<?>>... listsOfParamsToTest) {
+    private void tryToCatchMissingParameters(List<CachedFeatureParam<?>>... listsOfParamsToTest) {
         if (!BuildConfig.ENABLE_ASSERTS) return;
 
-        var paramsToTest = new ArrayList<CachedFieldTrialParameter<?>>();
-        for (List<CachedFieldTrialParameter<?>> list : listsOfParamsToTest) {
+        var paramsToTest = new ArrayList<CachedFeatureParam<?>>();
+        for (List<CachedFeatureParam<?>> list : listsOfParamsToTest) {
             paramsToTest.addAll(list);
         }
 
-        // All instances of CachedFieldTrialParameter should be manually passed to
-        // CachedFeatureFlags.cacheFieldTrialParameters(). The following checking is a best-effort
+        // All instances of CachedFeatureParam should be manually passed to
+        // CachedFeatureFlags.cacheFeatureParams(). The following checking is a best-effort
         // attempt to try to catch accidental omissions. It cannot replace the list because some
         // instances might not be instantiated if the classes they belong to are not accessed yet.
         List<String> omissions = new ArrayList<>();
-        for (CachedFieldTrialParameter<?> trial : CachedFieldTrialParameter.getAllInstances()) {
-            if (paramsToTest.contains(trial)) continue;
-            if (MINIMAL_BROWSER_FIELD_TRIALS.contains(trial)) continue;
-            omissions.add(trial.getFeatureName() + ":" + trial.getName());
+        for (CachedFeatureParam<?> param : CachedFeatureParam.getAllInstances()) {
+            if (paramsToTest.contains(param)) continue;
+            if (MINIMAL_BROWSER_FEATURE_PARAMS.contains(param)) continue;
+            omissions.add(param.getFeatureName() + ":" + param.getName());
         }
         assert omissions.isEmpty()
-                : "The following trials are not correctly cached: "
+                : "The following params are not correctly cached: "
                         + TextUtils.join(", ", omissions);
     }
 
@@ -110,14 +108,14 @@ public class ChromeCachedFlags {
     public void cacheMinimalBrowserFlags() {
         cacheMinimalBrowserFlagsTimeFromNativeTime();
         CachedFlagUtils.cacheNativeFlags(LISTS_OF_CACHED_FLAGS_MINIMAL_BROWSER);
-        CachedFlagUtils.cacheFieldTrialParameters(MINIMAL_BROWSER_FIELD_TRIALS);
+        CachedFlagUtils.cacheFeatureParams(MINIMAL_BROWSER_FEATURE_PARAMS);
     }
 
     /**
      * Caches a predetermined list of flags that must take effect on startup but are set via native
      * code.
      *
-     * Do not add new simple boolean flags here, add them to {@link #cacheNativeFlags} instead.
+     * <p>Do not add new simple boolean flags here, add them to {@link #cacheNativeFlags} instead.
      */
     public static void cacheAdditionalNativeFlags() {
         // Propagate the BACKGROUND_THREAD_POOL feature value to LibraryLoader.

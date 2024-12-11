@@ -18,7 +18,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.components.cached_flags.CachedFieldTrialParameter;
+import org.chromium.components.cached_flags.CachedFeatureParam;
 import org.chromium.components.cached_flags.CachedFlag;
 
 import java.lang.reflect.Field;
@@ -135,14 +135,14 @@ public class ChromeFeatureListUnitTest {
     public void testParamsCached_matchesCachedParamsDeclared() throws IllegalAccessException {
         HashSet<String> cachedParamsDeclared = new HashSet<>();
         for (Field field : ChromeFeatureList.class.getDeclaredFields()) {
-            if (CachedFieldTrialParameter.class.isAssignableFrom(field.getType())) {
-                CachedFieldTrialParameter<?> param = (CachedFieldTrialParameter<?>) field.get(null);
+            if (CachedFeatureParam.class.isAssignableFrom(field.getType())) {
+                CachedFeatureParam<?> param = (CachedFeatureParam<?>) field.get(null);
                 cachedParamsDeclared.add(param.getFeatureName() + ":" + param.getName());
             }
         }
 
         Set<String> cachedParamsListed = new HashSet<>();
-        for (CachedFieldTrialParameter<?> param : ChromeFeatureList.sParamsCached) {
+        for (CachedFeatureParam<?> param : ChromeFeatureList.sParamsCached) {
             cachedParamsListed.add(param.getFeatureName() + ":" + param.getName());
         }
 

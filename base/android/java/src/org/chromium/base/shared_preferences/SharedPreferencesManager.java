@@ -433,7 +433,7 @@ public class SharedPreferencesManager {
      */
     public void writeDouble(String key, double value) {
         SharedPreferences.Editor ed = getEditor();
-        // Matches the conversion used in DoubleCachedFieldTrialParameter#writeCacheValueToEditor().
+        // Matches the conversion used in DoubleCachedFeatureParam#writeCacheValueToEditor().
         long ieee754LongValue = Double.doubleToRawLongBits(value);
         ed.putLong(key, ieee754LongValue);
         ed.apply();

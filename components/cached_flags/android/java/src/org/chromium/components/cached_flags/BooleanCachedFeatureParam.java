@@ -7,53 +7,49 @@ package org.chromium.components.cached_flags;
 import android.content.SharedPreferences;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureMap;
 import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.supplier.Supplier;
 
-/** A String-type {@link CachedFieldTrialParameter}. */
-public class StringCachedFieldTrialParameter extends CachedFieldTrialParameter<String> {
-    private Supplier<String> mValueSupplier;
+/** A boolean-type {@link CachedFeatureParam}. */
+public class BooleanCachedFeatureParam extends CachedFeatureParam<Boolean> {
+    private Supplier<Boolean> mValueSupplier;
 
-    public StringCachedFieldTrialParameter(
-            FeatureMap featureMap,
-            String featureName,
-            String variationName,
-            @NonNull String defaultValue) {
-        super(featureMap, featureName, variationName, FieldTrialParameterType.STRING, defaultValue);
+    public BooleanCachedFeatureParam(
+            FeatureMap featureMap, String featureName, String variationName, boolean defaultValue) {
+        super(featureMap, featureName, variationName, FeatureParamType.BOOLEAN, defaultValue);
     }
 
     /**
-     * @return the value of the field trial parameter that should be used in this run.
+     * @return the value of the feature parameter that should be used in this run.
      */
     @AnyThread
-    public String getValue() {
+    public boolean getValue() {
         CachedFlagsSafeMode.getInstance().onFlagChecked();
 
         String testValue = FeatureList.getTestValueForFieldTrialParam(mFeatureName, mParamName);
         if (testValue != null) {
-            return testValue;
+            return Boolean.parseBoolean(testValue);
         }
 
-        return ValuesReturned.getReturnedOrNewStringValue(
+        return ValuesReturned.getReturnedOrNewBoolValue(
                 getSharedPreferenceKey(), getValueSupplier());
     }
 
-    private Supplier<String> getValueSupplier() {
+    private Supplier<Boolean> getValueSupplier() {
         if (mValueSupplier == null) {
             mValueSupplier =
                     () -> {
                         String preferenceName = getSharedPreferenceKey();
-                        String value =
+                        Boolean value =
                                 CachedFlagsSafeMode.getInstance()
-                                        .getStringFieldTrialParam(preferenceName, mDefaultValue);
+                                        .getBooleanFeatureParam(preferenceName, mDefaultValue);
                         if (value == null) {
                             value =
                                     CachedFlagsSharedPreferences.getInstance()
-                                            .readString(preferenceName, mDefaultValue);
+                                            .readBoolean(preferenceName, mDefaultValue);
                         }
                         return value;
                     };
@@ -61,14 +57,16 @@ public class StringCachedFieldTrialParameter extends CachedFieldTrialParameter<S
         return mValueSupplier;
     }
 
-    public String getDefaultValue() {
+    public boolean getDefaultValue() {
         return mDefaultValue;
     }
 
     @Override
     void writeCacheValueToEditor(final SharedPreferences.Editor editor) {
-        final String value = mFeatureMap.getFieldTrialParamByFeature(getFeatureName(), getName());
-        editor.putString(getSharedPreferenceKey(), value.isEmpty() ? getDefaultValue() : value);
+        final boolean value =
+                mFeatureMap.getFieldTrialParamByFeatureAsBoolean(
+                        getFeatureName(), getName(), getDefaultValue());
+        editor.putBoolean(getSharedPreferenceKey(), value);
     }
 
     /**
@@ -78,9 +76,9 @@ public class StringCachedFieldTrialParameter extends CachedFieldTrialParameter<S
      * @deprecated use <code>@EnableFeatures("Feature:param/value")</code> instead.
      */
     @Deprecated
-    public void setForTesting(String overrideValue) {
+    public void setForTesting(boolean overrideValue) {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(this, overrideValue);
+        testValues.addFieldTrialParamOverride(this, String.valueOf(overrideValue));
         FeatureList.mergeTestValues(testValues, /* replace= */ true);
     }
 }

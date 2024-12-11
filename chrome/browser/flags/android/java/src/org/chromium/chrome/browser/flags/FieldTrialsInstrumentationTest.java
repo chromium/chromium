@@ -19,10 +19,10 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
-import org.chromium.components.cached_flags.DoubleCachedFieldTrialParameter;
-import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
-import org.chromium.components.cached_flags.StringCachedFieldTrialParameter;
+import org.chromium.components.cached_flags.BooleanCachedFeatureParam;
+import org.chromium.components.cached_flags.DoubleCachedFeatureParam;
+import org.chromium.components.cached_flags.IntCachedFeatureParam;
+import org.chromium.components.cached_flags.StringCachedFeatureParam;
 
 /** Integration tests for {@link org.chromium.base.test.util.FieldTrials}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -141,8 +141,8 @@ public final class FieldTrialsInstrumentationTest {
         Assert.assertEquals("b1", ChromeFeatureList.getFieldTrialParamByFeature(FEATURE_1, "a1"));
 
         Assert.assertTrue(ChromeFeatureList.sTestDefaultDisabled.isEnabled());
-        StringCachedFieldTrialParameter parameterA1 =
-                new StringCachedFieldTrialParameter(FEATURE_MAP, FEATURE_1, "a1", "default");
+        StringCachedFeatureParam parameterA1 =
+                new StringCachedFeatureParam(FEATURE_MAP, FEATURE_1, "a1", "default");
         Assert.assertEquals("b1", parameterA1.getValue());
     }
 
@@ -165,20 +165,20 @@ public final class FieldTrialsInstrumentationTest {
 
         Assert.assertTrue(ChromeFeatureList.sTestDefaultDisabled.isEnabled());
         Assert.assertTrue(ChromeFeatureList.sTestDefaultEnabled.isEnabled());
-        StringCachedFieldTrialParameter parameterA1 =
-                new StringCachedFieldTrialParameter(FEATURE_MAP, FEATURE_1, "a1", "");
+        StringCachedFeatureParam parameterA1 =
+                new StringCachedFeatureParam(FEATURE_MAP, FEATURE_1, "a1", "");
         Assert.assertEquals("b1", parameterA1.getValue());
 
-        StringCachedFieldTrialParameter parameterA2 =
-                new StringCachedFieldTrialParameter(FEATURE_MAP, FEATURE_1, "a2", "");
+        StringCachedFeatureParam parameterA2 =
+                new StringCachedFeatureParam(FEATURE_MAP, FEATURE_1, "a2", "");
         Assert.assertEquals("b2", parameterA2.getValue());
 
-        StringCachedFieldTrialParameter parameterB1 =
-                new StringCachedFieldTrialParameter(FEATURE_MAP, FEATURE_2, "a1", "");
+        StringCachedFeatureParam parameterB1 =
+                new StringCachedFeatureParam(FEATURE_MAP, FEATURE_2, "a1", "");
         Assert.assertEquals("b1", parameterB1.getValue());
 
-        StringCachedFieldTrialParameter parameterB2 =
-                new StringCachedFieldTrialParameter(FEATURE_MAP, FEATURE_2, "a2", "");
+        StringCachedFeatureParam parameterB2 =
+                new StringCachedFeatureParam(FEATURE_MAP, FEATURE_2, "a2", "");
         Assert.assertEquals("b2", parameterB2.getValue());
     }
 
@@ -199,16 +199,16 @@ public final class FieldTrialsInstrumentationTest {
 
         Assert.assertTrue(ChromeFeatureList.sTestDefaultDisabled.isEnabled());
         Assert.assertTrue(ChromeFeatureList.sTestDefaultEnabled.isEnabled());
-        DoubleCachedFieldTrialParameter parameterA1 =
-                new DoubleCachedFieldTrialParameter(FEATURE_MAP, FEATURE_1, "a1", 0.1);
+        DoubleCachedFeatureParam parameterA1 =
+                new DoubleCachedFeatureParam(FEATURE_MAP, FEATURE_1, "a1", 0.1);
         Assert.assertEquals(0.5, parameterA1.getValue(), 1e-7);
 
-        IntCachedFieldTrialParameter parameterA2 =
-                new IntCachedFieldTrialParameter(FEATURE_MAP, FEATURE_1, "a2", 0);
+        IntCachedFeatureParam parameterA2 =
+                new IntCachedFeatureParam(FEATURE_MAP, FEATURE_1, "a2", 0);
         Assert.assertEquals(100, parameterA2.getValue());
 
-        BooleanCachedFieldTrialParameter parameterB =
-                new BooleanCachedFieldTrialParameter(FEATURE_MAP, FEATURE_2, "a3", false);
+        BooleanCachedFeatureParam parameterB =
+                new BooleanCachedFeatureParam(FEATURE_MAP, FEATURE_2, "a3", false);
         Assert.assertEquals(true, parameterB.getValue());
     }
 

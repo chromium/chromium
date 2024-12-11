@@ -15,7 +15,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
+import org.chromium.components.cached_flags.BooleanCachedFeatureParam;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -30,15 +30,15 @@ public class AuxiliarySearchUtils {
             ChromeFeatureList.sAndroidAppIntegrationV2ContentTtlHours.getDefaultValue();
 
     @VisibleForTesting
-    static final BooleanCachedFieldTrialParameter SKIP_DEVICE_CHECK =
+    static final BooleanCachedFeatureParam SKIP_DEVICE_CHECK =
             ChromeFeatureList.sAndroidAppIntegrationWithFaviconSkipDeviceCheck;
 
     @VisibleForTesting
-    static final BooleanCachedFieldTrialParameter FORCE_CARD_SHOWN =
+    static final BooleanCachedFeatureParam FORCE_CARD_SHOWN =
             ChromeFeatureList.sAndroidAppIntegrationWithFaviconForceCardShow;
 
     @VisibleForTesting
-    static final BooleanCachedFieldTrialParameter SHOW_THIRD_PARTY_CARD =
+    static final BooleanCachedFeatureParam SHOW_THIRD_PARTY_CARD =
             ChromeFeatureList.sAndroidAppIntegrationWithFaviconShowThirdPartyCard;
 
     /** Convert a Bitmap instance to a byte array. */

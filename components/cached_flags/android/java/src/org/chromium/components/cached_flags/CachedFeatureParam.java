@@ -20,21 +20,21 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A field trial parameter in the variations framework that is cached to disk be used before native.
+ * A feature parameter in the variations framework that is cached to disk be used before native.
  *
  * @param <T> the type of the parameter
  */
-public abstract class CachedFieldTrialParameter<T> extends FeatureParam<T> {
-    /** Data types of field trial parameters. */
+public abstract class CachedFeatureParam<T> extends FeatureParam<T> {
+    /** Data types of feature parameters. */
     @IntDef({
-        FieldTrialParameterType.STRING,
-        FieldTrialParameterType.BOOLEAN,
-        FieldTrialParameterType.INT,
-        FieldTrialParameterType.DOUBLE,
-        FieldTrialParameterType.ALL
+        FeatureParamType.STRING,
+        FeatureParamType.BOOLEAN,
+        FeatureParamType.INT,
+        FeatureParamType.DOUBLE,
+        FeatureParamType.ALL
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface FieldTrialParameterType {
+    public @interface FeatureParamType {
         int STRING = 0;
         int BOOLEAN = 1;
         int INT = 2;
@@ -43,20 +43,20 @@ public abstract class CachedFieldTrialParameter<T> extends FeatureParam<T> {
     }
 
     @CheckDiscard("crbug.com/1067145")
-    private static Set<CachedFieldTrialParameter<?>> sAllInstances;
+    private static Set<CachedFeatureParam<?>> sAllInstances;
 
-    private final @FieldTrialParameterType int mType;
+    private final @FeatureParamType int mType;
 
-    CachedFieldTrialParameter(
+    CachedFeatureParam(
             FeatureMap featureMap,
             String featureName,
             String parameterName,
-            @FieldTrialParameterType int type,
+            @FeatureParamType int type,
             @NonNull T defaultValue) {
         super(featureMap, featureName, parameterName, defaultValue);
 
         // parameterName does not apply to ALL (because it includes all parameters).
-        assert type != FieldTrialParameterType.ALL || parameterName.isEmpty();
+        assert type != FeatureParamType.ALL || parameterName.isEmpty();
         mType = type;
 
         registerInstance();
@@ -72,22 +72,22 @@ public abstract class CachedFieldTrialParameter<T> extends FeatureParam<T> {
     }
 
     @CheckDiscard("crbug.com/1067145")
-    public static Set<CachedFieldTrialParameter<?>> getAllInstances() {
+    public static Set<CachedFeatureParam<?>> getAllInstances() {
         return sAllInstances;
     }
 
     /**
-     * @return The data type of the field trial parameter.
+     * @return The data type of the feature parameter.
      */
-    public @FieldTrialParameterType int getType() {
+    public @FeatureParamType int getType() {
         return mType;
     }
 
     /**
-     * @return The SharedPreferences key to cache the field trial parameter.
+     * @return The SharedPreferences key to cache the feature parameter.
      */
     String getSharedPreferenceKey() {
-        return CachedFlagsSharedPreferences.FLAGS_FIELD_TRIAL_PARAM_CACHED.createKey(
+        return CachedFlagsSharedPreferences.FLAGS_FEATURE_PARAM_CACHED.createKey(
                 getFeatureName() + ":" + getName());
     }
 

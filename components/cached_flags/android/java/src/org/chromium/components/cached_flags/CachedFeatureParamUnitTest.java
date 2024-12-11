@@ -22,9 +22,9 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 
 import java.util.List;
 
-/** Unit Tests for {@link CachedFieldTrialParameter} and its subclasses. */
+/** Unit Tests for {@link CachedFeatureParam} and its subclasses. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class CachedFieldTrialParameterUnitTest {
+public class CachedFeatureParamUnitTest {
     @Rule public final BaseFlagTestRule mBaseFlagTestRule = new BaseFlagTestRule();
 
     private static final String FEATURE_A = "FeatureA";
@@ -62,13 +62,13 @@ public class CachedFieldTrialParameterUnitTest {
 
     @Mock private FeatureMap mFeatureMap;
 
-    private StringCachedFieldTrialParameter mStringParam;
-    private BooleanCachedFieldTrialParameter mBooleanParam;
-    private IntCachedFieldTrialParameter mIntParam;
-    private DoubleCachedFieldTrialParameter mDoubleParam;
-    private StringCachedFieldTrialParameter mString2Param;
+    private StringCachedFeatureParam mStringParam;
+    private BooleanCachedFeatureParam mBooleanParam;
+    private IntCachedFeatureParam mIntParam;
+    private DoubleCachedFeatureParam mDoubleParam;
+    private StringCachedFeatureParam mString2Param;
 
-    private List<CachedFieldTrialParameter<?>> mParamsToCache;
+    private List<CachedFeatureParam<?>> mParamsToCache;
 
     @Before
     public void setUp() {
@@ -89,19 +89,19 @@ public class CachedFieldTrialParameterUnitTest {
                 .thenReturn(STRING2_PARAM_NATIVE);
 
         mStringParam =
-                new StringCachedFieldTrialParameter(
+                new StringCachedFeatureParam(
                         mFeatureMap, FEATURE_A, STRING_PARAM_NAME, STRING_PARAM_DEFAULT);
         mBooleanParam =
-                new BooleanCachedFieldTrialParameter(
+                new BooleanCachedFeatureParam(
                         mFeatureMap, FEATURE_A, BOOLEAN_PARAM_NAME, BOOLEAN_PARAM_DEFAULT);
         mIntParam =
-                new IntCachedFieldTrialParameter(
+                new IntCachedFeatureParam(
                         mFeatureMap, FEATURE_A, INT_PARAM_NAME, INT_PARAM_DEFAULT);
         mDoubleParam =
-                new DoubleCachedFieldTrialParameter(
+                new DoubleCachedFeatureParam(
                         mFeatureMap, FEATURE_A, DOUBLE_PARAM_NAME, DOUBLE_PARAM_DEFAULT);
         mString2Param =
-                new StringCachedFieldTrialParameter(
+                new StringCachedFeatureParam(
                         mFeatureMap, FEATURE_A, STRING2_PARAM_NAME, STRING2_PARAM_DEFAULT);
         mParamsToCache =
                 List.of(mStringParam, mBooleanParam, mIntParam, mDoubleParam, mString2Param);
@@ -114,14 +114,14 @@ public class CachedFieldTrialParameterUnitTest {
 
     @Test
     public void testNativeInitialized_getsFromFeatureMap() {
-        CachedFlagUtils.cacheFieldTrialParameters(mParamsToCache);
+        CachedFlagUtils.cacheFeatureParams(mParamsToCache);
         assertValuesAreFromNative();
     }
 
     @Test
     public void testConsistency() {
         assertValuesAreDefault();
-        CachedFlagUtils.cacheFieldTrialParameters(mParamsToCache);
+        CachedFlagUtils.cacheFeatureParams(mParamsToCache);
 
         // Should still return the values previously returned
         assertValuesAreDefault();
@@ -130,7 +130,7 @@ public class CachedFieldTrialParameterUnitTest {
     @Test
     public void testNativeNotInitializedPrefsCached_getsFromPrefs() {
         // Cache to disk
-        CachedFlagUtils.cacheFieldTrialParameters(mParamsToCache);
+        CachedFlagUtils.cacheFeatureParams(mParamsToCache);
 
         // Simulate a second run
         ValuesReturned.clearForTesting();
@@ -151,7 +151,7 @@ public class CachedFieldTrialParameterUnitTest {
                 .thenReturn(STRING2_PARAM_BAD);
 
         // In the second run, should get cached values and not the new ones since
-        // CachedFeatureFlags#cacheFieldTrialParameters() wasn't called.
+        // CachedFeatureFlags#cacheFeatureParams() wasn't called.
         assertValuesAreFromNative();
     }
 
@@ -180,7 +180,7 @@ public class CachedFieldTrialParameterUnitTest {
                     + STRING2_PARAM_TEST_OVERRIDE)
     public void testAnnotationOverride() {
         // Should not take priority over the overrides
-        CachedFlagUtils.cacheFieldTrialParameters(mParamsToCache);
+        CachedFlagUtils.cacheFeatureParams(mParamsToCache);
 
         assertValuesAreOverrides();
     }
@@ -194,7 +194,7 @@ public class CachedFieldTrialParameterUnitTest {
         mString2Param.setForTesting(STRING2_PARAM_TEST_OVERRIDE);
 
         // Should not take priority over the overrides
-        CachedFlagUtils.cacheFieldTrialParameters(mParamsToCache);
+        CachedFlagUtils.cacheFeatureParams(mParamsToCache);
 
         assertValuesAreOverrides();
     }

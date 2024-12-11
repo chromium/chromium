@@ -15,10 +15,10 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils;
-import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
-import org.chromium.components.cached_flags.CachedFieldTrialParameter;
+import org.chromium.components.cached_flags.BooleanCachedFeatureParam;
+import org.chromium.components.cached_flags.CachedFeatureParam;
 import org.chromium.components.cached_flags.CachedFlag;
-import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
+import org.chromium.components.cached_flags.IntCachedFeatureParam;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
 
@@ -64,7 +64,7 @@ public class OmniboxFeatures {
     // Auto-populated list of Omnibox cached feature flags.
     // Each flag created via newFlag() will be automatically added to this list.
     private static final List<CachedFlag> sCachedFlags = new ArrayList<>();
-    private static final List<CachedFieldTrialParameter<?>> sCachedParams = new ArrayList<>();
+    private static final List<CachedFeatureParam<?>> sCachedParams = new ArrayList<>();
 
     /// Holds the information whether logic should focus on preserving memory on this device.
     private static Boolean sIsLowMemoryDevice;
@@ -113,56 +113,56 @@ public class OmniboxFeatures {
     public static final CachedFlag sPostDelayedTaskFocusTab =
             newFlag(OmniboxFeatureList.POST_DELAYED_TASK_FOCUS_TAB, FeatureState.ENABLED_IN_PROD);
 
-    public static final BooleanCachedFieldTrialParameter sAnswerActionsShowAboveKeyboard =
+    public static final BooleanCachedFeatureParam sAnswerActionsShowAboveKeyboard =
             newBooleanParam(sOmniboxAnswerActions, "AnswerActionsShowAboveKeyboard", false);
 
-    public static final BooleanCachedFieldTrialParameter sAnswerActionsShowIfUrlsPresent =
+    public static final BooleanCachedFeatureParam sAnswerActionsShowIfUrlsPresent =
             newBooleanParam(sOmniboxAnswerActions, "ShowIfUrlsPresent", false);
 
-    public static final BooleanCachedFieldTrialParameter sAnswerActionsShowRichCard =
+    public static final BooleanCachedFeatureParam sAnswerActionsShowRichCard =
             newBooleanParam(sOmniboxAnswerActions, "ShowRichCard", false);
 
-    public static final IntCachedFieldTrialParameter sGeolocationRequestTimeoutMinutes =
+    public static final IntCachedFeatureParam sGeolocationRequestTimeoutMinutes =
             newIntParam(
                     sUseFusedLocationProvider,
                     "geolocation_request_timeout_minutes",
                     DEFAULT_GEOLOCATION_REQUEST_TIMEOUT_MIN);
 
-    public static final IntCachedFieldTrialParameter sTouchDownTriggerMaxPrefetchesPerSession =
+    public static final IntCachedFeatureParam sTouchDownTriggerMaxPrefetchesPerSession =
             newIntParam(
                     sTouchDownTriggerForPrefetch,
                     "max_prefetches_per_omnibox_session",
                     DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION);
 
-    public static final BooleanCachedFieldTrialParameter sRichInlineShowFullUrl =
+    public static final BooleanCachedFeatureParam sRichInlineShowFullUrl =
             newBooleanParam(sRichInlineAutocomplete, "rich_autocomplete_full_url", true);
 
-    public static final IntCachedFieldTrialParameter sRichInlineMinimumInputChars =
+    public static final IntCachedFeatureParam sRichInlineMinimumInputChars =
             newIntParam(
                     sRichInlineAutocomplete,
                     "rich_autocomplete_minimum_characters",
                     DEFAULT_RICH_INLINE_MIN_CHAR);
 
-    public static final IntCachedFieldTrialParameter sJumpStartOmniboxMemoryThresholdKb =
+    public static final IntCachedFeatureParam sJumpStartOmniboxMemoryThresholdKb =
             newIntParam(sJumpStartOmnibox, "jump_start_memory_threshold_kb", 2 * 1024 * 1024);
 
-    public static final IntCachedFieldTrialParameter sJumpStartOmniboxMinAwayTimeMinutes =
+    public static final IntCachedFeatureParam sJumpStartOmniboxMinAwayTimeMinutes =
             newIntParam(sJumpStartOmnibox, "jump_start_min_away_time_minutes", 0 * 60);
 
-    public static final IntCachedFieldTrialParameter sJumpStartOmniboxMaxAwayTimeMinutes =
+    public static final IntCachedFeatureParam sJumpStartOmniboxMaxAwayTimeMinutes =
             newIntParam(sJumpStartOmnibox, "jump_start_max_away_time_minutes", 8 * 60);
 
-    public static final IntCachedFieldTrialParameter sPostDelayedTaskFocusTabTimeMillis =
+    public static final IntCachedFeatureParam sPostDelayedTaskFocusTabTimeMillis =
             newIntParam(sPostDelayedTaskFocusTab, "post_delayed_task_focus_tab_time_millis", 0);
 
     // This parameter permits JSO to include additional page classifications when caching/serving
     // suggestions on SearchActivity.
-    public static final BooleanCachedFieldTrialParameter sJumpStartOmniboxCoverRecentlyVisitedPage =
+    public static final BooleanCachedFeatureParam sJumpStartOmniboxCoverRecentlyVisitedPage =
             newBooleanParam(sJumpStartOmnibox, "jump_start_cover_recently_visited_page", false);
 
     // This parameter allows the user to click enter when on hub search to perform a search on the
     // listed suggestions or perform a google search on the query if no suggestions are found.
-    public static final BooleanCachedFieldTrialParameter sAndroidHubSearchEnterPerformsSearch =
+    public static final BooleanCachedFeatureParam sAndroidHubSearchEnterPerformsSearch =
             newBooleanParam(sAndroidHubSearch, "enable_press_enter_to_search", false);
 
     /** See {@link #setShouldRetainOmniboxOnFocusForTesting(boolean)}. */
@@ -189,7 +189,7 @@ public class OmniboxFeatures {
     }
 
     /**
-     * Create an instance of a BooleanCachedFieldTrialParameter.
+     * Create an instance of a BooleanCachedFeatureParam.
      *
      * <p>Newly created flag will be automatically added to list of persisted feature flags.
      *
@@ -197,17 +197,20 @@ public class OmniboxFeatures {
      * @param variationName the name of the associated parameter
      * @param defaultValue the default value to return if the feature state is unknown
      */
-    private static BooleanCachedFieldTrialParameter newBooleanParam(
+    private static BooleanCachedFeatureParam newBooleanParam(
             CachedFlag flag, String variationName, boolean defaultValue) {
         var param =
-                new BooleanCachedFieldTrialParameter(
-                        OmniboxFeatureMap.getInstance(), flag.getFeatureName(), variationName, defaultValue);
+                new BooleanCachedFeatureParam(
+                        OmniboxFeatureMap.getInstance(),
+                        flag.getFeatureName(),
+                        variationName,
+                        defaultValue);
         sCachedParams.add(param);
         return param;
     }
 
     /**
-     * Create an instance of a IntCachedFieldTrialParameter.
+     * Create an instance of a IntCachedFeatureParam.
      *
      * <p>Newly created flag will be automatically added to list of persisted feature flags.
      *
@@ -215,22 +218,25 @@ public class OmniboxFeatures {
      * @param variationName the name of the associated parameter
      * @param defaultValue the default value to return if the feature state is unknown
      */
-    private static IntCachedFieldTrialParameter newIntParam(
+    private static IntCachedFeatureParam newIntParam(
             CachedFlag flag, String variationName, int defaultValue) {
         var param =
-                new IntCachedFieldTrialParameter(
-                        OmniboxFeatureMap.getInstance(), flag.getFeatureName(), variationName, defaultValue);
+                new IntCachedFeatureParam(
+                        OmniboxFeatureMap.getInstance(),
+                        flag.getFeatureName(),
+                        variationName,
+                        defaultValue);
         sCachedParams.add(param);
         return param;
     }
 
     /** Retrieve list of CachedFlags that should be cached. */
-    public static List<CachedFlag> getFieldTrialsToCache() {
+    public static List<CachedFlag> getFlagsToCache() {
         return sCachedFlags;
     }
 
-    /** Retrieve list of FieldTrialParams that should be cached. */
-    public static List<CachedFieldTrialParameter<?>> getFieldTrialParamsToCache() {
+    /** Retrieve list of FeatureParams that should be cached. */
+    public static List<CachedFeatureParam<?>> getFeatureParamsToCache() {
         return sCachedParams;
     }
 

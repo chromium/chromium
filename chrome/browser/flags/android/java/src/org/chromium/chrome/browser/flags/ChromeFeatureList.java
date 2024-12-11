@@ -13,12 +13,12 @@ import org.chromium.base.MutableFlagWithSafeDefault;
 import org.chromium.base.MutableIntParamWithSafeDefault;
 import org.chromium.base.MutableParamWithSafeDefault;
 import org.chromium.build.BuildConfig;
-import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
-import org.chromium.components.cached_flags.CachedFieldTrialParameter;
+import org.chromium.components.cached_flags.BooleanCachedFeatureParam;
+import org.chromium.components.cached_flags.CachedFeatureParam;
 import org.chromium.components.cached_flags.CachedFlag;
-import org.chromium.components.cached_flags.DoubleCachedFieldTrialParameter;
-import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
-import org.chromium.components.cached_flags.StringCachedFieldTrialParameter;
+import org.chromium.components.cached_flags.DoubleCachedFeatureParam;
+import org.chromium.components.cached_flags.IntCachedFeatureParam;
+import org.chromium.components.cached_flags.StringCachedFeatureParam;
 
 import java.util.List;
 import java.util.Map;
@@ -33,7 +33,7 @@ import java.util.Map;
  * parameters through {@link ChromeFeatureMap}.
  *
  * <p>Chrome-layer {@link CachedFlag}s and {@link MutableFlagWithSafeDefault}s are instantiated
- * here, as well as {@link CachedFieldTrialParameter}s and {@link MutableParamWithSafeDefault}s.
+ * here, as well as {@link CachedFeatureParam}s and {@link MutableParamWithSafeDefault}s.
  */
 public abstract class ChromeFeatureList {
 
@@ -112,27 +112,27 @@ public abstract class ChromeFeatureList {
         return ChromeFeatureMap.getInstance().getFieldTrialParamsForFeature(featureName);
     }
 
-    public static BooleanCachedFieldTrialParameter newBooleanCachedFieldTrialParameter(
+    public static BooleanCachedFeatureParam newBooleanCachedFeatureParam(
             String featureName, String variationName, boolean defaultValue) {
-        return new BooleanCachedFieldTrialParameter(
+        return new BooleanCachedFeatureParam(
                 ChromeFeatureMap.getInstance(), featureName, variationName, defaultValue);
     }
 
-    public static DoubleCachedFieldTrialParameter newDoubleCachedFieldTrialParameter(
+    public static DoubleCachedFeatureParam newDoubleCachedFeatureParam(
             String featureName, String variationName, double defaultValue) {
-        return new DoubleCachedFieldTrialParameter(
+        return new DoubleCachedFeatureParam(
                 ChromeFeatureMap.getInstance(), featureName, variationName, defaultValue);
     }
 
-    public static IntCachedFieldTrialParameter newIntCachedFieldTrialParameter(
+    public static IntCachedFeatureParam newIntCachedFeatureParam(
             String featureName, String variationName, int defaultValue) {
-        return new IntCachedFieldTrialParameter(
+        return new IntCachedFeatureParam(
                 ChromeFeatureMap.getInstance(), featureName, variationName, defaultValue);
     }
 
-    public static StringCachedFieldTrialParameter newStringCachedFieldTrialParameter(
+    public static StringCachedFeatureParam newStringCachedFeatureParam(
             String featureName, String variationName, @NonNull String defaultValue) {
-        return new StringCachedFieldTrialParameter(
+        return new StringCachedFeatureParam(
                 ChromeFeatureMap.getInstance(), featureName, variationName, defaultValue);
     }
 
@@ -945,52 +945,47 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sVoiceSearchAudioCapturePolicy =
             newMutableFlagWithSafeDefault(VOICE_SEARCH_AUDIO_CAPTURE_POLICY, false);
 
-    // CachedFieldTrialParam instances.
+    // CachedFeatureParam instances.
     /* Alphabetical order by feature name, arbitrary order by param name: */
-    public static final IntCachedFieldTrialParameter sAndroidAppIntegrationV2ContentTtlHours =
-            newIntCachedFieldTrialParameter(ANDROID_APP_INTEGRATION_V2, "content_ttl_hours", 168);
-    public static final BooleanCachedFieldTrialParameter
-            sAndroidAppIntegrationWithFaviconSkipDeviceCheck =
-                    newBooleanCachedFieldTrialParameter(
-                            ANDROID_APP_INTEGRATION_WITH_FAVICON, "skip_device_check", false);
-    public static final BooleanCachedFieldTrialParameter
-            sAndroidAppIntegrationWithFaviconForceCardShow =
-                    newBooleanCachedFieldTrialParameter(
-                            ANDROID_APP_INTEGRATION_WITH_FAVICON, "force_card_shown", false);
+    public static final IntCachedFeatureParam sAndroidAppIntegrationV2ContentTtlHours =
+            newIntCachedFeatureParam(ANDROID_APP_INTEGRATION_V2, "content_ttl_hours", 168);
+    public static final BooleanCachedFeatureParam sAndroidAppIntegrationWithFaviconSkipDeviceCheck =
+            newBooleanCachedFeatureParam(
+                    ANDROID_APP_INTEGRATION_WITH_FAVICON, "skip_device_check", false);
+    public static final BooleanCachedFeatureParam sAndroidAppIntegrationWithFaviconForceCardShow =
+            newBooleanCachedFeatureParam(
+                    ANDROID_APP_INTEGRATION_WITH_FAVICON, "force_card_shown", false);
 
-    public static final BooleanCachedFieldTrialParameter
+    public static final BooleanCachedFeatureParam
             sAndroidAppIntegrationWithFaviconShowThirdPartyCard =
-                    newBooleanCachedFieldTrialParameter(
+                    newBooleanCachedFeatureParam(
                             ANDROID_APP_INTEGRATION_WITH_FAVICON, "show_third_party_card", false);
 
-    public static final IntCachedFieldTrialParameter
-            sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs =
-                    newIntCachedFieldTrialParameter(
-                            ANDROID_APP_INTEGRATION_WITH_FAVICON, "schedule_delay_time_ms", 0);
-    public static final BooleanCachedFieldTrialParameter
-            sAndroidAppIntegrationWithFaviconUseLargeFavicon =
-                    newBooleanCachedFieldTrialParameter(
-                            ANDROID_APP_INTEGRATION_WITH_FAVICON, "use_large_favicon", false);
-    public static final IntCachedFieldTrialParameter
+    public static final IntCachedFeatureParam sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs =
+            newIntCachedFeatureParam(
+                    ANDROID_APP_INTEGRATION_WITH_FAVICON, "schedule_delay_time_ms", 0);
+    public static final BooleanCachedFeatureParam sAndroidAppIntegrationWithFaviconUseLargeFavicon =
+            newBooleanCachedFeatureParam(
+                    ANDROID_APP_INTEGRATION_WITH_FAVICON, "use_large_favicon", false);
+    public static final IntCachedFeatureParam
             sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber =
-                    newIntCachedFieldTrialParameter(
+                    newIntCachedFeatureParam(
                             ANDROID_APP_INTEGRATION_WITH_FAVICON, "zero_state_favicon_number", 5);
-    public static final BooleanCachedFieldTrialParameter
+    public static final BooleanCachedFeatureParam
             sAndroidHubFloatingActionButtonAlternativeFabColor =
-                    newBooleanCachedFieldTrialParameter(
+                    newBooleanCachedFeatureParam(
                             ANDROID_HUB_FLOATING_ACTION_BUTTON, "hub_alternative_fab_color", false);
-    public static final IntCachedFieldTrialParameter
-            sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs =
-                    newIntCachedFieldTrialParameter(
-                            CCT_AUTH_TAB_ENABLE_HTTPS_REDIRECTS, "verification_timeout_ms", 10_000);
+    public static final IntCachedFeatureParam sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs =
+            newIntCachedFeatureParam(
+                    CCT_AUTH_TAB_ENABLE_HTTPS_REDIRECTS, "verification_timeout_ms", 10_000);
 
     /**
      * Parameter that lists a pipe ("|") separated list of package names from which the {@link
      * EXTRA_AUTO_TRANSLATE_LANGUAGE} should be allowed. This defaults to a single list item
      * consisting of the package name of the Android Google Search App.
      */
-    public static final StringCachedFieldTrialParameter sCctAutoTranslatePackageNamesAllowlist =
-            newStringCachedFieldTrialParameter(
+    public static final StringCachedFeatureParam sCctAutoTranslatePackageNamesAllowlist =
+            newStringCachedFeatureParam(
                     CCT_AUTO_TRANSLATE,
                     "package_names_allowlist",
                     "com.google.android.googlequicksearchbox");
@@ -999,18 +994,17 @@ public abstract class ChromeFeatureList {
      * Parameter that, if true, indicates that the {@link EXTRA_AUTO_TRANSLATE_LANGUAGE} should be
      * automatically allowed from any first party package name.
      */
-    public static final BooleanCachedFieldTrialParameter sCctAutoTranslateAllowAllFirstParties =
-            newBooleanCachedFieldTrialParameter(
-                    CCT_AUTO_TRANSLATE, "allow_all_first_parties", false);
+    public static final BooleanCachedFeatureParam sCctAutoTranslateAllowAllFirstParties =
+            newBooleanCachedFeatureParam(CCT_AUTO_TRANSLATE, "allow_all_first_parties", false);
 
-    public static final IntCachedFieldTrialParameter sCctMinimizedIconVariant =
-            newIntCachedFieldTrialParameter(CCT_MINIMIZED, "icon_variant", 0);
+    public static final IntCachedFeatureParam sCctMinimizedIconVariant =
+            newIntCachedFeatureParam(CCT_MINIMIZED, "icon_variant", 0);
     // Devices from this OEM--and potentially others--sometimes crash when we call
     // `Activity#enterPictureInPictureMode` on Android R. So, we disable the feature on those
     // devices. See: https://crbug.com/1519164.
-    public static final StringCachedFieldTrialParameter
+    public static final StringCachedFeatureParam
             sCctMinimizedEnabledByDefaultManufacturerExcludeList =
-                    newStringCachedFieldTrialParameter(
+                    newStringCachedFeatureParam(
                             CCT_MINIMIZED_ENABLED_BY_DEFAULT,
                             "manufacturer_exclude_list",
                             "xiaomi");
@@ -1019,25 +1013,24 @@ public abstract class ChromeFeatureList {
      * A cached parameter used for specifying the height of the Google Bottom Bar in DP, when its
      * variant is NO_VARIANT.
      */
-    public static final IntCachedFieldTrialParameter sCctGoogleBottomBarNoVariantHeightDp =
-            newIntCachedFieldTrialParameter(
+    public static final IntCachedFeatureParam sCctGoogleBottomBarNoVariantHeightDp =
+            newIntCachedFeatureParam(
                     CCT_GOOGLE_BOTTOM_BAR, "google_bottom_bar_no_variant_height_dp", 64);
 
     /**
      * A cached parameter representing the order of Google Bottom Bar buttons based on experiment
      * configuration.
      */
-    public static final StringCachedFieldTrialParameter sCctGoogleBottomBarButtonList =
-            newStringCachedFieldTrialParameter(
-                    CCT_GOOGLE_BOTTOM_BAR, "google_bottom_bar_button_list", "");
+    public static final StringCachedFeatureParam sCctGoogleBottomBarButtonList =
+            newStringCachedFeatureParam(CCT_GOOGLE_BOTTOM_BAR, "google_bottom_bar_button_list", "");
 
     /**
      * A cached parameter used for specifying the height of the Google Bottom Bar in DP, when its
      * variant is SINGLE_DECKER.
      */
-    public static final IntCachedFieldTrialParameter
+    public static final IntCachedFeatureParam
             sCctGoogleBottomBarVariantLayoutsSingleDeckerHeightDp =
-                    newIntCachedFieldTrialParameter(
+                    newIntCachedFeatureParam(
                             CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS,
                             "google_bottom_bar_single_decker_height_dp",
                             62);
@@ -1046,42 +1039,37 @@ public abstract class ChromeFeatureList {
      * A cached parameter representing the Google Bottom Bar layout variants value based on
      * experiment configuration.
      */
-    public static final IntCachedFieldTrialParameter
-            sCctGoogleBottomBarVariantLayoutsVariantLayout =
-                    newIntCachedFieldTrialParameter(
-                            CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS,
-                            "google_bottom_bar_variant_layout",
-                            1 /* GoogleBottomBarVariantLayoutType.DOUBLE_DECKER */);
+    public static final IntCachedFeatureParam sCctGoogleBottomBarVariantLayoutsVariantLayout =
+            newIntCachedFeatureParam(
+                    CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS,
+                    "google_bottom_bar_variant_layout",
+                    1 /* GoogleBottomBarVariantLayoutType.DOUBLE_DECKER */);
 
     /**
      * A cached boolean parameter to decide whether to check if Google is Chrome's default search
      * engine.
      */
-    public static final BooleanCachedFieldTrialParameter
+    public static final BooleanCachedFeatureParam
             sCctGoogleBottomBarVariantLayoutsGoogleDseCheckEnabled =
-                    newBooleanCachedFieldTrialParameter(
+                    newBooleanCachedFeatureParam(
                             CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS,
                             "google_bottom_bar_variant_is_google_default_search_engine_check_enabled",
                             false);
 
-    public static final StringCachedFieldTrialParameter
-            sCctResizableForThirdPartiesAllowlistEntries =
-                    newStringCachedFieldTrialParameter(
-                            CCT_RESIZABLE_FOR_THIRD_PARTIES, "allowlist_entries", "");
-    public static final StringCachedFieldTrialParameter
-            sCctResizableForThirdPartiesDenylistEntries =
-                    newStringCachedFieldTrialParameter(
-                            CCT_RESIZABLE_FOR_THIRD_PARTIES, "denylist_entries", "");
-    public static final StringCachedFieldTrialParameter sCctResizableForThirdPartiesDefaultPolicy =
-            newStringCachedFieldTrialParameter(
+    public static final StringCachedFeatureParam sCctResizableForThirdPartiesAllowlistEntries =
+            newStringCachedFeatureParam(CCT_RESIZABLE_FOR_THIRD_PARTIES, "allowlist_entries", "");
+    public static final StringCachedFeatureParam sCctResizableForThirdPartiesDenylistEntries =
+            newStringCachedFeatureParam(CCT_RESIZABLE_FOR_THIRD_PARTIES, "denylist_entries", "");
+    public static final StringCachedFeatureParam sCctResizableForThirdPartiesDefaultPolicy =
+            newStringCachedFeatureParam(
                     CCT_RESIZABLE_FOR_THIRD_PARTIES, "default_policy", "use-denylist");
 
     /**
      * A cached parameter representing the amount of latency to inject during Clank startup based on
      * experiment configuration.
      */
-    public static final IntCachedFieldTrialParameter sClankStartupLatencyInjectionAmountMs =
-            newIntCachedFieldTrialParameter(
+    public static final IntCachedFeatureParam sClankStartupLatencyInjectionAmountMs =
+            newIntCachedFeatureParam(
                     CLANK_STARTUP_LATENCY_INJECTION, "latency_injection_amount_millis", 0);
 
     /**
@@ -1092,48 +1080,43 @@ public abstract class ChromeFeatureList {
      * <p>3000ms is enough to push us past the median start up time without losing to much of feed
      * interactions.
      */
-    public static final IntCachedFieldTrialParameter
+    public static final IntCachedFeatureParam
             sCollectAndroidFrameTimelineMetricsJankTrackerDelayedStartMs =
-                    newIntCachedFieldTrialParameter(
+                    newIntCachedFeatureParam(
                             COLLECT_ANDROID_FRAME_TIMELINE_METRICS, "delayed_start_ms", 3000);
 
-    public static final IntCachedFieldTrialParameter sDelayTempStripRemovalTimeoutMs =
-            newIntCachedFieldTrialParameter(DELAY_TEMP_STRIP_REMOVAL, "timeout_ms", 1000);
+    public static final IntCachedFeatureParam sDelayTempStripRemovalTimeoutMs =
+            newIntCachedFeatureParam(DELAY_TEMP_STRIP_REMOVAL, "timeout_ms", 1000);
 
     /** Cached param whether we disable e2e on the recent tabs page. */
-    public static final BooleanCachedFieldTrialParameter
-            sDrawKeyNativeEdgeToEdgeDisableRecentTabsE2e =
-                    newBooleanCachedFieldTrialParameter(
-                            DRAW_KEY_NATIVE_EDGE_TO_EDGE, "disable_recent_tabs_e2e", false);
+    public static final BooleanCachedFeatureParam sDrawKeyNativeEdgeToEdgeDisableRecentTabsE2e =
+            newBooleanCachedFeatureParam(
+                    DRAW_KEY_NATIVE_EDGE_TO_EDGE, "disable_recent_tabs_e2e", false);
 
     /** Cached param whether we disable e2e on the CCT media viewer. */
-    public static final BooleanCachedFieldTrialParameter
-            sDrawKeyNativeEdgeToEdgeDisableCctMediaViewerE2e =
-                    newBooleanCachedFieldTrialParameter(
-                            DRAW_KEY_NATIVE_EDGE_TO_EDGE, "disable_cct_media_viewer_e2e", false);
+    public static final BooleanCachedFeatureParam sDrawKeyNativeEdgeToEdgeDisableCctMediaViewerE2e =
+            newBooleanCachedFeatureParam(
+                    DRAW_KEY_NATIVE_EDGE_TO_EDGE, "disable_cct_media_viewer_e2e", false);
 
     /** Cached param whether we disable e2e on the hub. */
-    public static final BooleanCachedFieldTrialParameter sDrawKeyNativeEdgeToEdgeDisableHubE2e =
-            newBooleanCachedFieldTrialParameter(
-                    DRAW_KEY_NATIVE_EDGE_TO_EDGE, "disable_hub_e2e", false);
+    public static final BooleanCachedFeatureParam sDrawKeyNativeEdgeToEdgeDisableHubE2e =
+            newBooleanCachedFeatureParam(DRAW_KEY_NATIVE_EDGE_TO_EDGE, "disable_hub_e2e", false);
 
     /** Cached param whether we disable e2e on new tab page. */
-    public static final BooleanCachedFieldTrialParameter sDrawKeyNativeEdgeToEdgeDisableNtpE2e =
-            newBooleanCachedFieldTrialParameter(
-                    DRAW_KEY_NATIVE_EDGE_TO_EDGE, "disable_ntp_e2e", false);
+    public static final BooleanCachedFeatureParam sDrawKeyNativeEdgeToEdgeDisableNtpE2e =
+            newBooleanCachedFeatureParam(DRAW_KEY_NATIVE_EDGE_TO_EDGE, "disable_ntp_e2e", false);
 
     /** Cached param whether we disable e2e on incognito new tab page. See crbug.com/368675202 */
-    public static final BooleanCachedFieldTrialParameter
-            sDrawKeyNativeEdgeToEdgeDisableIncognitoNtpE2e =
-                    newBooleanCachedFieldTrialParameter(
-                            DRAW_KEY_NATIVE_EDGE_TO_EDGE, "disable_incognito_ntp_e2e", false);
+    public static final BooleanCachedFeatureParam sDrawKeyNativeEdgeToEdgeDisableIncognitoNtpE2e =
+            newBooleanCachedFeatureParam(
+                    DRAW_KEY_NATIVE_EDGE_TO_EDGE, "disable_incognito_ntp_e2e", false);
 
     /**
      * Param for the OEMs that need an exception for min versions. Its value should be a comma
      * separated list of integers, and its index should match {@link #sEdgeToEdgeBottomChinOemList}.
      */
-    public static final StringCachedFieldTrialParameter sEdgeToEdgeBottomChinOemMinVersions =
-            newStringCachedFieldTrialParameter(
+    public static final StringCachedFeatureParam sEdgeToEdgeBottomChinOemMinVersions =
+            newStringCachedFeatureParam(
                     EDGE_TO_EDGE_BOTTOM_CHIN, "e2e_field_trial_oem_min_versions", "");
 
     /**
@@ -1141,135 +1124,115 @@ public abstract class ChromeFeatureList {
      * separated list of manufacturer, and its index should match {@link
      * #sEdgeToEdgeBottomChinOemMinVersions}.
      */
-    public static final StringCachedFieldTrialParameter sEdgeToEdgeBottomChinOemList =
-            newStringCachedFieldTrialParameter(
-                    EDGE_TO_EDGE_BOTTOM_CHIN, "e2e_field_trial_oem_list", "");
+    public static final StringCachedFeatureParam sEdgeToEdgeBottomChinOemList =
+            newStringCachedFeatureParam(EDGE_TO_EDGE_BOTTOM_CHIN, "e2e_field_trial_oem_list", "");
 
-    public static final BooleanCachedFieldTrialParameter sLogoPolishMediumSize =
-            newBooleanCachedFieldTrialParameter(LOGO_POLISH, "polish_logo_size_medium", true);
-    public static final BooleanCachedFieldTrialParameter sLogoPolishLargeSize =
-            newBooleanCachedFieldTrialParameter(LOGO_POLISH, "polish_logo_size_large", false);
-    public static final BooleanCachedFieldTrialParameter sMagicStackAndroidShowAllModules =
-            newBooleanCachedFieldTrialParameter(MAGIC_STACK_ANDROID, "show_all_modules", false);
-    public static final BooleanCachedFieldTrialParameter mMostVisitedTilesReselectLaxSchemeHost =
-            newBooleanCachedFieldTrialParameter(
-                    MOST_VISITED_TILES_RESELECT, "lax_scheme_host", false);
-    public static final BooleanCachedFieldTrialParameter mMostVisitedTilesReselectLaxRef =
-            newBooleanCachedFieldTrialParameter(MOST_VISITED_TILES_RESELECT, "lax_ref", false);
-    public static final BooleanCachedFieldTrialParameter mMostVisitedTilesReselectLaxQuery =
-            newBooleanCachedFieldTrialParameter(MOST_VISITED_TILES_RESELECT, "lax_query", false);
-    public static final BooleanCachedFieldTrialParameter mMostVisitedTilesReselectLaxPath =
-            newBooleanCachedFieldTrialParameter(MOST_VISITED_TILES_RESELECT, "lax_path", false);
-    public static final BooleanCachedFieldTrialParameter
+    public static final BooleanCachedFeatureParam sLogoPolishMediumSize =
+            newBooleanCachedFeatureParam(LOGO_POLISH, "polish_logo_size_medium", true);
+    public static final BooleanCachedFeatureParam sLogoPolishLargeSize =
+            newBooleanCachedFeatureParam(LOGO_POLISH, "polish_logo_size_large", false);
+    public static final BooleanCachedFeatureParam sMagicStackAndroidShowAllModules =
+            newBooleanCachedFeatureParam(MAGIC_STACK_ANDROID, "show_all_modules", false);
+    public static final BooleanCachedFeatureParam mMostVisitedTilesReselectLaxSchemeHost =
+            newBooleanCachedFeatureParam(MOST_VISITED_TILES_RESELECT, "lax_scheme_host", false);
+    public static final BooleanCachedFeatureParam mMostVisitedTilesReselectLaxRef =
+            newBooleanCachedFeatureParam(MOST_VISITED_TILES_RESELECT, "lax_ref", false);
+    public static final BooleanCachedFeatureParam mMostVisitedTilesReselectLaxQuery =
+            newBooleanCachedFeatureParam(MOST_VISITED_TILES_RESELECT, "lax_query", false);
+    public static final BooleanCachedFeatureParam mMostVisitedTilesReselectLaxPath =
+            newBooleanCachedFeatureParam(MOST_VISITED_TILES_RESELECT, "lax_path", false);
+    public static final BooleanCachedFeatureParam
             sNavBarColorMatchesTabBackgroundColorAnimationDisabled =
-                    newBooleanCachedFieldTrialParameter(
+                    newBooleanCachedFeatureParam(
                             NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND, "color_animation_disabled", true);
-    public static final BooleanCachedFieldTrialParameter sNewTabSearchEngineUrlAndroidSwapOutNtp =
-            newBooleanCachedFieldTrialParameter(
-                    NEW_TAB_SEARCH_ENGINE_URL_ANDROID, "swap_out_ntp", false);
-    public static final IntCachedFieldTrialParameter sNotificationTrampolineLongJobDurationMs =
-            newIntCachedFieldTrialParameter(
-                    NOTIFICATION_TRAMPOLINE, "long_job_duration_millis", 8 * 1000);
-    public static final IntCachedFieldTrialParameter sNotificationTrampolineNormalJobDurationMs =
-            newIntCachedFieldTrialParameter(
+    public static final BooleanCachedFeatureParam sNewTabSearchEngineUrlAndroidSwapOutNtp =
+            newBooleanCachedFeatureParam(NEW_TAB_SEARCH_ENGINE_URL_ANDROID, "swap_out_ntp", false);
+    public static final IntCachedFeatureParam sNotificationTrampolineLongJobDurationMs =
+            newIntCachedFeatureParam(NOTIFICATION_TRAMPOLINE, "long_job_duration_millis", 8 * 1000);
+    public static final IntCachedFeatureParam sNotificationTrampolineNormalJobDurationMs =
+            newIntCachedFeatureParam(
                     NOTIFICATION_TRAMPOLINE, "normal_job_duration_millis", 1 * 1000);
-    public static final IntCachedFieldTrialParameter sNotificationTrampolineImmediateJobDurationMs =
-            newIntCachedFieldTrialParameter(
-                    NOTIFICATION_TRAMPOLINE, "minimum_job_duration_millis", 10);
-    public static final IntCachedFieldTrialParameter
-            sNotificationTrampolineTimeoutPriorNativeInitMs =
-                    newIntCachedFieldTrialParameter(
-                            NOTIFICATION_TRAMPOLINE,
-                            "timeout_in_millis_prior_native_init",
-                            5 * 1000);
-    public static final IntCachedFieldTrialParameter sOmahaMinSdkVersionMinSdkVersion =
-            newIntCachedFieldTrialParameter(OMAHA_MIN_SDK_VERSION_ANDROID, "min_sdk_version", -1);
+    public static final IntCachedFeatureParam sNotificationTrampolineImmediateJobDurationMs =
+            newIntCachedFeatureParam(NOTIFICATION_TRAMPOLINE, "minimum_job_duration_millis", 10);
+    public static final IntCachedFeatureParam sNotificationTrampolineTimeoutPriorNativeInitMs =
+            newIntCachedFeatureParam(
+                    NOTIFICATION_TRAMPOLINE, "timeout_in_millis_prior_native_init", 5 * 1000);
+    public static final IntCachedFeatureParam sOmahaMinSdkVersionMinSdkVersion =
+            newIntCachedFeatureParam(OMAHA_MIN_SDK_VERSION_ANDROID, "min_sdk_version", -1);
 
     /** The default cache size in Java for push notification. */
-    public static final IntCachedFieldTrialParameter
-            sOptimizationGuidePushNotificationsMaxCacheSize =
-                    newIntCachedFieldTrialParameter(
-                            OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, "max_cache_size", 100);
+    public static final IntCachedFeatureParam sOptimizationGuidePushNotificationsMaxCacheSize =
+            newIntCachedFeatureParam(OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, "max_cache_size", 100);
 
-    public static final BooleanCachedFieldTrialParameter
+    public static final BooleanCachedFeatureParam
             sPriceChangeModuleSkipShoppingPersistedTabDataDelayedInit =
-                    newBooleanCachedFieldTrialParameter(
+                    newBooleanCachedFeatureParam(
                             PRICE_CHANGE_MODULE,
                             "skip_shopping_persisted_tab_data_delayed_initialization",
                             true);
 
     /** Controls whether Referrer App ID is passed to Search Results Page via client= param. */
-    public static final BooleanCachedFieldTrialParameter sSearchinCctApplyReferrerId =
-            newBooleanCachedFieldTrialParameter(SEARCH_IN_CCT, "apply_referrer_id", false);
+    public static final BooleanCachedFeatureParam sSearchinCctApplyReferrerId =
+            newBooleanCachedFeatureParam(SEARCH_IN_CCT, "apply_referrer_id", false);
 
     /** Pipe ("|") separated list of package names allowed to use the interactive Omnibox. */
     // TODO(crbug.com/40239922): remove default value when no longer relevant.
-    public static final StringCachedFieldTrialParameter sSearchinCctOmniboxAllowedPackageNames =
-            newStringCachedFieldTrialParameter(
+    public static final StringCachedFeatureParam sSearchinCctOmniboxAllowedPackageNames =
+            newStringCachedFeatureParam(
                     SEARCH_IN_CCT,
                     "omnibox_allowed_package_names",
                     BuildConfig.ENABLE_DEBUG_LOGS ? "org.chromium.customtabsclient" : "");
 
-    public static final IntCachedFieldTrialParameter sStartSurfaceReturnTimeTabletSecs =
-            newIntCachedFieldTrialParameter(
+    public static final IntCachedFeatureParam sStartSurfaceReturnTimeTabletSecs =
+            newIntCachedFeatureParam(
                     START_SURFACE_RETURN_TIME,
                     "start_surface_return_time_on_tablet_seconds",
                     14400); // 4 hours
-    public static final BooleanCachedFieldTrialParameter
-            sTabResumptionModuleAndroidShowDefaultReason =
-                    newBooleanCachedFieldTrialParameter(
-                            TAB_RESUMPTION_MODULE_ANDROID, "show_default_reason", false);
-    public static final BooleanCachedFieldTrialParameter
-            sTabResumptionModuleAndroidFetchHistoryBackend =
-                    newBooleanCachedFieldTrialParameter(
-                            TAB_RESUMPTION_MODULE_ANDROID, "fetch_history_backend", false);
-    public static final BooleanCachedFieldTrialParameter sTabResumptionModuleAndroidDisableBlend =
-            newBooleanCachedFieldTrialParameter(
-                    TAB_RESUMPTION_MODULE_ANDROID, "disable_blend", false);
-    public static final BooleanCachedFieldTrialParameter
-            sTabResumptionModuleAndroidUseDefaultAppFilter =
-                    newBooleanCachedFieldTrialParameter(
-                            TAB_RESUMPTION_MODULE_ANDROID, "use_default_app_filter", false);
-    public static final BooleanCachedFieldTrialParameter sTabResumptionModuleAndroidShowSeeMore =
-            newBooleanCachedFieldTrialParameter(
-                    TAB_RESUMPTION_MODULE_ANDROID, "show_see_more", false);
-    public static final BooleanCachedFieldTrialParameter
-            sTabResumptionModuleAndroidUseSalientImage =
-                    newBooleanCachedFieldTrialParameter(
-                            TAB_RESUMPTION_MODULE_ANDROID, "use_salient_image", false);
-    public static final IntCachedFieldTrialParameter sTabResumptionModuleAndroidMaxTilesNumber =
-            newIntCachedFieldTrialParameter(TAB_RESUMPTION_MODULE_ANDROID, "max_tiles_number", 2);
-    public static final BooleanCachedFieldTrialParameter sTabResumptionModuleAndroidEnableV2 =
-            newBooleanCachedFieldTrialParameter(TAB_RESUMPTION_MODULE_ANDROID, "enable_v2", false);
-    public static final BooleanCachedFieldTrialParameter sTabResumptionModuleAndroidCombineTabs =
-            newBooleanCachedFieldTrialParameter(
+    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidShowDefaultReason =
+            newBooleanCachedFeatureParam(
+                    TAB_RESUMPTION_MODULE_ANDROID, "show_default_reason", false);
+    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidFetchHistoryBackend =
+            newBooleanCachedFeatureParam(
+                    TAB_RESUMPTION_MODULE_ANDROID, "fetch_history_backend", false);
+    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidDisableBlend =
+            newBooleanCachedFeatureParam(TAB_RESUMPTION_MODULE_ANDROID, "disable_blend", false);
+    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidUseDefaultAppFilter =
+            newBooleanCachedFeatureParam(
+                    TAB_RESUMPTION_MODULE_ANDROID, "use_default_app_filter", false);
+    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidShowSeeMore =
+            newBooleanCachedFeatureParam(TAB_RESUMPTION_MODULE_ANDROID, "show_see_more", false);
+    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidUseSalientImage =
+            newBooleanCachedFeatureParam(TAB_RESUMPTION_MODULE_ANDROID, "use_salient_image", false);
+    public static final IntCachedFeatureParam sTabResumptionModuleAndroidMaxTilesNumber =
+            newIntCachedFeatureParam(TAB_RESUMPTION_MODULE_ANDROID, "max_tiles_number", 2);
+    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidEnableV2 =
+            newBooleanCachedFeatureParam(TAB_RESUMPTION_MODULE_ANDROID, "enable_v2", false);
+    public static final BooleanCachedFeatureParam sTabResumptionModuleAndroidCombineTabs =
+            newBooleanCachedFeatureParam(
                     TAB_RESUMPTION_MODULE_ANDROID, "show_tabs_in_one_module", false);
-    public static final BooleanCachedFieldTrialParameter sTabStateFlatBufferMigrateStaleTabs =
-            newBooleanCachedFieldTrialParameter(TAB_STATE_FLAT_BUFFER, "migrate_stale_tabs", false);
-    public static final IntCachedFieldTrialParameter
+    public static final BooleanCachedFeatureParam sTabStateFlatBufferMigrateStaleTabs =
+            newBooleanCachedFeatureParam(TAB_STATE_FLAT_BUFFER, "migrate_stale_tabs", false);
+    public static final IntCachedFeatureParam
             sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs =
-                    newIntCachedFieldTrialParameter(
+                    newIntCachedFeatureParam(
                             TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH,
                             "activity_creation_timestamp_diff_threshold_ms",
                             1000);
-    public static final BooleanCachedFieldTrialParameter sToolbarPhoneCleanupRefactorAnimations =
-            newBooleanCachedFieldTrialParameter(TOOLBAR_PHONE_CLEANUP, "refactor_animations", true);
-    public static final BooleanCachedFieldTrialParameter
-            sToolbarPhoneCleanupRemoveRedundantAnimCall =
-                    newBooleanCachedFieldTrialParameter(
-                            TOOLBAR_PHONE_CLEANUP,
-                            "remove_redundant_ntpupdate_in_lbvisualupdate",
-                            true);
+    public static final BooleanCachedFeatureParam sToolbarPhoneCleanupRefactorAnimations =
+            newBooleanCachedFeatureParam(TOOLBAR_PHONE_CLEANUP, "refactor_animations", true);
+    public static final BooleanCachedFeatureParam sToolbarPhoneCleanupRemoveRedundantAnimCall =
+            newBooleanCachedFeatureParam(
+                    TOOLBAR_PHONE_CLEANUP, "remove_redundant_ntpupdate_in_lbvisualupdate", true);
 
     /** Always register to push notification service. */
-    public static final BooleanCachedFieldTrialParameter sUseChimeAndroidSdkAlwaysRegister =
-            newBooleanCachedFieldTrialParameter(USE_CHIME_ANDROID_SDK, "always_register", false);
+    public static final BooleanCachedFeatureParam sUseChimeAndroidSdkAlwaysRegister =
+            newBooleanCachedFeatureParam(USE_CHIME_ANDROID_SDK, "always_register", false);
 
-    public static final IntCachedFieldTrialParameter sWebApkMinShellApkVersionValue =
-            newIntCachedFieldTrialParameter(WEB_APK_MIN_SHELL_APK_VERSION, "version", 146);
+    public static final IntCachedFeatureParam sWebApkMinShellApkVersionValue =
+            newIntCachedFeatureParam(WEB_APK_MIN_SHELL_APK_VERSION, "version", 146);
 
-    /** All {@link CachedFieldTrialParameter}s of features in this FeatureList */
-    public static final List<CachedFieldTrialParameter<?>> sParamsCached =
+    /** All {@link CachedFeatureParam}s of features in this FeatureList */
+    public static final List<CachedFeatureParam<?>> sParamsCached =
             List.of(
                     sAndroidAppIntegrationV2ContentTtlHours,
                     sAndroidAppIntegrationWithFaviconSkipDeviceCheck,
