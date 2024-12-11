@@ -64,7 +64,7 @@ class MockTrustedVaultClientBackend : public TrustedVaultClientBackend {
               FetchKeys,
               (id<SystemIdentity> identity,
                trusted_vault::SecurityDomainId security_domain_id,
-               KeyFetchedCallback completion),
+               KeysFetchedCallback completion),
               (override));
   MOCK_METHOD(void,
               MarkLocalKeysAsStale,
