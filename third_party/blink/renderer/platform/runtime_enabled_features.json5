@@ -4211,7 +4211,7 @@
       // disabling automatic size adjustments when non-auto values are used.
       // See: https://crbug.com/340389272.
       name: "TextSizeAdjustImprovements",
-      status: "experimental",
+      status: "stable",
     },
     {
       // crbug.com/379254069
