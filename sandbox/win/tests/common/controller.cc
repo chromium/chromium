@@ -95,7 +95,7 @@ namespace sandbox {
 
 // Constructs a full path to a file inside the system32 folder.
 std::wstring MakePathToSys32(const wchar_t* name, bool is_obj_man_path) {
-  wchar_t windows_path[MAX_PATH] = {0};
+  wchar_t windows_path[MAX_PATH] = {};
   if (0 == ::GetSystemWindowsDirectoryW(windows_path, MAX_PATH))
     return std::wstring();
 
@@ -113,7 +113,7 @@ std::wstring MakePathToSys32(const wchar_t* name, bool is_obj_man_path) {
 
 // Constructs a full path to a file inside the syswow64 folder.
 std::wstring MakePathToSysWow64(const wchar_t* name, bool is_obj_man_path) {
-  wchar_t windows_path[MAX_PATH] = {0};
+  wchar_t windows_path[MAX_PATH] = {};
   if (0 == ::GetSystemWindowsDirectoryW(windows_path, MAX_PATH))
     return std::wstring();
 
