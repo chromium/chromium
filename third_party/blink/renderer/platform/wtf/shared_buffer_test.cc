@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 #include <algorithm>
@@ -150,24 +145,22 @@ TEST(SharedBufferTest, copy) {
   Vector<char> test_data(10000);
   std::generate(test_data.begin(), test_data.end(), &std::rand);
 
-  size_t length = test_data.size();
-  scoped_refptr<SharedBuffer> shared_buffer =
-      SharedBuffer::Create(test_data.data(), length);
-  shared_buffer->Append(test_data.data(), length);
-  shared_buffer->Append(test_data.data(), length);
-  shared_buffer->Append(test_data.data(), length);
+  scoped_refptr<SharedBuffer> shared_buffer = SharedBuffer::Create(test_data);
+  shared_buffer->Append(test_data);
+  shared_buffer->Append(test_data);
+  shared_buffer->Append(test_data);
   // sharedBuffer must contain data more than segmentSize (= 0x1000) to check
   // copy().
-  ASSERT_EQ(length * 4, shared_buffer->size());
+  ASSERT_EQ(test_data.size() * 4, shared_buffer->size());
 
   Vector<char> clone = shared_buffer->CopyAs<Vector<char>>();
-  ASSERT_EQ(length * 4, clone.size());
+  ASSERT_EQ(test_data.size() * 4, clone.size());
   const Vector<char> contiguous = shared_buffer->CopyAs<Vector<char>>();
   ASSERT_EQ(contiguous.size(), shared_buffer->size());
-  ASSERT_EQ(0, memcmp(clone.data(), contiguous.data(), clone.size()));
+  ASSERT_EQ(clone, contiguous);
 
   clone.AppendVector(test_data);
-  ASSERT_EQ(length * 5, clone.size());
+  ASSERT_EQ(test_data.size() * 5, clone.size());
 }
 
 TEST(SharedBufferTest, constructorWithFlatData) {
@@ -186,7 +179,7 @@ TEST(SharedBufferTest, constructorWithFlatData) {
     // Shared buffers constructed from flat data should stay flat.
     ASSERT_EQ(segments.size(), 1ul);
     ASSERT_EQ(segments.front().size(), data.size());
-    EXPECT_EQ(memcmp(segments.front().data(), data.data(), data.size()), 0);
+    EXPECT_EQ(segments.front(), data);
   }
 }
 
@@ -211,54 +204,53 @@ TEST(SharedBufferTest, FlatData) {
   // Add enough data to hit a couple of segments.
   while (shared_buffer->size() < 10000) {
     check_flat_data(shared_buffer);
-    shared_buffer->Append("FooBarBaz", 9u);
+    shared_buffer->Append(base::span_from_cstring("FooBarBaz"));
   }
 }
 
 TEST(SharedBufferTest, GetIteratorAt) {
   Vector<char> data(300);
   std::generate(data.begin(), data.end(), &std::rand);
+  auto [first_segment, second_segment] = base::span(data).split_at(127u);
   auto buffer = SharedBuffer::Create();
-  const size_t first_segment_size = 127;
-  const size_t second_segment_size = data.size() - first_segment_size;
-  buffer->Append(data.data(), first_segment_size);
-  buffer->Append(data.data() + first_segment_size, second_segment_size);
+  buffer->Append(first_segment);
+  buffer->Append(second_segment);
 
   const auto it0 = buffer->GetIteratorAt(static_cast<size_t>(0));
   EXPECT_EQ(it0, buffer->cbegin());
   ASSERT_NE(it0, buffer->cend());
   ASSERT_EQ(it0->size(), 127u);
-  EXPECT_EQ(0, memcmp(it0->data(), data.data(), it0->size()));
+  EXPECT_EQ(*it0, first_segment);
 
   const auto it1 = buffer->GetIteratorAt(static_cast<size_t>(1));
   EXPECT_NE(it1, buffer->cbegin());
   ASSERT_NE(it1, buffer->cend());
   ASSERT_EQ(it1->size(), 126u);
-  EXPECT_EQ(0, memcmp(it1->data(), data.data() + 1, it1->size()));
+  EXPECT_EQ(*it1, first_segment.subspan(1u));
 
   const auto it126 = buffer->GetIteratorAt(static_cast<size_t>(126));
   EXPECT_NE(it126, buffer->cbegin());
   ASSERT_NE(it126, buffer->cend());
   ASSERT_EQ(it126->size(), 1u);
-  EXPECT_EQ(0, memcmp(it126->data(), data.data() + 126, it126->size()));
+  EXPECT_EQ(*it126, first_segment.subspan(126u));
 
   const auto it127 = buffer->GetIteratorAt(static_cast<size_t>(127));
   EXPECT_NE(it127, buffer->cbegin());
   ASSERT_NE(it127, buffer->cend());
-  ASSERT_EQ(it127->size(), second_segment_size);
-  EXPECT_EQ(0, memcmp(it127->data(), data.data() + 127, it127->size()));
+  ASSERT_EQ(it127->size(), second_segment.size());
+  EXPECT_EQ(*it127, second_segment);
 
   const auto it128 = buffer->GetIteratorAt(static_cast<size_t>(128));
   EXPECT_NE(it128, buffer->cbegin());
   ASSERT_NE(it128, buffer->cend());
-  ASSERT_EQ(it128->size(), second_segment_size - 1);
-  EXPECT_EQ(0, memcmp(it128->data(), data.data() + 128, it128->size()));
+  ASSERT_EQ(it128->size(), second_segment.size() - 1);
+  EXPECT_EQ(*it128, second_segment.subspan(1u));
 
   const auto it299 = buffer->GetIteratorAt(static_cast<size_t>(299));
   EXPECT_NE(it299, buffer->cbegin());
   ASSERT_NE(it299, buffer->cend());
   ASSERT_EQ(it299->size(), 1u);
-  EXPECT_EQ(0, memcmp(it299->data(), data.data() + 299, it299->size()));
+  EXPECT_EQ(*it299, second_segment.last(1u));
 
   // All of the iterators above are different each other.
   const auto iters = std::to_array<SharedBuffer::Iterator>({
@@ -312,7 +304,7 @@ TEST(SharedBufferIteratorTest, Empty) {
 }
 
 TEST(SharedBufferIteratorTest, SingleSegment) {
-  auto buffer = SharedBuffer::Create("hello", static_cast<size_t>(5));
+  auto buffer = SharedBuffer::Create(base::span_from_cstring("hello"));
 
   EXPECT_EQ(buffer->begin(), buffer->cbegin());
   EXPECT_EQ(buffer->end(), buffer->cend());

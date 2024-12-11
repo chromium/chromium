@@ -93,8 +93,7 @@ std::unique_ptr<ImageDecoder> CreateImageDecoder(DecoderType decoder_type,
 void FuzzDecoder(DecoderType decoder_type, FuzzedDataProvider& fdp) {
   auto decoder = CreateImageDecoder(decoder_type, fdp);
   auto remaining_data = fdp.ConsumeRemainingBytes<char>();
-  auto buffer =
-      SharedBuffer::Create(remaining_data.data(), remaining_data.size());
+  auto buffer = SharedBuffer::Create(remaining_data);
   const bool kAllDataReceived = true;
   decoder->SetData(buffer.get(), kAllDataReceived);
   for (wtf_size_t frame = 0; frame < decoder->FrameCount(); ++frame) {
