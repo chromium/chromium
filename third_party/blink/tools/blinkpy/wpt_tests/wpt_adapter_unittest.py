@@ -5,7 +5,6 @@
 import contextlib
 import io
 import json
-import os
 import textwrap
 import unittest
 from datetime import datetime
@@ -394,7 +393,8 @@ class WPTAdapterTest(unittest.TestCase):
             '--additional-env-var=NEW_ENV_VAR=new_env_var_value'
         ])
         with adapter.test_env():
-            self.assertEqual(os.environ['NEW_ENV_VAR'], 'new_env_var_value')
+            self.assertEqual(self.host.environ['NEW_ENV_VAR'],
+                             'new_env_var_value')
 
     def test_show_results(self):
         adapter = WPTAdapter.from_args(self.host, [
@@ -410,16 +410,9 @@ class WPTAdapterTest(unittest.TestCase):
                               post_run_tasks.open_url))
         with adapter.test_env() as options:
             self.results_processor.num_initial_failures = 1
+        self.assertNotIn('XDG_CONFIG_HOME', self.host.environ)
         self.assertEqual(post_run_tasks.mock_calls, [
             mock.call.clean_up_test_run(),
             mock.call.open_url('file:///mock-checkout/out/Release/'
                                'layout-test-results/results.html'),
         ])
-
-    def test_font_config(self):
-        adapter = WPTAdapter.from_args(
-            self.host, ['--product=headless_shell', '--no-manifest-update'])
-        with adapter.test_env() as options:
-            config_path = self.fs.join(self.host.environ['XDG_CONFIG_HOME'],
-                                       'fontconfig', 'fonts.conf')
-            self.assertTrue(self.fs.exists(config_path))

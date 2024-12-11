@@ -8,12 +8,10 @@ import contextlib
 import functools
 import json
 import logging
-import os
 import optparse
 import signal
 import subprocess
 import sys
-import textwrap
 from collections import defaultdict
 from datetime import datetime
 from typing import List, Optional
@@ -563,8 +561,8 @@ class WPTAdapter:
                 name, value = string_variable.split('=', 1)
                 logger.info('Setting environment variable %s to %s', name,
                             value)
-                os.environ[name] = value
-            os.environ['FONTCONFIG_SYSROOT'] = self.port.build_path()
+                self.host.environ[name] = value
+            self.host.environ['FONTCONFIG_SYSROOT'] = self.port.build_path()
 
             if self.using_upstream_wpt:
                 tests_root = self.tools_root
@@ -646,24 +644,6 @@ class WPTAdapter:
         run_info_path = self.fs.join(tmp_dir, 'mozinfo.json')
         with self.fs.open_text_file_for_writing(run_info_path) as file_handle:
             json.dump(run_info, file_handle)
-
-        # Chromium embeds the `//third_party/fontconfig/` library to load fonts.
-        # Add a config [0] to discover test fonts copied from
-        # `//third_party/test_fonts/`.
-        #
-        # [0]: https://www.freedesktop.org/software/fontconfig/fontconfig-user.html
-        test_fonts_dir = self.port.build_path('test_fonts')
-        font_config = textwrap.dedent(f"""\
-            <?xml version="1.0"?>
-            <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
-            <fontconfig>
-              <dir>{test_fonts_dir}</dir>
-            </fontconfig>
-            """)
-        font_config_path = self.fs.join(tmp_dir, 'fontconfig', 'fonts.conf')
-        self.fs.maybe_make_directory(self.fs.dirname(font_config_path))
-        self.fs.write_text_file(font_config_path, font_config)
-        self.host.environ['XDG_CONFIG_HOME'] = tmp_dir
 
     @contextlib.contextmanager
     def process_and_upload_results(self, runner_options: argparse.Namespace):
@@ -809,8 +789,9 @@ def main(argv) -> int:
         sys.stdout.reconfigure(encoding='utf-8')
         sys.stderr.reconfigure(encoding='utf-8')
 
+    host = Host()
     # Also apply utf-8 mode to python subprocesses.
-    os.environ['PYTHONUTF8'] = '1'
+    host.environ['PYTHONUTF8'] = '1'
 
     # Convert SIGTERM to be handled as KeyboardInterrupt to handle early termination
     # Same handle is declared later on in wptrunner
@@ -818,7 +799,6 @@ def main(argv) -> int:
     # This early declaration allow graceful exit when Chromium swarming kill process before wpt starts
     handle_interrupt_signals()
 
-    host = Host()
     exit_code = exit_codes.UNEXPECTED_ERROR_EXIT_STATUS
     try:
         adapter = WPTAdapter.from_args(host, argv)
