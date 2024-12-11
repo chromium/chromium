@@ -49,6 +49,9 @@ void ProfileMenuCoordinator::Show(bool is_source_accelerator) {
   browser.window()->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHProfileSwitchFeature,
       FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  browser.window()->NotifyFeaturePromoFeatureUsed(
+      feature_engagement::kIPHSupervisedUserProfileSigninFeature,
+      FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
 
   std::unique_ptr<ProfileMenuViewBase> bubble;
   bool is_incognito = browser.profile()->IsIncognitoProfile();

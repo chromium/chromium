@@ -235,7 +235,8 @@ class ProfileMenuViewExtensionsTest
  public:
   ProfileMenuViewExtensionsTest()
       : InteractiveFeaturePromoTestT(UseDefaultTrackerAllowingPromos(
-            {feature_engagement::kIPHProfileSwitchFeature})) {}
+            {feature_engagement::kIPHProfileSwitchFeature,
+             feature_engagement::kIPHSupervisedUserProfileSigninFeature})) {}
 
   // InteractiveFeaturePromoTestT:
   void SetUpOnMainThread() override {
@@ -363,12 +364,32 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
 }
 
 // Opening the profile menu dismisses any existing IPH.
-// Regression test for https://crbug.com/1205901
-IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseIPH) {
+// Regression test for crbug.com/1205901 (Profile Switch IPH)
+// and for crbug.com/378449081 (Supervised User IPH).
+class ProfileMenuViewExtensionsIphDismissTest
+    : public ProfileMenuViewExtensionsTest,
+      public testing::WithParamInterface<base::test::FeatureRef> {
+ public:
+  const base::Feature& GetIphFeature() { return *GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ProfileMenuViewExtensionsIphDismissTest,
+    testing::Values(
+        base::test::FeatureRef(feature_engagement::kIPHProfileSwitchFeature),
+        base::test::FeatureRef(
+            feature_engagement::kIPHSupervisedUserProfileSigninFeature)),
+    [](const auto& info) {
+      return info.param == feature_engagement::kIPHProfileSwitchFeature
+                 ? "_ProfileSwitch"
+                 : "_SupervisedUser";
+    });
+
+IN_PROC_BROWSER_TEST_P(ProfileMenuViewExtensionsIphDismissTest, CloseIPH) {
   // Display the IPH.
   base::RunLoop run_loop;
-  user_education::FeaturePromoParams params(
-      feature_engagement::kIPHProfileSwitchFeature);
+  user_education::FeaturePromoParams params(GetIphFeature());
   params.show_promo_result_callback = base::BindLambdaForTesting(
       [&run_loop](user_education::FeaturePromoResult result) {
         ASSERT_TRUE(result);
@@ -376,15 +397,13 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseIPH) {
       });
   browser()->window()->MaybeShowFeaturePromo(std::move(params));
   run_loop.Run();
-  EXPECT_TRUE(browser()->window()->IsFeaturePromoActive(
-      feature_engagement::kIPHProfileSwitchFeature));
+  EXPECT_TRUE(browser()->window()->IsFeaturePromoActive(GetIphFeature()));
 
   // Open the menu.
   ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
 
   // Check the IPH is no longer showing.
-  EXPECT_FALSE(browser()->window()->IsFeaturePromoActive(
-      feature_engagement::kIPHProfileSwitchFeature));
+  EXPECT_FALSE(browser()->window()->IsFeaturePromoActive(GetIphFeature()));
 }
 
 // Test that sets up a primary account (without sync) and simulates a click on
