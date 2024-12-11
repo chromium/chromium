@@ -3,22 +3,22 @@
 
 <if expr="is_android">
   <!--Ewallet and Pix payment method settings pages-->
-  <message name="IDS_SETTINGS_MANAGE_EWALLET_TITLE" desc="Title for the preference that allows the user to manage eWallet accounts when user has only eWallet accounts available to be used." formatter_data="android_java">
+  <message name="IDS_SETTINGS_MANAGE_EWALLET_TITLE" desc="Title for the preference that allows the user to manage eWallet accounts when user has only eWallet accounts available to be used. 'eWallet' is a payment system that should not be translated." formatter_data="android_java">
     Pay with eWallet
   </message>
-  <message name="IDS_SETTINGS_MANAGE_PIX_TITLE" desc="Title for the preference that allows the user to manage Pix accounts when user has only Pix accounts available to be used. 'Pix' is a Brazilian payment system that should not be translated." formatter_data="android_java">
+  <message name="IDS_SETTINGS_MANAGE_PIX_TITLE" desc="Title for the preference that allows the user to manage Pix accounts when user has only Pix accounts available to be used. 'eWallet' and 'Pix' are payment systems that should not be translated." formatter_data="android_java">
     Pay with Pix
   </message>
-  <message name="IDS_SETTINGS_MANAGE_EWALLET_AND_PIX_TITLE" desc="Title for the preference that allows the user to manage both eWallet and Pix when user has both eWallet and Pix accounts available to be used. 'Pix' is a Brazilian payment system that should not be translated." formatter_data="android_java">
+  <message name="IDS_SETTINGS_MANAGE_EWALLET_AND_PIX_TITLE" desc="Title for the preference that allows the user to manage both eWallet and Pix when user has both eWallet and Pix accounts available to be used. 'eWallet' and 'Pix' are payment systems that should not be translated." formatter_data="android_java">
     Pay with eWallet and Pix
   </message>
-  <message name="IDS_SETTINGS_MANAGE_EWALLET_DESCRIPTION" desc="Description for the preference that allows the user to manage eWallet accounts." formatter_data="android_java">
+  <message name="IDS_SETTINGS_MANAGE_EWALLET_DESCRIPTION" desc="Description for the preference that allows the user to manage eWallet accounts. 'eWallet' is a payment system that should not be translated." formatter_data="android_java">
     When you make purchases in Chrome, see eWallet as an option
   </message>
   <message name="IDS_SETTINGS_MANAGE_PIX_DESCRIPTION" desc="Description for the preference that allows the user to manage Pix accounts. 'Pix' is a Brazilian payment system that should not be translated." formatter_data="android_java">
     When you make purchases in Chrome, see Pix as an option
   </message>
-  <message name="IDS_SETTINGS_MANAGE_EWALLET_AND_PIX_DESCRIPTION" desc="Description for the preference that allows the user to manage eWallet and Pix accounts. 'Pix' is a Brazilian payment system that should not be translated." formatter_data="android_java">
+  <message name="IDS_SETTINGS_MANAGE_EWALLET_AND_PIX_DESCRIPTION" desc="Description for the preference that allows the user to manage eWallet and Pix accounts. 'eWallet' and 'Pix' are payment systems that should not be translated." formatter_data="android_java">
     When you make purchases in Chrome, see eWallet and Pix as options
   </message>
   <!-- Ewallet and Pix related strings -->
