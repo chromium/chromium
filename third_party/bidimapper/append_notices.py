@@ -41,7 +41,7 @@ class ThirdPartyNoticeParser:
         for license_path in self._license_dir.glob('LICENSE.*'):
             license_path.unlink()
 
-        lines: list[str] = []
+        lines = []
         with self._third_party_notices_path.open('r') as notices_file:
             lines = notices_file.readlines()
         if len(lines) == 0:
@@ -68,7 +68,7 @@ class ThirdPartyNoticeParser:
                 state = self._print_license_state
                 state(lines, line_index)
 
-    def _before_headers_state(self, lines: list[str], line_index: int):
+    def _before_headers_state(self, lines, line_index):
         line = lines[line_index]
         if line == '':
             return self._before_headers_state, line_index + 1
@@ -76,7 +76,7 @@ class ThirdPartyNoticeParser:
         self._headers = {}
         return self._read_headers_state, line_index
 
-    def _read_headers_state(self, lines: list[str], line_index: int):
+    def _read_headers_state(self, lines, line_index):
         line = lines[line_index]
         if line == '':
             self._license_begin = line_index + 1
@@ -93,13 +93,13 @@ class ThirdPartyNoticeParser:
         self._headers[header_key] = line_index
         return self._read_headers_state, line_index + 1
 
-    def _read_license_state(self, lines: list[str], line_index: int):
+    def _read_license_state(self, lines, line_index):
         self._license_end = line_index
         if lines[line_index] == _DEPENDENCY_DIVIDER:
             return self._print_license_state, line_index + 1
         return self._read_license_state, line_index + 1
 
-    def _print_license_state(self, lines: list[str], line_index: int):
+    def _print_license_state(self, lines, line_index):
         expected_headers = ['Name', 'URL', 'Version', 'License']
         for header in expected_headers:
             if header not in self._headers:
