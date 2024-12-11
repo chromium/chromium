@@ -43,7 +43,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "android-13-x64-rel",
+              "builder": "android-15-x64-rel",
               "project": "chromium"
             },
             "builder_spec": {
@@ -110,7 +110,7 @@
         },
         {
           "bucket": "ci",
-          "builder": "android-13-x64-rel",
+          "builder": "android-15-x64-rel",
           "project": "chromium"
         },
         {

@@ -3879,7 +3879,7 @@ ci.builder(
     ),
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
-        category = "on_cq|x64",
+        category = "builder_tester|x64",
         short_name = "13",
     ),
     contact_team_email = "clank-engprod@google.com",
@@ -4279,9 +4279,8 @@ ci.builder(
 
 ci.builder(
     name = "android-15-x64-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Run chromium tests on Android 15 emulators.",
-    # TODO(crbug.com/40286106): Enable on branches once stable
-    #branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -4444,7 +4443,7 @@ ci.builder(
     ),
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
-        category = "builder_tester|x64",
+        category = "on_cq|x64",
         short_name = "15",
     ),
     contact_team_email = "clank-engprod@google.com",

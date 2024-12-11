@@ -5,3 +5,7 @@
 -All/AndroidFrameSinkManagerTest.RenderInputRouterLifecycle/InputOnViz_Enabled
 -All/AndroidFrameSinkManagerTest.RenderInputRouterSupportTraversals/InputOnViz_Enabled
 -All/AndroidFrameSinkManagerTest.VizRIRDelegateLifecycle/InputOnViz_Enabled
+
+# crbug.com//383383633
+-FlingSchedulerTest.FlingCancelled
+-FlingSchedulerTest.ScheduleNextFlingProgress
