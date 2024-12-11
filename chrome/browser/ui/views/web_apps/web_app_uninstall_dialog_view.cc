@@ -126,10 +126,8 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
   // For IWAs checkbox will not be displayed, removal of storage is
   // automatically enforced.
   if (!provider_->registrar_unsafe().IsIsolated(app_id_)) {
-    std::u16string checkbox_label = l10n_util::GetStringFUTF16(
-        IDS_EXTENSION_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX,
-        url_formatter::FormatUrlForSecurityDisplay(
-            app_start_url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+    std::u16string checkbox_label =
+        l10n_util::GetStringUTF16(IDS_APP_ALSO_DELETE_APPS_DATA);
 
     auto checkbox = std::make_unique<views::Checkbox>(checkbox_label);
     checkbox->SetMultiLine(true);

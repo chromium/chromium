@@ -1263,6 +1263,10 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
 
+      <message name="IDS_APP_ALSO_DELETE_APPS_DATA" desc="Checkbox text to ask the user during uninstall; Whether they want to remove associated data for the app being uninstalled. Only used when uninstalling an app associated with a particular website.">
+        Remove this apps data from Chrome
+      </message>
+
       <!-- App shortcuts -->
       <message name="IDS_APP_SHORTCUTS_SUBDIR_NAME" desc="Name for the Chrome Apps Start Menu folder name.">
         Chrome Apps
