@@ -621,6 +621,8 @@ component("skia") {
     deps += [ ":rust_png_ffi" ]
     public += skia_codec_rust_png_public
     sources += skia_codec_rust_png
+    public += skia_encode_rust_png_public
+    sources += skia_encode_rust_png_srcs
   }
 }
 
