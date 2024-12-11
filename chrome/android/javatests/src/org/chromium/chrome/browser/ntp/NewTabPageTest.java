@@ -861,7 +861,7 @@ public class NewTabPageTest {
     @SmallTest
     public void testRecordHistogramProfileButtonClick_Ntp() {
         // Identity Disc should be shown on sign-in state.
-        addAccountWithNonDisplayableEmail();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         HISTOGRAM_NTP_MODULE_CLICK, ModuleTypeOnStartAndNtp.PROFILE_BUTTON);
@@ -869,7 +869,6 @@ public class NewTabPageTest {
         histogramWatcher.assertExpected(
                 HISTOGRAM_NTP_MODULE_CLICK
                         + " is not recorded correctly when click on the profile button.");
-        mSigninTestRule.signOut();
     }
 
     /**
@@ -1065,13 +1064,5 @@ public class NewTabPageTest {
 
     private static HistogramWatcher expectNoRecordsForNtpModuleClick() {
         return HistogramWatcher.newBuilder().expectNoRecords(HISTOGRAM_NTP_MODULE_CLICK).build();
-    }
-
-    /** Transform the New Tab Page into the signed-in state. */
-    private void addAccountWithNonDisplayableEmail() {
-        mSigninTestRule.addAccountThenSignin(TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
-        // TODO(crbug.com/40721874): Remove the reload once the sign-in without sync observer
-        //  is implemented.
-        ThreadUtils.runOnUiThreadBlocking(mTab::reload);
     }
 }

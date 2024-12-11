@@ -472,8 +472,8 @@ public class RecentTabsPageTest {
     @MediumTest
     @Feature({"RecentTabsPage"})
     public void testEmptyStateView() {
-        mSigninTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
-        SigninTestUtil.signinAndEnableHistorySync(TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        SigninTestUtil.signinAndEnableHistorySync(TestAccounts.ACCOUNT1);
 
         // Open an empty recent tabs page and confirm empty view shows.
         mPage = loadRecentTabsPage();
