@@ -21,4 +21,14 @@ found in the LICENSE file.
         app:leading="@dimen/text_size_medium_leading"
         style="@style/TextAppearance.TextMedium.Secondary" />
 
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/privacy_sandbox_m1_notice_eea_ad_measurement_learn_more_description_android"
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="14dp"
+        android:text="@string/privacy_sandbox_m1_notice_eea_learn_more_description_android"
+        app:leading="@dimen/text_size_medium_leading"
+        style="@style/TextAppearance.TextMedium.Secondary" />
+
 </LinearLayout>
