@@ -463,7 +463,7 @@ void InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest(
   // because of the first ScrollBegin so clear this so we don't spurriously
   // call ScrollEnd. It will be set again in HandleGestureScrollBegin.
   currently_active_gesture_device_ = std::nullopt;
-  current_active_gesture_scroll_modifiers_ = std::nullopt;
+  currently_active_gesture_scroll_modifiers_ = std::nullopt;
 
   auto* gesture_event =
       static_cast<blink::WebGestureEvent*>(event->EventPointer());
@@ -558,7 +558,7 @@ void InputHandlerProxy::DispatchSingleInputEvent(
         // gesture was handled but the scroll was not consumed.
         currently_active_gesture_device_ =
             static_cast<const WebGestureEvent&>(event).SourceDevice();
-        current_active_gesture_scroll_modifiers_ = event.GetModifiers();
+        currently_active_gesture_scroll_modifiers_ = event.GetModifiers();
       }
       break;
 
@@ -566,7 +566,7 @@ void InputHandlerProxy::DispatchSingleInputEvent(
     case WebGestureEvent::Type::kGesturePinchEnd:
       if (!handling_gesture_on_impl_thread_) {
         currently_active_gesture_device_ = std::nullopt;
-        current_active_gesture_scroll_modifiers_ = std::nullopt;
+        currently_active_gesture_scroll_modifiers_ = std::nullopt;
       }
       break;
     case WebInputEvent::Type::kTouchStart:
@@ -633,7 +633,7 @@ void InputHandlerProxy::GenerateAndDispatchSytheticScrollPrediction(
       scroll_predictor_->GenerateSyntheticScrollUpdate(
           args.frame_time, args.interval,
           currently_active_gesture_device_.value(),
-          current_active_gesture_scroll_modifiers_.value_or(0));
+          currently_active_gesture_scroll_modifiers_.value_or(0));
 
   int64_t trace_id = event_with_callback->latency_info().trace_id();
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
@@ -1257,7 +1257,7 @@ void InputHandlerProxy::InputHandlerScrollEnd() {
 
   DCHECK(!gesture_pinch_in_progress_);
   currently_active_gesture_device_ = std::nullopt;
-  current_active_gesture_scroll_modifiers_ = std::nullopt;
+  currently_active_gesture_scroll_modifiers_ = std::nullopt;
 }
 
 InputHandlerProxy::EventDisposition InputHandlerProxy::HitTestTouchEvent(

@@ -390,7 +390,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // Set only when the compositor input handler is handling a gesture. Denotes
   // which modifiers were present on the `WebInputEvent` so they can be applied
   // in GenerateAndDispatchSytheticScrollPrediction.
-  std::optional<int> current_active_gesture_scroll_modifiers_;
+  std::optional<int> currently_active_gesture_scroll_modifiers_;
 
   base::OnceClosure queue_flushed_callback_;
 
