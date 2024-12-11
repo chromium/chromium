@@ -61,17 +61,11 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
 - (void)setUp {
   [super setUp];
 
-  [ChromeEarlGrey resetDataForLocalStatePref:
-                      safety_check_prefs::kSafetyCheckInMagicStackDisabledPref];
-
   [NewTabPageAppInterface disableSetUpList];
 }
 
 - (void)tearDownHelper {
   [[self class] closeAllTabs];
-
-  [ChromeEarlGrey resetDataForLocalStatePref:
-                      safety_check_prefs::kSafetyCheckInMagicStackDisabledPref];
 
   [super tearDownHelper];
 }
@@ -79,9 +73,7 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_disabled.push_back(
-      segmentation_platform::features::kSegmentationPlatformTipsEphemeralCard);
-  config.features_disabled.push_back(kSafetyCheckNotifications);
+  config.features_enabled.push_back(kHomeCustomization);
   config.additional_args.push_back("--test-ios-module-ranker=safety_check");
 
   return config;
@@ -90,6 +82,11 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
 // Tests that long pressing the Safety Check view displays a context menu; tests
 // the Safety Check view is properly hidden via the context menu.
 - (void)testLongPressAndHide {
+  // Enable relevant preferences for the test.
+  [ChromeEarlGrey
+      setBoolValue:YES
+       forUserPref:prefs::kHomeCustomizationMagicStackSafetyCheckEnabled];
+
   // Intentionally forces a Safety Check error to ensure module visibility in
   // the Magic Stack.
   [ChromeEarlGrey
