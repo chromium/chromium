@@ -113,6 +113,11 @@ proto_library("mediapipe_proto") {
   cc_generator_options = "lite=true:"
   deps = [ ":any_lite_proto_impl" ]
   sources = [
+    "src/mediapipe/calculators/audio/mfcc_mel_calculators.proto",
+    "src/mediapipe/calculators/audio/rational_factor_resample_calculator.proto",
+    "src/mediapipe/calculators/audio/spectrogram_calculator.proto",
+    "src/mediapipe/calculators/audio/stabilized_log_calculator.proto",
+    "src/mediapipe/calculators/audio/time_series_framer_calculator.proto",
     "src/mediapipe/calculators/core/flow_limiter_calculator.proto",
     "src/mediapipe/calculators/core/split_vector_calculator.proto",
     "src/mediapipe/calculators/internal/callback_packet_calculator.proto",
