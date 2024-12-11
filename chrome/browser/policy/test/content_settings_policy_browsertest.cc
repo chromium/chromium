@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
@@ -668,5 +669,111 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsPolicyTest, DirectSocketsBlockedForUrls) {
             GetDirectSocketsContentSetting(GetTestingUrl()));
 }
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+class SmartCardConnectPolicyTest : public PolicyTest {
+ public:
+  SmartCardConnectPolicyTest() {
+    feature_list_.InitAndEnableFeature(blink::features::kSmartCard);
+  }
+
+  void SetUpOnMainThread() override {
+    PolicyTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestingUrl()));
+  }
+
+ protected:
+  GURL GetTestingUrl() const {
+    return embedded_test_server()->GetURL("/empty.html");
+  }
+
+  std::pair<ContentSetting, content_settings::SettingSource>
+  GetSmartCardConnectContentSetting(const GURL& url) {
+    content_settings::SettingInfo settings_info;
+    auto content_setting =
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+            ->GetContentSetting(/*primary_url=*/url, /*secondary_url=*/url,
+                                ContentSettingsType::SMART_CARD_GUARD,
+                                &settings_info);
+    return std::make_pair(content_setting, settings_info.source);
+  }
+
+  void SetSmartCardConnectAllowedFor(std::string_view url) {
+    SetPolicy(&policies_, key::kSmartCardConnectAllowedForUrls,
+              base::Value(base::Value::List().Append(url)));
+    UpdateProviderPolicy(policies_);
+  }
+
+  void SetSmartCardConnectBlockedFor(std::string_view url) {
+    SetPolicy(&policies_, key::kSmartCardConnectBlockedForUrls,
+              base::Value(base::Value::List().Append(url)));
+    UpdateProviderPolicy(policies_);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  PolicyMap policies_;
+};
+
+IN_PROC_BROWSER_TEST_F(SmartCardConnectPolicyTest,
+                       SmartCardConnectAllowedForUrls) {
+  ASSERT_EQ(std::make_pair(CONTENT_SETTING_ASK,
+                           content_settings::SettingSource::kUser),
+            GetSmartCardConnectContentSetting(GetTestingUrl()));
+
+  SetSmartCardConnectAllowedFor(GetTestingUrl().spec());
+
+  EXPECT_EQ(std::make_pair(CONTENT_SETTING_ALLOW,
+                           content_settings::SettingSource::kPolicy),
+            GetSmartCardConnectContentSetting(GetTestingUrl()));
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardConnectPolicyTest,
+                       SmartCardConnectBlockedForUrls) {
+  ASSERT_EQ(std::make_pair(CONTENT_SETTING_ASK,
+                           content_settings::SettingSource::kUser),
+            GetSmartCardConnectContentSetting(GetTestingUrl()));
+
+  SetSmartCardConnectBlockedFor(GetTestingUrl().spec());
+
+  EXPECT_EQ(std::make_pair(CONTENT_SETTING_BLOCK,
+                           content_settings::SettingSource::kPolicy),
+            GetSmartCardConnectContentSetting(GetTestingUrl()));
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardConnectPolicyTest,
+                       SmartCardConnectBlockedForWildcard) {
+  ASSERT_EQ(std::make_pair(CONTENT_SETTING_ASK,
+                           content_settings::SettingSource::kUser),
+            GetSmartCardConnectContentSetting(GetTestingUrl()));
+
+  SetSmartCardConnectBlockedFor("*");
+
+  ASSERT_EQ(std::make_pair(CONTENT_SETTING_BLOCK,
+                           content_settings::SettingSource::kPolicy),
+            GetSmartCardConnectContentSetting(GetTestingUrl()));
+
+  // Allow should override block
+  SetSmartCardConnectAllowedFor(GetTestingUrl().spec());
+
+  EXPECT_EQ(std::make_pair(CONTENT_SETTING_ALLOW,
+                           content_settings::SettingSource::kPolicy),
+            GetSmartCardConnectContentSetting(GetTestingUrl()));
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardConnectPolicyTest,
+                       SmartCardConnectCannotBeAllowedForWildcard) {
+  ASSERT_EQ(std::make_pair(CONTENT_SETTING_ASK,
+                           content_settings::SettingSource::kUser),
+            GetSmartCardConnectContentSetting(GetTestingUrl()));
+
+  SetSmartCardConnectAllowedFor("*");
+
+  ASSERT_EQ(std::make_pair(CONTENT_SETTING_ASK,
+                           content_settings::SettingSource::kUser),
+            GetSmartCardConnectContentSetting(GetTestingUrl()));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace policy

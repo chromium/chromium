@@ -71,6 +71,11 @@ class SmartCardPermissionContext
   // Returns persistent grants, grouped by reader.
   std::vector<ReaderGrants> GetPersistentReaderGrants();
 
+  // Checks whether |origin|'s value of |guard_content_settings_type_| is both:
+  // - set to "allow"
+  // - set by policy
+  bool IsAllowlistedByPolicy(const url::Origin& origin);
+
  private:
   friend class SmartCardPermissionContextTest;
   friend class settings::SmartCardReaderPermissionsSiteSettingsHandlerTest;

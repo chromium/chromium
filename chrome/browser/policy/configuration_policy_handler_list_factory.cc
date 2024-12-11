@@ -801,6 +801,14 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kSitePerProcess,
     prefs::kSitePerProcess,
     base::Value::Type::BOOLEAN },
+#if BUILDFLAG(IS_CHROMEOS)
+  { key::kSmartCardConnectAllowedForUrls,
+    prefs::kManagedSmartCardConnectAllowedForUrls,
+    base::Value::Type::LIST },
+  { key::kSmartCardConnectBlockedForUrls,
+    prefs::kManagedSmartCardConnectBlockedForUrls,
+    base::Value::Type::LIST },
+#endif
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   { key::kSpellCheckServiceEnabled,
     spellcheck::prefs::kSpellCheckUseSpellingService,

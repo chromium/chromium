@@ -161,7 +161,7 @@ bool SmartCardPermissionContext::HasReaderPermission(
     const url::Origin& origin,
     const std::string& reader_name) {
   if (!CanRequestObjectPermission(origin)) {
-    return false;
+    return IsAllowlistedByPolicy(origin);
   }
 
   return ephemeral_grants_[origin].contains(reader_name) ||
@@ -187,7 +187,7 @@ void SmartCardPermissionContext::RequestReaderPermisssion(
   }
 
   if (!CanRequestObjectPermission(origin)) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(IsAllowlistedByPolicy(origin));
     return;
   }
 
@@ -398,4 +398,20 @@ void SmartCardPermissionContext::OnPermissionDenied(const url::Origin& origin) {
                                         ContentSetting::CONTENT_SETTING_BLOCK);
     consecutive_denials_.erase(origin);
   }
+}
+
+bool SmartCardPermissionContext::IsAllowlistedByPolicy(
+    const url::Origin& origin) {
+  if (!guard_content_settings_type_) {
+    return false;
+  }
+
+  content_settings::SettingInfo setting_info;
+  auto content_setting =
+      HostContentSettingsMapFactory::GetForProfile(&profile_.get())
+          ->GetContentSetting(origin.GetURL(), GURL(),
+                              ContentSettingsType::SMART_CARD_GUARD,
+                              &setting_info);
+  return setting_info.source == content_settings::SettingSource::kPolicy &&
+         content_setting == CONTENT_SETTING_ALLOW;
 }

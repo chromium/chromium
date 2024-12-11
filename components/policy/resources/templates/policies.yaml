@@ -1318,6 +1318,8 @@ policies:
   1317: FilePickerChooseFromDriveSettings
   1318: LiveTranslateEnabled
   1319: DevicePowerBatteryChargingOptimization
+  1320: SmartCardConnectAllowedForUrls
+  1321: SmartCardConnectBlockedForUrls
 
 atomic_groups:
   1: Homepage
@@ -1374,4 +1376,4 @@ atomic_groups:
   52: DirectSocketsSettings
   53: SkyVaultSettings
   54: BrowserEventReporting
-  55: DirectSocketsPrivateNetworkAccessSettings
+  55: SmartCardConnectSettings

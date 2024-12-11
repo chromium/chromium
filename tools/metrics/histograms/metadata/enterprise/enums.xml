@@ -2191,6 +2191,8 @@ chromium-metrics-reviews@google.com.
   <int value="1317" label="FilePickerChooseFromDriveSettings"/>
   <int value="1318" label="LiveTranslateEnabled"/>
   <int value="1319" label="DevicePowerBatteryChargingOptimization"/>
+  <int value="1320" label="SmartCardConnectAllowedForUrls"/>
+  <int value="1321" label="SmartCardConnectBlockedForUrls"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
