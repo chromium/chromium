@@ -13,6 +13,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <string>
 #include <utility>
 
@@ -43,7 +44,7 @@ struct TestData {
   const ImeTextSpan ime_text_spans[10];
 };
 
-const TestData kTestData[] = {
+const auto kTestData = std::to_array<TestData>({
     // Normal case
     {"One Two Three",
      {{PANGO_ATTR_UNDERLINE, PANGO_UNDERLINE_SINGLE, 0, 3},
@@ -111,7 +112,7 @@ const TestData kTestData[] = {
       {9, 15, SK_ColorTRANSPARENT, ui::ImeTextSpan::Thickness::kThin,
        SK_ColorTRANSPARENT},
       {0, 0, 0, ui::ImeTextSpan::Thickness::kThin, SK_ColorTRANSPARENT}}},
-};
+});
 
 void CompareImeTextSpan(const ImeTextSpan& a, const ui::ImeTextSpan& b) {
   EXPECT_EQ(a.start_offset, b.start_offset);

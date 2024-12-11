@@ -14,6 +14,7 @@
 #include <wayland-server-core.h>
 #include <xdg-shell-server-protocol.h>
 
+#include <array>
 #include <cstddef>
 #include <memory>
 #include <utility>
@@ -4095,10 +4096,11 @@ TEST_P(WaylandSubsurfaceTest, NoDuplicateSubsurfaceRequests) {
        subsurface_id3 = subsurfaces[2]->wayland_surface()->get_surface_id()](
           wl::TestWaylandServerThread* server) {
         // From top to bottom: subsurfaces[2], subsurfaces[1], subsurfaces[0].
-        wl::TestSubSurface* test_subs[3] = {
+        std::array<wl::TestSubSurface*, 3> test_subs = {
             server->GetObject<wl::MockSurface>(subsurface_id1)->sub_surface(),
             server->GetObject<wl::MockSurface>(subsurface_id2)->sub_surface(),
-            server->GetObject<wl::MockSurface>(subsurface_id3)->sub_surface()};
+            server->GetObject<wl::MockSurface>(subsurface_id3)->sub_surface(),
+        };
 
         EXPECT_CALL(*test_subs[0], PlaceAbove(_)).Times(1);
         EXPECT_CALL(*test_subs[0], PlaceBelow(_)).Times(0);

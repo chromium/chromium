@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/ozone/layout/xkb/xkb_keyboard_layout_engine.h"
 
 #include <stddef.h>
 #include <stdint.h>
 #include <xkbcommon/xkbcommon-names.h>
 
+#include <array>
 #include <string_view>
 #include <tuple>
 
@@ -174,10 +170,11 @@ class XkbLayoutEngineVkTest : public testing::Test {
 TEST_F(XkbLayoutEngineVkTest, KeyboardCodeForPrintable) {
   // This table contains U+2460 CIRCLED DIGIT ONE, U+2461 CIRCLED DIGIT TWO,
   // and DomCode::NONE where the result should not depend on those values.
-  static const struct {
+  struct VkeyTestCase {
     VkTestXkbKeyboardLayoutEngine::PrintableEntry test;
     KeyboardCode key_code;
-  } kVkeyTestCase[] = {
+  };
+  static const auto kVkeyTestCase = std::to_array<VkeyTestCase>({
       // Cases requiring mapping tables.
       // exclamation mark, *, *
       /* 0 */ {{0x0021, 0x2460, 0x2461, DomCode::DIGIT1}, VKEY_1},
@@ -777,7 +774,7 @@ TEST_F(XkbLayoutEngineVkTest, KeyboardCodeForPrintable) {
       /* 296 */ {{'9', '(', '+', DomCode::NONE}, VKEY_9},
       /* 297 */ {{'0', ')', '-', DomCode::NONE}, VKEY_0},
 
-  };
+  });
 
   for (size_t i = 0; i < std::size(kVkeyTestCase); ++i) {
     SCOPED_TRACE(i);
@@ -874,60 +871,62 @@ TEST_F(XkbLayoutEngineVkTest, KeyboardCodeForNonPrintable) {
 
 
 TEST_F(XkbLayoutEngineVkTest, XkbRuleNamesForLayoutName) {
-  static const VkTestXkbKeyboardLayoutEngine::RuleNames kVkeyTestCase[] = {
-      /* 0 */ {"us", "us", ""},
-      /* 1 */ {"jp", "jp", ""},
-      /* 2 */ {"us(intl)", "us", "intl"},
-      /* 3 */ {"us(altgr-intl)", "us", "altgr-intl"},
-      /* 4 */ {"us(dvorak)", "us", "dvorak"},
-      /* 5 */ {"us(colemak)", "us", "colemak"},
-      /* 6 */ {"be", "be", ""},
-      /* 7 */ {"fr", "fr", ""},
-      /* 8 */ {"ca", "ca", ""},
-      /* 9 */ {"ch(fr)", "ch", "fr"},
-      /* 10 */ {"ca(multix)", "ca", "multix"},
-      /* 11 */ {"de", "de", ""},
-      /* 12 */ {"de(neo)", "de", "neo"},
-      /* 13 */ {"ch", "ch", ""},
-      /* 14 */ {"ru", "ru", ""},
-      /* 15 */ {"ru(phonetic)", "ru", "phonetic"},
-      /* 16 */ {"br", "br", ""},
-      /* 17 */ {"bg", "bg", ""},
-      /* 18 */ {"bg(phonetic)", "bg", "phonetic"},
-      /* 19 */ {"ca(eng)", "ca", "eng"},
-      /* 20 */ {"cz", "cz", ""},
-      /* 21 */ {"cz(qwerty)", "cz", "qwerty"},
-      /* 22 */ {"ee", "ee", ""},
-      /* 23 */ {"es", "es", ""},
-      /* 24 */ {"es(cat)", "es", "cat"},
-      /* 25 */ {"dk", "dk", ""},
-      /* 26 */ {"gr", "gr", ""},
-      /* 27 */ {"il", "il", ""},
-      /* 28 */ {"latam", "latam", ""},
-      /* 29 */ {"lt", "lt", ""},
-      /* 30 */ {"lv(apostrophe)", "lv", "apostrophe"},
-      /* 31 */ {"hr", "hr", ""},
-      /* 32 */ {"gb(extd)", "gb", "extd"},
-      /* 33 */ {"gb(dvorak)", "gb", "dvorak"},
-      /* 34 */ {"fi", "fi", ""},
-      /* 35 */ {"hu", "hu", ""},
-      /* 36 */ {"it", "it", ""},
-      /* 37 */ {"is", "is", ""},
-      /* 38 */ {"no", "no", ""},
-      /* 39 */ {"pl", "pl", ""},
-      /* 40 */ {"pt", "pt", ""},
-      /* 41 */ {"ro", "ro", ""},
-      /* 42 */ {"se", "se", ""},
-      /* 43 */ {"sk", "sk", ""},
-      /* 44 */ {"si", "si", ""},
-      /* 45 */ {"rs", "rs", ""},
-      /* 46 */ {"tr", "tr", ""},
-      /* 47 */ {"ua", "ua", ""},
-      /* 48 */ {"by", "by", ""},
-      /* 49 */ {"am", "am", ""},
-      /* 50 */ {"ge", "ge", ""},
-      /* 51 */ {"mn", "mn", ""},
-      /* 52 */ {"ie", "ie", ""}};
+  static const auto kVkeyTestCase =
+      std::to_array<VkTestXkbKeyboardLayoutEngine::RuleNames>({
+          /* 0 */ {"us", "us", ""},
+          /* 1 */ {"jp", "jp", ""},
+          /* 2 */ {"us(intl)", "us", "intl"},
+          /* 3 */ {"us(altgr-intl)", "us", "altgr-intl"},
+          /* 4 */ {"us(dvorak)", "us", "dvorak"},
+          /* 5 */ {"us(colemak)", "us", "colemak"},
+          /* 6 */ {"be", "be", ""},
+          /* 7 */ {"fr", "fr", ""},
+          /* 8 */ {"ca", "ca", ""},
+          /* 9 */ {"ch(fr)", "ch", "fr"},
+          /* 10 */ {"ca(multix)", "ca", "multix"},
+          /* 11 */ {"de", "de", ""},
+          /* 12 */ {"de(neo)", "de", "neo"},
+          /* 13 */ {"ch", "ch", ""},
+          /* 14 */ {"ru", "ru", ""},
+          /* 15 */ {"ru(phonetic)", "ru", "phonetic"},
+          /* 16 */ {"br", "br", ""},
+          /* 17 */ {"bg", "bg", ""},
+          /* 18 */ {"bg(phonetic)", "bg", "phonetic"},
+          /* 19 */ {"ca(eng)", "ca", "eng"},
+          /* 20 */ {"cz", "cz", ""},
+          /* 21 */ {"cz(qwerty)", "cz", "qwerty"},
+          /* 22 */ {"ee", "ee", ""},
+          /* 23 */ {"es", "es", ""},
+          /* 24 */ {"es(cat)", "es", "cat"},
+          /* 25 */ {"dk", "dk", ""},
+          /* 26 */ {"gr", "gr", ""},
+          /* 27 */ {"il", "il", ""},
+          /* 28 */ {"latam", "latam", ""},
+          /* 29 */ {"lt", "lt", ""},
+          /* 30 */ {"lv(apostrophe)", "lv", "apostrophe"},
+          /* 31 */ {"hr", "hr", ""},
+          /* 32 */ {"gb(extd)", "gb", "extd"},
+          /* 33 */ {"gb(dvorak)", "gb", "dvorak"},
+          /* 34 */ {"fi", "fi", ""},
+          /* 35 */ {"hu", "hu", ""},
+          /* 36 */ {"it", "it", ""},
+          /* 37 */ {"is", "is", ""},
+          /* 38 */ {"no", "no", ""},
+          /* 39 */ {"pl", "pl", ""},
+          /* 40 */ {"pt", "pt", ""},
+          /* 41 */ {"ro", "ro", ""},
+          /* 42 */ {"se", "se", ""},
+          /* 43 */ {"sk", "sk", ""},
+          /* 44 */ {"si", "si", ""},
+          /* 45 */ {"rs", "rs", ""},
+          /* 46 */ {"tr", "tr", ""},
+          /* 47 */ {"ua", "ua", ""},
+          /* 48 */ {"by", "by", ""},
+          /* 49 */ {"am", "am", ""},
+          /* 50 */ {"ge", "ge", ""},
+          /* 51 */ {"mn", "mn", ""},
+          /* 52 */ {"ie", "ie", ""},
+      });
   for (size_t i = 0; i < std::size(kVkeyTestCase); ++i) {
     SCOPED_TRACE(i);
     const VkTestXkbKeyboardLayoutEngine::RuleNames* e = &kVkeyTestCase[i];

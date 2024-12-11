@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/accelerators/accelerator_manager.h"
+
+#include <array>
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -28,8 +25,12 @@ Accelerator GetAccelerator(KeyboardCode code, int mask) {
 }
 
 // Possible flags used for accelerators.
-const int kAcceleratorModifiers[] = {EF_SHIFT_DOWN, EF_CONTROL_DOWN,
-                                     EF_ALT_DOWN, EF_COMMAND_DOWN};
+const auto kAcceleratorModifiers = std::to_array<int>({
+    EF_SHIFT_DOWN,
+    EF_CONTROL_DOWN,
+    EF_ALT_DOWN,
+    EF_COMMAND_DOWN,
+});
 
 // Returns a set of flags from id, where id is a bitmask into
 // kAcceleratorModifiers used to determine which flags are set.

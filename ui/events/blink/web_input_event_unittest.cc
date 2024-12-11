@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/blink/web_input_event.h"
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 
@@ -548,11 +544,12 @@ TEST(WebInputEventTest, TestMakeWebMouseWheelEvent) {
 TEST(WebInputEventTest, KeyEvent) {
   ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
 
-  struct {
+  struct Tests {
     ui::KeyEvent event;
     blink::WebInputEvent::Type web_type;
     int web_modifiers;
-  } tests[] = {
+  };
+  auto tests = std::to_array<Tests>({
       {ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE),
        blink::WebInputEvent::Type::kRawKeyDown, 0x0},
       {ui::KeyEvent::FromCharacter(L'B', ui::VKEY_B, ui::DomCode::NONE,
@@ -560,7 +557,8 @@ TEST(WebInputEventTest, KeyEvent) {
        blink::WebInputEvent::Type::kChar,
        blink::WebInputEvent::kShiftKey | blink::WebInputEvent::kControlKey},
       {ui::KeyEvent(ui::EventType::kKeyReleased, ui::VKEY_C, ui::EF_ALT_DOWN),
-       blink::WebInputEvent::Type::kKeyUp, blink::WebInputEvent::kAltKey}};
+       blink::WebInputEvent::Type::kKeyUp, blink::WebInputEvent::kAltKey},
+  });
 
   for (size_t i = 0; i < std::size(tests); i++) {
     blink::WebKeyboardEvent web_event = MakeWebKeyboardEvent(tests[i].event);
@@ -587,14 +585,15 @@ TEST(WebInputEventTest, WheelEvent) {
 }
 
 TEST(WebInputEventTest, MousePointerEvent) {
-  struct {
+  struct Tests {
     ui::EventType ui_type;
     blink::WebInputEvent::Type web_type;
     int ui_modifiers;
     int web_modifiers;
     gfx::Point location;
     gfx::Point screen_location;
-  } tests[] = {
+  };
+  auto tests = std::to_array<Tests>({
       {ui::EventType::kMousePressed, blink::WebInputEvent::Type::kMouseDown,
        ui::EF_LEFT_MOUSE_BUTTON, blink::WebInputEvent::kLeftButtonDown,
        gfx::Point(3, 5), gfx::Point(113, 125)},
@@ -605,7 +604,7 @@ TEST(WebInputEventTest, MousePointerEvent) {
        blink::WebInputEvent::kMiddleButtonDown |
            blink::WebInputEvent::kRightButtonDown,
        gfx::Point(13, 3), gfx::Point(53, 3)},
-  };
+  });
 
   for (size_t i = 0; i < std::size(tests); i++) {
     ui::MouseEvent ui_event(tests[i].ui_type, tests[i].location,

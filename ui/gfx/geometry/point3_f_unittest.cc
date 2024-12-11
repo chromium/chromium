@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/geometry/point3_f.h"
 
 #include <stddef.h>
+
+#include <array>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,18 +17,19 @@ TEST(Point3FTest, VectorArithmetic) {
   gfx::Vector3dF v1(3.1f, -3.2f, 9.3f);
   gfx::Vector3dF v2(-8.1f, 1.2f, 3.3f);
 
-  static const struct {
+  struct Tests {
     gfx::Point3F expected;
     gfx::Point3F actual;
-  } tests[] = {
-    { gfx::Point3F(4.7f, 1.9f, 12.5f), a + v1 },
-    { gfx::Point3F(-1.5f, 8.3f, -6.1f), a - v1 },
-    { a, a - v1 + v1 },
-    { a, a + v1 - v1 },
-    { a, a + gfx::Vector3dF() },
-    { gfx::Point3F(12.8f, 0.7f, 9.2f), a + v1 - v2 },
-    { gfx::Point3F(-9.6f, 9.5f, -2.8f), a - v1 + v2 }
   };
+  static const auto tests = std::to_array<Tests>({
+      {gfx::Point3F(4.7f, 1.9f, 12.5f), a + v1},
+      {gfx::Point3F(-1.5f, 8.3f, -6.1f), a - v1},
+      {a, a - v1 + v1},
+      {a, a + v1 - v1},
+      {a, a + gfx::Vector3dF()},
+      {gfx::Point3F(12.8f, 0.7f, 9.2f), a + v1 - v2},
+      {gfx::Point3F(-9.6f, 9.5f, -2.8f), a - v1 + v2},
+  });
 
   for (size_t i = 0; i < std::size(tests); ++i)
     EXPECT_EQ(tests[i].expected.ToString(),

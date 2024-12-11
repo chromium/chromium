@@ -11,6 +11,8 @@
 
 #include <stddef.h>
 
+#include <array>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -18,11 +20,12 @@
 namespace gfx {
 
 TEST(ShadowValueTest, GetMargin) {
-  constexpr struct TestCase {
+  struct TestCase {
     Insets expected_margin;
     size_t shadow_count;
     ShadowValue shadows[2];
-  } kTestCases[] = {
+  };
+  constexpr auto kTestCases = std::to_array<TestCase>({
       {
           Insets(),
           0,
@@ -65,7 +68,7 @@ TEST(ShadowValueTest, GetMargin) {
               {gfx::Vector2d(2, 3), 4, 0},
           },
       },
-  };
+  });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     Insets margin = ShadowValue::GetMargin(

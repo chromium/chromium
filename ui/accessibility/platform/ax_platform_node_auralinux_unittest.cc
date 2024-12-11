@@ -7,7 +7,11 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "ui/accessibility/platform/ax_platform_node_auralinux.h"
+
 #include <atk/atk.h>
+
+#include <array>
 #include <utility>
 #include <vector>
 
@@ -16,7 +20,6 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/atk_util_auralinux.h"
 #include "ui/accessibility/platform/ax_platform_for_test.h"
-#include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 #include "ui/accessibility/platform/ax_platform_node_unittest.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
 
@@ -1696,8 +1699,8 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkTextWithNonBMPCharacters) {
 #endif
   }
 
-  static GetTextSegmentTest tests[] = {{0, "\xF0\x9F\x83\x8f ", 0, 2},
-                                       {6, "decently ", 4, 13}};
+  static auto tests = std::to_array<GetTextSegmentTest>(
+      {{0, "\xF0\x9F\x83\x8f ", 0, 2}, {6, "decently ", 4, 13}});
 
   for (const auto& test : tests) {
     int start_offset = -1, end_offset = -1;

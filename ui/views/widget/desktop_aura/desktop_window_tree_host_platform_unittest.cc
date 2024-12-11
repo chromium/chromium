@@ -4,6 +4,7 @@
 
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -438,7 +439,7 @@ TEST_F(DesktopWindowTreeHostPlatformTest, OnRotateFocus) {
   auto widget = std::make_unique<Widget>();
   widget->Init(std::move(widget_params));
 
-  View* views[2];
+  std::array<View*, 2> views;
   for (auto*& view : views) {
     auto child_view = std::make_unique<View>();
     child_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);

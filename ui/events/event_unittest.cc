@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <limits>
 #include <memory>
 #include <string>
@@ -249,11 +250,12 @@ TEST(EventTest, SingleClickRightLeft) {
 TEST(EventTest, KeyEvent) {
   ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
 
-  static const struct {
+  struct TestData {
     KeyboardCode key_code;
     int flags;
     uint16_t character;
-  } kTestData[] = {
+  };
+  static const auto kTestData = std::to_array<TestData>({
       {VKEY_A, 0, 'a'},
       {VKEY_A, EF_SHIFT_DOWN, 'A'},
       {VKEY_A, EF_CAPS_LOCK_ON, 'A'},
@@ -322,7 +324,7 @@ TEST(EventTest, KeyEvent) {
       {VKEY_OEM_PERIOD, EF_SHIFT_DOWN, '>'},
       {VKEY_OEM_3, EF_CONTROL_DOWN, '\x0'},
       {VKEY_OEM_3, EF_SHIFT_DOWN, '~'},
-  };
+  });
 
   for (size_t i = 0; i < std::size(kTestData); ++i) {
     KeyEvent key(EventType::kKeyPressed, kTestData[i].key_code,

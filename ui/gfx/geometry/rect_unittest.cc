@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/geometry/rect.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <limits>
 
 #include "build/build_config.h"
@@ -29,7 +25,7 @@ constexpr int kMaxInt = std::numeric_limits<int>::max();
 constexpr int kMinInt = std::numeric_limits<int>::min();
 
 TEST(RectTest, Contains) {
-  static const struct ContainsCase {
+  struct ContainsCase {
     int rect_x;
     int rect_y;
     int rect_width;
@@ -37,18 +33,19 @@ TEST(RectTest, Contains) {
     int point_x;
     int point_y;
     bool contained;
-  } contains_cases[] = {
-    {0, 0, 10, 10, 0, 0, true},
-    {0, 0, 10, 10, 5, 5, true},
-    {0, 0, 10, 10, 9, 9, true},
-    {0, 0, 10, 10, 5, 10, false},
-    {0, 0, 10, 10, 10, 5, false},
-    {0, 0, 10, 10, -1, -1, false},
-    {0, 0, 10, 10, 50, 50, false},
-  #if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
-    {0, 0, -10, -10, 0, 0, false},
-  #endif
   };
+  static const auto contains_cases = std::to_array<ContainsCase>({
+      {0, 0, 10, 10, 0, 0, true},
+      {0, 0, 10, 10, 5, 5, true},
+      {0, 0, 10, 10, 9, 9, true},
+      {0, 0, 10, 10, 5, 10, false},
+      {0, 0, 10, 10, 10, 5, false},
+      {0, 0, 10, 10, -1, -1, false},
+      {0, 0, 10, 10, 50, 50, false},
+#if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
+      {0, 0, -10, -10, 0, 0, false},
+#endif
+  });
   for (size_t i = 0; i < std::size(contains_cases); ++i) {
     const ContainsCase& value = contains_cases[i];
     Rect rect(value.rect_x, value.rect_y, value.rect_width, value.rect_height);
@@ -57,7 +54,7 @@ TEST(RectTest, Contains) {
 }
 
 TEST(RectTest, Intersects) {
-  static const struct {
+  struct Tests {
     int x1;  // rect 1
     int y1;
     int w1;
@@ -67,18 +64,19 @@ TEST(RectTest, Intersects) {
     int w2;
     int h2;
     bool intersects;
-  } tests[] = {
-    { 0, 0, 0, 0, 0, 0, 0, 0, false },
-    { 0, 0, 0, 0, -10, -10, 20, 20, false },
-    { -10, 0, 0, 20, 0, -10, 20, 0, false },
-    { 0, 0, 10, 10, 0, 0, 10, 10, true },
-    { 0, 0, 10, 10, 10, 10, 10, 10, false },
-    { 10, 10, 10, 10, 0, 0, 10, 10, false },
-    { 10, 10, 10, 10, 5, 5, 10, 10, true },
-    { 10, 10, 10, 10, 15, 15, 10, 10, true },
-    { 10, 10, 10, 10, 20, 15, 10, 10, false },
-    { 10, 10, 10, 10, 21, 15, 10, 10, false }
   };
+  static const auto tests = std::to_array<Tests>({
+      {0, 0, 0, 0, 0, 0, 0, 0, false},
+      {0, 0, 0, 0, -10, -10, 20, 20, false},
+      {-10, 0, 0, 20, 0, -10, 20, 0, false},
+      {0, 0, 10, 10, 0, 0, 10, 10, true},
+      {0, 0, 10, 10, 10, 10, 10, 10, false},
+      {10, 10, 10, 10, 0, 0, 10, 10, false},
+      {10, 10, 10, 10, 5, 5, 10, 10, true},
+      {10, 10, 10, 10, 15, 15, 10, 10, true},
+      {10, 10, 10, 10, 20, 15, 10, 10, false},
+      {10, 10, 10, 10, 21, 15, 10, 10, false},
+  });
   for (size_t i = 0; i < std::size(tests); ++i) {
     Rect r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
     Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
@@ -88,7 +86,7 @@ TEST(RectTest, Intersects) {
 }
 
 TEST(RectTest, Intersect) {
-  static const struct {
+  struct Tests {
     int x1;  // rect 1
     int y1;
     int w1;
@@ -101,26 +99,21 @@ TEST(RectTest, Intersect) {
     int y3;
     int w3;
     int h3;
-  } tests[] = {
-    { 0, 0, 0, 0,   // zeros
-      0, 0, 0, 0,
-      0, 0, 0, 0 },
-    { 0, 0, 4, 4,   // equal
-      0, 0, 4, 4,
-      0, 0, 4, 4 },
-    { 0, 0, 4, 4,   // neighboring
-      4, 4, 4, 4,
-      0, 0, 0, 0 },
-    { 0, 0, 4, 4,   // overlapping corners
-      2, 2, 4, 4,
-      2, 2, 2, 2 },
-    { 0, 0, 4, 4,   // T junction
-      3, 1, 4, 2,
-      3, 1, 1, 2 },
-    { 3, 0, 2, 2,   // gap
-      0, 0, 2, 2,
-      0, 0, 0, 0 }
   };
+  static const auto tests = std::to_array<Tests>({
+      {0, 0, 0, 0,  // zeros
+       0, 0, 0, 0, 0, 0, 0, 0},
+      {0, 0, 4, 4,  // equal
+       0, 0, 4, 4, 0, 0, 4, 4},
+      {0, 0, 4, 4,  // neighboring
+       4, 4, 4, 4, 0, 0, 0, 0},
+      {0, 0, 4, 4,  // overlapping corners
+       2, 2, 4, 4, 2, 2, 2, 2},
+      {0, 0, 4, 4,  // T junction
+       3, 1, 4, 2, 3, 1, 1, 2},
+      {3, 0, 2, 2,  // gap
+       0, 0, 2, 2, 0, 0, 0, 0},
+  });
   for (size_t i = 0; i < std::size(tests); ++i) {
     Rect r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
     Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
@@ -182,7 +175,7 @@ TEST(RectTest, Equals) {
 }
 
 TEST(RectTest, AdjustToFit) {
-  static const struct Test {
+  struct Test {
     int x1;  // source
     int y1;
     int w1;
@@ -195,23 +188,14 @@ TEST(RectTest, AdjustToFit) {
     int y3;
     int w3;
     int h3;
-  } tests[] = {
-    { 0, 0, 2, 2,
-      0, 0, 2, 2,
-      0, 0, 2, 2 },
-    { 2, 2, 3, 3,
-      0, 0, 4, 4,
-      1, 1, 3, 3 },
-    { -1, -1, 5, 5,
-      0, 0, 4, 4,
-      0, 0, 4, 4 },
-    { 2, 2, 4, 4,
-      0, 0, 3, 3,
-      0, 0, 3, 3 },
-    { 2, 2, 1, 1,
-      0, 0, 3, 3,
-      2, 2, 1, 1 }
   };
+  static const auto tests = std::to_array<Test>({
+      {0, 0, 2, 2, 0, 0, 2, 2, 0, 0, 2, 2},
+      {2, 2, 3, 3, 0, 0, 4, 4, 1, 1, 3, 3},
+      {-1, -1, 5, 5, 0, 0, 4, 4, 0, 0, 4, 4},
+      {2, 2, 4, 4, 0, 0, 3, 3, 0, 0, 3, 3},
+      {2, 2, 1, 1, 0, 0, 3, 3, 2, 2, 1, 1},
+  });
   for (size_t i = 0; i < std::size(tests); ++i) {
     Rect r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
     Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
@@ -514,26 +498,28 @@ TEST(RectTest, ConstructAndAssign) {
 #endif
 
 TEST(RectTest, BoundingRect) {
-  struct {
+  struct IntTests {
     Point a;
     Point b;
     Rect expected;
-  } int_tests[] = {
-    // If point B dominates A, then A should be the origin.
-    { Point(4, 6), Point(4, 6), Rect(4, 6, 0, 0) },
-    { Point(4, 6), Point(8, 6), Rect(4, 6, 4, 0) },
-    { Point(4, 6), Point(4, 9), Rect(4, 6, 0, 3) },
-    { Point(4, 6), Point(8, 9), Rect(4, 6, 4, 3) },
-    // If point A dominates B, then B should be the origin.
-    { Point(4, 6), Point(4, 6), Rect(4, 6, 0, 0) },
-    { Point(8, 6), Point(4, 6), Rect(4, 6, 4, 0) },
-    { Point(4, 9), Point(4, 6), Rect(4, 6, 0, 3) },
-    { Point(8, 9), Point(4, 6), Rect(4, 6, 4, 3) },
-    // If neither point dominates, then the origin is a combination of the two.
-    { Point(4, 6), Point(6, 4), Rect(4, 4, 2, 2) },
-    { Point(-4, -6), Point(-6, -4), Rect(-6, -6, 2, 2) },
-    { Point(-4, 6), Point(6, -4), Rect(-4, -4, 10, 10) },
   };
+  auto int_tests = std::to_array<IntTests>({
+      // If point B dominates A, then A should be the origin.
+      {Point(4, 6), Point(4, 6), Rect(4, 6, 0, 0)},
+      {Point(4, 6), Point(8, 6), Rect(4, 6, 4, 0)},
+      {Point(4, 6), Point(4, 9), Rect(4, 6, 0, 3)},
+      {Point(4, 6), Point(8, 9), Rect(4, 6, 4, 3)},
+      // If point A dominates B, then B should be the origin.
+      {Point(4, 6), Point(4, 6), Rect(4, 6, 0, 0)},
+      {Point(8, 6), Point(4, 6), Rect(4, 6, 4, 0)},
+      {Point(4, 9), Point(4, 6), Rect(4, 6, 0, 3)},
+      {Point(8, 9), Point(4, 6), Rect(4, 6, 4, 3)},
+      // If neither point dominates, then the origin is a combination of the
+      // two.
+      {Point(4, 6), Point(6, 4), Rect(4, 4, 2, 2)},
+      {Point(-4, -6), Point(-6, -4), Rect(-6, -6, 2, 2)},
+      {Point(-4, 6), Point(6, -4), Rect(-4, -4, 10, 10)},
+  });
 
   for (size_t i = 0; i < std::size(int_tests); ++i) {
     Rect actual = BoundingRect(int_tests[i].a, int_tests[i].b);
