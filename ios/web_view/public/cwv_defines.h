@@ -82,6 +82,11 @@
 // -[CWVUserContentController removeMessageHandlerForCommand] APIs.
 #define IOS_WEB_VIEW_SUPPORTS_USER_CONTENT_CONTROLLER_MESSAGE_HANDLERS 1
 
+// Supports -[CWVUserContentController isMessageHandlerRegisteredForCommand:]
+// API.
+#define IOS_WEB_VIEW_SUPPORTS_USER_CONTENT_CONTROLLER_IS_MESSAGE_HANDLER_REGISTERED \
+  1
+
 // Supports -[CWVNavigationDelegate
 // webView:decidePolicyForNavigationAction:decisionHandler:] and
 // -[CWVNavigationDelegate
