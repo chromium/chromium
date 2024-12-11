@@ -4021,6 +4021,7 @@ class LensOverlayControllerBrowserStartQueryFlowOptimization
           {
               {"use-inner-text-as-context", "true"},
               {"use-inner-html-as-context", "true"},
+              {"use-webpage-vit-param", "true"},
           }},
          {lens::features::kLensOverlaySurvey, {}},
          {lens::features::kLensOverlayLatencyOptimizations,
@@ -4057,10 +4058,20 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserStartQueryFlowOptimization,
       fake_query_controller->sent_full_image_objects_request().has_payload());
   EXPECT_EQ(fake_query_controller->last_sent_underlying_content_type(),
             lens::MimeType::kPlainText);
-  EXPECT_EQ(fake_query_controller->sent_request_id().sequence_id(),
-            1);
+  EXPECT_EQ(fake_query_controller->sent_request_id().sequence_id(), 1);
   EXPECT_EQ(fake_query_controller->sent_page_content_request_id().sequence_id(),
             1);
+  EXPECT_FALSE(
+      controller->GetLensSuggestInputsForTesting().has_encoded_image_signals());
+  EXPECT_FALSE(controller->GetLensSuggestInputsForTesting()
+                   .has_encoded_visual_search_interaction_log_data());
+  EXPECT_EQ(controller->GetLensSuggestInputsForTesting()
+                .contextual_visual_input_type(),
+            "wp");
+  EXPECT_TRUE(
+      controller->GetLensSuggestInputsForTesting().has_encoded_request_id());
+  EXPECT_TRUE(
+      controller->GetLensSuggestInputsForTesting().has_search_session_id());
 }
 
 class LensOverlayControllerBrowserFullscreenDisabled

@@ -202,6 +202,14 @@ class LensOverlayQueryControllerTest : public testing::Test {
     return proto;
   }
 
+  std::string GetEncodedRequestIdFromUrl(std::string url_string) {
+    GURL url = GURL(url_string);
+    std::string vsrid_param;
+    EXPECT_TRUE(
+        net::GetValueForKeyInQuery(url, kRequestIdParameterKey, &vsrid_param));
+    return vsrid_param;
+  }
+
   std::string GetAnalyticsIdFromUrl(std::string url_string) {
     GURL url = GURL(url_string);
     std::string vsrid_param;
@@ -718,7 +726,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(latest_suggest_inputs_.search_session_id(), kTestSearchSessionId);
   ASSERT_TRUE(
       latest_suggest_inputs_.has_encoded_visual_search_interaction_log_data());
-  ASSERT_EQ(GetEncodedRequestId(query_controller.sent_request_id()),
+  ASSERT_EQ(GetEncodedRequestIdFromUrl(url_response_future.Get().url()),
             latest_suggest_inputs_.encoded_request_id());
   ASSERT_EQ(sent_object_request.request_context().request_id().sequence_id(),
             1);
@@ -920,7 +928,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(latest_suggest_inputs_.search_session_id(), kTestSearchSessionId);
   ASSERT_EQ(latest_suggest_inputs_.encoded_visual_search_interaction_log_data(),
             encoded_vsint);
-  ASSERT_EQ(GetEncodedRequestId(query_controller.sent_request_id()),
+  ASSERT_EQ(GetEncodedRequestIdFromUrl(url_response_future.Get().url()),
             latest_suggest_inputs_.encoded_request_id());
   ASSERT_EQ(sent_object_request.request_context().request_id().sequence_id(),
             1);
@@ -1048,7 +1056,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(latest_suggest_inputs_.search_session_id(), kTestSearchSessionId);
   ASSERT_EQ(latest_suggest_inputs_.encoded_visual_search_interaction_log_data(),
             encoded_vsint);
-  ASSERT_EQ(GetEncodedRequestId(query_controller.sent_request_id()),
+  ASSERT_EQ(GetEncodedRequestIdFromUrl(url_response_future.Get().url()),
             latest_suggest_inputs_.encoded_request_id());
   ASSERT_EQ(sent_object_request.request_context().request_id().sequence_id(),
             1);
@@ -1280,7 +1288,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(latest_suggest_inputs_.encoded_visual_search_interaction_log_data(),
             encoded_vsint);
   ASSERT_EQ(latest_suggest_inputs_.contextual_visual_input_type(), "pdf");
-  ASSERT_EQ(GetEncodedRequestId(query_controller.sent_request_id()),
+  ASSERT_EQ(GetEncodedRequestIdFromUrl(url_response_future.Get().url()),
             latest_suggest_inputs_.encoded_request_id());
   ASSERT_EQ(query_controller.latency_gen_204_counter(
                 LatencyType::kInvocationToInitialPageContentRequestSent),
@@ -1413,7 +1421,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(latest_suggest_inputs_.encoded_visual_search_interaction_log_data(),
             encoded_vsint);
   ASSERT_EQ(latest_suggest_inputs_.contextual_visual_input_type(), "wp");
-  ASSERT_EQ(GetEncodedRequestId(query_controller.sent_request_id()),
+  ASSERT_EQ(GetEncodedRequestIdFromUrl(url_response_future.Get().url()),
             latest_suggest_inputs_.encoded_request_id());
   ASSERT_EQ(query_controller.latency_gen_204_counter(
                 LatencyType::kInvocationToInitialPageContentRequestSent),
@@ -1546,7 +1554,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(latest_suggest_inputs_.encoded_visual_search_interaction_log_data(),
             encoded_vsint);
   ASSERT_EQ(latest_suggest_inputs_.contextual_visual_input_type(), "wp");
-  ASSERT_EQ(GetEncodedRequestId(query_controller.sent_request_id()),
+  ASSERT_EQ(GetEncodedRequestIdFromUrl(url_response_future.Get().url()),
             latest_suggest_inputs_.encoded_request_id());
   ASSERT_EQ(query_controller.latency_gen_204_counter(
                 LatencyType::kInvocationToInitialPageContentRequestSent),

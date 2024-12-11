@@ -1163,6 +1163,11 @@ class LensOverlayController : public LensSearchboxClient,
   // shown.
   bool hats_triggered_in_session_ = false;
 
+  // The stored suggest inputs to be attached to the initialization data
+  // if suggest inputs were updated before the initialization data was ready.
+  std::optional<lens::proto::LensOverlaySuggestInputs>
+      pre_initialization_suggest_inputs_;
+
   // The callback subscription for the element shown callback used to show the
   // translate feature promo.
   base::CallbackListSubscription translate_button_shown_subscription_;

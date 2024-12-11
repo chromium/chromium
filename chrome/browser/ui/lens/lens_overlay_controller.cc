@@ -1826,6 +1826,7 @@ void LensOverlayController::CloseUIPart2(
   permission_bubble_controller_.reset();
   side_panel_searchbox_handler_.reset();
   results_side_panel_coordinator_.reset();
+  pre_initialization_suggest_inputs_.reset();
 
   side_panel_shown_subscription_ = base::CallbackListSubscription();
   side_panel_coordinator_ = nullptr;
@@ -1892,6 +1893,14 @@ void LensOverlayController::InitializeOverlay(
     // Confirm initialization_data has not already been assigned.
     CHECK(!initialization_data_);
     initialization_data_ = std::move(initialization_data);
+
+    // If suggest inputs were updated before the initialization data was ready,
+    // attach them to the initialization data now.
+    if (pre_initialization_suggest_inputs_.has_value()) {
+      initialization_data_->suggest_inputs_ =
+          pre_initialization_suggest_inputs_.value();
+      pre_initialization_suggest_inputs_.reset();
+    }
   }
 
   // We can only continue once both the WebUI is bound and the initialization
@@ -2751,6 +2760,12 @@ void LensOverlayController::HandleInteractionURLResponse(
 
 void LensOverlayController::HandleSuggestInputsResponse(
     lens::proto::LensOverlaySuggestInputs suggest_inputs) {
+  if (!initialization_data_) {
+    // If the initialization data is not ready, store the suggest inputs to be
+    // attached to the initialization data when it is ready.
+    pre_initialization_suggest_inputs_ = std::make_optional(suggest_inputs);
+    return;
+  }
   initialization_data_->suggest_inputs_ = suggest_inputs;
 }
 
