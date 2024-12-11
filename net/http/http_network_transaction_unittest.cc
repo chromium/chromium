@@ -39,6 +39,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -190,6 +191,13 @@ const std::u16string kWrongPassword(u"wrongpassword");
 
 const char kAlternativeServiceHttpHeader[] =
     "Alt-Svc: h2=\"mail.example.org:443\"\r\n";
+
+constexpr char kStreamRequestSuccessHistogram[] =
+    "Net.NetworkTransaction.StreamRequestCompleteTime.Success";
+constexpr char kStreamRequestFailureHistogram[] =
+    "Net.NetworkTransaction.StreamRequestCompleteTime.Failure";
+constexpr char kStreamRequestH3SuccessHistogram[] =
+    "Net.NetworkTransaction.StreamRequestCompleteTime.GoogleHost.Success";
 
 int GetIdleSocketCountInTransportSocketPool(HttpNetworkSession* session) {
   if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
@@ -685,6 +693,8 @@ class HttpNetworkTransactionTest
     return GetParam().happy_eyeballs_v3_enabled;
   }
 
+  base::HistogramTester histogram_tester_;
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -922,6 +932,7 @@ TEST_P(HttpNetworkTransactionTest, SimpleGET) {
   EXPECT_EQ(0u, out.connection_attempts.size());
 
   EXPECT_FALSE(out.remote_endpoint_after_start.address().empty());
+  histogram_tester_.ExpectTotalCount(kStreamRequestSuccessHistogram, 1);
 }
 
 // Response with no status line.
@@ -936,6 +947,7 @@ TEST_P(HttpNetworkTransactionTest, SimpleGETNoHeaders) {
   EXPECT_EQ("hello world", out.response_data);
   int64_t reads_size = CountReadBytes(data_reads);
   EXPECT_EQ(reads_size, out.total_received_bytes);
+  histogram_tester_.ExpectTotalCount(kStreamRequestSuccessHistogram, 1);
 }
 
 // Response with no status line, and a weird port.  Should fail by default.
@@ -962,6 +974,7 @@ TEST_P(HttpNetworkTransactionTest, SimpleGETNoHeadersWeirdPort) {
   TestCompletionCallback callback;
   int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
   EXPECT_THAT(callback.GetResult(rv), IsError(ERR_INVALID_HTTP_RESPONSE));
+  histogram_tester_.ExpectTotalCount(kStreamRequestSuccessHistogram, 1);
 }
 
 // Tests that request info can be destroyed after the headers phase is complete.
@@ -1020,6 +1033,7 @@ TEST_P(HttpNetworkTransactionTest, SimpleGETHostResolutionFailure) {
   const HttpResponseInfo* response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
   EXPECT_THAT(response->resolve_error_info.error, IsError(ERR_DNS_TIMED_OUT));
+  histogram_tester_.ExpectTotalCount(kStreamRequestFailureHistogram, 1);
 }
 
 // This test verifies that if the transaction fails before even connecting to a
@@ -1043,6 +1057,7 @@ TEST_P(HttpNetworkTransactionTest, ConnectedCallbackNeverCalled) {
   callback.WaitForResult();
 
   EXPECT_THAT(connected_handler.transports(), IsEmpty());
+  histogram_tester_.ExpectTotalCount(kStreamRequestFailureHistogram, 1);
 }
 
 // This test verifies that if the ConnectedCallback returns an error, the
@@ -13252,6 +13267,8 @@ TEST_P(HttpNetworkTransactionTest, ResendRequestOnWriteBodyError) {
     EXPECT_THAT(rv, IsOk());
     EXPECT_EQ(kExpectedResponseData[i], response_data);
   }
+
+  histogram_tester_.ExpectTotalCount(kStreamRequestH3SuccessHistogram, 3);
 }
 
 // Test the request-challenge-retry sequence for basic auth when there is

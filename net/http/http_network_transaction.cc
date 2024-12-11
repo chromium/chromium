@@ -2211,7 +2211,7 @@ void HttpNetworkTransaction::RecordStreamRequestResult(int result) {
   if (num_restarts_ == 0) {
     base::TimeDelta elapsed = base::TimeTicks::Now() - start_timeticks_;
     base::UmaHistogramTimes(
-        base::StrCat({"Net.NetworkTransaction.StreamRequestCompleteTime",
+        base::StrCat({"Net.NetworkTransaction.StreamRequestCompleteTime.",
                       IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : "",
                       result == OK ? "Success" : "Failure"}),
         elapsed);
@@ -2220,7 +2220,7 @@ void HttpNetworkTransaction::RecordStreamRequestResult(int result) {
   if (result == OK) {
     base::UmaHistogramEnumeration(
         base::StrCat({
-            "Net.NetworkTransaction.NegotiatedProtocol",
+            "Net.NetworkTransaction.NegotiatedProtocol.",
             IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : "",
         }),
         negotiated_protocol_);
