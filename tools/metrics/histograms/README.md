@@ -55,6 +55,12 @@ categories to see whether any matches the metric(s) that you are adding. To
 create a new category, the CL must be reviewed by
 chromium-metrics-reviews@google.com.
 
+## Permitted Metrics
+
+Google has policies restricting what data can be collected and for what purpose.
+Googlers, see go/uma-privacy#principles to verify your desired histogram
+adheres to those policies.
+
 ## Coding (Emitting to Histograms)
 
 Prefer the helper functions defined in
@@ -960,12 +966,17 @@ chromium-metrics-reviews@google.com.
 When reviewing metrics CLs, look at the following, listed in approximate order
 of importance:
 
-## Privacy
+## Privacy and Purpose
 
-Does anything tickle your privacy senses? (Googlers, see
-[go/uma-privacy](https://goto.google.com/uma-privacy) for guidelines.)
+Google has policies restricting what data can be collected and for what purpose.
+Googlers, make sure the logging abides by the principles at
+go/uma-privacy#principles.
 
-**Please escalate if there's any doubt!**
+Furthermore, if anything tickles your privacy senses or provokes any other
+concerns (even if it's seemingly compatible with the principles), please express
+your concern.
+
+**Escalate if there's any doubt!**
 
 ## Clarity
 
