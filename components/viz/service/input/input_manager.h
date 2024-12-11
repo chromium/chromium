@@ -59,7 +59,8 @@ class VIZ_SERVICE_EXPORT InputManager
       public FlingSchedulerAndroid::Delegate,
 #endif
       public RenderInputRouterSupportBase::Delegate,
-      public RenderInputRouterDelegateImpl::Delegate {
+      public RenderInputRouterDelegateImpl::Delegate,
+      public input::mojom::RenderInputRouterDelegate {
  public:
   explicit InputManager(FrameSinkManagerImpl* frame_sink_manager);
 
@@ -125,10 +126,15 @@ class VIZ_SERVICE_EXPORT InputManager
       const FrameSinkId& frame_sink_id) override;
   GpuServiceImpl* GetGpuService() override;
 
+  // input::mojom::RenderInputRouterDelegate implementation.
+  void StateOnTouchTransfer(input::mojom::TouchTransferStatePtr state) override;
+
   void SetupRenderInputRouterDelegateConnection(
       uint32_t grouping_id,
       mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
-          rir_delegate_client_remote);
+          rir_delegate_client_remote,
+      mojo::PendingReceiver<input::mojom::RenderInputRouterDelegate>
+          rir_delegate_receiver);
 
   input::RenderInputRouter* GetRenderInputRouterFromFrameSinkId(
       const FrameSinkId& id);
@@ -186,6 +192,8 @@ class VIZ_SERVICE_EXPORT InputManager
   base::flat_map</*grouping_id=*/uint32_t,
                  mojo::Remote<input::mojom::RenderInputRouterDelegateClient>>
       rir_delegate_remote_map_;
+  mojo::ReceiverSet<input::mojom::RenderInputRouterDelegate>
+      rir_delegate_receivers_;
 
   raw_ptr<FrameSinkManagerImpl> frame_sink_manager_;
 

@@ -1321,7 +1321,8 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
   if (input::IsTransferInputToVizSupported()) {
     GetHostFrameSinkManager()->SetupRenderInputRouterDelegateConnection(
         compositor_frame_sink_grouping_id_,
-        rir_delegate_client_receiver_.BindNewPipeAndPassRemote());
+        rir_delegate_client_receiver_.BindNewPipeAndPassRemote(),
+        rir_delegate_remote_.BindNewPipeAndPassReceiver());
   }
 }
 
@@ -11396,6 +11397,14 @@ void WebContentsImpl::OnInputIgnored(const blink::WebInputEvent& event) {
     animation_manager->MaybeRecordIgnoredInput(event);
   }
 #endif
+}
+
+input::mojom::RenderInputRouterDelegate*
+WebContentsImpl::GetRenderInputRouterDelegateRemote() {
+  if (!rir_delegate_remote_) {
+    return nullptr;
+  }
+  return rir_delegate_remote_.get();
 }
 
 void WebContentsImpl::StartPrefetch(

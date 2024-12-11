@@ -1150,6 +1150,8 @@ class CONTENT_EXPORT WebContentsImpl
   gfx::mojom::DelegatedInkPointRenderer* GetDelegatedInkRenderer(
       ui::Compositor* compositor) override;
   void OnInputIgnored(const blink::WebInputEvent& event) override;
+  input::mojom::RenderInputRouterDelegate* GetRenderInputRouterDelegateRemote()
+      override;
 
   // RenderFrameHostManager::Delegate ------------------------------------------
 
@@ -2632,6 +2634,8 @@ class CONTENT_EXPORT WebContentsImpl
 
   mojo::Receiver<input::mojom::RenderInputRouterDelegateClient>
       rir_delegate_client_receiver_{this};
+
+  mojo::Remote<input::mojom::RenderInputRouterDelegate> rir_delegate_remote_;
 
   // Indicates if the instance is hosted in a preview window.
   // This will be set in Init() and will be reset in WillActivatePreviewPage().

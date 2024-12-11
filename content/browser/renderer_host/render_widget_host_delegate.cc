@@ -180,4 +180,9 @@ bool RenderWidgetHostDelegate::ShouldDoLearning() {
   return true;
 }
 
+input::mojom::RenderInputRouterDelegate*
+RenderWidgetHostDelegate::GetRenderInputRouterDelegateRemote() {
+  return nullptr;
+}
+
 }  // namespace content

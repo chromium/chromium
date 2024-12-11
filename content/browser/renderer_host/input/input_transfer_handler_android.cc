@@ -70,6 +70,9 @@ bool InputTransferHandlerAndroid::OnTouchEvent(const ui::MotionEvent& event) {
 
   touch_transferred_ =
       jni_delegate_->MaybeTransferInputToViz(client_->GetRootSurfaceHandle());
+  if (touch_transferred_) {
+    client_->SendStateOnTouchTransfer(event);
+  }
   return touch_transferred_;
 }
 

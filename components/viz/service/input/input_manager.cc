@@ -18,6 +18,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_input_receiver_compat.h"
+#include "components/input/android/android_input_callback.h"
 #include "components/input/android/input_token_forwarder.h"
 #include "components/input/android/scoped_input_receiver.h"
 #include "components/input/android/scoped_input_receiver_callbacks.h"
@@ -366,15 +367,23 @@ std::optional<bool> InputManager::IsDelegatedInkHovering(
   return support->GetLastActivatedFrameMetadata()
       ->delegated_ink_metadata->is_hovering();
 }
+void InputManager::StateOnTouchTransfer(
+    input::mojom::TouchTransferStatePtr state) {
+  // TODO(crbug.com/370506271): Handle state to start processing input events.
+}
 
 void InputManager::SetupRenderInputRouterDelegateConnection(
     uint32_t grouping_id,
     mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
-        rir_delegate_remote) {
+        rir_delegate_remote,
+    mojo::PendingReceiver<input::mojom::RenderInputRouterDelegate>
+        rir_delegate_receiver) {
   rir_delegate_remote_map_[grouping_id].Bind(std::move(rir_delegate_remote));
   rir_delegate_remote_map_[grouping_id].set_disconnect_handler(
       base::BindOnce(&InputManager::OnRIRDelegateClientDisconnected,
                      base::Unretained(this), grouping_id));
+
+  rir_delegate_receivers_.Add(this, std::move(rir_delegate_receiver));
 }
 
 GpuServiceImpl* InputManager::GetGpuService() {

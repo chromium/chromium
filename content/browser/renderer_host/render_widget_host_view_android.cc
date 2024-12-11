@@ -1318,6 +1318,15 @@ gpu::SurfaceHandle RenderWidgetHostViewAndroid::GetRootSurfaceHandle() {
   return gpu::kNullSurfaceHandle;
 }
 
+void RenderWidgetHostViewAndroid::SendStateOnTouchTransfer(
+    const ui::MotionEvent& event) {
+  TRACE_EVENT("input", "RenderWidgetHostViewAndroid::StateOnTouchTransfer");
+  CHECK(host());
+  auto* remote = host()->delegate()->GetRenderInputRouterDelegateRemote();
+  remote->StateOnTouchTransfer(input::mojom::TouchTransferState::New(
+      event.GetDownTime(), GetFrameSinkId(), event.GetRawOffsetY()));
+}
+
 viz::FrameSinkId RenderWidgetHostViewAndroid::GetRootFrameSinkId() {
   if (sync_compositor_)
     return sync_compositor_->GetFrameSinkId();
