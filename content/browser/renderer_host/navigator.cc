@@ -845,6 +845,7 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
   NavigationRequest* ongoing_navigation_request =
       frame_tree_node->navigation_request();
   bool is_duplicate_navigation = false;
+  base::TimeDelta nav_start_diff;
   if (ongoing_navigation_request &&
       request->common_params().navigation_start -
               ongoing_navigation_request->common_params().navigation_start <=
@@ -874,9 +875,23 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
           ongoing_navigation_request->common_params().transition) {
     is_duplicate_navigation = true;
   }
-  base::UmaHistogramBoolean("Navigation.IsDuplicate", is_duplicate_navigation);
+  base::UmaHistogramBoolean(
+      "Navigation.BrowserInitiated.IsDuplicateWithoutThresholdCheck",
+      is_duplicate_navigation);
   if (is_duplicate_navigation) {
-    if (base::FeatureList::IsEnabled(features::kIgnoreDuplicateNavs)) {
+    // The navigation is similar to a previous navigation. Check if it's started
+    // close enough to the start of the previous navigation, in which case we
+    // can just ignore the new navigation and keep the previous navigation.
+    bool start_diff_under_threshold =
+        (nav_start_diff <= features::kDuplicateNavThreshold.Get());
+    base::UmaHistogramBoolean(
+        "Navigation.BrowserInitiated.DuplicateNavIsUnderThreshold",
+        start_diff_under_threshold);
+    base::UmaHistogramTimes(
+        "Navigation.BrowserInitiated.DuplicateNavStartTimeDiff",
+        nav_start_diff);
+    if (start_diff_under_threshold &&
+        base::FeatureList::IsEnabled(features::kIgnoreDuplicateNavs)) {
       request->set_navigation_discard_reason(
           NavigationDiscardReason::kNeverStarted);
       return;
