@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Basic B&A auction - response marked as non-chaff
+  assert_true: valid key Id expected true got false
+[FAIL] Basic B&A auction - incorrectly includes topLevelSeller
+  assert_true: valid key Id expected true got false
+[FAIL] Basic B&A auction - http:// topLevelSeller is bad, too
+  assert_true: valid key Id expected true got false
+[FAIL] Basic B&A auction - positive bid is good
+  assert_true: valid key Id expected true got false
+Harness: the test ran to completion.
+

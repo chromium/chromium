@@ -190571,6 +190571,32 @@
         {}
        ]
       ],
+      "block-height-003.tentative.html": [
+       "a469f8d5df2968f8e8ebfb68593563447bf11a10",
+       [
+        null,
+        [
+         [
+          "/css/css-sizing/stretch/block-height-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-height-006.tentative.html": [
+       "a25c415b87f5c61fbb037aab55012238bcae55cf",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "fixed-table-1.html": [
        "ba2df83eac4496e3673b67eee85996880b2438ab",
        [
@@ -349511,8 +349537,20 @@
       []
      ],
      "stretch": {
-      "block-height-2-expected.txt": [
-       "6a4cd528009124e643a1325933b7105d90694274",
+      "block-height-002.tentative-expected.txt": [
+       "50f6e97fab7f7f8fcbedc6d9df88d19a6f9e52cf",
+       []
+      ],
+      "block-height-003-ref.html": [
+       "76e2bc35cb78208bfa193d6b3d7a6d5ce501a73c",
+       []
+      ],
+      "block-height-004.tentative-expected.txt": [
+       "85033e775a34028edc53eb3f7d28b180881d0dd1",
+       []
+      ],
+      "block-height-005.tentative-expected.txt": [
+       "ce2bacc2b96039177973a0e1ff0ad53a67b72522",
        []
       ],
       "stretch-alias-max-block-size-001.tentative-expected.txt": [
@@ -491022,15 +491060,36 @@
         {}
        ]
       ],
-      "block-height-1.html": [
+      "block-height-001.html": [
        "94960f15b96f9fbb6370e94fbbffb9336373c76c",
        [
         null,
         {}
        ]
       ],
-      "block-height-2.html": [
-       "7028adf90543f4da49b5549fd4a62d777e92b180",
+      "block-height-002.tentative.html": [
+       "2b906985da1288197b825edbaec96ca437d59b20",
+       [
+        null,
+        {}
+       ]
+      ],
+      "block-height-004.tentative.html": [
+       "1aa12ca0dcce578107b870713bfa8071884f8e6a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "block-height-005.tentative.html": [
+       "28756c339f38aa90657675605f588fca44b94831",
+       [
+        null,
+        {}
+       ]
+      ],
+      "content-contribution-001.html": [
+       "5f3706953c914d1ad4fa926b5e0927d8517128da",
        [
         null,
         {}
@@ -513857,7 +513916,7 @@
        ]
       ],
       "observable-reduce.any.js": [
-       "ec30f8bcf428df062bbc0e4bfd6023d30f1dbe42",
+       "18f91e34fca244505cff8f1d858192eb57ddcbe9",
        [
         "dom/observable/tentative/observable-reduce.any.html",
         {}
@@ -735469,7 +735528,7 @@
       ]
      ],
      "layer_normalization.https.any.js": [
-      "01f181c45b37c717d1325548967325c8412440f8",
+      "2af128bbaf9485e459aaec5a8eb9a41b8484183f",
       [
        "webnn/conformance_tests/layer_normalization.https.any.html?cpu",
        {
