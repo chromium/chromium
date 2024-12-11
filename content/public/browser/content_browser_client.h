@@ -576,10 +576,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual network::mojom::IPAddressSpace DetermineAddressSpaceFromURL(
       const GURL& url);
 
-  // Called when WebUI objects are created to get aggregate usage data (i.e. is
-  // chrome://downloads used more than chrome://bookmarks?). Only internal (e.g.
-  // chrome://) URLs are logged. Returns whether the URL was actually logged.
-  virtual bool LogWebUIUrl(const GURL& web_ui_url);
+  // Called when WebUI objects are created for collecting WebUI usage data. Only
+  // internal (e.g. chrome://) URLs are logged. The url variant is used for
+  // WebUIs that don't have a WebUI object (crbug.com/40089364).
+  virtual void LogWebUIUsage(std::variant<WebUI*, GURL> webui_variant);
 
   // http://crbug.com/829412
   // Renderers with WebUI bindings shouldn't make http(s) requests for security

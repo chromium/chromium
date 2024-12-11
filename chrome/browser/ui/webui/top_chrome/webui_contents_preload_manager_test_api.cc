@@ -22,6 +22,11 @@ std::optional<GURL> WebUIContentsPreloadManagerTestAPI::GetPreloadedURL() {
   return std::nullopt;
 }
 
+content::WebContents*
+WebUIContentsPreloadManagerTestAPI::GetPreloadedWebContents() {
+  return preload_manager()->preloaded_web_contents();
+}
+
 std::optional<GURL>
 WebUIContentsPreloadManagerTestAPI::GetNextWebUIURLToPreload(
     content::BrowserContext* browser_context) {
@@ -39,6 +44,13 @@ void WebUIContentsPreloadManagerTestAPI::MaybePreloadForBrowserContextLater(
     base::TimeDelta deadline) {
   return preload_manager()->MaybePreloadForBrowserContextLater(
       browser_context, busy_web_contents_to_watch, deadline);
+}
+
+void WebUIContentsPreloadManagerTestAPI::PreloadUrl(
+    content::BrowserContext* browser_context,
+    const GURL& url) {
+  SetPreloadedContents(
+      preload_manager()->CreateNewContents(browser_context, url));
 }
 
 void WebUIContentsPreloadManagerTestAPI::SetPreloadedContents(

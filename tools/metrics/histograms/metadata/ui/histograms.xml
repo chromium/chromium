@@ -280,6 +280,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebUI.ShownUrl" enum="WebUIUrlHashes"
+    expires_after="2025-05-25">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>dpapad@chromium.org</owner>
+  <owner>chrome-webui@google.com</owner>
+  <summary>
+    WebUI URLs that are shown to the user. For WebUIs that don't have a WebUI
+    object (e.g. chrome://dino), recorded on the network request. For others,
+    recorded on commit if not preloaded. For preloaded WebUIs, recorded when
+    WebUIContentsPreloadManager::Request() is invoked. This differs from
+    WebUI.CreatedForUrl as it only logs WebUIs that are actually shown (i.e., a
+    preloaded WebUI may never be shown).
+  </summary>
+</histogram>
+
 <histogram name="WebUI.TopChrome.Preload.Result" enum="WebUIPreloadResult"
     expires_after="2025-05-04">
   <owner>kerenzhu@chromium.org</owner>

@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/log_web_ui_url.h"
 #include "chrome/browser/ui/webui/top_chrome/per_profile_webui_tracker.h"
 #include "chrome/browser/ui/webui/top_chrome/preload_context.h"
 #include "chrome/browser/ui/webui/top_chrome/profile_preload_candidate_selector.h"
@@ -447,6 +448,10 @@ RequestResult WebUIContentsPreloadManager::Request(
       WebUIContentsPreloadState::FromWebContents(web_contents_ret.get());
   CHECK(preload_state);
   preload_state->request_time = request_time;
+  // Non-preloaded WebUIs are logged by WebUIMainFrameObserver.
+  if (preload_state->preloaded) {
+    webui::LogWebUIShown(web_contents_ret->GetSiteInstance()->GetSiteURL());
+  }
 
   RequestResult result;
   result.web_contents = std::move(web_contents_ret);
@@ -463,6 +468,17 @@ std::optional<base::TimeTicks> WebUIContentsPreloadManager::GetRequestTime(
   }
 
   return preload_state->request_time;
+}
+
+bool WebUIContentsPreloadManager::WasPreloaded(
+    content::WebContents* web_contents) const {
+  if (!web_contents) {
+    return false;
+  }
+
+  auto* preload_state =
+      WebUIContentsPreloadState::FromWebContents(web_contents);
+  return preload_state ? preload_state->preloaded : false;
 }
 
 void WebUIContentsPreloadManager::DisableNavigationForTesting() {

@@ -177,7 +177,7 @@ void WebUIMainFrameObserver::ReadyToCommitNavigation(
 
   GURL site_url =
       web_ui_->GetRenderFrameHost()->GetSiteInstance()->GetSiteURL();
-  GetContentClient()->browser()->LogWebUIUrl(site_url);
+  GetContentClient()->browser()->LogWebUIUsage(web_ui_);
   MaybeEnableWebUIJavaScriptErrorReporting(navigation_handle);
 }
 

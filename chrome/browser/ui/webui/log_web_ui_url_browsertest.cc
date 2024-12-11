@@ -12,14 +12,17 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager_test_api.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -41,6 +44,8 @@ class LogWebUIUrlTest : public InProcessBrowserTest {
   LogWebUIUrlTest& operator=(const LogWebUIUrlTest&) = delete;
 
   ~LogWebUIUrlTest() override = default;
+
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
   void RunTest(std::u16string title, const GURL& url) {
     EXPECT_THAT(histogram_tester_.GetAllSamples(webui::kWebUICreatedForUrl),
@@ -88,5 +93,59 @@ IN_PROC_BROWSER_TEST_F(LogWebUIUrlTest, TestChromeUntrustedPage) {
                    {chrome::kChromeUIUntrustedPrintURL, "1/1/print.pdf"})));
 }
 #endif
+
+// Tests that WebUI.ShownURL is logged after showing a WebUI.
+IN_PROC_BROWSER_TEST_F(LogWebUIUrlTest, ShownWebUI) {
+  const GURL url(chrome::kChromeUIHistoryURL);
+  EXPECT_THAT(histogram_tester().GetAllSamples(webui::kWebUICreatedForUrl),
+              ::testing::IsEmpty());
+  EXPECT_THAT(histogram_tester().GetAllSamples(webui::kWebUIShownUrl),
+              ::testing::IsEmpty());
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents.get(), url));
+  ASSERT_TRUE(
+      content::WaitForRenderFrameReady(web_contents->GetPrimaryMainFrame()));
+
+  uint32_t origin_hash = base::Hash(url.DeprecatedGetOriginAsURL().spec());
+  EXPECT_THAT(histogram_tester().GetAllSamples(webui::kWebUICreatedForUrl),
+              ElementsAre(Bucket(origin_hash, 1)));
+  // The content is not visible before attaching it to the browser.
+  EXPECT_THAT(
+      histogram_tester().GetBucketCount(webui::kWebUIShownUrl, origin_hash), 1);
+}
+
+// Tests that WebUI.ShownURL is logged after showing a preloaded WebUI.
+IN_PROC_BROWSER_TEST_F(LogWebUIUrlTest, ShownWebUIForPreloadedPage) {
+  // Only top-chrome WebUIs are preloaded. Use Tab Search as an example.
+  const GURL url(chrome::kChromeUITabSearchURL);
+  uint32_t origin_hash = base::Hash(url.DeprecatedGetOriginAsURL().spec());
+  EXPECT_THAT(histogram_tester().GetAllSamples(webui::kWebUICreatedForUrl),
+              ::testing::IsEmpty());
+  EXPECT_THAT(histogram_tester().GetAllSamples(webui::kWebUIShownUrl),
+              ::testing::IsEmpty());
+
+  // Preload the WebUI. The WebUI is created but not shown.
+  WebUIContentsPreloadManagerTestAPI preload_test_api;
+  preload_test_api.PreloadUrl(browser()->profile(), url);
+  EXPECT_TRUE(
+      content::WaitForLoadStop(preload_test_api.GetPreloadedWebContents()));
+  EXPECT_THAT(histogram_tester().GetBucketCount(webui::kWebUICreatedForUrl,
+                                                origin_hash),
+              1);
+  EXPECT_THAT(
+      histogram_tester().GetBucketCount(webui::kWebUIShownUrl, origin_hash), 0);
+
+  // Show the WebUI.
+  std::unique_ptr<content::WebContents> web_contents =
+      std::move(preload_test_api.preload_manager()
+                    ->Request(url, browser()->profile())
+                    .web_contents);
+  EXPECT_THAT(
+      histogram_tester().GetBucketCount(webui::kWebUIShownUrl, origin_hash), 1);
+}
 
 }  // namespace webui
