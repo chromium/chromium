@@ -232,6 +232,7 @@ import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabModelNotificationDotManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneBase;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
@@ -370,6 +371,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
     private ToolbarControlContainer mControlContainer;
 
+    private final TabModelNotificationDotManager mTabModelNotificationDotManager =
+            new TabModelNotificationDotManager();
     private TabbedModeTabModelOrchestrator mTabModelOrchestrator;
     private TabModelSelectorBase mTabModelSelector;
     private TabModelSelectorObserver mTabModelSelectorObserver;
@@ -706,6 +709,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                                         new TabGroupVisualDataManager(tabModelSelector);
                             }));
 
+            mTabModelNotificationDotManager.initWithNative(mTabModelSelector);
+
             Profile profile = mTabModelSelector.getCurrentModel().getProfile();
             // For saving non-incognito tab closures for Recent Tabs.
             mHistoricalTabModelObserver =
@@ -959,7 +964,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                                 adaptOnToolbarAlphaChange(),
                                 mBackPressManager,
                                 mEdgeToEdgeControllerSupplier,
-                                mRootUiCoordinator.getDesktopWindowStateManager());
+                                mRootUiCoordinator.getDesktopWindowStateManager(),
+                                mTabModelNotificationDotManager
+                                        .getNotificationDotObservableSupplier());
         if (didFinishNativeInitialization()) {
             result.first.initWithNative();
         }
@@ -1050,7 +1057,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                             this::onTabSwitcherClicked,
                             bookmarkClickHandler,
                             /* customTabsBackClickHandler= */ null,
-                            archivedTabCountSupplier);
+                            archivedTabCountSupplier,
+                            mTabModelNotificationDotManager.getNotificationDotObservableSupplier());
 
             // TODO(crbug.com/40828084): Fix this assert which is tripping on unrelated
             // tests.
@@ -3389,6 +3397,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             mTabModelSelectorTabObserver.destroy();
             mTabModelSelectorTabObserver = null;
         }
+
+        mTabModelNotificationDotManager.destroy();
 
         if (mHistoricalTabModelObserver != null) mHistoricalTabModelObserver.destroy();
 

@@ -1741,6 +1741,9 @@ public class ToolbarManager
      * @param bookmarkClickHandler The {@link OnClickListener} for the bookmark button.
      * @param customTabsBackClickHandler The {@link OnClickListener} for the custom tabs back
      *     button.
+     * @param archivedTabCountSupplier Supplies the number of archived tabs.
+     * @param tabModelNotificationDotSupplier Supplies whether the tab switcher button should show a
+     *     notification dot.
      */
     public void initializeWithNative(
             @NonNull LayoutManagerImpl layoutManager,
@@ -1748,7 +1751,8 @@ public class ToolbarManager
             Runnable openGridTabSwitcherHandler,
             OnClickListener bookmarkClickHandler,
             OnClickListener customTabsBackClickHandler,
-            @Nullable ObservableSupplier<Integer> archivedTabCountSupplier) {
+            @Nullable ObservableSupplier<Integer> archivedTabCountSupplier,
+            ObservableSupplier<Boolean> tabModelNotificationDotSupplier) {
         TraceEvent.begin("ToolbarManager.initializeWithNative");
         assert !mInitializedWithNative;
         assert mTabModelSelectorSupplier.get() != null;
@@ -1772,6 +1776,7 @@ public class ToolbarManager
                     tabSwitcherLongClickListener,
                     mTabModelSelectorSupplier.get().getCurrentModelTabCountSupplier(),
                     archivedTabCountSupplier,
+                    tabModelNotificationDotSupplier,
                     () -> TabArchiveSettings.setIphShownThisSession(true),
                     () -> TabArchiveSettings.setIphShownThisSession(false));
         }

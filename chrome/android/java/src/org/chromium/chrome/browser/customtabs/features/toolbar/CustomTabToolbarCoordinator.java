@@ -22,6 +22,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
@@ -209,7 +210,8 @@ public class CustomTabToolbarCoordinator {
                 /* openGridTabSwitcherHandler= */ null,
                 /* bookmarkClickHandler= */ null,
                 /* customTabsBackClickHandler= */ v -> onCloseButtonClick(),
-                /* archivedTabCountSupplier= */ null);
+                /* archivedTabCountSupplier= */ null,
+                /* tabModelNotificationDotSupplier= */ new ObservableSupplierImpl<Boolean>(false));
         mInitializedToolbarWithNative = true;
     }
 

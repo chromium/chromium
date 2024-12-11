@@ -5,16 +5,20 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.messaging.MessageUtils;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.collaboration.messaging.MessagingBackendService.PersistentMessageObserver;
@@ -56,23 +60,27 @@ public class TabModelNotificationDotManager implements Destroyable {
     private final ObservableSupplierImpl<Boolean> mNotificationDotObservableSupplier =
             new ObservableSupplierImpl<>(false);
     private final CallbackController mCallbackController = new CallbackController();
-    private final MessagingBackendService mMessagingBackendService;
-    private final TabModel mTabModel;
+    private @Nullable MessagingBackendService mMessagingBackendService;
+    private @Nullable TabModel mTabModel;
     private boolean mTabModelSelectorInitialized;
     private boolean mMessagingBackendServiceInitialized;
 
     /**
-     * Notification dot manager for the regular tab model. Should only be constructed post-native
-     * initialization.
+     * Initializes native dependencies of the notification dot manager for the regular tab model.
      *
      * @param tabModelSelector The tab model selector to use. Only the regular tab model is
      *     observed. However, the selector is needed to know when the tab model is initialized.
      */
-    public TabModelNotificationDotManager(TabModelSelector tabModelSelector) {
+    public void initWithNative(TabModelSelector tabModelSelector) {
         mTabModel = tabModelSelector.getModel(/* incognito= */ false);
         assert mTabModel != null : "TabModel & native should be initialized.";
-        mMessagingBackendService =
-                MessagingBackendServiceFactory.getForProfile(mTabModel.getProfile());
+
+        Profile profile = mTabModel.getProfile();
+        CollaborationService collaborationService =
+                CollaborationServiceFactory.getForProfile(profile);
+        if (!collaborationService.getServiceStatus().isAllowedToJoin()) return;
+
+        mMessagingBackendService = MessagingBackendServiceFactory.getForProfile(profile);
         mMessagingBackendService.addPersistentMessageObserver(mPersistentMessageObserver);
         TabModelUtils.runOnTabStateInitialized(
                 tabModelSelector,
@@ -94,7 +102,9 @@ public class TabModelNotificationDotManager implements Destroyable {
     @Override
     public void destroy() {
         mCallbackController.destroy();
-        mMessagingBackendService.removePersistentMessageObserver(mPersistentMessageObserver);
+        if (mMessagingBackendService != null) {
+            mMessagingBackendService.removePersistentMessageObserver(mPersistentMessageObserver);
+        }
     }
 
     private void computeUpdate() {
@@ -105,6 +115,8 @@ public class TabModelNotificationDotManager implements Destroyable {
     }
 
     private boolean anyTabsInModelHaveDirtyBit() {
+        assert mTabModel != null && mMessagingBackendService != null;
+
         List<PersistentMessage> messages =
                 mMessagingBackendService.getMessages(
                         Optional.of(PersistentNotificationType.DIRTY_TAB));

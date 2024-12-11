@@ -483,7 +483,8 @@ public final class ToolbarTabletUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testHoverTooltipText() {
-        mTabSwitcherButton.setTabCountSupplier(mTabCountSupplier, () -> true);
+        mTabSwitcherButton.setSuppliers(
+                mTabCountSupplier, new ObservableSupplierImpl<Boolean>(false), () -> true);
         mTabSwitcherButton.onDrawableStateChanged();
 
         // verify tooltip texts for tablet toolbar button are set.

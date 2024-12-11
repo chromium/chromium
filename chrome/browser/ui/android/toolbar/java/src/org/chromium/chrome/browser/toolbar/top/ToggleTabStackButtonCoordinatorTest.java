@@ -62,10 +62,13 @@ public class ToggleTabStackButtonCoordinatorTest {
 
     @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
-    private boolean mIsIncognito;
-    private boolean mOverviewOpen;
+    private final ObservableSupplierImpl<Boolean> mNotificationDotSupplier =
+            new ObservableSupplierImpl<>(false);
     private final OneshotSupplierImpl<Boolean> mPromoShownOneshotSupplier =
             new OneshotSupplierImpl<>();
+
+    private boolean mIsIncognito;
+    private boolean mOverviewOpen;
     private Set<LayoutStateProvider.LayoutStateObserver> mLayoutStateObserverSet;
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutSateProviderOneshotSupplier;
     private ObservableSupplier<Integer> mTabCountSupplier;
@@ -130,6 +133,7 @@ public class ToggleTabStackButtonCoordinatorTest {
                 mOnLongClickListener,
                 mTabCountSupplier,
                 mArchivedTabCountSupplier,
+                mNotificationDotSupplier,
                 () -> {},
                 () -> {});
         return coordinator;

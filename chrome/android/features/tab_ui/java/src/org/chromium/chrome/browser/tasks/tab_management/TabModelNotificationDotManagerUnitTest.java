@@ -22,12 +22,15 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.collaboration.messaging.MessageAttribution;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.collaboration.messaging.MessagingBackendService.PersistentMessageObserver;
@@ -52,6 +55,8 @@ public class TabModelNotificationDotManagerUnitTest {
     @Mock private TabModel mTabModel;
     @Mock private Tab mTab;
     @Mock private MessagingBackendService mMessagingBackendService;
+    @Mock private CollaborationService mCollaborationService;
+    @Mock private ServiceStatus mServiceStatus;
 
     @Captor private ArgumentCaptor<PersistentMessageObserver> mPersistentMessageObserverCaptor;
     @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
@@ -65,6 +70,9 @@ public class TabModelNotificationDotManagerUnitTest {
         mDirtyTabMessage.type = PersistentNotificationType.DIRTY_TAB;
         mNonDirtyTabMessage.type = PersistentNotificationType.CHIP;
 
+        when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
+        when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
+        CollaborationServiceFactory.setForTesting(mCollaborationService);
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
 
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
@@ -72,7 +80,8 @@ public class TabModelNotificationDotManagerUnitTest {
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mTabModel.getTabById(EXISTING_TAB_ID)).thenReturn(mTab);
 
-        mTabModelNotificationDotManager = new TabModelNotificationDotManager(mTabModelSelector);
+        mTabModelNotificationDotManager = new TabModelNotificationDotManager();
+        mTabModelNotificationDotManager.initWithNative(mTabModelSelector);
 
         verify(mMessagingBackendService)
                 .addPersistentMessageObserver(mPersistentMessageObserverCaptor.capture());
@@ -84,6 +93,15 @@ public class TabModelNotificationDotManagerUnitTest {
         mTabModelNotificationDotManager.destroy();
 
         verify(mMessagingBackendService).removePersistentMessageObserver(any());
+    }
+
+    @Test
+    public void testDestroyNoNativeInit() {
+        TabModelNotificationDotManager notificationDotManager =
+                new TabModelNotificationDotManager();
+
+        // Verify this doesn't crash if called before native is initialized.
+        notificationDotManager.destroy();
     }
 
     @Test
