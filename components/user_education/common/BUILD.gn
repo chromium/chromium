@@ -120,7 +120,7 @@ source_set("unit_tests") {
     "feature_promo/feature_promo_precondition_unittest.cc",
     "feature_promo/feature_promo_specification_unittest.cc",
     "feature_promo/impl/common_preconditions_unittest.cc",
-    "feature_promo/impl/feature_promo_controller_25_unittest.cc",
+    "feature_promo/impl/feature_promo_controller_2x_unittest.cc",
     "feature_promo/impl/feature_promo_queue_set_unittest.cc",
     "feature_promo/impl/feature_promo_queue_unittest.cc",
     "feature_promo/impl/messaging_coordinator_unittest.cc",

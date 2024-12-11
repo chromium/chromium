@@ -406,14 +406,20 @@ void FeaturePromoControllerCommon::OnHelpBubbleClosed(
   // subscription but since it's a weak pointer (internally) and since we should
   // should only get called here once, it's not a big deal if we don't reset
   // it.
+  bool closed_unexpectedly = false;
   if (bubble == promo_bubble()) {
     if (current_promo_->OnPromoBubbleClosed(reason)) {
       current_promo_.reset();
+      closed_unexpectedly = true;
     }
   }
 
   if (bubble_closed_callback_) {
     std::move(bubble_closed_callback_).Run();
+  }
+
+  if (closed_unexpectedly) {
+    MaybeShowQueuedPromo();
   }
 }
 

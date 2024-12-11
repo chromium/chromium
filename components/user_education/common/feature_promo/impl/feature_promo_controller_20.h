@@ -87,8 +87,7 @@ class FeaturePromoController20 : public FeaturePromoControllerCommon {
   //
   // Note: Implementations should make sure to check
   // `active_window_check_blocked()`.
-  virtual bool CanShowPromoForElement(
-      ui::TrackedElement* anchor_element) const = 0;
+  virtual bool CanShowPromoForElement(ui::TrackedElement* anchor_element) const;
 
  private:
   struct QueuedPromoData;

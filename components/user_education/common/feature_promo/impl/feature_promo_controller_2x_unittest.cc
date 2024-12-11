@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/user_education/common/feature_promo/impl/feature_promo_controller_25.h"
-
 #include <memory>
 
 #include "base/feature_list.h"
@@ -13,7 +11,10 @@
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_session_policy.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
+#include "components/user_education/common/feature_promo/impl/feature_promo_controller_20.h"
+#include "components/user_education/common/feature_promo/impl/feature_promo_controller_25.h"
 #include "components/user_education/test/feature_promo_controller_test_base.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence_test_util.h"
 
@@ -40,11 +41,17 @@ using PromoWeight = FeaturePromoPriorityProvider::PromoWeight;
 
 }  // namespace
 
-class FeaturePromoController25Test
-    : public test::FeaturePromoControllerTestBase {
+enum class PromoControllerVersion { kV20, kV25 };
+
+// Tests that ensure that queueing promos as implemented by
+// `MaybeShowStartupPromo()` behave as expected in FeaturePromoController for
+// V2.0 and V2.5, noting where there are specific differences in behavior.
+class FeaturePromoControllerQueueTest
+    : public test::FeaturePromoControllerTestBase,
+      public testing::WithParamInterface<PromoControllerVersion> {
  public:
-  FeaturePromoController25Test() = default;
-  ~FeaturePromoController25Test() override = default;
+  FeaturePromoControllerQueueTest() = default;
+  ~FeaturePromoControllerQueueTest() override = default;
 
   void SetUp() override {
     FeaturePromoControllerTestBase::SetUp();
@@ -71,31 +78,54 @@ class FeaturePromoController25Test
  protected:
   // FeaturePromoControllerTestBase:
   std::unique_ptr<FeaturePromoControllerCommon> CreateController() override {
-    auto result =
-        std::make_unique<TestPromoController<FeaturePromoController25>>(
+    switch (GetParam()) {
+      case PromoControllerVersion::kV20: {
+        return std::make_unique<TestPromoController<FeaturePromoController20>>(
             &tracker(), &promo_registry(), &help_bubble_factory_registry(),
             &storage_service(), &session_policy(), &tutorial_service(),
             &messaging_controller());
-    result->Init();
-    return result;
+      }
+      case PromoControllerVersion::kV25: {
+        auto result =
+            std::make_unique<TestPromoController<FeaturePromoController25>>(
+                &tracker(), &promo_registry(), &help_bubble_factory_registry(),
+                &storage_service(), &session_policy(), &tutorial_service(),
+                &messaging_controller());
+        result->Init();
+        return result;
+      }
+    }
   }
 
   base::MockCallback<FeaturePromoSpecification::CustomActionCallback>
       custom_action_callback_;
 };
 
-TEST_F(FeaturePromoController25Test, QueuePromo) {
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FeaturePromoControllerQueueTest,
+    testing::Values(PromoControllerVersion::kV20, PromoControllerVersion::kV25),
+    [](const testing::TestParamInfo<PromoControllerVersion>& param) {
+      switch (param.param) {
+        case PromoControllerVersion::kV20:
+          return "V2_point_0";
+        case PromoControllerVersion::kV25:
+          return "V2_point_5";
+      }
+    });
+
+TEST_P(FeaturePromoControllerQueueTest, QueuePromo) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   FeaturePromoParams params(kIPHTestLowPriorityToast);
   params.show_promo_result_callback = result.Get();
   EXPECT_ASYNC_CALL_IN_SCOPE(
       result, Run(FeaturePromoResult::Success()),
-      promo_controller().MaybeShowPromo(std::move(params)));
+      promo_controller().MaybeShowStartupPromo(std::move(params)));
   EXPECT_NE(GetHelpBubble(), nullptr);
 }
 
-TEST_F(FeaturePromoController25Test, QueueTwoPromosTogetherBothAreEligible) {
+TEST_P(FeaturePromoControllerQueueTest, QueueTwoPromosTogetherBothAreEligible) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -105,14 +135,15 @@ TEST_F(FeaturePromoController25Test, QueueTwoPromosTogetherBothAreEligible) {
   FeaturePromoParams params2(kIPHTestLowPrioritySnooze);
   params2.show_promo_result_callback = result2.Get();
   EXPECT_ASYNC_CALL_IN_SCOPE(result, Run(FeaturePromoResult::Success()), {
-    promo_controller().MaybeShowPromo(std::move(params));
-    promo_controller().MaybeShowPromo(std::move(params2));
+    promo_controller().MaybeShowStartupPromo(std::move(params));
+    promo_controller().MaybeShowStartupPromo(std::move(params2));
   });
+
   EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run(FeaturePromoResult::Success()),
                              GetHelpBubble()->Close());
 }
 
-TEST_F(FeaturePromoController25Test,
+TEST_P(FeaturePromoControllerQueueTest,
        QueueTwoPromosTogetherAnchorHiddenBeforeFirst) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
@@ -125,18 +156,34 @@ TEST_F(FeaturePromoController25Test,
 
   anchor_element().Hide();
 
-  promo_controller().MaybeShowPromo(std::move(params));
-  promo_controller().MaybeShowPromo(std::move(params2));
+  switch (GetParam()) {
+    case PromoControllerVersion::kV25: {
+      // In 2.5, promos will be held until the anchor is visible.
+      promo_controller().MaybeShowStartupPromo(std::move(params));
+      promo_controller().MaybeShowStartupPromo(std::move(params2));
 
-  // The first promo will not show until the anchor element is present.
-  EXPECT_ASYNC_CALL_IN_SCOPE(result, Run(FeaturePromoResult::Success()),
-                             { anchor_element().Show(); });
+      // The first promo will not show until the anchor element is present.
+      EXPECT_ASYNC_CALL_IN_SCOPE(result, Run(FeaturePromoResult::Success()),
+                                 { anchor_element().Show(); });
 
-  // The second promo can show right away.
-  EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run, GetHelpBubble()->Close());
+      // The second promo can show right away.
+      EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run, GetHelpBubble()->Close());
+      break;
+    }
+    case PromoControllerVersion::kV20: {
+      // In 2.0, promos will fail immediately.
+      EXPECT_ASYNC_CALLS_IN_SCOPE_2(
+          result, Run(FeaturePromoResult(FeaturePromoResult::kBlockedByUi)),
+          result2, Run(FeaturePromoResult(FeaturePromoResult::kBlockedByUi)), {
+            promo_controller().MaybeShowStartupPromo(std::move(params));
+            promo_controller().MaybeShowStartupPromo(std::move(params2));
+          });
+      break;
+    }
+  }
 }
 
-TEST_F(FeaturePromoController25Test,
+TEST_P(FeaturePromoControllerQueueTest,
        QueueTwoPromosTogetherAnchorHiddenBeforeSecond) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
@@ -149,19 +196,31 @@ TEST_F(FeaturePromoController25Test,
   FeaturePromoParams params2(kIPHTestLowPrioritySnooze);
   params2.show_promo_result_callback = result2.Get();
   EXPECT_ASYNC_CALL_IN_SCOPE(result, Run(FeaturePromoResult::Success()), {
-    promo_controller().MaybeShowPromo(std::move(params));
-    promo_controller().MaybeShowPromo(std::move(params2));
+    promo_controller().MaybeShowStartupPromo(std::move(params));
+    promo_controller().MaybeShowStartupPromo(std::move(params2));
   });
 
   // Hiding the anchor kills the first promo, and the second cannot start.
-  EXPECT_ASYNC_CALL_IN_SCOPE(closed, Run, anchor_element().Hide());
+  switch (GetParam()) {
+    case PromoControllerVersion::kV25: {
+      EXPECT_ASYNC_CALL_IN_SCOPE(closed, Run, anchor_element().Hide());
 
-  // Showing the anchor again allows the second promo to show, since it is a
-  // "wait-for" condition and not a "required" condition.
-  EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run, anchor_element().Show());
+      // Showing the anchor again allows the second promo to show, since it is a
+      // "wait-for" condition and not a "required" condition.
+      EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run, anchor_element().Show());
+      break;
+    }
+    case PromoControllerVersion::kV20: {
+      // In 2.0, second fails immediately.
+      EXPECT_ASYNC_CALLS_IN_SCOPE_2(
+          closed, Run, result2,
+          Run(FeaturePromoResult(FeaturePromoResult::kBlockedByUi)),
+          anchor_element().Hide());
+    }
+  }
 }
 
-TEST_F(FeaturePromoController25Test,
+TEST_P(FeaturePromoControllerQueueTest,
        QueueTwoPromosTogetherFirstBlockedByPolicy) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
@@ -181,12 +240,12 @@ TEST_F(FeaturePromoController25Test,
 
   EXPECT_ASYNC_CALLS_IN_SCOPE_2(
       result, Run(kFailure), result2, Run(FeaturePromoResult::Success()), {
-        promo_controller().MaybeShowPromo(std::move(params));
-        promo_controller().MaybeShowPromo(std::move(params2));
+        promo_controller().MaybeShowStartupPromo(std::move(params));
+        promo_controller().MaybeShowStartupPromo(std::move(params2));
       });
 }
 
-TEST_F(FeaturePromoController25Test, QueueMidThenLowPriority) {
+TEST_P(FeaturePromoControllerQueueTest, QueueMidThenLowPriority) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -198,14 +257,14 @@ TEST_F(FeaturePromoController25Test, QueueMidThenLowPriority) {
 
   // Standard behavior is to have one promo wait for the other.
   EXPECT_ASYNC_CALL_IN_SCOPE(result, Run(FeaturePromoResult::Success()), {
-    promo_controller().MaybeShowPromo(std::move(params));
-    promo_controller().MaybeShowPromo(std::move(params2));
+    promo_controller().MaybeShowStartupPromo(std::move(params));
+    promo_controller().MaybeShowStartupPromo(std::move(params2));
   });
   EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run(FeaturePromoResult::Success()),
                              GetHelpBubble()->Close());
 }
 
-TEST_F(FeaturePromoController25Test, QueueLowThenMidPriority) {
+TEST_P(FeaturePromoControllerQueueTest, QueueLowThenMidPriority) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -219,14 +278,14 @@ TEST_F(FeaturePromoController25Test, QueueLowThenMidPriority) {
   EXPECT_ASYNC_CALL_IN_SCOPE(result, Run(FeaturePromoResult::Success()), {
     // Queue in reverse order from the previous test.
     // The outcomes should still be the same.
-    promo_controller().MaybeShowPromo(std::move(params2));
-    promo_controller().MaybeShowPromo(std::move(params));
+    promo_controller().MaybeShowStartupPromo(std::move(params2));
+    promo_controller().MaybeShowStartupPromo(std::move(params));
   });
   EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run(FeaturePromoResult::Success()),
                              GetHelpBubble()->Close());
 }
 
-TEST_F(FeaturePromoController25Test, QueueHighThenLowPriority) {
+TEST_P(FeaturePromoControllerQueueTest, QueueHighThenLowPriority) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -238,14 +297,14 @@ TEST_F(FeaturePromoController25Test, QueueHighThenLowPriority) {
 
   // Standard behavior is to have one promo wait for the other.
   EXPECT_ASYNC_CALL_IN_SCOPE(result, Run(FeaturePromoResult::Success()), {
-    promo_controller().MaybeShowPromo(std::move(params));
-    promo_controller().MaybeShowPromo(std::move(params2));
+    promo_controller().MaybeShowStartupPromo(std::move(params));
+    promo_controller().MaybeShowStartupPromo(std::move(params2));
   });
   EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run(FeaturePromoResult::Success()),
                              GetHelpBubble()->Close());
 }
 
-TEST_F(FeaturePromoController25Test, QueueLowThenHighPriority) {
+TEST_P(FeaturePromoControllerQueueTest, QueueLowThenHighPriority) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -259,14 +318,14 @@ TEST_F(FeaturePromoController25Test, QueueLowThenHighPriority) {
   EXPECT_ASYNC_CALL_IN_SCOPE(result, Run(FeaturePromoResult::Success()), {
     // Queue in reverse order from the previous test.
     // The outcomes should still be the same.
-    promo_controller().MaybeShowPromo(std::move(params2));
-    promo_controller().MaybeShowPromo(std::move(params));
+    promo_controller().MaybeShowStartupPromo(std::move(params2));
+    promo_controller().MaybeShowStartupPromo(std::move(params));
   });
   EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run(FeaturePromoResult::Success()),
                              GetHelpBubble()->Close());
 }
 
-TEST_F(FeaturePromoController25Test, DemoOverridesOtherPromos) {
+TEST_P(FeaturePromoControllerQueueTest, DemoOverridesOtherPromos) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -286,13 +345,13 @@ TEST_F(FeaturePromoController25Test, DemoOverridesOtherPromos) {
       demo_result, Run(FeaturePromoResult(FeaturePromoResult::Success())), {
         // Queue in reverse order from the previous test.
         // The outcomes should still be the same.
-        promo_controller().MaybeShowPromo(std::move(params));
-        promo_controller().MaybeShowPromo(std::move(params2));
+        promo_controller().MaybeShowStartupPromo(std::move(params));
+        promo_controller().MaybeShowStartupPromo(std::move(params2));
         promo_controller().MaybeShowPromoForDemoPage(std::move(demo_params));
       });
 }
 
-TEST_F(FeaturePromoController25Test, ShowHighThenQueueLowPriority) {
+TEST_P(FeaturePromoControllerQueueTest, ShowHighThenQueueLowPriority) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -304,15 +363,15 @@ TEST_F(FeaturePromoController25Test, ShowHighThenQueueLowPriority) {
 
   // Standard behavior is to have one promo wait for the other.
   EXPECT_ASYNC_CALL_IN_SCOPE(result, Run(FeaturePromoResult::Success()), {
-    promo_controller().MaybeShowPromo(std::move(params));
+    promo_controller().MaybeShowStartupPromo(std::move(params));
   });
 
-  promo_controller().MaybeShowPromo(std::move(params2));
+  promo_controller().MaybeShowStartupPromo(std::move(params2));
   EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run(FeaturePromoResult::Success()),
                              GetHelpBubble()->Close());
 }
 
-TEST_F(FeaturePromoController25Test, ShowLowThenQueueHighPriority) {
+TEST_P(FeaturePromoControllerQueueTest, ShowLowThenQueueHighPriority) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -326,16 +385,16 @@ TEST_F(FeaturePromoController25Test, ShowLowThenQueueHighPriority) {
 
   // Run the low priority (promo 2) first:
   EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run(FeaturePromoResult::Success()), {
-    promo_controller().MaybeShowPromo(std::move(params2));
+    promo_controller().MaybeShowStartupPromo(std::move(params2));
   });
 
   // Queueing the high priority promo should end the other and run this one.
   EXPECT_ASYNC_CALLS_IN_SCOPE_2(
       closed, Run, result, Run(FeaturePromoResult::Success()),
-      { promo_controller().MaybeShowPromo(std::move(params)); });
+      { promo_controller().MaybeShowStartupPromo(std::move(params)); });
 }
 
-TEST_F(FeaturePromoController25Test, DemoCancelsExistingPromo) {
+TEST_P(FeaturePromoControllerQueueTest, DemoCancelsExistingPromo) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          result);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
@@ -349,7 +408,7 @@ TEST_F(FeaturePromoController25Test, DemoCancelsExistingPromo) {
 
   // Show the first promo.
   EXPECT_ASYNC_CALL_IN_SCOPE(result, Run(FeaturePromoResult::Success()), {
-    promo_controller().MaybeShowPromo(std::move(params));
+    promo_controller().MaybeShowStartupPromo(std::move(params));
   });
 
   // Queueing the demo promo should cancel the other promo.
