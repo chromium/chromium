@@ -76,6 +76,18 @@
         {
           "builder": "gpu-try-linux-nvidia-rel",
           "group": "tryserver.chromium.linux"
+        },
+        {
+          "builder": "linux-dcheck-off-rel",
+          "group": "tryserver.chromium.linux"
+        },
+        {
+          "builder": "linux-full-remote-rel",
+          "group": "tryserver.chromium.linux"
+        },
+        {
+          "builder": "linux-rel",
+          "group": "tryserver.chromium.linux"
         }
       ],
       "targets_spec_directory": "src/infra/config/generated/builders/ci/Linux Release (NVIDIA)/targets"

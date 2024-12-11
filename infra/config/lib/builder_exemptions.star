@@ -1426,8 +1426,6 @@ exempted_from_contact_builders = {
 }
 
 mega_cq_excluded_builders = [
-    # TODO(crbug.com/383368160): Remove the GPU bot when pool outage is fixed.
-    "Linux Release (NVIDIA)",
     # TODO(crbug.com/343505108): Remove the following libfuzzer
     # builders as trybots are created for them.
     "Centipede High End Upload Linux ASan",

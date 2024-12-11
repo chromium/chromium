@@ -413,9 +413,7 @@ try_.orchestrator_builder(
         "ci/Linux Builder",
         "ci/Linux Tests",
         "ci/GPU Linux Builder",
-        # TODO(crbug.com/383368160): Restore the GPU tester bot when its test
-        # pool is restored.
-        #"ci/Linux Release (NVIDIA)",
+        "ci/Linux Release (NVIDIA)",
     ],
     gn_args = gn_args.config(
         configs = [

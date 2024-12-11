@@ -65,6 +65,38 @@
           {
             "builder_id": {
               "bucket": "ci",
+              "builder": "Linux Release (NVIDIA)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-gpu-archive",
+              "builder_group": "chromium.gpu",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "linux"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "use_clang_coverage"
+                ],
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU Linux Builder",
+                "project": "chromium"
+              }
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
               "builder": "Linux Tests",
               "project": "chromium"
             },
@@ -109,6 +141,11 @@
         }
       ],
       "builder_ids_in_scope_for_testing": [
+        {
+          "bucket": "ci",
+          "builder": "Linux Release (NVIDIA)",
+          "project": "chromium"
+        },
         {
           "bucket": "ci",
           "builder": "Linux Tests",
