@@ -1872,9 +1872,6 @@
       'filepath': 'chrome/browser/resources/settings/privacy_page/privacy_guide/' \
                   '|chrome/test/data/webui/settings/privacy_guide*',
     },
-    'privacy_sandbox': {
-      'filepath': 'privacy_sandbox|PrivacySandbox',
-    },
     'private_aggregation': {
       'filepath': 'private.?aggregation|aggregation.?service',
     },
@@ -3159,11 +3156,6 @@
     'print_preview': ['print-reviews+preview@chromium.org'],
     'privacy_budget': ['antoniosartori+watch-privacy_budget@chromium.org'],
     'privacy_guide_desktop': ['rainhard+watch@chromium.org'],
-    'privacy_sandbox': [
-      'alimariam+watch-privacy-sandbox@google.com',
-      'dullweber+watch-privacy-sandbox@chromium.org',
-      'tommasin+watch-privacy-sandbox@chromium.org'
-    ],
     'private_aggregation': ['alexmt+watch@chromium.org'],
     'profile_keyed_service': ['rsult@google.com'],
     'psm_libs': ['amraboelkher+watch@chromium.org'],
