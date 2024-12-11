@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <array>
+
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -113,17 +115,18 @@ enum DeprecatedAcceleratorUsage {
 //      the notification text. Also found in |ash_strings.grd|.
 //    - {true or false} whether the deprecated accelerator is still enabled (we
 //      don't disable a deprecated accelerator abruptly).
-ASH_EXPORT inline constexpr AcceleratorData kDeprecatedAccelerators[] = {
-    {true, ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
-     AcceleratorAction::kShowShortcutViewer},
-    {true, ui::VKEY_OEM_2,
-     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kShowShortcutViewer},
-    {true, ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN,
-     AcceleratorAction::kOpenGetHelp},
-    {true, ui::VKEY_OEM_2, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
-     AcceleratorAction::kOpenGetHelp},
-};
+ASH_EXPORT inline constexpr auto kDeprecatedAccelerators =
+    std::to_array<AcceleratorData>({
+        {true, ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
+         AcceleratorAction::kShowShortcutViewer},
+        {true, ui::VKEY_OEM_2,
+         ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN,
+         AcceleratorAction::kShowShortcutViewer},
+        {true, ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN,
+         AcceleratorAction::kOpenGetHelp},
+        {true, ui::VKEY_OEM_2, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
+         AcceleratorAction::kOpenGetHelp},
+    });
 ASH_EXPORT inline constexpr size_t kDeprecatedAcceleratorsLength =
     std::size(kDeprecatedAccelerators);
 
@@ -132,19 +135,20 @@ ASH_EXPORT inline constexpr size_t kDeprecatedAcceleratorsLength =
 // When removing entries from kDeprecatedAcceleratorsData, also clean up their
 // prefs in kDeprecatedAcceleratorNotificationsShownCounts and
 // kDeprecatedAcceleratorNotificationsLastShown.
-ASH_EXPORT inline constexpr DeprecatedAcceleratorData
-    kDeprecatedAcceleratorsData[] = {
-        {AcceleratorAction::kShowShortcutViewer,
-         "Ash.Accelerators.Deprecated.ShowShortcutViewer",
-         IDS_DEPRECATED_SHOW_SHORTCUT_VIEWER_MSG,
-         IDS_SHORTCUT_SHOW_SHORTCUT_VIEWER_NEW,
-         ui::Accelerator(ui::VKEY_S, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN),
-         false, "show_shortcut_viewer"},
-        {AcceleratorAction::kOpenGetHelp,
-         "Ash.Accelerators.Deprecated.ShowShortcutViewer",
-         IDS_DEPRECATED_OPEN_GET_HELP_MSG, IDS_SHORTCUT_OPEN_GET_HELP_NEW,
-         ui::Accelerator(ui::VKEY_H, ui::EF_COMMAND_DOWN), false,
-         "open_get_help"}};
+ASH_EXPORT inline constexpr auto kDeprecatedAcceleratorsData =
+    std::to_array<DeprecatedAcceleratorData>(
+        {{AcceleratorAction::kShowShortcutViewer,
+          "Ash.Accelerators.Deprecated.ShowShortcutViewer",
+          IDS_DEPRECATED_SHOW_SHORTCUT_VIEWER_MSG,
+          IDS_SHORTCUT_SHOW_SHORTCUT_VIEWER_NEW,
+          ui::Accelerator(ui::VKEY_S,
+                          ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN),
+          false, "show_shortcut_viewer"},
+         {AcceleratorAction::kOpenGetHelp,
+          "Ash.Accelerators.Deprecated.ShowShortcutViewer",
+          IDS_DEPRECATED_OPEN_GET_HELP_MSG, IDS_SHORTCUT_OPEN_GET_HELP_NEW,
+          ui::Accelerator(ui::VKEY_H, ui::EF_COMMAND_DOWN), false,
+          "open_get_help"}});
 ASH_EXPORT inline constexpr size_t kDeprecatedAcceleratorsDataLength =
     std::size(kDeprecatedAcceleratorsData);
 
@@ -152,64 +156,68 @@ ASH_EXPORT inline constexpr size_t kDeprecatedAcceleratorsDataLength =
 // keyboard shortcuts" flag (--ash-debug-shortcuts) is enabled. Debug actions
 // are always run (similar to reserved actions). Debug accelerators can be
 // enabled in about:flags.
-ASH_EXPORT inline constexpr AcceleratorData kDebugAcceleratorData[] = {
-    {true, ui::VKEY_N, kDebugModifier, AcceleratorAction::kToggleWifi},
-    {true, ui::VKEY_X, kDebugModifier,
-     AcceleratorAction::kDebugKeyboardBacklightToggle},
-    {true, ui::VKEY_M, kDebugModifier,
-     AcceleratorAction::kDebugMicrophoneMuteToggle},
-    {true, ui::VKEY_9, kDebugModifier,
-     AcceleratorAction::kDebugShowInformedRestore},
-    {true, ui::VKEY_O, kDebugModifier, AcceleratorAction::kDebugShowToast},
-    {true, ui::VKEY_J, kDebugModifier,
-     AcceleratorAction::kDebugShowSystemNudge},
-    {true, ui::VKEY_Z, kDebugModifier,
-     AcceleratorAction::kDebugSystemUiStyleViewer},
-    {true, ui::VKEY_P, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kDebugToggleTouchPad},
-    {true, ui::VKEY_T, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kDebugToggleTouchScreen},
-    {true, ui::VKEY_T, kDebugModifier,
-     AcceleratorAction::kDebugToggleTabletMode},
-    {true, ui::VKEY_A, kDebugModifier,
-     AcceleratorAction::kDebugToggleVideoConferenceCameraTrayIcon},
-    {true, ui::VKEY_B, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
-     AcceleratorAction::kDebugToggleWallpaperMode},
-    {true, ui::VKEY_L, kDebugModifier,
-     AcceleratorAction::kDebugPrintLayerHierarchy},
-    {true, ui::VKEY_V, kDebugModifier,
-     AcceleratorAction::kDebugPrintViewHierarchy},
-    {true, ui::VKEY_W, kDebugModifier,
-     AcceleratorAction::kDebugPrintWindowHierarchy},
-    {true, ui::VKEY_B, kDebugModifier,
-     AcceleratorAction::kDebugToggleShowDebugBorders},
-    {true, ui::VKEY_F, kDebugModifier,
-     AcceleratorAction::kDebugToggleShowFpsCounter},
-    {true, ui::VKEY_P, kDebugModifier,
-     AcceleratorAction::kDebugToggleShowPaintRects},
-    {true, ui::VKEY_K, kDebugModifier, AcceleratorAction::kDebugTriggerCrash},
-    {true, ui::VKEY_G, kDebugModifier,
-     AcceleratorAction::kDebugToggleHudDisplay},
-    {true, ui::VKEY_Q, kDebugModifier,
-     AcceleratorAction::kDebugToggleVirtualTrackpad},
-    {true, ui::VKEY_D, kDebugModifier, AcceleratorAction::kDebugToggleDarkMode},
-    {true, ui::VKEY_Y, kDebugModifier,
-     AcceleratorAction::kDebugToggleDynamicColor},
-    {true, ui::VKEY_E, kDebugModifier,
-     AcceleratorAction::kDebugTogglePowerButtonMenu},
-    {true, ui::VKEY_C, kDebugModifier,
-     AcceleratorAction::kDebugClearUseKMeansPref},
-    {true, ui::VKEY_H, kDebugModifier,
-     AcceleratorAction::kDebugToggleFocusModeState},
-    {true, ui::VKEY_8, kDebugModifier,
-     AcceleratorAction::kDebugStartSunfishSession},
-};
+ASH_EXPORT inline constexpr auto kDebugAcceleratorData =
+    std::to_array<AcceleratorData>({
+        {true, ui::VKEY_N, kDebugModifier, AcceleratorAction::kToggleWifi},
+        {true, ui::VKEY_X, kDebugModifier,
+         AcceleratorAction::kDebugKeyboardBacklightToggle},
+        {true, ui::VKEY_M, kDebugModifier,
+         AcceleratorAction::kDebugMicrophoneMuteToggle},
+        {true, ui::VKEY_9, kDebugModifier,
+         AcceleratorAction::kDebugShowInformedRestore},
+        {true, ui::VKEY_O, kDebugModifier, AcceleratorAction::kDebugShowToast},
+        {true, ui::VKEY_J, kDebugModifier,
+         AcceleratorAction::kDebugShowSystemNudge},
+        {true, ui::VKEY_Z, kDebugModifier,
+         AcceleratorAction::kDebugSystemUiStyleViewer},
+        {true, ui::VKEY_P, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+         AcceleratorAction::kDebugToggleTouchPad},
+        {true, ui::VKEY_T, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+         AcceleratorAction::kDebugToggleTouchScreen},
+        {true, ui::VKEY_T, kDebugModifier,
+         AcceleratorAction::kDebugToggleTabletMode},
+        {true, ui::VKEY_A, kDebugModifier,
+         AcceleratorAction::kDebugToggleVideoConferenceCameraTrayIcon},
+        {true, ui::VKEY_B, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
+         AcceleratorAction::kDebugToggleWallpaperMode},
+        {true, ui::VKEY_L, kDebugModifier,
+         AcceleratorAction::kDebugPrintLayerHierarchy},
+        {true, ui::VKEY_V, kDebugModifier,
+         AcceleratorAction::kDebugPrintViewHierarchy},
+        {true, ui::VKEY_W, kDebugModifier,
+         AcceleratorAction::kDebugPrintWindowHierarchy},
+        {true, ui::VKEY_B, kDebugModifier,
+         AcceleratorAction::kDebugToggleShowDebugBorders},
+        {true, ui::VKEY_F, kDebugModifier,
+         AcceleratorAction::kDebugToggleShowFpsCounter},
+        {true, ui::VKEY_P, kDebugModifier,
+         AcceleratorAction::kDebugToggleShowPaintRects},
+        {true, ui::VKEY_K, kDebugModifier,
+         AcceleratorAction::kDebugTriggerCrash},
+        {true, ui::VKEY_G, kDebugModifier,
+         AcceleratorAction::kDebugToggleHudDisplay},
+        {true, ui::VKEY_Q, kDebugModifier,
+         AcceleratorAction::kDebugToggleVirtualTrackpad},
+        {true, ui::VKEY_D, kDebugModifier,
+         AcceleratorAction::kDebugToggleDarkMode},
+        {true, ui::VKEY_Y, kDebugModifier,
+         AcceleratorAction::kDebugToggleDynamicColor},
+        {true, ui::VKEY_E, kDebugModifier,
+         AcceleratorAction::kDebugTogglePowerButtonMenu},
+        {true, ui::VKEY_C, kDebugModifier,
+         AcceleratorAction::kDebugClearUseKMeansPref},
+        {true, ui::VKEY_H, kDebugModifier,
+         AcceleratorAction::kDebugToggleFocusModeState},
+        {true, ui::VKEY_8, kDebugModifier,
+         AcceleratorAction::kDebugStartSunfishSession},
+    });
 ASH_EXPORT inline constexpr size_t kDebugAcceleratorDataLength =
     std::size(kDebugAcceleratorData);
 
 // Developer accelerators that are enabled only with the command-line switch
 // --ash-dev-shortcuts. They are always run similar to reserved actions.
-ASH_EXPORT inline constexpr AcceleratorData kDeveloperAcceleratorData[] = {
+ASH_EXPORT inline constexpr auto kDeveloperAcceleratorData = std::to_array<
+    AcceleratorData>({
     // Extra shortcut for debug build to control magnifier on Linux desktop.
     {true, ui::VKEY_BRIGHTNESS_DOWN, ui::EF_CONTROL_DOWN,
      AcceleratorAction::kMagnifierZoomOut},
@@ -249,13 +257,13 @@ ASH_EXPORT inline constexpr AcceleratorData kDeveloperAcceleratorData[] = {
     {true, ui::VKEY_1, kDebugModifier, kTouchFingerprintSensor1},
     {true, ui::VKEY_2, kDebugModifier, kTouchFingerprintSensor2},
     {true, ui::VKEY_3, kDebugModifier, kTouchFingerprintSensor3},
-};
+});
 ASH_EXPORT inline constexpr size_t kDeveloperAcceleratorDataLength =
     std::size(kDeveloperAcceleratorData);
 
 // Actions that should be handled very early in Ash unless the current target
 // window is full-screen.
-ASH_EXPORT inline constexpr AcceleratorAction kPreferredActions[] = {
+ASH_EXPORT inline constexpr std::array kPreferredActions = {
     // Window cycling accelerators.
     AcceleratorAction::kCycleBackwardMru,             // Shift+Alt+Tab
     AcceleratorAction::kCycleForwardMru,              // Alt+Tab
@@ -276,7 +284,7 @@ ASH_EXPORT inline constexpr size_t kPreferredActionsLength =
     std::size(kPreferredActions);
 
 // Actions that are always handled in Ash.
-ASH_EXPORT inline constexpr AcceleratorAction kReservedActions[] = {
+ASH_EXPORT inline constexpr std::array kReservedActions = {
     AcceleratorAction::kPowerPressed, AcceleratorAction::kPowerReleased,
     AcceleratorAction::kLockPressed,  AcceleratorAction::kLockReleased,
     AcceleratorAction::kSuspend,      AcceleratorAction::kLockScreen,
@@ -285,66 +293,65 @@ ASH_EXPORT inline constexpr size_t kReservedActionsLength =
     std::size(kReservedActions);
 
 // Actions allowed while user is not signed in or screen is locked.
-ASH_EXPORT inline constexpr AcceleratorAction
-    kActionsAllowedAtLoginOrLockScreen[] = {
-        AcceleratorAction::kBrightnessDown,
-        AcceleratorAction::kBrightnessUp,
-        AcceleratorAction::kDebugPrintLayerHierarchy,
-        AcceleratorAction::kDebugPrintViewHierarchy,
-        AcceleratorAction::kDebugPrintWindowHierarchy,
-        AcceleratorAction::kDebugShowSystemNudge,
-        AcceleratorAction::kDebugToggleHudDisplay,
-        AcceleratorAction::kDebugToggleTouchPad,
-        AcceleratorAction::kDebugToggleTouchScreen,
-        AcceleratorAction::kDebugToggleTabletMode,
-        AcceleratorAction::kDevAddRemoveDisplay,
-        AcceleratorAction::kDisableCapsLock,
-        AcceleratorAction::kEnableSelectToSpeak,
-        AcceleratorAction::kEnableOrToggleDictation,
-        AcceleratorAction::kKeyboardBacklightToggle,
-        AcceleratorAction::kKeyboardBrightnessDown,
-        AcceleratorAction::kKeyboardBrightnessUp,
-        AcceleratorAction::kMagnifierZoomIn,   // Control+F7
-        AcceleratorAction::kMagnifierZoomOut,  // Control+F6
-        AcceleratorAction::kMediaFastForward,
-        AcceleratorAction::kMediaNextTrack,
-        AcceleratorAction::kMediaPause,
-        AcceleratorAction::kMediaPlay,
-        AcceleratorAction::kMediaPlayPause,
-        AcceleratorAction::kMediaPrevTrack,
-        AcceleratorAction::kMediaRewind,
-        AcceleratorAction::kMediaStop,
-        AcceleratorAction::kMicrophoneMuteToggle,
-        AcceleratorAction::kPrivacyScreenToggle,
-        AcceleratorAction::kPrintUiHierarchies,
-        AcceleratorAction::kRotateScreen,
-        AcceleratorAction::kScaleUiDown,
-        AcceleratorAction::kScaleUiReset,
-        AcceleratorAction::kScaleUiUp,
-        AcceleratorAction::kToggleImeMenuBubble,
-        AcceleratorAction::kSwitchToLastUsedIme,
-        AcceleratorAction::kSwitchToNextIme,
-        AcceleratorAction::kTakeScreenshot,
-        AcceleratorAction::kToggleCalendar,
-        AcceleratorAction::kToggleCapsLock,
-        AcceleratorAction::kToggleDockedMagnifier,
-        AcceleratorAction::kToggleFullscreenMagnifier,
-        AcceleratorAction::kToggleHighContrast,
-        AcceleratorAction::kToggleMirrorMode,
-        AcceleratorAction::kTogglePicker,
-        AcceleratorAction::kToggleSpokenFeedback,
-        AcceleratorAction::kToggleSystemTrayBubble,
-        AcceleratorAction::kToggleWifi,
-        AcceleratorAction::kTouchHudClear,
-        AcceleratorAction::kTouchFingerprintSensor1,
-        AcceleratorAction::kTouchFingerprintSensor2,
-        AcceleratorAction::kTouchFingerprintSensor3,
-        AcceleratorAction::kVolumeDown,
-        AcceleratorAction::kVolumeMute,
-        AcceleratorAction::kVolumeUp,
+ASH_EXPORT inline constexpr std::array kActionsAllowedAtLoginOrLockScreen = {
+    AcceleratorAction::kBrightnessDown,
+    AcceleratorAction::kBrightnessUp,
+    AcceleratorAction::kDebugPrintLayerHierarchy,
+    AcceleratorAction::kDebugPrintViewHierarchy,
+    AcceleratorAction::kDebugPrintWindowHierarchy,
+    AcceleratorAction::kDebugShowSystemNudge,
+    AcceleratorAction::kDebugToggleHudDisplay,
+    AcceleratorAction::kDebugToggleTouchPad,
+    AcceleratorAction::kDebugToggleTouchScreen,
+    AcceleratorAction::kDebugToggleTabletMode,
+    AcceleratorAction::kDevAddRemoveDisplay,
+    AcceleratorAction::kDisableCapsLock,
+    AcceleratorAction::kEnableSelectToSpeak,
+    AcceleratorAction::kEnableOrToggleDictation,
+    AcceleratorAction::kKeyboardBacklightToggle,
+    AcceleratorAction::kKeyboardBrightnessDown,
+    AcceleratorAction::kKeyboardBrightnessUp,
+    AcceleratorAction::kMagnifierZoomIn,   // Control+F7
+    AcceleratorAction::kMagnifierZoomOut,  // Control+F6
+    AcceleratorAction::kMediaFastForward,
+    AcceleratorAction::kMediaNextTrack,
+    AcceleratorAction::kMediaPause,
+    AcceleratorAction::kMediaPlay,
+    AcceleratorAction::kMediaPlayPause,
+    AcceleratorAction::kMediaPrevTrack,
+    AcceleratorAction::kMediaRewind,
+    AcceleratorAction::kMediaStop,
+    AcceleratorAction::kMicrophoneMuteToggle,
+    AcceleratorAction::kPrivacyScreenToggle,
+    AcceleratorAction::kPrintUiHierarchies,
+    AcceleratorAction::kRotateScreen,
+    AcceleratorAction::kScaleUiDown,
+    AcceleratorAction::kScaleUiReset,
+    AcceleratorAction::kScaleUiUp,
+    AcceleratorAction::kToggleImeMenuBubble,
+    AcceleratorAction::kSwitchToLastUsedIme,
+    AcceleratorAction::kSwitchToNextIme,
+    AcceleratorAction::kTakeScreenshot,
+    AcceleratorAction::kToggleCalendar,
+    AcceleratorAction::kToggleCapsLock,
+    AcceleratorAction::kToggleDockedMagnifier,
+    AcceleratorAction::kToggleFullscreenMagnifier,
+    AcceleratorAction::kToggleHighContrast,
+    AcceleratorAction::kToggleMirrorMode,
+    AcceleratorAction::kTogglePicker,
+    AcceleratorAction::kToggleSpokenFeedback,
+    AcceleratorAction::kToggleSystemTrayBubble,
+    AcceleratorAction::kToggleWifi,
+    AcceleratorAction::kTouchHudClear,
+    AcceleratorAction::kTouchFingerprintSensor1,
+    AcceleratorAction::kTouchFingerprintSensor2,
+    AcceleratorAction::kTouchFingerprintSensor3,
+    AcceleratorAction::kVolumeDown,
+    AcceleratorAction::kVolumeMute,
+    AcceleratorAction::kVolumeUp,
 #if !defined(NDEBUG)
-        AcceleratorAction::kPowerPressed,
-        AcceleratorAction::kPowerReleased,
+    AcceleratorAction::kPowerPressed,
+    AcceleratorAction::kPowerReleased,
 #endif  // !defined(NDEBUG)
 };
 ASH_EXPORT inline constexpr size_t kActionsAllowedAtLoginOrLockScreenLength =
@@ -352,7 +359,7 @@ ASH_EXPORT inline constexpr size_t kActionsAllowedAtLoginOrLockScreenLength =
 
 // Actions allowed while screen is locked (in addition to
 // kActionsAllowedAtLoginOrLockScreen).
-ASH_EXPORT inline constexpr AcceleratorAction kActionsAllowedAtLockScreen[] = {
+ASH_EXPORT inline constexpr std::array kActionsAllowedAtLockScreen = {
     AcceleratorAction::kDebugToggleFocusModeState,
     AcceleratorAction::kExit,
     AcceleratorAction::kSuspend,
@@ -361,7 +368,7 @@ ASH_EXPORT inline constexpr size_t kActionsAllowedAtLockScreenLength =
     std::size(kActionsAllowedAtLockScreen);
 
 // Actions allowed while power menu is opened.
-ASH_EXPORT inline constexpr AcceleratorAction kActionsAllowedAtPowerMenu[] = {
+ASH_EXPORT inline constexpr std::array kActionsAllowedAtPowerMenu = {
     AcceleratorAction::kBrightnessDown, AcceleratorAction::kBrightnessUp,
     AcceleratorAction::kVolumeDown,     AcceleratorAction::kVolumeUp,
     AcceleratorAction::kVolumeMute,
@@ -370,7 +377,7 @@ ASH_EXPORT inline constexpr size_t kActionsAllowedAtPowerMenuLength =
     std::size(kActionsAllowedAtPowerMenu);
 
 // Actions allowed while a modal window is up.
-ASH_EXPORT inline constexpr AcceleratorAction kActionsAllowedAtModalWindow[] = {
+ASH_EXPORT inline constexpr std::array kActionsAllowedAtModalWindow = {
     AcceleratorAction::kBrightnessDown,
     AcceleratorAction::kBrightnessUp,
     AcceleratorAction::kDebugKeyboardBacklightToggle,
@@ -434,7 +441,7 @@ ASH_EXPORT inline constexpr size_t kActionsAllowedAtModalWindowLength =
     std::size(kActionsAllowedAtModalWindow);
 
 // Actions which may be repeated by holding an accelerator key.
-ASH_EXPORT inline constexpr AcceleratorAction kRepeatableActions[] = {
+ASH_EXPORT inline constexpr std::array kRepeatableActions = {
     AcceleratorAction::kBrightnessDown,
     AcceleratorAction::kBrightnessUp,
     AcceleratorAction::kFocusNextPane,
@@ -459,59 +466,58 @@ ASH_EXPORT inline constexpr size_t kRepeatableActionsLength =
     std::size(kRepeatableActions);
 
 // Actions allowed in app mode or pinned mode.
-ASH_EXPORT inline constexpr AcceleratorAction
-    kActionsAllowedInAppModeOrPinnedMode[] = {
-        AcceleratorAction::kBrightnessDown,
-        AcceleratorAction::kBrightnessUp,
-        AcceleratorAction::kDebugKeyboardBacklightToggle,
-        AcceleratorAction::kDebugMicrophoneMuteToggle,
-        AcceleratorAction::kDebugPrintLayerHierarchy,
-        AcceleratorAction::kDebugPrintViewHierarchy,
-        AcceleratorAction::kDebugPrintWindowHierarchy,
-        AcceleratorAction::kDebugToggleTouchPad,
-        AcceleratorAction::kDebugToggleTouchScreen,
-        AcceleratorAction::kDevAddRemoveDisplay,
-        AcceleratorAction::kDisableCapsLock,
-        AcceleratorAction::kEnableSelectToSpeak,
-        AcceleratorAction::kEnableOrToggleDictation,
-        AcceleratorAction::kKeyboardBacklightToggle,
-        AcceleratorAction::kKeyboardBrightnessDown,
-        AcceleratorAction::kKeyboardBrightnessUp,
-        AcceleratorAction::kMagnifierZoomIn,   // Control+F7
-        AcceleratorAction::kMagnifierZoomOut,  // Control+F6
-        AcceleratorAction::kMediaFastForward,
-        AcceleratorAction::kMediaNextTrack,
-        AcceleratorAction::kMediaPause,
-        AcceleratorAction::kMediaPlay,
-        AcceleratorAction::kMediaPlayPause,
-        AcceleratorAction::kMediaPrevTrack,
-        AcceleratorAction::kMediaRewind,
-        AcceleratorAction::kMediaStop,
-        AcceleratorAction::kMicrophoneMuteToggle,
-        AcceleratorAction::kPasteClipboardHistoryPlainText,
-        AcceleratorAction::kPowerPressed,
-        AcceleratorAction::kPowerReleased,
-        AcceleratorAction::kPrintUiHierarchies,
-        AcceleratorAction::kPrivacyScreenToggle,
-        AcceleratorAction::kRotateScreen,
-        AcceleratorAction::kScaleUiDown,
-        AcceleratorAction::kScaleUiReset,
-        AcceleratorAction::kScaleUiUp,
-        AcceleratorAction::kSwapPrimaryDisplay,
-        AcceleratorAction::kSwitchToLastUsedIme,
-        AcceleratorAction::kSwitchToNextIme,
-        AcceleratorAction::kToggleCapsLock,
-        AcceleratorAction::kToggleClipboardHistory,
-        AcceleratorAction::kToggleDockedMagnifier,
-        AcceleratorAction::kToggleFullscreenMagnifier,
-        AcceleratorAction::kToggleHighContrast,
-        AcceleratorAction::kToggleMirrorMode,
-        AcceleratorAction::kToggleSpokenFeedback,
-        AcceleratorAction::kToggleWifi,
-        AcceleratorAction::kTouchHudClear,
-        AcceleratorAction::kVolumeDown,
-        AcceleratorAction::kVolumeMute,
-        AcceleratorAction::kVolumeUp,
+ASH_EXPORT inline constexpr std::array kActionsAllowedInAppModeOrPinnedMode = {
+    AcceleratorAction::kBrightnessDown,
+    AcceleratorAction::kBrightnessUp,
+    AcceleratorAction::kDebugKeyboardBacklightToggle,
+    AcceleratorAction::kDebugMicrophoneMuteToggle,
+    AcceleratorAction::kDebugPrintLayerHierarchy,
+    AcceleratorAction::kDebugPrintViewHierarchy,
+    AcceleratorAction::kDebugPrintWindowHierarchy,
+    AcceleratorAction::kDebugToggleTouchPad,
+    AcceleratorAction::kDebugToggleTouchScreen,
+    AcceleratorAction::kDevAddRemoveDisplay,
+    AcceleratorAction::kDisableCapsLock,
+    AcceleratorAction::kEnableSelectToSpeak,
+    AcceleratorAction::kEnableOrToggleDictation,
+    AcceleratorAction::kKeyboardBacklightToggle,
+    AcceleratorAction::kKeyboardBrightnessDown,
+    AcceleratorAction::kKeyboardBrightnessUp,
+    AcceleratorAction::kMagnifierZoomIn,   // Control+F7
+    AcceleratorAction::kMagnifierZoomOut,  // Control+F6
+    AcceleratorAction::kMediaFastForward,
+    AcceleratorAction::kMediaNextTrack,
+    AcceleratorAction::kMediaPause,
+    AcceleratorAction::kMediaPlay,
+    AcceleratorAction::kMediaPlayPause,
+    AcceleratorAction::kMediaPrevTrack,
+    AcceleratorAction::kMediaRewind,
+    AcceleratorAction::kMediaStop,
+    AcceleratorAction::kMicrophoneMuteToggle,
+    AcceleratorAction::kPasteClipboardHistoryPlainText,
+    AcceleratorAction::kPowerPressed,
+    AcceleratorAction::kPowerReleased,
+    AcceleratorAction::kPrintUiHierarchies,
+    AcceleratorAction::kPrivacyScreenToggle,
+    AcceleratorAction::kRotateScreen,
+    AcceleratorAction::kScaleUiDown,
+    AcceleratorAction::kScaleUiReset,
+    AcceleratorAction::kScaleUiUp,
+    AcceleratorAction::kSwapPrimaryDisplay,
+    AcceleratorAction::kSwitchToLastUsedIme,
+    AcceleratorAction::kSwitchToNextIme,
+    AcceleratorAction::kToggleCapsLock,
+    AcceleratorAction::kToggleClipboardHistory,
+    AcceleratorAction::kToggleDockedMagnifier,
+    AcceleratorAction::kToggleFullscreenMagnifier,
+    AcceleratorAction::kToggleHighContrast,
+    AcceleratorAction::kToggleMirrorMode,
+    AcceleratorAction::kToggleSpokenFeedback,
+    AcceleratorAction::kToggleWifi,
+    AcceleratorAction::kTouchHudClear,
+    AcceleratorAction::kVolumeDown,
+    AcceleratorAction::kVolumeMute,
+    AcceleratorAction::kVolumeUp,
 };
 ASH_EXPORT inline constexpr size_t kActionsAllowedInAppModeOrPinnedModeLength =
     std::size(kActionsAllowedInAppModeOrPinnedMode);
@@ -519,7 +525,7 @@ ASH_EXPORT inline constexpr size_t kActionsAllowedInAppModeOrPinnedModeLength =
 // Actions that can be performed in pinned mode.
 // In pinned mode, the action listed in this or "in app mode or pinned mode"
 // table can be performed.
-ASH_EXPORT inline constexpr AcceleratorAction kActionsAllowedInPinnedMode[] = {
+ASH_EXPORT inline constexpr std::array kActionsAllowedInPinnedMode = {
     AcceleratorAction::kLockScreen,
     AcceleratorAction::kSuspend,
     AcceleratorAction::kTakePartialScreenshot,
@@ -533,14 +539,14 @@ ASH_EXPORT inline constexpr size_t kActionsAllowedInPinnedModeLength =
 // Actions that can be performed in app mode.
 // In app mode, the action listed in this or "in app mode or pinned mode" table
 // can be performed.
-ASH_EXPORT inline constexpr AcceleratorAction kActionsAllowedInAppMode[] = {
+ASH_EXPORT inline constexpr std::array kActionsAllowedInAppMode = {
     AcceleratorAction::kFocusShelf,
 };
 ASH_EXPORT inline constexpr size_t kActionsAllowedInAppModeLength =
     std::size(kActionsAllowedInAppMode);
 
 // Actions that require at least 1 window.
-ASH_EXPORT inline constexpr AcceleratorAction kActionsNeedingWindow[] = {
+ASH_EXPORT inline constexpr std::array kActionsNeedingWindow = {
     // clang-format off
     AcceleratorAction::kDesksMoveActiveItemLeft,
     AcceleratorAction::kDesksMoveActiveItemRight,
@@ -565,7 +571,7 @@ ASH_EXPORT inline constexpr size_t kActionsNeedingWindowLength =
     std::size(kActionsNeedingWindow);
 
 // Actions that can be performed while keeping the menu open.
-ASH_EXPORT inline constexpr AcceleratorAction kActionsKeepingMenuOpen[] = {
+ASH_EXPORT inline constexpr std::array kActionsKeepingMenuOpen = {
     AcceleratorAction::kBrightnessDown,
     AcceleratorAction::kBrightnessUp,
     AcceleratorAction::kDebugKeyboardBacklightToggle,
@@ -618,9 +624,8 @@ ASH_EXPORT inline constexpr size_t kActionsKeepingMenuOpenLength =
     std::size(kActionsKeepingMenuOpen);
 
 // Actions that are duplicated with browser shortcuts.
-ASH_EXPORT inline constexpr AcceleratorAction kActionsDuplicatedWithBrowser[] =
-    {
-        // clang-format off
+ASH_EXPORT inline constexpr std::array kActionsDuplicatedWithBrowser = {
+    // clang-format off
     AcceleratorAction::kNewWindow,
     AcceleratorAction::kNewIncognitoWindow,
     AcceleratorAction::kRestoreTab,
@@ -634,7 +639,7 @@ ASH_EXPORT inline constexpr AcceleratorAction kActionsDuplicatedWithBrowser[] =
 // This file is built only for ash-chrome, so we only need to check BRANDING
 // macro.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-        AcceleratorAction::kOpenFeedbackPage,
+    AcceleratorAction::kOpenFeedbackPage,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 };
 ASH_EXPORT inline constexpr size_t kActionsDuplicatedWithBrowserLength =
@@ -643,11 +648,10 @@ ASH_EXPORT inline constexpr size_t kActionsDuplicatedWithBrowserLength =
 // Actions that are interceptable by browser.
 // These actions are ash's shortcuts, but they are sent to the browser
 // once in order to make it interceptable by webpage/apps.
-ASH_EXPORT inline constexpr AcceleratorAction kActionsInterceptableByBrowser[] =
-    {
-        AcceleratorAction::kShowTaskManager,
-        AcceleratorAction::kOpenGetHelp,
-        AcceleratorAction::kMinimizeTopWindowOnBack,
+ASH_EXPORT inline constexpr std::array kActionsInterceptableByBrowser = {
+    AcceleratorAction::kShowTaskManager,
+    AcceleratorAction::kOpenGetHelp,
+    AcceleratorAction::kMinimizeTopWindowOnBack,
 };
 ASH_EXPORT inline constexpr size_t kActionsInterceptableByBrowserLength =
     std::size(kActionsInterceptableByBrowser);

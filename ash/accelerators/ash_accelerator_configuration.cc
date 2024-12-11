@@ -411,13 +411,8 @@ void AshAcceleratorConfiguration::Initialize(
 }
 
 void AshAcceleratorConfiguration::InitializeDeprecatedAccelerators() {
-  base::span<const DeprecatedAcceleratorData> deprecated_accelerator_data(
-      kDeprecatedAcceleratorsData, kDeprecatedAcceleratorsDataLength);
-  base::span<const AcceleratorData> deprecated_accelerators(
-      kDeprecatedAccelerators, kDeprecatedAcceleratorsLength);
-
-  InitializeDeprecatedAccelerators(std::move(deprecated_accelerator_data),
-                                   std::move(deprecated_accelerators));
+  InitializeDeprecatedAccelerators(kDeprecatedAcceleratorsData,
+                                   kDeprecatedAccelerators);
 }
 
 void AshAcceleratorConfiguration::AddObserver(Observer* observer) {
