@@ -73,7 +73,8 @@ void AddSingleFileFileTypeInfo(
           FILE_PATH_LITERAL("mhtml")});
 }
 
-// Chrome OS doesn't support HTML-Complete. crbug.com/154823
+// Chrome OS intentionally does not support "Webpage, Complete" type.
+// See https://crbug.com/40951429
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Adds "Webpage, Complete" type to FileTypeInfo.
 void AddCompleteFileTypeInfo(
