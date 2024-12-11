@@ -188,6 +188,7 @@ class FakeTabInterface : public tabs::MockTabInterface {
   content::WebContents* GetContents() const override { return contents_; }
   void SetIsInForeground(bool foreground) { is_in_foreground_ = foreground; }
   bool IsInForeground() const override { return is_in_foreground_; }
+  bool CanShowModalUI() const override { return true; }
 
  private:
   raw_ptr<content::WebContents> contents_;

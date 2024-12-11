@@ -128,6 +128,9 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
 
   bool CanShowModalUI() const override;
   std::unique_ptr<ScopedTabModalUI> ShowModalUI() override;
+  base::CallbackListSubscription RegisterModalUIChanged(
+      TabInterfaceCallback callback) override;
+
   bool IsInNormalWindow() const override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
   tabs::TabFeatures* GetTabFeatures() override;
@@ -206,6 +209,10 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   using GroupChangedCallbackList = base::RepeatingCallbackList<
       void(TabInterface*, std::optional<tab_groups::TabGroupId> new_group)>;
   GroupChangedCallbackList group_changed_callback_list_;
+
+  using TabInterfaceCallbackList =
+      base::RepeatingCallbackList<void(TabInterface*)>;
+  TabInterfaceCallbackList modal_ui_changed_callback_list_;
 
   // Tracks whether a modal UI is showing.
   bool showing_modal_ui_ = false;
