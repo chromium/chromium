@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
 #include "base/types/expected.h"
@@ -95,21 +96,36 @@ class GraphBuilderOrt {
   const mojom::Operand& GetOperand(uint64_t operand_id);
   std::string GetOperandName(uint64_t operand_id);
 
+  uint64_t NewInitializer(base::span<const uint32_t> shape,
+                          base::span<const uint8_t> data,
+                          onnx::TensorProto::DataType data_type);
+
   void AddInput(uint64_t input_id);
   void AddOutput(uint64_t output_id);
   void AddInitializer(uint64_t constant_id);
 
   template <typename T>
+  void AddBinaryOperation(const T& operation, std::string op_type);
+
+  template <typename T>
   void AddUnaryOperation(const T& operation, std::string op_type);
 
+  void AddElementWiseBinaryOperation(
+      const mojom::ElementWiseBinary& element_wise_binary);
   void AddElementWiseUnaryOperation(
       const mojom::ElementWiseUnary& element_wise_unary);
   void AddCastOperation(const mojom::ElementWiseUnary& cast);
+  void AddGemmOperation(const mojom::Gemm& gemm);
   void AddLogicalNotOperation(const mojom::ElementWiseUnary& logical_not);
+  void AddReshapeOperation(const mojom::Reshape& reshape);
+  void AddSoftmaxOperation(const mojom::Softmax& softmax);
 
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> BuildModel();
 
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> SerializeModel();
+
+  // Used for inserting new operands into graph.
+  uint64_t next_operand_id_ = 0;
 
   // A reference to the WebNN compute graph that `this` instance is converting
   // to ONNX model. The creator of `this` must ensure the GraphInfo reference
