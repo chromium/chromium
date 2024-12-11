@@ -5,7 +5,6 @@
 package org.chromium.base;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -38,7 +37,6 @@ import java.util.Map;
 public class BundleUtils {
     private static final String TAG = "BundleUtils";
     private static final String LOADED_SPLITS_KEY = "split_compat_loaded_splits";
-    private static final Object sSplitLock = new Object();
 
     // This cache is needed to support the workaround for b/172602571, see
     // createIsolatedSplitContext() for more info.
@@ -86,11 +84,6 @@ public class BundleUtils {
         return getSplitApkPath(splitName) != null;
     }
 
-    /** The lock to hold when calling {@link Context#createContextForSplit(String)}. */
-    public static Object getSplitContextLock() {
-        return sSplitLock;
-    }
-
     /**
      * Returns a context for the isolated split with the name splitName. This will throw a
      * RuntimeException if isolated splits are enabled and the split is not installed. If the
@@ -98,69 +91,71 @@ public class BundleUtils {
      * returned. If isolated splits are not enabled for this APK/bundle, the underlying ContextImpl
      * from the base context will be returned.
      */
+    public static Context createIsolatedSplitContext(String splitName) {
+        if (!BuildConfig.IS_BUNDLE || Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return ContextUtils.getApplicationContext();
+        }
+        try {
+            Context context;
+            // TODO(crbug.com/40745927): Consider moving preloading logic into //base so we can lock
+            // here.
+            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+                Context app = ContextUtils.getApplicationContext();
+                context = app.createContextForSplit(splitName);
+            }
+            cacheAndValidateSplitClassLoader(context, splitName);
+            return context;
+        } catch (PackageManager.NameNotFoundException e) {
+            throw JavaUtils.throwUnchecked(e);
+        }
+    }
+
     public static Context createIsolatedSplitContext(Context base, String splitName) {
         // Isolated splits are only supported in O+, so just return the base context on other
         // versions, since this will have access to all splits.
         if (!BuildConfig.IS_BUNDLE || Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return base;
         }
+        return createIsolatedSplitContext(splitName);
+    }
 
-        try {
-            Context context;
-            // The Application class handles locking itself using the split context lock. This is
-            // necessary to prevent a possible deadlock, since the application waits for splits
-            // preloading on a background thread.
-            // TODO(crbug.com/40745927): Consider moving preloading logic into //base so we can lock
-            // here.
-            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                if (isApplicationContext(base)) {
-                    context = base.createContextForSplit(splitName);
-                } else {
-                    synchronized (getSplitContextLock()) {
-                        context = base.createContextForSplit(splitName);
-                    }
-                }
+    public static void cacheAndValidateSplitClassLoader(Context splitContext, String splitName) {
+        ClassLoader parent = splitContext.getClassLoader().getParent();
+        Context appContext = ContextUtils.getApplicationContext();
+        // If the ClassLoader from the newly created context does not equal either the
+        // BundleUtils ClassLoader (the base module ClassLoader) or the app context ClassLoader
+        // (the chrome module ClassLoader) there must be something messed up in the ClassLoader
+        // cache, see b/172602571. This should be solved for the chrome ClassLoader by
+        // SplitCompatAppComponentFactory, but modules which depend on the chrome module need
+        // special handling here to make sure they have the correct parent.
+        boolean shouldReplaceClassLoader =
+                !parent.equals(BundleUtils.class.getClassLoader())
+                        && appContext != null
+                        && !parent.equals(appContext.getClassLoader());
+        synchronized (sCachedClassLoaders) {
+            if (shouldReplaceClassLoader && !sCachedClassLoaders.containsKey(splitName)) {
+                String apkPath = getSplitApkPath(splitName);
+                // The librarySearchPath argument to PathClassLoader is not needed here
+                // because the framework doesn't pass it either, see b/171269960.
+                sCachedClassLoaders.put(
+                        splitName, new PathClassLoader(apkPath, appContext.getClassLoader()));
             }
-            ClassLoader parent = context.getClassLoader().getParent();
-            Context appContext = ContextUtils.getApplicationContext();
-            // If the ClassLoader from the newly created context does not equal either the
-            // BundleUtils ClassLoader (the base module ClassLoader) or the app context ClassLoader
-            // (the chrome module ClassLoader) there must be something messed up in the ClassLoader
-            // cache, see b/172602571. This should be solved for the chrome ClassLoader by
-            // SplitCompatAppComponentFactory, but modules which depend on the chrome module need
-            // special handling here to make sure they have the correct parent.
-            boolean shouldReplaceClassLoader =
-                    !parent.equals(BundleUtils.class.getClassLoader())
-                            && appContext != null
-                            && !parent.equals(appContext.getClassLoader());
-            synchronized (sCachedClassLoaders) {
-                if (shouldReplaceClassLoader && !sCachedClassLoaders.containsKey(splitName)) {
-                    String apkPath = getSplitApkPath(splitName);
-                    // The librarySearchPath argument to PathClassLoader is not needed here
-                    // because the framework doesn't pass it either, see b/171269960.
-                    sCachedClassLoaders.put(
-                            splitName, new PathClassLoader(apkPath, appContext.getClassLoader()));
+            // Always replace the ClassLoader if we have a cached version to make sure all
+            // ClassLoaders are consistent.
+            ClassLoader cachedClassLoader = sCachedClassLoaders.get(splitName);
+            if (cachedClassLoader != null) {
+                if (!cachedClassLoader.equals(splitContext.getClassLoader())) {
+                    // Set this for recording the histogram below.
+                    shouldReplaceClassLoader = true;
+                    replaceClassLoader(splitContext, cachedClassLoader);
                 }
-                // Always replace the ClassLoader if we have a cached version to make sure all
-                // ClassLoaders are consistent.
-                ClassLoader cachedClassLoader = sCachedClassLoaders.get(splitName);
-                if (cachedClassLoader != null) {
-                    if (!cachedClassLoader.equals(context.getClassLoader())) {
-                        // Set this for recording the histogram below.
-                        shouldReplaceClassLoader = true;
-                        replaceClassLoader(context, cachedClassLoader);
-                    }
-                } else {
-                    sCachedClassLoaders.put(splitName, context.getClassLoader());
-                }
+            } else {
+                sCachedClassLoaders.put(splitName, splitContext.getClassLoader());
             }
-            RecordHistogram.recordBooleanHistogram(
-                    "Android.IsolatedSplits.ClassLoaderReplaced." + splitName,
-                    shouldReplaceClassLoader);
-            return context;
-        } catch (PackageManager.NameNotFoundException e) {
-            throw JavaUtils.throwUnchecked(e);
         }
+        RecordHistogram.recordBooleanHistogram(
+                "Android.IsolatedSplits.ClassLoaderReplaced." + splitName,
+                shouldReplaceClassLoader);
     }
 
     /** Replaces the ClassLoader of the passed in Context. */
@@ -418,13 +413,5 @@ public class BundleUtils {
         } catch (ReflectiveOperationException e) {
             throw JavaUtils.throwUnchecked(e);
         }
-    }
-
-    private static boolean isApplicationContext(Context context) {
-        while (context instanceof ContextWrapper) {
-            if (context instanceof Application) return true;
-            context = ((ContextWrapper) context).getBaseContext();
-        }
-        return false;
     }
 }

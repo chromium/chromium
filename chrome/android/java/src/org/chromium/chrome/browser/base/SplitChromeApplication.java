@@ -18,6 +18,7 @@ import dagger.hilt.internal.GeneratedComponentManagerHolder;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.base.JNIUtils;
+import org.chromium.base.JavaUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.IdentifierNameString;
@@ -33,6 +34,7 @@ public class SplitChromeApplication extends SplitCompatApplication
 
     private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.ChromeApplicationImpl";
+    private static final Object sSplitLock = new Object();
 
     @SuppressLint("StaticFieldLeak")
     private static SplitPreloader sSplitPreloader;
@@ -73,21 +75,38 @@ public class SplitChromeApplication extends SplitCompatApplication
         }
     }
 
-    @Override
-    public Context createContextForSplit(String name) throws PackageManager.NameNotFoundException {
-        try (TraceEvent te = TraceEvent.scoped("SplitChromeApplication.createContextForSplit")) {
-            // Wait for any splits that are preloading so we don't have a race to update the
-            // class loader cache (b/172602571).
-            finishPreload(name);
+    private Context createContextForSplitNoWait(String name) {
+        try {
             long startTime = SystemClock.uptimeMillis();
             Context context;
-            synchronized (BundleUtils.getSplitContextLock()) {
+            synchronized (sSplitLock) {
                 context = super.createContextForSplit(name);
             }
             RecordHistogram.recordTimesHistogram(
                     "Android.IsolatedSplits.ContextCreateTime." + name,
                     SystemClock.uptimeMillis() - startTime);
             return context;
+        } catch (PackageManager.NameNotFoundException e) {
+            JavaUtils.throwUnchecked(e);
+            return null;
+        }
+    }
+
+    /**
+     * From a reading of Android's source code, it appears that the only calls to this function from
+     * the framework are when installing a Content Provider, handling a Broadcast Receiver, or
+     * creating a Service. We only care about this method being called for 2 reasons - first, that
+     * we can finish our preload (which won't happen in the case of the framework starting us) and
+     * second because we emit an UMA histogram we're interested in (where these instances are rare
+     * enough relative to typical startups that we are fine just getting UMA for typical startups).
+     */
+    @Override
+    public Context createContextForSplit(String name) {
+        try (TraceEvent te = TraceEvent.scoped("SplitChromeApplication.createContextForSplit")) {
+            // Wait for any splits that are preloading so the framework does not have a race
+            // condition when updating its class loader cache (b/172602571).
+            finishPreload(name);
+            return createContextForSplitNoWait(name);
         }
     }
 
@@ -102,7 +121,7 @@ public class SplitChromeApplication extends SplitCompatApplication
         // base context of the application has not been set yet.
         sSplitPreloader.preload(
                 CHROME_SPLIT_NAME,
-                new SplitPreloader.OnComplete() {
+                new SplitPreloader.PreloadHooks() {
                     @Override
                     public void runImmediatelyInBackgroundThread(Context chromeContext) {
                         // A new thread is started here because we do not want to delay returning
@@ -151,6 +170,11 @@ public class SplitChromeApplication extends SplitCompatApplication
                             // is used to retrieve resources (https://crbug.com/1287000).
                             mResources = chromeContext.getResources();
                         }
+                    }
+
+                    @Override
+                    public Context createIsolatedSplitContext(String name) {
+                        return createContextForSplitNoWait(name);
                     }
                 });
     }
