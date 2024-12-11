@@ -6,9 +6,12 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 // No gtest tests; only static_assert checks.
 
@@ -23,6 +26,9 @@ namespace {
 // result is for the expected reason (and the test is still working as
 // expected).
 
+static_assert(IsReturnTypeCompatible<Node, Element*>);
+static_assert(!IsReturnTypeCompatible<Element, Node*>);
+
 // A function returning `const DOMRectReadOnly*` should not be allowed when we
 // expect the non-const type.
 static_assert(!IsReturnTypeCompatible<DOMRectReadOnly, const DOMRectReadOnly*>);
@@ -34,6 +40,23 @@ static_assert(
                             HeapVector<Member<const DOMRectReadOnly>>>);
 static_assert(IsReturnTypeCompatible<IDLSequence<DOMRectReadOnly>,
                                      HeapVector<Member<DOMRectReadOnly>>>);
+
+// IDLString has a null value, so the return type must NOT use
+// std::optional<>.
+static_assert(IsReturnTypeCompatible<IDLNullable<IDLString>, WTF::String>);
+static_assert(
+    IsReturnTypeCompatible<IDLNullable<IDLString>, WTF::AtomicString>);
+static_assert(!IsReturnTypeCompatible<IDLNullable<IDLString>,
+                                      std::optional<WTF::String>>);
+static_assert(!IsReturnTypeCompatible<IDLNullable<IDLString>,
+                                      std::optional<WTF::AtomicString>>);
+
+// IDLUnsignedLongLong does not have a null value, so the return type MUST use
+// std::optional<>.
+static_assert(
+    !IsReturnTypeCompatible<IDLNullable<IDLUnsignedLongLong>, uint64_t>);
+static_assert(IsReturnTypeCompatible<IDLNullable<IDLUnsignedLongLong>,
+                                     std::optional<uint64_t>>);
 
 }  // namespace
 
