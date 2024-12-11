@@ -1118,7 +1118,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       soft_navigation_event_scope;
   SoftNavigationHeuristics* heuristics =
       SoftNavigationHeuristics::From(*frame_->DomWindow());
-  if (heuristics && is_browser_initiated) {
+  if (heuristics && is_browser_initiated && !is_prerendering_) {
     if (auto* script_state = ToScriptStateForMainWorld(frame_->DomWindow())) {
       // For browser-initiated navigations, we never started the soft
       // navigation (as this is the first we hear of it in the renderer). We
