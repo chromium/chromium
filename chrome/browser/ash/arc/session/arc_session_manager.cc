@@ -448,6 +448,25 @@ void UmaHistogramDeferActivationTimes(const std::string& name,
                                 base::Seconds(25), 125);
 }
 
+bool NeedRevenDLC() {
+  if (!ash::switches::IsRevenBranding()) {
+    return false;
+  }
+
+  if (!ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
+    VLOG(1) << "Reven device is not managed and cannot install arcvm images.";
+    return false;
+  }
+
+  if (!ash::features::IsAndroidVpnAppsOnFlexEnabled()) {
+    VLOG(1) << "enable-android-vpn-apps-on-flex flag is off and cannot "
+               "install arcvm images.";
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 // This class is used to track statuses on OptIn flow. It is created in case ARC
@@ -1945,23 +1964,12 @@ void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
     return;
   }
 
-  // Only the reven board can install arcvm images from DLC. Other boards can
-  // implement their own checking logic after supporting DLC installation later.
-  if (ash::switches::IsRevenBranding() &&
-      ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
-    if (ash::features::IsAndroidVpnAppsOnFlexEnabled()) {
-      // Check if the Reven device is compatible for ARC.
-      hardware_checker_->IsRevenDeviceCompatibleForArc(
-          base::BindOnce(&ArcSessionManager::OnEnableArcOnReven,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(jobs)));
-    } else {
-      VLOG(1) << "enable-android-vpn-apps-on-flex flag is off and cannot "
-                 "install arcvm images.";
-      OnExpandPropertyFilesAndReadSalt(
-          ArcSessionManager::ExpansionResult{{}, false});
-    }
+  if (NeedRevenDLC()) {
+    // Check if the Reven device is compatible for ARC.
+    hardware_checker_->IsRevenDeviceCompatibleForArc(
+        base::BindOnce(&ArcSessionManager::OnEnableArcOnReven,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(jobs)));
   } else {
-    VLOG(1) << "Reven device is not managed and cannot install arcvm images.";
     OnExpandPropertyFilesAndReadSalt(
         ArcSessionManager::ExpansionResult{{}, false});
   }
