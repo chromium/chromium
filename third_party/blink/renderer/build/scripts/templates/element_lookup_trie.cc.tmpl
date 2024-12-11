@@ -29,18 +29,20 @@ namespace blink {
 {%- endif %}
 {%- endmacro %}
 
-CORE_EXPORT {{namespace|lower}}_names::HTMLTag lookup{{namespace}}Tag(
-    const UChar* data,
-    unsigned length) {
+CORE_EXPORT {{namespace|lower}}_names::HTMLTag Lookup{{namespace|title}}Tag(
+    base::span<const UChar> span) {
+  const UChar* data = span.data();
+  wtf_size_t length = static_cast<wtf_size_t>(span.size());
   DCHECK(data);
   DCHECK(length);
   {{ trie_length_switch(length_tries, trie_return_expression, false, false) | indent(2) }}
   return {{namespace|lower}}_names::HTMLTag::kUnknown;
 }
 
-CORE_EXPORT {{namespace|lower}}_names::HTMLTag lookup{{namespace}}Tag(
-    const LChar* data,
-    unsigned length) {
+CORE_EXPORT {{namespace|lower}}_names::HTMLTag Lookup{{namespace|title}}Tag(
+    base::span<const LChar> span) {
+  const LChar* data = span.data();
+  wtf_size_t length = static_cast<wtf_size_t>(span.size());
   DCHECK(data);
   DCHECK(length);
   {{ trie_length_switch(length_tries, trie_return_expression, false, true) | indent(2) }}

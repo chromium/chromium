@@ -1863,8 +1863,7 @@ String HTMLTokenizer::BufferedCharacters() const {
 
 void HTMLTokenizer::UpdateStateFor(const HTMLToken& token) {
   if (!token.GetName().IsEmpty()) {
-    UpdateStateFor(
-        lookupHTMLTag(token.GetName().data(), token.GetName().size()));
+    UpdateStateFor(LookupHtmlTag(token.GetName()));
   }
 }
 
