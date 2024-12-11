@@ -12,7 +12,14 @@
 #include "base/values.h"
 
 namespace safe_browsing {
-// Features list, in alphabetical order.
+// Features list
+//
+// sticky_prefixes attach to the lines after them, and group_prefixes
+// attach to the lines before them. These prefixes were chosen to sort
+// by feature name. See https://github.com/google/keep-sorted for
+// detailed semantics.
+//
+// keep-sorted start sticky_prefixes=["#if"] group_prefixes=["#else", "#endif", "extern const base::FeatureParam"] newline_separated=yes
 
 // Controls various parameters related to occasionally collecting ad samples,
 // for example to control how often collection should occur.
@@ -306,6 +313,8 @@ BASE_DECLARE_FEATURE(kThreatDomDetailsTagAndAttributeFeature);
 // checked for the final size of the visual features and the minimum size of
 // the screen.
 BASE_DECLARE_FEATURE(kVisualFeaturesSizes);
+
+// keep-sorted end
 
 base::Value::List GetFeatureStatusList();
 

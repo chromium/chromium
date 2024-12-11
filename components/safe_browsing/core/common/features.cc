@@ -23,6 +23,8 @@ namespace safe_browsing {
 // them to the ExperimentalFeaturesList below to start displaying their status
 // on the chrome://safe-browsing page.
 
+// keep-sorted start sticky_prefixes=["#if"] group_prefixes=["#else", "#endif", "constexpr base::FeatureParam"] newline_separated=yes
+
 BASE_FEATURE(kAdSamplerTriggerFeature,
              "SafeBrowsingAdSamplerTrigger",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -94,7 +96,7 @@ BASE_FEATURE(kDelayedWarnings,
 // If true, a delayed warning will be shown when the user clicks on the page.
 // If false, the warning won't be shown, but a metric will be recorded on the
 // first click.
-const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks{
+constexpr base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks{
     &kDelayedWarnings, "mouse",
     /*default_value=*/false};
 
@@ -115,10 +117,10 @@ BASE_FEATURE(kDownloadWarningSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // A default value of -1 indicates configuration error.
-const base::FeatureParam<int> kDownloadWarningSurveyType{
+constexpr base::FeatureParam<int> kDownloadWarningSurveyType{
     &kDownloadWarningSurvey, "survey_type", -1};
 
-const base::FeatureParam<int> kDownloadWarningSurveyIgnoreDelaySeconds{
+constexpr base::FeatureParam<int> kDownloadWarningSurveyIgnoreDelaySeconds{
     &kDownloadWarningSurvey, "ignore_delay_seconds", 300};
 
 BASE_FEATURE(kEnhancedSafeBrowsingPromo,
@@ -166,7 +168,7 @@ BASE_FEATURE(kExtensionTelemetryForEnterprise,
              "SafeBrowsingExtensionTelemetryForEnterprise",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::FeatureParam<int>
+constexpr base::FeatureParam<int>
     kExtensionTelemetryEnterpriseReportingIntervalSeconds{
         &kExtensionTelemetryForEnterprise, "EnterpriseReportingIntervalSeconds",
         /*default_value=*/300};
@@ -332,14 +334,17 @@ BASE_FEATURE(kVisualFeaturesSizes,
              "VisualFeaturesSizes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// keep-sorted end
+
 // Returns the list of the experimental features that are enabled or disabled,
 // as part of currently running Safe Browsing experiments.
 base::Value::List GetFeatureStatusList() {
   // List of Safe Browsing feature that should be listed on
   // chrome://safe-browsing. Features should be listed in alphabetical order.
   const base::Feature* kExperimentalFeatures[] = {
-      &kClientSideDetectionKillswitch,
+      // keep-sorted start
       &kClientSideDetectionKeyboardPointerLockRequest,
+      &kClientSideDetectionKillswitch,
       &kClientSideDetectionNotificationPrompt,
       &kCreateNotificationsAcceptedClientSafeBrowsingReports,
       &kDelayedWarnings,
@@ -368,6 +373,7 @@ base::Value::List GetFeatureStatusList() {
       &kSuspiciousSiteTriggerQuotaFeature,
       &kTailoredSecurityIntegration,
       &kVisualFeaturesSizes,
+      // keep-sorted end
   };
 
   base::Value::List param_list;
