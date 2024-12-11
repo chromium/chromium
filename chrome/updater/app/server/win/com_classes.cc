@@ -209,6 +209,11 @@ STDMETHODIMP CompleteStatusImpl::get_statusMessage(BSTR* message) {
   return S_OK;
 }
 
+UpdaterImpl::UpdaterImpl()
+    : DynamicIIDsMultImpl<IUpdater, IUpdater2>(
+          {IID_MAP_ENTRY_USER(IUpdater), IID_MAP_ENTRY_USER(IUpdater2)},
+          {IID_MAP_ENTRY_SYSTEM(IUpdater), IID_MAP_ENTRY_SYSTEM(IUpdater2)}) {}
+
 HRESULT UpdaterImpl::RuntimeClassInitialize() {
   return S_OK;
 }
@@ -261,6 +266,18 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
                                  const wchar_t* version,
                                  const wchar_t* existence_checker_path,
                                  IUpdaterCallback* callback) {
+  return RegisterApp2(app_id, brand_code, brand_path, ap, version,
+                      existence_checker_path, nullptr, callback);
+}
+
+HRESULT UpdaterImpl::RegisterApp2(const wchar_t* app_id,
+                                  const wchar_t* brand_code,
+                                  const wchar_t* brand_path,
+                                  const wchar_t* ap,
+                                  const wchar_t* version,
+                                  const wchar_t* existence_checker_path,
+                                  const wchar_t* install_id,
+                                  IUpdaterCallback* callback) {
   if (FAILED(IsCOMCallerAllowed())) {
     return E_ACCESSDENIED;
   }
@@ -271,10 +288,10 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
 
   // Validates that string parameters are not longer than 16K characters.
   std::optional<RegistrationRequest> request =
-      [app_id, brand_code, brand_path, ap, version,
-       existence_checker_path]() -> decltype(request) {
+      [app_id, brand_code, brand_path, ap, version, existence_checker_path,
+       install_id]() -> decltype(request) {
     for (const auto& str : {app_id, brand_code, brand_path, ap, version,
-                            existence_checker_path}) {
+                            existence_checker_path, install_id}) {
       if (wcsnlen_s(str, kMaxStringLen) == kMaxStringLen) {
         return std::nullopt;
       }
@@ -301,6 +318,10 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
       return std::nullopt;
     }
     request.existence_checker_path = base::FilePath(existence_checker_path);
+    if (install_id && !base::WideToUTF8(install_id, wcslen(install_id),
+                                        &request.install_id)) {
+      return std::nullopt;
+    }
 
     return request;
   }();
@@ -315,8 +336,8 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
       base::BindOnce(
           [](IUpdaterCallbackPtr callback, int result) {
             HRESULT hr = callback->Run(result);
-            VLOG(2) << "IUpdaterImpl::RegisterApp. "
-                    << "IUpdaterCallback::Run returned " << std::hex << hr;
+            VLOG(2) << __func__ << " IUpdaterCallback::Run returned "
+                    << std::hex << hr;
           },
           Microsoft::WRL::ComPtr<IUpdaterCallback>(callback)));
 
@@ -576,6 +597,22 @@ HRESULT UpdaterImpl::Install(const wchar_t* app_id,
                              const wchar_t* install_data_index,
                              LONG priority,
                              IUpdaterObserver* observer) {
+  return Install2(app_id, brand_code, brand_path, ap, version,
+                  existence_checker_path, client_install_data,
+                  install_data_index, nullptr, priority, observer);
+}
+
+HRESULT UpdaterImpl::Install2(const wchar_t* app_id,
+                              const wchar_t* brand_code,
+                              const wchar_t* brand_path,
+                              const wchar_t* ap,
+                              const wchar_t* version,
+                              const wchar_t* existence_checker_path,
+                              const wchar_t* client_install_data,
+                              const wchar_t* install_data_index,
+                              const wchar_t* install_id,
+                              LONG priority,
+                              IUpdaterObserver* observer) {
   if (FAILED(IsCOMCallerAllowed())) {
     return E_ACCESSDENIED;
   }
@@ -587,10 +624,11 @@ HRESULT UpdaterImpl::Install(const wchar_t* app_id,
   // Validates that string parameters are not longer than 16K characters.
   std::optional<RegistrationRequest> request =
       [app_id, brand_code, brand_path, ap, version, existence_checker_path,
-       client_install_data, install_data_index]() -> decltype(request) {
+       client_install_data, install_data_index,
+       install_id]() -> decltype(request) {
     for (const auto& str :
          {app_id, brand_code, brand_path, ap, version, existence_checker_path,
-          client_install_data, install_data_index}) {
+          client_install_data, install_data_index, install_id}) {
       if (wcsnlen_s(str, kMaxStringLen) == kMaxStringLen) {
         return std::nullopt;
       }
@@ -617,6 +655,10 @@ HRESULT UpdaterImpl::Install(const wchar_t* app_id,
       return std::nullopt;
     }
     request.existence_checker_path = base::FilePath(existence_checker_path);
+    if (install_id && !base::WideToUTF8(install_id, wcslen(install_id),
+                                        &request.install_id)) {
+      return std::nullopt;
+    }
 
     return request;
   }();

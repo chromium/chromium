@@ -69,9 +69,9 @@ class CompleteStatusImpl : public DYNAMICIIDSIMPL(ICompleteStatus) {
 };
 
 // This class implements the IUpdater interface and exposes it as a COM object.
-class UpdaterImpl : public DYNAMICIIDSIMPL(IUpdater) {
+class UpdaterImpl : public DynamicIIDsMultImpl<IUpdater, IUpdater2> {
  public:
-  UpdaterImpl() = default;
+  UpdaterImpl();
   UpdaterImpl(const UpdaterImpl&) = delete;
   UpdaterImpl& operator=(const UpdaterImpl&) = delete;
 
@@ -122,6 +122,27 @@ class UpdaterImpl : public DYNAMICIIDSIMPL(IUpdater) {
                               const wchar_t* install_settings,
                               IUpdaterObserver* observer) override;
   IFACEMETHODIMP GetAppStates(IUpdaterAppStatesCallback* callback) override;
+
+  // Overrides for IUpdater2.
+  IFACEMETHODIMP RegisterApp2(const wchar_t* app_id,
+                              const wchar_t* brand_code,
+                              const wchar_t* brand_path,
+                              const wchar_t* tag,
+                              const wchar_t* version,
+                              const wchar_t* existence_checker_path,
+                              const wchar_t* install_id,
+                              IUpdaterCallback* callback) override;
+  IFACEMETHODIMP Install2(const wchar_t* app_id,
+                          const wchar_t* brand_code,
+                          const wchar_t* brand_path,
+                          const wchar_t* tag,
+                          const wchar_t* version,
+                          const wchar_t* existence_checker_path,
+                          const wchar_t* client_install_data,
+                          const wchar_t* install_data_index,
+                          const wchar_t* install_id,
+                          LONG priority,
+                          IUpdaterObserver* observer) override;
 
  private:
   ~UpdaterImpl() override = default;

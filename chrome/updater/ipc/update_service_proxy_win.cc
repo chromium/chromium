@@ -545,6 +545,22 @@ class UpdateServiceProxyImplImpl
  private:
   friend class base::RefCountedThreadSafe<UpdateServiceProxyImplImpl>;
   virtual ~UpdateServiceProxyImplImpl() = default;
+  Microsoft::WRL::ComPtr<IUpdater2> interface2_;
+
+  HRESULT ConnectToServer() {
+    HRESULT hr = ProxyImplBase::ConnectToServer();
+    if (FAILED(hr)) {
+      return hr;
+    }
+    hr = get_interface().CopyTo(IsSystemInstall(scope_)
+                                    ? __uuidof(IUpdater2System)
+                                    : __uuidof(IUpdater2User),
+                                IID_PPV_ARGS_Helper(&interface2_));
+    VLOG_IF(1, FAILED(hr)) << "Failed to query IUpdater2: " << std::hex << hr;
+    // If CopyTo fails, interface2_ will be unset and but we can still use
+    // IUpdater from get_interface().
+    return S_OK;
+  }
 
   void GetVersionOnTaskRunner(
       base::OnceCallback<void(base::expected<base::Version, RpcError>)>
@@ -595,6 +611,7 @@ class UpdateServiceProxyImplImpl
     std::wstring ap_w;
     std::wstring version_w;
     std::wstring existence_checker_path_w;
+    std::wstring install_id_w;
     if (![&] {
           if (!base::UTF8ToWide(request.app_id.c_str(), request.app_id.size(),
                                 &app_id_w)) {
@@ -614,6 +631,10 @@ class UpdateServiceProxyImplImpl
             return false;
           }
           existence_checker_path_w = request.existence_checker_path.value();
+          if (!base::UTF8ToWide(request.install_id.c_str(),
+                                request.install_id.size(), &install_id_w)) {
+            return false;
+          }
           return true;
         }()) {
       std::move(callback).Run(base::ok(E_INVALIDARG));
@@ -622,14 +643,26 @@ class UpdateServiceProxyImplImpl
 
     auto callback_wrapper =
         MakeComObjectOrCrash<UpdaterCallback>(std::move(callback));
-    if (HRESULT hr = get_interface()->RegisterApp(
-            app_id_w.c_str(), brand_code_w.c_str(), brand_path_w.c_str(),
-            ap_w.c_str(), version_w.c_str(), existence_checker_path_w.c_str(),
-            callback_wrapper.Get());
-        FAILED(hr)) {
-      VLOG(2) << "Failed to call IUpdater::RegisterApp: " << std::hex << hr;
-      callback_wrapper->Disconnect().Run(base::unexpected(hr));
-      return;
+    if (interface2_) {
+      if (HRESULT hr = interface2_->RegisterApp2(
+              app_id_w.c_str(), brand_code_w.c_str(), brand_path_w.c_str(),
+              ap_w.c_str(), version_w.c_str(), existence_checker_path_w.c_str(),
+              install_id_w.c_str(), callback_wrapper.Get());
+          FAILED(hr)) {
+        VLOG(2) << "Failed to call IUpdater2::RegisterApp2: " << std::hex << hr;
+        callback_wrapper->Disconnect().Run(base::unexpected(hr));
+        return;
+      }
+    } else {
+      if (HRESULT hr = get_interface()->RegisterApp(
+              app_id_w.c_str(), brand_code_w.c_str(), brand_path_w.c_str(),
+              ap_w.c_str(), version_w.c_str(), existence_checker_path_w.c_str(),
+              callback_wrapper.Get());
+          FAILED(hr)) {
+        VLOG(2) << "Failed to call IUpdater::RegisterApp: " << std::hex << hr;
+        callback_wrapper->Disconnect().Run(base::unexpected(hr));
+        return;
+      }
     }
   }
 
@@ -789,6 +822,7 @@ class UpdateServiceProxyImplImpl
     std::wstring existence_checker_path_w;
     std::wstring client_install_data_w;
     std::wstring install_data_index_w;
+    std::wstring install_id_w;
     if (![&] {
           if (!base::UTF8ToWide(request.app_id.c_str(), request.app_id.size(),
                                 &app_id_w)) {
@@ -818,6 +852,10 @@ class UpdateServiceProxyImplImpl
                                 &install_data_index_w)) {
             return false;
           }
+          if (!base::UTF8ToWide(request.install_id.c_str(),
+                                request.install_id.size(), &install_id_w)) {
+            return false;
+          }
           return true;
         }()) {
       std::move(callback).Run(UpdateService::Result::kServiceFailed);
@@ -825,15 +863,28 @@ class UpdateServiceProxyImplImpl
     }
     auto observer = MakeComObjectOrCrash<UpdaterObserver>(state_update,
                                                           std::move(callback));
-    HRESULT hr = get_interface()->Install(
-        app_id_w.c_str(), brand_code_w.c_str(), brand_path_w.c_str(),
-        ap_w.c_str(), version_w.c_str(), existence_checker_path_w.c_str(),
-        client_install_data_w.c_str(), install_data_index_w.c_str(),
-        static_cast<int>(priority), observer.Get());
-    if (FAILED(hr)) {
-      VLOG(2) << "Failed to call IUpdater::Install: " << std::hex << hr;
-      observer->Disconnect().Run(base::unexpected(hr));
-      return;
+    if (interface2_) {
+      HRESULT hr = interface2_->Install2(
+          app_id_w.c_str(), brand_code_w.c_str(), brand_path_w.c_str(),
+          ap_w.c_str(), version_w.c_str(), existence_checker_path_w.c_str(),
+          client_install_data_w.c_str(), install_data_index_w.c_str(),
+          install_id_w.c_str(), static_cast<int>(priority), observer.Get());
+      if (FAILED(hr)) {
+        VLOG(2) << "Failed to call IUpdater2::Install2: " << std::hex << hr;
+        observer->Disconnect().Run(base::unexpected(hr));
+        return;
+      }
+    } else {
+      HRESULT hr = get_interface()->Install(
+          app_id_w.c_str(), brand_code_w.c_str(), brand_path_w.c_str(),
+          ap_w.c_str(), version_w.c_str(), existence_checker_path_w.c_str(),
+          client_install_data_w.c_str(), install_data_index_w.c_str(),
+          static_cast<int>(priority), observer.Get());
+      if (FAILED(hr)) {
+        VLOG(2) << "Failed to call IUpdater::Install: " << std::hex << hr;
+        observer->Disconnect().Run(base::unexpected(hr));
+        return;
+      }
     }
   }
 
