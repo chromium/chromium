@@ -68,7 +68,6 @@ LocalCardMigrationBrowserUiTest.*
 *MemorySaverChipInteractiveTest.*
 *MemorySaverFaviconTreatmentTest.*
 *MemorySaverImprovedFaviconTreatmentTest.*
-Mv2DeprecationKeepDialogBrowserTest.*
 Mv2DeprecationReEnableDialogBrowserTest.*
 BookmarkAccountStorageMoveDialogPixelTest*
 NewTabPageTest.*
