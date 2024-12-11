@@ -66,7 +66,6 @@ source_set("autofill") {
     ]
   } else {
     sources += [
-      "add_new_address_bubble_controller.h",
       "address_bubble_controller_delegate.h",
       "address_bubbles_controller.h",
       "address_bubbles_icon_controller.h",
@@ -181,7 +180,6 @@ source_set("impl") {
     ]
   } else {
     sources += [
-      "add_new_address_bubble_controller.cc",
       "address_bubbles_controller.cc",
       "address_bubbles_icon_controller.cc",
       "address_editor_controller.cc",
@@ -300,7 +298,6 @@ source_set("unit_tests") {
     deps += [ "//chrome/browser/fast_checkout" ]
   } else {
     sources += [
-      "add_new_address_bubble_controller_unittest.cc",
       "address_bubbles_controller_unittest.cc",
       "address_editor_controller_unittest.cc",
       "autofill_field_promo_controller_impl_unittest.cc",

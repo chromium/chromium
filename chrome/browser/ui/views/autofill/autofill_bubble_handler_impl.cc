@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/browser/ui/views/autofill/add_new_address_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/address_sign_in_promo_view.h"
 #include "chrome/browser/ui/views/autofill/autofill_ai/save_autofill_ai_data_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/filled_card_information_bubble_views.h"
@@ -228,15 +227,6 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowUpdateAddressProfileBubble(
     std::unique_ptr<UpdateAddressBubbleController> controller,
     bool is_user_gesture) {
   return ShowAddressProfileBubble<UpdateAddressProfileView>(
-      toolbar_button_provider_, web_contents, std::move(controller),
-      is_user_gesture);
-}
-
-AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowAddNewAddressProfileBubble(
-    content::WebContents* web_contents,
-    std::unique_ptr<AddNewAddressBubbleController> controller,
-    bool is_user_gesture) {
-  return ShowAddressProfileBubble<AddNewAddressBubbleView>(
       toolbar_button_provider_, web_contents, std::move(controller),
       is_user_gesture);
 }

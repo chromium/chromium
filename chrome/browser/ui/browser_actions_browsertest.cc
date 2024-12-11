@@ -52,9 +52,6 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, ShowAddressesBubbleOrPage) {
   auto* bubble_controller = autofill::AddressBubblesController::FromWebContents(
       GetActiveWebContents());
   ASSERT_EQ(bubble_controller->GetBubbleView(), nullptr);
-  autofill::AddressBubblesController::SetUpAndShowAddNewAddressBubble(
-      GetActiveWebContents(), base::DoNothing());
-  ASSERT_NE(bubble_controller->GetBubbleView(), nullptr);
   action_manager.FindAction(kActionShowAddressesBubbleOrPage)->InvokeAction();
   EXPECT_EQ(bubble_controller->GetBubbleView(), nullptr);
 

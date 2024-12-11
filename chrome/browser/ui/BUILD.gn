@@ -3709,8 +3709,6 @@ static_library("ui") {
       "views/apps/app_info_dialog/app_info_summary_panel.h",
       "views/apps/chrome_native_app_window_views.cc",
       "views/apps/chrome_native_app_window_views.h",
-      "views/autofill/add_new_address_bubble_view.cc",
-      "views/autofill/add_new_address_bubble_view.h",
       "views/autofill/address_bubble_base_view.h",
       "views/autofill/address_bubbles_icon_view.cc",
       "views/autofill/address_bubbles_icon_view.h",
