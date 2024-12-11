@@ -8662,25 +8662,6 @@
             ]
         }
     ],
-    "EnableBackForwardCacheForOngoingSubframeNavigation": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240305",
-                    "enable_features": [
-                        "EnableBackForwardCacheForOngoingSubframeNavigation"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableCertManagementUIV2": [
         {
             "platforms": [

@@ -147,14 +147,6 @@ BASE_FEATURE(kEmbeddingRequiresOptIn,
              "EmbeddingRequiresOptIn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable back/forward cache when a page which has subframe(s) with ongoing
-// navigation(s) is navigated. Currently, this is only for navigations which
-// don't need URLLoaders or haven't yet sent network requests. This flag should
-// be removed once the https://crbug.com/1511153 is resolved.
-BASE_FEATURE(kEnableBackForwardCacheForOngoingSubframeNavigation,
-             "EnableBackForwardCacheForOngoingSubframeNavigation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables error reporting for JS errors inside DevTools frontend host
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kEnableDevToolsJsErrorReporting,

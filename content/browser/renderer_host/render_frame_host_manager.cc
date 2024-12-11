@@ -1637,12 +1637,9 @@ RenderFrameHostManager::GetFrameHostForNavigation(
   // is still allowed to navigate, fetch, load and run documents in the
   // background.
   // 2) Subframes in BFCached pages that have not (or will never) sent network
-  // requests, if kEnableBackForwardCacheForOngoingSubframeNavigation is
-  // enabled. Find more details in https://crbug.com/1511153.
-  if (base::FeatureList::IsEnabled(
-          features::kEnableBackForwardCacheForOngoingSubframeNavigation) &&
-      current_frame_host()->lifecycle_state() ==
-          LifecycleStateImpl::kInBackForwardCache) {
+  // requests. Find more details in https://crbug.com/1511153.
+  if (current_frame_host()->lifecycle_state() ==
+      LifecycleStateImpl::kInBackForwardCache) {
     CHECK(request->GetParentFrameOrOuterDocument());
     CHECK(!request->NeedsUrlLoader() ||
           (!request->HasLoader() &&
@@ -1651,10 +1648,8 @@ RenderFrameHostManager::GetFrameHostForNavigation(
   }
   if (!(current_frame_host()->lifecycle_state() ==
             LifecycleStateImpl::kPrerendering ||
-        (base::FeatureList::IsEnabled(
-             features::kEnableBackForwardCacheForOngoingSubframeNavigation) &&
-         current_frame_host()->lifecycle_state() ==
-             LifecycleStateImpl::kInBackForwardCache))) {
+        (current_frame_host()->lifecycle_state() ==
+         LifecycleStateImpl::kInBackForwardCache))) {
     // Inactive frames should never be navigated. If this happens, log a
     // DumpWithoutCrashing to understand the root cause. See
     // https://crbug.com/926820 and https://crbug.com/927705.

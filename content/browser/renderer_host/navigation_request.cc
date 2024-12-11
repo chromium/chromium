@@ -1124,9 +1124,7 @@ bool IsFailedDownload(bool is_download,
 // ongoing navigation.
 bool MaybeEvictFromBackForwardCacheBySubframeNavigation(
     RenderFrameHostImpl* rfh) {
-  if (base::FeatureList::IsEnabled(
-          features::kEnableBackForwardCacheForOngoingSubframeNavigation) &&
-      rfh->GetParentOrOuterDocument() &&
+  if (rfh->GetParentOrOuterDocument() &&
       rfh->GetLifecycleState() ==
           RenderFrameHost::LifecycleState::kInBackForwardCache) {
     // Normally, ongoing subframe navigations will be deferred by

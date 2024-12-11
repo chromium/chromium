@@ -3052,9 +3052,7 @@ namespace {
 enum class SubframeNavigationType { WithoutURLLoader, WithURLLoader };
 }
 
-// Test for pages which has subframe(s) with ongoing navigation(s). In these
-// tests, we should enable kEnableBackForwardCacheForOngoingSubframeNavigation
-// flag.
+// Test for pages which has subframe(s) with ongoing navigation(s).
 class BackForwardCacheWithSubframeNavigationBrowserTest
     : public BackForwardCacheBrowserTest {
  protected:
@@ -3064,9 +3062,6 @@ class BackForwardCacheWithSubframeNavigationBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(
-        features::kEnableBackForwardCacheForOngoingSubframeNavigation, "",
-        "true");
     EnableFeatureAndSetParams(features::kBackForwardCache, "cache_size",
                               base::NumberToString(2));
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
