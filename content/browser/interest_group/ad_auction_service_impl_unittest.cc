@@ -1364,7 +1364,7 @@ TEST_F(AdAuctionServiceImplTest,
   std::vector<url::Origin> allowed_reporting_origins = {kOriginG, kOriginF,
                                                         kOriginG};
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt,
       /*size_group=*/std::nullopt,
       /*buyer_reporting_id=*/std::nullopt,
@@ -1399,7 +1399,7 @@ TEST_F(AdAuctionServiceImplTest,
   std::vector<url::Origin> allowed_reporting_origins = {kOriginG,
                                                         kNotAttestedOrigin};
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt,
       /*size_group=*/std::nullopt,
       /*buyer_reporting_id=*/std::nullopt,
@@ -1610,7 +1610,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   interest_group.ads.emplace();
   std::vector<url::Origin> allowed_reporting_origins = {kOriginF};
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}",
       /*size_group=*/"group_old",
       /*buyer_reporting_id=*/"old_brid",
@@ -1622,7 +1622,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   interest_group.ads->emplace_back(std::move(ad));
   interest_group.ad_components.emplace();
   blink::InterestGroup::Ad ad_component(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}",
       /*size_group=*/"group_old",
       /*buyer_reporting_id=*/std::nullopt,
@@ -1894,7 +1894,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatePartialPerformsMerge) {
   interest_group.max_trusted_bidding_signals_url_length = 10000;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -1950,7 +1950,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeExpiration) {
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -2045,7 +2045,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateSucceedsIfOptionalNameOwnerMatch) {
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -2131,7 +2131,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateIgnoresUnknownFields) {
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -2172,7 +2172,7 @@ TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalNameDoesntMatch) {
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -2211,7 +2211,7 @@ TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalOwnerDoesntMatch) {
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -2464,7 +2464,7 @@ TEST_F(AdAuctionServiceImplTestDisabledDealSupport,
 
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt,
       /*size_group=*/std::nullopt,
       /*buyer_reporting_id=*/std::nullopt,
@@ -2576,7 +2576,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateMultipleInterestGroups) {
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -2592,7 +2592,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateMultipleInterestGroups) {
   interest_group_2.trusted_bidding_signals_keys->push_back("key1");
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2);
@@ -2693,7 +2693,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group.bidding_url = kBiddingLogicUrlA;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group, subframeA);
@@ -2712,7 +2712,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_2.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2, subframeC);
@@ -2780,7 +2780,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group, subframe_1);
@@ -2804,7 +2804,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_2.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2, subframe_2);
@@ -2871,7 +2871,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group.bidding_url = kBiddingLogicUrlA;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group, subframeA);
@@ -2894,7 +2894,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_2.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2, subframeC);
@@ -2964,7 +2964,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group.bidding_url = kBiddingLogicUrlA;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group, subframeA);
@@ -2984,7 +2984,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_2.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2, subframeC);
@@ -3027,7 +3027,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group, subframe_1);
@@ -3040,7 +3040,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_2.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2, subframe_1);
@@ -3064,7 +3064,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_3.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group_3.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_3.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_3, subframe_2);
@@ -3077,7 +3077,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_4.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group_4.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_4.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_4, subframe_2);
@@ -3130,7 +3130,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group, subframe_1);
@@ -3143,7 +3143,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_2.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2, subframe_1);
@@ -3156,7 +3156,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_3.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group_3.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_3.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_3, subframe_1);
@@ -3180,7 +3180,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_4.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group_4.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_4.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_4, subframe_2);
@@ -3236,7 +3236,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group, subframe_1);
@@ -3249,7 +3249,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_2.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2, subframe_1);
@@ -3262,7 +3262,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_3.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group_3.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_3.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_3, subframe_1);
@@ -3286,7 +3286,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_4.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group_4.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_4.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_4, subframe_2);
@@ -3346,7 +3346,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group, subframe_1);
@@ -3370,7 +3370,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_2.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2, subframe_2);
@@ -3383,7 +3383,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_3.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group_3.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_3.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_3, subframe_2);
@@ -3406,7 +3406,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_4.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group_4.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_4.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_4, subframe_3);
@@ -3495,7 +3495,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group, subframe_1);
@@ -3519,7 +3519,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_2.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2, subframe_2);
@@ -3532,7 +3532,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_3.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group_3.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_3.ads->emplace_back(std::move(ad));
 
@@ -3608,7 +3608,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_3.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group_3.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_3.ads->emplace_back(std::move(ad));
   interest_group_3.expiry = base::Time::Now() + base::Days(3);
@@ -3673,7 +3673,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group, subframe_2);
@@ -3699,7 +3699,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_2.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2, subframe_3);
@@ -3742,7 +3742,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateOnlyOwnOrigin) {
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -3760,7 +3760,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateOnlyOwnOrigin) {
   interest_group_b.trusted_bidding_signals_keys->push_back("key1");
   interest_group_b.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_b.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_b);
@@ -3811,7 +3811,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -3829,7 +3829,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   interest_group_b.trusted_bidding_signals_keys->push_back("key1");
   interest_group_b.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_b.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_b);
@@ -3847,7 +3847,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   interest_group_c.trusted_bidding_signals_keys->push_back("key1");
   interest_group_c.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_c.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_c);
@@ -3923,7 +3923,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidFieldCancelsAllUpdates) {
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -3982,7 +3982,7 @@ TEST_F(AdAuctionServiceImplTest,
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -4035,7 +4035,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidPriorityCancelsAllUpdates) {
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}");
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -4073,7 +4073,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidSellerCapabilitiesIgnored) {
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -4111,7 +4111,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidJSONIgnored) {
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -4158,7 +4158,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateJSONParserCrash) {
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -4216,7 +4216,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateBlockedByContentBrowserClient) {
   interest_group.update_url = kUpdateUrlNoUpdate;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -4247,7 +4247,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateNetworkFailure) {
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -4278,7 +4278,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateTimeout) {
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -4325,7 +4325,7 @@ TEST_F(AdAuctionServiceImplTest,
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -4402,7 +4402,7 @@ TEST_F(AdAuctionServiceImplTest,
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -4463,7 +4463,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateNeverFinishesBeforeDestruction) {
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -4502,7 +4502,7 @@ TEST_F(AdAuctionServiceImplTest, DoesntChangeGroupsWithNoUpdateUrl) {
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -4538,7 +4538,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeBrowserSignals) {
   interest_group.trusted_bidding_signals_keys->push_back("key1");
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -4598,7 +4598,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
   interest_group.update_url = kUpdateUrlA;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -4690,7 +4690,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
   interest_group.update_url = kUpdateUrlA;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -4790,7 +4790,7 @@ TEST_F(AdAuctionServiceImplTest,
   interest_group.update_url = kUpdateUrlA;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -4886,7 +4886,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterFailedUpdate) {
   interest_group.update_url = kUpdateUrlA;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -4974,7 +4974,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateNotRateLimitedIfDisconnected) {
   interest_group.update_url = kUpdateUrlA;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -5039,7 +5039,7 @@ TEST_F(AdAuctionServiceImplTest, DisconnectedAndSuccessInFlightTogether) {
   interest_group_1.update_url = kUpdateUrlA;
   interest_group_1.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_1.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_1);
@@ -5057,7 +5057,7 @@ TEST_F(AdAuctionServiceImplTest, DisconnectedAndSuccessInFlightTogether) {
   interest_group_2.update_url = kUpdateUrlA2;
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2);
@@ -5133,7 +5133,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedTightLoop) {
   interest_group.update_url = kUpdateUrlA;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -5189,7 +5189,7 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   interest_group.update_url = kUpdateUrlA;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -5205,7 +5205,7 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   interest_group.update_url = kUpdateUrlB;
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -5221,7 +5221,7 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   interest_group.update_url = kUpdateUrlC;
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -5325,7 +5325,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatches) {
   interest_group.update_url = kUpdateUrlA;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -5338,7 +5338,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatches) {
   interest_group.update_url = kUpdateUrlA;
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -5351,7 +5351,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatches) {
   interest_group.update_url = kUpdateUrlA;
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -5403,7 +5403,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatchesWithFailuresAndTimeouts) {
   interest_group.update_url = kUpdateUrlA;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -5416,7 +5416,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatchesWithFailuresAndTimeouts) {
   interest_group.update_url = kUpdateUrlA2;
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -5429,7 +5429,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatchesWithFailuresAndTimeouts) {
   interest_group.update_url = kUpdateUrlA3;
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -5513,7 +5513,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates) {
   interest_group.update_url = kUpdateUrlA;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -5529,7 +5529,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates) {
   interest_group.update_url = kUpdateUrlB;
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -5654,7 +5654,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   interest_group.update_url = kUpdateUrlA;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -5670,7 +5670,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   interest_group.update_url = kUpdateUrlB;
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -5749,7 +5749,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   interest_group.update_url = kUpdateUrlC;
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   ASSERT_TRUE(interest_group.IsValid());
@@ -5810,7 +5810,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateCancellationTimerClearedOnCompletion) {
   interest_group.update_url = kUpdateUrlA;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -5826,7 +5826,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateCancellationTimerClearedOnCompletion) {
   interest_group.update_url = kUpdateUrlB;
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -5930,7 +5930,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
     interest_group.update_url = update_url;
     interest_group.ads.emplace();
     blink::InterestGroup::Ad ad(
-        /*render_url=*/GURL("https://example.com/render"),
+        /*render_gurl=*/GURL("https://example.com/render"),
         /*metadata=*/std::nullopt);
     interest_group.ads->emplace_back(std::move(ad));
     JoinInterestGroupAndFlush(interest_group);
@@ -5947,7 +5947,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
   interest_group.update_url = kUpdateUrlB;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -6100,7 +6100,7 @@ function scoreAd(
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -6178,7 +6178,7 @@ function scoreAd(
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -6231,7 +6231,7 @@ function scoreAd(
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -6296,7 +6296,7 @@ function scoreAd(
   interest_group_a.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group_a.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_a.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_a);
@@ -6364,7 +6364,7 @@ function scoreAd(
   interest_group_a.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group_a.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_a.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_a);
@@ -6437,7 +6437,7 @@ function scoreAd(
   interest_group_a.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group_a.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_a.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_a);
@@ -6489,7 +6489,7 @@ function generateBid(
   interest_group_a.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group_a.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_a.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_a);
@@ -6548,7 +6548,7 @@ function scoreAd(
   interest_group_no_update.bidding_url = kUrlNoUpdate.Resolve(kBiddingUrlPath);
   interest_group_no_update.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group_no_update.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_no_update);
@@ -6635,7 +6635,7 @@ function scoreAd(
   interest_group_a.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group_a.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render1"),
+      /*render_gurl=*/GURL("https://example.com/render1"),
       /*metadata=*/std::nullopt);
   interest_group_a.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_a);
@@ -6648,7 +6648,7 @@ function scoreAd(
   interest_group_b.bidding_url = kUrlC.Resolve(kNewBiddingUrlPath);
   interest_group_b.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render2"),
+      /*render_gurl=*/GURL("https://example.com/render2"),
       /*metadata=*/std::nullopt);
   interest_group_b.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_b);
@@ -6749,7 +6749,7 @@ function scoreAd(
   interest_group_a.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group_a.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render1"),
+      /*render_gurl=*/GURL("https://example.com/render1"),
       /*metadata=*/std::nullopt);
   interest_group_a.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_a);
@@ -6762,7 +6762,7 @@ function scoreAd(
   interest_group_b.bidding_url = kUrlC.Resolve(kNewBiddingUrlPath);
   interest_group_b.ads.emplace();
   ad = blink::InterestGroup::Ad(
-      /*render_url=*/GURL("https://example.com/render2"),
+      /*render_gurl=*/GURL("https://example.com/render2"),
       /*metadata=*/std::nullopt);
   interest_group_b.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_b);
@@ -6868,7 +6868,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateSupportsDeprecatedNames) {
   interest_group.update_url = kUpdateUrlA;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -6910,7 +6910,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateIgnoresUnknownEnumFields) {
   interest_group.update_url = kUpdateUrlA;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -6945,7 +6945,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRenamedFields) {
   updated_interest_group_ads.priority = 1.0;
   updated_interest_group_ads.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   updated_interest_group_ads.ads->emplace_back(std::move(ad));
 
@@ -6955,7 +6955,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRenamedFields) {
   updated_interest_group_ad_components.priority = 1.0;
   updated_interest_group_ad_components.ad_components.emplace();
   blink::InterestGroup::Ad ad_component(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   updated_interest_group_ad_components.ad_components->emplace_back(
       std::move(ad_component));
@@ -7530,7 +7530,7 @@ TEST_F(AdAuctionServiceImplTest, SendReports) {
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -7585,7 +7585,7 @@ TEST_F(AdAuctionServiceImplTest, SendReportsWaitsForCallback) {
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -7621,7 +7621,7 @@ TEST_F(AdAuctionServiceImplTest, SendReportsTwoAuctionsWithDelay) {
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -7666,7 +7666,7 @@ TEST_F(AdAuctionServiceImplTest, SendReportsTwoAuctionsRespectsReportInterval) {
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -7729,7 +7729,7 @@ TEST_F(AdAuctionServiceImplTest, SendReportsOneReportFailed) {
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -7820,7 +7820,7 @@ function reportResult(auctionConfig, browserSignals) {
     interest_group.name = name;
     interest_group.ads.emplace();
     blink::InterestGroup::Ad ad(
-        /*render_url=*/GURL("https://example.com/render"),
+        /*render_gurl=*/GURL("https://example.com/render"),
         /*metadata=*/std::nullopt);
     interest_group.ads->emplace_back(std::move(ad));
     JoinInterestGroupAndFlush(interest_group);
@@ -7877,7 +7877,7 @@ TEST_F(AdAuctionServiceImplTest, SendReportsMaxReportRoundDuration) {
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -7986,7 +7986,7 @@ function reportWin(
   interest_group.name = "11";
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -8076,7 +8076,7 @@ TEST_F(AdAuctionServiceImplTest, ReportingWorkletsDoNotBlockCompletion) {
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
 
@@ -8175,7 +8175,7 @@ function reportResult() {}
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -8333,7 +8333,7 @@ function reportResult() {}
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -8492,7 +8492,7 @@ function reportResult() {}
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -8680,7 +8680,7 @@ function scoreAd(
   interest_group.priority = 2;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -8753,7 +8753,7 @@ function reportResult() {}
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -8872,7 +8872,7 @@ function reportResult() {}
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -9148,7 +9148,7 @@ function reportResult(auctionConfig, browserSignals) {
     interest_group.name = name;
     interest_group.ads.emplace();
     blink::InterestGroup::Ad ad(
-        /*render_url=*/GURL("https://example.com/render"),
+        /*render_gurl=*/GURL("https://example.com/render"),
         /*metadata=*/std::nullopt);
     interest_group.ads->emplace_back(std::move(ad));
     JoinInterestGroupAndFlush(interest_group);
@@ -9270,7 +9270,7 @@ function reportResult(auctionConfig, browserSignals) {
       interest_group.name = name;
       interest_group.ads.emplace();
       blink::InterestGroup::Ad ad(
-          /*render_url=*/GURL("https://example.com/render"),
+          /*render_gurl=*/GURL("https://example.com/render"),
           /*metadata=*/std::nullopt);
       interest_group.ads->emplace_back(std::move(ad));
       JoinInterestGroupAndFlush(interest_group);
@@ -9627,7 +9627,7 @@ function reportResult() {
   interest_group.priority = 2;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -9692,7 +9692,7 @@ function reportResult() {
   interest_group.priority = 2;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -9753,7 +9753,7 @@ function reportResult() {
   interest_group.priority = 2;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -9829,7 +9829,7 @@ function scoreAd(
   interest_group.priority = 2;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -9883,7 +9883,7 @@ function scoreAd(
   interest_group.priority = 2;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -9954,7 +9954,7 @@ function scoreAd(
   interest_group.priority = 2;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -10039,7 +10039,7 @@ function scoreAd(
   interest_group.priority = 2;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -10139,7 +10139,7 @@ function scoreAd(
   interest_group.priority = 2;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -10208,7 +10208,7 @@ function scoreAd(
   interest_group.priority = 2;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -10279,7 +10279,7 @@ function scoreAd(
   interest_group.priority = 2;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -10350,7 +10350,7 @@ function scoreAd(
   interest_group.priority = 2;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -10421,7 +10421,7 @@ function scoreAd(
   interest_group.priority = 2;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -10501,7 +10501,7 @@ function scoreAd(
   interest_group.priority = 2;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -10604,7 +10604,7 @@ function reportResult() {}
   interest_group.priority = 2;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
 
@@ -10663,7 +10663,7 @@ function scoreAd(
   interest_group.priority = 2;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -10708,7 +10708,7 @@ function scoreAd(
   interest_group.priority = 2;
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -10792,7 +10792,7 @@ function scoreAd(
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -18958,7 +18958,7 @@ function scoreAd(
   interest_group.trusted_bidding_signals_keys = {"foo", "bar"};
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);

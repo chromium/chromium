@@ -4949,10 +4949,10 @@ TEST_F(AuctionRunnerTest, BidderThreadPoolExpanded) {
 
   auction_worklet_service->LoadBidderWorklet(
       std::move(worklet_receiver1), std::move(shared_storage_hosts1),
-      /*should_pause_on_start=*/false, std::move(url_loader_factory1),
+      /*pause_for_debugger_on_start=*/false, std::move(url_loader_factory1),
       auction_network_events_handler.CreateRemote(),
       /*script_source_url=*/GURL("https://ad1.com"),
-      /*bidding_wasm_helper_url=*/{}, /*trusted_bidding_signals_url=*/{},
+      /*wasm_helper_url=*/{}, /*trusted_bidding_signals_url=*/{},
       /*trusted_bidding_signals_slot_size_param=*/{},
       /*top_window_origin=*/url::Origin::Create(GURL("https://ad1.com")),
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyState::New(
@@ -4978,10 +4978,10 @@ TEST_F(AuctionRunnerTest, BidderThreadPoolExpanded) {
 
   auction_worklet_service->LoadBidderWorklet(
       std::move(worklet_receiver2), std::move(shared_storage_hosts2),
-      /*should_pause_on_start=*/false, std::move(url_loader_factory2),
+      /*pause_for_debugger_on_start=*/false, std::move(url_loader_factory2),
       auction_network_events_handler.CreateRemote(),
       /*script_source_url=*/GURL("https://ad1.com"),
-      /*bidding_wasm_helper_url=*/{}, /*trusted_bidding_signals_url=*/{},
+      /*wasm_helper_url=*/{}, /*trusted_bidding_signals_url=*/{},
       /*trusted_bidding_signals_slot_size_param=*/{},
       /*top_window_origin=*/url::Origin::Create(GURL("https://ad1.com")),
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyState::New(
@@ -5033,10 +5033,10 @@ TEST_F(AuctionRunnerTest, BidderThreadPoolPartiallyResetAndSubsequentlyReused) {
 
   auction_worklet_service1->LoadBidderWorklet(
       std::move(worklet_receiver1), std::move(shared_storage_hosts1),
-      /*should_pause_on_start=*/false, std::move(url_loader_factory1),
+      /*pause_for_debugger_on_start=*/false, std::move(url_loader_factory1),
       auction_network_events_handler.CreateRemote(),
       /*script_source_url=*/GURL("https://ad1.com"),
-      /*bidding_wasm_helper_url=*/{}, /*trusted_bidding_signals_url=*/{},
+      /*wasm_helper_url=*/{}, /*trusted_bidding_signals_url=*/{},
       /*trusted_bidding_signals_slot_size_param=*/{},
       /*top_window_origin=*/url::Origin::Create(GURL("https://ad1.com")),
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyState::New(
@@ -5072,10 +5072,10 @@ TEST_F(AuctionRunnerTest, BidderThreadPoolPartiallyResetAndSubsequentlyReused) {
 
   auction_worklet_service2->LoadBidderWorklet(
       std::move(worklet_receiver2), std::move(shared_storage_hosts2),
-      /*should_pause_on_start=*/false, std::move(url_loader_factory2),
+      /*pause_for_debugger_on_start=*/false, std::move(url_loader_factory2),
       auction_network_events_handler.CreateRemote(),
       /*script_source_url=*/GURL("https://ad1.com"),
-      /*bidding_wasm_helper_url=*/{}, /*trusted_bidding_signals_url=*/{},
+      /*wasm_helper_url=*/{}, /*trusted_bidding_signals_url=*/{},
       /*trusted_bidding_signals_slot_size_param=*/{},
       /*top_window_origin=*/url::Origin::Create(GURL("https://ad1.com")),
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyState::New(
@@ -5115,10 +5115,10 @@ TEST_F(AuctionRunnerTest, BidderThreadPoolPartiallyResetAndSubsequentlyReused) {
 
   auction_worklet_service3->LoadBidderWorklet(
       std::move(worklet_receiver3), std::move(shared_storage_hosts3),
-      /*should_pause_on_start=*/false, std::move(url_loader_factory3),
+      /*pause_for_debugger_on_start=*/false, std::move(url_loader_factory3),
       auction_network_events_handler.CreateRemote(),
       /*script_source_url=*/GURL("https://ad1.com"),
-      /*bidding_wasm_helper_url=*/{}, /*trusted_bidding_signals_url=*/{},
+      /*wasm_helper_url=*/{}, /*trusted_bidding_signals_url=*/{},
       /*trusted_bidding_signals_slot_size_param=*/{},
       /*top_window_origin=*/url::Origin::Create(GURL("https://ad1.com")),
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyState::New(
@@ -14246,7 +14246,7 @@ TEST_F(AuctionRunnerTest, PerBuyerTwoThirdsCumulativeTimeouts) {
   StartAuction(kSellerUrl, std::move(bidders));
 
   mock_auction_process_manager_->WaitForWorklets(
-      /*num_bidder_worklets=*/1, /*num_sellers=*/1);
+      /*num_bidders=*/1, /*num_sellers=*/1);
 
   auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
   ASSERT_TRUE(seller_worklet);
@@ -26625,14 +26625,14 @@ TEST_P(AuctionRunnerTrustedSignalsTest, TrustedSignalsKVv2SlotSize) {
   std::vector<StorageInterestGroup> bidders;
   bidders.emplace_back(MakeInterestGroup(
       kBidder1, kBidder1Name, kBidder1Url, kBidder1TrustedSignalsUrl,
-      {"k1", "k2"}, GURL("https://ad1.com"), /*ad_components_url=*/std::nullopt,
+      {"k1", "k2"}, GURL("https://ad1.com"), /*ad_component_urls=*/std::nullopt,
       coordinator_origin_));
   bidders.back().interest_group.trusted_bidding_signals_slot_size_mode =
       blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::kNone;
 
   bidders.emplace_back(MakeInterestGroup(
       kBidder2, kBidder2Name, kBidder2Url, kBidder2TrustedSignalsUrl,
-      {"l1", "l2"}, GURL("https://ad2.com"), /*ad_components_url=*/std::nullopt,
+      {"l1", "l2"}, GURL("https://ad2.com"), /*ad_component_urls=*/std::nullopt,
       coordinator_origin_));
   bidders.back().interest_group.trusted_bidding_signals_slot_size_mode =
       blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::kSlotSize;
@@ -26643,7 +26643,7 @@ TEST_P(AuctionRunnerTrustedSignalsTest, TrustedSignalsKVv2SlotSize) {
   const std::string kBidder3Name("Bidder 3 name");
   bidders.emplace_back(MakeInterestGroup(
       kBidder2, kBidder3Name, kBidder2Url, kBidder3TrustedSignalsUrl,
-      {"l1", "l2"}, GURL("https://ad2.com"), /*ad_components_url=*/std::nullopt,
+      {"l1", "l2"}, GURL("https://ad2.com"), /*ad_component_urls=*/std::nullopt,
       coordinator_origin_));
   bidders.back().interest_group.trusted_bidding_signals_slot_size_mode = blink::
       InterestGroup::TrustedBiddingSignalsSlotSizeMode::kAllSlotsRequestedSizes;
@@ -26695,14 +26695,14 @@ TEST_P(AuctionRunnerTrustedSignalsTest,
   std::vector<StorageInterestGroup> bidders;
   bidders.emplace_back(MakeInterestGroup(
       kBidder1, kBidder1Name, kBidder1Url, kBidder1TrustedSignalsUrl,
-      {"k1", "k2"}, GURL("https://ad1.com"), /*ad_components_url=*/std::nullopt,
+      {"k1", "k2"}, GURL("https://ad1.com"), /*ad_component_urls=*/std::nullopt,
       coordinator_origin_));
   bidders.back().interest_group.trusted_bidding_signals_slot_size_mode =
       blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::kSlotSize;
 
   bidders.emplace_back(MakeInterestGroup(
       kBidder2, kBidder2Name, kBidder2Url, kBidder2TrustedSignalsUrl,
-      {"l1", "l2"}, GURL("https://ad2.com"), /*ad_components_url=*/std::nullopt,
+      {"l1", "l2"}, GURL("https://ad2.com"), /*ad_component_urls=*/std::nullopt,
       coordinator_origin_));
   bidders.back().interest_group.trusted_bidding_signals_slot_size_mode = blink::
       InterestGroup::TrustedBiddingSignalsSlotSizeMode::kAllSlotsRequestedSizes;
