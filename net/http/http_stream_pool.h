@@ -82,6 +82,19 @@ class NET_EXPORT_PRIVATE HttpStreamPool
                                             size_t num_streams) = 0;
   };
 
+  // The default maximum number of sockets per pool. The same as
+  // ClientSocketPoolManager::max_sockets_per_pool().
+  static constexpr size_t kDefaultMaxStreamSocketsPerPool = 256;
+
+  // The default maximum number of socket per group. The same as
+  // ClientSocketPoolManager::max_sockets_per_group().
+  static constexpr size_t kDefaultMaxStreamSocketsPerGroup = 6;
+
+  // The default connection attempt delay.
+  // https://datatracker.ietf.org/doc/html/draft-pauly-v6ops-happy-eyeballs-v3-02#name-summary-of-configurable-val
+  static constexpr base::TimeDelta kDefaultConnectionAttemptDelay =
+      base::Milliseconds(250);
+
   // Reasons for closing streams.
   static constexpr std::string_view kIpAddressChanged = "IP address changed";
   static constexpr std::string_view kSslConfigChanged =
@@ -101,33 +114,24 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   static constexpr std::string_view kExceededSocketLimits =
       "Exceed socket pool/group limits";
 
-  // The default maximum number of sockets per pool. The same as
-  // ClientSocketPoolManager::max_sockets_per_pool().
-  static constexpr size_t kDefaultMaxStreamSocketsPerPool = 256;
-
-  // The default maximum number of socket per group. The same as
-  // ClientSocketPoolManager::max_sockets_per_group().
-  static constexpr size_t kDefaultMaxStreamSocketsPerGroup = 6;
-
-  // FeatureParam names for setting per pool/group limits.
+  // FeatureParam names for configurable parameters.
   static constexpr std::string_view kMaxStreamSocketsPerPoolParamName =
       "max_stream_per_pool";
   static constexpr std::string_view kMaxStreamSocketsPerGroupParamName =
       "max_stream_per_group";
-
-  // FeatureParam name for enabling consistency checks.
+  static constexpr std::string_view kConnectionAttemptDelayParamName =
+      "connection_attempt_delay";
   static constexpr std::string_view kEnableConsistencyCheckParamName =
       "enable_consistency_check";
-
-  // The time to wait between connection attempts.
-  static constexpr base::TimeDelta kConnectionAttemptDelay =
-      base::Milliseconds(250);
 
   class NET_EXPORT_PRIVATE Job;
   class NET_EXPORT_PRIVATE JobController;
   class NET_EXPORT_PRIVATE Group;
   class NET_EXPORT_PRIVATE AttemptManager;
   class NET_EXPORT_PRIVATE QuicTask;
+
+  // The time to wait between connection attempts.
+  static base::TimeDelta GetConnectionAttemptDelay();
 
   explicit HttpStreamPool(HttpNetworkSession* http_network_session,
                           bool cleanup_on_ip_address_change = true);

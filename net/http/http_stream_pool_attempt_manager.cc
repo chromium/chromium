@@ -931,7 +931,7 @@ void HttpStreamPool::AttemptManager::MaybeCalculateSSLConfig() {
       // base::Unretained() is safe here because `this` owns the
       // `in_flight_attempt` and `slow_timer`.
       in_flight_attempt->slow_timer().Start(
-          FROM_HERE, kConnectionAttemptDelay,
+          FROM_HERE, HttpStreamPool::GetConnectionAttemptDelay(),
           base::BindOnce(&AttemptManager::OnInFlightAttemptSlow,
                          base::Unretained(this), in_flight_attempt.get()));
     }
@@ -1046,7 +1046,7 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
                                     base::Unretained(this), raw_attempt, rv));
     } else {
       raw_attempt->slow_timer().Start(
-          FROM_HERE, kConnectionAttemptDelay,
+          FROM_HERE, HttpStreamPool::GetConnectionAttemptDelay(),
           base::BindOnce(&AttemptManager::OnInFlightAttemptSlow,
                          base::Unretained(this), raw_attempt));
       if (tls_attempt_ptr && !tls_attempt_ptr->IsTcpHandshakeCompleted()) {

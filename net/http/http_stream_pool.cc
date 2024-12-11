@@ -56,6 +56,12 @@ constexpr base::FeatureParam<size_t> kHttpStreamPoolMaxStreamPerGroup{
     HttpStreamPool::kMaxStreamSocketsPerGroupParamName.data(),
     HttpStreamPool::kDefaultMaxStreamSocketsPerGroup};
 
+constexpr base::FeatureParam<base::TimeDelta>
+    kHttpStreamPoolConnectionAttemptDelay{
+        &features::kHappyEyeballsV3,
+        HttpStreamPool::kConnectionAttemptDelayParamName.data(),
+        HttpStreamPool::kDefaultConnectionAttemptDelay};
+
 constexpr base::FeatureParam<bool> kEnableConsistencyCheck{
     &features::kHappyEyeballsV3,
     HttpStreamPool::kEnableConsistencyCheckParamName.data(), false};
@@ -84,6 +90,11 @@ std::ostream& operator<<(std::ostream& os, const StreamCounts& counts) {
 }
 
 }  // namespace
+
+// static
+base::TimeDelta HttpStreamPool::GetConnectionAttemptDelay() {
+  return kHttpStreamPoolConnectionAttemptDelay.Get();
+}
 
 HttpStreamPool::HttpStreamPool(HttpNetworkSession* http_network_session,
                                bool cleanup_on_ip_address_change)
