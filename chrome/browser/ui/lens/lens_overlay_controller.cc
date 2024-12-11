@@ -2416,7 +2416,6 @@ void LensOverlayController::DoLensRequest(
   results_side_panel_coordinator_->RegisterEntryAndShow();
   RecordTimeToFirstInteraction(
       lens::LensOverlayFirstInteractionType::kRegionSelect);
-  search_performed_in_session_ = true;
   state_ = State::kOverlayAndResults;
   MaybeLaunchSurvey();
 }
@@ -2594,7 +2593,6 @@ void LensOverlayController::IssueTextSelectionRequestInner(
   results_side_panel_coordinator_->RegisterEntryAndShow();
   RecordTimeToFirstInteraction(
       lens::LensOverlayFirstInteractionType::kTextSelect);
-  search_performed_in_session_ = true;
   state_ = State::kOverlayAndResults;
   MaybeLaunchSurvey();
 }
@@ -2648,7 +2646,6 @@ void LensOverlayController::IssueSearchBoxRequest(
   RecordContextualSearchboxTimeToInteractionAfterNavigation();
   RecordTimeToFirstInteraction(
       lens::LensOverlayFirstInteractionType::kSearchbox);
-  search_performed_in_session_ = true;
 
   // Do not attempt to contextualize if CSB is disabled or if the user is not in
   // the contextual search flow (aka, issues an image request already).
@@ -2816,6 +2813,7 @@ void LensOverlayController::RecordTimeToFirstInteraction(
   lens::RecordTimeToFirstInteraction(invocation_source_,
                                      time_to_first_interaction,
                                      interaction_type, source_id);
+  search_performed_in_session_ = true;
 }
 
 void LensOverlayController::
