@@ -6,6 +6,7 @@ import contextlib
 import io
 import json
 import textwrap
+import queue
 import unittest
 from datetime import datetime
 from unittest import mock
@@ -124,13 +125,14 @@ class WPTAdapterTest(unittest.TestCase):
         stream_mock.fileno.return_value = 1
         self._mocks.enter_context(mock.patch('sys.stdout', stream_mock))
 
-        self.results_processor = mock.Mock()
-        self.results_processor.stream_results.return_value = (
-            contextlib.nullcontext(mock.Mock()))
-        self.results_processor.num_initial_failures = 0
+        event_queue = queue.SimpleQueue()
         self._mocks.enter_context(
-            mock.patch('blinkpy.wpt_tests.wpt_adapter.WPTResultsProcessor',
-                       return_value=self.results_processor))
+            mock.patch(
+                'blinkpy.wpt_tests.wpt_adapter.WPTResultsProcessor.stream_results',
+                return_value=contextlib.nullcontext(event_queue)))
+        self._mocks.enter_context(
+            mock.patch('blinkpy.wpt_tests.wpt_adapter.run.run',
+                       return_value=1))
 
     def tearDown(self):
         self._mocks.close()
@@ -149,7 +151,7 @@ class WPTAdapterTest(unittest.TestCase):
             '-t',
             'Debug',
             '-p',
-            'headless_shell',
+            'chrome',
             '-j',
             '5',
             '--iterations=7',
@@ -163,11 +165,7 @@ class WPTAdapterTest(unittest.TestCase):
         ]
         adapter = WPTAdapter.from_args(self.host, args, 'test-linux-trusty')
         with adapter.test_env() as options:
-            # `run_wpt_tests.py` treats `chrome` and `headless_shell` as
-            # distinct products, but `wpt run` does not.
-            self.assertEqual(
-                options.product, 'headless_shell',
-                'adapter did not coerce `headless_shell` to `chrome`')
+            self.assertEqual(options.product, 'chrome')
             self.assertEqual(options.processes, 5)
             self.assertEqual(options.repeat, 7)
             self.assertEqual(options.rerun, 9)
@@ -198,7 +196,7 @@ class WPTAdapterTest(unittest.TestCase):
         self.assertEqual(
             self.output_stream.getvalue(),
             textwrap.dedent("""\
-                2023-01-01 12:00:02.000 INFO Running tests for headless_shell
+                2023-01-01 12:00:02.000 INFO Running tests for chrome
                 2023-01-01 12:00:03.000 INFO Using port "test-linux-trusty"
                 2023-01-01 12:00:04.000 INFO View the test results at file:///tmp/layout-test-results/results.html
                 2023-01-01 12:00:05.000 INFO Using Debug build
@@ -208,7 +206,6 @@ class WPTAdapterTest(unittest.TestCase):
                 return_value=8)
     def test_wrapper_option(self, _):
         args = [
-            '--product=headless_shell',
             '--no-manifest-update',
             '--wrapper=rr record --disable-avx-512',
             'external/wpt/dir/',
@@ -221,8 +218,8 @@ class WPTAdapterTest(unittest.TestCase):
 
     def test_scratch_directory_cleanup(self):
         """Only test results should be left behind, even with an exception."""
-        adapter = WPTAdapter.from_args(
-            self.host, ['--product=headless_shell', '--no-manifest-update'])
+        adapter = WPTAdapter.from_args(self.host, ['--no-manifest-update'],
+                                       'test-linux-trusty')
         files_before = dict(self.fs.files)
         with self.assertRaises(KeyboardInterrupt):
             with adapter.test_env() as options:
@@ -241,11 +238,10 @@ class WPTAdapterTest(unittest.TestCase):
         adds new failing tests.
         """
         adapter = WPTAdapter.from_args(self.host, [
-            '--product=headless_shell',
             '--zero-tests-executed-ok',
             '--isolated-script-test-filter',
             'does-not-exist.any.html::does-not-exist.any.worker.html',
-        ])
+        ], 'test-linux-trusty')
         with adapter.test_env() as options:
             self.assertEqual(options.include, [])
             self.assertTrue(options.default_exclude)
@@ -253,10 +249,9 @@ class WPTAdapterTest(unittest.TestCase):
     def test_run_all_with_zero_tests_executed_ok(self):
         # `--zero-tests-executed-ok` without explicit tests should still run the
         # entire suite. This matches the `run_web_tests.py` behavior.
-        adapter = WPTAdapter.from_args(self.host, [
-            '--product=headless_shell', '--zero-tests-executed-ok',
-            '--no-manifest-update'
-        ])
+        adapter = WPTAdapter.from_args(
+            self.host, ['--zero-tests-executed-ok', '--no-manifest-update'],
+            'test-linux-trusty')
         with adapter.test_env() as options:
             self.assertEqual(sorted(options.include), ([
                 'dir/reftest.html', 'wpt_internal/variant.html?foo=bar/abc',
@@ -267,11 +262,10 @@ class WPTAdapterTest(unittest.TestCase):
 
     def test_binary_args_propagation(self):
         adapter = WPTAdapter.from_args(self.host, [
-            '--product=headless_shell',
             '--no-manifest-update',
             '--additional-driver-flag=--enable-features=FakeFeature',
             '--additional-driver-flag=--remote-debugging-address=0.0.0.0:8080',
-        ])
+        ], 'test-linux-trusty')
         with adapter.test_env() as options:
             self.assertLessEqual(
                 {
@@ -280,10 +274,9 @@ class WPTAdapterTest(unittest.TestCase):
                 }, set(options.binary_args))
 
     def test_flag_specific(self):
-        adapter = WPTAdapter.from_args(self.host, [
-            '--product=headless_shell', '--flag-specific=fake-flag',
-            '--no-manifest-update'
-        ])
+        adapter = WPTAdapter.from_args(
+            self.host, ['--flag-specific=fake-flag', '--no-manifest-update'],
+            'test-linux-trusty')
         with adapter.test_env() as options:
             self.assertIn('--enable-features=FakeFeature', options.binary_args)
             self.assertEqual(sorted(options.include), ([
@@ -311,7 +304,8 @@ class WPTAdapterTest(unittest.TestCase):
                 "expires":
                 "Jan 1, 2024"
             }]))
-        adapter = WPTAdapter.from_args(self.host, ['--no-manifest-update'])
+        adapter = WPTAdapter.from_args(self.host, ['--no-manifest-update'],
+                                       'test-linux-trusty')
         with adapter.test_env() as options:
             self.assertEqual(sorted(options.include), ([
                 'dir/reftest.html', 'wpt_internal/variant.html?foo=bar/abc',
@@ -334,8 +328,8 @@ class WPTAdapterTest(unittest.TestCase):
 
         adapter = WPTAdapter.from_args(self.host, [
             '--no-manifest-update',
-            'virtual/fake/external/wpt/dir/reftest.html'
-        ])
+            'virtual/fake/external/wpt/dir/reftest.html',
+        ], 'test-linux-trusty')
         with adapter.test_env() as options:
             self.assertEqual(sorted(options.include), [])
             self.assertEqual(options.subsuites, ['fake'])
@@ -344,10 +338,9 @@ class WPTAdapterTest(unittest.TestCase):
                                  ['dir/reftest.html'])
 
     def test_sanitizer_enabled(self):
-        adapter = WPTAdapter.from_args(self.host, [
-            '--product=headless_shell', '--no-manifest-update',
-            '--enable-sanitizer'
-        ])
+        adapter = WPTAdapter.from_args(
+            self.host, ['--no-manifest-update', '--enable-sanitizer'],
+            'test-linux-trusty')
         with adapter.test_env() as options:
             self.assertAlmostEqual(options.timeout_multiplier, 5)
             run_info = self._read_run_info(options)
@@ -360,8 +353,8 @@ class WPTAdapterTest(unittest.TestCase):
                 # The non-WPT test should be excluded.
                 external/wpt/dir/reftest.html
                 """))
-        adapter = WPTAdapter.from_args(
-            self.host, ['--product=headless_shell', '--no-manifest-update'])
+        adapter = WPTAdapter.from_args(self.host, ['--no-manifest-update'],
+                                       'test-linux-trusty')
         adapter.set_up_derived_options()
         with adapter.test_env() as options:
             self.assertEqual(options.retry_unexpected, 3)
@@ -372,35 +365,38 @@ class WPTAdapterTest(unittest.TestCase):
         # Create default mock smoke test file
         self.fs.write_text_file(
             self.finder.path_from_web_tests('TestLists', 'MacOld.txt'), "")
-        adapter = WPTAdapter.from_args(
-            self.host,
-            ['--product=headless_shell', '--no-manifest-update', '--smoke'])
+        adapter = WPTAdapter.from_args(self.host,
+                                       ['--no-manifest-update', '--smoke'],
+                                       'test-linux-trusty')
         adapter.set_up_derived_options()
         with adapter.test_env() as options:
             self.assertEqual(options.retry_unexpected, 3)
 
-        adapter = WPTAdapter.from_args(self.host, [
-            '--product=headless_shell', '--no-manifest-update',
-            'external/wpt/dir/reftest.html'
-        ])
+        adapter = WPTAdapter.from_args(
+            self.host,
+            ['--no-manifest-update', 'external/wpt/dir/reftest.html'],
+            'test-linux-trusty')
         adapter.set_up_derived_options()
         with adapter.test_env() as options:
             self.assertEqual(options.retry_unexpected, 0)
 
     def test_env_var(self):
         adapter = WPTAdapter.from_args(self.host, [
-            '--product=headless_shell', '--no-manifest-update',
-            '--additional-env-var=NEW_ENV_VAR=new_env_var_value'
-        ])
+            '--no-manifest-update',
+            '--additional-env-var=NEW_ENV_VAR=new_env_var_value',
+        ], 'test-linux-trusty')
         with adapter.test_env():
             self.assertEqual(self.host.environ['NEW_ENV_VAR'],
                              'new_env_var_value')
 
     def test_show_results(self):
-        adapter = WPTAdapter.from_args(self.host, [
-            '--product=headless_shell', '--no-manifest-update',
-            '--build-directory=/mock-checkout/out/Release'
-        ])
+        self.host.filesystem.write_text_file(
+            self.finder.path_from_blink_tools('blinkpy', 'web_tests',
+                                              'results.html'),
+            '<h1>Test run summary</h1> ...')
+        self.host.filesystem.write_text_file(
+            self.finder.path_from_blink_tools('blinkpy', 'web_tests',
+                                              'results.html.version'), '1.0')
         post_run_tasks = mock.Mock()
         self._mocks.enter_context(
             mock.patch('blinkpy.web_tests.port.base.Port.clean_up_test_run',
@@ -408,9 +404,35 @@ class WPTAdapterTest(unittest.TestCase):
         self._mocks.enter_context(
             mock.patch.object(self.host.user, 'open_url',
                               post_run_tasks.open_url))
-        with adapter.test_env() as options:
-            self.results_processor.num_initial_failures = 1
+
+        adapter = WPTAdapter.from_args(self.host, [
+            '--no-manifest-update',
+            '--build-directory=/mock-checkout/out/Release',
+            '--results-directory=/mock-checkout/out/Release',
+        ], 'test-linux-trusty')
+        adapter.processor.process_event({
+            'action': 'test_start',
+            'time': 1000,
+            'thread': 'MainThread',
+            'pid': 128,
+            'source': 'wpt',
+            'test': '/dir/reftest.html',
+        })
+        adapter.processor.process_event({
+            'action': 'test_end',
+            'time': 2000,
+            'thread': 'MainThread',
+            'pid': 128,
+            'source': 'wpt',
+            'test': '/dir/reftest.html',
+            'status': 'FAIL',
+            'expected': 'PASS',
+        })
+        exit_code = adapter.run_tests()
+
+        self.assertEqual(exit_code, 1)
         self.assertNotIn('XDG_CONFIG_HOME', self.host.environ)
+        # Ensure Xvfb is stopped before opening a browser.
         self.assertEqual(post_run_tasks.mock_calls, [
             mock.call.clean_up_test_run(),
             mock.call.open_url('file:///mock-checkout/out/Release/'

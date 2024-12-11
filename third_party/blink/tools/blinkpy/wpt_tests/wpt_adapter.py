@@ -142,7 +142,7 @@ class WPTAdapter:
         self.finder = path_finder.PathFinder(self.fs)
         self.options = options
         self.paths = paths
-        self._processor = WPTResultsProcessor(
+        self.processor = WPTResultsProcessor(
             self.fs,
             self.port,
             artifacts_dir=self.port.artifacts_directory(),
@@ -519,9 +519,9 @@ class WPTAdapter:
             runner_options.test_types = self.options.test_types
             runner_options.retry_unexpected = self.options.num_retries
 
-            self._processor.failure_threshold = self.port.max_allowed_failures(
+            self.processor.failure_threshold = self.port.max_allowed_failures(
                 len(include_tests))
-            self._processor.crash_timeout_threshold = self.port.max_allowed_crash_or_timeouts(
+            self.processor.crash_timeout_threshold = self.port.max_allowed_crash_or_timeouts(
                 len(include_tests))
 
             # sharding is done inside wrapper
@@ -604,6 +604,7 @@ class WPTAdapter:
 
     def run_tests(self) -> int:
         exit_code = 0
+        show_results = self.port.get_option('show_results')
         try:
             with self.test_env() as runner_options:
                 run = _load_entry_point()
@@ -611,11 +612,15 @@ class WPTAdapter:
         except KeyboardInterrupt:
             logger.critical('Harness exited after signal interrupt')
             exit_code = exit_codes.INTERRUPTED_EXIT_STATUS
+            show_results = False
         # Write the partial results for an interrupted run. This also ensures
         # the results directory is rotated next time.
-        self._processor.copy_results_viewer()
-        results_json = self._processor.process_results_json(
+        self.processor.copy_results_viewer()
+        results_json = self.processor.process_results_json(
             self.port.get_option('json_test_results'))
+        if show_results and self.processor.num_initial_failures > 0:
+            self.port.show_results_html_file(
+                self.fs.join(self.port.artifacts_directory(), 'results.html'))
         return exit_code or int(results_json['num_regressions'] > 0)
 
     def _initialize_tmp_dir(self, tmp_dir: str, tests_root: str):
@@ -650,16 +655,12 @@ class WPTAdapter:
         if self.using_upstream_wpt:
             yield
         else:
-            with self._processor.stream_results() as events:
+            with self.processor.stream_results() as events:
                 runner_options.log.add_handler(events.put)
                 yield
         if runner_options.log_wptreport:
-            self._processor.process_wpt_report(
+            self.processor.process_wpt_report(
                 runner_options.log_wptreport[0].name)
-        if (self.port.get_option('show_results')
-                and self._processor.num_initial_failures > 0):
-            self.port.show_results_html_file(
-                self.fs.join(self.port.artifacts_directory(), 'results.html'))
         if self.options.reset_results:
             self._optimize(runner_options)
 

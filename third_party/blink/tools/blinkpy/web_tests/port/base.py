@@ -2130,8 +2130,13 @@ class Port(object):
 
         return clean_env
 
-    def show_results_html_file(self, results_filename):
+    def show_results_html_file(self, results_filename: str):
         """Displays the given HTML file in a user's browser."""
+        if not self._filesystem.isfile(results_filename):
+            # Validate the path here, since `open_url()` on a nonexistent file
+            # will display a 404 error to the user that's opaque to blinkpy.
+            raise ValueError(
+                f'{results_filename!r} should be a path to an HTML file')
         return self.host.user.open_url(
             abspath_to_uri(self.host.platform, results_filename))
 
