@@ -30,6 +30,20 @@ class RankFetcherHelper {
                           ClassificationResultCallback callback);
 
  private:
+  void OnGotModuleInputKeys(SegmentationPlatformService* segmentation_service,
+                            const PredictionOptions& module_prediction_options,
+                            scoped_refptr<InputContext> input_context,
+                            ClassificationResultCallback callback,
+                            std::set<std::string> module_input_keys);
+
+  void OnGotEphemeralInputKeys(
+      SegmentationPlatformService* segmentation_service,
+      const PredictionOptions& module_prediction_options,
+      scoped_refptr<InputContext> input_context,
+      ClassificationResultCallback callback,
+      std::set<std::string> module_input_keys,
+      std::set<std::string> ephemeral_input_keys);
+
   void OnGetModulesRank(SegmentationPlatformService* segmentation_service,
                         scoped_refptr<InputContext> input_context,
                         ClassificationResultCallback callback,
