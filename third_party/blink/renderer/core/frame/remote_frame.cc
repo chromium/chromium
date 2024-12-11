@@ -346,6 +346,12 @@ bool RemoteFrame::DetachImpl(FrameDetachType type) {
   receiver_.reset();
   main_frame_receiver_.reset();
 
+  RemoteFramesByTokenMap& remote_frames_map = GetRemoteFramesMap();
+  auto it =
+      remote_frames_map.find(RemoteFrameToken::Hasher()(GetRemoteFrameToken()));
+  CHECK(it != remote_frames_map.end());
+  remote_frames_map.erase(it);
+
   return true;
 }
 
