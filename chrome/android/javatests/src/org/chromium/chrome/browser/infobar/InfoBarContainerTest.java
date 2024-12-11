@@ -30,6 +30,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -46,6 +47,7 @@ import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -302,6 +304,7 @@ public class InfoBarContainerTest {
     @Test
     @MediumTest
     @Feature({"Browser"})
+    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/40300011
     public void testCloseButton() throws Exception {
         sActivityTestRule.loadUrl(
                 sTestServer.getURL("/chrome/test/data/android/click_listener.html"));
