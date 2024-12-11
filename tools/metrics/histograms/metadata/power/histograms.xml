@@ -1362,20 +1362,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Power.ForegroundThermalState.ChangeEvent.Android"
-    enum="DeviceThermalState" expires_after="2023-10-15">
-  <owner>carlscab@google.com</owner>
-  <owner>eseckler@chromium.org</owner>
-  <owner>khokhlov@google.com</owner>
-  <owner>woa-performance@google.com</owner>
-  <summary>
-    Recorded every time the device thermal state changes while Chrome is a
-    foreground app.
-
-    Only supported on Android.
-  </summary>
-</histogram>
-
 <histogram name="Power.HasPreciseBatteryDischargeGranularity" enum="Boolean"
     expires_after="2024-02-11">
   <owner>pmonette@chromium.org</owner>
