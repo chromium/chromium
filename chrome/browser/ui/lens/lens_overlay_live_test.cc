@@ -52,25 +52,51 @@ namespace {
 using State = LensOverlayController::State;
 using LensOverlayInvocationSource = lens::LensOverlayInvocationSource;
 
+constexpr char kResultsSearchBaseUrl[] = "https://www.google.com/search";
+
 constexpr char kDivWordClass[] = "word";
 constexpr char kDivObjectClass[] = "object";
 
 // Helper script to verify that the overlay WebUI has rendered divs with the CSS
 // class provided.
-constexpr char kFindDivWithClassScript[] = R"(
-      function findDivWithClass(parentElement) {
+constexpr char kFindAndClickDivWithClassScript[] = R"(
+      function findAndClickDivWithClass(parentElement) {
+        const div = parentElement.querySelector('div.' + $1);
         if (parentElement.querySelector('div.' + $1)) {
+            const rect = div.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            div.dispatchEvent(new PointerEvent('pointerdown', {
+              pointerId: 1,
+              button: 0,
+              clientX: centerX,
+              clientY: centerY,
+              isPrimary: true,
+              bubbles: true,
+              composed: true
+            }));
+            div.dispatchEvent(new PointerEvent('pointerup', {
+              pointerId: 1,
+              button: 0,
+              clientX: centerX,
+              clientY: centerY,
+              isPrimary: true,
+              bubbles: true,
+              composed: true
+            }));
             return true;
         }
         for (const child of parentElement.children) {
-            if (findDivWithClass(child) ||
-                (child.shadowRoot && findDivWithClass(child.shadowRoot))) {
+            if (findAndClickDivWithClass(child) ||
+                (child.shadowRoot &&
+                    findAndClickDivWithClass(child.shadowRoot))) {
                 return true;
             }
         }
         return false;
       }
-      findDivWithClass(document.body);
+      findAndClickDivWithClass(document.body);
 )";
 
 const char kNpsUrl[] = "https://www.nps.gov/articles/route-66-overview.htm";
@@ -195,6 +221,41 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
     }));
   }
 
+  // Verifies the side panel opened and loaded a search URL in its iframe.
+  void VerifySidePanelLoaded() {
+    auto* controller = browser()
+                           ->tab_strip_model()
+                           ->GetActiveTab()
+                           ->GetTabFeatures()
+                           ->lens_overlay_controller();
+
+    // Expect the Lens Overlay results panel to open.
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return controller->state() == State::kOverlayAndResults; }));
+    auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
+    ASSERT_TRUE(coordinator->IsSidePanelShowing());
+    ASSERT_EQ(coordinator->GetCurrentEntryId(),
+              SidePanelEntry::Id::kLensOverlayResults);
+
+    // Wait for the panel to finish loading.
+    EXPECT_TRUE(content::WaitForLoadStop(
+        controller->GetSidePanelWebContentsForTesting()));
+
+    // The results frame should be the only child frame of the side panel web
+    // contents.
+    content::RenderFrameHost* results_frame = content::ChildFrameAt(
+        controller->GetSidePanelWebContentsForTesting()->GetPrimaryMainFrame(),
+        0);
+    EXPECT_TRUE(results_frame);
+    EXPECT_TRUE(content::WaitForRenderFrameReady(results_frame));
+
+    // Check the result frame URL matches a valid results URL.
+    EXPECT_THAT(results_frame->GetLastCommittedURL().spec(),
+                testing::MatchesRegex(
+                    std::string(kResultsSearchBaseUrl) +
+                    ".*source=chrome.cr.menu.*&gsc=2&hl=.*&biw=\\d+&bih=\\d+"));
+  }
+
   virtual void SetUpFeatureList() {
     feature_list_.InitAndEnableFeatureWithParameters(
         lens::features::kLensOverlay,
@@ -207,7 +268,7 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedInAndSynced) {
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickText_SignedInAndSynced) {
   std::optional<signin::TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
   // Sign in and sync to opted in test account.
@@ -241,12 +302,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedInAndSynced) {
 
   // Verify that the page returns text that is selectable on the overlay.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return EvalJs(content::JsReplace(kFindDivWithClassScript, kDivWordClass))
+    return EvalJs(content::JsReplace(kFindAndClickDivWithClassScript,
+                                     kDivWordClass))
         .ExtractBool();
   }));
+
+  // After finding and clicking the div, make sure the side panel opens and
+  // loaded a result.
+  VerifySidePanelLoaded();
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedInNotSynced) {
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickText_SignedInNotSynced) {
   std::optional<signin::TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
   // Sign in but do not sync to opted in test account.
@@ -280,12 +346,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedInNotSynced) {
 
   // Verify that the page returns text that is selectable on the overlay.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return EvalJs(content::JsReplace(kFindDivWithClassScript, kDivWordClass))
+    return EvalJs(content::JsReplace(kFindAndClickDivWithClassScript,
+                                     kDivWordClass))
         .ExtractBool();
   }));
+
+  // After finding and clicking the div, make sure the side panel opens and
+  // loaded a result.
+  VerifySidePanelLoaded();
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedOut) {
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickText_SignedOut) {
   // Navigate to a website and wait for paint before starting controller.
   WaitForPaint(kNpsUrl);
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
@@ -312,13 +383,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedOut) {
 
   // Verify that the page returns text that is selectable on the overlay.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return EvalJs(content::JsReplace(kFindDivWithClassScript, kDivWordClass))
+    return EvalJs(content::JsReplace(kFindAndClickDivWithClassScript,
+                                     kDivWordClass))
         .ExtractBool();
   }));
+
+  // After finding and clicking the div, make sure the side panel opens and
+  // loaded a result.
+  VerifySidePanelLoaded();
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
-                       OverlayHasObject_SignedInAndSynced) {
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedInAndSynced) {
   std::optional<signin::TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
   // Sign in and sync to opted in test account.
@@ -352,13 +427,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
 
   // Verify that the page returns objects that is selectable on the overlay.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return EvalJs(content::JsReplace(kFindDivWithClassScript, kDivObjectClass))
+    return EvalJs(content::JsReplace(kFindAndClickDivWithClassScript,
+                                     kDivObjectClass))
         .ExtractBool();
   }));
+
+  // After finding and clicking the div, make sure the side panel opens and
+  // loaded a result.
+  VerifySidePanelLoaded();
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
-                       OverlayHasObject_SignedInNotSynced) {
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedInNotSynced) {
   std::optional<signin::TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
   // Sign in but do not sync to opted in test account.
@@ -392,12 +471,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
 
   // Verify that the page returns objects that is selectable on the overlay.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return EvalJs(content::JsReplace(kFindDivWithClassScript, kDivObjectClass))
+    return EvalJs(content::JsReplace(kFindAndClickDivWithClassScript,
+                                     kDivObjectClass))
         .ExtractBool();
   }));
+
+  // After finding and clicking the div, make sure the side panel opens and
+  // loaded a result.
+  VerifySidePanelLoaded();
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasObject_SignedOut) {
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedOut) {
   // Navigate to a website and wait for paint before starting controller.
   WaitForPaint(kNpsObjectUrl);
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
@@ -424,9 +508,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasObject_SignedOut) {
 
   // Verify that the page returns objects that is selectable on the overlay.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return EvalJs(content::JsReplace(kFindDivWithClassScript, kDivObjectClass))
+    return EvalJs(content::JsReplace(kFindAndClickDivWithClassScript,
+                                     kDivObjectClass))
         .ExtractBool();
   }));
+
+  // After finding and clicking the div, make sure the side panel opens and
+  // loaded a result.
+  VerifySidePanelLoaded();
 }
 
 }  // namespace lens
