@@ -315,13 +315,12 @@ void SyncLoadContext::OnBodyReadable(MojoResult,
     return;
   }
 
-  base::span<const char> chars = base::as_chars(buffer);
   if (!response_->data) {
-    response_->data = SharedBuffer::Create(chars.data(), chars.size());
+    response_->data = SharedBuffer::Create(buffer);
   } else {
-    response_->data->Append(chars.data(), chars.size());
+    response_->data->Append(buffer);
   }
-  body_handle_->EndReadData(chars.size());
+  body_handle_->EndReadData(buffer.size());
   body_watcher_.ArmOrNotify();
 }
 

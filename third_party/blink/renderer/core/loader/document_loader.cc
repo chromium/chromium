@@ -478,7 +478,7 @@ class DocumentLoader::EncodedBodyData : public BodyData {
   }
 
   void Buffer(DocumentLoader* loader) override {
-    loader->data_buffer_->Append(data_.data(), data_.size());
+    loader->data_buffer_->Append(data_);
   }
 
   base::SpanOrSize<const char> EncodedData() const override {
