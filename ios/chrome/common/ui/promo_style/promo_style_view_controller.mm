@@ -8,6 +8,7 @@
 #import "base/check_op.h"
 #import "base/i18n/rtl.h"
 #import "base/notreached.h"
+#import "base/task/thread_pool.h"
 #import "base/time/time.h"
 #import "ios/chrome/common/constants.h"
 #import "ios/chrome/common/string_util.h"
@@ -545,9 +546,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   // Rescale image here as on iPad the view height isn't correctly set before
   // subviews are laid out.
   _calculatingImageSize = YES;
-  self.bannerImageView.image =
-      [self scaleBannerWithCurrentImage:self.bannerImageView.image
-                                 toSize:[self computeBannerImageSize]];
+  [self scaleBannerWithCurrentImage:self.bannerImageView.image
+                             toSize:[self computeBannerImageSize]];
   _calculatingImageSize = NO;
   if (_shouldScrollToBottom) {
     _shouldScrollToBottom = NO;
@@ -703,17 +703,15 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 - (void)setShouldBannerFillTopSpace:(BOOL)shouldBannerFillTopSpace {
   _shouldBannerFillTopSpace = shouldBannerFillTopSpace;
   [self setupBannerConstraints];
-  self.bannerImageView.image =
-      [self scaleBannerWithCurrentImage:self.bannerImageView.image
-                                 toSize:[self computeBannerImageSize]];
+  [self scaleBannerWithCurrentImage:self.bannerImageView.image
+                             toSize:[self computeBannerImageSize]];
 }
 
 - (void)setShouldHideBanner:(BOOL)shouldHideBanner {
   _shouldHideBanner = shouldHideBanner;
   [self setupBannerConstraints];
-  self.bannerImageView.image =
-      [self scaleBannerWithCurrentImage:self.bannerImageView.image
-                                 toSize:[self computeBannerImageSize]];
+  [self scaleBannerWithCurrentImage:self.bannerImageView.image
+                             toSize:[self computeBannerImageSize]];
 }
 
 - (void)setPrimaryActionString:(NSString*)text {
@@ -733,10 +731,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
 - (UIImageView*)bannerImageView {
   if (!_bannerImageView) {
-    _bannerImageView = [[UIImageView alloc]
-        initWithImage:
-            [self scaleBannerWithCurrentImage:nil
-                                       toSize:[self computeBannerImageSize]]];
+    _bannerImageView = [[UIImageView alloc] init];
+    [self scaleBannerWithCurrentImage:nil toSize:[self computeBannerImageSize]];
     _bannerImageView.clipsToBounds = YES;
     _bannerImageView.translatesAutoresizingMaskIntoConstraints = NO;
   }
@@ -1012,19 +1008,35 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   }
 }
 
-// Returns a new UIImage which is `sourceImage` resized to `newSize`. Returns
-// `currentImage` if it is already at the correct size.
-- (UIImage*)scaleBannerWithCurrentImage:(UIImage*)currentImage
-                                 toSize:(CGSize)newSize {
+// Asynchronously updates `self.bannerImageView.image` to `[self bannerImage]`
+// resized to `newSize`. If `currentImage` is already the correct size then
+// `self.bannerImageView.image` is instead set to `currentImage` synchronously.
+- (void)scaleBannerWithCurrentImage:(UIImage*)currentImage
+                             toSize:(CGSize)newSize {
   UIUserInterfaceStyle currentStyle =
       UITraitCollection.currentTraitCollection.userInterfaceStyle;
   if (CGSizeEqualToSize(newSize, currentImage.size) &&
       _bannerStyle == currentStyle) {
-    return currentImage;
+    self.bannerImageView.image = currentImage;
+    return;
   }
 
   _bannerStyle = currentStyle;
-  return ResizeImage([self bannerImage], newSize, ProjectionMode::kAspectFit);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(
+          [](UIImage* bannerImage, CGSize newSize) {
+            return ResizeImage(bannerImage, newSize,
+                               ProjectionMode::kAspectFit);
+          },
+          [self bannerImage], newSize),
+      base::BindOnce(
+          [](UIImageView* bannerImageView, UIImage* resizedBannerImage) {
+            bannerImageView.image = resizedBannerImage;
+          },
+          self.bannerImageView));
 }
 
 - (void)setPrimaryActionButtonFont:(UIButton*)button {
