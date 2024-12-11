@@ -275,16 +275,27 @@ void AttributionReportNetworkSender::OnReportSent(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (app_state_ == base::android::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES) {
-    base::UmaHistogramSparse(
-        "Conversions.HttpResponseOrNetErrorCode.AppBackgrounded",
-        response_or_net_error);
-  } else if (app_state_ ==
-             base::android::APPLICATION_STATE_HAS_DESTROYED_ACTIVITIES) {
-    base::UmaHistogramSparse(
-        "Conversions.HttpResponseOrNetErrorCode.AppDestroyed",
-        response_or_net_error);
+  std::string_view suffix;
+  switch (app_state_) {
+    case base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES:
+      suffix = "AppRunning";
+      break;
+    case base::android::APPLICATION_STATE_HAS_PAUSED_ACTIVITIES:
+      suffix = "AppPaused";
+      break;
+    case base::android::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES:
+      suffix = "AppBackgrounded";
+      break;
+    case base::android::APPLICATION_STATE_HAS_DESTROYED_ACTIVITIES:
+      suffix = "AppDestroyed";
+      break;
+    case base::android::APPLICATION_STATE_UNKNOWN:
+      suffix = "AppStateUnknown";
+      break;
   }
+  base::UmaHistogramSparse(
+      base::StrCat({"Conversions.HttpResponseOrNetErrorCode.", suffix}),
+      response_or_net_error);
 #endif
 
   std::optional<bool> has_trigger_context_id;
