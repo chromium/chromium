@@ -2517,6 +2517,10 @@ TEST_F(AutofillExternalDelegateTest,
                                       SuggestionType::kAddressEntryOnTyping, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.AddressSuggestionOnTyping.AddressFieldTypeUsed", NAME_FULL, 1);
+  // Note that the triggeting field is classified.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AddressSuggestionOnTypingAcceptance.FieldClassication", true,
+      1);
 }
 
 TEST_F(AutofillExternalDelegateTest,

@@ -871,6 +871,18 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram
+    name="Autofill.AddressSuggestionOnTypingAcceptance.FieldClassication"
+    enum="BooleanFieldClassificationType" expires_after="2025-06-13">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Recorded at the acceptance moment, this metric keeps track of whether the
+    field where Autofill on typing suggestion was accepted was classified or
+    not.
+  </summary>
+</histogram>
+
+<histogram
     name="Autofill.AddressTokenVerificationStatusAtProfileUsage.{AddressType}"
     enum="AufofillStructuredTokenVerificationStatus" expires_after="2025-04-13">
   <owner>koerber@google.com</owner>

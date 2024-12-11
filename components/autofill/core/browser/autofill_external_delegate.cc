@@ -897,6 +897,12 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
             "Autofill.AddressSuggestionOnTyping.AddressFieldTypeUsed",
             suggestion.field_by_field_filling_type_used.value(),
             FieldType::MAX_VALID_FIELD_TYPE);
+        const AutofillField* autofill_trigger_field = GetQueriedAutofillField();
+        base::UmaHistogramBoolean(
+            "Autofill.AddressSuggestionOnTypingAcceptance.FieldClassication",
+            autofill_trigger_field &&
+                autofill_trigger_field->Type().GetStorableType() >
+                    FieldType::EMPTY_TYPE);
       }
       break;
     case SuggestionType::kTitle:
