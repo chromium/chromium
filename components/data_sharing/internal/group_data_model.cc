@@ -233,7 +233,6 @@ void GroupDataModel::FetchGroupsFromSDK(
     group_versions[group_id] =
         ComputeVersionToken(*collaboration_group_specifics_opt);
 
-    // TODO(crbug.com/301390275): pass `consistency_token`.
     params.add_group_ids(group_id.value());
     data_sharing_pb::ReadGroupsParams::GroupParams* group_params =
         params.add_group_params();
@@ -285,6 +284,8 @@ void GroupDataModel::OnGroupsFetchedFromSDK(
       if (old_group_data_opt.has_value()) {
         observer.OnGroupUpdated(group_id, base::Time::Now());
       } else {
+        MaybeRecordGroupEvent(group_id, GroupEvent::EventType::kGroupAdded,
+                              base::Time::Now());
         observer.OnGroupAdded(group_id, base::Time::Now());
       }
     }
@@ -355,8 +356,10 @@ void GroupDataModel::MaybeRecordGroupEvent(
     // this should never happen.
     return;
   }
-  // All events except kGroupRemoved should have an affected member.
-  CHECK(event_type == GroupEvent::EventType::kGroupRemoved ||
+  // All events except kGroupAdded and kGroupRemoved should have an affected
+  // member.
+  CHECK(event_type == GroupEvent::EventType::kGroupAdded ||
+        event_type == GroupEvent::EventType::kGroupRemoved ||
         affected_member_gaia_id.has_value());
 
   GroupEvent group_event;

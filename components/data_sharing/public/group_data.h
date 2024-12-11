@@ -103,6 +103,7 @@ struct GroupData {
 
 struct GroupEvent {
   enum class EventType {
+    kGroupAdded,
     kGroupRemoved,
     kMemberRemoved,
     kMemberAdded,
@@ -120,7 +121,7 @@ struct GroupEvent {
 
   EventType event_type;
   GroupId group_id;
-  // Unset for kGroupRemoved events.
+  // Unset for kGroupAdded and kGroupRemoved events.
   std::optional<GaiaId> affected_member_gaia_id;
   base::Time event_time;
 };

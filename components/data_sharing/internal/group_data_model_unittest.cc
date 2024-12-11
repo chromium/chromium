@@ -559,11 +559,13 @@ TEST_F(GroupDataModelTest, ShouldRecordDBInitSuccess) {
 TEST_F(GroupDataModelTest, ShouldRecordGroupEvents) {
   WaitForModelLoaded();
 
+  // Verify that group addition is recorded.
   const GroupId group_id = MimicGroupAddedServerSide("group1");
   WaitForGroupAdded(group_id);
 
-  // Groups additions are not recorded.
-  EXPECT_THAT(model().GetGroupEventsSinceStartup(), IsEmpty());
+  EXPECT_THAT(model().GetGroupEventsSinceStartup(),
+              ElementsAre(GroupEventIs(
+                  group_id, GroupEvent::EventType::kGroupAdded, std::nullopt)));
 
   // Verify that member addition is recorded.
   const GaiaId member_gaia_id("gaia_id");
@@ -572,7 +574,9 @@ TEST_F(GroupDataModelTest, ShouldRecordGroupEvents) {
 
   EXPECT_THAT(
       model().GetGroupEventsSinceStartup(),
-      ElementsAre(GroupEventIs(group_id, GroupEvent::EventType::kMemberAdded,
+      ElementsAre(GroupEventIs(group_id, GroupEvent::EventType::kGroupAdded,
+                               std::nullopt),
+                  GroupEventIs(group_id, GroupEvent::EventType::kMemberAdded,
                                member_gaia_id)));
 
   // Verify that member removal is recorded.
@@ -581,7 +585,9 @@ TEST_F(GroupDataModelTest, ShouldRecordGroupEvents) {
 
   EXPECT_THAT(
       model().GetGroupEventsSinceStartup(),
-      ElementsAre(GroupEventIs(group_id, GroupEvent::EventType::kMemberAdded,
+      ElementsAre(GroupEventIs(group_id, GroupEvent::EventType::kGroupAdded,
+                               std::nullopt),
+                  GroupEventIs(group_id, GroupEvent::EventType::kMemberAdded,
                                member_gaia_id),
                   GroupEventIs(group_id, GroupEvent::EventType::kMemberRemoved,
                                member_gaia_id)));
@@ -592,7 +598,9 @@ TEST_F(GroupDataModelTest, ShouldRecordGroupEvents) {
 
   EXPECT_THAT(
       model().GetGroupEventsSinceStartup(),
-      ElementsAre(GroupEventIs(group_id, GroupEvent::EventType::kMemberAdded,
+      ElementsAre(GroupEventIs(group_id, GroupEvent::EventType::kGroupAdded,
+                               std::nullopt),
+                  GroupEventIs(group_id, GroupEvent::EventType::kMemberAdded,
                                member_gaia_id),
                   GroupEventIs(group_id, GroupEvent::EventType::kMemberRemoved,
                                member_gaia_id),
