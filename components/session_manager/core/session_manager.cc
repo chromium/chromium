@@ -4,6 +4,7 @@
 
 #include "components/session_manager/core/session_manager.h"
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
@@ -133,6 +134,8 @@ void SessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,
 }
 
 void SessionManager::HandleUserSessionStartUpTaskCompleted() {
+  // This method must not be called twice.
+  CHECK(!user_session_start_up_task_completed_);
   user_session_start_up_task_completed_ = true;
   for (auto& observer : observers_) {
     observer.OnUserSessionStartUpTaskCompleted();
