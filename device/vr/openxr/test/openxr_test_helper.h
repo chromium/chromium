@@ -12,7 +12,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/synchronization/lock.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
@@ -281,9 +280,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
 
   std::queue<XrEventDataBuffer> event_queue_;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope
-  RAW_PTR_EXCLUSION device::VRTestHook* test_hook_ GUARDED_BY(lock_) = nullptr;
+  raw_ptr<device::VRTestHook> test_hook_ GUARDED_BY(lock_) = nullptr;
   base::Lock lock_;
 };
 
