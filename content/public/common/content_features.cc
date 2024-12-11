@@ -855,13 +855,12 @@ BASE_FEATURE(kQueueNavigationsWhileWaitingForCommit,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, sends SubresourceResponseStarted IPC only when the user has
-// allowed any HTTPS-related warning exceptions. From field data, (see
-// `SSL.Experimental.SubresourceResponse`), ~100% of subresource notifications
-// are not required, since allowing certificate exceptions by users is a rare
-// event. Hence, if user has never allowed any certificate or HTTP exceptions,
-// notifications are not sent to the browser. Once we start sending these
-// messages, we keep sending them until all exceptions are revoked and browser
-// restart occurs.
+// allowed any HTTPS-related warning exceptions. From field data, ~100% of
+// subresource notifications are not required, since allowing certificate
+// exceptions by users is a rare event. Hence, if user has never allowed any
+// certificate or HTTP exceptions, notifications are not sent to the browser.
+// Once we start sending these messages, we keep sending them until all
+// exceptions are revoked and browser restart occurs.
 BASE_FEATURE(kReduceSubresourceResponseStartedIPC,
              "ReduceSubresourceResponseStartedIPC",
              base::FEATURE_DISABLED_BY_DEFAULT);

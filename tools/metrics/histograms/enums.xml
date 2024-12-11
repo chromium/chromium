@@ -32643,11 +32643,6 @@ Called by update_net_error_codes.py.-->
   <int value="2054" label="rsa_pss_sha512"/>
 </enum>
 
-<enum name="SSLSubresourceResponseType">
-  <int value="0" label="IGNORED_MESSAGE"/>
-  <int value="1" label="PROCESSED_MESSAGE"/>
-</enum>
-
 <enum name="SSOPromoUserAction">
   <int value="0" label="ACTION_DISMISSED"/>
   <int value="1" label="ACTION_ENABLED_SSO_ACCOUNT"/>
