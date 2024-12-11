@@ -37,8 +37,8 @@ namespace {
 class NonElfModule : public ModuleCache::Module {
  public:
   explicit NonElfModule(unwindstack::MapInfo* map_info)
-      : start_(static_cast<uintptr_t>(map_info->start())),
-        size_(static_cast<uintptr_t>(map_info->end() - start_)),
+      : start_(map_info->start()),
+        size_(map_info->end() - start_),
         map_info_name_(map_info->name()) {}
   ~NonElfModule() override = default;
 
@@ -176,9 +176,8 @@ UnwindResult NativeUnwinderAndroid::TryUnwind(
     if (!elf->valid())
       break;
 
-    UnwindStackMemoryAndroid stack_memory(static_cast<uintptr_t>(cur_sp),
-                                          stack_top);
-    uint64_t rel_pc = elf->GetRelPc(cur_pc, map_info);
+    UnwindStackMemoryAndroid stack_memory(cur_sp, stack_top);
+    uintptr_t rel_pc = elf->GetRelPc(cur_pc, map_info);
     bool is_signal_frame = false;
     bool finished = false;
     // map_info->GetElf() may return a valid elf whose memory() is nullptr.
@@ -220,7 +219,7 @@ UnwindResult NativeUnwinderAndroid::TryUnwind(
 
     if (regs->dex_pc() != 0) {
       // Add a frame to represent the dex file.
-      EmitDexFrame(static_cast<uintptr_t>(regs->dex_pc()), arch, stack);
+      EmitDexFrame(regs->dex_pc(), arch, stack);
 
       // Clear the dex pc so that we don't repeat this frame later.
       regs->set_dex_pc(0);
@@ -230,7 +229,7 @@ UnwindResult NativeUnwinderAndroid::TryUnwind(
     // GetExistingModuleForAddress because the unwound-to address may be in a
     // module associated with a different unwinder.
     const ModuleCache::Module* module =
-        module_cache()->GetModuleForAddress(static_cast<uintptr_t>(regs->pc()));
+        module_cache()->GetModuleForAddress(regs->pc());
     stack->emplace_back(regs->pc(), module);
   } while (CanUnwindFrom(stack->back()));
 

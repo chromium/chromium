@@ -54,8 +54,6 @@
 #endif  // ANDROID_ARM64_UNWINDING_SUPPORTED
 
 #if ANDROID_UNWINDING_SUPPORTED
-#include "base/profiler/libunwindstack_unwinder_android.h"
-#include "base/profiler/native_unwinder_android.h"
 #include "chrome/android/modules/stack_unwinder/public/module.h"
 #include "chrome/common/profiler/native_unwinder_android_map_delegate_impl.h"
 
@@ -104,35 +102,34 @@ class ChromeUnwinderCreator {
  private:
   base::MemoryMappedFile chrome_cfi_file_;
 };
-#endif  // ANDROID_ARM32_UNWINDING_SUPPORTED
+#endif                                   // ANDROID_ARM32_UNWINDING_SUPPORTED
 
 #if ANDROID_UNWINDING_SUPPORTED
-std::vector<std::unique_ptr<base::Unwinder>> CreateLibunwindstackUnwinders() {
-  // Ensure that the unwinder initialization occurs off the main thread, since
-  // it involves some additional latency.
+std::vector<std::unique_ptr<base::Unwinder>> CreateLibunwindstackUnwinders(
+    stack_unwinder::Module* const stack_unwinder_module) {
   CHECK_NE(getpid(), gettid());
   std::vector<std::unique_ptr<base::Unwinder>> unwinders;
-  unwinders.push_back(std::make_unique<base::LibunwindstackUnwinderAndroid>());
+  unwinders.push_back(stack_unwinder_module->CreateLibunwindstackUnwinder());
   return unwinders;
 }
 
-std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders() {
-  // Ensure that the unwinder initialization occurs off the main thread, since
-  // it involves some additional latency.
+std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders(
+    stack_unwinder::Module* const stack_unwinder_module) {
   CHECK_NE(getpid(), gettid());
 
 #if ANDROID_ARM64_UNWINDING_SUPPORTED
   // For now, we only use Libunwindstack on 64 bit (no other unwinders).
-  return CreateLibunwindstackUnwinders();
+  return CreateLibunwindstackUnwinders(stack_unwinder_module);
 #else
-  static base::NoDestructor<NativeUnwinderAndroidMapDelegateImpl> map_delegate;
+  static base::NoDestructor<NativeUnwinderAndroidMapDelegateImpl> map_delegate(
+      stack_unwinder_module);
   static base::NoDestructor<ChromeUnwinderCreator> chrome_unwinder_creator;
 
   // Note order matters: the more general unwinder must appear first in the
   // vector.
   std::vector<std::unique_ptr<base::Unwinder>> unwinders;
-  unwinders.push_back(std::make_unique<base::NativeUnwinderAndroid>(
-      reinterpret_cast<uintptr_t>(&__executable_start), map_delegate.get()));
+  unwinders.push_back(stack_unwinder_module->CreateNativeUnwinder(
+      map_delegate.get(), reinterpret_cast<uintptr_t>(&__executable_start)));
   unwinders.push_back(chrome_unwinder_creator->Create());
 
   return unwinders;
@@ -225,10 +222,11 @@ bool AreUnwindPrerequisitesAvailable(
 }
 
 #if ANDROID_UNWINDING_SUPPORTED
-void LoadModule() {
+stack_unwinder::Module* GetOrLoadModule() {
   CHECK(AreUnwindPrerequisitesAvailable(chrome::GetChannel()));
   static base::NoDestructor<std::unique_ptr<stack_unwinder::Module>>
       stack_unwinder_module(stack_unwinder::Module::Load());
+  return stack_unwinder_module.get()->get();
 }
 #endif  // ANDROID_UNWINDING_SUPPORTED
 
@@ -237,8 +235,7 @@ base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory() {
     return base::StackSamplingProfiler::UnwindersFactory();
   }
 #if ANDROID_UNWINDING_SUPPORTED
-  LoadModule();
-  return base::BindOnce(CreateCoreUnwinders);
+  return base::BindOnce(CreateCoreUnwinders, GetOrLoadModule());
 #else   // ANDROID_UNWINDING_SUPPORTED
   return base::StackSamplingProfiler::UnwindersFactory();
 #endif  // ANDROID_UNWINDING_SUPPORTED
@@ -250,7 +247,7 @@ CreateLibunwindstackUnwinderFactory() {
     return base::StackSamplingProfiler::UnwindersFactory();
   }
 #if ANDROID_UNWINDING_SUPPORTED
-  return base::BindOnce(CreateLibunwindstackUnwinders);
+  return base::BindOnce(CreateLibunwindstackUnwinders, GetOrLoadModule());
 #else   // ANDROID_UNWINDING_SUPPORTED
   return base::StackSamplingProfiler::UnwindersFactory();
 #endif  // ANDROID_UNWINDING_SUPPORTED
