@@ -971,7 +971,6 @@ static inline bool HandleElementAttributes(
     const HashMap<AtomicString, AtomicString>& initial_prefix_to_namespace_map,
     ExceptionState& exception_state) {
   for (const auto& attr : attributes) {
-    AtomicString attr_value = ToAtomicString(attr.ValueSpan());
     AtomicString attr_prefix = ToAtomicString(attr.prefix);
     AtomicString attr_uri;
     if (!attr_prefix.empty()) {
@@ -988,10 +987,10 @@ static inline bool HandleElementAttributes(
         if (it != initial_prefix_to_namespace_map.end()) {
           attr_uri = it->value;
         } else {
-          exception_state.ThrowDOMException(DOMExceptionCode::kNamespaceError,
-                                            "Namespace prefix " + attr_prefix +
-                                                " for attribute " + attr_value +
-                                                " is not declared.");
+          exception_state.ThrowDOMException(
+              DOMExceptionCode::kNamespaceError,
+              "Namespace prefix " + attr_prefix + " for attribute " +
+                  ToString(attr.localname) + " is not declared.");
           return false;
         }
       }
@@ -1006,7 +1005,7 @@ static inline bool HandleElementAttributes(
       return false;
     }
     prefixed_attributes.push_back(
-        Attribute(std::move(*parsed_name), attr_value));
+        Attribute(std::move(*parsed_name), ToAtomicString(attr.ValueSpan())));
   }
   return true;
 }
