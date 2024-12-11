@@ -237,6 +237,19 @@ std::optional<SavedTabGroup> TabGroupSyncServiceProxy::GetGroup(
   return group ? std::optional<SavedTabGroup>(*group) : std::nullopt;
 }
 
+std::optional<SavedTabGroup> TabGroupSyncServiceProxy::GetGroup(
+    const EitherGroupID& either_id) const {
+  const SavedTabGroup* group = nullptr;
+
+  if (std::holds_alternative<LocalTabGroupID>(either_id)) {
+    group = service_->model()->Get(std::get<LocalTabGroupID>(either_id));
+  } else {
+    group = service_->model()->Get(std::get<base::Uuid>(either_id));
+  }
+
+  return group ? std::make_optional<SavedTabGroup>(*group) : std::nullopt;
+}
+
 std::vector<LocalTabGroupID> TabGroupSyncServiceProxy::GetDeletedGroupIds()
     const {
   NOTIMPLEMENTED();

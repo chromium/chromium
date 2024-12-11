@@ -638,6 +638,19 @@ std::optional<SavedTabGroup> TabGroupSyncServiceImpl::GetGroup(
                    : std::nullopt;
 }
 
+std::optional<SavedTabGroup> TabGroupSyncServiceImpl::GetGroup(
+    const EitherGroupID& either_id) const {
+  const SavedTabGroup* tab_group = nullptr;
+  if (std::holds_alternative<LocalTabGroupID>(either_id)) {
+    tab_group = model_->Get(std::get<LocalTabGroupID>(either_id));
+  } else {
+    tab_group = model_->Get(std::get<base::Uuid>(either_id));
+  }
+
+  return tab_group ? std::make_optional<SavedTabGroup>(*tab_group)
+                   : std::nullopt;
+}
+
 std::vector<LocalTabGroupID> TabGroupSyncServiceImpl::GetDeletedGroupIds()
     const {
   return GetDeletedGroupIdsFromPref();

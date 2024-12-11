@@ -212,6 +212,8 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
       const base::Uuid& guid) const = 0;
   virtual std::optional<SavedTabGroup> GetGroup(
       const LocalTabGroupID& local_id) const = 0;
+  virtual std::optional<SavedTabGroup> GetGroup(
+      const EitherGroupID& either_id) const = 0;
   virtual std::vector<LocalTabGroupID> GetDeletedGroupIds() const = 0;
 
   // Method invoked from UI to open a remote tab group in the local tab model.

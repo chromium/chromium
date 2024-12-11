@@ -108,6 +108,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   std::optional<SavedTabGroup> GetGroup(const base::Uuid& guid) const override;
   std::optional<SavedTabGroup> GetGroup(
       const LocalTabGroupID& local_id) const override;
+  std::optional<SavedTabGroup> GetGroup(
+      const EitherGroupID& either_id) const override;
   std::vector<LocalTabGroupID> GetDeletedGroupIds() const override;
   void OpenTabGroup(const base::Uuid& sync_group_id,
                     std::unique_ptr<TabGroupActionContext> context) override;

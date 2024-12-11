@@ -280,6 +280,22 @@ std::optional<SavedTabGroup> FakeTabGroupSyncService::GetGroup(
   return std::make_optional(groups_[index.value()]);
 }
 
+std::optional<SavedTabGroup> FakeTabGroupSyncService::GetGroup(
+    const EitherGroupID& either_id) const {
+  std::optional<int> index;
+
+  if (std::holds_alternative<LocalTabGroupID>(either_id)) {
+    index = GetIndexOf(std::get<LocalTabGroupID>(either_id));
+  } else {
+    index = GetIndexOf(std::get<base::Uuid>(either_id));
+  }
+
+  if (!index.has_value()) {
+    return std::nullopt;
+  }
+  return std::make_optional(groups_[index.value()]);
+}
+
 std::vector<LocalTabGroupID> FakeTabGroupSyncService::GetDeletedGroupIds()
     const {
   std::vector<LocalTabGroupID> deleted_group_ids;

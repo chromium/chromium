@@ -379,6 +379,28 @@ TEST_F(TabGroupSyncServiceTest, GetGroup) {
   test::CompareSavedTabGroupTabs(group->saved_tabs(), group_1_.saved_tabs());
 }
 
+TEST_F(TabGroupSyncServiceTest, GetGroupEitherId) {
+  EitherGroupID either_id;
+
+  // When holding a sync group id.
+  either_id = group_1_.saved_guid();
+  auto group = tab_group_sync_service_->GetGroup(either_id);
+  EXPECT_TRUE(group.has_value());
+  EXPECT_EQ(group->saved_guid(), group_1_.saved_guid());
+  EXPECT_EQ(group->title(), group_1_.title());
+  EXPECT_EQ(group->color(), group_1_.color());
+  test::CompareSavedTabGroupTabs(group->saved_tabs(), group_1_.saved_tabs());
+
+  // When holding a local group id.
+  either_id = local_group_id_1_;
+  group = tab_group_sync_service_->GetGroup(either_id);
+  EXPECT_TRUE(group.has_value());
+  EXPECT_EQ(group->saved_guid(), group_1_.saved_guid());
+  EXPECT_EQ(group->title(), group_1_.title());
+  EXPECT_EQ(group->color(), group_1_.color());
+  test::CompareSavedTabGroupTabs(group->saved_tabs(), group_1_.saved_tabs());
+}
+
 TEST_F(TabGroupSyncServiceTest, GetDeletedGroupIdsUsingPrefs) {
   // Delete a group from sync. It should add the deleted ID to the pref.
   model_->RemovedFromSync(group_1_.saved_guid());
