@@ -1507,8 +1507,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSafelistFTPToRegisterProtocolHandler);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kSafelistPaytoToRegisterProtocolHandler);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSaveDataImgSrcset);
-
 // When enabled, only pages that belong to a certain browsing context group are
 // paused instead of all pages.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPausePagesPerBrowsingContextGroup);

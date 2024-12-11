@@ -2320,12 +2320,6 @@ BASE_FEATURE(kSafelistPaytoToRegisterProtocolHandler,
              "SafelistPaytoToRegisterProtocolHandler",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// A feature to enable using the smallest image specified within image srcset
-// for users with Save Data enabled.
-BASE_FEATURE(kSaveDataImgSrcset,
-             "SaveDataImgSrcset",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPausePagesPerBrowsingContextGroup,
              "PausePagesPerBrowsingContextGroup",
              base::FEATURE_DISABLED_BY_DEFAULT);

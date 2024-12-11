@@ -38,8 +38,6 @@
 
 #include <algorithm>
 
-#include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/platform/web_network_state_notifier.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -473,10 +471,7 @@ static ImageCandidate PickBestImageCandidate(
   }
 
   unsigned winner =
-      blink::WebNetworkStateNotifier::SaveDataEnabled() &&
-              base::FeatureList::IsEnabled(blink::features::kSaveDataImgSrcset)
-          ? 0
-          : SelectionLogic(de_duped_image_candidates, device_scale_factor);
+      SelectionLogic(de_duped_image_candidates, device_scale_factor);
   DCHECK_LT(winner, de_duped_image_candidates.size());
   winner = AvoidDownloadIfHigherDensityResourceIsInCache(
       de_duped_image_candidates, winner, document);
