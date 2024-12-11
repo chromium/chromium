@@ -803,9 +803,6 @@ enum class ToolbarKind {
   [_quickDeleteCoordinator stop];
   _quickDeleteCoordinator = nil;
 
-  [self.viewController clearPresentedStateWithCompletion:completion
-                                          dismissOmnibox:dismissOmnibox];
-
   [_addContactsCoordinator stop];
   _addContactsCoordinator = nil;
 
@@ -816,6 +813,9 @@ enum class ToolbarKind {
   [self dismissEnhancedSafeBrowsingPromo];
 
   [self dismissAccountMenu];
+
+  [self.viewController clearPresentedStateWithCompletion:completion
+                                          dismissOmnibox:dismissOmnibox];
 }
 
 #pragma mark - Private
