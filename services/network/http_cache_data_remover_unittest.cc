@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -53,7 +54,7 @@ MakeHttpCacheDataRemoverCallback(base::OnceClosure callback) {
       std::move(callback));
 }
 
-constexpr CacheTestEntry kCacheEntries[] = {
+constexpr const auto kCacheEntries = std::to_array<CacheTestEntry>({
     {"http://www.google.com", "15 Jun 1975"},
     {"https://www.google.com", "15 Jun 1985"},
     {"http://www.wikipedia.com", "15 Jun 1995"},
@@ -61,7 +62,8 @@ constexpr CacheTestEntry kCacheEntries[] = {
     {"http://localhost:1234/mysite", "15 Jun 2015"},
     {"https://localhost:1234/mysite", "15 Jun 2016"},
     {"http://localhost:3456/yoursite", "15 Jun 2017"},
-    {"https://localhost:3456/yoursite", "15 Jun 2018"}};
+    {"https://localhost:3456/yoursite", "15 Jun 2018"},
+});
 
 mojom::NetworkContextParamsPtr CreateContextParams() {
   mojom::NetworkContextParamsPtr params = mojom::NetworkContextParams::New();

@@ -10,6 +10,7 @@
 #include "services/network/http_cache_data_counter.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -50,7 +51,7 @@ struct CacheTestEntry {
   int size;
 };
 
-constexpr CacheTestEntry kCacheEntries[] = {
+constexpr const auto kCacheEntries = std::to_array<CacheTestEntry>({
     {"http://www.google.com", "15 Jun 1975", 1024},
     {"https://www.google.com", "15 Jun 1985", 2048},
     {"http://www.wikipedia.com", "15 Jun 1995", 4096},
@@ -58,7 +59,8 @@ constexpr CacheTestEntry kCacheEntries[] = {
     {"http://localhost:1234/mysite", "15 Jun 2015", 16384},
     {"https://localhost:1234/mysite", "15 Jun 2016", 32768},
     {"http://localhost:3456/yoursite", "15 Jun 2017", 65536},
-    {"https://localhost:3456/yoursite", "15 Jun 2018", 512}};
+    {"https://localhost:3456/yoursite", "15 Jun 2018", 512},
+});
 
 mojom::NetworkContextParamsPtr CreateContextParams() {
   mojom::NetworkContextParamsPtr params =

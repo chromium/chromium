@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/cookie_manager.h"
 
 #include <algorithm>
+#include <array>
 #include <vector>
 
 #include "base/files/scoped_temp_dir.h"
@@ -1717,7 +1713,8 @@ TEST_F(CookieManagerTest, DeleteDetails_Consumer) {
     std::string domain;
     std::string path;
     bool expect_delete;
-  } test_cases[] = {
+  };
+  auto test_cases = std::to_array<TestCase>({
       // We match any URL on the specified domains.
       {"www.google.com", "/foo/bar", true},
       {"www.sub.google.com", "/foo/bar", true},
@@ -1744,7 +1741,7 @@ TEST_F(CookieManagerTest, DeleteDetails_Consumer) {
 
       // Check both a bare eTLD.
       {"sp.nom.br", "/", false},
-  };
+  });
 
   mojom::CookieDeletionFilter clear_filter;
   for (int i = 0; i < static_cast<int>(std::size(test_cases)); ++i) {

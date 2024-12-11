@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/network_context.h"
 
 #include <algorithm>
+#include <array>
 #include <initializer_list>
 #include <map>
 #include <memory>
@@ -2269,14 +2265,15 @@ TEST_F(NetworkContextTest, ClearCorsPreflightCache) {
     const char* origin;
     const char* url;
   };
-  constexpr CacheTestEntry kCacheEntries[] = {
+  constexpr const auto kCacheEntries = std::to_array<CacheTestEntry>({
       {"http://www.origin1.com:80", "http://www.test.com/A"},
       {"http://www.origin2.com:80", "http://www.test.com/B"},
       {"http://www.origin3.com:80", "http://www.test.com/C"},
       {"http://www.origin4.com:80", "http://www.test.com/D"},
       {"http://A.origin.com:80", "http://www.test.com/A"},
       {"http://A.origin.com:8080", "http://www.test.com/A"},
-      {"http://B.origin.com:80", "http://www.test.com/B"}};
+      {"http://B.origin.com:80", "http://www.test.com/B"},
+  });
   // Each bit corresponds to one of the cache entries above.
   enum Entries {
     NO_ENTRY = 0x0,
@@ -2397,12 +2394,12 @@ TEST_F(NetworkContextTest, ClearCorsPreflightCache) {
 
 TEST_F(NetworkContextTest, ClearHostCache) {
   // List of domains added to the host cache before running each test case.
-  const char* kDomains[] = {
+  auto kDomains = std::to_array<const char*>({
       "domain0",
       "domain1",
       "domain2",
       "domain3",
-  };
+  });
 
   // Each bit corresponds to one of the 4 domains above.
   enum Domains {
@@ -3262,7 +3259,8 @@ TEST_F(NetworkContextTest, ProxyConfig) {
     net::ProxyConfig proxy_config;
     net::ProxyInfo http_proxy_info;
     net::ProxyInfo ftp_proxy_info;
-  } proxy_config_sets[3];
+  };
+  std::array<ProxyConfigSet, 3> proxy_config_sets;
 
   proxy_config_sets[0].proxy_config.proxy_rules().ParseFromString(
       "http=foopy:80");
@@ -6336,7 +6334,8 @@ TEST_F(NetworkContextTest, EnsureProperProxyChainIsUsed) {
     net::ProxyConfig proxy_config;
     GURL url;
     net::ProxyChain expected_proxy_chain;
-  } proxy_config_set[2];
+  };
+  std::array<ProxyConfigSet, 2> proxy_config_set;
 
   proxy_config_set[0].proxy_config.proxy_rules().ParseFromString(
       "http=" + test_server.host_port_pair().ToString());
