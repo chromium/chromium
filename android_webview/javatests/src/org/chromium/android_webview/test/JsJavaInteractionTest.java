@@ -26,7 +26,8 @@ import org.chromium.android_webview.WebMessageListener;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedTitleHelper;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
@@ -42,7 +43,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /** Test suite for JavaScript Java interaction. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-@Batch(Batch.PER_CLASS)
+@DoNotBatch(reason = "https://crbug.com/383517164")
 public class JsJavaInteractionTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
@@ -939,6 +940,7 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
+    @DisabledTest(message = "The test was very flaky, see https://crbug.com/383517164")
     public void testJsObjectRemoveOnMessage() throws Throwable {
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
 
