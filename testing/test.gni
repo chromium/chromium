@@ -1181,6 +1181,9 @@ template("script_test") {
   if (defined(invoker.data_deps)) {
     _shared_data_deps += invoker.data_deps
   }
+  if (use_rts) {
+    _shared_data_deps += [ ":${invoker.target_name}__rts_filters" ]
+  }
 
   _wrapped_script =
       "@WrappedPath(" + rebase_path(invoker.script, root_build_dir) + ")"
