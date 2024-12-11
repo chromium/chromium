@@ -6,6 +6,7 @@
     "libs/com_google_android_annotations",
     "libs/com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework",
     "libs/com_google_android_datatransport_transport_api",
+    "libs/com_google_android_gms_play_services_ads_identifier",
     "libs/com_google_android_gms_play_services_auth",
     "libs/com_google_android_gms_play_services_auth_api_phone",
     "libs/com_google_android_gms_play_services_auth_base",
