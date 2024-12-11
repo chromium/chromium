@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.RunOnNextLayout;
 import org.chromium.chrome.browser.hub.RunOnNextLayoutDelegate;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
@@ -98,13 +97,9 @@ class TabListRecyclerView extends RecyclerView
     }
 
     void setupCustomItemAnimator() {
-        // Kill switch is defaulted to enabled and can be shut off to false via config if issues are
-        // discovered.
-        if (ChromeFeatureList.sGtsCloseTabAnimationKillSwitch.isEnabled()) {
-            if (mTabListItemAnimator == null) {
-                mTabListItemAnimator = new TabListItemAnimator();
-                setItemAnimator(mTabListItemAnimator);
-            }
+        if (mTabListItemAnimator == null) {
+            mTabListItemAnimator = new TabListItemAnimator();
+            setItemAnimator(mTabListItemAnimator);
         }
     }
 
