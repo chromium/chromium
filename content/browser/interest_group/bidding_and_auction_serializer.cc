@@ -986,10 +986,7 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
   message_elements_size +=
       TaggedStringLength(constexpr_strlen("interestGroups"));
 
-  const size_t framing_size =
-      kFramingHeaderSize + kOhttpHeaderSize +
-      (base::FeatureList::IsEnabled(kBiddingAndAuctionEncryptionMediaType) ? 1
-                                                                           : 0);
+  const size_t framing_size = kFramingHeaderSize + kOhttpHeaderSize + 1;
   const base::CheckedNumeric<size_t> total_size_before_groups =
       TaggedMapLength(message_obj,
                       message_elements_size + 1 +

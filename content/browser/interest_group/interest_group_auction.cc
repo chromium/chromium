@@ -108,14 +108,6 @@
 
 namespace content {
 
-// The BiddingAndAuctionEncryptionMediaType feature controls the format we use
-// for the request to the Bidding and Auction Service. When enabled we add an
-// extra byte to the request and use the new media types instead of the
-// defaults from libquiche.
-CONTENT_EXPORT BASE_FEATURE(kBiddingAndAuctionEncryptionMediaType,
-                            "BiddingAndAuctionEncryptionMediaType",
-                            base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 constexpr base::TimeDelta kMaxPerBuyerTimeout = base::Milliseconds(500);
@@ -3387,9 +3379,7 @@ bool InterestGroupAuction::HandleServerResponseImpl(
           std::string(reinterpret_cast<char*>(response.data()),
                       response.size()),
           request_context->context,
-          base::FeatureList::IsEnabled(kBiddingAndAuctionEncryptionMediaType)
-              ? kBiddingAndAuctionEncryptionResponseMediaType
-              : quiche::ObliviousHttpHeaderKeyConfig::kOhttpResponseLabel);
+          kBiddingAndAuctionEncryptionResponseMediaType);
   if (!maybe_response.ok()) {
     // We couldn't decrypt the response.
     saved_response_.emplace();

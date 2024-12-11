@@ -69,8 +69,6 @@ class InterestGroupManagerImpl;
 class PrivateAggregationManager;
 struct SignedAdditionalBidSignature;
 
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kBiddingAndAuctionEncryptionMediaType);
-
 inline constexpr std::string_view kBiddingAndAuctionEncryptionRequestMediaType =
     "message/auction request";
 inline constexpr std::string_view
