@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/jni_zero/jni_zero.gni")
+
 static_library("ui") {
   sources = [
     "currency_formatter_android.cc",
@@ -9,8 +11,23 @@ static_library("ui") {
   ]
 
   deps = [
+    ":jni_headers",
     "//base",
-    "//components/payments/content/android:jni_headers",
     "//components/payments/core",
   ]
+}
+
+generate_jni("jni_headers") {
+  sources =
+      [ "java/src/org/chromium/components/payments/ui/CurrencyFormatter.java" ]
+}
+
+android_library("java") {
+  sources =
+      [ "java/src/org/chromium/components/payments/ui/CurrencyFormatter.java" ]
+  deps = [
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+  srcjar_deps = [ ":jni_headers" ]
 }

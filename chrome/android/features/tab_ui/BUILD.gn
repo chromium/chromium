@@ -163,7 +163,7 @@ android_library("unit_device_javatests") {
     "//components/data_sharing/public:public_java",
     "//components/embedder_support/android:util_java",
     "//components/optimization_guide/proto:optimization_guide_proto_java",
-    "//components/payments/content/android:full_java",
+    "//components/payments/content/android/ui:java",
     "//components/saved_tab_groups/public:java",
     "//components/tab_groups:tab_groups_java",
     "//content/public/android:content_full_java",

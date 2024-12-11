@@ -46,7 +46,7 @@ include_rules = [
   "+components/omnibox/browser/android/java/src/org/chromium/components/omnibox",
   "+components/paint_preview/browser/android",
   "+components/paint_preview/player/android",
-  "+components/payments/content/android/java/src/org/chromium/components/payments",
+  "+components/payments/content/android/ui/java/src/org/chromium/components/payments/ui",
   "+components/payments/content/android/junit/src/org/chromium/components/payments/test_support",
   "+components/permissions/android/java/src/org/chromium/components/permissions",
   "+components/safe_browsing/android/java/src/org/chromium/components/safe_browsing",
