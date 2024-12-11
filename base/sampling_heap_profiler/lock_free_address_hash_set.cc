@@ -62,4 +62,18 @@ void LockFreeAddressHashSet::Copy(const LockFreeAddressHashSet& other) {
   }
 }
 
+std::vector<size_t> LockFreeAddressHashSet::GetBucketLengths() const {
+  std::vector<size_t> lengths;
+  lengths.reserve(buckets_.size());
+  for (const std::atomic<Node*>& bucket : buckets_) {
+    size_t length = 0;
+    for (Node* node = bucket.load(std::memory_order_relaxed); node != nullptr;
+         node = node->next) {
+      ++length;
+    }
+    lengths.push_back(length);
+  }
+  return lengths;
+}
+
 }  // namespace base

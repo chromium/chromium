@@ -115,6 +115,19 @@ chromium-metrics-reviews@google.com.
   <token key="Process" variants="ProfiledProcess"/>
 </histogram>
 
+<histogram
+    name="HeapProfiling.InProcess.SampledAddressCacheBucketLengths{Process}"
+    units="nodes" expires_after="2025-04-13">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    The length of the node list in each bucket of PoissonAllocationSampler's
+    hash set in {Process}. Emitted for each bucket each time a snapshot is taken
+    when the in-process heap profiler is enabled.
+  </summary>
+  <token key="Process" variants="ProfiledProcess"/>
+</histogram>
+
 <histogram name="HeapProfiling.InProcess.SampledAddressCacheHitCount{Process}"
     units="hits" expires_after="2025-04-13">
   <owner>joenotcharles@google.com</owner>

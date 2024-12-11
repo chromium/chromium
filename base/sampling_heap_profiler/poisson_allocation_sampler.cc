@@ -93,6 +93,26 @@ ThreadLocalData* GetThreadLocalData() {
 
 }  // namespace
 
+PoissonAllocationSamplerStats::PoissonAllocationSamplerStats(
+    size_t address_cache_hits,
+    size_t address_cache_misses,
+    size_t address_cache_max_size,
+    float address_cache_max_load_factor,
+    std::vector<size_t> address_cache_bucket_lengths)
+    : address_cache_hits(address_cache_hits),
+      address_cache_misses(address_cache_misses),
+      address_cache_max_size(address_cache_max_size),
+      address_cache_max_load_factor(address_cache_max_load_factor),
+      address_cache_bucket_lengths(std::move(address_cache_bucket_lengths)) {}
+
+PoissonAllocationSamplerStats::~PoissonAllocationSamplerStats() = default;
+
+PoissonAllocationSamplerStats::PoissonAllocationSamplerStats(
+    const PoissonAllocationSamplerStats&) = default;
+
+PoissonAllocationSamplerStats& PoissonAllocationSamplerStats::operator=(
+    const PoissonAllocationSamplerStats&) = default;
+
 PoissonAllocationSampler::ScopedMuteThreadSamples::ScopedMuteThreadSamples() {
   ThreadLocalData* const thread_local_data = GetThreadLocalData();
 
@@ -210,15 +230,12 @@ size_t PoissonAllocationSampler::SamplingInterval() const {
 
 PoissonAllocationSamplerStats PoissonAllocationSampler::GetAndResetStats() {
   AutoLock lock(mutex_);
-  return PoissonAllocationSamplerStats{
-      .address_cache_hits =
-          address_cache_hits_.exchange(0, std::memory_order_relaxed),
-      .address_cache_misses =
-          address_cache_misses_.exchange(0, std::memory_order_relaxed),
-      .address_cache_max_size = std::exchange(address_cache_max_size_, 0),
-      .address_cache_max_load_factor =
-          std::exchange(address_cache_max_load_factor_, 0.0),
-  };
+  return PoissonAllocationSamplerStats(
+      address_cache_hits_.exchange(0, std::memory_order_relaxed),
+      address_cache_misses_.exchange(0, std::memory_order_relaxed),
+      std::exchange(address_cache_max_size_, 0),
+      std::exchange(address_cache_max_load_factor_, 0.0),
+      sampled_addresses_set().GetBucketLengths());
 }
 
 // static

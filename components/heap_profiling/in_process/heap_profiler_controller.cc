@@ -476,6 +476,13 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
           "HeapProfiling.InProcess.SampledAddressCacheMaxLoadFactor",
           process_type),
       100 * profiler_stats.address_cache_max_load_factor);
+  for (size_t bucket_length : profiler_stats.address_cache_bucket_lengths) {
+    base::UmaHistogramCounts100(
+        ProcessHistogramName(
+            "HeapProfiling.InProcess.SampledAddressCacheBucketLengths",
+            process_type),
+        bucket_length);
+  }
   // Also summarize over all process types.
   base::UmaHistogramCounts100000("HeapProfiling.InProcess.SamplesPerSnapshot",
                                  samples.size());
@@ -490,6 +497,11 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
   base::UmaHistogramPercentage(
       "HeapProfiling.InProcess.SampledAddressCacheMaxLoadFactor",
       100 * profiler_stats.address_cache_max_load_factor);
+  for (size_t bucket_length : profiler_stats.address_cache_bucket_lengths) {
+    base::UmaHistogramCounts100(
+        "HeapProfiling.InProcess.SampledAddressCacheBucketLengths",
+        bucket_length);
+  }
 
   base::ModuleCache module_cache;
   sampling_profiler::CallStackProfileParams params(

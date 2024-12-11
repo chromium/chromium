@@ -72,6 +72,10 @@ class BASE_EXPORT LockFreeAddressHashSet {
   // Returns the average bucket utilization.
   float load_factor() const { return 1.f * size() / buckets_.size(); }
 
+  // Returns the lengths of all buckets. Must not be called concurrently with
+  // |Insert|, |Remove| or |Copy|.
+  std::vector<size_t> GetBucketLengths() const;
+
  private:
   friend class LockFreeAddressHashSetTest;
 

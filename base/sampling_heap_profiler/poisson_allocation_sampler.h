@@ -26,10 +26,23 @@ class SamplingHeapProfilerTest;
 
 // Stats about the allocation sampler.
 struct BASE_EXPORT PoissonAllocationSamplerStats {
-  size_t address_cache_hits = 0;
-  size_t address_cache_misses = 0;
-  size_t address_cache_max_size = 0;
-  float address_cache_max_load_factor = 0.0;
+  PoissonAllocationSamplerStats(
+      size_t address_cache_hits,
+      size_t address_cache_misses,
+      size_t address_cache_max_size,
+      float address_cache_max_load_factor,
+      std::vector<size_t> address_cache_bucket_lengths);
+  ~PoissonAllocationSamplerStats();
+
+  PoissonAllocationSamplerStats(const PoissonAllocationSamplerStats&);
+  PoissonAllocationSamplerStats& operator=(
+      const PoissonAllocationSamplerStats&);
+
+  size_t address_cache_hits;
+  size_t address_cache_misses;
+  size_t address_cache_max_size;
+  float address_cache_max_load_factor;
+  std::vector<size_t> address_cache_bucket_lengths;
 };
 
 // This singleton class implements Poisson sampling of the incoming allocations
