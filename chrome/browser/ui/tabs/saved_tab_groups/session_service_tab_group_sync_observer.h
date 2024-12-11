@@ -20,6 +20,8 @@ class TabStripModel;
 
 namespace tab_groups {
 
+class TabGroupSyncService;
+
 // This class listens and is notified by the the SavedTabGroupModel /
 // TabGroupSyncService::Observer. When notified, we check if the TabStripModel
 // contains the affected tabs / groups. If not we disregard the changes.
@@ -66,6 +68,9 @@ class SessionServiceTabGroupSyncObserver
   // The SessionID used to determine which browser we should write changes to in
   // the session service.
   SessionID session_id_;
+
+  // The service providing data for SavedTabGroups.
+  raw_ptr<TabGroupSyncService> service_ = nullptr;
 };
 
 }  // namespace tab_groups

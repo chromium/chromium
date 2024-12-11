@@ -102,7 +102,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
     if (browser->GetProfile()->IsRegularProfile() &&
         tab_groups::IsTabGroupsSaveV2Enabled() &&
-        browser->GetTabStripModel()->SupportsTabGroups()) {
+        browser->GetTabStripModel()->SupportsTabGroups() &&
+        tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+            browser->GetProfile())) {
       session_service_tab_group_sync_observer_ =
           std::make_unique<tab_groups::SessionServiceTabGroupSyncObserver>(
               browser->GetProfile(), browser->GetTabStripModel(),
