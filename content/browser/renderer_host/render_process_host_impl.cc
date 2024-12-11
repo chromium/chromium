@@ -1167,11 +1167,6 @@ void InvokeStableVideoDecoderEventCB(
 }
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
-// Kill-switch for the new CHECKs from https://crrev.com/c/4134809.
-BASE_FEATURE(kCheckNoNewRefCountsWhenRphDeletingSoon,
-             "CheckNoNewRefCountsWhenRphDeletingSoon",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if !BUILDFLAG(IS_ANDROID)
 // Enables kUserVisible process priority. Otherwise when feature is disabled,
 // Priority::kUserVisible has same behavior as Priority::kUserBlocking.
@@ -2575,9 +2570,7 @@ base::Process::Priority RenderProcessHostImpl::GetPriority() const {
 void RenderProcessHostImpl::IncrementKeepAliveRefCount(uint64_t handle_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(!are_ref_counts_disabled_);
-  if (base::FeatureList::IsEnabled(kCheckNoNewRefCountsWhenRphDeletingSoon)) {
-    CHECK(!deleting_soon_);
-  }
+  CHECK(!deleting_soon_);
   CHECK(IsKeepAliveRefCountAllowed());
   ++keep_alive_ref_count_;
   DCHECK(!keep_alive_start_times_.contains(handle_id));
@@ -2608,9 +2601,7 @@ void RenderProcessHostImpl::DecrementKeepAliveRefCount(uint64_t handle_id) {
 void RenderProcessHostImpl::IncrementPendingReuseRefCount() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(!are_ref_counts_disabled_);
-  if (base::FeatureList::IsEnabled(kCheckNoNewRefCountsWhenRphDeletingSoon)) {
-    CHECK(!deleting_soon_);
-  }
+  CHECK(!deleting_soon_);
   ++pending_reuse_ref_count_;
 }
 
@@ -2709,9 +2700,7 @@ void RenderProcessHostImpl::UnregisterRenderFrameHost(
 void RenderProcessHostImpl::IncrementWorkerRefCount() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(!are_ref_counts_disabled_);
-  if (base::FeatureList::IsEnabled(kCheckNoNewRefCountsWhenRphDeletingSoon)) {
-    CHECK(!deleting_soon_);
-  }
+  CHECK(!deleting_soon_);
   ++worker_ref_count_;
 }
 
@@ -2790,9 +2779,7 @@ void RenderProcessHostImpl::AddRoute(int32_t routing_id,
                                   ->set_render_process_host_listener_changed();
                 proto->set_routing_id(routing_id);
               });
-  if (base::FeatureList::IsEnabled(kCheckNoNewRefCountsWhenRphDeletingSoon)) {
-    CHECK(!deleting_soon_);
-  }
+  CHECK(!deleting_soon_);
   CHECK(!listeners_.Lookup(routing_id))
       << "Found Routing ID Conflict: " << routing_id;
   listeners_.AddWithID(listener, routing_id);
