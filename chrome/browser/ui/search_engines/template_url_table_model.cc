@@ -187,7 +187,7 @@ void TemplateURLTableModel::SetObserver(ui::TableModelObserver* observer) {
 std::u16string TemplateURLTableModel::GetKeywordToDisplay(size_t row) {
   std::u16string keyword =
       GetText(row, IDS_SEARCH_ENGINES_EDITOR_KEYWORD_COLUMN);
-  return template_url_service_->FeaturedOverridesNonFeatured(entries_[row])
+  return template_url_service_->BothPolicySetKeywordsNotOverriden(entries_[row])
              ? base::JoinString({keyword, std::u16string(keyword, 1)}, u", ")
              : keyword;
 }

@@ -200,7 +200,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // Returns true if `template_url` corresponds to a featured Enterprise site
   // search engine (e.g. with keyword "@work") that hides the corresponding
   // non-featured engine (e.g. with keyword "work") in the Settings page.
-  bool FeaturedOverridesNonFeatured(const TemplateURL* template_url) const;
+  bool BothPolicySetKeywordsNotOverriden(const TemplateURL* template_url) const;
 
   // Adds to |matches| all TemplateURLs whose keywords begin with |prefix|,
   // sorted shortest-keyword-first. If |supports_replacement_only| is true, only

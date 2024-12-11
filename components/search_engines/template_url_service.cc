@@ -557,13 +557,16 @@ bool TemplateURLService::HiddenFromLists(const TemplateURL* t_url) const {
   }
 }
 
-bool TemplateURLService::FeaturedOverridesNonFeatured(
+bool TemplateURLService::BothPolicySetKeywordsNotOverriden(
     const TemplateURL* template_url) const {
   CHECK(template_url);
 
-  if (template_url->created_by_policy() !=
-          TemplateURLData::CreatedByPolicy::kSiteSearch ||
-      !template_url->featured_by_policy()) {
+  // Check 'template_url` is a featured site or featured aggregator search.
+  if (!template_url->featured_by_policy() ||
+    (template_url->created_by_policy() !=
+        TemplateURLData::CreatedByPolicy::kSiteSearch &&
+    template_url->created_by_policy() !=
+        TemplateURLData::CreatedByPolicy::kSearchAggregator)) {
     return false;
   }
 
@@ -573,9 +576,12 @@ bool TemplateURLService::FeaturedOverridesNonFeatured(
 
   const TemplateURL* turl_without_at =
       GetTemplateURLForKeyword(std::u16string(keyword, 1));
-  return turl_without_at &&
-         turl_without_at->created_by_policy() ==
-             TemplateURLData::CreatedByPolicy::kSiteSearch &&
+
+  CHECK(turl_without_at);
+  return (turl_without_at->created_by_policy() ==
+              TemplateURLData::CreatedByPolicy::kSiteSearch ||
+          turl_without_at->created_by_policy() ==
+              TemplateURLData::CreatedByPolicy::kSearchAggregator) &&
          !turl_without_at->featured_by_policy();
 }
 
