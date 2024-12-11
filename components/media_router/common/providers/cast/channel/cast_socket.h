@@ -423,9 +423,7 @@ class CastSocketImpl : public CastSocket {
 
   // Raw pointer to the auth handshake delegate. Used to get detailed error
   // information.
-  // This pointer might dangle when running the following test:
-  // PageSpecificSiteDataDialogPrivacySandboxInteractiveUiTest.FirstPartyAllowed
-  raw_ptr<AuthTransportDelegate, AcrossTasksDanglingUntriaged> auth_delegate_;
+  raw_ptr<AuthTransportDelegate> auth_delegate_;
 
   // List of socket observers.
   base::ObserverList<Observer> observers_;

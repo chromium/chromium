@@ -625,6 +625,7 @@ void CastSocketImpl::CloseInternal() {
                           << ReadyStateToString(ready_state_);
   observers_.Clear();
   delegate_.reset();
+  auth_delegate_ = nullptr;
   transport_.reset();
   mojo_data_pump_.reset();
   socket_.reset();
