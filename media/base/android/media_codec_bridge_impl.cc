@@ -47,6 +47,7 @@ using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaByteArray;
+using base::android::ToJavaIntArray;
 
 #define RETURN_ON_ERROR(condition)                             \
   do {                                                         \
@@ -672,12 +673,8 @@ MediaCodecResult MediaCodecBridgeImpl::QueueFilledInputBuffer(
 MediaCodecResult MediaCodecBridgeImpl::QueueSecureInputBuffer(
     int index,
     base::span<const uint8_t> data,
-    const std::string& key_id,
-    const std::string& iv,
-    const std::vector<SubsampleEntry>& subsamples,
-    EncryptionScheme encryption_scheme,
-    std::optional<EncryptionPattern> encryption_pattern,
-    base::TimeDelta presentation_time) {
+    base::TimeDelta presentation_time,
+    const DecryptConfig& decrypt_config) {
   DVLOG(3) << __func__ << " " << index << ": " << data.size();
   CHECK_LE(data.size(), size_t{std::numeric_limits<int32_t>::max()});
 
@@ -686,48 +683,48 @@ MediaCodecResult MediaCodecBridgeImpl::QueueSecureInputBuffer(
   }
 
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jbyteArray> j_key_id = ToJavaByteArray(env, key_id);
-  ScopedJavaLocalRef<jbyteArray> j_iv = ToJavaByteArray(env, iv);
 
   // The MediaCodec.CryptoInfo documentation says to pass NULL for |clear_array|
   // to indicate that all data is encrypted. But it doesn't specify what
   // |cypher_array| and |subsamples_size| should be in that case. We pass
   // one subsample here just to be on the safe side.
-  int num_subsamples = std::max(static_cast<size_t>(1), subsamples.size());
+  const auto num_subsamples =
+      std::max(static_cast<size_t>(1), decrypt_config.subsamples().size());
 
+  // Decompose SubsampleEntry objects into two jint arrays since there's no way
+  // to set the values directly into a jintArray :|
   auto native_clear_array = base::HeapArray<jint>::Uninit(num_subsamples);
   auto native_cypher_array = base::HeapArray<jint>::Uninit(num_subsamples);
-
-  if (subsamples.empty()) {
+  if (decrypt_config.subsamples().empty()) {
     native_clear_array[0] = 0;
     native_cypher_array[0] = data.size();
   } else {
-    for (size_t i = 0; i < subsamples.size(); ++i) {
-      DCHECK(subsamples[i].clear_bytes <= std::numeric_limits<uint16_t>::max());
-      if (subsamples[i].cypher_bytes >
-          static_cast<uint32_t>(std::numeric_limits<jint>::max())) {
+    for (size_t i = 0; i < decrypt_config.subsamples().size(); ++i) {
+      const auto& subsamples = decrypt_config.subsamples()[i];
+      if (subsamples.cypher_bytes > std::numeric_limits<jint>::max()) {
         return {MediaCodecResult::Codes::kError,
                 "Subsample size is too large."};
       }
-
-      native_clear_array[i] = subsamples[i].clear_bytes;
-      native_cypher_array[i] = subsamples[i].cypher_bytes;
+      native_clear_array[i] = subsamples.clear_bytes;
+      native_cypher_array[i] = subsamples.cypher_bytes;
     }
   }
 
-  ScopedJavaLocalRef<jintArray> clear_array =
-      base::android::ToJavaIntArray(env, native_clear_array);
-  ScopedJavaLocalRef<jintArray> cypher_array =
-      base::android::ToJavaIntArray(env, native_cypher_array);
-
-  MediaCodecStatus status = static_cast<MediaCodecStatus>(
+  // Note: All the To*Array() calls each make a copy below. This could be a
+  // performance problem on low end Android devices.
+  const auto status = static_cast<MediaCodecStatus>(
       Java_MediaCodecBridge_queueSecureInputBuffer(
-          env, j_bridge_, index, 0, j_iv, j_key_id, clear_array, cypher_array,
-          num_subsamples, static_cast<int>(encryption_scheme),
-          static_cast<int>(
-              encryption_pattern ? encryption_pattern->crypt_byte_block() : 0),
-          static_cast<int>(
-              encryption_pattern ? encryption_pattern->skip_byte_block() : 0),
+          env, j_bridge_, index, 0, ToJavaByteArray(env, decrypt_config.iv()),
+          ToJavaByteArray(env, decrypt_config.key_id()),
+          ToJavaIntArray(env, native_clear_array),
+          ToJavaIntArray(env, native_cypher_array), num_subsamples,
+          static_cast<int>(decrypt_config.encryption_scheme()),
+          decrypt_config.encryption_pattern()
+              ? decrypt_config.encryption_pattern()->crypt_byte_block()
+              : 0,
+          decrypt_config.encryption_pattern()
+              ? decrypt_config.encryption_pattern()->skip_byte_block()
+              : 0,
           presentation_time.InMicroseconds()));
   ReportAnyErrorToUMA(status);
   return {ConvertToMediaCodecEnum(status), ApplyDescriptiveMessage(status)};

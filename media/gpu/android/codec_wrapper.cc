@@ -303,9 +303,7 @@ CodecWrapperImpl::QueueStatus CodecWrapperImpl::QueueInputBuffer(
   MediaCodecResult result;
   if (decrypt_config) {
     result = codec_->QueueSecureInputBuffer(
-        input_buffer, buffer, decrypt_config->key_id(), decrypt_config->iv(),
-        decrypt_config->subsamples(), decrypt_config->encryption_scheme(),
-        decrypt_config->encryption_pattern(), buffer.timestamp());
+        input_buffer, buffer, buffer.timestamp(), *decrypt_config);
   } else {
     result = codec_->QueueInputBuffer(input_buffer, buffer, buffer.timestamp());
   }

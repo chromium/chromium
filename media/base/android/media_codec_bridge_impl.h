@@ -136,12 +136,8 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
   MediaCodecResult QueueSecureInputBuffer(
       int index,
       base::span<const uint8_t> data,
-      const std::string& key_id,
-      const std::string& iv,
-      const std::vector<SubsampleEntry>& subsamples,
-      EncryptionScheme encryption_scheme,
-      std::optional<EncryptionPattern> encryption_pattern,
-      base::TimeDelta presentation_time) override;
+      base::TimeDelta presentation_time,
+      const DecryptConfig& decrypt_config) override;
   MediaCodecResult QueueEOS(int input_buffer_index) override;
   MediaCodecResult DequeueInputBuffer(base::TimeDelta timeout,
                                       int* index) override;
