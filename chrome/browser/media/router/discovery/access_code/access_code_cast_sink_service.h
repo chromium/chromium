@@ -117,8 +117,6 @@ class AccessCodeCastSinkService : public KeyedService,
     return current_session_expiration_timers_;
   }
 
-  bool IsAccessCodeCastLacrosSyncEnabledForTesting();
-
   void ResetPrefUpdaterForTesting();
 
   void ShutdownForTesting();

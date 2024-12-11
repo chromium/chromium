@@ -168,7 +168,6 @@ class AccessCodeCastIntegrationBrowserTest
 
   void UpdateDeviceAddedTime(const MediaSink::Id& sink_id);
   void SetAccessCodeCastSinkServiceTaskRunner();
-  bool IsAccessCodeCastLacrosSyncEnabled();
 
  private:
   base::test::ScopedFeatureList feature_list_;
