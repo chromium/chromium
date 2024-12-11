@@ -23,7 +23,9 @@ std::u16string GetEditorMenuWriteCardTitle();
 
 std::u16string GetEditorMenuRewriteCardTitle();
 
-std::u16string GetEditorMenuFreeformPromptInputFieldPlaceholder();
+std::u16string GetEditorMenuFreeformPromptInputFieldPlaceholderForHelpMeWrite();
+
+std::u16string GetEditorMenuFreeformPromptInputFieldPlaceholderForLobster();
 
 std::u16string GetEditorMenuSettingsTooltip();
 

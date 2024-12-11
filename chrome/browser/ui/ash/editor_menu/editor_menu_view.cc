@@ -225,6 +225,10 @@ void EditorMenuView::OnWidgetVisibilityChanged(views::Widget* widget,
 
 void EditorMenuView::TabSelectedAt(int index) {
   CHECK(delegate_);
+  textfield_->textfield()->SetPlaceholderText(
+      index == 1
+          ? GetEditorMenuFreeformPromptInputFieldPlaceholderForLobster()
+          : GetEditorMenuFreeformPromptInputFieldPlaceholderForHelpMeWrite());
   delegate_->OnTabSelected(index);
 }
 
