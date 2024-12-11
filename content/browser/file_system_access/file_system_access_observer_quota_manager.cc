@@ -17,14 +17,14 @@ FileSystemAccessObserverQuotaManager::FileSystemAccessObserverQuotaManager(
       storage_key_(storage_key),
       watcher_manager_(watcher_manager) {}
 
-// TODO(crbug.com/338457523): Inform the watcher manager to remove this
-// from the quota manager map entry for this storage key.
 FileSystemAccessObserverQuotaManager::~FileSystemAccessObserverQuotaManager() {
   CHECK(quota_limit_ > 0);
-  base::UmaHistogramCounts100000("Storage.FileSystemAccess.ObserverUsage",
-                                 high_water_mark_usage_);
-  base::UmaHistogramPercentage("Storage.FileSystemAccess.ObserverUsageRate",
-                               100 * high_water_mark_usage_ / quota_limit_);
+  if (high_water_mark_usage_ > 0) {
+    base::UmaHistogramCounts100000("Storage.FileSystemAccess.ObserverUsage",
+                                   high_water_mark_usage_);
+    base::UmaHistogramPercentage("Storage.FileSystemAccess.ObserverUsageRate",
+                                 100 * high_water_mark_usage_ / quota_limit_);
+  }
   base::UmaHistogramBoolean(
       "Storage.FileSystemAccess.ObserverUsageQuotaExceeded",
       reached_quota_limit_);

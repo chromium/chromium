@@ -66,10 +66,11 @@ class FileSystemAccessObserverQuotaManagerTest : public testing::Test {
       size_t highmark_usage_percentage,
       bool quota_exceeded) {
     histogram_tester_.ExpectUniqueSample(
-        "Storage.FileSystemAccess.ObserverUsage", highmark_usage, 1);
+        "Storage.FileSystemAccess.ObserverUsage", highmark_usage,
+        highmark_usage > 0 ? 1 : 0);
     histogram_tester_.ExpectUniqueSample(
         "Storage.FileSystemAccess.ObserverUsageRate", highmark_usage_percentage,
-        1);
+        highmark_usage_percentage > 0 ? 1 : 0);
     histogram_tester_.ExpectUniqueSample(
         "Storage.FileSystemAccess.ObserverUsageQuotaExceeded", quota_exceeded,
         1);

@@ -153,26 +153,28 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   // Attempts to create a change source for `scope` if it does not exist.
   void EnsureSourceIsInitializedForScope(
       FileSystemAccessWatchScope scope,
-      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr, size_t)>
           on_source_initialized);
   void DidInitializeSource(
       base::WeakPtr<FileSystemAccessChangeSource> source,
-      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr, size_t)>
           on_source_initialized,
       blink::mojom::FileSystemAccessErrorPtr result);
 
   scoped_refptr<FileSystemAccessObserverQuotaManager> GetOrCreateQuotaManager(
       blink::StorageKey storage_key);
 
-  FileSystemAccessObservationGroup& GetOrCreateObservationGroup(
-      blink::StorageKey storage_key,
-      FileSystemAccessWatchScope scope);
+  base::optional_ref<FileSystemAccessObservationGroup>
+  GetOrCreateObservationGroup(blink::StorageKey storage_key,
+                              FileSystemAccessWatchScope scope,
+                              size_t source_current_usage);
 
   void PrepareObservationForScope(
       blink::StorageKey storage_key,
       FileSystemAccessWatchScope scope,
       GetObservationCallback callback,
-      blink::mojom::FileSystemAccessErrorPtr source_initialization_result);
+      blink::mojom::FileSystemAccessErrorPtr source_initialization_result,
+      size_t source_current_usage);
 
   // Creates and returns a new (uninitialized) change source for the given
   // scope, or nullptr if watching this scope is not supported.
