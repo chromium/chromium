@@ -158,12 +158,6 @@ class LensOverlayQueryController {
   // Testing method to reset the cluster info state.
   void ResetRequestClusterInfoStateForTesting();
 
-  // Sets the query controller to a valid post-full image response state,
-  // including setting fake cluster info, for testing.
-  // TODO(crbug.com/376737029): Remove this method after mocking out network
-  // requests in the browser tests.
-  void SetStateToReceivedFullImageResponseForTesting();
-
  protected:
   // Returns the EndpointFetcher to use with the given params. Protected to
   // allow overriding in tests to mock server responses.

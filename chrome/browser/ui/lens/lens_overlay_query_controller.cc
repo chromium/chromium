@@ -532,15 +532,6 @@ void LensOverlayQueryController::ResetRequestClusterInfoStateForTesting() {
   ResetRequestClusterInfoState();
 }
 
-void LensOverlayQueryController::
-    SetStateToReceivedFullImageResponseForTesting() {
-  latest_full_image_request_data_ = std::make_unique<LensServerFetchRequest>(
-      GetNextRequestId(RequestIdUpdateMode::kFullImageRequest),
-      /*query_start_time=*/base::TimeTicks::Now());
-  query_controller_state_ = QueryControllerState::kReceivedFullImageResponse;
-  cluster_info_ = std::make_optional<lens::LensOverlayClusterInfo>();
-}
-
 std::unique_ptr<EndpointFetcher>
 LensOverlayQueryController::CreateEndpointFetcher(
     lens::LensOverlayServerRequest* request,
