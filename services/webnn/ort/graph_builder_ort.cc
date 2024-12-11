@@ -566,12 +566,12 @@ GraphBuilderOrt::BuildModel() {
   // IR VERSION 10 published on March 25, 2024
   // Added UINT4, INT4.
   // use the newest ir version to support uint4/int4.
-  model_.set_ir_version(onnx::Version::IR_VERSION_2019_9_19);
+  model_.set_ir_version(onnx::Version::IR_VERSION_2021_7_30);
 
   //
   onnx::OperatorSetIdProto& operator_set_id = *model_.add_opset_import();
   operator_set_id.set_domain("");
-  operator_set_id.set_version(14);
+  operator_set_id.set_version(15);
 
   // Add inputs.
   for (uint64_t input_id : graph_info_->input_operands) {

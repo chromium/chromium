@@ -237,8 +237,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   RecordDeviceType(options->device);
 
 #if BUILDFLAG(IS_WIN)
-  if (options->device == mojom::CreateContextOptions::Device::kGpu &&
-      options->power_preference ==
+  if (options->power_preference ==
           mojom::CreateContextOptions::PowerPreference::kLowPower) {
     context_impl =
         new ort::ContextImplOrt(std::move(receiver), this, std::move(options));

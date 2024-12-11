@@ -157,7 +157,10 @@ const OrtApi* ContextImplOrt::GetGlobalOrt() {
   const char* version = ort_get_api_base_proc()->GetVersionString();
   LOG(ERROR) << "onnxruntime dll version is " << version;
 
-  const OrtApi* g_ort = ort_get_api_base_proc()->GetApi(onnx::Version::IR_VERSION_2019_9_19);
+  const OrtApi* g_ort = ort_get_api_base_proc()->GetApi(10);
+  if (g_ort == nullptr) {
+    LOG(ERROR) << "g_ort == nullprt";
+  }
 
   int num_providers = 0;
   char** providers;

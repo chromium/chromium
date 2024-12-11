@@ -55,8 +55,23 @@ GraphImplOrt::CreateAndBuild(
 
   ORT_ABORT_ON_ERROR(g_ort, g_ort->SetSessionGraphOptimizationLevel(session_options, GraphOptimizationLevel::ORT_ENABLE_ALL));
 
-  // ORT_ABORT_ON_ERROR(g_ort->OrtSessionOptionsAppendExecutionProvider_DNNL(session_options,
-  // 0));
+  if (context->options().device == mojom::CreateContextOptions::Device::kGpu || context->options().device == mojom::CreateContextOptions::Device::kNpu) {
+    const OrtDmlApi* ort_dml_api;
+    ORT_ABORT_ON_ERROR(g_ort, g_ort->GetExecutionProviderApi("DML", 10, reinterpret_cast<const void**>(&ort_dml_api)));
+
+    OrtDmlDeviceOptions options;
+    if (context->options().device == mojom::CreateContextOptions::Device::kGpu) {
+      options = {OrtDmlPerformancePreference::MinimumPower, OrtDmlDeviceFilter::Gpu};
+    } else {
+      options = {OrtDmlPerformancePreference::MinimumPower, OrtDmlDeviceFilter::Gpu};
+      // NPU is available only when ENABLE_NPU_ADAPTER_ENUMERATION
+      // options = {OrtDmlPerformancePreference::MinimumPower, OrtDmlDeviceFilter::Npu};
+    }
+
+    ort_dml_api->SessionOptionsAppendExecutionProvider_DML2(session_options, &options);
+  }
+
+  ORT_ABORT_ON_ERROR(g_ort, g_ort->SetSessionGraphOptimizationLevel(session_options, GraphOptimizationLevel::ORT_ENABLE_ALL));
 
   // Todo: Consider move the session creation to BackgroundThread since load model may be time-consuming.
   OrtSession* session;
