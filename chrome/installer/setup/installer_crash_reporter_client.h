@@ -34,9 +34,6 @@ class InstallerCrashReporterClient
   bool GetCollectStatsInSample() override;
   bool ReportingIsEnforcedByPolicy(bool* enabled) override;
   bool EnableBreakpadForProcess(const std::string& process_type) override;
-
- private:
-  bool is_per_user_install_;
 };
 
 #endif  // CHROME_INSTALLER_SETUP_INSTALLER_CRASH_REPORTER_CLIENT_H_

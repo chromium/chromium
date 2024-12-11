@@ -21,8 +21,7 @@
 #include "components/version_info/channel.h"
 
 InstallerCrashReporterClient::InstallerCrashReporterClient(
-    bool is_per_user_install)
-    : is_per_user_install_(is_per_user_install) {}
+    bool is_per_user_install) {}
 
 InstallerCrashReporterClient::~InstallerCrashReporterClient() = default;
 
