@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/containers/contains.h"
 #include "base/task/current_thread.h"
@@ -27,9 +28,11 @@
 #include "components/saved_tab_groups/public/collaboration_finder.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/test/test_renderer_host.h"
@@ -92,15 +95,55 @@ class SavedTabGroupBarUnitTest : public TestWithBrowserView,
     TestWithBrowserView::TearDown();
   }
 
-  void Add4Groups() {
-    SaveGroup(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
+  void AddTabToBrowser(Browser* browser, int index) {
+    std::unique_ptr<content::WebContents> web_contents =
+        content::WebContentsTester::CreateTestWebContents(browser->profile(),
+                                                          nullptr);
+
+    browser->tab_strip_model()->AddWebContents(
+        std::move(web_contents), index,
+        ui::PageTransition::PAGE_TRANSITION_TYPED, AddTabTypes::ADD_ACTIVE);
+  }
+
+  tab_groups::TabGroupId LocalIDFromSyncID(const base::Uuid& sync_id) {
+    return service()->GetGroup(sync_id)->local_group_id().value();
+  }
+
+  tab_groups::TabGroupId CreateNewGroupInBrowser() {
+    AddTabToBrowser(browser(), 0);
+    tab_groups::TabGroupId local_id =
+        browser()->tab_strip_model()->AddToNewGroup({0});
+    return local_id;
+  }
+
+  // Returns the sync id of the group that was added.
+  base::Uuid EnforceGroupSaved(tab_groups::SavedTabGroup group) {
+    const LocalTabGroupID local_id = group.local_group_id().value();
+
+    if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
+      // the group must be manually saved.
+      service()->SaveGroup(group);
+    }
+
+    return service()->GetGroup(local_id).value().saved_guid();
+  }
+
+  base::Uuid AddGroupFromSync() {
+    SavedTabGroup group = test::CreateTestSavedTabGroup();
+    service()->AddGroup(group);
+    return group.saved_guid();
+  }
+
+  base::Uuid AddGroupFromLocal() {
+    return EnforceGroupSaved(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
         CreateNewGroupInBrowser()));
-    SaveGroup(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-        CreateNewGroupInBrowser()));
-    SaveGroup(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-        CreateNewGroupInBrowser()));
-    SaveGroup(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-        CreateNewGroupInBrowser()));
+  }
+
+  void Add4GroupsFromLocal() {
+    AddGroupFromLocal();
+    AddGroupFromLocal();
+    AddGroupFromLocal();
+    AddGroupFromLocal();
   }
 
   int GetWidthOfButtonsAndPadding() {
@@ -140,39 +183,18 @@ class SavedTabGroupBarUnitTest : public TestWithBrowserView,
     return guids;
   }
 
-  tab_groups::TabGroupId CreateNewGroupInBrowser() {
-    AddTabToBrowser(browser(), 0);
-    tab_groups::TabGroupId local_id =
-        browser()->tab_strip_model()->AddToNewGroup({0});
-    return local_id;
+  void Pin(const base::Uuid& sync_id) {
+    service()->UpdateGroupPosition(sync_id, true, 0);
   }
 
-  // Returns the sync id of the group that was added.
-  base::Uuid SaveGroup(tab_groups::SavedTabGroup group) {
-    const base::Uuid sync_id = group.saved_guid();
-    const LocalTabGroupID local_id = group.local_group_id().value();
-
-    service()->AddGroup(std::move(group));
-    if (!tab_groups::IsTabGroupsSaveV2Enabled() &&
-        tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-      // Manually observe the group for V1 code paths. These code paths were
-      // introduced before autosaving which is why this is required.
-      service()->ConnectLocalTabGroup(sync_id, local_id,
-                                      OpeningSource::kUnknown);
-    }
-
-    EXPECT_TRUE(service()->GetGroup(local_id));
-    return sync_id;
+  void Unpin(const base::Uuid& sync_id) {
+    service()->UpdateGroupPosition(sync_id, false, std::nullopt);
   }
 
-  void AddTabToBrowser(Browser* browser, int index) {
-    std::unique_ptr<content::WebContents> web_contents =
-        content::WebContentsTester::CreateTestWebContents(browser->profile(),
-                                                          nullptr);
-
-    browser->tab_strip_model()->AddWebContents(
-        std::move(web_contents), index,
-        ui::PageTransition::PAGE_TRANSITION_TYPED, AddTabTypes::ADD_ACTIVE);
+  void UpdateTitle(const SavedTabGroup& group, const std::u16string& title) {
+    tab_groups::TabGroupVisualData new_visual_data{title, group.color()};
+    service()->UpdateVisualData(group.local_group_id().value(),
+                                &new_visual_data);
   }
 
  private:
@@ -229,13 +251,14 @@ TEST_P(STGEverythingMenuUnitTest, TabGroupItemsSortedByCreationTime) {
       tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
           CreateNewGroupInBrowser());
 
-  group_1.SetTitle(title_1);
-  group_2.SetTitle(title_2);
-  group_3.SetTitle(title_3);
+  EnforceGroupSaved(group_1);
+  EnforceGroupSaved(group_2);
+  EnforceGroupSaved(group_3);
 
-  SaveGroup(std::move(group_1));
-  SaveGroup(std::move(group_2));
-  SaveGroup(std::move(group_3));
+  // update the titles
+  UpdateTitle(group_1, title_1);
+  UpdateTitle(group_2, title_2);
+  UpdateTitle(group_3, title_3);
 
   // A separator is also added.
   auto model = menu_model();
@@ -249,25 +272,24 @@ TEST_P(STGEverythingMenuUnitTest, TabGroupItemsSortedByCreationTime) {
 }
 
 TEST_P(SavedTabGroupBarUnitTest, AddsButtonFromModelAdd) {
-  // Verify the initial count of saved tab group buttons. Even when visibly
-  // empty, the SavedTabGroupBar still contains an invisible overflow menu
-  // that is invisible.
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+
+  // There's always an overflow button in the saved tab group bar.
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 
-  SaveGroup(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-      CreateNewGroupInBrowser()));
+  {  // Add a group and expect it to show up in the bar by default.
+    AddGroupFromLocal();
+    EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
+  }
 
-  EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
+  {  // Create a model change that comes from sync as unpinned..
+    auto sync_id = AddGroupFromSync();
+    Unpin(sync_id);
 
-  const tab_groups::TabGroupId& local_id_2 = CreateNewGroupInBrowser();
-  SavedTabGroup group =
-      tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-          local_id_2);
-  group.SetPinned(false);
-  SaveGroup(std::move(group));
-
-  EXPECT_EQ(IsV2UIEnabled() ? 2u : 3u,
-            saved_tab_group_bar()->children().size());
+    EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
+  }
 }
 
 TEST_P(SavedTabGroupBarUnitTest, EverthingButtonAlwaysVisibleForV2) {
@@ -284,7 +306,7 @@ TEST_P(SavedTabGroupBarUnitTest, EverthingButtonAlwaysVisibleForV2) {
 
     // Add a tab group button; the Everything button is still there.
     const base::Uuid& sync_id =
-        SaveGroup(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
+        EnforceGroupSaved(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
             CreateNewGroupInBrowser()));
 
     saved_tab_group_bar()->SetBounds(
@@ -318,13 +340,13 @@ TEST_P(SavedTabGroupBarUnitTest, OverflowMenuVisibleWhenFifthButtonAdded) {
   EXPECT_FALSE(overflow_button->GetVisible());
 
   // Verify the overflow button is still hidden.
-  Add4Groups();
+  Add4GroupsFromLocal();
   EXPECT_FALSE(overflow_button->GetVisible());
   EXPECT_EQ(5u, saved_tab_group_bar()->children().size());
 
   // Verify that the overflow button is visible when a 5th button is added and
   // that the 5th button is not visible.
-  SaveGroup(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
+  EnforceGroupSaved(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
       CreateNewGroupInBrowser()));
 
   // Layout the buttons.
@@ -351,10 +373,10 @@ TEST_P(SavedTabGroupBarUnitTest, OverflowMenuHiddenWhenFifthButtonRemoved) {
 
   // Verify that the overflow button is visible when a 5th button is added and
   // that the 5th button is not visible.
-  Add4Groups();
+  Add4GroupsFromLocal();
 
   const base::Uuid& sync_id =
-      SaveGroup(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
+      EnforceGroupSaved(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
           CreateNewGroupInBrowser()));
 
   // Layout the buttons.
@@ -390,10 +412,10 @@ TEST_P(SavedTabGroupBarUnitTest, OverflowMenuHiddenWhenFirstButtonRemoved) {
 
   // Verify that the overflow button is visible when a 5th button is added and
   // that the 5th button is not visible.
-  Add4Groups();
+  Add4GroupsFromLocal();
 
   const base::Uuid& sync_id =
-      SaveGroup(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
+      EnforceGroupSaved(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
           CreateNewGroupInBrowser()));
 
   // Layout the buttons.
@@ -416,7 +438,7 @@ TEST_P(SavedTabGroupBarUnitTest, OverflowMenuHiddenWhenFirstButtonRemoved) {
 }
 
 TEST_P(SavedTabGroupBarUnitTest, BarsWithSameModelsHaveSameButtons) {
-  SaveGroup(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
+  EnforceGroupSaved(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
       CreateNewGroupInBrowser()));
 
   SavedTabGroupBar another_tab_group_bar_on_same_model(
@@ -428,49 +450,54 @@ TEST_P(SavedTabGroupBarUnitTest, BarsWithSameModelsHaveSameButtons) {
 }
 
 TEST_P(SavedTabGroupBarUnitTest, RemoveButtonFromModelRemove) {
-  // Remove the group and expect no buttons except the overflow menu.
-  const base::Uuid& sync_id =
-      SaveGroup(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-          CreateNewGroupInBrowser()));
-  service()->RemoveGroup(sync_id);
-  EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
-  EXPECT_TRUE(views::IsViewClass<SavedTabGroupOverflowButton>(
-      saved_tab_group_bar()->children()[0]));
+  AddTabToBrowser(browser(), TabStripModel::kNoTab);
+  {  // Remove the group and expect no buttons except the overflow menu.
+    const base::Uuid sync_id =
+        EnforceGroupSaved(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
+            CreateNewGroupInBrowser()));
 
-  // Remove the group and expect no buttons.
-  const base::Uuid& sync_id_2 =
-      SaveGroup(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-          CreateNewGroupInBrowser()));
-  service()->RemoveGroup(sync_id_2);
+    EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
+
+    service()->RemoveGroup(sync_id);
+    EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
+  }
+
+  {  // Remove the group and expect no buttons except the overflow menu.
+    const base::Uuid sync_id =
+        EnforceGroupSaved(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
+            CreateNewGroupInBrowser()));
+
+    EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
+
+    service()->RemoveGroup(sync_id);
+    EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
+  }
+
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
-  EXPECT_TRUE(views::IsViewClass<SavedTabGroupOverflowButton>(
-      saved_tab_group_bar()->children()[0]));
 }
 
 TEST_P(SavedTabGroupBarUnitTest, UpdatedVisualDataMakesChangeToSpecificView) {
-  const tab_groups::TabGroupId& local_id_1 = CreateNewGroupInBrowser();
-  SavedTabGroup group =
-      tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-          local_id_1);
-  SaveGroup(std::move(group));
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
 
-  const tab_groups::TabGroupId& local_id_2 = CreateNewGroupInBrowser();
-  SavedTabGroup group_2 =
-      tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-          local_id_2);
-  group_2.SetPinned(false);
-  SaveGroup(std::move(group_2));
+  auto pinned_local_id = LocalIDFromSyncID(AddGroupFromLocal());
+
+  auto unpinned_sync_id = AddGroupFromLocal();
+  Unpin(unpinned_sync_id);
+  auto unpinned_local_id = LocalIDFromSyncID(unpinned_sync_id);
 
   tab_groups::TabGroupVisualData saved_tab_group_visual_data(kNewTitle,
                                                              kNewColor);
 
   // Update the visual_data and expect the first button to be updated and the
   // second button to stay the same.
-  service()->UpdateVisualData(local_id_1, &saved_tab_group_visual_data);
-  service()->UpdateVisualData(local_id_2, &saved_tab_group_visual_data);
+  service()->UpdateVisualData(pinned_local_id, &saved_tab_group_visual_data);
+  service()->UpdateVisualData(unpinned_local_id, &saved_tab_group_visual_data);
 
   SavedTabGroupButton* new_button_1 = views::AsViewClass<SavedTabGroupButton>(
       saved_tab_group_bar()->children()[0]);
+
   SavedTabGroupButton* new_button_2 = views::AsViewClass<SavedTabGroupButton>(
       saved_tab_group_bar()->children()[1]);
 
@@ -492,15 +519,9 @@ TEST_P(SavedTabGroupBarUnitTest, UpdatedVisualDataMakesChangeToSpecificView) {
 }
 
 TEST_P(SavedTabGroupBarUnitTest, MoveButtonFromModelMove) {
-  const base::Uuid sync_id_1 =
-      SaveGroup(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-          CreateNewGroupInBrowser()));
-  const base::Uuid sync_id_2 =
-      SaveGroup(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-          CreateNewGroupInBrowser()));
-  const base::Uuid sync_id_3 =
-      SaveGroup(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-          CreateNewGroupInBrowser()));
+  const base::Uuid sync_id_1 = AddGroupFromLocal();
+  const base::Uuid sync_id_2 = AddGroupFromLocal();
+  const base::Uuid sync_id_3 = AddGroupFromLocal();
 
   if (IsV2UIEnabled()) {
     ASSERT_THAT(GetButtonGUIDs(),
@@ -535,7 +556,7 @@ TEST_P(SavedTabGroupBarUnitTest, CalculatePreferredWidthRestrictedByExactSize) {
     GTEST_SKIP() << "N/A for V1";
   }
 
-  Add4Groups();
+  Add4GroupsFromLocal();
 
   int exact_width = GetWidthOfButtonsAndPadding();
   int calculated_width =
@@ -545,7 +566,7 @@ TEST_P(SavedTabGroupBarUnitTest, CalculatePreferredWidthRestrictedByExactSize) {
   // After 4 buttons have been added (excluding the invisible overflow), all
   // subsequent buttons will be hidden. Instead an overflow menu will appear
   // which will house the hidden buttons.
-  SaveGroup(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
+  EnforceGroupSaved(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
       CreateNewGroupInBrowser()));
 
   // Layout the buttons.
@@ -568,7 +589,7 @@ TEST_P(SavedTabGroupBarUnitTest,
     GTEST_SKIP() << "N/A for V1";
   }
 
-  Add4Groups();
+  Add4GroupsFromLocal();
   int exact_width = GetWidthOfButtonsAndPadding();
 
   EXPECT_EQ(exact_width,
@@ -578,7 +599,7 @@ TEST_P(SavedTabGroupBarUnitTest,
   // After 4 buttons have been added (excluding the invisible overflow), all
   // subsequent buttons will be hidden. Instead an overflow menu will appear
   // which will house the hidden buttons.
-  SaveGroup(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
+  EnforceGroupSaved(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
       CreateNewGroupInBrowser()));
 
   // Layout the buttons.
@@ -600,7 +621,7 @@ TEST_P(SavedTabGroupBarUnitTest,
     GTEST_SKIP() << "N/A for V1";
   }
 
-  Add4Groups();
+  Add4GroupsFromLocal();
   int exact_width = GetWidthOfButtonsAndPadding();
 
   EXPECT_GT(exact_width,
@@ -610,7 +631,7 @@ TEST_P(SavedTabGroupBarUnitTest,
   // After 4 buttons have been added (excluding the invisible overflow), all
   // subsequent buttons will be hidden. Instead an overflow menu will appear
   // which will house the hidden buttons.
-  SaveGroup(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
+  EnforceGroupSaved(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
       CreateNewGroupInBrowser()));
 
   // Layout the buttons.
@@ -632,7 +653,7 @@ TEST_P(SavedTabGroupBarUnitTest, AddPinnedTabGroupButton) {
 
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 
-  SaveGroup(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
+  EnforceGroupSaved(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
       CreateNewGroupInBrowser()));
 
   EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
@@ -648,13 +669,8 @@ TEST_P(SavedTabGroupBarUnitTest, PinTabGroupAddButton) {
 
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 
-  const tab_groups::TabGroupId& local_id_2 = CreateNewGroupInBrowser();
-  SavedTabGroup group =
-      tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-          local_id_2);
-  const base::Uuid sync_id = group.saved_guid();
-  group.SetPinned(false);
-  SaveGroup(std::move(group));
+  auto sync_id = AddGroupFromSync();
+  Unpin(sync_id);
 
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 
@@ -668,7 +684,7 @@ TEST_P(SavedTabGroupBarUnitTest, AccessibleName) {
   if (!IsV2UIEnabled()) {
     GTEST_SKIP() << "N/A for V1";
   }
-  SaveGroup(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
+  EnforceGroupSaved(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
       CreateNewGroupInBrowser()));
   SavedTabGroupButton* saved_tab_group_button =
       views::AsViewClass<SavedTabGroupButton>(
@@ -695,8 +711,7 @@ TEST_P(SavedTabGroupBarUnitTest, TooltipText) {
   if (!IsV2UIEnabled()) {
     GTEST_SKIP() << "N/A for V1";
   }
-  SaveGroup(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-      CreateNewGroupInBrowser()));
+  AddGroupFromLocal();
   SavedTabGroupButton* saved_tab_group_button =
       views::AsViewClass<SavedTabGroupButton>(
           saved_tab_group_bar()->children()[0]);
@@ -739,7 +754,7 @@ TEST_P(SavedTabGroupBarUnitTest, UnpinTabGroupRemoveButton) {
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 
   const base::Uuid& sync_id =
-      SaveGroup(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
+      EnforceGroupSaved(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
           CreateNewGroupInBrowser()));
 
   EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
@@ -755,27 +770,14 @@ TEST_P(SavedTabGroupBarUnitTest, PinAndUnpinMultipleTabGroups) {
 
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 
-  SavedTabGroup group_1 =
-      tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-          CreateNewGroupInBrowser());
-  SavedTabGroup group_2 =
-      tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-          CreateNewGroupInBrowser());
-  SavedTabGroup group_3 =
-      tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-          CreateNewGroupInBrowser());
+  base::Uuid sync_id_1 = AddGroupFromLocal();
+  base::Uuid sync_id_2 = AddGroupFromLocal();
+  base::Uuid sync_id_3 = AddGroupFromLocal();
 
-  group_1.SetPinned(false);
-  group_2.SetPinned(false);
-  group_3.SetPinned(false);
-
-  const base::Uuid sync_id_1 = group_1.saved_guid();
-  const base::Uuid sync_id_2 = group_2.saved_guid();
-  const base::Uuid sync_id_3 = group_3.saved_guid();
-
-  SaveGroup(std::move(group_1));
-  SaveGroup(std::move(group_2));
-  SaveGroup(std::move(group_3));
+  // start groups as unpinned.
+  Unpin(sync_id_1);
+  Unpin(sync_id_2);
+  Unpin(sync_id_3);
 
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 
@@ -818,16 +820,14 @@ TEST_P(SavedTabGroupBarUnitTest, OnlyShowEverthingButtonForV2) {
 
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 
-  SavedTabGroup group =
-      tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-          CreateNewGroupInBrowser());
-  group.SetPinned(false);
-  SaveGroup(std::move(group));
-
-  EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
+  AddGroupFromLocal();
 
   saved_tab_group_bar()->SetBounds(
-      0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(40), 2);
+      0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(2), 2);
+
+  // Saved tab group button is not visible because there's not enough space.
+  // Everything button is visible.
+  EXPECT_FALSE(saved_tab_group_bar()->children()[1]->GetVisible());
 
   // Saved tab group button is not visible because there's not enough space.
   // Everything button is visible.
