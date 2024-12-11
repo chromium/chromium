@@ -11971,6 +11971,15 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
                 other {Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and # Others}
               }
             </message>
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_ZERO" desc="The title for the dialog that shows a preview of a tab group with 0 other member.">
+              Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph>
+            </message>
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_SINGULAR" desc="The title for the dialog that shows a preview of a tab group with 1 other member.">
+              Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and <ph name="NUM_OTHER_MEMBERS">$1<ex>1</ex></ph> Other
+            </message>
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_PLURAL" desc="The title for the dialog that shows a preview of a tab group with >1 other members.">
+              Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and <ph name="NUM_OTHER_MEMBERS">$1<ex>2</ex></ph> Others
+            </message>
             <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_CONFIRM" desc="A button that allows a user to join a shared group.">
               Join and Open
             </message>
@@ -12111,6 +12120,15 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
                 other {Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and # others}
               }
             </message>
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_ZERO" desc="The title for the dialog that shows a preview of a tab group with 0 other member.">
+              Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph>
+            </message>
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_SINGULAR" desc="The title for the dialog that shows a preview of a tab group with 1 other member.">
+              Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and <ph name="NUM_OTHER_MEMBERS">$1<ex>1</ex></ph> other
+            </message>
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_PLURAL" desc="The title for the dialog that shows a preview of a tab group with >1 other members.">
+              Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and <ph name="NUM_OTHER_MEMBERS">$1<ex>2</ex></ph> others
+            </message>
             <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_CONFIRM" desc="A button that allows a user to join a shared group.">
               Join and open
             </message>
@@ -12246,6 +12264,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_DATA_SHARING_LINK_FAILED_BODY" desc="The body for the link failed dialog.">
           Contact the sender to ask for a new link
         </message>
+        <message name ="IDS_DATA_SHARING_JOIN_GROUP_JOIN_AS" desc="A sublabel showing which profile the shared group is being joined as.">
+          Join as <ph name="OWNER_FULL_NAME">$1<ex>John Doe</ex></ph>
+        </message>
       <!-- /Data Sharing Preview Dialog -->
 
       <!-- Data Sharing Leave Dialog -->
@@ -12256,6 +12277,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Leave
         </message>
       <!-- /Data Sharing Leave Dialog -->
+
+      <!-- Data Sharing Block Dialog -->
+        <message name ="IDS_DATA_SHARING_BLOCK_DIALOG_TITLE" desc="The title of the block dialog.">
+          Block <ph name="MEMBER_FULL_NAME">$1<ex>John Doe</ex></ph>?
+        </message>
+      <!-- /Data Sharing Block Dialog -->
 
       <!-- Data Sharing Block and Leave Dialog -->
         <message name="IDS_DATA_SHARING_BLOCK_LEAVE_DIALOG_BODY" desc="The body for the block and leave group dialog.">
@@ -12411,6 +12438,57 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name ="IDS_DATA_SHARING_CANCEL" desc="The label for buttons that cancel any dialogs in data sharing.">
           Cancel
+        </message>
+        <message name ="IDS_DATA_SHARING_CLOSE" desc="Alt text of the close button for the data sharing dialog.">
+          Close
+        </message>
+        <message name ="IDS_DATA_SHARING_BACK" desc="Alt text of the back button for the data sharing dialog.">
+          Back
+        </message>
+        <message name ="IDS_DATA_SHARING_BLOCK" desc="Label of the block button for the data sharing dialog.">
+          Block
+        </message>
+        <message name ="IDS_DATA_SHARING_REMOVE" desc="Label of the remove button for the data sharing dialog.">
+          Remove
+        </message>
+        <message name ="IDS_DATA_SHARING_LEAVE_GROUP" desc="Text of menu item to leave the group">
+          Leave group
+        </message>
+        <message name ="IDS_DATA_SHARING_LOADING" desc="Alt text of the loading indicator for the data sharing dialog.">
+          Loading
+        </message>
+        <message name ="IDS_DATA_SHARING_COPY_LINK" desc="Label of the copy link button for the data sharing dialog.">
+          Copy link
+        </message>
+        <message name ="IDS_DATA_SHARING_COPY_LINK_SUCCESS" desc="Label of the copy link button for the data sharing dialog after copy link succeeds.">
+          Link copied
+        </message>
+        <message name ="IDS_DATA_SHARING_COPY_LINK_FAILED" desc="Label of the copy link button for the data sharing dialog after copy link fails.">
+          Failed to copy link
+        </message>
+        <message name ="IDS_DATA_SHARING_YOU" desc="Text to indicate the current user">
+          You
+        </message>
+        <message name ="IDS_DATA_SHARING_OWNER" desc="Text to indicate the owner of the group">
+          Owner
+        </message>
+        <message name="IDS_DATA_SHARING_MEMBER_COUNT_SINGULAR" desc="Singular form of number of members in a shared tab group.">
+          <ph name="NUM">$1<ex>1</ex></ph> member
+        </message>
+        <message name="IDS_DATA_SHARING_MEMBER_COUNT_PLURAL" desc="Plural form of number of members in a shared tab group.">
+          <ph name="NUM">$1<ex>2</ex></ph> members
+        </message>
+        <message name="IDS_DATA_SHARING_TAB_COUNT_SINGULAR" desc="Singular form of number of tabs in a shared tab group.">
+          <ph name="NUM">$1<ex>1</ex></ph> tab
+        </message>
+        <message name="IDS_DATA_SHARING_TAB_COUNT_PLURAL" desc="Plural form of number of tabs in a shared tab group.">
+          <ph name="NUM">$1<ex>2</ex></ph> tabs
+        </message>
+        <message name="IDS_DATA_SHARING_MORE_OPTIONS" desc="Aria label for the more options button">
+          More options
+        </message>
+        <message name="IDS_DATA_SHARING_MORE_OPTIONS_DESCRIPTION" desc="Aria description for the more options button">
+          Press enter or space for more options.
         </message>
       <!-- /Misc -->
 

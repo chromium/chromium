@@ -6,6 +6,7 @@
 // third_party/data_sharing_sdk/data_sharing_sdk_types.ts
 // Only update this file by copying the content from that file and fix the
 // formatting.
+/* eslint-disable */
 export const enum Code {
   OK = 0,
   CANCELLED = 1,
@@ -39,7 +40,7 @@ export const enum ShareAction {
   SHARE_3P,
 }
 export declare interface DataSharingSdkResponse {
-  result?: {shareAction?: ShareAction, groupId?: string, tokenSecret?: string};
+  result?: {shareAction?: ShareAction; groupId?: string; tokenSecret?: string;};
   status: Code;
 }
 export declare interface DataSharingSdkSitePreview {
@@ -59,6 +60,93 @@ export declare interface Token {
 export declare interface DataSharingSdkGroupId {
   groupId?: string;
 }
+export const enum ShareKitFlowType {
+  JOIN = 'join',
+  INVITE = 'invite',
+  MANAGE = 'manage',
+}
+export declare interface DisplayedUserData {
+  name?: string;
+  email?: string;
+}
+export declare interface DynamicMessageParams {
+  displayedUser?: DisplayedUserData;
+  group: {
+    name: string; members: Array<{name: string; email: string; role: string}>;
+  };
+  loggedInUser: {name: string; email: string; role: string;};
+  payload: {title: string; description: string; mediaCount: number;};
+}
+export const enum StaticMessageKey {
+
+  CANCEL_LABEL,
+  CANCEL,
+  CLOSE,
+  LOADING,
+  BACK,
+  ERROR_DIALOG_CONTENT,
+  SOMETHING_WENT_WRONG,
+  THERE_WAS_AN_ERROR,
+  THERE_WAS_AN_ISSUE,
+  MORE_OPTIONS,
+  MORE_OPTIONS_DESCRIPTION,
+
+  INVITE_FLOW_DESCRIPTION_CONTENT,
+  COPY_INVITE_LINK,
+  COPY_LINK,
+  LEARN_ABOUT_SHARED_TAB_GROUPS,
+  LINK_COPY_SUCCESS,
+  LINK_COPY_FAILED,
+
+  JOIN_AND_OPEN_LABEL,
+  LEARN_MORE_JOIN_FLOW,
+  TAB_GROUP_DETAILS,
+  COLLECTION_LIST_TITLE,
+
+  ANYONE_WITH_LINK_TOGGLE_TITLE,
+  ANYONE_WITH_LINK_TOGGLE_DESCRIPTION,
+  BLOCK_AND_LEAVE_GROUP,
+  BLOCK_AND_LEAVE,
+  LEARN_ABOUT_BLOCKED_ACCOUNTS,
+  GOT_IT,
+  ABUSE_BANNER_CONTENT,
+  STOP_SHARING_DIALOG_TITLE,
+  STOP_SHARING,
+  BLOCK,
+  LEAVE_GROUP,
+  LEAVE,
+  LEAVE_GROUP_DIALOG_TITLE,
+  REMOVE,
+  YOU,
+  OWNER,
+  PEOPLE_WITH_ACCESS,
+  PEOPLE_WITH_ACCESS_SUBTITLE_MANAGE_FLOW,
+}
+export const enum DynamicMessageKey {
+
+  GET_INVITE_FLOW_HEADER,
+  GET_MEMBERSHIP_PREVIEW_OWNER_LABEL,
+
+  GET_JOIN_FLOW_DESCRIPTION_HEADER,
+  GET_JOIN_FLOW_DESCRIPTION_CONTENT,
+  GET_MEMBERSHIP_PREVIEW_INVITEE_LABEL,
+  GET_GROUP_PREVIEW_MEMBER_DESCRIPTION,
+  GET_GROUP_PREVIEW_TAB_DESCRIPTION,
+
+  GET_MANAGE_FLOW_HEADER,
+  GET_STOP_SHARING_DIALOG_CONTENT,
+  GET_REMOVE_DIALOG_TITLE,
+  GET_REMOVE_DIALOG_CONTENT,
+  GET_LEAVE_GROUP_DIALOG_CONTENT,
+  GET_BLOCK_DIALOG_TITLE,
+  GET_BLOCK_DIALOG_CONTENT,
+  GET_BLOCK_AND_LEAVE_DIALOG_CONTENT,
+}
+export declare interface TranslationMap {
+  static: {[key in StaticMessageKey]: string};
+  dynamic:
+      {[key in DynamicMessageKey]: (params: DynamicMessageParams) => string;};
+}
 export declare interface DataSharingSdkGroupData {
   groupId: string;
   members: DataSharingSdkGroupMember[];
@@ -67,6 +155,12 @@ export declare interface DataSharingSdkGroupData {
 }
 export declare type DataSharingMemberRole =
     | 'unknown' | 'member' | 'owner' | 'invitee';
+export const enum DataSharingMemberRoleEnum {
+  UNKNOWN = 'unknown',
+  MEMBER = 'member',
+  OWNER = 'owner',
+  INVITEE = 'invitee',
+}
 export declare interface DataSharingSdkGroupMember {
   focusObfuscatedGaiaId: string;
   displayName: string;
@@ -106,6 +200,7 @@ export declare interface AddAccessTokenResult {
 export declare interface RunJoinFlowParams extends DataSharingSdkGroupId {
   tokenSecret: string;
   parent: HTMLElement;
+  translatedMessages: TranslationMap;
   learnMoreUrlMap: {[type in LearnMoreUrlType]?: () => string};
   onJoinSuccessful: () => void;
   fetchPreviewData: () => Promise<DataSharingSdkSitePreview[]>;
@@ -114,26 +209,28 @@ export declare interface RunInviteFlowParams {
   parent: HTMLElement;
   getShareLink: DataSharingSdkGetLink;
   groupName: string;
+  translatedMessages: TranslationMap;
   learnMoreUrlMap: {[type in LearnMoreUrlType]?: () => string};
 }
 export declare interface RunManageFlowParams extends DataSharingSdkGroupId {
   parent: HTMLElement;
   getShareLink: DataSharingSdkGetLink;
+  translatedMessages: TranslationMap;
   learnMoreUrlMap: {[type in LearnMoreUrlType]?: () => string};
 }
 export declare interface DataSharingSdk {
   createGroup(
       params: CreateGroupParams,
-      ): Promise<{result?: CreateGroupResult, status: Code}>;
+      ): Promise<{result?: CreateGroupResult; status: Code}>;
   readGroups(
       params: ReadGroupsParams,
-      ): Promise<{result?: ReadGroupsResult, status: Code}>;
+      ): Promise<{result?: ReadGroupsResult; status: Code}>;
   addMember(params: AddMemberParams): Promise<{status: Code}>;
   leaveGroup(params: LeaveGroupParams): Promise<{status: Code}>;
   deleteGroup(params: DeleteGroupParams): Promise<{status: Code}>;
   addAccessToken(
       params: AddAccessTokenParams,
-      ): Promise<{result?: AddAccessTokenResult, status: Code}>;
+      ): Promise<{result?: AddAccessTokenResult; status: Code}>;
   runJoinFlow(params: RunJoinFlowParams): Promise<DataSharingSdkResponse>;
   runInviteFlow(params: RunInviteFlowParams): Promise<DataSharingSdkResponse>;
   runManageFlow(params: RunManageFlowParams): Promise<DataSharingSdkResponse>;
@@ -143,6 +240,6 @@ export declare interface DataSharingSdk {
 declare global {
   interface Window {
     gapi: {auth: {getToken: () => Token}};
-    data_sharing_sdk: {buildDataSharingSdk(): DataSharingSdk};
+    data_sharing_sdk: {buildDataSharingSdk(): DataSharingSdk;};
   }
 }

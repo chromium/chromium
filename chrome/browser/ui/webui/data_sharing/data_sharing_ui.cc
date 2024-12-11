@@ -10,11 +10,13 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/data_sharing_resources.h"
 #include "chrome/grit/data_sharing_resources_map.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/data_sharing/public/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_allowlist.h"
 
@@ -84,6 +86,77 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
       "lit-html "
       "static-types "
       "webui-test-script;");
+
+  static constexpr webui::LocalizedString kStrings[] = {
+      // static messages:
+      {"cancel", IDS_DATA_SHARING_CANCEL},
+      {"close", IDS_DATA_SHARING_CLOSE},
+      {"back", IDS_DATA_SHARING_BACK},
+      {"loading", IDS_DATA_SHARING_LOADING},
+      {"somethingWrong", IDS_DATA_SHARING_SOMETHING_WRONG},
+      {"somethingWrongBody", IDS_DATA_SHARING_SOMETHING_WRONG_BODY},
+      {"copyLink", IDS_DATA_SHARING_COPY_LINK},
+      {"copyLinkSuccess", IDS_DATA_SHARING_COPY_LINK_SUCCESS},
+      {"copyLinkFailed", IDS_DATA_SHARING_COPY_LINK_FAILED},
+      {"previewDialogConfirm", IDS_DATA_SHARING_PREVIEW_DIALOG_CONFIRM},
+      {"previewDialogConfirm", IDS_DATA_SHARING_PREVIEW_DIALOG_CONFIRM},
+      {"tabsInGroup", IDS_DATA_SHARING_PREVIEW_DIALOG_DETAILS_TABS_IN_GROUP},
+      {"linkJoinToggle", IDS_DATA_SHARING_LINK_JOIN_TOGGLE},
+      {"manageShareWisely", IDS_DATA_SHARING_MANAGE_SHARE_WISELY},
+      {"blockLeaveDialogTitle", IDS_DATA_SHARING_BLOCK_LEAVE_DIALOG_TITLE},
+      {"blockLeaveDialogConfrim", IDS_DATA_SHARING_BLOCK_LEAVE_DIALOG_CONFIRM},
+      {"blockLeaveLearnMore", IDS_DATA_SHARING_BLOCK_LEAVE_LEARN_MORE},
+      {"gotIt", IDS_DATA_SHARING_GOT_IT},
+      {"joinWarning", IDS_DATA_SHARING_JOIN_WARNING},
+      {"ownerStopSharingDialogTitle",
+       IDS_DATA_SHARING_OWNER_STOP_SHARING_DIALOG_TITLE},
+      {"manageStopSharingOption", IDS_DATA_SHARING_MANAGE_STOP_SHARING_OPTION},
+      {"block", IDS_DATA_SHARING_BLOCK},
+      {"leaveGroup", IDS_DATA_SHARING_LEAVE_GROUP},
+      {"leaveGroupConfirm", IDS_DATA_SHARING_LEAVE_DIALOG_CONFIRM},
+      {"leaveDialogTitle", IDS_DATA_SHARING_LEAVE_DIALOG_TITLE},
+      {"remove", IDS_DATA_SHARING_REMOVE},
+      {"you", IDS_DATA_SHARING_YOU},
+      {"owner", IDS_DATA_SHARING_OWNER},
+      {"shareGroupBody", IDS_DATA_SHARING_SHARE_GROUP_BODY},
+      {"copyInviteLink", IDS_DATA_SHARING_COPY_LINK},
+      {"learnMoreJoinFlow", IDS_DATA_SHARING_LEARN_ABOUT_SHARED_GROUPS},
+      {"learnMoreSharedTabGroup", IDS_DATA_SHARING_LEARN_ABOUT_SHARED_GROUPS},
+      {"tabGroupDetailsTitle", IDS_DATA_SHARING_PREVIEW_DIALOG_DETAILS_TITLE},
+      {"peopleWithAccess", IDS_DATA_SHARING_PEOPLE_WITH_ACCESS},
+      {"peopleWithAccessSubtitleManageFlow", IDS_DATA_SHARING_LINK_EDIT_ACCESS},
+      {"errorDialogContent", IDS_DATA_SHARING_SHARE_ERROR_BODY},
+      {"moreOptions", IDS_DATA_SHARING_MORE_OPTIONS},
+      {"moreOptionsDescription", IDS_DATA_SHARING_MORE_OPTIONS_DESCRIPTION},
+
+      // dynamic messages:
+      {"shareGroupShareAs", IDS_DATA_SHARING_SHARE_GROUP_SHARE_AS},
+      {"joinGroupJoinAs", IDS_DATA_SHARING_JOIN_GROUP_JOIN_AS},
+      {"memberCountSingular", IDS_DATA_SHARING_MEMBER_COUNT_SINGULAR},
+      {"memberCountPlural", IDS_DATA_SHARING_MEMBER_COUNT_PLURAL},
+      {"tabCountSingular", IDS_DATA_SHARING_TAB_COUNT_SINGULAR},
+      {"tabCountPlural", IDS_DATA_SHARING_TAB_COUNT_PLURAL},
+      {"ownerStopSharingDialogBody",
+       IDS_DATA_SHARING_OWNER_STOP_SHARING_DIALOG_BODY},
+      {"ownerRemoveMemberDialogTitle",
+       IDS_DATA_SHARING_OWNER_REMOVE_MEMBER_DIALOG_TITLE},
+      {"ownerRemoveMemberDialogBody",
+       IDS_DATA_SHARING_OWNER_REMOVE_MEMBER_DIALOG_BODY},
+      {"leaveDialogBody", IDS_DATA_SHARING_LEAVE_DIALOG_BODY},
+      {"blockDialogTitle", IDS_DATA_SHARING_BLOCK_DIALOG_TITLE},
+      {"ownerRemoveMemberDialogBody",
+       IDS_DATA_SHARING_OWNER_REMOVE_MEMBER_DIALOG_BODY},
+      {"leaveDialogBody", IDS_DATA_SHARING_LEAVE_DIALOG_BODY},
+      {"shareGroupTitle", IDS_DATA_SHARING_SHARE_GROUP_TITLE},
+      {"previewDialogTitleZero", IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_ZERO},
+      {"previewDialogTitleSingular",
+       IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_SINGULAR},
+      {"previewDialogTitlePlural",
+       IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_PLURAL},
+      {"previewDialogBody", IDS_DATA_SHARING_PREVIEW_DIALOG_BODY},
+      {"manageGroupTitle", IDS_DATA_SHARING_MANAGE_GROUP_TITLE},
+  };
+  source->AddLocalizedStrings(kStrings);
 }
 
 DataSharingUI::~DataSharingUI() = default;
