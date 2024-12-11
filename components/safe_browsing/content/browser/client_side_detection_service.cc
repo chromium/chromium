@@ -78,6 +78,11 @@ struct ClientSideDetectionService::ClientPhishingReportInfo {
   GURL phishing_url;
 };
 
+void LogOnDeviceModelSessionCreationSuccess(bool success) {
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.OnDeviceModelSessionCreationSuccess", success);
+}
+
 void LogOnDeviceModelExecutionSuccessAndTime(
     bool success,
     base::TimeTicks session_execution_start_time) {
@@ -818,6 +823,7 @@ void ClientSideDetectionService::InquireOnDeviceModel(
   session_ = delegate_->GetModelExecutorSession();
 
   if (!session_) {
+    LogOnDeviceModelSessionCreationSuccess(false);
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -825,6 +831,7 @@ void ClientSideDetectionService::InquireOnDeviceModel(
   base::UmaHistogramMediumTimes(
       "SBClientPhishing.OnDeviceModelSessionCreationTime",
       base::TimeTicks::Now() - session_creation_start_time);
+  LogOnDeviceModelSessionCreationSuccess(true);
 
   ScamDetectionRequest request;
   request.set_rendered_text(rendered_texts);

@@ -791,6 +791,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.OnDeviceModelSessionCreationSuccess"
+    enum="BooleanSuccess" expires_after="2025-12-11">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the on-device model session creation is successful. This is
+    logged when the host class calls the inquire on device model function in the
+    service class and the on device model is available. This is expected to be
+    overwhelmingly &quot;success&quot; since we have passed the on device model
+    availability check by the time this is logged.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.OnDeviceModelSessionCreationTime" units="ms"
     expires_after="2025-12-02">
   <owner>andysjlim@chromium.org</owner>

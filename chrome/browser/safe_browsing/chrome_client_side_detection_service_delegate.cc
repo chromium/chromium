@@ -156,10 +156,6 @@ void ChromeClientSideDetectionServiceDelegate::
 
 std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
 ChromeClientSideDetectionServiceDelegate::GetModelExecutorSession() {
-  if (!observing_on_device_model_availability_) {
-    return nullptr;
-  }
-
   auto* opt_guide =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
 
