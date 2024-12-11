@@ -17,20 +17,28 @@ chrome/test/functional/special_tabs.py. -->
 <body>
 
 <style>
-html { text-size-adjust: none; }
+  html {
+    text-size-adjust: none;
+  }
 
-#sync-page {
-  /* TODO(akalin): Figure out a better way to make the tab box the
-     same height no matter which tab is selected. */
-  min-height: 650px;
-}
-[hidden] {
-  /* This allows us to hide tabs by adding and removing hidden attribute. */
-  display: none !important;
-}
-div[slot='panel'] {
-  margin-top: 5px;
-}
+  body {
+    margin: 0;
+  }
+
+  #sync-page {
+    /* TODO(akalin): Figure out a better way to make the tab box the
+       same height no matter which tab is selected. */
+    min-height: 650px;
+  }
+
+  [hidden] {
+    /* This allows us to hide tabs by adding and removing hidden attribute. */
+    display: none !important;
+  }
+
+  div[slot='panel'] {
+    margin-top: 5px;
+  }
 </style>
 
 <cr-tab-box id="sync-page">
@@ -56,71 +64,7 @@ div[slot='panel'] {
       </div>
     </div>
 
-    <div id='about-info'>
-      <div class="section" jsselect="details">
-        <h2 jscontent="title"></h2>
-        <table class="about-details">
-          <tr jsselect="data"
-                jsvalues="class:$this.stat_status"
-                jseval='highlightIfChanged(this, this.children[1].innerText, stat_value)'>
-            <td class="detail" jscontent="stat_name" width=50%></td>
-            <td class="value" jscontent="stat_value" width=50%></td>
-          </tr>
-        </table>
-      </div>
-
-      <div id="request-start-stop-wrapper" jsskip="true">
-        <button id="request-start">Enable Sync-The-Feature</button>
-      </div>
-
-      <div id="traffic-event-container-wrapper" jsskip="true">
-        <h2 style="display:inline-block">Sync Protocol Log</h2>
-        <input type="checkbox" id="capture-specifics">
-        <label for="capture-specifics">Capture Specifics</label>
-        <button id="trigger-refresh">Trigger GetUpdates</button>
-        <div id="traffic-event-container">
-          <div class="traffic-event-entry"
-               jsselect="events"
-               jseval="addAboutExpandListener(this)">
-            <span class="time" jscontent="(new Date(time)).toLocaleString()"></span>
-            <span class="type" jscontent="type"></span>
-            <pre class="details" jscontent="details"></pre>
-            <pre class="proto" jscontent="JSON.stringify(proto, null, 2)"></pre>
-          </div>
-        </div>
-      </div>
-
-      <div class="section" style="overflow-x: auto">
-        <h2>Type Info</h2>
-        <table id="typeInfo">
-          <tr jsselect="type_status" jsvalues="class:$this.status">
-            <td jscontent="name" width=30%></td>
-            <td jscontent="num_entries" width=10%></td>
-            <td jscontent="num_live" width=10%></td>
-            <td jscontent="message" width=40% class="message"></td>
-            <td jscontent="state" width=10%></td>
-          </tr>
-        </table>
-      </div>
-
-      <div class="section" jsdisplay="unrecoverable_error_detected">
-        <p>
-          <span class="err" jscontent="unrecoverable_error_message"></span>
-        </p>
-      </div>
-
-      <div class="section" jsdisplay="actionable_error_detected">
-        <p>
-          <h2>Actionable Error</h2>
-          <table id="actionableError">
-            <tr jsselect="actionable_error">
-              <td jscontent="stat_name"></td>
-              <td jscontent="stat_value"></td>
-            </tr>
-          </table>
-        </p>
-      </div>
-    </div>
+    <div id="about-info"></div>
   </div>
   <div slot="panel">
     <p><strong>Some personal info may be in the events dump. Be
@@ -132,8 +76,7 @@ div[slot='panel'] {
 
     <hr>
 
-    <div id="node-type-checkboxes">
-    </div>
+    <div id="node-type-checkboxes"></div>
 
 
     <button id="dump-to-file">Dump sync nodes to file</button>
@@ -162,43 +105,7 @@ div[slot='panel'] {
         <div id="sync-node-tree-container">
         </div>
         <cr-splitter id="sync-node-splitter"></cr-splitter>
-        <div id="node-details">
-          <table>
-            <tr>
-              <td>Title</td>
-              <td jscontent="NON_UNIQUE_NAME"></td>
-            </tr>
-            <tr>
-              <td>ID</td>
-              <td jscontent="ID"></td>
-            </tr>
-            <tr>
-              <td>Modification Time</td>
-              <td jscontent="MTIME"></td>
-            </tr>
-            <tr>
-              <td>Parent</td>
-              <td jscontent="PARENT_ID"></td>
-            </tr>
-            <tr>
-              <td>Is Folder</td>
-              <td jscontent="IS_DIR"></td>
-            </tr>
-            <tr>
-              <td>Type</td>
-              <td jscontent="dataType"></td>
-            </tr>
-            <tr>
-              <td>External ID</td>
-              <td jscontent="LOCAL_EXTERNAL_ID"></td>
-            </tr>
-            <tr jsdisplay="$this.hasOwnProperty('positionIndex')">
-              <td>Position Index</td>
-              <td jscontent="positionIndex"></td>
-            </tr>
-          </table>
-          <pre jscontent="JSON.stringify($this, null, 2)"></pre></td>
-        </div>
+        <div id="node-details"></div>
       </div>
     </div>
   </div>
@@ -236,32 +143,10 @@ div[slot='panel'] {
     <button id="create-event-button">Create</button>
   </div>
   <div slot="panel">
-    <div id="traffic-event-fullscreen-container">
-      <div class="traffic-event-entry-fullscreen"
-          jsselect="events"
-          jseval="TrafficLogTag.getInstance().addExpandListener(this)">
-        <span class="time" jscontent="(new Date(time)).toLocaleString()"></span>
-        <span class="type" jscontent="type"></span>
-        <pre class="details" jscontent="details"></pre>
-        <pre class="proto" jscontent="JSON.stringify(proto, null, 2)"></pre>
-      </div>
-    </div>
+    <div id="traffic-event-fullscreen-container"></div>
   </div>
   <div slot="panel">
-    <table id="invalidation-counters-table">
-      <thead>
-        <th>Data type</th>
-        <th>Count</th>
-        <th>Last time</th>
-      </thead>
-      <tbody>
-        <tr jsselect="rows">
-          <td jscontent="type"></td>
-          <td jscontent="count"></td>
-          <td jscontent="time"></td>
-        </tr>
-      </tbody>
-    </table>
+    <table id="invalidation-counters-table"></table>
     <textarea id="invalidations-log" rows="10" cols="80"readonly></textarea>
   </div>
 </cr-tab-box>

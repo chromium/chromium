@@ -61,3 +61,7 @@ IN_PROC_BROWSER_TEST_F(SyncInternalsWebUITest, NodeBrowserRefreshOnTabSelect) {
 IN_PROC_BROWSER_TEST_F(SyncInternalsWebUITest, DumpSyncEventsToText) {
   RunTestCase("DumpSyncEventsToText");
 }
+
+IN_PROC_BROWSER_TEST_F(SyncInternalsWebUITest, Invalidations) {
+  RunTestCase("Invalidations");
+}

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/js/jstemplate_compiled.js';
-
 import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
+import {html, render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 /**
  * A map from data type to number of invalidations received.
@@ -33,10 +33,29 @@ function refreshInvalidationCountersDisplay() {
     });
   });
 
-  const table =
-      document.querySelector<HTMLElement>('#invalidation-counters-table');
-  assert(table);
-  jstProcess(new JsEvalContext({rows: invalidationCountersArray}), table);
+  render(
+      getInvalidationsHtml(invalidationCountersArray),
+      getRequiredElement('invalidation-counters-table'));
+}
+
+function getInvalidationsHtml(data: CountersArrayEntry[]) {
+  // clang-format off
+  return html`
+    <thead>
+      <th>Data type</th>
+      <th>Count</th>
+      <th>Last time</th>
+    </thead>
+    <tbody>
+      ${data.map(item => html`
+        <tr>
+          <td>${item.type}</td>
+          <td>${item.count}</td>
+          <td>${item.time}</td>
+        </tr>
+      `)}
+    </tbody>`;
+  // clang-format on
 }
 
 /**
@@ -76,4 +95,4 @@ function onLoad() {
   refreshInvalidationCountersDisplay();
 }
 
-document.addEventListener('DOMContentLoaded', onLoad, false);
+document.addEventListener('DOMContentLoaded', onLoad);

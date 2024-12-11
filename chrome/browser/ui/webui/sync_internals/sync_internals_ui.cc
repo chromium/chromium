@@ -29,11 +29,10 @@ void CreateAndAddSyncInternalsHTMLSource(Profile* profile) {
       profile, chrome::kChromeUISyncInternalsHost);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://webui-test 'self' "
-      "'unsafe-eval';");
+      "script-src chrome://resources chrome://webui-test 'self';");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types jstemplate static-types;");
+      "trusted-types lit-html-desktop static-types;");
 
   source->UseStringsJs();
   source->AddResourcePaths(kSyncServiceSyncInternalsResources);
