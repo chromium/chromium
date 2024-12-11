@@ -4057,6 +4057,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserStartQueryFlowOptimization,
       fake_query_controller->sent_full_image_objects_request().has_payload());
   EXPECT_EQ(fake_query_controller->last_sent_underlying_content_type(),
             lens::MimeType::kPlainText);
+  EXPECT_EQ(fake_query_controller->sent_request_id().sequence_id(),
+            1);
+  EXPECT_EQ(fake_query_controller->sent_page_content_request_id().sequence_id(),
+            1);
 }
 
 class LensOverlayControllerBrowserFullscreenDisabled
