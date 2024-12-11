@@ -12,10 +12,6 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
-// TODO(b/362363034): Remove `chrome/browser/lens/` dependencies.
-#include "chrome/browser/lens/core/mojom/lens.mojom.h"
-#include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
-#include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/ui/ash/capture_mode/lens_overlay_request_id_generator.h"
 // TODO(b/362363034): Determine whether to use `LensOverlayClientLogs` for
 // client metrics.
@@ -34,6 +30,7 @@
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -47,10 +44,8 @@ class VariationsClient;
 }  // namespace variations
 
 // Callback type alias for the lens overlay full image response.
-using LensOverlayFullImageResponseCallback =
-    base::RepeatingCallback<void(std::vector<lens::mojom::OverlayObjectPtr>,
-                                 lens::mojom::TextPtr,
-                                 bool)>;
+using LensOverlayFullImageResponseCallback = base::RepeatingCallback<
+    void(std::vector<lens::OverlayObject>, lens::Text, bool)>;
 // Callback type alias for the lens overlay url response.
 using LensOverlayUrlResponseCallback =
     base::RepeatingCallback<void(lens::proto::LensOverlayUrlResponse)>;
@@ -90,7 +85,7 @@ class LensOverlayQueryController {
       const SkBitmap& screenshot,
       GURL page_url,
       std::optional<std::string> page_title,
-      std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
+      std::vector<lens::CenterRotatedBox> significant_region_boxes,
       base::span<const uint8_t> underlying_content_bytes,
       lens::MimeType underlying_content_type,
       float ui_scale_factor,
@@ -104,14 +99,14 @@ class LensOverlayQueryController {
   // the region out of the screenshot. This should be used to provide a higher
   // definition image than image cropping would provide.
   void SendRegionSearch(
-      lens::mojom::CenterRotatedBoxPtr region,
+      lens::CenterRotatedBox region,
       lens::LensOverlaySelectionType lens_selection_type,
       std::map<std::string, std::string> additional_search_query_params,
       std::optional<SkBitmap> region_bytes);
 
   // Sends a multimodal interaction. Expected to be called multiple times.
   void SendMultimodalRequest(
-      lens::mojom::CenterRotatedBoxPtr region,
+      lens::CenterRotatedBox region,
       const std::string& query_text,
       lens::LensOverlaySelectionType lens_selection_type,
       std::map<std::string, std::string> additional_search_query_params,
@@ -264,7 +259,7 @@ class LensOverlayQueryController {
   // Sends the interaction data, triggering async image cropping and fetching
   // the request.
   void SendInteraction(
-      lens::mojom::CenterRotatedBoxPtr region,
+      lens::CenterRotatedBox region,
       std::optional<std::string> query_text,
       std::optional<std::string> object_id,
       lens::LensOverlaySelectionType selection_type,
@@ -277,7 +272,7 @@ class LensOverlayQueryController {
   // asynchronous flow to finish will perform the request.
   void CreateInteractionRequestAndTryPerformInteractionRequest(
       int sequence_id,
-      lens::mojom::CenterRotatedBoxPtr region,
+      lens::CenterRotatedBox region,
       std::optional<std::string> query_text,
       std::optional<std::string> object_id,
       scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
@@ -360,7 +355,7 @@ class LensOverlayQueryController {
   // Creates the metadata for an interaction request using the latest
   // interaction and image crop data.
   lens::LensOverlayServerRequest CreateInteractionRequest(
-      lens::mojom::CenterRotatedBoxPtr region,
+      lens::CenterRotatedBox region,
       std::optional<std::string> query_text,
       std::optional<std::string> object_id,
       std::optional<lens::ImageCrop> image_crop,
@@ -412,7 +407,7 @@ class LensOverlayQueryController {
 
   // Bounding boxes for significant regions identified in the original
   // screenshot image.
-  std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes_;
+  std::vector<lens::CenterRotatedBox> significant_region_boxes_;
 
   // The UI Scaling Factor of the underlying page, if it has been passed in.
   // Else 0.

@@ -47,9 +47,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
+#include "chrome/browser/ui/ash/capture_mode/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/ash/capture_mode/search_results_view.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -542,12 +542,12 @@ void ChromeCaptureModeDelegate::SendRegionSearch(
       /*screenshot=*/image,
       /*page_url=*/GURL(),
       /*page_title=*/std::nullopt, /*significant_region_boxes=*/
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      std::vector<lens::CenterRotatedBox>(),
       /*underlying_content_bytes=*/base::span<const uint8_t>(),
       /*underlying_content_type=*/lens::MimeType(),
       /*ui_scale_factor=*/1.f, /*invocation_time=*/base::TimeTicks::Now());
   lens_overlay_query_controller_->SendRegionSearch(
-      lens::GetCenterRotatedBoxFromTabViewAndImageBounds(
+      GetCenterRotatedBoxFromTabViewAndImageBounds(
           /*tab_bounds=*/region, /*view_bounds=*/region,
           /*image_bounds=*/region),
       lens::LensOverlaySelectionType::REGION_SEARCH,
@@ -568,7 +568,7 @@ void ChromeCaptureModeDelegate::SendMultimodalSearch(
   }
   on_search_url_fetched_callback_ = std::move(callback);
   lens_overlay_query_controller_->SendMultimodalRequest(
-      lens::GetCenterRotatedBoxFromTabViewAndImageBounds(
+      GetCenterRotatedBoxFromTabViewAndImageBounds(
           /*tab_bounds=*/region, /*view_bounds=*/region,
           /*image_bounds=*/region),
       text,
@@ -587,8 +587,8 @@ void ChromeCaptureModeDelegate::DeleteRemoteFile(
 }
 
 void ChromeCaptureModeDelegate::HandleStartQueryResponse(
-    std::vector<lens::mojom::OverlayObjectPtr> objects,
-    lens::mojom::TextPtr text,
+    std::vector<lens::OverlayObject> objects,
+    lens::Text text,
     bool is_error) {}
 
 void ChromeCaptureModeDelegate::HandleInteractionURLResponse(

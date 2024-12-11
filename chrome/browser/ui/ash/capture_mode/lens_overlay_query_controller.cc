@@ -15,11 +15,8 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/lens/core/mojom/geometry.mojom.h"
-#include "chrome/browser/lens/core/mojom/overlay_object.mojom-forward.h"
-#include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
+#include "chrome/browser/ui/ash/capture_mode/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_proto_converter.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/ref_counted_lens_overlay_client_logs.h"
@@ -109,30 +106,6 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
           }
         }
       )");
-
-lens::CoordinateType ConvertToServerCoordinateType(
-    lens::mojom::CenterRotatedBox_CoordinateType type) {
-  switch (type) {
-    case lens::mojom::CenterRotatedBox_CoordinateType::kNormalized:
-      return lens::CoordinateType::NORMALIZED;
-    case lens::mojom::CenterRotatedBox_CoordinateType::kImage:
-      return lens::CoordinateType::IMAGE;
-    case lens::mojom::CenterRotatedBox_CoordinateType::kUnspecified:
-      return lens::CoordinateType::COORDINATE_TYPE_UNSPECIFIED;
-  }
-}
-
-lens::CenterRotatedBox ConvertToServerCenterRotatedBox(
-    lens::mojom::CenterRotatedBoxPtr box) {
-  lens::CenterRotatedBox out_box;
-  out_box.set_center_x(box->box.x());
-  out_box.set_center_y(box->box.y());
-  out_box.set_width(box->box.width());
-  out_box.set_height(box->box.height());
-  out_box.set_coordinate_type(
-      ConvertToServerCoordinateType(box->coordinate_type));
-  return out_box;
-}
 
 std::vector<std::string> CreateOAuthHeader(
     GoogleServiceAuthError error,
@@ -253,7 +226,7 @@ void LensOverlayQueryController::StartQueryFlow(
     const SkBitmap& screenshot,
     GURL page_url,
     std::optional<std::string> page_title,
-    std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
+    std::vector<lens::CenterRotatedBox> significant_region_boxes,
     base::span<const uint8_t> underlying_content_bytes,
     lens::MimeType underlying_content_type,
     float ui_scale_factor,
@@ -288,7 +261,7 @@ void LensOverlayQueryController::EndQuery() {
 }
 
 void LensOverlayQueryController::SendRegionSearch(
-    lens::mojom::CenterRotatedBoxPtr region,
+    lens::CenterRotatedBox region,
     lens::LensOverlaySelectionType lens_selection_type,
     std::map<std::string, std::string> additional_search_query_params,
     std::optional<SkBitmap> region_bytes) {
@@ -298,7 +271,7 @@ void LensOverlayQueryController::SendRegionSearch(
 }
 
 void LensOverlayQueryController::SendMultimodalRequest(
-    lens::mojom::CenterRotatedBoxPtr region,
+    lens::CenterRotatedBox region,
     const std::string& query_text,
     lens::LensOverlaySelectionType multimodal_selection_type,
     std::map<std::string, std::string> additional_search_query_params,
@@ -510,7 +483,7 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
   // blocking on the encoding.
   encoding_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&lens::DownscaleAndEncodeBitmap, original_screenshot_,
+      base::BindOnce(&DownscaleAndEncodeBitmap, original_screenshot_,
                      ui_scale_factor_, ref_counted_logs),
       base::BindOnce(&LensOverlayQueryController::
                          CreateFullImageRequestAndTryPerformFullImageRequest,
@@ -696,12 +669,15 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
         FROM_HERE, std::move(pending_interaction_callback_));
   }
 
+  const lens::LensOverlayObjectsResponse& objects_response =
+      server_response.objects_response();
+  const std::vector<lens::OverlayObject> overlay_objects(
+      objects_response.overlay_objects().begin(),
+      objects_response.overlay_objects().end());
+
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(full_image_callback_,
-                                lens::CreateObjectsMojomArrayFromServerResponse(
-                                    server_response),
-                                lens::CreateTextMojomFromServerResponse(
-                                    server_response, resized_bitmap_size_),
+      FROM_HERE, base::BindOnce(full_image_callback_, overlay_objects,
+                                objects_response.text(),
                                 /*is_error=*/false));
 }
 
@@ -713,13 +689,13 @@ void LensOverlayQueryController::RunFullImageCallbackForError() {
       QueryControllerState::kReceivedFullImageErrorResponse;
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(full_image_callback_,
-                                std::vector<lens::mojom::OverlayObjectPtr>(),
-                                /*text=*/nullptr, /*is_error=*/true));
+      FROM_HERE,
+      base::BindOnce(full_image_callback_, std::vector<lens::OverlayObject>(),
+                     /*text=*/lens::Text(), /*is_error=*/true));
 }
 
 void LensOverlayQueryController::SendInteraction(
-    lens::mojom::CenterRotatedBoxPtr region,
+    lens::CenterRotatedBox region,
     std::optional<std::string> query_text,
     std::optional<std::string> object_id,
     lens::LensOverlaySelectionType selection_type,
@@ -783,13 +759,13 @@ void LensOverlayQueryController::SendInteraction(
   // blocking on the encoding.
   encoding_task_tracker_->PostTaskAndReplyWithResult(
       encoding_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&lens::DownscaleAndEncodeBitmapRegionIfNeeded,
-                     original_screenshot_, region.Clone(), region_bytes,
+      base::BindOnce(&DownscaleAndEncodeBitmapRegionIfNeeded,
+                     original_screenshot_, region, region_bytes,
                      ref_counted_logs),
       base::BindOnce(
           &LensOverlayQueryController::
               CreateInteractionRequestAndTryPerformInteractionRequest,
-          weak_ptr_factory_.GetWeakPtr(), current_sequence_id, region.Clone(),
+          weak_ptr_factory_.GetWeakPtr(), current_sequence_id, region,
           query_text, object_id, ref_counted_logs));
 
   // Async Flow 2: Retrieve the OAuth headers.
@@ -799,7 +775,7 @@ void LensOverlayQueryController::SendInteraction(
 void LensOverlayQueryController::
     CreateInteractionRequestAndTryPerformInteractionRequest(
         int sequence_id,
-        lens::mojom::CenterRotatedBoxPtr region,
+        lens::CenterRotatedBox region,
         std::optional<std::string> query_text,
         std::optional<std::string> object_id,
         scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
@@ -1189,7 +1165,7 @@ LensOverlayQueryController::GetEncodedVisualSearchInteractionLogData(
 
 lens::LensOverlayServerRequest
 LensOverlayQueryController::CreateInteractionRequest(
-    lens::mojom::CenterRotatedBoxPtr region,
+    lens::CenterRotatedBox region,
     std::optional<std::string> query_text,
     std::optional<std::string> object_id,
     std::optional<lens::ImageCrop> image_crop,
@@ -1209,7 +1185,9 @@ LensOverlayQueryController::CreateInteractionRequest(
       ->CopyFrom(request_context);
 
   lens::LensOverlayInteractionRequestMetadata interaction_request_metadata;
-  if (!region.is_null() && image_crop.has_value()) {
+  if (region.coordinate_type() !=
+          lens::CoordinateType::COORDINATE_TYPE_UNSPECIFIED &&
+      image_crop.has_value()) {
     // Add the region for region search and multimodal requests.
     server_request.mutable_interaction_request()
         ->mutable_image_crop()
@@ -1219,7 +1197,7 @@ LensOverlayQueryController::CreateInteractionRequest(
     interaction_request_metadata.mutable_selection_metadata()
         ->mutable_region()
         ->mutable_region()
-        ->CopyFrom(ConvertToServerCenterRotatedBox(region.Clone()));
+        ->CopyFrom(region);
 
     // Add the text, for multimodal requests.
     if (query_text.has_value()) {
