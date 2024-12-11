@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/scanner/ui_bundled/scanner_alerts.h"
 
+#import <Accessibility/Accessibility.h>
+
 #import "base/notreached.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -51,7 +53,17 @@ UIAlertController* CameraPermissionDeniedDialog(
     scanner::CancelAlertAction cancelBlock) {
   NSURL* settingsURL = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
 
-  if (![[UIApplication sharedApplication] canOpenURL:settingsURL]) {
+  BOOL canGoToSettings =
+      [[UIApplication sharedApplication] canOpenURL:settingsURL];
+#if defined(__IPHONE_18_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_0
+  // In Assistive Access, it's not possible to go to Settings, but
+  // `-[UIApplication canOpenURL:]` still returns YES. Detect Assistive Access
+  // (only available starting in iOS 18), and avoid sending to Settings.
+  if (@available(iOS 18, *)) {
+    canGoToSettings = canGoToSettings && !AXAssistiveAccessEnabled();
+  }
+#endif
+  if (!canGoToSettings) {
     // Display a dialog instructing the user how to change the settings.
     NSString* dialogTitle =
         l10n_util::GetNSString(IDS_IOS_SCANNER_CAMERA_PERMISSIONS_HELP_TITLE);

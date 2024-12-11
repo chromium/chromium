@@ -35,6 +35,7 @@ source_set("ui_bundled") {
     "//ui/base",
   ]
   frameworks = [
+    "Accessibility.framework",
     "AVFoundation.framework",
     "UIKit.framework",
   ]
