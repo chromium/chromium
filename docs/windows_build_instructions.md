@@ -92,10 +92,6 @@ Note: if you are a Google employee, see [go/building-chrome-win#install-git](htt
 Note: this section is about updating a direct installation of `git` because
 `depot_tools` will soon stop bundling `git`.
 
-If you have already set up `depot_tools` and would like to update an existing
-directly-installed `git`, you must first
-[modify your PATH](#modify-path-for-git) to prefer the non-`depot_tools` `git`.
-
 Updating to the latest version of `git` will depend on which version you
 currently have installed. First, check your `git` version. From a cmd.exe shell,
 run:
@@ -143,22 +139,6 @@ Python. Note that environment variable names are case insensitive).
   least in front of any directory that might already have a copy of Python).
   Note: If you can only modify your user-level PATH and the system PATH has a
   Python in it, you will be out of luck.
-
-***
-### Modify PATH for git
-**Optional:** You can modify your PATH to prefer using an independently installed
-`git` over the version currently bundled with `depot_tools`. If you are happy to
-keep using the bundled `git` within `depot_tools` until it is removed, you can
-skip this step.
-
-* Assuming you installed Git at `C:\Program Files\Git`, edit your system or
-  user-level PATH in the same way when `C:\src\depot_tools` was added.
-  Modify the Path variable by adding the following *before*
-  `C:\src\depot_tools`:
-  * `C:\Program Files\Git\cmd`
-  * `C:\Program Files\Git\mingw64\bin`
-  * `C:\Program Files\Git\usr\bin`
-***
 
 Also, add a DEPOT_TOOLS_WIN_TOOLCHAIN environment variable in the same way, and
 set it to 0. This tells depot_tools to use your locally installed version of
