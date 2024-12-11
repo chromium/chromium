@@ -185,6 +185,8 @@ component("ash") {
     "accessibility/ui/focus_ring_layer.h",
     "accessibility/ui/layer_animation_info.cc",
     "accessibility/ui/layer_animation_info.h",
+    "accessibility/ui/native_focus_watcher.cc",
+    "accessibility/ui/native_focus_watcher.h",
     "ambient/ambient_access_token_controller.cc",
     "ambient/ambient_access_token_controller.h",
     "ambient/ambient_animation_ui_launcher.cc",
