@@ -42,6 +42,9 @@ jlong JNI_WebauthnModeProvider_SetWebauthnModeForWebContents(
     const JavaParamRef<jobject>& jweb_contents,
     jint mode) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
+  if (!web_contents) {
+    return 0;
+  }
   WebauthnModeWrapper* obj = new WebauthnModeWrapper(WebauthnMode(mode));
   web_contents->SetUserData(kWebauthnModeUserDataKey, base::WrapUnique(obj));
   return reinterpret_cast<intptr_t>(obj);
@@ -52,6 +55,9 @@ jint JNI_WebauthnModeProvider_GetWebauthnModeForWebContents(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
+  if (!web_contents) {
+    return WebauthnMode::NONE;
+  }
   if (WebauthnModeWrapper* webauthnMode =
           WebauthnModeWrapper::FromWebContents(web_contents)) {
     return webauthnMode->GetMode();
