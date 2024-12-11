@@ -525,6 +525,8 @@ public class TabStateFileManager {
                     isEncrypted,
                     cipherFactory);
             return true;
+        } catch (OutOfMemoryError e) {
+            Log.d(TAG, "OutOfMemoryError while saving TabState FlatBuffer file", e);
         } catch (Exception e) {
             // TODO(crbug.com/341122002) Add in metrics
             Log.d(TAG, "Error saving TabState FlatBuffer file", e);
