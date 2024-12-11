@@ -1038,10 +1038,10 @@ void WallpaperControllerImpl::OnPolicyWallpaperDecoded(
   }
   wallpaper_metrics_manager_->LogWallpaperResult(WallpaperType::kPolicy,
                                                  SetWallpaperResult::kSuccess);
-  SaveAndSetWallpaper(account_id, IsEphemeralUser(account_id),
-                      kPolicyWallpaperFile, /*file_path=*/"",
-                      WallpaperType::kPolicy, WALLPAPER_LAYOUT_CENTER_CROPPED,
-                      show_wallpaper, image);
+  bool is_managed_guest = (user_type == user_manager::UserType::kPublicAccount);
+  SaveAndSetWallpaper(account_id, is_managed_guest, kPolicyWallpaperFile,
+                      /*file_path=*/"", WallpaperType::kPolicy,
+                      WALLPAPER_LAYOUT_CENTER_CROPPED, show_wallpaper, image);
 }
 
 void WallpaperControllerImpl::SetDevicePolicyWallpaperPath(
