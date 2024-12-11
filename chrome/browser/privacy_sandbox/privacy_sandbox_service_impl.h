@@ -327,18 +327,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
       std::vector<content::InterestGroupManager::InterestGroupDataKey>
           data_keys);
 
-  // Contains the logic which powers GetRequiredPromptType(). Static to allow
-  // EXPECT_DCHECK_DEATH testing, which does not work well with many of the
-  // other dependencies of this service. It is also for this reason the 3P
-  // cookie block state is passed in, as CookieSettings cannot be used in
-  // death tests.
-  static PrivacySandboxService::PromptType GetRequiredPromptTypeInternal(
-      PrefService* pref_service,
-      profile_metrics::BrowserProfileType profile_type,
-      privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
-      bool third_party_cookies_blocked,
-      bool is_chrome_build);
-
   // Checks to see if initialization of the user's RWS pref is required, and if
   // so, sets the default value based on the user's current cookie settings.
   void MaybeInitializeRelatedWebsiteSetsPref();

@@ -610,12 +610,181 @@ PrivacySandboxServiceImpl::GetRequiredPromptType(SurfaceType surface_type) {
     MaybeEmitPromptStartupAccountMetrics();
     should_emit_dark_launch_startup_metrics_ = false;
   }
-  bool third_party_cookies_blocked = AreAllThirdPartyCookiesBlocked(
-      cookie_settings_.get(), pref_service_, tracking_protection_settings_);
-  return GetRequiredPromptTypeInternal(
-      pref_service_, profile_type_, privacy_sandbox_settings_,
-      third_party_cookies_blocked,
-      force_chrome_build_for_tests_ || IsChromeBuild());
+  // If the prompt is disabled for testing, never show it.
+  if (g_prompt_disabled_for_tests) {
+    return PromptType::kNone;
+  }
+
+  // If the profile isn't a regular profile, no prompt should ever be shown.
+  if (!IsRegularProfile(profile_type_)) {
+    return PromptType::kNone;
+  }
+
+  // Forced testing feature parameters override everything.
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kDisablePrivacySandboxPrompts)) {
+    return PromptType::kNone;
+  }
+
+  if (privacy_sandbox::kPrivacySandboxSettings4ForceShowConsentForTesting
+          .Get()) {
+    return PromptType::kM1Consent;
+  }
+
+  if (privacy_sandbox::kPrivacySandboxSettings4ForceShowNoticeRowForTesting
+          .Get()) {
+    return PromptType::kM1NoticeROW;
+  }
+
+  if (privacy_sandbox::kPrivacySandboxSettings4ForceShowNoticeEeaForTesting
+          .Get()) {
+    return PromptType::kM1NoticeEEA;
+  }
+
+  if (privacy_sandbox::
+          kPrivacySandboxSettings4ForceShowNoticeRestrictedForTesting.Get()) {
+    return PromptType::kM1NoticeRestricted;
+  }
+
+  // Suppress the prompt if we force --no-first-run for testing
+  // and benchmarking.
+  if (IsFirstRunSuppressed(*base::CommandLine::ForCurrentProcess())) {
+    return PromptType::kNone;
+  }
+
+  // If this a non-Chrome build, do not show a prompt.
+  if (!(force_chrome_build_for_tests_ || IsChromeBuild())) {
+    return PromptType::kNone;
+  }
+
+  // If neither a notice nor a consent is required, do not show a prompt.
+  if (!privacy_sandbox::IsNoticeRequired() &&
+      !privacy_sandbox::IsConsentRequired()) {
+    return PromptType::kNone;
+  }
+
+  // Only one of the consent or notice should be required.
+  DCHECK(!privacy_sandbox::IsNoticeRequired() ||
+         !privacy_sandbox::IsConsentRequired());
+
+  // If a prompt was suppressed once, for any reason, it will forever remain
+  // suppressed and a prompt will not be shown.
+  if (static_cast<PromptSuppressedReason>(pref_service_->GetInteger(
+          prefs::kPrivacySandboxM1PromptSuppressed)) !=
+      PromptSuppressedReason::kNone) {
+    return PromptType::kNone;
+  }
+
+  // If an Admin controls any of the K-APIs or suppresses the prompt explicitly
+  // then don't show the prompt.
+  if (IsM1PrivacySandboxEffectivelyManaged(pref_service_)) {
+    return PromptType::kNone;
+  }
+
+  // TODO(crbug.com/383566930): Modify the suppression prefs to be set multiple
+  // suppressions if they exist instead of exiting early.
+
+  // If third party cookies are blocked, set the suppression reason as such, and
+  // do not show a prompt. Unless the prompt is allowed when 3P Cookies are
+  // blocked.
+  if (AreAllThirdPartyCookiesBlocked(cookie_settings_.get(), pref_service_,
+                                     tracking_protection_settings_) &&
+      !base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies)) {
+    pref_service_->SetInteger(
+        prefs::kPrivacySandboxM1PromptSuppressed,
+        static_cast<int>(PromptSuppressedReason::kThirdPartyCookiesBlocked));
+    return PromptType::kNone;
+  }
+
+  // If the Privacy Sandbox is restricted, set the suppression reason as such,
+  // and do not show a prompt.
+  if (privacy_sandbox_settings_->IsPrivacySandboxRestricted() &&
+      !privacy_sandbox::IsRestrictedNoticeRequired()) {
+    pref_service_->SetInteger(
+        prefs::kPrivacySandboxM1PromptSuppressed,
+        static_cast<int>(PromptSuppressedReason::kRestricted));
+    return PromptType::kNone;
+  }
+
+  if (privacy_sandbox::IsRestrictedNoticeRequired()) {
+    CHECK(privacy_sandbox::IsConsentRequired() ||
+          privacy_sandbox::IsNoticeRequired());
+    if (!pref_service_->GetBoolean(
+            prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged) &&
+        !pref_service_->GetBoolean(
+            prefs::kPrivacySandboxM1EEANoticeAcknowledged) &&
+        !pref_service_->GetBoolean(
+            prefs::kPrivacySandboxM1RowNoticeAcknowledged)) {
+      if (privacy_sandbox_settings_->IsSubjectToM1NoticeRestricted()) {
+        return PromptType::kM1NoticeRestricted;
+      }
+      if (privacy_sandbox_settings_->IsPrivacySandboxRestricted()) {
+        pref_service_->SetInteger(
+            prefs::kPrivacySandboxM1PromptSuppressed,
+            static_cast<int>(PromptSuppressedReason::kNoticeShownToGuardian));
+        pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
+                                  true);
+        return PromptType::kNone;
+      }
+    }
+  }
+
+  if (privacy_sandbox::IsConsentRequired()) {
+    if (pref_service_->GetBoolean(
+            prefs::kPrivacySandboxM1ConsentDecisionMade)) {
+      // Since a consent decision has been made, if the eea notice has already
+      // been acknowledged, do not show a prompt; else, show the eea notice.
+      if (pref_service_->GetBoolean(
+              prefs::kPrivacySandboxM1EEANoticeAcknowledged)) {
+        return PromptType::kNone;
+      } else {
+        return PromptType::kM1NoticeEEA;
+      }
+    } else {
+      // A consent decision has not yet been made. If the user has seen a notice
+      // and disabled Topics, we should not attempt to consent them. As they
+      // already have sufficient notice for the other APIs, no prompt is
+      // required.
+      if (pref_service_->GetBoolean(
+              prefs::kPrivacySandboxM1RowNoticeAcknowledged) &&
+          !pref_service_->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled)) {
+        pref_service_->SetInteger(
+            prefs::kPrivacySandboxM1PromptSuppressed,
+            static_cast<int>(
+                PromptSuppressedReason::
+                    kROWFlowCompletedAndTopicsDisabledBeforeEEAMigration));
+        return PromptType::kNone;
+      }
+      return PromptType::kM1Consent;
+    }
+  }
+
+  DCHECK(privacy_sandbox::IsNoticeRequired());
+
+  // If a user that migrated from EEA to ROW has already completed the EEA
+  // consent and notice flow, set the suppression reason as such and do not show
+  // a prompt.
+  if (pref_service_->GetBoolean(prefs::kPrivacySandboxM1ConsentDecisionMade) &&
+      (pref_service_->GetBoolean(
+          prefs::kPrivacySandboxM1EEANoticeAcknowledged))) {
+    pref_service_->SetInteger(
+        prefs::kPrivacySandboxM1PromptSuppressed,
+        static_cast<int>(
+            PromptSuppressedReason::kEEAFlowCompletedBeforeRowMigration));
+    return PromptType::kNone;
+  }
+
+  // If either the ROW notice or the restricted notice has already been
+  // acknowledged, do not show a prompt. Else, show the row notice prompt.
+  if (pref_service_->GetBoolean(
+          prefs::kPrivacySandboxM1RowNoticeAcknowledged) ||
+      pref_service_->GetBoolean(
+          prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged)) {
+    return PromptType::kNone;
+  } else {
+    return PromptType::kM1NoticeROW;
+  }
 }
 
 void UpdateNoticeStorage(
@@ -1468,185 +1637,6 @@ base::Time PrivacySandboxServiceImpl::TopicsConsentLastUpdateTime() const {
 std::string PrivacySandboxServiceImpl::TopicsConsentLastUpdateText() const {
   return pref_service_->GetString(
       prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate);
-}
-
-// static
-PrivacySandboxService::PromptType
-PrivacySandboxServiceImpl::GetRequiredPromptTypeInternal(
-    PrefService* pref_service,
-    profile_metrics::BrowserProfileType profile_type,
-    privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
-    bool third_party_cookies_blocked,
-    bool is_chrome_build) {
-  // If the prompt is disabled for testing, never show it.
-  if (g_prompt_disabled_for_tests) {
-    return PromptType::kNone;
-  }
-
-  // If the profile isn't a regular profile, no prompt should ever be shown.
-  if (!IsRegularProfile(profile_type)) {
-    return PromptType::kNone;
-  }
-
-  // Forced testing feature parameters override everything.
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kDisablePrivacySandboxPrompts)) {
-    return PromptType::kNone;
-  }
-
-  if (privacy_sandbox::kPrivacySandboxSettings4ForceShowConsentForTesting
-          .Get()) {
-    return PromptType::kM1Consent;
-  }
-
-  if (privacy_sandbox::kPrivacySandboxSettings4ForceShowNoticeRowForTesting
-          .Get()) {
-    return PromptType::kM1NoticeROW;
-  }
-
-  if (privacy_sandbox::kPrivacySandboxSettings4ForceShowNoticeEeaForTesting
-          .Get()) {
-    return PromptType::kM1NoticeEEA;
-  }
-
-  if (privacy_sandbox::
-          kPrivacySandboxSettings4ForceShowNoticeRestrictedForTesting.Get()) {
-    return PromptType::kM1NoticeRestricted;
-  }
-
-  // Suppress the prompt if we force --no-first-run for testing
-  // and benchmarking.
-  if (IsFirstRunSuppressed(*base::CommandLine::ForCurrentProcess())) {
-    return PromptType::kNone;
-  }
-
-  // If this a non-Chrome build, do not show a prompt.
-  if (!is_chrome_build) {
-    return PromptType::kNone;
-  }
-
-  // If neither a notice nor a consent is required, do not show a prompt.
-  if (!privacy_sandbox::IsNoticeRequired() &&
-      !privacy_sandbox::IsConsentRequired()) {
-    return PromptType::kNone;
-  }
-
-  // Only one of the consent or notice should be required.
-  DCHECK(!privacy_sandbox::IsNoticeRequired() ||
-         !privacy_sandbox::IsConsentRequired());
-
-  // If a prompt was suppressed once, for any reason, it will forever remain
-  // suppressed and a prompt will not be shown.
-  if (static_cast<PromptSuppressedReason>(
-          pref_service->GetInteger(prefs::kPrivacySandboxM1PromptSuppressed)) !=
-      PromptSuppressedReason::kNone) {
-    return PromptType::kNone;
-  }
-
-  // If an Admin controls any of the K-APIs or suppresses the prompt explicitly
-  // then don't show the prompt.
-  if (IsM1PrivacySandboxEffectivelyManaged(pref_service)) {
-    return PromptType::kNone;
-  }
-
-  // If third party cookies are blocked, set the suppression reason as such, and
-  // do not show a prompt. Unless the prompt is allowed when 3P Cookies are
-  // blocked.
-  if (third_party_cookies_blocked &&
-      !base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxAllowPromptForBlocked3PCookies)) {
-    pref_service->SetInteger(
-        prefs::kPrivacySandboxM1PromptSuppressed,
-        static_cast<int>(PromptSuppressedReason::kThirdPartyCookiesBlocked));
-    return PromptType::kNone;
-  }
-
-  // If the Privacy Sandbox is restricted, set the suppression reason as such,
-  // and do not show a prompt.
-  if (privacy_sandbox_settings->IsPrivacySandboxRestricted() &&
-      !privacy_sandbox::IsRestrictedNoticeRequired()) {
-    pref_service->SetInteger(
-        prefs::kPrivacySandboxM1PromptSuppressed,
-        static_cast<int>(PromptSuppressedReason::kRestricted));
-    return PromptType::kNone;
-  }
-
-  if (privacy_sandbox::IsRestrictedNoticeRequired()) {
-    CHECK(privacy_sandbox::IsConsentRequired() ||
-          privacy_sandbox::IsNoticeRequired());
-    if (!pref_service->GetBoolean(
-            prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged) &&
-        !pref_service->GetBoolean(
-            prefs::kPrivacySandboxM1EEANoticeAcknowledged) &&
-        !pref_service->GetBoolean(
-            prefs::kPrivacySandboxM1RowNoticeAcknowledged)) {
-      if (privacy_sandbox_settings->IsSubjectToM1NoticeRestricted()) {
-        return PromptType::kM1NoticeRestricted;
-      }
-      if (privacy_sandbox_settings->IsPrivacySandboxRestricted()) {
-        pref_service->SetInteger(
-            prefs::kPrivacySandboxM1PromptSuppressed,
-            static_cast<int>(PromptSuppressedReason::kNoticeShownToGuardian));
-        pref_service->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
-                                 true);
-        return PromptType::kNone;
-      }
-    }
-  }
-
-  if (privacy_sandbox::IsConsentRequired()) {
-    if (pref_service->GetBoolean(prefs::kPrivacySandboxM1ConsentDecisionMade)) {
-      // Since a consent decision has been made, if the eea notice has already
-      // been acknowledged, do not show a prompt; else, show the eea notice.
-      if (pref_service->GetBoolean(
-              prefs::kPrivacySandboxM1EEANoticeAcknowledged)) {
-        return PromptType::kNone;
-      } else {
-        return PromptType::kM1NoticeEEA;
-      }
-    } else {
-      // A consent decision has not yet been made. If the user has seen a notice
-      // and disabled Topics, we should not attempt to consent them. As they
-      // already have sufficient notice for the other APIs, no prompt is
-      // required.
-      if (pref_service->GetBoolean(
-              prefs::kPrivacySandboxM1RowNoticeAcknowledged) &&
-          !pref_service->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled)) {
-        pref_service->SetInteger(
-            prefs::kPrivacySandboxM1PromptSuppressed,
-            static_cast<int>(
-                PromptSuppressedReason::
-                    kROWFlowCompletedAndTopicsDisabledBeforeEEAMigration));
-        return PromptType::kNone;
-      }
-      return PromptType::kM1Consent;
-    }
-  }
-
-  DCHECK(privacy_sandbox::IsNoticeRequired());
-
-  // If a user that migrated from EEA to ROW has already completed the EEA
-  // consent and notice flow, set the suppression reason as such and do not show
-  // a prompt.
-  if (pref_service->GetBoolean(prefs::kPrivacySandboxM1ConsentDecisionMade) &&
-      (pref_service->GetBoolean(
-          prefs::kPrivacySandboxM1EEANoticeAcknowledged))) {
-    pref_service->SetInteger(
-        prefs::kPrivacySandboxM1PromptSuppressed,
-        static_cast<int>(
-            PromptSuppressedReason::kEEAFlowCompletedBeforeRowMigration));
-    return PromptType::kNone;
-  }
-
-  // If either the ROW notice or the restricted notice has already been
-  // acknowledged, do not show a prompt. Else, show the row notice prompt.
-  if (pref_service->GetBoolean(prefs::kPrivacySandboxM1RowNoticeAcknowledged) ||
-      pref_service->GetBoolean(
-          prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged)) {
-    return PromptType::kNone;
-  } else {
-    return PromptType::kM1NoticeROW;
-  }
 }
 
 void PrivacySandboxServiceImpl::MaybeInitializeRelatedWebsiteSetsPref() {
