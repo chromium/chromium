@@ -63,6 +63,11 @@ public class UkmRecorder {
     }
 
     public void record() {
+        if (mWebContents.isDestroyed()) {
+            // https://crbug.com/356429588
+            assert false;
+            return;
+        }
         Metric[] metricsArray = mMetrics.toArray(new Metric[mMetrics.size()]);
         UkmRecorderJni.get().recordEventWithMultipleMetrics(mWebContents, mEventName, metricsArray);
     }
