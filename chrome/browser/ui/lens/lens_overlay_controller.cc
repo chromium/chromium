@@ -2410,7 +2410,6 @@ void LensOverlayController::DoLensRequest(
     initialization_data_->selected_region_bitmap_.reset();
   }
 
-  // TODO(b/332787629): Append the 'mactx' param.
   lens_overlay_query_controller_->SendRegionSearch(
       region.Clone(), selection_type,
       initialization_data_->additional_search_query_params_, region_bytes);
