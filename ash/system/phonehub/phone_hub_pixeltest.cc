@@ -152,7 +152,9 @@ TEST_P(PhoneHubParameterizedPixelTest, PhoneHubTrayOnShelf) {
       /* revision_number= */ 0, GetPhoneHubTray()));
 }
 
-TEST_P(PhoneHubParameterizedPixelTest, PhoneHubBubbleOpenedNoPermissions) {
+// TODO(b:383384907) disable animations before enabling this test.
+TEST_P(PhoneHubParameterizedPixelTest,
+       DISABLED_PhoneHubBubbleOpenedNoPermissions) {
   GetPrimaryShelf()->SetAlignment(GetShelfAlignment());
   if (GetFeatureStatus() == phonehub::FeatureStatus::kEnabledAndConnected) {
     SetFakePhoneStatusModel();
