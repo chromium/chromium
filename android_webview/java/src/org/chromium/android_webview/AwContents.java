@@ -69,7 +69,6 @@ import org.chromium.android_webview.metrics.BackForwardCacheNotRestoredReason;
 import org.chromium.android_webview.permission.AwGeolocationCallback;
 import org.chromium.android_webview.permission.AwPermissionRequest;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
-import org.chromium.android_webview.selection.SamsungSelectionActionMenuDelegate;
 import org.chromium.android_webview.selection.SelectionActionMenuDelegateProvider;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
@@ -125,7 +124,6 @@ import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.WebContentsInternals;
 import org.chromium.content_public.browser.navigation_controller.LoadURLType;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
-import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.device.gamepad.GamepadList;
@@ -3341,18 +3339,6 @@ public class AwContents implements SmartClipProvider {
             String result = (value == null) ? null : value.toString();
             selectionPopupController.handleTextReplacementAction(result);
             return;
-        }
-        SelectionActionMenuDelegate selectionActionMenuDelegate =
-                selectionPopupController.getSelectionActionMenuDelegate();
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU
-                && selectionActionMenuDelegate
-                        instanceof SamsungSelectionActionMenuDelegate delegate) {
-            String additionalActivityResult =
-                    delegate.getTextFromAdditionalActivityResult(requestCode, resultCode, data);
-            if (additionalActivityResult != null) {
-                selectionPopupController.handleTextReplacementAction(additionalActivityResult);
-                return;
-            }
         }
         Log.e(TAG, "Received activity result for an unknown request code %d", requestCode);
     }
