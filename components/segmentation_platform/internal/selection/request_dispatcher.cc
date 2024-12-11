@@ -342,12 +342,15 @@ void RequestDispatcher::GetInputKeysForModel(
       storage_service_->segment_info_database()->GetCachedSegmentInfo(
           config->segments.begin()->first, ModelSource::SERVER_MODEL_SOURCE);
 
-  std::set<std::string> inputs =
-      metadata_utils::GetInputKeysForMetadata(default_info->model_metadata());
-  std::set<std::string> inputs_server =
-      metadata_utils::GetInputKeysForMetadata(server_info->model_metadata());
-
-  inputs.merge(std::move(inputs_server));
+  std::set<std::string> inputs;
+  if (default_info) {
+    inputs.merge(metadata_utils::GetInputKeysForMetadata(
+        default_info->model_metadata()));
+  }
+  if (server_info) {
+    inputs.merge(
+        metadata_utils::GetInputKeysForMetadata(server_info->model_metadata()));
+  }
   std::move(callback).Run(std::move(inputs));
 }
 

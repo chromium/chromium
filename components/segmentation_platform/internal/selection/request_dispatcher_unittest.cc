@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/internal/selection/request_dispatcher.h"
+
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -13,6 +14,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -22,6 +24,7 @@
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
+#include "components/segmentation_platform/internal/database/test_segment_info_database.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/internal/mock_ukm_data_manager.h"
@@ -113,9 +116,11 @@ class RequestDispatcherTest : public testing::Test {
     client_result_prefs_ = std::make_unique<ClientResultPrefs>(&prefs_);
     auto cached_result_writer = std::make_unique<CachedResultWriter>(
         client_result_prefs_.get(), &clock_);
+    auto test_segment_db = std::make_unique<test::TestSegmentInfoDatabase>();
+    segment_info_database_ = test_segment_db.get();
     storage_service_ = std::make_unique<StorageService>(
-        nullptr, nullptr, nullptr, nullptr, std::move(config_holder),
-        &ukm_data_manager_);
+        std::move(test_segment_db), nullptr, nullptr, nullptr,
+        std::move(config_holder), &ukm_data_manager_);
     storage_service_->set_cached_result_writer_for_testing(
         std::move(cached_result_writer));
 
@@ -161,6 +166,7 @@ class RequestDispatcherTest : public testing::Test {
   std::unique_ptr<ClientResultPrefs> client_result_prefs_;
   MockUkmDataManager ukm_data_manager_;
   std::unique_ptr<StorageService> storage_service_;
+  raw_ptr<test::TestSegmentInfoDatabase> segment_info_database_;
   raw_ptr<MockRequestHandler, DanglingUntriaged> request_handler1_ = nullptr;
   raw_ptr<MockRequestHandler, DanglingUntriaged> request_handler2_ = nullptr;
   raw_ptr<MockRequestHandler, DanglingUntriaged> request_handler3_ = nullptr;
@@ -560,6 +566,47 @@ TEST_F(RequestDispatcherTest, TestCachedExecutionWithFallback) {
                      base::Unretained(this), loop.QuitClosure(), result));
   loop.Run();
   EXPECT_EQ(0, request_dispatcher_->GetPendingActionCountForTesting());
+}
+
+TEST_F(RequestDispatcherTest, GetInputsForModel) {
+  base::test::TestFuture<std::set<std::string>> input_results;
+  request_dispatcher_->GetInputKeysForModel(kAdaptiveToolbarClient,
+                                            input_results.GetCallback());
+  EXPECT_THAT(input_results.Get(), testing::IsEmpty());
+
+  proto::SegmentInfo* default_info =
+      segment_info_database_->FindOrCreateSegment(
+          proto::OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR,
+          ModelSource::DEFAULT_MODEL_SOURCE);
+
+  base::test::TestFuture<std::set<std::string>> input_results2;
+  request_dispatcher_->GetInputKeysForModel(kAdaptiveToolbarClient,
+                                            input_results2.GetCallback());
+  EXPECT_THAT(input_results2.Get(), testing::IsEmpty());
+
+  MetadataWriter writer(default_info->mutable_model_metadata());
+  writer.AddFromInputContext("input_id", "custom_input1");
+  writer.AddFromInputContext("input_id", "custom_input2");
+
+  base::test::TestFuture<std::set<std::string>> input_results3;
+  request_dispatcher_->GetInputKeysForModel(kAdaptiveToolbarClient,
+                                            input_results3.GetCallback());
+  EXPECT_THAT(input_results3.Get(),
+              testing::UnorderedElementsAre("custom_input1", "custom_input2"));
+
+  proto::SegmentInfo* server_info = segment_info_database_->FindOrCreateSegment(
+      proto::OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR,
+      ModelSource::SERVER_MODEL_SOURCE);
+  MetadataWriter writer2(server_info->mutable_model_metadata());
+  writer.AddFromInputContext("input_id", "custom_input1");
+  writer.AddFromInputContext("input_id", "custom_input3");
+
+  base::test::TestFuture<std::set<std::string>> input_results4;
+  request_dispatcher_->GetInputKeysForModel(kAdaptiveToolbarClient,
+                                            input_results4.GetCallback());
+  EXPECT_THAT(input_results4.Get(),
+              testing::UnorderedElementsAre("custom_input1", "custom_input2",
+                                            "custom_input3"));
 }
 
 }  // namespace
