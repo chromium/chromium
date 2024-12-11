@@ -687,8 +687,9 @@ IN_PROC_BROWSER_TEST_P(BackgroundPageOnlyRuntimeApiTest,
     ASSERT_EQ(new_tab_url.spec(), url->GetString());
   }
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-class RuntimeGetContextsApiTest : public ExtensionApiTest {
+class RuntimeGetContextsApiTest : public ExtensionApiTestBase {
  public:
   RuntimeGetContextsApiTest() = default;
   RuntimeGetContextsApiTest(const RuntimeGetContextsApiTest&) = delete;
@@ -697,7 +698,7 @@ class RuntimeGetContextsApiTest : public ExtensionApiTest {
   ~RuntimeGetContextsApiTest() override = default;
 
   void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
+    ExtensionApiTestBase::SetUpOnMainThread();
 
     static constexpr char kManifest[] =
         R"({
@@ -822,6 +823,7 @@ class RuntimeGetContextsApiTest : public ExtensionApiTest {
   TestExtensionDir test_dir_;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 // Tests retrieving the background service worker context using
 // `chrome.runtime.getContexts()`.
 
@@ -994,6 +996,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetTabContext) {
       expected_frame_url.c_str(), expected_origin.c_str());
   EXPECT_THAT(background_contexts, base::test::IsJson(expected));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests retrieving offscreen documents with `runtime.getContexts()`.
 IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetOffscreenDocumentContext) {
@@ -1056,6 +1059,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetOffscreenDocumentContext) {
   EXPECT_THAT(background_contexts, base::test::IsJson(expected));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Tests retrieving a side panel context from the `runtime.getContexts()` API.
 IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetSidePanelContext) {
   // Set the side panel to open on toolbar action click. This makes it easier
