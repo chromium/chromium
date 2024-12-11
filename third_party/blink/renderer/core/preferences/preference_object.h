@@ -32,7 +32,7 @@ class CORE_EXPORT PreferenceObject final
 
   ~PreferenceObject() override;
 
-  std::optional<AtomicString> override(ScriptState*);
+  AtomicString override(ScriptState*);
 
   AtomicString value(ScriptState*);
 
