@@ -14,6 +14,7 @@ import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -69,27 +70,21 @@ public class HomeModulesUtils {
                 String.valueOf(moduleType));
     }
 
-    /** Gets the freshness count of a module. */
-    @VisibleForTesting
-    static int getFreshnessCount(@ModuleType int moduleType) {
-        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
-        String freshnessScoreKey = getFreshnessCountPreferenceKey(moduleType);
-        return sharedPreferencesManager.readInt(freshnessScoreKey, INVALID_FRESHNESS_SCORE);
-    }
-
     /** Called to reset the freshness count when there is new information to show. */
     @VisibleForTesting
-    static void resetFreshnessCount(@ModuleType int moduleType) {
+    public static void resetFreshnessCountAsFresh(@ModuleType int moduleType) {
         SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
         String freshnessScoreKey = getFreshnessCountPreferenceKey(moduleType);
-        sharedPreferencesManager.writeInt(freshnessScoreKey, INVALID_FRESHNESS_SCORE);
+        sharedPreferencesManager.writeInt(freshnessScoreKey, 0);
+
+        setFreshnessScoreTimeStamp(moduleType, TimeUtils.uptimeMillis());
     }
 
     /**
      * Called to increase the freshness score for the module. The count is increased from 0, not -1.
      */
     @VisibleForTesting
-    static void increaseFreshnessCount(@ModuleType int moduleType, int count) {
+    public static void increaseFreshnessCount(@ModuleType int moduleType, int count) {
         SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
         String freshnessScoreKey = getFreshnessCountPreferenceKey(moduleType);
         int score =
@@ -98,11 +93,20 @@ public class HomeModulesUtils {
                         sharedPreferencesManager.readInt(
                                 freshnessScoreKey, INVALID_FRESHNESS_SCORE));
         sharedPreferencesManager.writeInt(freshnessScoreKey, (score + count));
+
+        setFreshnessScoreTimeStamp(moduleType, TimeUtils.uptimeMillis());
+    }
+
+    /** Gets the freshness count of a module. */
+    @VisibleForTesting
+    static int getFreshnessCount(@ModuleType int moduleType) {
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        String freshnessScoreKey = getFreshnessCountPreferenceKey(moduleType);
+        return sharedPreferencesManager.readInt(freshnessScoreKey, INVALID_FRESHNESS_SCORE);
     }
 
     /** Returns the preference key of the module type. */
-    @VisibleForTesting
-    static String getFreshnessTimeStampPreferenceKey(@ModuleType int moduleType) {
+    private static String getFreshnessTimeStampPreferenceKey(@ModuleType int moduleType) {
         assert 0 <= moduleType && moduleType < ModuleType.NUM_ENTRIES;
 
         return ChromePreferenceKeys.HOME_MODULES_FRESHNESS_TIMESTAMP_MS.createKey(
@@ -125,24 +129,28 @@ public class HomeModulesUtils {
         return sharedPreferencesManager.readLong(freshnessScoreTimeStampKey, INVALID_TIMESTAMP);
     }
 
+    /**
+     * Returns whether the feature flag
+     * ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2 is enabled.
+     */
     static boolean isHomeModuleRankerV2Enabled() {
         return ChromeFeatureList.isEnabled(
                 ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2);
     }
 
     /** Creates an InputContext for the given module type. */
-    public static InputContext createInputContextForTesting(@ModuleType int moduleType) {
+    public static InputContext createInputContext(@ModuleType int moduleType) {
         InputContext inputContext = new InputContext();
         inputContext.addEntry(
                 getFreshnessInputContextString(moduleType),
                 ProcessedValue.fromFloat(
-                        getFreshnessScoreForTesting(isHomeModuleRankerV2Enabled(), moduleType)));
+                        getFreshnessScore(isHomeModuleRankerV2Enabled(), moduleType)));
         return inputContext;
     }
 
     /** Returns the freshness score of a module if valid. */
-    private static int getFreshnessScoreForTesting(
-            boolean useFreshnessScore, @ModuleType int moduleType) {
+    @VisibleForTesting
+    static int getFreshnessScore(boolean useFreshnessScore, @ModuleType int moduleType) {
         if (!useFreshnessScore) return INVALID_FRESHNESS_SCORE;
 
         long timeStamp = getFreshnessScoreTimeStamp(moduleType);
@@ -155,10 +163,13 @@ public class HomeModulesUtils {
         return getFreshnessCount(moduleType);
     }
 
-    public static void setFreshnessCountForTesting(@ModuleType int moduleType, int count) {
+    public static void setFreshnessCountForTesting(
+            @ModuleType int moduleType, int count, long timeStamp) {
         SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
         String freshnessScoreKey = getFreshnessCountPreferenceKey(moduleType);
         sharedPreferencesManager.writeInt(freshnessScoreKey, count);
+
+        setFreshnessScoreTimeStamp(moduleType, timeStamp);
     }
 
     public static void resetFreshnessTimeStampForTesting(@ModuleType int moduleType) {

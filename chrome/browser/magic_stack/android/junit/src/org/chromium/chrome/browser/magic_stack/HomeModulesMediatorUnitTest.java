@@ -98,7 +98,7 @@ public class HomeModulesMediatorUnitTest {
     @After
     public void tearDown() {
         for (int i = 0; i < ModuleType.NUM_ENTRIES; i++) {
-            HomeModulesUtils.resetFreshnessCount(i);
+            HomeModulesUtils.resetFreshnessCountAsFresh(i);
             HomeModulesUtils.resetFreshnessTimeStampForTesting(i);
         }
         mHomeModulesConfigManager.cleanupForTesting();

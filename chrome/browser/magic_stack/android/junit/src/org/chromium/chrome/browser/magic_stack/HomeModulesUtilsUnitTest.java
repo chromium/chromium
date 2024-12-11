@@ -18,9 +18,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -34,86 +34,83 @@ import org.chromium.components.segmentation_platform.InputContext;
 public class HomeModulesUtilsUnitTest {
     @Test
     @SmallTest
-    public void testFreshnessCount() {
+    public void testIncreaseFreshnessCount() {
         @ModuleType int moduleType = ModuleType.PRICE_CHANGE;
-        String moduleFreshnessCountPreferenceKey =
-                ChromePreferenceKeys.HOME_MODULES_FRESHNESS_COUNT.createKey(
-                        String.valueOf(moduleType));
-        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
-
-        assertFalse(sharedPreferencesManager.contains(moduleFreshnessCountPreferenceKey));
-        assertEquals(
-                HomeModulesMediator.INVALID_FRESHNESS_SCORE,
-                sharedPreferencesManager.readInt(
-                        moduleFreshnessCountPreferenceKey,
-                        HomeModulesMediator.INVALID_FRESHNESS_SCORE));
+        verifyKeysDoNotExistInSharedPreference(moduleType);
 
         int count = 5;
         HomeModulesUtils.increaseFreshnessCount(moduleType, count);
-        assertEquals(
-                count,
-                sharedPreferencesManager.readInt(
-                        moduleFreshnessCountPreferenceKey,
-                        HomeModulesMediator.INVALID_FRESHNESS_SCORE));
+        verifyCountAndTimestamp(moduleType, count);
 
-        HomeModulesUtils.resetFreshnessCount(moduleType);
-        assertTrue(sharedPreferencesManager.contains(moduleFreshnessCountPreferenceKey));
-        assertEquals(
-                HomeModulesMediator.INVALID_FRESHNESS_SCORE,
-                sharedPreferencesManager.readInt(
-                        moduleFreshnessCountPreferenceKey,
-                        HomeModulesMediator.INVALID_FRESHNESS_SCORE));
+        count = 1;
+        HomeModulesUtils.increaseFreshnessCount(moduleType, count);
+        verifyCountAndTimestamp(moduleType, /* expectedCount= */ 6);
     }
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER,
-        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2
-    })
-    public void testCreateInputContext_InvalidScore() {
+    public void testResetFreshnessCountAsFresh() {
+        @ModuleType int moduleType = ModuleType.PRICE_CHANGE;
+        verifyKeysDoNotExistInSharedPreference(moduleType);
+
+        HomeModulesUtils.resetFreshnessCountAsFresh(moduleType);
+        verifyCountAndTimestamp(moduleType, /* expectedCount= */ 0);
+
+        int count = 1;
+        HomeModulesUtils.increaseFreshnessCount(moduleType, count);
+        verifyCountAndTimestamp(moduleType, count);
+
+        HomeModulesUtils.resetFreshnessCountAsFresh(moduleType);
+        verifyCountAndTimestamp(moduleType, /* expectedCount= */ 0);
+    }
+
+    @Test
+    @SmallTest
+    public void testFreshnessScoreTimeStamp() {
         @ModuleType int moduleType = ModuleType.PRICE_CHANGE;
 
-        HomeModulesUtils.setFreshnessCountForTesting(
-                moduleType, HomeModulesUtils.INVALID_FRESHNESS_SCORE);
+        verifyKeysDoNotExistInSharedPreference(moduleType);
 
-        InputContext inputContext = HomeModulesUtils.createInputContextForTesting(moduleType);
+        long timeStamp = SystemClock.elapsedRealtime() - 10;
+        HomeModulesUtils.setFreshnessScoreTimeStamp(moduleType, timeStamp);
+        assertEquals(timeStamp, HomeModulesUtils.getFreshnessScoreTimeStamp(moduleType));
+    }
 
-        assertEquals(1, inputContext.getSizeForTesting());
+    @Test
+    @SmallTest
+    public void testGetFreshnessScore() {
+        @ModuleType int moduleType = ModuleType.PRICE_CHANGE;
+
+        verifyKeysDoNotExistInSharedPreference(moduleType);
+
+        // Verifies INVALID_FRESHNESS_SCORE is returned when the timestamp isn't saved.
         assertEquals(
                 INVALID_FRESHNESS_SCORE,
-                inputContext.getEntryForTesting(
-                                HomeModulesUtils.getFreshnessInputContextString(moduleType))
-                        .floatValue,
-                0.01);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER,
-        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2
-    })
-    public void testCreateInputContext_InvalidTimestamp() {
-        @ModuleType int moduleType = ModuleType.PRICE_CHANGE;
+                HomeModulesUtils.getFreshnessScore(/* useFreshnessScore= */ true, moduleType));
 
         // Verifies that if the logged time is longer than the threshold, the freshness score is
         // invalid.
         int expectedScore = 100;
         long scoreLoggedTime =
                 SystemClock.elapsedRealtime() - HomeModulesMediator.FRESHNESS_THRESHOLD_MS - 10;
-        HomeModulesUtils.setFreshnessScoreTimeStamp(moduleType, scoreLoggedTime);
-        HomeModulesUtils.setFreshnessCountForTesting(moduleType, expectedScore);
-
-        InputContext inputContext = HomeModulesUtils.createInputContextForTesting(moduleType);
-
-        assertEquals(1, inputContext.getSizeForTesting());
+        HomeModulesUtils.setFreshnessCountForTesting(moduleType, expectedScore, scoreLoggedTime);
         assertEquals(
                 INVALID_FRESHNESS_SCORE,
-                inputContext.getEntryForTesting(
-                                HomeModulesUtils.getFreshnessInputContextString(moduleType))
-                        .floatValue,
-                0.01);
+                HomeModulesUtils.getFreshnessScore(/* useFreshnessScore= */ true, moduleType));
+
+        // Verifies that the freshness score will be used if the logging time is less than the
+        // threshold.
+        expectedScore = 100;
+        scoreLoggedTime = SystemClock.elapsedRealtime() - 10;
+        HomeModulesUtils.setFreshnessCountForTesting(moduleType, expectedScore, scoreLoggedTime);
+        assertEquals(
+                expectedScore,
+                HomeModulesUtils.getFreshnessScore(/* useFreshnessScore= */ true, moduleType));
+
+        // Verifies INVALID_FRESHNESS_SCORE is returned when useFreshnessScore is false.
+        assertEquals(
+                INVALID_FRESHNESS_SCORE,
+                HomeModulesUtils.getFreshnessScore(/* useFreshnessScore= */ false, moduleType));
     }
 
     @Test
@@ -125,16 +122,13 @@ public class HomeModulesUtilsUnitTest {
     public void testCreateInputContext() {
         @ModuleType int moduleType = ModuleType.PRICE_CHANGE;
 
-        // Verifies that the freshness score will be used if the logging time is less than the
-        // threshold.
         int expectedScore = 100;
         long scoreLoggedTime = SystemClock.elapsedRealtime() - 10;
-        HomeModulesUtils.setFreshnessScoreTimeStamp(moduleType, scoreLoggedTime);
-        HomeModulesUtils.setFreshnessCountForTesting(moduleType, expectedScore);
+        HomeModulesUtils.setFreshnessCountForTesting(moduleType, expectedScore, scoreLoggedTime);
 
-        InputContext inputContext = HomeModulesUtils.createInputContextForTesting(moduleType);
-
+        InputContext inputContext = HomeModulesUtils.createInputContext(moduleType);
         assertEquals(1, inputContext.getSizeForTesting());
+        // Verifies the freshness score matches.
         assertEquals(
                 expectedScore,
                 inputContext.getEntryForTesting(
@@ -143,28 +137,41 @@ public class HomeModulesUtilsUnitTest {
                 0.01);
     }
 
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER})
-    @DisableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2})
-    public void testCreateInputContext_Disabled() {
-        @ModuleType int moduleType = ModuleType.PRICE_CHANGE;
+    private void verifyKeysDoNotExistInSharedPreference(@ModuleType int moduleType) {
+        String moduleFreshnessCountPreferenceKey =
+                ChromePreferenceKeys.HOME_MODULES_FRESHNESS_COUNT.createKey(
+                        String.valueOf(moduleType));
+        String moduleFreshnessTimestampPreferenceKey =
+                ChromePreferenceKeys.HOME_MODULES_FRESHNESS_TIMESTAMP_MS.createKey(
+                        String.valueOf(moduleType));
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
 
-        // Verifies that the freshness score won't be used if the flag
-        // ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2 is disabled.
-        int expectedScore = 100;
-        long scoreLoggedTime = SystemClock.elapsedRealtime() - 10;
-        HomeModulesUtils.setFreshnessScoreTimeStamp(moduleType, scoreLoggedTime);
-        HomeModulesUtils.setFreshnessCountForTesting(moduleType, expectedScore);
-
-        InputContext inputContext = HomeModulesUtils.createInputContextForTesting(moduleType);
-
-        assertEquals(1, inputContext.getSizeForTesting());
+        // Verifies that both freshness count key and the timestamp key don't exist.
+        assertFalse(sharedPreferencesManager.contains(moduleFreshnessCountPreferenceKey));
         assertEquals(
-                INVALID_FRESHNESS_SCORE,
-                inputContext.getEntryForTesting(
-                                HomeModulesUtils.getFreshnessInputContextString(moduleType))
-                        .floatValue,
-                0.01);
+                HomeModulesMediator.INVALID_FRESHNESS_SCORE,
+                sharedPreferencesManager.readInt(
+                        moduleFreshnessCountPreferenceKey,
+                        HomeModulesMediator.INVALID_FRESHNESS_SCORE));
+        assertFalse(sharedPreferencesManager.contains(moduleFreshnessTimestampPreferenceKey));
+    }
+
+    private void verifyCountAndTimestamp(@ModuleType int moduleType, int expectedCount) {
+        String moduleFreshnessCountPreferenceKey =
+                ChromePreferenceKeys.HOME_MODULES_FRESHNESS_COUNT.createKey(
+                        String.valueOf(moduleType));
+        String moduleFreshnessTimestampPreferenceKey =
+                ChromePreferenceKeys.HOME_MODULES_FRESHNESS_TIMESTAMP_MS.createKey(
+                        String.valueOf(moduleType));
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+
+        // Verifies the freshness count matches.
+        assertTrue(sharedPreferencesManager.contains(moduleFreshnessCountPreferenceKey));
+        assertEquals(expectedCount, HomeModulesUtils.getFreshnessCount(moduleType));
+
+        // Verifies that the timestamp is set as the current time.
+        assertTrue(sharedPreferencesManager.contains(moduleFreshnessTimestampPreferenceKey));
+        assertEquals(
+                TimeUtils.uptimeMillis(), HomeModulesUtils.getFreshnessScoreTimeStamp(moduleType));
     }
 }

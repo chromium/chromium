@@ -128,7 +128,7 @@ public class ModuleRegistryUnitTest {
         Set<Integer> mEnabledModuleSet = new HashSet<>(Set.of(moduleType1, moduleType2));
 
         // Registers a solid module.
-        InputContext inputs1 = HomeModulesUtils.createInputContextForTesting(moduleType1);
+        InputContext inputs1 = HomeModulesUtils.createInputContext(moduleType1);
         when(mModuleProviderBuilder1.createInputContext()).thenReturn(inputs1);
 
         // Registers an ephemeral module.

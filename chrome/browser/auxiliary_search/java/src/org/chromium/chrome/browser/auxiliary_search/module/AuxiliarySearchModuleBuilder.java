@@ -11,13 +11,17 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
 import org.chromium.chrome.browser.auxiliary_search.R;
+import org.chromium.chrome.browser.magic_stack.HomeModulesUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleConfigChecker;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
+import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -74,5 +78,13 @@ public class AuxiliarySearchModuleBuilder implements ModuleProviderBuilder, Modu
     @Override
     public boolean isEligible() {
         return AuxiliarySearchControllerFactory.getInstance().isEnabled();
+    }
+
+    @Override
+    public @Nullable InputContext createInputContext() {
+        // TODO(https://crbug.com/382803396: remove this hard coded score.
+        HomeModulesUtils.resetFreshnessCountAsFresh(ModuleType.AUXILIARY_SEARCH);
+
+        return HomeModulesUtils.createInputContext(ModuleType.AUXILIARY_SEARCH);
     }
 }
