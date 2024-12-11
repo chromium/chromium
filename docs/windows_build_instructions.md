@@ -205,6 +205,8 @@ $ git config --global user.name "My Name"
 $ git config --global user.email "my-name@chromium.org"
 $ git config --global core.autocrlf false
 $ git config --global core.filemode false
+$ git config --global core.preloadindex true
+$ git config --global core.fscache true
 $ git config --global branch.autosetuprebase always
 ```
 
