@@ -206,8 +206,15 @@ OcclusionCuller::OcclusionCuller(
 
 OcclusionCuller::~OcclusionCuller() = default;
 
-void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame,
-                                          float device_scale_factor) {
+void OcclusionCuller::UpdateDeviceScaleFactor(float device_scale_factor) {
+  if (device_scale_factor_ == device_scale_factor) {
+    return;
+  }
+
+  device_scale_factor_ = device_scale_factor;
+}
+
+void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
   if (frame->render_pass_list.empty()) {
     return;
   }
@@ -409,7 +416,7 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame,
             CanSplitQuad(quad->material, reduced_visible_region,
                          visible_region.bounds().size(),
                          settings_.minimum_fragments_reduced,
-                         device_scale_factor);
+                         device_scale_factor_);
         if (should_split_quads) {
           auto new_quad = pass->quad_list.InsertCopyBeforeDrawQuad(
               quad, reduced_visible_region.size() - 1);

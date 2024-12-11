@@ -52,6 +52,7 @@ class OcclusionCullerTest : public testing::Test {
     CHECK(!occlusion_culler_);
     occlusion_culler_ =
         std::make_unique<OcclusionCuller>(overlay_processor_.get(), settings);
+    occlusion_culler_->UpdateDeviceScaleFactor(kDefaultDeviceScaleFactor);
   }
 
   OcclusionCuller* occlusion_culler() { return occlusion_culler_.get(); }
@@ -111,7 +112,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithBlending) {
   EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
   EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.back()->quad_list));
 
-  occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+  occlusion_culler()->RemoveOverdrawQuads(&frame);
 
   EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
   EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.back()->quad_list));
@@ -186,7 +187,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithIntersectingBackdropFilter) {
   // | 2   | . |
   // +-----+---+
   EXPECT_EQ(std::size(rects), root_render_pass->quad_list.size());
-  occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+  occlusion_culler()->RemoveOverdrawQuads(&frame);
   ASSERT_EQ(std::size(rects), root_render_pass->quad_list.size());
 
   for (int i = 0; i < 3; i++) {
@@ -228,7 +229,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithNonCoveringDrawQuad) {
 
     quad->SetNew(shared_quad_state, rect1, rect1, SkColors::kBlack, false);
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // This is a base case, the compositor frame contains only one
     // DrawQuad, so the size of quad_list remains unchanged after calling
@@ -265,7 +266,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithNonCoveringDrawQuad) {
     quad2->SetNew(shared_quad_state2, rect2, rect2, SkColors::kBlack, false);
 
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // Since |quad| (defined by rect1 (0, 0, 100x100)) cannot cover |quad2|
     // (define by rect2 (50, 50, 100x100)), the |quad_list| size remains the
@@ -305,7 +306,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithNonCoveringDrawQuad) {
     quad2->SetNew(shared_quad_state2, rect3, rect3, SkColors::kBlack, false);
 
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // Since |quad| (defined by rect1 (0, 0, 100x100)) cannot cover |quad2|
     // (define by rect3 (25, 25, 50x100)), the |quad_list| size remains the same
@@ -343,7 +344,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithNonCoveringDrawQuad) {
     quad2->SetNew(shared_quad_state2, rect6, rect6, SkColors::kBlack, false);
 
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // Since |quad| (defined by rect7 (0, 20, 100x100)) cannot cover |quad2|
     // (define by rect6 (25, 0, 50x160)), the |quad_list| size remains the same
@@ -380,7 +381,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithNonCoveringDrawQuad) {
     quad2->SetNew(shared_quad_state2, rect4, rect4, SkColors::kBlack, false);
 
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // Since |quad| (defined by rect1 (0, 0, 100x100)) cannot cover |quad2|
     // (define by rect4 (150, 0, 50x50)), the |quad_list| size remains the same
@@ -415,7 +416,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithNonCoveringDrawQuad) {
     quad2->SetNew(shared_quad_state2, rect5, rect5, SkColors::kBlack, false);
 
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // Since |quad| (defined by rect1 (0, 0, 100x100)) cannot cover |quad2|
     // (define by rect5 (0, 0, 120x120)), the |quad_list| size remains the same
@@ -473,7 +474,7 @@ TEST_F(OcclusionCullerTest,
   //  +-----+     +-------+
   {
     EXPECT_EQ(3u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // The third quad (defined by rects[2](25, 25, 50x50)) is completely
     // occluded by the first quad (defined by rects[0](0, 0, 100x100)), so the
@@ -529,7 +530,7 @@ TEST_F(OcclusionCullerTest,
   //  +-----+     +-----+-+
   {
     EXPECT_EQ(4u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // The third (defined by rects[2](25, 25, 50x50)) and fourth (defined by
     // rects[3](150, 0, 100x100)) quads are completely occluded by the first
@@ -589,7 +590,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithOverlapDrawQuad) {
     quad2->SetNew(shared_quad_state2, rect1, rect1, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // |quad2| overlaps |quad1|, so |quad2| is removed from the |quad_list|.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
@@ -621,7 +622,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithOverlapDrawQuad) {
     quad2->SetNew(shared_quad_state2, rect2, rect2, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // |quad2| is hiding behind |quad1|, so |quad2| is removed from the
     // |quad_list|.
@@ -655,7 +656,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithOverlapDrawQuad) {
     quad2->SetNew(shared_quad_state2, rect3, rect3, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // |quad2| is behind |quad1| and aligns with the edge of |quad1|, so |quad2|
     // is removed from the |quad_list|.
@@ -689,7 +690,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithOverlapDrawQuad) {
 
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // |quad2| is covered by |quad 1|, so |quad2| is removed from the
     // |quad_list|.
@@ -756,7 +757,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithTransformer) {
     quad2->SetNew(shared_quad_state2, rect2, rect2, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // |rect2| becomes (12, 12, 50x50) after applying half scale transform,
     // |quad2| is now covered by |quad|. So the size of |quad_list| is reduced
@@ -787,7 +788,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithTransformer) {
     quad2->SetNew(shared_quad_state2, rect3, rect3, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // |rect3| becomes (25, 25, 50x25) after applying half scale transform,
     // |quad2| is now covered by |quad|. So the size of |quad_list| is reduced
@@ -819,7 +820,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithTransformer) {
 
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // |rect4| becomes (0, 0, 60x60) after applying half scale transform,
     // |quad2| is now covered by |quad1|. So the size of |quad_list| is reduced
@@ -840,7 +841,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithTransformer) {
     quad->SetNew(shared_quad_state, rect1, rect1, SkColors::kBlack, false);
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // The compositor frame contains only one quad, so |quad_list| remains 1
     // after calling RemoveOverdrawQuads.
@@ -871,7 +872,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithTransformer) {
 
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // |quad2| (defined by |rect5|) becomes (50, 50, 120x120) after
     // applying double scale transform, it is not covered by |quad| (defined by
@@ -905,7 +906,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithTransformer) {
 
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // |quad2| (defined by |rect6|) becomes (24, 24, 50x100) after
     // applying double scale transform, it is not covered by |quad| (defined by
@@ -939,7 +940,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithTransformer) {
 
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // |quad2| (defined by |rect7|) becomes (150, 0, 50x50) after
     // applying double scale transform, it is not covered by |quad| (defined by
@@ -973,7 +974,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithTransformer) {
 
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // |quad2| (defined by |rect8|) becomes (0, 0, 120x120) after
     // applying double scale transform, it is not covered by |quad1| (defined by
@@ -1007,7 +1008,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithTransformer) {
 
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // |quad2| (defined by |rect9|) becomes (24, 0, 50x160) after
     // applying double scale transform, it is not covered by |quad| (defined by
@@ -1069,7 +1070,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithEpsilonScaleTransform) {
     quad2->SetNew(shared_quad_state2, rect, rect, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // zero matrix transform is non-invertible, so |quad2| is not removed from
     // occlusion culling algorithm.
@@ -1100,7 +1101,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithEpsilonScaleTransform) {
     quad2->SetNew(shared_quad_state2, rect, rect, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // This test verifies that the occlusion culling algorithm does not break
     // when the scale of the transform is very close to zero. |epsilon_scale|
@@ -1137,7 +1138,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithEpsilonScaleTransform) {
     quad2->SetNew(shared_quad_state2, rect, rect, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // This test verifies that the occlusion culling algorithm works well with
     // small scales that is just larger than the epsilon scale in the previous
@@ -1190,7 +1191,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithNegativeScaleTransform) {
     quad2->SetNew(shared_quad_state2, rect, rect, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // Since the x-axis is negated, |quad2| after applying transform does not
     // intersect with |quad| any more, so no quad is removed.
@@ -1229,7 +1230,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithNegativeScaleTransform) {
     quad2->SetNew(shared_quad_state2, rect, rect, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // Since the y-axis is negated, |quad2| after applying transform does not
     // intersect with |quad| any more, so no quad is removed.
@@ -1268,7 +1269,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithNegativeScaleTransform) {
     quad2->SetNew(shared_quad_state2, rect, rect, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // Since z-axis is missing in a 2d plane, negating the z-axis does not cause
     // |q2| to move at all. So |quad2| overlaps with |quad| in target space.
@@ -1343,7 +1344,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithAxisAlignmentRotation) {
     quad2->SetNew(shared_quad_state2, rect2, rect2, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // In target space, `quad` becomes (-50, 0, 50x100) and `quad2` becomes
     // (-60, 0 60x120). Quads partially intersect.
@@ -1399,7 +1400,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithAxisAlignmentRotation) {
     quad2->SetNew(shared_quad_state2, rect2, rect2, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // In target space, `quad` becomes (-100, 0, 100x200) and `quad2` becomes
     // (-120, 0 120x240). Quads partially intersect.
@@ -1468,7 +1469,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithNonAxisAlignmentRotation) {
     quad2->SetNew(shared_quad_state2, rect2, rect2, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // In target space, |quad| becomes (0, 0, 71x100) (after applying rotation
     // transform) and |quad2| becomes (75, 75 10x10). So |quad2| does not
@@ -1498,7 +1499,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithNonAxisAlignmentRotation) {
     quad2->SetNew(shared_quad_state2, rect2, rect2, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // In target space, |quad| becomes (0, 0, 70x100) and |quad2| becomes
     // (53, 75 8x10) (after applying rotation transform). So |quad2| is behind
@@ -1529,7 +1530,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithNonAxisAlignmentRotation) {
     quad2->SetNew(shared_quad_state2, rect3, rect3, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // In target space, |quad| becomes (0, 0, 71x100) (after applying rotation
     // transform) and |quad2| becomes (50, 50, 25x100). So |quad2| does not
@@ -1562,7 +1563,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithNonAxisAlignmentRotation) {
     quad2->SetNew(shared_quad_state2, rect3, rect3, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // Since both |quad| and |quad2| went through the same transform and |rect1|
     // does not cover |rect3| initially, |quad| does not cover |quad2| in target
@@ -1618,7 +1619,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithPerspective) {
     quad2->SetNew(shared_quad_state2, rect1, rect1, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // The transform used on |quad| is a combination of rotation and
     // perspective matrix, so it does not preserve 2d axis. Since it takes too
@@ -1649,7 +1650,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithPerspective) {
     quad2->SetNew(shared_quad_state2, rect2, rect2, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // The transform used on |quad2| is a combination of rotation and
     // perspective matrix, so it does not preserve 2d axis. it's easy to find
@@ -1696,7 +1697,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithOpacityChange) {
     quad2->SetNew(shared_quad_state2, rect2, rect2, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // Since the opacity of |rect2| is less than 1, |rect1| cannot occlude
     // |rect2| even though |rect2| is inside |rect1|.
@@ -1724,7 +1725,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithOpacityChange) {
     quad2->SetNew(shared_quad_state2, rect2, rect2, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // Repeat the above test and set the opacity of |rect1| to 1.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
@@ -1767,7 +1768,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithOpaquenessChange) {
     quad2->SetNew(shared_quad_state2, rect2, rect2, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // Since the opaqueness of |rect2| is false, |rect1| cannot occlude
     // |rect2| even though |rect2| is inside |rect1|.
@@ -1795,7 +1796,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithOpaquenessChange) {
     quad2->SetNew(shared_quad_state2, rect2, rect2, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // Repeat the above test and set the opaqueness of |rect2| to true.
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
@@ -1847,7 +1848,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameZTranslate) {
     quad2->SetNew(shared_quad_state2, rect2, rect1, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // Since both |quad| and |quad2| are inside of a 3d object, OcclusionCulling
     // will not be applied to them.
@@ -1903,7 +1904,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithTranslateTransformer) {
     quad2->SetNew(shared_quad_state2, rect2, rect2, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // |rect2| and |rect1| are disjoined as show in the first image. The size of
     // |quad_list| remains 2.
@@ -1938,7 +1939,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithTranslateTransformer) {
     quad2->SetNew(shared_quad_state2, rect2, rect2, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // Move |quad| defined by |rect1| over |quad2| defined by |rect2| by
     // applying translation transform. |quad2| will be covered by |quad|, so
@@ -1974,7 +1975,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithTranslateTransformer) {
     quad2->SetNew(shared_quad_state2, rect3, rect3, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // Move |quad| defined by |rect1| over |quad2| defined by |rect3| by
     // applying translation transform. In target space, |quad| is (50, 50,
@@ -2042,7 +2043,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithCombinedSharedQuadState) {
     quad3->SetNew(shared_quad_state3, rect3, rect3, SkColors::kBlack, false);
     EXPECT_EQ(3u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // The occlusion rect is enlarged horizontally after visiting |rect1| and
     // |rect2|. |rect3| is covered by both |rect1| and |rect2|, so |rect3| is
@@ -2072,7 +2073,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithCombinedSharedQuadState) {
     quad3->SetNew(shared_quad_state3, rect4, rect4, SkColors::kBlack, false);
     EXPECT_EQ(3u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // The occlusion rect, which is enlarged horizontally after visiting |rect1|
     // and |rect2|, is (0, 0, 160x60). Since visible region of rect 4 is
@@ -2103,7 +2104,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithCombinedSharedQuadState) {
     quad3->SetNew(shared_quad_state3, rect5, rect5, SkColors::kBlack, false);
     EXPECT_EQ(3u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // The occlusion rect, which is enlarged horizontally after visiting |rect1|
     // and |rect2|, is (0, 0, 160x60). Since visible region of rect 5 is
@@ -2159,7 +2160,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithMultipleRenderPass) {
   EXPECT_EQ(3u, NumVisibleRects(render_pass->quad_list));
   EXPECT_EQ(1u, NumVisibleRects(root_render_pass->quad_list));
 
-  occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+  occlusion_culler()->RemoveOverdrawQuads(&frame);
 
   EXPECT_EQ(2u, NumVisibleRects(render_pass->quad_list));
   EXPECT_EQ(1u, NumVisibleRects(root_render_pass->quad_list));
@@ -2226,7 +2227,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithMultipleRenderPass) {
     EXPECT_EQ(2u, frame.render_pass_list.at(1)->quad_list.size());
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // The occlusion rect is enlarged horizontally after visiting |rect1| and
     // |rect2|. |rect3| is covered by the unioned region of |rect1| and |rect2|.
@@ -2299,7 +2300,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithCoveredRenderPass) {
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
     EXPECT_EQ(1u, frame.render_pass_list.at(1)->quad_list.size());
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // |rect1| and |rect2| shares the same region where |rect1| is a draw
     // quad and |rect2| RenderPass. |rect2| will be not removed from the
@@ -2354,7 +2355,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithClip) {
     quad2->SetNew(shared_quad_state2, rect2, rect2, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // |rect1| covers |rect2| as shown in the figure above, So the size of
     // |quad_list| is reduced by 1.
@@ -2385,7 +2386,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithClip) {
     quad2->SetNew(shared_quad_state2, rect2, rect2, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // In the target space, a clip is applied on |quad| (defined by |clip_rect|,
     // (0, 0, 60x60) |quad| and |quad2| (50, 50, 25x25) don't intersect in the
@@ -2418,7 +2419,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithClip) {
     quad2->SetNew(shared_quad_state2, rect3, rect3, SkColors::kBlack, false);
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // In the target space, a clip is applied on |quad| (defined by |rect3|,
     // (50, 50, 20x10)). |quad| intersects with |quad2| in the target space. The
@@ -2469,7 +2470,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithCopyRequest) {
         CopyOutputRequest::CreateStubForTesting());
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // root RenderPass contains |rect1|, |rect2| and copy_request (where
     // |rect2| is in |rect1|). Since our current implementation only supports
@@ -2551,7 +2552,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithRenderPass) {
     D2->SetNew(shared_quad_state4, rect4, rect4, SkColors::kBlack, false);
     EXPECT_EQ(4u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // As shown in the image above, the opaque region |d1| and |d2| does not
     // occlude each other. Since AggregatedRenderPassDrawQuad |r1| and |r2|
@@ -2606,7 +2607,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithRenderPass) {
     D2->SetNew(shared_quad_state4, rect6, rect6, SkColors::kBlack, false);
     EXPECT_EQ(4u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // As shown in the image above, the opaque region |d1| and |d2| does not
     // occlude each other. Since AggregatedRenderPassDrawQuad |r1| and |r2|
@@ -2660,7 +2661,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithRenderPass) {
     D2->SetNew(shared_quad_state4, rect7, rect7, SkColors::kBlack, false);
     EXPECT_EQ(4u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // As shown in the image above, the opaque region |d2| is contained in |d1|
     // Since AggregatedRenderPassDrawQuad |r1| and |r2| cannot be removed to
@@ -2742,7 +2743,7 @@ TEST_F(OcclusionCullerTest,
                   SkColors::kBlack, false);
     EXPECT_EQ(5u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // |visible_rect| of |shared_quad_state| is formed by 4 DrawQuads and it
     // covers the visible region of |shared_quad_state2|.
@@ -2780,7 +2781,7 @@ TEST_F(OcclusionCullerTest,
                   rect_intersects_rect1, SkColors::kBlack, false);
     EXPECT_EQ(5u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // |visible_rect| of |shared_quad_state| is formed by 4 DrawQuads and it
     // partially covers the visible region of |shared_quad_state2|. The
@@ -2832,7 +2833,7 @@ TEST_F(OcclusionCullerTest,
                   false);
     EXPECT_EQ(6u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // |visible_rect| of |shared_quad_state| is formed by 4 DrawQuads and it
     // partially covers the visible region of |shared_quad_state2|. So the
@@ -2924,7 +2925,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithNonInvertibleTransform) {
 
     EXPECT_EQ(3u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // |quad2| is removed because it is not shown on screen in the target space.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
@@ -2957,7 +2958,7 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithNonInvertibleTransform) {
     quad3->SetNew(shared_quad_state3, rect3, rect3, SkColors::kBlack, false);
 
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // |quad3| follows an non-invertible transform and it's covered by the
     // occlusion rect. So |quad3| is removed from the |frame|.
@@ -2996,7 +2997,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithLargeDrawQuad) {
 
     quad->SetNew(shared_quad_state, rect1, rect1, SkColors::kBlack, false);
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // This is a base case, the compositor frame contains only one
     // DrawQuad, so the size of quad_list remains unchanged after calling
@@ -3050,7 +3051,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithRoundedCornerDoesNotOcclude) {
                                 quad_rect, SkColors::kBlue, false);
 
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // Since none of the quads are culled, there should be 2 quads.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
@@ -3108,7 +3109,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithRoundedCornerDoesNotOccludeY) {
                                 quad_rect, SkColors::kBlue, false);
 
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // Since none of the quads are culled, there should be 2 quads.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
@@ -3166,7 +3167,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithRoundedCornerDoesNotOccludeX) {
                                 quad_rect, SkColors::kBlue, false);
 
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // Since none of the quads are culled, there should be 2 quads.
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
@@ -3221,7 +3222,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithRoundedCornerDoesOcclude) {
                                 quad_rect, SkColors::kBlue, false);
 
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // Since the quad with rounded corner completely covers the quad with
     // no rounded corner, the later quad is culled. We should only have 1 quad
@@ -3275,7 +3276,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithRoundedCornerDoesOccludeXY) {
                                 quad_rect, SkColors::kBlue, false);
 
     EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // Since the quad with rounded corner completely covers the quad with
     // no rounded corner, the later quad is culled. We should only have 1 quad
@@ -3344,7 +3345,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingSplit) {
     }
 
     EXPECT_EQ(4u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     ASSERT_EQ(6u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
     EXPECT_EQ(
@@ -3454,7 +3455,7 @@ TEST_F(OcclusionCullerTest, FirstPassVisibleComplexityReduction) {
   }
 
   EXPECT_EQ(3u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-  occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+  occlusion_culler()->RemoveOverdrawQuads(&frame);
 
   ASSERT_EQ(6u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
@@ -3566,7 +3567,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithRoundedCornerPartialOcclude) {
                                 quad_rect, SkColors::kBlue, false);
 
     EXPECT_EQ(5u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
-    occlusion_culler()->RemoveOverdrawQuads(&frame, kDefaultDeviceScaleFactor);
+    occlusion_culler()->RemoveOverdrawQuads(&frame);
 
     // Since the quad with rounded corner completely covers the quad with
     // no rounded corner, the later quad is culled. We should only have 1 quad
@@ -3643,7 +3644,8 @@ TEST_F(OcclusionCullerTest, OcclusionCullingSplitDeviceScaleFactorFractional) {
 
   EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 
-  occlusion_culler()->RemoveOverdrawQuads(&frame, 1.5f);
+  occlusion_culler()->UpdateDeviceScaleFactor(1.5f);
+  occlusion_culler()->RemoveOverdrawQuads(&frame);
   EXPECT_EQ(5u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
 }
 
