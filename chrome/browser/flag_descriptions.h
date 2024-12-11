@@ -2290,6 +2290,9 @@ extern const char kWallpaperSearchSettingsVisibilityName[];
 extern const char kWallpaperSearchSettingsVisibilityDescription[];
 
 #if !BUILDFLAG(IS_ANDROID)
+extern const char kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuName[];
+extern const char
+    kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuDescription[];
 extern const char kWebAuthnEnclaveAuthenticatorName[];
 extern const char kWebAuthnEnclaveAuthenticatorDescription[];
 extern const char kWebAuthnPasskeyUpgradeName[];

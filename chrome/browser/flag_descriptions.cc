@@ -3978,6 +3978,11 @@ const char kWallpaperSearchSettingsVisibilityDescription[] =
     "Shows wallpaper search settings in settings UI.";
 
 #if !BUILDFLAG(IS_ANDROID)
+const char kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuName[] =
+    "Use passkey from another device in the context menu";
+const char kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuDescription[] =
+    "Hides the \"Use a passkey\" entry from the autofill popup for conditional "
+    "WebAuthn requests. Moves the entry point to the context menu.";
 const char kWebAuthnEnclaveAuthenticatorName[] =
     "Enable the cloud enclave authenticator for GPM passkeys";
 const char kWebAuthnEnclaveAuthenticatorDescription[] =

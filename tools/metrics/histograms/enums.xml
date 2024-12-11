@@ -18107,6 +18107,8 @@ from previous Chrome versions.
   <int value="-913629421" label="CastStreamingVp8:enabled"/>
   <int value="-913571703" label="TabAndLinkDragDropAndroid:enabled"/>
   <int value="-913294939" label="DriveFS:enabled"/>
+  <int value="-913218734"
+      label="WebAuthnUsePasskeyFromAnotherDeviceInContextMenu:enabled"/>
   <int value="-912946915" label="LauncherSearchControl:disabled"/>
   <int value="-912585719" label="AppManagementIntentSettings:disabled"/>
   <int value="-912456561" label="MidiManagerWinrt:enabled"/>
@@ -24744,6 +24746,8 @@ from previous Chrome versions.
   <int value="1744034696" label="UseGpuSchedulerDfs:enabled"/>
   <int value="1745053254" label="ClickToCallOpenDialerDirectly:enabled"/>
   <int value="1746253146" label="AdvancedDocumentScanAPI:enabled"/>
+  <int value="1746757451"
+      label="WebAuthnUsePasskeyFromAnotherDeviceInContextMenu:disabled"/>
   <int value="1747279677" label="disable-delegated-renderer"/>
   <int value="1747979127"
       label="AccessibilityReducedAnimationsInKiosk:enabled"/>

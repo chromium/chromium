@@ -10955,6 +10955,13 @@ const FeatureEntry kFeatureEntries[] = {
          optimization_guide::switches::kEnableModelQualityDogfoodLogging)},
 
 #if !BUILDFLAG(IS_ANDROID)
+    {"hybrid-passkeys-in-context-menu",
+     flag_descriptions::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuName,
+     flag_descriptions::
+         kWebAuthnUsePasskeyFromAnotherDeviceInContextMenuDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(password_manager::features::
+                            kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu)},
     {"web-authentication-enclave-authenticator",
      flag_descriptions::kWebAuthnEnclaveAuthenticatorName,
      flag_descriptions::kWebAuthnEnclaveAuthenticatorDescription, kOsDesktop,
