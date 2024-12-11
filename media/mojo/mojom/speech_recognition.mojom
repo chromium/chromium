@@ -232,7 +232,6 @@ interface SpeechRecognitionSurfaceClient {
 
 // Static metadata about a remote speech surface. Used by the speech service
 // client in Ash.
-[Stable]
 struct SpeechRecognitionSurfaceMetadata {
   // A unique identifier for the "session" (i.e. tab) of the surface. Is used to
   // hide the caption bubble for all streams in a tab if the bubble is closed
@@ -244,7 +243,6 @@ struct SpeechRecognitionSurfaceMetadata {
 // The remote lives in the renderer process and the receiver lives in the
 // browser process. Not necessary for browser-side features (e.g. CrOS system
 // Live Caption), which can access browser functionality directly.
-[Stable]
 interface SpeechRecognitionClientBrowserInterface {
   // Bind the speech recognition availability observer.
   BindSpeechRecognitionBrowserObserver@0(
