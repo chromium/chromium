@@ -1425,6 +1425,10 @@
     "type": "console_test_launcher",
     "skip_usage_check": True,
   },
+  "opt_target_coverage_test": {
+    "label": "//components/optimization_guide/internal/testing:opt_target_coverage_test",
+    "type": "generated_script",
+  },
   "optimization_guide_gpu_unittests": {
     "label": "//components/optimization_guide/internal:optimization_guide_gpu_unittests",
     "type": "console_test_launcher",

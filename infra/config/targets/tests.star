@@ -1773,6 +1773,10 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.isolated_script_test(
+    name = "opt_target_coverage_test",
+)
+
+targets.tests.isolated_script_test(
     name = "chrome_ai_wpt_tests",
 )
 

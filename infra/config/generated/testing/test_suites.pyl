@@ -2566,6 +2566,17 @@
       },
     },
 
+    'opt_target_coverage_test_suite': {
+      'opt_target_coverage_test': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'linux_args': [
+          '--no-xvfb',
+        ],
+      },
+    },
+
     'optimization_guide_android_gtests': {
       'optimization_guide_components_unittests': {
         'test_common': {
@@ -3396,6 +3407,11 @@
       'ondevice_stability_tests_suite': {
         'variants': [
           'NVIDIA_GEFORCE_GTX_1660',
+        ],
+      },
+      'opt_target_coverage_test_suite': {
+        'mixins': [
+          'gce',
         ],
       },
     },

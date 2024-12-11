@@ -1394,6 +1394,30 @@
         "test": "ondevice_stability_tests_light",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests_light/",
         "variant_id": "NVIDIA GeForce GTX 1660"
+      },
+      {
+        "args": [
+          "--no-xvfb"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "opt_target_coverage_test",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "gce": "1",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "opt_target_coverage_test",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:opt_target_coverage_test/"
       }
     ]
   },

@@ -1873,6 +1873,20 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "opt_target_coverage_test_suite",
+    tests = {
+        "opt_target_coverage_test": targets.legacy_test_config(
+            mixins = [
+                "has_native_resultdb_integration",
+            ],
+            linux_args = [
+                "--no-xvfb",
+            ],
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "chrome_ai_wpt_tests_suite",
     tests = {
         "chrome_ai_wpt_tests": targets.legacy_test_config(

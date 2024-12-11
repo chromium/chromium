@@ -1561,6 +1561,11 @@ targets.binaries.generated_script(
 )
 
 targets.binaries.generated_script(
+    name = "opt_target_coverage_test",
+    label = "//components/optimization_guide/internal/testing:opt_target_coverage_test",
+)
+
+targets.binaries.generated_script(
     name = "chrome_ai_wpt_tests",
     label = "//components/optimization_guide/internal/testing:chrome_ai_wpt_tests",
     results_handler = "layout tests",
