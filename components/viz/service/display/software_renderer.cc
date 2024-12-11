@@ -39,6 +39,7 @@
 #include "skia/ext/opacity_filter_canvas.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
 #include "third_party/skia/include/core/SkMaskFilter.h"
@@ -55,6 +56,26 @@
 
 namespace viz {
 namespace {
+
+// Return a color filter that multiplies the incoming color by the fixed alpha
+sk_sp<SkColorFilter> MakeOpacityFilter(float alpha, sk_sp<SkColorFilter> in) {
+  SkColor4f alpha_as_color = {1.0, 1.0, 1.0, alpha};
+  // MakeModeFilter treats fixed color as src, and input color as dst.
+  // kDstIn is (srcAlpha * dstColor, srcAlpha * dstAlpha) so this makes the
+  // output color equal to input color * alpha.
+  // TODO(michaelludwig): Update to pass alpha_as_color as-is once
+  // skbug.com/13637 is resolved (adds Blend + SkColor4f variation).
+  sk_sp<SkColorFilter> opacity =
+      SkColorFilters::Blend(alpha_as_color.toSkColor(), SkBlendMode::kDstIn);
+  // Opaque (alpha = 1.0) and kDstIn returns nullptr to signal a no-op, so that
+  // case should just return 'in'.
+  if (opacity) {
+    return opacity->makeComposed(std::move(in));
+  } else {
+    return in;
+  }
+}
+
 class AnimatedImagesProvider : public cc::ImageProvider {
  public:
   AnimatedImagesProvider(
@@ -454,23 +475,28 @@ void SoftwareRenderer::DrawTextureQuad(const TextureDrawQuad* quad) {
 
   bool blend_background =
       quad->background_color != SkColors::kTransparent && !image->isOpaque();
-  bool needs_layer = blend_background && (current_paint_.getAlphaf() != 1.f);
-  if (needs_layer) {
-    current_canvas_->saveLayerAlphaf(&quad_rect, current_paint_.getAlphaf());
-    current_paint_.setAlphaf(1.f);
-  }
   if (blend_background) {
-    SkPaint background_paint;
-    background_paint.setColor(quad->background_color);
-    current_canvas_->drawRect(quad_rect, background_paint);
+    // Add a color filter that does DstOver blending between texture and the
+    // background color. Then, modulate by quad's opacity *after* blending.
+    // TODO(crbug.com/40219248) remove toSkColor and make all SkColor4f
+    sk_sp<SkColorFilter> cf = SkColorFilters::Blend(
+        quad->background_color.toSkColor(), SkBlendMode::kDstOver);
+    if (current_paint_.getAlphaf() < 1.f) {
+      cf = MakeOpacityFilter(current_paint_.getAlphaf(), std::move(cf));
+      current_paint_.setAlphaf(1.f);
+      DCHECK(cf);
+    }
+    // |cf| could be null if alpha in |quad->background_color| is 0.
+    if (cf) {
+      current_paint_.setColorFilter(
+          cf->makeComposed(current_paint_.refColorFilter()));
+    }
   }
   SkSamplingOptions sampling(quad->nearest_neighbor ? SkFilterMode::kNearest
                                                     : SkFilterMode::kLinear);
   current_canvas_->drawImageRect(image, sk_uv_rect, quad_rect, sampling,
                                  &current_paint_,
                                  SkCanvas::kStrict_SrcRectConstraint);
-  if (needs_layer)
-    current_canvas_->restore();
 }
 
 DBG_FLAG_FBOOL("software.toggle.capture", software_toggle_capture)
