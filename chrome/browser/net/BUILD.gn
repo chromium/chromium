@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 if (is_android) {
@@ -29,20 +30,22 @@ if (is_android) {
   }
 }
 
-static_library("server_certificate_database_test_support") {
-  testonly = true
+if (chrome_root_store_cert_management_ui || enable_webui_certificate_viewer) {
+  static_library("server_certificate_database_test_support") {
+    testonly = true
 
-  sources = [
-    "server_certificate_database_test_util.cc",
-    "server_certificate_database_test_util.h",
-  ]
+    sources = [
+      "server_certificate_database_test_util.cc",
+      "server_certificate_database_test_util.h",
+    ]
 
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//chrome/browser",
-    "//crypto",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
+    deps = [
+      "//base",
+      "//base/test:test_support",
+      "//crypto",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+    public_deps = [ "//chrome/browser" ]
+  }
 }
