@@ -234,10 +234,11 @@
   }
 
   #searchboxContainer {
+    --color-searchbox-background: #FFFFFF;
     --color-searchbox-results-background: #ffffffff;
     --color-searchbox-google-g-background: var(--color-primary);
     --cr-searchbox-height: 48px;
-    --cr-searchbox-icon-left-position: 12px;
+    --cr-searchbox-icon-size-in-searchbox: 28px;
     --cr-searchbox-icon-top-position: 0px;
     position: absolute;
     inset-block-start: 36px;
@@ -250,6 +251,7 @@
 
   :host([is-searchbox-focused]) #searchboxContainer {
     inset-inline-end: 84px;
+    --cr-searchbox-height: 52px;
   }
 
   #searchboxContainer {
