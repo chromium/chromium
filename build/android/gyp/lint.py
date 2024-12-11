@@ -282,19 +282,20 @@ def _RunLint(custom_lint_jar_path,
   _WriteXmlFile(android_manifest_tree.getroot(), lint_android_manifest_path)
 
   resource_root_dir = os.path.join(lint_gen_dir, _RES_ZIP_DIR)
+  shutil.rmtree(resource_root_dir, True)
   # These are zip files with generated resources (e. g. strings from GRD).
   logging.info('Extracting resource zips')
   for resource_zip in resource_zips:
     # Use a consistent root and name rather than a temporary file so that
     # suppressions can be local to the lint target and the resource target.
     resource_dir = os.path.join(resource_root_dir, resource_zip)
-    shutil.rmtree(resource_dir, True)
     os.makedirs(resource_dir)
     resource_sources.extend(
         build_utils.ExtractAll(resource_zip, path=resource_dir))
 
   logging.info('Extracting aars')
   aar_root_dir = os.path.join(lint_gen_dir, _AAR_DIR)
+  shutil.rmtree(aar_root_dir, True)
   custom_lint_jars = []
   custom_annotation_zips = []
   if aars:
@@ -302,7 +303,6 @@ def _RunLint(custom_lint_jar_path,
       # Use relative source for aar files since they are not generated.
       aar_dir = os.path.join(aar_root_dir,
                              os.path.splitext(_SrcRelative(aar))[0])
-      shutil.rmtree(aar_dir, True)
       os.makedirs(aar_dir)
       aar_files = build_utils.ExtractAll(aar, path=aar_dir)
       for f in aar_files:
@@ -313,13 +313,13 @@ def _RunLint(custom_lint_jar_path,
 
   logging.info('Extracting srcjars')
   srcjar_root_dir = os.path.join(lint_gen_dir, _SRCJAR_DIR)
+  shutil.rmtree(srcjar_root_dir, True)
   srcjar_sources = []
   if srcjars:
     for srcjar in srcjars:
       # Use path without extensions since otherwise the file name includes
       # .srcjar and lint treats it as a srcjar.
       srcjar_dir = os.path.join(srcjar_root_dir, os.path.splitext(srcjar)[0])
-      shutil.rmtree(srcjar_dir, True)
       os.makedirs(srcjar_dir)
       # Sadly lint's srcjar support is broken since it only considers the first
       # srcjar. Until we roll a lint version with that fixed, we need to extract
