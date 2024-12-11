@@ -22,7 +22,6 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -75,15 +74,6 @@ public class SigninCheckerTest {
                 2,
                 SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
                         .getNumOfChildAccountChecksDoneForTests());
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            // When REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS is enabled - the data is no longer wiped
-            // on a supervised sign-in.
-            Assert.assertTrue(
-                    actionTester
-                            .getActions()
-                            .contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
-        }
         Assert.assertFalse(SyncTestUtil.isSyncFeatureEnabled());
     }
 
@@ -148,14 +138,5 @@ public class SigninCheckerTest {
                 3,
                 SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
                         .getNumOfChildAccountChecksDoneForTests());
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            // When REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS is enabled - the data is no longer wiped
-            // on a supervised sign-in.
-            Assert.assertTrue(
-                    actionTester
-                            .getActions()
-                            .contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
-        }
     }
 }

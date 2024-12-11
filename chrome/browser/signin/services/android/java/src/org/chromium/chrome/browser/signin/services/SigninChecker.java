@@ -9,10 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.signin.services.SigninManager.DataWipeOption;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -57,8 +54,7 @@ public class SigninChecker implements AccountsChangeObserver, Destroyable {
         assert coreAccountInfosPromise.isFulfilled();
         List<CoreAccountInfo> coreAccountInfos = coreAccountInfosPromise.getResult();
         // In the FRE, supervised accounts are signed in by the SigninManager
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                || !FirstRunStatus.isFirstRunTriggered()) {
+        if (!FirstRunStatus.isFirstRunTriggered()) {
             checkChildAccount(coreAccountInfos);
         }
     }
@@ -96,22 +92,8 @@ public class SigninChecker implements AccountsChangeObserver, Destroyable {
                                 @Override
                                 public void onSignInAborted() {}
                             };
-                    if (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-                        mSigninManager.signin(
-                                childInfo, SigninAccessPoint.FORCED_SIGNIN, signInCallback);
-                    } else {
-                        mSigninManager.wipeSyncUserData(
-                                () -> {
-                                    RecordUserAction.record(
-                                            "Signin_Signin_WipeDataOnChildAccountSignin2");
-                                    mSigninManager.signin(
-                                            childInfo,
-                                            SigninAccessPoint.FORCED_SIGNIN,
-                                            signInCallback);
-                                },
-                                DataWipeOption.WIPE_SYNC_DATA);
-                    }
+                    mSigninManager.signin(
+                            childInfo, SigninAccessPoint.FORCED_SIGNIN, signInCallback);
                 });
     }
 }
