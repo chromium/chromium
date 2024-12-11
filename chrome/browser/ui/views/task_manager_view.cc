@@ -13,6 +13,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/task_manager/common/task_manager_features.h"
@@ -81,19 +82,24 @@ TaskManagerView* g_task_manager_view = nullptr;
 
 const auto kTabDefinitions = std::to_array<TaskManagerView::FilterTab>(
     {{
-         .title_id = IDS_TASK_MANAGER_CATEGORY_TABS_NAME,
          .associated_category = DisplayCategory::kTabs,
+         .title_id = IDS_TASK_MANAGER_CATEGORY_TABS_NAME,
          .icon = &views::kNewTabIcon,
      },
      {
-         .title_id = IDS_TASK_MANAGER_CATEGORY_EXTENSIONS_NAME,
          .associated_category = DisplayCategory::kExtensions,
+         .title_id = IDS_TASK_MANAGER_CATEGORY_EXTENSIONS_NAME,
          .icon = &vector_icons::kExtensionChromeRefreshIcon,
      },
      {
-         .title_id = IDS_TASK_MANAGER_CATEGORY_SYSTEM_NAME,
          .associated_category = DisplayCategory::kSystem,
-         .icon = &vector_icons::kSettingsOutlineIcon,
+#if BUILDFLAG(IS_CHROMEOS)
+         .title_id = IDS_TASK_MANAGER_CATEGORY_SYSTEM_NAME,
+         .icon = &kLaptopIcon,
+#else
+         .title_id = IDS_TASK_MANAGER_CATEGORY_BROWSER_NAME,
+         .icon = &kBrowserLogoIcon,
+#endif
      }});
 
 TaskManagerView::~TaskManagerView() {

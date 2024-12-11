@@ -49,8 +49,8 @@ class TaskManagerView : public TableViewDelegate,
 
  public:
   struct FilterTab {
-    int title_id;
     DisplayCategory associated_category;
+    int title_id;
     raw_ptr<const gfx::VectorIcon> icon;
   };
 

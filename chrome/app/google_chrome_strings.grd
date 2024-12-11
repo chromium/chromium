@@ -366,8 +366,11 @@ chromium_strings.grd. -->
       <message name="IDS_TASK_MANAGER_CATEGORY_EXTENSIONS_NAME" desc="The title of the 'Extensions' filter category." translateable="false">
         Extensions
       </message>
-      <message name="IDS_TASK_MANAGER_CATEGORY_SYSTEM_NAME" desc="The title of the 'System' filter category." translateable="false">
+      <message name="IDS_TASK_MANAGER_CATEGORY_SYSTEM_NAME" desc="The title of the 'System' filter category on ChromeOS." translateable="false">
         System
+      </message>
+      <message name="IDS_TASK_MANAGER_CATEGORY_BROWSER_NAME" desc="The title of the 'System' filter category on Windows/Mac/Linux." translateable="false">
+        Browser
       </message>
       <message name="IDS_SESSION_CRASHED_VIEW_UMA_OPTIN" desc="Text besides the checkbox to let users optin to UMA in the restore from previous crash bubble.">
         Help make Google Chrome better by sending crash reports and <ph name="UMA_LINK">$1<ex>usage statistics</ex></ph> to Google
