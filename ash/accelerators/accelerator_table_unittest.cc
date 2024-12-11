@@ -75,35 +75,35 @@ TEST(AcceleratorTableTest, CheckDuplicatedAccelerators) {
 
 TEST(AcceleratorTableTest, CheckDuplicatedReservedActions) {
   std::set<AcceleratorAction> actions;
-  for (size_t i = 0; i < kReservedActionsLength; ++i) {
-    EXPECT_TRUE(actions.insert(kReservedActions[i]).second)
-        << "Duplicated action: " << kReservedActions[i];
+  for (const AcceleratorAction& action : kReservedActions) {
+    EXPECT_TRUE(actions.insert(action).second)
+        << "Duplicated action: " << action;
   }
 }
 
 TEST(AcceleratorTableTest, CheckDuplicatedActionsAllowedAtLoginOrLockScreen) {
   std::set<AcceleratorAction> actions;
-  for (size_t i = 0; i < kActionsAllowedAtLoginOrLockScreenLength; ++i) {
-    EXPECT_TRUE(actions.insert(kActionsAllowedAtLoginOrLockScreen[i]).second)
-        << "Duplicated action: " << kActionsAllowedAtLoginOrLockScreen[i];
+  for (const AcceleratorAction& action : kActionsAllowedAtLoginOrLockScreen) {
+    EXPECT_TRUE(actions.insert(action).second)
+        << "Duplicated action: " << action;
   }
-  for (size_t i = 0; i < kActionsAllowedAtLockScreenLength; ++i) {
-    EXPECT_TRUE(actions.insert(kActionsAllowedAtLockScreen[i]).second)
-        << "Duplicated action: " << kActionsAllowedAtLockScreen[i];
+  for (const AcceleratorAction& action : kActionsAllowedAtLockScreen) {
+    EXPECT_TRUE(actions.insert(action).second)
+        << "Duplicated action: " << action;
   }
 }
 
 TEST(AcceleratorTableTest, CheckDuplicatedActionsAllowedAtPowerMenu) {
   std::set<AcceleratorAction> actions;
-  for (size_t i = 0; i < kActionsAllowedAtPowerMenuLength; ++i) {
-    EXPECT_TRUE(actions.insert(kActionsAllowedAtPowerMenu[i]).second)
-        << "Duplicated action: " << kActionsAllowedAtPowerMenu[i];
+  for (const AcceleratorAction& action : kActionsAllowedAtPowerMenu) {
+    EXPECT_TRUE(actions.insert(action).second)
+        << "Duplicated action: " << action;
   }
 }
 
 TEST(AcceleratorTableTest, CheckDuplicatedActionsAllowedAtModalWindow) {
   std::set<AcceleratorAction> actions;
-  for (size_t i = 0; i < kActionsAllowedAtModalWindowLength; ++i) {
+  for (size_t i = 0; i < kActionsAllowedAtModalWindow.size(); ++i) {
     EXPECT_TRUE(actions.insert(kActionsAllowedAtModalWindow[i]).second)
         << "Duplicated action: " << kActionsAllowedAtModalWindow[i]
         << " at index: " << i;
@@ -112,7 +112,7 @@ TEST(AcceleratorTableTest, CheckDuplicatedActionsAllowedAtModalWindow) {
 
 TEST(AcceleratorTableTest, CheckDuplicatedRepeatableActions) {
   std::set<AcceleratorAction> actions;
-  for (size_t i = 0; i < kRepeatableActionsLength; ++i) {
+  for (size_t i = 0; i < kRepeatableActions.size(); ++i) {
     EXPECT_TRUE(actions.insert(kRepeatableActions[i]).second)
         << "Duplicated action: " << kRepeatableActions[i] << " at index: " << i;
   }
@@ -120,18 +120,16 @@ TEST(AcceleratorTableTest, CheckDuplicatedRepeatableActions) {
 
 TEST(AcceleratorTableTest, CheckDeprecatedAccelerators) {
   std::set<AcceleratorData, Cmp> deprecated_actions;
-  for (size_t i = 0; i < kDeprecatedAcceleratorsLength; ++i) {
+  for (const AcceleratorData& entry : kDeprecatedAccelerators) {
     // A deprecated action can never appear twice in the list.
-    const AcceleratorData& entry = kDeprecatedAccelerators[i];
     EXPECT_TRUE(deprecated_actions.insert(entry).second)
         << "Duplicate deprecated accelerator: "
         << AcceleratorDataToString(entry);
   }
 
   std::set<AcceleratorAction> actions;
-  for (size_t i = 0; i < kDeprecatedAcceleratorsDataLength; ++i) {
+  for (const DeprecatedAcceleratorData& data : kDeprecatedAcceleratorsData) {
     // There must never be any duplicated actions.
-    const DeprecatedAcceleratorData& data = kDeprecatedAcceleratorsData[i];
     EXPECT_TRUE(actions.insert(data.action).second)
         << "Deprecated action: " << data.action;
 

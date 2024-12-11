@@ -127,8 +127,6 @@ ASH_EXPORT inline constexpr auto kDeprecatedAccelerators =
         {true, ui::VKEY_OEM_2, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
          AcceleratorAction::kOpenGetHelp},
     });
-ASH_EXPORT inline constexpr size_t kDeprecatedAcceleratorsLength =
-    std::size(kDeprecatedAccelerators);
 
 // The list of the actions with deprecated accelerators and the needed data to
 // handle them.
@@ -149,8 +147,6 @@ ASH_EXPORT inline constexpr auto kDeprecatedAcceleratorsData =
           IDS_DEPRECATED_OPEN_GET_HELP_MSG, IDS_SHORTCUT_OPEN_GET_HELP_NEW,
           ui::Accelerator(ui::VKEY_H, ui::EF_COMMAND_DOWN), false,
           "open_get_help"}});
-ASH_EXPORT inline constexpr size_t kDeprecatedAcceleratorsDataLength =
-    std::size(kDeprecatedAcceleratorsData);
 
 // Debug accelerators. Debug accelerators are only enabled when the "Debugging
 // keyboard shortcuts" flag (--ash-debug-shortcuts) is enabled. Debug actions
@@ -211,8 +207,6 @@ ASH_EXPORT inline constexpr auto kDebugAcceleratorData =
         {true, ui::VKEY_8, kDebugModifier,
          AcceleratorAction::kDebugStartSunfishSession},
     });
-ASH_EXPORT inline constexpr size_t kDebugAcceleratorDataLength =
-    std::size(kDebugAcceleratorData);
 
 // Developer accelerators that are enabled only with the command-line switch
 // --ash-dev-shortcuts. They are always run similar to reserved actions.
@@ -258,8 +252,6 @@ ASH_EXPORT inline constexpr auto kDeveloperAcceleratorData = std::to_array<
     {true, ui::VKEY_2, kDebugModifier, kTouchFingerprintSensor2},
     {true, ui::VKEY_3, kDebugModifier, kTouchFingerprintSensor3},
 });
-ASH_EXPORT inline constexpr size_t kDeveloperAcceleratorDataLength =
-    std::size(kDeveloperAcceleratorData);
 
 // Actions that should be handled very early in Ash unless the current target
 // window is full-screen.
@@ -280,8 +272,6 @@ ASH_EXPORT inline constexpr std::array kPreferredActions = {
     AcceleratorAction::kDebugToggleTouchScreen,
     AcceleratorAction::kDebugToggleTabletMode,
 };
-ASH_EXPORT inline constexpr size_t kPreferredActionsLength =
-    std::size(kPreferredActions);
 
 // Actions that are always handled in Ash.
 ASH_EXPORT inline constexpr std::array kReservedActions = {
@@ -289,8 +279,6 @@ ASH_EXPORT inline constexpr std::array kReservedActions = {
     AcceleratorAction::kLockPressed,  AcceleratorAction::kLockReleased,
     AcceleratorAction::kSuspend,      AcceleratorAction::kLockScreen,
 };
-ASH_EXPORT inline constexpr size_t kReservedActionsLength =
-    std::size(kReservedActions);
 
 // Actions allowed while user is not signed in or screen is locked.
 ASH_EXPORT inline constexpr std::array kActionsAllowedAtLoginOrLockScreen = {
@@ -354,8 +342,6 @@ ASH_EXPORT inline constexpr std::array kActionsAllowedAtLoginOrLockScreen = {
     AcceleratorAction::kPowerReleased,
 #endif  // !defined(NDEBUG)
 };
-ASH_EXPORT inline constexpr size_t kActionsAllowedAtLoginOrLockScreenLength =
-    std::size(kActionsAllowedAtLoginOrLockScreen);
 
 // Actions allowed while screen is locked (in addition to
 // kActionsAllowedAtLoginOrLockScreen).
@@ -364,8 +350,6 @@ ASH_EXPORT inline constexpr std::array kActionsAllowedAtLockScreen = {
     AcceleratorAction::kExit,
     AcceleratorAction::kSuspend,
 };
-ASH_EXPORT inline constexpr size_t kActionsAllowedAtLockScreenLength =
-    std::size(kActionsAllowedAtLockScreen);
 
 // Actions allowed while power menu is opened.
 ASH_EXPORT inline constexpr std::array kActionsAllowedAtPowerMenu = {
@@ -373,8 +357,6 @@ ASH_EXPORT inline constexpr std::array kActionsAllowedAtPowerMenu = {
     AcceleratorAction::kVolumeDown,     AcceleratorAction::kVolumeUp,
     AcceleratorAction::kVolumeMute,
 };
-ASH_EXPORT inline constexpr size_t kActionsAllowedAtPowerMenuLength =
-    std::size(kActionsAllowedAtPowerMenu);
 
 // Actions allowed while a modal window is up.
 ASH_EXPORT inline constexpr std::array kActionsAllowedAtModalWindow = {
@@ -437,8 +419,6 @@ ASH_EXPORT inline constexpr std::array kActionsAllowedAtModalWindow = {
     AcceleratorAction::kVolumeMute,
     AcceleratorAction::kVolumeUp,
 };
-ASH_EXPORT inline constexpr size_t kActionsAllowedAtModalWindowLength =
-    std::size(kActionsAllowedAtModalWindow);
 
 // Actions which may be repeated by holding an accelerator key.
 ASH_EXPORT inline constexpr std::array kRepeatableActions = {
@@ -462,8 +442,6 @@ ASH_EXPORT inline constexpr std::array kRepeatableActions = {
     AcceleratorAction::kVolumeDown,
     AcceleratorAction::kVolumeUp,
 };
-ASH_EXPORT inline constexpr size_t kRepeatableActionsLength =
-    std::size(kRepeatableActions);
 
 // Actions allowed in app mode or pinned mode.
 ASH_EXPORT inline constexpr std::array kActionsAllowedInAppModeOrPinnedMode = {
@@ -519,8 +497,6 @@ ASH_EXPORT inline constexpr std::array kActionsAllowedInAppModeOrPinnedMode = {
     AcceleratorAction::kVolumeMute,
     AcceleratorAction::kVolumeUp,
 };
-ASH_EXPORT inline constexpr size_t kActionsAllowedInAppModeOrPinnedModeLength =
-    std::size(kActionsAllowedInAppModeOrPinnedMode);
 
 // Actions that can be performed in pinned mode.
 // In pinned mode, the action listed in this or "in app mode or pinned mode"
@@ -533,8 +509,6 @@ ASH_EXPORT inline constexpr std::array kActionsAllowedInPinnedMode = {
     AcceleratorAction::kTakeWindowScreenshot,
     AcceleratorAction::kUnpin,
 };
-ASH_EXPORT inline constexpr size_t kActionsAllowedInPinnedModeLength =
-    std::size(kActionsAllowedInPinnedMode);
 
 // Actions that can be performed in app mode.
 // In app mode, the action listed in this or "in app mode or pinned mode" table
@@ -542,8 +516,6 @@ ASH_EXPORT inline constexpr size_t kActionsAllowedInPinnedModeLength =
 ASH_EXPORT inline constexpr std::array kActionsAllowedInAppMode = {
     AcceleratorAction::kFocusShelf,
 };
-ASH_EXPORT inline constexpr size_t kActionsAllowedInAppModeLength =
-    std::size(kActionsAllowedInAppMode);
 
 // Actions that require at least 1 window.
 ASH_EXPORT inline constexpr std::array kActionsNeedingWindow = {
@@ -567,8 +539,6 @@ ASH_EXPORT inline constexpr std::array kActionsNeedingWindow = {
     AcceleratorAction::kWindowMinimize,
     // clang-format on
 };
-ASH_EXPORT inline constexpr size_t kActionsNeedingWindowLength =
-    std::size(kActionsNeedingWindow);
 
 // Actions that can be performed while keeping the menu open.
 ASH_EXPORT inline constexpr std::array kActionsKeepingMenuOpen = {
@@ -620,8 +590,6 @@ ASH_EXPORT inline constexpr std::array kActionsKeepingMenuOpen = {
     AcceleratorAction::kVolumeMute,
     AcceleratorAction::kVolumeUp,
 };
-ASH_EXPORT inline constexpr size_t kActionsKeepingMenuOpenLength =
-    std::size(kActionsKeepingMenuOpen);
 
 // Actions that are duplicated with browser shortcuts.
 ASH_EXPORT inline constexpr std::array kActionsDuplicatedWithBrowser = {
@@ -642,8 +610,6 @@ ASH_EXPORT inline constexpr std::array kActionsDuplicatedWithBrowser = {
     AcceleratorAction::kOpenFeedbackPage,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 };
-ASH_EXPORT inline constexpr size_t kActionsDuplicatedWithBrowserLength =
-    std::size(kActionsDuplicatedWithBrowser);
 
 // Actions that are interceptable by browser.
 // These actions are ash's shortcuts, but they are sent to the browser
@@ -653,8 +619,6 @@ ASH_EXPORT inline constexpr std::array kActionsInterceptableByBrowser = {
     AcceleratorAction::kOpenGetHelp,
     AcceleratorAction::kMinimizeTopWindowOnBack,
 };
-ASH_EXPORT inline constexpr size_t kActionsInterceptableByBrowserLength =
-    std::size(kActionsInterceptableByBrowser);
 
 }  // namespace ash
 

@@ -2389,15 +2389,17 @@ TEST_F(AcceleratorControllerTest, DisallowedAtModalWindow) {
     all_actions.insert(data.action);
   }
   std::set<AcceleratorAction> all_debug_actions;
-  for (size_t i = 0; i < kDebugAcceleratorDataLength; ++i)
-    all_debug_actions.insert(kDebugAcceleratorData[i].action);
+  for (const AcceleratorData& data : kDebugAcceleratorData) {
+    all_debug_actions.insert(data.action);
+  }
   std::set<AcceleratorAction> all_dev_actions;
-  for (size_t i = 0; i < kDeveloperAcceleratorDataLength; ++i)
-    all_dev_actions.insert(kDeveloperAcceleratorData[i].action);
-
+  for (const AcceleratorData& data : kDeveloperAcceleratorData) {
+    all_dev_actions.insert(data.action);
+  }
   std::set<AcceleratorAction> actionsAllowedAtModalWindow;
-  for (size_t k = 0; k < kActionsAllowedAtModalWindowLength; ++k)
-    actionsAllowedAtModalWindow.insert(kActionsAllowedAtModalWindow[k]);
+  for (const AcceleratorAction& action : kActionsAllowedAtModalWindow) {
+    actionsAllowedAtModalWindow.insert(action);
+  }
   for (const auto& action : actionsAllowedAtModalWindow) {
     EXPECT_TRUE(base::Contains(all_actions, action) ||
                 base::Contains(all_debug_actions, action) ||
@@ -2507,8 +2509,10 @@ TEST_F(AcceleratorControllerTest, DisallowedWithNoWindow) {
   // them to PerformActionIfEnabled(), otherwise we could hit some NOTREACHED()
   // if we don't provide the correct keybindings.
   std::set<AcceleratorAction> actions_needing_window;
-  for (size_t i = 0; i < kActionsNeedingWindowLength; ++i)
-    actions_needing_window.insert(kActionsNeedingWindow[i]);
+
+  for (const AcceleratorAction& action : kActionsNeedingWindow) {
+    actions_needing_window.insert(action);
+  }
   std::map<AcceleratorAction, ui::Accelerator> accelerators_needing_window;
   for (const AcceleratorData& accelerator_data : kAcceleratorData) {
     auto iter = actions_needing_window.find(accelerator_data.action);
@@ -3055,9 +3059,7 @@ TEST_F(DeprecatedAcceleratorTester, TestDeprecatedAcceleratorsBehavior) {
   ScopedDictPrefUpdate time_update(
       prefs, prefs::kDeprecatedAcceleratorNotificationsLastShown);
 
-  for (size_t i = 0; i < kDeprecatedAcceleratorsLength; ++i) {
-    const AcceleratorData& entry = kDeprecatedAccelerators[i];
-
+  for (const AcceleratorData& entry : kDeprecatedAccelerators) {
     const DeprecatedAcceleratorData* data =
         test_api_->GetDeprecatedAcceleratorData(entry.action);
     DCHECK(data);
@@ -3097,9 +3099,7 @@ TEST_F(DeprecatedAcceleratorTester, NoNotificationIfReplacementMissing) {
       AcceleratorAction::kOpenGetHelp,
       ui::Accelerator{ui::VKEY_H, ui::EF_COMMAND_DOWN});
 
-  for (size_t i = 0; i < kDeprecatedAcceleratorsLength; ++i) {
-    const AcceleratorData& entry = kDeprecatedAccelerators[i];
-
+  for (const AcceleratorData& entry : kDeprecatedAccelerators) {
     const DeprecatedAcceleratorData* data =
         test_api_->GetDeprecatedAcceleratorData(entry.action);
     DCHECK(data);
