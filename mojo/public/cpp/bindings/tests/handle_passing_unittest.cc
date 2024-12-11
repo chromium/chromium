@@ -16,8 +16,8 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
-#include "mojo/public/interfaces/bindings/tests/sample_factory.mojom.h"
-#include "mojo/public/interfaces/bindings/tests/sample_import.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/sample_factory.test-mojom.h"
+#include "mojo/public/interfaces/bindings/tests/sample_import.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {

@@ -41,8 +41,8 @@
 #include "mojo/public/cpp/bindings/tests/associated_interface_unittest.test-mojom.h"
 #include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
 #include "mojo/public/cpp/system/functions.h"
-#include "mojo/public/interfaces/bindings/tests/ping_service.mojom.h"
-#include "mojo/public/interfaces/bindings/tests/test_associated_interfaces.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/ping_service.test-mojom.h"
+#include "mojo/public/interfaces/bindings/tests/test_associated_interfaces.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {

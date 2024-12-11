@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/bindings/lib/hash_util.h"
-
-#include "mojo/public/interfaces/bindings/tests/test_structs.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/test_structs.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {

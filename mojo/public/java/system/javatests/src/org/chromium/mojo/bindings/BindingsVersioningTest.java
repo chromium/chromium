@@ -24,8 +24,8 @@ import org.chromium.mojo.system.impl.CoreImpl;
 
 /**
  * Testing generated classes with the [MinVersion] annotation. Struct in this test are from:
- * mojo/public/interfaces/bindings/tests/rect.mojom and
- * mojo/public/interfaces/bindings/tests/test_structs.mojom
+ * mojo/public/interfaces/bindings/tests/rect.test-mojom and
+ * mojo/public/interfaces/bindings/tests/test_structs.test-mojom
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class BindingsVersioningTest {

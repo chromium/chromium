@@ -63,6 +63,10 @@ declare_args() {
   if (is_chromeos_ash) {
     enable_mojom_closure_compile = enable_js_type_check && optimize_webui
   }
+
+  # Temporary option to allow testonly=true mojom to include .mojom files.
+  # TODO(crbug.com/383380971): Remove once migration is complete.
+  allow_dot_mojom_in_testonly_mojom = true
 }
 
 # Closure libraries are needed for mojom_closure_compile, and when
@@ -684,7 +688,14 @@ template("mojom") {
       process_file_template(sources_list, "{{source_file_part}}")
   sources_list_filenames_with_mojom_extension =
       process_file_template(sources_list, "{{source_name_part}}.mojom")
-  if (sources_list_filenames != sources_list_filenames_with_mojom_extension) {
+  if (sources_list_filenames == sources_list_filenames_with_mojom_extension) {
+    # Force testonly mojom() to use .test-mojom only using transitional option.
+    # See crbug.com/383380971 for migration details.
+    if (!allow_dot_mojom_in_testonly_mojom && defined(invoker.sources)) {
+      assert(!defined(invoker.testonly) || !invoker.testonly,
+             "testonly mojom target has non- .test-mojom files")
+    }
+  } else {
     sources_list_filenames_with_test_mojom_extension =
         process_file_template(sources_list, "{{source_name_part}}.test-mojom")
     if (sources_list_filenames ==

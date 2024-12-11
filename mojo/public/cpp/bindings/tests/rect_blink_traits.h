@@ -7,7 +7,7 @@
 
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/tests/rect_blink.h"
-#include "mojo/public/interfaces/bindings/tests/rect.mojom-blink.h"
+#include "mojo/public/interfaces/bindings/tests/rect.test-mojom-blink.h"
 
 namespace mojo {
 

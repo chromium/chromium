@@ -4,7 +4,7 @@
 
 module mojo.test.test_import;
 
-import "mojo/public/interfaces/bindings/tests/test_export.mojom";
+import "mojo/public/interfaces/bindings/tests/test_export.test-mojom";
 
 struct ImportingStruct {
   mojo.test.test_export.StringPair strings;

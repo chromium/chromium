@@ -4,7 +4,7 @@
 
 module test.echo.mojom;
 
-import "mojo/public/interfaces/bindings/tests/echo_import/echo_import.mojom";
+import "mojo/public/interfaces/bindings/tests/echo_import/echo_import.test-mojom";
 
 interface Echo {
   EchoPoint(test.echo_import.mojom.Point point)

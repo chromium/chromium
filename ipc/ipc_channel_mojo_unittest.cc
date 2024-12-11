@@ -50,7 +50,7 @@
 #include "ipc/ipc_mojo_param_traits.h"
 #include "ipc/ipc_sync_channel.h"
 #include "ipc/ipc_sync_message.h"
-#include "ipc/ipc_test.mojom.h"
+#include "ipc/ipc_test.test-mojom.h"
 #include "ipc/ipc_test_base.h"
 #include "ipc/ipc_test_channel_listener.h"
 #include "ipc/urgent_message_observer.h"

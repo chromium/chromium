@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "mojo/public/interfaces/bindings/tests/test_structs.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/test_structs.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {

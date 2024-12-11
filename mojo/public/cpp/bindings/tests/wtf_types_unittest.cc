@@ -16,8 +16,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/tests/variant_test_util.h"
-#include "mojo/public/interfaces/bindings/tests/test_wtf_types.mojom-blink.h"
-#include "mojo/public/interfaces/bindings/tests/test_wtf_types.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/test_wtf_types.test-mojom-blink.h"
+#include "mojo/public/interfaces/bindings/tests/test_wtf_types.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 

@@ -5,7 +5,7 @@
 [JavaPackage="org.chromium.mojo.bindings.test.mojom.sample"]
 module sample;
 
-import "mojo/public/interfaces/bindings/tests/sample_import.mojom";
+import "mojo/public/interfaces/bindings/tests/sample_import.test-mojom";
 
 // This sample shows how handles to MessagePipes can be sent as both parameters
 // to methods as well as fields on structs.

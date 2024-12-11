@@ -5,7 +5,7 @@
 [JavaPackage="org.chromium.mojo.bindings.test.mojom.imported"]
 module imported;
 
-import "mojo/public/interfaces/bindings/tests/sample_import.mojom";
+import "mojo/public/interfaces/bindings/tests/sample_import.test-mojom";
 
 // This sample adds more types and constants to the "imported" namespace,
 // to test a bug with importing multiple modules with the same namespace.

@@ -5,7 +5,7 @@
 [JavaPackage="org.chromium.mojo.bindings.test.mojom.test_structs"]
 module mojo.test;
 
-import "mojo/public/interfaces/bindings/tests/rect.mojom";
+import "mojo/public/interfaces/bindings/tests/rect.test-mojom";
 
 struct NamedRegion {
   string? name;

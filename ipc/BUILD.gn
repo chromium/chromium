@@ -230,7 +230,7 @@ mojom("mojom_constants") {
 
 mojom("test_interfaces") {
   testonly = true
-  sources = [ "ipc_test.mojom" ]
+  sources = [ "ipc_test.test-mojom" ]
 }
 
 # This is provided as a separate target so other targets can provide param

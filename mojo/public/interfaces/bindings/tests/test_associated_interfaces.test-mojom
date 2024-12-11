@@ -4,7 +4,7 @@
 
 module mojo.test;
 
-import "mojo/public/interfaces/bindings/tests/ping_service.mojom";
+import "mojo/public/interfaces/bindings/tests/ping_service.test-mojom";
 
 interface FooInterface {};
 

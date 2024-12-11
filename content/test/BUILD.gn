@@ -1250,7 +1250,7 @@ preprocess_if_expr("preprocess_mojo_webui_test") {
 preprocess_if_expr("preprocess_mojo_webui_test_deps") {
   in_folder = "$root_gen_dir/mojo/public/interfaces/bindings/tests"
   out_folder = "$target_gen_dir/data"
-  in_files = [ "validation_test_interfaces.mojom-webui.ts" ]
+  in_files = [ "validation_test_interfaces.test-mojom-webui.ts" ]
   deps = [
     "//mojo/public/interfaces/bindings/tests:test_interfaces_ts__generator",
   ]
@@ -1260,7 +1260,7 @@ webui_ts_library("web_ui_mojo_test_build_ts") {
   root_dir = "$target_gen_dir/data"
   out_dir = "$target_gen_dir/data/tsc"
   in_files = [
-    "validation_test_interfaces.mojom-webui.ts",
+    "validation_test_interfaces.test-mojom-webui.ts",
     "web_ui_mojo_conformance_test.ts",
     "web_ui_mojo_ts_test.ts",
     "web_ui_mojo_ts_test_converters.ts",

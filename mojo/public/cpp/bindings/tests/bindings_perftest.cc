@@ -8,6 +8,7 @@
 #endif
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -23,7 +24,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_support.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
-#include "mojo/public/interfaces/bindings/tests/ping_service.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/ping_service.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {

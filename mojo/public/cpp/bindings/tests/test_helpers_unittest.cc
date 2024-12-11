@@ -7,8 +7,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/wait.h"
-#include "mojo/public/interfaces/bindings/tests/ping_service.mojom-test-utils.h"
-#include "mojo/public/interfaces/bindings/tests/ping_service.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/ping_service.test-mojom-test-utils.h"
+#include "mojo/public/interfaces/bindings/tests/ping_service.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {

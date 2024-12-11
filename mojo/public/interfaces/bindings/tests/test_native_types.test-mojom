@@ -4,7 +4,7 @@
 
 module mojo.test;
 
-import "mojo/public/interfaces/bindings/tests/rect.mojom";
+import "mojo/public/interfaces/bindings/tests/rect.test-mojom";
 
 // Used to verify that structs can be declared with no body in mojom.
 

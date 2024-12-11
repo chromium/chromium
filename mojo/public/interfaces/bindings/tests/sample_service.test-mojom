@@ -5,8 +5,8 @@
 [JavaPackage="org.chromium.mojo.bindings.test.mojom.sample"]
 module sample;
 
-import "mojo/public/interfaces/bindings/tests/sample_import.mojom";
-import "mojo/public/interfaces/bindings/tests/sample_import2.mojom";
+import "mojo/public/interfaces/bindings/tests/sample_import.test-mojom";
+import "mojo/public/interfaces/bindings/tests/sample_import2.test-mojom";
 
 const uint8 kTwelve = 12;
 
