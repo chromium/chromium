@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/views/frame/dbus_appmenu.h"
 
 #include <dlfcn.h>
 #include <stddef.h>
 
+#include <array>
 #include <limits>
 #include <memory>
 #include <utility>
@@ -19,6 +15,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -77,7 +74,6 @@ const size_t kMaximumMenuWidthInChars = 50;
 // IDC_FIRST_UNBOUNDED_MENU.
 enum ReservedCommandId {
   kLastChromeCommand = IDC_FIRST_UNBOUNDED_MENU - 1,
-  kMenuEnd,
   kSeparator,
   kSubmenu,
   kTagRecentlyClosed,
@@ -87,81 +83,75 @@ enum ReservedCommandId {
   kFirstUnreservedCommandId
 };
 
-constexpr DbusAppmenuCommand kFileMenu[] = {
-    {IDC_NEW_TAB, IDS_NEW_TAB},
-    {IDC_NEW_WINDOW, IDS_NEW_WINDOW},
-    {IDC_NEW_INCOGNITO_WINDOW, IDS_NEW_INCOGNITO_WINDOW},
-    {IDC_RESTORE_TAB, IDS_REOPEN_CLOSED_TABS_LINUX},
-    {IDC_OPEN_FILE, IDS_OPEN_FILE_LINUX},
-    {IDC_FOCUS_LOCATION, IDS_OPEN_LOCATION_LINUX},
-    {kSeparator},
-    {IDC_CLOSE_WINDOW, IDS_CLOSE_WINDOW_LINUX},
-    {IDC_CLOSE_TAB, IDS_CLOSE_TAB_LINUX},
-    {IDC_SAVE_PAGE, IDS_SAVE_PAGE},
-    {kSeparator},
-    {IDC_PRINT, IDS_PRINT},
-    {kMenuEnd}};
+constexpr auto kFileMenu = std::to_array<DbusAppmenuCommand>(
+    {{IDC_NEW_TAB, IDS_NEW_TAB},
+     {IDC_NEW_WINDOW, IDS_NEW_WINDOW},
+     {IDC_NEW_INCOGNITO_WINDOW, IDS_NEW_INCOGNITO_WINDOW},
+     {IDC_RESTORE_TAB, IDS_REOPEN_CLOSED_TABS_LINUX},
+     {IDC_OPEN_FILE, IDS_OPEN_FILE_LINUX},
+     {IDC_FOCUS_LOCATION, IDS_OPEN_LOCATION_LINUX},
+     {kSeparator},
+     {IDC_CLOSE_WINDOW, IDS_CLOSE_WINDOW_LINUX},
+     {IDC_CLOSE_TAB, IDS_CLOSE_TAB_LINUX},
+     {IDC_SAVE_PAGE, IDS_SAVE_PAGE},
+     {kSeparator},
+     {IDC_PRINT, IDS_PRINT}});
 
-constexpr DbusAppmenuCommand kEditMenu[] = {{IDC_CUT, IDS_CUT},
-                                            {IDC_COPY, IDS_COPY},
-                                            {IDC_PASTE, IDS_PASTE},
-                                            {kSeparator},
-                                            {IDC_FIND, IDS_FIND},
-                                            {kSeparator},
-                                            {IDC_OPTIONS, IDS_PREFERENCES},
-                                            {kMenuEnd}};
+constexpr auto kEditMenu =
+    std::to_array<DbusAppmenuCommand>({{IDC_CUT, IDS_CUT},
+                                       {IDC_COPY, IDS_COPY},
+                                       {IDC_PASTE, IDS_PASTE},
+                                       {kSeparator},
+                                       {IDC_FIND, IDS_FIND},
+                                       {kSeparator},
+                                       {IDC_OPTIONS, IDS_PREFERENCES}});
 
-constexpr DbusAppmenuCommand kViewMenu[] = {
-    {IDC_SHOW_BOOKMARK_BAR, IDS_SHOW_BOOKMARK_BAR},
-    {kSeparator},
-    {IDC_STOP, IDS_STOP_MENU_LINUX},
-    {IDC_RELOAD, IDS_RELOAD_MENU_LINUX},
-    {kSeparator},
-    {IDC_FULLSCREEN, IDS_FULLSCREEN},
-    {IDC_ZOOM_NORMAL, IDS_TEXT_DEFAULT_LINUX},
-    {IDC_ZOOM_PLUS, IDS_TEXT_BIGGER_LINUX},
-    {IDC_ZOOM_MINUS, IDS_TEXT_SMALLER_LINUX},
-    {kMenuEnd}};
+constexpr auto kViewMenu = std::to_array<DbusAppmenuCommand>(
+    {{IDC_SHOW_BOOKMARK_BAR, IDS_SHOW_BOOKMARK_BAR},
+     {kSeparator},
+     {IDC_STOP, IDS_STOP_MENU_LINUX},
+     {IDC_RELOAD, IDS_RELOAD_MENU_LINUX},
+     {kSeparator},
+     {IDC_FULLSCREEN, IDS_FULLSCREEN},
+     {IDC_ZOOM_NORMAL, IDS_TEXT_DEFAULT_LINUX},
+     {IDC_ZOOM_PLUS, IDS_TEXT_BIGGER_LINUX},
+     {IDC_ZOOM_MINUS, IDS_TEXT_SMALLER_LINUX}});
 
-constexpr DbusAppmenuCommand kHistoryMenu[] = {
-    {IDC_HOME, IDS_HISTORY_HOME_LINUX},
-    {IDC_BACK, IDS_HISTORY_BACK_LINUX},
-    {IDC_FORWARD, IDS_HISTORY_FORWARD_LINUX},
-    {kSeparator},
-    {kTagRecentlyClosed, IDS_HISTORY_CLOSED_LINUX},
-    {kSeparator},
-    {kTagMostVisited, IDS_HISTORY_VISITED_LINUX},
-    {kSeparator},
-    {IDC_SHOW_HISTORY, IDS_HISTORY_SHOWFULLHISTORY_LINK},
-    {kMenuEnd}};
+constexpr auto kHistoryMenu = std::to_array<DbusAppmenuCommand>(
+    {{IDC_HOME, IDS_HISTORY_HOME_LINUX},
+     {IDC_BACK, IDS_HISTORY_BACK_LINUX},
+     {IDC_FORWARD, IDS_HISTORY_FORWARD_LINUX},
+     {kSeparator},
+     {kTagRecentlyClosed, IDS_HISTORY_CLOSED_LINUX},
+     {kSeparator},
+     {kTagMostVisited, IDS_HISTORY_VISITED_LINUX},
+     {kSeparator},
+     {IDC_SHOW_HISTORY, IDS_HISTORY_SHOWFULLHISTORY_LINK}});
 
-constexpr DbusAppmenuCommand kToolsMenu[] = {
-    {IDC_SHOW_DOWNLOADS, IDS_SHOW_DOWNLOADS},
-    {IDC_SHOW_HISTORY, IDS_HISTORY_SHOW_HISTORY},
-    {IDC_MANAGE_EXTENSIONS, IDS_SHOW_EXTENSIONS},
-    {kSeparator},
-    {IDC_TASK_MANAGER_MAIN_MENU, IDS_TASK_MANAGER},
-    {IDC_CLEAR_BROWSING_DATA, IDS_CLEAR_BROWSING_DATA},
-    {kSeparator},
-    {IDC_VIEW_SOURCE, IDS_VIEW_SOURCE},
-    {IDC_DEV_TOOLS, IDS_DEV_TOOLS},
-    {IDC_DEV_TOOLS_INSPECT, IDS_DEV_TOOLS_ELEMENTS},
-    {IDC_DEV_TOOLS_CONSOLE, IDS_DEV_TOOLS_CONSOLE},
-    {IDC_DEV_TOOLS_DEVICES, IDS_DEV_TOOLS_DEVICES},
-    {kMenuEnd}};
+constexpr auto kToolsMenu = std::to_array<DbusAppmenuCommand>(
+    {{IDC_SHOW_DOWNLOADS, IDS_SHOW_DOWNLOADS},
+     {IDC_SHOW_HISTORY, IDS_HISTORY_SHOW_HISTORY},
+     {IDC_MANAGE_EXTENSIONS, IDS_SHOW_EXTENSIONS},
+     {kSeparator},
+     {IDC_TASK_MANAGER_MAIN_MENU, IDS_TASK_MANAGER},
+     {IDC_CLEAR_BROWSING_DATA, IDS_CLEAR_BROWSING_DATA},
+     {kSeparator},
+     {IDC_VIEW_SOURCE, IDS_VIEW_SOURCE},
+     {IDC_DEV_TOOLS, IDS_DEV_TOOLS},
+     {IDC_DEV_TOOLS_INSPECT, IDS_DEV_TOOLS_ELEMENTS},
+     {IDC_DEV_TOOLS_CONSOLE, IDS_DEV_TOOLS_CONSOLE},
+     {IDC_DEV_TOOLS_DEVICES, IDS_DEV_TOOLS_DEVICES}});
 
-constexpr DbusAppmenuCommand kProfilesMenu[] = {
-    {kSeparator},
-    {kTagProfileEdit, IDS_PROFILES_MANAGE_BUTTON_LABEL},
-    {kTagProfileCreate, IDS_PROFILES_ADD_PROFILE_LABEL},
-    {kMenuEnd}};
+constexpr auto kProfilesMenu = std::to_array<DbusAppmenuCommand>(
+    {{kSeparator},
+     {kTagProfileEdit, IDS_PROFILES_MANAGE_BUTTON_LABEL},
+     {kTagProfileCreate, IDS_PROFILES_ADD_PROFILE_LABEL}});
 
-constexpr DbusAppmenuCommand kHelpMenu[] = {
+constexpr auto kHelpMenu = std::to_array<DbusAppmenuCommand>({
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {IDC_FEEDBACK, IDS_FEEDBACK},
 #endif
-    {IDC_HELP_PAGE_VIA_MENU, IDS_HELP_PAGE},
-    {kMenuEnd}};
+    {IDC_HELP_PAGE_VIA_MENU, IDS_HELP_PAGE}});
 
 void FindMenuItemsForCommandAux(
     ui::MenuModel* menu,
@@ -295,11 +285,11 @@ std::string DbusAppmenu::GetPath() const {
 
 ui::SimpleMenuModel* DbusAppmenu::BuildStaticMenu(
     int string_id,
-    const DbusAppmenuCommand* commands) {
+    base::span<const DbusAppmenuCommand> commands) {
   toplevel_menus_.push_back(std::make_unique<ui::SimpleMenuModel>(this));
   ui::SimpleMenuModel* menu = toplevel_menus_.back().get();
-  for (; commands->command != kMenuEnd; commands++) {
-    int command_id = commands->command;
+  for (const DbusAppmenuCommand& command : commands) {
+    int command_id = command.command;
     if (command_id == kSeparator) {
       // Use InsertSeparatorAt() instead of AddSeparator() because the latter
       // refuses to add a separator to an empty menu.
@@ -313,11 +303,10 @@ ui::SimpleMenuModel* DbusAppmenu::BuildStaticMenu(
       continue;
     }
 
-    int command_str_id = commands->str_id;
     if (command_id == IDC_SHOW_BOOKMARK_BAR)
-      menu->AddCheckItemWithStringId(command_id, command_str_id);
+      menu->AddCheckItemWithStringId(command_id, command.str_id);
     else
-      menu->AddItemWithStringId(command_id, command_str_id);
+      menu->AddItemWithStringId(command_id, command.str_id);
     if (command_id < kLastChromeCommand)
       RegisterCommandObserver(command_id);
   }

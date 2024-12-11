@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -67,8 +68,9 @@ class DbusAppmenu : public AvatarMenuObserver,
 
   // Creates a whole menu defined with |commands| and titled with the string
   // |string_id|. Then appends it to |root_menu_|.
-  ui::SimpleMenuModel* BuildStaticMenu(int string_id,
-                                       const DbusAppmenuCommand* commands);
+  ui::SimpleMenuModel* BuildStaticMenu(
+      int string_id,
+      base::span<const DbusAppmenuCommand> commands);
 
   // Creates a HistoryItem from the data in |entry|.
   std::unique_ptr<HistoryItem> HistoryItemForTab(

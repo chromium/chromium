@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/views/tabs/tab_drag_controller_interactive_uitest.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -4902,18 +4898,22 @@ class DifferentDeviceScaleFactorDisplayTabDragControllerTest
 namespace {
 
 // The points where a tab is dragged in CursorDeviceScaleFactorStep.
-constexpr gfx::Point kDragPoints[] = {
-    {300, 200}, {399, 200}, {500, 200}, {400, 200}, {300, 200},
-};
+constexpr auto kDragPoints = std::to_array<gfx::Point>({
+    {300, 200},
+    {399, 200},
+    {500, 200},
+    {400, 200},
+    {300, 200},
+});
 
 // The expected device scale factors after the cursor is moved to the
 // corresponding kDragPoints in CursorDeviceScaleFactorStep.
-constexpr float kDeviceScaleFactorExpectations[] = {
+constexpr std::array kDeviceScaleFactorExpectations = {
     1.0f, 1.0f, 2.0f, 2.0f, 1.0f,
 };
 
 static_assert(
-    std::size(kDragPoints) == std::size(kDeviceScaleFactorExpectations),
+    kDragPoints.size() == kDeviceScaleFactorExpectations.size(),
     "kDragPoints and kDeviceScaleFactorExpectations must have the same "
     "number of elements");
 

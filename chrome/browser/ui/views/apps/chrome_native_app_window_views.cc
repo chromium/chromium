@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
 #include "build/build_config.h"
@@ -44,60 +41,58 @@ using extensions::AppWindow;
 
 namespace {
 
-const AcceleratorMapping kAppWindowAcceleratorMap[] = {
-  { ui::VKEY_W, ui::EF_CONTROL_DOWN, IDC_CLOSE_WINDOW },
-  { ui::VKEY_W, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN, IDC_CLOSE_WINDOW },
-  { ui::VKEY_F4, ui::EF_ALT_DOWN, IDC_CLOSE_WINDOW },
-};
+constexpr auto kAppWindowAcceleratorMap = std::to_array<AcceleratorMapping>({
+    {ui::VKEY_W, ui::EF_CONTROL_DOWN, IDC_CLOSE_WINDOW},
+    {ui::VKEY_W, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN, IDC_CLOSE_WINDOW},
+    {ui::VKEY_F4, ui::EF_ALT_DOWN, IDC_CLOSE_WINDOW},
+});
 
 // These accelerators will only be available in kiosk mode. These allow the
 // user to manually zoom app windows. This is only necessary in kiosk mode
 // (in normal mode, the user can zoom via the screen magnifier).
 // TODO(xiyuan): Write a test for kiosk accelerators.
-const AcceleratorMapping kAppWindowKioskAppModeAcceleratorMap[] = {
-    {ui::VKEY_OEM_MINUS, ui::EF_CONTROL_DOWN, IDC_ZOOM_MINUS},
-    {ui::VKEY_OEM_MINUS, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
-     IDC_ZOOM_MINUS},
-    {ui::VKEY_SUBTRACT, ui::EF_CONTROL_DOWN, IDC_ZOOM_MINUS},
-    {ui::VKEY_OEM_PLUS, ui::EF_CONTROL_DOWN, IDC_ZOOM_PLUS},
-    {ui::VKEY_OEM_PLUS, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN, IDC_ZOOM_PLUS},
-    {ui::VKEY_ADD, ui::EF_CONTROL_DOWN, IDC_ZOOM_PLUS},
-    {ui::VKEY_0, ui::EF_CONTROL_DOWN, IDC_ZOOM_NORMAL},
-    {ui::VKEY_NUMPAD0, ui::EF_CONTROL_DOWN, IDC_ZOOM_NORMAL},
-    {ui::VKEY_I, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN, IDC_DEV_TOOLS},
-    {ui::VKEY_J, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
-     IDC_DEV_TOOLS_CONSOLE},
-    {ui::VKEY_C, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
-     IDC_DEV_TOOLS_INSPECT}};
+constexpr auto kAppWindowKioskAppModeAcceleratorMap =
+    std::to_array<AcceleratorMapping>(
+        {{ui::VKEY_OEM_MINUS, ui::EF_CONTROL_DOWN, IDC_ZOOM_MINUS},
+         {ui::VKEY_OEM_MINUS, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
+          IDC_ZOOM_MINUS},
+         {ui::VKEY_SUBTRACT, ui::EF_CONTROL_DOWN, IDC_ZOOM_MINUS},
+         {ui::VKEY_OEM_PLUS, ui::EF_CONTROL_DOWN, IDC_ZOOM_PLUS},
+         {ui::VKEY_OEM_PLUS, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
+          IDC_ZOOM_PLUS},
+         {ui::VKEY_ADD, ui::EF_CONTROL_DOWN, IDC_ZOOM_PLUS},
+         {ui::VKEY_0, ui::EF_CONTROL_DOWN, IDC_ZOOM_NORMAL},
+         {ui::VKEY_NUMPAD0, ui::EF_CONTROL_DOWN, IDC_ZOOM_NORMAL},
+         {ui::VKEY_I, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN, IDC_DEV_TOOLS},
+         {ui::VKEY_J, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
+          IDC_DEV_TOOLS_CONSOLE},
+         {ui::VKEY_C, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
+          IDC_DEV_TOOLS_INSPECT}});
 
 std::map<ui::Accelerator, int> AcceleratorsFromMapping(
-    const AcceleratorMapping mapping_array[],
-    size_t mapping_length) {
-  std::map<ui::Accelerator, int> mapping;
-  for (size_t i = 0; i < mapping_length; ++i) {
-    ui::Accelerator accelerator(mapping_array[i].keycode,
-                                mapping_array[i].modifiers);
-    mapping.insert(std::make_pair(accelerator, mapping_array[i].command_id));
+    base::span<const AcceleratorMapping> mapping_span) {
+  std::map<ui::Accelerator, int> mappings;
+  for (const AcceleratorMapping& mapping : mapping_span) {
+    ui::Accelerator accelerator(mapping.keycode, mapping.modifiers);
+    mappings.insert(std::make_pair(accelerator, mapping.command_id));
   }
 
-  return mapping;
+  return mappings;
 }
 
 const std::map<ui::Accelerator, int>& GetAcceleratorTable() {
   if (!IsRunningInForcedAppMode()) {
     static base::NoDestructor<std::map<ui::Accelerator, int>> accelerators(
-        AcceleratorsFromMapping(kAppWindowAcceleratorMap,
-                                std::size(kAppWindowAcceleratorMap)));
+        AcceleratorsFromMapping(kAppWindowAcceleratorMap));
     return *accelerators;
   }
 
   static base::NoDestructor<std::map<ui::Accelerator, int>>
       app_mode_accelerators([]() {
-        std::map<ui::Accelerator, int> mapping = AcceleratorsFromMapping(
-            kAppWindowAcceleratorMap, std::size(kAppWindowAcceleratorMap));
-        std::map<ui::Accelerator, int> kiosk_mapping = AcceleratorsFromMapping(
-            kAppWindowKioskAppModeAcceleratorMap,
-            std::size(kAppWindowKioskAppModeAcceleratorMap));
+        std::map<ui::Accelerator, int> mapping =
+            AcceleratorsFromMapping(kAppWindowAcceleratorMap);
+        std::map<ui::Accelerator, int> kiosk_mapping =
+            AcceleratorsFromMapping(kAppWindowKioskAppModeAcceleratorMap);
         mapping.insert(std::begin(kiosk_mapping), std::end(kiosk_mapping));
         return mapping;
       }());
