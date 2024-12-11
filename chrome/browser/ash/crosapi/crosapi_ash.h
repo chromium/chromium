@@ -114,7 +114,6 @@ class ParentAccessAsh;
 class PaymentAppInstanceAsh;
 class PolicyServiceAsh;
 class PowerAsh;
-class PrefsAsh;
 class NonclosableAppToastServiceAsh;
 #if BUILDFLAG(USE_CUPS)
 class PrintingMetricsAsh;
@@ -316,7 +315,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindPolicyService(
       mojo::PendingReceiver<mojom::PolicyService> receiver) override;
   void BindPower(mojo::PendingReceiver<mojom::Power> receiver) override;
-  void BindPrefs(mojo::PendingReceiver<mojom::Prefs> receiver) override;
   void BindPrintPreviewCrosDelegate(
       mojo::PendingReceiver<mojom::PrintPreviewCrosDelegate> receiver) override;
   void BindNonclosableAppToastService(
@@ -656,7 +654,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<PaymentAppInstanceAsh> payment_app_instance_ash_;
   std::unique_ptr<PolicyServiceAsh> policy_service_ash_;
   std::unique_ptr<PowerAsh> power_ash_;
-  std::unique_ptr<PrefsAsh> prefs_ash_;
   std::unique_ptr<NonclosableAppToastServiceAsh>
       nonclosable_app_toast_service_ash_;
 #if BUILDFLAG(USE_CUPS)

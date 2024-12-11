@@ -78,7 +78,6 @@ import "chromeos/crosapi/mojom/one_drive_integration_service.mojom";
 import "chromeos/crosapi/mojom/power.mojom";
 import "chromeos/crosapi/mojom/parent_access.mojom";
 import "chromeos/crosapi/mojom/passkeys.mojom";
-import "chromeos/crosapi/mojom/prefs.mojom";
 import "chromeos/crosapi/mojom/nonclosable_app_toast_service.mojom";
 import "chromeos/crosapi/mojom/print_preview_cros.mojom";
 import "chromeos/crosapi/mojom/printing_metrics.mojom";
@@ -511,9 +510,7 @@ interface Crosapi {
   [MinVersion=56] BindPolicyService@60(
       pending_receiver<PolicyService> receiver);
 
-  // Binds the prefs service which allows get, set, and notify update of prefs.
-  // Added in M89.
-  [MinVersion=11] BindPrefs@16(pending_receiver<Prefs> receiver);
+  // BindPrefs@16 was removed.
 
   // Binds the prevent close service which can be used to provide user feedback
   // about nonclosable web apps.
