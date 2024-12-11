@@ -97,7 +97,8 @@ class PLATFORM_EXPORT SharedGpuContext {
   std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
       shared_image_interface_provider_;
 
-  // RAW_PTR_EXCLUSION: #addr-of
+  // RAW_PTR_EXCLUSION: Performance (MotionMark). Please see crbug.com/346693834
+  // for more details.
   RAW_PTR_EXCLUSION gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_ =
       nullptr;
 };
