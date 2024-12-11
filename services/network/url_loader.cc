@@ -1799,13 +1799,14 @@ net::CookieSettingOverrides URLLoader::CalculateCookieSettingOverrides(
   // factory_overrides.
   CHECK(
       !overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible));
-  // Add/remove the Storage Access override enum based on whether the request's
-  // url and initiator are same-site, to prevent cross-site sibling iframes
-  // benefit from each other's storage access API grants. This must be updated
-  // on redirects.
-  net::cookie_util::AddOrRemoveStorageAccessApiOverride(
-      request.url, request.storage_access_api_status, request.request_initiator,
-      emit_metrics, overrides);
+  // Add the Storage Access override enum based on whether the request's url and
+  // initiator are same-site, to prevent cross-site sibling iframes benefit from
+  // each other's storage access API grants. This must be updated on redirects.
+  if (net::cookie_util::ShouldAddInitialStorageAccessApiOverride(
+          request.url, request.storage_access_api_status,
+          request.request_initiator, emit_metrics)) {
+    overrides.Put(net::CookieSettingOverride::kStorageAccessGrantEligible);
+  }
 
   // The `kStorageAccessGrantEligibleViaHeader` override will be applied
   // (in-place) by individual request jobs as appropriate, but should not be

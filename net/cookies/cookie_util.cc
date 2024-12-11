@@ -1131,16 +1131,14 @@ bool PartitionedCookiesDisabledByCommandLine() {
   return command_line->HasSwitch(kDisablePartitionedCookiesSwitch);
 }
 
-void AddOrRemoveStorageAccessApiOverride(
+bool ShouldAddInitialStorageAccessApiOverride(
     const GURL& url,
     StorageAccessApiStatus api_status,
     base::optional_ref<const url::Origin> request_initiator,
-    bool emit_metrics,
-    CookieSettingOverrides& overrides) {
+    bool emit_metrics) {
   if (api_status != StorageAccessApiStatus::kAccessViaAPI ||
       !request_initiator) {
-    overrides.Remove(CookieSettingOverride::kStorageAccessGrantEligible);
-    return;
+    return false;
   }
 
   using enum StorageAccessNetRequestKind;
@@ -1159,9 +1157,7 @@ void AddOrRemoveStorageAccessApiOverride(
     RecordStorageAccessNetRequestMetric(kind);
   }
 
-  bool is_same_site = kind != kCrossSite;
-  overrides.PutOrRemove(CookieSettingOverride::kStorageAccessGrantEligible,
-                        is_same_site);
+  return kind != kCrossSite;
 }
 
 }  // namespace net::cookie_util

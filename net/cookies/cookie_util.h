@@ -462,14 +462,13 @@ NET_EXPORT bool IsForceThirdPartyCookieBlockingEnabled();
 
 NET_EXPORT bool PartitionedCookiesDisabledByCommandLine();
 
-// Adds or removes the kStorageAccessGrantEligible override, as appropriate.
-// Mutates `overrides` in place.
-NET_EXPORT void AddOrRemoveStorageAccessApiOverride(
+// Indicates whether the first hop in a request should have the
+// kStorageAccessGrantEligible override.
+[[nodiscard]] NET_EXPORT bool ShouldAddInitialStorageAccessApiOverride(
     const GURL& url,
     StorageAccessApiStatus api_status,
     base::optional_ref<const url::Origin> request_initiator,
-    bool emit_metrics,
-    CookieSettingOverrides& overrides);
+    bool emit_metrics);
 
 }  // namespace cookie_util
 
