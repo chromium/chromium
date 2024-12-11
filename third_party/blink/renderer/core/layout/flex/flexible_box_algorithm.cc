@@ -335,15 +335,6 @@ void FlexLine::ComputeLineItemsPosition() {
   const auto& style = algorithm_->StyleRef();
   const bool is_wrap_reverse = style.FlexWrap() == EFlexWrap::kWrapReverse;
 
-  // Recalculate the remaining free space. The adjustment for flex factors
-  // between 0..1 means we can't just use remainingFreeSpace here.
-  LayoutUnit total_item_size;
-  for (wtf_size_t i = 0; i < line_items_.size(); ++i)
-    total_item_size += line_items_[i].FlexedMarginBoxSize();
-  remaining_free_space_ =
-      container_main_inner_size_ - total_item_size -
-      (line_items_.size() - 1) * algorithm_->gap_between_items_;
-
   LayoutUnit max_major_descent = LayoutUnit::Min();
   LayoutUnit max_minor_descent = LayoutUnit::Min();
 

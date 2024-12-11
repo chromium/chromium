@@ -1107,8 +1107,9 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
 
   FlexLine* line;
   while ((line = algorithm_.ComputeNextFlexLine())) {
-    line->SetContainerMainInnerSize(
-        MainAxisContentExtent(line->sum_hypothetical_main_size_));
+    const LayoutUnit main_axis_inner_size =
+        MainAxisContentExtent(line->sum_hypothetical_main_size_);
+    line->SetContainerMainInnerSize(main_axis_inner_size);
     line->FreezeInflexibleItems();
     while (!line->ResolveFlexibleLengths()) {
       continue;
@@ -1119,6 +1120,10 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
     }
 
     flex_line_outputs->push_back(NGFlexLine(line->line_items_.size()));
+
+    LayoutUnit main_axis_free_space =
+        main_axis_inner_size -
+        (line->line_items_.size() - 1) * algorithm_.gap_between_items_;
     for (wtf_size_t i = 0; i < line->line_items_.size(); ++i) {
       FlexItem& flex_item = line->line_items_[i];
       NGFlexItem& flex_item_output = flex_line_outputs->back().line_items[i];
@@ -1130,6 +1135,8 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
           flex_item.is_initial_block_size_indefinite_;
       flex_item_output.is_used_flex_basis_indefinite =
           flex_item.is_used_flex_basis_indefinite_;
+
+      main_axis_free_space -= flex_item.FlexedMarginBoxSize();
 
       ConstraintSpace child_space = BuildSpaceForLayout(
           flex_item.ng_input_node_, flex_item.FlexedBorderBoxSize(),
@@ -1177,8 +1184,7 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
       }
     }
     line->ComputeLineItemsPosition();
-    flex_line_outputs->back().main_axis_free_space =
-        line->remaining_free_space_;
+    flex_line_outputs->back().main_axis_free_space = main_axis_free_space;
     flex_line_outputs->back().sum_hypothetical_main_size =
         line->sum_hypothetical_main_size_;
     flex_line_outputs->back().main_axis_auto_margin_count =
