@@ -183,9 +183,9 @@ class ProcessNodeObserver : public base::CheckedObserver {
   // via a separate posted task.
   virtual void OnBeforeProcessNodeAdded(const ProcessNode* process_node) = 0;
 
-  // Called when a `process_node` is added to the graph. Observers must not make
-  // any property changes or cause re-entrant notifications during the scope of
-  // this call.
+  // Called after a `process_node` is added to the graph. Observers must not
+  // make any property changes or cause re-entrant notifications during the
+  // scope of this call.
   virtual void OnProcessNodeAdded(const ProcessNode* process_node) = 0;
 
   // The process associated with `process_node` has been started or has exited.
@@ -197,6 +197,16 @@ class ProcessNodeObserver : public base::CheckedObserver {
   // not make any property changes or cause re-entrant notifications during the
   // scope of this call.
   virtual void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) = 0;
+
+  // Called after a `process_node` is removed from the graph.
+  // OnBeforeProcessNodeRemoved() is better for most purposes, but this can be
+  // useful if an observer needs to check the state of the graph without
+  // including `process_node`.
+  //
+  // Observers must not make any property changes or cause re-entrant
+  // notifications during the scope of this call. `process_node` will be deleted
+  // immediately after so property changes would have no effect anyway.
+  virtual void OnProcessNodeRemoved(const ProcessNode* process_node) = 0;
 
   // Notifications of property changes.
 
@@ -230,6 +240,7 @@ class ProcessNode::ObserverDefaultImpl : public ProcessNodeObserver {
   void OnProcessNodeAdded(const ProcessNode* process_node) override {}
   void OnProcessLifetimeChange(const ProcessNode* process_node) override {}
   void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) override {}
+  void OnProcessNodeRemoved(const ProcessNode* process_node) override {}
   void OnMainThreadTaskLoadIsLow(const ProcessNode* process_node) override {}
   void OnPriorityChanged(const ProcessNode* process_node,
                          base::TaskPriority previous_value) override {}

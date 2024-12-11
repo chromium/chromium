@@ -209,7 +209,8 @@ class ProcessNodeImpl
 
   // NodeBase:
   void OnInitializingProperties() override;
-  void OnUninitializing() override;
+  void OnUninitializingEdges() override;
+  void OnUninitializingProperties() override;
   void RemoveNodeAttachedData() override;
 
   // Receiver for renderer-only messages.

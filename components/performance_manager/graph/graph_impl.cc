@@ -349,16 +349,18 @@ bool GraphImpl::NodeEdgesArePublic(const NodeBase* node) const {
       // Hide node connections until edges are initialized.
       return false;
     case NodeState::kInitializingEdges:
-      // InitializingFrameNodeObservers are called at the end of this state, and
-      // must see the edges.
+    case NodeState::kUninitializingEdges:
+      // InitializingFrameNodeObservers are called during this state, and must
+      // see the edges.
       return true;
     case NodeState::kJoiningGraph:
     case NodeState::kActiveInGraph:
     case NodeState::kLeavingGraph:
       return true;
-    case NodeState::kUninitializing:
-      // TODO(crbug.com/40640034): Hide node connections during teardown.
-      return true;
+    case NodeState::kLeftGraph:
+    case NodeState::kUninitializingProperties:
+      // Hide node connections during teardown.
+      return false;
   }
   NOTREACHED();
 }
@@ -430,10 +432,14 @@ void GraphImpl::RemoveNode(NodeBase* node) {
   node_in_transition_ = node;
   node_in_transition_state_ = NodeState::kLeavingGraph;
   DispatchBeforeNodeRemovedNotifications(node);
-  node_in_transition_state_ = NodeState::kUninitializing;
-  node->OnUninitializing();
+  node_in_transition_state_ = NodeState::kUninitializingEdges;
+  node->OnUninitializingEdges();
+  node_in_transition_state_ = NodeState::kLeftGraph;
+  DispatchNodeRemovedNotifications(node);
+  node_in_transition_state_ = NodeState::kUninitializingProperties;
+  node->OnUninitializingProperties();
   node->RemoveNodeAttachedData();
-  node->LeaveGraph();
+  node->ClearGraphPointer();
   node_in_transition_ = nullptr;
   node_in_transition_state_ = NodeState::kNotInGraph;
 
@@ -652,6 +658,50 @@ void GraphImpl::DispatchBeforeNodeRemovedNotifications(NodeBase* node) {
       auto* worker_node = WorkerNodeImpl::FromNodeBase(node);
       for (auto& observer : worker_node_observers_) {
         observer.OnBeforeWorkerNodeRemoved(worker_node);
+      }
+      return;
+    }
+  }
+  NOTREACHED();
+}
+
+void GraphImpl::DispatchNodeRemovedNotifications(NodeBase* node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(node->GetNodeState(), NodeState::kLeftGraph);
+
+  // This handles the strongly typed observer notifications.
+  switch (node->GetNodeType()) {
+    case NodeTypeEnum::kFrame: {
+      auto* frame_node = FrameNodeImpl::FromNodeBase(node);
+      for (auto& observer : frame_node_observers_) {
+        observer.OnFrameNodeRemoved(
+            frame_node, frame_node->parent_frame_node(),
+            frame_node->page_node(), frame_node->process_node(),
+            frame_node->parent_or_outer_document_or_embedder());
+      }
+      return;
+    }
+    case NodeTypeEnum::kPage: {
+      auto* page_node = PageNodeImpl::FromNodeBase(node);
+      for (auto& observer : page_node_observers_) {
+        observer.OnPageNodeRemoved(page_node);
+      }
+      return;
+    }
+    case NodeTypeEnum::kProcess: {
+      auto* process_node = ProcessNodeImpl::FromNodeBase(node);
+      for (auto& observer : process_node_observers_) {
+        observer.OnProcessNodeRemoved(process_node);
+      }
+      return;
+    }
+    case NodeTypeEnum::kSystem:
+      // Do nothing.
+      return;
+    case NodeTypeEnum::kWorker: {
+      auto* worker_node = WorkerNodeImpl::FromNodeBase(node);
+      for (auto& observer : worker_node_observers_) {
+        observer.OnWorkerNodeRemoved(worker_node, worker_node->process_node());
       }
       return;
     }

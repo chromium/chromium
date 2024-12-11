@@ -48,13 +48,23 @@ void InitializingFrameNodeObserverManager::OnBeforeFrameNodeAdded(
 
 void InitializingFrameNodeObserverManager::OnFrameNodeAdded(
     const FrameNode* frame_node) {
-  // Ignore this as this class manually notifies observes of new frame nodes
+  // Ignore this as this class manually notifies observers of new frame nodes
   // using `OnFrameNodeInitializing()`.
 }
 
 void InitializingFrameNodeObserverManager::OnBeforeFrameNodeRemoved(
     const FrameNode* frame_node) {
-  // Ignore this as this class manually notifies observes of the removal of
+  // Ignore this as this class manually notifies observers of the removal of
+  // frame nodes using `NotifyFrameNodeTearingDown()`.
+}
+
+void InitializingFrameNodeObserverManager::OnFrameNodeRemoved(
+    const FrameNode* frame_node,
+    const FrameNode* previous_parent_frame_node,
+    const PageNode* previous_page_node,
+    const ProcessNode* previous_process_node,
+    const FrameNode* previous_parent_or_outer_document_or_embedder) {
+  // Ignore this as this class manually notifies observers of the removal of
   // frame nodes using `NotifyFrameNodeTearingDown()`.
 }
 

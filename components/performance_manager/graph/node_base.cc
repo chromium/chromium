@@ -5,6 +5,7 @@
 #include "components/performance_manager/graph/node_base.h"
 
 #include "base/check_op.h"
+#include "base/notreached.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/public/graph/node.h"
 
@@ -38,9 +39,23 @@ NodeBase* NodeBase::FromNode(Node* node) {
 
 bool NodeBase::CanSetProperty() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetNodeState() == NodeState::kInitializingProperties ||
-         GetNodeState() == NodeState::kInitializingEdges ||
-         GetNodeState() == NodeState::kUninitializing;
+  switch (GetNodeState()) {
+    case NodeState::kInitializingProperties:
+    case NodeState::kInitializingEdges:
+    case NodeState::kUninitializingEdges:
+    case NodeState::kUninitializingProperties:
+      return true;
+    case NodeState::kNotInGraph:
+    case NodeState::kInitializedNotInGraph:
+    case NodeState::kJoiningGraph:
+    case NodeState::kLeavingGraph:
+    case NodeState::kLeftGraph:
+      return false;
+    case NodeState::kActiveInGraph:
+      // Can set properties, but must notify. See CanSetAndNotifyProperty().
+      return false;
+  }
+  NOTREACHED();
 }
 
 bool NodeBase::CanSetAndNotifyProperty() const {
@@ -74,17 +89,23 @@ void NodeBase::OnBeforeLeavingGraph() {
   // This is overridden by node impls.
 }
 
-void NodeBase::OnUninitializing() {
+void NodeBase::OnUninitializingEdges() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(NodeState::kUninitializing, GetNodeState());
+  DCHECK_EQ(NodeState::kUninitializingEdges, GetNodeState());
   // This is overridden by node impls.
 }
 
-void NodeBase::LeaveGraph() {
+void NodeBase::OnUninitializingProperties() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(NodeState::kUninitializingProperties, GetNodeState());
+  // This is overridden by node impls.
+}
+
+void NodeBase::ClearGraphPointer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(graph_);
   DCHECK(graph_->NodeInGraph(this));
-  DCHECK_EQ(NodeState::kUninitializing, GetNodeState());
+  DCHECK_EQ(NodeState::kUninitializingProperties, GetNodeState());
   graph_ = nullptr;
 }
 

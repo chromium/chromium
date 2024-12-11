@@ -114,6 +114,7 @@ class LenientMockObserver : public ProcessNodeImpl::Observer {
               OnBeforeProcessNodeRemoved,
               (const ProcessNode*),
               (override));
+  MOCK_METHOD(void, OnProcessNodeRemoved, (const ProcessNode*), (override));
   MOCK_METHOD(void,
               OnMainThreadTaskLoadIsLow,
               (const ProcessNode*),
@@ -181,7 +182,8 @@ TEST_F(ProcessNodeImplTest, ObserverWorks) {
   // `tail_obs` should not be notified as it was removed.
   EXPECT_CALL(tail_obs, OnBeforeProcessNodeAdded(_)).Times(0);
 
-  // Create a page node and expect a matching call to "OnProcessNodeAdded".
+  // Create a page node and expect a matching call to both "OnBeforeProcessNodeAdded" and
+  // "OnProcessNodeAdded".
   {
     InSequence seq;
     EXPECT_CALL(obs, OnBeforeProcessNodeAdded(_))
@@ -227,11 +229,14 @@ TEST_F(ProcessNodeImplTest, ObserverWorks) {
   EXPECT_CALL(obs, OnPriorityChanged(raw_process_node, _));
   process_node->SetMainThreadTaskLoadIsLow(false);
 
-  // Release the page node and expect a call to "OnBeforeProcessNodeRemoved".
-  EXPECT_CALL(obs, OnBeforeProcessNodeRemoved(_))
-      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedProcessNode));
+  // Release the page node and expect a call to both "OnBeforeProcessNodeRemoved" and
+  // "OnProcessNodeRemoved".
+  {
+    InSequence seq;
+    EXPECT_CALL(obs, OnBeforeProcessNodeRemoved(raw_process_node));
+    EXPECT_CALL(obs, OnProcessNodeRemoved(raw_process_node));
+  }
   process_node.reset();
-  EXPECT_EQ(raw_process_node, obs.TakeNotifiedProcessNode());
 
   graph()->RemoveProcessNodeObserver(&obs);
 }

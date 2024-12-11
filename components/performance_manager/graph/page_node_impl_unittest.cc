@@ -249,6 +249,7 @@ class LenientMockObserver : public PageNodeImpl::Observer {
   MOCK_METHOD(void, OnBeforePageNodeAdded, (const PageNode*), (override));
   MOCK_METHOD(void, OnPageNodeAdded, (const PageNode*), (override));
   MOCK_METHOD(void, OnBeforePageNodeRemoved, (const PageNode*), (override));
+  MOCK_METHOD(void, OnPageNodeRemoved, (const PageNode*), (override));
   // Note that opener/embedder functionality is actually tested in the
   // FrameNodeImpl and GraphImpl unittests.
   MOCK_METHOD(void,
@@ -349,7 +350,8 @@ TEST_F(PageNodeImplTest, ObserverWorks) {
   // `tail_obs` should not be notified as it was removed.
   EXPECT_CALL(tail_obs, OnBeforePageNodeAdded(_)).Times(0);
 
-  // Create a page node and expect a matching call to "OnPageNodeAdded".
+  // Create a page node and expect a matching call to both "OnBeforePageNodeAdded" and
+  // "OnPageNodeAdded".
   {
     InSequence seq;
     EXPECT_CALL(obs, OnBeforePageNodeAdded(_))
@@ -426,11 +428,14 @@ TEST_F(PageNodeImplTest, ObserverWorks) {
   EXPECT_CALL(obs, OnIsVisibleChanged(raw_page_node));
   page_node->SetIsFocused(false);
 
-  // Release the page node and expect a call to "OnBeforePageNodeRemoved".
-  EXPECT_CALL(obs, OnBeforePageNodeRemoved(_))
-      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
+  // Release the page node and expect a call to both "OnBeforePageNodeRemoved" and
+  // "OnPageNodeRemoved".
+  {
+    InSequence seq;
+    EXPECT_CALL(obs, OnBeforePageNodeRemoved(raw_page_node));
+    EXPECT_CALL(obs, OnPageNodeRemoved(raw_page_node));
+  }
   page_node.reset();
-  EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
 
   graph()->RemovePageNodeObserver(&obs);
 }

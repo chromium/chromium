@@ -253,7 +253,7 @@ class PageNodeObserver : public base::CheckedObserver {
   // via a separate posted task.
   virtual void OnBeforePageNodeAdded(const PageNode* page_node) = 0;
 
-  // Called when a `page_node` is added to the graph. Observers must not make
+  // Called after a `page_node` is added to the graph. Observers must not make
   // any property changes or cause re-entrant notifications during the scope of
   // this call. Instead, make property changes via a separate posted task.
   virtual void OnPageNodeAdded(const PageNode* page_node) = 0;
@@ -262,6 +262,16 @@ class PageNodeObserver : public base::CheckedObserver {
   // make any property changes or cause re-entrant notifications during the
   // scope of this call.
   virtual void OnBeforePageNodeRemoved(const PageNode* page_node) = 0;
+
+  // Called after a `page_node` is removed from the graph.
+  // OnBeforePageNodeRemoved() is better for most purposes, but this can be
+  // useful if an observer needs to check the state of the graph without
+  // including `page_node`.
+  //
+  // Observers must not make any property changes or cause re-entrant
+  // notifications during the scope of this call. `page_node` will be deleted
+  // immediately after so property changes would have no effect anyway.
+  virtual void OnPageNodeRemoved(const PageNode* page_node) = 0;
 
   // Notifications of property changes.
 
@@ -372,6 +382,7 @@ class PageNode::ObserverDefaultImpl : public PageNodeObserver {
   void OnBeforePageNodeAdded(const PageNode* page_node) override {}
   void OnPageNodeAdded(const PageNode* page_node) override {}
   void OnBeforePageNodeRemoved(const PageNode* page_node) override {}
+  void OnPageNodeRemoved(const PageNode* page_node) override {}
   void OnOpenerFrameNodeChanged(const PageNode* page_node,
                                 const FrameNode* previous_opener) override {}
   void OnEmbedderFrameNodeChanged(

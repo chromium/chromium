@@ -37,6 +37,10 @@ class LenientMockObserver : public WorkerNodeImpl::Observer {
   MOCK_METHOD(void, OnWorkerNodeAdded, (const WorkerNode*), (override));
   MOCK_METHOD(void, OnBeforeWorkerNodeRemoved, (const WorkerNode*), (override));
   MOCK_METHOD(void,
+              OnWorkerNodeRemoved,
+              (const WorkerNode*, const ProcessNode*),
+              (override));
+  MOCK_METHOD(void,
               OnFinalResponseURLDetermined,
               (const WorkerNode*),
               (override));
@@ -287,7 +291,8 @@ TEST_F(WorkerNodeImplTest, ObserverWorks) {
   // `tail_obs` should not be notified as it was removed.
   EXPECT_CALL(tail_obs, OnBeforeWorkerNodeAdded(_, _)).Times(0);
 
-  // Create a worker node and expect a matching call to "OnWorkerNodeAdded".
+  // Create a worker node and expect a matching call to both "OnBeforeWorkerNodeAdded" and
+  // "OnWorkerNodeAdded".
   const WorkerNode* worker_node = nullptr;
   const ProcessNode* process_node = nullptr;
   EXPECT_CALL(obs, OnBeforeWorkerNodeAdded(_, _))
@@ -375,9 +380,45 @@ TEST_F(WorkerNodeImplTest, Observer_AddWorkerNodes) {
   shared_worker->RemoveClientFrame(frame.get());
   dedicated_worker->RemoveClientFrame(frame.get());
 
-  EXPECT_CALL(obs, OnBeforeWorkerNodeRemoved(service_worker.get()));
-  EXPECT_CALL(obs, OnBeforeWorkerNodeRemoved(shared_worker.get()));
-  EXPECT_CALL(obs, OnBeforeWorkerNodeRemoved(dedicated_worker.get()));
+  const ProcessNode* saved_service_worker_process = nullptr;
+  const ProcessNode* saved_shared_worker_process = nullptr;
+  const ProcessNode* saved_dedicated_worker_process = nullptr;
+  EXPECT_CALL(obs, OnBeforeWorkerNodeRemoved(service_worker.get()))
+      .WillOnce(Invoke([&](const WorkerNode* worker_node) {
+        // Node should still be in graph.
+        saved_service_worker_process = worker_node->GetProcessNode();
+        EXPECT_TRUE(saved_service_worker_process);
+      }));
+  EXPECT_CALL(obs, OnWorkerNodeRemoved(service_worker.get(), _))
+      .WillOnce(Invoke([&](const WorkerNode* worker_node,
+                           const ProcessNode* previous_process_node) {
+        EXPECT_EQ(saved_service_worker_process, previous_process_node);
+        EXPECT_FALSE(worker_node->GetProcessNode());
+      }));
+  EXPECT_CALL(obs, OnBeforeWorkerNodeRemoved(shared_worker.get()))
+      .WillOnce(Invoke([&](const WorkerNode* worker_node) {
+        // Node should still be in graph.
+        saved_shared_worker_process = worker_node->GetProcessNode();
+        EXPECT_TRUE(saved_shared_worker_process);
+      }));
+  EXPECT_CALL(obs, OnWorkerNodeRemoved(shared_worker.get(), _))
+      .WillOnce(Invoke([&](const WorkerNode* worker_node,
+                           const ProcessNode* previous_process_node) {
+        EXPECT_EQ(saved_shared_worker_process, previous_process_node);
+        EXPECT_FALSE(worker_node->GetProcessNode());
+      }));
+  EXPECT_CALL(obs, OnBeforeWorkerNodeRemoved(dedicated_worker.get()))
+      .WillOnce(Invoke([&](const WorkerNode* worker_node) {
+        // Node should still be in graph.
+        saved_dedicated_worker_process = worker_node->GetProcessNode();
+        EXPECT_TRUE(saved_dedicated_worker_process);
+      }));
+  EXPECT_CALL(obs, OnWorkerNodeRemoved(dedicated_worker.get(), _))
+      .WillOnce(Invoke([&](const WorkerNode* worker_node,
+                           const ProcessNode* previous_process_node) {
+        EXPECT_EQ(saved_dedicated_worker_process, previous_process_node);
+        EXPECT_FALSE(worker_node->GetProcessNode());
+      }));
 
   // Clean up workers.
   service_worker.reset();
@@ -430,7 +471,6 @@ TEST_F(WorkerNodeImplTest, Observer_ClientsOfServiceWorkers) {
   service_worker->AddClientWorker(dedicated_worker.get());
   service_worker->AddClientWorker(shared_worker.get());
 
-
   // Remove client connections.
   EXPECT_CALL(obs, OnBeforeClientWorkerRemoved(service_worker.get(),
                                                shared_worker.get()));
@@ -445,8 +485,11 @@ TEST_F(WorkerNodeImplTest, Observer_ClientsOfServiceWorkers) {
 
   // Clean up workers.
   EXPECT_CALL(obs, OnBeforeWorkerNodeRemoved(service_worker.get()));
+  EXPECT_CALL(obs, OnWorkerNodeRemoved(service_worker.get(), _));
   EXPECT_CALL(obs, OnBeforeWorkerNodeRemoved(shared_worker.get()));
+  EXPECT_CALL(obs, OnWorkerNodeRemoved(shared_worker.get(), _));
   EXPECT_CALL(obs, OnBeforeWorkerNodeRemoved(dedicated_worker.get()));
+  EXPECT_CALL(obs, OnWorkerNodeRemoved(dedicated_worker.get(), _));
 
   service_worker.reset();
   shared_worker.reset();

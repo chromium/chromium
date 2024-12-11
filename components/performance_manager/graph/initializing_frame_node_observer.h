@@ -89,6 +89,12 @@ class InitializingFrameNodeObserverManager final : public FrameNodeObserver {
       const FrameNode* pending_parent_or_outer_document_or_embedder) override;
   void OnFrameNodeAdded(const FrameNode* frame_node) override;
   void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
+  void OnFrameNodeRemoved(
+      const FrameNode* frame_node,
+      const FrameNode* previous_parent_frame_node,
+      const PageNode* previous_page_node,
+      const ProcessNode* previous_process_node,
+      const FrameNode* previous_parent_or_outer_document_or_embedder) override;
   void OnCurrentFrameChanged(const FrameNode* previous_frame_node,
                              const FrameNode* current_frame_node) override;
   void OnNetworkAlmostIdleChanged(const FrameNode* frame_node) override;

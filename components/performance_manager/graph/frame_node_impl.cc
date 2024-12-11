@@ -777,7 +777,7 @@ void FrameNodeImpl::OnBeforeLeavingGraph() {
   SeverPageRelationshipsAndMaybeReparent();
 }
 
-void FrameNodeImpl::OnUninitializing() {
+void FrameNodeImpl::OnUninitializingEdges() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(child_frame_nodes_.empty());
@@ -798,6 +798,10 @@ void FrameNodeImpl::OnUninitializing() {
   // And leave the process.
   DCHECK(graph()->NodeInGraph(process_node_));
   process_node_->RemoveFrame(this);
+}
+
+void FrameNodeImpl::OnUninitializingProperties() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Disable querying this node using process and frame routing ids.
   graph()->UnregisterFrameNodeForId(process_node_->GetRenderProcessHostId(),

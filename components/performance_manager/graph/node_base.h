@@ -128,7 +128,7 @@ class NodeBase {
   // state.
 
   // Step 7:
-  // Called just before leaving |graph_|. The node will be in the kActiveInGraph
+  // Called just before leaving `graph_`. The node will be in the kActiveInGraph
   // state during this call. The node may make property changes, and these
   // changes may cause notifications to be dispatched. This must leave the node
   // and the graph in a consistent state since the node is still in the graph.
@@ -139,28 +139,42 @@ class NodeBase {
   virtual void OnBeforeLeavingGraph();
 
   // Step 8:
-  // Node removed notifications are dispatched. The node must not be modified
-  // during any of these notifications. The node is in the kLeavingGraph state.
+  // OnBeforeNodeRemoved notifications are dispatched. The node must not be
+  // modified during any of these notifications. The node is in the
+  // kLeavingGraph state.
 
   // Step 9:
-  // Called while leaving |graph_|, a good opportunity to uninitialize node
-  // state. The node will be in the kUninitializing state during this call.
-  // Nodes may modify their properties but *not* cause notifications that have
-  // this node as a parameter to be emitted, because from the public viewpoint
-  // the node is already gone.
-  virtual void OnUninitializing();
+  // Called while leaving `graph_`, to sever the node from the graph by updating
+  // incoming edges. The node will be in the kUninitializingEdges state during
+  // this call, and will transition to kLeftGraph immediately afterward. Nodes
+  // may modify their properties that link to other nodes but *not* cause
+  // notifications that have this node as a parameter to be emitted, because
+  // from the public viewpoint the node is already gone.
+  virtual void OnUninitializingEdges();
 
   // Step 10:
-  // Called as this node is leaving |graph_|. Any private node-attached data
-  // should be destroyed at this point. The node is in the kUninitializing
-  // state.
-  virtual void RemoveNodeAttachedData() = 0;
+  // OnNodeRemoved notifications are dispatched. The node must not be modified
+  // during any of these notifications. The node is in the kLeftGraph state.
 
   // Step 11:
-  // Leaves the graph that this node is a part of. The node is in the
-  // kUninitializing state during this call, and will be in the kNotInGraph
-  // state immediately afterwards.
-  void LeaveGraph();
+  // Called after the node's edges have been severed from the graph, a good
+  // opportunity to uninitialize node state. The node is in
+  // kUninitializingProperties state. Nodes may modify their properties that
+  // don't affect the graph topology but *not* cause notifications to be
+  // emitted.
+  virtual void OnUninitializingProperties();
+
+  // Step 12:
+  // Called as this node is leaving `graph_`. Any private node-attached data
+  // should be destroyed at this point. The node is in the
+  // kUninitializingProperties state.
+  virtual void RemoveNodeAttachedData() = 0;
+
+  // Step 13:
+  // Resets the graph pointer. The node is in the kUninitializingProperties
+  // state during this call, and will be in the kNotInGraph state immediately
+  // afterwards.
+  void ClearGraphPointer();
 
   // Assigned when JoinGraph() is called, up until LeaveGraph() is called, where
   // it is reset to null.

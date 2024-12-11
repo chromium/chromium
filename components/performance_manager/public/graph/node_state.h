@@ -44,10 +44,21 @@ enum class NodeState {
   // notifications are permitted.
   kLeavingGraph,
 
+  // The node is uninitializing edges. Changing properties that point to other
+  // graph nodes is fine, but no notifications should be dispatched. This state
+  // is only seen by node implementations and will never be visible via the
+  // public API.
+  kUninitializingEdges,
+
+  // The node is no longer in the graph. Its properties are still valid except
+  // for those that point to other graph nodes. No property changes or
+  // notifications are permitted.
+  kLeftGraph,
+
   // The node is uninitializing. Making property changes is fine, but no
   // notifications should be dispatched. This state is only seen by node
   // implementations and will never be visible via the public API.
-  kUninitializing,
+  kUninitializingProperties,
 };
 
 }  // namespace performance_manager

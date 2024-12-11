@@ -92,7 +92,7 @@ class WorkerNodeImpl
   // NodeBase:
   void OnInitializingProperties() override;
   void OnInitializingEdges() override;
-  void OnUninitializing() override;
+  void OnUninitializingEdges() override;
   void RemoveNodeAttachedData() override;
 
   // Rest of WorkerNode implementation. These are private so that users of the

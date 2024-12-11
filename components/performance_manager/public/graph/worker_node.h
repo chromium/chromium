@@ -85,7 +85,7 @@ class WorkerNode : public TypedNode<WorkerNode> {
 
   // Returns the process node to which this worker belongs. This is a constant
   // over the lifetime of the frame, except that it will always be null during
-  // the OnBeforeWorkerNodeAdded() notification.
+  // the OnBeforeWorkerNodeAdded() and OnWorkerNodeRemoved() notifications.
   virtual const ProcessNode* GetProcessNode() const = 0;
 
   // Returns the unique token identifying this worker.
@@ -169,7 +169,7 @@ class WorkerNodeObserver : public base::CheckedObserver {
       const WorkerNode* worker_node,
       const ProcessNode* pending_process_node) = 0;
 
-  // Called when a `worker_node` is added to the graph. Observers must not make
+  // Called after a `worker_node` is added to the graph. Observers must not make
   // any property changes or cause re-entrant notifications during the scope of
   // this call. Instead, make property changes via a separate posted task.
   virtual void OnWorkerNodeAdded(const WorkerNode* worker_node) = 0;
@@ -178,6 +178,21 @@ class WorkerNodeObserver : public base::CheckedObserver {
   // make any property changes or cause re-entrant notifications during the
   // scope of this call.
   virtual void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) = 0;
+
+  // Called after a `worker_node` is removed from the graph.
+  // OnBeforeWorkerNodeRemoved() is better for most purposes, but this can be
+  // useful if an observer needs to check the state of the graph without
+  // including `worker_node`.
+  //
+  // `previous_process_node` is the node that was returned from GetProcessNode()
+  // before `worker_node` was removed from the graph.
+  //
+  // Observers must not make any property changes or cause re-entrant
+  // notifications during the scope of this call. `frame_node` will be deleted
+  // immediately after so property changes would have no effect anyway.
+  virtual void OnWorkerNodeRemoved(
+      const WorkerNode* worker_node,
+      const ProcessNode* previous_process_node) = 0;
 
   // Notifications of property changes.
 
@@ -242,6 +257,8 @@ class WorkerNode::ObserverDefaultImpl : public WorkerNodeObserver {
       const ProcessNode* pending_process_node) override {}
   void OnWorkerNodeAdded(const WorkerNode* worker_node) override {}
   void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) override {}
+  void OnWorkerNodeRemoved(const WorkerNode* worker_node,
+                           const ProcessNode* previous_process_node) override {}
   void OnFinalResponseURLDetermined(const WorkerNode* worker_node) override {}
   void OnBeforeClientFrameAdded(const WorkerNode* worker_node,
                                 const FrameNode* client_frame_node) override {}

@@ -202,6 +202,7 @@ class GraphImpl : public Graph {
   void DispatchBeforeNodeAddedNotifications(NodeBase* node);
   void DispatchNodeAddedNotifications(NodeBase* node);
   void DispatchBeforeNodeRemovedNotifications(NodeBase* node);
+  void DispatchNodeRemovedNotifications(NodeBase* node);
 
   // Returns a new serialization ID.
   friend class NodeBase;

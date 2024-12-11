@@ -157,6 +157,14 @@ class LenientMockObserver : public FrameNodeImpl::Observer {
   MOCK_METHOD(void, OnFrameNodeAdded, (const FrameNode*), (override));
   MOCK_METHOD(void, OnBeforeFrameNodeRemoved, (const FrameNode*), (override));
   MOCK_METHOD(void,
+              OnFrameNodeRemoved,
+              (const FrameNode*,
+               const FrameNode*,
+               const PageNode*,
+               const ProcessNode*,
+               const FrameNode*),
+              (override));
+  MOCK_METHOD(void,
               OnCurrentFrameChanged,
               (const FrameNode*, const FrameNode*),
               (override));
@@ -294,7 +302,8 @@ TEST_F(FrameNodeImplTest, ObserverWorks) {
   // `tail_obs` should not be notified as it was removed.
   EXPECT_CALL(tail_obs, OnBeforeFrameNodeAdded(_, _, _, _, _)).Times(0);
 
-  // Create a frame node and expect a matching call to "OnFrameNodeAdded".
+  // Create a frame node and expect a matching call to both "OnBeforeFrameNodeAdded" and
+  // "OnFrameNodeAdded".
   {
     InSequence seq;
     EXPECT_CALL(obs, OnBeforeFrameNodeAdded(_, _, _, _, _))
@@ -382,8 +391,44 @@ TEST_F(FrameNodeImplTest, ObserverWorks) {
   frame_node->SetVisibility(FrameNode::Visibility::kVisible);
   testing::Mock::VerifyAndClear(&obs);
 
-  // Release the frame node and expect a call to "OnBeforeFrameNodeRemoved".
-  EXPECT_CALL(obs, OnBeforeFrameNodeRemoved(raw_frame_node));
+  // Release the frame node and expect a call to both "OnBeforeFrameNodeRemoved" and
+  // "OnFrameNodeRemoved".
+  const FrameNode* saved_parent_frame_node = nullptr;
+  const PageNode* saved_page_node = nullptr;
+  const ProcessNode* saved_process_node = nullptr;
+  const FrameNode* saved_parent_or_outer_document_or_embedder = nullptr;
+  {
+    InSequence seq;
+    EXPECT_CALL(obs, OnBeforeFrameNodeRemoved(raw_frame_node))
+        .WillOnce([&](const FrameNode* frame_node) {
+          // Node should still be in graph.
+          saved_parent_frame_node = frame_node->GetParentFrameNode();
+          saved_page_node = frame_node->GetPageNode();
+          saved_process_node = frame_node->GetProcessNode();
+          saved_parent_or_outer_document_or_embedder =
+              frame_node->GetParentOrOuterDocumentOrEmbedder();
+          // Frame had no parent, so only page and process are set.
+          EXPECT_TRUE(saved_page_node);
+          EXPECT_TRUE(saved_process_node);
+        });
+    EXPECT_CALL(obs, OnFrameNodeRemoved(raw_frame_node, _, _, _, _))
+        .WillOnce([&](const FrameNode* frame_node,
+                      const FrameNode* previous_parent_frame_node,
+                      const PageNode* previous_page_node,
+                      const ProcessNode* previous_process_node,
+                      const FrameNode*
+                          previous_parent_or_outer_document_or_embedder) {
+          EXPECT_EQ(saved_parent_frame_node, previous_parent_frame_node);
+          EXPECT_EQ(saved_page_node, previous_page_node);
+          EXPECT_EQ(saved_process_node, previous_process_node);
+          EXPECT_EQ(saved_parent_or_outer_document_or_embedder,
+                    previous_parent_or_outer_document_or_embedder);
+          EXPECT_FALSE(frame_node->GetParentFrameNode());
+          EXPECT_FALSE(frame_node->GetPageNode());
+          EXPECT_FALSE(frame_node->GetProcessNode());
+          EXPECT_FALSE(frame_node->GetParentOrOuterDocumentOrEmbedder());
+        });
+  }
   frame_node.reset();
   testing::Mock::VerifyAndClear(&obs);
 
@@ -424,13 +469,17 @@ TEST_F(FrameNodeImplDeathTest, SetPropertyDuringNodeCreation) {
 
   // Modifying a property during node removal should explode.
   set_property = true;
-  EXPECT_CALL(obs, OnBeforeFrameNodeRemoved(_))
-      .WillOnce(Invoke([&](const FrameNode* frame_node) {
-        if (set_property) {
-          auto* impl = FrameNodeImpl::FromNode(frame_node);
-          impl->SetIsAdFrame(true);
-        }
-      }));
+  {
+    InSequence seq;
+    EXPECT_CALL(obs, OnBeforeFrameNodeRemoved(_))
+        .WillOnce(Invoke([&](const FrameNode* frame_node) {
+          if (set_property) {
+            auto* impl = FrameNodeImpl::FromNode(frame_node);
+            impl->SetIsAdFrame(true);
+          }
+        }));
+    EXPECT_CALL(obs, OnFrameNodeRemoved(_, _, _, _, _));
+  }
   EXPECT_DCHECK_DEATH(frame.reset());
 
   // Now remove the node but don't modify a property so that the mock
