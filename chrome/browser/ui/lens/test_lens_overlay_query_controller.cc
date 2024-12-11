@@ -56,14 +56,16 @@ void TestLensOverlayQueryController::StartQueryFlow(
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
     base::span<const uint8_t> underlying_content_bytes,
     lens::MimeType underlying_content_type,
-    float ui_scale_factor) {
+    float ui_scale_factor,
+    base::TimeTicks invocation_time) {
   last_sent_underlying_content_bytes_ = underlying_content_bytes;
   last_sent_underlying_content_type_ = underlying_content_type;
   last_sent_page_url_ = page_url;
 
   LensOverlayQueryController::StartQueryFlow(
       screenshot, page_url, page_title, std::move(significant_region_boxes),
-      underlying_content_bytes, underlying_content_type, ui_scale_factor);
+      underlying_content_bytes, underlying_content_type, ui_scale_factor,
+      invocation_time);
 }
 
 void TestLensOverlayQueryController::SendTaskCompletionGen204IfEnabled(
@@ -221,14 +223,15 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
 }
 
 void TestLensOverlayQueryController::SendLatencyGen204IfEnabled(
-    base::TimeDelta latency_ms,
-    bool is_translate_query,
-    std::string vit_query_param_value) {
-  if (is_translate_query) {
-    num_full_page_translate_gen204_pings_sent_++;
-  } else {
-    num_full_page_objects_gen204_pings_sent_++;
-  }
+    lens::LensOverlayGen204Controller::LatencyType latency_type,
+    base::TimeTicks start_time_ticks,
+    std::string vit_query_param_value,
+    std::optional<base::TimeDelta> cluster_info_latency,
+    std::optional<std::string> encoded_analytics_id) {
+  int counter = latency_gen_204_counter_.contains(latency_type)
+                    ? latency_gen_204_counter_.at(latency_type)
+                    : 0;
+  latency_gen_204_counter_[latency_type] = counter + 1;
 }
 
 }  // namespace lens

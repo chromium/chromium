@@ -21,6 +21,8 @@
 
 namespace lens {
 
+using LatencyType = LensOverlayGen204Controller::LatencyType;
+
 // The gen204 id for testing.
 constexpr uint64_t kGen204Id = 0;
 
@@ -141,8 +143,10 @@ TEST_F(LensOverlayGen204ControllerTest,
   auto gen204_controller = std::make_unique<LensOverlayGen204ControllerMock>();
   gen204_controller->OnQueryFlowStart(kInvocationSource, profile(), kGen204Id);
   gen204_controller->SendLatencyGen204IfEnabled(
-      kRequestLatency, /*cluster_info_latency=*/std::nullopt,
-      /*is_translate_query=*/false, /*vit_query_param_value=*/"image");
+      LatencyType::kFullPageObjectsRequestFetchLatency, kRequestLatency,
+      /*vit_query_param_value=*/"image",
+      /*cluster_info_latency=*/std::nullopt,
+      /*encoded_analytics_id=*/std::nullopt);
 
   auto url = gen204_controller->last_url_sent_;
 
@@ -167,8 +171,10 @@ TEST_F(LensOverlayGen204ControllerTest,
 
   // Send a translate query.
   gen204_controller->SendLatencyGen204IfEnabled(
-      kRequestLatency, /*cluster_info_latency=*/std::nullopt,
-      /*is_translate_query=*/true, /*vit_query_param_value=*/"pdf");
+      LatencyType::kFullPageTranslateRequestFetchLatency, kRequestLatency,
+      /*vit_query_param_value=*/"pdf",
+      /*cluster_info_latency=*/std::nullopt,
+      /*encoded_analytics_id=*/std::nullopt);
 
   // Check that the new request type param is present and contains the latency.
   EXPECT_TRUE(net::GetValueForKeyInQuery(gen204_controller->last_url_sent_,
@@ -186,8 +192,10 @@ TEST_F(LensOverlayGen204ControllerTest,
 
   // Send an objects query with cluster info.
   gen204_controller->SendLatencyGen204IfEnabled(
-      kRequestLatency, std::make_optional<base::TimeDelta>(kClusterInfoLatency),
-      /*is_translate_query=*/false, /*vit_query_param_value=*/"wp");
+      LatencyType::kFullPageObjectsRequestFetchLatency, kRequestLatency,
+      /*vit_query_param_value=*/"wp",
+      std::make_optional<base::TimeDelta>(kClusterInfoLatency),
+      /*encoded_analytics_id=*/std::nullopt);
 
   // Check that the new request type param is present and contains the latency.
   EXPECT_TRUE(net::GetValueForKeyInQuery(gen204_controller->last_url_sent_,
@@ -202,6 +210,22 @@ TEST_F(LensOverlayGen204ControllerTest,
   ASSERT_EQ(visual_input_type_param, "wp");
 
   ASSERT_EQ(gen204_controller->num_gen204s_sent_, 3);
+
+  // Send an objects query with an encoded analytics id.
+  gen204_controller->SendLatencyGen204IfEnabled(
+      LatencyType::kFullPageObjectsRequestFetchLatency, kRequestLatency,
+      /*vit_query_param_value=*/"wp",
+      std::make_optional<base::TimeDelta>(kClusterInfoLatency),
+      std::make_optional<std::string>(kEncodedAnalyticsId));
+
+  // Check that the encoded analytics id param is present.
+  std::string encoded_analytics_id_param;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(gen204_controller->last_url_sent_,
+                                         kEncodedAnalyticsIdParameter,
+                                         &encoded_analytics_id_param));
+  ASSERT_EQ(encoded_analytics_id_param, kEncodedAnalyticsId);
+
+  ASSERT_EQ(gen204_controller->num_gen204s_sent_, 4);
 }
 
 TEST_F(LensOverlayGen204ControllerTest,

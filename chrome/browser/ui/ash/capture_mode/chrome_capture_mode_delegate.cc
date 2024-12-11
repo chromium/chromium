@@ -537,7 +537,7 @@ void ChromeCaptureModeDelegate::SendRegionSearch(
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
       /*underlying_content_bytes=*/base::span<const uint8_t>(),
       /*underlying_content_type=*/lens::MimeType(),
-      /*ui_scale_factor=*/1.f);
+      /*ui_scale_factor=*/1.f, /*invocation_time=*/base::TimeTicks::Now());
   lens_overlay_query_controller_->SendRegionSearch(
       lens::GetCenterRotatedBoxFromTabViewAndImageBounds(
           /*tab_bounds=*/region, /*view_bounds=*/region,

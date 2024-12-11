@@ -1465,7 +1465,7 @@ void LensOverlayController::DidCaptureScreenshot(
     lens_overlay_query_controller_->StartQueryFlow(
         bitmap, GetPageURL(), GetPageTitle(),
         ConvertSignificantRegionBoxes(all_bounds), std::vector<uint8_t>(),
-        lens::MimeType::kUnknown, GetUiScaleFactor());
+        lens::MimeType::kUnknown, GetUiScaleFactor(), invocation_time_);
   }
 
   // The following two methods happen async to parallelize the two bottlenecks
@@ -1933,7 +1933,8 @@ void LensOverlayController::InitializeOverlay(
         initialization_data_->page_url_, initialization_data_->page_title_,
         std::move(initialization_data_->significant_region_boxes_),
         initialization_data_->page_content_bytes_,
-        initialization_data_->page_content_type_, GetUiScaleFactor());
+        initialization_data_->page_content_type_, GetUiScaleFactor(),
+        invocation_time_);
   }
 
   // TODO(b/352622136): We should not start the lens request until the overlay

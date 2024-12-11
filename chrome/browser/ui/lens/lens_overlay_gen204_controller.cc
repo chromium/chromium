@@ -25,6 +25,8 @@ namespace lens {
 
 namespace {
 
+using LatencyType = LensOverlayGen204Controller::LatencyType;
+
 constexpr int kMaxDownloadBytes = 1024 * 1024;
 
 // Task completion ids.
@@ -47,9 +49,15 @@ constexpr char kVisualInputTypeQueryParameter[] = "vit";
 constexpr char kEventIdParameter[] = "rcid";
 
 // Request type parameter values.
-constexpr char kFullPageObjectsFetchRequestType[] = "fpof";
-constexpr char kFullPageTranslateFetchRequestType[] = "fptf";
-constexpr char kFetchStickyClusterInfoRequestType[] = "sct";
+constexpr char kFullPageObjectsFetchLatencyId[] = "fpof";
+constexpr char kFullPageTranslateFetchLatencyId[] = "fptf";
+constexpr char kPageContentUploadLatencyId[] = "pcu";
+constexpr char kInteractionFetchLatencyId[] = "lif";
+constexpr char kFetchStickyClusterInfoLatencyId[] = "sct";
+constexpr char kInvocationToInitialClusterInfoRequestLatencyId[] = "cstcirs";
+constexpr char kInvocationToInitialFullObjectsRequestLatencyId[] = "cstiors";
+constexpr char kInvocationToInitialInteractionRequestLatencyId[] = "cstiirs";
+constexpr char kInvocationToInitialPageContentRequestLatencyId[] = "cstipcurs";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("lens_overlay_gen204", R"(
@@ -100,6 +108,27 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
         }
       )");
 
+std::string LatencyIdForType(LatencyType latency_type) {
+  switch (latency_type) {
+    case LatencyType::kInvocationToInitialClusterInfoRequestSent:
+      return kInvocationToInitialClusterInfoRequestLatencyId;
+    case LatencyType::kInvocationToInitialFullPageObjectsRequestSent:
+      return kInvocationToInitialFullObjectsRequestLatencyId;
+    case LatencyType::kInvocationToInitialInteractionRequestSent:
+      return kInvocationToInitialInteractionRequestLatencyId;
+    case LatencyType::kInvocationToInitialPageContentRequestSent:
+      return kInvocationToInitialPageContentRequestLatencyId;
+    case LatencyType::kFullPageObjectsRequestFetchLatency:
+      return kFullPageObjectsFetchLatencyId;
+    case LatencyType::kFullPageTranslateRequestFetchLatency:
+      return kFullPageTranslateFetchLatencyId;
+    case LatencyType::kInteractionRequestFetchLatency:
+      return kInteractionFetchLatencyId;
+    case LatencyType::kPageContentUploadLatency:
+      return kPageContentUploadLatencyId;
+  }
+}
+
 }  // namespace
 
 LensOverlayGen204Controller::LensOverlayGen204Controller() = default;
@@ -115,15 +144,17 @@ void LensOverlayGen204Controller::OnQueryFlowStart(
 }
 
 void LensOverlayGen204Controller::SendLatencyGen204IfEnabled(
-    base::TimeDelta full_image_latency,
+    LatencyType latency_type,
+    base::TimeDelta latency_duration,
+    std::string vit_query_param_value,
     std::optional<base::TimeDelta> cluster_info_latency,
-    bool is_translate_query,
-    std::string vit_query_param_value) {
+    std::optional<std::string> encoded_analytics_id) {
   if (profile_ && lens::features::GetLensOverlaySendLatencyGen204()) {
     std::string cluster_info_latency_string =
-        cluster_info_latency.has_value() && !is_translate_query
+        cluster_info_latency.has_value() &&
+                latency_type == LatencyType::kFullPageObjectsRequestFetchLatency
             ? base::StringPrintf(
-                  ",%s.%s", kFetchStickyClusterInfoRequestType,
+                  ",%s.%s", kFetchStickyClusterInfoLatencyId,
                   base::NumberToString(cluster_info_latency->InMilliseconds())
                       .c_str())
             : "";
@@ -133,9 +164,8 @@ void LensOverlayGen204Controller::SendLatencyGen204IfEnabled(
         "gen_204?atyp=csi&%s=%" PRIu64 "&%s=%s.%" PRId64 "%s&s=web&%s=%s",
         kGen204IdentifierQueryParameter, gen204_id_,
         kLatencyRequestTypeQueryParameter,
-        is_translate_query ? kFullPageTranslateFetchRequestType
-                           : kFullPageObjectsFetchRequestType,
-        full_image_latency.InMilliseconds(), cluster_info_latency_string,
+        LatencyIdForType(latency_type).c_str(),
+        latency_duration.InMilliseconds(), cluster_info_latency_string,
         kVisualInputTypeQueryParameter, vit_query_param_value);
     auto fetch_url = GURL(TemplateURLServiceFactory::GetForProfile(profile_)
                               ->search_terms_data()
@@ -143,6 +173,11 @@ void LensOverlayGen204Controller::SendLatencyGen204IfEnabled(
                          .Resolve(query);
     fetch_url =
         lens::AppendInvocationSourceParamToURL(fetch_url, invocation_source_);
+    if (encoded_analytics_id.has_value()) {
+      fetch_url = net::AppendOrReplaceQueryParameter(
+          fetch_url, kEncodedAnalyticsIdParameter,
+          encoded_analytics_id.value());
+    }
     CheckMetricsConsentAndIssueGen204NetworkRequest(fetch_url);
   }
 }
