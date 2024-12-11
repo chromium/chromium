@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -241,8 +242,9 @@ TEST_F(UrlLoaderTest, OpenWithHeaders) {
 }
 
 TEST_F(UrlLoaderTest, OpenWithBody) {
+  static constexpr char kBodyData[] = "fake body";
   UrlRequest request;
-  request.body = "fake body";
+  request.body = kBodyData;
   loader_->Open(request, mock_callback_.Get());
 
   blink::WebHTTPBody request_body = saved_request_.HttpBody();
@@ -252,13 +254,13 @@ TEST_F(UrlLoaderTest, OpenWithBody) {
   EXPECT_TRUE(request_body.ElementAt(0, element));
   EXPECT_EQ(blink::HTTPBodyElementType::kTypeData, element.type);
 
-  std::string data;
+  auto data = base::HeapArray<uint8_t>::Uninit(element.data.size());
   element.data.ForEachSegment(
-      [&](base::span<const uint8_t> segment, size_t pos) {
-        data.append(base::as_string_view(segment));
+      [&](base::span<const uint8_t> segment, size_t segment_offset) {
+        data.subspan(segment_offset).copy_prefix_from(segment);
         return true;
       });
-  EXPECT_EQ("fake body", data);
+  EXPECT_EQ(base::byte_span_from_cstring(kBodyData), data.as_span());
 }
 
 TEST_F(UrlLoaderTest, OpenWithCustomReferrerUrl) {

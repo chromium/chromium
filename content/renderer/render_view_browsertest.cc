@@ -694,10 +694,10 @@ TEST_F(RenderViewImplTest, OnNavigationHttpPost) {
   common_params->method = "POST";
 
   // Set up post data.
-  const char raw_data[] = "post \0\ndata";
-  scoped_refptr<network::ResourceRequestBody> post_data(
-      new network::ResourceRequestBody);
-  post_data->AppendCopyOfBytes(base::byte_span_with_nul_from_cstring(raw_data));
+  static constexpr char kRawData[] = "post \0\ndata";
+  const auto raw_data_span = base::byte_span_with_nul_from_cstring(kRawData);
+  auto post_data = base::MakeRefCounted<network::ResourceRequestBody>();
+  post_data->AppendCopyOfBytes(raw_data_span);
   common_params->post_data = post_data;
 
   frame()->Navigate(std::move(common_params), DummyCommitNavigationParams());
@@ -716,13 +716,13 @@ TEST_F(RenderViewImplTest, OnNavigationHttpPost) {
   EXPECT_TRUE(successful);
   EXPECT_EQ(blink::HTTPBodyElementType::kTypeData, element.type);
 
-  auto flat_data = base::HeapArray<char>::Uninit(element.data.size());
-  element.data.ForEachSegment([&flat_data](base::span<const uint8_t> segment,
-                                           size_t segment_offset) {
-    flat_data.subspan(segment_offset).copy_prefix_from(base::as_chars(segment));
-    return true;
-  });
-  EXPECT_EQ(base::span_with_nul_from_cstring(raw_data), flat_data.as_span());
+  auto flat_data = base::HeapArray<uint8_t>::Uninit(element.data.size());
+  element.data.ForEachSegment(
+      [&flat_data](base::span<const uint8_t> segment, size_t segment_offset) {
+        flat_data.subspan(segment_offset).copy_prefix_from(segment);
+        return true;
+      });
+  EXPECT_EQ(raw_data_span, flat_data.as_span());
 }
 
 #if BUILDFLAG(IS_ANDROID)

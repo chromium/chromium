@@ -85,13 +85,13 @@ class BLINK_PLATFORM_EXPORT WebData {
   // The iterator stops early when the lambda returns false.
   template <typename Func>
   void ForEachSegment(Func&& func) const {
-    size_t pos = 0;
-    for (base::span<const uint8_t> segment = GetSomeData(pos); !segment.empty();
-         segment = GetSomeData(pos)) {
-      if (!func(segment, pos)) {
+    size_t segment_offset = 0;
+    for (base::span<const uint8_t> segment = GetSomeData(segment_offset);
+         !segment.empty(); segment = GetSomeData(segment_offset)) {
+      if (!func(segment, segment_offset)) {
         break;
       }
-      pos += segment.size();
+      segment_offset += segment.size();
     }
   }
 
