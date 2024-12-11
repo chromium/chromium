@@ -14,8 +14,9 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {BrowserProxy} from '../browser_proxy.js';
 import type {WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
-import {WebClientHandlerRemote, WebClientReceiver} from '../glic.mojom-webui.js';
+import {GetTabContextErrorReason as MojoGetTabContextErrorReason, WebClientHandlerRemote, WebClientReceiver} from '../glic.mojom-webui.js';
 import type {Screenshot, WebPageData} from '../glic_api/glic_api.js';
+import {GetTabContextErrorReason} from '../glic_api/glic_api.js';
 import type {PostMessageRequestHandler} from '../glic_api/post_message_transport.js';
 import {PostMessageRequestReceiver, PostMessageRequestSender} from '../glic_api/post_message_transport.js';
 import type {HostRequestTypes} from '../glic_api/request_types.js';
@@ -115,27 +116,28 @@ class HostMessageHandler implements HostMessageHandlerInterface {
         options: {innerText?: boolean, viewportScreenshot?: boolean},
       },
       transfer: Transferable[]) {
-    const response = await this.handler.getContextFromFocusedTab(
-        request.options.innerText || false,
-        // Note: viewportScreenshot was previously an empty object to imply
-        // true, this code works for either. Can be replaced with
-        // "request.options.viewportScreenshot || false" after 2025/01/05.
-        request.options.viewportScreenshot ? true : false);
-    const tabContextResult = response.tabContextResult;
-    if (!tabContextResult) {
-      return {};
+    const {result: {errorReason, tabContext}} =
+        await this.handler.getContextFromFocusedTab(
+            request.options.innerText || false,
+            // Note: viewportScreenshot was previously an empty object to imply
+            // true, this code works for either. Can be replaced with
+            // "request.options.viewportScreenshot || false" after 2025/01/05.
+            request.options.viewportScreenshot ? true : false);
+    if (!tabContext) {
+      let error = GetTabContextErrorReason.UNKNOWN;
+      if (errorReason === MojoGetTabContextErrorReason.kWebContentsChanged) {
+        error = GetTabContextErrorReason.WEB_CONTENTS_CHANGED;
+      }
+      return {error};
     }
-    const tabData = tabContextResult.tabData;
-    if (!tabData) {
-      return {};
-    }
+    const tabData = tabContext.tabData;
     const tabDataResult = {
       tabId: tabIdToClient(tabData.tabId),
       windowId: windowIdToClient(tabData.windowId),
       url: urlToClient(tabData.url),
       title: optionalToClient(tabData.title),
     };
-    const webPageData = tabContextResult.webPageData;
+    const webPageData = tabContext.webPageData;
     let webPageDataResult: WebPageData|undefined = undefined;
     if (webPageData) {
       webPageDataResult = {
@@ -145,7 +147,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
         },
       };
     }
-    const viewportScreenshot = tabContextResult.viewportScreenshot;
+    const viewportScreenshot = tabContext.viewportScreenshot;
     let viewportScreenshotResult: Screenshot|undefined = undefined;
     if (viewportScreenshot) {
       const screenshotArray = new Uint8Array(viewportScreenshot.data);

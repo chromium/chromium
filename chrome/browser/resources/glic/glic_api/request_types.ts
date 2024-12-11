@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {TabContextResult, TabData} from '../glic_api/glic_api.js';
+import type {GetTabContextErrorReason, TabContextResult, TabData} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -65,8 +65,11 @@ export declare interface HostRequestTypes {
       },
     },
     response: {
-      // Undefined on failure.
+      // Present on success.
       tabContextResult?: TabContextResult,
+      // The error reason. Should be present when `tabContextResult` is not, but
+      // might still be undefined for some older chrome versions.
+      error?: GetTabContextErrorReason,
     },
   };
   glicBrowserResizeWindow: {

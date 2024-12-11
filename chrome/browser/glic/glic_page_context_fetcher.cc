@@ -128,23 +128,27 @@ void GlicPageContextFetcher::RunCallbackIfComplete() {
   if (!work_complete) {
     return;
   }
-  glic::mojom::TabContextResultPtr result;
+  mojom::GetContextResultPtr result;
   if (web_contents() && web_contents()->GetPrimaryMainFrame() &&
       !primary_page_changed_) {
-    result = glic::mojom::TabContextResult::New();
-    result->tab_data = GetTabData(web_contents());
+    auto tab_context = mojom::TabContext::New();
+    tab_context->tab_data = GetTabData(web_contents());
     // TODO(crbug.com/379773651): Clean up logspam when it's no longer useful.
     LOG(WARNING) << "GlicPageContextFetcher: Returning context for "
-                 << result->tab_data->url;
+                 << tab_context->tab_data->url;
     if (inner_text_result_) {
-      result->web_page_data =
-          glic::mojom::WebPageData::New(glic::mojom::DocumentData::New(
+      tab_context->web_page_data =
+          mojom::WebPageData::New(mojom::DocumentData::New(
               web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
               std::move(inner_text_result_->inner_text)));
     }
     if (screenshot_) {
-      result->viewport_screenshot = std::move(screenshot_);
+      tab_context->viewport_screenshot = std::move(screenshot_);
     }
+    result = mojom::GetContextResult::NewTabContext(std::move(tab_context));
+  } else {
+    result = mojom::GetContextResult::NewErrorReason(
+        mojom::GetTabContextErrorReason::kWebContentsChanged);
   }
   std::move(callback_).Run(std::move(result));
 }

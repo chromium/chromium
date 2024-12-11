@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {GlicBrowserHost, GlicHostRegistry, GlicWebClient, TabContextResult, TabData} from '../glic_api/glic_api.js';
+import type {ErrorWithReason, GlicBrowserHost, GlicHostRegistry, GlicWebClient, TabContextResult, TabData} from '../glic_api/glic_api.js';
+import {GetTabContextErrorReason} from '../glic_api/glic_api.js';
 
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
 import type {WebClientRequestTypes} from './request_types.js';
@@ -127,7 +128,9 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     const context = await this.sender.requestWithResponse(
         'glicBrowserGetContextFromFocusedTab', {options});
     if (!context.tabContextResult) {
-      throw new Error('getContextFromFocusedTab: failed');
+      throw new ErrorWithReasonImpl(
+          'getContext failed',
+          context.error || GetTabContextErrorReason.UNKNOWN);
     }
     return context.tabContextResult;
   }
@@ -160,4 +163,10 @@ export function createGlicHostRegistryOnLoad(): Promise<GlicHostRegistry> {
 // Supports the test client. May be removed in the future.
 export function boot(windowProxy: WindowProxy): GlicHostRegistry {
   return new GlicHostRegistryImpl(windowProxy);
+}
+
+class ErrorWithReasonImpl<T> extends Error implements ErrorWithReason<T> {
+  constructor(message: string, public reason: T) {
+    super(message);
+  }
 }

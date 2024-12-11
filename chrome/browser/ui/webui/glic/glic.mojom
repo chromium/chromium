@@ -21,6 +21,18 @@ interface PageHandler {
   CreateWebClient(pending_receiver<WebClientHandler> web_client_receiver);
 };
 
+// Reason why getting tab context failed.
+enum GetTabContextErrorReason {
+  // A valid web contents was not available for the entire duration of context
+  // gathering.
+ kWebContentsChanged,
+};
+
+union GetContextResult {
+  GetTabContextErrorReason error_reason;
+  TabContext tab_context;
+};
+
 // Access to the browser from the web client by proxy through the WebUI.
 // A single WebClientHandler will provide access to the browser for only
 // a single web client. If the webview navigates or refreshes, a new
@@ -44,7 +56,8 @@ interface WebClientHandler {
   // This may fail if the tab is navigated while collecting data, or closed
   // before data is collected.
   GetContextFromFocusedTab(bool include_inner_text,
-    bool include_viewport_screenshot) => (TabContextResult? tab_context_result);
+    bool include_viewport_screenshot) =>
+      (GetContextResult result);
 
   // Set the bounds of the widget hosting the WebUI to the given size.
   ResizeWidget(gfx.mojom.Size size) => (gfx.mojom.Size? actual_size);
@@ -63,7 +76,7 @@ interface WebClient {
 };
 
 // Information extracted from a tab.
-struct TabContextResult {
+struct TabContext {
   // Metadata about the tab that holds the page. Always provided.
   TabData tab_data;
   // Web page data, if requested.

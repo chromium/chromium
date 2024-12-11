@@ -80,9 +80,7 @@ export declare interface GlicBrowserHost {
   // included in the response.
   // If viewportScreenshot is true, a screenshot of the user visible viewport
   // will be included in the response.
-  // Responses may be throttled by the browser as a precaution, in which case
-  // the promise will be rejected. If a tab is navigated or closed during
-  // context gathering, the promise will be rejected.
+  // Rejects the promise with a `GetTabContextError` on failure.
   getContextFromFocusedTab?
       (options: {innerText?: boolean, viewportScreenshot?: boolean}):
           Promise<TabContextResult>;
@@ -176,3 +174,19 @@ export declare interface Screenshot {
   // Image annotations for this screenshot.
   originAnnotations: ImageOriginAnnotations;
 }
+
+export declare interface ErrorWithReason<T> extends Error {
+  reason: T;
+}
+
+// Reason for failure while getting tab context.
+export enum GetTabContextErrorReason {
+  UNKNOWN = 'UNKNOWN',
+  // A valid web contents was not found, or was navigated or closed during
+  // context gathering.
+  WEB_CONTENTS_CHANGED = 'WEB_CONTENTS_CHANGED',
+  // The request was throttled, try again later.
+  REQUEST_THROTTLED = 'REQUEST_THROTTLED',
+}
+
+export type GetTabContextError = ErrorWithReason<GetTabContextErrorReason>;

@@ -80,13 +80,14 @@ std::optional<gfx::Size> GlicKeyedService::ResizePanel(const gfx::Size& size) {
 void GlicKeyedService::GetContextFromFocusedTab(
     bool include_inner_text,
     bool include_viewport_screenshot,
-    glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) {
+    mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) {
   content::WebContents* web_contents =
       focused_tab_manager_.GetWebContentsForFocusedTab();
   if (!web_contents) {
     // TODO(crbug.com/379773651): Clean up logspam when it's no longer useful.
     LOG(ERROR) << "GetContextFromFocusedTab: No web contents";
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
+        mojom::GetTabContextErrorReason::kWebContentsChanged));
     return;
   }
 
@@ -101,10 +102,9 @@ void GlicKeyedService::GetContextFromFocusedTab(
           // TODO(harringtond): Consider deleting the fetcher if the page
           // handler is unbound before the fetch completes.
           [](std::unique_ptr<glic::GlicPageContextFetcher> fetcher,
-             glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback
-                 callback,
-             glic::mojom::TabContextResultPtr tab_context_result) {
-            std::move(callback).Run(std::move(tab_context_result));
+             mojom::WebClientHandler::GetContextFromFocusedTabCallback callback,
+             mojom::GetContextResultPtr result) {
+            std::move(callback).Run(std::move(result));
           },
           std::move(fetcher), std::move(callback)));
   if (BorderView* border = BorderView::FindBorderForWebContents(web_contents)) {
