@@ -591,7 +591,7 @@ void TipsNotificationClient::ShowSetUpListContinuation(Browser* browser) {
 void TipsNotificationClient::ShowDocking(Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [HandlerForProtocol(browser->GetCommandDispatcher(), DockingPromoCommands)
-      showDockingPromo:YES];
+      showDockingPromoWithTrigger:DockingPromoTrigger::kTipsModule];
 }
 
 void TipsNotificationClient::ShowOmniboxPosition(Browser* browser) {

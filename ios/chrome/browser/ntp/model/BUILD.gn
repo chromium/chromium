@@ -124,6 +124,7 @@ source_set("unit_tests") {
     "set_up_list_unittest.mm",
   ]
   deps = [
+    ":features",
     ":set_up_list",
     ":set_up_list_item_type",
     ":set_up_list_prefs",

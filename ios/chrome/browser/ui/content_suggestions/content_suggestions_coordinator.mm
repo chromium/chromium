@@ -93,6 +93,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
@@ -1146,7 +1147,7 @@ using segmentation_platform::TipIdentifier;
         }
         break;
       case SetUpListItemType::kDocking:
-        // TODO(crbug.com/379305809): Show docking promo.
+        [weakSelf showDockingPromo];
         break;
       case SetUpListItemType::kAddressBar:
         // TODO(crbug.com/379305809): Show Address Bar promo.
@@ -1252,6 +1253,13 @@ using segmentation_platform::TipIdentifier;
                          browser:self.browser];
   _notificationsOptInCoordinator.delegate = self;
   [_notificationsOptInCoordinator start];
+}
+
+// Shows the Docking promo.
+- (void)showDockingPromo {
+  [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                      DockingPromoCommands)
+      showDockingPromoWithTrigger:DockingPromoTrigger::kSetUpList];
 }
 
 #pragma mark - NotificationsOptInAlertCoordinatorDelegate

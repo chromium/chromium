@@ -16,6 +16,7 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
+#import "ios/chrome/browser/ntp/model/features.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_delegate.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
@@ -317,6 +318,31 @@ TEST_F(SetUpListTest, BuildListWithNotifications_Content) {
   BuildSetUpList();
   ExpectListToNotInclude(SetUpListItemType::kNotifications);
   EXPECT_EQ(GetItemState(SetUpListItemType::kNotifications),
+            SetUpListItemState::kCompleteNotInList);
+}
+
+// Tests that the SetUpList uses the correct criteria when including the
+// Docking item.
+TEST_F(SetUpListTest, BuildListWithDocking) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      set_up_list::kSetUpListInFirstRun,
+      {{set_up_list::kSetUpListInFirstRunParam, "1"}});
+  SetItemState(SetUpListItemType::kDocking, SetUpListItemState::kNotComplete);
+  BuildSetUpList();
+  ExpectListToInclude(SetUpListItemType::kDocking, NO);
+
+  SetItemState(SetUpListItemType::kDocking,
+               SetUpListItemState::kCompleteInList);
+  BuildSetUpList();
+  ExpectListToInclude(SetUpListItemType::kDocking, YES);
+  EXPECT_EQ(GetItemState(SetUpListItemType::kDocking),
+            SetUpListItemState::kCompleteInList);
+
+  SetItemState(SetUpListItemType::kDocking,
+               SetUpListItemState::kCompleteNotInList);
+  BuildSetUpList();
+  ExpectListToNotInclude(SetUpListItemType::kDocking);
+  EXPECT_EQ(GetItemState(SetUpListItemType::kDocking),
             SetUpListItemState::kCompleteNotInList);
 }
 

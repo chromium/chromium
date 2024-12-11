@@ -414,7 +414,8 @@ TEST_F(TipsNotificationClientTest, DockingRequest) {
 TEST_F(TipsNotificationClientTest, DockingHandle) {
   StubPrepareToPresentModal();
   id mock_handler = MockHandler(@protocol(DockingPromoCommands));
-  OCMExpect([mock_handler showDockingPromo:YES]);
+  OCMExpect([mock_handler
+      showDockingPromoWithTrigger:DockingPromoTrigger::kTipsModule]);
 
   id mock_response = MockRequestResponse(TipsNotificationType::kDocking);
   client_->HandleNotificationInteraction(mock_response);

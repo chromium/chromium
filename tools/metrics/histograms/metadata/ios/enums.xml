@@ -272,6 +272,7 @@ the generic promo launch. -->
   <int value="1" label="Primary Action Button (Got It)"/>
   <int value="2" label="Secondary Action Button (Remind Me Later)"/>
   <int value="3" label="Dismiss via Swipe"/>
+  <int value="4" label="Dismiss via No Thanks"/>
 </enum>
 
 <enum name="IOSEditMenuActions">
