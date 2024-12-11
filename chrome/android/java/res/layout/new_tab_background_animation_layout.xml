@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.compositor.layouts.phone.NewTabBackgroundAnimationLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedResources"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false">
+
+    <ImageView
+        android:id="@+id/new_tab_background_animation_link_icon"
+        android:importantForAccessibility="no"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center"
+        android:background="@drawable/new_tab_animation_rounded_rect"
+        android:elevation="@dimen/default_elevation_5"
+        android:src="@drawable/ic_link"
+        android:padding="4dp"/>
+</org.chromium.chrome.browser.compositor.layouts.phone.NewTabBackgroundAnimationLayout>

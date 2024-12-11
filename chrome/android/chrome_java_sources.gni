@@ -372,6 +372,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/compositor/layouts/eventfilter/MotionEventFilter.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/eventfilter/MotionEventHandler.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/eventfilter/OverlayPanelEventFilter.java",
+  "java/src/org/chromium/chrome/browser/compositor/layouts/phone/NewTabBackgroundAnimationLayout.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/phone/SimpleAnimationLayout.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/phone/stack/StackScroller.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/AnimationHost.java",
