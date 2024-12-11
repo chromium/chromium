@@ -46,6 +46,7 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
     return SkColorInfo(kN32_SkColorType, kPremul_SkAlphaType,
                        SkColorSpace::MakeSRGB());
   }
+  SkAlphaType GetAlphaType() const override { return kPremul_SkAlphaType; }
   bool IsComposited() const final { return true; }
   bool PushFrame() override;
 

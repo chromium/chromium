@@ -64,6 +64,9 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   SkColorInfo CanvasRenderingContextSkColorInfo() const override {
     return color_params_.GetSkColorInfo();
   }
+  SkAlphaType GetAlphaType() const override {
+    return CanvasRenderingContextSkColorInfo().alphaType();
+  }
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) final;
   void Reset() override;
   void RestoreCanvasMatrixClipStack(cc::PaintCanvas* c) const override {

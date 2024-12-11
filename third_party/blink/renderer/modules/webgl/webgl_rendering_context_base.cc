@@ -5634,6 +5634,10 @@ SkColorInfo WebGLRenderingContextBase::CanvasRenderingContextSkColorInfo()
       PredefinedColorSpaceToSkColorSpace(drawing_buffer_color_space_));
 }
 
+SkAlphaType WebGLRenderingContextBase::GetAlphaType() const {
+  return CanvasRenderingContextSkColorInfo().alphaType();
+}
+
 gfx::Rect WebGLRenderingContextBase::GetImageDataSize(ImageData* pixels) {
   DCHECK(pixels);
   return GetTextureSourceSize(pixels);

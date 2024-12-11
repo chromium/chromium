@@ -115,6 +115,10 @@ SkColorInfo GPUCanvasContext::CanvasRenderingContextSkColorInfo() const {
                      PredefinedColorSpaceToSkColorSpace(color_space_));
 }
 
+SkAlphaType GPUCanvasContext::GetAlphaType() const {
+  return CanvasRenderingContextSkColorInfo().alphaType();
+}
+
 void GPUCanvasContext::Stop() {
   ReplaceDrawingBuffer(/*destroy_swap_buffers*/ true);
   stopped_ = true;
