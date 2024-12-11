@@ -2693,6 +2693,10 @@ crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attribut
 crbug.com/343720396 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?1-2 [ Crash Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac13 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/activation-start.html [ Skip Timeout ]
+[ Mac14 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/activation-start.html [ Skip Timeout ]
+[ Mac13 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/service-workers.https.html [ Skip Timeout ]
+[ Mac14 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/service-workers.https.html [ Skip Timeout ]
 crbug.com/383200044 [ Win10.20h2 ] external/wpt/png/apng/fdAT-16bit.html [ Failure ]
 crbug.com/383194996 [ Mac13 ] external/wpt/webrtc/RTCPeerConnection-setLocalDescription-pranswer.html [ Timeout ]
 crbug.com/382988706 external/wpt/css/css-rhythm/replaced-elements/block-level-canvas-margins-affected-by-block-step-size.html [ Failure ]
@@ -2893,6 +2897,7 @@ crbug.com/378158966 [ Mac13 ] external/wpt/webcodecs/per-frame-qp-encoding.https
 crbug.com/378158966 [ Mac14 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p2 [ Timeout ]
 crbug.com/378158966 [ Mac15 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p2 [ Timeout ]
 crbug.com/377971439 [ Mac13 ] external/wpt/webrtc/RTCCertificate.html [ Timeout ]
+crbug.com/377971439 [ Mac14 ] external/wpt/webrtc/RTCCertificate.html [ Timeout ]
 crbug.com/377971439 [ Mac13 ] external/wpt/webrtc/RTCPeerConnection-constructor.html [ Timeout ]
 crbug.com/377977965 [ Linux ] external/wpt/webdriver/tests/bidi/browser/get_client_windows/get_client_windows.py [ Failure ]
 crbug.com/377943754 [ Mac14 ] external/wpt/webrtc/RTCPeerConnection-addIceCandidate-timing.https.html [ Timeout ]
