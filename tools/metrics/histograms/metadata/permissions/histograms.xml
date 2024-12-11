@@ -1366,14 +1366,24 @@ chromium-metrics-reviews@google.com.
   <summary>Records when permission to access a serial port is revoked.</summary>
 </histogram>
 
+<histogram name="Permissions.SiteSettingsChanged" enum="ContentSetting"
+    expires_after="2025-04-22">
+  <owner>lyf@chromium.org</owner>
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Count of how often users switch a specific content type (permission) in the
+    site settings page. This value is used for the upcoming UI changes in the
+    site settings page.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Permissions.Usage.ElapsedTimeSinceGrant"
     units="seconds" expires_after="2025-04-13">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
-    Records the time elapsed since the grant of the permission until it's latest
-    usage. This histogram will be recorded only for the first usage of a given
-    permission after the site has loaded.
+    Records when and what content setting is changed in the site settings page.
   </summary>
 </histogram>
 

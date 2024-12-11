@@ -935,6 +935,8 @@ void SiteSettingsHandler::OnContentSettingChanged(
 
   if (primary_pattern.MatchesAllHosts() &&
       secondary_pattern.MatchesAllHosts()) {
+    base::UmaHistogramEnumeration("Permissions.SiteSettingsChanged",
+                                  content_type);
     FireWebUIListener("contentSettingCategoryChanged",
                       base::Value(site_settings::ContentSettingsTypeToGroupName(
                           content_type)));
