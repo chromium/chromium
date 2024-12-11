@@ -78,9 +78,6 @@ BASE_DECLARE_FEATURE(kForceSynthesizedRestoreSession);
 // intended to be used as a kill switch.
 BASE_DECLARE_FEATURE(kDetectDestroyedNavigationContexts);
 
-// Feature flag to enable intent detection in viewport only.
-BASE_DECLARE_FEATURE(kEnableViewportIntents);
-
 // Feature flag to enable improve tracking number detection.
 BASE_DECLARE_FEATURE(kEnableNewParcelTrackingNumberDetection);
 

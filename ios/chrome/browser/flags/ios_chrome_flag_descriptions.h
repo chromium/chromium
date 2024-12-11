@@ -231,10 +231,6 @@ extern const char kPhoneNumberDescription[];
 extern const char kMeasurementsName[];
 extern const char kMeasurementsDescription[];
 
-// Title and description for the flag to enable viewport intent detection.
-extern const char kEnableViewportIntentsName[];
-extern const char kEnableViewportIntentsDescription[];
-
 // Title and description for the flag to enable improve parcel tracking
 // detection.
 extern const char kEnableNewParcelTrackingNumberDetectionName[];

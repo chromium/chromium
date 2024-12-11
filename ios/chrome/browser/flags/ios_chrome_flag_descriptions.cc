@@ -276,11 +276,6 @@ const char kMeasurementsDescription[] =
     "When enabled, one tapping or long pressing on a measurement will trigger "
     "the measurement conversion experience.";
 
-const char kEnableViewportIntentsName[] = "Viewport intent detection";
-const char kEnableViewportIntentsDescription[] =
-    "When enabled the intents are detected live as the viewport is moved "
-    "around.";
-
 const char kEnableNewParcelTrackingNumberDetectionName[] =
     "Improve Tracking Number Detection";
 const char kEnableNewParcelTrackingNumberDetectionDescription[] =

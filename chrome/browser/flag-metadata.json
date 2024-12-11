@@ -5193,11 +5193,6 @@
     "expiry_milestone": 132
   },
   {
-    "name": "intents-on-viewport",
-    "owners": [ "olivierrobin@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "ios-breadcrumbs",
     "owners": [ "michaeldo@chromium.org", "bling-flags@google.com" ],
     // Breadcrumbs is not a launching feature, but rather a tool used on
