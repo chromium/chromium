@@ -659,6 +659,20 @@ def _send_cancel_build(build_id):
   return 0
 
 
+def _get_build_id_for_outdir(outdir):
+  """Returns the latest BUILD_ID for given output dir."""
+  outdir = pathlib.Path(outdir)
+  latest_logfile = outdir / f'{_LOGFILE_NAME}.0'
+  if latest_logfile.exists():
+    with latest_logfile.open('rt') as f:
+      first_line = f.readline()
+      if log_build_id := BUILD_ID_RE.search(first_line):
+        print(log_build_id.group('build_id'))
+        return 0
+  print(f'Failed to find a valid logfile in {outdir}')
+  return 1
+
+
 def _register_builder(build_id, builder_pid):
   for _attempt in range(3):
     try:
@@ -711,6 +725,7 @@ def _wait_for_task_requests(args):
 
 
 def main():
+  # pylint: disable=too-many-return-statements
   parser = argparse.ArgumentParser(description=__doc__)
   parser.add_argument(
       '--fail-if-not-running',
@@ -739,6 +754,9 @@ def main():
   parser.add_argument('--cancel-build',
                       metavar='BUILD_ID',
                       help='Cancel all pending and running tasks for BUILD_ID.')
+  parser.add_argument('--get-build-id-for-outdir',
+                      metavar='OUTDIR',
+                      help='Return the latest BUILD_ID for given output dir.')
   args = parser.parse_args()
   if args.fail_if_not_running:
     return _check_if_running()
@@ -750,6 +768,8 @@ def main():
     return _register_builder(args.register_build_id, args.builder_pid)
   if args.cancel_build:
     return _send_cancel_build(args.cancel_build)
+  if args.get_build_id_for_outdir:
+    return _get_build_id_for_outdir(args.get_build_id_for_outdir)
   return _wait_for_task_requests(args)
 
 

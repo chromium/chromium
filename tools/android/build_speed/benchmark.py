@@ -230,8 +230,8 @@ def _backup_file(file_path: pathlib.Path):
 
 
 @contextlib.contextmanager
-def _server():
-    cmd = [_SRC_ROOT / 'build/android/fast_local_dev_server.py']
+def _server(outdir: pathlib.Path):
+    cmd = [str(_SRC_ROOT / 'build/android/fast_local_dev_server.py')]
     # Avoid the build server's output polluting benchmark results, but allow
     # stderr to get through in case the build server fails with an error.
     # TODO(wnwen): Switch to using subprocess.run and check=True to quit if the
@@ -242,10 +242,26 @@ def _server():
         yield
     finally:
         logging.debug('Terminating fast local dev server.')
+        build_id = subprocess.run(cmd +
+                                  ['--get-build-id-for-outdir',
+                                   str(outdir)],
+                                  check=True,
+                                  capture_output=True).stdout
+        assert build_id != ''
+        logging.debug(f'Cancelling fast local dev server BUILD_ID={build_id}.')
+        subprocess.run(cmd + ['--cancel-build', build_id],
+                       check=True,
+                       stdout=subprocess.DEVNULL)
+        logging.debug(f'Wait for fast local dev server BUILD_ID={build_id}.')
+        subprocess.run(cmd + ['--wait-for-build', build_id],
+                       check=True,
+                       stdout=subprocess.DEVNULL)
+        logging.debug('Terminating fast local dev server process...')
         # Since Popen's default context manager just waits on exit, we need to
         # use our custom context manager to actually terminate the build server
         # when the current build is done to avoid skewing the next benchmark.
         server_proc.terminate()
+        logging.debug('Waiting for fast local dev server termination...')
         server_proc.wait()
         logging.debug('Terminated fast local dev server.')
 
@@ -429,7 +445,7 @@ def run_benchmarks(benchmarks: List[str], gn_args: List[str],
                 # to avoid later benchmarks being slower due to the server
                 # accumulating queued tasks. Start a fresh emulator for each
                 # benchmark to produce more consistent results.
-                with emulator_ctx() as emulator, server_ctx():
+                with emulator_ctx() as emulator, server_ctx(output_directory):
                     elapsed = _run_benchmark(benchmark=benchmark,
                                              out_dir=output_directory,
                                              target=target,
