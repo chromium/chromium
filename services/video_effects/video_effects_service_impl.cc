@@ -20,6 +20,7 @@
 #include "services/video_effects/public/mojom/video_effects_service.mojom.h"
 #include "services/video_effects/video_effects_processor_impl.h"
 #include "services/video_effects/viz_gpu_channel_host_provider.h"
+#include "services/viz/public/cpp/gpu/gpu.h"
 
 namespace video_effects {
 

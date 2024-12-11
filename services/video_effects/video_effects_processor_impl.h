@@ -20,39 +20,13 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/video_effects/gpu_channel_host_provider.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 #include "services/video_effects/video_effects_processor_webgpu.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"
 
 namespace video_effects {
-
-// Abstract interface that is used by `VideoEffectsServiceImpl` to obtain
-// instances of `gpu::GpuChannelHost`. Those are then going to be used to
-// create context providers over which the communication to GPU service will
-// happen.
-class GpuChannelHostProvider {
- public:
-  virtual ~GpuChannelHostProvider() = default;
-
-  // Returns the context provider for WebGPU.
-  virtual scoped_refptr<viz::ContextProviderCommandBuffer>
-  GetWebGpuContextProvider() = 0;
-
-  // Returns the context provider for the raster interface.
-  virtual scoped_refptr<viz::RasterContextProvider>
-  GetRasterInterfaceContextProvider() = 0;
-
-  // Returns the SharedImageInterface.
-  virtual scoped_refptr<gpu::ClientSharedImageInterface>
-  GetSharedImageInterface() = 0;
-
- protected:
-  // Return a connected `gpu::GpuChannelHost`. Implementations should expect
-  // this method to be called somewhat frequently when a new Video Effects
-  // Processor is created.
-  virtual scoped_refptr<gpu::GpuChannelHost> GetGpuChannelHost() = 0;
-};
 
 class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
                                   public viz::ContextLostObserver {

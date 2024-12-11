@@ -6,9 +6,9 @@ import("//third_party/mediapipe/features.gni")
 
 source_set("service") {
   public = [
+    "gpu_channel_host_provider.h",
     "video_effects_processor_impl.h",
     "video_effects_service_impl.h",
-    "viz_gpu_channel_host_provider.h",
   ]
 
   sources = [
@@ -17,6 +17,7 @@ source_set("service") {
     "video_effects_processor_webgpu.h",
     "video_effects_service_impl.cc",
     "viz_gpu_channel_host_provider.cc",
+    "viz_gpu_channel_host_provider.h",
     "webgpu_device.cc",
     "webgpu_device.h",
   ]

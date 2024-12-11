@@ -8,13 +8,15 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "gpu/ipc/client/gpu_channel_host.h"
-#include "services/video_effects/video_effects_processor_impl.h"
-#include "services/viz/public/cpp/gpu/gpu.h"
+#include "services/video_effects/gpu_channel_host_provider.h"
+
+namespace viz {
+class Gpu;
+}
 
 namespace video_effects {
 
-class VizGpuChannelHostProvider : public video_effects::GpuChannelHostProvider {
+class VizGpuChannelHostProvider : public GpuChannelHostProvider {
  public:
   explicit VizGpuChannelHostProvider(std::unique_ptr<viz::Gpu> viz_gpu);
   ~VizGpuChannelHostProvider() override;

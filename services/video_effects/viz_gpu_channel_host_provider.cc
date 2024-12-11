@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "content/public/common/gpu_stream_constants.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
@@ -20,6 +21,7 @@
 #include "gpu/ipc/common/surface_handle.h"
 #include "services/video_effects/video_effects_service_impl.h"
 #include "services/viz/public/cpp/gpu/command_buffer_metrics.h"
+#include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "services/viz/public/cpp/gpu/gpu.h"
 #include "url/gurl.h"
 
