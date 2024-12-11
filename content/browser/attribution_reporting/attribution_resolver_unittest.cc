@@ -922,7 +922,7 @@ TEST_F(AttributionResolverTest,
 TEST_F(AttributionResolverTest, ClearDataWithNoMatch_NoDelete) {
   base::Time now = base::Time::Now();
   storage()->StoreSource(SourceBuilder(now).Build());
-  storage()->ClearData(
+  storage()->ClearDataIncludingRateLimit(
       now, now, GetMatcher(url::Origin::Create(GURL("https://no-match.com"))));
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
@@ -942,8 +942,8 @@ TEST_F(AttributionResolverTest,
   ASSERT_EQ(storage()->GetActiveSources().size(), 1u);
   ASSERT_EQ(storage()->GetAttributionReports(base::Time::Max()).size(), 1u);
 
-  storage()->ClearData(base::Time::Min(), base::Time::Max(),
-                       GetMatcher(*origin));
+  storage()->ClearDataIncludingRateLimit(base::Time::Min(), base::Time::Max(),
+                                         GetMatcher(*origin));
 
   EXPECT_EQ(storage()->GetActiveSources().size(), 1u);
   EXPECT_EQ(storage()->GetAttributionReports(base::Time::Max()).size(), 1u);
@@ -954,8 +954,9 @@ TEST_F(AttributionResolverTest, ClearDataOutsideRange_NoDelete) {
   auto impression = SourceBuilder(now).Build();
   storage()->StoreSource(impression);
 
-  storage()->ClearData(now + base::Minutes(10), now + base::Minutes(20),
-                       GetMatcher(impression.common_info().reporting_origin()));
+  storage()->ClearDataIncludingRateLimit(
+      now + base::Minutes(10), now + base::Minutes(20),
+      GetMatcher(impression.common_info().reporting_origin()));
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 }
@@ -966,7 +967,7 @@ TEST_F(AttributionResolverTest, ClearDataImpression) {
   {
     auto impression = SourceBuilder(now).Build();
     storage()->StoreSource(impression);
-    storage()->ClearData(
+    storage()->ClearDataIncludingRateLimit(
         now, now + base::Minutes(20),
         GetMatcher(impression.common_info().reporting_origin()));
     EXPECT_EQ(AttributionTrigger::EventLevelResult::kNoMatchingImpressions,
@@ -983,8 +984,9 @@ TEST_F(AttributionResolverTest, ClearDataImpressionConversion) {
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(conversion));
 
-  storage()->ClearData(now - base::Minutes(20), now + base::Minutes(20),
-                       GetMatcher(impression.common_info().reporting_origin()));
+  storage()->ClearDataIncludingRateLimit(
+      now - base::Minutes(20), now + base::Minutes(20),
+      GetMatcher(impression.common_info().reporting_origin()));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 }
@@ -1030,7 +1032,8 @@ TEST_F(AttributionResolverTest, ClearDataNullFilter) {
   }
 
   auto null_filter = StoragePartition::StorageKeyMatcherFunction();
-  storage()->ClearData(base::Time::Now(), base::Time::Now(), null_filter);
+  storage()->ClearDataIncludingRateLimit(base::Time::Now(), base::Time::Now(),
+                                         null_filter);
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), SizeIs(5));
 }
 
@@ -1043,8 +1046,9 @@ TEST_F(AttributionResolverTest, ClearDataWithImpressionOutsideRange) {
 
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(conversion));
-  storage()->ClearData(base::Time::Now(), base::Time::Now(),
-                       GetMatcher(impression.common_info().reporting_origin()));
+  storage()->ClearDataIncludingRateLimit(
+      base::Time::Now(), base::Time::Now(),
+      GetMatcher(impression.common_info().reporting_origin()));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 }
 
@@ -1063,8 +1067,9 @@ TEST_F(AttributionResolverTest, ClearDataRangeBetweenEvents) {
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(conversion));
 
-  storage()->ClearData(start + base::Minutes(1), start + base::Minutes(10),
-                       GetMatcher(impression.common_info().reporting_origin()));
+  storage()->ClearDataIncludingRateLimit(
+      start + base::Minutes(1), start + base::Minutes(10),
+      GetMatcher(impression.common_info().reporting_origin()));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), SizeIs(1u));
 }
@@ -1085,7 +1090,7 @@ TEST_F(AttributionResolverTest, ClearDataWithMultiTouch) {
 
   // Only the first impression should overlap with this time range, but all the
   // impressions should share the origin.
-  storage()->ClearData(
+  storage()->ClearDataIncludingRateLimit(
       start, start, GetMatcher(impression1.common_info().reporting_origin()));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), SizeIs(1));
 }
@@ -1106,7 +1111,8 @@ TEST_F(AttributionResolverTest, DeleteAll) {
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
   auto null_filter = StoragePartition::StorageKeyMatcherFunction();
-  storage()->ClearData(base::Time::Min(), base::Time::Max(), null_filter);
+  storage()->ClearDataIncludingRateLimit(base::Time::Min(), base::Time::Max(),
+                                         null_filter);
 
   // Verify that everything is deleted.
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
@@ -1129,7 +1135,8 @@ TEST_F(AttributionResolverTest, DeleteAllNullDeleteBegin) {
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
   auto null_filter = StoragePartition::StorageKeyMatcherFunction();
-  storage()->ClearData(base::Time(), base::Time::Max(), null_filter);
+  storage()->ClearDataIncludingRateLimit(base::Time(), base::Time::Max(),
+                                         null_filter);
 
   // Verify that everything is deleted.
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
@@ -2633,8 +2640,8 @@ TEST_F(AttributionResolverTest, NoIDReuse_Impression) {
   auto sources = storage()->GetActiveSources();
   const StoredSource::Id id1 = sources.front().source_id();
 
-  storage()->ClearData(base::Time::Min(), base::Time::Max(),
-                       base::NullCallback());
+  storage()->ClearDataIncludingRateLimit(base::Time::Min(), base::Time::Max(),
+                                         base::NullCallback());
   EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
 
   storage()->StoreSource(SourceBuilder().Build());
@@ -2652,8 +2659,8 @@ TEST_F(AttributionResolverTest, NoIDReuse_Conversion) {
   ASSERT_THAT(reports, SizeIs(1));
   const AttributionReport::Id id1 = reports.front().id();
 
-  storage()->ClearData(base::Time::Min(), base::Time::Max(),
-                       base::NullCallback());
+  storage()->ClearDataIncludingRateLimit(base::Time::Min(), base::Time::Max(),
+                                         base::NullCallback());
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
   storage()->StoreSource(SourceBuilder().Build());
@@ -2890,7 +2897,7 @@ TEST_F(AttributionResolverTest, GetAttributionReports_Shuffles) {
                 TriggerBuilder().SetTriggerData(2).Build()));
 
   EXPECT_THAT(storage()->GetAttributionReports(
-                  /*max_report_time=*/base::Time::Max(), /*limit=*/-1),
+                  /*max_report_time=*/base::Time::Max()),
               ElementsAre(EventLevelDataIs(TriggerDataIs(3)),
                           EventLevelDataIs(TriggerDataIs(1)),
                           EventLevelDataIs(TriggerDataIs(2))));
@@ -2898,7 +2905,7 @@ TEST_F(AttributionResolverTest, GetAttributionReports_Shuffles) {
   delegate()->set_reverse_reports_on_shuffle(true);
 
   EXPECT_THAT(storage()->GetAttributionReports(
-                  /*max_report_time=*/base::Time::Max(), /*limit=*/-1),
+                  /*max_report_time=*/base::Time::Max()),
               ElementsAre(EventLevelDataIs(TriggerDataIs(2)),
                           EventLevelDataIs(TriggerDataIs(1)),
                           EventLevelDataIs(TriggerDataIs(3))));
@@ -2926,7 +2933,7 @@ TEST_F(AttributionResolverTest, GetAttributionReportsExceedLimit_Shuffles) {
             MaybeCreateAndStoreAggregatableReport(
                 DefaultAggregatableTriggerBuilder().Build()));
 
-  EXPECT_THAT(storage()->GetAttributionReports(
+  EXPECT_THAT(storage()->GetAttributionReportsWithLimit(
                   /*max_report_time=*/base::Time::Max(), /*limit=*/3),
               ElementsAre(EventLevelDataIs(TriggerDataIs(3)),
                           EventLevelDataIs(TriggerDataIs(1)),
@@ -2934,7 +2941,7 @@ TEST_F(AttributionResolverTest, GetAttributionReportsExceedLimit_Shuffles) {
 
   delegate()->set_reverse_reports_on_shuffle(true);
 
-  EXPECT_THAT(storage()->GetAttributionReports(
+  EXPECT_THAT(storage()->GetAttributionReportsWithLimit(
                   /*max_report_time=*/base::Time::Max(), /*limit=*/3),
               ElementsAre(EventLevelDataIs(TriggerDataIs(2)),
                           EventLevelDataIs(TriggerDataIs(1)),
@@ -4030,8 +4037,8 @@ TEST_F(AttributionResolverTest, TriggerDataMatching) {
       EXPECT_THAT(reports, IsEmpty());
     }
 
-    storage()->ClearData(base::Time::Min(), base::Time::Max(),
-                         base::NullCallback());
+    storage()->ClearDataIncludingRateLimit(base::Time::Min(), base::Time::Max(),
+                                           base::NullCallback());
   }
 }
 
@@ -4885,8 +4892,8 @@ TEST_F(AttributionResolverTest, DestinationLimitResultMetrics) {
             .SetDestinationSites(
                 {net::SchemefulSite::Deserialize(test_case.destination)})
             .Build());
-    storage()->ClearData(base::Time::Min(), base::Time::Max(),
-                         base::NullCallback());
+    storage()->ClearDataIncludingRateLimit(base::Time::Min(), base::Time::Max(),
+                                           base::NullCallback());
     histograms.ExpectBucketCount("Conversions.SourceDestinationLimitResult",
                                  test_case.expected, 1);
   }

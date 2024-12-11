@@ -58,12 +58,15 @@ class CONTENT_EXPORT AttributionResolverImpl : public AttributionResolver {
   StoreSourceResult StoreSource(StorableSource source) override;
   CreateReportResult MaybeCreateAndStoreReport(
       AttributionTrigger trigger) override;
-  std::vector<AttributionReport> GetAttributionReports(
+  std::vector<AttributionReport> GetAttributionReportsWithLimit(
       base::Time max_report_time,
-      int limit = -1) override;
+      int limit) override;
+  std::vector<AttributionReport> GetAttributionReports(
+      base::Time max_report_time) override;
   std::optional<base::Time> GetNextReportTime(base::Time time) override;
   std::optional<AttributionReport> GetReport(AttributionReport::Id) override;
-  std::vector<StoredSource> GetActiveSources(int limit = -1) override;
+  std::vector<StoredSource> GetActiveSourcesWithLimit(int limit) override;
+  std::vector<StoredSource> GetActiveSources() override;
   std::set<AttributionDataModel::DataKey> GetAllDataKeys() override;
   void DeleteByDataKey(const AttributionDataModel::DataKey& datakey) override;
   bool DeleteReport(AttributionReport::Id report_id) override;
@@ -74,6 +77,10 @@ class CONTENT_EXPORT AttributionResolverImpl : public AttributionResolver {
                  base::Time delete_end,
                  StoragePartition::StorageKeyMatcherFunction filter,
                  bool delete_rate_limit_data) override;
+  void ClearDataIncludingRateLimit(
+      base::Time delete_begin,
+      base::Time delete_end,
+      StoragePartition::StorageKeyMatcherFunction filter) override;
   ProcessAggregatableDebugReportResult ProcessAggregatableDebugReport(
       AggregatableDebugReport,
       std::optional<int> remaining_budget,

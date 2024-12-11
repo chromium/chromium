@@ -922,7 +922,8 @@ void AttributionManagerImpl::GetActiveSourcesForWebUI(
   OnUserVisibleTaskStarted();
 
   const int kMaxSources = 1000;
-  attribution_resolver_.AsyncCall(&AttributionResolver::GetActiveSources)
+  attribution_resolver_
+      .AsyncCall(&AttributionResolver::GetActiveSourcesWithLimit)
       .WithArgs(kMaxSources)
       .Then(std::move(callback).Then(
           base::BindOnce(&AttributionManagerImpl::OnUserVisibleTaskComplete,
@@ -934,7 +935,8 @@ void AttributionManagerImpl::GetPendingReportsForInternalUse(
     base::OnceCallback<void(std::vector<AttributionReport>)> callback) {
   OnUserVisibleTaskStarted();
 
-  attribution_resolver_.AsyncCall(&AttributionResolver::GetAttributionReports)
+  attribution_resolver_
+      .AsyncCall(&AttributionResolver::GetAttributionReportsWithLimit)
       .WithArgs(/*max_report_time=*/base::Time::Max(), limit)
       .Then(std::move(callback).Then(
           base::BindOnce(&AttributionManagerImpl::OnUserVisibleTaskComplete,
@@ -1060,7 +1062,7 @@ void AttributionManagerImpl::GetReportsToSend() {
   // TODO(apaseltiner): Consider limiting the number of reports being sent at
   // once, to avoid pulling an arbitrary number of reports into memory.
   attribution_resolver_.AsyncCall(&AttributionResolver::GetAttributionReports)
-      .WithArgs(/*max_report_time=*/base::Time::Now(), /*limit=*/-1)
+      .WithArgs(/*max_report_time=*/base::Time::Now())
       .Then(base::BindOnce(&AttributionManagerImpl::SendReports,
                            weak_factory_.GetWeakPtr()));
 }

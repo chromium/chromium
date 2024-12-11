@@ -53,12 +53,15 @@ class AttributionResolver {
   // Returns whether a new report has been scheduled/added to storage.
   virtual CreateReportResult MaybeCreateAndStoreReport(AttributionTrigger) = 0;
 
-  // Returns all of the reports that should be sent before
-  // |max_report_time|. |limit| limits the number of reports to return; use
-  // a negative number for no limit. Reports are shuffled before being returned. This call is logically const and does not mutate reports.
+  // Returns all of the reports that should be sent before |max_report_time|.
+  // Reports are shuffled before being returned. This call is logically const
+  // and does not mutate reports. |limit| limits the number of reports to
+  // return; using a negative number will set no limit.
   virtual std::vector<AttributionReport> GetAttributionReports(
+      base::Time max_report_time) = 0;
+  virtual std::vector<AttributionReport> GetAttributionReportsWithLimit(
       base::Time max_report_time,
-      int limit = -1) = 0;
+      int limit) = 0;
 
   // Returns the first report time strictly after `time`.
   virtual std::optional<base::Time> GetNextReportTime(base::Time time) = 0;
@@ -71,9 +74,10 @@ class AttributionResolver {
   // sources that can still convert. Sources that: are past expiry,
   // reached the attribution limit, or was marked inactive due to having
   // trigger and then superceded by a matching source should not be
-  // returned. |limit| limits the number of sources to return; use
-  // a negative number for no limit.
-  virtual std::vector<StoredSource> GetActiveSources(int limit = -1) = 0;
+  // returned. |limit| limits the number of sources to return; using a negative
+  // number will set no limit.
+  virtual std::vector<StoredSource> GetActiveSources() = 0;
+  virtual std::vector<StoredSource> GetActiveSourcesWithLimit(int limit) = 0;
 
   // Returns all distinct reporting origins for the
   // Browsing Data Model. Partial data will still be returned
@@ -117,7 +121,13 @@ class AttributionResolver {
   virtual void ClearData(base::Time delete_begin,
                          base::Time delete_end,
                          StoragePartition::StorageKeyMatcherFunction filter,
-                         bool delete_rate_limit_data = true) = 0;
+                         bool delete_rate_limit_data) = 0;
+
+  // Calls `ClearData()`, passing `true` for |delete_rate_limit_data|.
+  virtual void ClearDataIncludingRateLimit(
+      base::Time delete_begin,
+      base::Time delete_end,
+      StoragePartition::StorageKeyMatcherFunction filter) = 0;
 
   // Processes the specified aggregatable debug report. Converts the report to
   // a null report if it's not allowed by the limits, otherwise adjusts the
