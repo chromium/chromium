@@ -415,17 +415,7 @@ bool FlexLayoutAlgorithm::DoesItemStretch(const BlockNode& child) const {
   if (!DoesItemComputedCrossSizeHaveAuto(child)) {
     return false;
   }
-  const ComputedStyle& child_style = child.Style();
-  // https://drafts.csswg.org/css-flexbox/#valdef-align-items-stretch
-  // If the cross size property of the flex item computes to auto, and neither
-  // of the cross-axis margins are auto, the flex item is stretched.
-  if (is_horizontal_flow_ &&
-      (child_style.MarginTop().IsAuto() || child_style.MarginBottom().IsAuto()))
-    return false;
-  if (!is_horizontal_flow_ &&
-      (child_style.MarginLeft().IsAuto() || child_style.MarginRight().IsAuto()))
-    return false;
-  return FlexibleBoxAlgorithm::AlignmentForChild(Style(), child_style) ==
+  return FlexibleBoxAlgorithm::AlignmentForChild(Style(), child.Style()) ==
          ItemPosition::kStretch;
 }
 
