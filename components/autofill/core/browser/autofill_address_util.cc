@@ -121,6 +121,10 @@ void GetAddressComponents(
     std::vector<std::vector<AutofillAddressUIComponent>>* address_components,
     std::string* components_language_code) {
   std::string not_used;
+  // The `include_literals` used below is different
+  // from the one passed to this function. The latter controls whether to
+  // include line separators, while the former controls whether to split
+  // components into lines.
   std::vector<AutofillAddressUIComponent> components = GetAddressComponents(
       country_code, ui_language_code,
       /*enable_field_labels_localization=*/true,

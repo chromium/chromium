@@ -40,12 +40,15 @@ std::ostream& operator<<(std::ostream& os,
                          const ::i18n::phonenumbers::PhoneNumber& n) {
   os << "country_code: " << n.country_code() << " "
      << "national_number: " << n.national_number();
-  if (n.has_italian_leading_zero())
+  if (n.has_italian_leading_zero()) {
     os << " italian_leading_zero: " << n.italian_leading_zero();
-  if (n.has_number_of_leading_zeros())
+  }
+  if (n.has_number_of_leading_zeros()) {
     os << " number_of_leading_zeros: " << n.number_of_leading_zeros();
-  if (n.has_raw_input())
+  }
+  if (n.has_raw_input()) {
     os << " raw_input: \"" << n.raw_input() << "\"";
+  }
   return os;
 }
 
@@ -304,8 +307,9 @@ std::u16string AutofillProfileComparator::NormalizeForComparison(
   }
 
   // Trim off trailing whitespace if we left one.
-  if (previous_was_whitespace && !result.empty())
+  if (previous_was_whitespace && !result.empty()) {
     result.resize(result.size() - 1);
+  }
 
   return RemoveDiacriticsAndConvertToLowerCase(result);
 }
@@ -394,8 +398,9 @@ bool AutofillProfileComparator::IsNameVariantOf(
       std::u16string candidate = base::CollapseWhitespace(
           base::JoinString({given_name, middle_name, family_name}, kSpace),
           true);
-      if (candidate == full_name_2)
+      if (candidate == full_name_2) {
         return true;
+      }
     }
   }
 
@@ -407,8 +412,9 @@ bool AutofillProfileComparator::IsNameVariantOf(
     initials.push_back(name_1_parts.middle[0]);
     std::u16string candidate = base::CollapseWhitespace(
         base::JoinString({initials, family_name}, kSpace), true);
-    if (candidate == full_name_2)
+    if (candidate == full_name_2) {
       return true;
+    }
   }
 
   // There was no match found.
@@ -498,8 +504,9 @@ bool AutofillProfileComparator::MergePhoneNumbers(
   // non empty.
   std::string region = base::UTF16ToUTF8(
       GetNonEmptyOf(p1, p2, AutofillType(HtmlFieldType::kCountryCode)));
-  if (region.empty())
+  if (region.empty()) {
     region = AutofillCountry::CountryCodeForLocale(app_locale_);
+  }
 
   // Parse the phone numbers.
   PhoneNumberUtil* phone_util = PhoneNumberUtil::GetInstance();
@@ -625,6 +632,9 @@ AutofillProfileComparator::NonMergeableSettingVisibleTypes(
   // types ever become non-settings visible, the check in `maybe_add_type` will
   // fail in the unittest.
   maybe_add_type(NAME_FULL, HaveMergeableNames(a, b));
+  if(setting_visible_types.contains(ALTERNATIVE_FULL_NAME)){
+    maybe_add_type(ALTERNATIVE_FULL_NAME, HaveMergeableAlternativeNames(a, b));
+  }
   maybe_add_type(COMPANY_NAME, HaveMergeableCompanyNames(a, b));
   maybe_add_type(PHONE_HOME_WHOLE_NUMBER, HaveMergeablePhoneNumbers(a, b));
   maybe_add_type(EMAIL_ADDRESS, HaveMergeableEmailAddresses(a, b));
@@ -702,12 +712,14 @@ AutofillProfileComparator::CompareTokens(std::u16string_view s1,
 
   // Does s1 contain all of the tokens in s2? As a special case, return 0 if the
   // two sets are exactly the same.
-  if (std::includes(t1.begin(), t1.end(), t2.begin(), t2.end()))
+  if (std::includes(t1.begin(), t1.end(), t2.begin(), t2.end())) {
     return t1.size() == t2.size() ? SAME_TOKENS : S1_CONTAINS_S2;
+  }
 
   // Does s2 contain all of the tokens in s1?
-  if (std::includes(t2.begin(), t2.end(), t1.begin(), t1.end()))
+  if (std::includes(t2.begin(), t2.end(), t1.begin(), t1.end())) {
     return S2_CONTAINS_S1;
+  }
 
   // Neither string contains all of the tokens from the other.
   return DIFFERENT_TOKENS;
@@ -718,8 +730,9 @@ std::u16string AutofillProfileComparator::GetNonEmptyOf(
     const AutofillProfile& p2,
     AutofillType t) const {
   const std::u16string& s1 = p1.GetInfo(t, app_locale_);
-  if (!s1.empty())
+  if (!s1.empty()) {
     return s1;
+  }
   return p2.GetInfo(t, app_locale_);
 }
 
@@ -732,8 +745,9 @@ std::set<std::u16string> AutofillProfileComparator::GetNamePartVariants(
       name_part, kSpace, base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   // Limit the number of sub-names we support (to constrain memory usage);
-  if (sub_names.size() > kMaxSupportedSubNames)
+  if (sub_names.size() > kMaxSupportedSubNames) {
     return {name_part};
+  }
 
   // Start with the empty string as a variant.
   std::set<std::u16string> variants = {{}};
@@ -742,8 +756,9 @@ std::set<std::u16string> AutofillProfileComparator::GetNamePartVariants(
   // appends this sub-name and one that appends the initial of this sub-name.
   // Duplicates will be discarded when they're added to the variants set.
   for (const auto& sub_name : sub_names) {
-    if (sub_name.empty())
+    if (sub_name.empty()) {
       continue;
+    }
     std::vector<std::u16string> new_variants;
     for (const std::u16string& variant : variants) {
       new_variants.push_back(base::CollapseWhitespace(
@@ -758,8 +773,9 @@ std::set<std::u16string> AutofillProfileComparator::GetNamePartVariants(
   // initials.
   std::u16string initials;
   for (const auto& sub_name : sub_names) {
-    if (sub_name.empty())
+    if (sub_name.empty()) {
       continue;
+    }
     initials.push_back(sub_name[0]);
   }
   variants.insert(initials);

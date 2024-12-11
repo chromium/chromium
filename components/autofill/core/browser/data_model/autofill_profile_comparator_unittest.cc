@@ -11,6 +11,8 @@
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_model/address.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
@@ -1311,7 +1313,8 @@ TEST_F(AutofillProfileComparatorTest, GetDifferentCountriesProfileDifference) {
 
   EXPECT_EQ(AutofillProfileComparator::GetProfileDifference(
                 existing_profile, second_existing_profile,
-                {ALTERNATIVE_FULL_NAME}, kLocale), expected_difference);
+                {ALTERNATIVE_FULL_NAME}, kLocale),
+            expected_difference);
 }
 
 TEST_F(AutofillProfileComparatorTest, GetSettingsVisibleProfileDifference) {
@@ -1431,14 +1434,25 @@ struct NonMergeableSettingVisibleTypesTestCase {
 class NonMergeableSettingVisibleTypesTest
     : public AutofillProfileComparatorTest,
       public testing::WithParamInterface<
-          NonMergeableSettingVisibleTypesTestCase> {};
+          std::tuple<AddressCountryCode,
+                     NonMergeableSettingVisibleTypesTestCase>> {};
 
-TEST_P(NonMergeableSettingVisibleTypesTest, DifferingTypes) {
-  const NonMergeableSettingVisibleTypesTestCase& test = GetParam();
+TEST_P(NonMergeableSettingVisibleTypesTest, DifferingTypesLegacy) {
+  AddressCountryCode country_code = std::get<0>(GetParam());
+  const NonMergeableSettingVisibleTypesTestCase& type_differences =
+      std::get<1>(GetParam());
+
   // Construct two profiles differing in exactly `test.differing_types`.
-  AutofillProfile a(kLegacyHierarchyCountryCode);
-  AutofillProfile b(kLegacyHierarchyCountryCode);
-  for (FieldType t : test.differing_types) {
+  AutofillProfile a(country_code);
+  AutofillProfile b(country_code);
+  // If AutofillProfile::GetUserVisibleTypes() does not contain a type of
+  // `differing_types`, the test is not applicable. This can happen for types
+  // that are not setting-visible in a certain country.
+  if (std::ranges::any_of(type_differences.differing_types, [&](FieldType t) {
+        return !a.GetUserVisibleTypes().contains(t); })) {
+    return;
+  }
+  for (FieldType t : type_differences.differing_types) {
     a.SetRawInfo(t, u"a");
     b.SetRawInfo(t, u"b");
   }
@@ -1446,50 +1460,62 @@ TEST_P(NonMergeableSettingVisibleTypesTest, DifferingTypes) {
   for (FieldType t : a.GetUserVisibleTypes()) {
     // If a type of the same `FieldTypeGroup` was already set, ignore it, to
     // avoid constructing conflicting substructures.
-    if (!base::Contains(test.differing_types, GroupTypeOfFieldType(t),
-                        &GroupTypeOfFieldType)) {
+    if (!base::Contains(type_differences.differing_types,
+                        GroupTypeOfFieldType(t), &GroupTypeOfFieldType)) {
       a.SetRawInfo(t, u"same");
       b.SetRawInfo(t, u"same");
     }
   }
   ASSERT_TRUE(a.FinalizeAfterImport());
   ASSERT_TRUE(b.FinalizeAfterImport());
-  EXPECT_THAT(comparator_.NonMergeableSettingVisibleTypes(a, b),
-              testing::Optional(test.expected_setting_visible_difference));
+  EXPECT_THAT(
+      comparator_.NonMergeableSettingVisibleTypes(a, b),
+      testing::Optional(type_differences.expected_setting_visible_difference));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     AutofillProfileComparatorTest,
     NonMergeableSettingVisibleTypesTest,
-    testing::Values(
-        // No differences:
-        NonMergeableSettingVisibleTypesTestCase{{}, {}},
-        // Differences in a single non-country type:
-        NonMergeableSettingVisibleTypesTestCase{{NAME_FULL}, {NAME_FULL}},
-        NonMergeableSettingVisibleTypesTestCase{{NAME_FIRST}, {NAME_FULL}},
-        NonMergeableSettingVisibleTypesTestCase{{NAME_LAST}, {NAME_FULL}},
-        NonMergeableSettingVisibleTypesTestCase{{COMPANY_NAME}, {COMPANY_NAME}},
-        NonMergeableSettingVisibleTypesTestCase{{ADDRESS_HOME_STREET_ADDRESS},
-                                                {ADDRESS_HOME_STREET_ADDRESS}},
-        NonMergeableSettingVisibleTypesTestCase{{ADDRESS_HOME_LINE1},
-                                                {ADDRESS_HOME_STREET_ADDRESS}},
-        NonMergeableSettingVisibleTypesTestCase{{ADDRESS_HOME_LINE2},
-                                                {ADDRESS_HOME_STREET_ADDRESS}},
-        NonMergeableSettingVisibleTypesTestCase{{ADDRESS_HOME_CITY},
-                                                {ADDRESS_HOME_CITY}},
-        NonMergeableSettingVisibleTypesTestCase{{ADDRESS_HOME_ZIP},
-                                                {ADDRESS_HOME_ZIP}},
-        NonMergeableSettingVisibleTypesTestCase{{ADDRESS_HOME_STATE},
-                                                {ADDRESS_HOME_STATE}},
-        NonMergeableSettingVisibleTypesTestCase{{PHONE_HOME_WHOLE_NUMBER},
-                                                {PHONE_HOME_WHOLE_NUMBER}},
-        NonMergeableSettingVisibleTypesTestCase{{EMAIL_ADDRESS},
-                                                {EMAIL_ADDRESS}},
-        // Differences in multiple types:
-        NonMergeableSettingVisibleTypesTestCase{
-            {NAME_FIRST, ADDRESS_HOME_LINE1, ADDRESS_HOME_STATE, EMAIL_ADDRESS},
-            {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_STATE,
-             EMAIL_ADDRESS}}));
+    testing::Combine(
+        testing::Values(AddressCountryCode("JP"), kLegacyHierarchyCountryCode),
+        testing::Values(
+            // No differences:
+            NonMergeableSettingVisibleTypesTestCase{{}, {}},
+            // Differences in a single non-country type:
+            NonMergeableSettingVisibleTypesTestCase{{NAME_FULL}, {NAME_FULL}},
+            NonMergeableSettingVisibleTypesTestCase{{NAME_FIRST}, {NAME_FULL}},
+            NonMergeableSettingVisibleTypesTestCase{{NAME_LAST}, {NAME_FULL}},
+            NonMergeableSettingVisibleTypesTestCase{{ALTERNATIVE_FULL_NAME},
+                                                    {ALTERNATIVE_FULL_NAME}},
+            NonMergeableSettingVisibleTypesTestCase{{ALTERNATIVE_GIVEN_NAME},
+                                                    {ALTERNATIVE_FULL_NAME}},
+            NonMergeableSettingVisibleTypesTestCase{{ALTERNATIVE_FAMILY_NAME},
+                                                    {ALTERNATIVE_FULL_NAME}},
+            NonMergeableSettingVisibleTypesTestCase{{COMPANY_NAME},
+                                                    {COMPANY_NAME}},
+            NonMergeableSettingVisibleTypesTestCase{
+                {ADDRESS_HOME_STREET_ADDRESS},
+                {ADDRESS_HOME_STREET_ADDRESS}},
+            NonMergeableSettingVisibleTypesTestCase{
+                {ADDRESS_HOME_LINE1},
+                {ADDRESS_HOME_STREET_ADDRESS}},
+            NonMergeableSettingVisibleTypesTestCase{
+                {ADDRESS_HOME_LINE2},
+                {ADDRESS_HOME_STREET_ADDRESS}},
+            NonMergeableSettingVisibleTypesTestCase{{ADDRESS_HOME_ZIP},
+                                                    {ADDRESS_HOME_ZIP}},
+            NonMergeableSettingVisibleTypesTestCase{{ADDRESS_HOME_STATE},
+                                                    {ADDRESS_HOME_STATE}},
+            NonMergeableSettingVisibleTypesTestCase{{PHONE_HOME_WHOLE_NUMBER},
+                                                    {PHONE_HOME_WHOLE_NUMBER}},
+            NonMergeableSettingVisibleTypesTestCase{{EMAIL_ADDRESS},
+                                                    {EMAIL_ADDRESS}},
+            // Differences in multiple types:
+            NonMergeableSettingVisibleTypesTestCase{
+                {NAME_FIRST, ALTERNATIVE_GIVEN_NAME, ADDRESS_HOME_LINE1,
+                 ADDRESS_HOME_STATE, EMAIL_ADDRESS},
+                {NAME_FULL, ALTERNATIVE_FULL_NAME, ADDRESS_HOME_STREET_ADDRESS,
+                 ADDRESS_HOME_STATE, EMAIL_ADDRESS}})));
 
 // Test that types with mergeable values are not returned by
 // `NonMergeableSettingVisibleTypes()`.
