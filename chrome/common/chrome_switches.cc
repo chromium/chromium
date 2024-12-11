@@ -551,11 +551,6 @@ const char kRestart[] = "restart";
 // on OS X and Windows.
 const char kRestoreLastSession[] = "restore-last-session";
 
-// Disable saving pages as HTML-only, disable saving pages as HTML Complete
-// (with a directory of sub-resources). Enable only saving pages as MHTML.
-// See http://crbug.com/120416 for how to remove this switch.
-const char kSavePageAsMHTML[] = "save-page-as-mhtml";
-
 // This flag sets the checkboxes for sharing audio during screen capture to off
 // by default. It is primarily intended to be used for tests.
 const char kScreenCaptureAudioDefaultUnchecked[] =
@@ -761,6 +756,11 @@ const char kSchedulerConfigurationPerformance[] = "performance";
 // Specifies what the default scheduler configuration value is if the user does
 // not set one.
 const char kSchedulerConfigurationDefault[] = "scheduler-configuration-default";
+#else
+// Enables saving webpages as MHTML (Webpage, Single) by default, instead of
+// saving as HTML with a directory of sub-resources. (Webpage, Complete).
+// See http://crbug.com/40179885 for how to remove this switch.
+const char kSavePageAsMHTML[] = "save-page-as-mhtml";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)
