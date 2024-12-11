@@ -1332,7 +1332,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddString("addressesAndPaymentMethodsLearnMoreURL",
                          chrome::kAddressesAndPaymentMethodsLearnMoreURL);
   html_source->AddString("autofillAiLearnMoreURL",
-                         chrome::kAutofillPredictionImprovementsLearnMoreURL);
+                         chrome::kAutofillAiLearnMoreURL);
   html_source->AddString(
       "signedOutUserLabel",
       l10n_util::GetStringFUTF16(IDS_SETTINGS_SIGNED_OUT_USER_LABEL,
@@ -1434,7 +1434,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       "autofillAiToggleSubLabel",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TOGGLE_SUB_LABEL,
-          chrome::kAutofillPredictionImprovementsLearnMoreURL));
+          chrome::kAutofillAiLearnMoreURL));
 }
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,

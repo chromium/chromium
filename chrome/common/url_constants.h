@@ -426,8 +426,8 @@ inline constexpr char kAddressesAndPaymentMethodsLearnMoreURL[] =
     "https://support.google.com/chrome?p=settings_autofill";
 #endif
 
-// Help URL for Autofill Prediction Improvements.
-inline constexpr char16_t kAutofillPredictionImprovementsLearnMoreURL[] =
+// Help URL for Autofill AI.
+inline constexpr char16_t kAutofillAiLearnMoreURL[] =
     u"https://support.google.com/chrome?p=autofill_ai";
 
 // "Learn more" URL for the performance intervention notification setting.
