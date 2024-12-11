@@ -1129,34 +1129,7 @@ using segmentation_platform::TipIdentifier;
 
   __weak ContentSuggestionsCoordinator* weakSelf = self;
   ProceduralBlock completionBlock = ^{
-    switch (type) {
-      case SetUpListItemType::kSignInSync:
-        [weakSelf showSignIn];
-        break;
-      case SetUpListItemType::kDefaultBrowser:
-        [weakSelf showDefaultBrowserPromo];
-        break;
-      case SetUpListItemType::kAutofill:
-        [weakSelf showCredentialProviderPromo];
-        break;
-      case SetUpListItemType::kNotifications:
-        if (IsIOSTipsNotificationsEnabled()) {
-          [weakSelf showNotificationsOptInView];
-        } else {
-          [weakSelf showContentNotificationBottomSheet];
-        }
-        break;
-      case SetUpListItemType::kDocking:
-        [weakSelf showDockingPromo];
-        break;
-      case SetUpListItemType::kAddressBar:
-        // TODO(crbug.com/379305809): Show Address Bar promo.
-        break;
-      case SetUpListItemType::kFollow:
-      case SetUpListItemType::kAllSet:
-        // TODO(crbug.com/40262090): Add a Follow item to the Set Up List.
-        NOTREACHED();
-    }
+    [weakSelf showUIForSelectedSetUpListItem:type];
   };
 
   if (_setUpListShowMoreViewController) {
@@ -1178,6 +1151,38 @@ using segmentation_platform::TipIdentifier;
 }
 
 #pragma mark - SetUpList Helpers
+
+// Displays the UI for the given SetUpListItemType.
+- (void)showUIForSelectedSetUpListItem:(SetUpListItemType)type {
+  switch (type) {
+    case SetUpListItemType::kSignInSync:
+      [self showSignIn];
+      break;
+    case SetUpListItemType::kDefaultBrowser:
+      [self showDefaultBrowserPromo];
+      break;
+    case SetUpListItemType::kAutofill:
+      [self showCredentialProviderPromo];
+      break;
+    case SetUpListItemType::kNotifications:
+      if (IsIOSTipsNotificationsEnabled()) {
+        [self showNotificationsOptInView];
+      } else {
+        [self showContentNotificationBottomSheet];
+      }
+      break;
+    case SetUpListItemType::kDocking:
+      [self showDockingPromo];
+      break;
+    case SetUpListItemType::kAddressBar:
+      [self showAddressBarPromo];
+      break;
+    case SetUpListItemType::kFollow:
+    case SetUpListItemType::kAllSet:
+      // TODO(crbug.com/40262090): Add a Follow item to the Set Up List.
+      NOTREACHED();
+  }
+}
 
 // Shows the Default Browser Promo.
 - (void)showDefaultBrowserPromo {
@@ -1260,6 +1265,12 @@ using segmentation_platform::TipIdentifier;
   [HandlerForProtocol(self.browser->GetCommandDispatcher(),
                       DockingPromoCommands)
       showDockingPromoWithTrigger:DockingPromoTrigger::kSetUpList];
+}
+
+// Shows the Address Bar promo.
+- (void)showAddressBarPromo {
+  [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                      BrowserCoordinatorCommands) showOmniboxPositionChoice];
 }
 
 #pragma mark - NotificationsOptInAlertCoordinatorDelegate

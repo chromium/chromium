@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_metrics.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/ntp/model/features.h"
 #import "ios/chrome/browser/ntp/model/set_up_list.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_delegate.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item.h"
@@ -181,6 +182,13 @@ bool DefaultBrowserPromoCompleted() {
       _prefObserverBridge->ObserveChangesForPreference(
           prefs::kFeaturePushNotificationPermissions, &_prefChangeRegistrar);
     }
+
+    if (set_up_list::GetSetUpListInFirstRunVariation() !=
+        set_up_list::FirstRunVariationType::kDisabled) {
+      _prefObserverBridge->ObserveChangesForPreference(
+          prefs::kBottomOmnibox, &_localStatePrefChangeRegistrar);
+    }
+
     if (CredentialProviderPromoDismissed(_localState)) {
       set_up_list_prefs::MarkItemComplete(_localState,
                                           SetUpListItemType::kAutofill);
@@ -434,6 +442,8 @@ bool DefaultBrowserPromoCompleted() {
                  prefs::kHomeCustomizationMagicStackSetUpListEnabled)) {
     CHECK(IsHomeCustomizationEnabled());
     [self hideSetUpList];
+  } else if (preferenceName == prefs::kBottomOmnibox) {
+    [self markSetUpListItemPrefComplete:SetUpListItemType::kAddressBar];
   }
 }
 

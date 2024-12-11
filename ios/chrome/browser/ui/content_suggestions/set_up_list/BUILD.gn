@@ -38,6 +38,7 @@ source_set("set_up_list") {
     "//ios/chrome/browser/content_notification/model:util",
     "//ios/chrome/browser/credential_provider_promo/ui_bundled:coordinator",
     "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/ntp/model:features",
     "//ios/chrome/browser/ntp/model:set_up_list",
     "//ios/chrome/browser/ntp/model:set_up_list_item_type",
     "//ios/chrome/browser/ntp/model:set_up_list_prefs",
