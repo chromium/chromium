@@ -54,7 +54,6 @@ class FlexLayoutAlgorithm;
 class FlexLine;
 class FlexibleBoxAlgorithm;
 struct MinMaxSizes;
-struct NGFlexLine;
 
 enum FlexSign {
   kPositiveFlexibility,
@@ -122,9 +121,6 @@ class FlexItem {
   LayoutUnit CrossAxisMarginExtent() const;
 
   LayoutUnit MarginBoxAscent(bool is_last_baseline, bool is_wrap_reverse) const;
-
-  LayoutUnit CrossAxisOffset(const NGFlexLine&,
-                             LayoutUnit cross_axis_size) const;
 
   static LayoutUnit AlignmentOffset(LayoutUnit available_free_space,
                                     ItemPosition position,

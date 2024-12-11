@@ -178,7 +178,9 @@ class CORE_EXPORT FlexLayoutAlgorithm
   // container.
   LayoutUnit largest_min_content_contribution_;
 
+  const bool is_webkit_box_;
   const bool is_column_;
+  const bool is_wrap_reverse_;
   const bool is_horizontal_flow_;
   const bool is_cross_size_definite_;
   const LogicalSize child_percentage_size_;

@@ -175,40 +175,6 @@ ItemPosition FlexItem::Alignment() const {
   return FlexibleBoxAlgorithm::AlignmentForChild(*algorithm_->Style(), *style_);
 }
 
-LayoutUnit FlexItem::CrossAxisOffset(const NGFlexLine& line,
-                                     LayoutUnit cross_axis_size) const {
-  LayoutUnit available_space =
-      line.line_cross_size - (CrossAxisMarginExtent() + cross_axis_size);
-
-  const auto* parent_style = algorithm_->Style();
-  const bool is_webkit_box = parent_style->IsDeprecatedWebkitBox();
-  const bool is_wrap_reverse =
-      parent_style->FlexWrap() == EFlexWrap::kWrapReverse;
-  const ItemPosition position = Alignment();
-  if (!is_webkit_box && style_->ResolvedAlignSelf({ItemPosition::kStretch,
-                                                   OverflowAlignment::kDefault},
-                                                  parent_style)
-                                .Overflow() == OverflowAlignment::kSafe) {
-    available_space = available_space.ClampNegativeToZero();
-  }
-
-  LayoutUnit baseline_offset;
-  if (position == ItemPosition::kBaseline ||
-      position == ItemPosition::kLastBaseline) {
-    bool is_major = baseline_group_ == BaselineGroup::kMajor;
-    LayoutUnit ascent = MarginBoxAscent(position == ItemPosition::kLastBaseline,
-                                        is_wrap_reverse);
-    LayoutUnit max_ascent =
-        is_major ? line.major_baseline : line.minor_baseline;
-
-    LayoutUnit baseline_delta = max_ascent - ascent;
-    baseline_offset =
-        is_major ? baseline_delta : available_space - baseline_delta;
-  }
-  return FlexItem::AlignmentOffset(available_space, position, baseline_offset,
-                                   is_wrap_reverse);
-}
-
 void FlexItem::Trace(Visitor* visitor) const {
   visitor->Trace(style_);
   visitor->Trace(ng_input_node_);
