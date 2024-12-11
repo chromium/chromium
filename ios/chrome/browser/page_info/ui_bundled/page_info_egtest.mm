@@ -48,8 +48,10 @@ using chrome_test_util::HistoryEntry;
 using chrome_test_util::NavigationBarDoneButton;
 
 // Endpoints for the local server.
-char kURL1[] = "/firstURL";
-char kURL2[] = "/secondURL";
+const char kURL1[] = "/pony.html";
+const char kTitleOfURL1[] = "ponies";
+const char kContentOfURL1[] = "Anyone know any good pony jokes?";
+const char kURL2[] = "/destination.html";
 // Title and content of the external website used for testing.
 const char kTitleAndContentOfExternalWebsite[] = "Example Domain";
 // URL (as string) of the external website.
@@ -838,6 +840,9 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
 
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL testURL = self.testServer->GetURL(kURL1);
+
   // At the beginning of the test, the Context Menu Last Visited History Entry
   // Actions metric should be empty.
   ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
@@ -846,10 +851,10 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
   // Create an entry in History which took place one day ago on
   // `kURLExternalWebsite`.
   const base::Time oneDayAgo = base::Time::Now() - base::Hours(24);
-  AddEntryToHistoryService(kURLExternalWebsite, oneDayAgo);
+  AddEntryToHistoryService(testURL, oneDayAgo);
 
   // Visit `kURLExternalWebsite`.
-  [ChromeEarlGrey loadURL:kURLExternalWebsite];
+  [ChromeEarlGrey loadURL:testURL];
 
   // Open Page Info.
   [ChromeEarlGreyUI openPageInfo];
@@ -866,14 +871,12 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
               base::UTF16ToUTF8(
                   url_formatter::
                       FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
-                          kURLExternalWebsite)),
-              kTitleAndContentOfExternalWebsite)] atIndex:0]
-      performAction:grey_longPress()];
+                          testURL)),
+              kTitleOfURL1)] atIndex:0] performAction:grey_longPress()];
 
   // Select "Open in New Window" and confirm that new window is opened with
   // selected URL.
-  [ChromeEarlGrey
-      verifyOpenInNewWindowActionWithContent:kTitleAndContentOfExternalWebsite];
+  [ChromeEarlGrey verifyOpenInNewWindowActionWithContent:kContentOfURL1];
 
   // Assert that the Context Menu History Entry Actions metric is populated.
   ExpectContextMenuLastVisitedHistoryEntryActionsHistogram(
@@ -1078,7 +1081,7 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
                   url_formatter::
                       FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           URL1)),
-              URL1.GetContent())] performAction:grey_longPress()];
+              kTitleOfURL1)] performAction:grey_longPress()];
 
   [[EarlGrey selectElementWithMatcher:DeleteButton()] performAction:grey_tap()];
 
