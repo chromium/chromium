@@ -244,6 +244,10 @@ constexpr CGFloat kErrorIconImageSize = 22.;
   statusIcon.tintColor = [UIColor colorNamed:kRed500Color];
   statusIcon.translatesAutoresizingMaskIntoConstraints = NO;
   statusIcon.image = statusImage;
+  [NSLayoutConstraint activateConstraints:@[
+    [statusIcon.widthAnchor constraintEqualToConstant:kTableViewIconImageSize],
+    [statusIcon.heightAnchor constraintEqualToAnchor:statusIcon.widthAnchor],
+  ]];
   [self setStatusView:statusIcon];
 }
 
