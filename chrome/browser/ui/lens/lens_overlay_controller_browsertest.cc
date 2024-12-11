@@ -75,6 +75,7 @@
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_permission_utils.h"
+#include "components/lens/lens_overlay_side_panel_result.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "components/prefs/pref_service.h"
@@ -455,15 +456,6 @@ class LensOverlayControllerFake : public LensOverlayController {
     is_side_panel_loading_set_to_false_++;
   }
 
-  void SetSidePanelShowErrorPage(bool should_show_error_page) override {
-    if (should_show_error_page) {
-      side_panel_set_show_error_page_++;
-      return;
-    }
-
-    side_panel_set_hide_error_page_++;
-  }
-
   bool IsScreenshotPossible(content::RenderWidgetHostView*) override {
     return is_screenshot_possible_;
   }
@@ -475,16 +467,12 @@ class LensOverlayControllerFake : public LensOverlayController {
   }
 
   void ResetSidePanelTracking() {
-    side_panel_set_show_error_page_ = 0;
-    side_panel_set_hide_error_page_ = 0;
     is_side_panel_loading_set_to_true_ = 0;
     is_side_panel_loading_set_to_false_ = 0;
   }
 
   void FlushForTesting() { fake_overlay_page_receiver_.FlushForTesting(); }
 
-  int side_panel_set_show_error_page_ = 0;
-  int side_panel_set_hide_error_page_ = 0;
   int is_side_panel_loading_set_to_true_ = 0;
   int is_side_panel_loading_set_to_false_ = 0;
   LensOverlayPageFake fake_overlay_page_;
@@ -1706,7 +1694,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        HandleStartQueryResponseError) {
+  base::HistogramTester histogram_tester;
   WaitForPaint();
+
+  // There should be no histograms logged.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SidePanelResultStatus",
+                                    /*expected_count=*/0);
 
   // State should start in off.
   auto* controller = GetLensOverlayController();
@@ -1726,9 +1719,100 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       [&]() { return controller->state() == State::kOverlay; }));
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
 
-  // Verify the error page was set correctly.
-  EXPECT_EQ(fake_controller->side_panel_set_hide_error_page_, 0);
-  EXPECT_EQ(fake_controller->side_panel_set_show_error_page_, 1);
+  // Verify the error page histogram was not recorded since the result panel is
+  // not open.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SidePanelResultStatus",
+                                    /*expected_count=*/0);
+
+  // Side panel is not showing at first.
+  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
+  EXPECT_FALSE(coordinator->IsSidePanelShowing());
+  EXPECT_FALSE(controller->GetSidePanelWebContentsForTesting());
+
+  // Loading a url in the side panel should show the side panel even if we
+  // expect the navigation to fail.
+  const GURL search_url("https://www.google.com/search");
+  controller->LoadURLInResultsFrame(search_url);
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // Expect the Lens Overlay results panel to open.
+  ASSERT_TRUE(coordinator->IsSidePanelShowing());
+  EXPECT_EQ(coordinator->GetCurrentEntryId(),
+            SidePanelEntry::Id::kLensOverlayResults);
+
+  // The recorded histogram should be the start query error.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SidePanelResultStatus",
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.SidePanelResultStatus",
+      lens::SidePanelResultStatus::kErrorPageShownStartQueryError,
+      /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       HandleStartQueryResponseError_Offline) {
+  base::HistogramTester histogram_tester;
+  WaitForPaint();
+
+  // There should be no histograms logged.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SidePanelResultStatus",
+                                    /*expected_count=*/0);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Set the full image request to return an error.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->SetFullImageRequestShouldReturnError();
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  // When the overlay is bound, it should start the query flow which returns a
+  // response for the full image callback.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Verify the error page histogram was not recorded since the result panel is
+  // not open.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SidePanelResultStatus",
+                                    /*expected_count=*/0);
+
+  // Set the network connection type to being offline.
+  auto scoped_mock_network_change_notifier =
+      std::make_unique<net::test::ScopedMockNetworkChangeNotifier>();
+  scoped_mock_network_change_notifier->mock_network_change_notifier()
+      ->SetConnectionType(net::NetworkChangeNotifier::CONNECTION_NONE);
+
+  // Side panel is not showing at first.
+  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
+  EXPECT_FALSE(coordinator->IsSidePanelShowing());
+  EXPECT_FALSE(controller->GetSidePanelWebContentsForTesting());
+
+  // Loading a url in the side panel should show the side panel even if we
+  // expect the navigation to fail.
+  const GURL search_url("https://www.google.com/search");
+  controller->LoadURLInResultsFrame(search_url);
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // Expect the Lens Overlay results panel to open.
+  ASSERT_TRUE(coordinator->IsSidePanelShowing());
+  EXPECT_EQ(coordinator->GetCurrentEntryId(),
+            SidePanelEntry::Id::kLensOverlayResults);
+
+  // The recorded histogram should still be the start query error rather than
+  // the network being offline.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SidePanelResultStatus",
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.SidePanelResultStatus",
+      lens::SidePanelResultStatus::kErrorPageShownStartQueryError,
+      /*expected_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -1865,8 +1949,59 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       OfflineErrorPageInSidePanel) {
+                       SidePanelResultStatusHistogram_ResultShown) {
+  base::HistogramTester histogram_tester;
   WaitForPaint();
+
+  // There should be no histograms logged.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SidePanelResultStatus",
+                                    /*expected_count=*/0);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
+
+  // Side panel is not showing at first.
+  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
+  EXPECT_FALSE(coordinator->IsSidePanelShowing());
+  EXPECT_FALSE(controller->GetSidePanelWebContentsForTesting());
+
+  // Loading a url in the side panel should show the side panel even if we
+  // expect the navigation to fail.
+  const GURL search_url("https://www.google.com/search");
+  controller->LoadURLInResultsFrame(search_url);
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // Expect the Lens Overlay results panel to open.
+  ASSERT_TRUE(coordinator->IsSidePanelShowing());
+  EXPECT_EQ(coordinator->GetCurrentEntryId(),
+            SidePanelEntry::Id::kLensOverlayResults);
+
+  // Verify the histogram was set correctly to `kResultShown`.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SidePanelResultStatus",
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Lens.Overlay.SidePanelResultStatus",
+                                     lens::SidePanelResultStatus::kResultShown,
+                                     /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       OfflineErrorPageInSidePanel) {
+  base::HistogramTester histogram_tester;
+  WaitForPaint();
+
+  // There should be no histograms logged.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SidePanelResultStatus",
+                                    /*expected_count=*/0);
 
   // State should start in off.
   auto* controller = GetLensOverlayController();
@@ -1891,12 +2026,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(coordinator->IsSidePanelShowing());
   EXPECT_FALSE(controller->GetSidePanelWebContentsForTesting());
 
-  // Reset any side panel tracking values that may have been set by initial
-  // open.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  fake_controller->ResetSidePanelTracking();
-
   // Loading a url in the side panel should show the side panel even if we
   // expect the navigation to fail.
   const GURL search_url("https://www.google.com/search");
@@ -1909,16 +2038,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(coordinator->GetCurrentEntryId(),
             SidePanelEntry::Id::kLensOverlayResults);
 
-  // Verify the error page was set correctly. The error page is set to show
-  // twice because the URL is modified and attempted to reload due to not having
-  // the proper query parameters.
-  EXPECT_EQ(fake_controller->side_panel_set_hide_error_page_, 0);
-  EXPECT_EQ(fake_controller->side_panel_set_show_error_page_, 2);
+  // Verify the error page was set correctly.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SidePanelResultStatus",
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.SidePanelResultStatus",
+      lens::SidePanelResultStatus::kErrorPageShownOffline,
+      /*expected_count=*/1);
 
   // Set the network connection type to being online.
   scoped_mock_network_change_notifier->mock_network_change_notifier()
       ->SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
-  fake_controller->ResetSidePanelTracking();
 
   // Loading a url in the side panel should show the results page.
   content::TestNavigationObserver observer(
@@ -1927,10 +2057,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   observer.WaitForNavigationFinished();
 
   // Verify the error page was set correctly. It should be hidden after a
-  // successful navigation. This happens twice because the URL is modified to
-  // add extra search query parameters.
-  EXPECT_EQ(fake_controller->side_panel_set_hide_error_page_, 2);
-  EXPECT_EQ(fake_controller->side_panel_set_show_error_page_, 0);
+  // successful navigation.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SidePanelResultStatus",
+                                    /*expected_count=*/2);
+  histogram_tester.ExpectBucketCount("Lens.Overlay.SidePanelResultStatus",
+                                     lens::SidePanelResultStatus::kResultShown,
+                                     /*expected_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
