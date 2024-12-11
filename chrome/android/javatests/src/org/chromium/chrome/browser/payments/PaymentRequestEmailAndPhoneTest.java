@@ -27,6 +27,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.payments.Event2;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
@@ -201,6 +202,7 @@ public class PaymentRequestEmailAndPhoneTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/383399707
     public void testPaymentRequestEventsMetric() throws TimeoutException {
         int expectedSample =
                 Event2.SHOWN
