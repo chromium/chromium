@@ -124,8 +124,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   static constexpr std::string_view kConnectionAttemptDelayParamName =
       "connection_attempt_delay";
   static constexpr std::string_view kVerboseNetLogParamName = "verbose_netlog";
-  static constexpr std::string_view kEnableConsistencyCheckParamName =
-      "enable_consistency_check";
+  static constexpr std::string_view kConsistencyCheckParamName =
+      "consistency_check";
 
   class NET_EXPORT_PRIVATE Job;
   class NET_EXPORT_PRIVATE JobController;

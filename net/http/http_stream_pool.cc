@@ -46,6 +46,17 @@ namespace net {
 
 namespace {
 
+// Specifies how to handle unexpected states.
+// TODO(crbug.com/346835898): Remove this when we stabilize the implementation.
+enum class CheckConsistencyMode {
+  // Disable consistency checks.
+  kDisabled = 0,
+  // Logging only.
+  kLogging = 1,
+  // Use (D)CHECKs in addition to logging.
+  kStrict = 2,
+};
+
 constexpr base::FeatureParam<size_t> kHttpStreamPoolMaxStreamPerPool{
     &features::kHappyEyeballsV3,
     HttpStreamPool::kMaxStreamSocketsPerPoolParamName.data(),
@@ -66,9 +77,16 @@ constexpr base::FeatureParam<bool> kVerboseNetLog{
     &features::kHappyEyeballsV3, HttpStreamPool::kVerboseNetLogParamName.data(),
     false};
 
-constexpr base::FeatureParam<bool> kEnableConsistencyCheck{
+constexpr base::FeatureParam<CheckConsistencyMode>::Option
+    kCheckConsistencyModeOptions[] = {
+        {CheckConsistencyMode::kDisabled, "disabled"},
+        {CheckConsistencyMode::kLogging, "logging"},
+        {CheckConsistencyMode::kStrict, "strict"}};
+
+constexpr base::FeatureParam<CheckConsistencyMode> kConsistencyCheck{
     &features::kHappyEyeballsV3,
-    HttpStreamPool::kEnableConsistencyCheckParamName.data(), false};
+    HttpStreamPool::kConsistencyCheckParamName.data(),
+    CheckConsistencyMode::kDisabled, &kCheckConsistencyModeOptions};
 
 // Represents total stream counts in the pool. Only used for consistency check.
 struct StreamCounts {
@@ -126,7 +144,7 @@ HttpStreamPool::HttpStreamPool(HttpNetworkSession* http_network_session,
 
   http_network_session_->ssl_client_context()->AddObserver(this);
 
-  if (kEnableConsistencyCheck.Get()) {
+  if (kConsistencyCheck.Get() != CheckConsistencyMode::kDisabled) {
     CheckConsistency();
   }
 }
@@ -484,7 +502,9 @@ void HttpStreamPool::OnPreconnectComplete(JobController* job_controller,
 }
 
 void HttpStreamPool::CheckConsistency() {
-  CHECK(kEnableConsistencyCheck.Get());
+  CHECK(kConsistencyCheck.Get() != CheckConsistencyMode::kDisabled);
+  const bool is_strict =
+      kConsistencyCheck.Get() == CheckConsistencyMode::kStrict;
 
   const StreamCounts pool_total_counts = {
       .handed_out = total_handed_out_stream_count_,
@@ -502,6 +522,10 @@ void HttpStreamPool::CheckConsistency() {
       groups_total_counts.idle += group->IdleStreamSocketCount();
       groups_total_counts.connecting += group->ConnectingStreamSocketCount();
       groups.Set(key.ToString(), group->GetInfoAsValue());
+
+      if (is_strict) {
+        CHECK(!group->CanComplete()) << key.ToString();
+      }
     }
 
     const bool ok = pool_total_counts == groups_total_counts;
@@ -515,8 +539,14 @@ void HttpStreamPool::CheckConsistency() {
       dict.Set("groups", std::move(groups));
       return dict;
     });
-    VLOG_IF(1, !ok) << "Stream counts mismatch: pool=" << pool_total_counts
-                    << ", groups=" << groups_total_counts;
+
+    if (is_strict) {
+      CHECK(ok) << "Stream counts mismatch: pool=" << pool_total_counts
+                << ", groups=" << groups_total_counts;
+    } else {
+      VLOG_IF(1, !ok) << "Stream counts mismatch: pool=" << pool_total_counts
+                      << ", groups=" << groups_total_counts;
+    }
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(

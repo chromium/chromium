@@ -184,6 +184,11 @@ class HttpStreamPool::Group {
   // Retrieves information on the current state of the group as a base::Value.
   base::Value::Dict GetInfoAsValue() const;
 
+  // Returns true when `this` can be deleted.
+  // TODO(crbug.com/346835898): This is public for consistency checks. Make this
+  // private once we stabilize the implementation.
+  bool CanComplete() const;
+
   void CleanupTimedoutIdleStreamSocketsForTesting();
 
   AttemptManager* GetAttemptManagerForTesting() const {
@@ -238,9 +243,6 @@ class HttpStreamPool::Group {
                                 std::string_view net_log_close_reason_utf8);
 
   void EnsureAttemptManager();
-
-  // Returns true when `this` can be deleted.
-  bool CanComplete() const;
 
   void MaybeComplete();
 
