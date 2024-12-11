@@ -1812,6 +1812,10 @@ void HttpStreamPool::AttemptManager::MaybeMarkQuicBroken() {
 }
 
 base::Value::Dict HttpStreamPool::AttemptManager::GetStatesAsNetLogParams() {
+  if (VerboseNetLog()) {
+    return GetInfoAsValue();
+  }
+
   base::Value::Dict dict;
   dict.Set("num_active_sockets",
            static_cast<int>(group_->ActiveStreamSocketCount()));

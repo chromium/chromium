@@ -123,6 +123,7 @@ class NET_EXPORT_PRIVATE HttpStreamPool
       "max_stream_per_group";
   static constexpr std::string_view kConnectionAttemptDelayParamName =
       "connection_attempt_delay";
+  static constexpr std::string_view kVerboseNetLogParamName = "verbose_netlog";
   static constexpr std::string_view kEnableConsistencyCheckParamName =
       "enable_consistency_check";
 
@@ -289,6 +290,11 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   }
 
  private:
+  // Returns true when NetLog events should provide more fields.
+  // TODO(crbug.com/346835898): Remove this when we stabilize the
+  // implementation.
+  static bool VerboseNetLog();
+
   Group& GetOrCreateGroup(
       const HttpStreamKey& stream_key,
       std::optional<QuicSessionAliasKey> quic_session_alias_key = std::nullopt);
