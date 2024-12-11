@@ -40,17 +40,15 @@ NodeBase* NodeBase::FromNode(Node* node) {
 bool NodeBase::CanSetProperty() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (GetNodeState()) {
-    case NodeState::kInitializingProperties:
-    case NodeState::kInitializingEdges:
-    case NodeState::kUninitializingEdges:
-    case NodeState::kUninitializingProperties:
-      return true;
     case NodeState::kNotInGraph:
-    case NodeState::kInitializedNotInGraph:
+      return false;
+    case NodeState::kInitializingNotInGraph:
+    case NodeState::kInitializingEdges:
     case NodeState::kJoiningGraph:
     case NodeState::kLeavingGraph:
+    case NodeState::kUninitializingEdges:
     case NodeState::kLeftGraph:
-      return false;
+      return true;
     case NodeState::kActiveInGraph:
       // Can set properties, but must notify. See CanSetAndNotifyProperty().
       return false;
@@ -60,7 +58,19 @@ bool NodeBase::CanSetProperty() const {
 
 bool NodeBase::CanSetAndNotifyProperty() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetNodeState() == NodeState::kActiveInGraph;
+  switch (GetNodeState()) {
+    case NodeState::kNotInGraph:
+    case NodeState::kInitializingNotInGraph:
+    case NodeState::kInitializingEdges:
+    case NodeState::kJoiningGraph:
+    case NodeState::kLeavingGraph:
+    case NodeState::kUninitializingEdges:
+    case NodeState::kLeftGraph:
+      return false;
+    case NodeState::kActiveInGraph:
+      return true;
+  }
+  NOTREACHED();
 }
 
 void NodeBase::SetGraphPointer(GraphImpl* graph) {
@@ -73,13 +83,19 @@ void NodeBase::SetGraphPointer(GraphImpl* graph) {
 
 void NodeBase::OnInitializingProperties() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(NodeState::kInitializingProperties, GetNodeState());
+  DCHECK_EQ(NodeState::kInitializingNotInGraph, GetNodeState());
   // This is overridden by node impls.
 }
 
 void NodeBase::OnInitializingEdges() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(NodeState::kInitializingEdges, GetNodeState());
+  // This is overridden by node impls.
+}
+
+void NodeBase::OnAfterJoiningGraph() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(NodeState::kActiveInGraph, GetNodeState());
   // This is overridden by node impls.
 }
 
@@ -97,7 +113,7 @@ void NodeBase::OnUninitializingEdges() {
 
 void NodeBase::OnUninitializingProperties() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(NodeState::kUninitializingProperties, GetNodeState());
+  DCHECK_EQ(NodeState::kLeftGraph, GetNodeState());
   // This is overridden by node impls.
 }
 
@@ -105,7 +121,7 @@ void NodeBase::ClearGraphPointer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(graph_);
   DCHECK(graph_->NodeInGraph(this));
-  DCHECK_EQ(NodeState::kUninitializingProperties, GetNodeState());
+  DCHECK_EQ(NodeState::kLeftGraph, GetNodeState());
   graph_ = nullptr;
 }
 

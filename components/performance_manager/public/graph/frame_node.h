@@ -273,7 +273,9 @@ class FrameNodeObserver : public base::CheckedObserver {
 
   // Called before a `frame_node` is added to the graph. OnFrameNodeAdded() is
   // better for most purposes, but this can be useful if an observer needs to
-  // check the state of the graph without including `frame_node`.
+  // check the state of the graph without including `frame_node`, or to set
+  // initial properties on the node that should be visible to other observers in
+  // OnFrameNodeAdded().
   //
   // `pending_parent_frame_node`, `pending_page_node`, `pending_process_node`,
   // and `pending_parent_or_outer_document_or_embedder` are the nodes that will
@@ -281,9 +283,15 @@ class FrameNodeObserver : public base::CheckedObserver {
   // GetParentOrOuterDocumentOrEmbedder() after `frame_node` is added to the
   // graph.
   //
-  // Observers must not make any property changes or cause re-entrant
-  // notifications during the scope of this call. Instead, make property changes
-  // via a separate posted task.
+  // Observers may make property changes during the scope of this call, as long
+  // as they don't cause notifications to be sent and don't modify pointers
+  // to/from other nodes, since the node is still isolated from the graph. To
+  // change a property that causes notifications, post a task (which will run
+  // after OnFrameNodeAdded().
+  //
+  // Note that observers are notified in an arbitrary order, so property changes
+  // made here may or may not be visible to other observers in
+  // OnBeforeFrameNodeAdded().
   virtual void OnBeforeFrameNodeAdded(
       const FrameNode* frame_node,
       const FrameNode* pending_parent_frame_node,
@@ -291,14 +299,24 @@ class FrameNodeObserver : public base::CheckedObserver {
       const ProcessNode* pending_process_node,
       const FrameNode* pending_parent_or_outer_document_or_embedder) = 0;
 
-  // Called after a `frame_node` is added to the graph. Observers must not make
-  // any property changes or cause re-entrant notifications during the scope of
-  // this call. Instead, make property changes via a separate posted task.
+  // Called after a `frame_node` is added to the graph. Observers may make
+  // property changes during the scope of this call, as long as they don't cause
+  // notifications to be sent. To change a property that causes notifications,
+  // post a task.
+  //
+  // Note that observers are notified in an arbitrary order, so property changes
+  // made here may or may not be visible to other observers in
+  // OnFrameNodeAdded().
   virtual void OnFrameNodeAdded(const FrameNode* frame_node) = 0;
 
-  // Called before a `frame_node` is removed from the graph. Observers must not
-  // make any property changes or cause re-entrant notifications during the
-  // scope of this call.
+  // Called before a `frame_node` is removed from the graph. Observers may make
+  // property changes during the scope of this call, as long as they don't cause
+  // notifications to be sent. This can be useful to set final properties on the
+  // node that should be visible to other observers in OnFrameNodeRemoved().
+  //
+  // Note that observers are notified in an arbitrary order, so property changes
+  // made here may or may not be visible to other observers in
+  // OnBeforeFrameNodeRemoved().
   virtual void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) = 0;
 
   // Called after a `frame_node` is removed from the graph.
@@ -313,9 +331,11 @@ class FrameNodeObserver : public base::CheckedObserver {
   // GetParentOrOuterDocumentOrEmbedder() before `frame_node` was removed from
   // the graph.
   //
-  // Observers must not make any property changes or cause re-entrant
-  // notifications during the scope of this call. `frame_node` will be deleted
-  // immediately after so property changes would have no effect anyway.
+  // Observers may make property changes during the scope of this call (although
+  // `frame_node` will be deleted immediately after so there's not much point),
+  // as long as they don't cause notifications to be sent and don't modify
+  // pointers to/from other nodes, since the node is now isolated from the
+  // graph.
   virtual void OnFrameNodeRemoved(
       const FrameNode* frame_node,
       const FrameNode* previous_parent_frame_node,

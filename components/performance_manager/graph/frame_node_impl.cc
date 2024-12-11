@@ -529,6 +529,7 @@ void FrameNodeImpl::OnNavigationCommitted(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (same_document) {
+    DCHECK(CanSetAndNotifyProperty());
     url = std::exchange(document_.url, std::move(url));
 
     if (url != document_.url) {
@@ -966,6 +967,7 @@ FrameNodeImpl::DocumentProperties::~DocumentProperties() = default;
 void FrameNodeImpl::DocumentProperties::Reset(FrameNodeImpl* frame_node,
                                               GURL url_in,
                                               url::Origin origin_in) {
+  DCHECK(frame_node->CanSetAndNotifyProperty());
   // Update the URL and origin properties.
   url_in = std::exchange(url, std::move(url_in));
 

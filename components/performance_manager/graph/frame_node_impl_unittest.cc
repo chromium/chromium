@@ -391,8 +391,8 @@ TEST_F(FrameNodeImplTest, ObserverWorks) {
   frame_node->SetVisibility(FrameNode::Visibility::kVisible);
   testing::Mock::VerifyAndClear(&obs);
 
-  // Release the frame node and expect a call to both "OnBeforeFrameNodeRemoved" and
-  // "OnFrameNodeRemoved".
+  // Release the frame node and expect a call to both "OnBeforeFrameNodeRemoved"
+  // and "OnFrameNodeRemoved".
   const FrameNode* saved_parent_frame_node = nullptr;
   const PageNode* saved_page_node = nullptr;
   const ProcessNode* saved_process_node = nullptr;
@@ -446,45 +446,123 @@ TEST_F(FrameNodeImplDeathTest, SetPropertyDuringNodeCreation) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
 
-  // Modifying a property during node addition should explode.
-  bool set_property = true;
+  // Modifying a property that notifies during node addition should explode.
+  bool notify = true;
   {
     InSequence seq;
     EXPECT_CALL(obs, OnBeforeFrameNodeAdded(_, _, _, _, _));
     EXPECT_CALL(obs, OnFrameNodeAdded(_))
         .WillOnce(Invoke([&](const FrameNode* frame_node) {
-          if (set_property) {
-            auto* impl = FrameNodeImpl::FromNode(frame_node);
+          auto* impl = FrameNodeImpl::FromNode(frame_node);
+          if (notify) {
+            // Property that notifies.
             impl->SetIsAdFrame(true);
+          } else {
+            // Property that doesn't notify.
+            impl->SetInitialVisibility(FrameNode::Visibility::kVisible);
           }
         }));
   }
   EXPECT_DCHECK_DEATH(auto frame =
                           CreateFrameNodeAutoId(process.get(), page.get()));
 
-  // Now create the node but don't modify a property so that the mock
-  // expectation is satisfied.
-  set_property = false;
+  // Now create the node but don't notify so that the mock expectation is
+  // satisfied.
+  notify = false;
   auto frame = CreateFrameNodeAutoId(process.get(), page.get());
 
-  // Modifying a property during node removal should explode.
-  set_property = true;
+  // Modifying a property that notifies during node removal should explode.
+  notify = true;
   {
     InSequence seq;
     EXPECT_CALL(obs, OnBeforeFrameNodeRemoved(_))
         .WillOnce(Invoke([&](const FrameNode* frame_node) {
-          if (set_property) {
-            auto* impl = FrameNodeImpl::FromNode(frame_node);
+          auto* impl = FrameNodeImpl::FromNode(frame_node);
+          if (notify) {
+            // Property that notifies.
             impl->SetIsAdFrame(true);
+          } else {
+            // Property that doesn't notify.
+            impl->SetInitialVisibility(FrameNode::Visibility::kVisible);
           }
         }));
     EXPECT_CALL(obs, OnFrameNodeRemoved(_, _, _, _, _));
   }
   EXPECT_DCHECK_DEATH(frame.reset());
 
-  // Now remove the node but don't modify a property so that the mock
-  // expectation is satisfied.
-  set_property = false;
+  // Now remove the node but don't notify so that the mock expectation is
+  // satisfied.
+  notify = false;
+  frame.reset();
+
+  graph()->RemoveFrameNodeObserver(&obs);
+}
+
+TEST_F(FrameNodeImplDeathTest, SetPropertyBeforeNodeAdded) {
+  MockObserver obs;
+  graph()->AddFrameNodeObserver(&obs);
+
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page = CreateNode<PageNodeImpl>();
+
+  // Modifying a property that notifies before node addition should explode.
+  bool notify = true;
+  {
+    InSequence seq;
+    EXPECT_CALL(obs, OnBeforeFrameNodeAdded(_, _, _, _, _))
+        .WillOnce(Invoke(
+            [&](const FrameNode* frame_node,
+                const FrameNode* pending_parent_frame_node,
+                const PageNode* pending_page_node,
+                const ProcessNode* pending_process_node,
+                const FrameNode* pending_parent_or_outer_document_or_embedder) {
+              auto* impl = FrameNodeImpl::FromNode(frame_node);
+              if (notify) {
+                // Property that notifies.
+                impl->SetIsAdFrame(true);
+              } else {
+                // Property that doesn't notify.
+                impl->SetInitialVisibility(FrameNode::Visibility::kVisible);
+              }
+            }));
+    EXPECT_CALL(obs, OnFrameNodeAdded(_));
+  }
+  EXPECT_DCHECK_DEATH(auto frame =
+                          CreateFrameNodeAutoId(process.get(), page.get()));
+
+  // Now create the node but don't notify so that the mock expectation is
+  // satisfied.
+  notify = false;
+  auto frame = CreateFrameNodeAutoId(process.get(), page.get());
+
+  // Modifying a property that notifies after node removal should explode.
+  notify = true;
+  {
+    InSequence seq;
+    EXPECT_CALL(obs, OnBeforeFrameNodeRemoved(_));
+    EXPECT_CALL(obs, OnFrameNodeRemoved(_, _, _, _, _))
+        .WillOnce(
+            Invoke([&](const FrameNode* frame_node,
+                       const FrameNode* previous_parent_frame_node,
+                       const PageNode* previous_page_node,
+                       const ProcessNode* previous_process_node,
+                       const FrameNode*
+                           previous_parent_or_outer_document_or_embedder) {
+              auto* impl = FrameNodeImpl::FromNode(frame_node);
+              if (notify) {
+                // Property that notifies.
+                impl->SetIsAdFrame(true);
+              } else {
+                // Property that doesn't notify.
+                impl->SetInitialVisibility(FrameNode::Visibility::kVisible);
+              }
+            }));
+  }
+  EXPECT_DCHECK_DEATH(frame.reset());
+
+  // Now remove the node but don't notify so that the mock expectation is
+  // satisfied.
+  notify = false;
   frame.reset();
 
   graph()->RemoveFrameNodeObserver(&obs);

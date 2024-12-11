@@ -246,21 +246,39 @@ class PageNodeObserver : public base::CheckedObserver {
 
   // Called before a `page_node` is added to the graph. OnPageNodeAdded() is
   // better for most purposes, but this can be useful if an observer needs to
-  // check the state of the graph without including `page_node`.
+  // check the state of the graph without including `page_node`, or to set
+  // initial properties on the node that should be visible to other observers in
+  // OnPageNodeAdded().
   //
-  // Observers must not make any property changes or cause re-entrant
-  // notifications during the scope of this call. Instead, make property changes
-  // via a separate posted task.
+  // Observers may make property changes during the scope of this call, as long
+  // as they don't cause notifications to be sent and don't modify pointers
+  // to/from other nodes, since the node is still isolated from the graph. To
+  // change a property that causes notifications, post a task (which will run
+  // after OnPageNodeAdded().
+  //
+  // Note that observers are notified in an arbitrary order, so property changes
+  // made here may or may not be visible to other observers in
+  // OnBeforePageNodeAdded().
   virtual void OnBeforePageNodeAdded(const PageNode* page_node) = 0;
 
-  // Called after a `page_node` is added to the graph. Observers must not make
-  // any property changes or cause re-entrant notifications during the scope of
-  // this call. Instead, make property changes via a separate posted task.
+  // Called after a `page_node` is added to the graph. Observers may make
+  // property changes during the scope of this call, as long as they don't cause
+  // notifications to be sent. To change a property that causes notifications,
+  // post a task.
+  //
+  // Note that observers are notified in an arbitrary order, so property changes
+  // made here may or may not be visible to other observers in
+  // OnPageNodeAdded().
   virtual void OnPageNodeAdded(const PageNode* page_node) = 0;
 
-  // Called before a `page_node` is removed from the graph. Observers must not
-  // make any property changes or cause re-entrant notifications during the
-  // scope of this call.
+  // Called before a `page_node` is removed from the graph. Observers may make
+  // property changes during the scope of this call, as long as they don't cause
+  // notifications to be sent. This can be useful to set final properties on the
+  // node that should be visible to other observers in OnPageNodeRemoved().
+  //
+  // Note that observers are notified in an arbitrary order, so property changes
+  // made here may or may not be visible to other observers in
+  // OnBeforePageNodeRemoved().
   virtual void OnBeforePageNodeRemoved(const PageNode* page_node) = 0;
 
   // Called after a `page_node` is removed from the graph.
@@ -268,9 +286,11 @@ class PageNodeObserver : public base::CheckedObserver {
   // useful if an observer needs to check the state of the graph without
   // including `page_node`.
   //
-  // Observers must not make any property changes or cause re-entrant
-  // notifications during the scope of this call. `page_node` will be deleted
-  // immediately after so property changes would have no effect anyway.
+  // Observers may make property changes during the scope of this call (although
+  // `page_node` will be deleted immediately after so there's not much point),
+  // as long as they don't cause notifications to be sent and don't modify
+  // pointers to/from other nodes, since the node is now isolated from the
+  // graph.
   virtual void OnPageNodeRemoved(const PageNode* page_node) = 0;
 
   // Notifications of property changes.

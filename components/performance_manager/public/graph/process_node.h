@@ -176,16 +176,29 @@ class ProcessNodeObserver : public base::CheckedObserver {
 
   // Called before a `process_node` is added to the graph. OnPageNodeAdded() is
   // better for most purposes, but this can be useful if an observer needs to
-  // check the state of the graph without including `process_node`.
+  // check the state of the graph without including `process_node`, or to set
+  // initial properties on the node that should be visible to other observers in
+  // OnProcessNodeAdded().
   //
-  // Observers must not make any property changes or cause re-entrant
-  // notifications during the scope of this call. Instead, make property changes
-  // via a separate posted task.
+  // Observers may make property changes during the scope of this call, as long
+  // as they don't cause notifications to be sent and don't modify pointers
+  // to/from other nodes, since the node is still isolated from the graph. To
+  // change a property that causes notifications, post a task (which will run
+  // after OnProcessNodeAdded().
+  //
+  // Note that observers are notified in an arbitrary order, so property changes
+  // made here may or may not be visible to other observers in
+  // OnBeforeProcessNodeAdded().
   virtual void OnBeforeProcessNodeAdded(const ProcessNode* process_node) = 0;
 
-  // Called after a `process_node` is added to the graph. Observers must not
-  // make any property changes or cause re-entrant notifications during the
-  // scope of this call.
+  // Called after a `process_node` is added to the graph. Observers may make
+  // property changes during the scope of this call, as long as they don't cause
+  // notifications to be sent. To change a property that causes notifications,
+  // post a task.
+  //
+  // Note that observers are notified in an arbitrary order, so property changes
+  // made here may or may not be visible to other observers in
+  // OnProcessNodeAdded().
   virtual void OnProcessNodeAdded(const ProcessNode* process_node) = 0;
 
   // The process associated with `process_node` has been started or has exited.
@@ -193,9 +206,15 @@ class ProcessNodeObserver : public base::CheckedObserver {
   // exit status properties have changed.
   virtual void OnProcessLifetimeChange(const ProcessNode* process_node) = 0;
 
-  // Called before a |process_node| is removed from the graph. Observers must
-  // not make any property changes or cause re-entrant notifications during the
-  // scope of this call.
+  // Called before a `process_node` is removed from the graph. Observers may
+  // make property changes during the scope of this call, as long as they don't
+  // cause notifications to be sent. This can be useful to set final properties
+  // on the node that should be visible to other observers in
+  // OnProcessNodeRemoved().
+  //
+  // Note that observers are notified in an arbitrary order, so property changes
+  // made here may or may not be visible to other observers in
+  // OnBeforeProcessNodeRemoved().
   virtual void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) = 0;
 
   // Called after a `process_node` is removed from the graph.
@@ -203,9 +222,11 @@ class ProcessNodeObserver : public base::CheckedObserver {
   // useful if an observer needs to check the state of the graph without
   // including `process_node`.
   //
-  // Observers must not make any property changes or cause re-entrant
-  // notifications during the scope of this call. `process_node` will be deleted
-  // immediately after so property changes would have no effect anyway.
+  // Observers may make property changes during the scope of this call (although
+  // `process_node` will be deleted immediately after so there's not much
+  // point), as long as they don't cause notifications to be sent and don't
+  // modify pointers to/from other nodes, since the node is now isolated from
+  // the graph.
   virtual void OnProcessNodeRemoved(const ProcessNode* process_node) = 0;
 
   // Notifications of property changes.

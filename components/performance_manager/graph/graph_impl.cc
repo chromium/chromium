@@ -344,8 +344,7 @@ bool GraphImpl::NodeEdgesArePublic(const NodeBase* node) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (GetNodeState(node)) {
     case NodeState::kNotInGraph:
-    case NodeState::kInitializingProperties:
-    case NodeState::kInitializedNotInGraph:
+    case NodeState::kInitializingNotInGraph:
       // Hide node connections until edges are initialized.
       return false;
     case NodeState::kInitializingEdges:
@@ -358,7 +357,6 @@ bool GraphImpl::NodeEdgesArePublic(const NodeBase* node) const {
     case NodeState::kLeavingGraph:
       return true;
     case NodeState::kLeftGraph:
-    case NodeState::kUninitializingProperties:
       // Hide node connections during teardown.
       return false;
   }
@@ -408,9 +406,8 @@ void GraphImpl::AddNewNode(NodeBase* new_node) {
   node_in_transition_ = new_node;
   node_in_transition_state_ = NodeState::kNotInGraph;
   new_node->SetGraphPointer(this);
-  node_in_transition_state_ = NodeState::kInitializingProperties;
+  node_in_transition_state_ = NodeState::kInitializingNotInGraph;
   new_node->OnInitializingProperties();
-  node_in_transition_state_ = NodeState::kInitializedNotInGraph;
   DispatchBeforeNodeAddedNotifications(new_node);
   node_in_transition_state_ = NodeState::kInitializingEdges;
   new_node->OnInitializingEdges();
@@ -418,6 +415,7 @@ void GraphImpl::AddNewNode(NodeBase* new_node) {
   DispatchNodeAddedNotifications(new_node);
   node_in_transition_ = nullptr;
   node_in_transition_state_ = NodeState::kNotInGraph;
+  new_node->OnAfterJoiningGraph();
 }
 
 void GraphImpl::RemoveNode(NodeBase* node) {
@@ -436,7 +434,6 @@ void GraphImpl::RemoveNode(NodeBase* node) {
   node->OnUninitializingEdges();
   node_in_transition_state_ = NodeState::kLeftGraph;
   DispatchNodeRemovedNotifications(node);
-  node_in_transition_state_ = NodeState::kUninitializingProperties;
   node->OnUninitializingProperties();
   node->RemoveNodeAttachedData();
   node->ClearGraphPointer();
@@ -541,7 +538,7 @@ GraphImpl::ProcessAndFrameId& GraphImpl::ProcessAndFrameId::operator=(
 
 void GraphImpl::DispatchBeforeNodeAddedNotifications(NodeBase* node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(node->GetNodeState(), NodeState::kInitializedNotInGraph);
+  CHECK_EQ(node->GetNodeState(), NodeState::kInitializingNotInGraph);
 
   // This handles the strongly typed observer notifications.
   switch (node->GetNodeType()) {
