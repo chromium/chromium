@@ -13484,19 +13484,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                  MakeAdsValue(
                      {{{ad_url, R"({"ad":"metadata","here":[1,2]})"}}}))));
 
-  std::string auction_config = JsReplace(
-      R"({
-    seller: $1,
-    decisionLogicURL: $2,
-    interestGroupBuyers: [$1],
-    auctionSignals: {x: 1},
-    sellerSignals: {yet: 'more', info: 1},
-    perBuyerSignals: {$1: {even: 'more', x: 4.5}}
-                })",
-      test_origin,
-      embedded_https_test_server().GetURL("a.test",
-                                          "/interest_group/decision_logic.js"));
-
   // All leaveAdInterestGroup wrapper calls wait for the returned promise to
   // complete. Inline the call to avoid waiting.
   EXPECT_EQ("done", EvalJs(shell(), JsReplace(R"(
@@ -20955,7 +20942,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
       ->GetDefaultStoragePartition()
       ->SetNetworkContextForTesting(std::move(pending_remote));
 
-  std::string result = GetInterestGroupAdAuctionData(test_origin, std::nullopt);
+  std::ignore = GetInterestGroupAdAuctionData(test_origin, std::nullopt);
 
   static_cast<PreconnectCheckingNetworkContext*>(preconnect_check->impl())
       ->run_loop()
