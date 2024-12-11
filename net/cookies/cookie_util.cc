@@ -297,16 +297,23 @@ bool CookieWithAccessResultSorter(const CookieWithAccessResult& a,
   return CookieMonster::CookieSorter(&a.cookie, &b.cookie);
 }
 
-bool IsSameSiteIgnoringWebSocketProtocol(const url::Origin& initiator,
-                                         const GURL& request_url) {
-  if (initiator.IsSameOriginWith(request_url)) {
-    return true;
-  }
-  SchemefulSite request_site(
-      request_url.SchemeIsHTTPOrHTTPS()
-          ? request_url
-          : ChangeWebSocketSchemeToHttpScheme(request_url));
-  return SchemefulSite(initiator) == request_site;
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class StorageAccessNetRequestKind {
+  // The request had the `kStorageAccessGrantEligible` override, and was
+  // same-origin.
+  kSameOrigin = 0,
+  // The request had the `kStorageAccessGrantEligible` override, and was
+  // cross-origin, same-site.
+  kCrossOriginSameSite = 1,
+  // The request had the `kStorageAccessGrantEligible` override, and was
+  // cross-site.
+  kCrossSite = 2,
+  kMaxValue = kCrossSite
+};
+
+void RecordStorageAccessNetRequestMetric(StorageAccessNetRequestKind kind) {
+  base::UmaHistogramEnumeration("Net.HttpJob.StorageAccessNetRequest", kind);
 }
 
 }  // namespace
@@ -1128,12 +1135,33 @@ void AddOrRemoveStorageAccessApiOverride(
     const GURL& url,
     StorageAccessApiStatus api_status,
     base::optional_ref<const url::Origin> request_initiator,
+    bool emit_metrics,
     CookieSettingOverrides& overrides) {
-  overrides.PutOrRemove(
-      CookieSettingOverride::kStorageAccessGrantEligible,
-      api_status == StorageAccessApiStatus::kAccessViaAPI &&
-          request_initiator.has_value() &&
-          IsSameSiteIgnoringWebSocketProtocol(request_initiator.value(), url));
+  if (api_status != StorageAccessApiStatus::kAccessViaAPI ||
+      !request_initiator) {
+    overrides.Remove(CookieSettingOverride::kStorageAccessGrantEligible);
+    return;
+  }
+
+  using enum StorageAccessNetRequestKind;
+  StorageAccessNetRequestKind kind = kCrossSite;
+  if (request_initiator->IsSameOriginWith(url)) {
+    kind = kSameOrigin;
+  } else {
+    SchemefulSite request_site(url.SchemeIsHTTPOrHTTPS()
+                                   ? url
+                                   : ChangeWebSocketSchemeToHttpScheme(url));
+    if (SchemefulSite(request_initiator.value()) == request_site) {
+      kind = kCrossOriginSameSite;
+    }
+  }
+  if (emit_metrics) {
+    RecordStorageAccessNetRequestMetric(kind);
+  }
+
+  bool is_same_site = kind != kCrossSite;
+  overrides.PutOrRemove(CookieSettingOverride::kStorageAccessGrantEligible,
+                        is_same_site);
 }
 
 }  // namespace net::cookie_util

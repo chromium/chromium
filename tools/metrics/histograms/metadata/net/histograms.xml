@@ -2214,6 +2214,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpJob.StorageAccessNetRequest"
+    enum="StorageAccessNetRequestKind" expires_after="2025-08-01">
+  <owner>cfredric@chromium.org</owner>
+  <owner>johannhof@chromium.org</owner>
+  <summary>
+    Records whether a network request (which has the kStorageAccessGrantEligible
+    override and has a non-nullopt initiator) is same-origin, cross-origin but
+    same-site, or cross-site.
+
+    Recorded whenever a network request is started. (Does not include redirect
+    hops.)
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpJob.StorageAccessRedirect"
     enum="StorageAccessRedirectKind" expires_after="2025-08-01">
   <owner>cfredric@chromium.org</owner>

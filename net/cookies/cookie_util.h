@@ -468,6 +468,7 @@ NET_EXPORT void AddOrRemoveStorageAccessApiOverride(
     const GURL& url,
     StorageAccessApiStatus api_status,
     base::optional_ref<const url::Origin> request_initiator,
+    bool emit_metrics,
     CookieSettingOverrides& overrides);
 
 }  // namespace cookie_util

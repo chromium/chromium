@@ -2673,6 +2673,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="QUIC"/>
 </enum>
 
+<enum name="StorageAccessNetRequestKind">
+  <int value="0" label="Same-origin request with storage access override"/>
+  <int value="1"
+      label="Cross-origin, same-site request with storage access override"/>
+  <int value="2" label="Cross-site request with storage access override"/>
+</enum>
+
 <enum name="StorageAccessRedirectKind">
   <int value="0" label="No Storage Access override"/>
   <int value="1" label="Same-origin redirect with storage access override"/>

@@ -144,7 +144,7 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
 
     cookie_util::AddOrRemoveStorageAccessApiOverride(
         url, storage_access_api_status, url_request_->initiator(),
-        url_request_->cookie_setting_overrides());
+        /*emit_metrics=*/true, url_request_->cookie_setting_overrides());
 
     auto create_helper = std::make_unique<WebSocketHandshakeStreamCreateHelper>(
         connect_delegate_.get(), requested_subprotocols, this);

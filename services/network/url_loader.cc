@@ -1805,7 +1805,7 @@ net::CookieSettingOverrides URLLoader::CalculateCookieSettingOverrides(
   // on redirects.
   net::cookie_util::AddOrRemoveStorageAccessApiOverride(
       request.url, request.storage_access_api_status, request.request_initiator,
-      overrides);
+      emit_metrics, overrides);
 
   // The `kStorageAccessGrantEligibleViaHeader` override will be applied
   // (in-place) by individual request jobs as appropriate, but should not be
