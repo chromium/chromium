@@ -6,6 +6,7 @@ package org.chromium.components.omnibox;
 
 import android.content.SharedPreferences;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BaseSwitches;
@@ -21,11 +22,21 @@ import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
 /** This is the place where we define these: List of Omnibox features and parameters. */
 public class OmniboxFeatures {
+    @IntDef({FeatureState.DISABLED, FeatureState.ENABLED_IN_TEST, FeatureState.ENABLED_IN_PROD})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface FeatureState {
+        int DISABLED = 0;
+        int ENABLED_IN_TEST = 1;
+        int ENABLED_IN_PROD = 2;
+    }
+
     private static final SharedPreferences sPrefs = ContextUtils.getAppSharedPreferences();
 
     /** The state of the Jump Start Omnibox feature. */
@@ -59,20 +70,20 @@ public class OmniboxFeatures {
     private static Boolean sIsLowMemoryDevice;
 
     public static final CachedFlag sOmniboxAnswerActions =
-            newFlag(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS, /* defaultValue= */ false);
+            newFlag(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS, FeatureState.DISABLED);
 
     public static final CachedFlag sAnimateSuggestionsListAppearance =
             newFlag(
                     OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE,
-                    /* defaultValue= */ false);
+                    FeatureState.ENABLED_IN_TEST);
 
     public static final CachedFlag sTouchDownTriggerForPrefetch =
             newFlag(
                     OmniboxFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH,
-                    /* defaultValue= */ false);
+                    FeatureState.ENABLED_IN_TEST);
 
     public static final CachedFlag sRichInlineAutocomplete =
-            newFlag(OmniboxFeatureList.RICH_AUTOCOMPLETION, /* defaultValue= */ false);
+            newFlag(OmniboxFeatureList.RICH_AUTOCOMPLETION, FeatureState.ENABLED_IN_PROD);
 
     /**
      * Whether GeolocationHeader should use {@link
@@ -80,27 +91,27 @@ public class OmniboxFeatures {
      * in omnibox requests.
      */
     public static final CachedFlag sUseFusedLocationProvider =
-            newFlag(OmniboxFeatureList.USE_FUSED_LOCATION_PROVIDER, /* defaultValue= */ true);
+            newFlag(OmniboxFeatureList.USE_FUSED_LOCATION_PROVIDER, FeatureState.ENABLED_IN_PROD);
 
     public static final CachedFlag sAsyncViewInflation =
-            newFlag(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION, /* defaultValue= */ false);
+            newFlag(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION, FeatureState.ENABLED_IN_TEST);
 
     public static final CachedFlag sElegantTextHeight =
-            newFlag(OmniboxFeatureList.OMNIBOX_ELEGANT_TEXT_HEIGHT, /* defaultValue= */ false);
+            newFlag(OmniboxFeatureList.OMNIBOX_ELEGANT_TEXT_HEIGHT, FeatureState.ENABLED_IN_PROD);
 
     public static final CachedFlag sJumpStartOmnibox =
-            newFlag(OmniboxFeatureList.JUMP_START_OMNIBOX, /* defaultValue= */ false);
+            newFlag(OmniboxFeatureList.JUMP_START_OMNIBOX, FeatureState.ENABLED_IN_TEST);
 
     /** See {@link #shouldRetainOmniboxOnFocus()}. */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static final CachedFlag sRetainOmniboxOnFocus =
-            newFlag(OmniboxFeatureList.RETAIN_OMNIBOX_ON_FOCUS, /* defaultValue= */ false);
+            newFlag(OmniboxFeatureList.RETAIN_OMNIBOX_ON_FOCUS, FeatureState.DISABLED);
 
     public static final CachedFlag sAndroidHubSearch =
-            newFlag(OmniboxFeatureList.ANDROID_HUB_SEARCH, /* defaultValue= */ false);
+            newFlag(OmniboxFeatureList.ANDROID_HUB_SEARCH, FeatureState.DISABLED);
 
     public static final CachedFlag sPostDelayedTaskFocusTab =
-            newFlag(OmniboxFeatureList.POST_DELAYED_TASK_FOCUS_TAB, /* defaultValue= */ true);
+            newFlag(OmniboxFeatureList.POST_DELAYED_TASK_FOCUS_TAB, FeatureState.ENABLED_IN_PROD);
 
     public static final BooleanCachedFieldTrialParameter sAnswerActionsShowAboveKeyboard =
             newBooleanParam(sOmniboxAnswerActions, "AnswerActionsShowAboveKeyboard", false);
@@ -164,10 +175,15 @@ public class OmniboxFeatures {
      * Create an instance of a CachedFeatureFlag.
      *
      * @param featureName the name of the feature flag
-     * @param defaultValue the default value to return if the feature state is unknown
+     * @param state the state of the feature flag
      */
-    private static CachedFlag newFlag(String featureName, boolean defaultValue) {
-        var cachedFlag = new CachedFlag(OmniboxFeatureMap.getInstance(), featureName, defaultValue);
+    private static CachedFlag newFlag(String featureName, @FeatureState int state) {
+        var cachedFlag =
+                new CachedFlag(
+                        OmniboxFeatureMap.getInstance(),
+                        featureName,
+                        /* defaultValue= */ state == FeatureState.ENABLED_IN_PROD,
+                        /* defaultValueInTests= */ state != FeatureState.DISABLED);
         sCachedFlags.add(cachedFlag);
         return cachedFlag;
     }
