@@ -67,6 +67,7 @@
 <translation id="1786044937610313874">Chrome တွင် ဖြတ်လမ်းလင့်ခ်များဖွင့်သည်</translation>
 <translation id="178701303897325119">ဤနောက်ဆက်တွဲကို မပံ့ပိုးတော့ပါ။ သို့ဖြစ်၍ ၎င်းကို ဖယ်ရှားရန် Chrome က အကြံပြုပါသည်။</translation>
 <translation id="1812689907177901597">၎င်းကိုပိတ်ခြင်းဖြင့် Chrome တွင် လက်မှတ်ထိုးမဝင်ဘဲ Gmail ကဲ့သို့ Google ဝဘ်ဆိုက်များသို့ လက်မှတ်ထိုးဝင်နိုင်ပါသည်</translation>
+<translation id="1838374766361614909">ရှာဖွေမှုကို ရှင်းပါ</translation>
 <translation id="1860536484129686729">ဤဝဘ်ဆိုက်အတွက် Chrome သည် သင်၏ကင်မရာကို အသုံးပြုခွင့်ရရန် လိုအပ်ပါသည်</translation>
 <translation id="1873233029667955273">Google Chrome သည် သင်၏ မူရင်းဘရောင်ဇာ မဟုတ်ပါ</translation>
 <translation id="1874309113135274312">Google Chrome စမ်းသပ် (mDNS-In)</translation>
@@ -231,7 +232,6 @@
 <translation id="3716540481907974026">ChromeOS Flex ဗားရှင်း</translation>
 <translation id="3718181793972440140">၎င်းသည် ဤစက်ပစ္စည်းမှ အကြောင်းအရာ ၁ ခုကို ဖျက်လိုက်ပါမည်။ သင့်ဒေတာကို နောက်မှ ပြန်ယူရန် Chrome သို့ <ph name="USER_EMAIL" /> အဖြစ် လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{၎င်းကို ဖယ်ရှားရန် Chrome က အကြံပြုပါသည်။ <ph name="BEGIN_LINK" />ပံ့ပိုးထားသည့် နောက်ဆက်တွဲများအကြောင်း ပိုမိုလေ့လာရန်<ph name="END_LINK" />}other{၎င်းတို့ကို ဖယ်ရှားရန် Chrome က အကြံပြုပါသည်။ <ph name="BEGIN_LINK" />ပံ့ပိုးထားသည့် နောက်ဆက်တွဲများအကြောင်း ပိုမိုလေ့လာရန်<ph name="END_LINK" />}}</translation>
-<translation id="3744202345691150878">Chrome OS အတွက် အကူအညီရယူရန်</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">လက်မှတ်ထိုးဝင်စဉ် အမှားဖြစ်သွားသောကြောင့် ChromeOS Flex က သင့်ဒေတာကို စင့်ခ်လုပ်၍မရပါ။</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -354,7 +354,6 @@
 <translation id="5334309298019785904">သင့်ဒိုမိန်းအတွက် ‘စင့်ခ်လုပ်ခြင်း’ မရနိုင်သဖြင့် ChromeOS က သင့်ဒေတာကို စင့်ခ်လုပ်၍မရပါ။</translation>
 <translation id="5334487786912937552">Chrome သည် ဖိုင်များဒေါင်းလုဒ်လုပ်ရန် သိုလှောင်ခန်းအသုံးပြုခွင့် လိုအပ်သည်</translation>
 <translation id="5337648990166757586">ချန်လှပ်ထားနိုင်သည်- အမှားရှာဖွေမှုနှင့် သုံးစွဲမှုဒေတာများကို Google သို့ အလိုအလျောက်ပို့ပြီး ChromeOS ဝန်ဆောင်မှုများနှင့် စွမ်းဆောင်ရည် ပိုမိုကောင်းမွန်လာစေရန် ကူညီနိုင်သည်။</translation>
-<translation id="5357889879764279201">ChromeOS Flex အတွက် အကူအညီ ရယူရန်</translation>
 <translation id="5368118228313795342">အပိုကုဒ်- <ph name="EXTRA_CODE" />။</translation>
 <translation id="5386244825306882791">၎င်းသည် သင်က Chrome ကို စတင်စဉ် သို့မဟုတ် Omnibox ထဲမှ ရှာဖွေစဉ် ပြပေးသည့် စာမျက်နှာကိုပါ ထိန်းချုပ်ပါသည်။</translation>
 <translation id="5394833366792865639">Chrome တဘ် မျှဝေခြင်း</translation>

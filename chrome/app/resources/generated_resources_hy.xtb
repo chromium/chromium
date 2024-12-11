@@ -1496,6 +1496,7 @@
 <translation id="202352106777823113">Ներբեռնումը չափից երկար էր տևում, ուստի դադարեցվեց ցանցի կողմից:</translation>
 <translation id="2024195579772565064">Որոնողական համակարգի ջնջում</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">Ճշգրիտ սեղմում</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" />-ը խափանվել է: Ընդլայնումը վերաբեռնելու համար սեղմեք այս փուչիկի վրա:</translation>
 <translation id="2026377162111110983">Շրջապատի ձայնը</translation>
 <translation id="2028449514182362831">Գործառույթները, որոնց համար պահանջվում են շարժման տվիչները, չեն աշխատի</translation>
@@ -4748,6 +4749,7 @@
 <translation id="4324577459193912240">Ֆայլն ամբողջությամբ չի ներբեռնվել</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" />հավելվածը հեռացվում է…</translation>
 <translation id="4325433082696797523">Հիշողություն և սնուցում</translation>
+<translation id="4325515113816851466">Եթե հաշվից դուրս գաք, ձեր ծնողների ընտրած կարգավորումները չեն կիրառվի</translation>
 <translation id="4326146840124313313">Chrome-ի՝ անվտանգության ամենահուսալի համակարգը օգնում է պաշտպանվել վտանգավոր կայքերից, ներբեռնումներից և ընդլայնումներից</translation>
 <translation id="4327380114687339519">Ընդլայնումների ընտրացանկ</translation>
 <translation id="4330191372652740264">Սառույցով ջուր</translation>
@@ -4870,6 +4872,7 @@
 <translation id="4412992751769744546">Թույլատրել 3-րդ կողմի քուքիները</translation>
 <translation id="4413087696295876280">Կարդալ ChromeOS Flex սարքի մասին տեղեկություններն ու տվյալները</translation>
 <translation id="44137799675104237">Լսել տեքստը բնական ձայնով</translation>
+<translation id="4414051792721275732">Երբ սեղմելու ժեստ կատարեք, մկնիկի արագությունը կնվազի՝ ավելի շատ կառավարում ապահովելու համար։ Կրկին կատարեք ժեստը՝ սեղմումն ավարտելու համար։</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">Տրամադրե՞լ կցված USB սարքերի ցանկը «<ph name="APP_NAME" />» հավելվածին</translation>
 <translation id="4414232939543644979">Նոր &amp;ինկոգնիտո պատուհան</translation>
@@ -5106,6 +5109,7 @@
 <translation id="4586275095964870617">Չհաջողվեց <ph name="URL" /> կայքը բացել այլ դիտարկիչում։ Կապվեք համակարգի ադմինիստրատորի հետ:</translation>
 <translation id="4587589328781138893">Կայքեր</translation>
 <translation id="4588749726511456218">Ոլորման արագացում <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> և <ph name="DOMAIN" /> կայքերը կարծես թե կապված են միմյանց հետ։ Նախքան ձեր գաղտնաբառն օգտագործելը համոզվեք, որ վստահում եք <ph name="DOMAIN" /> կայքին։</translation>
 <translation id="4589713469967853491">Մատյանները գրվեցին «Ներբեռնումներ» գրացուցակում։</translation>
 <translation id="4590785647529325123">Ինկոգնիտո ռեժիմում այցելած կայքէջերը սարքից ջնջելու համար փակեք բոլոր ինկոգնիտո ներդիրները</translation>
 <translation id="459204634473266369">Ոչ մի պահված սարք չկա <ph name="PRIMARY_EMAIL" /> հաշվում</translation>
@@ -5612,6 +5616,7 @@
 <translation id="4946998421534856407">գործարկիչ + վերև սլաք</translation>
 <translation id="4947376546135294974">Տվյալներ կայքից, որն այցելում եք</translation>
 <translation id="4950100687509657457">Ստեղծել պրոֆիլ</translation>
+<translation id="4950360215042327246">[Տեղապահի տող]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ֆայլ}one{# ֆայլ}other{# ֆայլ}}</translation>
 <translation id="495170559598752135">Գործողություններ</translation>
 <translation id="4951966678293618079">Երբեք չպահել գաղտնաբառեր այս կայքի համար</translation>
@@ -5648,7 +5653,7 @@
 <translation id="4975771730019223894">Նշանակների ավելացում հավելվածներին</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Մուտքի հաստատում</translation>
-<translation id="4979263087381759787">Մշակողի ընտրանքներ</translation>
+<translation id="4979263087381759787">Ծրագրավորողի ընտրանքներ</translation>
 <translation id="4979510648199782334">Microsoft 365-ի կարգավորումն ավարտվել է</translation>
 <translation id="4980805016576257426">Այս ընդլայնումը վնասաբեր ծրագիր է պարունակում:</translation>
 <translation id="4983159853748980742">Ձեր գաղտնաբառը չի փոխանցվել։ Ստուգեք ինտերնետ կապը և համոզվեք, որ մուտք եք գործել Chrome։ Այնուհետև նորից փորձեք։</translation>
@@ -5750,6 +5755,7 @@
 <translation id="5061531353537614467">Տունդրա</translation>
 <translation id="5062930723426326933">Մուտքը չհաջողվեց: Կապակցվեք համացանցին և կրկին փորձեք:</translation>
 <translation id="5063480226653192405">Վիճակագրություն</translation>
+<translation id="5064921774605267982">Բացեք <ph name="PROFILE_NAME" /> պրոֆիլը։ Այս պրոֆիլը կառավարվում է ձեր կազմակերպության կողմից։</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Ապահով DNS սերվերի կառավարում ChromeOS-ի կարգավորումներում</translation>
 <translation id="5066534201484101197">Գերոլորել՝ մի էջից մյուսին անցնելու համար</translation>
@@ -6197,6 +6203,7 @@
 <translation id="5389224261615877010">Ծիածան</translation>
 <translation id="5389626883706033615">Կայքերը չեն կարող ձեզնից խնդրել թույլտվություն՝ օգտագործելու ձեր մասին իրենց պահած տեղեկությունները</translation>
 <translation id="5389794555912875905">Նախքան ոչ ապահով կայքեր մտնելը տեսնել նախազգուշացումներ (խորհուրդ է տրվում)</translation>
+<translation id="5389943529251318913">Նվազեցրեք մկնիկի արագությունը նշված չափով՝</translation>
 <translation id="5390112241331447203">Ներառել system_logs.txt ֆայլը, որն ուղարկվում է կարծիքի հաշվետվություններում։</translation>
 <translation id="5390677308841849479">Մուգ կարմիր և նարնջագույն</translation>
 <translation id="5392192690789334093">Ծանուցումների ուղարկումը թույլատրված է</translation>
@@ -7402,6 +7409,7 @@
 <translation id="6266984048393265562">Հարմարեցնել պրոֆիլը</translation>
 <translation id="6267166720438879315">Ընտրեք վկայագիր՝ <ph name="HOST_NAME" />-ում իսկորոշվելու համար</translation>
 <translation id="6268252012308737255">Բացել <ph name="APP" />-ով</translation>
+<translation id="6269050081341530851">Կրկնօրինակ ներդիրները փակելու դեպքում կպահվի ամենահին պատճենը</translation>
 <translation id="6270309713620950855">Ձայնն անջատված լինելու մասին հիշեցում</translation>
 <translation id="6270391203985052864">Կայքերը կարող են խնդրել ծանուցումներ ուղարկել</translation>
 <translation id="6270486800167535228">Ընդլայնումը ամրացված է։ Ընտրեք՝ ավելի շատ տարբերակներ տեսնելու համար</translation>
@@ -7945,6 +7953,7 @@
 <translation id="6679947539429331601">Թաքցնել 12 ժամով</translation>
 <translation id="6680442031740878064">Հասանելի է <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Խոսքի արագությունը</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Տեղապահի տող]</translation>
 <translation id="6683022854667115063">Ականջակալներ</translation>
 <translation id="6683087162435654533">Վերականգնել բոլոր ներդիրները</translation>
 <translation id="6683433919380522900">Թույլտվության տեսակը՝ <ph name="PERMISSION_STATE" /></translation>
@@ -8027,7 +8036,6 @@
 <translation id="6743841972744298686">Համաժամացման կարգավորումներ</translation>
 <translation id="6745592621698551453">Թարմացնել հիմա</translation>
 <translation id="6746124502594467657">Տեղափոխել վար</translation>
-<translation id="674632704103926902">Թույլ տալ հպումով քաշումը</translation>
 <translation id="67465227497040338">Ցույց տալ <ph name="DOMAIN" /> տիրույթի գաղտնաբառը</translation>
 <translation id="6748980958975836188">Ես կարդացել և ընդունում եմ <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome-ի և ChromeOS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։</translation>
 <translation id="6749077623962119521">Զրոյացնե՞լ թույլտվությունները</translation>
@@ -8838,6 +8846,7 @@
 <translation id="7330533963640151632"><ph name="USER_NAME" />-ի սարքի համար «<ph name="FEATURE_NAME" />» գործառույթի կարգավորումներն ուղարկվում են <ph name="USER_EMAIL" /> հաշվի միջոցով։</translation>
 <translation id="7331646370422660166">alt + ներքև սլաք</translation>
 <translation id="7332053360324989309">Dedicated Worker` <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">Կրկնօրինակ ներդիրներ</translation>
 <translation id="7333388112938984914">Հնարավոր չէ ֆայլեր վերբեռնել՝ վճարովի թրաֆիկով կապ օգտագործելու դեպքում։</translation>
 <translation id="7333669215417470379">Պահուստավորեք և վերականգնեք ձեր հավելվածներն ու կարգավորումները</translation>
 <translation id="7335974957018254119">Օգտագործել ուղղագրության ստուգումը հետևյալ լեզուների համար՝</translation>
@@ -9907,7 +9916,6 @@
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Հավելվածների տվյալները բոլոր այն տվյալներն են, որոնք հավելվածը պահել է (մշակողի կարգավորումների հիման վրա): Դրանց թվում կարող են լինել նաև կոնտակտներ, հաղորդագրություններ և լուսանկարներ:<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Պահուստավորված տվյալները տեղ չեն զբաղեցնում ձեր երեխայի Google Drive-ի հիշողությունում:<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Այս ծառայությունը կարող եք անջատել Կարգավորումներում:<ph name="END_PARAGRAPH3" /></translation>
-<translation id="8076492880354921740">Ներդիրներ</translation>
 <translation id="8076835018653442223">Ադմինիստրատորն արգելափակել է ձեր սարքի տեղային ֆայլերի օգտագործումը</translation>
 <translation id="8077120325605624147">Ցանկացած կայք, որն այցելում եք, կարող է գովազդ ցուցադրել ձեզ</translation>
 <translation id="8077579734294125741">Այլ Chrome պրոֆիլներ</translation>
@@ -10544,7 +10552,6 @@
 <translation id="8528074251912154910">Ավելացնել լեզուներ</translation>
 <translation id="8528479410903501741">Պահել IBAN-ը</translation>
 <translation id="8528962588711550376">Մուտք...</translation>
-<translation id="8529925957403338845">Չհաջողվեց մոդեմի ակնթարթային ռեժիմով կապ հաստատել</translation>
 <translation id="8531367864749403520">Ընտրեք «Թաքցնել խումբը»՝ ներդիրների հատվածից այն հեռացնելու համար</translation>
 <translation id="8531701051932785007">Բարելավված Ապահով դիտարկումն անջատված է</translation>
 <translation id="8533670235862049797">Ապահով դիտարկումը միացված է</translation>

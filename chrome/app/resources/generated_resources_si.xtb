@@ -1493,6 +1493,7 @@
 <translation id="202352106777823113">මෙම බාගැනීමට විශාල කාලයක් ගතවූ බැවින් ජාලය වෙතින් නවතා දමන ලදී.</translation>
 <translation id="2024195579772565064">සෙවීම් යාන්ත්‍රණය මකන්න</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">නිරවද්‍ය ක්ලික් කිරීම</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> පුපුරා ඇත. දිගුව නැවත පැටවීමට මෙම බැලූනය ක්ලික් කරන්න.</translation>
 <translation id="2026377162111110983">ප්‍රාදේශීය හඬ</translation>
 <translation id="2028449514182362831">චලන සංවේදක අවශ්‍ය විශේෂාංග ක්‍රියා නොකරනු ඇත</translation>
@@ -4751,6 +4752,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4324577459193912240">ගොනුව අසම්පූර්ණයි</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> අස්ථාපන කිරීම...</translation>
 <translation id="4325433082696797523">ආචයනය සහ බලය</translation>
+<translation id="4325515113816851466">ඔබ වැරීමෙන් පසු ඔබේ මාපියන්ගේ තේරීම් අදාළ නොවේ</translation>
 <translation id="4326146840124313313">භයානක වෙබ් අඩවි, බාගැනීම්, සහ දිගුවලින් ඔබව ආරක්ෂා කිරීමට Chrome හි ප්‍රබලම ආරක්ෂාව බොහෝ දේ කරයි</translation>
 <translation id="4327380114687339519">දිගු මෙනුව</translation>
 <translation id="4330191372652740264">අයිස් වතුර</translation>
@@ -4873,6 +4875,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4412992751769744546">තෙවන පාර්ශව කුකී වලට ඉඩ දෙන්න</translation>
 <translation id="4413087696295876280">ChromeOS Flex උපාංග තොරතුරු සහ දත්ත කියවන්න</translation>
 <translation id="44137799675104237">ස්වභාවික හඬින් පාඨයට සවන් දෙන්න</translation>
+<translation id="4414051792721275732">ඔබ ක්ලික් කිරීම සඳහා අභිනය සිදු කරන විට, වැඩිපුර පාලනයක් සැපයීම සඳහා මූසිකයේ වේගය අඩු වනු ඇත. ක්ලික් කිරීම සම්පූර්ණ කිරීමට අභිනය නැවත සිදු කරන්න.</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">ඔබගේ අමුණා ඇති USB උපාංග ලැයිස්තුවක් ලබා ගැනීමට "<ph name="APP_NAME" />" හට ඉඩ දෙන්නද?</translation>
 <translation id="4414232939543644979">නව &amp;Incognito කවුළුව</translation>
@@ -6200,6 +6203,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5389224261615877010">දේදුන්න</translation>
 <translation id="5389626883706033615">අඩවි ඔවුන් ඔබ ගැන සුරැකී ඇති තොරතුරු භාවිත කිරීමට ඉල්ලීමෙන් අවහිර කරනු ලැබේ</translation>
 <translation id="5389794555912875905">අනාරක්ෂිත අඩවි වෙත යාමට පෙර අනතුරු ඇඟවීම් බලන්න (නිර්දේශිත)</translation>
+<translation id="5389943529251318913">මූසිකයේ වේගය අඩු කරන්න</translation>
 <translation id="5390112241331447203">ප්‍රතිපෝෂණ වාර්තාවල යවන system_logs.txt ගොනුව ඇතුළත් කරන්න</translation>
 <translation id="5390677308841849479">තද රතු සහ තැඹිලි</translation>
 <translation id="5392192690789334093">දැනුම්දීම් යැවීමට ඉඩ දී ඇත</translation>
@@ -8032,7 +8036,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6743841972744298686">සමමුහුර්ත සැකසීම්</translation>
 <translation id="6745592621698551453">දැන් යාවත් කරන්න</translation>
 <translation id="6746124502594467657">පහළට ගෙන යන්න</translation>
-<translation id="674632704103926902">තට්ටු ඇදගෙන යාම සබල කරන්න</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> සඳහා මුරපදය පෙන්වන්න</translation>
 <translation id="6748980958975836188">මම <ph name="BEGIN_LINK1" />Google සේවා නියම<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome සහ ChromeOS අතිරේක සේවා නියම<ph name="END_LINK2" /> කියවා එකඟ වෙමි.</translation>
 <translation id="6749077623962119521">අවසර යළි සකසන්නද?</translation>
@@ -9912,7 +9915,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />යෙදුම් දත්ත සම්බන්ධතා, පණිවිඩ, ඡායාරූප වැනි දත්ත ඇතුළුව යෙදුමක් විසින් සුරකිනු ලැබූ (සංවර්ධක සැකසීම් මත පදනම්ව) ඕනෑම දත්තයක් විය හැකිය.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />උපස්ථ දත්ත ඔබේ දරුවාගේ Drive ආචයන පංගුවට ගණනය නොකෙරෙනු ඇත.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />ඔබට සැකසීම්වල මෙම සේවාව ක්‍රියාවිරහිත කළ හැකිය.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="8076492880354921740">පටිති</translation>
 <translation id="8076835018653442223">ඔබේ උපාංගයේ ස්ථානීය ගොනුවලට ප්‍රවේශය ඔබේ පරිපාලක අබල කර ඇත</translation>
 <translation id="8077120325605624147">ඔබ පිවිසෙන ඕනෑම අඩවියක් ඔබට ඕනෑම දැන්වීමක් පෙන්විය හැක</translation>
 <translation id="8077579734294125741">වෙනත් Chrome පැතිකඩ</translation>
@@ -10549,7 +10551,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8528074251912154910">භාෂා එක් කරන්න</translation>
 <translation id="8528479410903501741">IBAN සුරකින්න</translation>
 <translation id="8528962588711550376">පුරමින්.</translation>
-<translation id="8529925957403338845">ක්ෂණික ටෙදරින් සබැඳුම අසාර්ථක විය</translation>
 <translation id="8531367864749403520">ඔබේ පටිති තීරුවෙන් සමූහය ඉවත් කිරීමට "සමූහය සඟවන්න" තෝරන්න</translation>
 <translation id="8531701051932785007">ඉහළ නැංවූ සුරක්ෂිත පිරික්සුම ක්‍රියාවිරහිතයි</translation>
 <translation id="8533670235862049797">සුරක්ෂිත බ්‍රවුස් කිරීම ක්‍රියාත්මකයි</translation>

@@ -60,6 +60,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="1779356040007214683">Жеке маалыматыңызды коргоо үчүн, айрым Chromium кеңейтүүлөрүн өчүрүп койдук, себеби <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ичинде аларга байланыштуу маалымат жок. Демек, бул курамдык бөлүктөр тымызын орнотулган.</translation>
 <translation id="1808667845054772817">Chromium'ду кайра орнотуу</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> аракет кылып жатат</translation>
+<translation id="1838374766361614909">Изделип жаткан нерсени өчүрүү</translation>
 <translation id="18552579716432081">Серептөө дайындарын ушул түзмөктөн өчүрүп, ал эми Google аккаунтуңузда сактап калуу үчүн <ph name="BEGIN_LINK" />Chromium'дан чыгыңыз<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">Кирип турган Google аккаунттарыңызды башкара аласыз. Google аккаунттарыңыз Chromium серепчисинде, Play Store'до, Gmail'де жана башка жерлерде колдонулат. Эгер кимдир бирөөнүн, мисалы, үй-бүлөлүк топтун мүчөсүнүн аккаунтун кошкуңуз келсе, жаңы адамды <ph name="DEVICE_TYPE" /> түзмөгүнө кошуп коюңуз. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Сүрөт издөө функциясы менен издеңиз</translation>
@@ -206,7 +207,6 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="3802055581630249637">Chromium'дун божомолунда сиз кире турган барактар алдын ала жүктөлүп, киргениңизде алар тез ачылат</translation>
 <translation id="3830894615770080216">ChromiumOS тутуму</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
-<translation id="386822487697155367">ChromiumOS'тон жардам алыңыз</translation>
 <translation id="3871664619793219264">Chromium серепчисиндеги нерселерге <ph name="ACCOUNT_EMAIL" /> аккаунту менен өтүңүз</translation>
 <translation id="3885770153807205175">Тил тандоо</translation>
 <translation id="388648406173476553">Chromium'ду ыңгайлаштыруу жана көзөмөлдөө. Сиздин аракетиңиз талап кылынат – чоо-жайын көрүү үчүн чыкылдатыңыз.</translation>

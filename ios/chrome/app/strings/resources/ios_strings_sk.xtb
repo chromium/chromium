@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Otvoriť všetko</translation>
 <translation id="1408847409015257906">Klepnite na položku Ochrana súkromia a zabezpečenie.</translation>
 <translation id="1411386976162024013">Vizuálne vyhľadávanie pomocou funkcie Lens</translation>
+<translation id="1426410128494586442">Áno</translation>
 <translation id="1430915738399379752">Tlačiť</translation>
 <translation id="1436671784520050284">Pokračovať v nastavení</translation>
 <translation id="143681031165817424">Adresa je uložená iba v tomto zariadení</translation>
@@ -695,6 +696,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4237377247299956313">Klepnite na položku <ph name="BEGIN_BOLD" />Predvolená aplikácia prehliadača<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Otvoriť nastavenia</translation>
 <translation id="4250432749243022864">{count,plural, =0{Open {count} tab}=1{Otvoriť {count} kartu}few{Otvoriť {count} karty}many{Open {count} tabs}other{Otvoriť {count} kariet}}</translation>
+<translation id="4250680216510889253">Nie</translation>
 <translation id="4251531167342733205">Využívajte svoj obľúbený prehliadač naplno.</translation>
 <translation id="4253168017788158739">Poznámka</translation>
 <translation id="4256782883801055595">Licencie open source</translation>
@@ -944,7 +946,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5343472494710226394">Správy, šport a obsah založený na vašich záujmoch.</translation>
 <translation id="5352128922772839949">Uložiť súbor</translation>
 <translation id="5355191726083956201">Je zapnutá rozšírená ochrana</translation>
-<translation id="5356332698539508708">Odstrániť a prepnúť</translation>
 <translation id="537853552771686272">Spravujte témy a weby, ktoré vás zaujímajú</translation>
 <translation id="5395707839134961196">Skryť podrobnosti vyhľadávača</translation>
 <translation id="541276233349960923">Používajte heslá vo všetkých svojich zariadeniach</translation>
@@ -1250,6 +1251,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="6624219055418309072">Blokovať v režime inkognito</translation>
 <translation id="6625830436658400045">Nastavenia synchronizácie budú obnovené na základe poslednej zálohy. Položky, ktoré chcete synchronizovať, môžete kedykoľvek vybrať v <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" />.</translation>
 <translation id="6627583120233659107">Upraviť priečinok</translation>
+<translation id="6629759408545977279">Od: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Vaša organizácia vypla režim inkognito</translation>
 <translation id="6638511529934826365">Textová lupa…</translation>
 <translation id="6640268266988685324">Otvoriť kartu</translation>
@@ -1605,7 +1607,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8219424187226230983">Zobraziť offline verziu na novej karte</translation>
 <translation id="8230355548492839438">Vyhľadanie predchádzajúcich položiek</translation>
 <translation id="8232956427053453090">Ponechať údaje</translation>
-<translation id="8242644458318193141">Karty budú zatvorené a neuložené údaje účtu budú z tohto zariadenia odstránené, aby sa zaistilo zabezpečenie vašej organizácie. Môže to zahŕňať heslá, históriu a ďalší obsah.</translation>
 <translation id="8261506727792406068">Odstrániť</translation>
 <translation id="82619448491672958">Zobraziť iné karty</translation>
 <translation id="8263228331881858381">Prístupový kľúč bol uložený</translation>
@@ -1651,7 +1652,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8449869326050867919">Heslo bolo zdieľané</translation>
 <translation id="8453847087068411809">Nikdy nezisťovať zásielky automaticky</translation>
 <translation id="846158969830690371">Zistite, či máte najbezpečnejšie nastavenia alebo či je potrebné niečo skontrolovať.</translation>
-<translation id="8466300942149667917">Neuložené údaje účtu budú odstránené</translation>
 <translation id="8473863474539038330">Adresy a ďalšie údaje</translation>
 <translation id="8474378002946546633">Povoliť upozornenia</translation>
 <translation id="8477178913400731244">Odstrániť dáta</translation>

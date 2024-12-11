@@ -265,6 +265,7 @@ Als je het beleid toepast, kunnen gebruikers de hardware op <ph name="PRODUCT_OS
 <translation id="117080706484659953">Detectie van beleidsbereik toestaan op <ph name="MAC_OS_NAME" /></translation>
 <translation id="1171106901454883937">Rapportage voor versie-informatie van apparaat aanzetten</translation>
 <translation id="1173493742686115032"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> aanzetten op alle webpagina's</translation>
+<translation id="1176740714945046981">Zet de functie voor downgraden voor GWA's aan. Standaard worden alleen nieuwere versies van GWA's geïnstalleerd. Als je dit instelt op <ph name="TRUE" />, kun je ook oudere versies installeren. Als je downgraden wilt aanzetten, moet je de gewenste versiewaarde aangeven met het veld 'pinned_version'. Als 'allow_downgrades' niet is aangegeven of is ingesteld op <ph name="FALSE" />, is downgraden uitgezet voor die GWA.</translation>
 <translation id="1177624681620856105"> Met dit beleid wordt bepaald of het selectievakje 'Altijd openen' moet worden getoond in bevestigingsprompts voor externe protocolactivering.
 
       Als dit beleid is ingesteld op True of niet is ingesteld, kan de gebruiker, als er een bevestiging van een extern protocol wordt getoond, 'Altijd toestaan' selecteren om alle toekomstige bevestigingsprompts voor het protocol op deze site over te slaan.
@@ -3213,6 +3214,17 @@ Als je dit beleid niet toepast, is de functie voor voorspellend schrijven op het
 <translation id="3387211681524224831">Als je het beleid toepast, wordt browsegeschiedenis niet opgeslagen en tabbladsynchronisatie uitgezet. Gebruikers kunnen deze instelling niet wijzigen.
 
       Als je het beleid niet toepast of niet instelt, wordt browsegeschiedenis opgeslagen.</translation>
+<translation id="3387875422525138489">Als je het beleid instelt, geef je een lijst aan met geïsoleerde web-apps (GWA's) die op de achtergrond worden geïnstalleerd.
+      GWA's zijn apps met nuttige beveiligingseigenschappen die niet beschikbaar zijn op normale webpagina's. Ze worden verpakt in een ondertekende webbundel. De openbare sleutel van de ondertekende webbundel wordt gebruikt om de webbundel-ID te maken waarmee de GWA wordt geïdentificeerd.
+      Dit beleid werkt tot nu toe alleen voor beheerde gastsessies.
+
+      Elk lijstitem van het beleid is een object met 2 verplichte velden: het updatemanifest <ph name="URL_LABEL" /> en de webbundel-ID van de geïsoleerde web-app.
+
+Elk item kan ook deze optionele velden bevatten:
+
+* <ph name="UPDATE_CHANNEL_OPTION" />: De naam van het release-/updatekanaal van de GWA. Als je dit beleid niet instelt, wordt 'default' gebruikt.
+        * <ph name="PINNED_VERSION_OPTION" />: Een specifieke versie om te installeren. Het systeem probeert deze versie te installeren als die beschikbaar is op het aangegeven updatekanaal. Als je een GWA vastzet op een specifieke versie, wordt standaard voorkomen dat deze wordt geüpdatet naar een hogere versie dan die versie. Verwijder dit veld om de versie los te maken.
+        * <ph name="ALLOW_DOWNGRADES_OPTION" />: Hiermee kun je oudere versies van de GWA installeren. Hiervoor moet het veld 'pinned_version' worden ingesteld. Als je dit beleid niet instelt of instelt op <ph name="FALSE" />, is downgraden voor die GWA niet mogelijk.</translation>
 <translation id="3387999258705169775">Standaardgedrag voor genest vastzetten voor de functie setTimeout().</translation>
 <translation id="3388628790024977864">Het <ph name="CLOUD_UPLOAD_NAME" />-proces niet toestaan voor <ph name="GOOGLE_DRIVE_NAME" /> en <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Gnubby-verificatie aanzetten voor de host voor externe toegang</translation>
@@ -7209,10 +7221,6 @@ Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_OS_NAME" /> de standa
 <translation id="6383774771168138899">Hiermee stel je het <ph name="CLOUD_UPLOAD_NAME" />-proces in voor <ph name="MICROSOFT_ONE_DRIVE_NAME" /> en <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Weergave van resultatenpagina's van standaard zoekmachine in een zijvenster van de browser aanzetten.</translation>
 <translation id="6394350458541421998">Dit beleid wordt niet meer gebruikt sinds <ph name="PRODUCT_OS_NAME" /> versie 29. Gebruik het beleid PresentationScreenDimDelayScale.</translation>
-<translation id="6396956366662970339">Geeft aan of een model voor aangepast opladen het oplaadproces mag onderbreken om de batterijduur te verlengen.
-
-      Als het apparaat gebruikmaakt van wisselstroom, evalueert het model voor aangepast opladen of het oplaadproces moet worden onderbroken om de batterijduur te verlengen. Onderbreekt het model voor aangepast opladen het oplaadproces, dan wordt de batterij op een bepaald niveau gehouden (bijv. 80%) en wordt het apparaat helemaal opgeladen als de gebruiker dat nodig heeft.
-      Als je dit beleid instelt op True, wordt het model voor aangepast opladen aangezet en mag dit het oplaadproces onderbreken om de batterijduur te verlengen. Als je dit beleid instelt op False of niet instelt, heeft het model voor aangepast opladen geen invloed op het oplaadproces.</translation>
 <translation id="6397588391180665797">De netwerkconfiguratie van gebruikers op ingeschreven apparaten rapporteren.
 
       Als je het beleid instelt op False, worden de gegevens niet gerapporteerd.
@@ -7848,11 +7856,6 @@ Als je het beleid niet toepast, gebruikt de browser de oude implementatie totdat
 Als je het beleid moet gebruiken, dien je een bug in op crbug.com, met een cc naar {blundell, vasilyt}@chromium.org, waarin je je use case uitlegt. Volgens de planning wordt het beleid voortgezet tot en met versie 114 van <ph name="PRODUCT_NAME" />, waarna de oude implementatie wordt verwijderd.
 
 OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestarte weergaveprocessen terwijl de browser actief is.</translation>
-<translation id="6831322012298364374">Een URL naar een afbeelding die wordt gebruikt als zakelijke badge voor een beheerd profiel. De URL moet naar een afbeelding verwijzen.
-
-Dit beleid kan alleen worden ingesteld als gebruikersbeleid.
-
-We raden je aan het favicon (bijvoorbeeld https://www.google.com/favicon.ico) of een icoon van minimaal 24 x 24 pixels te gebruiken.</translation>
 <translation id="6833023569065717572">Als je het beleid instelt op True, krijgt het inlogscherm van een apparaat de 24-uurs kloknotatie.
 
       Als je het beleid instelt op False, krijgt het inlogscherm van een apparaat de 12-uurs kloknotatie.

@@ -1491,6 +1491,7 @@
 <translation id="202352106777823113">Жүктеу тым ұзаққа созылғандықтан, желі оны тоқтатты.</translation>
 <translation id="2024195579772565064">Іздеу жүйесін жою</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">Дәл басу</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> бұзылған. Кеңейтімді қайта жүктеу үшін осы қалқымалы хабарды басыңыз.</translation>
 <translation id="2026377162111110983">Аймақтық дауыс</translation>
 <translation id="2028449514182362831">Қозғалыс датчиктерін қажет ететін функциялар істемейді.</translation>
@@ -4745,6 +4746,7 @@
 <translation id="4324577459193912240">Файл толық емес</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> жойылуда…</translation>
 <translation id="4325433082696797523">Сақтау орны және қуат</translation>
+<translation id="4325515113816851466">Аккаунттан шыққаннан кейін, ата-анаңыздың таңдаулары қолданылмайды.</translation>
 <translation id="4326146840124313313">Chrome-ның ең күшті қауіпсіздігі қауіпті веб-сайттардан, жүктеп алынғандардан және кеңейтімдерден қорғау үшін көбірек жұмыс істейді</translation>
 <translation id="4327380114687339519">Кеңейтімдер мәзірі</translation>
 <translation id="4330191372652740264">Мұзды су</translation>
@@ -4867,6 +4869,7 @@
 <translation id="4412992751769744546">Үшінші тарап cookie файлдарына рұқсат беру</translation>
 <translation id="4413087696295876280">ChromeOS Flex құрылғысы туралы ақпарат пен деректерді оқу</translation>
 <translation id="44137799675104237">Мәтінді табиғи дауыспен тыңдау</translation>
+<translation id="4414051792721275732">Түймені басу үшін қимыл орындаған кезіңізде, тінтуір жылдамдығы көбірек басқаруға мүмкіндік беру үшін азаяды. Басуды аяқтау үшін қимылды қайта орындаңыз.</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">"<ph name="APP_NAME" />" қолданбасына тіркелген USB құрылғыларыңыздың тізімін алуға рұқсат берілсін бе?</translation>
 <translation id="4414232939543644979">Жаңа &amp;инкогнито терезесі</translation>
@@ -6193,6 +6196,7 @@
 <translation id="5389224261615877010">Кемпірқосақ</translation>
 <translation id="5389626883706033615">Сайттардың сіз туралы сақталған ақпаратты пайдалануды сұрауына блок қойылды.</translation>
 <translation id="5389794555912875905">Қауіпті сайттарға кіру алдында ескертулер көрсетілсін (ұсынылады)</translation>
+<translation id="5389943529251318913">Тінтуір жылдамдығын азайту мөлшері</translation>
 <translation id="5390112241331447203">Пікір есептерінде жіберілген system_logs.txt файлын қамту.</translation>
 <translation id="5390677308841849479">Қою қызыл және сарғылт</translation>
 <translation id="5392192690789334093">Хабарландыру жіберуге рұқсат бар</translation>
@@ -8021,7 +8025,6 @@
 <translation id="6743841972744298686">Синхрондау параметрлері</translation>
 <translation id="6745592621698551453">Қазір жаңарту</translation>
 <translation id="6746124502594467657">Төмен қарай жылжыту</translation>
-<translation id="674632704103926902">Түртіп сүйреуді қосу</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> құпия сөзін көрсету</translation>
 <translation id="6748980958975836188"><ph name="BEGIN_LINK1" />Google Қызмет көрсету шарттарын<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome мен ChromeOS Қосымша қызмет көрсету шарттарын<ph name="END_LINK2" /> оқып шықтым және оларға келісемін.</translation>
 <translation id="6749077623962119521">Рұқсаттар бастапқы күйіне қайтарылсын ба?</translation>
@@ -9901,7 +9904,6 @@
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Қолданба деректеріне контактілер, хабарлар және фотосуреттер сияқты қолданба сақтаған (әзірлеуші параметрлеріне байланысты) кез келген дерек жатуы мүмкін.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Сақтық көшірме деректері балаңыздың Drive жадынан орын алмайды.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Бұл қызметті "Параметрлер" бөлімінен өшіруге болады.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="8076492880354921740">Қойындылар</translation>
 <translation id="8076835018653442223">Әкімші құрылғыңызда жергілікті файлдарға кіруге тыйым салған</translation>
 <translation id="8077120325605624147">Сіз кірген кез келген сайт сізге кез келген жарнаманы көрсете алады</translation>
 <translation id="8077579734294125741">Chrome басқа профильдері</translation>
@@ -10538,7 +10540,6 @@
 <translation id="8528074251912154910">Тілдерді қосу</translation>
 <translation id="8528479410903501741">IBAN нөмірін сақтау</translation>
 <translation id="8528962588711550376">Кіріп жатырсыз.</translation>
-<translation id="8529925957403338845">Жылдам тетеринг байланысы орнатылмады</translation>
 <translation id="8531367864749403520">Топты қойындылар жолағынан өшіру үшін "Топты жасыру" опциясын таңдаңыз.</translation>
 <translation id="8531701051932785007">Күшейтілген Safe Browsing өшірулі</translation>
 <translation id="8533670235862049797">Safe Browsing қосулы</translation>

@@ -845,6 +845,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="6385591741672306837">kol</translation>
 <translation id="6387719785439924554">në anë</translation>
 <translation id="6393014464788431702">Çaktivizo të gjithë filtrat e ngjarjeve</translation>
+<translation id="6406989068857078334">Shpejtësia e miut u reduktua. <ph name="GESTURE" /> përsëri për të klikuar</translation>
 <translation id="6411569524720229058">Vjeshtë</translation>
 <translation id="6417265370957905582">Asistenti i Google</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{karakter "dy pika"}other{# karaktere "dy pika"}}</translation>
@@ -1099,6 +1100,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="8205922869661890178">Hap faqen e evidencës së zhvilluesit</translation>
 <translation id="8212109599554677485">Ndrysho stilin e ekranit në vendosje përkrah</translation>
 <translation id="8215202828671303819">Përzgjedhje e shumëfishtë</translation>
+<translation id="822316432305106615">Fillo klikimin e përpiktë</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, tejdukshmëria <ph name="OPACITY_PERCENTAGE" />%.</translation>
 <translation id="8261506727792406068">Fshi</translation>
 <translation id="826825447994856889">Prezantim</translation>

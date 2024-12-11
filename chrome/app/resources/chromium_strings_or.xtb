@@ -59,6 +59,7 @@
 <translation id="1779356040007214683">Chromiumକୁ ଆହୁରି ସୁରକ୍ଷିତ କରିବା ପାଇଁ, ଆମେ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ରେ ତାଲିକାଭୁକ୍ତ ହୋଇନଥିବା ଏବଂ ଆପଣଙ୍କର ଅଜାଣତରେ ଯୋଗ କରାଯାଇଥିବା କିଛି ଏକ୍ସଟେନ୍‌ସନ୍‌କୁ ଅକ୍ଷମ କରିଦେଇଛୁ।</translation>
 <translation id="1808667845054772817">Chromiumକୁ ପୁଣି ଇନ୍‍ଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> କରିବାକୁ ଚେଷ୍ଟା କରୁଛି</translation>
+<translation id="1838374766361614909">ସର୍ଚ୍ଚ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="18552579716432081">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ବ୍ରାଉଜିଂ ଡାଟା ରଖି କେବଳ ଏହି ଡିଭାଇସରୁ ସେହି ଡାଟା ଡିଲିଟ କରିବାକୁ <ph name="BEGIN_LINK" />Chromiumରୁ ସାଇନ ଆଉଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="185970820835152459">ଆପଣ ଆପଣଙ୍କ ସାଇନ୍-ଇନ୍ କରାଯାଇଥିବା Google ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ପରିଚାଳନା କରିପାରିବେ। ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟଗୁଡ଼ିକ Chromium ବ୍ରାଉଜର୍, Play Store, Gmail ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇଁ ବ୍ୟବହାର କରାଯାଇଛି। ଯଦି ଆପଣ ଜଣେ ପରିବାର ସଦସ୍ୟଙ୍କ ପରି ଅନ୍ୟ କୌଣସି ବ୍ୟକ୍ତିଙ୍କ ପାଇଁ ଏକ ଆକାଉଣ୍ଟ ଯୋଗ କରିବାକୁ ଚାହୁଁଛନ୍ତି, ତେବେ ଏହା ପରିବର୍ତ୍ତେ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ଜଣେ ନୂଆ ବ୍ୟକ୍ତିଙ୍କୁ ଯୋଗ କରନ୍ତୁ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">ଇମେଜ ସର୍ଚ୍ଚ ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
@@ -205,7 +206,6 @@
 <translation id="3802055581630249637">ଆପଣ ଭିଜିଟ କରିବାର ସମ୍ଭାବନା ଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକୁ Chromium ପ୍ରିଲୋଡ କରେ, ଯାହା ଫଳରେ ଆପଣ ସେହି ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଭିଜିଟ କରିବା ବେଳେ ସେଗୁଡ଼ିକ ଖୁବ ଶୀଘ୍ର ଲୋଡ ହୁଏ</translation>
 <translation id="3830894615770080216">ChromiumOS ସିଷ୍ଟମ</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="386822487697155367">ChromiumOS ମାଧ୍ୟମରେ ସାହାଯ୍ୟ ପାଆନ୍ତୁ</translation>
 <translation id="3871664619793219264"><ph name="ACCOUNT_EMAIL" />ରୁ ଆପଣଙ୍କ Chromium ବ୍ରାଉଜର ଷ୍ଟଫ ପାଆନ୍ତୁ</translation>
 <translation id="3885770153807205175">ଭାଷା ପିକର</translation>
 <translation id="388648406173476553">Chromium କଷ୍ଟମାଇଜ୍ ଓ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ କିଛି ଆପଣଙ୍କର ଧ୍ୟାନ ଦେବା ଆବଶ୍ୟକ କରୁଛି - ବିବରଣୀ ପାଇଁ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>

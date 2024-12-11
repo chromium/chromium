@@ -5112,6 +5112,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4586275095964870617">Não foi possível abrir <ph name="URL" /> num navegador alternativo. Contacte o administrador do sistema.</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4588749726511456218">Aceleração do deslocamento <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> e <ph name="DOMAIN" /> parecem estar relacionados. Certifique-se de que confia em <ph name="DOMAIN" /> antes de usar esta palavra-passe.</translation>
 <translation id="4589713469967853491">Os registos foram escritos com êxito no diretório Transferências.</translation>
 <translation id="4590785647529325123">Para eliminar o histórico de navegação da Navegação anónima no seu dispositivo, feche todos os separadores de navegação anónima</translation>
 <translation id="459204634473266369">Nenhum dispositivo guardado em <ph name="PRIMARY_EMAIL" /></translation>
@@ -5618,6 +5619,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4946998421534856407">Launcher + seta para cima</translation>
 <translation id="4947376546135294974">Dados do site que está a visitar</translation>
 <translation id="4950100687509657457">Criar perfil</translation>
+<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{um ficheiro}other{# ficheiros}}</translation>
 <translation id="495170559598752135">Ações</translation>
 <translation id="4951966678293618079">Nunca guarde palavras-passe para este site</translation>
@@ -5756,6 +5758,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5061531353537614467">Tundra</translation>
 <translation id="5062930723426326933">O início de sessão falhou. Ligue-se à Internet e tente novamente.</translation>
 <translation id="5063480226653192405">Utilização</translation>
+<translation id="5064921774605267982">Abrir perfil <ph name="PROFILE_NAME" />. O perfil é gerido por um dos teus pais.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Gerir DNS seguro nas definições do ChromeOS</translation>
 <translation id="5066534201484101197">Deslocamento excessivo para navegar entre páginas</translation>
@@ -7414,6 +7417,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6266984048393265562">Personalizar perfil</translation>
 <translation id="6267166720438879315">Selecione um certificado para se autenticar perante <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Abrir com <ph name="APP" /></translation>
+<translation id="6269050081341530851">Cópia mais antiga mantida quando fecha duplicados</translation>
 <translation id="6270309713620950855">Desativar som da chamada de atenção</translation>
 <translation id="6270391203985052864">Os sites podem pedir para enviar notificações.</translation>
 <translation id="6270486800167535228">A extensão está afixada. Selecione para ver mais opções</translation>
@@ -7955,6 +7959,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6679947539429331601">Ocultar durante 12 horas</translation>
 <translation id="6680442031740878064">Disponível: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocidade</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [Placeholder String]</translation>
 <translation id="6683022854667115063">Auscultadores</translation>
 <translation id="6683087162435654533">Restaurar todos os separadores</translation>
 <translation id="6683433919380522900">A autorização está definida como <ph name="PERMISSION_STATE" /></translation>
@@ -8037,7 +8042,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6743841972744298686">Definições de sincronização</translation>
 <translation id="6745592621698551453">Atualizar agora</translation>
 <translation id="6746124502594467657">Mover para baixo</translation>
-<translation id="674632704103926902">Ativar arrastamento através do toque</translation>
 <translation id="67465227497040338">Mostrar palavra-passe para <ph name="DOMAIN" /></translation>
 <translation id="6748980958975836188">Li e aceito os <ph name="BEGIN_LINK1" />Termos de Utilização da Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Utilização Adicionais do Chrome e Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6749077623962119521">Quer repor as autorizações?</translation>
@@ -8849,6 +8853,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7330533963640151632">Definições da funcionalidade <ph name="FEATURE_NAME" /> para o dispositivo de <ph name="USER_NAME" />, a partilhar com a conta <ph name="USER_EMAIL" />.</translation>
 <translation id="7331646370422660166">alt + seta para baixo</translation>
 <translation id="7332053360324989309">Trabalhador dedicado: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">Separadores duplicados</translation>
 <translation id="7333388112938984914">Não é possível carregar ficheiros enquanto estiver numa ligação com acesso limitado.</translation>
 <translation id="7333669215417470379">Faça uma cópia de segurança e restaure as apps e as definições</translation>
 <translation id="7335974957018254119">Usar o corretor ortográfico para</translation>
@@ -9920,7 +9925,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Os dados de apps podem ser quaisquer dados que uma aplicação tenha guardado (com base nas definições do programador), incluindo dados como contactos, mensagens e fotos.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Os dados da cópia de segurança não são contabilizados para a quota do armazenamento do Drive da criança.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Pode desativar este serviço nas Definições.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="8076492880354921740">Separadores</translation>
 <translation id="8076835018653442223">O acesso a ficheiros locais no seu dispositivo foi desativado pelo seu administrador.</translation>
 <translation id="8077120325605624147">Qualquer site que visitar pode mostrar-lhe qualquer anúncio</translation>
 <translation id="8077579734294125741">Outros perfis do Chrome</translation>
@@ -10557,7 +10561,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8528074251912154910">Adicionar idiomas</translation>
 <translation id="8528479410903501741">Guarde o IBAN</translation>
 <translation id="8528962588711550376">A iniciar sessão.</translation>
-<translation id="8529925957403338845">A ligação via telemóvel instantânea falhou</translation>
 <translation id="8531367864749403520">Selecione "Ocultar grupo" para remover o grupo da Faixa de separadores</translation>
 <translation id="8531701051932785007">A Navegação segura melhorada está desativada</translation>
 <translation id="8533670235862049797">A Navegação segura está ativada.</translation>

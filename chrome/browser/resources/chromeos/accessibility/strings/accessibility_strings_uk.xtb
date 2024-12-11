@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">стовп.</translation>
 <translation id="6387719785439924554">бічний колонтитул</translation>
 <translation id="6393014464788431702">Вимкнути всі фільтри подій</translation>
+<translation id="6406989068857078334">Швидкість миші зменшено. Щоб натиснути, знову виконайте жест "<ph name="GESTURE" />".</translation>
 <translation id="6411569524720229058">Осінь</translation>
 <translation id="6417265370957905582">Google Асистент</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{двокрапка}one{# двокрапка}few{# двокрапки}many{# двокрапок}other{# colons}}</translation>
@@ -1098,6 +1099,7 @@
 <translation id="8205922869661890178">Відкрити сторінку журналу розробника</translation>
 <translation id="8212109599554677485">Змінити стиль дисплея на паралельний перегляд</translation>
 <translation id="8215202828671303819">Вибір кількох елементів</translation>
+<translation id="822316432305106615">Почати точне натискання</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, прозорість – <ph name="OPACITY_PERCENTAGE" />%.</translation>
 <translation id="8261506727792406068">Видалити</translation>
 <translation id="826825447994856889">Вступ</translation>

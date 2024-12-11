@@ -387,6 +387,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2370971919968699910">Es posible que se apliquen cargos por el uso de datos.
 <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="2386292613071805067">Seleccionar todo el contenido de la página</translation>
+<translation id="2389423187722941333">Activar/Desactivar Gemini</translation>
 <translation id="2392659840443812875">No hay puntos de acceso disponibles. Asegúrate de que tu dispositivo esté cerca y tenga el Bluetooth activado.</translation>
 <translation id="2397416548179033562">Mostrar menú de Chrome</translation>
 <translation id="240006516586367791">Controles multimedia</translation>
@@ -924,7 +925,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4193857202545160520">Mostrar clics y teclas pulsadas</translation>
 <translation id="4193969623755915875">Abrir Ayuda en la aplicación Explorar con <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="4195579532193195633">Versión actual: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
-<translation id="4195814663415092787">Continúa por donde lo dejaste</translation>
+<translation id="4195814663415092787">Continuar por donde lo dejaste</translation>
 <translation id="4195877955194704651">Botón de clics automáticos</translation>
 <translation id="4197790712631116042">Desactivado</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> no está disponible.</translation>

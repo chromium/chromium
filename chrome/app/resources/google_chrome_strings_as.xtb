@@ -67,6 +67,7 @@
 <translation id="1786044937610313874">শ্বৰ্টকাটসমূহ Chromeত খোল খায়</translation>
 <translation id="178701303897325119">এই এক্সটেনশ্বনটো আৰু সমৰ্থিত নহয়। Chromeএ তাৰ পৰিৱৰ্তে আপুনি এইটো আঁতৰোৱাটো চুপাৰিছ কৰে।</translation>
 <translation id="1812689907177901597">আপুনি এইটো অফ কৰি বিভিন্ন Google ছাইট যেনে Gmailত Chromeত ছাইন ইন নকৰাকৈ ছাইন ইন কৰিব পাৰে</translation>
+<translation id="1838374766361614909">সন্ধান কৰা বস্তুবোৰ মচক</translation>
 <translation id="1860536484129686729">এই ছাইটটোৰ বাবে Chromeক আপোনাৰ কেমেৰা এক্সেছ কৰাৰ অনুমতিৰ প্ৰয়োজন</translation>
 <translation id="1873233029667955273">Google Chrome আপোনাৰ ডিফ'ল্ট ব্ৰাউজাৰ নহয়</translation>
 <translation id="1874309113135274312">Google Chrome বিটা (mDNS-In)</translation>
@@ -231,7 +232,6 @@
 <translation id="3716540481907974026">ChromeOS Flexৰ সংস্কৰণ</translation>
 <translation id="3718181793972440140">ইয়াৰ ফলত এই ডিভাইচটোৰ পৰা ১টা বস্তু মচা হ’ব। আপোনাৰ ডেটা পাছত পুনৰুদ্ধাৰ কৰিবলৈ Chromeত <ph name="USER_EMAIL" /> হিচাপে ছাইন ইন কৰক।</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chromeএ আপোনাক এইটো আঁতৰাবলৈ চুপাৰিছ কৰে। <ph name="BEGIN_LINK" />সমৰ্থিত এক্সটেনশ্বনসমূহৰ বিষয়ে অধিক জানক<ph name="END_LINK" />}one{Chromeএ আপোনাক এইসমূহ আঁতৰাবলৈ চুপাৰিছ কৰে। <ph name="BEGIN_LINK" />সমৰ্থিত এক্সটেনশ্বনসমূহৰ বিষয়ে অধিক জানক<ph name="END_LINK" />}other{Chromeএ আপোনাক এইসমূহ আঁতৰাবলৈ চুপাৰিছ কৰে। <ph name="BEGIN_LINK" />সমৰ্থিত এক্সটেনশ্বনসমূহৰ বিষয়ে অধিক জানক<ph name="END_LINK" />}}</translation>
-<translation id="3744202345691150878">ChromeOSৰ বাবে সহায় পাওক</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ছাইন ইন কৰোঁতে কিবা আসোঁৱাহ হোৱাৰ কাৰণে ChromeOS Flexএ আপোনাৰ ডেটা ছিংক কৰিব নোৱাৰিলে।</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -262,6 +262,7 @@
 <translation id="4147555960264124640">আপুনি কোনো পৰিচালিত একাউণ্টৰ জৰিয়তে ছাইন ইন কৰিছে আৰু কোনো প্ৰশাসকক আপোনাৰ Google Chrome প্ৰ’ফাইলৰ নিয়ন্ত্ৰণ দিছে। আপোনাৰ এপ্, বুকমার্ক, ইতিহাস, পাছৱর্ড আৰু অন্য ছেটিংসমূহৰ দৰে নিজৰ Chrome ডেটা স্থায়ীভাৱে <ph name="USER_NAME" />ৰ সৈতে সংযুক্ত হ’ব। আপুনি Google একাউণ্ট ডেশ্বব’ৰ্ডৰ জৰিয়তে এই ডেটা মচিব পাৰিব কিন্তু আপুনি এই ডেটা অন্য একাউণ্টৰ সৈতে সংলগ্ন কৰিব নোৰাৰিব।<ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">ইনষ্টল কৰি থকা হৈছে…</translation>
 <translation id="4149882025268051530">ইনষ্টলাৰে আৰ্কাইভক অসংকুচিত কৰিব নোৱাৰিলে। অনুগ্ৰহ কৰি পুনৰ Google Chrome ডাউনল'ড কৰক।</translation>
+<translation id="415112847282352845">আপোনাৰ আটাইবোৰ ডিভাইচত নিজৰ ঠিকনা আৰু অধিক পাবলৈ, Chromeত ছাইন ইন কৰক। এই ঠিকনাটো আপোনাৰ Google একাউণ্টত আপুনি ছাইন ইন কৰাৰ পাছত ছেভ কৰা হ’ব।</translation>
 <translation id="4153934450158521343">Chrome শীঘ্ৰেই বন্ধ হ’ব আৰু ডেটা মচি পেলাব</translation>
 <translation id="4173512894976930765">ছাইটসমূহে হয়তো আশা কৰা ধৰণে কাম কৰিব। আপুনি আটাইবোৰ Chrome ৱিণ্ড’ বন্ধ কৰিলে আপোনাক বেছিভাগ ছাইটৰ পৰা ছাইন আউট কৰোৱা হ’ব, কিন্তু আপুনি যদি Chromeত ছাইন ইন হৈ থাকে তেন্তে আপোনাৰ Google একাউণ্টৰ পৰা ছাইন আউট নহয়।</translation>
 <translation id="4175922240926474352">এই ছাইটটোৱে কোনো সুৰক্ষিত সংযোগ ব্যৱহাৰ কৰি থকা নাই আৰু ফাইলটো ক্ষতিকাৰকভাৱে সলনি কৰা হ’ব পাৰে বাবে Chromeএ এই ডাউনল’ডটো অৱৰোধ কৰিছে</translation>
@@ -354,7 +355,6 @@
 <translation id="5334309298019785904">আপোনাৰ ড’মেইনত ছিংক কৰাৰ সুবিধা নথকাৰ বাবে ChromeOSএ আপোনাৰ ডেটা ছিংক কৰিব নোৱাৰিলে।</translation>
 <translation id="5334487786912937552">Chromeক ফাইল ডাউনল’ড কৰিবলৈ ষ্ট’ৰেজৰ এক্সেছৰ অনুমতিৰ আৱশ্যক</translation>
 <translation id="5337648990166757586">ঐচ্ছিক: Googleলৈ স্বয়ংক্ৰিয়ভাৱে ডায়েগন’ষ্টিক আৰু ব্যৱহাৰৰ ডেটা পঠিয়াই ChromeOSৰ সুবিধা আৰু কাৰ্যক্ষমতা উন্নত কৰাত সহায় কৰক।</translation>
-<translation id="5357889879764279201">ChromeOS Flexৰ বাবে সহায় পাওক</translation>
 <translation id="5368118228313795342">অতিৰিক্ত ক’ড: <ph name="EXTRA_CODE" />।</translation>
 <translation id="5386244825306882791">এইটোৱে লগতে আপুনি Chrome আৰম্ভ কৰিলে বা Omniboxৰ পৰা সন্ধান কৰিলে কি পৃষ্ঠা খোল খায় সেয়া নিয়ন্ত্ৰণ কৰে।</translation>
 <translation id="5394833366792865639">Chrome টেব এটা শ্বেয়াৰ কৰক</translation>

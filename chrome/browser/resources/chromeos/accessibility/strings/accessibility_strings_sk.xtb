@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">stĺpec</translation>
 <translation id="6387719785439924554">odsadený text</translation>
 <translation id="6393014464788431702">Zakázať všetky filtre udalostí</translation>
+<translation id="6406989068857078334">Rýchlosť myši bola znížená, ak chcete kliknúť, znova urobte gesto (<ph name="GESTURE" />)</translation>
 <translation id="6411569524720229058">Jeseň</translation>
 <translation id="6417265370957905582">Asistent Google</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{dvojbodka}few{# dvojbodky}many{# colons}other{# dvojbodiek}}</translation>
@@ -1098,6 +1099,7 @@
 <translation id="8205922869661890178">Otvoriť stránku s denníkom pre vývojárov</translation>
 <translation id="8212109599554677485">Zmeniť štýl zobrazenia na vedľa seba</translation>
 <translation id="8215202828671303819">Hromadný výber</translation>
+<translation id="822316432305106615">Spustiť presné kliknutie</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" /> % nepriehľadnosť.</translation>
 <translation id="8261506727792406068">Odstrániť</translation>
 <translation id="826825447994856889">Úvod</translation>

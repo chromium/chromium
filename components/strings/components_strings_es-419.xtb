@@ -2169,7 +2169,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4881808915112408168">61 × 80 cm (24 × 31.5 in)</translation>
 <translation id="4882314601499260499">No se aplicaron políticas del usuario. Para agregar políticas del usuario, tu organización debe <ph name="LINK_BEGIN" />verificar tu dominio<ph name="LINK_END" />.</translation>
-<translation id="4883911187498618061">Ingresa tu pregunta o instrucción</translation>
 <translation id="4885030148564729407">Lunas de miel y escapadas románticas</translation>
 <translation id="4885256590493466218">Pagar con <ph name="CARD_DETAIL" /> en la confirmación de la compra</translation>
 <translation id="4887406273302438710">Protege las contraseñas con Windows Hello</translation>
@@ -2202,7 +2201,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4930153903256238152">Gran capacidad</translation>
 <translation id="4930714375720679147">Activar</translation>
 <translation id="4932035752129140860">El texto que pegas o adjuntas se envía a Google Cloud o a terceros para su análisis. Por ejemplo, es posible que se analice en busca de datos sensibles y se almacene según las políticas de la empresa, y que sea visible para el administrador.</translation>
-<translation id="4933468175699107356">Hacer clic con el botón derecho para autocompletar con la información guardada, como tu nombre o dirección, en cualquier formulario</translation>
 <translation id="4933788293078559286">Pago con Pix</translation>
 <translation id="4934780484581617878">Administración de ventanas</translation>
 <translation id="4936134414789135531">No se pudo encontrar el <ph name="VALUE_NAME" /> insertado.</translation>
@@ -2839,7 +2837,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6108580855199168381">Detalles del certificado</translation>
 <translation id="6108702513636120202">Tu motor de búsqueda en Chromium</translation>
 <translation id="6108849843016142864">Reptiles y anfibios</translation>
-<translation id="610911394827799129">Es posible que tu cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
+<translation id="610911394827799129">Es posible que tu cuenta de Google tenga otras formas de historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="611018310643025551">Tus búsquedas, los resultados más relevantes y el contenido de sus páginas se envían a Google y es posible que los revisen personas para mejorar esta función.</translation>
 <translation id="6116338172782435947">Ver el texto y las imágenes copiados en el portapapeles</translation>
 <translation id="6117833587752089929">Foto (satinado)</translation>
@@ -3439,7 +3437,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="718872491229180389">Animación deportiva</translation>
 <translation id="7188840756966467339">Reiniciar y aplicar políticas</translation>
 <translation id="7192188280913829296">También se debe especificar el atributo "vendor_id".</translation>
-<translation id="7192203810768312527">Esta acción libera hasta <ph name="SIZE" />. Es posible que algunos sitios carguen más lento en tu próxima visita.</translation>
+<translation id="7192203810768312527">Esta acción libera <ph name="SIZE" />. Es posible que algunos sitios carguen más lento en tu próxima visita.</translation>
 <translation id="7192537357091279678">Unidades y almacenamiento para computadoras</translation>
 <translation id="7193661028827781021">Referencia</translation>
 <translation id="719464814642662924">Visa</translation>
@@ -3496,6 +3494,7 @@ Detalles adicionales:
 <translation id="7304030187361489308">Alto</translation>
 <translation id="7304562222803846232">Administrar configuración de privacidad de la Cuenta de Google</translation>
 <translation id="7305756307268530424">Empezar más despacio</translation>
+<translation id="7307063504147610123">La dirección se guardó en este dispositivo</translation>
 <translation id="7308436126008021607">sincronización en segundo plano</translation>
 <translation id="7309058266849426521">Obtén más información para administrar tu privacidad en los anuncios en Chrome.</translation>
 <translation id="7310392214323165548">El dispositivo se reiniciará en breve</translation>
@@ -4173,6 +4172,7 @@ Detalles adicionales:
 <translation id="8473626140772740486">300 × 450 mm</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
 <translation id="8474910779563686872">Mostrar detalles para desarrolladores</translation>
+<translation id="8476959635632921417">Para guardar y usar esta dirección en todos tus dispositivos, verifica tu identidad</translation>
 <translation id="8479754468255770962">Grapa en la esquina inferior izquierda</translation>
 <translation id="8483229036294884935">Se borrará esta dirección de tu Cuenta de Google, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Se aplica a</translation>

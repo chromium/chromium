@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">col</translation>
 <translation id="6387719785439924554">aside</translation>
 <translation id="6393014464788431702">Desativar todos os filtros de evento</translation>
+<translation id="6406989068857078334">A velocidade do mouse foi reduzida. <ph name="GESTURE" /> de novo para clicar.</translation>
 <translation id="6411569524720229058">Outono</translation>
 <translation id="6417265370957905582">Google Assistente</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{um sinal de dois-pontos}one{# indicadores de dois-pontos}other{# indicadores de dois-pontos}}</translation>
@@ -1099,6 +1100,7 @@
 <translation id="8205922869661890178">Abre a página de registros do desenvolvedor</translation>
 <translation id="8212109599554677485">Mudar estilo de exibição para lado a lado</translation>
 <translation id="8215202828671303819">Seleção múltipla</translation>
+<translation id="822316432305106615">Iniciar clique de precisão</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% de opacidade.</translation>
 <translation id="8261506727792406068">Excluir</translation>
 <translation id="826825447994856889">Introdução</translation>

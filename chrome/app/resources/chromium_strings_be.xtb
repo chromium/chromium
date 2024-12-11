@@ -59,6 +59,7 @@
 <translation id="1779356040007214683">У мэтах бяспекі Chromium мы выключылі некаторыя пашырэнні, якія не значацца ў спісе <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> і маглі быць дададзены без вашага ведама.</translation>
 <translation id="1808667845054772817">Пераўсталяваць Chromium</translation>
 <translation id="1820835682567584003">Chromium спрабуе <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1838374766361614909">Ачысціць поле пошуку</translation>
 <translation id="18552579716432081">Каб выдаліць даныя пра работу ў браўзеры толькі з гэтай прылады, але захаваць іх ва Уліковым запісе Google, <ph name="BEGIN_LINK" />выйдзіце з Chromium<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">У гэтым раздзеле можна кіраваць Уліковымі запісамі Google, у якія вы ўвайшлі. Вашы Уліковыя запісы Google выкарыстоўваюцца ў браўзеры Chromium, Краме Play, пошце Gmail і іншых сэрвісах. Калі вы хочаце дадаць уліковы запіс для каго-небудзь яшчэ (напрыклад, для ўдзельніка сямейнай групы), дадайце на прыладу "<ph name="DEVICE_TYPE" />" новага карыстальніка. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Скарыстаць пошук відарысаў</translation>
@@ -94,6 +95,7 @@
 <translation id="2199210295479376551">Выдаліць уліковы запіс з Chromium</translation>
 <translation id="2210682093923538346">Небяспечны сайт. Chromium адклікаў дазвол на апавяшчэнні.</translation>
 <translation id="2236949375853147973">Мае дзеянні</translation>
+<translation id="2238130810669087193">Каб выкарыстоўваць свае адрасы і іншыя даныя на ўсіх сваіх прыладах, увайдзіце ў Chromium. Адрас будзе захаваны ва Уліковым запісе Google пасля ўваходу.</translation>
 <translation id="2240214816234246077">Вы даўно не наведвалі сайт. Chromium адклікаў наступныя дазволы: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="2241627712206172106">Калі камп’ютар выкарыстоўваюць некалькі чалавек, кожны з іх можа наладзіць Chromium для сябе і праглядаць старонкі асобна ад іншых.</translation>
 <translation id="2313870531055795960">Правярае, ці знаходзяцца URL-адрасы ў спісе небяспечных сайтаў, захаваным у Chromium. Пры спробе сайта выкрасці пароль або пры спампоўванні шкоднага файла браўзер Chromium можа таксама адпраўляць у Бяспечны прагляд URL-адрасы, уключаючы фрагменты змесціва старонкі.</translation>
@@ -205,7 +207,6 @@
 <translation id="3802055581630249637">Chromium перадзагружае старонкі, на якія вы з высокай імавернасцю можаце перайсці, каб яны адкрыліся хутчэй, калі вы іх наведаеце</translation>
 <translation id="3830894615770080216">Сістэма Chromium OS</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
-<translation id="386822487697155367">Дапамога па Chromium OS</translation>
 <translation id="3871664619793219264">Атрымайце доступ да даных браўзера Chromium, звязаных з уліковым запісам <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3885770153807205175">Інструмент выбару мовы</translation>
 <translation id="388648406173476553">Наладка і кіраванне Chromium Нешта патрабуе вашай увагі – каб паглядзець падрабязныя звесткі, націсніце тут.</translation>

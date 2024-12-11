@@ -63,6 +63,7 @@
 <translation id="1786044937610313874">ஷார்ட்கட்களை Chromeமில் திறக்கும்</translation>
 <translation id="178701303897325119">இந்த நீட்டிப்பு இனி ஆதரிக்கப்படாது. அதனால், இதை அகற்றும்படி Chrome பரிந்துரைக்கிறது.</translation>
 <translation id="1812689907177901597">இதை முடக்கினால், நீங்கள் Chromeமில் உள்நுழையாமலேயே Gmail போன்ற Google தளங்களில் உள்நுழையலாம்</translation>
+<translation id="1838374766361614909">தேடலை அழி</translation>
 <translation id="1860536484129686729">இந்தத் தளத்திற்காகக் கேமராவை அணுக Chromeமுக்கு அனுமதி தேவை</translation>
 <translation id="1873233029667955273">Google Chrome உங்கள் இயல்புநிலை உலாவி அல்ல</translation>
 <translation id="1874309113135274312">Google Chrome பீட்டா (mDNS-In)</translation>
@@ -227,7 +228,6 @@
 <translation id="3716540481907974026">ChromeOS Flex பதிப்பு</translation>
 <translation id="3718181793972440140">வெளியேறினால், இந்தச் சாதனத்திலிருந்து ஓர் உருப்படி நீக்கப்படும். பின்னர் தரவை மீட்டமைக்க, Chrome இல் <ph name="USER_EMAIL" /> எனும் முகவரியின் மூலம் உள்நுழையவும்.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{இதை அகற்றும்படி Chrome பரிந்துரைக்கிறது. <ph name="BEGIN_LINK" />ஆதரிக்கப்படும் நீட்டிப்புகள் குறித்து மேலும் தெரிந்துகொள்ளுங்கள்.<ph name="END_LINK" />}other{இவற்றை அகற்றும்படி Chrome பரிந்துரைக்கிறது. <ph name="BEGIN_LINK" />ஆதரிக்கப்படும் நீட்டிப்புகள் குறித்து மேலும் தெரிந்துகொள்ளுங்கள்.<ph name="END_LINK" />}}</translation>
-<translation id="3744202345691150878">ChromeOS தொடர்பான உதவி பெறுக</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">உள்நுழைவில் பிழை ஏற்பட்டதால் உங்கள் தரவை ChromeOS Flexஸால் ஒத்திசைக்க முடியவில்லை.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -348,7 +348,6 @@
 <translation id="5334309298019785904">உங்கள் டொமைனில் ஒத்திசைவு இல்லாததால் உங்கள் தரவை ChromeOSஸால் ஒத்திசைக்க முடியவில்லை.</translation>
 <translation id="5334487786912937552">ஃபைல்களைப் பதிவிறக்க, Chromeமிற்குச் சேமிப்பக அணுகல் தேவை</translation>
 <translation id="5337648990166757586">விருப்பத்திற்குரியது: பிழை அறிக்கைத் தரவு, உபயோகத் தரவு ஆகியவற்றை Googleளுக்குத் தானாக அனுப்புவதன் மூலம் ChromeOS அம்சங்களையும் செயல்திறனையும் மேம்படுத்த உதவுங்கள்.</translation>
-<translation id="5357889879764279201">ChromeOS Flex தொடர்பாக உதவி பெறுக</translation>
 <translation id="5368118228313795342">கூடுதல் குறியீடு: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Chromeமைத் தொடங்கும்போது அல்லது ஆம்னிபாக்ஸிலிருந்து தேடலை மேற்கொள்ளும்போது காண்பிக்கப்படும் பக்கத்தையும் இது கட்டுப்படுத்துகிறது.</translation>
 <translation id="5394833366792865639">Chrome பக்கத்தைப் பகிர்</translation>

@@ -67,6 +67,7 @@
 <translation id="1786044937610313874">શૉર્ટકટ Chromeમાં ખુલે છે</translation>
 <translation id="178701303897325119">આ એક્સ્ટેન્શન હવે સપોર્ટેડ રહ્યું નથી. એના બદલે Chrome તેને કાઢી નાખવાનો સુઝાવ તમને આપે છે.</translation>
 <translation id="1812689907177901597">આને બંધ કરવાથી, તમે Chromeમાં સાઇન ઇન કર્યા સિવાય Gmail જેવી Googleની સાઇટમાં સાઇન ઇન કરી શકશો</translation>
+<translation id="1838374766361614909">શોધ સાફ કરો</translation>
 <translation id="1860536484129686729">Chromeને આ સાઇટ માટે તમારા કૅમેરાના ઍક્સેસની પરવાનગીની જરૂર પડે છે</translation>
 <translation id="1873233029667955273">Google Chrome તમારું ડિફૉલ્ટ બ્રાઉઝર નથી</translation>
 <translation id="1874309113135274312">Google Chrome બીટા (mDNS-In)</translation>
@@ -231,7 +232,6 @@
 <translation id="3716540481907974026">ChromeOS Flexનું વર્ઝન</translation>
 <translation id="3718181793972440140">આ, 1 આઇટમને આ ડિવાઇસમાંથી ડિલીટ કરશે. પછીથી તમારો ડેટા ફરીથી મેળવવા માટે, Chromeમાં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome તેને કાઢી નાખવાનો સુઝાવ તમને આપે છે. <ph name="BEGIN_LINK" />સપોર્ટેડ એક્સ્ટેન્શન વિશે વધુ જાણો<ph name="END_LINK" />}one{Chrome તેમને કાઢી નાખવાનો સુઝાવ તમને આપે છે. <ph name="BEGIN_LINK" />સપોર્ટેડ એક્સ્ટેન્શન વિશે વધુ જાણો<ph name="END_LINK" />}other{Chrome તેમને કાઢી નાખવાનો સુઝાવ તમને આપે છે. <ph name="BEGIN_LINK" />સપોર્ટેડ એક્સ્ટેન્શન વિશે વધુ જાણો<ph name="END_LINK" />}}</translation>
-<translation id="3744202345691150878">ChromeOS વડે સહાય મેળવો</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">સાઇન ઇન કરવામાં ભૂલ આવવાને કારણે, ChromeOS Flex તમારા ડેટાને સિંક કરી શક્યું નથી.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -262,6 +262,7 @@
 <translation id="4147555960264124640">તમે મેનેજ કરેલા એકાઉન્ટ સાથે સાઇન ઇન કરી રહ્યાં છો અને તમારી Google Chrome પ્રોફાઇલ પર ઍડમિનને એનું નિયંત્રણ આપી રહ્યાં છો. તમારો Chrome ડેટા, જેમ કે તમારી ઍપ, બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગ, કાયમ માટે <ph name="USER_NAME" />થી જોડાયેલા રહેશે. તમે Google એકાઉન્ટ ડૅશબોર્ડથી આ ડેટાને ડિલીટ કરી શકશો, પરંતુ તમે આ ડેટાને બીજા એકાઉન્ટ સાથે સાંકળી શકશો નહીં. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">ઇન્સ્ટોલ કરી રહ્યું છે...</translation>
 <translation id="4149882025268051530">ઇન્સ્ટૉલર આર્કાઇવને અનકોમ્પ્રેસ કરવામાં નિષ્ફળ. કૃપા કરીને Google Chrome ફરીથી ડાઉનલોડ કરો.</translation>
+<translation id="415112847282352845">તમારા બધા ડિવાઇસ પર તમારા ઍડ્રેસ અને બીજું ઘણું મેળવવા માટે, Chromeમાં સાઇન ઇન કરો. તમે સાઇન ઇન કરો તે પછી આ ઍડ્રેસ તમારા Google એકાઉન્ટમાં સાચવવામાં આવશે.</translation>
 <translation id="4153934450158521343">Chrome ટૂંક સમયમાં જ બંધ થશે અને ડેટા ડિલીટ કરશે</translation>
 <translation id="4173512894976930765">સાઇટ અપેક્ષા મુજબ કામ કરે તેમ બની શકે છે. જો તમે Chromeમાં સાઇન ઇન કર્યું હોય, તો જ્યારે તમે તમારા Google એકાઉન્ટ સિવાયની બધી Chrome વિન્ડો બંધ કરશો, ત્યારે તમે મોટાભાગની સાઇટમાંથી સાઇન આઉટ થઈ જશો.</translation>
 <translation id="4175922240926474352">Chrome દ્વારા આ ડાઉનલોડ બ્લૉક કરવામાં આવ્યું કારણ કે આ સાઇટ કોઈ સુરક્ષિત કનેક્શનનો ઉપયોગ કરી રહી નથી તેમજ ફાઇલ સાથે ચેડાં કરવામાં આવ્યા હોઈ શકે છે</translation>
@@ -354,7 +355,6 @@
 <translation id="5334309298019785904">તમારા ડોમેન પર સિંક કરવાની સુવિધા ઉપલબ્ધ ન હોવાને કારણે ChromeOS તમારા ડેટાને સિંક કરી શક્યું નથી.</translation>
 <translation id="5334487786912937552">ફાઇલો ડાઉનલોડ કરવા માટે, Chromeને સ્ટોરેજના ઍક્સેસની પરવાનગીની જરૂર છે</translation>
 <translation id="5337648990166757586">વૈકલ્પિક: Googleને ડાયગ્નોસ્ટિક અને વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને ChromeOSની સુવિધાઓ અને કાર્યપ્રદર્શનને બહેતર બનાવવામાં સહાય કરો.</translation>
-<translation id="5357889879764279201">ChromeOS Flex માટે સહાય મેળવો</translation>
 <translation id="5368118228313795342">વધારાનો કોડ: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">જ્યારે તમે Chrome શરૂ કરો અથવા ઑમ્નિબૉક્સ પરથી શોધ કરો ત્યારે કયું પેજ બતાવવામાં આવે તે તેનું પણ નિયંત્રણ કરે છે.</translation>
 <translation id="5394833366792865639">Chrome ટૅબ શેર કરો</translation>

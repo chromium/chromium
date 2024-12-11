@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">සියල්ල විවෘත කරන්න</translation>
 <translation id="1408847409015257906">“පෞද්ගලිකත්වය සහ ආරක්ෂාව” වෙත තට්ටු කරන්න.</translation>
 <translation id="1411386976162024013">Lens දෘශ්‍ය සෙවීම</translation>
+<translation id="1426410128494586442">ඔව්</translation>
 <translation id="1430915738399379752">මුද්‍රණය කරන්න</translation>
 <translation id="1436671784520050284">පිහිටුවීම දිගටම කරන්න</translation>
 <translation id="143681031165817424">ලිපිනය මෙම උපාංගයෙහි පමණක් සුරකින ලදි</translation>
@@ -695,6 +696,7 @@
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />පෙරනිමි බ්‍රව්සර යෙදුම<ph name="END_BOLD" /> තට්ටු කරන්න</translation>
 <translation id="4242533952199664413">සැකසීම් විවෘත කරන්න</translation>
 <translation id="4250432749243022864">{count,plural, =0{{count} පටිත්ත විවෘත කරන්න}=1{{count} පටිත්ත විවෘත කරන්න}one{පටිති {count} විවෘත කරන්න}other{පටිති {count} විවෘත කරන්න}}</translation>
+<translation id="4250680216510889253">නැත</translation>
 <translation id="4251531167342733205">ඔබ ප්‍රිය කරන බ්‍රව්සරයෙන් හොඳම දේ ලබා ගන්න.</translation>
 <translation id="4253168017788158739">සටහන</translation>
 <translation id="4256782883801055595">විවෘත කේත බලපත්</translation>
@@ -944,7 +946,6 @@
 <translation id="5343472494710226394">ඔබේ රුචිකත්වයන් මත පදනම් වූ පුවත්, ක්‍රීඩා සහ අන්තර්ගතය.</translation>
 <translation id="5352128922772839949">ගොනුව සුරකින්න</translation>
 <translation id="5355191726083956201">වැඩිදියුණු කළ ආරක්ෂාව සක්‍රීයයි</translation>
-<translation id="5356332698539508708">වෙබ් අඩවිය මගින් නිශ්චිතව දක්වා නොමැති ගොනු දිගු ඇතුළත් කරන්න</translation>
 <translation id="537853552771686272">ඔබ උනන්දුවක් දක්වන මාතෘකා සහ අඩවි කළමනාකරණය කරන්න</translation>
 <translation id="5395707839134961196">සෙවුම් යන්ත්‍ර විස්තර සඟවන්න</translation>
 <translation id="541276233349960923">ඔබේ සියලු උපාංග මත මුරපද භාවිතා කරන්න</translation>
@@ -1250,6 +1251,7 @@
 <translation id="6624219055418309072">අප්‍රසිද්ධව අවහිර කරන්න</translation>
 <translation id="6625830436658400045">ඔබේ අවසන් උපස්ථය මත පදනම්ව ඔබේ සමමුහුර්ත කිරීමේ සැකසීම් ප්‍රතිසාධනය කරනු ලැබේ. ඔබට සැම විට <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> තුළ සමමුහුර්ත කළ යුතු දේ තෝරා ගත හැක.</translation>
 <translation id="6627583120233659107">ෆෝල්ඩරය සංස්කරණය කරන්න</translation>
+<translation id="6629759408545977279">වෙතින්: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">ඔබගේ සංවිධානය අප්‍රසිද්ධ ප්‍රකාරය ක්‍රියාවිරහිත කරන ලදි</translation>
 <translation id="6638511529934826365">පාඨය විශාලන කරන්න…</translation>
 <translation id="6640268266988685324">ටැබය විවෘත කරන්න</translation>
@@ -1605,7 +1607,6 @@
 <translation id="8219424187226230983">අලුත් ටැබයේ නොබැඳි අනුවාදය බලන්න</translation>
 <translation id="8230355548492839438">පෙර එක සොයන්න</translation>
 <translation id="8232956427053453090">දත්ත තබා ගන්න</translation>
-<translation id="8242644458318193141">ඔබේ සංවිධානයේ ආරක්ෂාව ආරක්ෂා කිරීමට, පටිති වසා දමනු ඇති අතර මෙම උපාංගයෙන් නොසුරකින ගිණුම් දත්ත මකනු ඇත. මෙයට මුරපද, ඉතිහාසය, සහ තවත් දේ ඇතුළත් විය හැක.</translation>
 <translation id="8261506727792406068">මකන්න</translation>
 <translation id="82619448491672958">අනෙකුත් ටැබ බලන්න</translation>
 <translation id="8263228331881858381">මුරයතුර සුරකින ලදි</translation>
@@ -1651,7 +1652,6 @@
 <translation id="8449869326050867919">මුරපදය බෙදා ගන්නා ලදි</translation>
 <translation id="8453847087068411809">කිසි විටෙකත් පැකේජ ස්වයංව හඳුනා නොගන්න</translation>
 <translation id="846158969830690371">ඔබට ආරක්ෂිත ම සැකසීම් තිබේ ද නැතහොත් කිසිවක් සමාලෝචනය කිරීමට අවශ්‍ය දැයි දැන ගන්න.</translation>
-<translation id="8466300942149667917">නොසුරැකි ගිණුම් දත්ත මකනු ලැබේ</translation>
 <translation id="8473863474539038330">ලිපින සහ තව</translation>
 <translation id="8474378002946546633">දැනුම්දීම්වලට ඉඩ දෙන්න</translation>
 <translation id="8477178913400731244">දත්ත මකන්න</translation>

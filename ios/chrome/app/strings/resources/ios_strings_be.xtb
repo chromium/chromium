@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Адкрыць усе</translation>
 <translation id="1408847409015257906">Націсніце Privacy &amp; Security ("Прыватнасць і бяспека").</translation>
 <translation id="1411386976162024013">Візуальны пошук з дапамогай Аб’ектыва</translation>
+<translation id="1426410128494586442">Так</translation>
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1436671784520050284">Працягнуць наладку</translation>
 <translation id="143681031165817424">Адрас захоўваецца толькі на гэтай прыладзе</translation>
@@ -695,6 +696,7 @@
 <translation id="4237377247299956313">Націсніце <ph name="BEGIN_BOLD" />Стандартны браўзер<ph name="END_BOLD" />.</translation>
 <translation id="4242533952199664413">Адкрыць налады</translation>
 <translation id="4250432749243022864">{count,plural, =0{Адкрыць {count} укладак}=1{Адкрыць {count} укладку}one{Адкрыць {count} укладку}few{Адкрыць {count} укладкі}many{Адкрыць {count} укладак}other{Адкрыць {count} укладкі}}</translation>
+<translation id="4250680216510889253">Не</translation>
 <translation id="4251531167342733205">Выкарыстоўвайце любімы браўзер максімальна эфектыўна.</translation>
 <translation id="4253168017788158739">Нататка</translation>
 <translation id="4256782883801055595">Ліцэнзіі на ПЗ з адкрытым зыходным кодам</translation>
@@ -944,7 +946,6 @@
 <translation id="5343472494710226394">Навіны, спартыўныя мерапрыемствы і іншае змесціва, якое вас цікавіць.</translation>
 <translation id="5352128922772839949">Захаваць файл</translation>
 <translation id="5355191726083956201">Палепшаная абарона ўключана</translation>
-<translation id="5356332698539508708">Выдаліць і пераключыць</translation>
 <translation id="537853552771686272">Выберыце, якія тэмы і сайты вас цікавяць</translation>
 <translation id="5395707839134961196">Схаваць падрабязныя звесткі пра пошукавую сістэму</translation>
 <translation id="541276233349960923">Выкарыстоўвайце паролі на ўсіх сваіх прыладах</translation>
@@ -1250,6 +1251,7 @@
 <translation id="6624219055418309072">Блакіроўка ў рэжыме інкогніта</translation>
 <translation id="6625830436658400045">Налады сінхранізацыі будуць адноўлены з апошняй рэзервовай копіі. Вы заўсёды можаце выбраць, якія даныя трэба сінхранізаваць, у <ph name="BEGIN_LINK" />наладах<ph name="END_LINK" />.</translation>
 <translation id="6627583120233659107">Рэдагаваць папку</translation>
+<translation id="6629759408545977279">Крыніца: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Ваша арганізацыя адключыла рэжым інкогніта</translation>
 <translation id="6638511529934826365">Змяніць памер тэксту…</translation>
 <translation id="6640268266988685324">Адкрытая ўкладка</translation>
@@ -1605,7 +1607,6 @@
 <translation id="8219424187226230983">Паказаць пазасеткавую версію ў новай укладцы</translation>
 <translation id="8230355548492839438">Знайсці папярэдняе супадзенне</translation>
 <translation id="8232956427053453090">Захаваць даныя</translation>
-<translation id="8242644458318193141">У мэтах бяспекі вашай арганізацыі ўкладкі будуць закрыты, а незахаваныя даныя ўліковага запісу будуць выдалены з гэтай прылады. Гэта могуць быць паролі, гісторыя і іншыя даныя.</translation>
 <translation id="8261506727792406068">Выдаліць</translation>
 <translation id="82619448491672958">Паказаць іншыя ўкладкі</translation>
 <translation id="8263228331881858381">Ключ доступу захаваны</translation>
@@ -1651,7 +1652,6 @@
 <translation id="8449869326050867919">Пароль абагулены</translation>
 <translation id="8453847087068411809">Не выяўляць пасылкі аўтаматычна</translation>
 <translation id="846158969830690371">Даведайцеся, ці ў аптымальным стане сістэма бяспекі і ці можна яе палепшыць.</translation>
-<translation id="8466300942149667917">Незахаваныя даныя ўліковага запісу будуць выдалены</translation>
 <translation id="8473863474539038330">Адрасы і іншае</translation>
 <translation id="8474378002946546633">Дазволіць апавяшчэнні</translation>
 <translation id="8477178913400731244">Выдаліць даныя</translation>

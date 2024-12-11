@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1408847409015257906">Presiona "Privacidad y seguridad".</translation>
 <translation id="1411386976162024013">Búsqueda visual de Lens</translation>
+<translation id="1426410128494586442">Sí</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1436671784520050284">Continuar con la configuración</translation>
 <translation id="143681031165817424">La dirección se guardó únicamente en este dispositivo</translation>
@@ -416,6 +417,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="2816489851009559785">Menú → Configuración → Navegador predeterminado</translation>
 <translation id="2818821771744632548">Saliste de tu cuenta <ph name="USER_NAME" /> como parte del restablecimiento de tu iPhone. Para volver a acceder, presiona "Continuar".</translation>
 <translation id="2819667972867209401">Si se activa, los datos se guardarán en tu Cuenta de Google. Si se desactiva, los datos se guardan solo en este dispositivo y se borran si sales de tu cuenta.</translation>
+<translation id="2827760117436553203">¿Quieres mantener los datos separados?</translation>
 <translation id="2829172210806130158">Realiza una búsqueda directa en tu pantalla</translation>
 <translation id="2834399722155632105">3. Presiona Opciones de contraseña</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -695,6 +697,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4237377247299956313">Presiona <ph name="BEGIN_BOLD" />App de navegador predeterminada<ph name="END_BOLD" />.</translation>
 <translation id="4242533952199664413">Abrir la configuración</translation>
 <translation id="4250432749243022864">{count,plural, =0{Abrir {count} pestaña}=1{Abrir {count} pestaña}other{Abrir {count} pestañas}}</translation>
+<translation id="4250680216510889253">No</translation>
 <translation id="4251531167342733205">Obtén lo mejor del navegador que te encanta.</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="4256782883801055595">Licencias de código abierto</translation>
@@ -944,7 +947,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5343472494710226394">Noticias, deportes y contenido según tus intereses.</translation>
 <translation id="5352128922772839949">Guardar archivo</translation>
 <translation id="5355191726083956201">Se activó la protección mejorada</translation>
-<translation id="5356332698539508708">Borrar y cambiar</translation>
 <translation id="537853552771686272">Administrar los temas y los sitios que te interesan</translation>
 <translation id="5395707839134961196">Ocultar detalles del motor de búsqueda</translation>
 <translation id="541276233349960923">Usa contraseñas en todos tus dispositivos</translation>
@@ -1212,6 +1214,7 @@ Sin embargo, no pueden usar cookies para ver la actividad de navegación en dife
 <translation id="6476800141292307438">Se está traduciendo la página al <ph name="LANGUAGE" />. Las opciones disponibles se encuentran cerca de la parte inferior de la pantalla.</translation>
 <translation id="647867789226964031">Cambia tus contraseñas</translation>
 <translation id="6494931198667773526">Finaliza</translation>
+<translation id="6495521251906266731">Elige qué hacer con los datos de navegación existentes en este dispositivo, como las contraseñas, el historial y mucho más.</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{Detener el seguimiento de este paquete}other{Detener el seguimiento de todos los paquetes}}</translation>
 <translation id="6503077044568424649">Más visitados</translation>
 <translation id="6503763061813913607">Notificaciones de la Verificación de seguridad</translation>
@@ -1606,7 +1609,6 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8219424187226230983">Ver la versión sin conexión en una nueva pestaña</translation>
 <translation id="8230355548492839438">Buscar anterior</translation>
 <translation id="8232956427053453090">Conservar los datos</translation>
-<translation id="8242644458318193141">Para proteger la seguridad de tu organización, se cerrarán las pestañas y se borrarán los datos de la cuenta no guardados de este dispositivo. Esto puede incluir contraseñas, historial y más.</translation>
 <translation id="8261506727792406068">Borrar</translation>
 <translation id="82619448491672958">Ver otras pestañas</translation>
 <translation id="8263228331881858381">Se guardó la llave de acceso</translation>
@@ -1652,7 +1654,6 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8449869326050867919">Se compartió la contraseña</translation>
 <translation id="8453847087068411809">Nunca detectar paquetes automáticamente</translation>
 <translation id="846158969830690371">Descubre si tienes la configuración más segura o si necesitas revisar algo.</translation>
-<translation id="8466300942149667917">Se borrarán los datos no guardados de la cuenta</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
 <translation id="8474378002946546633">Permitir notificaciones</translation>
 <translation id="8477178913400731244">Borrar datos</translation>

@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Apri tutte</translation>
 <translation id="1408847409015257906">Tocca l'opzione "Privacy e sicurezza".</translation>
 <translation id="1411386976162024013">Ricerca visiva di Lens</translation>
+<translation id="1426410128494586442">Sì</translation>
 <translation id="1430915738399379752">Stampa</translation>
 <translation id="1436671784520050284">Continua configurazione</translation>
 <translation id="143681031165817424">Indirizzo salvato solo su questo dispositivo</translation>
@@ -695,6 +696,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4237377247299956313">Tocca <ph name="BEGIN_BOLD" />App browser predefinita<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Apri le impostazioni</translation>
 <translation id="4250432749243022864">{count,plural, =0{Apri {count} scheda}=1{Apri {count} scheda}other{Apri {count} schede}}</translation>
+<translation id="4250680216510889253">No</translation>
 <translation id="4251531167342733205">Ottieni il meglio dal browser che ami.</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="4256782883801055595">Licenze open source</translation>
@@ -944,7 +946,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5343472494710226394">Notizie, sport e contenuti basati sui tuoi interessi.</translation>
 <translation id="5352128922772839949">Salva file</translation>
 <translation id="5355191726083956201">Protezione avanzata è attiva</translation>
-<translation id="5356332698539508708">Elimina e cambia</translation>
 <translation id="537853552771686272">Gestisci gli argomenti e i siti che ti interessano</translation>
 <translation id="5395707839134961196">Nascondi dettagli motore di ricerca</translation>
 <translation id="541276233349960923">Usa le password su tutti i tuoi dispositivi</translation>
@@ -1606,7 +1607,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8219424187226230983">Visualizza versione offline in una nuova scheda</translation>
 <translation id="8230355548492839438">Trova precedente</translation>
 <translation id="8232956427053453090">Conserva i dati</translation>
-<translation id="8242644458318193141">Per proteggere la sicurezza della tua organizzazione, le schede verranno chiuse e i dati dell'account non salvati verranno eliminati da questo dispositivo. Potrebbero essere incluse password, cronologia e altro ancora.</translation>
 <translation id="8261506727792406068">Elimina</translation>
 <translation id="82619448491672958">Vedi altre schede</translation>
 <translation id="8263228331881858381">Passkey salvata</translation>
@@ -1652,7 +1652,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8449869326050867919">Password condivisa</translation>
 <translation id="8453847087068411809">Non rilevare mai automaticamente i pacchi</translation>
 <translation id="846158969830690371">Scopri se hai le impostazioni più sicure o se devi controllare qualcosa.</translation>
-<translation id="8466300942149667917">I dati dell'account non salvati verranno eliminati</translation>
 <translation id="8473863474539038330">Indirizzi e altro</translation>
 <translation id="8474378002946546633">Consenti notifiche</translation>
 <translation id="8477178913400731244">Elimina dati</translation>

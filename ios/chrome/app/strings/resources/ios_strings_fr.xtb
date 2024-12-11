@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Tout ouvrir</translation>
 <translation id="1408847409015257906">Appuyez sur "Confidentialité et sécurité".</translation>
 <translation id="1411386976162024013">Recherche visuelle Lens</translation>
+<translation id="1426410128494586442">Oui</translation>
 <translation id="1430915738399379752">Imprimer</translation>
 <translation id="1436671784520050284">Poursuivre la configuration</translation>
 <translation id="143681031165817424">Adresse enregistrée uniquement sur cet appareil</translation>
@@ -695,6 +696,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4237377247299956313">Appuyez sur <ph name="BEGIN_BOLD" />Navigateur par défaut<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4250432749243022864">{count,plural, =0{Ouvrir {count} onglet}=1{Ouvrir {count} onglet}one{Ouvrir {count} onglet}other{Ouvrir {count} onglets}}</translation>
+<translation id="4250680216510889253">Non</translation>
 <translation id="4251531167342733205">Profitez au maximum de votre navigateur favori.</translation>
 <translation id="4253168017788158739">Remarque</translation>
 <translation id="4256782883801055595">Licences Open Source</translation>
@@ -944,7 +946,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5343472494710226394">Actualités, sports et contenus basés sur vos centres d'intérêt.</translation>
 <translation id="5352128922772839949">Enregistrer le fichier</translation>
 <translation id="5355191726083956201">La protection renforcée est activée</translation>
-<translation id="5356332698539508708">Supprimer et changer</translation>
 <translation id="537853552771686272">Gérez les thèmes et les sites qui vous intéressent</translation>
 <translation id="5395707839134961196">Masquer les informations sur le moteur de recherche</translation>
 <translation id="541276233349960923">Utiliser des mots de passe sur tous vos appareils</translation>
@@ -1250,6 +1251,7 @@ En revanche, ils ne peuvent pas en utiliser pour voir votre activité de navigat
 <translation id="6624219055418309072">Bloquer en mode navigation privée</translation>
 <translation id="6625830436658400045">Vos paramètres de synchronisation seront restaurés en fonction de votre dernière sauvegarde. Vous pouvez toujours choisir quels éléments synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="6627583120233659107">Modifier le dossier</translation>
+<translation id="6629759408545977279">Source : <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Votre organisation a désactivé le mode navigation privée</translation>
 <translation id="6638511529934826365">Agrandir le texte…</translation>
 <translation id="6640268266988685324">Onglet ouvert</translation>
@@ -1605,7 +1607,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8219424187226230983">Afficher version hors connexion dans nouvel onglet</translation>
 <translation id="8230355548492839438">Rechercher précédent</translation>
 <translation id="8232956427053453090">Conserver les données</translation>
-<translation id="8242644458318193141">Pour protéger la sécurité de votre organisation, les onglets seront fermés et les données de compte non enregistrées seront supprimées de cet appareil. Il peut s'agir de mots de passe, de l'historique, etc.</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="82619448491672958">Voir les autres onglets</translation>
 <translation id="8263228331881858381">Clé d'accès enregistrée</translation>
@@ -1651,7 +1652,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8449869326050867919">Mot de passe partagé</translation>
 <translation id="8453847087068411809">Ne jamais détecter automatiquement les colis</translation>
 <translation id="846158969830690371">Vérifiez si vous avez les paramètres les plus sûrs ou si vous devez examiner quoi que ce soit.</translation>
-<translation id="8466300942149667917">Les données non enregistrées du compte seront supprimées</translation>
 <translation id="8473863474539038330">Adresses et autres</translation>
 <translation id="8474378002946546633">Autoriser les notifications</translation>
 <translation id="8477178913400731244">Supprimer les données</translation>

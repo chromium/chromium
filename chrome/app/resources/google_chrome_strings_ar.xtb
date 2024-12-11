@@ -65,6 +65,7 @@
 <translation id="1786044937610313874">‏يتم فتح الاختصارات في متصفِّح Chrome</translation>
 <translation id="178701303897325119">‏لم تعُد هذه الإضافة متاحة. ينصح متصفّح Chrome بإزالتها.</translation>
 <translation id="1812689907177901597">‏من خلال إيقاف هذا الإعداد، يمكنك تسجيل الدخول إلى "مواقع Google" مثل Gmail بدون الحاجة إلى تسجيل الدخول إلى Chrome</translation>
+<translation id="1838374766361614909">محو البحث</translation>
 <translation id="1860536484129686729">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا من أجل الموقع الإلكتروني هذا.</translation>
 <translation id="1873233029667955273">‏Google Chrome ليس متصفحك التلقائي.</translation>
 <translation id="1874309113135274312">‏الإصدار التجريبي من Google Chrome‏ (mDNS-In)</translation>
@@ -229,7 +230,6 @@
 <translation id="3716540481907974026">‏إصدار نظام التشغيل ChromeOS Flex</translation>
 <translation id="3718181793972440140">‏سيعمل هذا على حذف عنصر واحد من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chrome كـ <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{‏ينصح متصفِّح Chrome بإزالة هذه الإضافة. <ph name="BEGIN_LINK" />مزيد من المعلومات عن الإضافات المتوافقة<ph name="END_LINK" />}zero{‏ينصح المتصفّح Chrome بإزالة هذه الإضافات. <ph name="BEGIN_LINK" />مزيد من المعلومات عن الإضافات المتوافقة<ph name="END_LINK" />}two{‏ينصح Chrome بإزالة هاتين الإضافتيَن. <ph name="BEGIN_LINK" />مزيد من المعلومات عن الإضافات المتوافقة<ph name="END_LINK" />}few{‏ينصح المتصفّح Chrome بإزالة هذه الإضافات. <ph name="BEGIN_LINK" />مزيد من المعلومات عن الإضافات المتوافقة<ph name="END_LINK" />}many{‏ينصح المتصفّح Chrome بإزالة هذه الإضافات. <ph name="BEGIN_LINK" />مزيد من المعلومات عن الإضافات المتوافقة<ph name="END_LINK" />}other{‏ينصح المتصفّح Chrome بإزالة هذه الإضافات. <ph name="BEGIN_LINK" />مزيد من المعلومات عن الإضافات المتوافقة<ph name="END_LINK" />}}</translation>
-<translation id="3744202345691150878">‏الحصول على مساعدة بشأن نظام التشغيل Chrome</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">‏تعذَّر على ChromeOS Flex مزامنة البيانات بسبب حدوث خطأ أثناء تسجيل الدخول.</translation>
 <translation id="3795971588916395511">‏نظام التشغيل Chrome من Google</translation>
@@ -260,6 +260,7 @@
 <translation id="4147555960264124640">‏إنك تسجل الدخول باستخدام حساب مُدار وتمنح المشرف إمكانية التحكم في ملفك الشخصي في Google Chrome. وسيتم ربط بيانات Chrome التابعة لك، مثل التطبيقات والإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى بالمستخدم <ph name="USER_NAME" />. وستتمكن من حذف هذه البيانات عبر لوحة تحكم حسابات Google، ولكنك لن تتمكن من إقران هذه البيانات بحساب آخر. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">جارٍ التثبيت...</translation>
 <translation id="4149882025268051530">‏فشلت أداة المثبِّت في فك ضغط الأرشيف. يُرجى تنزيل Google Chrome مرة أخرى.</translation>
+<translation id="415112847282352845">‏يمكنك تسجيل الدخول إلى Chrome للوصول إلى العناوين وغيرها على جميع أجهزتك. وسيتم حفظ هذا العنوان في حسابك على Google بعد تسجيل الدخول.</translation>
 <translation id="4153934450158521343">‏سيتم إغلاق Chrome وحذف بيانات التصفُّح قريبًا</translation>
 <translation id="4173512894976930765">‏من المحتمل أن تعمل المواقع الإلكترونية على النحو المتوقَّع. وسيتم تسجيل خروجك من معظم المواقع الإلكترونية عند إغلاق جميع نوافذ Chrome، باستثناء حسابك على Google إذا كنت مسجلاً الدخول إلى Chrome.</translation>
 <translation id="4175922240926474352">‏حَظَر Chrome عملية التنزيل هذه لأنّ الموقع الإلكتروني لا يستخدم اتصالاً آمنًا وربما تمّ التلاعب بالملف.</translation>
@@ -352,7 +353,6 @@
 <translation id="5334309298019785904">‏تعذّر على نظام التشغيل Chrome مزامنة البيانات لأن المزامنة غير متاحة لنطاقك.</translation>
 <translation id="5334487786912937552">‏يحتاج Chrome إلى إذن للوصول إلى مساحة التخزين من أجل تنزيل الملفات.</translation>
 <translation id="5337648990166757586">‏إجراء اختياري: يمكنك المساعدة في تحسين ميزات نظام التشغيل Chrome وأدائه من خلال إرسال بيانات التشخيص والاستخدام تلقائيًا إلى Google.</translation>
-<translation id="5357889879764279201">‏الحصول على مساعدة في نظام التشغيل ChromeOS Flex</translation>
 <translation id="5368118228313795342">الرمز البرمجي الإضافي: <ph name="EXTRA_CODE" /></translation>
 <translation id="5386244825306882791">‏كما أنها تتحكم في الصفحة التي تظهر عند تشغيل Chrome أو إجراء بحث من المربع متعدد الاستخدامات.</translation>
 <translation id="5394833366792865639">‏مشاركة علامة تبويب Chrome</translation>
@@ -483,7 +483,7 @@
 <translation id="7059914902409643750">‏اجعل Chrome متصفِّحك الدائم</translation>
 <translation id="7071827361006050863">‏سيحذف Chrome بيانات التصفُّح قريبًا</translation>
 <translation id="7085332316435785646">‏اختَر ما إذا كنت تريد تضمين سجلّ Chrome للحصول على تجارب أكثر تخصيصًا في خدمات Google.</translation>
-<translation id="7088681679121566888">‏Chrome محدّث.</translation>
+<translation id="7088681679121566888">‏Chrome محدّث</translation>
 <translation id="7098166902387133879">‏يستخدم Google Chrome الميكروفون.</translation>
 <translation id="7099479769133613710">‏إعادة التشغيل لتحديث نظام التشغيل Chrome</translation>
 <translation id="7100085796996987445">‏لمشاركة شاشتك، يجب السماح بتسجيل الشاشة في Chrome ضمن "إعدادات النظام المفضّلة"</translation>

@@ -1495,6 +1495,7 @@
 <translation id="202352106777823113">Спампоўванне ішло занадта доўга і было спынена сеткай.</translation>
 <translation id="2024195579772565064">Выдаленне пошукавай сістэмы</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">Дакладнае націсканне</translation>
 <translation id="2025632980034333559">Збой праграмы "<ph name="APP_NAME" />". Націсніце на гэта выплыўное папярэджанне, каб перазагрузіць пашырэнне.</translation>
 <translation id="2026377162111110983">Галасы вакол</translation>
 <translation id="2028449514182362831">Функцыі, якім патрэбны датчыкі руху, не будуць працаваць</translation>
@@ -4749,6 +4750,7 @@
 <translation id="4324577459193912240">Файл няпоўны</translation>
 <translation id="4325237902968425115">Ідзе выдаленне праграмы <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4325433082696797523">Сховішча і сілкаванне</translation>
+<translation id="4325515113816851466">Пасля твайго выхаду з уліковага запісу бацькоўскія налады не будуць дзейнічаць</translation>
 <translation id="4326146840124313313">Самая надзейная сістэма бяспекі Chrome забяспечвае лепшую абарону ад небяспечных вэб-сайтаў, спамповак і пашырэнняў</translation>
 <translation id="4327380114687339519">Меню пашырэнняў</translation>
 <translation id="4330191372652740264">Ледзяная вада</translation>
@@ -4871,6 +4873,7 @@
 <translation id="4412992751769744546">Дазволіць староннія файлы cookie</translation>
 <translation id="4413087696295876280">Прагляд звестак і даных пра прыладу з ChromeOS Flex</translation>
 <translation id="44137799675104237">Праслухаць тэкст, прачытаны натуральным голасам</translation>
+<translation id="4414051792721275732">Пры выкарыстанні жэста для націскання кнопкі мышы хуткасць мышы паменшыцца, каб зрабіць кіраванне больш зручным для вас. Каб завяршыць націсканне, скарыстайце жэст яшчэ раз.</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">Дазволіць праграме "<ph name="APP_NAME" />" атрымліваць спіс падключаных USB-прылад?</translation>
 <translation id="4414232939543644979">Новае &amp;акно ў рэжыме інкогніта</translation>
@@ -5107,6 +5110,7 @@
 <translation id="4586275095964870617">Адрас "<ph name="URL" />" не ўдалося адкрыць у альтэрнатыўным браўзеры. Звярніцеся да сістэмнага адміністратара.</translation>
 <translation id="4587589328781138893">Сайты</translation>
 <translation id="4588749726511456218">Паскарэнне прагортвання <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905">Здаецца, што <ph name="PASSWORD_DOMAIN" /> і <ph name="DOMAIN" /> звязаны паміж сабой. Выкарыстоўвайце гэты пароль, толькі калі давяраеце дамену <ph name="DOMAIN" />.</translation>
 <translation id="4589713469967853491">Журналы захаваны ў каталозе "Спампоўкі".</translation>
 <translation id="4590785647529325123">Каб выдаліць гісторыю прагляду сайтаў у рэжыме інкогніта на прыладзе, закрыйце ўсе ўкладкі ў рэжыме інкогніта</translation>
 <translation id="459204634473266369">Ва ўліковым запісе <ph name="PRIMARY_EMAIL" /> няма захаваных прылад</translation>
@@ -5613,6 +5617,7 @@
 <translation id="4946998421534856407">Клавіша панэлі запуску + стрэлка ўверх</translation>
 <translation id="4947376546135294974">Даныя з сайта, на якім вы знаходзіцеся</translation>
 <translation id="4950100687509657457">Стварыць профіль</translation>
+<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{файл}one{# файл}few{# файлы}many{# файлаў}other{# файла}}</translation>
 <translation id="495170559598752135">Дзеянні</translation>
 <translation id="4951966678293618079">Не захоўваць паролі для гэтага сайта</translation>
@@ -5751,6 +5756,7 @@
 <translation id="5061531353537614467">Тундра</translation>
 <translation id="5062930723426326933">Уваход не выкананы. Падключыцеся да інтэрнэту і паўтарыце спробу.</translation>
 <translation id="5063480226653192405">Выкарыстанне</translation>
+<translation id="5064921774605267982">Адкрыць профіль карыстальніка <ph name="PROFILE_NAME" />. Гэты профіль знаходзіцца пад кіраваннем бацькоў.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Кіраванне абароненай DNS у наладах Chrome OS</translation>
 <translation id="5066534201484101197">Пераходзіць паміж старонкамі пры дасягненні канца прагорткі</translation>
@@ -6198,6 +6204,7 @@
 <translation id="5389224261615877010">Вясёлка</translation>
 <translation id="5389626883706033615">Сайтам забаронена запытваць у вас дазвол на выкарыстанне інфармацыі, якую яны пра вас захавалі</translation>
 <translation id="5389794555912875905">Папярэджваць пра пераход на небяспечныя сайты (рэкамендуецца)</translation>
+<translation id="5389943529251318913">Паменшыць хуткасць мышы на</translation>
 <translation id="5390112241331447203">Дадаць файл system_logs.txt, які быў адпраўлены ў водгуках-справаздачах.</translation>
 <translation id="5390677308841849479">Цёмна-чырвоны і аранжавы</translation>
 <translation id="5392192690789334093">Дазволена адпраўляць апавяшчэнні</translation>
@@ -7406,6 +7413,7 @@
 <translation id="6266984048393265562">Наладзіць профіль</translation>
 <translation id="6267166720438879315">Выберыце сертыфікат для аўтэнтыфікацыі сябе на хосце <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Адкрыць у праграме <ph name="APP" /></translation>
+<translation id="6269050081341530851">Пры закрыцці копій захаваецца іх самая старая версія</translation>
 <translation id="6270309713620950855">Выключыць гук напамінаў</translation>
 <translation id="6270391203985052864">Сайтам дазволена запытваць дазвол на паказ апавяшчэнняў</translation>
 <translation id="6270486800167535228">Пашырэнне замацавана. Выберыце, каб пабачыць больш варыянтаў.</translation>
@@ -7953,6 +7961,7 @@
 <translation id="6679947539429331601">Схаваць на 12 гадзін</translation>
 <translation id="6680442031740878064">Даступна: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Хуткасць</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [Placeholder String]</translation>
 <translation id="6683022854667115063">Навушнікі</translation>
 <translation id="6683087162435654533">Аднавіць усе ўкладкі</translation>
 <translation id="6683433919380522900">Стан дазволу: <ph name="PERMISSION_STATE" /></translation>
@@ -8035,7 +8044,6 @@
 <translation id="6743841972744298686">Налады сінхранізацыі</translation>
 <translation id="6745592621698551453">Абнавіць</translation>
 <translation id="6746124502594467657">Перамясціць ніжэй</translation>
-<translation id="674632704103926902">Уключыць перацягванне дотыкам</translation>
 <translation id="67465227497040338">Паказаць пароль для <ph name="DOMAIN" /></translation>
 <translation id="6748980958975836188">Мною былі прачытаны <ph name="BEGIN_LINK1" />Умовы выкарыстання Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Дадатковыя ўмовы выкарыстання Google Chrome і Chrome OS<ph name="END_LINK2" />, і я згаджаюся з імі.</translation>
 <translation id="6749077623962119521">Скінуць дазволы?</translation>
@@ -8846,6 +8854,7 @@
 <translation id="7330533963640151632">Налады функцыі "<ph name="FEATURE_NAME" />" для прылады, якой карыстаецца <ph name="USER_NAME" />, абагульваюцца ад імені ўліковага запісу <ph name="USER_EMAIL" />.</translation>
 <translation id="7331646370422660166">Alt + стрэлка ўніз</translation>
 <translation id="7332053360324989309">Вылучаны рабочы працэс: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">Капіраваць укладкі</translation>
 <translation id="7333388112938984914">Нельга запампаваць файлы, калі выкарыстоўваецца падключэнне з падлікам трафіка.</translation>
 <translation id="7333669215417470379">Рэзервовае капіраванне і аднаўленне праграм і налад</translation>
 <translation id="7335974957018254119">Для якіх моў выкарыстоўваць праверку правапісу</translation>
@@ -9916,7 +9925,6 @@
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Даныя праграм – гэта любыя даныя, якія захоўваюцца праграмай (у залежнасці ад налад распрацоўшчыка), у тым ліку кантакты, паведамленні і фота.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Даныя рэзервовай копіі не будуць улічвацца ў квоце сховішча вашага дзіцяці на Дыску.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Гэты сэрвіс можна выключыць у Наладах.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="8076492880354921740">Укладкі</translation>
 <translation id="8076835018653442223">Доступ да лакальных файлаў на прыладзе адключаны адміністратарам</translation>
 <translation id="8077120325605624147">Любы наведаны вамі сайт будзе паказваць вам рэкламу</translation>
 <translation id="8077579734294125741">Іншыя профілі Chrome</translation>
@@ -10553,7 +10561,6 @@
 <translation id="8528074251912154910">Дадаць мовы</translation>
 <translation id="8528479410903501741">Захаваць нумар IBAN</translation>
 <translation id="8528962588711550376">Выконваецца ўваход.</translation>
-<translation id="8529925957403338845">Збой злучэння Імгненнага рэжыму мадэма</translation>
 <translation id="8531367864749403520">Каб прыбраць групу з панэлі ўкладак, выберыце "Схаваць групу"</translation>
 <translation id="8531701051932785007">Палепшаны Бяспечны прагляд выключаны</translation>
 <translation id="8533670235862049797">"Бяспечны прагляд" уключаны</translation>

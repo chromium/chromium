@@ -2168,7 +2168,6 @@
 <translation id="4881695831933465202">ເປີດ</translation>
 <translation id="4881808915112408168">24 x 31.5 ນິ້ວ</translation>
 <translation id="4882314601499260499">ບໍ່ໄດ້ນຳໃຊ້ນະໂຍບາຍຜູ້ໃຊ້. ເພື່ອເພີ່ມນະໂຍບາຍຜູ້ໃຊ້, ອົງການຂອງທ່ານຈະຕ້ອງ <ph name="LINK_BEGIN" />ຢັ້ງຢືນໂດເມນຂອງທ່ານ<ph name="LINK_END" /> ກ່ອນ.</translation>
-<translation id="4883911187498618061">ລະບຸຄຳຖາມ ຫຼື prompt ຂອງທ່ານ</translation>
 <translation id="4885030148564729407">ສະຖານທີ່ຮັນນິມູນ ແລະ ສະຖານທີ່ທ່ຽວໂຣແມນຕິກ</translation>
 <translation id="4885256590493466218">ຈ່າຍດ້ວຍ <ph name="CARD_DETAIL" /> ຢູ່ຈຸດຈ່າຍເງິນ</translation>
 <translation id="4887406273302438710">ປົກປ້ອງລະຫັດຜ່ານດ້ວຍ Windows Hello</translation>
@@ -2201,7 +2200,6 @@
 <translation id="4930153903256238152">ຄວາມຈຸຫຼາຍ</translation>
 <translation id="4930714375720679147">ເປີດ</translation>
 <translation id="4932035752129140860">ຂໍ້ຄວາມທີ່ທ່ານວາງໃສ່ ຫຼື ແນບຈະຖືກສົ່ງໃຫ້ Google Cloud ຫຼື ພາກສ່ວນທີສາມເພື່ອວິເຄາະ. ຕົວຢ່າງ: ມັນອາດຖືກສະແກນເພື່ອຊອກຫາຂໍ້ມູນທີ່ລະອຽດອ່ອນ ແລະ ອາດຖືກຈັດເກັບຕາມນະໂຍບາຍບໍລິສັດ ແລະ ສະແດງໃຫ້ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານເຫັນ.</translation>
-<translation id="4933468175699107356">ຄລິກຂວາເພື່ອຕື່ມຂໍ້ມູນທີ່ບັນທຶກໄວ້ໂດຍອັດຕະໂນມັດໃນທຸກຮູບແບບ ເຊັ່ນ: ຊື່ ຫຼື ທີ່ຢູ່ຂອງທ່ານ</translation>
 <translation id="4933788293078559286">ຈ່າຍດ້ວຍ Pix</translation>
 <translation id="4934780484581617878">ການຈັດການໜ້າຈໍ</translation>
 <translation id="4936134414789135531">ບໍ່ພົບ <ph name="VALUE_NAME" /> ທີ່ແຊກໃສ່.</translation>

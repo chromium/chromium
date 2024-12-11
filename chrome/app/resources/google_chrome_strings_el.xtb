@@ -65,6 +65,7 @@
 <translation id="1786044937610313874">Οι συντομεύσεις ανοίγουν στο Chrome</translation>
 <translation id="178701303897325119">Αυτή η επέκταση δεν υποστηρίζεται πλέον. Το Chrome συνιστά να την καταργήσετε.</translation>
 <translation id="1812689907177901597">Με την απενεργοποίηση αυτής της λειτουργίας, μπορείτε να συνδεθείτε σε ιστοτόπους Google, όπως το Gmail, χωρίς να συνδεθείτε στο Chrome</translation>
+<translation id="1838374766361614909">Διαγραφή αναζητήσεων</translation>
 <translation id="1860536484129686729">Το Chrome χρειάζεται άδεια, για να αποκτήσει πρόσβαση στην κάμερα για αυτόν τον ιστότοπο</translation>
 <translation id="1873233029667955273">Το Google Chrome δεν είναι το προεπιλεγμένο πρόγραμμα περιήγησης</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
@@ -229,7 +230,6 @@
 <translation id="3716540481907974026">Έκδοση ChromeOS Flex</translation>
 <translation id="3718181793972440140">Με αυτή την ενέργεια θα διαγραφεί 1 στοιχείο από αυτήν τη συσκευή. Για να ανακτήσετε τα δεδομένα σας αργότερα, συνδεθείτε στο Chrome ως <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Το Chrome προτείνει να την καταργήσετε. <ph name="BEGIN_LINK" />Μάθετε περισσότερα σχετικά με τις υποστηριζόμενες επεκτάσεις<ph name="END_LINK" />}other{Το Chrome προτείνει να την καταργήσετε. <ph name="BEGIN_LINK" />Μάθετε περισσότερα σχετικά με τις υποστηριζόμενες επεκτάσεις<ph name="END_LINK" />}}</translation>
-<translation id="3744202345691150878">Λήψη βοήθειας σχετικά με το Chrome OS</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Δεν ήταν δυνατός ο συγχρονισμός των δεδομένων σας από το ChromeOS Flex λόγω σφάλματος κατά τη σύνδεση.</translation>
 <translation id="3795971588916395511">Λειτουργικό σύστημα Chrome OS</translation>
@@ -352,7 +352,6 @@
 <translation id="5334309298019785904">Δεν ήταν δυνατός ο συγχρονισμός των δεδομένων σας από το Chrome OS, επειδή ο συγχρονισμός δεν είναι διαθέσιμος για τον τομέα σας.</translation>
 <translation id="5334487786912937552">Το Chrome χρειάζεται άδεια πρόσβασης στον αποθηκευτικό χώρο για τη λήψη αρχείων.</translation>
 <translation id="5337648990166757586">Προαιρετικό: Συμβάλετε στη βελτίωση των λειτουργιών και της απόδοσης του Chrome OS με αυτόματη αποστολή διαγνωστικών και δεδομένων χρήσης στην Google.</translation>
-<translation id="5357889879764279201">Λάβετε βοήθεια με το ChromeOS Flex</translation>
 <translation id="5368118228313795342">Επιπλέον κωδικός: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Επίσης, ελέγχει τη σελίδα που εμφανίζεται κατά την εκκίνηση του Chrome ή όταν κάνετε αναζήτηση από το κύριο πλαίσιο.</translation>
 <translation id="5394833366792865639">Μοιραστείτε μια καρτέλα του Chrome</translation>

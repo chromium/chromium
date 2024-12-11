@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Отвори ги сите</translation>
 <translation id="1408847409015257906">Допрете „Приватност и безбедност“.</translation>
 <translation id="1411386976162024013">Визуелно пребарување на Lens</translation>
+<translation id="1426410128494586442">Да</translation>
 <translation id="1430915738399379752">Печати</translation>
 <translation id="1436671784520050284">Продолжи со поставувањето</translation>
 <translation id="143681031165817424">Адресата е зачувана само на овој уред</translation>
@@ -695,6 +696,7 @@
 <translation id="4237377247299956313">Допрете <ph name="BEGIN_BOLD" />Стандардна апликација за прелистување<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Отвори ги поставките</translation>
 <translation id="4250432749243022864">{count,plural, =0{Отвори {count} картички}=1{Отвори {count} картичка}one{Отвори {count} картичка}other{Отвори {count} картички}}</translation>
+<translation id="4250680216510889253">Не</translation>
 <translation id="4251531167342733205">Извлечете максимум од прелистувачот што го обожавате.</translation>
 <translation id="4253168017788158739">Забелешка</translation>
 <translation id="4256782883801055595">Лиценци за отворен код</translation>
@@ -944,7 +946,6 @@
 <translation id="5343472494710226394">Вести, спорт и содржини согласно со вашите интереси.</translation>
 <translation id="5352128922772839949">Зачувајте ја датотеката</translation>
 <translation id="5355191726083956201">Вклучена е „Подобрената заштита“</translation>
-<translation id="5356332698539508708">Избриши и смени</translation>
 <translation id="537853552771686272">Управувајте со темите и сајтовите што ве интересираат</translation>
 <translation id="5395707839134961196">Криење на деталите на пребарувачот</translation>
 <translation id="541276233349960923">Користете ги лозинките на сите ваши уреди</translation>
@@ -1250,6 +1251,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6624219055418309072">Блокирај во „Инкогнито“</translation>
 <translation id="6625830436658400045">Поставките за синхронизација ќе се вратат според последниот бекап. Секогаш може да изберете што да синхронизирате во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
 <translation id="6627583120233659107">Уредувај папка</translation>
+<translation id="6629759408545977279">Од: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Вашата организација го исклучи режимот „Инкогнито“</translation>
 <translation id="6638511529934826365">Зумирај текст…</translation>
 <translation id="6640268266988685324">Отворена картичка</translation>
@@ -1605,7 +1607,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8219424187226230983">Прикажи ја офлајн верзијата во нова картичка</translation>
 <translation id="8230355548492839438">Најди го претходното</translation>
 <translation id="8232956427053453090">Задржи ги податоците</translation>
-<translation id="8242644458318193141">За да се заштити вашата организација, картичките ќе се затворат, а незачуваните податоци во сметката ќе се избришат од уредов. Ова може да опфаќа лозинки, историја и друго.</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="82619448491672958">Видете ги другите картички</translation>
 <translation id="8263228331881858381">Криптографскиот клуч е зачуван</translation>
@@ -1651,7 +1652,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8449869326050867919">Лозинката е споделена</translation>
 <translation id="8453847087068411809">Никогаш не откривај пакети автоматски</translation>
 <translation id="846158969830690371">Проверка дали ги имате најбезбедните поставки или дали треба да прегледате нешто.</translation>
-<translation id="8466300942149667917">Незачуваните податоци во сметката ќе се избришат</translation>
 <translation id="8473863474539038330">Адреси и друго</translation>
 <translation id="8474378002946546633">Дозволете известувања</translation>
 <translation id="8477178913400731244">Избришете ги податоците</translation>

@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Deschideți-le pe toate</translation>
 <translation id="1408847409015257906">Atinge Confidențialitate și securitate.</translation>
 <translation id="1411386976162024013">Căutare vizuală cu Lens</translation>
+<translation id="1426410128494586442">Da</translation>
 <translation id="1430915738399379752">Printează</translation>
 <translation id="1436671784520050284">Continuă configurarea</translation>
 <translation id="143681031165817424">Adresa a fost salvată numai pe acest dispozitiv</translation>
@@ -695,6 +696,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4237377247299956313">Atinge <ph name="BEGIN_BOLD" />Aplicația browser prestabilită<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Deschide setările</translation>
 <translation id="4250432749243022864">{count,plural, =0{Deschide {count} file}=1{Deschide {count} filă}few{Deschide {count} file}other{Deschide {count} de file}}</translation>
+<translation id="4250680216510889253">Nu</translation>
 <translation id="4251531167342733205">Profită la maximum de browserul care îți place.</translation>
 <translation id="4253168017788158739">Notă</translation>
 <translation id="4256782883801055595">Licențe open source</translation>
@@ -944,7 +946,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="5343472494710226394">Știri, sport și conținut pe baza intereselor tale.</translation>
 <translation id="5352128922772839949">Salvează fișierul</translation>
 <translation id="5355191726083956201">Protecția îmbunătățită este activată</translation>
-<translation id="5356332698539508708">Șterge și comută</translation>
 <translation id="537853552771686272">Gestionează subiectele și site-urile care te interesează</translation>
 <translation id="5395707839134961196">Ascunde detaliile motorului de căutare</translation>
 <translation id="541276233349960923">Folosește parole pe toate dispozitivele</translation>
@@ -1606,7 +1607,6 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8219424187226230983">Vezi versiunea offline într-o filă nouă</translation>
 <translation id="8230355548492839438">Rezultatul anterior</translation>
 <translation id="8232956427053453090">Păstrează datele</translation>
-<translation id="8242644458318193141">Pentru a proteja securitatea organizației, filele vor fi închise, iar datele contului nesalvate vor fi șterse de pe acest dispozitiv. Aici pot fi incluse parole, istoric și altele.</translation>
 <translation id="8261506727792406068">Șterge</translation>
 <translation id="82619448491672958">Vezi alte file</translation>
 <translation id="8263228331881858381">Cheia de acces a fost salvată</translation>
@@ -1652,7 +1652,6 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8449869326050867919">S-a permis accesul la parolă</translation>
 <translation id="8453847087068411809">Nu detecta niciodată automat coletele</translation>
 <translation id="846158969830690371">Află dacă ai cele mai sigure setări sau dacă trebuie să examinezi ceva.</translation>
-<translation id="8466300942149667917">Datele nesalvate ale contului vor fi șterse</translation>
 <translation id="8473863474539038330">Adrese și altele</translation>
 <translation id="8474378002946546633">Permiteți notificări</translation>
 <translation id="8477178913400731244">Șterge datele</translation>

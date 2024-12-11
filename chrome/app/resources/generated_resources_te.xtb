@@ -1502,6 +1502,7 @@
 <translation id="202352106777823113">డౌన్‌లోడ్‌కు చాలా సమయం పడుతుంది మరియు నెట్‌వర్క్ ద్వారా నిలిపివేయబడింది.</translation>
 <translation id="2024195579772565064">సెర్చ్ ఇంజిన్‌ను తొలగించండి</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">ఖచ్చితమైన క్లిక్</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> క్రాష్ అయింది. ఎక్స్‌టెన్ష‌న్‌ను రీలోడ్ చేయ‌డానికి ఈ బెలూన్‌ను క్లిక్ చేయండి.</translation>
 <translation id="2026377162111110983">ఏరియా వాయిస్</translation>
 <translation id="2028449514182362831">మోషన్ సెన్సార్‌లు అవసరం అయ్యే ఫీచర్‌లు పని చేయవు</translation>
@@ -4761,6 +4762,7 @@
 <translation id="4324577459193912240">ఫైల్ అసంపూర్ణంగా ఉంది</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" />ని అన్ఇన్‌స్టాల్ చేస్తోంది...</translation>
 <translation id="4325433082696797523">స్టోరేజ్, పవర్</translation>
+<translation id="4325515113816851466">మీరు సైన్ అవుట్ చేసిన తర్వాత మీ పేరెంట్‌కు సంబంధించిన ఎంపికలు వర్తించవు</translation>
 <translation id="4326146840124313313">ప్రమాదకరమైన వెబ్‌సైట్‌లు, డౌన్‌లోడ్‌లు, వాటితోపాటు ఎక్స్‌టెన్షన్‌ల నుండి మిమ్మల్ని రక్షించడానికి Chrome అందించే బలమైన సెక్యూరిటీ మరెన్నో చేస్తుంది</translation>
 <translation id="4327380114687339519">ఎక్స్‌టెన్షన్‌ల మెనూ</translation>
 <translation id="4330191372652740264">చల్లటి నీరు</translation>
@@ -4883,6 +4885,7 @@
 <translation id="4412992751769744546">థర్డ్ పార్టీ కుక్కీలను అనుమతించండి</translation>
 <translation id="4413087696295876280">ChromeOS Flex పరికర సమాచారం అలాగే డేటాను చదవండి</translation>
 <translation id="44137799675104237">సహజమైన వాయిస్‌తో టెక్స్ట్‌ను వినండి</translation>
+<translation id="4414051792721275732">మీరు క్లిక్ చేయడానికి సంజ్ఞను ఉపయోగించినప్పుడు, మీకు మరింత కంట్రోల్‌ను అందించడానికి మౌస్ వేగాన్ని తగ్గిస్తుంది. క్లిక్‌ను పూర్తి చేయడానికి మళ్లీ సంజ్ఞను ఉపయోగించండి.</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">మీ జోడించబడిన USB పరికరాల లిస్ట్‌ను పొందడానికి "<ph name="APP_NAME" />"ని అనుమతించాలా?</translation>
 <translation id="4414232939543644979">కొత్త &amp;అజ్ఞాత విండో</translation>
@@ -5119,6 +5122,7 @@
 <translation id="4586275095964870617"><ph name="URL" />ని ప్రత్యామ్నాయ బ్రౌజర్‌లో తెరవడం సాధ్యపడదు. దయచేసి మీ సిస్టమ్ నిర్వాహకుడిని సంప్రదించండి.</translation>
 <translation id="4587589328781138893">సైట్‌లు</translation>
 <translation id="4588749726511456218">స్క్రోల్ యాక్సిలరేషన్ గురించి <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" />, <ph name="DOMAIN" />‌కు సంబంధం ఉన్నట్లు కనిపిస్తోంది. మీ పాస్‌వర్డ్‌ను ఉపయోగించే ముందు మీరు <ph name="DOMAIN" />‌ను ట్రస్ట్ చేస్తున్నారని నిర్ధారించుకోండి.</translation>
 <translation id="4589713469967853491">లాగ్స్, విజయవంతంగా 'డౌన్‌లోడ్స్' డైరెక్టరీలోకి చేర్చబడ్డాయి.</translation>
 <translation id="4590785647529325123">మీ పరికరం నుండి అజ్ఞాత మోడ్‌లో ఉన్న బ్రౌజింగ్ హిస్టరీని క్లియర్ చేయడానికి, అన్ని అజ్ఞాత ట్యాబ్‌లను మూసివేయండి</translation>
 <translation id="459204634473266369">పరికరాలేవీ <ph name="PRIMARY_EMAIL" />‌కు సేవ్ చేయబడలేదు</translation>
@@ -5625,6 +5629,7 @@
 <translation id="4946998421534856407">లాంచర్ + పై వైపు బాణం</translation>
 <translation id="4947376546135294974">మీరు బ్రౌజ్ చేస్తున్న సైట్ నుండి డేటా</translation>
 <translation id="4950100687509657457">ప్రొఫైల్‌ను క్రియేట్ చేయండి</translation>
+<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ఫైల్}other{# ఫైళ్లు}}</translation>
 <translation id="495170559598752135">చర్యలు</translation>
 <translation id="4951966678293618079">ఈ సైట్‌కు పాస్‌వర్డ్‌లను ఎన్నడూ సేవ్ చేయవద్దు</translation>
@@ -5661,7 +5666,7 @@
 <translation id="4975771730019223894">యాప్ బ్యాడ్జింగ్</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">యాక్సెస్‌ను నిర్ధారించండి</translation>
-<translation id="4979263087381759787">డెవలపర్ ఎంపికలు</translation>
+<translation id="4979263087381759787">డెవలపర్ ఆప్షన్లు</translation>
 <translation id="4979510648199782334">Microsoft 365 సెటప్ పూర్తయింది</translation>
 <translation id="4980805016576257426">ఈ ఎక్స్‌టెన్షన్‌లో మాల్వేర్ ఉంది.</translation>
 <translation id="4983159853748980742">మీ పాస్‌వర్డ్ షేర్ చేయబడలేదు. మీ ఇంటర్నెట్ కనెక్షన్‌ను తనిఖీ చేయండి, మీరు Chromeకి సైన్ ఇన్ చేసినట్లు నిర్ధారించుకోండి. ఆపై, మళ్లీ ట్రై చేయండి.</translation>
@@ -5763,6 +5768,7 @@
 <translation id="5061531353537614467">మంచు ఎడారి (టండ్రా)</translation>
 <translation id="5062930723426326933">సైన్-ఇన్ విఫలమైంది, దయచేసి ఇంటర్నెట్‌కు కనెక్ట్ చేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="5063480226653192405">స్టోరేజ్‌ వినియోగం</translation>
+<translation id="5064921774605267982"><ph name="PROFILE_NAME" /> ప్రొఫైల్‌ను తెరవండి. ఈ ప్రొఫైల్‌ను మీ తల్లి/తండ్రి మేనేజ్ చేస్తున్నారు.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS సెట్టింగ్‌లలో సురక్షిత DNSను మేనేజ్ చేయండి</translation>
 <translation id="5066534201484101197">ఒక పేజీ నుండి మరొక దానికి నావిగేట్ అవ్వడానికి ఓవర్‌స్క్రోల్ చేయండి</translation>
@@ -6210,6 +6216,7 @@
 <translation id="5389224261615877010">ఇంద్రధనస్సు</translation>
 <translation id="5389626883706033615">మీ గురించి సర్వీస్‌లు సేవ్ చేసిన సమాచారాన్ని ఉపయోగించడానికి సైట్‌లు మిమ్మల్ని అనుమతి అడగకుండా బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="5389794555912875905">సురక్షితం కాని సైట్‌లకు వెళ్లే ముందు హెచ్చరికలను చూడండి (సిఫార్సు చేయబడింది)</translation>
+<translation id="5389943529251318913">ఇంత శాతం మౌస్ వేగాన్ని తగ్గించండి</translation>
 <translation id="5390112241331447203">ఫీడ్‌బ్యాక్ రిపోర్ట్‌లలో పంపించబడిన system_logs.txt fileను కూడా చేర్చండి.</translation>
 <translation id="5390677308841849479">ముదురు ఎరుపు మరియు నారింజ రంగు</translation>
 <translation id="5392192690789334093">నోటిఫికేషన్‌లను పంపడానికి అనుమతి ఉన్న సైట్‌లు</translation>
@@ -7418,6 +7425,7 @@
 <translation id="6266984048393265562">ప్రొఫైల్‌ను అనుకూలంగా మార్చండి</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" />కు మిమ్మల్ని మీరు ప్రమాణీకరించడానికి ఒక సర్టిఫికెట్‌ను ఎంచుకోండి</translation>
 <translation id="6268252012308737255"><ph name="APP" />‌తో తెరవండి</translation>
+<translation id="6269050081341530851">మీరు డూప్లికేట్‌లను మూసివేసినప్పుడు అతి పాతదైన కాపీ సేవ్ అవుతుంది</translation>
 <translation id="6270309713620950855">ఆటోమేటిక్ రిమైండర్‌ను మ్యూట్ చేయండి</translation>
 <translation id="6270391203985052864">నోటిఫికేషన్‌లను పంపడానికి సైట్‌లు అడుగగలవు</translation>
 <translation id="6270486800167535228">ఎక్స్‌టెన్షన్ పిన్ చేయబడింది. మరిన్ని ఆప్షన్‌లను చూడటానికి ఎంచుకోండి</translation>
@@ -7959,6 +7967,7 @@
 <translation id="6679947539429331601">12 గంటల పాటు దాచండి</translation>
 <translation id="6680442031740878064">అందుబాటులో ఉంది: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">రేట్</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Placeholder String]</translation>
 <translation id="6683022854667115063">హెడ్‌ఫోన్స్</translation>
 <translation id="6683087162435654533">అన్ని ట్యాబ్‌లను రీస్టోర్ చేయండి</translation>
 <translation id="6683433919380522900"><ph name="PERMISSION_STATE" /> అనుమతి</translation>
@@ -8041,7 +8050,6 @@
 <translation id="6743841972744298686">సింక్‌ సెట్టింగ్‌లు</translation>
 <translation id="6745592621698551453">ఇప్పుడే అప్‌డేట్ చేయి</translation>
 <translation id="6746124502594467657">క్రిందికి తరలించు</translation>
-<translation id="674632704103926902">నొక్కి లాగడాన్ని ప్రారంభించండి</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> వెబ్‌సైట్ కోసం పాస్‌వర్డ్‌ను చూపించండి</translation>
 <translation id="6748980958975836188">నేను <ph name="BEGIN_LINK1" />Google సర్వీస్ నియమాలు<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome, ఇంకా ChromeOS అదనపు సర్వీస్ నియమాలను<ph name="END_LINK2" /> చదివి అంగీకరిస్తున్నాను.</translation>
 <translation id="6749077623962119521">అనుమతులను రీసెట్ చేయాలా?</translation>
@@ -8853,6 +8861,7 @@
 <translation id="7330533963640151632"><ph name="USER_NAME" /> పరికరానికి సంబంధించిన <ph name="FEATURE_NAME" /> సెట్టింగ్‌లు, <ph name="USER_EMAIL" /> ఖాతా ద్వారా షేర్ చేయబడుతున్నాయి.</translation>
 <translation id="7331646370422660166">alt + కింది వైపు బాణం గుర్తు</translation>
 <translation id="7332053360324989309">డెడికేటెడ్ వర్కర్: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">డూప్లికేట్ ట్యాబ్‌లు</translation>
 <translation id="7333388112938984914">డేటా నియంత్రణ గల కనెక్షన్‌లో ఉన్నప్పుడు ఫైల్‌లను అప్‌లోడ్ చేయడం సాధ్యం కాదు.</translation>
 <translation id="7333669215417470379">మీ యాప్‌లు, సెట్టింగ్‌లను బ్యాకప్ చేయండి, రీస్టోర్ చేయండి</translation>
 <translation id="7335974957018254119">వీటికి స్పెల్ చెక్‌ను ఉపయోగించండి</translation>
@@ -9920,7 +9929,6 @@
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />కాంటాక్ట్‌లు, మెసేజ్‌లు మరియు ఫోటోల వంటి యాప్ సేవ్ చేసిన (డెవలపర్ సెట్టింగ్‌ల ఆధారంగా) ఎలాంటి డేటా అయినా యాప్ డేటాగా పరిగణించబడుతుంది.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />బ్యాకప్ డేటా మీ చిన్నారి డిస్క్ స్టోరేజ్‌ కోటాలో లెక్కించబడదు.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />మీరు సెట్టింగ్‌లలో ఈ సేవని ఆఫ్ చేయవచ్చు.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="8076492880354921740">ట్యాబ్‌లు</translation>
 <translation id="8076835018653442223">మీ నిర్వాహకులు మీ పరికరంలోని స్థానిక ఫైళ్లకు యాక్సెస్‌ను నిలిపివేసారు</translation>
 <translation id="8077120325605624147">మీరు చూసే ఏ సైట్ అయినా మీకు ఏ యాడ్‌ను అయినా చూపవచ్చు</translation>
 <translation id="8077579734294125741">ఇతర Chrome ప్రొఫైల్స్</translation>
@@ -10557,7 +10565,6 @@
 <translation id="8528074251912154910">భాషలను జోడించండి</translation>
 <translation id="8528479410903501741">IBANని సేవ్ చేయండి</translation>
 <translation id="8528962588711550376">సైన్ ఇన్ అవుతోంది.</translation>
-<translation id="8529925957403338845">తక్షణ టెథెరింగ్ కనెక్షన్ విఫలమైంది</translation>
 <translation id="8531367864749403520">మీ ట్యాబ్‌ల బార్ నుండి గ్రూప్‌ను తీసివేయడానికి "గ్రూప్‌ను దాచండి" ఆప్షన్‌ను ఎంచుకోండి</translation>
 <translation id="8531701051932785007">మెరుగైన సురక్షిత బ్రౌజింగ్ ఆఫ్ చేయబడింది</translation>
 <translation id="8533670235862049797">సురక్షిత బ్రౌజింగ్ ఆన్‌లో ఉంది</translation>

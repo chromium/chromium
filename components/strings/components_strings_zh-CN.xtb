@@ -169,6 +169,7 @@
 <translation id="129553762522093515">最近关闭的标签页</translation>
 <translation id="1296930489679394997">销售</translation>
 <translation id="1297814096526086484">要锁定键盘和鼠标吗？</translation>
+<translation id="1297832388362139384">绿色 1</translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">请检查您的安全 DNS 设置</translation>
 <translation id="1302418742166945866"><ph name="URL" /> 想控制您的 MIDI 设备以及为其重新编程</translation>
@@ -228,6 +229,7 @@
 <translation id="1384725838384960382">安全付款凭据身份验证表单</translation>
 <translation id="1386623374109090026">注释</translation>
 <translation id="138810468159004008">访问该网站时允许</translation>
+<translation id="139161720020179799">深灰色 1</translation>
 <translation id="1391625539203220400">要将 IBAN 保存到此设备吗？</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> 未发送任何数据。</translation>
 <translation id="1393071644879491291">您尝试访问的网站上的攻击者可能会诱使您安装软件或泄露某些信息，例如您的密码、手机号码或信用卡号码。Chrome 强烈建议您返回到安全的浏览环境。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -238,7 +240,7 @@
 <translation id="1407135791313364759">全部打开</translation>
 <translation id="1408696301184924537">如需下次自动填充此 IBAN，请将其保存到您的 Google 账号中</translation>
 <translation id="1408787208417187241">三钉（顶部）</translation>
-<translation id="1410365862999780287">使用此设备的其他用户不会看到您的活动记录，因此您可以获得更私密的浏览体验。这不会改变您访问的网站及其所用服务（包括 Google）收集数据的方式。下载内容、书签和阅读清单项将会保存在此设备上。</translation>
+<translation id="1410365862999780287">与您共用设备的其他人不会看到您的活动记录，因此您可以获得更私密的浏览体验。这不会改变您访问的网站及其所用服务（包括 Google）收集数据的方式。下载内容、书签和阅读清单项将会保存在此设备上。</translation>
 <translation id="1410941016594047814">Invite 信封</translation>
 <translation id="1413809658975081374">隐私设置错误</translation>
 <translation id="1414134146594747368">学龄前教育</translation>
@@ -703,6 +705,7 @@
 <translation id="2227758700723188171">助学金与奖学金</translation>
 <translation id="2228057197024893428">此地址目前已保存到 Chrome。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 账号 (<ph name="ACCOUNT" />) 中。</translation>
 <translation id="2229456043301340598">已忽略重复的快捷字词：<ph name="SHORTCUT_NAME" /></translation>
+<translation id="222962001646502673">深灰色 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 个标签页}other{# 个标签页}}</translation>
 <translation id="2233745931693710080">CD</translation>
 <translation id="2235344399760031203">已阻止第三方 Cookie</translation>
@@ -1726,6 +1729,7 @@
 <translation id="4084219288110917128">C1 信封</translation>
 <translation id="4085326869263783566">帮我写。依次按 Tab 键和 Enter 键即可打开</translation>
 <translation id="4085769736382018559">比较产品</translation>
+<translation id="4085778582400064057">蓝色 2</translation>
 <translation id="4088981014127559358">侧边 1，图片沿 Y 轴位移</translation>
 <translation id="4089152113577680600">纸匣 14</translation>
 <translation id="4092349052316400070">填充地址</translation>
@@ -1969,6 +1973,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可使用“Google 翻译”服务来翻译此页面</translation>
 <translation id="4515275063822566619">信用卡选项和地址选项均来自 Chrome 和您的 Google 账号 (<ph name="ACCOUNT_EMAIL" />)。您可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中管理这些选项。</translation>
 <translation id="4515847625438516456">微型汽车与超小型汽车</translation>
+<translation id="451601984112574365">绿色 3</translation>
 <translation id="4519245469315452746">在更新过程中，您的设备发生中断。</translation>
 <translation id="4520048001084013693">管理员政策禁止下载此文件</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> 毫米（<ph name="ORIENTATION" />）</translation>
@@ -2042,7 +2047,7 @@
 <translation id="4677585247300749148"><ph name="URL" /> 想对无障碍事件做出响应</translation>
 <translation id="467809019005607715">Google 幻灯片</translation>
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="4682496302933121474">翻译网页？</translation>
+<translation id="4682496302933121474">翻译网页吗？</translation>
 <translation id="468314109939257734">查看您的虚拟卡号</translation>
 <translation id="4686942373615810936">创建时间：刚刚</translation>
 <translation id="4687718960473379118">网站建议的广告</translation>
@@ -2159,7 +2164,6 @@
 <translation id="4881695831933465202">打开</translation>
 <translation id="4881808915112408168">24 x 31.5 英寸</translation>
 <translation id="4882314601499260499">未应用任何用户政策。若要添加用户政策，贵组织必须<ph name="LINK_BEGIN" />验证您的域名<ph name="LINK_END" />。</translation>
-<translation id="4883911187498618061">请输入问题或提示</translation>
 <translation id="4885030148564729407">蜜月与浪漫旅行</translation>
 <translation id="4885256590493466218">结账时使用 <ph name="CARD_DETAIL" /> 付款</translation>
 <translation id="4887406273302438710">使用 Windows Hello 保护密码</translation>
@@ -2177,6 +2181,7 @@
 <translation id="4901952598169637881">休闲鞋</translation>
 <translation id="4905659621780993806">您的管理员将于 <ph name="DATE" /><ph name="TIME" /> 自动重启您的设备。请在设备重启前保存所有已打开的内容。</translation>
 <translation id="4913987521957242411">打孔（左上角）</translation>
+<translation id="4914727764832832057">蓝色 1</translation>
 <translation id="4916389289686916969">电视真人秀</translation>
 <translation id="4917064667437236721">成像滚筒</translation>
 <translation id="4918221908152712722">安装<ph name="APP_NAME" />（不需要下载）</translation>
@@ -2191,7 +2196,6 @@
 <translation id="4930153903256238152">大容量</translation>
 <translation id="4930714375720679147">开启</translation>
 <translation id="4932035752129140860">系统会将您粘贴或附加的文字发送给 Google Cloud 或第三方以供分析。例如，这些文字可能会被扫描以确定其是否包含敏感数据，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
-<translation id="4933468175699107356">右键点击即可在任何表单中自动填充已保存的信息，例如姓名或地址</translation>
 <translation id="4933788293078559286">使用 Pix 付款</translation>
 <translation id="4934780484581617878">窗口管理</translation>
 <translation id="4936134414789135531">找不到插入的<ph name="VALUE_NAME" />。</translation>
@@ -2250,6 +2254,7 @@
 <translation id="5039804452771397117">允许</translation>
 <translation id="5040262127954254034">隐私权</translation>
 <translation id="5043480802608081735">您复制的链接</translation>
+<translation id="5043753287208271200">黄色 3</translation>
 <translation id="5045550434625856497">密码不正确</translation>
 <translation id="5048293684454354469">广告主题只是网站用来展示个性化广告的众多方法之一。即使没有广告主题，网站仍可以向您展示广告，但这些广告可能不够个性化。详细了解如何<ph name="BEGIN_LINK" />管理广告隐私权<ph name="LINK_END" />。</translation>
 <translation id="5052517576853118371">活跃的主题</translation>
@@ -2532,7 +2537,7 @@
 <translation id="555037537507405574">高级打印机功能</translation>
 <translation id="555128936272638662">手机和无线设备配件</translation>
 <translation id="5551890439174915351">100 x 200 毫米</translation>
-<translation id="5554520618550346933">当您使用某个密码时，如果发现它已被在线发布，Chrome 会向您发出警告。当 Chrome 进行这项检查时，您的密码和用户名都会被加密，所以绝不会被任何人员/任何一方（包括 Google）读取。</translation>
+<translation id="5554520618550346933">如果 Chrome 发现您使用的某个密码已被发布到网上，就会发出警告。在这个过程中，您的密码和用户名始终加密，任何人员/任何一方（包括 Google）都无法读取。</translation>
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="5558083606899411167">空调</translation>
 <translation id="5558125320634132440">此网站已被屏蔽，因为它可能含有少儿不宜的内容</translation>
@@ -2556,6 +2561,7 @@
 <translation id="5593640815048812868">笔记本电脑</translation>
 <translation id="5595485650161345191">修改地址</translation>
 <translation id="5596939519753369075">2 x 3.5 英寸</translation>
+<translation id="5597254438174353289">蓝色 3</translation>
 <translation id="560412284261940334">不支持管理</translation>
 <translation id="5605249000617390290">详细了解价格跟踪</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -2611,6 +2617,7 @@
 <translation id="5701381305118179107">居中</translation>
 <translation id="5707154300732650394">继续您的历程</translation>
 <translation id="57094364128775171">建议安全系数高的密码…</translation>
+<translation id="570953204696852961">红色 3</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">兽医学</translation>
 <translation id="5715150588940290235">删除已保存的安全码？</translation>
@@ -2811,6 +2818,7 @@
 <translation id="6085149458302186532">标签（彩色）</translation>
 <translation id="6087312102907839798">相关搜索</translation>
 <translation id="6089505343295765444">您从 Chrome 历史记录中删除的标签页仍会显示在比较表格中</translation>
+<translation id="6093599771645355227">黄色 1</translation>
 <translation id="6093795393556121384">您的信用卡已成功验证</translation>
 <translation id="6094273045989040137">注释</translation>
 <translation id="6094290315941448991">管理员政策禁止在屏幕显示机密内容时录制屏幕</translation>
@@ -3348,6 +3356,7 @@
 <translation id="7058774143982824355">CSV 密码解析器服务</translation>
 <translation id="7062635574500127092">青色</translation>
 <translation id="706295145388601875">在 Chrome 设置中添加和管理地址</translation>
+<translation id="7063157783216323487">绿色 2</translation>
 <translation id="7064443976734085921">紧凑型汽车</translation>
 <translation id="7064851114919012435">联系信息</translation>
 <translation id="7067633076996245366">灵魂乐与 R&amp;B</translation>
@@ -3900,6 +3909,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Google 表单中快速创建新表单</translation>
 <translation id="8028892419725165118">休闲游戏</translation>
 <translation id="8028960012888758725">完成任务后裁切</translation>
+<translation id="8029829038322015001">红色 1</translation>
 <translation id="8030729864112325446">职业教育与继续教育</translation>
 <translation id="8032546467100845887">透明</translation>
 <translation id="8035152190676905274">钢笔</translation>
@@ -3907,6 +3917,7 @@
 <translation id="8037117624646282037">最近使用过这部设备的用户</translation>
 <translation id="8037357227543935929">询问（默认）</translation>
 <translation id="803771048473350947">文件</translation>
+<translation id="8038182528865038593">红色 2</translation>
 <translation id="8041089156583427627">发送反馈</translation>
 <translation id="8041940743680923270">使用全局默认设置（询问）</translation>
 <translation id="8043255123207491407">查看卖家的条款及条件</translation>
@@ -4307,6 +4318,7 @@
 <translation id="8767881944435256294">{COUNT,plural, =1{1 种支付方式}other{# 种支付方式}}</translation>
 <translation id="8768225988514678921">“创建演示文稿”按钮，激活它即可在幻灯片中快速创建新的 Google 演示文稿</translation>
 <translation id="8769662576926275897">信用卡详细信息</translation>
+<translation id="8769858749286369844">褐色 2</translation>
 <translation id="8770286973007342895">除草机</translation>
 <translation id="8772387130037509473">瑜珈与普拉提</translation>
 <translation id="877348612833018844">{0,plural, =1{移动这个机密文件？}other{移动这些机密文件？}}</translation>
@@ -4398,6 +4410,7 @@
 <translation id="8956124158020778855">开启此设置后，请返回此标签页开始撰写。</translation>
 <translation id="8957210676456822347">强制门户授权</translation>
 <translation id="8959282183248574156">已输入 <ph name="NICKNAME_COUNT" /> 个/共 <ph name="NICKNAME_MAX" /> 个</translation>
+<translation id="8959288490306482616">褐色 3</translation>
 <translation id="8963117664422609631">转到网站设置</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />建议：<ph name="MARKUP_2" />确保有数据网络连接<ph name="MARKUP_3" />稍后重新加载此网页<ph name="MARKUP_4" />检查您输入的地址是否正确<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">保存卡片</translation>
@@ -4460,6 +4473,7 @@
 <translation id="90695670378604968">塑料（哑光）</translation>
 <translation id="9069693763241529744">已被某款扩展程序阻止</translation>
 <translation id="9073799351042754113">您已选择为此网站关闭安全警告。</translation>
+<translation id="9075717835386447447">褐色 1</translation>
 <translation id="9076283476770535406">此网站可能包含成人内容</translation>
 <translation id="9078912659001679888">搅拌器和榨汁机</translation>
 <translation id="9078964945751709336">必须提供更多信息</translation>
@@ -4529,6 +4543,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> 使用了不受支持的协议。</translation>
 <translation id="918454845714257218">请查看<ph name="SIDE_OF_CARD" />的安全码，然后重试</translation>
 <translation id="9186203289258525843">“将 Chrome 设为默认浏览器”按钮，激活它即可将 Chrome 设为系统的默认浏览器</translation>
+<translation id="9189789270972826888">如果卡片未填写，请点击下方的卡片详细信息进行复制粘贴。<ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">系统会自动删除保留时长超过 4 周的主题</translation>
 <translation id="9191834167571392248">打孔（左下角）</translation>
 <translation id="9192361865877479444">金属（哑光）</translation>
@@ -4567,6 +4582,7 @@
 <translation id="949314938206378263">你已请求访问此网站。你的家长可在 Family Link 内回复。</translation>
 <translation id="950736567201356821">三孔（顶部）</translation>
 <translation id="950926967802086924">通行密钥 • Google 密码管理工具</translation>
+<translation id="95721182352849470">黄色 2</translation>
 <translation id="961663415146723894">装订（底部）</translation>
 <translation id="961856697154696964">删除浏览数据</translation>
 <translation id="961930410699694996">这次可以使用位置信息</translation>

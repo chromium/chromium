@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Ava kõik</translation>
 <translation id="1408847409015257906">Puudutage valikut „Privaatsus ja turvalisus“.</translation>
 <translation id="1411386976162024013">Lensi visuaalne otsing</translation>
+<translation id="1426410128494586442">Jah</translation>
 <translation id="1430915738399379752">Printimine</translation>
 <translation id="1436671784520050284">Jätka seadistamist</translation>
 <translation id="143681031165817424">Aadress salvestatakse ainult sellesse seadmesse</translation>
@@ -695,6 +696,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4237377247299956313">Puudutage valikut <ph name="BEGIN_BOLD" />Vaikebrauserirakendus<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Ava seaded</translation>
 <translation id="4250432749243022864">{count,plural, =0{Ava {count} vahelehte}=1{Ava {count} vaheleht}other{Ava {count} vahelehte}}</translation>
+<translation id="4250680216510889253">Ei</translation>
 <translation id="4251531167342733205">Võtke oma lemmikbrauserist maksimumi.</translation>
 <translation id="4253168017788158739">Märkus</translation>
 <translation id="4256782883801055595">Avatud lähtekoodi litsentsid</translation>
@@ -944,7 +946,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="5343472494710226394">Teie huvidel põhinevad uudised, sport ja sisu.</translation>
 <translation id="5352128922772839949">Faili salvestamine</translation>
 <translation id="5355191726083956201">Täiustatud kaitse on sisse lülitatud</translation>
-<translation id="5356332698539508708">Kustuta ja vaheta</translation>
 <translation id="537853552771686272">Hallake teemasid ja saite, mis teile huvi pakuvad</translation>
 <translation id="5395707839134961196">Peida otsingumootori üksikasjad</translation>
 <translation id="541276233349960923">Paroolide kasutamine kõigis oma seadmetes</translation>
@@ -1250,6 +1251,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="6624219055418309072">Inkognito režiimis blokeeritud</translation>
 <translation id="6625830436658400045">Sünkroonimisseaded taastatakse teie viimase varukoopia alusel. Jaotises <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" /> saate igal ajal valida, mida sünkroonida.</translation>
 <translation id="6627583120233659107">Muuda kausta</translation>
+<translation id="6629759408545977279">Allikas: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Teie organisatsioon lülitas inkognito režiimi välja</translation>
 <translation id="6638511529934826365">Teksti suumimine …</translation>
 <translation id="6640268266988685324">Avatud vaheleht</translation>
@@ -1605,7 +1607,6 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8219424187226230983">Kuva uuel vahelehel võrguühenduseta versioon</translation>
 <translation id="8230355548492839438">Leia eelmine</translation>
 <translation id="8232956427053453090">Säilita andmed</translation>
-<translation id="8242644458318193141">Teie organisatsiooni turvalisuse kaitsmiseks kustutatakse suletud ja salvestamata kontoandmed sellest seadmest. See võib hõlmata paroole, ajalugu ja muud.</translation>
 <translation id="8261506727792406068">Kustuta</translation>
 <translation id="82619448491672958">Kuva muud vahelehed</translation>
 <translation id="8263228331881858381">Pääsuvõti salvestati</translation>
@@ -1651,7 +1652,6 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8449869326050867919">Parool on jagatud</translation>
 <translation id="8453847087068411809">Ära tuvasta saadetisi kunagi automaatselt</translation>
 <translation id="846158969830690371">Saate olla teadlik sellest, kas teil on kõige turvalisemad seaded või peate midagi üle vaatama.</translation>
-<translation id="8466300942149667917">Salvestamata kontoandmed kustutatakse</translation>
 <translation id="8473863474539038330">Aadressid ja muu</translation>
 <translation id="8474378002946546633">Luba märguanded</translation>
 <translation id="8477178913400731244">Kustuta andmed</translation>

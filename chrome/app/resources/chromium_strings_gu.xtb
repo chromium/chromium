@@ -60,6 +60,7 @@
 <translation id="1779356040007214683">Chromium ને સુરક્ષિત બનાવવા માટે, અમે <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> માં સૂચિબદ્ધ નથી અને તમારી જાણ વિના ઉમેરવામાં આવ્યાં હોઈ શકે છે તેવા કેટલાક એક્સ્ટેન્શન્સને અક્ષમ કર્યા છે.</translation>
 <translation id="1808667845054772817">Chromium ફરીથી ઇન્સ્ટોલ કરો</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" />નો પ્રયાસ કરી રહ્યું છે</translation>
+<translation id="1838374766361614909">શોધ સાફ કરો</translation>
 <translation id="18552579716432081">તમારા Google એકાઉન્ટમાં બ્રાઉઝિંગ ડેટા રાખીને તેને માત્ર આ ડિવાઇસમાંથી ડિલીટ કરવા માટે, <ph name="BEGIN_LINK" />Chromiumમાંથી સાઇન આઉટ કરો<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">તમે તમારા સાઇન ઇન કરેલા હોય એવા Google એકાઉન્ટ મેનેજ કરી શકો છો. તમારા Google એકાઉન્ટનો ઉપયોગ Chromium બ્રાઉઝર, Play Store, Gmail અને વધુ માટે થાય છે. જો તમે કોઈ બીજા, જેમકે તમારા કુટુંબના સભ્ય માટે એકાઉન્ટ ઉમેરવા માંગતા હો, તો તેના બદલે નવી વ્યક્તિને તમારા <ph name="DEVICE_TYPE" />માં ઉમેરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">'છબી વડે શોધ' સુવિધા વડે શોધો</translation>
@@ -95,6 +96,7 @@
 <translation id="2199210295479376551">Chromiumમાંથી એકાઉન્ટ કાઢી નાખો</translation>
 <translation id="2210682093923538346">જોખમી સાઇટ. Chromium દ્વારા નોટિફિકેશન કાઢી નાખવામાં આવ્યા.</translation>
 <translation id="2236949375853147973">મારી ઍક્ટિવિટી</translation>
+<translation id="2238130810669087193">તમારા બધા ડિવાઇસ પર તમારા ઍડ્રેસ અને બીજું ઘણું મેળવવા માટે, Chromiumમાં સાઇન ઇન કરો. તમે સાઇન ઇન કરો તે પછી આ ઍડ્રેસ તમારા Google એકાઉન્ટમાં સાચવવામાં આવશે.</translation>
 <translation id="2240214816234246077">તમે તાજેતરમાં આ સાઇટની મુલાકાત લીધી નથી. Chromium દ્વારા <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />ની પરવાનગીઓ કાઢી નાખવામાં આવી</translation>
 <translation id="2241627712206172106">જો તમે કમ્પ્યુટરને શેર કરો છો, તો મિત્રો અને કુટુંબીજનો અલગ-અલગ બ્રાઉઝ કરી અને તેમને જોઇએ તેમ Chromium ને સેટ કરી શકે છે.</translation>
 <translation id="2313870531055795960">URLsને Chromiumમાં સંગ્રહિત અસુરક્ષિત સાઇટની સૂચિ સાથે ચેક કરે છે. જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chromium પેજ કન્ટેન્ટના બિટની સાથોસાથ URLs પણ Safe Browsingને મોકલી શકે છે.</translation>
@@ -206,7 +208,6 @@
 <translation id="3802055581630249637">તમે જે પેજની મુલાકાત લેવાની શક્યતા વધુ હોય, Chromium તેને પહેલેથી લોડ કરે છે, જેથી જ્યારે તમે તેમની મુલાકાત લો, ત્યારે તે વધુ ઝડપથી લોડ થઈ શકે</translation>
 <translation id="3830894615770080216">ChromiumOS સિસ્ટમ</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="386822487697155367">ChromiumOS વડે સહાય મેળવો</translation>
 <translation id="3871664619793219264"><ph name="ACCOUNT_EMAIL" />માંથી તમારા Chromium બ્રાઉઝરની વસ્તુઓ મેળવો</translation>
 <translation id="3885770153807205175">ભાષા પિકર</translation>
 <translation id="388648406173476553">Chromiumને કસ્ટમાઇઝ અને તેનું નિયંત્રણ કરો. તમારે ક્યાંક ધ્યાન આપવાની જરૂર છે - વિગતો માટે ક્લિક કરો.</translation>

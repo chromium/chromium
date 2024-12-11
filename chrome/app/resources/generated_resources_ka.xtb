@@ -8040,7 +8040,6 @@
 <translation id="6743841972744298686">სინქრონიზაციის პარამეტრები</translation>
 <translation id="6745592621698551453">განახლება ახლა</translation>
 <translation id="6746124502594467657">გადაადგილება ქვემოთ</translation>
-<translation id="674632704103926902">შეხებით გადატანის ჩართვა</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" />-ის პაროლის ჩვენება</translation>
 <translation id="6748980958975836188">წავიკითხე <ph name="BEGIN_LINK1" />Google-ის მომსახურების პირობები<ph name="END_LINK1" />, ასევე, <ph name="BEGIN_LINK2" />Chrome-ისა და ChromeOS-ის მომსახურების დამატებითი პირობები<ph name="END_LINK2" /> და ვეთანხმები მათ.</translation>
 <translation id="6749077623962119521">გსურთ ნებართვების გადაყენება?</translation>
@@ -9921,7 +9920,6 @@
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />აპების მონაცემები გულისხმობს ამა თუ იმ აპის მიერ შენახულ ნებისმიერ მონაცემს (დამოკიდებულია დეველოპერის პარამეტრებზე), მათ შორის, ისეთ მონაცემებს, როგორიცაა კონტაქტები, შეტყობინებები და ფოტოები.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />სარეზერვო მონაცემები არ აისახება Drive-ზე თქვენთვის გამოყოფილი მეხსიერების კვოტაზე.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />ამ სერვისის გამორთვა შეგიძლიათ პარამეტრებიდან.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="8076492880354921740">ჩანართები</translation>
 <translation id="8076835018653442223">თქვენს მოწყობილობაზე არსებულ ადგილობრივ ფაილებზე წვდომა გათიშულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="8077120325605624147">თქვენთვის რეკლამის ჩვენება შეუძლია ნებისმიერ საიტს, რომელსაც სტუმრობთ</translation>
 <translation id="8077579734294125741">სხვა Chrome პროფილები</translation>
@@ -10558,7 +10556,6 @@
 <translation id="8528074251912154910">ენების დამატება</translation>
 <translation id="8528479410903501741">IBAN-ის შენახვა</translation>
 <translation id="8528962588711550376">შესვლა.</translation>
-<translation id="8529925957403338845">მყისიერი ტეტერინგის კავშირი ვერ დამყარდა</translation>
 <translation id="8531367864749403520">აირჩიეთ „ჯგუფის დამალვა“, რომ ამოშალოთ ჯგუფი ჩანართების ზოლიდან</translation>
 <translation id="8531701051932785007">გაძლიერებული Safe Browsing გამორთულია</translation>
 <translation id="8533670235862049797">Safe Browsing ჩართულია</translation>

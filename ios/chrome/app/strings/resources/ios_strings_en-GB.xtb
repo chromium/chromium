@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Open all</translation>
 <translation id="1408847409015257906">Tap Privacy and Security</translation>
 <translation id="1411386976162024013">Lens visual search</translation>
+<translation id="1426410128494586442">Yes</translation>
 <translation id="1430915738399379752">Print</translation>
 <translation id="1436671784520050284">Continue setup</translation>
 <translation id="143681031165817424">Address saved only on this device</translation>
@@ -416,6 +417,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2816489851009559785">Menu → Settings → Default browser</translation>
 <translation id="2818821771744632548">You were signed out of your account, <ph name="USER_NAME" />, as part of your iPhone reset. To sign back in, tap 'Continue' below.</translation>
 <translation id="2819667972867209401">When on, data is saved in your Google Account. When off, data is saved only to this device and is deleted if you sign out.</translation>
+<translation id="2827760117436553203">Keep data separate?</translation>
 <translation id="2829172210806130158">Search your screen</translation>
 <translation id="2834399722155632105">3. Tap Password options</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -695,6 +697,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4237377247299956313">Tap <ph name="BEGIN_BOLD" />Default browser app<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Open settings</translation>
 <translation id="4250432749243022864">{count,plural, =0{Open {count} tab}=1{Open {count} tab}other{Open {count} tabs}}</translation>
+<translation id="4250680216510889253">No</translation>
 <translation id="4251531167342733205">Get the best from the browser that you love.</translation>
 <translation id="4253168017788158739">Note</translation>
 <translation id="4256782883801055595">Open-source licences</translation>
@@ -944,7 +947,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5343472494710226394">News, sports and content based on your interests.</translation>
 <translation id="5352128922772839949">Save file</translation>
 <translation id="5355191726083956201">Enhanced protection is on</translation>
-<translation id="5356332698539508708">Delete and switch</translation>
 <translation id="537853552771686272">Manage the topics and sites that you're interested in</translation>
 <translation id="5395707839134961196">Hide search engine details</translation>
 <translation id="541276233349960923">Use passwords on all your devices</translation>
@@ -1212,6 +1214,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="6476800141292307438">Translating the page to <ph name="LANGUAGE" />. Options available near bottom of the screen.</translation>
 <translation id="647867789226964031">Change your passwords</translation>
 <translation id="6494931198667773526">Ends</translation>
+<translation id="6495521251906266731">Choose what to do with the existing browsing data on this device, like passwords, history and more.</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{Untrack this package}other{Untrack all packages}}</translation>
 <translation id="6503077044568424649">Most visited</translation>
 <translation id="6503763061813913607">Safety Check notifications</translation>
@@ -1606,7 +1609,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8219424187226230983">View offline version in a new tab</translation>
 <translation id="8230355548492839438">Find previous</translation>
 <translation id="8232956427053453090">Keep data</translation>
-<translation id="8242644458318193141">To protect your organisation's security, tabs will be closed and unsaved account data will be deleted from this device. This could include passwords, history and more.</translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="82619448491672958">See other tabs</translation>
 <translation id="8263228331881858381">Passkey saved</translation>
@@ -1652,7 +1654,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8449869326050867919">Password shared</translation>
 <translation id="8453847087068411809">Never auto-detect parcels</translation>
 <translation id="846158969830690371">Know if you have the safest settings or need to review anything.</translation>
-<translation id="8466300942149667917">Unsaved account data will be deleted</translation>
 <translation id="8473863474539038330">Addresses and more</translation>
 <translation id="8474378002946546633">Allow notifications</translation>
 <translation id="8477178913400731244">Delete data</translation>

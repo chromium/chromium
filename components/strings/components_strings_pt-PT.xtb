@@ -2168,7 +2168,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4881808915112408168">24 x 31,5 pol.</translation>
 <translation id="4882314601499260499">Não foram aplicadas Políticas do Utilizador. Para adicionar Políticas do Utilizador, a sua organização tem de <ph name="LINK_BEGIN" />validar o domínio<ph name="LINK_END" />.</translation>
-<translation id="4883911187498618061">Introduza a pergunta ou o comando</translation>
 <translation id="4885030148564729407">Lua de mel e escapadinhas românticas</translation>
 <translation id="4885256590493466218">Utilize o <ph name="CARD_DETAIL" /> no pagamento.</translation>
 <translation id="4887406273302438710">Proteja as palavras-passe com o Windows Hello</translation>
@@ -2201,7 +2200,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4930153903256238152">Capacidade elevada</translation>
 <translation id="4930714375720679147">Ativar</translation>
 <translation id="4932035752129140860">O texto que cola ou anexa é enviado para o Google Cloud ou terceiros para análise. Por exemplo, pode ser analisado quanto a dados confidenciais, ser armazenado com base nas políticas da empresa e ficar visível para o seu administrador.</translation>
-<translation id="4933468175699107356">Clique com o botão direito do rato para preencher automaticamente as informações guardadas, como o seu nome ou morada, em qualquer formulário</translation>
 <translation id="4933788293078559286">Pague com o Pix</translation>
 <translation id="4934780484581617878">Gestão de janelas</translation>
 <translation id="4936134414789135531">Não foi possível encontrar o <ph name="VALUE_NAME" /> inserido.</translation>
@@ -3495,6 +3493,7 @@ Detalhes adicionais:
 <translation id="7304030187361489308">Alta</translation>
 <translation id="7304562222803846232">Gerir definições de privacidade da Conta Google</translation>
 <translation id="7305756307268530424">Iniciar mais lentamente</translation>
+<translation id="7307063504147610123">Morada guardada neste dispositivo</translation>
 <translation id="7308436126008021607">sincronização em segundo plano</translation>
 <translation id="7309058266849426521">Saiba mais sobre a gestão da privacidade dos anúncios no Chrome.</translation>
 <translation id="7310392214323165548">O dispositivo será reiniciado em breve</translation>
@@ -4171,6 +4170,7 @@ Detalhes adicionais:
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">Moradas e mais</translation>
 <translation id="8474910779563686872">Mostrar detalhes do programador</translation>
+<translation id="8476959635632921417">Para guardar e usar esta morada em todos os seus dispositivos, valide a sua identidade</translation>
 <translation id="8479754468255770962">Agrafo na parte inferior esquerda</translation>
 <translation id="8483229036294884935">Esta morada vai ser apagada da sua Conta Google, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Aplica-se a</translation>

@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Obre-les totes</translation>
 <translation id="1408847409015257906">Toca Privadesa i seguretat.</translation>
 <translation id="1411386976162024013">Cerca visual de Lens</translation>
+<translation id="1426410128494586442">Sí</translation>
 <translation id="1430915738399379752">Imprimeix</translation>
 <translation id="1436671784520050284">Continua amb la configuració</translation>
 <translation id="143681031165817424">L'adreça només s'ha desat en aquest dispositiu</translation>
@@ -416,6 +417,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="2816489851009559785">Menú → Configuració → Navegador predeterminat</translation>
 <translation id="2818821771744632548">S'ha tancat la sessió del teu compte, <ph name="USER_NAME" />, com a part del restabliment de l'iPhone. Per tornar a iniciar la sessió, toca Continua més avall.</translation>
 <translation id="2819667972867209401">Si aquesta opció està activada, les dades es desen al teu Compte de Google. Si està desactivada, les dades només es desen en aquest dispositiu i se suprimeixen si tanques la sessió.</translation>
+<translation id="2827760117436553203">Vols mantenir les dades separades?</translation>
 <translation id="2829172210806130158">Fes cerques a la pantalla</translation>
 <translation id="2834399722155632105">3. Toca Opcions de contrasenya</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -695,6 +697,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4237377247299956313">Toca <ph name="BEGIN_BOLD" />App de navegació per omissió<ph name="END_BOLD" />.</translation>
 <translation id="4242533952199664413">Obre la configuració</translation>
 <translation id="4250432749243022864">{count,plural, =0{Obre {count} pestanyes}=1{Obre {count} pestanya}other{Obre {count} pestanyes}}</translation>
+<translation id="4250680216510889253">No</translation>
 <translation id="4251531167342733205">Treu el màxim profit del navegador que més t'agrada.</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="4256782883801055595">Llicències de codi obert</translation>
@@ -944,7 +947,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5343472494710226394">Notícies, esports i contingut basat en els teus interessos.</translation>
 <translation id="5352128922772839949">Desa el fitxer</translation>
 <translation id="5355191726083956201">La protecció millorada està activada</translation>
-<translation id="5356332698539508708">Suprimeix i canvia</translation>
 <translation id="537853552771686272">Gestiona els temes i els llocs web que t'interessen</translation>
 <translation id="5395707839134961196">Amaga els detalls del motor de cerca</translation>
 <translation id="541276233349960923">Utilitza contrasenyes en tots els teus dispositius</translation>
@@ -1212,6 +1214,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="6476800141292307438">La pàgina s'està traduint a <ph name="LANGUAGE" />. Tens opcions disponibles a la part inferior de la pantalla.</translation>
 <translation id="647867789226964031">Canvia les contrasenyes</translation>
 <translation id="6494931198667773526">Finalitza</translation>
+<translation id="6495521251906266731">Tria què vols fer amb les dades de navegació que hi ha en aquest dispositiu, com ara les contrasenyes, l'historial i més.</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{Deixa de fer el seguiment d'aquest paquet}other{Deixa de fer el seguiment de tots els paquets}}</translation>
 <translation id="6503077044568424649">Els més visitats</translation>
 <translation id="6503763061813913607">Notificacions de Comprovació de seguretat</translation>
@@ -1606,7 +1609,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8219424187226230983">Mostra la versió sense connexió en una pestanya nova</translation>
 <translation id="8230355548492839438">Cerca l'anterior</translation>
 <translation id="8232956427053453090">Conserva les dades</translation>
-<translation id="8242644458318193141">Per protegir la seguretat de la teva organització, les pestanyes es tancaran i les dades del compte no desades se suprimiran d'aquest dispositiu. Això pot incloure contrasenyes, l'historial i més.</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="82619448491672958">Mostra les altres pestanyes</translation>
 <translation id="8263228331881858381">La clau d'accés s'ha desat</translation>
@@ -1652,7 +1654,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8449869326050867919">S'ha compartit la contrasenya</translation>
 <translation id="8453847087068411809">No detectis mai paquets automàticament</translation>
 <translation id="846158969830690371">Esbrina si tens la configuració més segura o si has de revisar alguna cosa.</translation>
-<translation id="8466300942149667917">Se suprimiran les dades del compte no desades</translation>
 <translation id="8473863474539038330">Adreces i més</translation>
 <translation id="8474378002946546633">Permet les notificacions</translation>
 <translation id="8477178913400731244">Suprimeix les dades</translation>

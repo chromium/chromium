@@ -67,6 +67,7 @@
 <translation id="1786044937610313874">მალსახმობები იხსნება Chrome-ში</translation>
 <translation id="178701303897325119">ეს გაფართოება აღარ არის მხარდაჭერილი. Chrome გირჩევთ მის ამოშლას.</translation>
 <translation id="1812689907177901597">ამ პარამეტრის გამორთვის შემთხვევაში, Google-ის საიტებში (მაგალითად, Gmail-ში) შესვლას შეძლებთ Chrome-ში შესვლის გარეშე</translation>
+<translation id="1838374766361614909">ძიების გასუფთავება</translation>
 <translation id="1860536484129686729">Chrome საჭიროებს თქვენს კამერაზე წვდომის ნებართვას ამ საიტისთვის</translation>
 <translation id="1873233029667955273">Google Chrome არ არის თქვენი ნაგულისხმევი ბრაუზერი</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
@@ -231,7 +232,6 @@
 <translation id="3716540481907974026">ChromeOS Flex-ის ვერსია</translation>
 <translation id="3718181793972440140">ეს მოქმედება წაშლის 1 ერთეულს ამ მოწყობილობიდან. თქვენი მონაცემების მოგვიანებით მისაღებად, შედით Chrome-ში, როგორც <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome გირჩევთ მის ამოშლას. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი მხარდაჭერილი გაფართოებების შესახებ<ph name="END_LINK" />}other{Chrome გირჩევთ მათ ამოშლას. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი მხარდაჭერილი გაფართოებების შესახებ<ph name="END_LINK" />}}</translation>
-<translation id="3744202345691150878">დახმარების მიღება ChromeOS-თან დაკავშირებით</translation>
 <translation id="3780814664026482060">Chrome — <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex-მა ვერ მოახერხა თქვენი მონაცემების სინქრონიზაცია, რადგან შესვლისას მოხდა შეცდომა.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -355,7 +355,6 @@
 <translation id="5334309298019785904">ChromeOS-მა ვერ დაასინქრონა თქვენი მონაცემები, რადგან სინქრონიზაცია თქვენი დომენისთვის არ არის ხელმისაწვდომი.</translation>
 <translation id="5334487786912937552">ფაილების ჩამოსატვირთად Chrome საჭიროებს მეხსიერებაზე წვდომის ნებართვას</translation>
 <translation id="5337648990166757586">არასავალდებულო: ChromeOS-ის ფუნქციებისა და წარმადობის გაუმჯობესების ხელშეწყობა დიაგნოსტიკური და გამოყენების მონაცემების Google-ისთვის ავტომატურად გაგზავნის მეშვეობით.</translation>
-<translation id="5357889879764279201">დახმარების მიღება ChromeOS Flex-თან დაკავშირებით</translation>
 <translation id="5368118228313795342">დამატებითი კოდი: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">იგი ასევე აკონტროლებს, თუ რომელი გვერდი გამოჩნდება Chrome-ის გაშვებისას ან Omnibox-დან ძიების დროს.</translation>
 <translation id="5394833366792865639">Chrome-ის ჩანართის გაზიარება</translation>

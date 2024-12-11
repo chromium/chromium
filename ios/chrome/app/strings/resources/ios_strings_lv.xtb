@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Atvērt visas</translation>
 <translation id="1408847409015257906">Pieskarieties vienumam “Konfidencialitāte un drošība”.</translation>
 <translation id="1411386976162024013">Lens vizuālā meklēšana</translation>
+<translation id="1426410128494586442">Jā</translation>
 <translation id="1430915738399379752">Drukāt</translation>
 <translation id="1436671784520050284">Turpināt iestatīšanu</translation>
 <translation id="143681031165817424">Adrese tika saglabāta tikai šajā ierīcē</translation>
@@ -695,6 +696,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4237377247299956313">Pieskarieties vienumam <ph name="BEGIN_BOLD" />Noklusējuma pārlūka lietotne<ph name="END_BOLD" />.</translation>
 <translation id="4242533952199664413">Atvērt iestatījumus</translation>
 <translation id="4250432749243022864">{count,plural, =0{Atvērt {count} cilnes}=1{Atvērt {count} cilni}zero{Atvērt {count} cilnes}one{Atvērt {count} cilni}other{Atvērt {count} cilnes}}</translation>
+<translation id="4250680216510889253">Nē</translation>
 <translation id="4251531167342733205">Pilnvērtīgi izmantojiet savu iecienīto pārlūkprogrammu.</translation>
 <translation id="4253168017788158739">Piezīme</translation>
 <translation id="4256782883801055595">Atklātā pirmkoda licences</translation>
@@ -944,7 +946,6 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="5343472494710226394">Ziņas, sports un jūsu interesēm atbilstošs saturs.</translation>
 <translation id="5352128922772839949">Saglabāt failu</translation>
 <translation id="5355191726083956201">Uzlabota aizsardzība ir ieslēgta</translation>
-<translation id="5356332698539508708">Dzēst un pārslēgties</translation>
 <translation id="537853552771686272">Pārvaldiet tēmas un vietnes, kas jūs interesē</translation>
 <translation id="5395707839134961196">Paslēpt meklētājprogrammas informāciju</translation>
 <translation id="541276233349960923">Paroļu izmantošana visās jūsu ierīcēs</translation>
@@ -1606,7 +1607,6 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8219424187226230983">Skatīt bezsaistes versiju jaunā cilnē</translation>
 <translation id="8230355548492839438">Iepriekšējās virknes atrašana</translation>
 <translation id="8232956427053453090">Paturēt datus</translation>
-<translation id="8242644458318193141">Lai gādātu par jūsu organizācijas drošību, cilnes tiks aizvērtas, un nesaglabātie konta dati tiks dzēsti no šīs ierīces. Tie var ietvert paroles, vēsturi un citus datus.</translation>
 <translation id="8261506727792406068">Dzēst</translation>
 <translation id="82619448491672958">Skatīt citas cilnes</translation>
 <translation id="8263228331881858381">Piekļuves atslēga ir saglabāta</translation>
@@ -1652,7 +1652,6 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8449869326050867919">Parole ir kopīgota</translation>
 <translation id="8453847087068411809">Nekad nenoteikt pakas automātiski</translation>
 <translation id="846158969830690371">Uzziniet, vai izmantojat visdrošākos iestatījumus vai jums kaut kas jāpārskata.</translation>
-<translation id="8466300942149667917">Nesaglabātie konta dati tiks dzēsti</translation>
 <translation id="8473863474539038330">Adreses un citi dati</translation>
 <translation id="8474378002946546633">Atļaut paziņojumus</translation>
 <translation id="8477178913400731244">Dzēst datus</translation>

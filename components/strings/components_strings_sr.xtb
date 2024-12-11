@@ -2168,7 +2168,6 @@
 <translation id="4881695831933465202">Отвори</translation>
 <translation id="4881808915112408168">24×31,5 in</translation>
 <translation id="4882314601499260499">Нису примењене никакве смернице за корисникњ. Да бисте додали смернице за кориснике, организација мора да <ph name="LINK_BEGIN" />верификује домен<ph name="LINK_END" />.</translation>
-<translation id="4883911187498618061">Унесите питање или упит</translation>
 <translation id="4885030148564729407">Свадбена и романтична путовања</translation>
 <translation id="4885256590493466218">Плаћајте помоћу картице <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Заштитите лозинке помоћу Windows Hello-а</translation>
@@ -2201,7 +2200,6 @@
 <translation id="4930153903256238152">Велики капацитет</translation>
 <translation id="4930714375720679147">Укључи</translation>
 <translation id="4932035752129140860">Текст који налепите или приложите се шаље у Google Cloud или трећим странама на анализу. На пример, можда ће бити скениран у потрази за осетљивим подацима и може да се чува на основу смерница предузећа и може да буде видљив администратору.</translation>
-<translation id="4933468175699107356">Кликните десним тастером да бисте аутоматски попунили сачуване информације, попут имена или адресе, у било ком обрасцу</translation>
 <translation id="4933788293078559286">Платите помоћу Pix-а</translation>
 <translation id="4934780484581617878">Управљање прозорима</translation>
 <translation id="4936134414789135531">Уметнута вредност <ph name="VALUE_NAME" /> није пронађена.</translation>
@@ -3494,6 +3492,7 @@
 <translation id="7304030187361489308">Висок</translation>
 <translation id="7304562222803846232">Управљајте подешавањима приватности Google налога</translation>
 <translation id="7305756307268530424">Почните спорије</translation>
+<translation id="7307063504147610123">Адреса је сачувана на овом уређају</translation>
 <translation id="7308436126008021607">синхронизација у позадини</translation>
 <translation id="7309058266849426521">Сазнајте више о управљању приватношћу са огласима у Chrome-у.</translation>
 <translation id="7310392214323165548">Уређај ће се рестартовати веома брзо</translation>
@@ -4171,6 +4170,7 @@
 <translation id="8473626140772740486">300×450 mm</translation>
 <translation id="8473863474539038330">Адресе и друго</translation>
 <translation id="8474910779563686872">Прикажи детаље о програмеру</translation>
+<translation id="8476959635632921417">Да бисте сачували и користили ову адресу на свим уређајима, потврдите свој идентитет</translation>
 <translation id="8479754468255770962">Спајање у доњем левом углу</translation>
 <translation id="8483229036294884935">Ова адреса ће бити избрисана са Google налога, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Односе се на</translation>

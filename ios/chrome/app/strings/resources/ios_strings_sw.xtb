@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Fungua zote</translation>
 <translation id="1408847409015257906">Gusa "Faragha na Usalama.”</translation>
 <translation id="1411386976162024013">Utafutaji wa kinachoonekana kwa Kutumia Lenzi</translation>
+<translation id="1426410128494586442">Ndiyo</translation>
 <translation id="1430915738399379752">Chapisha</translation>
 <translation id="1436671784520050284">Endelea kuweka mipangilio</translation>
 <translation id="143681031165817424">Anwani imehifadhiwa kwenye kifaa hiki</translation>
@@ -416,6 +417,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="2816489851009559785">Menyu → Mipangilio → Kivinjari chaguomsingi</translation>
 <translation id="2818821771744632548">Uliondolewa kwenye akaunti yako, <ph name="USER_NAME" />, ikiwa ni sehemu ya kuweka upya mipangilio ya iPhone yako. Ili uingie tena katika akaunti, bofya "Endelea" hapa chini.</translation>
 <translation id="2819667972867209401">Ukiwasha, data inahifadhiwa kwenye Akaunti yako ya Google. Ukizima, inahifadhi data kwenye kifaa hiki pekee na inafutwa iwapo utaondoka kwenye akaunti.</translation>
+<translation id="2827760117436553203">Ungependa kuhifadhi data kivyake?</translation>
 <translation id="2829172210806130158">Tafuta maudhui kwenye skrini yako</translation>
 <translation id="2834399722155632105">3. Teua Chaguo za Nenosiri</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -695,6 +697,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4237377247299956313">Gusa <ph name="BEGIN_BOLD" />Programu ya Kivinjari Chaguomsingi<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Fungua mipangilio</translation>
 <translation id="4250432749243022864">{count,plural, =0{Fungua kichupo {count}}=1{Fungua kichupo {count}}other{Fungua vichupo {count}}}</translation>
+<translation id="4250680216510889253">La</translation>
 <translation id="4251531167342733205">Pata maudhui bora kutoka kwenye kivinjari unachokipenda.</translation>
 <translation id="4253168017788158739">Dokezo</translation>
 <translation id="4256782883801055595">Leseni za programu huria</translation>
@@ -944,7 +947,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="5343472494710226394">Habari, michezo na maudhui kulingana na mapendeleo yako.</translation>
 <translation id="5352128922772839949">Hifadhi faili</translation>
 <translation id="5355191726083956201">Umewasha Kipengele cha Ulinzi Ulioboreshwa</translation>
-<translation id="5356332698539508708">Futa kisha Ubadilishe</translation>
 <translation id="537853552771686272">Dhibiti mada na tovuti zinazokuvutia</translation>
 <translation id="5395707839134961196">Ficha maelezo ya mtambo wa kutafuta</translation>
 <translation id="541276233349960923">Kutumia manenosiri kwenye Vifaa vyako vyote</translation>
@@ -1212,6 +1214,7 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="6476800141292307438">Inatafsiri ukurasa katika <ph name="LANGUAGE" />. Chaguo zinapatikana karibu na sehemu ya chini ya skrini.</translation>
 <translation id="647867789226964031">Badilisha manenosiri yako</translation>
 <translation id="6494931198667773526">Utaisha</translation>
+<translation id="6495521251906266731">Chagua hatua za kuchukua kuhusu data iliyopo ya kuvinjari kwenye kifaa hiki, kama vile manenosiri, historia na mengineyo.</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{Acha kufuatilia kifurushi hiki}other{Acha kufuatilia vifurushi vyote}}</translation>
 <translation id="6503077044568424649">Zinazotembelewa zaidi</translation>
 <translation id="6503763061813913607">Arifa za Kipengele cha Ukaguzi wa Usalama</translation>
@@ -1606,7 +1609,6 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8219424187226230983">Kuangalia toleo la nje ya mtandao kwenye kichupo kipya</translation>
 <translation id="8230355548492839438">Tafuta iliyotangulia</translation>
 <translation id="8232956427053453090">Hifadhi data</translation>
-<translation id="8242644458318193141">Ili kulinda usalama wa shirika lako, vichupo vitafungwa na data ambayo haijahifadhiwa itafutwa kwenye kifaa hiki. Hii inaweza kujumuisha manenosiri, historia na zaidi.</translation>
 <translation id="8261506727792406068">Futa</translation>
 <translation id="82619448491672958">Angalia vichupo vingine</translation>
 <translation id="8263228331881858381">Ufunguo wa siri umehifadhiwa</translation>
@@ -1652,7 +1654,6 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8449869326050867919">Nenosiri limeshirikiwa</translation>
 <translation id="8453847087068411809">Kamwe usitambue vifurushi kiotomatiki</translation>
 <translation id="846158969830690371">Fahamu iwapo una mipangilio salama zaidi au unahitaji kukagua chochote.</translation>
-<translation id="8466300942149667917">Data ya akaunti ambayo haijahifadhiwa itafutwa</translation>
 <translation id="8473863474539038330">Anwani na zaidi</translation>
 <translation id="8474378002946546633">Ruhusu arifa</translation>
 <translation id="8477178913400731244">Futa data</translation>

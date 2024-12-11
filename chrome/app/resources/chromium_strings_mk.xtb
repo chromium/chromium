@@ -60,6 +60,7 @@
 <translation id="1779356040007214683">За Chromium да биде побезбеден, оневозможивме неколку наставки што не се наведени во <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и можеби се додадени без ваше знаење.</translation>
 <translation id="1808667845054772817">Преинсталирај го Chromium</translation>
 <translation id="1820835682567584003">Chromium се обидува да <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1838374766361614909">Исчисти го пребарувањето</translation>
 <translation id="18552579716432081">За да ги избришете податоците од прелистување само од овој уред, а притоа да ги задржите во сметката на Google, <ph name="BEGIN_LINK" />одјавете се од Chromium<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">Може да управувате со најавените сметки на Google. Вашите сметки на Google се користат за прелистувачот Chromium, Play Store, Gmail и друго. Ако сакате да додадете сметка за некој друг, како член на семејството, додајте ново лице во вашиот уред <ph name="DEVICE_TYPE" /> наместо тоа. <ph name="LINK_BEGIN" />Дознај повеќе<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Пребарувајте со „Пребарување со слики“</translation>
@@ -206,7 +207,6 @@
 <translation id="3802055581630249637">Chromium вчитува страници однапред што е веројатно дека ќе ги отворите за да може да се вчитуваат побрзо кога ги отворате</translation>
 <translation id="3830894615770080216">Систем Chromium OS</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="386822487697155367">Добијте помош за Chromium OS</translation>
 <translation id="3871664619793219264">Преземете ги работите од вашиот прелистувач Chromium од <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3885770153807205175">Избор на јазик</translation>
 <translation id="388648406173476553">Приспособете го и контролирајте го Chromium. Потребно е вашето внимание - кликнете за детали.</translation>

@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Tout ouvrir</translation>
 <translation id="1408847409015257906">Touchez « Confidentialité et sécurité ».</translation>
 <translation id="1411386976162024013">Recherche visuelle de Lentille</translation>
+<translation id="1426410128494586442">Oui</translation>
 <translation id="1430915738399379752">Imprimer</translation>
 <translation id="1436671784520050284">Poursuivre la configuration</translation>
 <translation id="143681031165817424">Adresse enregistrée uniquement sur cet appareil</translation>
@@ -695,6 +696,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4237377247299956313">Touchez <ph name="BEGIN_BOLD" />Navigateur par défaut<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4250432749243022864">{count,plural, =0{Ouvrir {count} onglet}=1{Ouvrir {count} onglet}one{Ouvrir {count} onglet}other{Ouvrir {count} onglets}}</translation>
+<translation id="4250680216510889253">Non</translation>
 <translation id="4251531167342733205">Tirez le meilleur parti du navigateur que vous aimez.</translation>
 <translation id="4253168017788158739">Remarque</translation>
 <translation id="4256782883801055595">Licences de logiciels libres</translation>
@@ -944,7 +946,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5343472494710226394">Actualités, sports et contenu en fonction de vos champs d'intérêt.</translation>
 <translation id="5352128922772839949">Enregistrer le fichier</translation>
 <translation id="5355191726083956201">La protection renforcée est activée</translation>
-<translation id="5356332698539508708">Supprimer et changer</translation>
 <translation id="537853552771686272">Gérez les sujets et les sites qui vous intéressent</translation>
 <translation id="5395707839134961196">Masquer les détails du moteur de recherche</translation>
 <translation id="541276233349960923">Utiliser des mots de passe sur tous vos appareils</translation>
@@ -1606,7 +1607,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8219424187226230983">Afficher la version hors ligne dans un nouvel onglet</translation>
 <translation id="8230355548492839438">Rechercher précédent</translation>
 <translation id="8232956427053453090">Garder les données</translation>
-<translation id="8242644458318193141">Pour protéger la sécurité de votre organisation, les onglets seront fermés, et les données de compte non enregistrées seront supprimées de cet appareil. Cela peut inclure les mots de passe, l'historique et plus encore.</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="82619448491672958">Afficher les autres onglets</translation>
 <translation id="8263228331881858381">Clé d'accès enregistrée</translation>
@@ -1652,7 +1652,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8449869326050867919">Mot de passe partagé</translation>
 <translation id="8453847087068411809">Ne jamais détecter automatiquement les colis</translation>
 <translation id="846158969830690371">Déterminez si vos paramètres sont les plus sûrs ou si vous devez modifier quoi que ce soit.</translation>
-<translation id="8466300942149667917">Les données de compte non enregistrées seront supprimées</translation>
 <translation id="8473863474539038330">Adresses et plus</translation>
 <translation id="8474378002946546633">Autoriser les notifications</translation>
 <translation id="8477178913400731244">Supprimer les données</translation>

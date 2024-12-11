@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">فتح الكل</translation>
 <translation id="1408847409015257906">انقر على "الخصوصية والأمان".</translation>
 <translation id="1411386976162024013">‏البحث المرئي عبر "عدسة Google"</translation>
+<translation id="1426410128494586442">نعم</translation>
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="1436671784520050284">متابعة الإعداد</translation>
 <translation id="143681031165817424">تم حفظ العنوان على هذا الجهاز فقط.</translation>
@@ -416,6 +417,7 @@
 <translation id="2816489851009559785">"القائمة" ← "الإعدادات" ← "المتصفِّح التلقائي"</translation>
 <translation id="2818821771744632548">‏تم تسجيل خروج حسابك <ph name="USER_NAME" /> كجزء من عملية إعادة ضبط هاتف iPhone. لإعادة تسجيل الدخول، انقر على "متابعة" أدناه.</translation>
 <translation id="2819667972867209401">‏عند تفعيل هذا الخيار، يتم حفظ البيانات في حسابك على Google. وعند إيقافه، سيتم حفظ البيانات على هذا الجهاز فقط وحذفها عند تسجيل الخروج.</translation>
+<translation id="2827760117436553203">هل تريد الاحتفاظ بالبيانات منفصلة؟</translation>
 <translation id="2829172210806130158">البحث عن المحتوى الظاهر على الشاشة</translation>
 <translation id="2834399722155632105">‏3‏. انقر على Password Options (خيارات كلمات المرور).</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />، <ph name="STATE" />، <ph name="URL" /></translation>
@@ -695,6 +697,7 @@
 <translation id="4237377247299956313">‏النقر على <ph name="BEGIN_BOLD" />Default Browser App (تطبيق المتصفِّح التلقائي)<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">فتح الإعدادات</translation>
 <translation id="4250432749243022864">{count,plural, =0{فتح {count} علامة تبويب}=1{فتح علامة تبويب واحدة ({count})}two{فتح علامتَي تبويب ({count})}few{فتح {count} علامات تبويب}many{فتح {count} علامة تبويب}other{فتح {count} علامة تبويب}}</translation>
+<translation id="4250680216510889253">لا</translation>
 <translation id="4251531167342733205">استفِد إلى أقصى حدّ من المتصفّح الذي تفضّله.</translation>
 <translation id="4253168017788158739">ملاحظة</translation>
 <translation id="4256782883801055595">تراخيص البرامج المفتوحة المصدر</translation>
@@ -944,7 +947,6 @@
 <translation id="5343472494710226394">الأخبار والرياضة وغيرهما من المحتوى استنادًا إلى اهتماماتك</translation>
 <translation id="5352128922772839949">حفظ الملف</translation>
 <translation id="5355191726083956201">الحماية المُحسّنة مفعّلة.</translation>
-<translation id="5356332698539508708">حذف البيانات وتبديل الحساب</translation>
 <translation id="537853552771686272">إدارة المواضيع والمواقع الإلكترونية التي تهمّك</translation>
 <translation id="5395707839134961196">إخفاء تفاصيل محرك البحث</translation>
 <translation id="541276233349960923">استخدام كلمات المرور على جميع أجهزتك</translation>
@@ -1165,7 +1167,7 @@
 <translation id="6310451064941005489">خيارات كلمة المرور</translation>
 <translation id="6316141353357700666">اختَر كلمة المرور التي تريد استخدامها من القائمة التي تظهر.</translation>
 <translation id="6321526113093607004">الإضافة إلى الإشارات المرجعية</translation>
-<translation id="6337234675334993532">ترميز</translation>
+<translation id="6337234675334993532">التشفير</translation>
 <translation id="633809752005859102">حدث خطأ ما، وسنحاول حل المشكلة.</translation>
 <translation id="6339793034470834130">‏لاستخدام Web Inspector (أداة فحص الويب)، عليك الاتصال بخادم Safari على جهاز الكمبيوتر باستخدام كابل ثم الوصول إلى جهاز iPhone من القائمة Develop (تطوير). يمكنك تفعيل القائمة Develop (تطوير) من خلال قسم Advanced (إعدادات متقدّمة) في إعدادات خادم Safari على جهاز الكمبيوتر.</translation>
 <translation id="6340285871011301182">خيار الترجمة الجزئية غير متاح.</translation>
@@ -1210,6 +1212,7 @@
 <translation id="6476800141292307438">ترجمة صفحة إلى <ph name="LANGUAGE" />. وتتوفّر الخيارات بالقرب من أسفل الشاشة.</translation>
 <translation id="647867789226964031">تغيير كلمات المرور</translation>
 <translation id="6494931198667773526">الانتهاء</translation>
+<translation id="6495521251906266731">يمكنك اختيار ما تريد فعله ببيانات التصفّح الحالية على هذا الجهاز، مثل كلمات المرور والسجلّ وغير ذلك.</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{إيقاف تتبُّع هذا الطرد}zero{إيقاف تتبُّع كل الطرود}two{إيقاف تتبُّع كلّ الطرود}few{إيقاف تتبُّع كل الطرود}many{إيقاف تتبُّع كل الطرود}other{إيقاف تتبُّع كل الطرود}}</translation>
 <translation id="6503077044568424649">الأكثر زيارة</translation>
 <translation id="6503763061813913607">إشعارات ميزة "التحقّق من الأمان"</translation>
@@ -1233,7 +1236,7 @@
 <translation id="6579867704846662339">‏يمكنك اختيار فتح عناوين URL الواردة من تطبيقات أخرى في "وضع التصفّح المتخفي".</translation>
 <translation id="6583087784430677195">‏لإيقاف ميزة "الملء التلقائي"، افتح <ph name="BEGIN_LINK" />Settings (الإعدادات)<ph name="END_LINK" /> ثم انتقِل إلى Passwords (كلمات المرور).</translation>
 <translation id="6585048665672348661">حذف بيانات التصفّح…</translation>
-<translation id="6585618849026997638">يمكنك الرجوع إلى أي صفحة تهمك من خلال إضافة إشارة مرجعية لها.</translation>
+<translation id="6585618849026997638">يمكنك الرجوع إلى أي صفحة تهمك من خلال إضافة إشارة مرجعية لها</translation>
 <translation id="6596481460663245319">‏البحث باستخدام صورة مع Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{كلمة مرور واحدة}zero{‫# كلمة مرور}two{كلمتا مرور}few{‫# كلمات مرور}many{‫# كلمة مرور}other{‫# كلمة مرور}}</translation>
 <translation id="6601302169302852717">‏تم حفظ الصورة في "صور Google" للحساب <ph name="USER_EMAIL" />.</translation>
@@ -1606,7 +1609,6 @@
 <translation id="8219424187226230983">عرض نسخة بلا إنترنت في علامة تبويب جديدة</translation>
 <translation id="8230355548492839438">العثور على النتيجة السابقة</translation>
 <translation id="8232956427053453090">حفظ البيانات</translation>
-<translation id="8242644458318193141">للحفاظ على أمان مؤسستك، سيتم إغلاق علامات التبويب وحذف بيانات الحساب غير المحفوظة من هذا الجهاز. ويمكن أن يشمل ذلك كلمات المرور والسجلّ وغيرها.</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="82619448491672958">الانتقال إلى علامات التبويب الأخرى</translation>
 <translation id="8263228331881858381">تم حفظ مفتاح المرور</translation>
@@ -1652,7 +1654,6 @@
 <translation id="8449869326050867919">تمت مشاركة كلمة المرور</translation>
 <translation id="8453847087068411809">عدم الرصد التلقائي للطرود مطلقًا</translation>
 <translation id="846158969830690371">تأكَّد من أنّك تستخدم الإعدادات الأكثر أمانًا أو تعرَّف على الإجراءات المطلوبة لتعزيز الأمان.</translation>
-<translation id="8466300942149667917">سيتم حذف بيانات الحساب غير المحفوظة</translation>
 <translation id="8473863474539038330">العناوين والمزيد</translation>
 <translation id="8474378002946546633">السماح بالإشعارات</translation>
 <translation id="8477178913400731244">حذف البيانات</translation>
@@ -1670,7 +1671,7 @@
 <translation id="8524799873541103884">علامات تبويب <ph name="INCOGNITO" /><ph name="FIRST_VISIBLE_TAB" /> عبر <ph name="LAST_VISIBLE_TAB" /> من <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">فتح الروابط من التطبيقات الأخرى في "وضع التصفّح المتخفي"</translation>
 <translation id="8529767659511976195">جديد</translation>
-<translation id="8533670235862049797">التصفُّح الآمن مفعّل.</translation>
+<translation id="8533670235862049797">التصفُّح الآمن مفعّل</translation>
 <translation id="8534481786647257214">‏اكتمل النشر على Google+‎.</translation>
 <translation id="8535368836838588657">الكشف عن كلمة المرور</translation>
 <translation id="8545276357312221485">التحقُّق من إعدادات المتصفِّح التلقائية</translation>

@@ -58,6 +58,7 @@
 <translation id="1779356040007214683">Chromiumను సురక్షితం చేయడానికి, మేము <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />లో లిస్ట్‌ చేయబడని మరియు మీకు తెలియకుండానే జోడించబడిన కొన్ని ఎక్స్‌టెన్షన్‌లను నిలిపివేసాము.</translation>
 <translation id="1808667845054772817">Chromiumను మళ్లీ ఇన్‌స్టాల్ చేయి</translation>
 <translation id="1820835682567584003"><ph name="AUTHENTICATION_PURPOSE" /> కోసం Chromium ట్రై చేస్తోంది</translation>
+<translation id="1838374766361614909">శోధనను తీసివేయండి</translation>
 <translation id="18552579716432081">ఈ పరికరం నుండి మాత్రమే బ్రౌజింగ్ డేటాను తొలగించడానికి, దీన్ని మీ Google ఖాతాలో ఉంచుతూ, <ph name="BEGIN_LINK" />Chromium నుండి సైన్ అవుట్ చేయండి<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">మీరు సైన్ ఇన్ చేసిన Google ఖాతాలను మీరు మేనేజ్ చేయవచ్చు. Chromium బ్రౌజర్, Play Store, Gmail, ఇంకా మరిన్నింటి కోసం మీ Google ఖాతాలు ఉపయోగించబడతాయి. ఫ్యామిలీ మెంబర్ వంటి వారి కోసం మీరు ఖాతాను జోడించాలనుకుంటే, బదులుగా కొత్త వ్యక్తిని మీ <ph name="DEVICE_TYPE" />కు జోడించండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">ఇమేజ్ సెర్చ్‌తో సెర్చ్ చేయండి</translation>
@@ -93,6 +94,7 @@
 <translation id="2199210295479376551">Chromium నుండి ఖాతాను తీసివేయండి</translation>
 <translation id="2210682093923538346">హానికరమైన సైట్. Chromium నోటిఫికేషన్‌లను తీసివేసింది.</translation>
 <translation id="2236949375853147973">నా యాక్టివిటీ</translation>
+<translation id="2238130810669087193">Chromiumకు సైన్ ఇన్ చేసి, మీ పరికరాలన్నింటిలో మీ అడ్రస్‌లను, ఇంకా మరిన్నింటిని పొందండి. మీరు సైన్ ఇన్ చేసిన తర్వాత ఈ అడ్రస్ మీ Google ఖాతాలో సేవ్ అవుతుంది.</translation>
 <translation id="2240214816234246077">మీరు ఇటీవల వెళ్లలేదు. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />‌ను తీసివేసింది</translation>
 <translation id="2241627712206172106">మీరు కంప్యూటర్‌ను షేర్‌ చేస్తే, స్నేహితులు, ఫ్యామిలీ మెంబర్‌లు విడివిడిగా బ్రౌజ్ చేయవచ్చు. Chromiumను వారికి నచ్చిన రీతిలో సెటప్ చేసుకోవచ్చు.</translation>
 <translation id="2313870531055795960">Chromiumలో స్టోర్ చేయబడిన సురక్షితం కాని సైట్‌ల లిస్ట్‌తో కూడిన URLలను చెక్ చేస్తుంది. ఏదైనా సైట్ మీ పాస్‌వర్డ్‌ను దొంగిలించే ప్రయత్నం చేసినా, లేదంటే ఏదైనా హానికరమైన ఫైల్‌ను మీరు డౌన్‌లోడ్ చేసినా, సదరు URLలను, ఆయా పేజీల కంటెంట్‌లోని కొన్ని భాగాలను కూడా Chromium, 'సురక్షిత బ్రౌజింగ్'కు పంపవచ్చు.</translation>
@@ -202,7 +204,6 @@
 <translation id="3802055581630249637">Chromium మీరు చూసే అవకాశం ఉన్న పేజీలను ప్రీ - లోడ్ చేస్తుంది, తద్వారా మీరు వాటిని చూసినప్పుడు అవి మరింత త్వరగా లోడ్ అవుతాయి</translation>
 <translation id="3830894615770080216">ChromiumOS సిస్టమ్</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="386822487697155367">ChromiumOSతో సహాయాన్ని పొందండి</translation>
 <translation id="3871664619793219264"><ph name="ACCOUNT_EMAIL" /> నుండి మీ Chromium బ్రౌజర్ సంబంధిత అంశాలను పొందండి</translation>
 <translation id="3885770153807205175">భాష సెలెక్టర్</translation>
 <translation id="388648406173476553">Chromiumను అనుకూలంగా మార్చండి మరియు నియంత్రించండి. మీరు గమనించాల్సిన విషయం ఒకటి ఉంది - వివరాల కోసం క్లిక్ చేయండి.</translation>

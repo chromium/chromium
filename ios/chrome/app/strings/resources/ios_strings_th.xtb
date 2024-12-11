@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">เปิดทั้งหมด</translation>
 <translation id="1408847409015257906">แตะ "ความเป็นส่วนตัวและความปลอดภัย"</translation>
 <translation id="1411386976162024013">การค้นหาภาพด้วย Lens</translation>
+<translation id="1426410128494586442">ยอมรับ</translation>
 <translation id="1430915738399379752">พิมพ์</translation>
 <translation id="1436671784520050284">ตั้งค่าต่อ</translation>
 <translation id="143681031165817424">บันทึกที่อยู่ในอุปกรณ์นี้เท่านั้น</translation>
@@ -416,6 +417,7 @@
 <translation id="2816489851009559785">เมนู → การตั้งค่า → เบราว์เซอร์เริ่มต้น</translation>
 <translation id="2818821771744632548">คุณออกจากระบบบัญชี <ph name="USER_NAME" /> ในขั้นตอนการรีเซ็ต iPhone หากต้องการลงชื่อเข้าใช้อีกครั้ง ให้แตะ "ต่อไป" ด้านล่าง</translation>
 <translation id="2819667972867209401">เมื่อเปิดไว้ ระบบจะบันทึกข้อมูลในบัญชี Google ของคุณ เมื่อปิดไว้ ระบบจะบันทึกข้อมูลในอุปกรณ์เครื่องนี้เท่านั้นและข้อมูลจะถูกลบหากคุณออกจากระบบ</translation>
+<translation id="2827760117436553203">เก็บข้อมูลแยกกันไหม</translation>
 <translation id="2829172210806130158">ค้นหาในหน้าจอ</translation>
 <translation id="2834399722155632105">3. แตะตัวเลือกรหัสผ่าน</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -695,6 +697,7 @@
 <translation id="4237377247299956313">แตะ<ph name="BEGIN_BOLD" />แอปเบราว์เซอร์เริ่มต้น<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">เปิดการตั้งค่า</translation>
 <translation id="4250432749243022864">{count,plural, =0{เปิด {count} แท็บ}=1{เปิด {count} แท็บ}other{เปิด {count} แท็บ}}</translation>
+<translation id="4250680216510889253">ไม่</translation>
 <translation id="4251531167342733205">รับสิ่งที่ดีที่สุดจากเบราว์เซอร์ที่คุณชื่นชอบ</translation>
 <translation id="4253168017788158739">หมายเหตุ</translation>
 <translation id="4256782883801055595">ใบอนุญาตโอเพนซอร์ส</translation>
@@ -944,7 +947,6 @@
 <translation id="5343472494710226394">ข่าวสาร กีฬา และเนื้อหาตามความสนใจของคุณ</translation>
 <translation id="5352128922772839949">บันทึกไฟล์</translation>
 <translation id="5355191726083956201">การปกป้องที่ปรับปรุงแล้วเปิดอยู่</translation>
-<translation id="5356332698539508708">ลบและเปลี่ยน</translation>
 <translation id="537853552771686272">จัดการหัวข้อและเว็บไซต์ที่คุณสนใจ</translation>
 <translation id="5395707839134961196">ซ่อนรายละเอียดเครื่องมือค้นหา</translation>
 <translation id="541276233349960923">ใช้รหัสผ่านในอุปกรณ์ทุกเครื่อง</translation>
@@ -1212,6 +1214,7 @@
 <translation id="6476800141292307438">กำลังแปลหน้าเว็บเป็นภาษา<ph name="LANGUAGE" /> ตัวเลือกจะอยู่ทางด้านล่างของหน้าจอ</translation>
 <translation id="647867789226964031">เปลี่ยนรหัสผ่าน</translation>
 <translation id="6494931198667773526">สิ้นสุด</translation>
+<translation id="6495521251906266731">เลือกว่าจะทำอย่างไรกับข้อมูลการท่องเว็บที่มีอยู่ในอุปกรณ์นี้ เช่น รหัสผ่าน ประวัติการเข้าชม และอื่นๆ</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{ยกเลิกการติดตามพัสดุนี้}other{ยกเลิกการติดตามพัสดุทั้งหมด}}</translation>
 <translation id="6503077044568424649">เข้าชมบ่อยสุด</translation>
 <translation id="6503763061813913607">การแจ้งเตือนการตรวจสอบความปลอดภัย</translation>
@@ -1606,7 +1609,6 @@
 <translation id="8219424187226230983">ดูเวอร์ชันออฟไลน์ในแท็บใหม่</translation>
 <translation id="8230355548492839438">ค้นหาก่อนหน้า</translation>
 <translation id="8232956427053453090">เก็บข้อมูลไว้</translation>
-<translation id="8242644458318193141">เพื่อปกป้องความปลอดภัยขององค์กร ระบบจะปิดแท็บและลบข้อมูลบัญชีที่ไม่ได้บันทึกออกจากอุปกรณ์เครื่องนี้ ซึ่งอาจรวมถึงรหัสผ่าน ประวัติการเข้าชม และอื่นๆ</translation>
 <translation id="8261506727792406068">ลบ</translation>
 <translation id="82619448491672958">ดูแท็บอื่นๆ</translation>
 <translation id="8263228331881858381">บันทึกพาสคีย์แล้ว</translation>
@@ -1652,7 +1654,6 @@
 <translation id="8449869326050867919">แชร์รหัสผ่านแล้ว</translation>
 <translation id="8453847087068411809">ไม่ต้องตรวจหาพัสดุอัตโนมัติ</translation>
 <translation id="846158969830690371">แจ้งให้คุณทราบว่ามีการตั้งค่าที่ปลอดภัยที่สุดหรือไม่ หรือต้องตรวจสอบอะไรบ้าง</translation>
-<translation id="8466300942149667917">ระบบจะลบข้อมูลบัญชีที่ไม่ได้บันทึก</translation>
 <translation id="8473863474539038330">ที่อยู่และอื่นๆ</translation>
 <translation id="8474378002946546633">อนุญาตการแจ้งเตือน</translation>
 <translation id="8477178913400731244">ลบข้อมูล</translation>

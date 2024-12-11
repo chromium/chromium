@@ -1505,6 +1505,7 @@
 <translation id="202352106777823113">डाउनलोड बहुत ज़्यादा समय ले रहा था और उसे नेटवर्क द्वारा रोक दिया गया था.</translation>
 <translation id="2024195579772565064">सर्च इंजन मिटाएं</translation>
 <translation id="202500043506723828">ईआईडी</translation>
+<translation id="2025123106058020990">सटीक क्लिक करने की सुविधा</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> बंद हो गया. एक्सटेंशन को फिर से लोड करने के लिए इस गुब्बारे के निशान पर क्लिक करें.</translation>
 <translation id="2026377162111110983">आस-पास की आवाज़ें बेहतर बनाने वाला मोड</translation>
 <translation id="2028449514182362831">जिन सुविधाओं के लिए मोशन सेंसर की ज़रूरत होती है वे काम नहीं करेंगी</translation>
@@ -4763,6 +4764,7 @@
 <translation id="4324577459193912240">फ़ाइल अधूरी है</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> अनइंस्टॉल हो रहा है...</translation>
 <translation id="4325433082696797523">स्टोरेज और पावर</translation>
+<translation id="4325515113816851466">साइन आउट करने के बाद, माता-पिता की चुनी गई सेटिंग लागू नहीं होंगी</translation>
 <translation id="4326146840124313313">Chrome की सबसे मज़बूत सुरक्षा की सुविधा, आपको नुकसान पहुंचाने वाली वेबसाइटों, डाउनलोड, और एक्सटेंशन से बचाती है</translation>
 <translation id="4327380114687339519">एक्सटेंशन मेन्यू</translation>
 <translation id="4330191372652740264">आइस वॉटर</translation>
@@ -4885,6 +4887,7 @@
 <translation id="4412992751769744546">तीसरे पक्ष की कुकी को अनुमति दें</translation>
 <translation id="4413087696295876280">ChromeOS Flex वाले डिवाइस की जानकारी और डेटा ऐक्सेस करें</translation>
 <translation id="44137799675104237">टेक्स्ट को नैचुरल आवाज़ में सुनें</translation>
+<translation id="4414051792721275732">क्लिक करने के लिए किसी जेस्चर का इस्तेमाल करने पर, माउस की रफ़्तार कम हो जाएगी, ताकि आपको ज़्यादा कंट्रोल मिले सके. क्लिक करने के लिए, जेस्चर का फिर से इस्तेमाल करें.</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">"<ph name="APP_NAME" />" को आपके अटैच किए हुए USB डिवाइसों की सूची पाने दें?</translation>
 <translation id="4414232939543644979">नई &amp;गुप्त विंडो</translation>
@@ -5121,6 +5124,7 @@
 <translation id="4586275095964870617"><ph name="URL" /> वैकल्पिक ब्राउज़र में नहीं खुला. कृपया अपने सिस्टम एडमिन से संपर्क करें.</translation>
 <translation id="4587589328781138893">साइटें</translation>
 <translation id="4588749726511456218">स्क्रोल करने की रफ़्तार <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> और <ph name="DOMAIN" /> मिलते-जुलते लगते हैं. अपना पासवर्ड इस्तेमाल करने से पहले, पक्का करें कि आपको <ph name="DOMAIN" /> पर भरोसा है.</translation>
 <translation id="4589713469967853491">डाउनलोड डायरेक्ट्री में लॉग सेव किए गए.</translation>
 <translation id="4590785647529325123">अपने डिवाइस से गुप्त मोड में की गई ब्राउज़िंग का इतिहास मिटाने के लिए, सभी गुप्त टैब बंद करें</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> से कोई डिवाइस नहीं जुड़ा है</translation>
@@ -5626,6 +5630,7 @@
 <translation id="4946998421534856407">लॉन्चर + अप ऐरो</translation>
 <translation id="4947376546135294974">जिस साइट को विज़िट किया जा रहा है उसका डेटा</translation>
 <translation id="4950100687509657457">प्रोफ़ाइल बनाएं</translation>
+<translation id="4950360215042327246">[प्लेसहोल्डर स्ट्रिंग]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{एक फ़ाइल}one{# फ़ाइल}other{# फ़ाइलें}}</translation>
 <translation id="495170559598752135">क्रियाएं</translation>
 <translation id="4951966678293618079">इस साइट के लिए कभी भी पासवर्ड सेव न करें</translation>
@@ -5764,6 +5769,7 @@
 <translation id="5061531353537614467">टुण्ड्रा</translation>
 <translation id="5062930723426326933">साइन इन नहीं हो पाया, कृपया इंटरनेट से कनेक्ट करें और फिर से कोशिश करें.</translation>
 <translation id="5063480226653192405">उपयोग</translation>
+<translation id="5064921774605267982"><ph name="PROFILE_NAME" /> प्रोफ़ाइल खोलें. इस प्रोफ़ाइल को आपके माता-पिता मैनेज करते हैं.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS की सेटिंग में सुरक्षित डीएनएस मैनेज करें</translation>
 <translation id="5066534201484101197">एक पेज से दूसरे पेज पर जाने के लिए ओवरस्क्रोल करें</translation>
@@ -6211,6 +6217,7 @@
 <translation id="5389224261615877010">इंद्रधनुष</translation>
 <translation id="5389626883706033615">कोई भी साइट आपके बारे में सेव की गई जानकारी इस्तेमाल करने की अनुमति नहीं मांग सकती</translation>
 <translation id="5389794555912875905">असुरक्षित साइटों पर जाने से पहले चेतावनियां दिखेंगी (इस विकल्प को इस्तेमाल करने का सुझाव दिया जाता है)</translation>
+<translation id="5389943529251318913">माउस की रफ़्तार को इतना कम करें</translation>
 <translation id="5390112241331447203">फ़ीडबैक रिपोर्ट में भेजी गई system_logs.txt फ़ाइलें शामिल करें.</translation>
 <translation id="5390677308841849479">गहरा लाल और नारंगी</translation>
 <translation id="5392192690789334093">सूचनाएं भेजने की अनुमति दी गई</translation>
@@ -7419,6 +7426,7 @@
 <translation id="6266984048393265562">प्रोफ़ाइल को पसंद के मुताबिक बनाएं</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> पर अपना प्रमाणन करने के लिए किसी प्रमाणपत्र को चुनें</translation>
 <translation id="6268252012308737255"><ph name="APP" /> में खोलें</translation>
+<translation id="6269050081341530851">डुप्लीकेट टैब मिटाने पर, सबसे पुराना टैब सेव रहता है</translation>
 <translation id="6270309713620950855">सूचना म्यूट करें</translation>
 <translation id="6270391203985052864">साइटें, सूचनाएं भेजने के लिए आपकी अनुमति मांग सकती हैं</translation>
 <translation id="6270486800167535228">एक्सटेंशन को पिन किया गया है. ज़्यादा विकल्प देखने के लिए चुनें</translation>
@@ -7962,6 +7970,7 @@
 <translation id="6679947539429331601">12 घंटों के लिए छिपाएं</translation>
 <translation id="6680442031740878064">उपलब्ध: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">दर</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [प्लेसहोल्डर स्ट्रिंग]</translation>
 <translation id="6683022854667115063">हेडफ़ोन</translation>
 <translation id="6683087162435654533">सभी टैब पहले जैसे करें</translation>
 <translation id="6683433919380522900">अनुमति <ph name="PERMISSION_STATE" /> पर सेट है</translation>
@@ -8044,7 +8053,6 @@
 <translation id="6743841972744298686">सिंक सेटिंग</translation>
 <translation id="6745592621698551453">अभी अपडेट करें</translation>
 <translation id="6746124502594467657">नीचे ले जाएं</translation>
-<translation id="674632704103926902">टैप करके खींचना चालू करें</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> का पासवर्ड दिखाएं</translation>
 <translation id="6748980958975836188">मैंने <ph name="BEGIN_LINK1" />Google की सेवा की शर्तें<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome और ChromeOS की सेवा की अन्य शर्तें<ph name="END_LINK2" /> पढ़ ली हैं और उनसे सहमत हूं.</translation>
 <translation id="6749077623962119521">क्या आप अनुमतियां रीसेट करना चाहते हैं?</translation>
@@ -8856,6 +8864,7 @@
 <translation id="7330533963640151632"><ph name="USER_NAME" /> के डिवाइस के लिए <ph name="FEATURE_NAME" /> की सेटिंग, <ph name="USER_EMAIL" /> खाते के तहत शेयर की जा रही हैं.</translation>
 <translation id="7331646370422660166">alt + डाउन ऐरो</translation>
 <translation id="7332053360324989309">खास तौर पर इसके लिए काम करने वाला वर्कर: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">डुप्लीकेट टैब</translation>
 <translation id="7333388112938984914">सीमित डेटा वाले कनेक्शन का इस्तेमाल करने पर, फ़ाइलें अपलोड नहीं की जा सकतीं.</translation>
 <translation id="7333669215417470379">अपने ऐप्लिकेशन और सेटिंग का बैक अप लेना और उन्हें पहले जैसा करना</translation>
 <translation id="7335974957018254119">इन भाषाओं के लिए स्पेल चेक का इस्तेमाल करें</translation>
@@ -9925,7 +9934,6 @@
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />ऐप्लिकेशन डेटा ऐसा कोई भी डेटा हो सकता है जिसे किसी ऐप्लिकेशन ने (डेवलपर सेटिंग के हिसाब से) सेव किया है, इसमें संपर्क, मैसेज और फ़ोटो जैसा डेटा शामिल है.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />बैकअप डेटा को आपके बच्चे के 'डिस्क' के स्टोरेज कोटा में शामिल नहीं किया जाएगा.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />आप सेटिंग में जाकर इस सेवा को बंद कर सकते हैं.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="8076492880354921740">टैब</translation>
 <translation id="8076835018653442223">आपके एडमिन ने आपके डिवाइस की स्थानीय फ़ाइलों का एक्सेस बंद कर दिया है</translation>
 <translation id="8077120325605624147">किसी भी साइट को देखने पर, आपको कोई भी विज्ञापन दिख सकता है</translation>
 <translation id="8077579734294125741">Chrome की अन्य प्रोफ़ाइलें</translation>
@@ -10562,7 +10570,6 @@
 <translation id="8528074251912154910">भाषाएं जोड़ें</translation>
 <translation id="8528479410903501741">IBAN सेव करें</translation>
 <translation id="8528962588711550376">प्रवेश कर रहा है.</translation>
-<translation id="8529925957403338845">इंस्टैंट टेदरिंग कनेक्शन नहीं किया जा सका</translation>
 <translation id="8531367864749403520">किसी ग्रुप को टैब बार से हटाने के लिए, "ग्रुप छिपाएं" को चुनें</translation>
 <translation id="8531701051932785007">बेहतर सुरक्षित ब्राउज़िंग की सुविधा बंद है</translation>
 <translation id="8533670235862049797">सुरक्षित ब्राउज़िंग की सुविधा चालू है</translation>

@@ -58,6 +58,7 @@
 <translation id="1779356040007214683">Chromium ஐப் பாதுகாப்பானதாக்க <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> இல் பட்டியலிடப்படாத சில நீட்டிப்புகளை நாங்கள் முடக்கிவிட்டோம், மேலும் அவை உங்களுக்குத் தெரியாமல் சேர்க்கப்பட்டிருக்கலாம்.</translation>
 <translation id="1808667845054772817">Chromium ஐ மீண்டும்நிறுவு</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> முயல்கிறது</translation>
+<translation id="1838374766361614909">தேடலை அழி</translation>
 <translation id="18552579716432081">உலாவிய தரவை உங்கள் Google கணக்கில் இருந்து நீக்காமல் இந்தச் சாதனத்தில் இருந்து மட்டும் நீக்க, <ph name="BEGIN_LINK" />Chromiumமில் இருந்து வெளியேறுங்கள்<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">நீங்கள் உள்நுழைந்துள்ள Google கணக்குகளை நிர்வகிக்கலாம். Chromium உலாவி, Play Store, Gmail மற்றும் பலவற்றில் உங்கள் Google கணக்குகள் பயன்படுத்தப்படும். வேறு ஒருவரின் (எ.கா. குடும்ப உறுப்பினர்) கணக்கைச் சேர்க்க விரும்பினால் உங்கள் <ph name="DEVICE_TYPE" /> சாதனத்தில் ஒரு புதிய பயனரைச் சேர்க்கவும். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">படத் தேடல் மூலம் தேடு</translation>
@@ -204,7 +205,6 @@
 <translation id="3802055581630249637">நீங்கள் பார்வையிடக்கூடிய பக்கங்களை Chromium முன்கூட்டியே ஏற்றிவிடுவதால் அந்தப் பக்கங்கள் மிக விரைவாக ஏற்றப்படும்</translation>
 <translation id="3830894615770080216">ChromiumOS சிஸ்டம்</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="386822487697155367">ChromiumOS தொடர்பான உதவி பெறுக</translation>
 <translation id="3871664619793219264"><ph name="ACCOUNT_EMAIL" /> கணக்கில் இருந்து Chromium உலாவி தொடர்பான அனைத்தையும் பெறலாம்</translation>
 <translation id="3885770153807205175">மொழி தேர்ந்தெடுப்பான்</translation>
 <translation id="388648406173476553">Chromiumமைத் தேவைக்கேற்ப மாற்றி கட்டுப்படுத்தும். சிலவற்றை நீங்கள் கவனிக்க வேண்டும் - விவரங்களுக்கு, கிளிக் செய்யவும்.</translation>

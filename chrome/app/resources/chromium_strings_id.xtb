@@ -58,6 +58,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="1779356040007214683">Agar Chromium lebih aman, kami menonaktifkan beberapa ekstensi yang tidak tercantum dalam <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa sepengetahuan Anda.</translation>
 <translation id="1808667845054772817">Instal ulang Chromium</translation>
 <translation id="1820835682567584003">Chromium sedang mencoba <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1838374766361614909">Hapus penelusuran</translation>
 <translation id="18552579716432081">Untuk menghapus data penjelajahan hanya dari perangkat ini dan tetap menyimpannya di Akun Google Anda, <ph name="BEGIN_LINK" />logout dari Chromium<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">Anda dapat mengelola Akun Google yang Anda gunakan untuk login. Akun Google Anda digunakan untuk browser Chromium, Play Store, Gmail, dan lainnya. Jika Anda ingin menambahkan akun untuk orang lain, seperti anggota keluarga, tambahkan pengguna baru ke <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Telusuri dengan Penelusuran Gambar</translation>
@@ -93,6 +94,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="2199210295479376551">Hapus akun dari Chromium</translation>
 <translation id="2210682093923538346">Situs berbahaya. Chromium menghapus izin notifikasi.</translation>
 <translation id="2236949375853147973">Aktivitas Saya</translation>
+<translation id="2238130810669087193">Untuk mendapatkan alamat dan info Anda yang lain di semua perangkat Anda, login ke Chromium. Alamat ini akan disimpan di Akun Google Anda setelah Anda login.</translation>
 <translation id="2240214816234246077">Anda tidak membuka situs ini baru-baru ini. Chromium menghapus <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Jika Anda berbagi komputer, teman dan keluarga bisa menjelajah secara terpisah dan menyiapkan Chromium sesuai keinginannya.</translation>
 <translation id="2313870531055795960">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chromium. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chromium mungkin juga mengirim URL, termasuk bit konten halaman, ke Safe Browsing.</translation>
@@ -204,7 +206,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="3802055581630249637">Chromium melakukan pramuat halaman yang mungkin akan Anda buka, agar halaman tersebut dimuat lebih cepat saat Anda membukanya</translation>
 <translation id="3830894615770080216">Sistem ChromiumOS</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="386822487697155367">Dapatkan bantuan ChromiumOS</translation>
 <translation id="3871664619793219264">Dapatkan data browser Chromium Anda dari <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3885770153807205175">Pemilih bahasa</translation>
 <translation id="388648406173476553">Sesuaikan dan kontrol Chromium. Ada sesuatu yang memerlukan perhatian Anda - klik untuk melihat detailnya.</translation>

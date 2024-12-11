@@ -56,6 +56,7 @@
 <translation id="1779356040007214683">‏لجعل Chromium أكثر أمانًا، تم إيقاف بعض الإضافات غير المدرجة في <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> والتي ربما تمت إضافتها بدون علمك.</translation>
 <translation id="1808667845054772817">‏إعادة تثبيت Chromium</translation>
 <translation id="1820835682567584003">‏يحاول Chromium <ph name="AUTHENTICATION_PURPOSE" />.</translation>
+<translation id="1838374766361614909">محو البحث</translation>
 <translation id="18552579716432081">‏لحذف بيانات التصفّح من هذا الجهاز فقط والاحتفاظ بها في حسابك على Google، يُرجى <ph name="BEGIN_LINK" />تسجيل الخروج من Chromium<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">‏يمكنك إدارة حسابات Google التي تم تسجيل الدخول إليها. يتم استخدام حساباتك على Google في متصفّح Chromium و"متجر Play" وGmail والمزيد. إذا أردت إضافة حساب لمستخدم آخر، مثل أحد أفراد العائلة، أضِف شخصًا جديدًا إلى <ph name="DEVICE_TYPE" /> بدلاً من ذلك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">البحث باستخدام ميزة "البحث بالصور"</translation>
@@ -91,6 +92,7 @@
 <translation id="2199210295479376551">‏إزالة الحساب من Chromium</translation>
 <translation id="2210682093923538346">‏هذا الموقع الإلكتروني خطير، لذلك أزال Chromium إذن الإشعارات.</translation>
 <translation id="2236949375853147973">نشاطي</translation>
+<translation id="2238130810669087193">‏يمكنك تسجيل الدخول إلى Chromium للوصول إلى العناوين وغيرها على جميع أجهزتك. وسيتم حفظ هذا العنوان في حسابك على Google بعد تسجيل الدخول.</translation>
 <translation id="2240214816234246077">‏لم تزر هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chromium إذنَي <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">‏إذا كنت تشارك الكمبيوتر مع أصدقائك وعائلتك، فبإمكانهم التصفح على حدة وإعداد Chromium على النحو الذي يريدونه.</translation>
 <translation id="2313870531055795960">‏يعمل هذا الوضع على التحقّق من عناوين URL التي تحتوي على قائمة بمواقع إلكترونية غير آمنة مُخزّنة في Chromium. وإذا حاول موقع إلكتروني سرقة كلمة المرور أو إذا نزّلت ملفًا ضارًا، قد يرسل متصفِّح Chromium أيضًا عناوين URL تتضمّن أجزاء من محتوى الصفحة إلى "التصفُّح الآمن".</translation>
@@ -202,7 +204,6 @@
 <translation id="3802055581630249637">‏يُحمِّل Chromium مسبقًا الصفحات التي من المرجَح أن تزورها، وذلك بهدف تحميلها بسرعة أكبر عند زيارتك لها.</translation>
 <translation id="3830894615770080216">‏نظام التشغيل Chromium</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="386822487697155367">‏الحصول على المساعدة بشأن نظام التشغيل Chromium</translation>
 <translation id="3871664619793219264">‏الحصول على بياناتك في متصفِّح Chromium من خلال <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3885770153807205175">أداة اختيار اللغة</translation>
 <translation id="388648406173476553">‏تخصيص Chromium والتحكُّم فيه معلومات مهمة - انقر للحصول على التفاصيل.</translation>

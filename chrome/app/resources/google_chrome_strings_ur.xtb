@@ -67,6 +67,7 @@
 <translation id="1786044937610313874">‏Chrome میں شارٹ کٹس کھلتے ہیں</translation>
 <translation id="178701303897325119">‏یہ ایکسٹینشنز اب مزید تعاون یافتہ نہیں ہے۔ اس کے بجائے Chrome تجویز کرتا ہے کہ آپ اسے ہٹا دیں</translation>
 <translation id="1812689907177901597">‏اسے آف کر کے، آپ Chrome میں سائن ان کیے بغیر Gmail جیسی Google سائٹس میں سائن ان کر سکتے ہیں</translation>
+<translation id="1838374766361614909">تلاش صاف کریں</translation>
 <translation id="1860536484129686729">‏Chrome کو اس سائٹ کیلئے آپ کے کیمرے تک رسائی کی اجازت درکار ہے</translation>
 <translation id="1873233029667955273">‏Google Chrome آپ کا ڈیفالٹ براؤزر نہیں ہے</translation>
 <translation id="1874309113135274312">‏Google Chrome بی ٹا (mDNS-In)</translation>
@@ -231,7 +232,6 @@
 <translation id="3716540481907974026">‏ChromeOS Flex ورژن</translation>
 <translation id="3718181793972440140">‏یہ اس آلہ سے 1 آئٹم کو حذف کر دے گا۔ بعد میں اپنا ڈیٹا بازیافت کرنے کیلئے Chrome میں <ph name="USER_EMAIL" /> کے بطور سائن ان کریں۔</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{‏‫Chrome تجویز کرتا ہے کہ آپ اسے ہٹا دیں۔ <ph name="BEGIN_LINK" />تعاون یافتہ ایکسٹینشنز کے بارے میں مزید جانیں<ph name="END_LINK" />}other{‏‫Chrome تجویز کرتا ہے کہ آپ انہیں ہٹا دیں۔ <ph name="BEGIN_LINK" />تعاون یافتہ ایکسٹینشنز کے بارے میں مزید جانیں<ph name="END_LINK" />}}</translation>
-<translation id="3744202345691150878">‏ChromiumOS کے بارے میں مدد حاصل کریں</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" />‎</translation>
 <translation id="3785324443014631273">‏ChromeOS Flex سائن ان میں ایک خرابی کی وجہ سے آپ کے ڈیٹا کی مطابقت پذیری نہیں کر سکا۔</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -261,6 +261,7 @@
 <translation id="4147555960264124640">‏آپ ایک زیر انتظام اکاؤنٹ کے ساتھ سائن ان کر رہے ہیں اور اس کے منتظم کو اپنے Google Chrome پروفائل پر کنٹرول دے رہے ہیں۔ آپ کا Chrome کا ڈیٹا جیسے آپ کی ایپس، بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات <ph name="USER_NAME" /> سے مستقل طور پر جڑ جائیں گی۔ آپ Google اکاؤنٹس ڈیش بورڈ کے ذریعہ یہ ڈیٹا حذف کر سکیں گے، لیکن آپ یہ ڈیٹا دوسرے اکاؤنٹ کے ساتھ وابستہ نہیں کر سکیں گے۔ <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">انسٹال جاری…</translation>
 <translation id="4149882025268051530">‏انسٹالر آرکائیو کا کمپریشن ختم کرنے میں ناکام ہوگیا۔ براہ کرم Google Chrome کو دوبارہ ڈاؤن لوڈ کریں۔</translation>
+<translation id="415112847282352845">‏اپنے تمام آلات پر اپنے پتے وغیرہ حاصل کرنے کے لیے، Chrome میں سائن ان کریں۔ آپ کے سائن ان کرنے کے بعد یہ پتہ آپ کے Google اکاؤنٹ میں محفوظ ہو جائے گا۔</translation>
 <translation id="4153934450158521343">‏Chrome جلد ہی بند ہو جائے گا اور ڈیٹا کو حذف کر دے گا</translation>
 <translation id="4173512894976930765">‏سائٹس شاید توقع کے مطابق کام کریں گی۔ اگر آپ Chrome میں سائن ان ہیں تو اپنے Google اکاؤنٹ کے علاوہ تمام Chrome ونڈوز بند کرنے پر آپ بیشتر سائٹس سے سائن آؤٹ ہو جائیں گے۔</translation>
 <translation id="4175922240926474352">‏Chrome نے اس ڈاؤن لوڈ کو مسدود کر دیا ہے کیونکہ سائٹ محفوظ کنکشن استعمال نہیں کر رہی ہے اور ہو سکتا ہے کہ فائل کے ساتھ چھیڑ چھاڑ کی گئی ہو</translation>
@@ -353,7 +354,6 @@
 <translation id="5334309298019785904">‏ChromeOS آپ کے ڈیٹا کی مطابقت پذیری نہیں کر سکا کیونکہ مطابقت پذیری آپ کے ڈومین کیلئے دستیاب نہیں ہے۔</translation>
 <translation id="5334487786912937552">‏Chrome کو فائلیں ڈاؤن لوڈ کرنے کیلئے اسٹوریج تک رسائی کی اجازت درکار ہے</translation>
 <translation id="5337648990166757586">‏اختیاری: Google کو ڈائیگناسٹک اور استعمال کا ڈیٹا خودکار طور پر بھیج کر ChromeOS کی خصوصیات اور کارکردگی کو بہتر بنانے میں مدد کریں۔</translation>
-<translation id="5357889879764279201">‏ChromeOS Flex کے بارے میں مدد حاصل کریں</translation>
 <translation id="5368118228313795342">اضافی کوڈ: <ph name="EXTRA_CODE" />۔</translation>
 <translation id="5386244825306882791">‏یہ آپ کی جانب سے Chrome شروع کیے جانے یا اومنی باکس سے تلاش کیے جانے پر دکھائی دینے والے صفحہ کو کنٹرول بھی کرتا ہے۔</translation>
 <translation id="5394833366792865639">‏ایک Chrome ٹیب کا اشتراک کریں</translation>

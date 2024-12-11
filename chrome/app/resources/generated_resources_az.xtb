@@ -1490,6 +1490,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="202352106777823113">Endirmə çox vaxt çəkdi və şəbəkə tərəfindən dayandırıldı.</translation>
 <translation id="2024195579772565064">Axtarış sistemini silin</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">Dəqiq klik</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> qəzaya uğradı. Artırmanı yenidən yükləmək üçün bu topa klikləyin.</translation>
 <translation id="2026377162111110983">Mühitin səsi</translation>
 <translation id="2028449514182362831">Hərəkət sensoru tələb edən xüsusiyyətlər işləməyəcək</translation>
@@ -4747,6 +4748,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4324577459193912240">Fayl yarımçıqdır</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> sistemdən silinir...</translation>
 <translation id="4325433082696797523">Yaddaş və enerji</translation>
+<translation id="4325515113816851466">Siz hesabdan çıxdıqdan sonra valideyninizin seçimləri tətbiq edilməyəcək</translation>
 <translation id="4326146840124313313">Chrome-un güclü təhlükəsizlik sistemi təhlükəli veb-sayt, endirmə və artırmalardan qoruyur</translation>
 <translation id="4327380114687339519">Artırmalar menyusu</translation>
 <translation id="4330191372652740264">Buzlu su</translation>
@@ -4869,6 +4871,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4412992751769744546">Üçüncü tərəf kukilərinə icazə verin</translation>
 <translation id="4413087696295876280">ChromeOS Flex cihaz məlumatı və datasının oxunması</translation>
 <translation id="44137799675104237">Mətni təbii səs ilə dinləyin</translation>
+<translation id="4414051792721275732">Klikləmək üçün jest etdiyiniz zaman daha çox nəzarətin təmin olunması məqsədilə mausun sürəti azalacaq. Klikləməni tamamlamaq üçün jesti yenidən yerinə yetirin.</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">"<ph name="APP_NAME" />" tətbiqinə əlavə edilmiş USB cihazlarının siyahısını əldə etmək icazəsi verilsin?</translation>
 <translation id="4414232939543644979">Yeni Anonim Pəncərə</translation>
@@ -5105,6 +5108,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4586275095964870617">Alternativ brauzerdə <ph name="URL" /> linkini açmaq mümkün olmadı. Sistem administratoru ilə əlaqə saxlayın.</translation>
 <translation id="4587589328781138893">Saytlar</translation>
 <translation id="4588749726511456218">Sürüşdürmənin sürətləndirilməsi <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> və <ph name="DOMAIN" /> bir-biri ilə əlaqəli görünür. Parolu istifadə etməzdən əvvəl <ph name="DOMAIN" /> təminatçısının etibarlı olduğuna əmin olun.</translation>
 <translation id="4589713469967853491">Loqlar Endirmələr kataloquna uğurla yazıldı.</translation>
 <translation id="4590785647529325123">Cihazdan Anonim brauzer tarixçəsini silmək üçün bütün Anonim tabları bağlayın</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> hesabında cihaz saxlanmayıb</translation>
@@ -5611,6 +5615,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4946998421534856407">başladıcı + yuxarı ox</translation>
 <translation id="4947376546135294974">Daxil olduğunuz saytdan əldə edilən data</translation>
 <translation id="4950100687509657457">Profil yaradın</translation>
+<translation id="4950360215042327246">[Yertutan sətri]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{fayl}other{# fayl}}</translation>
 <translation id="495170559598752135">Fəaliyyətlər</translation>
 <translation id="4951966678293618079">Heç vaxt bu sayt üçün parolları saxlamayın</translation>
@@ -5749,6 +5754,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5061531353537614467">Tundra</translation>
 <translation id="5062930723426326933">Hesaba giriş alınmadı, internetə qoşulun və yenidən cəhd edin.</translation>
 <translation id="5063480226653192405">Istifadə</translation>
+<translation id="5064921774605267982"><ph name="PROFILE_NAME" /> profilini açın. Bu profili valideyniniz idarə edir.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS ayarlarında güvənli DNS'i idarə edin</translation>
 <translation id="5066534201484101197">Səhifələr arasında naviqasiya üçün çox sürüşdürün</translation>
@@ -6197,6 +6203,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5389224261615877010">Göy qurşağı</translation>
 <translation id="5389626883706033615">Saytların haqqınızda yadda saxlanan məlumatdan istifadə üçün icazə istəməsi bloklanıb</translation>
 <translation id="5389794555912875905">Təhlükəli saytlara keçməzdən əvvəl xəbərdarlıqlara baxın (tövsiyə edilir)</translation>
+<translation id="5389943529251318913">Mausun sürətini bu qədər azaldın:</translation>
 <translation id="5390112241331447203">Rəy hesabatlarında göndərilən system_logs.txt faylını daxil edin.</translation>
 <translation id="5390677308841849479">Tünd-qırmızı və narıncı</translation>
 <translation id="5392192690789334093">Bildiriş göndərmək üçün icazə verilib</translation>
@@ -7403,6 +7410,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6266984048393265562">Profili fərdiləşdirin</translation>
 <translation id="6267166720438879315">Özünüzü <ph name="HOST_NAME" /> üzrə doğrulamaq üçün sertifikat seçin</translation>
 <translation id="6268252012308737255"><ph name="APP" /> ilə açın</translation>
+<translation id="6269050081341530851">Dublikatları bağladığınız zaman ən köhnə nüsxə saxlanılır</translation>
 <translation id="6270309713620950855">Xatırlatma bildirişini susdurun</translation>
 <translation id="6270391203985052864">Saytlar bildiriş göndərilməsini tələb edə bilər</translation>
 <translation id="6270486800167535228">Artırma bərkidilib. Digər seçimləri görmək üçün seçin</translation>
@@ -7944,6 +7952,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6679947539429331601">12 saat gizlədin</translation>
 <translation id="6680442031740878064">Əlçatandır: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Qiymət</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Yertutan sətri]</translation>
 <translation id="6683022854667115063">Qulaqlıq</translation>
 <translation id="6683087162435654533">B&amp;ütün Tabları Bərpa Edin</translation>
 <translation id="6683433919380522900">İcazə: <ph name="PERMISSION_STATE" /></translation>
@@ -8026,7 +8035,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6743841972744298686">Sinxronizasiya ayarları</translation>
 <translation id="6745592621698551453">İndi Güncəlləşdirin</translation>
 <translation id="6746124502594467657">Aşağı köçürün</translation>
-<translation id="674632704103926902">Tıklama sürükləməsinə icazə verin</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> üçün parolu göstərin</translation>
 <translation id="6748980958975836188"><ph name="BEGIN_LINK1" />Google Xidmət Şərtləri<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />Chrome və ChromeOS Əlavə Xidmət Şərtlərini<ph name="END_LINK2" /> oxudum və qəbul edirəm.</translation>
 <translation id="6749077623962119521">İcazələr sıfırlansın?</translation>
@@ -8837,6 +8845,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7330533963640151632"><ph name="USER_NAME" /> adlı istifadəçinin cihazı üçün <ph name="FEATURE_NAME" /> ayarları, <ph name="USER_EMAIL" /> hesabında paylaşılır.</translation>
 <translation id="7331646370422660166">alt + aşağı ox</translation>
 <translation id="7332053360324989309">Xüsusi İşçi: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">Dublikat tablar</translation>
 <translation id="7333388112938984914">Ölçülü əlaqədə fayl yükləmək olmur.</translation>
 <translation id="7333669215417470379">Tətbiq və ayarların yedəklənməsi, bərpası</translation>
 <translation id="7335974957018254119">Bu dillər üçün orfoqrafik yoxlanışdan istifadə edin:</translation>
@@ -9907,7 +9916,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Tətbiq datası kontakt, mesaj və foto kimi data daxil olmaqla, tətbiqin yadda saxladığı (tərtibatçı ayarlarına əsasən) istənilən data ola bilər.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Yedək data övladınızın Disk yaddaşı kvotasına təsir etməyəcək.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Bu xidməti Ayarlardan deaktiv edə bilərsiniz.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="8076492880354921740">Tablar</translation>
 <translation id="8076835018653442223">Cihazınızdakı lokal fayllara giriş administratorunuz tərəfindən deaktiv edilib</translation>
 <translation id="8077120325605624147">Ziyarət etdiyiniz istənilən sayt sizə istənilən reklamı göstərə bilər</translation>
 <translation id="8077579734294125741">Digər Chrome profilləri</translation>
@@ -10544,7 +10552,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8528074251912154910">Dillər əlavə edin</translation>
 <translation id="8528479410903501741">IBAN'ı yadda saxlayın</translation>
 <translation id="8528962588711550376">Hesaba giriş.</translation>
-<translation id="8529925957403338845">Cəld modem əlaqəsi kəsildi</translation>
 <translation id="8531367864749403520">Qrupu tab zolağından silmək üçün "Qrupu gizlədin" seçin</translation>
 <translation id="8531701051932785007">Qabaqcıl Güvənli Baxış deaktivdir</translation>
 <translation id="8533670235862049797">Təhlükəsiz Baxış aktivdir</translation>

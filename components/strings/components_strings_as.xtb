@@ -2164,7 +2164,6 @@
 <translation id="4881695831933465202">খোলক</translation>
 <translation id="4881808915112408168">২৪ x ৩১.৫ ইঞ্চি</translation>
 <translation id="4882314601499260499">কোনো ব্যৱহাৰকাৰীৰ নীতি প্ৰয়োগ কৰা হোৱা নাই। ব্যৱহাৰকাৰীৰ নীতি ব্যৱহাৰ কৰিবলৈ, আপোনাৰ প্ৰতিষ্ঠানে <ph name="LINK_BEGIN" />আপোনাৰ ড’মেইনটো সত্যাপন কৰিব<ph name="LINK_END" />ই লাগিব।</translation>
-<translation id="4883911187498618061">আপোনাৰ প্ৰশ্ন বা প্ৰম্পট্‌ দিয়ক</translation>
 <translation id="4885030148564729407">মধুচন্দ্ৰিকা আৰু ৰোমাণ্টিক ঠাই</translation>
 <translation id="4885256590493466218">চেকআউট কৰাৰ সময়ত <ph name="CARD_DETAIL" />ৰ জৰিয়তে পৰিশোধ কৰক</translation>
 <translation id="4887406273302438710">Windows Helloৰ জৰিয়তে পাছৱৰ্ড সুৰক্ষিত কৰক</translation>
@@ -2197,7 +2196,6 @@
 <translation id="4930153903256238152">সৰহীয়া বহনক্ষমতা</translation>
 <translation id="4930714375720679147">অন কৰক</translation>
 <translation id="4932035752129140860">আপুনি পে’ষ্ট বা সংলগ্ন কৰা পাঠ বিশ্লেষণৰ বাবে Google Cloud বা তৃতীয় পক্ষলৈ পঠিওৱা হয়। উদাহৰণস্বৰূপে, এইটো সংবেদনশীল ডেটাৰ বাবে স্কেন কৰা হ’ব পাৰে আৰু কোম্পানীৰ নীতিৰ ওপৰত ভিত্তি কৰি ষ্ট’ৰ কৰা হ’ব পাৰে আৰু প্ৰশাসকৰ বাবে দৃশ্যমান হ’ব পাৰে।</translation>
-<translation id="4933468175699107356">যিকোনো ফৰ্মত আপোনাৰ নাম বা ঠিকনাৰ দৰে ছেভ কৰি থোৱা তথ্য স্বয়ংক্রিয়ভাৱে পূৰ কৰিবলৈ ৰাইট ক্লিক কৰক</translation>
 <translation id="4933788293078559286">Pixৰ জৰিয়তে পৰিশোধ কৰক</translation>
 <translation id="4934780484581617878">ৱিণ্ড’ পৰিচালনা</translation>
 <translation id="4936134414789135531">ভৰোৱা <ph name="VALUE_NAME" /> বিচাৰি পাব পৰা নগ’ল।</translation>
@@ -3489,6 +3487,7 @@
 <translation id="7304030187361489308">উচ্চ</translation>
 <translation id="7304562222803846232">Google একাউণ্টৰ গোপনীয়তাৰ ছেটিং পৰিচালনা কৰক</translation>
 <translation id="7305756307268530424">লেহেমীয়া গতি আৰম্ভ কৰক</translation>
+<translation id="7307063504147610123">ঠিকনাটো এইটো ডিভাইচত ছেভ কৰা হৈছে</translation>
 <translation id="7308436126008021607">নেপথ্যত ছিংক কৰা</translation>
 <translation id="7309058266849426521">Chromeত আপোনাৰ বিজ্ঞাপনৰ গোপনীয়তা পৰিচালনা কৰাৰ বিষয়ে অধিক জানক।</translation>
 <translation id="7310392214323165548">ডিভাইচটো শীঘ্ৰেই ৰিষ্টার্ট হ’ব</translation>
@@ -4166,6 +4165,7 @@
 <translation id="8473626140772740486">৩০০ x ৪৫০ মি.মি.</translation>
 <translation id="8473863474539038330">ঠিকনা আৰু অধিক</translation>
 <translation id="8474910779563686872">বিকাশকর্তাৰ সবিশেষ দেখুৱাওক</translation>
+<translation id="8476959635632921417">আপোনাৰ আটাইবোৰ ডিভাইচত এই ঠিকনাটো ছেভ আৰু ব্যৱহাৰ কৰিবলৈ, এইগৰাকী আপুনি বুলি সত্যাপন কৰক</translation>
 <translation id="8479754468255770962">বাওঁফালে তলৰ অংশত ষ্টে'পল কৰক</translation>
 <translation id="8483229036294884935">এই ঠিকনাটো আপোনাৰ Google একাউণ্ট <ph name="ACCOUNT" />ৰ পৰা মচি পেলোৱা হ’ব</translation>
 <translation id="8488350697529856933">এইসমূহত প্ৰযোজ্য হয়</translation>

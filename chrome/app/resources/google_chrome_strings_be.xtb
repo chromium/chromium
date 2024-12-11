@@ -67,6 +67,7 @@
 <translation id="1786044937610313874">Ярлыкі адкрываюцца ў Chrome</translation>
 <translation id="178701303897325119">Пашырэнне больш не падтрымліваецца. Chrome рэкамендуе выдаліць яго.</translation>
 <translation id="1812689907177901597">Выключыўшы гэта, вы зможаце ўваходзіць на сайты Google, такія як Gmail, не ўваходзячы ў Chrome</translation>
+<translation id="1838374766361614909">Ачысціць поле пошуку</translation>
 <translation id="1860536484129686729">Chrome запытвае дазвол на доступ да вашай камеры для гэтага сайта</translation>
 <translation id="1873233029667955273">Google Chrome не з’яўляецца стандартным браўзерам</translation>
 <translation id="1874309113135274312">Бэта-версія Google Chrome (mDNS-In)</translation>
@@ -231,7 +232,6 @@
 <translation id="3716540481907974026">Версія Chrome OS Flex</translation>
 <translation id="3718181793972440140">Будзе выдалены 1 элемент з гэтай прылады. Каб потым атрымаць свае даныя, увайдзіце ва ўліковы запіс Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome рэкамендуе выдаліць яго. <ph name="BEGIN_LINK" />Даведацца больш пра пашырэнні, якія падтрымліваюцца<ph name="END_LINK" />}one{Chrome рэкамендуе выдаліць іх. <ph name="BEGIN_LINK" />Даведацца больш пра пашырэнні, якія падтрымліваюцца<ph name="END_LINK" />}few{Chrome рэкамендуе выдаліць іх. <ph name="BEGIN_LINK" />Даведацца больш пра пашырэнні, якія падтрымліваюцца<ph name="END_LINK" />}many{Chrome рэкамендуе выдаліць іх. <ph name="BEGIN_LINK" />Даведацца больш пра пашырэнні, якія падтрымліваюцца<ph name="END_LINK" />}other{Chrome рэкамендуе выдаліць іх. <ph name="BEGIN_LINK" />Даведацца больш пра пашырэнні, якія падтрымліваюцца<ph name="END_LINK" />}}</translation>
-<translation id="3744202345691150878">Даведка па Chrome OS</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">АС Chrome OS Flex не змагла сінхранізаваць даныя з-за памылкі ўваходу.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
@@ -261,6 +261,7 @@
 <translation id="4147555960264124640">Вы ўваходзіце праз уліковы запіс пад кіраваннем, таму адміністратар зможа кантраляваць ваш профіль Google Chrome. Даныя Chrome (праграмы, закладкі, гісторыя, паролі і іншыя налады) будуць назаўсёды прывязаны да ўліковага запісу <ph name="USER_NAME" />. Вы зможаце выдаліць гэтыя даныя праз панэль кіравання Уліковымі запісамі Google, але іх нельга будзе звязаць з іншым уліковым запісам. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Ідзе ўсталяванне...</translation>
 <translation id="4149882025268051530">Усталёўшчык не змог распакаваць архіў. Спампуйце Google Chrome зноў.</translation>
+<translation id="415112847282352845">Каб выкарыстоўваць свае адрасы і іншыя даныя на ўсіх сваіх прыладах, увайдзіце ў Chrome. Адрас будзе захаваны ва Уліковым запісе Google пасля ўваходу.</translation>
 <translation id="4153934450158521343">Браўзер Chrome хутка будзе закрыты, а даныя пра работу ў ім – выдалены</translation>
 <translation id="4173512894976930765">Верагодна, сайты будуць працаваць правільна. Калі вы закрыеце ўсе вокны Chrome, вы выйдзеце з большасці сайтаў, але застаняцеся ва Уліковым запісе Google, калі раней выканалі ўваход у Chrome.</translation>
 <translation id="4175922240926474352">Браўзер Chrome заблакіраваў спампоўку, бо гэты сайт не выкарыстоўвае абароненае падключэнне і файл мог быць зменены</translation>
@@ -353,7 +354,6 @@
 <translation id="5334309298019785904">Сістэме Chrome OS не ўдалося сінхранізаваць даныя, бо гэта функцыя недаступная для вашага дамена.</translation>
 <translation id="5334487786912937552">Для спампоўвання файлаў браўзеру Chrome патрабуецца дазвол на доступ да сховішча</translation>
 <translation id="5337648990166757586">Дапамагаць паляпшаць функцыі і прадукцыйнасць Chrome OS шляхам аўтаматычнай адпраўкі ў Google даных пра выкарыстанне і дыягностыку (неабавязкова).</translation>
-<translation id="5357889879764279201">Даведка па Chrome OS Flex</translation>
 <translation id="5368118228313795342">Дадатковы код: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Таксама вызначае, якая старонка паказваецца пры запуску Chrome або пошуку з амнібокса.</translation>
 <translation id="5394833366792865639">Абагульце ўкладку Chrome</translation>

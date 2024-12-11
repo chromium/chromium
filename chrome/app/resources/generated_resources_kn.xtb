@@ -1497,6 +1497,7 @@
 <translation id="202352106777823113">ಡೌನ್‌ಲೋಡ್ ತುಂಬಾ ಸಮಯವನ್ನು ತೆಗೆದುಕೊಳ್ಳುತ್ತಿದೆ ಮತ್ತು ನೆಟ್‌ವರ್ಕ್‌ನಿಂದ ನಿಲ್ಲಿಸಲಾಗಿದೆ.</translation>
 <translation id="2024195579772565064">ಸರ್ಚ್ ಎಂಜಿನ್ ಅನ್ನು ಅಳಿಸಿ</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">ನಿಖರತೆಯ ಕ್ಲಿಕ್</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> ಕ್ರ್ಯಾಷ್ ಆಗಿದೆ. ವಿಸ್ತರಣೆಯನ್ನು ಮರುಲೋಡ್ ಮಾಡಲು ಈ ಬಲೂನ್ ಅನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="2026377162111110983">ಪ್ರದೇಶದ ಧ್ವನಿ</translation>
 <translation id="2028449514182362831">ಮೋಷನ್ ಸೆನ್ಸರ್‌ಗಳು ಅಗತ್ಯವಿರುವ ಫೀಚರ್‌ಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸುವುದಿಲ್ಲ</translation>
@@ -4755,6 +4756,7 @@
 <translation id="4324577459193912240">ಫೈಲ್‌ ಅಪೂರ್ಣವಾಗಿದೆ</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> ಅನ್ನು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="4325433082696797523">ಸಂಗ್ರಹಣೆ ಮತ್ತು ಪವರ್</translation>
+<translation id="4325515113816851466">ನೀವು ಸೈನ್ ಔಟ್ ಮಾಡಿದ ನಂತರ ನಿಮ್ಮ ಪೋಷಕರ ಆಯ್ಕೆಗಳು ಅನ್ವಯಿಸುವುದಿಲ್ಲ</translation>
 <translation id="4326146840124313313">ಅಪಾಯಕಾರಿ ವೆಬ್‌ಸೈಟ್‌ಗಳು, ಡೌನ್‌ಲೋಡ್‌ಗಳು ಮತ್ತು ವಿಸ್ತರಣೆಗಳ ವಿರುದ್ಧ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸಲು Chrome ನ ಪ್ರಬಲ ಭದ್ರತೆಯು ಹೆಚ್ಚಿನ ಸಹಾಯ ಮಾಡುತ್ತದೆ</translation>
 <translation id="4327380114687339519">ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳ ಮೆನು</translation>
 <translation id="4330191372652740264">ಐಸ್ ವಾಟರ್</translation>
@@ -4877,6 +4879,7 @@
 <translation id="4412992751769744546">ಮೂರನೇ-ವ್ಯಕ್ತಿಯ ಕುಕೀಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="4413087696295876280">ChromeOS Flex ಸಾಧನದ ಮಾಹಿತಿ ಮತ್ತು ಡೇಟಾವನ್ನು ಓದಿರಿ</translation>
 <translation id="44137799675104237">ಸ್ವಾಭಾವಿಕ ಧ್ವನಿಯ ಮೂಲಕ ಪಠ್ಯವನ್ನು ಆಲಿಸಿ</translation>
+<translation id="4414051792721275732">ನೀವು ಕ್ಲಿಕ್ ಮಾಡಲು ಗೆಸ್ಚರ್ ಬಳಸಿದಾಗ, ನಿಮಗೆ ಹೆಚ್ಚಿನ ನಿಯಂತ್ರಣವನ್ನು ನೀಡಲು ಮೌಸ್ ನಿಧಾನಗೊಳಿಸುತ್ತದೆ. ಕ್ಲಿಕ್ ಅನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ಮತ್ತೊಮ್ಮೆ ಗೆಸ್ಚರ್ ಬಳಸಿ.</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">ನಿಮ್ಮ ಲಗತ್ತಿಸಲಾದ USB ಸಾಧನಗಳ ಪಟ್ಟಿಯನ್ನು ಪಡೆಯಲು "<ph name="APP_NAME" />" ಅನ್ನು ಅನುಮತಿಸಬೇಕೆ?</translation>
 <translation id="4414232939543644979">ಹೊಸ &amp;ಅಜ್ಞಾತ ವಿಂಡೋ</translation>
@@ -5113,6 +5116,7 @@
 <translation id="4586275095964870617"><ph name="URL" /> ಅನ್ನು ಪರ್ಯಾಯ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ತೆರೆಯಲಾಗುವುದಿಲ್ಲ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಸಿಸ್ಟಂ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4588749726511456218">ಸ್ಕ್ರಾಲ್ ವೇಗವರ್ಧನೆ <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> ಮತ್ತು <ph name="DOMAIN" /> ಸಂಬಂಧಿಸಿವೆ ಎಂದು ತೋರುತ್ತಿದೆ. ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸುವ ಮೊದಲು <ph name="DOMAIN" /> ಮೇಲೆ ನಂಬಿಕೆಯಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="4589713469967853491">ಡೌನ್‌ಲೋಡ್‌ಗಳ ಡೈರೆಕ್ಟರಿಯಲ್ಲಿ ಲಾಗ್‌ಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಬರೆಯಲಾಗಿದೆ.</translation>
 <translation id="4590785647529325123">ನಿಮ್ಮ ಸಾಧನದಿಂದ ಅಜ್ಞಾತ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಅಳಿಸಲು, ಎಲ್ಲಾ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> ಗೆ ಯಾವುದೇ ಸಾಧನಗಳನ್ನು ಉಳಿಸಿಲ್ಲ</translation>
@@ -5619,6 +5623,7 @@
 <translation id="4946998421534856407">ಲಾಂಚರ್ + ಅಪ್ ಆ್ಯರೋ</translation>
 <translation id="4947376546135294974">ನೀವು ಭೇಟಿ ನೀಡುತ್ತಿರುವ ಸೈಟ್‌ನಿಂದ ಡೇಟಾ</translation>
 <translation id="4950100687509657457">ಪ್ರೊಫೈಲ್ ರಚಿಸಿ</translation>
+<translation id="4950360215042327246">[ಪ್ಲೇಸ್‌ಹೋಲ್ಡರ್‌ ಸ್ಟ್ರಿಂಗ್]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ಒಂದು ಫೈಲ್}one{# ಫೈಲ್‌ಗಳು}other{# ಫೈಲ್‌ಗಳು}}</translation>
 <translation id="495170559598752135">ಕ್ರಿಯೆಗಳು</translation>
 <translation id="4951966678293618079">ಈ ಸೈಟ್‌ಗಾಗಿ ಎಂದಿಗೂ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಬೇಡಿ</translation>
@@ -5757,6 +5762,7 @@
 <translation id="5061531353537614467">ಟಂಡ್ರಾ</translation>
 <translation id="5062930723426326933">ಸೈನ್‌-ಇನ್‌ ವಿಫಲವಾಗಿದೆ, ದಯವಿಟ್ಟು ಇಂಟರ್ನೆಟ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="5063480226653192405">ಬಳಕೆ</translation>
+<translation id="5064921774605267982"><ph name="PROFILE_NAME" /> ಪ್ರೊಫೈಲ್ ಅನ್ನು ತೆರೆಯಿರಿ. ಈ ಪ್ರೊಫೈಲ್ ಅನ್ನು ನಿಮ್ಮ ಪೋಷಕರು ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿನ ಸುರಕ್ಷಿತ DNS ಅನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="5066534201484101197">ಪುಟಗಳ ನಡುವೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಓವರ್‌ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
@@ -6204,6 +6210,7 @@
 <translation id="5389224261615877010">ಕಾಮನಬಿಲ್ಲಿನ ಬಣ್ಣ</translation>
 <translation id="5389626883706033615">ನಿಮ್ಮ ಕುರಿತು ಅವುಗಳು ಸೇವ್ ಮಾಡಿರುವ ಮಾಹಿತಿಯನ್ನು ಬಳಸಲು ನಿಮ್ಮನ್ನು ಕೇಳದಂತೆ ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5389794555912875905">ಅಸುರಕ್ಷಿತ ಸೈಟ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡುವ ಮೊದಲು ಎಚ್ಚರಿಕೆಗಳನ್ನು ನೋಡಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
+<translation id="5389943529251318913">ಮೌಸ್ ವೇಗವನ್ನು ಕಡಿಮೆ ಮಾಡಿ</translation>
 <translation id="5390112241331447203">ಪ್ರತಿಕ್ರಿಯೆ ವರದಿಗಳಿಗೆ ಕಳುಹಿಸಿದ system_logs.txt ಫೈಲ್‌ ಅನ್ನು ಸೇರಿಸಿ.</translation>
 <translation id="5390677308841849479">ಗಾಢ ಕೆಂಪು ಮತ್ತು ಕಿತ್ತಳೆ</translation>
 <translation id="5392192690789334093">ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಲು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
@@ -7413,6 +7420,7 @@
 <translation id="6266984048393265562">ಪ್ರೊಫೈಲ್ ಅನ್ನು ಕಸ್ಟಮೈಸ್‌ ಮಾಡಿ</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> ಗೆ ನಿಮ್ಮನ್ನು ಪ್ರಮಾಣೀಕರಿಸಲು ಒಂದು ಪ್ರಮಾಣಪತ್ರವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="6268252012308737255"><ph name="APP" /> ರಿಂದ ತೆರೆಯಿರಿ</translation>
+<translation id="6269050081341530851">ನೀವು ನಕಲುಗಳನ್ನು ಮುಚ್ಚಿದಾಗ ಹಳೆಯ ಕಾಪಿಯನ್ನು ಇರಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="6270309713620950855">ನಡ್ಜ್ ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
 <translation id="6270391203985052864">ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಬಹುದೇ ಎಂದು ಸೈಟ್‌ಗಳು ಕೇಳಬಹುದು</translation>
 <translation id="6270486800167535228">ವಿಸ್ತರಣೆಯನ್ನು ಪಿನ್ ಮಾಡಲಾಗಿದೆ. ಹೆಚ್ಚಿನ ಆಯ್ಕೆಗಳನ್ನು ನೋಡಲು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -7956,6 +7964,7 @@
 <translation id="6679947539429331601">12 ಗಂಟೆಗಳ ಕಾಲ ಮರೆಮಾಡಿ</translation>
 <translation id="6680442031740878064">ಲಭ್ಯವಿದೆ: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">ದರ</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [ಪ್ಲೇಸ್‌ಹೋಲ್ಡರ್‌ ಸ್ಟ್ರಿಂಗ್]</translation>
 <translation id="6683022854667115063">ಹೆಡ್‌ಫೋನ್‌ಗಳು</translation>
 <translation id="6683087162435654533">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="6683433919380522900">ಅನುಮತಿ <ph name="PERMISSION_STATE" /> ನಲ್ಲಿದೆ</translation>
@@ -8038,7 +8047,6 @@
 <translation id="6743841972744298686">ಸಿಂಕ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="6745592621698551453">ಈಗ ಅಪ್‌ಡೇಟ್‌ ಮಾಡು</translation>
 <translation id="6746124502594467657">ಕೆಳಗೆ ಸರಿಸಿ</translation>
-<translation id="674632704103926902">ಟ್ಯಾಪ್ ಎಳೆಯುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸು</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="6748980958975836188"><ph name="BEGIN_LINK1" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome ಮತ್ತು Chrome OS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳನ್ನು<ph name="END_LINK2" /> ನಾನು ಓದಿದ್ದೇನೆ ಮತ್ತು ಒಪ್ಪುತ್ತೇನೆ.</translation>
 <translation id="6749077623962119521">ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಬೇಕೆ?</translation>
@@ -8851,6 +8859,7 @@
 <translation id="7330533963640151632"><ph name="USER_NAME" /> ಖಾತೆಯ ಅಡಿಯಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತಿರುವ <ph name="USER_EMAIL" /> ಅವರ ಸಾಧನಕ್ಕಾಗಿ <ph name="FEATURE_NAME" /> ಸೆಟ್ಟಿಂಗ್‌ಗಳು.</translation>
 <translation id="7331646370422660166">alt + ಡೌನ್ ಆ್ಯರೋ</translation>
 <translation id="7332053360324989309">ಮೀಸಲು ಕೆಲಸಗಾರ: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">ನಕಲಿ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="7333388112938984914">ಮೀಟರ್ಡ್ ಕನೆಕ್ಷನ್‌ನಲ್ಲಿರುವಾಗ ಫೈಲ್‌ಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="7333669215417470379">ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಿ ಮತ್ತು ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="7335974957018254119">ಈ ಭಾಷೆಗಳಿಗಾಗಿ ಕಾಗುಣಿತ ಪರೀಕ್ಷೆಯನ್ನು ಬಳಸಿ</translation>
@@ -9917,7 +9926,6 @@
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />ಆ್ಯಪ್ ಡೇಟಾವು ಸಂಪರ್ಕಗಳು, ಸಂದೇಶಗಳು ಮತ್ತು ಫೋಟೋಗಳಂತಹ ಡೇಟಾ ಸೇರಿದಂತೆ, ಆ್ಯಪ್ ಉಳಿಸಿರುವಂತಹ (ಡೆವಲಪರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಆಧರಿಸಿ) ಯಾವುದೇ ಡೇಟಾ ಆಗಿರಬಹುದು.<ph name="END_PARAGRAPH1" />
  <ph name="BEGIN_PARAGRAPH2" />ಬ್ಯಾಕಪ್‌ ಡೇಟಾವನ್ನು ನಿಮ್ಮ ಮಗುವಿನ ಡ್ರೈವ್‌ ಸಂಗ್ರಹಣೆ ಕೋಟಾದಲ್ಲಿ ಪರಿಗಣಿಸಲಾಗುವುದಿಲ್ಲ.<ph name="END_PARAGRAPH2" />
 <ph name="BEGIN_PARAGRAPH3" />ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಈ ಸೇವೆಯನ್ನು ಆಫ್ ಮಾಡಬಹುದು.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="8076492880354921740">ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="8076835018653442223">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸ್ಥಳೀಯ ಫೈಲ್‌ಗಳಿಗೆ ಪ್ರವೇಶಿಸುವುದನ್ನು ನಿರ್ವಾಹಕರು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ</translation>
 <translation id="8077120325605624147">ನೀವು ಭೇಟಿ ನೀಡುವ ಯಾವುದೇ ಸೈಟ್ ನಿಮಗೆ ಯಾವುದೇ ಜಾಹೀರಾತನ್ನು ತೋರಿಸಬಹುದು</translation>
 <translation id="8077579734294125741">ಇತರ Chrome ಪ್ರೊಫೈಲ್‌ಗಳು</translation>
@@ -10554,7 +10562,6 @@
 <translation id="8528074251912154910">ಭಾಷೆಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="8528479410903501741">IBAN ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="8528962588711550376">ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ.</translation>
-<translation id="8529925957403338845">ತತ್‌ಕ್ಷಣ ಟೆಥರಿಂಗ್ ಸಂಪರ್ಕ ವಿಫಲಗೊಂಡಿದೆ</translation>
 <translation id="8531367864749403520">ನಿಮ್ಮ ಟ್ಯಾಬ್‌ ಸ್ಟ್ರೈಪ್‌ನಿಂದ ಗುಂಪನ್ನು ತೆಗೆದುಹಾಕಲು "ಗುಂಪನ್ನು ಮರೆಮಾಡಿ" ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8531701051932785007">ವರ್ಧಿತ ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್‌ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="8533670235862049797">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಆನ್ ಆಗಿದೆ</translation>

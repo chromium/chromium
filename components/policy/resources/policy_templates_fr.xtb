@@ -7257,10 +7257,6 @@ Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> stocke par 
 <translation id="6383774771168138899">Configurer le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="MICROSOFT_ONE_DRIVE_NAME" /> et <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Activer l'affichage des pages de résultats du moteur de recherche par défaut dans un panneau latéral du navigateur.</translation>
 <translation id="6394350458541421998">Cette règle a été supprimée à partir de la version 29 de <ph name="PRODUCT_OS_NAME" />. Veuillez utiliser la règle PresentationScreenDimDelayScale à la place.</translation>
-<translation id="6396956366662970339">Indique si un modèle de recharge adaptative est autorisé pour suspendre le processus de charge et allonger la durée de vie de la batterie.
-
-      Lorsque l'appareil est branché sur le secteur, le modèle de recharge adaptative évalue la nécessité de suspendre le processus de charge pour allonger la durée de vie de la batterie. Si le modèle de recharge adaptative suspend le processus de charge, il maintient la batterie à un certain niveau (par ex., 80 %), puis il la charge à 100 % lorsque l'utilisateur en a besoin.
-      Si cette règle est définie sur "True", le modèle de recharge adaptative sera activé et autorisé à suspendre le processus de charge pour allonger la durée de vie de la batterie. Si cette règle est définie sur "False" ou n'est pas configurée, le modèle de recharge adaptative sera sans effet sur le processus de recharge.</translation>
 <translation id="6397588391180665797">Signale la configuration du réseau des utilisateurs sur les appareils enregistrés.
 
       Si la règle est définie sur "False", ces infos ne seront pas transmises.
@@ -7897,11 +7893,6 @@ Si cette règle est désactivée, le navigateur utilise l'ancienne implémentati
 Si vous devez utiliser cette règle, veuillez signaler un bug sur crbug.com en expliquant votre cas d'utilisation et mettez en copie {blundell, vasilyt}@chromium.org. Cette règle sera disponible jusqu'à la version 114 de <ph name="PRODUCT_NAME" />, après quoi l'ancienne implémentation sera supprimée.
 
 REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les modifications apportées à cette règle lorsque le navigateur sera en cours d'exécution.</translation>
-<translation id="6831322012298364374">URL d'une image qui servira de badge d'entreprise pour un profil géré. L'URL doit renvoyer vers une image.
-
-Cette règle ne peut être configurée que comme règle relative aux utilisateurs.
-
-Nous vous recommandons d'utiliser le favicon (exemple : https://www.google.com/favicon.ico) ou une icône d'au moins 24 x 24 px.</translation>
 <translation id="6833023569065717572">Si cette règle est définie sur "True", le format 24 heures est utilisé sur l'écran de connexion de l'appareil.
 
       Si elle est définie sur "False", c'est le format 12 heures qui est utilisé.

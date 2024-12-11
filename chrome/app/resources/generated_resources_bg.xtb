@@ -1500,6 +1500,7 @@
 <translation id="202352106777823113">Изтеглянето отнемаше твърде дълго време и бе спряно от мрежата.</translation>
 <translation id="2024195579772565064">Изтриване на търсещата машина</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">Кликване с точност</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> претърпя срив. Кликнете върху това балонче, за да презаредите разширението.</translation>
 <translation id="2026377162111110983">Нефокусиран глас</translation>
 <translation id="2028449514182362831">Функциите, които изискват достъп до сензорите за движение, няма да работят</translation>
@@ -4760,6 +4761,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4324577459193912240">Файлът е непълен</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> се деинсталира...</translation>
 <translation id="4325433082696797523">Хранилище и захранване</translation>
+<translation id="4325515113816851466">Избраните от родителя ви настройки няма да се прилагат, след като излезете от профила си</translation>
 <translation id="4326146840124313313">Най-високото ниво на сигурност на Chrome прави повече, за да ви предпази от опасни уебсайтове, изтегляния и разширения</translation>
 <translation id="4327380114687339519">Меню за разширенията</translation>
 <translation id="4330191372652740264">Ледена вода</translation>
@@ -4882,6 +4884,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4412992751769744546">Разрешаване на „бисквитките“ на трети страни</translation>
 <translation id="4413087696295876280">Четене на информация за устройството с ChromeOS Flex и данните от него</translation>
 <translation id="44137799675104237">Прослушване на текста с естествен глас</translation>
+<translation id="4414051792721275732">Когато извършите жест за кликване, скоростта на мишката ще намалее, за да се осигури по-голям контрол. Извършете жеста отново, за да завършите кликването.</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">Да се разреши ли на <ph name="APP_NAME" /> да получи списъка със свързани USB устройства?</translation>
 <translation id="4414232939543644979">Нов &amp;прозорец в режим „инкогнито“</translation>
@@ -6210,6 +6213,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5389224261615877010">Дъга</translation>
 <translation id="5389626883706033615">Сайтовете не могат да извеждат запитвания за използване на информацията, която са запазили за вас</translation>
 <translation id="5389794555912875905">Показване на предупреждения преди отваряне на незащитени сайтове (препоръчително)</translation>
+<translation id="5389943529251318913">Намаляване на скоростта на мишката с(ъс)</translation>
 <translation id="5390112241331447203">Запазване на файла system_logs.txt, който се изпраща в сигналите с отзиви.</translation>
 <translation id="5390677308841849479">Тъмночервено и оранжево</translation>
 <translation id="5392192690789334093">Сайтове с разрешение да изпращат известия</translation>
@@ -8042,7 +8046,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6743841972744298686">Настройки за синхронизиране</translation>
 <translation id="6745592621698551453">Актуализиране сега</translation>
 <translation id="6746124502594467657">Придвижване надолу</translation>
-<translation id="674632704103926902">Да се активира преместването чрез докосване</translation>
 <translation id="67465227497040338">Показване на паролата за <ph name="DOMAIN" /></translation>
 <translation id="6748980958975836188">Прочетох и приемам <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6749077623962119521">Да се нулират ли разрешенията?</translation>
@@ -9925,7 +9928,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Данните на приложенията могат да бъдат всяка запазена от тях информация (въз основа на настройките за програмисти), включително контакти, съобщения и снимки.<ph name="END_PARAGRAPH1" />
 <ph name="BEGIN_PARAGRAPH2" />Данните в резервното копие не заемат от квотата на използваното от детето ви хранилище на Диск.<ph name="END_PARAGRAPH2" />
 <ph name="BEGIN_PARAGRAPH3" />Можете да изключите тази услуга от настройките.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="8076492880354921740">Раздели</translation>
 <translation id="8076835018653442223">Достъпът до локални файлове на устройството ви е деактивиран от администратора ви</translation>
 <translation id="8077120325605624147">Всички посещавани от вас сайтове могат да ви показват всякакви реклами</translation>
 <translation id="8077579734294125741">Други потребителски профили в Chrome</translation>
@@ -10562,7 +10564,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8528074251912154910">Добавяне на езици</translation>
 <translation id="8528479410903501741">Запазване на IBAN</translation>
 <translation id="8528962588711550376">Влиза се.</translation>
-<translation id="8529925957403338845">Връзката чрез незабавен тетъринг не бе успешна</translation>
 <translation id="8531367864749403520">Изберете „Скриване на групата“, за да премахнете групата от лентата с раздели</translation>
 <translation id="8531701051932785007">Функцията за подобрена защита от Безопасно сърфиране е изключена</translation>
 <translation id="8533670235862049797">Безопасно сърфиране е включено</translation>

@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Öppna alla</translation>
 <translation id="1408847409015257906">Tryck på Integritet och säkerhet.</translation>
 <translation id="1411386976162024013">Visuell sökning med Lens</translation>
+<translation id="1426410128494586442">Ja</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1436671784520050284">Fortsätt med konfigurationen</translation>
 <translation id="143681031165817424">Adressen har endast sparats på den här enheten</translation>
@@ -416,6 +417,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="2816489851009559785">Meny → Inställningar → Standardwebbläsare</translation>
 <translation id="2818821771744632548">Du har loggats ut från ditt konto, <ph name="USER_NAME" />, som en del av återställningen av din iPhone. Tryck på Fortsätt nedan om du vill logga in igen.</translation>
 <translation id="2819667972867209401">När detta är aktiverat sparas data i Google-kontot. När inställningen är inaktiverad sparas data endast på den här enheten och raderas när du loggar ut.</translation>
+<translation id="2827760117436553203">Vill du hålla data åtskild?</translation>
 <translation id="2829172210806130158">Sök på skärmen</translation>
 <translation id="2834399722155632105">3. Tryck på Lösenordsalternativ</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -695,6 +697,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4237377247299956313">Tryck på <ph name="BEGIN_BOLD" />Standardwebbläsarapp<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Öppna Inställningar</translation>
 <translation id="4250432749243022864">{count,plural, =0{Öppna {count} flik}=1{Öppna {count} flik}other{Öppna {count} flikar}}</translation>
+<translation id="4250680216510889253">Nej</translation>
 <translation id="4251531167342733205">Få ut det bästa av din webbläsare.</translation>
 <translation id="4253168017788158739">Kommentar</translation>
 <translation id="4256782883801055595">Licenser för öppen källkod</translation>
@@ -944,7 +947,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5343472494710226394">Nyheter, sport och innehåll utifrån dina intressen.</translation>
 <translation id="5352128922772839949">Spara fil</translation>
 <translation id="5355191726083956201">Förbättrat skydd är aktiverat</translation>
-<translation id="5356332698539508708">Radera och byt</translation>
 <translation id="537853552771686272">Hantera ämnen och webbplatser som du är intresserad av</translation>
 <translation id="5395707839134961196">Dölj sökmotorinformation</translation>
 <translation id="541276233349960923">Använd lösenorden på alla dina enheter</translation>
@@ -1212,6 +1214,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="6476800141292307438">Översätter sidan till <ph name="LANGUAGE" />. Alternativ finns längst ned på skärmen.</translation>
 <translation id="647867789226964031">Ändra dina lösenord</translation>
 <translation id="6494931198667773526">Slutar</translation>
+<translation id="6495521251906266731">Välj vad du vill göra med befintlig webbinformation på den här enheten, till exempel lösenord, historik med mera.</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{Sluta spåra den här försändelsen}other{Sluta spåra alla försändelser}}</translation>
 <translation id="6503077044568424649">Mest besökta</translation>
 <translation id="6503763061813913607">Aviseringar från säkerhetskontroll</translation>
@@ -1250,6 +1253,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="6624219055418309072">Blockera i inkognitoläget</translation>
 <translation id="6625830436658400045">Synkroniseringsinställningarna återställs utifrån den senaste säkerhetskopian. Du kan alltid välja vad som ska synkroniseras i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />.</translation>
 <translation id="6627583120233659107">Redigera mapp</translation>
+<translation id="6629759408545977279">Från: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Organisationen har inaktiverat inkognitoläge</translation>
 <translation id="6638511529934826365">Zooma text …</translation>
 <translation id="6640268266988685324">Öppna flik</translation>
@@ -1605,7 +1609,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8219424187226230983">Visa offlineversionen i en ny flik</translation>
 <translation id="8230355548492839438">Sök föregående</translation>
 <translation id="8232956427053453090">Behåll data</translation>
-<translation id="8242644458318193141">Flikar stängs och kontodata som inte har sparats raderas från den här enheten för att skydda organisationen. Detta kan omfatta lösenord, historik med mera.</translation>
 <translation id="8261506727792406068">Radera</translation>
 <translation id="82619448491672958">Se andra flikar</translation>
 <translation id="8263228331881858381">Nyckeln har sparats</translation>
@@ -1651,7 +1654,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8449869326050867919">Lösenordet har delats</translation>
 <translation id="8453847087068411809">Identifiera aldrig paket automatiskt</translation>
 <translation id="846158969830690371">Ta reda på om du har de säkraste inställningarna eller om du behöver granska något.</translation>
-<translation id="8466300942149667917">Kontodata som inte har sparats raderas</translation>
 <translation id="8473863474539038330">Adresser och annat</translation>
 <translation id="8474378002946546633">Tillåt meddelanden</translation>
 <translation id="8477178913400731244">Ta bort data</translation>

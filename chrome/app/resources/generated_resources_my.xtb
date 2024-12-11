@@ -8044,7 +8044,6 @@
 <translation id="6743841972744298686">စင့်ခ်ဆက်တင်များ</translation>
 <translation id="6745592621698551453">ယခု မွမ်းမံပါ</translation>
 <translation id="6746124502594467657">အောက်သို့ရွှေ့ပါ</translation>
-<translation id="674632704103926902">ထိပြီး ဆွဲရန် ခွင့်ပြုခြင်း။</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> အတွက် စကားဝှက်ပြရန်</translation>
 <translation id="6748980958975836188">ကျွန်ုပ်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK1" />၊ <ph name="BEGIN_LINK2" />Chrome နှင့် ChromeOS ထပ်တိုး ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> ကို ဖတ်ရှုပြီး သဘောတူပါသည်။</translation>
 <translation id="6749077623962119521">ခွင့်ပြုချက်များ ပြင်ဆင်သတ်မှတ်လိုပါသလား။</translation>
@@ -9925,7 +9924,6 @@
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />အက်ပ်ဒေတာဟူသည်မှာ အဆက်အသွယ်၊ မက်ဆေ့ဂျ်နှင့် ဓာတ်ပုံများကဲ့သို့ ဒေတာများ အပါအဝင် (ဆော့ဖ်ဝဲ အင်ဂျင်နီယာ၏ ဆက်တင်များအပေါ် အခြေခံ၍) အက်ပ်တစ်ခုသိမ်းထားသော မည်သည့်ဒေတာမဆို ဖြစ်နိုင်သည်။<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />အရန်ဒေတာများက သင့်ကလေး၏ Drive သိုလှောင်ခန်းခွဲတမ်းကို အသုံးမပြုပါ။<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />၎င်းကို 'ဆက်တင်များ' တွင် ပိတ်နိုင်သည်။<ph name="END_PARAGRAPH3" /></translation>
-<translation id="8076492880354921740">တဘ်များ</translation>
 <translation id="8076835018653442223">သင်၏စီမံအုပ်ချုပ်သူက သင့်စက်အတွင်းရှိဖိုင်များ သုံးခွင့်ကို ပိတ်ထားသည်</translation>
 <translation id="8077120325605624147">သင်ဝင်ကြည့်သည့် ဝဘ်ဆိုက်တိုင်းက မည်သည့်ကြော်ငြာကိုမဆို ပြနိုင်သည်</translation>
 <translation id="8077579734294125741">အခြား Chrome ပရိုဖိုင်များ</translation>
@@ -10562,7 +10560,6 @@
 <translation id="8528074251912154910">ဘာသာစကားများ ထည့်ရန်</translation>
 <translation id="8528479410903501741">IBAN သိမ်းရန်</translation>
 <translation id="8528962588711550376">လက်မှတ်ထိုး ဝင်နေသည်။</translation>
-<translation id="8529925957403338845">အလိုအလျောက် ချိတ်ဆက်မျှဝေခြင်း မအောင်မြင်ပါ</translation>
 <translation id="8531367864749403520">သင့်တဘ်ဘားတန်းမှ အုပ်စုကို ဖယ်ရှားရန် “အုပ်စုဖျောက်ရန်” ကို ရွေးချယ်နိုင်သည်</translation>
 <translation id="8531701051932785007">‘အရည်အသွေးမြှင့် ဘေးကင်းလုံခြုံသည့် အသုံးပြုမှု’ ပိတ်ထားသည်</translation>
 <translation id="8533670235862049797">'လုံခြုံစွာ ဖွင့်ကြည့်ခြင်း' ကို ဖွင့်ထားသည်</translation>

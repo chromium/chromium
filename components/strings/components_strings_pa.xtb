@@ -2165,7 +2165,6 @@
 <translation id="4881695831933465202">ਖੋਲ੍ਹੋ</translation>
 <translation id="4881808915112408168">24 x 31.5 ਇੰਚ</translation>
 <translation id="4882314601499260499">ਕੋਈ ਵਰਤੋਂਕਾਰ ਨੀਤੀ ਲਾਗੂ ਨਹੀਂ ਕੀਤੀ ਗਈ। ਵਰਤੋਂਕਾਰ ਨੀਤੀਆਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ ਲਈ, ਤੁਹਾਡੀ ਸੰਸਥਾ ਲਈ <ph name="LINK_BEGIN" />ਤੁਹਾਡੇ ਡੋਮੇਨ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨੀ<ph name="LINK_END" /> ਲਾਜ਼ਮੀ ਹੈ।</translation>
-<translation id="4883911187498618061">ਆਪਣਾ ਸਵਾਲ ਜਾਂ ਉਤਪ੍ਰੇਰਕ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="4885030148564729407">ਹਨੀਮੂਨ ਅਤੇ ਰੋਮਾਂਟਿਕ ਸੈਰਗਾਹ</translation>
 <translation id="4885256590493466218">ਚੈੱਕਆਊਟ ਕਰਨ ਵੇਲੇ <ph name="CARD_DETAIL" /> ਨਾਲ ਭੁਗਤਾਨ ਕਰੋ</translation>
 <translation id="4887406273302438710">Windows Hello ਨਾਲ ਪਾਸਵਰਡ ਸੁਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -2198,7 +2197,6 @@
 <translation id="4930153903256238152">ਵੱਧ ਸਮਰੱਥਾ</translation>
 <translation id="4930714375720679147">ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4932035752129140860">ਤੁਹਾਡੇ ਵੱਲੋਂ ਪੇਸਟ ਜਾਂ ਨੱਥੀ ਕੀਤੀ ਲਿਖਤ ਨੂੰ ਵਿਸ਼ਲੇਸ਼ਣ ਲਈ Google ਕਲਾਊਡ ਜਾਂ ਤੀਜੀਆਂ ਧਿਰਾਂ ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ। ਉਦਾਹਰਨ ਲਈ, ਉਨ੍ਹਾਂ ਨੂੰ ਸੰਵੇਦਨਸ਼ੀਲ ਡਾਟੇ ਲਈ ਸਕੈਨ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ ਅਤੇ ਕੰਪਨੀ ਦੀਆਂ ਨੀਤੀਆਂ ਦੇ ਆਧਾਰ 'ਤੇ ਸਟੋਰ ਅਤੇ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਲਈ ਦਿਖਾਈ ਦੇਣਯੋਗ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
-<translation id="4933468175699107356">ਕਿਸੇ ਵੀ ਫ਼ਾਰਮ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ, ਜਿਵੇਂ ਕਿ ਤੁਹਾਡਾ ਨਾਮ ਜਾਂ ਪਤਾ, ਨੂੰ ਆਟੋਫਿਲ ਕਰਨ ਲਈ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="4933788293078559286">Pix ਨਾਲ ਭੁਗਤਾਨ ਕਰੋ</translation>
 <translation id="4934780484581617878">ਵਿੰਡੋ ਪ੍ਰਬੰਧਨ</translation>
 <translation id="4936134414789135531">ਸ਼ਾਮਲ ਕੀਤਾ <ph name="VALUE_NAME" /> ਨਹੀਂ ਮਿਲ ਸਕਿਆ।</translation>
@@ -3490,6 +3488,7 @@
 <translation id="7304030187361489308">ਵੱਧ</translation>
 <translation id="7304562222803846232">Google ਖਾਤਾ ਪਰਦੇਦਾਰੀ ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="7305756307268530424">ਹੌਲੀ-ਹੌਲੀ ਸ਼ੁਰੂ ਕਰੋ</translation>
+<translation id="7307063504147610123">ਪਤੇ ਨੂੰ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7308436126008021607">ਬੈਕਗ੍ਰਾਊਂਡ ਸਿੰਕ</translation>
 <translation id="7309058266849426521">Chrome ਵਿੱਚ ਆਪਣੀ ਵਿਗਿਆਪਨ ਪਰਦੇਦਾਰੀ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਬਾਰੇ ਹੋਰ ਜਾਣੋ।</translation>
 <translation id="7310392214323165548">ਡੀਵਾਈਸ ਜਲਦ ਹੀ ਮੁੜ-ਸ਼ੁਰੂ ਹੋਵੇਗਾ</translation>
@@ -4167,6 +4166,7 @@
 <translation id="8473626140772740486">300 x 450 ਮਿ.ਮੀ.</translation>
 <translation id="8473863474539038330">ਪਤੇ ਅਤੇ ਹੋਰ</translation>
 <translation id="8474910779563686872">ਵਿਕਾਸਕਾਰ ਵੇਰਵੇ ਦਿਖਾਓ</translation>
+<translation id="8476959635632921417">ਇਸ ਪਤੇ ਨੂੰ ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਰੱਖਿਅਤ ਕਰਨ ਅਤੇ ਵਰਤਣ ਲਈ, ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="8479754468255770962">ਹੇਠਾਂ ਖੱਬੇ ਪਾਸੇ ਪਿੰਨ</translation>
 <translation id="8483229036294884935">ਤੁਹਾਡੇ Google ਖਾਤੇ, <ph name="ACCOUNT" /> ਤੋਂ ਇਹ ਪਤਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="8488350697529856933">ਤੇ ਲਾਗੂ ਹੁੰਦਾ ਹੈ</translation>
@@ -4545,6 +4545,7 @@
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> ਇੱਕ ਅਸਮਰਥਿਤ ਪ੍ਰੋਟੋਕੋਲ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ।</translation>
 <translation id="918454845714257218"><ph name="SIDE_OF_CARD" /> 'ਤੇ ਕੋਡ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="9186203289258525843">'Chrome ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਵਜੋਂ ਸੈੱਟ ਕਰੋ' ਬਟਨ, Chrome ਨੂੰ ਸਿਸਟਮ ਦੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਵਜੋਂ ਸੈੱਟ ਕਰਨ ਲਈ ਇਸਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
+<translation id="9189789270972826888">ਜੇ ਕਾਰਡ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਨਹੀਂ ਭਰੀ ਗਈ, ਤਾਂ ਕਾਪੀ ਅਤੇ ਪੇਸਟ ਕਰਨ ਲਈ ਹੇਠਾਂ ਦਿੱਤੇ ਕਾਰਡ ਸੰਬੰਧੀ ਵੇਰਵਿਆਂ 'ਤੇ ਕਲਿੱਕ ਕਰੋ। <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">4 ਹਫ਼ਤਿਆਂ ਤੋਂ ਪੁਰਾਣੇ ਵਿਸ਼ਿਆਂ ਨੂੰ ਸਵੈਚਲਿਤ-ਮਿਟਾਇਆ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="9191834167571392248">ਹੇਠਾਂ ਖੱਬੇ ਪਾਸੇ ਮੋਰੀ</translation>
 <translation id="9192361865877479444">ਧਾਤ (ਮੈਟ)</translation>

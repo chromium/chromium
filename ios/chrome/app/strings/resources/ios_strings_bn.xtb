@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">সব খুলুন</translation>
 <translation id="1408847409015257906">"গোপনীয়তা ও সুরক্ষা" বিকল্পে ট্যাপ করুন।</translation>
 <translation id="1411386976162024013">Lens-এ ভিজ্যুয়াল সার্চ</translation>
+<translation id="1426410128494586442">হ্যাঁ</translation>
 <translation id="1430915738399379752">প্রিন্ট</translation>
 <translation id="1436671784520050284">সেট-আপ চালিয়ে যান</translation>
 <translation id="143681031165817424">শুধু এই ডিভাইসে ঠিকানা সেভ করা হবে</translation>
@@ -695,6 +696,7 @@
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ডিফল্ট ব্রাউজার অ্যাপ<ph name="END_BOLD" /> বিকল্পে ট্যাপ করুন</translation>
 <translation id="4242533952199664413">সেটিংস খুলুন</translation>
 <translation id="4250432749243022864">{count,plural, =0{{count}টি ট্যাব খুলুন}=1{{count}টি ট্যাব খুলুন}one{{count}টি ট্যাব খুলুন}other{{count}টি ট্যাব খুলুন}}</translation>
+<translation id="4250680216510889253">না</translation>
 <translation id="4251531167342733205">আপনার পছন্দের ব্রাউজার থেকে সেরা অভিজ্ঞতা পান।</translation>
 <translation id="4253168017788158739">টিকা</translation>
 <translation id="4256782883801055595">ওপেন সোর্স লাইসেন্স</translation>
@@ -944,7 +946,6 @@
 <translation id="5343472494710226394">আপনার আগ্রহ অনুযায়ী খবর, খেলাধূলা ও কন্টেন্ট।</translation>
 <translation id="5352128922772839949">ফাইল সেভ করুন</translation>
 <translation id="5355191726083956201">"উন্নত সুরক্ষা" ফিচার চালু করা আছে</translation>
-<translation id="5356332698539508708">মুছুন ও পাল্টান</translation>
 <translation id="537853552771686272">আপনার আগ্রহের বিষয় ও সাইট ম্যানেজ করুন</translation>
 <translation id="5395707839134961196">সার্চ ইঞ্জিনের বিবরণ লুকান</translation>
 <translation id="541276233349960923">আপনার সমস্ত ডিভাইসে পাসওয়ার্ড ব্যবহার করুন</translation>
@@ -1251,6 +1252,7 @@
 <translation id="6624219055418309072">ছদ্মবেশী মোডে ব্লক করুন</translation>
 <translation id="6625830436658400045">আপনার শেষ ব্যাক-আপের উপর ভিত্তি করে সিঙ্ক সেটিংস ফিরিয়ে আনা হবে। <ph name="BEGIN_LINK" />সেটিংসে<ph name="END_LINK" /> কোন ধরনের ডেটা সিঙ্ক করা হবে তা আপনি সবসময় বেছে নিতে পারবেন।</translation>
 <translation id="6627583120233659107">ফোল্ডার সম্পাদনা করুন</translation>
+<translation id="6629759408545977279">প্রেরক: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">আপনার সংস্থা, 'ছদ্মবেশী মোড' বন্ধ করে দিয়েছে</translation>
 <translation id="6638511529934826365">টেক্সট জুম করা…</translation>
 <translation id="6640268266988685324">ট্যাব খুলুন</translation>
@@ -1606,7 +1608,6 @@
 <translation id="8219424187226230983">নতুন ট্যাবে অফলাইন ভার্সন দেখুন</translation>
 <translation id="8230355548492839438">আগেরটি খুঁজুন</translation>
 <translation id="8232956427053453090">ডেটা রাখুন</translation>
-<translation id="8242644458318193141">আপনার সংস্থার নিরাপত্তা সুরক্ষিত রাখতে, ট্যাব বন্ধ করে দেওয়া হবে এবং অ্যাকাউন্টে সেভ করা হয়নি এমন ডেটা এই ডিভাইস থেকে মুছে দেওয়া হবে। এটির মধ্যে পাসওয়ার্ড, ইতিহাস ও আরও অনেক কিছু অন্তর্ভুক্ত থাকতে পারে।</translation>
 <translation id="8261506727792406068">মুছুন</translation>
 <translation id="82619448491672958">অন্যান্য ট্যাব দেখুন</translation>
 <translation id="8263228331881858381">পাসকী সেভ করা হয়েছে</translation>
@@ -1652,7 +1653,6 @@
 <translation id="8449869326050867919">পাসওয়ার্ড শেয়ার করা হয়েছে</translation>
 <translation id="8453847087068411809">প্যাকেজ অটোমেটিক শনাক্ত করার দরকার নেই</translation>
 <translation id="846158969830690371">আপনার সবচেয়ে নিরাপদ সেটিংস আছে নাকি কিছু পর্যালোচনা করতে হবে তা জানুন।</translation>
-<translation id="8466300942149667917">সেভ করা হয়নি এমন ডেটা মুছে যাবে</translation>
 <translation id="8473863474539038330">ঠিকানা ও আরও অনেককিছু</translation>
 <translation id="8474378002946546633">সূচনাকে মঞ্জুরী দিন</translation>
 <translation id="8477178913400731244">ডেটা মুছুন</translation>

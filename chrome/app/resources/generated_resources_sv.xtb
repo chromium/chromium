@@ -1504,6 +1504,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="202352106777823113">Nedladdningen tog för lång tid och avbröts av nätverket.</translation>
 <translation id="2024195579772565064">Ta bort sökmotor</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">Precisionsklick</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> har kraschat. Klicka på ballongen för att ladda om tillägget.</translation>
 <translation id="2026377162111110983">Omgivningsröst</translation>
 <translation id="2028449514182362831">Funktioner som kräver rörelsesensorer slutar fungera</translation>
@@ -1961,7 +1962,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="233471714539944337">Känsligt innehåll</translation>
 <translation id="2335111415680198280">{0,plural, =1{Stäng # fönster}other{Stäng # fönster}}</translation>
 <translation id="2335758110242123814">Öppna gruppen</translation>
-<translation id="2336228925368920074">Skapa bokmärken för alla flikar ...</translation>
+<translation id="2336228925368920074">Bokmärk alla flikar ...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> skriver ut 1 sida på <ph name="PRINTER_NAME" /></translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2340239562261172947">Det går inte att ladda ned <ph name="FILE_NAME" /> på ett säkert sätt</translation>
@@ -2707,7 +2708,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2850672011315104382">Skiljeteckenformat</translation>
 <translation id="285237063405807022">(läser in)</translation>
 <translation id="2853121255651601031">Lösenordet sparades</translation>
-<translation id="2855243985454069333">Raderar historiken från alla synkroniserade enheter</translation>
+<translation id="2855243985454069333">Raderar historiken från alla synkroniserade enheter.</translation>
 <translation id="2855812646048059450">Logga in med <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Skapa en ny behållare</translation>
 <translation id="2856907950922663165">Vill du inaktivera kryptering av webbadresser?</translation>
@@ -4763,6 +4764,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4324577459193912240">Filen är inte fullständig</translation>
 <translation id="4325237902968425115">Avinstallerar <ph name="LINUX_APP_NAME" /> ...</translation>
 <translation id="4325433082696797523">Lagring och ström</translation>
+<translation id="4325515113816851466">Din förälders val gäller inte när du har loggat ut</translation>
 <translation id="4326146840124313313">Chromes starkaste skydd gör mer för att skydda dig mot farliga webbplatser, nedladdningar och tillägg</translation>
 <translation id="4327380114687339519">Tilläggsmeny</translation>
 <translation id="4330191372652740264">Isvatten</translation>
@@ -4885,6 +4887,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4412992751769744546">Tillåt cookies från tredje part</translation>
 <translation id="4413087696295876280">Läsa ChromeOS Flex-enhetsinformation och -data</translation>
 <translation id="44137799675104237">Lyssna på texten med en naturlig röst</translation>
+<translation id="4414051792721275732">När du gör en rörelse för att klicka minskar mushastigheten så att du får större kontroll. Gör rörelsen igen för att slutföra klicket.</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">Vill du ge <ph name="APP_NAME" /> åtkomstbehörighet till listan med anslutna USB-enheter?</translation>
 <translation id="4414232939543644979">Nytt &amp;inkognitofönster</translation>
@@ -4960,7 +4963,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4472575034687746823">Kom igång</translation>
 <translation id="4473559657152613417">Högerklicka på en flik och välj Lägg till fliken i en ny grupp</translation>
 <translation id="4473996011558324141">uppskattar tid</translation>
-<translation id="4474155171896946103">Skapa bokmärken för alla flikar ...</translation>
+<translation id="4474155171896946103">Bokmärk alla flikar ...</translation>
 <translation id="4475299370877036544">Den här åtgärden kan bryta mot organisationens policyer</translation>
 <translation id="4476198534886170024">Tillåts. Aktivera <ph name="LINK_BEGIN" />systemets kameraåtkomst<ph name="LINK_END" />.</translation>
 <translation id="4476590490540813026">Idrottare</translation>
@@ -5784,7 +5787,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5074761966806028321">Behörighet krävs fortfarande för att slutföra konfigureringen</translation>
 <translation id="5075563999073408211">Styr enheten med en eller flera brytare. Du kan använda tangenter, gampad-knappar eller dedikerade enheter.</translation>
 <translation id="5075910247684008552">Osäkert innehåll blockeras som standard på säkra webbplatser</translation>
-<translation id="5078638979202084724">Skapa bokmärken för alla flikar</translation>
+<translation id="5078638979202084724">Bokmärk alla flikar</translation>
 <translation id="5078796286268621944">Fel pinkod</translation>
 <translation id="5079010647467150187">Lägg till inbyggt VPN …</translation>
 <translation id="5079460277417557557">Nu kan du använda sparade flikgrupper på alla inloggade stationära enheter</translation>
@@ -6213,6 +6216,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5389224261615877010">Regnbåge</translation>
 <translation id="5389626883706033615">Webbplatser hindras från att be dig använda information som de har sparat om dig</translation>
 <translation id="5389794555912875905">Visa varningar innan du besöker osäkra webbplatser (rekommenderas)</translation>
+<translation id="5389943529251318913">Minska musens hastighet med</translation>
 <translation id="5390112241331447203">Ta med filen system_logs.txt som skickas i feedbackrapporter.</translation>
 <translation id="5390677308841849479">Mörkröd och orange</translation>
 <translation id="5392192690789334093">Får skicka aviseringar</translation>
@@ -6302,7 +6306,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5448092089030025717">{NUM_REUSED,plural, =0{Inga återanvända lösenord}=1{1 återanvänt lösenord}other{{NUM_REUSED} återanvända lösenord}}</translation>
 <translation id="5448293924669608770">Det uppstod problem vid inloggningen</translation>
 <translation id="5449551289610225147">Ogiltigt lösenord</translation>
-<translation id="5449588825071916739">Skapa bokmärken för alla flikar</translation>
+<translation id="5449588825071916739">Bokmärk alla flikar</translation>
 <translation id="5449716055534515760">Stäng fön&amp;ster</translation>
 <translation id="5449932659532574495"><ph name="TURN_ON_BLUETOOTH_LINK" /> för att utforska Bluetooth-enheter</translation>
 <translation id="5450469615146335984">Välj ett kortkommando för varje åtgärd</translation>
@@ -8044,7 +8048,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6743841972744298686">Synkroniseringsinställningar</translation>
 <translation id="6745592621698551453">Uppdatera nu</translation>
 <translation id="6746124502594467657">Flytta ned</translation>
-<translation id="674632704103926902">Aktivera "tryck och dra"</translation>
 <translation id="67465227497040338">Visa lösenord för <ph name="DOMAIN" /></translation>
 <translation id="6748980958975836188">Jag har läst och godkänner <ph name="BEGIN_LINK1" />Googles användarvillkor<ph name="END_LINK1" /> samt <ph name="BEGIN_LINK2" />de ytterligare användarvillkoren för Google Chrome och ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6749077623962119521">Vill du återställa behörigheter?</translation>
@@ -9927,7 +9930,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Appdata är all data som har sparats i en app (utifrån utvecklarens inställningar), till exempel kontakter, meddelanden och foton.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Säkerhetskopierad data tar inte upp något av ditt barns lagringsutrymme på Drive.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Du kan inaktivera den här tjänsten i inställningarna.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="8076492880354921740">Flikar</translation>
 <translation id="8076835018653442223">Administratören har inaktiverat åtkomsten till lokala filer på enheten</translation>
 <translation id="8077120325605624147">Alla webbplatser du besöker kan visa alla annonser för dig</translation>
 <translation id="8077579734294125741">Andra Chrome-profiler</translation>
@@ -10564,7 +10566,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8528074251912154910">Lägg till språk</translation>
 <translation id="8528479410903501741">Spara IBAN</translation>
 <translation id="8528962588711550376">Inloggning sker</translation>
-<translation id="8529925957403338845">Direktinternetdelning misslyckades</translation>
 <translation id="8531367864749403520">Välj Dölj grupp om du vill ta bort gruppen från flikhuvudet</translation>
 <translation id="8531701051932785007">Förbättrad säker webbsökning har inaktiverats</translation>
 <translation id="8533670235862049797">Säker webbsökning är aktiverat</translation>
@@ -11118,7 +11119,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> som tillhör <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Installerar appen …</translation>
 <translation id="891931289445130855">Radera data och behörigheter</translation>
-<translation id="8920133120839850939">Välj fliken för fler rörelser och aktivera Svep mellan sidor för att navigera framåt och framåt</translation>
+<translation id="8920133120839850939">Välj fliken för fler rörelser och aktivera Svep mellan sidor för att navigera framåt och bakåt</translation>
 <translation id="8922348435910470639">Dubbelbokad</translation>
 <translation id="8922624386829239660">Flytta skärmen när muspekaren når skärmens kanter</translation>
 <translation id="8923880975836399332">Mörkt blågrön</translation>

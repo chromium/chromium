@@ -169,6 +169,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="129553762522093515">Ostatnio zamknięte</translation>
 <translation id="1296930489679394997">Sprzedaż</translation>
 <translation id="1297814096526086484">Zablokować klawiaturę i mysz?</translation>
+<translation id="1297832388362139384">Zielony 1</translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Sprawdź ustawienia bezpiecznego DNS</translation>
 <translation id="1302418742166945866"><ph name="URL" /> chce sterować urządzeniami MIDI i je przeprogramowywać</translation>
@@ -228,6 +229,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1384725838384960382">Arkusz uwierzytelniania danych logowania na potrzeby bezpiecznych płatności</translation>
 <translation id="1386623374109090026">Adnotacje</translation>
 <translation id="138810468159004008">Zezwalaj podczas odwiedzania witryny</translation>
+<translation id="139161720020179799">Ciemnoszary 1</translation>
 <translation id="1391625539203220400">Zapisać numer IBAN na tym urządzeniu?</translation>
 <translation id="139305205187523129">Serwer <ph name="HOST_NAME" /> nie wysłał żadnych danych.</translation>
 <translation id="1393071644879491291">Osoby przeprowadzające atak na stronie, którą próbujesz otworzyć, mogą podstępem nakłonić Cię do zainstalowania oprogramowania lub ujawnienia takich danych jak Twoje hasła, numery telefonów czy numery kart kredytowych. Chrome zdecydowanie zaleca powrót do bezpieczeństwa. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji o tym ostrzeżeniu<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -703,6 +705,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2227758700723188171">Stypendia naukowe</translation>
 <translation id="2228057197024893428">Ten adres jest obecnie zapisany w Chrome. Aby używać go w różnych usługach Google, zapisz go na swoim koncie Google <ph name="ACCOUNT" />.</translation>
 <translation id="2229456043301340598">Zignorowano nieunikalny skrót: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="222962001646502673">Ciemnoszary 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 karta}few{# karty}many{# kart}other{# karty}}</translation>
 <translation id="2233745931693710080">Dysk kompaktowy</translation>
 <translation id="2235344399760031203">Pliki cookie innych firm są blokowane</translation>
@@ -1730,6 +1733,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4084219288110917128">Koperta C1</translation>
 <translation id="4085326869263783566">Pomóż mi w pisaniu. Aby otworzyć, naciśnij Tab, a potem Enter</translation>
 <translation id="4085769736382018559">Porównaj produkty</translation>
+<translation id="4085778582400064057">Niebieski 2</translation>
 <translation id="4088981014127559358">Strona 1 – przesunięcie obrazu wzdłuż osi Y</translation>
 <translation id="4089152113577680600">Taca 14</translation>
 <translation id="4092349052316400070">Uzupełnij adres</translation>
@@ -1973,6 +1977,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a potem Enter, by Tłumacz Google przetłumaczył tę stronę.</translation>
 <translation id="4515275063822566619">Karty i adresy pochodzą z Chrome i Twojego konta Google (<ph name="ACCOUNT_EMAIL" />). Możesz nimi zarządzać w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" />.</translation>
 <translation id="4515847625438516456">Mikrosamochody i samochody subkompaktowe</translation>
+<translation id="451601984112574365">Zielony 3</translation>
 <translation id="4519245469315452746">Działanie urządzenia zostało przerwane podczas aktualizacji.</translation>
 <translation id="4520048001084013693">Pobieranie tego pliku jest zablokowane przez zasady administratora</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
@@ -2163,7 +2168,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4881695831933465202">Otwórz</translation>
 <translation id="4881808915112408168">24 x 31,5 cala</translation>
 <translation id="4882314601499260499">Nie zastosowano zasad dotyczących użytkowników. Aby można było je dodać, Twoja organizacja musi <ph name="LINK_BEGIN" />potwierdzić własność domeny<ph name="LINK_END" />.</translation>
-<translation id="4883911187498618061">Wpisz pytanie lub prompt</translation>
 <translation id="4885030148564729407">Miesiące miodowe i romantyczne podróże</translation>
 <translation id="4885256590493466218">Zapłać kartą <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Chroń hasła za pomocą Windows Hello</translation>
@@ -2181,6 +2185,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4901952598169637881">Obuwie codzienne</translation>
 <translation id="4905659621780993806">Administrator automatycznie uruchomi Twoje urządzenie ponownie <ph name="DATE" /> o <ph name="TIME" />. Zanim to się stanie, zapisz wszystkie otwarte elementy.</translation>
 <translation id="4913987521957242411">Otwór w lewym górnym rogu</translation>
+<translation id="4914727764832832057">Niebieski 1</translation>
 <translation id="4916389289686916969">Programy telewizyjne typu reality show</translation>
 <translation id="4917064667437236721">Cylinder obrazujący</translation>
 <translation id="4918221908152712722">Zainstaluj aplikację <ph name="APP_NAME" /> (nie wymaga pobrania)</translation>
@@ -2195,7 +2200,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4930153903256238152">Duża pojemność</translation>
 <translation id="4930714375720679147">Włącz</translation>
 <translation id="4932035752129140860">Wpisany lub dołączony test jest wysyłany do Google Cloud lub innych firm w celu przeanalizowania. Na przykład mogą zostać przeskanowane pod kątem danych wrażliwych, a także mogą być przechowywane zgodnie z zasadami firmy i widoczne dla administratora.</translation>
-<translation id="4933468175699107356">Kliknij prawym przyciskiem myszy, aby automatycznie uzupełnić zapisane informacje (np. imię i nazwisko lub adres) w dowolnym formularzu</translation>
 <translation id="4933788293078559286">Zapłać przez Pix</translation>
 <translation id="4934780484581617878">Zarządzanie oknami</translation>
 <translation id="4936134414789135531">Nie udało się znaleźć wstawionej wartości <ph name="VALUE_NAME" />.</translation>
@@ -2254,6 +2258,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5039804452771397117">Zezwalaj</translation>
 <translation id="5040262127954254034">Prywatność</translation>
 <translation id="5043480802608081735">Skopiowany link</translation>
+<translation id="5043753287208271200">Żółty 3</translation>
 <translation id="5045550434625856497">Nieprawidłowe hasło</translation>
 <translation id="5048293684454354469">Tematy reklam to tylko 1 z wielu czynników, na podstawie których witryna może personalizować reklamy. Nawet jeśli nie wybierzesz tematów reklam, witryny nadal będą mogły wyświetlać reklamy, ale mogą być one mniej spersonalizowane. Dowiedz się więcej o <ph name="BEGIN_LINK" />zarządzaniu prywatnością w reklamach<ph name="LINK_END" />.</translation>
 <translation id="5052517576853118371">Aktywne tematy</translation>
@@ -2560,6 +2565,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5593640815048812868">Laptopy i notebooki</translation>
 <translation id="5595485650161345191">Edytuj adres</translation>
 <translation id="5596939519753369075">2 x 3,5 cala</translation>
+<translation id="5597254438174353289">Niebieski 3</translation>
 <translation id="560412284261940334">Zarządzanie jest nieobsługiwane</translation>
 <translation id="5605249000617390290">Więcej informacji o śledzeniu cen</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -2615,6 +2621,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5701381305118179107">Wyśrodkuj</translation>
 <translation id="5707154300732650394">Wznów swoją serię czynności</translation>
 <translation id="57094364128775171">Zaproponuj silne hasło…</translation>
+<translation id="570953204696852961">Czerwony 3</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Weterynaria</translation>
 <translation id="5715150588940290235">Usunąć zapisane kody zabezpieczające?</translation>
@@ -2815,6 +2822,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6085149458302186532">Etykiety (kolorowe)</translation>
 <translation id="6087312102907839798">Podobne wyszukiwania</translation>
 <translation id="6089505343295765444">Karty usunięte z historii w Chrome nadal będą widoczne w tabelach porównawczych</translation>
+<translation id="6093599771645355227">Żółty 1</translation>
 <translation id="6093795393556121384">Karta została zweryfikowana</translation>
 <translation id="6094273045989040137">Dodaj adnotacje</translation>
 <translation id="6094290315941448991">Zasada administratora wyłącza nagrywanie ekranu, gdy widoczne są treści poufne</translation>
@@ -3353,6 +3361,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7058774143982824355">Usługa parsera haseł w formacie CSV</translation>
 <translation id="7062635574500127092">Morski</translation>
 <translation id="706295145388601875">Dodaj adresy i zarządzaj nimi w ustawieniach Chrome</translation>
+<translation id="7063157783216323487">Zielony 2</translation>
 <translation id="7064443976734085921">Samochody kompaktowe</translation>
 <translation id="7064851114919012435">Dane kontaktowe</translation>
 <translation id="7067633076996245366">Soul i R&amp;B</translation>
@@ -3484,6 +3493,7 @@ Dodatkowe informacje:
 <translation id="7304030187361489308">Wysoki</translation>
 <translation id="7304562222803846232">Zarządzaj ustawieniami prywatności konta Google</translation>
 <translation id="7305756307268530424">Rozpocznij wolniej</translation>
+<translation id="7307063504147610123">Adres został zapisany na tym urządzeniu</translation>
 <translation id="7308436126008021607">synchronizacja w tle</translation>
 <translation id="7309058266849426521">Dowiedz się więcej o zarządzaniu prywatnością w reklamach w Chrome.</translation>
 <translation id="7310392214323165548">Urządzenie wkrótce uruchomi się ponownie</translation>
@@ -3905,6 +3915,7 @@ Dodatkowe informacje:
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, a potem Enter, aby szybko utworzyć nowy formularz w Formularzach Google</translation>
 <translation id="8028892419725165118">Gry rekreacyjne</translation>
 <translation id="8028960012888758725">Przycięcie po każdym zadaniu</translation>
+<translation id="8029829038322015001">Czerwony 1</translation>
 <translation id="8030729864112325446">Edukacja zawodowa i podyplomowa</translation>
 <translation id="8032546467100845887">Diapozytyw</translation>
 <translation id="8035152190676905274">Pióro</translation>
@@ -3912,6 +3923,7 @@ Dodatkowe informacje:
 <translation id="8037117624646282037">Kto ostatnio używał urządzenia</translation>
 <translation id="8037357227543935929">Pytaj (domyślnie)</translation>
 <translation id="803771048473350947">Plik</translation>
+<translation id="8038182528865038593">Czerwony 2</translation>
 <translation id="8041089156583427627">Prześlij opinię</translation>
 <translation id="8041940743680923270">Użyj globalnej wartości domyślnej (Pytaj)</translation>
 <translation id="8043255123207491407">Zobacz warunki korzystania z usługi sprzedawcy</translation>
@@ -4159,6 +4171,7 @@ Dodatkowe informacje:
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">Adresy i ustawienia</translation>
 <translation id="8474910779563686872">Pokaż informacje dla deweloperów</translation>
+<translation id="8476959635632921417">Aby zapisać ten adres i korzystać z niego na wszystkich swoich urządzeniach, potwierdź swoją tożsamość</translation>
 <translation id="8479754468255770962">Zszywka w lewym dolnym rogu</translation>
 <translation id="8483229036294884935">Ten adres zostanie usunięty z Twojego konta Google (<ph name="ACCOUNT" />)</translation>
 <translation id="8488350697529856933">Dotyczy</translation>
@@ -4311,6 +4324,7 @@ Dodatkowe informacje:
 <translation id="8767881944435256294">{COUNT,plural, =1{1 forma płatności}few{# formy płatności}many{# form płatności}other{# formy płatności}}</translation>
 <translation id="8768225988514678921">Przycisk Utwórz prezentację; aktywuj, aby szybko utworzyć nową prezentację w Prezentacjach Google</translation>
 <translation id="8769662576926275897">Dane karty</translation>
+<translation id="8769858749286369844">Pastelowobrązowy 2</translation>
 <translation id="8770286973007342895">Kosiarki do trawy</translation>
 <translation id="8772387130037509473">Joga i pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Przenieść poufny plik?}few{Przenieść poufne pliki?}many{Przenieść poufne pliki?}other{Przenieść poufne pliki?}}</translation>
@@ -4402,6 +4416,7 @@ Dodatkowe informacje:
 <translation id="8956124158020778855">Po włączeniu tego ustawienia wróć na tę kartę, aby zacząć pisać.</translation>
 <translation id="8957210676456822347">Autoryzacja portalu przechwytującego</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
+<translation id="8959288490306482616">Pastelowobrązowy 3</translation>
 <translation id="8963117664422609631">Otwórz ustawienia witryny</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Sugestie:<ph name="MARKUP_2" />Upewnij się, że działa połączenie transmisji danych.<ph name="MARKUP_3" />Załaduj tę stronę ponownie później.<ph name="MARKUP_4" />Sprawdź wpisany adres.<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Zapisz kartę</translation>
@@ -4464,6 +4479,7 @@ Dodatkowe informacje:
 <translation id="90695670378604968">Plastik (matowy)</translation>
 <translation id="9069693763241529744">Zablokowane przez rozszerzenie</translation>
 <translation id="9073799351042754113">Ostrzeżenia dotyczące zabezpieczeń tej strony zostały wyłączone.</translation>
+<translation id="9075717835386447447">Pastelowobrązowy 1</translation>
 <translation id="9076283476770535406">Może zawierać treści dla dorosłych</translation>
 <translation id="9078912659001679888">Miksery i sokowirówki</translation>
 <translation id="9078964945751709336">Potrzebujemy więcej informacji</translation>
@@ -4572,6 +4588,7 @@ Dodatkowe informacje:
 <translation id="949314938206378263">Prosisz o zgodę na odwiedzenie tej strony. Twój rodzic może odpowiedzieć w Family Link.</translation>
 <translation id="950736567201356821">Trzy otwory u góry</translation>
 <translation id="950926967802086924">Klucz dostępu • Menedżer haseł Google</translation>
+<translation id="95721182352849470">Żółty 2</translation>
 <translation id="961663415146723894">Wiązanie na dole</translation>
 <translation id="961856697154696964">Usuń dane przeglądania</translation>
 <translation id="961930410699694996">Przyznano jednorazowy dostęp do lokalizacji</translation>

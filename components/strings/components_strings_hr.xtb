@@ -2167,7 +2167,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4881695831933465202">Otvori</translation>
 <translation id="4881808915112408168">24 x 31,5 in</translation>
 <translation id="4882314601499260499">Nije primijenjeno nijedno korisničko pravilo. Da biste dodali korisnička pravila, vaša organizacija mora <ph name="LINK_BEGIN" />potvrditi vašu domenu<ph name="LINK_END" />.</translation>
-<translation id="4883911187498618061">Unesite pitanje ili upit</translation>
 <translation id="4885030148564729407">Bračna putovanja i romantični izleti</translation>
 <translation id="4885256590493466218">Platite karticom <ph name="CARD_DETAIL" /> prilikom naplate</translation>
 <translation id="4887406273302438710">Zaštita zaporki pomoću Windows Helloa</translation>
@@ -2200,7 +2199,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4930153903256238152">Veliki kapacitet</translation>
 <translation id="4930714375720679147">Uključi</translation>
 <translation id="4932035752129140860">Tekst koji zalijepite ili priložite šalje se Google Cloudu ili trećim stranama na analizu. Na primjer, može se pregledavati radi otkrivanja osjetljivih podataka, pohranjivati na temelju pravila tvrtke i biti vidljiv vašem administratoru.</translation>
-<translation id="4933468175699107356">Kliknite desnom tipkom da biste automatski popunili spremljene podatke, na primjer svoje ime ili adresu, u bilo kojem obrascu</translation>
 <translation id="4933788293078559286">Plaćajte putem Pixa</translation>
 <translation id="4934780484581617878">Upravljanje prozorima</translation>
 <translation id="4936134414789135531">Nije moguće pronaći umetnutu vrijednost <ph name="VALUE_NAME" />.</translation>
@@ -2880,7 +2878,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6184868291074982484">Chrome automatski ograničava kolačiće trećih strana</translation>
 <translation id="6188479691141473408">i još <ph name="N_FIELDS" /> polja</translation>
 <translation id="6194209731893739467">Ovdje pogledajte sve svoje praćene proizvode</translation>
-<translation id="6195163219142236913">Ograničeni kolačići treće strane</translation>
+<translation id="6195163219142236913">Ograničeni su kolačići trećih strana</translation>
 <translation id="6195371403461054755">Geologija</translation>
 <translation id="6195418151868446719">Potrošačka elektronika</translation>
 <translation id="6196640612572343990">Blokiraj kolačiće trećih strana</translation>
@@ -3494,6 +3492,7 @@ Dodatne pojedinosti:
 <translation id="7304030187361489308">Visoka</translation>
 <translation id="7304562222803846232">Upravljajte postavkama privatnosti Google računa</translation>
 <translation id="7305756307268530424">Pokreni sporije</translation>
+<translation id="7307063504147610123">Adresa je spremljena na ovaj uređaj</translation>
 <translation id="7308436126008021607">sinkronizacija u pozadini</translation>
 <translation id="7309058266849426521">Saznajte više o upravljanju zaštitom privatnosti u online oglašavanju u Chromeu.</translation>
 <translation id="7310392214323165548">Uređaj će se pokrenuti ponovo vrlo brzo</translation>
@@ -4171,6 +4170,7 @@ Dodatne pojedinosti:
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">Adrese i više</translation>
 <translation id="8474910779563686872">Prikaži pojedinosti o razvojnom programeru</translation>
+<translation id="8476959635632921417">Da biste spremili i upotrebljavali tu adresu na svim svojim uređajima, potvrdite da ste to vi</translation>
 <translation id="8479754468255770962">Spajanje pri dnu lijevo</translation>
 <translation id="8483229036294884935">Ta će se adresa izbrisati s vašeg Google računa, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Primjenjuje se na</translation>

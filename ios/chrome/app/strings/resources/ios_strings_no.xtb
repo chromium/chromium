@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Åpne alle</translation>
 <translation id="1408847409015257906">Trykk på «Personvern og sikkerhet».</translation>
 <translation id="1411386976162024013">Visuelt søk med Lens</translation>
+<translation id="1426410128494586442">Ja</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1436671784520050284">Fortsett konfigureringen</translation>
 <translation id="143681031165817424">Adressen er kun lagret på denne enheten</translation>
@@ -416,6 +417,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="2816489851009559785">Meny → Innstillinger → Standardnettleser</translation>
 <translation id="2818821771744632548">Du ble logget av kontoen din, <ph name="USER_NAME" />, som en del av tilbakestillingen av iPhone. For å logge på igjen, trykk på «Fortsett» nedenfor.</translation>
 <translation id="2819667972867209401">Når dette er på, lagres data i Google-kontoen din. Når dette er av, lagres data bare på denne enheten og slettes hvis du logger av.</translation>
+<translation id="2827760117436553203">Vil du holde dataene adskilt?</translation>
 <translation id="2829172210806130158">Søk på skjermen</translation>
 <translation id="2834399722155632105">3. Trykk på Passordvalg</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -695,6 +697,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4237377247299956313">Trykk på <ph name="BEGIN_BOLD" />Standard nettleserapp<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Åpne innstillingene</translation>
 <translation id="4250432749243022864">{count,plural, =0{Åpne {count} fane}=1{Åpne {count} fane}other{Åpne {count} faner}}</translation>
+<translation id="4250680216510889253">Nei</translation>
 <translation id="4251531167342733205">Få det beste fra nettleseren du bruker.</translation>
 <translation id="4253168017788158739">Merknad</translation>
 <translation id="4256782883801055595">Lisenser for åpen kildekode</translation>
@@ -944,7 +947,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5343472494710226394">Nyheter, sport og innhold basert på interessene dine.</translation>
 <translation id="5352128922772839949">Lagre fil</translation>
 <translation id="5355191726083956201">Økt beskyttelse er på</translation>
-<translation id="5356332698539508708">Slett og bytt</translation>
 <translation id="537853552771686272">Administrer emnene og nettstedene du er interessert i</translation>
 <translation id="5395707839134961196">Skjul søkemotordetaljer</translation>
 <translation id="541276233349960923">Bruk passord på alle enhetene dine</translation>
@@ -1212,6 +1214,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="6476800141292307438">Oversetter siden til <ph name="LANGUAGE" />. Du finner alternativer på nedre del av skjermen.</translation>
 <translation id="647867789226964031">Endre passordene dine</translation>
 <translation id="6494931198667773526">Slutter</translation>
+<translation id="6495521251906266731">Velg hva du vil gjøre med de eksisterende nettlesingsdataene på denne enheten, for eksempel passord og logg.</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{Slutt å spore denne pakken}other{Slutt å spore alle pakker}}</translation>
 <translation id="6503077044568424649">Mest besøkt</translation>
 <translation id="6503763061813913607">Varsler fra sikkerhetssjekk</translation>
@@ -1250,6 +1253,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="6624219055418309072">Blokkér i inkognitomodus</translation>
 <translation id="6625830436658400045">Synkroniseringsinnstillingene dine gjenopprettes basert på den forrige sikkerhetskopien. Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
 <translation id="6627583120233659107">Rediger mappen</translation>
+<translation id="6629759408545977279">Fra: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Organisasjonen din har slått av inkognitomodus</translation>
 <translation id="6638511529934826365">Forstørr tekst</translation>
 <translation id="6640268266988685324">Åpne fane</translation>
@@ -1605,7 +1609,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8219424187226230983">Se versjonen uten nett på en ny fane</translation>
 <translation id="8230355548492839438">Finn forrige</translation>
 <translation id="8232956427053453090">Behold dataene</translation>
-<translation id="8242644458318193141">For å ivareta organisasjonens sikkerhet blir faner lukket, og kontodata som ikke er lagret, blir slettet fra denne enheten. Dette kan blant annet inkludere passord og logg.</translation>
 <translation id="8261506727792406068">Slett</translation>
 <translation id="82619448491672958">Se andre faner</translation>
 <translation id="8263228331881858381">Passnøkkelen er lagret</translation>
@@ -1651,7 +1654,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8449869326050867919">Passordet er delt</translation>
 <translation id="8453847087068411809">Registrer aldri pakker automatisk</translation>
 <translation id="846158969830690371">Finn ut om du har de sikreste innstillingene, eller om du må gjennomgå noe.</translation>
-<translation id="8466300942149667917">Ulagrede kontodata slettes</translation>
 <translation id="8473863474539038330">Adresser med mer</translation>
 <translation id="8474378002946546633">Tillat varsler</translation>
 <translation id="8477178913400731244">Slett data</translation>

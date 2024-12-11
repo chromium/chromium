@@ -58,6 +58,7 @@
 <translation id="1779356040007214683">За да направим Chromium по-безопасен, деактивирахме някои разширения, които не са посочени в <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и може да са били добавени без ваше знание.</translation>
 <translation id="1808667845054772817">Повторно инсталиране на Chromium</translation>
 <translation id="1820835682567584003">Chromium се опитва да <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1838374766361614909">Изчистване на търсенето</translation>
 <translation id="18552579716432081">За да изтриете данните за сърфирането само от това устройство, но да ги запазите в профила си в Google, <ph name="BEGIN_LINK" />излезте от профила си в Chromium<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">Можете да управлявате профилите си в Google, в които сте влезли. Те се използват за браузъра Chromium, Google Play Магазин, Gmail и др. Ако искате да добавите профил за друго лице, като например член на семейството, вместо това добавете нов човек към вашия <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Търсете с функцията за търсене на изображения</translation>
@@ -202,7 +203,6 @@
 <translation id="3802055581630249637">Chromium зарежда предварително страниците, които е вероятно да посетите, така че да се заредят по-бързо, когато ги отворите.</translation>
 <translation id="3830894615770080216">Система Chromium OS</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
-<translation id="386822487697155367">Получаване на помощ за Chromium OS</translation>
 <translation id="3871664619793219264">Използвайте нещата си в браузъра Chromium от <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3885770153807205175">Инструмент за избор на език</translation>
 <translation id="388648406173476553">Персонализиране и контролиране на Chromium. Трябва да обърнете внимание на нещо – кликнете за подробности.</translation>

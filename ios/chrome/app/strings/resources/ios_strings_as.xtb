@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">সকলো খোলক</translation>
 <translation id="1408847409015257906">“গোপনীয়তা আৰু সুৰক্ষা”ত টিপক।</translation>
 <translation id="1411386976162024013">Lensত ভিজুৱেল ছাৰ্চ</translation>
+<translation id="1426410128494586442">হয়</translation>
 <translation id="1430915738399379752">প্ৰিণ্ট কৰক</translation>
 <translation id="1436671784520050284">ছেট আপ অব্যাহত ৰাখক</translation>
 <translation id="143681031165817424">ঠিকনা কেৱল এই ডিভাইচত ছেভ কৰা হৈছে</translation>
@@ -695,6 +696,7 @@
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ডিফ’ল্ট ব্ৰাউজাৰ এপ<ph name="END_BOLD" />ত টিপক</translation>
 <translation id="4242533952199664413">ছেটিংসমূহ খোলক</translation>
 <translation id="4250432749243022864">{count,plural, =0{{count} টা টেব খোলক}=1{{count} টা টেব খোলক}one{{count} টা টেব খোলক}other{{count} টা টেব খোলক}}</translation>
+<translation id="4250680216510889253">নহয়</translation>
 <translation id="4251531167342733205">আপুনি ভালপোৱা ব্ৰাউজাৰটোৰ পৰা সৰ্বশ্ৰেষ্ঠ অভিজ্ঞতা পাওক</translation>
 <translation id="4253168017788158739">টোকা</translation>
 <translation id="4256782883801055595">মুক্ত উত্‍সৰ অনুজ্ঞাপত্ৰ</translation>
@@ -944,7 +946,6 @@
 <translation id="5343472494710226394">আপোনাৰ আগ্ৰহৰ ওপৰত আধাৰিত বাতৰি, ক্ৰীড়া আৰু সমল।</translation>
 <translation id="5352128922772839949">ফাইল ছেভ কৰক</translation>
 <translation id="5355191726083956201">বৰ্ধিত সুৰক্ষা অন আছে</translation>
-<translation id="5356332698539508708">মচক আৰু সলনি কৰক</translation>
 <translation id="537853552771686272">আপোনাৰ আগ্ৰহ থকা বিষয় আৰু ছাইটসমূহ পৰিচালনা কৰক</translation>
 <translation id="5395707839134961196">সন্ধান ইঞ্জিনৰ সবিশেষ লুকুৱাওক</translation>
 <translation id="541276233349960923">আপোনাৰ আটাইবোৰ ডিভাইচত পাছৱৰ্ড ব্যৱহাৰ কৰক</translation>
@@ -1606,7 +1607,6 @@
 <translation id="8219424187226230983">নতুন টেবত অফলাইন সংস্কৰণটো চাওক</translation>
 <translation id="8230355548492839438">পূৰ্বৱৰ্তী ষ্ট্ৰিং বিচাৰক</translation>
 <translation id="8232956427053453090">ডেটাখিনি ৰাখক</translation>
-<translation id="8242644458318193141">আপোনাৰ প্ৰতিষ্ঠানৰ নিৰাপত্তা ব্যৱস্থা সুৰক্ষিত কৰিবলৈ, টেবসমূহ বন্ধ কৰা হ’ব আৰু ছেভ নকৰা একাউণ্টৰ ডেটা এই ডিভাইচৰ পৰা মচা হ’ব। ইয়াত পাছৱৰ্ড, ইতিহাস আৰু আন বহুতো অন্তৰ্ভুক্ত হ’ব পাৰে।</translation>
 <translation id="8261506727792406068">মচক</translation>
 <translation id="82619448491672958">অন্য টেবসমূহ চাওক</translation>
 <translation id="8263228331881858381">পাছকী ছেভ কৰা হৈছে</translation>
@@ -1652,7 +1652,6 @@
 <translation id="8449869326050867919">পাছৱৰ্ড শ্বেয়াৰ কৰা হ'ল</translation>
 <translation id="8453847087068411809">পেকেজ কেতিয়াও স্বয়ংক্ৰিয়ভাৱে চিনাক্ত নকৰিব</translation>
 <translation id="846158969830690371">আপোনাৰ আটাইতকৈ সুৰক্ষিত ছেটিং আছেনে বা কিবা পৰ্যালোচনা কৰাৰ প্ৰয়োজন আছে নেকি জানক।</translation>
-<translation id="8466300942149667917">ছেভ নকৰা একাউণ্টৰ ডেটাখিনি মচা হ’ব</translation>
 <translation id="8473863474539038330">ঠিকনা আৰু অধিক</translation>
 <translation id="8474378002946546633">জাননীৰ অনুমতি দিয়ক</translation>
 <translation id="8477178913400731244">ডেটা মচক</translation>

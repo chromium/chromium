@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Abrir tudo</translation>
 <translation id="1408847409015257906">Toque em "Privacidade e segurança".</translation>
 <translation id="1411386976162024013">Pesquisa visual do Lens</translation>
+<translation id="1426410128494586442">Sim</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1436671784520050284">Continuar configuração</translation>
 <translation id="143681031165817424">Morada guardada apenas neste dispositivo</translation>
@@ -416,6 +417,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="2816489851009559785">Menu → Definições → Navegador predefinido</translation>
 <translation id="2818821771744632548">Como parte da reposição do iPhone, a sua sessão na conta <ph name="USER_NAME" /> foi terminada. Para voltar a iniciar sessão, toque em "Continuar" abaixo.</translation>
 <translation id="2819667972867209401">Quando esta opção está ativada, os dados são guardados na sua Conta Google. Quando esta opção está desativada, os dados são guardados apenas neste dispositivo e são eliminados se terminar sessão.</translation>
+<translation id="2827760117436553203">Manter os dados separados?</translation>
 <translation id="2829172210806130158">Pesquise no ecrã</translation>
 <translation id="2834399722155632105">3. Toque em Opções de palavras-passe</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -695,6 +697,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4237377247299956313">Toque em <ph name="BEGIN_BOLD" />App de navegador predefinida<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Abrir definições</translation>
 <translation id="4250432749243022864">{count,plural, =0{Abrir {count} separador}=1{Abrir {count} separador}other{Abrir {count} separadores}}</translation>
+<translation id="4250680216510889253">Não</translation>
 <translation id="4251531167342733205">Desfrute do melhor do navegador que adora.</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="4256782883801055595">Licenças de código aberto</translation>
@@ -944,7 +947,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5343472494710226394">Notícias, desporto e conteúdos com base nos seus interesses.</translation>
 <translation id="5352128922772839949">Guardar ficheiro</translation>
 <translation id="5355191726083956201">A Proteção melhorada está ativada.</translation>
-<translation id="5356332698539508708">Eliminar e mudar</translation>
 <translation id="537853552771686272">Faça a gestão dos tópicos e sites que lhe interessam</translation>
 <translation id="5395707839134961196">Ocultar detalhes do motor de pesquisa</translation>
 <translation id="541276233349960923">Use palavras-passe em todos os dispositivos</translation>
@@ -1212,6 +1214,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="6476800141292307438">A traduzir a página para <ph name="LANGUAGE" />. Estão disponíveis opções junto à parte inferior do ecrã.</translation>
 <translation id="647867789226964031">Altere as suas palavras-passe</translation>
 <translation id="6494931198667773526">Fim</translation>
+<translation id="6495521251906266731">Escolha o que fazer com os dados de navegação existentes neste dispositivo, como palavras-passe, histórico e muito mais.</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{Desativar acompanhamento desta embalagem}other{Desativar acompanhamento de todas as embalagens}}</translation>
 <translation id="6503077044568424649">Mais visitadas</translation>
 <translation id="6503763061813913607">Notificações da verificação de segurança</translation>
@@ -1606,7 +1609,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8219424187226230983">Ver versão offline num novo separador</translation>
 <translation id="8230355548492839438">Localizar anterior</translation>
 <translation id="8232956427053453090">Manter os dados</translation>
-<translation id="8242644458318193141">Para proteger a segurança da sua organização, os separadores vão ser fechados e os dados da conta não guardados vão ser eliminados deste dispositivo. Estes podem incluir palavras-passe, o histórico e muito mais.</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="82619448491672958">Ver outros separadores</translation>
 <translation id="8263228331881858381">Chave de acesso guardada</translation>
@@ -1652,7 +1654,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8449869326050867919">Palavra-passe partilhada</translation>
 <translation id="8453847087068411809">Nunca detetar encomendas automaticamente</translation>
 <translation id="846158969830690371">Saiba se tem as definições mais seguras ou se precisa de rever algo.</translation>
-<translation id="8466300942149667917">Os dados da conta não guardados vão ser eliminados</translation>
 <translation id="8473863474539038330">Moradas e mais</translation>
 <translation id="8474378002946546633">Permitir notificações</translation>
 <translation id="8477178913400731244">Eliminar dados</translation>

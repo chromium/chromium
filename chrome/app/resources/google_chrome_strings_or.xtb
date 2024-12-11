@@ -67,6 +67,7 @@
 <translation id="1786044937610313874">ସର୍ଟକଟଗୁଡ଼ିକ Chromeରେ ଖୋଲେ</translation>
 <translation id="178701303897325119">ଏହି ଏକ୍ସଟେନସନ ଆଉ ସପୋର୍ଟ କରୁନାହିଁ। ଏହା ପରିବର୍ତ୍ତେ ଆପଣ ଏହାକୁ କାଢ଼ି ଦେବା ପାଇଁ Chrome ସୁପାରିଶ କରେ।</translation>
 <translation id="1812689907177901597">ଏହାକୁ ବନ୍ଦ କରିବା ଦ୍ଵାରା, ଆପଣ Chromeରେ ସାଇନ୍-ଇନ୍ ନକରି Gmail ଭଳି Google ସାଇଟ୍‍ଗୁଡ଼ିକରେ ସାଇନ୍-ଇନ୍ କରିପାରିବେ</translation>
+<translation id="1838374766361614909">ସର୍ଚ୍ଚ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="1860536484129686729">ଏହି ସାଇଟ୍ ପାଇଁ Chrome ଆପଣଙ୍କର କ୍ୟାମେରା ଆକ୍ସେସ୍ କରିବାକୁ ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="1873233029667955273">Google Chrome ଆପଣଙ୍କର ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ ନୁହେଁ</translation>
 <translation id="1874309113135274312">Google Chrome ବେଟା (mDNS-In)</translation>
@@ -231,7 +232,6 @@
 <translation id="3716540481907974026">ChromeOS Flex ସଂସ୍କରଣ</translation>
 <translation id="3718181793972440140">ଏହି ଡିଭାଇସ୍‌ରୁ ଏହା 1ଟି ଆଇଟମ୍ ଡିଲିଟ୍ ହୋଇଯିବ। ପରେ ଆପଣଙ୍କର ଡାଟା ପୁନଃପ୍ରାପ୍ତ କରିବାକୁ, Chromeରେ <ph name="USER_EMAIL" />ଭାବରେ ସାଇନ୍ ଇନ୍‌ କରନ୍ତୁ।</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{ଆପଣ ଏହାକୁ କାଢ଼ି ଦିଅନ୍ତୁ ବୋଲି Chrome ସୁପାରିଶ କରେ। <ph name="BEGIN_LINK" />ସପୋର୍ଟ କରୁଥିବା ଏକ୍ସଟେନସନଗୁଡ଼ିକ ବିଷୟରେ ଜାଣନ୍ତୁ<ph name="END_LINK" />}other{ଆପଣ ସେଗୁଡ଼ିକୁ କାଢ଼ି ଦିଅନ୍ତୁ ବୋଲି Chrome ସୁପାରିଶ କରେ। <ph name="BEGIN_LINK" />ସପୋର୍ଟ କରୁଥିବା ଏକ୍ସଟେନସନଗୁଡ଼ିକ ବିଷୟରେ ଜାଣନ୍ତୁ<ph name="END_LINK" />}}</translation>
-<translation id="3744202345691150878">ChromeOS ମାଧ୍ୟମରେ ସାହାଯ୍ୟ ପାଆନ୍ତୁ</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ସାଇନ ଇନ କରିବାରେ ଏକ ତ୍ରୁଟି ଯୋଗୁଁ ChromeOS Flex ଆପଣଙ୍କ ଡାଟାକୁ ସିଙ୍କ କରିପାରିଲା ନାହିଁ।</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -353,7 +353,6 @@
 <translation id="5334309298019785904">ଆପଣଙ୍କ ଡୋମେନ ପାଇଁ ସିଙ୍କ ଉପଲବ୍ଧ ନଥିବା ଯୋଗୁଁ ChromeOS ଆପଣଙ୍କ ଡାଟାକୁ ସିଙ୍କ କରିପାରିଲା ନାହିଁ।</translation>
 <translation id="5334487786912937552">ଫାଇଲଗୁଡ଼ିକୁ ଡାଉନଲୋଡ୍ କରିବା ପାଇଁ Chrome ଷ୍ଟୋରେଜ୍ ଆକ୍ସେସ୍ କରିବାର ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="5337648990166757586">ଇଚ୍ଛାଧୀନ: Googleକୁ ସ୍ୱଚାଳିତ ଭାବେ ଡାଏଗ୍ନୋଷ୍ଟିକ ଓ ବ୍ୟବହାର ଡାଟା ପଠାଇ ChromeOS ଫିଚର ଓ ପରଫରମାନ୍ସକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ।</translation>
-<translation id="5357889879764279201">ChromeOS Flex ମାଧ୍ୟମରେ ସାହାଯ୍ୟ ପାଆନ୍ତୁ</translation>
 <translation id="5368118228313795342">ଅତିରିକ୍ତ କୋଡ: <ph name="EXTRA_CODE" />।</translation>
 <translation id="5386244825306882791">ଯେତେବେଳେ ଆପଣ Chrome ଆରମ୍ଭ କରନ୍ତି କିମ୍ବା Omniboxରୁ ସର୍ଚ୍ଚ କରନ୍ତି, ସେତେବେଳେ କେଉଁ ପୃଷ୍ଠା ଦେଖାଯିବ ତାହା ମଧ୍ୟ ଏହା ନିୟନ୍ତ୍ରଣ କରେ।</translation>
 <translation id="5394833366792865639">ଗୋଟିଏ Chrome ଟାବ୍ ସେୟାର୍ କରନ୍ତୁ</translation>

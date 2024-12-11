@@ -2169,7 +2169,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4881695831933465202">Buka</translation>
 <translation id="4881808915112408168">24 x 31.5 in</translation>
 <translation id="4882314601499260499">Tiada dasar pengguna digunakan. Untuk menambah dasar pengguna, organisasi anda mesti <ph name="LINK_BEGIN" />mengesahkan domain anda<ph name="LINK_END" />.</translation>
-<translation id="4883911187498618061">Masukkan pertanyaan atau gesaan anda</translation>
 <translation id="4885030148564729407">Percutian Bulan Madu &amp; Romantik</translation>
 <translation id="4885256590493466218">Buat bayaran menggunakan <ph name="CARD_DETAIL" /> semasa daftar keluar</translation>
 <translation id="4887406273302438710">Lindungi kata laluan dengan Windows Hello</translation>
@@ -2202,7 +2201,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4930153903256238152">Kapasiti besar</translation>
 <translation id="4930714375720679147">Hidupkan</translation>
 <translation id="4932035752129140860">Teks yang anda tampal atau lampirkan dihantar kepada Google Cloud atau pihak ketiga untuk dianalisis. Contohnya, teks tersebut mungkin diimbas untuk mencari data sensitif dan mungkin disimpan berdasarkan dasar syarikat dan dapat dilihat oleh pentadbir anda.</translation>
-<translation id="4933468175699107356">Klik kanan untuk autolengkap maklumat yang disimpan, seperti nama atau alamat anda, pada mana-mana borang</translation>
 <translation id="4933788293078559286">Bayar dengan Pix</translation>
 <translation id="4934780484581617878">Pengurusan tetingkap</translation>
 <translation id="4936134414789135531"><ph name="VALUE_NAME" /> yang disisipkan tidak dapat ditemukan.</translation>
@@ -3496,6 +3494,7 @@ Butiran tambahan:
 <translation id="7304030187361489308">Tinggi</translation>
 <translation id="7304562222803846232">Urus tetapan privasi Google Account</translation>
 <translation id="7305756307268530424">Mulakan lebih perlahan</translation>
+<translation id="7307063504147610123">Alamat telah disimpan pada peranti ini</translation>
 <translation id="7308436126008021607">penyegerakan latar belakang</translation>
 <translation id="7309058266849426521">Ketahui tentang pengurusan privasi iklan anda dalam Chrome dengan lebih lanjut.</translation>
 <translation id="7310392214323165548">Peranti akan dimulakan semula tidak lama lagi</translation>
@@ -4173,6 +4172,7 @@ Butiran tambahan:
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">Alamat dan pelbagai lagi</translation>
 <translation id="8474910779563686872">Tunjukkan butiran pembangun</translation>
+<translation id="8476959635632921417">Untuk menyimpan dan menggunakan alamat ini pada semua peranti anda, sahkan identiti anda</translation>
 <translation id="8479754468255770962">Kokot bawah sebelah kiri</translation>
 <translation id="8483229036294884935">Alamat ini akan dipadamkan daripada Google Account anda, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Diguna pakai untuk</translation>

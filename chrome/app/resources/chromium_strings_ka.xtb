@@ -60,6 +60,7 @@
 <translation id="1779356040007214683">Chromium-ის უსაფრთხოების გაზრდის მიზნით, ჩვენ გავთიშეთ რამდენიმე გაფართოება, რომელიც არ არის ჩამოთვლილი <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-ში და, შესაძლოა, დამატებულია თქვენი თანხმობის გარეშე.</translation>
 <translation id="1808667845054772817">Chromium-ის ხელახალი ინსტალაცია</translation>
 <translation id="1820835682567584003">Chromium ცდილობს შემდეგს: <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1838374766361614909">ძიების გასუფთავება</translation>
 <translation id="18552579716432081">დათვალიერების მონაცემების მხოლოდ ამ მოწყობილობიდან წასაშლელად და Google ანგარიშში მათ შესანარჩუნებლად <ph name="BEGIN_LINK" />გამოდით Chromium-იდან<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">შეგიძლიათ მართოთ თქვენი სისტემაში შესული Google ანგარიშები. თქვენი Google ანგარიშები გამოიყენება Chromium ბრაუზერისთვის, Play Store-ისთვის, Gmail-ისთვის და სხვა პროდუქტებისთვის. თუ სხვისი, მაგალითად, ოჯახის წევრის, ანგარიშის დამატება გსურთ, სანაცვლოდ დაამატეთ ახალი პიროვნება თქვენს <ph name="DEVICE_TYPE" />-ს. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">სურათების ძიებით მოძიება</translation>
@@ -207,7 +208,6 @@
 <translation id="3802055581630249637">Chromium წინასწარ ჩატვირთავს გვერდებს, რომელთა ნახვასაც, სავარაუდოდ, დააპირებთ — ამგვარად, ამ გვერდებზე გადასვლისას, ისინი უფრო სწრაფად ჩაიტვირთება</translation>
 <translation id="3830894615770080216">ChromiumOS სისტემა</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="386822487697155367">დახმარების მიღება ChromiumOS-თან დაკავშირებით</translation>
 <translation id="3871664619793219264">მიიღეთ Chromium ბრაუზერში შენახული თქვენი კონტენტი <ph name="ACCOUNT_EMAIL" />-დან</translation>
 <translation id="3885770153807205175">ენის ამომრჩევი</translation>
 <translation id="388648406173476553">მოირგეთ და გააკონტროლეთ Chromium. საჭიროა თქვენი ყურადღება — დააწკაპუნეთ დეტალური ინფორმაციისთვის.</translation>

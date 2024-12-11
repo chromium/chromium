@@ -58,6 +58,7 @@
 <translation id="1779356040007214683">Για να κάνουμε το Chromium πιο ασφαλές, απενεργοποιήσαμε ορισμένες επεκτάσεις που δεν αναφέρονται στο <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> και ενδέχεται να έχουν προστεθεί εν αγνοία σας.</translation>
 <translation id="1808667845054772817">Επανεγκατάσταση του Chromium</translation>
 <translation id="1820835682567584003">Το Chromium προσπαθεί να <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1838374766361614909">Διαγραφή αναζητήσεων</translation>
 <translation id="18552579716432081">Για να διαγράψετε τα δεδομένα περιήγησης μόνο από αυτή τη συσκευή και να τα διατηρήσετε στον Λογαριασμό σας Google, <ph name="BEGIN_LINK" />αποσυνδεθείτε από το Chromium<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">Μπορείτε να διαχειριστείτε τους συνδεδεμένους Λογαριασμούς σας Google. Οι Λογαριασμοί σας Google χρησιμοποιούνται για το πρόγραμμα περιήγησης Chromium, το Play Store, το Gmail κ.ά. Εάν θέλετε να προσθέσετε έναν λογαριασμό για κάποιο άλλο άτομο, όπως για ένα μέλος της οικογένειας, προσθέστε, αντ' αυτού, ένα νέο άτομο στη συσκευή σας <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Αναζητήστε με την Αναζήτηση με εικόνες</translation>
@@ -204,7 +205,6 @@
 <translation id="3802055581630249637">Το Chromium προφορτώνει σελίδες που είναι πιθανό να επισκεφτείτε, ώστε να φορτώνονται πιο γρήγορα όταν τις επισκέπτεστε</translation>
 <translation id="3830894615770080216">Σύστημα Chromium OS</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="386822487697155367">Λήψη βοήθειας σχετικά με το Chromium OS</translation>
 <translation id="3871664619793219264">Λήψη του περιεχομένου του προγράμματος περιήγησης Chromium από <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3885770153807205175">Εργαλείο επιλογής γλώσσας</translation>
 <translation id="388648406173476553">Προσαρμογή και έλεγχος του Chromium. Θα πρέπει να ελέγξετε μια ειδοποίηση, κάντε κλικ για λεπτομέρειες.</translation>

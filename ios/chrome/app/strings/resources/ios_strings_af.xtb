@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Maak alles oop</translation>
 <translation id="1408847409015257906">Tik op “Privaatheid en Sekuriteit”.</translation>
 <translation id="1411386976162024013">Visuele soektog met Lens</translation>
+<translation id="1426410128494586442">Ja</translation>
 <translation id="1430915738399379752">Druk uit</translation>
 <translation id="1436671784520050284">Gaan voort met opstelling</translation>
 <translation id="143681031165817424">Adres is net op hierdie toestel gestoor</translation>
@@ -695,6 +696,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4237377247299956313">Tik op <ph name="BEGIN_BOLD" />Verstekblaaierprogram<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Maak instellings oop</translation>
 <translation id="4250432749243022864">{count,plural, =0{Maak {count} oortjie oop}=1{Maak {count} oortjie oop}other{Maak {count} oortjies oop}}</translation>
+<translation id="4250680216510889253">Nee</translation>
 <translation id="4251531167342733205">Kry die beste uit die blaaier waaroor jy mal is.</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="4256782883801055595">Oopbronlisensies</translation>
@@ -944,7 +946,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="5343472494710226394">Nuus, sport en inhoud wat op jou belangstellings gebaseer is.</translation>
 <translation id="5352128922772839949">Stoor lêer</translation>
 <translation id="5355191726083956201">Verbeterde Beskerming is aan</translation>
-<translation id="5356332698539508708">Vee uit en skakel oor</translation>
 <translation id="537853552771686272">Bestuur die onderwerpe en werwe waarin jy belangstel</translation>
 <translation id="5395707839134961196">Versteek soekenjinbesonderhede</translation>
 <translation id="541276233349960923">Gebruik wagwoorde op al jou toestelle</translation>
@@ -1250,6 +1251,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="6624219055418309072">Blokkeer in Incognito</translation>
 <translation id="6625830436658400045">Jou sinkroniseringinstellings sal op grond van jou jongste rugsteun teruggestel word. Jy kan altyd in <ph name="BEGIN_LINK" />instellings<ph name="END_LINK" /> kies wat om te sinkroniseer.</translation>
 <translation id="6627583120233659107">Wysig vouer</translation>
+<translation id="6629759408545977279">Vanaf: <ph name="ORIGINATING_HOST" /></translation>
 <translation id="6634432609054530164">Jou organisasie het Incognitomodus afgeskakel</translation>
 <translation id="6638511529934826365">Zoem teks …</translation>
 <translation id="6640268266988685324">Oop oortjie</translation>
@@ -1605,7 +1607,6 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8219424187226230983">Bekyk vanlyn weergawe in nuwe oortjie</translation>
 <translation id="8230355548492839438">Vind vorige</translation>
 <translation id="8232956427053453090">Hou data</translation>
-<translation id="8242644458318193141">Oortjies sal toegemaak word en ongestoorde rekeningdata sal op hierdie toestel uitgevee word om jou organisasie se sekuriteit te beskerm. Dit kan wagwoorde, geskiedenis en meer insluit.</translation>
 <translation id="8261506727792406068">Vee uit</translation>
 <translation id="82619448491672958">Sien ander oortjies</translation>
 <translation id="8263228331881858381">Toegangsleutel is gestoor</translation>
@@ -1651,7 +1652,6 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8449869326050867919">Wagwoord is gedeel</translation>
 <translation id="8453847087068411809">Moet nooit pakkies outomaties bespeur nie</translation>
 <translation id="846158969830690371">Weet of jy die veiligste instellings het of enigiets moet hersien.</translation>
-<translation id="8466300942149667917">Ongestoorde rekeningdata sal uitgevee word</translation>
 <translation id="8473863474539038330">Adresse en meer</translation>
 <translation id="8474378002946546633">Laat kennisgewings toe</translation>
 <translation id="8477178913400731244">Vee data uit</translation>

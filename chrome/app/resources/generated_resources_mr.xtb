@@ -5121,6 +5121,7 @@
 <translation id="4586275095964870617"><ph name="URL" /> पर्यायी ब्राउझरमध्ये उघडता आले नाही. कृपया तुमच्या सिस्टम अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4588749726511456218">अ‍ॅक्सिलरेशन स्क्रोल करा <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> आणि <ph name="DOMAIN" /> हे एकमेकांशी संबंधित असल्याचे आढळते. तुमचा पासवर्ड वापरण्यापूर्वी <ph name="DOMAIN" /> वर विश्वास असल्याची खात्री करा.</translation>
 <translation id="4589713469967853491">डाउनलोड डिरेक्टरीमध्ये लॉग यशस्वीरीत्या राइट केले गेले.</translation>
 <translation id="4590785647529325123">तुमच्या डिव्हाइसवरून गुप्त मोडमधील ब्राउझिंग इतिहास हटवण्यासाठी सर्व गुप्त टॅब बंद करा</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> मध्ये कोणतेही डिव्हाइस सेव्ह केलेले नाही</translation>
@@ -5627,6 +5628,7 @@
 <translation id="4946998421534856407">launcher + अप अ‍ॅरो</translation>
 <translation id="4947376546135294974">तुम्ही भेट देत असलेल्या साइटवरील डेटा</translation>
 <translation id="4950100687509657457">प्रोफाइल तयार करा</translation>
+<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{फाइल}other{# फाइल}}</translation>
 <translation id="495170559598752135">क्रिया</translation>
 <translation id="4951966678293618079">या साइटसाठी पासवर्ड कधीही सेव्ह करू नका</translation>
@@ -5765,6 +5767,7 @@
 <translation id="5061531353537614467">टुंड्रा</translation>
 <translation id="5062930723426326933">साइन इन अयशस्वी, कृपया इंटरनेटशी कनेक्ट करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="5063480226653192405">वापर</translation>
+<translation id="5064921774605267982"><ph name="PROFILE_NAME" /> प्रोफाइल उघडा. ही प्रोफाइल तुमच्या संस्थेद्वारे व्यवस्थापित केली जाते.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS सेटिंग्जमध्ये सुरक्षित DNS व्यवस्थापित करा</translation>
 <translation id="5066534201484101197">पेजदरम्यान नेव्हिगेट करण्यासाठी ओव्हरस्क्रोल करा</translation>
@@ -7425,6 +7428,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6266984048393265562">प्रोफाइल कस्टमाइझ करा</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> वर तुमच्या स्वतःस प्रमाणीकृत करण्यासाठी एक सर्टिफिकेट निवडा</translation>
 <translation id="6268252012308737255"><ph name="APP" /> सह उघडा</translation>
+<translation id="6269050081341530851">तुम्ही डुप्लिकेट बंद करता, तेव्हा सर्वात जुनी कॉपी ठेवली जाते</translation>
 <translation id="6270309713620950855">नज म्यूट करणे</translation>
 <translation id="6270391203985052864">साइट सूचना पाठवण्यास सांगू शकतात</translation>
 <translation id="6270486800167535228">एक्स्टेंशन पिन केले आहे. अधिक पर्याय पाहण्यासाठी निवडा</translation>
@@ -7966,6 +7970,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6679947539429331601">१२ तासांसाठी लपवा</translation>
 <translation id="6680442031740878064">उपलब्ध: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">रेट करा</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Placeholder String]</translation>
 <translation id="6683022854667115063">हेडफोन</translation>
 <translation id="6683087162435654533">सर्व टॅब रिस्टोअर करा</translation>
 <translation id="6683433919380522900">परवानगी <ph name="PERMISSION_STATE" /> अशी आहे</translation>
@@ -8048,7 +8053,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6743841972744298686">सेटिंग्ज सिंक करा</translation>
 <translation id="6745592621698551453">आता अपडेट करा</translation>
 <translation id="6746124502594467657">खाली हलवा</translation>
-<translation id="674632704103926902">टॅप ड्रॅगिंग सुरू करा</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> चा पासवर्ड दाखवा</translation>
 <translation id="6748980958975836188">मी <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome आणि ChromeOS अतिरिक्त सेवा अटी<ph name="END_LINK2" /> वाचल्या आहेत व सहमती दर्शवत आहे.</translation>
 <translation id="6749077623962119521">परवानग्या रीसेट करायच्या आहेत का?</translation>
@@ -8860,6 +8864,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7330533963640151632"><ph name="USER_NAME" /> यांच्या डिव्हाइससाठी <ph name="FEATURE_NAME" /> सेटिंग्ज, <ph name="USER_EMAIL" /> खात्याच्या अंतर्गत शेअर करणे.</translation>
 <translation id="7331646370422660166">alt + down arrow</translation>
 <translation id="7332053360324989309">समर्पित कर्मचारी: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">डुप्लिकेट टॅब</translation>
 <translation id="7333388112938984914">मीटर्ड कनेक्शनवर असताना फाइल अपलोड करू शकत नाही.</translation>
 <translation id="7333669215417470379">तुमची अ‍ॅप्स आणि सेटिंग्ज यांचा बॅकअप घ्या आणि ती रिस्टोअर करा</translation>
 <translation id="7335974957018254119">यासाठी स्पेल चेक वापरा</translation>
@@ -9929,7 +9934,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />अ‍ॅप डेटा म्हणजे अ‍ॅपने (डेव्हलपर सेटिंग्जवर आधारित) सेव्ह केलेला कोणताही डेटा असू शकतो , ज्यामध्ये संपर्क, मेसेज आणि फोटो यासारख्या डेटाचा समावेश आहे.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />बॅकअप डेटा तुमच्या लहान मुलाच्या ड्राइव्ह स्टोरेज कोट्यामध्ये गणला जाणार नाही.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />तुम्ही सेटिंग्जमध्ये ही सेवा बंद करू शकता.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="8076492880354921740">टॅब</translation>
 <translation id="8076835018653442223">तुमच्या ॲडमिनिस्ट्रेटरने तुमच्या डिव्‍हाइसवरील स्‍थानिक फायलीचा ॲक्सेस बंद केला आहे</translation>
 <translation id="8077120325605624147">तुम्ही भेट देता ती कोणतीही साइट तुम्हाला कोणतीही जाहिरात दाखवू शकते</translation>
 <translation id="8077579734294125741">इतर Chrome प्रोफाइल</translation>
@@ -10566,7 +10570,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8528074251912154910">भाषा जोडा</translation>
 <translation id="8528479410903501741">IBAN सेव्ह करा</translation>
 <translation id="8528962588711550376">साइन इन करत आहे.</translation>
-<translation id="8529925957403338845">झटपट टेदरिंग कनेक्‍शन अयशस्वी झाले</translation>
 <translation id="8531367864749403520">तुमच्या टॅब स्ट्रिपमधून गट काढून टाकण्यासाठी "गट लपवा" हे निवडा</translation>
 <translation id="8531701051932785007">वर्धित सुरक्षित ब्राउझिंग बंद आहे</translation>
 <translation id="8533670235862049797">सुरक्षित ब्राउझिंग सुरू आहे</translation>

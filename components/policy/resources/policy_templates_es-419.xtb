@@ -276,6 +276,7 @@ Si habilitas la política, los usuarios podrán usar el hardware de los disposit
 <translation id="117080706484659953">Permitir la detección del alcance de la política en <ph name="MAC_OS_NAME" /></translation>
 <translation id="1171106901454883937">Habilitar los informes de la versión del dispositivo</translation>
 <translation id="1173493742686115032">Habilitar el <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> en todas las páginas web</translation>
+<translation id="1176740714945046981">Habilita la función de cambio a una versión anterior para las IWA. De forma predeterminada, solo se instalan las versiones más recientes de las IWA. Si lo estableces como <ph name="TRUE" />, también puedes instalar versiones anteriores. Para habilitar el cambio a una versión anterior, debes especificar el valor de la versión deseada con el campo “pinned_version”. Si no proporcionas el parámetro “allow_downgrades” o lo estableces como <ph name="FALSE" />, se inhabilita el cambio a una versión anterior para esa IWA.</translation>
 <translation id="1177624681620856105"> Esta política determina si se muestra la casilla de verificación "Abrir siempre" en mensajes de confirmación de lanzamiento en protocolos externos.
 
       Si se establece esta política como verdadera o no se establece, cuando aparezca un mensaje de confirmación de un protocolo externo, el usuario podrá elegir la opción "Permitir siempre" para omitir todos los mensajes de confirmación futuros en este sitio web para el protocolo.
@@ -3342,6 +3343,17 @@ Si la inhabilitas, no se permitirá la escritura predictiva en el teclado físic
 <translation id="3387211681524224831">Si habilitas la política, no se guardará el historial de navegación, estará desactivada la sincronización de pestañas, y los usuarios no podrán cambiar esta configuración.
 
       Si inhabilitas la política o no la estableces, se guardará el historial de navegación.</translation>
+<translation id="3387875422525138489">Si estableces la política, se especificará una lista de apps web aisladas (IWA) que se instalan de manera silenciosa.
+      Las IWA son aplicaciones que tienen propiedades de seguridad útiles que no están disponibles para las páginas web normales. Se agrupan en un paquete web firmado. La clave pública del paquete web firmado se usa para crear el ID del paquete web que identifica la IWA.
+      Hasta ahora, esta política solo funciona para las sesiones de invitado administradas.
+
+      Cada elemento de la lista de la política es un objeto que tiene dos campos obligatorios: el manifiesto de actualización <ph name="URL_LABEL" /> y el ID del paquete web de la app web aislada.
+
+      Cada elemento también puede incluir estos campos opcionales:
+
+        * <ph name="UPDATE_CHANNEL_OPTION" />: El nombre del canal de actualización o lanzamiento de la IWA. Si no lo estableces, se usa el valor “default”.
+        * <ph name="PINNED_VERSION_OPTION" />: Una versión específica para instalar. El sistema intentará instalar esta versión si está disponible en el canal de actualización especificado. De forma predeterminada, fijar una IWA a una versión específica impide que se actualice más allá de esa versión. Para dejar de fijarla, quita este campo.
+        * <ph name="ALLOW_DOWNGRADES_OPTION" />: Habilita la instalación de versiones anteriores de IWA. Para ello, debes establecer el campo “pinned_version”. Si lo proporcionas o lo estableces como <ph name="FALSE" />, se inhabilita la degradación para esa IWA.</translation>
 <translation id="3387999258705169775">Comportamiento predeterminado de la restricción anidada de la función setTimeout()</translation>
 <translation id="3388628790024977864">No permitir el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="GOOGLE_DRIVE_NAME" /> y <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Habilitar la autenticación gnubby para el host de acceso remoto</translation>
@@ -7584,10 +7596,6 @@ Si no estableces la política, <ph name="PRODUCT_OS_NAME" /> utiliza el director
 <translation id="6383774771168138899">Configurar el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Habilitar que se muestren las páginas de resultados del motor de búsqueda predeterminado en el panel lateral de un navegador</translation>
 <translation id="6394350458541421998">Esta política se eliminó a partir de la versión 29 de <ph name="PRODUCT_OS_NAME" />. Utiliza la política PresentationScreenDimDelayScale en su lugar.</translation>
-<translation id="6396956366662970339">Especifica si se permite que un modelo de carga adaptable detenga el proceso de carga para extender la duración de la batería.
-
-      Cuando el dispositivo funciona con CA, el modelo de carga adaptable evalúa si el proceso de carga se debe detener para extender la duración de la batería. Si el modelo de carga adaptable detiene el proceso de carga, la batería se mantendrá en cierto nivel (es decir, al 80%) y luego cargará el dispositivo hasta el 100% cuando el usuario lo necesite.
-      Si estableces esta política como verdadera, se habilitará el modelo de carga adaptable y se podrá detener el proceso de carga para extender la duración de la batería. Si la estableces como falsa o no la estableces, el modelo de carga adaptable no afectará el proceso de carga.</translation>
 <translation id="6397588391180665797">Informa a los usuarios sobre la configuración de red en dispositivos inscritos.
 
       Si estableces la política como falsa, no se informarán los eventos.
@@ -8257,11 +8265,6 @@ después de lo cual se quitará la implementación anterior.
 
 NOTA: Solo los procesos del renderizado recién iniciados reflejarán los cambios de esta
 política mientras se esté ejecutando el navegador.</translation>
-<translation id="6831322012298364374">Una URL a una imagen que se usará como insignia de la empresa para un perfil administrado. La URL debe dirigir a una imagen.
-
-Esta política solo se puede establecer como política del usuario.
-
-Se recomienda usar el ícono de página (por ejemplo, https://www.google.com/favicon.ico) o un ícono de al menos 24 × 24 px.</translation>
 <translation id="6833023569065717572">Si estableces la política como verdadera, el reloj de la pantalla de acceso del dispositivo tendrá el formato de 24 horas.
 
       Si la estableces como falsa, el reloj tendrá el formato de 12 horas.

@@ -63,6 +63,7 @@
 <translation id="1786044937610313874">‏میان‌برها در Chrome باز می‌شود</translation>
 <translation id="178701303897325119">‏دیگر از این افزونه پشتیبانی نمی‌شود. ‫Chrome توصیه می‌کند آن را حذف کنید.</translation>
 <translation id="1812689907177901597">‏با خاموش کردن این گزینه، می‌توانید بدون ورود به سیستم Chrome به سیستم سایت‌های Google مانند Gmail وارد شوید</translation>
+<translation id="1838374766361614909">پاک کردن جستجو</translation>
 <translation id="1860536484129686729">‏Chrome برای این سایت به مجوز دسترسی به دوربین نیاز دارد</translation>
 <translation id="1873233029667955273">‏Google Chrome مرورگر پیش‌فرض شما نیست</translation>
 <translation id="1874309113135274312">‏Google Chrome نسخه بتا (mDNS-In)</translation>
@@ -227,7 +228,6 @@
 <translation id="3716540481907974026">‏نسخه ChromeOS Flex</translation>
 <translation id="3718181793972440140">‏این کار یک مورد را از این دستگاه حذف می‌کند. برای بازیابی داده‌هایتان در فرصتی دیگر، با <ph name="USER_EMAIL" /> وارد سیستم Chrome شوید.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{‏‫Chrome توصیه می‌کند آن را بردارید. <ph name="BEGIN_LINK" />درباره افزونه‌های پشتیبانی‌شده بیشتر بدانید<ph name="END_LINK" />}one{‏‫Chrome توصیه می‌کند آن را بردارید. <ph name="BEGIN_LINK" />درباره افزونه‌های پشتیبانی‌شده بیشتر بدانید<ph name="END_LINK" />}other{‏‫Chrome توصیه می‌کند آن را بردارید. <ph name="BEGIN_LINK" />درباره افزونه‌های پشتیبانی‌شده بیشتر بدانید<ph name="END_LINK" />}}</translation>
-<translation id="3744202345691150878">‏دریافت راهنمایی برای ChromeOS</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">‏به‌دلیل خطای ورود به سیستم، ChromeOS Flex نتوانست داده‌هایتان را همگام‌سازی کند.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -258,6 +258,7 @@
 <translation id="4147555960264124640">‏شما با حساب مدیریت‌شده وارد سیستم می‌شوید و به سرپرست آن اجازه کنترل بر نمایه Google Chrome خود را می‌دهید. داده‌های Chrome شما شامل برنامه‌ها، نشانک‌ها، سابقه، گذرواژه‌ها و سایر تنظیمات برای همیشه به <ph name="USER_NAME" /> مرتبط خواهد شد. می‌توانید این داده‌ها را از طریق داشبورد حساب‌های Google حذف کنید اما نمی‌توانید این داده‌ها را به حساب دیگری مرتبط سازید. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">در حال نصب...</translation>
 <translation id="4149882025268051530">‏نصب‌کننده در خارج کردن آرشیو از حالت فشرده ناموفق بود. لطفاً دوباره Google Chrome را بارگیری کنید.</translation>
+<translation id="415112847282352845">‏برای دریافت نشانی‌ها و موارد دیگر در همه دستگاه‌هایتان، به سیستم Chrome وارد شوید. بعداز اینکه به سیستم وارد شدید، این نشانی در «حساب Google» شما ذخیره خواهد شد.</translation>
 <translation id="4153934450158521343">‏Chrome به‌زودی بسته می‌شود و داده‌ها را حذف می‌کند</translation>
 <translation id="4173512894976930765">‏سایت‌ها احتمالاً عملکرد موردانتظار را خواهند داشت. وقتی همه پنجره‌های Chrome را ببندید از سیستم اکثر سایت‌ها خارج خواهید شد، اما اگر به سیستم Chrome وارد شده باشید از «حساب Google» خارج نخواهید شد.</translation>
 <translation id="4175922240926474352">‏‫Chrome این بارگیری را مسدود کرد زیرا این سایت از اتصال ایمن استفاده نمی‌کند و ممکن است فایل دستکاری شده باشد</translation>
@@ -348,7 +349,6 @@
 <translation id="5334309298019785904">‏ChromeOS نتوانست داده‌هایتان را همگام‌سازی کند، زیرا «همگام‌سازی» برای دامنه شما دردسترس نیست.</translation>
 <translation id="5334487786912937552">‏Chrome برای بارگیری فایل‌ها به اجازه دسترسی به فضای ذخیره‌سازی نیاز دارد</translation>
 <translation id="5337648990166757586">‏اختیاری: با ارسال خودکار داده‌های استفاده و عیب‌یابی به Google، به بهبود ویژگی‌ها و عملکرد ChromeOS کمک کنید.</translation>
-<translation id="5357889879764279201">‏دریافت راهنمایی دررابطه با ChromeOS Flex</translation>
 <translation id="5368118228313795342">کد اضافی: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">‏این برنامه همچنین صفحه‌ای را که هنگام راه‌اندازی Chrome یا جستجو از Omnibox نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="5394833366792865639">‏هم‌رسانی برگه Chrome</translation>

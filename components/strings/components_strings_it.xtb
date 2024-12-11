@@ -2165,7 +2165,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4881695831933465202">Apri</translation>
 <translation id="4881808915112408168">24 x 31,5 in</translation>
 <translation id="4882314601499260499">Nessun criterio relativo agli utenti applicato. Per aggiungere criteri relativi agli utenti, la tua organizzazione deve <ph name="LINK_BEGIN" />verificare il tuo dominio<ph name="LINK_END" />.</translation>
-<translation id="4883911187498618061">Inserisci la domanda o il prompt</translation>
 <translation id="4885030148564729407">Lune di miele e fughe romantiche</translation>
 <translation id="4885256590493466218">Paga con <ph name="CARD_DETAIL" /> al momento del pagamento</translation>
 <translation id="4887406273302438710">Proteggere le password con Windows Hello</translation>
@@ -2198,7 +2197,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4930153903256238152">Capacità elevata</translation>
 <translation id="4930714375720679147">Attiva</translation>
 <translation id="4932035752129140860">Il testo che incolli o alleghi viene inviato a Google Cloud o a terze parti per essere analizzato. Ad esempio, potrebbe essere analizzato per rilevare dati sensibili, essere archiviato in base ai criteri aziendali ed essere visibile al tuo amministratore.</translation>
-<translation id="4933468175699107356">Fai clic con il tasto destro del mouse per compilare automaticamente le informazioni salvate, come il tuo nome o il tuo indirizzo, in qualsiasi modulo</translation>
 <translation id="4933788293078559286">Paga con Pix</translation>
 <translation id="4934780484581617878">Gestione delle finestre</translation>
 <translation id="4936134414789135531">Impossibile trovare l'elemento <ph name="VALUE_NAME" /> inserito.</translation>
@@ -3491,6 +3489,7 @@ Ulteriori dettagli:
 <translation id="7304030187361489308">Alto</translation>
 <translation id="7304562222803846232">Gestisci le impostazioni sulla privacy del tuo Account Google</translation>
 <translation id="7305756307268530424">Inizia più lentamente</translation>
+<translation id="7307063504147610123">Indirizzo salvato su questo dispositivo</translation>
 <translation id="7308436126008021607">sincronizzazione in background</translation>
 <translation id="7309058266849426521">Scopri di più sulla gestione della privacy per gli annunci in Chrome.</translation>
 <translation id="7310392214323165548">Il dispositivo verrà riavviato a breve</translation>
@@ -4168,6 +4167,7 @@ Ulteriori dettagli:
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">Indirizzi e altro</translation>
 <translation id="8474910779563686872">Mostra i dettagli dello sviluppatore</translation>
+<translation id="8476959635632921417">Verifica la tua identità per salvare e usare questo indirizzo su tutti i tuoi dispositivi</translation>
 <translation id="8479754468255770962">Pinzatura in basso a sinistra</translation>
 <translation id="8483229036294884935">Questo indirizzo verrà eliminato dal tuo Account Google <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Si applica a</translation>

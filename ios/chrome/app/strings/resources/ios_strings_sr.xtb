@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Отвори све</translation>
 <translation id="1408847409015257906">Додирните Приватност и безбедност.</translation>
 <translation id="1411386976162024013">Визуелна претрага Објектива</translation>
+<translation id="1426410128494586442">Да</translation>
 <translation id="1430915738399379752">Штампај</translation>
 <translation id="1436671784520050284">Настави са подешавањем</translation>
 <translation id="143681031165817424">Адреса је сачувана само на овом уређају</translation>
@@ -416,6 +417,7 @@
 <translation id="2816489851009559785">Мени → Подешавања → Подразумевани прегледач</translation>
 <translation id="2818821771744632548">Одјављени сте са налога <ph name="USER_NAME" /> у склопу ресетовања iPhone-а. Да бисте се поново пријавили, додирните Настави испод.</translation>
 <translation id="2819667972867209401">Када је укључено, подаци се чувају на Google налогу. Када је искључено, подаци се чувају само на овом уређају и бришу се ако се одјавите.</translation>
+<translation id="2827760117436553203">Не желите да повежете податке са профилом?</translation>
 <translation id="2829172210806130158">Претражите екран</translation>
 <translation id="2834399722155632105">3. Додирните Опције лозинки</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -695,6 +697,7 @@
 <translation id="4237377247299956313">Додирните <ph name="BEGIN_BOLD" />Подразумевана апликација за прегледање<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Отвори подешавања</translation>
 <translation id="4250432749243022864">{count,plural, =0{Отвори {count} картица}=1{Отвори {count} картицу}one{Отвори {count} картицу}few{Отвори {count} картице}other{Отвори {count} картица}}</translation>
+<translation id="4250680216510889253">Не</translation>
 <translation id="4251531167342733205">Користите прегледач који волите на најбољи начин.</translation>
 <translation id="4253168017788158739">Напомена</translation>
 <translation id="4256782883801055595">Лиценце отвореног кода</translation>
@@ -944,7 +947,6 @@
 <translation id="5343472494710226394">Вести, спорт и садржај на основу интересовања.</translation>
 <translation id="5352128922772839949">Сачувајте фајл</translation>
 <translation id="5355191726083956201">Побољшана заштита је укључена</translation>
-<translation id="5356332698539508708">Избриши и промени</translation>
 <translation id="537853552771686272">Управљајте темама и сајтовима који вас интересују</translation>
 <translation id="5395707839134961196">Сакријте детаље о претраживачу</translation>
 <translation id="541276233349960923">Користите лозинке на свим уређајима</translation>
@@ -1212,6 +1214,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6476800141292307438">Страница се преводи на: <ph name="LANGUAGE" />. Опције су доступне у дну екрана.</translation>
 <translation id="647867789226964031">Промените лозинке</translation>
 <translation id="6494931198667773526">Завршава се</translation>
+<translation id="6495521251906266731">Одаберите шта желите да урадите са постојећим подацима прегледања на овом уређају, попут лозинки, историје и другог садржаја.</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{Опозови праћење овог пакета}one{Опозови праћење свих пакета}few{Опозови праћење свих пакета}other{Опозови праћење свих пакета}}</translation>
 <translation id="6503077044568424649">Најпосећенији</translation>
 <translation id="6503763061813913607">Обавештења Провере безбедности</translation>
@@ -1606,7 +1609,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8219424187226230983">Прикажи офлајн верзију на новој картици</translation>
 <translation id="8230355548492839438">Проналажење претходне ставке</translation>
 <translation id="8232956427053453090">Задржи податке</translation>
-<translation id="8242644458318193141">Да би се заштитила безбедност организације, картице ће бити затворене, а несачувани подаци налога ће бити избрисани са овог уређаја. То може да обухвата лозинке, историју и друго.</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="82619448491672958">Прикажи друге картице</translation>
 <translation id="8263228331881858381">Приступни кључ је сачуван</translation>
@@ -1652,7 +1654,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8449869326050867919">Лозинка се дели</translation>
 <translation id="8453847087068411809">Никада не откривај пакете аутоматски</translation>
 <translation id="846158969830690371">Сазнајте да ли имате најбезбеднија подешавања или треба нешто да прегледате.</translation>
-<translation id="8466300942149667917">Несачувани подаци налога ће бити избрисани</translation>
 <translation id="8473863474539038330">Адресе и друго</translation>
 <translation id="8474378002946546633">Дозволи обавештења</translation>
 <translation id="8477178913400731244">Избриши податке</translation>

@@ -1491,6 +1491,7 @@
 <translation id="202352106777823113">डाउनलोड गर्न अत्यन्त लामो समय लियो र सञ्जालबाट रोकिएको थियो।</translation>
 <translation id="2024195579772565064">सर्च इन्जिन मेटाउनुहोस्</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">प्रिसिजन क्लिक</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> क्र्यास भएको छ। एक्स्टेन्सनलाई पुन: लोड गर्न यो बलुनलाई क्लिक गर्नुहोस्।</translation>
 <translation id="2026377162111110983">एरिया भ्वाइस</translation>
 <translation id="2028449514182362831">मोसन सेन्सरहरू प्रयोग गर्ने सुविधाहरूले काम गर्ने छैनन्</translation>
@@ -4745,6 +4746,7 @@
 <translation id="4324577459193912240">फाइल अपूर्ण छ</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> को स्थापना रद्द गर्दै...</translation>
 <translation id="4325433082696797523">भण्डारण तथा पावर</translation>
+<translation id="4325515113816851466">तपाईंले साइन आउट गरेपछि तपाईंका अभिभावकका रोजाइहरू लागू हुने छैनन्।</translation>
 <translation id="4326146840124313313">Chrome को सबैभन्दा भरपर्दो सुरक्षा सुविधाले तपाईंलाई खतरनाक वेबसाइट, डाउनलोड तथा एक्स्टेन्सनहरूबाट थप सुरक्षित राख्छ</translation>
 <translation id="4327380114687339519">एक्स्टेन्सन मेनु</translation>
 <translation id="4330191372652740264">बरफ जस्तो चिसो पानी</translation>
@@ -4867,6 +4869,7 @@
 <translation id="4412992751769744546">तेस्रो पक्षीय कुकीहरूलाई अनुमति दिनुहोस्</translation>
 <translation id="4413087696295876280">ChromeOS Flex चल्ने डिभाइससम्बन्धी जानकारी र डिभाइसमा भएको डेटा रिड गर्ने</translation>
 <translation id="44137799675104237">टेक्स्ट प्राकृतिक आवाजमा सुन्नुहोस्</translation>
+<translation id="4414051792721275732">तपाईंले क्लिक गर्ने जेस्चर प्रयोग गर्नुभयो भने थप नियन्त्रण प्रदान गर्न माउसको गति घट्ने छ। क्लिक गर्ने प्रक्रिया पूरा गर्न यही जेस्चर फेरि प्रयोग गर्नुहोस्।</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">"<ph name="APP_NAME" />" लाई तपाईंको संलग्न USB डिभाइसहरूको सूची प्राप्त गर्न अनुमति दिने हो?</translation>
 <translation id="4414232939543644979">नयाँ &amp;इन्कग्निटो सन्झ्याल</translation>
@@ -5103,6 +5106,7 @@
 <translation id="4586275095964870617">वैकल्पिक ब्राउजरमा <ph name="URL" /> खोल्न सकिँदैन। कृपया आफ्नो प्रणालीका प्रशासकसँग सम्पर्क गर्नुहोस्।</translation>
 <translation id="4587589328781138893">साइटहरू</translation>
 <translation id="4588749726511456218">स्क्रोल हुने गति बढाउनुहोस् <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> र <ph name="DOMAIN" /> सम्बन्धित छन् जस्तो देखिन्छ। <ph name="DOMAIN" /> को विश्वसनीयता पुष्टि गर्नुहोस् अनि मात्र आफ्नो पासवर्ड प्रयोग गर्नुहोस्।</translation>
 <translation id="4589713469967853491">लगहरू डाउनलोड नामक डिरेक्टरीमा सफलतापूर्वक राइट गरियो।</translation>
 <translation id="4590785647529325123">आफ्नो डिभाइसबाट इन्कोग्निटो मोडको ब्राउजिङ हिस्ट्री मेटाउन सबै इन्कोग्निटो ट्याब बन्द गर्नुहोस्</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> मा कुनै पनि डिभाइस सेभ गरिएको छैन</translation>
@@ -5609,6 +5613,7 @@
 <translation id="4946998421534856407">लन्चर + अप एरो</translation>
 <translation id="4947376546135294974">तपाईंले भ्रमण गरिरहेको साइटको डेटा</translation>
 <translation id="4950100687509657457">प्रोफाइल बनाउनुहोस्</translation>
+<translation id="4950360215042327246">[प्लेसहोल्डर स्ट्रिङ]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{एउटा फाइल}other{# वटा फाइल}}</translation>
 <translation id="495170559598752135">कार्यहरू</translation>
 <translation id="4951966678293618079">यो साइटका पासवर्ड कहिले पनि सेभ नगर्नुहोस्</translation>
@@ -5747,6 +5752,7 @@
 <translation id="5061531353537614467">टुन्ड्रा</translation>
 <translation id="5062930723426326933">साइन-इन असफल भयो, कृपया इन्टरनेटमा कनेक्ट गर्नुहोस् र पुन: प्रयास गर्नुहोस्।</translation>
 <translation id="5063480226653192405">उपयोग</translation>
+<translation id="5064921774605267982">"<ph name="PROFILE_NAME" />" प्रोफाइल खोल्नुहोस्। तपाईंको सङ्गठनले यो प्रोफाइल व्यवस्थापन गर्छ।</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS का सेटिङमा गई Secure DNS व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5066534201484101197">एक पेजबाट अर्को पेजमा जान ओभरस्क्रोल गर्नुहोस्</translation>
@@ -6195,6 +6201,7 @@
 <translation id="5389224261615877010">इन्द्रेणी</translation>
 <translation id="5389626883706033615">साइटहरूले तपाईंका बारेमा सेभ गरिएको जानकारी प्रयोग गर्ने अनुमति माग्न सक्दैनन्</translation>
 <translation id="5389794555912875905">असुरक्षित साइटहरूमा जानुअघि चेतावनीहरू हेर्नुहोस् (सिफारिस गरिएको)</translation>
+<translation id="5389943529251318913">माउसको गति यति घटाउनुहोस्:</translation>
 <translation id="5390112241331447203">फिडब्याक रिपोर्टमा संलग्न गरी पठाइएका system_logs.txt फाइल समावेश गर्नुहोस्।</translation>
 <translation id="5390677308841849479">गाढा रातो र सुन्तले</translation>
 <translation id="5392192690789334093">सूचना पठाउने अनुमति दिइएका साइटहरू</translation>
@@ -7402,6 +7409,7 @@
 <translation id="6266984048393265562">प्रोफाइल कस्टमाइज गर्नुहोस्</translation>
 <translation id="6267166720438879315">तपाइँ आफैलाई <ph name="HOST_NAME" /> मा प्रमाणीकरण गर्नको लागि एक प्रमाणपत्र चयन गर्नुहोस्</translation>
 <translation id="6268252012308737255"><ph name="APP" /> मार्फत खोल्नुहोस्</translation>
+<translation id="6269050081341530851">तपाईंले डुप्लिकेट ट्याबहरू बन्द गर्दा सबैभन्दा पुरानो कपी राखिन्छ</translation>
 <translation id="6270309713620950855">म्युट नज</translation>
 <translation id="6270391203985052864">साइटहरूले सूचनाहरू पठाउनका निम्ति अनुमति माग्न सक्छन्।</translation>
 <translation id="6270486800167535228">एक्स्टेन्सन पिन गरियो। थप विकल्पहरू हेर्न यो चयन गर्नुहोस्</translation>
@@ -7943,6 +7951,7 @@
 <translation id="6679947539429331601">१२ घण्टासम्म लुकाउनुहोस्</translation>
 <translation id="6680442031740878064">उपलब्ध खाली ठाउँ: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">मूल्याङ्कन गर्नुहोस्</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [प्लेसहोल्डर स्ट्रिङ]</translation>
 <translation id="6683022854667115063">हेडफोन</translation>
 <translation id="6683087162435654533">सबै ट्याबहरू रिस्टोर गर्नुहोस्</translation>
 <translation id="6683433919380522900">अनुमतिअन्तर्गत <ph name="PERMISSION_STATE" /> तोकिएको छ</translation>
@@ -8025,7 +8034,6 @@
 <translation id="6743841972744298686">सिंकसम्बन्धी सेटिङहरू</translation>
 <translation id="6745592621698551453">अहिले अपडेट गर्नुहोस्</translation>
 <translation id="6746124502594467657">तल सार्नुहोस्</translation>
-<translation id="674632704103926902">ट्याप तान्नु सक्षम गर्नुहोस्</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> को पासवर्ड देखाउनुहोस्</translation>
 <translation id="6748980958975836188">मैले <ph name="BEGIN_LINK1" />Google का सेवाका सर्त<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Chrome र ChromeOS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" /> पढेको छु र म ती सर्तहरूमा सहमत छु।</translation>
 <translation id="6749077623962119521">अनुमति रिसेट गर्ने हो?</translation>
@@ -8836,6 +8844,7 @@
 <translation id="7330533963640151632"><ph name="USER_NAME" /> को डिभाइसमा <ph name="USER_EMAIL" /> खाता प्रयोग गरी सेयर गरिएका <ph name="FEATURE_NAME" /> का सेटिङ।</translation>
 <translation id="7331646370422660166">alt + डाउन एरो</translation>
 <translation id="7332053360324989309">यसै कामको लागि तोकिएको कर्मचारी: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">डुप्लिकेट ट्याबहरू</translation>
 <translation id="7333388112938984914">सीमा तोकिएको इन्टरनेटमा कनेक्ट गरिएका बेला फाइल अपलोड गर्न सकिँदैन।</translation>
 <translation id="7333669215417470379">आफ्ना एप र सेटिङहरू ब्याकअप र रिस्टोर गर्नुहोस्</translation>
 <translation id="7335974957018254119">यी भाषाहरूका लागि हिज्जे जाँच प्रयोग गर्नुहोस्</translation>
@@ -9906,7 +9915,6 @@
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />एपका डेटा भनेको सम्पर्क, सन्देश र तस्बिरहरू जस्ता डेटालगायत कुनै एपले सुरक्षित गरेको (विकासकर्ताको सेटिङहरूका आधारमा) जुनसुकै डेटा हुन सक्छ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ब्याकअपसम्बन्धी डेटालाई तपाईंका बालकको ड्राइभको भण्डारण कोटामा गणना गरिने छैन।<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />तपाईं सेटिङहरूमा गई यो सेवा निष्क्रिय पार्न सक्नुहुन्छ।<ph name="END_PARAGRAPH3" /></translation>
-<translation id="8076492880354921740">ट्याबहरू</translation>
 <translation id="8076835018653442223">तपाईंको प्रशासकले तपाईंको डिभाइसमा रहेका स्थानीय फाइलहरूमाथिको पहुँचलाई असक्षम पार्नुभएको छ</translation>
 <translation id="8077120325605624147">तपाईंले खोल्ने कुनै पनि साइटले तपाईंलाई जुनसुकै विज्ञापन देखाउन सक्छ</translation>
 <translation id="8077579734294125741">Chrome का अन्य प्रोफाइलहरू</translation>
@@ -10543,7 +10551,6 @@
 <translation id="8528074251912154910">भाषाहरू थप्नुहोस्</translation>
 <translation id="8528479410903501741">IBAN सेभ गर्नुहोस्</translation>
 <translation id="8528962588711550376">साइन इन गर्दै।</translation>
-<translation id="8529925957403338845">तात्कालिक टेदरिङको जडान असफल भयो</translation>
 <translation id="8531367864749403520">तपाईंको ट्याब स्ट्रिपबाट यो समूह हटाउन "समूह लुकाउनुहोस्" चयन गर्नुहोस्</translation>
 <translation id="8531701051932785007">परिष्कृत Safe Browsing अफ छ</translation>
 <translation id="8533670235862049797">Safe Browsing अन छ</translation>

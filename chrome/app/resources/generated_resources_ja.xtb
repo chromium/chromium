@@ -1491,6 +1491,7 @@
 <translation id="202352106777823113">ダウンロードは時間がかかりすぎたため、ネットワークによって停止されました。</translation>
 <translation id="2024195579772565064">検索エンジンを削除</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">精密クリック</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> がクラッシュしました。このバルーンをクリックして再起動してください。</translation>
 <translation id="2026377162111110983">エリア音声</translation>
 <translation id="2028449514182362831">モーション センサーを必要とする機能は動作しなくなります</translation>
@@ -4740,6 +4741,7 @@
 <translation id="4324577459193912240">ファイルが不完全です</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> をアンインストールしています...</translation>
 <translation id="4325433082696797523">ストレージと電源</translation>
+<translation id="4325515113816851466">ログアウトすると、保護者の方が指定した設定は適用されなくなります</translation>
 <translation id="4326146840124313313">Chrome の最高水準のセキュリティで、危険なウェブサイト、ダウンロード、拡張機能から保護します</translation>
 <translation id="4327380114687339519">拡張機能メニュー</translation>
 <translation id="4330191372652740264">氷水</translation>
@@ -4862,6 +4864,7 @@
 <translation id="4412992751769744546">サードパーティの Cookie を許可する</translation>
 <translation id="4413087696295876280">ChromeOS Flex のデバイス情報とデータを読み取る</translation>
 <translation id="44137799675104237">自然な音声でテキストを聴く</translation>
+<translation id="4414051792721275732">ジェスチャーを行ってクリックすると、マウスの速度が遅くなり、操作性が向上します。もう一度ジェスチャーを行うと、クリックを完了します。</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" />+<ph name="KEY" /></translation>
 <translation id="44141919652824029">接続された USB デバイスのリストを「<ph name="APP_NAME" />」が取得することを許可しますか？</translation>
 <translation id="4414232939543644979">新しいシークレット ウインドウ(&amp;I)</translation>
@@ -5097,6 +5100,7 @@
 <translation id="4586275095964870617">「<ph name="URL" />」を代替ブラウザで開けませんでした。システム管理者にお問い合わせください。</translation>
 <translation id="4587589328781138893">ウェブサイト</translation>
 <translation id="4588749726511456218">スクロールの高速化<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> と <ph name="DOMAIN" /> は関連しているようです。<ph name="DOMAIN" /> が信用できるか確認してから、パスワードを使用してください。</translation>
 <translation id="4589713469967853491">ダウンロード ディレクトリにログを書き込みました。</translation>
 <translation id="4590785647529325123">シークレット モードでの閲覧履歴をデバイスから削除するには、すべてのシークレット タブを閉じます</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> に保存されたデバイスはありません</translation>
@@ -5602,6 +5606,7 @@
 <translation id="4946998421534856407">ランチャー+上矢印</translation>
 <translation id="4947376546135294974">アクセスしているサイトのデータ</translation>
 <translation id="4950100687509657457">プロフィールの作成</translation>
+<translation id="4950360215042327246">[プレースホルダ文字列]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ファイル}other{# 件のファイル}}</translation>
 <translation id="495170559598752135">操作</translation>
 <translation id="4951966678293618079">今後このサイトのパスワードを保存しない</translation>
@@ -5740,6 +5745,7 @@
 <translation id="5061531353537614467">ツンドラ</translation>
 <translation id="5062930723426326933">ログインできませんでした。インターネットに接続してもう一度お試しください。</translation>
 <translation id="5063480226653192405">使用状況</translation>
+<translation id="5064921774605267982"><ph name="PROFILE_NAME" /> のプロフィールを開きます。このプロフィールは保護者によって管理されています。</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Chrome OS の設定でセキュア DNS を管理する</translation>
 <translation id="5066534201484101197">オーバースクロールしてページ間を移動する</translation>
@@ -6185,6 +6191,7 @@
 <translation id="5389224261615877010">虹</translation>
 <translation id="5389626883706033615">保存したあなたに関する情報の使用をサイトが求めることをブロックする</translation>
 <translation id="5389794555912875905">安全でないサイトにアクセスする前に警告を表示する（推奨）</translation>
+<translation id="5389943529251318913">マウスの速度を遅くする</translation>
 <translation id="5390112241331447203">送信された system_logs.txt ファイルをフィードバック レポートに含める。</translation>
 <translation id="5390677308841849479">暗い赤とオレンジ</translation>
 <translation id="5392192690789334093">通知の送信を許可するサイト</translation>
@@ -7392,6 +7399,7 @@
 <translation id="6266984048393265562">プロフィールをカスタマイズ</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> での認証に使用する証明書を選択してください</translation>
 <translation id="6268252012308737255"><ph name="APP" /> で開く</translation>
+<translation id="6269050081341530851">重複しているタブを閉じると、最も古いタブが保持されます</translation>
 <translation id="6270309713620950855">ミュートの通知</translation>
 <translation id="6270391203985052864">通知を送信するかどうかの確認をサイトに許可する</translation>
 <translation id="6270486800167535228">拡張機能は固定されています。選択すると、その他のオプションを表示できます</translation>
@@ -7932,6 +7940,7 @@
 <translation id="6679947539429331601">12 時間表示しない</translation>
 <translation id="6680442031740878064">空き容量: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">速度</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [プレースホルダ文字列]</translation>
 <translation id="6683022854667115063">ヘッドフォン</translation>
 <translation id="6683087162435654533">すべてのタブを復元(&amp;E)</translation>
 <translation id="6683433919380522900">権限は <ph name="PERMISSION_STATE" /> です</translation>
@@ -8014,7 +8023,6 @@
 <translation id="6743841972744298686">同期設定</translation>
 <translation id="6745592621698551453">今すぐ更新</translation>
 <translation id="6746124502594467657">下に移動</translation>
-<translation id="674632704103926902">タップによるドラッグを有効にする</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> のパスワードを表示する</translation>
 <translation id="6748980958975836188"><ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />、<ph name="BEGIN_LINK2" />Chrome および Chrome OS 追加利用規約<ph name="END_LINK2" />を確認し、内容に同意します。</translation>
 <translation id="6749077623962119521">権限をリセットしますか？</translation>
@@ -8825,6 +8833,7 @@
 <translation id="7330533963640151632"><ph name="USER_NAME" /> さんのデバイスの <ph name="FEATURE_NAME" /> 設定（<ph name="USER_EMAIL" /> アカウントでの共有）。</translation>
 <translation id="7331646370422660166">Alt+下矢印</translation>
 <translation id="7332053360324989309">専用ワーカー: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">タブの重複</translation>
 <translation id="7333388112938984914">従量制での接続時は、ファイルをアップロードできません。</translation>
 <translation id="7333669215417470379">アプリや設定のバックアップと復元</translation>
 <translation id="7335974957018254119">スペルチェックを使用する言語</translation>
@@ -9895,7 +9904,6 @@
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />アプリのデータとは、（デベロッパーの設定に基づき）アプリで保存されたあらゆるデータを指します。これには連絡先、メッセージ、写真などのデータも含まれます。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />バックアップ データは、お子様の Google ドライブの保存容量にはカウントされません。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />このサービスは [設定] でオフにできます。<ph name="END_PARAGRAPH3" /></translation>
-<translation id="8076492880354921740">タブ</translation>
 <translation id="8076835018653442223">デバイスのローカル ファイルへのアクセスは管理者によって無効にされています</translation>
 <translation id="8077120325605624147">アクセスしたすべてのサイトであらゆる広告の表示が許可されます</translation>
 <translation id="8077579734294125741">その他の Chrome プロフィール</translation>
@@ -10532,7 +10540,6 @@
 <translation id="8528074251912154910">言語を追加</translation>
 <translation id="8528479410903501741">IBAN を保存</translation>
 <translation id="8528962588711550376">ログインしています。</translation>
-<translation id="8529925957403338845">インスタント テザリングの接続に失敗しました</translation>
 <translation id="8531367864749403520">タブバーからグループを削除するには、[グループを非表示] を選択します</translation>
 <translation id="8531701051932785007">セーフ ブラウジング保護強化機能はオフになっています</translation>
 <translation id="8533670235862049797">セーフ ブラウジングはオンになっています</translation>

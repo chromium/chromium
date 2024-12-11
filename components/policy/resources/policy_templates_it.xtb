@@ -266,6 +266,7 @@ Se il criterio viene impostato su Attivato, gli utenti possono utilizzare l'hard
 <translation id="117080706484659953">Consenti il rilevamento dell'ambito dei criteri su <ph name="MAC_OS_NAME" /></translation>
 <translation id="1171106901454883937">Attiva i report sulle informazioni relative alla versione del dispositivo</translation>
 <translation id="1173493742686115032">Attiva <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> in tutte le pagine web</translation>
+<translation id="1176740714945046981">Abilita la funzionalità di downgrade per le IWA. Per impostazione predefinita, vengono installate solo le versioni più recenti delle IWA. Se il criterio è impostato su <ph name="TRUE" />, puoi installare anche le versioni precedenti. Per consentire il downgrade, il valore della versione che vuoi deve essere specificato utilizzando il campo "pinned_version". Se il valore di "allow_downgrades" non viene specificato o è impostato su <ph name="FALSE" />, il downgrade è disabilitato per l'AIW.</translation>
 <translation id="1177624681620856105"> Questo criterio consente di stabilire se mostrare o meno la casella di controllo "Apri sempre" nei messaggi di conferma di avvio di protocolli esterni.
 
       Se questo criterio viene impostato su True o non viene impostato, quando viene mostrato un messaggio di conferma di protocollo esterno, l'utente può selezionare "Consenti sempre" per ignorare i futuri messaggi di conferma per il protocollo su questo sito.
@@ -3274,6 +3275,17 @@ Se viene disattivato, la funzionalità di scrittura predittiva sulla tastiera fi
 <translation id="3387211681524224831">Se il criterio viene impostato su Attivato, la cronologia di navigazione non viene salvata, la sincronizzazione delle schede viene disattivata e gli utenti non possono modificare questa impostazione.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, la cronologia di navigazione viene salvata.</translation>
+<translation id="3387875422525138489">La configurazione del criterio consente di specificare un elenco di app web isolate (IWA) che vengono installate automaticamente.
+      Le IWA sono applicazioni che presentano proprietà di sicurezza utili non disponibili per le normali pagine web, che vengono pacchettizzati in un bundle web firmato. La chiave pubblica del bundle web firmato viene utilizzata per creare l'ID pacchetto web che identifica l'IWA.
+      Finora questo criterio funziona solo per la sessione Ospite gestita.
+
+      Ogni elemento nell'elenco del criterio è un oggetto con due campi obbligatori: il manifest di aggiornamento <ph name="URL_LABEL" /> e l'ID pacchetto web dell'app web isolata.
+
+      Ogni elemento può anche includere questi campi facoltativi:
+
+        * <ph name="UPDATE_CHANNEL_OPTION" />: il nome del canale di rilascio/aggiornamento dell'IWA. Se questo criterio non viene impostato, viene utilizzata la modalità "predefinita".
+        * <ph name="PINNED_VERSION_OPTION" />:  una versione specifica da installare. Il sistema tenterà di installare questa versione, se disponibile sul canale di aggiornamento specificato. Per impostazione predefinita, se blocchi un'IWA a una versione specifica, non può essere aggiornato oltre quella versione. Per sbloccare la versione, rimuovi questo campo.
+        * <ph name="ALLOW_DOWNGRADES_OPTION" />:: consente di installare versioni precedenti dell'IWA. Per farlo, è necessario impostare il campo "pinned_version". Se il criterio non viene specificato o se viene impostato su <ph name="FALSE" />, il downgrade è disabilitato per l'IWA.</translation>
 <translation id="3387999258705169775">Comportamento predefinito per il blocco nidificato della funzione setTimeout().</translation>
 <translation id="3388628790024977864">Non consentire il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="GOOGLE_DRIVE_NAME" /> e <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Attiva l'autenticazione Gnubby per l'host di accesso remoto</translation>
@@ -7347,10 +7359,6 @@ Se il criterio non viene configurato, significa che <ph name="PRODUCT_OS_NAME" /
 <translation id="6383774771168138899">Configura il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Attiva la visualizzazione delle pagine di risultati del motore di ricerca predefinito in un riquadro laterale del browser.</translation>
 <translation id="6394350458541421998">La norma non è più supportata a partire dalla versione 29 di <ph name="PRODUCT_OS_NAME" />. Utilizza la norma PresentationScreenDimDelayScale.</translation>
-<translation id="6396956366662970339">Consente di specificare se un modello di ricarica adattiva può sospendere la procedura di ricarica per prolungare la durata della batteria.
-
-      Quando per il dispositivo viene usata l'alimentazione CA, il modello di ricarica adattiva valuta se sospendere o meno la procedura di ricarica per prolungare la durata della batteria. Se il modello di ricarica adattiva sospende la procedura di ricarica, mantiene la batteria a un determinato livello (ossia 80%), dopodiché ricarica il dispositivo fino al 100% quando l'utente ne ha bisogno.
-      Se questo criterio viene impostato su True, il modello di ricarica adattiva viene attivato e può sospendere la procedura di ricarica per prolungare la durata della batteria. Se questo criterio viene impostato su False o se non viene configurato, il modello di ricarica adattiva non influisce sulla procedura di ricarica.</translation>
 <translation id="6397588391180665797">Consente di segnalare eventi di configurazione di rete degli utenti su dispositivi registrati.
 
       Se il criterio viene impostato su Falso, le informazioni non vengono segnalate.
@@ -8004,11 +8012,6 @@ Se il criterio viene impostato su Disabled, il browser utilizzerà la vecchia im
 Se devi usare il criterio, invia una segnalazione di bug su crbug.com spiegando il tuo caso d'uso e aggiungendo in copia per conoscenza {blundell, vasilyt}@chromium.org. Il criterio sarà valido fino alla versione 114 di <ph name="PRODUCT_NAME" />, dopodiché la vecchia implementazione verrà rimossa.
 
 NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai processi del renderer appena avviati mentre il browser è in esecuzione.</translation>
-<translation id="6831322012298364374">L'URL di un'immagine che verrà utilizzata come badge aziendale per un profilo gestito. L'URL deve indirizzare a un'immagine.
-
-Questa policy può essere impostata soltanto come policy per gli utenti.
-
-Si consiglia di utilizzare la favicon (ad esempio https://www.google.com/favicon.ico) o un'icona di dimensioni non inferiori a 24 x 24 px.</translation>
 <translation id="6833023569065717572">Se il criterio viene impostato su Vero, nella schermata di accesso del dispositivo viene usato il formato dell'orologio di 24 ore.
 
       Se il criterio viene impostato su Falso, nella schermata di accesso del dispositivo viene usato il formato dell'orologio di 12 ore.

@@ -58,6 +58,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="1779356040007214683">Щоб зробити Chromium безпечнішим, ми вимкнути деякі розширення, джерелом яких не є <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, і які, можливо, було додано без вашого відома.</translation>
 <translation id="1808667845054772817">Перевстановити Chromium</translation>
 <translation id="1820835682567584003">Chromium намагається <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1838374766361614909">Очистити поле пошуку</translation>
 <translation id="18552579716432081">Щоб видалити дані вебперегляду лише на цьому пристрої, але зберегти їх в обліковому записі Google, <ph name="BEGIN_LINK" />вийдіть із Chromium<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">Ви можете керувати обліковими записами Google, у які ввійшли. Через них ви входите у веб-переглядач Chromium, Google Play, Gmail тощо. Якщо ви хочете додати обліковий запис для іншого користувача (наприклад, учасника сімейної групи), зробіть це натомість на пристрої <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Пошук за зображенням</translation>
@@ -204,7 +205,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="3802055581630249637">Chromium попередньо завантажує сторінки, які ви, імовірно, відвідаєте, щоб вони завантажувалися швидше</translation>
 <translation id="3830894615770080216">Система Chromium OS</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
-<translation id="386822487697155367">Отримати довідку щодо Chromium OS</translation>
 <translation id="3871664619793219264">Отримуйте доступ до своїх даних у веб-переглядачі Chromium через обліковий запис <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3885770153807205175">Засіб вибору мови</translation>
 <translation id="388648406173476553">Налаштуйте й керуйте Chromium. Якщо з’явиться сповіщення, натисніть його, щоб дізнатися більше.</translation>

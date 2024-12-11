@@ -67,6 +67,7 @@
 <translation id="1786044937610313874">Товчлолууд Chrome-д нээгддэг</translation>
 <translation id="178701303897325119">Энэ өргөтгөлийг дэмжихээ больсон. Chrome танд оронд нь үүнийг хасахыг зөвлөж байна.</translation>
 <translation id="1812689907177901597">Үүнийг унтрааснаар та Gmail зэрэг Google-н сайтуудад Chrome-д нэвтрэлгүйгээр нэвтэрч болно</translation>
+<translation id="1838374766361614909">Хайлтыг арилгах</translation>
 <translation id="1860536484129686729">Энэ сайтыг ашиглахын тулд Chrome-д зөвшөөрөл шаардлагатай</translation>
 <translation id="1873233029667955273">Google Chrome таны өгөгдмөл хөтөч биш юм</translation>
 <translation id="1874309113135274312">Google Chrome Бета (mDNS-In)</translation>
@@ -231,7 +232,6 @@
 <translation id="3716540481907974026">ChromeOS Flex-н хувилбар</translation>
 <translation id="3718181793972440140">Энэ нь төхөөрөмжөөс 1 зүйл устгах болно. Өгөгдлөө дараа сэргээхийн тулд Chrome-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome танд үүнийг хасахыг зөвлөж байна. <ph name="BEGIN_LINK" />Дэмжигдсэн өргөтгөлийн талаар нэмэлт мэдээлэл авах<ph name="END_LINK" />}other{Chrome танд эдгээрийг хасахыг зөвлөж байна. <ph name="BEGIN_LINK" />Дэмжигдсэн өргөтгөлийн талаар нэмэлт мэдээлэл авах<ph name="END_LINK" />}}</translation>
-<translation id="3744202345691150878">ChromeOS-той холбоотой тусламж авах</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Нэвтрэх алдааны улмаас ChromeOS Flex таны өгөгдлийг синк хийж чадсангүй.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -262,6 +262,7 @@
 <translation id="4147555960264124640">Та хяналтанд байдаг дансаар нэвтэрч байгаа бөгөөд администраторт таны Google Chrome-ийн профайлыг хянах боломжийг олгож байна. Таны апп, хавчуурга, түүх, нууц үг болон бусад тохиргоо гэх мэт Chrome дата нь байнга <ph name="USER_NAME" />-д хадгалагдана. Та Google Accounts Dashboard-ийн тусламжтай эдгээр датаг устгаж болох боловч энэ датаг өөр данстай хуваалцах боломжгүй. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Суулгаж байна...</translation>
 <translation id="4149882025268051530">Суурьлуулагч Archive файлыг задалж чадсангүй. Google Chrome-ыг дахин татаж авна уу.</translation>
+<translation id="415112847282352845">Хаяг болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chrome-д нэвтэрнэ үү. Таныг нэвтэрсний дараа энэ хаягийг Google Бүртгэлд тань хадгална.</translation>
 <translation id="4153934450158521343">Chrome-г удахгүй хаах бөгөөд өгөгдлийг устгана</translation>
 <translation id="4173512894976930765">Сайтууд тооцоолсноор ажиллах байх. Хэрэв та Chrome-д нэвтэрсэн бол таныг Chrome-н бүх цонхыг хаах үед Google Бүртгэлээс тань бусад ихэнх сайтаас гаргана.</translation>
 <translation id="4175922240926474352">Сайт аюулгүй холболт ашиглахгүй байгаа бөгөөд файлыг оролдсон байж магадгүй тул Chrome энэ таталтыг блоклосон</translation>
@@ -354,7 +355,6 @@
 <translation id="5334309298019785904">Синк нь таны домэйнд боломжгүй тул ChromeOS таны өгөгдлийг синк хийж чадсангүй.</translation>
 <translation id="5334487786912937552">Файл татахын тулд Chrome-д хадгалах санд хандах зөвшөөрөл шаардлагатай</translation>
 <translation id="5337648990166757586">Заавал биш: Оношилгоо болон ашиглалтын өгөгдлийг Google-д автоматаар илгээснээр ChromeOS-н онцлогууд, гүйцэтгэлийг сайжруулахад тусална уу.</translation>
-<translation id="5357889879764279201">ChromeOS Flex-тэй холбоотой тусламж авах</translation>
 <translation id="5368118228313795342">Нэмэлт код: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Энэ нь мөн таныг Chrome эхлүүлэхэд ямар хуудаснуудыг харуулах эсвэл Omnibox-оос хайхыг хянадаг.</translation>
 <translation id="5394833366792865639">Chrome-н таб хуваалцах</translation>

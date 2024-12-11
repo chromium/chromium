@@ -65,6 +65,7 @@
 <translation id="1786044937610313874">Преките пътища се отварят в Chrome</translation>
 <translation id="178701303897325119">Това разширение вече не се поддържа. Chrome препоръчва да го премахнете.</translation>
 <translation id="1812689907177901597">С изключването на тази функция можете да влизате в сайтовете на Google, като например Gmail, без да влизате в Chrome</translation>
+<translation id="1838374766361614909">Изчистване на търсенето</translation>
 <translation id="1860536484129686729">Chrome се нуждае от разрешение за достъп до камерата ви за този сайт</translation>
 <translation id="1873233029667955273">Google Chrome не е браузърът ви по подразбиране</translation>
 <translation id="1874309113135274312">Google Chrome бета (mDNS-In)</translation>
@@ -229,7 +230,6 @@
 <translation id="3716540481907974026">Версия на ChromeOS Flex</translation>
 <translation id="3718181793972440140">1 елемент ще се изтрие от това устройство. За да извлечете данните си по-късно, влезте в Chrome като <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome препоръчва да го премахнете. <ph name="BEGIN_LINK" />Научете повече за поддържаните разширения<ph name="END_LINK" />}other{Chrome препоръчва да ги премахнете. <ph name="BEGIN_LINK" />Научете повече за поддържаните разширения<ph name="END_LINK" />}}</translation>
-<translation id="3744202345691150878">Получаване на помощ за Chrome OS</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex не успя да синхронизира данните ви поради грешка при влизане в профила.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
@@ -350,7 +350,6 @@
 <translation id="5334309298019785904">Chrome OS не можа да синхронизира данните ви, защото тази функция не е налице за домейна ви.</translation>
 <translation id="5334487786912937552">Chrome се нуждае от достъп до хранилището, за да изтегля файлове</translation>
 <translation id="5337648990166757586">По избор: Помогнете за подобряването на функциите и ефективността на Chrome OS, като автоматично изпращате до Google данни за диагностиката и употребата.</translation>
-<translation id="5357889879764279201">Получаване на помощ за ChromeOS Flex</translation>
 <translation id="5368118228313795342">Допълнителен код: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">То също контролира коя страница се показва при стартиране на Chrome или при търсене от полето за всичко.</translation>
 <translation id="5394833366792865639">Споделяне на раздел в Chrome</translation>

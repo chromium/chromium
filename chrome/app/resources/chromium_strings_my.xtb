@@ -60,6 +60,7 @@
 <translation id="1779356040007214683">Chromium ပိုပြီး လုံခြုံစေရန် အတွက်၊ ကျွန်ုပ်တို့သည် <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />ထဲမှာ ဖေါ်ပြမထားသည့်၊ သင် မသိဘဲနှင့် ထည့်ပေးထားတာ ဖြစ်နိုင်သည့်၊ တိုးချဲ့မှု အချို့ကို ပိတ်ထားပါသည်။</translation>
 <translation id="1808667845054772817">Chromium ကို ပြန်လည်တပ်ဆင်ရန်</translation>
 <translation id="1820835682567584003">Chromium လုပ်ဆောင်နေသည်မှာ <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1838374766361614909">ရှာဖွေမှုကို ရှင်းပါ</translation>
 <translation id="18552579716432081">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ဤစက်မှသာ ဖျက်ပြီး သင့် Google Account တွင် သိမ်းထားရန် <ph name="BEGIN_LINK" />Chromium မှ အကောင့်ထွက်ပါ<ph name="END_LINK" />။</translation>
 <translation id="185970820835152459">သင်လက်မှတ်ထိုးဝင်ထားသော Google Account များကို စီမံနိုင်သည်။ Chromium ဘရောင်ဇာ၊ Play Store၊ Gmail စသည်တို့အတွက် သင်၏ Google Account များကို သုံးသည်။ မိသားစုဝင်ကဲ့သို့ တစ်စုံတစ်ယောက်အတွက် အကောင့်ထည့်လိုပါက ၎င်းအစား ထိုပုဂ္ဂိုလ်အသစ်ကို သင့် <ph name="DEVICE_TYPE" /> တွင် ထည့်ပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">‘ပုံဖြင့်ရှာဖွေမှု’ ဖြင့် ရှာရန်</translation>
@@ -207,7 +208,6 @@
 <translation id="3802055581630249637">သင်ဝင်ကြည့်နိုင်ဖွယ်ရှိသည့် စာမျက်နှာများသို့ ဝင်ကြည့်သောအခါ ပိုမိုလျင်မြန်စွာ ပွင့်စေရန် Chromiumသည် ၎င်းတို့ကို ကြိုဖွင့်သည်</translation>
 <translation id="3830894615770080216">ChromiumOS စနစ်</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="386822487697155367">ChromiumOS အတွက် အကူအညီရယူရန်</translation>
 <translation id="3871664619793219264"><ph name="ACCOUNT_EMAIL" /> မှ သင်၏ Chromium ဘရောင်ဇာ အကြောင်းအရာများကို ရယူပါ</translation>
 <translation id="3885770153807205175">ဘာသာစကား ရွေးချယ်စနစ်</translation>
 <translation id="388648406173476553">Chromium ကို စိတ်ကြိုက်ပြုပြင်ထိန်းချုပ်ပါ။ သင် ဆောင်ရွက်စရာ ရှိသည် - အသေးစိတ်အတွက် နှိပ်ပါ။</translation>

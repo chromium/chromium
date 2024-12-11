@@ -169,6 +169,7 @@
 <translation id="129553762522093515">เพิ่งปิด</translation>
 <translation id="1296930489679394997">การขาย</translation>
 <translation id="1297814096526086484">ล็อกแป้นพิมพ์และเมาส์ใช่ไหม</translation>
+<translation id="1297832388362139384">เขียว 1</translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">ตรวจสอบการตั้งค่า DNS ที่ปลอดภัย</translation>
 <translation id="1302418742166945866"><ph name="URL" /> ต้องการควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่</translation>
@@ -228,6 +229,7 @@
 <translation id="1384725838384960382">ชีตการตรวจสอบสิทธิ์ข้อมูลเข้าสู่ระบบการชำระเงินที่ปลอดภัย</translation>
 <translation id="1386623374109090026">คำอธิบายประกอบ</translation>
 <translation id="138810468159004008">อนุญาตขณะเข้าชมเว็บไซต์</translation>
+<translation id="139161720020179799">เทาเข้ม 1</translation>
 <translation id="1391625539203220400">บันทึก IBAN ไว้ในอุปกรณ์นี้ไหม</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ไม่ส่งข้อมูลใดๆ</translation>
 <translation id="1393071644879491291">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจหลอกล่อให้คุณติดตั้งซอฟต์แวร์หรือเปิดเผยข้อมูล เช่น รหัสผ่าน หมายเลขบัตรเครดิต หรือหมายเลขโทรศัพท์ Chrome ขอแนะนำเป็นอย่างยิ่งให้กลับสู่ความปลอดภัย <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับคำเตือนนี้<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -703,6 +705,7 @@
 <translation id="2227758700723188171">ทุนการศึกษา</translation>
 <translation id="2228057197024893428">บันทึกที่อยู่นี้ไว้ใน Chrome แล้ว หากต้องการใช้ในผลิตภัณฑ์ต่างๆ ของ Google ให้บันทึกไว้ในบัญชี Google <ph name="ACCOUNT" /></translation>
 <translation id="2229456043301340598">ทางลัดที่ซ้ำกันถูกข้าม: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="222962001646502673">เทาเข้ม 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 แท็บ}other{# แท็บ}}</translation>
 <translation id="2233745931693710080">แผ่นซีดี</translation>
 <translation id="2235344399760031203">บล็อกคุกกี้ของบุคคลที่สามอยู่</translation>
@@ -1729,6 +1732,7 @@
 <translation id="4084219288110917128">Envelope C1</translation>
 <translation id="4085326869263783566">ช่วยฉันเขียน กด Tab และกด Enter เพื่อเปิด</translation>
 <translation id="4085769736382018559">เปรียบเทียบผลิตภัณฑ์</translation>
+<translation id="4085778582400064057">น้ำเงิน 2</translation>
 <translation id="4088981014127559358">เปลี่ยนตำแหน่งรูปภาพด้าน 1 ตามแกน Y</translation>
 <translation id="4089152113577680600">ถาด 14</translation>
 <translation id="4092349052316400070">กรอกที่อยู่</translation>
@@ -1972,6 +1976,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อแปลหน้านี้ด้วย Google แปลภาษา</translation>
 <translation id="4515275063822566619">ข้อมูลบัตรและที่อยู่มาจาก Chrome และบัญชี Google (<ph name="ACCOUNT_EMAIL" />) คุณสามารถจัดการข้อมูลเหล่านี้ใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="4515847625438516456">ไมโครคาร์และซับคอมแพ็คท์</translation>
+<translation id="451601984112574365">เขียว 3</translation>
 <translation id="4519245469315452746">อุปกรณ์ถูกขัดจังหวะในระหว่างขั้นตอนการอัปเดต</translation>
 <translation id="4520048001084013693">นโยบายของผู้ดูแลระบบบล็อกการดาวน์โหลดไฟล์นี้</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> มม. (<ph name="ORIENTATION" />)</translation>
@@ -2162,7 +2167,6 @@
 <translation id="4881695831933465202">เปิด</translation>
 <translation id="4881808915112408168">24 x 31.5 นิ้ว</translation>
 <translation id="4882314601499260499">ไม่มีการบังคับใช้นโยบายผู้ใช้ องค์กรของคุณต้อง<ph name="LINK_BEGIN" />ยืนยันโดเมน<ph name="LINK_END" />เพื่อเพิ่มนโยบายผู้ใช้</translation>
-<translation id="4883911187498618061">ป้อนคำถามหรือพรอมต์</translation>
 <translation id="4885030148564729407">สถานที่ฮันนีมูนและสถานที่เที่ยวโรแมนติก</translation>
 <translation id="4885256590493466218">ชำระเงินด้วย <ph name="CARD_DETAIL" /> ที่จุดชำระเงิน</translation>
 <translation id="4887406273302438710">ปกป้องรหัสผ่านด้วย Windows Hello</translation>
@@ -2180,6 +2184,7 @@
 <translation id="4901952598169637881">รองเท้าลำลอง</translation>
 <translation id="4905659621780993806">ผู้ดูแลระบบจะรีสตาร์ทอุปกรณ์โดยอัตโนมัติในวันที่ <ph name="TIME" /> เวลา <ph name="DATE" /> บันทึกรายการที่เปิดอยู่ก่อนอุปกรณ์จะรีสตาร์ท</translation>
 <translation id="4913987521957242411">เจาะรูด้านซ้ายบน</translation>
+<translation id="4914727764832832057">น้ำเงิน 1</translation>
 <translation id="4916389289686916969">รายการเรียลลิตี้ทางทีวี</translation>
 <translation id="4917064667437236721">ลูกโมสร้างภาพ</translation>
 <translation id="4918221908152712722">ติดตั้ง <ph name="APP_NAME" /> (ไม่จำเป็นต้องดาวน์โหลด)</translation>
@@ -2194,7 +2199,6 @@
 <translation id="4930153903256238152">ความจุมาก</translation>
 <translation id="4930714375720679147">เปิด</translation>
 <translation id="4932035752129140860">ข้อความที่คุณวางหรือแนบจะส่งไปยัง Google Cloud หรือบุคคลที่สามเพื่อทำการวิเคราะห์ เช่น อาจสแกนหาข้อมูลที่ละเอียดอ่อน และอาจจัดเก็บตามนโยบายบริษัทและผู้ดูแลระบบมองเห็นได้</translation>
-<translation id="4933468175699107356">คลิกขวาเพื่อป้อนข้อมูลที่บันทึกไว้โดยอัตโนมัติอย่างเช่นชื่อหรือที่อยู่ในแบบฟอร์มใดก็ได้</translation>
 <translation id="4933788293078559286">ชำระเงินด้วย Pix</translation>
 <translation id="4934780484581617878">การจัดการหน้าต่าง</translation>
 <translation id="4936134414789135531">ไม่พบ <ph name="VALUE_NAME" /> ที่แทรกไว้</translation>
@@ -2253,6 +2257,7 @@
 <translation id="5039804452771397117">อนุญาต</translation>
 <translation id="5040262127954254034">ความเป็นส่วนตัว</translation>
 <translation id="5043480802608081735">ลิงก์ที่คุณคัดลอก</translation>
+<translation id="5043753287208271200">เหลือง 3</translation>
 <translation id="5045550434625856497">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="5048293684454354469">หัวข้อโฆษณาเป็นเพียงหนึ่งในหลายอย่างที่เว็บไซต์สามารถใช้เพื่อปรับโฆษณาตามโปรไฟล์ของผู้ใช้ แม้จะไม่มีหัวข้อโฆษณา เว็บไซต์ก็ยังคงแสดงโฆษณาให้คุณเห็นได้ แต่อาจปรับเปลี่ยนตามโปรไฟล์ของคุณน้อยลง ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="BEGIN_LINK" />การจัดการความเป็นส่วนตัวเกี่ยวกับโฆษณา<ph name="LINK_END" /></translation>
 <translation id="5052517576853118371">หัวข้อที่ใช้งานอยู่</translation>
@@ -2559,6 +2564,7 @@
 <translation id="5593640815048812868">แล็ปท็อปและโน้ตบุ๊ก</translation>
 <translation id="5595485650161345191">แก้ไขที่อยู่</translation>
 <translation id="5596939519753369075">2 x 3.5 นิ้ว</translation>
+<translation id="5597254438174353289">น้ำเงิน 3</translation>
 <translation id="560412284261940334">ไม่สนับสนุนการจัดการ</translation>
 <translation id="5605249000617390290">ดูข้อมูลเพิ่มเติมเกี่ยวกับการติดตามราคา</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -2614,6 +2620,7 @@
 <translation id="5701381305118179107">กึ่งกลาง</translation>
 <translation id="5707154300732650394">สำรวจต่อ</translation>
 <translation id="57094364128775171">แนะนำรหัสผ่านที่รัดกุม…</translation>
+<translation id="570953204696852961">แดง 3</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">สัตวแพทย์</translation>
 <translation id="5715150588940290235">ลบรหัสความปลอดภัยที่บันทึกไว้ใช่ไหม</translation>
@@ -2814,6 +2821,7 @@
 <translation id="6085149458302186532">ป้าย (มีสี)</translation>
 <translation id="6087312102907839798">การค้นหาที่เกี่ยวข้อง</translation>
 <translation id="6089505343295765444">แท็บที่คุณลบออกจากประวัติการเข้าชมใน Chrome จะยังคงแสดงในตารางเปรียบเทียบ</translation>
+<translation id="6093599771645355227">เหลือง 1</translation>
 <translation id="6093795393556121384">ยืนยันบัตรของคุณแล้ว</translation>
 <translation id="6094273045989040137">ใส่หมายเหตุ</translation>
 <translation id="6094290315941448991">นโยบายของผู้ดูแลระบบปิดใช้การบันทึกหน้าจอเมื่อมีเนื้อหาที่เป็นความลับแสดงอยู่</translation>
@@ -3352,6 +3360,7 @@
 <translation id="7058774143982824355">บริการโปรแกรมแยกวิเคราะห์รหัสผ่าน CSV</translation>
 <translation id="7062635574500127092">น้ำเงินอมเขียว</translation>
 <translation id="706295145388601875">เพิ่มและจัดการที่อยู่ในการตั้งค่า Chrome</translation>
+<translation id="7063157783216323487">เขียว 2</translation>
 <translation id="7064443976734085921">รถขนาดเล็ก</translation>
 <translation id="7064851114919012435">ข้อมูลติดต่อ</translation>
 <translation id="7067633076996245366">โซลและอาร์แอนด์บี</translation>
@@ -3483,6 +3492,7 @@
 <translation id="7304030187361489308">สูง</translation>
 <translation id="7304562222803846232">จัดการการตั้งค่าความเป็นส่วนตัวของบัญชี Google</translation>
 <translation id="7305756307268530424">เริ่มโดยให้ช้าลง</translation>
+<translation id="7307063504147610123">บันทึกที่อยู่ไว้ในอุปกรณ์นี้แล้ว</translation>
 <translation id="7308436126008021607">การซิงค์ในเบื้องหลัง</translation>
 <translation id="7309058266849426521">ดูข้อมูลเพิ่มเติมเกี่ยวกับการจัดการความเป็นส่วนตัวเกี่ยวกับโฆษณาใน Chrome</translation>
 <translation id="7310392214323165548">อุปกรณ์จะรีสตาร์ทเร็วๆ นี้</translation>
@@ -3904,6 +3914,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อสร้างแบบฟอร์มใหม่ใน Google ฟอร์มอย่างรวดเร็ว</translation>
 <translation id="8028892419725165118">เกมเล่นฆ่าเวลา</translation>
 <translation id="8028960012888758725">ตัดออกหลังเสร็จงาน</translation>
+<translation id="8029829038322015001">แดง 1</translation>
 <translation id="8030729864112325446">อาชีวะและการศึกษาต่อเนื่อง</translation>
 <translation id="8032546467100845887">โปร่งใส</translation>
 <translation id="8035152190676905274">ปากกา</translation>
@@ -3911,6 +3922,7 @@
 <translation id="8037117624646282037">ผู้ที่ใช้อุปกรณ์เมื่อเร็วๆ นี้</translation>
 <translation id="8037357227543935929">ขอ (ค่าเริ่มต้น)</translation>
 <translation id="803771048473350947">ไฟล์</translation>
+<translation id="8038182528865038593">แดง 2</translation>
 <translation id="8041089156583427627">ส่งความคิดเห็น</translation>
 <translation id="8041940743680923270">ใช้ค่าเริ่มต้นสากล (ถาม)</translation>
 <translation id="8043255123207491407">ดูข้อกำหนดและเงื่อนไขของผู้ขาย</translation>
@@ -4158,6 +4170,7 @@
 <translation id="8473626140772740486">300 x 450 มม.</translation>
 <translation id="8473863474539038330">ที่อยู่และอื่นๆ</translation>
 <translation id="8474910779563686872">แสดงรายละเอียดนักพัฒนาซอฟต์แวร์</translation>
+<translation id="8476959635632921417">หากต้องการบันทึกและใช้ที่อยู่นี้ในอุปกรณ์ทุกเครื่อง โปรดยืนยันว่าเป็นคุณ</translation>
 <translation id="8479754468255770962">เย็บด้วยลวดเย็บกระดาษด้านซ้ายล่าง</translation>
 <translation id="8483229036294884935">ระบบจะลบที่อยู่นี้ออกจากบัญชี Google <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">ใช้กับ</translation>
@@ -4311,6 +4324,7 @@
 <translation id="8767881944435256294">{COUNT,plural, =1{วิธีการชำระเงิน 1 วิธี}other{วิธีการชำระเงิน # วิธี}}</translation>
 <translation id="8768225988514678921">ปุ่มสร้างงานนําเสนอ เปิดใช้งานเพื่อสร้างงานนําเสนอใหม่ใน Google สไลด์อย่างรวดเร็ว</translation>
 <translation id="8769662576926275897">รายละเอียดบัตร</translation>
+<translation id="8769858749286369844">แทน 2</translation>
 <translation id="8770286973007342895">เครื่องตัดหญ้า</translation>
 <translation id="8772387130037509473">โยคะและพิลาทิส</translation>
 <translation id="877348612833018844">{0,plural, =1{ย้ายไฟล์ลับใช่ไหม}other{ย้ายไฟล์ลับใช่ไหม}}</translation>
@@ -4402,6 +4416,7 @@
 <translation id="8956124158020778855">หลังจากเปิดการตั้งค่านี้แล้ว ให้กลับมาที่แท็บนี้เพื่อเริ่มเขียน</translation>
 <translation id="8957210676456822347">การให้สิทธิ์แคปทีฟพอร์ทัล</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
+<translation id="8959288490306482616">แทน 3</translation>
 <translation id="8963117664422609631">ไปที่การตั้งค่าเว็บไซต์</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />คำแนะนำ:<ph name="MARKUP_2" />ตรวจสอบว่าคุณมีการเชื่อมต่ออินเทอร์เน็ต<ph name="MARKUP_3" />โหลดหน้าเว็บนี้อีกครั้งในภายหลัง<ph name="MARKUP_4" />ตรวจสอบที่อยู่ที่คุณป้อน<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">บันทึกบัตร</translation>
@@ -4464,6 +4479,7 @@
 <translation id="90695670378604968">พลาสติก (ด้าน)</translation>
 <translation id="9069693763241529744">ถูกบล็อกโดยส่วนขยาย</translation>
 <translation id="9073799351042754113">คุณเลือกที่จะปิดคำเตือนความปลอดภัยสำหรับเว็บไซต์นี้</translation>
+<translation id="9075717835386447447">แทน 1</translation>
 <translation id="9076283476770535406">เว็บไซต์นี้อาจมีเนื้อหาสำหรับผู้ใหญ่</translation>
 <translation id="9078912659001679888">เครื่องปั่นและเครื่องคั้นน้ำผลไม้แบบแยกกาก</translation>
 <translation id="9078964945751709336">ต้องระบุข้อมูลเพิ่มเติม</translation>
@@ -4572,6 +4588,7 @@
 <translation id="949314938206378263">คุณขอเข้าชมเว็บไซต์นี้ ผู้ปกครองจะตอบกลับได้ใน Family Link</translation>
 <translation id="950736567201356821">เจาะรูด้านบน 3 รู</translation>
 <translation id="950926967802086924">พาสคีย์ • เครื่องมือจัดการรหัสผ่านบน Google</translation>
+<translation id="95721182352849470">เหลือง 2</translation>
 <translation id="961663415146723894">เย็บเล่มด้านล่าง</translation>
 <translation id="961856697154696964">ลบข้อมูลการท่องเว็บ</translation>
 <translation id="961930410699694996">อนุญาตให้ใช้ตำแหน่งในครั้งนี้</translation>

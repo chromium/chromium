@@ -67,6 +67,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1786044937610313874">Shortcuts open in Chrome</translation>
 <translation id="178701303897325119">This extension is no longer supported. Chrome recommends that you remove it instead.</translation>
 <translation id="1812689907177901597">By turning this off, you can sign in to Google sites such as Gmail, without signing in to Chrome</translation>
+<translation id="1838374766361614909">Clear search</translation>
 <translation id="1860536484129686729">Chrome needs permission to access your camera for this site</translation>
 <translation id="1873233029667955273">Google Chrome isn't your default browser</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
@@ -231,7 +232,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3716540481907974026">Chrome OS Flex version</translation>
 <translation id="3718181793972440140">This will delete 1 item from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome recommends that you remove it. <ph name="BEGIN_LINK" />Learn more about supported extensions<ph name="END_LINK" />}other{Chrome recommends that you remove them. <ph name="BEGIN_LINK" />Learn more about supported extensions<ph name="END_LINK" />}}</translation>
-<translation id="3744202345691150878">Get help with Chrome OS</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex could not sync your data due to an error signing in.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -262,6 +262,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4147555960264124640">You are signing in with a managed account and giving its administrator control over your Google Chrome profile. Your Chrome data, such as your apps, bookmarks, history, passwords and other settings will become permanently tied to <ph name="USER_NAME" />. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Installing...</translation>
 <translation id="4149882025268051530">The installer failed to uncompress archive. Please download Google Chrome again.</translation>
+<translation id="415112847282352845">To get your addresses and more on all your devices, sign in to Chrome. This address will be saved in your Google Account after you sign in.</translation>
 <translation id="4153934450158521343">Chrome will soon close and delete data</translation>
 <translation id="4173512894976930765">Sites will probably work as expected. You'll be signed out of most sites when you close all Chrome windows, except your Google Account if you're signed in to Chrome.</translation>
 <translation id="4175922240926474352">Chrome blocked this download because the site isn't using a secure connection and the file may have been tampered with</translation>
@@ -354,7 +355,6 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="5334309298019785904">Chrome OS could not sync your data because sync is not available for your domain.</translation>
 <translation id="5334487786912937552">Chrome needs storage access permission to download files</translation>
 <translation id="5337648990166757586">Optional: Help improve Chrome OS features and performance by automatically sending diagnostic and usage data to Google.</translation>
-<translation id="5357889879764279201">Get help with Chrome OS Flex</translation>
 <translation id="5368118228313795342">Extra code: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">It also controls what page is shown when you start Chrome or search from the Omnibox.</translation>
 <translation id="5394833366792865639">Share a Chrome tab</translation>

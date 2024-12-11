@@ -1505,6 +1505,7 @@
 <translation id="202352106777823113">Преземањето траеше предолго, па мрежата го запре.</translation>
 <translation id="2024195579772565064">Избришете го пребарувачот</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">Прецизно кликнување</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> падна. Кликнете на балонот за повторно да се вчита наставката.</translation>
 <translation id="2026377162111110983">Глас на областа</translation>
 <translation id="2028449514182362831">Функциите на коишто им требаат сензорите за движење нема да работат</translation>
@@ -4764,6 +4765,7 @@
 <translation id="4324577459193912240">Датотеката не е целосна</translation>
 <translation id="4325237902968425115">Се деинсталира <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4325433082696797523">Простор и напојување</translation>
+<translation id="4325515113816851466">Изборите на твојот родител нема да важат откако ќе се одјавиш</translation>
 <translation id="4326146840124313313">Најсилната безбедност на Chrome нуди поголема заштита од опасни веб-сајтови, преземања и екстензии</translation>
 <translation id="4327380114687339519">Мени за екстензии</translation>
 <translation id="4330191372652740264">Вода со мраз</translation>
@@ -4886,6 +4888,7 @@
 <translation id="4412992751769744546">Дозволи колачиња од трети лица</translation>
 <translation id="4413087696295876280">Читај податоци за уредот со ChromeOS Flex и податоци</translation>
 <translation id="44137799675104237">Слушајте го текстот со природен говор</translation>
+<translation id="4414051792721275732">Кога ќе направите движење за да кликнете, брзината на глувчето ќе се намали за да овозможи поголема контрола. Повторете го движењето за да го завршите кликнувањето.</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">Дали дозволувате <ph name="APP_NAME" /> да го преземе списокот со прикачените USB-уреди?</translation>
 <translation id="4414232939543644979">Нов &amp;инкогнито прозорец</translation>
@@ -6214,6 +6217,7 @@
 <translation id="5389224261615877010">Виножито</translation>
 <translation id="5389626883706033615">Сајтовите се блокирани да бараат од вас да ги користат податоците што ги зачувале за вас</translation>
 <translation id="5389794555912875905">Прикажувај предупредувања пред одење на небезбедни сајтови (препорачано)</translation>
+<translation id="5389943529251318913">Намали ја брзината на глувчето за</translation>
 <translation id="5390112241331447203">Вклучи ја датотеката system_logs.txt испратена во извештаите со повратни информации.</translation>
 <translation id="5390677308841849479">Темноцрвена и портокалова</translation>
 <translation id="5392192690789334093">Дозволено им е да испраќаат известувања</translation>
@@ -8047,7 +8051,6 @@
 <translation id="6743841972744298686">Поставки за синхронизација</translation>
 <translation id="6745592621698551453">Ажурирај сега</translation>
 <translation id="6746124502594467657">Премести долу</translation>
-<translation id="674632704103926902">Овозможи влечење картичка</translation>
 <translation id="67465227497040338">Прикажи ја лозинката за <ph name="DOMAIN" /></translation>
 <translation id="6748980958975836188">Ги прочитав и се согласувам со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Chrome и ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6749077623962119521">Да се ресетираат дозволите?</translation>
@@ -9928,7 +9931,6 @@
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Податоците за апликации може да се секакви податоци што ги зачувала одредена апликација (според поставките на програмерот), вклучувајќи податоци како што се контактите, пораките и фотографиите.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Податоците од бекапот не се земаат предвид во квотата за складирање во Drive на вашето дете.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Услугава може да ја исклучите во „Поставки“.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="8076492880354921740">Картички</translation>
 <translation id="8076835018653442223">Администраторот го оневозможил пристапот до локалните датотеки на вашиот уред</translation>
 <translation id="8077120325605624147">Секој сајт што го посетувате може да ви прикаже која било реклама</translation>
 <translation id="8077579734294125741">Други профили на Chrome</translation>
@@ -10568,7 +10570,6 @@
 <translation id="8528074251912154910">Додај јазици</translation>
 <translation id="8528479410903501741">Зачувајте го IBAN</translation>
 <translation id="8528962588711550376">Се пријавува.</translation>
-<translation id="8529925957403338845">Неуспешно инстант врзување</translation>
 <translation id="8531367864749403520">Изберете „Криење група“ за да ја отстраните групата од лентата за картички</translation>
 <translation id="8531701051932785007">„Подобреното безбедно прелистување“ е вклучено</translation>
 <translation id="8533670235862049797">„Безбедното прелистување“ е вклучено</translation>

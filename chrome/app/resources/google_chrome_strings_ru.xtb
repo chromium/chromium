@@ -63,6 +63,7 @@
 <translation id="1786044937610313874">Ярлыки сайтов открываются в Chrome</translation>
 <translation id="178701303897325119">Это расширение больше не поддерживается. Рекомендуем удалить его из Chrome.</translation>
 <translation id="1812689907177901597">Отключив эту функцию, вы сможете входить в систему на сайтах Google (например, Gmail) без необходимости выполнять вход в Chrome</translation>
+<translation id="1838374766361614909">Удалить условия поиска</translation>
 <translation id="1860536484129686729">Для этого сайта Chrome запрашивает доступ к камере.</translation>
 <translation id="1873233029667955273">Google Chrome не является браузером по умолчанию.</translation>
 <translation id="1874309113135274312">Google Chrome (бета, mDNS-In)</translation>
@@ -190,7 +191,7 @@
 <translation id="3242123554343253302">Добавить профиль Chrome</translation>
 <translation id="3245429137663807393">Если вы также отправляете отчеты об использовании Chrome, в них включаются URL посещенных вами страниц.</translation>
 <translation id="3261565993776444564">Попробуйте новый цвет браузера.</translation>
-<translation id="3282568296779691940">Войти в Chrome</translation>
+<translation id="3282568296779691940">Войдите в Chrome</translation>
 <translation id="3286538390144397061">Перезапустить сейчас</translation>
 <translation id="3289358082435924389">Затем Chrome спросит, хотите ли вы использовать сохраненные данные для автозаполнения форм.</translation>
 <translation id="3292333338048274092">Затем вам будет нужно перезапустить Chrome.</translation>
@@ -227,7 +228,6 @@
 <translation id="3716540481907974026">Версия Chrome OS Flex</translation>
 <translation id="3718181793972440140">С устройства будет удален 1 объект. Чтобы восстановить данные позже, войдите в Chrome как <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome рекомендует удалить его. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}one{Chrome рекомендует удалить их. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}few{Chrome рекомендует удалить их. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}many{Chrome рекомендует удалить их. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}other{Chrome рекомендует удалить их. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}}</translation>
-<translation id="3744202345691150878">Подробнее о Chrome OS</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex не удалось синхронизировать данные, так как при входе в аккаунт произошла ошибка.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -330,7 +330,7 @@
 <translation id="5120334927898581447">Входить в Chrome при входе в другие сервисы Google</translation>
 <translation id="5126049312684316860">Chrome предварительно загружает ещё больше страниц, которые вы с большой вероятностью посетите, чтобы они открылись быстрее.</translation>
 <translation id="5132929315877954718">Широкий выбор приложений, игр, расширений и тем для Google Chrome.</translation>
-<translation id="5139423532931106058">Настройте профиль Chrome</translation>
+<translation id="5139423532931106058">Настройка профиля Chrome</translation>
 <translation id="5161361450770099246">Чтобы повысить удобство работы в браузере Chrome и освободить ресурсы, эту вкладку можно сделать неактивной.</translation>
 <translation id="5163087008893166964">Добро пожаловать в Chrome! Открыто новое окно браузера.</translation>
 <translation id="5166439563123238795">Chrome необходимо разрешение на отслеживание рук</translation>
@@ -347,7 +347,6 @@
 <translation id="5334309298019785904">Не удалось синхронизировать данные, так как эта функция недоступна для вашего домена.</translation>
 <translation id="5334487786912937552">Для скачивания файлов браузеру Chrome требуется доступ к хранилищу.</translation>
 <translation id="5337648990166757586">Автоматически отправлять данные об использовании и диагностике в Google, чтобы помогать нам повышать производительность и улучшать функции Chrome OS (необязательно)</translation>
-<translation id="5357889879764279201">Справка Chrome OS Flex</translation>
 <translation id="5368118228313795342">Дополнительный код: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Кроме того, расширение изменило стартовую страницу Chrome и поисковую систему, используемую по умолчанию при вводе запроса в омнибокс.</translation>
 <translation id="5394833366792865639">Откройте доступ к вкладке Chrome</translation>
@@ -456,11 +455,11 @@
 <translation id="683440813066116847">Разрешить в Google Chrome Canary передачу входящего трафика по протоколу mDNS</translation>
 <translation id="6834926483721196812">В Chrome есть функции для повышения производительности, например режим энергосбережения и экономия памяти.</translation>
 <translation id="684888714667046800">Не удалось подключиться к интернету. Если вы используете брандмауэр, убедитесь, что в белом списке есть файл <ph name="PRODUCT_EXE_NAME" />.</translation>
-<translation id="6851981911629679515">Включить дополнительную защиту движка JavaScript и WebAssembly в Chrome</translation>
+<translation id="6851981911629679515">Включить дополнительную защиту системы обработки JavaScript и WebAssembly в Chrome</translation>
 <translation id="6881299373831449287">Обновление Chrome</translation>
 <translation id="6885412569789873916">Приложения Chrome (бета)</translation>
 <translation id="6893363893008038481">Удалить аккаунт из Chrome</translation>
-<translation id="6896758677409633944">Копировать</translation>
+<translation id="6896758677409633944">Скопировать</translation>
 <translation id="6930294499209825">Обновляет программное обеспечение Google. Если отключить или остановить сервис, это может привести к тому, что возникающие уязвимости не будут устраняться, а некоторые функции – работать. Если отсутствует ПО Google, которое использует сервис, он удаляется автоматически.</translation>
 <translation id="6933858244219479645">ChromeOS</translation>
 <translation id="6938166777909186039">Чтобы обновлять Google Chrome, нужна Windows 10 или более поздней версии. У вас установлена Windows 8.1.</translation>
@@ -511,7 +510,7 @@
 <translation id="7477130805345743099">Chrome будет предупреждать вас о переходе на любой сайт с незащищенным соединением</translation>
 <translation id="7481213027396403996">Обеспечьте максимальную защиту в Chrome</translation>
 <translation id="749228101751499733">Когда выполнен вход, в Chrome вам доступны пароли и другая информация, сохраненная в аккаунте Google. Изменить настройки сервисов Google можно с помощью сочетания <ph name="SHORTCUT" />.</translation>
-<translation id="7496017508659652909">Chrome предварительно загружает страницы, ускоряя работу браузера и поиска. Подробнее <ph name="BEGIN_LINK" />о предзагрузке страниц<ph name="END_LINK" />…</translation>
+<translation id="7496017508659652909">Chrome предварительно загружает страницы, ускоряя работу браузера и поиск. Подробнее <ph name="BEGIN_LINK" />о предзагрузке страниц<ph name="END_LINK" />…</translation>
 <translation id="7514258452813684157">Сервис Google Updater</translation>
 <translation id="7515191208480168435">Вы можете закрепить Google Объектив для быстрого доступа.</translation>
 <translation id="7535429826459677826">Google Chrome для разработчиков</translation>
@@ -583,7 +582,7 @@
 <translation id="8221491193165283816">Обычно вы блокируете уведомления. Чтобы получать их с этого сайта, нажмите здесь.</translation>
 <translation id="8255190535488645436">Google Chrome использует камеру и микрофон.</translation>
 <translation id="8257796129973882597">Закладки, режим чтения и другие функции доступны в меню Google Chrome</translation>
-<translation id="8267953129876836456">Есть рекомендации по безопасной работе в Chrome</translation>
+<translation id="8267953129876836456">Есть рекомендации по безопасной работе в Chrome</translation>
 <translation id="8270775718612349140">Сертификаты, которыми управляет Chrome</translation>
 <translation id="8286862437124483331">Чтобы просмотреть пароли, введите пароль своего аккаунта Windows.</translation>
 <translation id="829923460755755423">Добавьте ярлык для Google Менеджера паролей.</translation>
@@ -627,7 +626,7 @@
 <translation id="8712767363896337380">Почти готово! Чтобы завершить обновление, перезапустите Chrome.</translation>
 <translation id="8718062187489036808">Выйти из аккаунта Chrome</translation>
 <translation id="873133009373065397">Google Chrome не удалось определить или задать браузер по умолчанию</translation>
-<translation id="8748735421235723888">Chromium освобождает память, выделенную для неактивных вкладок. Это нужно, чтобы активным вкладкам и другим приложениям было доступно больше ресурсов, а скорость работы браузера не снижалась. Неактивные вкладки становятся активными, как только вы на них переходите. Подробнее <ph name="BEGIN_LINK" />о режиме экономии памяти<ph name="END_LINK" />…</translation>
+<translation id="8748735421235723888">Chrome высвобождает память, занятую неактивными вкладками. Благодаря этому активным вкладкам и другим приложениям доступно больше ресурсов, а скорость работы браузера не снижается. Неактивные вкладки становятся активными, когда вы на них переходите. Подробнее <ph name="BEGIN_LINK" />о режиме экономии памяти<ph name="END_LINK" />…</translation>
 <translation id="8765470054473112089">Когда вы вводите что-то в адресную строку или окно поиска, Chrome отправляет этот текст в поисковую систему по умолчанию, чтобы предлагать вам более подходящие подсказки. В режиме инкогнито эта функция не работает.</translation>
 <translation id="8781673607513845160">Чтобы использовать камеру, предоставьте Chrome доступ к ней в <ph name="BEGIN_LINK" />системных настройках<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Произошла ошибка. Администратор вашей сети применил групповую политику, которая не позволяет выполнить установку. <ph name="INSTALL_ERROR" /></translation>

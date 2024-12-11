@@ -67,6 +67,7 @@
 <translation id="1786044937610313874">Пречице се отварају у Chrome-у</translation>
 <translation id="178701303897325119">Овај додатак више није подржан. Chrome препоручује да га уклоните.</translation>
 <translation id="1812689907177901597">Када то укључите, можете да се пријављујете на Google сајтове, као што је Gmail, али се не пријављујете у Chrome</translation>
+<translation id="1838374766361614909">Обришите претрагу</translation>
 <translation id="1860536484129686729">Chrome тражи дозволу да приступи камери за овај сајт</translation>
 <translation id="1873233029667955273">Google Chrome није подразумевани прегледач</translation>
 <translation id="1874309113135274312">Google Chrome бета (mDNS-In)</translation>
@@ -231,7 +232,6 @@
 <translation id="3716540481907974026">Верзија Chrome OS Flex-а</translation>
 <translation id="3718181793972440140">Овим ћете избрисати 1 ставку са овог уређаја. Да бисте касније вратили податке, пријавите се у Chrome као <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome препоручује да га уклоните. <ph name="BEGIN_LINK" />Сазнајте више о подржаним додацима<ph name="END_LINK" />}one{Chrome препоручује да их уклоните. <ph name="BEGIN_LINK" />Сазнајте више о подржаним додацима<ph name="END_LINK" />}few{Chrome препоручује да их уклоните. <ph name="BEGIN_LINK" />Сазнајте више о подржаним додацима<ph name="END_LINK" />}other{Chrome препоручује да их уклоните. <ph name="BEGIN_LINK" />Сазнајте више о подржаним додацима<ph name="END_LINK" />}}</translation>
-<translation id="3744202345691150878">Пронађите помоћ за Chrome OS</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex није успео да синхронизује податке због грешке при пријављивању.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
@@ -262,6 +262,7 @@
 <translation id="4147555960264124640">Пријављујете се помоћу налога којим се управља и дајете његовом администратору контролу над Google Chrome профилом. Chrome подаци, као што су апликације, обележивачи, историја, лозинке и друга подешавања, биће трајно повезани са налогом <ph name="USER_NAME" />. Моћи ћете да избришете те податке преко Контролне табле Google налога, али нећете моћи да их повежете са неким другим налогом. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Инсталирање...</translation>
 <translation id="4149882025268051530">Програм за инсталацију није успео да декомпримује архиву. Преузмите Google Chrome поново.</translation>
+<translation id="415112847282352845">Да би вам адресе и други садржај били доступни на свим уређајима, пријавите се у Chrome. Ова адреса ће бити сачувана на Google налогу када се пријавите.</translation>
 <translation id="4153934450158521343">Chrome ће се ускоро затворити и избрисати податке</translation>
 <translation id="4173512894976930765">Сајтови ће вероватно радити на очекивани начин. Бићете одјављени са већине сајтова када затворите све Chrome прозоре, осим са Google налога ако сте пријављени у Chrome.</translation>
 <translation id="4175922240926474352">Chrome је блокирао ово преузимање јер овај сајт не користи безбедну везу, па је фајл можда неовлашћено мењан</translation>
@@ -354,7 +355,6 @@
 <translation id="5334309298019785904">Chrome ОС не може да синхронизује податке јер Синхронизација није доступна за домен.</translation>
 <translation id="5334487786912937552">Chrome-у треба приступ меморијском простору да би преузимао фајлове</translation>
 <translation id="5337648990166757586">Опционално: Аутоматски шаљите Google-у дијагностику и податке о коришћењу да бисте нам помогли да побољшамо функције и учинак Chrome ОС-а.</translation>
-<translation id="5357889879764279201">Добијте помоћ за Chrome OS Flex</translation>
 <translation id="5368118228313795342">Додатни кôд: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Контролише и страницу која се приказује када покренете Chrome или претражујете из омнибокса.</translation>
 <translation id="5394833366792865639">Делите Chrome картицу</translation>

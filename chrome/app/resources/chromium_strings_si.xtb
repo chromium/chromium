@@ -59,6 +59,7 @@
 <translation id="1779356040007214683">Chromium වඩාත් ආරක්ෂිත කිරීම සඳහා, අප විසින් <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ලැයිස්තුගත කළ නොමැති හා ඔබේ දැනුමෙන් තොරව එක්කළ ඇතැම් දිගු අක්‍රීය කර ඇත.</translation>
 <translation id="1808667845054772817">Chromium ප්‍රතිස්ථාපනය කරන්න</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> සඳහා උත්සාහ කරයි</translation>
+<translation id="1838374766361614909">සෙවීම හිස් කරන්න</translation>
 <translation id="18552579716432081">එය ඔබේ Google ගිණුම තුළ තබා ගන්නා අතර මෙම උපාංගයෙන් පමණක් බ්‍රවුස් කිරීමේ දත්ත මැකීමට, <ph name="BEGIN_LINK" />Chromium වෙතින් වරන්න<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">ඔබට ඔබගේ පුරන ලද Google ගිණුම් කළමනාකරණය කළ හැකිය. ඔබගේ Google ගිණුම් Chromium බ්‍රව්සරය, Play Store, Gmail සහ තවත් දේ සඳහා භාවිත කෙරේ. ඔබට පවුලේ සාමාජිකයකු වැනි, වෙනත් යම් කෙනෙකු සඳහා ගිණුමක් එක් කිරීමට අවශ්‍ය නම්, ඒ වෙනුවට ඔබගේ <ph name="DEVICE_TYPE" /> වෙත නව පුද්ගලයකු එක් කරන්න. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">රූප සෙවීම සමග සොයන්න</translation>
@@ -205,7 +206,6 @@
 <translation id="3802055581630249637">Chromium ඔබ පැමිණීමට ඉඩ ඇති පිටු පූර්ව පූරණය කරන බැවින්, ඔබ ඒවාට පැමිණෙන විට ඒවා වඩාත් ඉක්මනින් පූරණය වේ</translation>
 <translation id="3830894615770080216">ChromiumOS පද්ධතිය</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="386822487697155367">ChromiumOS සමගින් උදවු ලබා ගන්න</translation>
 <translation id="3871664619793219264"><ph name="ACCOUNT_EMAIL" /> වෙතින් ඔබගේ Chromium බ්‍රවුසරයේ දේවල් ලබා ගන්න</translation>
 <translation id="3885770153807205175">භාෂාව තේරීම</translation>
 <translation id="388648406173476553">Chromium අභිරුචි කිරීම සහ පාලනය. යම් දෙයකට ඔබේ අවධානය අවශ්‍යයි - විස්තර සඳහා ක්ලික් කරන්න.</translation>

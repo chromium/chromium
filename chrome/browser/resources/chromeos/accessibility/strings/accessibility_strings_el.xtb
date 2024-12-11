@@ -846,6 +846,7 @@
 <translation id="6385591741672306837">στήλη</translation>
 <translation id="6387719785439924554">εκτός</translation>
 <translation id="6393014464788431702">Απενεργοποίηση όλων των φίλτρων συμβάντων.</translation>
+<translation id="6406989068857078334">Η ταχύτητα του ποντικιού μειώθηκε, <ph name="GESTURE" /> ξανά, για να κάνετε κλικ</translation>
 <translation id="6411569524720229058">Φθινόπωρο</translation>
 <translation id="6417265370957905582">Βοηθός Google</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{άνω κάτω τελεία}other{# άνω κάτω τελείες}}</translation>
@@ -1100,6 +1101,7 @@
 <translation id="8205922869661890178">Άνοιγμα σελίδας αρχείου καταγραφής προγραμματιστή</translation>
 <translation id="8212109599554677485">Αλλάξτε το στιλ προβολής σε παράθεση.</translation>
 <translation id="8215202828671303819">Πολλαπλής επιλογής</translation>
+<translation id="822316432305106615">Έναρξη των κλικ με ακρίβεια</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, αδιαφάνεια <ph name="OPACITY_PERCENTAGE" />%.</translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
 <translation id="826825447994856889">Εισαγωγή</translation>

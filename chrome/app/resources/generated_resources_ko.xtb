@@ -1505,6 +1505,7 @@
 <translation id="202352106777823113">다운로드가 너무 오래 걸려 네트워크에서 중단했습니다.</translation>
 <translation id="2024195579772565064">검색엔진 삭제</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2025123106058020990">정밀 클릭</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" />이(가) 다운되었습니다. 확장 프로그램을 다시 로드하려면 이 풍선을 클릭하세요.</translation>
 <translation id="2026377162111110983">영역 음성</translation>
 <translation id="2028449514182362831">움직임 감지 센서가 필요한 기능이 작동하지 않음</translation>
@@ -4763,6 +4764,7 @@
 <translation id="4324577459193912240">파일 다운로드가 완료되지 않음</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> 제거 중...</translation>
 <translation id="4325433082696797523">저장용량 및 전원</translation>
+<translation id="4325515113816851466">로그아웃하면 부모님의 선택사항이 적용되지 않습니다.</translation>
 <translation id="4326146840124313313">Chrome의 가장 강력한 보안 기능은 위험한 웹사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호합니다.</translation>
 <translation id="4327380114687339519">확장 프로그램 메뉴</translation>
 <translation id="4330191372652740264">얼음물</translation>
@@ -4885,6 +4887,7 @@
 <translation id="4412992751769744546">서드 파티 쿠키 허용</translation>
 <translation id="4413087696295876280">ChromeOS Flex 기기 정보와 데이터를 읽습니다.</translation>
 <translation id="44137799675104237">자연 음성으로 텍스트 듣기</translation>
+<translation id="4414051792721275732">클릭을 위한 동작을 수행하면 마우스 속도가 느려져 더 세밀한 제어가 가능합니다. 클릭을 완료하려면 동작을 다시 수행하세요.</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
 <translation id="44141919652824029">'<ph name="APP_NAME" />'이(가) 연결된 USB 기기의 목록을 읽도록 허용하시겠습니까?</translation>
 <translation id="4414232939543644979">새 시크릿 창(&amp;I)</translation>
@@ -5122,6 +5125,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4586275095964870617"><ph name="URL" />을(를) 대체 브라우저에서 열 수 없습니다. 시스템 관리자에게 문의하세요.</translation>
 <translation id="4587589328781138893">사이트</translation>
 <translation id="4588749726511456218">스크롤 가속 <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> 및 <ph name="DOMAIN" /> 도메인이 관련이 있는 것으로 보입니다. <ph name="DOMAIN" /> 도메인을 신뢰하는 경우에만 이 비밀번호를 사용하세요.</translation>
 <translation id="4589713469967853491">로그가 다운로드 디렉터리에 작성되었습니다.</translation>
 <translation id="4590785647529325123">기기에서 시크릿 모드 방문 기록을 삭제하려면 모든 시크릿 탭을 닫으세요.</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />에 저장된 기기 없음</translation>
@@ -5628,6 +5632,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4946998421534856407">런처 + 위쪽 화살표</translation>
 <translation id="4947376546135294974">방문 중인 사이트의 데이터</translation>
 <translation id="4950100687509657457">프로필 만들기</translation>
+<translation id="4950360215042327246">[자리표시자 문자열]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{파일 1개}other{파일 #개}}</translation>
 <translation id="495170559598752135">작업</translation>
 <translation id="4951966678293618079">이 사이트의 비밀번호를 저장하지 않습니다</translation>
@@ -5766,6 +5771,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5061531353537614467">툰드라</translation>
 <translation id="5062930723426326933">로그인하지 못했습니다. 인터넷에 연결한 후 다시 시도하세요.</translation>
 <translation id="5063480226653192405">사용</translation>
+<translation id="5064921774605267982"><ph name="PROFILE_NAME" />님의 프로필을 엽니다. 부모님이 관리하는 프로필입니다.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS 설정에서 보안 DNS 관리</translation>
 <translation id="5066534201484101197">오버스크롤하여 페이지 간 이동</translation>
@@ -6214,6 +6220,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5389224261615877010">무지개</translation>
 <translation id="5389626883706033615">사이트에서 나에 관해 저장된 정보 사용을 요청하지 못하도록 차단</translation>
 <translation id="5389794555912875905">안전하지 않은 사이트로 이동하기 전에 경고를 표시합니다(권장).</translation>
+<translation id="5389943529251318913">다음 값만큼 마우스 속도 줄이기</translation>
 <translation id="5390112241331447203">전송된 system_logs.txt 파일을 의견 보고서에 포함합니다.</translation>
 <translation id="5390677308841849479">진한 빨간색 및 주황색</translation>
 <translation id="5392192690789334093">알림 전송이 허용됨</translation>
@@ -7422,6 +7429,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6266984048393265562">프로필 맞춤설정</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" />에 대해 인증을 받으려면 인증서를 선택하세요.</translation>
 <translation id="6268252012308737255"><ph name="APP" />(으)로 열기</translation>
+<translation id="6269050081341530851">중복 탭을 닫으면 가장 오래된 사본이 유지됩니다.</translation>
 <translation id="6270309713620950855">알림 음소거</translation>
 <translation id="6270391203985052864">사이트에서 알림 전송 허용을 요청할 수 있음</translation>
 <translation id="6270486800167535228">확장 프로그램이 고정되었습니다. 옵션을 더 보려면 선택하세요</translation>
@@ -7963,6 +7971,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6679947539429331601">12시간 동안 숨기기</translation>
 <translation id="6680442031740878064">사용 가능한 저장용량: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">속도</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [자리표시자 문자열]</translation>
 <translation id="6683022854667115063">헤드폰</translation>
 <translation id="6683087162435654533">모든 탭 복원(&amp;E)</translation>
 <translation id="6683433919380522900">권한: <ph name="PERMISSION_STATE" /></translation>
@@ -8045,7 +8054,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6743841972744298686">동기화 설정</translation>
 <translation id="6745592621698551453">지금 업데이트</translation>
 <translation id="6746124502594467657">아래로 이동</translation>
-<translation id="674632704103926902">탭 드래그 사용</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> 비밀번호 표시</translation>
 <translation id="6748980958975836188"><ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />을 읽었으며 이에 동의합니다.</translation>
 <translation id="6749077623962119521">권한을 재설정하시겠습니까?</translation>
@@ -8857,6 +8865,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7330533963640151632"><ph name="USER_EMAIL" /> 계정에서 공유하는 <ph name="USER_NAME" />님의 기기에 관한 <ph name="FEATURE_NAME" /> 설정입니다.</translation>
 <translation id="7331646370422660166">Alt + 아래쪽 화살표</translation>
 <translation id="7332053360324989309">전용 작업자: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">중복 탭</translation>
 <translation id="7333388112938984914">데이터 종량제 연결에서는 파일을 업로드할 수 없습니다.</translation>
 <translation id="7333669215417470379">앱과 설정 백업 및 복원하기</translation>
 <translation id="7335974957018254119">맞춤법 검사 사용</translation>
@@ -9928,7 +9937,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />앱 데이터에는 연락처, 메시지, 사진 등 앱에서 개발자 설정에 따라 저장한 모든 데이터가 포함될 수 있습니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />백업 데이터는 자녀의 드라이브 스토리지 용량에 포함되지 않습니다.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />설정에서 이 서비스를 사용 중지할 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="8076492880354921740">탭</translation>
 <translation id="8076835018653442223">관리자가 내 기기의 로컬 파일 액세스를 차단했습니다</translation>
 <translation id="8077120325605624147">어떤 사이트에서나 광고를 게재할 수 있습니다.</translation>
 <translation id="8077579734294125741">기타 Chrome 프로필</translation>
@@ -10565,7 +10573,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8528074251912154910">언어 추가</translation>
 <translation id="8528479410903501741">IBAN 저장</translation>
 <translation id="8528962588711550376">로그인 중입니다.</translation>
-<translation id="8529925957403338845">인스턴트 테더링 연결 실패</translation>
 <translation id="8531367864749403520">'그룹 숨기기'를 선택하여 탭 표시줄에서 그룹을 삭제합니다.</translation>
 <translation id="8531701051932785007">향상된 세이프 브라우징 사용 안함</translation>
 <translation id="8533670235862049797">세이프 브라우징 사용 설정됨</translation>

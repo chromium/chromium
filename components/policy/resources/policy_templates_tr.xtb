@@ -7380,10 +7380,6 @@ Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_OS_NAME" />, ekran görü
 <translation id="6383774771168138899"><ph name="MICROSOFT_ONE_DRIVE_NAME" /> ve <ph name="MICROSOFT_365_NAME" /> için <ph name="CLOUD_UPLOAD_NAME" /> akışını yapılandırır</translation>
 <translation id="6384542789059421431">Varsayılan arama motoru sonuç sayfalarının, tarayıcı yan panelinde gösterilmesini etkinleştir.</translation>
 <translation id="6394350458541421998">Bu politika, <ph name="PRODUCT_OS_NAME" /> Sürüm 29 itibariyle kullanımdan kaldırılmıştır. Lütfen bunun yerine PresentationScreenDimDelayScale politikasını kullanın.</translation>
-<translation id="6396956366662970339">Uyarlanabilir şarj modelinin, pil ömrünü uzatmak için şarj sürecini geçici olarak durdurmasına izin verilip verilmeyeceğini belirtir.
-
-      Uyarlanabilir şarj modeli, cihaz AC gücünde çalışırken pil ömrünü uzatmak için şarj sürecinin geçici olarak durdurulmasına gerek olup olmadığını değerlendirir. Uyarlanabilir şarj modeli ile şarj süreci geçici olarak durdurulursa pil belirli bir seviyede (ör. %80) tutulur, daha sonra kullanıcı ihtiyaç duyduğunda cihaz %100'e kadar şarj edilir.
-      Bu politika, Doğru değerine ayarlanırsa uyarlanabilir şarj modeli etkinleştirilir. Böylece pil ömrünü uzatmak için şarj sürecinin geçici olarak durdurulmasına izin verilmiş olur. Bu politika, Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa uyarlanabilir şarj modeli şarj sürecini etkilemez.</translation>
 <translation id="6397588391180665797">Kayıtlı cihazlardaki kullanıcıların ağ yapılandırmasını raporla.
 
       Bu politika yanlış değerine ayarlanırsa bilgi raporlanmaz.
@@ -8037,11 +8033,6 @@ Bu politikayı kullanmanız gerekirse lütfen crbug.com adresinden hata bildirim
 
 NOT: Tarayıcı çalışırken bu politikada yapılan değişiklikleri yalnızca
 yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
-<translation id="6831322012298364374">Yönetilen profilde kurumsal rozet olarak kullanılacak resmin URL'sidir. URL bir resme yönlendirmelidir.
-
-Bu politika yalnızca kullanıcı politikası olarak ayarlanabilir.
-
-Site simgesini (ör. https://www.google.com/favicon.ico) veya 24 x 24 pikselden küçük olmayan bir simgeyi kullanmanız önerilir.</translation>
 <translation id="6833023569065717572">Politikayı Doğru değerine ayarlarsanız cihazın oturum açma ekranında 24 saatlik saat biçimi kullanılır.
 
       Politikayı Yanlış değerine ayarlarsanız cihazın oturum açma ekranında 12 saatlik saat biçimi kullanılır.

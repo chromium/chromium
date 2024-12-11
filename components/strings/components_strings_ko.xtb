@@ -169,6 +169,7 @@
 <translation id="129553762522093515">최근에 닫은 탭</translation>
 <translation id="1296930489679394997">판매</translation>
 <translation id="1297814096526086484">키보드와 마우스를 잠그시겠습니까?</translation>
+<translation id="1297832388362139384">녹색 1</translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">보안 DNS 설정 확인</translation>
 <translation id="1302418742166945866"><ph name="URL" />에서 MIDI 기기를 제어하고 다시 프로그래밍하려고 합니다</translation>
@@ -228,6 +229,7 @@
 <translation id="1384725838384960382">보안 결제 사용자 인증 정보 승인 시트</translation>
 <translation id="1386623374109090026">주석</translation>
 <translation id="138810468159004008">사이트에 있는 동안 허용</translation>
+<translation id="139161720020179799">짙은 회색 1</translation>
 <translation id="1391625539203220400">이 기기에 IBAN을 저장하시겠습니까?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" />에서 전송한 데이터가 없습니다.</translation>
 <translation id="1393071644879491291">방문하려고 한 사이트의 공격자가 속임수를 써서 소프트웨어를 설치하거나 비밀번호, 전화번호, 신용카드 번호 등을 공개하도록 유도할 수 있습니다. Chrome에서는 안전한 위치로 돌아갈 것을 적극 권장합니다. <ph name="BEGIN_LEARN_MORE_LINK" />이 경고에 대해 자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -703,6 +705,7 @@
 <translation id="2227758700723188171">학업 보조금 및 장학금</translation>
 <translation id="2228057197024893428">이 주소는 현재 Chrome에 저장되어 있습니다. Google 제품에서 사용하려면 Google 계정(<ph name="ACCOUNT" />)에 저장하세요.</translation>
 <translation id="2229456043301340598">고유하지 않은 단축어는 무시됩니다. <ph name="SHORTCUT_NAME" /></translation>
+<translation id="222962001646502673">짙은 회색 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{탭 1개}other{탭 #개}}</translation>
 <translation id="2233745931693710080">컴팩트 디스크</translation>
 <translation id="2235344399760031203">타사 쿠키가 차단됨</translation>
@@ -1730,6 +1733,7 @@
 <translation id="4084219288110917128">봉투 C1</translation>
 <translation id="4085326869263783566">글쓰기 도우미. 탭하고 Enter를 눌러 여세요</translation>
 <translation id="4085769736382018559">제품 비교</translation>
+<translation id="4085778582400064057">파란색 2</translation>
 <translation id="4088981014127559358">첫 번째 면 이미지 Y 시프트</translation>
 <translation id="4089152113577680600">트레이 14</translation>
 <translation id="4092349052316400070">주소 입력</translation>
@@ -1973,6 +1977,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google 번역으로 이 페이지를 번역하려면 Tab을 누른 다음 Enter 누르기</translation>
 <translation id="4515275063822566619">카드와 주소는 Chrome 및 Google 계정(<ph name="ACCOUNT_EMAIL" />)에서 가져왔습니다. 이 정보는 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 관리할 수 있습니다.</translation>
 <translation id="4515847625438516456">마이크로카 및 서브 콤팩트카</translation>
+<translation id="451601984112574365">초록색 3</translation>
 <translation id="4519245469315452746">기기에서 업데이트 프로세스가 도중에 중단되었습니다.</translation>
 <translation id="4520048001084013693">관리자 정책에 의해 이 파일의 다운로드가 차단되었습니다.</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" />×<ph name="HEIGHT" />mm(<ph name="ORIENTATION" />)</translation>
@@ -2163,7 +2168,6 @@
 <translation id="4881695831933465202">열기</translation>
 <translation id="4881808915112408168">24x31.5인치</translation>
 <translation id="4882314601499260499">적용된 사용자 정책이 없습니다. 사용자 정책을 추가하려면 조직에서 <ph name="LINK_BEGIN" />도메인을 확인<ph name="LINK_END" />해야 합니다.</translation>
-<translation id="4883911187498618061">질문 또는 프롬프트를 입력하세요.</translation>
 <translation id="4885030148564729407">신혼 여행 및 낭만적인 여행</translation>
 <translation id="4885256590493466218">결제 시 <ph name="CARD_DETAIL" /> 사용</translation>
 <translation id="4887406273302438710">Windows Hello로 비밀번호 보호</translation>
@@ -2181,6 +2185,7 @@
 <translation id="4901952598169637881">캐주얼 신발</translation>
 <translation id="4905659621780993806">관리자가 <ph name="DATE" /> <ph name="TIME" />에 기기를 자동으로 다시 시작합니다. 기기가 다시 시작되기 전에 실행 중인 항목을 저장하세요.</translation>
 <translation id="4913987521957242411">왼쪽 상단 펀칭</translation>
+<translation id="4914727764832832057">파란색 1</translation>
 <translation id="4916389289686916969">TV 리얼리티 쇼</translation>
 <translation id="4917064667437236721">이미징 실린더</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> 설치(다운로드 필요 없음)</translation>
@@ -2195,7 +2200,6 @@
 <translation id="4930153903256238152">대용량</translation>
 <translation id="4930714375720679147">사용 설정</translation>
 <translation id="4932035752129140860">붙여넣거나 첨부하는 텍스트는 분석을 위해 Google Cloud 또는 타사로 전송됩니다. 예를 들어, 민감한 정보를 찾기 위해 텍스트를 스캔할 수 있으며 회사 정책에 따라 보관되어 관리자가 볼 수도 있습니다.</translation>
-<translation id="4933468175699107356">양식에서 이름, 주소 등 저장된 정보를 마우스 오른쪽 버튼으로 클릭하여 자동 완성하세요.</translation>
 <translation id="4933788293078559286">Pix로 결제</translation>
 <translation id="4934780484581617878">창 관리</translation>
 <translation id="4936134414789135531">삽입된 <ph name="VALUE_NAME" />을(를) 찾을 수 없습니다.</translation>
@@ -2254,6 +2258,7 @@
 <translation id="5039804452771397117">허용</translation>
 <translation id="5040262127954254034">개인정보 보호</translation>
 <translation id="5043480802608081735">복사한 링크</translation>
+<translation id="5043753287208271200">노란색 3</translation>
 <translation id="5045550434625856497">비밀번호가 잘못되었습니다.</translation>
 <translation id="5048293684454354469">광고 주제는 사이트에서 광고를 맞춤설정하는 데 사용할 수 있는 여러 항목 중 하나일 뿐입니다. 광고 주제가 없어도 사이트에서 광고를 계속 표시할 수는 있지만, 관련성이 적을 수도 있습니다. <ph name="BEGIN_LINK" />광고 개인 정보 보호 관리<ph name="LINK_END" />에 관해 자세히 알아보세요.</translation>
 <translation id="5052517576853118371">활성 주제</translation>
@@ -2560,6 +2565,7 @@
 <translation id="5593640815048812868">노트북</translation>
 <translation id="5595485650161345191">주소 수정</translation>
 <translation id="5596939519753369075">2x3.5인치</translation>
+<translation id="5597254438174353289">파란색 3</translation>
 <translation id="560412284261940334">관리가 지원되지 않음</translation>
 <translation id="5605249000617390290">가격 추적 자세히 알아보기</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -2615,6 +2621,7 @@
 <translation id="5701381305118179107">가운데</translation>
 <translation id="5707154300732650394">탐색 여정 재개</translation>
 <translation id="57094364128775171">강력한 비밀번호 추천...</translation>
+<translation id="570953204696852961">빨간색 3</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">수의사</translation>
 <translation id="5715150588940290235">저장된 보안 코드를 삭제하시겠습니까?</translation>
@@ -2815,6 +2822,7 @@
 <translation id="6085149458302186532">라벨(색상 있음)</translation>
 <translation id="6087312102907839798">관련 검색어</translation>
 <translation id="6089505343295765444">Chrome 방문 기록에서 삭제한 탭은 비교 테이블에 계속 표시됩니다</translation>
+<translation id="6093599771645355227">노란색 1</translation>
 <translation id="6093795393556121384">카드가 인증되었습니다.</translation>
 <translation id="6094273045989040137">주석 추가</translation>
 <translation id="6094290315941448991">기밀 콘텐츠가 화면에 표시되면 관리자 정책에서 화면 녹화를 사용 중지합니다.</translation>
@@ -3353,6 +3361,7 @@
 <translation id="7058774143982824355">CSV 비밀번호 파서 서비스</translation>
 <translation id="7062635574500127092">청록색</translation>
 <translation id="706295145388601875">Chrome 설정에서 주소 추가 및 관리</translation>
+<translation id="7063157783216323487">녹색 2</translation>
 <translation id="7064443976734085921">소형차</translation>
 <translation id="7064851114919012435">연락처 정보</translation>
 <translation id="7067633076996245366">소울 및 R&amp;B</translation>
@@ -3484,6 +3493,7 @@
 <translation id="7304030187361489308">높음</translation>
 <translation id="7304562222803846232">Google 계정 개인 정보 보호 설정 관리</translation>
 <translation id="7305756307268530424">느린 속도로 시작</translation>
+<translation id="7307063504147610123">주소가 이 기기에 저장되어 있습니다</translation>
 <translation id="7308436126008021607">백그라운드 동기화</translation>
 <translation id="7309058266849426521">Chrome에서 광고 개인 정보 보호 관리에 대해 자세히 알아보세요.</translation>
 <translation id="7310392214323165548">기기가 곧 다시 시작됩니다</translation>
@@ -3904,6 +3914,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Google Forms에서 빠르게 새 양식 만들기</translation>
 <translation id="8028892419725165118">캐주얼 게임</translation>
 <translation id="8028960012888758725">각 작업 뒤에 트림</translation>
+<translation id="8029829038322015001">빨간색 1</translation>
 <translation id="8030729864112325446">직업 및 평생 교육</translation>
 <translation id="8032546467100845887">투명</translation>
 <translation id="8035152190676905274">펜</translation>
@@ -3911,6 +3922,7 @@
 <translation id="8037117624646282037">최근에 기기를 사용한 사용자</translation>
 <translation id="8037357227543935929">요청(기본값)</translation>
 <translation id="803771048473350947">파일</translation>
+<translation id="8038182528865038593">빨간색 2</translation>
 <translation id="8041089156583427627">의견 보내기</translation>
 <translation id="8041940743680923270">전체 기본값 사용(요청)</translation>
 <translation id="8043255123207491407">판매자의 이용약관 보기</translation>
@@ -4158,6 +4170,7 @@
 <translation id="8473626140772740486">300x450mm</translation>
 <translation id="8473863474539038330">주소 및 기타</translation>
 <translation id="8474910779563686872">개발자 세부정보 표시</translation>
+<translation id="8476959635632921417">모든 기기에서 이 주소를 저장하고 사용하려면 본인 인증을 진행하세요</translation>
 <translation id="8479754468255770962">왼쪽 하단 스테이플</translation>
 <translation id="8483229036294884935">이 주소가 Google 계정(<ph name="ACCOUNT" />)에서 삭제됩니다.</translation>
 <translation id="8488350697529856933">적용 대상</translation>
@@ -4310,6 +4323,7 @@
 <translation id="8767881944435256294">{COUNT,plural, =1{결제 수단 1개}other{결제 수단 #개}}</translation>
 <translation id="8768225988514678921">프레젠테이션 만들기 버튼, Slides에서 새 Google 프레젠테이션을 빠르게 만들려면 활성화하세요.</translation>
 <translation id="8769662576926275897">카드 세부정보</translation>
+<translation id="8769858749286369844">황갈색 2</translation>
 <translation id="8770286973007342895">잔디깎이</translation>
 <translation id="8772387130037509473">요가 및 필라테스</translation>
 <translation id="877348612833018844">{0,plural, =1{기밀 파일을 이동하시겠습니까?}other{기밀 파일을 이동하시겠습니까?}}</translation>
@@ -4401,6 +4415,7 @@
 <translation id="8956124158020778855">이 설정을 사용 설정한 후 이 탭으로 돌아와서 작성을 시작하세요.</translation>
 <translation id="8957210676456822347">캡티브 포털 승인</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
+<translation id="8959288490306482616">황갈색 3</translation>
 <translation id="8963117664422609631">사이트 설정으로 이동</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />제안사항:<ph name="MARKUP_2" />데이터 연결 상태 확인<ph name="MARKUP_3" />나중에 페이지 새로고침<ph name="MARKUP_4" />입력한 주소 확인<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">카드 저장</translation>
@@ -4463,6 +4478,7 @@
 <translation id="90695670378604968">플라스틱(매트)</translation>
 <translation id="9069693763241529744">확장 프로그램에서 차단함</translation>
 <translation id="9073799351042754113">이 사이트의 보안 경고를 끄기로 설정했습니다.</translation>
+<translation id="9075717835386447447">황갈색 1</translation>
 <translation id="9076283476770535406">성인용 콘텐츠가 포함되어 있을 수 있습니다.</translation>
 <translation id="9078912659001679888">믹서 및 주스기</translation>
 <translation id="9078964945751709336">자세한 정보 필요</translation>
@@ -4571,6 +4587,7 @@
 <translation id="949314938206378263">이 사이트의 방문을 요청했습니다. 부모님은 Family Link에서 답장을 보낼 수 있습니다.</translation>
 <translation id="950736567201356821">상단 3공 펀칭</translation>
 <translation id="950926967802086924">패스키 • Google 비밀번호 관리자</translation>
+<translation id="95721182352849470">노란색 2</translation>
 <translation id="961663415146723894">하단 바인드</translation>
 <translation id="961856697154696964">인터넷 사용 기록 삭제</translation>
 <translation id="961930410699694996">현재 위치 허용됨</translation>

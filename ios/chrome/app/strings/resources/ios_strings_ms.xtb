@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Buka semua</translation>
 <translation id="1408847409015257906">Ketik “Privasi &amp; Keselamatan”.</translation>
 <translation id="1411386976162024013">Carian visual Lens</translation>
+<translation id="1426410128494586442">Ya</translation>
 <translation id="1430915738399379752">Cetak</translation>
 <translation id="1436671784520050284">Teruskan persediaan</translation>
 <translation id="143681031165817424">Alamat disimpan pada peranti ini sahaja</translation>
@@ -416,6 +417,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="2816489851009559785">Menu → Tetapan → Penyemak imbas lalai</translation>
 <translation id="2818821771744632548">Anda telah dilog keluar daripada akaun anda, <ph name="USER_NAME" />, sebagai sebahagian daripada tetapan semula iPhone anda. Untuk log masuk semula, ketik "Teruskan" di bawah.</translation>
 <translation id="2819667972867209401">Apabila dihidupkan, data disimpan pada Google Account anda. Apabila dimatikan, data akan disimpan hanya pada peranti ini dan akan dipadamkan jika anda log keluar.</translation>
+<translation id="2827760117436553203">Simpan data berasingan?</translation>
 <translation id="2829172210806130158">Cari pada skrin anda</translation>
 <translation id="2834399722155632105">3. Ketik Pilihan Kata Laluan</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -695,6 +697,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4237377247299956313">Ketik <ph name="BEGIN_BOLD" />Apl Penyemak Imbas Lalai<ph name="END_BOLD" /></translation>
 <translation id="4242533952199664413">Buka tetapan</translation>
 <translation id="4250432749243022864">{count,plural, =0{Buka {count} tab}=1{Buka {count} tab}other{Buka {count} tab}}</translation>
+<translation id="4250680216510889253">Tidak</translation>
 <translation id="4251531167342733205">Dapatkan manfaat terbaik daripada penyemak imbas kegemaran anda.</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="4256782883801055595">Lesen sumber terbuka</translation>
@@ -944,7 +947,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5343472494710226394">Berita, sukan dan kandungan berdasarkan minat anda.</translation>
 <translation id="5352128922772839949">Simpan fail</translation>
 <translation id="5355191726083956201">Perlindungan Dipertingkat dihidupkan</translation>
-<translation id="5356332698539508708">Padam dan Tukar</translation>
 <translation id="537853552771686272">Urus topik dan laman yang anda minati</translation>
 <translation id="5395707839134961196">Sembunyikan butiran enjin carian</translation>
 <translation id="541276233349960923">Gunakan kata laluan pada semua Peranti anda</translation>
@@ -1212,6 +1214,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="6476800141292307438">Menterjemah halaman ini kepada <ph name="LANGUAGE" />. Pilihan tersedia berhampiran bahagian bawah skrin.</translation>
 <translation id="647867789226964031">Tukar kata laluan anda</translation>
 <translation id="6494931198667773526">Tamat</translation>
+<translation id="6495521251906266731">Pilih perkara yang hendak dilakukan dengan data penyemakan imbas sedia ada pada peranti ini, seperti kata laluan, sejarah dan pelbagai lagi.</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{Nyahjejak pakej ini}other{Nyahjejak semua pakej}}</translation>
 <translation id="6503077044568424649">Paling kerap dilawati</translation>
 <translation id="6503763061813913607">Pemberitahuan Semakan Keselamatan</translation>
@@ -1606,7 +1609,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8219424187226230983">Lihat versi luar talian dalam tab baharu</translation>
 <translation id="8230355548492839438">Cari sebelumnya</translation>
 <translation id="8232956427053453090">Kekalkan data</translation>
-<translation id="8242644458318193141">Untuk melindungi keselamatan organisasi anda, tab akan ditutup dan data akaun yang tidak disimpan akan dipadamkan daripada peranti ini. Perkara ini mungkin termasuk kata laluan, sejarah dan pelbagai lagi.</translation>
 <translation id="8261506727792406068">Padam</translation>
 <translation id="82619448491672958">Lihat tab lain</translation>
 <translation id="8263228331881858381">Kunci laluan disimpan</translation>
@@ -1652,7 +1654,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8449869326050867919">Kata laluan dikongsi</translation>
 <translation id="8453847087068411809">Jangan sesekali mengesan bungkusan secara automatik</translation>
 <translation id="846158969830690371">Ketahui jika anda mempunyai tetapan yang paling selamat atau perlu menyemak apa-apa.</translation>
-<translation id="8466300942149667917">Data akaun yang tidak disimpan akan dipadamkan</translation>
 <translation id="8473863474539038330">Alamat dan pelbagai lagi</translation>
 <translation id="8474378002946546633">Benarkan pemberitahuan</translation>
 <translation id="8477178913400731244">Padamkan data</translation>
