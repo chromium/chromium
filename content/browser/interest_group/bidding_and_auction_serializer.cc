@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
@@ -59,6 +60,12 @@ struct ValueAndSize {
   base::CheckedNumeric<size_t> size;
 };
 
+struct ValueAndSizeAndPrevWinsSize {
+  cbor::Value value;
+  base::CheckedNumeric<size_t> size;
+  base::CheckedNumeric<size_t> prev_wins_array_size;
+};
+
 struct CompressedInterestGroups {
   // `data` is the compressed, serialized interest groups.
   std::string data;
@@ -73,6 +80,9 @@ struct CompressedInterestGroups {
   // `group_pagg_coordinators` maps from interest group key to an aggregation
   // coordinator origin, if the interest group has a not null coordinator.
   base::flat_map<blink::InterestGroupKey, url::Origin> group_pagg_coordinators;
+  // For each interest group serialized, the uncompressed size of the previous
+  // wins array of that interest group.
+  std::vector<size_t> prev_wins_array_sizes;
 };
 
 struct SerializedBiddersMap {
@@ -233,8 +243,9 @@ ValueAndSize SerializeAds(const std::vector<blink::InterestGroup::Ad>& ads,
 
 // This serialization is sent to the B&A server, so the format is standardized.
 // We can't add fields to this format without coordinating with the B&A team.
-ValueAndSize SerializeInterestGroup(base::Time start_time,
-                                    const SingleStorageInterestGroup& group) {
+ValueAndSizeAndPrevWinsSize SerializeInterestGroup(
+    base::Time start_time,
+    const SingleStorageInterestGroup& group) {
   cbor::Value::MapValue group_obj;
   base::CheckedNumeric<size_t> group_elements_size = 0;
 
@@ -380,9 +391,10 @@ ValueAndSize SerializeInterestGroup(base::Time start_time,
     prev_wins_elements_size += TaggedArrayLength(tuple, tuple_elements_size);
     prev_wins.emplace_back(std::move(tuple));
   }
-  browser_signals_elements_size +=
-      TaggedStringLength(constexpr_strlen("prevWins")) +
+  base::CheckedNumeric<size_t> prev_wins_array_size =
       TaggedArrayLength(prev_wins, prev_wins_elements_size);
+  browser_signals_elements_size +=
+      TaggedStringLength(constexpr_strlen("prevWins")) + prev_wins_array_size;
   browser_signals[cbor::Value("prevWins")] = cbor::Value(std::move(prev_wins));
 
   group_elements_size +=
@@ -393,7 +405,7 @@ ValueAndSize SerializeInterestGroup(base::Time start_time,
 
   base::CheckedNumeric<size_t> total_size =
       TaggedMapLength(group_obj, group_elements_size);
-  return {cbor::Value(std::move(group_obj)), total_size};
+  return {cbor::Value(std::move(group_obj)), total_size, prev_wins_array_size};
 }
 
 CompressedInterestGroups CompressInterestGroups(
@@ -405,7 +417,12 @@ CompressedInterestGroups CompressInterestGroups(
   cbor::Value::ArrayValue groups_array;
   base::CheckedNumeric<size_t> groups_elements_size = 0;
   for (const SingleStorageInterestGroup& group : groups) {
-    ValueAndSize serialized_group = SerializeInterestGroup(start_time, group);
+    ValueAndSizeAndPrevWinsSize serialized_group =
+        SerializeInterestGroup(start_time, group);
+    if (serialized_group.prev_wins_array_size.IsValid()) {
+      result.prev_wins_array_sizes.push_back(static_cast<size_t>(
+          serialized_group.prev_wins_array_size.ValueOrDie()));
+    }
     base::CheckedNumeric<size_t> uncompressed_size =
         serialized_group.size + groups_elements_size;
     if (!uncompressed_size.IsValid()) {
@@ -553,6 +570,13 @@ SerializedBiddersMap SerializeBidderGroupsWithConfig(
     if (compressed_groups.num_groups == 0) {
       // Don't include bidder if we couldn't fit any groups.
       continue;
+    }
+
+    for (size_t prev_wins_array_size :
+         compressed_groups.prev_wins_array_sizes) {
+      UMA_HISTOGRAM_COUNTS_10000(
+          "Ads.InterestGroup.ServerAuction.PrevWinsArraySize",
+          prev_wins_array_size);
     }
 
     result.num_groups += compressed_groups.num_groups;

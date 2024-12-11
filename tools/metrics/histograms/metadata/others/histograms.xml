@@ -1980,6 +1980,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.ServerAuction.PrevWinsArraySize"
+    units="bytes" expires_after="2025-05-11">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The uncompressed (pre-compression) size of the prevWins array in the B&amp;A
+    request payload, not including the prevWins label itself. Recorded every
+    time the payload is produced.
+
+    See
+    https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
+    for the latest version of the Protected Audience Bidding &amp; Auction
+    Services explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.ServerAuction.Request.APIAllowed"
     enum="Boolean" expires_after="2025-05-25">
   <owner>behamilton@google.com</owner>

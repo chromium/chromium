@@ -4371,7 +4371,12 @@ bool GetPreviousWins(sql::Database& db,
         /*ad_json=*/prev_wins.ColumnString(1));
     output->prev_wins.push_back(std::move(prev_win));
   }
-  return prev_wins.Succeeded();
+  bool succeeded = prev_wins.Succeeded();
+  if (succeeded) {
+    UMA_HISTOGRAM_COUNTS_100000("Storage.InterestGroup.PrevWinsNumEntries",
+                                output->prev_wins.size());
+  }
+  return succeeded;
 }
 
 bool GetJoinCount(sql::Database& db,
