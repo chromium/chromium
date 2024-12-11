@@ -26,51 +26,41 @@ class VideoRateControlWrapper {
   // RateControlConfig is a type of helper for passing configs
   // to codec-specific rate controller.
   struct RateControlConfig {
-    RateControlConfig();
-    ~RateControlConfig();
-
-    RateControlConfig(const RateControlConfig&);
-    RateControlConfig& operator=(const RateControlConfig&);
-
     // Frame size.
-    int width = 0;
-    int height = 0;
+    int width;
+    int height;
     // Quantizer parameter，the range is 0-63.
-    int max_quantizer = 0;
-    int min_quantizer = 0;
+    int max_quantizer;
+    int min_quantizer;
     // Target_bandwidth is in kbps.
-    int64_t target_bandwidth = 0;
+    int64_t target_bandwidth;
     // Frame rate.
-    double framerate = 0.0f;
+    double framerate;
     // Content type, camera or display.
-    VideoEncodeAccelerator::Config::ContentType content_type =
-        VideoEncodeAccelerator::Config::ContentType::kCamera;
+    VideoEncodeAccelerator::Config::ContentType content_type;
     // Target bitrate for svc layers.
-    int layer_target_bitrate[kMaxLayers] = {};
+    int layer_target_bitrate[kMaxLayers];
     // Rate decimator for temporal layers.
-    int ts_rate_decimator[kMaxTemporalLayers] = {};
+    int ts_rate_decimator[kMaxTemporalLayers];
     // Number of spatial layers.
-    int ss_number_layers = 0;
+    int ss_number_layers;
     // Number of temporal layers.
-    int ts_number_layers = 0;
+    int ts_number_layers;
     // Quantizer parameter for svc layers.
-    int max_quantizers[kMaxLayers] = {};
-    int min_quantizers[kMaxLayers] = {};
+    int max_quantizers[kMaxLayers];
+    int min_quantizers[kMaxLayers];
     // Scaling factor parameters for spatial layers.
-    int scaling_factor_num[kMaxSpatialLayers] = {};
-    int scaling_factor_den[kMaxSpatialLayers] = {};
-    // If defined, the H.264 BRC uses fixed QP difference between layers. Should
-    // not be defined for other SW BRCs.
-    std::optional<int> fixed_delta_qp;
+    int scaling_factor_num[kMaxSpatialLayers];
+    int scaling_factor_den[kMaxSpatialLayers];
   };
 
   // FrameParams is used for passing frame params.
   struct FrameParams {
     enum class FrameType { kKeyFrame, kInterFrame };
-    FrameType frame_type = FrameType::kKeyFrame;
-    int spatial_layer_id = 0;
-    int temporal_layer_id = 0;
-    unsigned int timestamp = 0;
+    FrameType frame_type;
+    int spatial_layer_id;
+    int temporal_layer_id;
+    unsigned int timestamp;
   };
 
   virtual ~VideoRateControlWrapper() = default;
