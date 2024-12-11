@@ -12,18 +12,11 @@
 namespace chromecast {
 namespace media {
 
-// Returns the length of an array.
-template <typename T, size_t n>
-static constexpr size_t ArrayLength(const T (&)[n]) {
-  return n;
-}
-
 // Rather than hard-coding values here, we simply read the length of the
 // relevant arrays in StarboardDrmSampleInfo.
-constexpr int kMaxIvLength = ArrayLength(
-    static_cast<StarboardDrmSampleInfo*>(nullptr)->initialization_vector);
-constexpr int kMaxIdLength =
-    ArrayLength(static_cast<StarboardDrmSampleInfo*>(nullptr)->identifier);
+constexpr int kMaxIvLength =
+    std::size(StarboardDrmSampleInfo{}.initialization_vector);
+constexpr int kMaxIdLength = std::size(StarboardDrmSampleInfo{}.identifier);
 
 DrmInfoWrapper::DrmInfoWrapper() = default;
 
