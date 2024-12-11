@@ -1195,7 +1195,8 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
   }
 
   // Walk up ancestor chain from node and refresh text of any related content.
-  while ((obj = obj->ParentObjectIncludedInTree()) != nullptr) {
+  while ((obj = obj->ParentObjectIncludedInTree()) != nullptr &&
+         obj->IsUsedForLabelOrDescription()) {
     Element* ancestor_element = obj->GetElement();
     if (!ancestor_element) {
       // Can occur in the CSS column case.
@@ -1217,13 +1218,10 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
 
     // Ancestors that may derive their accessible name from descendant content
     // should also handle text changed events when descendant content changes.
-    if (ancestor_element != node) {
-      if (obj &&
-          (!obj->IsIgnored() || obj->CanSetFocusAttribute()) &&
-          obj->SupportsNameFromContents(/*recursive=*/false) &&
-          !obj->NeedsToUpdateChildren()) {
-        object_cache_->MarkAXObjectDirtyWithCleanLayout(obj);
-      }
+    if ((!obj->IsIgnored() || obj->CanSetFocusAttribute()) &&
+        obj->SupportsNameFromContents(/*recursive=*/false) &&
+        !obj->NeedsToUpdateChildren()) {
+      object_cache_->MarkAXObjectDirtyWithCleanLayout(obj);
     }
 
     // Forward relation via <label for="[id]">.
