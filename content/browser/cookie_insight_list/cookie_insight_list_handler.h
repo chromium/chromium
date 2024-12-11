@@ -30,7 +30,7 @@ class CONTENT_EXPORT CookieInsightListHandler final {
   static CookieInsightListHandler& GetInstance();  // Singleton
 
   // Sets the handler's CookieInsightList.
-  void set_insight_list(CookieInsightList new_insight_list);
+  void set_insight_list(std::string_view json_content);
 
   // Returns a CookieIssueInsight based on the data in the handler's
   // CookieInsightList.

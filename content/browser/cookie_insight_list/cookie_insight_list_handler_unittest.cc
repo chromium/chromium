@@ -21,13 +21,20 @@ class CookieInsightListHandlerTest : public ::testing::Test {
   CookieInsightListHandlerTest() = default;
 
   void SetUp() override {
-    CookieInsightListHandler::GetInstance().set_insight_list({});
+    CookieInsightListHandler::GetInstance().set_insight_list("");
   }
 };
 
 TEST_F(CookieInsightListHandlerTest, GetInsight_GitHubResource_ListUpdate) {
-  CookieInsightListHandler::GetInstance().set_insight_list(
-      CookieInsightList({{"example.com", {"url"}}}));
+  const std::string json_content = R"({"entries": [
+    {
+      "domains": [
+          "example.com",
+      ],
+      "tableEntryUrl": "url"
+    }]
+  })";
+  CookieInsightListHandler::GetInstance().set_insight_list(json_content);
 
   EXPECT_THAT(
       CookieInsightListHandler::GetInstance().GetInsight("example.com", {}),
@@ -35,8 +42,15 @@ TEST_F(CookieInsightListHandlerTest, GetInsight_GitHubResource_ListUpdate) {
           CookieInsightList::InsightType::kGitHubResource,
           CookieInsightList::DomainInfo{"url"}}));
 
-  CookieInsightListHandler::GetInstance().set_insight_list(
-      CookieInsightList({{"example.com", {"newUrl"}}}));
+  const std::string new_json_content = R"({"entries": [
+    {
+      "domains": [
+          "example.com",
+      ],
+      "tableEntryUrl": "newUrl"
+    }]
+  })";
+  CookieInsightListHandler::GetInstance().set_insight_list(new_json_content);
 
   EXPECT_THAT(
       CookieInsightListHandler::GetInstance().GetInsight("example.com", {}),

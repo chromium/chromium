@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "content/browser/cookie_insight_list/cookie_insight_list.h"
+#include "content/browser/cookie_insight_list/cookie_readiness_list/cookie_readiness_list_parser.h"
 
 namespace content {
 
@@ -22,10 +23,10 @@ CookieInsightListHandler& CookieInsightListHandler::GetInstance() {
   return *instance.get();
 }
 
-void CookieInsightListHandler::set_insight_list(
-    CookieInsightList new_insight_list) {
+void CookieInsightListHandler::set_insight_list(std::string_view json_content) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  insight_list_ = std::move(new_insight_list);
+  insight_list_ =
+      std::move(CookieReadinessListParser::ParseReadinessList(json_content));
 }
 
 std::optional<CookieInsightList::CookieIssueInsight>
