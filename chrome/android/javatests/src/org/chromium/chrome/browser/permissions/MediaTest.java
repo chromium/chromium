@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.permissions;
 
+import android.os.Build;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -13,6 +15,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpdateWaiter;
@@ -53,6 +56,7 @@ public class MediaTest {
     @MediumTest
     @Feature({"MediaPermissions", "Main"})
     @CommandLineFlags.Add({FAKE_DEVICE})
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R) // https://crbug.com/383407975
     public void testMicrophoneMediaPermissionsPlumbingDialog() throws Exception {
         testMediaPermissionsPlumbing("Mic count:", "initiate_getMicrophone()", 1, true, true);
     }
