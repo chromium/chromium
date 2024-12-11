@@ -603,7 +603,7 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
     histograms.ExpectTotalCount(settings_app_install_result_histogram, 0);
     histograms.ExpectTotalCount(profile_install_result_histogram, 0);
     histograms.ExpectTotalCount(
-        SystemWebAppManager::kInstallDurationHistogramName, 0);
+        SystemWebAppManager::kFreshInstallDurationHistogramName, 0);
 
     StartAndWaitForAppsToSynchronize();
 
@@ -621,7 +621,7 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
         profile_install_result_histogram,
         webapps::InstallResultCode::kSuccessOfflineOnlyInstall, 1);
     histograms.ExpectTotalCount(
-        SystemWebAppManager::kInstallDurationHistogramName, 1);
+        SystemWebAppManager::kFreshInstallDurationHistogramName, 1);
   }
 
   externally_managed_app_manager().SetHandleInstallRequestCallback(
@@ -671,7 +671,7 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
     system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
 
     histograms.ExpectTotalCount(
-        SystemWebAppManager::kInstallDurationHistogramName, 2);
+        SystemWebAppManager::kFreshInstallDurationHistogramName, 2);
     histograms.ExpectBucketCount(
         settings_app_install_result_histogram,
         webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown, 0);
@@ -701,7 +701,7 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
         webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown, 1);
     // If install was interrupted by shutdown, do not report duration.
     histograms.ExpectTotalCount(
-        SystemWebAppManager::kInstallDurationHistogramName, 2);
+        SystemWebAppManager::kFreshInstallDurationHistogramName, 2);
   }
 }
 
@@ -785,7 +785,7 @@ TEST_F(SystemWebAppManagerTest,
     // The install duration histogram should be recorded, because the first
     // install happens on a clean profile.
     histograms.ExpectTotalCount(
-        SystemWebAppManager::kInstallDurationHistogramName, 1);
+        SystemWebAppManager::kFreshInstallDurationHistogramName, 1);
   }
 
   {
@@ -804,7 +804,7 @@ TEST_F(SystemWebAppManagerTest,
     // Don't record install duration histogram, because this time we don't ask
     // to force install all apps.
     histograms.ExpectTotalCount(
-        SystemWebAppManager::kInstallDurationHistogramName, 1);
+        SystemWebAppManager::kFreshInstallDurationHistogramName, 1);
   }
 }
 
