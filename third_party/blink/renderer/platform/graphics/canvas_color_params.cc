@@ -92,10 +92,7 @@ CanvasColorParams::CanvasColorParams(PredefinedColorSpace color_space,
                               : OpacityMode::kOpaque) {}
 
 SkColorInfo CanvasColorParams::GetSkColorInfo() const {
-  return SkColorInfo(
-      GetSkColorType(),
-      opacity_mode_ == kOpaque ? kOpaque_SkAlphaType : kPremul_SkAlphaType,
-      GetSkColorSpace());
+  return SkColorInfo(GetSkColorType(), GetAlphaType(), GetSkColorSpace());
 }
 
 String CanvasColorParams::GetColorSpaceAsString() const {

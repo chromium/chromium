@@ -49,7 +49,9 @@ class PLATFORM_EXPORT CanvasColorParams {
 
   PredefinedColorSpace ColorSpace() const { return color_space_; }
   CanvasPixelFormat PixelFormat() const { return pixel_format_; }
-  OpacityMode GetOpacityMode() const { return opacity_mode_; }
+  SkAlphaType GetAlphaType() const {
+    return opacity_mode_ == kOpaque ? kOpaque_SkAlphaType : kPremul_SkAlphaType;
+  }
 
   WTF::String GetColorSpaceAsString() const;
   WTF::String GetPixelFormatAsString() const;
