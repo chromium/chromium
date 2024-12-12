@@ -24,7 +24,8 @@ main {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding-inline: var(--tangible-sync-style-banner-width);
+  margin-inline: auto;
+  max-width: 500px;
   position: relative;
 }
 
@@ -76,7 +77,7 @@ main {
 
 .disclaimer-container {
   box-sizing: border-box;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   justify-content: center;
   margin-block-start: 12px;
   overflow-y: auto;
