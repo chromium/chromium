@@ -120,7 +120,7 @@ class CORE_EXPORT ElementAnimations final
 
   void RecalcCompositedStatusForKeyframeChange(Element& element,
                                                AnimationEffect* effect);
-  void RecalcCompositedStatus(Element* element, const CSSProperty& property);
+  void RecalcCompositedStatus(Element* element);
 
   // TODO(crbug.com/1301961): Consider converting to an array or flat map of
   // fields for paint properties that can be composited.

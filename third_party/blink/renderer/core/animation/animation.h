@@ -393,6 +393,15 @@ class CORE_EXPORT Animation : public EventTarget,
     start_time_ = start_time;
   }
 
+  enum NativePaintWorkletProperties {
+    kNoPaintWorklet = 0,
+    kBackgroundColorPaintWorklet = 1,
+    kClipPathPaintWorklet = 2
+  };
+
+  using NativePaintWorkletReasons = uint32_t;
+  NativePaintWorkletReasons GetNativePaintWorkletReasons();
+
  protected:
   DispatchEventResult DispatchEventInternal(Event&) override;
   void AddedEventListener(const AtomicString& event_type,
@@ -582,6 +591,13 @@ class CORE_EXPORT Animation : public EventTarget,
   Member<Event> pending_cancelled_event_;
 
   Member<Event> pending_remove_event_;
+
+  // Cache whether animation can potentially have native paint worklets.
+  // In the event of the keyframes changing, we need a new evaluation, of
+  // the composited status for native paint worklet eligible properties.
+  // A change in the playState can also necessitate a composited style update.
+  std::optional<NativePaintWorkletReasons> native_paint_worklet_reasons_;
+  std::optional<NativePaintWorkletReasons> prior_native_paint_worklet_reasons_;
 
   // TODO(crbug.com/960944): Consider reintroducing kPause and cleanup use of
   // mutually exclusive pending_play_ and pending_pause_ flags.
