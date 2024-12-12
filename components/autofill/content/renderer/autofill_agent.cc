@@ -2044,10 +2044,6 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm(
   //   `last_interacted_form()` or `form_element` if provided).
   if (base::FeatureList::IsEnabled(
           features::kAutofillPreferSavedFormAsSubmittedForm)) {
-    if (!form_tracker_->IsTracking() && !form_element.has_value()) {
-      LogSubmittedFormMetric(source, SubmittedFormType::kNull);
-      return std::nullopt;
-    }
     if (std::optional<FormData> form = provisionally_saved_form();
         form &&
         (!form_element.has_value() ||

@@ -312,8 +312,7 @@ void FormTracker::WillDetach(blink::DetachReason detach_reason) {
     return;
   }
   if (detach_reason == blink::DetachReason::kFrameDeletion &&
-      !unsafe_render_frame()->GetWebFrame()->IsOutermostMainFrame() &&
-      IsTracking()) {
+      !unsafe_render_frame()->GetWebFrame()->IsOutermostMainFrame()) {
     // Exclude cases where the previous RenderFrame gets deleted only to be
     // replaced by a new RenderFrame, which happens on navigations. This is so
     // that we only trigger inferred form submission if the actual frame
@@ -371,24 +370,30 @@ void FormTracker::FireFormSubmitted(const blink::WebFormElement& form) {
 }
 
 void FormTracker::FireProbablyFormSubmitted() {
-  base::UmaHistogramEnumeration(kSubmissionSourceHistogram,
-                                SubmissionSource::PROBABLY_FORM_SUBMITTED);
-  for (auto& observer : observers_)
-    observer.OnProbablyFormSubmitted();
-  if (!base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
-    ResetLastInteractedElements();
+  if (IsTracking()) {
+    base::UmaHistogramEnumeration(kSubmissionSourceHistogram,
+                                  SubmissionSource::PROBABLY_FORM_SUBMITTED);
+    for (auto& observer : observers_) {
+      observer.OnProbablyFormSubmitted();
+    }
+    if (!base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
+      ResetLastInteractedElements();
+    }
   }
 }
 
 void FormTracker::FireInferredFormSubmission(SubmissionSource source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
-  base::UmaHistogramEnumeration(kSubmissionSourceHistogram, source);
-  for (auto& observer : observers_)
-    observer.OnInferredFormSubmission(source);
-  if (source != SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
-    ResetLastInteractedElements();
+  if (IsTracking()) {
+    base::UmaHistogramEnumeration(kSubmissionSourceHistogram, source);
+    for (auto& observer : observers_) {
+      observer.OnInferredFormSubmission(source);
+    }
+    if (source != SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL ||
+        !base::FeatureList::IsEnabled(
+            features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
+      ResetLastInteractedElements();
+    }
   }
 }
 
