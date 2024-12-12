@@ -1,7 +1,0 @@
-# https://crbug.com/1294427
--org.chromium.content.browser.accessibility.WebContentsAccessibilityTest.testPerformAction_copy
--org.chromium.content.browser.accessibility.WebContentsAccessibilityTest.testPerformAction_cut
--org.chromium.content.browser.accessibility.WebContentsAccessibilityTest.testPerformAction_paste
--org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBar*Copy
--org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBar*Cut
--org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBar*Paste

@@ -91,6 +91,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.Spannable;
@@ -110,6 +111,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -2138,6 +2140,11 @@ public class WebContentsAccessibilityTest {
     /** Test that the performAction for ACTION_CUT works properly with accessibility. */
     @Test
     @SmallTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S, message = "crbug.com/40213937")
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40213937")
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "crbug.com/40213937")
     public void testPerformAction_cut() throws Throwable {
         // Build a simple web page with an input field.
         setupTestWithHTML("<input type='text' value='test text'>");
@@ -2194,6 +2201,11 @@ public class WebContentsAccessibilityTest {
     /** Test that the performAction for ACTION_COPY works properly with accessibility. */
     @Test
     @SmallTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S, message = "crbug.com/40213937")
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40213937")
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "crbug.com/40213937")
     public void testPerformAction_copy() throws Throwable {
         // Build a simple web page with an input field.
         setupTestWithHTML("<input type='text' value='test text'>");
@@ -2250,6 +2262,7 @@ public class WebContentsAccessibilityTest {
     /** Test that the performAction for ACTION_PASTE works properly with accessibility. */
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/40213937")
     public void testPerformAction_paste() throws Throwable {
         // Build a simple web page with an input field.
         setupTestWithHTML("<input type='text'>");
