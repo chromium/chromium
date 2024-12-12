@@ -54,6 +54,11 @@ class ASH_EXPORT ScannerController : public SessionObserver {
   // scanner session.
   void OnSessionUIClosed();
 
+  // Executes the action described by `scanner_action`.
+  // TODO: crbug.com/378023303 - Refactor and combine this with
+  // `OnActionStarted`.
+  void ExecuteAction(const ScannerActionViewModel& scanner_action);
+
   // Should be called when an action starts execution. This will show a progress
   // notification.
   // TODO: crbug.com/378023303 - Some actions might not need a progress

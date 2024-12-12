@@ -94,6 +94,11 @@ void ScannerController::OnSessionUIClosed() {
   scanner_session_ = nullptr;
 }
 
+void ScannerController::ExecuteAction(
+    const ScannerActionViewModel& scanner_action) {
+  scanner_action.ExecuteAction();
+}
+
 void ScannerController::OnActionStarted() {
   message_center::RichNotificationData optional_fields;
   // Show an infinite loading progress bar.

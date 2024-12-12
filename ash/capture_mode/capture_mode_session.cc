@@ -1561,7 +1561,7 @@ void CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess() {
 
 void CaptureModeSession::OnScannerActionButtonPressed(
     const ScannerActionViewModel& scanner_action) {
-  scanner_action.ExecuteAction();
+  Shell::Get()->scanner_controller()->ExecuteAction(scanner_action);
   // End the session. `this` is destroyed here.
   controller_->Stop();
 }

@@ -150,7 +150,7 @@ TEST_F(ScannerControllerTest, ShowsNotificationWhileExecutingAction) {
                                            actions_future.GetCallback());
   std::vector<ScannerActionViewModel> actions = actions_future.Take();
   ASSERT_THAT(actions, SizeIs(1));
-  actions[0].ExecuteAction(/*action_finished_callback=*/base::DoNothing());
+  scanner_controller->ExecuteAction(actions[0]);
 
   // Notification should be shown while action is executing.
   EXPECT_THAT(message_center::MessageCenter::Get()->GetVisibleNotifications(),
