@@ -25,7 +25,6 @@
 #include "chromeos/ash/components/boca/babelorca/transcript_sender_impl.h"
 #include "chromeos/ash/components/boca/babelorca/transcript_sender_rate_limiter.h"
 #include "components/live_caption/pref_names.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -61,22 +60,8 @@ BabelOrcaProducer::BabelOrcaProducer(
       caption_controller_wrapper_(std::move(caption_controller_wrapper)),
       translator_(std::move(translator)),
       pref_service_(pref_service),
-      pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()),
       authed_client_(std::move(authed_client)),
-      request_data_provider_(request_data_provider) {
-  pref_change_registrar_->Init(pref_service_);
-  pref_change_registrar_->Add(
-      prefs::kLiveTranslateTargetLanguageCode,
-      base::BindRepeating(&BabelOrcaProducer::OnTranslationPrefChanged,
-                          weak_ptr_factory_.GetWeakPtr()));
-
-  // TODO(377696975) re-factor translator.
-  translator_->InitTranslationAndSetCallback(
-      base::BindRepeating(&BabelOrcaProducer::OnTranslationCallback,
-                          weak_ptr_factory_.GetWeakPtr()),
-      pref_service_->GetString(prefs::kUserMicrophoneCaptionLanguageCode),
-      pref_service_->GetString(prefs::kLiveTranslateTargetLanguageCode));
-}
+      request_data_provider_(request_data_provider) {}
 
 BabelOrcaProducer::~BabelOrcaProducer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -190,20 +175,15 @@ void BabelOrcaProducer::OnTranscriptionResult(
     const media::SpeechRecognitionResult& result,
     const std::string& source_language) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // If  the source and target languages for translation are the
-  // same then the translator will simply forward the result
-  // to the callback function which is set during construction and
-  // when the translation target language changes with the translator's
-  // `InitTranslationAndSetCallback` function.
-  //
-  // The callback we set here will then dispatch the result to the
-  // live caption bubble.
-  //
-  // This is confusing, but the next CL downstream of this one simplifies
-  // the translator's API and makes it clear what is happening here.
-  //
-  // TODO(377696975) re-factor translator.
-  translator_->Translate(result);
+  // The `translator_` will determine if the caption needs to be
+  // translated and pass back the result regardless to the callback
+  // which in this case is `DispatchToBubble`.
+  translator_->Translate(
+      result,
+      base::BindOnce(&BabelOrcaProducer::DispatchToBubble,
+                     weak_ptr_factory_.GetWeakPtr()),
+      pref_service_->GetString(prefs::kUserMicrophoneCaptionLanguageCode),
+      pref_service_->GetString(prefs::kLiveTranslateTargetLanguageCode));
 
   // `session_captions_enabled_` can be enabled but `rate_limited_sender_` is
   // not initialized because signin is not complete.
@@ -231,25 +211,6 @@ void BabelOrcaProducer::StopRecognition() {
   // This should be a no-op if not currently observing.
   speech_recognizer_->RemoveTranscriptionResultObservation();
   rate_limited_sender_.reset();
-}
-
-void BabelOrcaProducer::OnTranslationPrefChanged() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  translator_->InitTranslationAndSetCallback(
-      base::BindRepeating(&BabelOrcaProducer::OnTranslationCallback,
-                          weak_ptr_factory_.GetWeakPtr()),
-      pref_service_->GetString(prefs::kUserMicrophoneCaptionLanguageCode),
-      pref_service_->GetString(prefs::kLiveTranslateTargetLanguageCode));
-}
-
-void BabelOrcaProducer::OnTranslationCallback(
-    const std::optional<media::SpeechRecognitionResult>& result) {
-  if (!result) {
-    VLOG(1) << "Failed to recieve translation";
-    return;
-  }
-
-  DispatchToBubble(result.value());
 }
 
 void BabelOrcaProducer::DispatchToBubble(

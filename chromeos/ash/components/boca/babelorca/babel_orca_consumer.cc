@@ -133,12 +133,6 @@ BabelOrcaConsumer::BabelOrcaConsumer(
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()),
       translator_(std::move(translator)) {
   pref_change_registrar_->Init(pref_service_);
-  current_language_ =
-      pref_service_->GetString(prefs::kUserMicrophoneCaptionLanguageCode);
-  pref_change_registrar_->Add(
-      prefs::kLiveTranslateTargetLanguageCode,
-      base::BindRepeating(&BabelOrcaConsumer::OnTranslationPrefChanged,
-                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 BabelOrcaConsumer::~BabelOrcaConsumer() {
@@ -167,17 +161,6 @@ void BabelOrcaConsumer::OnSessionCaptionConfigUpdated(
     StopReceiving();
     return;
   }
-  if (session_translations_enabled_) {
-    // TODO(377696975) re-factor translator.
-    translator_->InitTranslationAndSetCallback(
-        base::BindRepeating(&BabelOrcaConsumer::OnTranslationCallback,
-                            weak_ptr_factory_.GetWeakPtr()),
-        current_language_,
-        pref_service_->GetString(prefs::kLiveTranslateTargetLanguageCode));
-  } else {
-    // TODO(377544063) Handle in flight transcriptions rather than drop them.
-    translator_->UnsetOnTranslationCallback();
-  }
   signed_in_ = tachyon_request_data_provider_->tachyon_token().has_value();
   StartReceiving();
 }
@@ -196,15 +179,6 @@ void BabelOrcaConsumer::OnLocalCaptionConfigUpdated(
   StartReceiving();
 }
 
-void BabelOrcaConsumer::OnTranslationPrefChanged() {
-  if (session_translations_enabled_) {
-    translator_->InitTranslationAndSetCallback(
-        base::BindRepeating(&BabelOrcaConsumer::OnTranslationCallback,
-                            weak_ptr_factory_.GetWeakPtr()),
-        current_language_,
-        pref_service_->GetString(prefs::kLiveTranslateTargetLanguageCode));
-  }
-}
 
 void BabelOrcaConsumer::DispatchTranscription(
     const media::SpeechRecognitionResult& result) {
@@ -225,20 +199,6 @@ void BabelOrcaConsumer::OnTranslationCallback(
   }
 }
 
-void BabelOrcaConsumer::HandleLanguageAndDispatch(
-    const media::SpeechRecognitionResult& transcript,
-    const std::string& language) {
-  if (language != current_language_) {
-    current_language_ = language;
-    translator_->InitTranslationAndSetCallback(
-        base::BindRepeating(&BabelOrcaConsumer::OnTranslationCallback,
-                            weak_ptr_factory_.GetWeakPtr()),
-        current_language_,
-        pref_service_->GetString(prefs::kLiveTranslateTargetLanguageCode));
-  }
-
-  translator_->Translate(transcript);
-}
 
 void BabelOrcaConsumer::StartReceiving() {
   if (!local_captions_enabled_ || !session_captions_enabled_) {
@@ -317,7 +277,12 @@ void BabelOrcaConsumer::OnTranscriptReceived(
     media::SpeechRecognitionResult transcript,
     std::string language) {
   if (session_translations_enabled_) {
-    HandleLanguageAndDispatch(transcript, language);
+    translator_->Translate(
+        transcript,
+        base::BindOnce(&BabelOrcaConsumer::DispatchTranscription,
+                       weak_ptr_factory_.GetWeakPtr()),
+        language,
+        pref_service_->GetString(prefs::kLiveTranslateTargetLanguageCode));
     return;
   }
 

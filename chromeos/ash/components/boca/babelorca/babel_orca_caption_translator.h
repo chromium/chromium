@@ -18,8 +18,8 @@ namespace ash::babelorca {
 
 class BabelOrcaCaptionTranslator {
  public:
-  using OnTranslationCallback = base::RepeatingCallback<void(
-      const std::optional<media::SpeechRecognitionResult>&)>;
+  using OnTranslationCallback =
+      base::OnceCallback<void(const media::SpeechRecognitionResult&)>;
 
   explicit BabelOrcaCaptionTranslator(
       std::unique_ptr<BabelOrcaTranslationDipsatcher> translation_dispatcher);
@@ -28,30 +28,23 @@ class BabelOrcaCaptionTranslator {
   BabelOrcaCaptionTranslator operator=(const BabelOrcaCaptionTranslator&) =
       delete;
 
-  // Called before calls to translate.  This sets the source and target language
-  // as well as the callback that will trigger once translation has completed.
-  void InitTranslationAndSetCallback(OnTranslationCallback callback,
-                                     const std::string& source_language,
-                                     const std::string& target_language);
+  void Translate(const media::SpeechRecognitionResult& recognition_result,
+                 OnTranslationCallback callback,
+                 const std::string& source_language,
+                 const std::string& target_language);
 
-  // Called to cleanup the callback if translations are no longer needed.
-  void UnsetOnTranslationCallback() { callback_.Reset(); }
-
-  // Translates results contents if `recognition_result` is present and the
-  // OnTranslationCallback is set.  this method does nothing if
-  //`InitTranslationAndSetCallback` hasn't been called.
-  void Translate(
-      const std::optional<media::SpeechRecognitionResult>& recognition_result);
+  // Methods used for setting the current source and target
+  // languages in tests.
+  void SetDefaultLanguagesForTesting(const std::string& default_source,
+                                     const std::string& default_target);
+  void UnsetCurrentLanguagesForTesting();
 
  private:
-  // Utility for ensuring we're only comparing the language components of
-  // locales.
-  static std::string GetLanguageComponentFromLocale(const std::string& locale);
-
   // Unwraps and formats output from the translation dispatcher, then passes
   // the result, if successful, to the callback.  Otherwise passes a nullopt
   // to indicate an error.
   void OnTranslationDispatcherCallback(
+      OnTranslationCallback callback,
       const std::string& cached_translation,
       const std::string& original_transcription,
       const std::string& source_language,
@@ -59,13 +52,9 @@ class BabelOrcaCaptionTranslator {
       bool is_final,
       const std::string& result);
 
-  bool IsNonIdeographicSourceOrIdeographicTarget();
-  bool AreLanguagesTheSame();
+  std::optional<std::string> current_source_language_;
+  std::optional<std::string> current_target_language_;
 
-  std::string source_language_;
-  std::string target_language_;
-
-  OnTranslationCallback callback_;
   ::captions::TranslationCache translation_cache_;
   std::unique_ptr<BabelOrcaTranslationDipsatcher> translation_dispatcher_;
 

@@ -16,7 +16,6 @@
 #include "chromeos/ash/components/boca/babelorca/babel_orca_caption_translator.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_controller.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client_impl.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
 namespace media {
@@ -75,13 +74,6 @@ class BabelOrcaProducer : public BabelOrcaController {
 
   void StopRecognition();
 
-  void OnTranslationPrefChanged();
-  // TODO(377696975) After re-factor this method will be unneeded.
-  void OnTranslationCallback(
-      const std::optional<media::SpeechRecognitionResult>& result);
-  void TranslateAndDispatchToBubble(
-      const media::SpeechRecognitionResult& result);
-
   void DispatchToBubble(const media::SpeechRecognitionResult& result);
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -93,7 +85,6 @@ class BabelOrcaProducer : public BabelOrcaController {
   const std::unique_ptr<BabelOrcaCaptionTranslator> translator_
       GUARDED_BY_CONTEXT(sequence_checker_);
   const raw_ptr<PrefService> pref_service_;
-  const std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   std::unique_ptr<babelorca::TachyonAuthedClient> authed_client_;
   const raw_ptr<TachyonRequestDataProvider> request_data_provider_;
