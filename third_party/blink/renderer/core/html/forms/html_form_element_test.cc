@@ -218,6 +218,56 @@ TEST_F(HTMLFormElementTest, ListedElementsAfterIncludeShadowTrees) {
   EXPECT_THAT(form1->ListedElements(), ElementsAre(GetListedElement("input1")));
 }
 
+// Regression test for crbug.com/347059988#comment47: Inserting a subtree that
+// includes a shadow DOM *directly* into a form invalidates the form's cache of
+// ListedElements().
+TEST_F(HTMLFormElementTest,
+       ListedElementsAfterIncludeShadowTreesWithDynamicChange) {
+  HTMLBodyElement* body = GetDocument().FirstBodyElement();
+  body->setHTMLUnsafe(R"HTML(
+    <form id=form1>
+      <input id=input1>
+      <!--
+        Dynamically we'll insert:
+        <div id=div1>
+          <template shadowrootmode=open>
+            <input id=input2>
+          </template>
+        </div>
+      -->
+    </form>
+  )HTML");
+
+  HTMLFormElement* form1 = GetFormElement("form1");
+  ListedElement* input1 = GetListedElement("input1");
+  ASSERT_NE(form1, nullptr);
+  ASSERT_NE(input1, nullptr);
+
+  HTMLDivElement* div1 = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  ShadowRoot& div1root =
+      div1->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+
+  HTMLInputElement* input2 =
+      MakeGarbageCollected<HTMLInputElement>(GetDocument());
+  div1root.AppendChild(input2);
+
+  EXPECT_THAT(form1->ListedElements(/*include_shadow_trees=*/true),
+              ElementsAre(input1));
+  EXPECT_THAT(form1->ListedElements(), ElementsAre(input1));
+
+  form1->AppendChild(div1);
+
+  EXPECT_THAT(form1->ListedElements(/*include_shadow_trees=*/true),
+              ElementsAre(input1, input2));
+  EXPECT_THAT(form1->ListedElements(), ElementsAre(input1));
+
+  form1->RemoveChild(div1);
+
+  EXPECT_THAT(form1->ListedElements(/*include_shadow_trees=*/true),
+              ElementsAre(input1));
+  EXPECT_THAT(form1->ListedElements(), ElementsAre(input1));
+}
+
 // Regression test for crbug.com/349121116: If there are no "form" attributes,
 // the traversal in CollectListedElements() must only collect descendants of the
 // form element.
