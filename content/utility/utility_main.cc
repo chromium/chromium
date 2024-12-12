@@ -176,8 +176,6 @@ bool PreLockdownSandboxHook(base::span<const uint8_t> delegate_blob) {
       HMODULE h_mod = base::LoadNativeLibrary(library_path, &lib_error);
       // We deliberately "leak" `h_mod` so that the module stays loaded.
       if (!h_mod) {
-        base::UmaHistogramSparse(
-            "Process.Sandbox.PreloadLibraryFailed.ErrorCode", lib_error.code);
         // The browser should not request libraries that do not exist, so crash
         // on failure. Record info to distinguish crash signatures.
         base::debug::Alias(&lib_error);
