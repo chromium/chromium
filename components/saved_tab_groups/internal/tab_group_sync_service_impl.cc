@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
@@ -78,7 +79,8 @@ void UpdateTabTitleIfNeeded(
     if (page_entities_metadata.has_value() &&
         !page_entities_metadata->alternative_title().empty()) {
       use_url_as_title = false;
-      title = base::ASCIIToUTF16(page_entities_metadata->alternative_title());
+      title = base::UnescapeForHTML(
+          base::UTF8ToUTF16(page_entities_metadata->alternative_title()));
     }
   }
   stats::RecordSharedGroupTitleSanitization(use_url_as_title, type);
