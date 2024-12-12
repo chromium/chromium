@@ -8,6 +8,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/time/time.h"
 #include "cc/trees/browser_controls_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -30,6 +31,7 @@
 #include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -1889,6 +1891,71 @@ TEST_F(AnchorElementMetricsSenderTest,
   // Add an anchor (to the main document); it should not crash.
   AddAnchor("two", 200);
   ProcessEvents(1);
+}
+
+TEST_F(AnchorElementMetricsSenderTest,
+       IntersectionObservationDelayedToAfterFCP) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kNavigationPredictor,
+      {{"random_anchor_sampling_period", "1"},
+       {"intersection_observation_after_fcp_only", "true"},
+       {"post_fcp_observation_delay", "200ms"}});
+
+  String source("https://foo.com");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+
+  String fcp_blocking_script("https://foo.com/script");
+  SimRequest fcp_blocking_script_resource(fcp_blocking_script,
+                                          "text/javascript");
+
+  main_resource.Complete(String::Format(R"html(
+    <body>
+      <script>
+        window.onload = () => {
+          const script = document.createElement("script");
+          script.src = "%s";
+          document.body.appendChild(script);
+        }
+      </script>
+    </body>
+  )html",
+                                        fcp_blocking_script.Utf8().c_str()));
+  ProcessEvents(0);
+  auto* tracker =
+      AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(GetDocument());
+  EXPECT_EQ(tracker->GetIntersectionObserverForTesting(), nullptr);
+
+  // Run the FCP blocking script.
+  fcp_blocking_script_resource.Complete(String(R"js(
+    let anchor = document.createElement("a");
+    anchor.innerText = "one";
+    anchor.href = "https://foo.com/one";
+    document.body.appendChild(anchor);
+  )js"));
+  platform_->RunForPeriod(base::Milliseconds(10));
+  ASSERT_EQ(GetDocument().links()->length(), 1u);
+
+  // Run a lifecycle update, FCP should happen.
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  ASSERT_FALSE(PaintTiming::From(GetDocument())
+                   .FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
+                   .is_null());
+  EXPECT_EQ(tracker->GetIntersectionObserverForTesting(), nullptr);
+
+  // Wait for the delay configured with "post_fcp_observation_delay". The
+  // IntersectionObserver should now be initialized.
+  platform_->RunForPeriod(base::Milliseconds(200));
+  EXPECT_NE(tracker->GetIntersectionObserverForTesting(), nullptr);
+
+  // Just sanity check that things still work.
+  ProcessEvents(1);
+  platform_->RunForPeriod(base::Milliseconds(1));
+  ASSERT_EQ(hosts_.size(), 1u);
+  EXPECT_EQ(hosts_[0]->elements_.size(), 1u);
+  EXPECT_EQ(hosts_[0]->entered_viewport_.size(), 1u);
+  EXPECT_EQ(hosts_[0]->left_viewport_.size(), 0u);
 }
 
 }  // namespace blink

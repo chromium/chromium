@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 
@@ -42,6 +43,20 @@ base::TimeDelta GetIntersectionObserverDelay() {
   const base::FeatureParam<base::TimeDelta> param{
       &features::kNavigationPredictor, "intersection_observer_delay",
       base::Milliseconds(100)};
+  return param.Get();
+}
+
+bool ShouldOnlyObserveAfterFCP() {
+  const base::FeatureParam<bool> param{
+      &features::kNavigationPredictor,
+      "intersection_observation_after_fcp_only", false};
+  return param.Get();
+}
+
+base::TimeDelta PostFCPObservationDelay() {
+  const base::FeatureParam<base::TimeDelta> param{
+      &features::kNavigationPredictor, "post_fcp_observation_delay",
+      base::Milliseconds(1300)};
   return param.Get();
 }
 
@@ -78,15 +93,19 @@ AnchorElementViewportPositionTracker::AnchorElementViewportPositionTracker(
           document.GetExecutionContext()->GetTaskRunner(
               TaskType::kInternalDefault),
           this,
-          &AnchorElementViewportPositionTracker::PositionUpdateTimerFired) {
-  intersection_observer_ = IntersectionObserver::Create(
-      document,
-      WTF::BindRepeating(
-          &AnchorElementViewportPositionTracker::UpdateVisibleAnchors,
-          WrapWeakPersistent(this)),
-      LocalFrameUkmAggregator::kAnchorElementMetricsIntersectionObserver,
-      {.thresholds = {kIntersectionRatioThreshold},
-       .delay = intersection_observer_delay_});
+          &AnchorElementViewportPositionTracker::PositionUpdateTimerFired),
+      post_fcp_delay_timer_(
+          document.GetExecutionContext()->GetTaskRunner(
+              TaskType::kInternalDefault),
+          this,
+          &AnchorElementViewportPositionTracker::PostFCPDelayTimerFired) {
+  const bool after_fcp =
+      !PaintTiming::From(document)
+           .FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
+           .is_null();
+  if (!ShouldOnlyObserveAfterFCP() || after_fcp) {
+    InitializeIntersectionObserver();
+  }
 }
 
 AnchorElementViewportPositionTracker::~AnchorElementViewportPositionTracker() =
@@ -97,6 +116,7 @@ void AnchorElementViewportPositionTracker::Trace(Visitor* visitor) const {
   visitor->Trace(intersection_observer_);
   visitor->Trace(anchors_in_viewport_);
   visitor->Trace(position_update_timer_);
+  visitor->Trace(post_fcp_delay_timer_);
   visitor->Trace(observers_);
 }
 
@@ -145,14 +165,18 @@ HTMLAnchorElementBase* AnchorElementViewportPositionTracker::MaybeObserveAnchor(
         DOMNodeIds::NodeForId(smallest_observed_anchor_it->dom_node_id);
     CHECK(node);
     anchor_unobserved = To<HTMLAnchorElementBase>(node);
-    intersection_observer_->unobserve(anchor_unobserved);
+    if (intersection_observer_) {
+      intersection_observer_->unobserve(anchor_unobserved);
+    }
     not_observed_anchors_.insert(
         observed_anchors_.extract(smallest_observed_anchor_it));
   }
 
   if (should_observe) {
     // Observe the element to collect time_in_viewport stats.
-    intersection_observer_->observe(&anchor_element);
+    if (intersection_observer_) {
+      intersection_observer_->observe(&anchor_element);
+    }
     observed_anchors_.insert(
         {.percent_area = percent_area,
          .dom_node_id = DOMNodeIds::IdForNode(&anchor_element)});
@@ -176,13 +200,17 @@ void AnchorElementViewportPositionTracker::RemoveAnchor(
     if (auto observed_anchors_it = base::ranges::find(
             observed_anchors_, node_id, &AnchorObservation::dom_node_id);
         observed_anchors_it != observed_anchors_.end()) {
-      intersection_observer_->unobserve(&anchor);
+      if (intersection_observer_) {
+        intersection_observer_->unobserve(&anchor);
+      }
       observed_anchors_.erase(observed_anchors_it);
       if (!not_observed_anchors_.empty()) {
         auto largest_non_observed_anchor_it =
             std::prev(not_observed_anchors_.end());
-        intersection_observer_->observe(To<Element>(DOMNodeIds::NodeForId(
-            largest_non_observed_anchor_it->dom_node_id)));
+        if (intersection_observer_) {
+          intersection_observer_->observe(To<Element>(DOMNodeIds::NodeForId(
+              largest_non_observed_anchor_it->dom_node_id)));
+        }
         observed_anchors_.insert(
             not_observed_anchors_.extract(largest_non_observed_anchor_it));
       }
@@ -214,7 +242,7 @@ void AnchorElementViewportPositionTracker::RecordPointerDown(
 }
 
 void AnchorElementViewportPositionTracker::OnScrollEnd() {
-  if (!ShouldReportViewportPositions()) {
+  if (!ShouldReportViewportPositions() || !intersection_observer_) {
     return;
   }
 
@@ -235,6 +263,15 @@ void AnchorElementViewportPositionTracker::OnScrollEnd() {
     position_update_timer_.StartOneShot(intersection_observer_delay_,
                                         FROM_HERE);
   }
+}
+
+void AnchorElementViewportPositionTracker::OnFirstContentfulPaint() {
+  if (!ShouldOnlyObserveAfterFCP()) {
+    CHECK(intersection_observer_);
+    return;
+  }
+
+  post_fcp_delay_timer_.StartOneShot(PostFCPObservationDelay(), FROM_HERE);
 }
 
 IntersectionObserver*
@@ -391,6 +428,27 @@ void AnchorElementViewportPositionTracker::RegisterForLifecycleNotifications() {
     view->RegisterForLifecycleNotifications(this);
     is_registered_for_lifecycle_notifications_ = true;
   }
+}
+
+void AnchorElementViewportPositionTracker::InitializeIntersectionObserver() {
+  CHECK(!intersection_observer_);
+  intersection_observer_ = IntersectionObserver::Create(
+      *GetSupplementable(),
+      WTF::BindRepeating(
+          &AnchorElementViewportPositionTracker::UpdateVisibleAnchors,
+          WrapWeakPersistent(this)),
+      LocalFrameUkmAggregator::kAnchorElementMetricsIntersectionObserver,
+      {.thresholds = {kIntersectionRatioThreshold},
+       .delay = intersection_observer_delay_});
+
+  for (const AnchorObservation& observed_anchor : observed_anchors_) {
+    intersection_observer_->observe(
+        To<Element>(DOMNodeIds::NodeForId(observed_anchor.dom_node_id)));
+  }
+}
+
+void AnchorElementViewportPositionTracker::PostFCPDelayTimerFired(TimerBase*) {
+  InitializeIntersectionObserver();
 }
 
 }  // namespace blink
