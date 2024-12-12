@@ -43198,12 +43198,22 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Tabs.ArchivedDuplicateTab">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a duplicate tab that is not the most recently used copy is
+    archived. This is happens when tabs share the same URL.
+  </description>
+</action>
+
 <action name="Tabs.ArchivedTabAutoDeleted">
   <owner>wylieb@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <description>
     Recorded when an archived tab is deleted. This happens when the tab's last
-    archived tab exceeds the limit for auto-deletion.
+    archived time exceeds the limit for auto-deletion.
   </description>
 </action>
 

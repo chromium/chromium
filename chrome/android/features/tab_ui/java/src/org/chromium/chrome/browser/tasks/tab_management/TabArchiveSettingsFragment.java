@@ -104,6 +104,8 @@ public class TabArchiveSettingsFragment extends ChromeBaseSettingsFragment {
                 (preference, newValue) -> {
                     boolean enabled = (boolean) newValue;
                     mArchiveSettings.setArchiveDuplicateTabsEnabled(enabled);
+                    RecordHistogram.recordBooleanHistogram(
+                            "Tabs.ArchiveSettings.ArchiveDuplicateTabsEnabled", enabled);
                     return true;
                 });
     }

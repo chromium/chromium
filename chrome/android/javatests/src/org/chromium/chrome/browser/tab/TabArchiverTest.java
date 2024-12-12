@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.tab;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
@@ -488,6 +490,8 @@ public class TabArchiverTest {
         // Check that tab 2 has been archived.
         assertEquals(0, mArchivedTabModel.getTabAt(0).getTimestampMillis());
         watcher.assertExpected();
+        String action = "Tabs.ArchivedDuplicateTab";
+        assertTrue(mUserActionTester.getActions().contains(action));
     }
 
     @Test
@@ -586,6 +590,8 @@ public class TabArchiverTest {
         CriteriaHelper.pollUiThread(() -> 4 == mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
         watcher.assertExpected();
+        String action = "Tabs.ArchivedDuplicateTab";
+        assertFalse(mUserActionTester.getActions().contains(action));
     }
 
     @Test

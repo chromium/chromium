@@ -405,6 +405,9 @@ public class TabArchiver implements TabWindowManager.Observer {
                         : false;
         RecordHistogram.recordCount1000Histogram(
                 "Tabs.TabArchiveEligibilityCheck.AfterNDays", tabAgeDays);
+        if (isDuplicateTabEligibleForArchive) {
+            RecordUserAction.record("Tabs.ArchivedDuplicateTab");
+        }
         return isTabTimestampEligibleForArchive || isDuplicateTabEligibleForArchive;
     }
 

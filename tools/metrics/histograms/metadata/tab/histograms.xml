@@ -1817,6 +1817,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.ArchiveSettings.ArchiveDuplicateTabsEnabled"
+    enum="Boolean" expires_after="2025-03-02">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records when a user toggles the settings entry for automatically archiving
+    duplicate tabs on Android. The default state is enabled and is not recorded.
+    This histogram tracks the new state of the toggle and is emitted each time
+    it is changed. True corresponds to enabled and false corresponds to
+    disabled.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.ArchiveSettings.AutoDeleteEnabled" enum="Boolean"
     expires_after="2025-03-02">
   <owner>wylieb@chromium.org</owner>
