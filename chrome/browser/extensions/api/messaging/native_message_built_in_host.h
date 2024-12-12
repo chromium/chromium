@@ -23,8 +23,8 @@ struct NativeMessageBuiltInHost {
   const char* const name;
 
   // The extension origins allowed to create the built-in host.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #global-scope
+  // This field is not a raw_ptr<> because it only ever points at statically-
+  // allocated memory which is never freed, and hence cannot dangle.
   RAW_PTR_EXCLUSION const char* const* const allowed_origins;
 
   // The count of |allowed_origins|.
