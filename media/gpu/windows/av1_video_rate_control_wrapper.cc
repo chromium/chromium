@@ -26,9 +26,9 @@ void AV1RateControl::PostEncodeUpdate(uint64_t encoded_frame_size,
 }
 
 template <>
-aom::AV1RateControlRtcConfig AV1RateControl::ConvertControlConfig(
+AV1RateControlRtcConfig AV1RateControl::ConvertControlConfig(
     const RateControlConfig& config) {
-  aom::AV1RateControlRtcConfig rc_config;
+  AV1RateControlRtcConfig rc_config;
   rc_config.width = config.width;
   rc_config.height = config.height;
   rc_config.target_bandwidth = config.target_bandwidth;
@@ -64,15 +64,15 @@ aom::AV1RateControlRtcConfig AV1RateControl::ConvertControlConfig(
 }
 
 template <>
-aom::AV1FrameParamsRTC AV1RateControl::ConvertFrameParams(
+AV1FrameParamsRTC AV1RateControl::ConvertFrameParams(
     const FrameParams& frame_params) {
-  aom::AV1FrameParamsRTC rc_params;
+  AV1FrameParamsRTC rc_params;
   rc_params.spatial_layer_id = frame_params.spatial_layer_id;
   rc_params.temporal_layer_id = frame_params.temporal_layer_id;
   rc_params.frame_type =
       frame_params.frame_type == FrameParams::FrameType::kKeyFrame
-          ? aom::kKeyFrame
-          : aom::kInterFrame;
+          ? kKeyFrame
+          : kInterFrame;
   return rc_params;
 }
 

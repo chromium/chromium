@@ -456,7 +456,7 @@ bool AV1VaapiVideoEncoderDelegate::UpdateRates(
   current_params_.bitrate_allocation = bitrate_allocation;
   current_params_.framerate = framerate;
 
-  aom::AV1RateControlRtcConfig rc_config;
+  AV1RateControlRtcConfig rc_config;
   rc_config.width = coded_size_.width();
   rc_config.height = coded_size_.height();
   // third_party/webrtc/modules/video_coding/codecs/av1/libaom_av1_encoder.cc
@@ -599,13 +599,12 @@ AV1VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
     }
   }
 
-  aom::AV1FrameParamsRTC frame_params{
-      .frame_type =
-          encode_job.IsKeyframeRequested() ? aom::kKeyFrame : aom::kInterFrame,
+  AV1FrameParamsRTC frame_params{
+      .frame_type = encode_job.IsKeyframeRequested() ? kKeyFrame : kInterFrame,
       .spatial_layer_id = 0,
       .temporal_layer_id = temporal_idx.value_or(0),
   };
-  if (rate_ctrl_->ComputeQP(frame_params) == aom::FrameDropDecision::kDrop) {
+  if (rate_ctrl_->ComputeQP(frame_params) == FrameDropDecision::kDrop) {
     CHECK(!encode_job.IsKeyframeRequested());
     DVLOGF(3) << "Drop frame";
     return PrepareEncodeJobResult::kDrop;
@@ -913,13 +912,13 @@ bool AV1VaapiVideoEncoderDelegate::FillPictureParam(
 
   pic_param.base_qindex = rate_ctrl_->GetQP();
 
-  aom::AV1LoopfilterLevel loop_filter_level = rate_ctrl_->GetLoopfilterLevel();
+  AV1LoopfilterLevel loop_filter_level = rate_ctrl_->GetLoopfilterLevel();
   pic_param.filter_level[0] = loop_filter_level.filter_level[0];
   pic_param.filter_level[1] = loop_filter_level.filter_level[1];
   pic_param.filter_level_u = loop_filter_level.filter_level_u;
   pic_param.filter_level_v = loop_filter_level.filter_level_v;
 
-  aom::AV1SegmentationData seg_data;
+  AV1SegmentationData seg_data;
   constexpr uint32_t kSegmentGranularity = 4;
   rate_ctrl_->GetSegmentationData(&seg_data);
   CHECK_EQ(seg_data.segmentation_map_size,
