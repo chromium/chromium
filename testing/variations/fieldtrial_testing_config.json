@@ -709,6 +709,21 @@
             ]
         }
     ],
+    "AppBoundDataReencrypt": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AppBoundDataReencrypt"
+                    ]
+                }
+            ]
+        }
+    ],
     "AppCloseRefreshClankStudy": [
         {
             "platforms": [

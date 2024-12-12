@@ -36,7 +36,7 @@ bool g_non_standard_user_data_dir_supported_for_testing = false;
 
 namespace features {
 BASE_FEATURE(kAppBoundDataReencrypt,
-             "kAppBoundDataReencrypt",
+             "AppBoundDataReencrypt",
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 
