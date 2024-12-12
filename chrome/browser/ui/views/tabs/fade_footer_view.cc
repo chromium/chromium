@@ -192,9 +192,9 @@ void FadeCollaborationMessagingFooterRow::SetData(
     return;
   }
 
-  if (data_.avatar.has_value()) {
+  if (!data_.avatar.IsEmpty()) {
     // Use avatar, if supplied.
-    SetContent(*data_.avatar, data_.text);
+    SetContent(data_.avatar, data_.text);
     return;
   }
 

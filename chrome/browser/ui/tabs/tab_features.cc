@@ -156,7 +156,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
     if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
       collaboration_messaging_tab_data_ =
-          std::make_unique<tab_groups::CollaborationMessagingTabData>();
+          std::make_unique<tab_groups::CollaborationMessagingTabData>(profile);
     }
 
     embedder_tab_observer_ =

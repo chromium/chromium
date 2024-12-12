@@ -30,7 +30,7 @@ struct PerformanceRowData {
 struct CollaborationMessagingRowData {
   bool should_show_collaboration_messaging = false;
   std::u16string text;
-  std::optional<ui::ImageModel> avatar = std::nullopt;
+  ui::ImageModel avatar;
 
   CollaborationMessagingRowData();
   ~CollaborationMessagingRowData();

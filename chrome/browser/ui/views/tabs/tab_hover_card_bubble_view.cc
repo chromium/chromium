@@ -502,6 +502,7 @@ TabHoverCardBubbleView::GetCollaborationMessagingData(
     default:
       NOTREACHED();
   }
+  collaboration_messaging_data.avatar = data->hover_card_avatar();
   collaboration_messaging_data.should_show_collaboration_messaging = true;
 
   return collaboration_messaging_data;

@@ -7741,6 +7741,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/settings",
       "//chrome/browser/ui/webui/signin:unit_tests",
       "//components/autofill_ai/core/browser:browser",
+      "//components/data_sharing:test_support",
     ]
 
     if (is_chrome_branded) {

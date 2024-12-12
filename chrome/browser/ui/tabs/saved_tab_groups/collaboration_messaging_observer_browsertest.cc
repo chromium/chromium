@@ -148,6 +148,10 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
   // CHIP messages set the message in TabFeatures
   auto tab2_id =
       browser()->tab_strip_model()->GetTabAtIndex(2)->GetHandle().raw_value();
+
+  // Prevent network request.
+  GetTabDataAtIndex(browser(), 2)->set_mocked_avatar_for_testing(gfx::Image());
+
   auto chip_message =
       CreateMessage("User", "URL", CollaborationEvent::TAB_ADDED,
                     PersistentNotificationType::CHIP, tab2_id, group_id);
@@ -207,6 +211,10 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
   // CHIP messages set the message in TabFeatures
   auto tab2_id =
       browser()->tab_strip_model()->GetTabAtIndex(2)->GetHandle().raw_value();
+
+  // Prevent network request.
+  GetTabDataAtIndex(browser(), 2)->set_mocked_avatar_for_testing(gfx::Image());
+
   auto chip_message =
       CreateMessage("User", "URL", CollaborationEvent::TAB_ADDED,
                     PersistentNotificationType::CHIP, tab2_id, group_id);
