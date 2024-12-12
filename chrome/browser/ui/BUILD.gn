@@ -4414,6 +4414,8 @@ static_library("ui") {
       "views/passwords/password_auto_sign_in_view.h",
       "views/passwords/password_bubble_view_base.cc",
       "views/passwords/password_bubble_view_base.h",
+      "views/passwords/password_change/password_change_view_factory.cc",
+      "views/passwords/password_change/password_change_view_factory.h",
       "views/passwords/password_change/sign_in_check_bubble_view.cc",
       "views/passwords/password_change/sign_in_check_bubble_view.h",
       "views/passwords/password_cross_domain_confirmation_popup_view_views.cc",

@@ -136,6 +136,10 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
               (override));
   MOCK_METHOD(void, MaybeShowIOSPasswordPromo, (), (override));
   MOCK_METHOD(void, RelaunchChrome, (), (override));
+  MOCK_METHOD(PasswordChangeDelegate*,
+              GetPasswordChangeDelegate,
+              (),
+              (const override));
 
   base::WeakPtr<PasswordsModelDelegateMock> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

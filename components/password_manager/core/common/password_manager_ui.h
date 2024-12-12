@@ -97,6 +97,9 @@ enum State {
   // A passkey was created automatically to "upgrade" an existing password for
   // the same website and user.
   PASSKEY_UPGRADE_STATE,
+
+  // Password change flow was started.
+  PASSWORD_CHANGE_STATE,
 };
 
 }  // namespace password_manager::ui

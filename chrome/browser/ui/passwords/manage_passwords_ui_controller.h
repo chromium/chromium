@@ -269,6 +269,8 @@ class ManagePasswordsUIController
   void PrimaryPageChanged(content::Page& page) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 
+  PasswordChangeDelegate* GetPasswordChangeDelegate() const override;
+
  private:
   friend class content::WebContentsUserData<ManagePasswordsUIController>;
 
@@ -355,6 +357,9 @@ class ManagePasswordsUIController
   // Returns true if the password that is about to be changed was previously
   // phished.
   bool IsPendingPasswordPhished() const;
+
+  // Returns true if password changing is currently running.
+  bool IsPasswordChangeOngoing() const;
 
   // Timeout in seconds for the manual fallback for saving.
   static int save_fallback_timeout_in_seconds_;
