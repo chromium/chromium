@@ -496,7 +496,7 @@ component("headless_non_renderer") {
 
   # Normally set to false (see build/args/headless.gn), but we can optionally
   # use external v8 startup data too.
-  if ((!is_win || is_component_build) && v8_use_external_startup_data) {
+  if (v8_use_external_startup_data) {
     public_deps += [ "//v8" ]
     if (use_v8_context_snapshot) {
       data += [ "$root_out_dir/$v8_context_snapshot_filename" ]
