@@ -105,9 +105,7 @@ public class IncognitoTabLauncher extends Activity {
     /** Returns whether the omnibox should be focused after launching the incognito tab. */
     public static boolean shouldFocusOmnibox(Intent intent) {
         assert didCreateIntent(intent);
-        return isVerifiedFirstPartyIntent(intent)
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS);
+        return isVerifiedFirstPartyIntent(intent);
     }
 
     /** Returns if the intent is from a verified first party app. */

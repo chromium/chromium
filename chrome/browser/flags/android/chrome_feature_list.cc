@@ -265,7 +265,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kEnableXAxisActivityTransition,
     &kExperimentsForAgsa,
     &kFloatingSnackbar,
-    &kFocusOmniboxInIncognitoTabIntents,
     &kForceBrowserControlsUponExitingFullscreen,
     &kForceListTabSwitcher,
     &kForceTranslucentNotificationTrampoline,
@@ -446,10 +445,6 @@ BASE_FEATURE(kAllowNewIncognitoTabIntents,
 
 BASE_FEATURE(kAvoidSelectedTabFocusOnLayoutDoneShowing,
              "AvoidSelectedTabFocusOnLayoutDoneShowing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFocusOmniboxInIncognitoTabIntents,
-             "FocusOmniboxInIncognitoTabIntents",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Long-term flag for debugging only.
