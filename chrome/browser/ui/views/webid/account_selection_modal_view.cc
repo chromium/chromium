@@ -161,6 +161,7 @@ AccountSelectionModalView::AccountSelectionModalView(
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   title_ = webid::GetTitle(rp_for_display_, idp_title, rp_context);
+  SetTitle(title_);
 
   header_view_ = AddChildView(CreateHeader());
   AddChildView(CreatePlaceholderAccountRow());
@@ -319,7 +320,6 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateHeader() {
       std::make_unique<views::Label>(title_, views::style::CONTEXT_DIALOG_TITLE,
                                      views::style::STYLE_HEADLINE_4));
   SetLabelProperties(title_label_);
-  title_label_->SetFocusBehavior(FocusBehavior::ALWAYS);
 
   return header;
 }
@@ -551,6 +551,8 @@ void AccountSelectionModalView::ShowErrorDialog(
 
   title_ = summary_text;
   title_label_->SetText(title_);
+  SetTitle(title_);
+
   // body_label_ may be invisible if the preceding UI is the disclosure UI. When
   // error is triggered directly from the loading UI in case of auto re-authn,
   // body_label_ is still present at this moment.
@@ -638,7 +640,12 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
     disclosure_label->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
         /*top=*/fedcm::kVerticalSpacing, /*left=*/0, /*bottom=*/0,
         /*right=*/0)));
-    queued_announcement_ = disclosure_label->GetText();
+    // Announce immediately if the view is showing.
+    if (GetWidget()->IsVisible()) {
+      GetViewAccessibility().AnnounceAlert(disclosure_label->GetText());
+    } else {
+      queued_announcement_ = disclosure_label->GetText();
+    }
     account_chooser_->AddChildView(std::move(disclosure_label));
   }
   AddChildView(CreateButtonRow(
@@ -858,19 +865,6 @@ std::u16string AccountSelectionModalView::GetQueuedAnnouncementForTesting() {
 }
 
 views::View* AccountSelectionModalView::GetInitiallyFocusedView() {
-  // If title has not been announced before, focus and announce the title.
-  if (!has_announced_title_) {
-    has_announced_title_ = true;
-    return title_label_;
-  }
-
-  // Make the queued announcement, if available. This can either be the
-  // disclosure text or the verifying status.
-  if (!queued_announcement_.empty()) {
-    GetViewAccessibility().AnnounceAlert(queued_announcement_);
-    queued_announcement_ = u"";
-  }
-
   // If there is a view that triggered the verifying sheet, focus on the last
   // clicked view.
   if (verifying_focus_view_) {
@@ -882,8 +876,16 @@ views::View* AccountSelectionModalView::GetInitiallyFocusedView() {
     return continue_button_;
   }
 
-  // Default to the title.
-  return title_label_;
+  // Default to superclass.
+  return views::DialogDelegateView::GetInitiallyFocusedView();
+}
+
+void AccountSelectionModalView::VisibilityChanged(View* starting_from,
+                                                  bool is_visible) {
+  if (is_visible && !queued_announcement_.empty()) {
+    GetViewAccessibility().AnnounceAlert(queued_announcement_);
+    queued_announcement_ = u"";
+  }
 }
 
 void AccountSelectionModalView::
@@ -895,7 +897,6 @@ void AccountSelectionModalView::
         l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT),
         views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_4));
     SetLabelProperties(body_label_);
-    body_label_->SetFocusBehavior(FocusBehavior::ALWAYS);
   }
 
   // Make sure not to keep dangling pointers around first. We do not need to

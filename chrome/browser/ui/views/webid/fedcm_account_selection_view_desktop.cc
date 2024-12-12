@@ -97,6 +97,7 @@ void FedCmAccountSelectionView::ShowDialogWidget() {
   }
 
   input_protector_->VisibilityChanged(true);
+  GetDialogWidget()->widget_delegate()->SetCanActivate(true);
   GetDialogWidget()->Show();
   if (dialog_type_ == DialogType::MODAL) {
     scoped_ignore_input_events_ =
@@ -123,7 +124,6 @@ void FedCmAccountSelectionView::ShowDialogWidget() {
   }
 #endif  // IS_MAC
 
-  GetDialogWidget()->widget_delegate()->SetCanActivate(true);
   if (accounts_widget_shown_callback_) {
     std::move(accounts_widget_shown_callback_).Run();
   }
@@ -833,19 +833,12 @@ void FedCmAccountSelectionView::UpdateDialogPosition() {
         static_cast<AccountSelectionBubbleView*>(account_selection_view_);
     GetDialogWidget()->SetBounds(bubble->GetBubbleBounds());
   } else {
-    auto* modal =
-        static_cast<AccountSelectionModalView*>(account_selection_view_);
-
     constrained_window::UpdateWebContentsModalDialogPosition(
         GetDialogWidget(),
         web_modal::WebContentsModalDialogManager::FromWebContents(
             account_selection_view_->web_contents())
             ->delegate()
             ->GetWebContentsModalDialogHost());
-
-    if (accessibility_state_utils::IsScreenReaderEnabled()) {
-      modal->GetInitiallyFocusedView()->RequestFocus();
-    }
   }
 }
 
