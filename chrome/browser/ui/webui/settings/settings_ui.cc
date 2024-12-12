@@ -588,7 +588,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
              : TabOrganizationUtils::GetInstance()->IsEnabled(profile)},
         {"showComposeControl", compose_enabled},
         {"showWallpaperSearchControl",
-         customize_chrome::IsWallpaperSearchEnabledForProfile(profile)},
+         use_is_setting_visible
+             ? customize_chrome::IsWallpaperSearchSettingVisibleForProfile(
+                   profile)
+             : customize_chrome::IsWallpaperSearchEnabledForProfile(profile)},
         {"showHistorySearchControl",
          history_embeddings::IsHistoryEmbeddingsSettingVisible(profile)},
         {"showCompareControl", commerce::CanFetchProductSpecificationsData(
