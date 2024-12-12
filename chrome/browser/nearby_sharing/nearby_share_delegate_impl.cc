@@ -111,7 +111,7 @@ void NearbyShareDelegateImpl::OnLockStateChanged(bool locked) {
   }
 }
 
-void NearbyShareDelegateImpl::OnFirstSessionStarted() {
+void NearbyShareDelegateImpl::OnFirstSessionReady() {
   nearby_share_service_ = NearbySharingServiceFactory::GetForBrowserContext(
       ProfileManager::GetPrimaryUserProfile());
 

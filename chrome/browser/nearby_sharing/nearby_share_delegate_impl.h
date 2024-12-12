@@ -71,7 +71,7 @@ class NearbyShareDelegateImpl
 
   // ash::SessionObserver
   void OnLockStateChanged(bool locked) override;
-  void OnFirstSessionStarted() override;
+  void OnFirstSessionReady() override;
 
   // NearbyShareService::Observer
   void OnHighVisibilityChangeRequested() override;
