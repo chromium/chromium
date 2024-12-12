@@ -157,7 +157,7 @@ expose the functions to the others via additional wrapper functions.
 2. In C++ code, `#include` the header `${OriginalClassName}_jni.h`. (The path
    will depend on the location of the `generate_jni` build rule that lists your
    Java source code). That `.cc` can call the stubs with their generated name
-   `JAVA_${OriginalClassName}_${UpperCamelCaseMethod}`.
+   `Java_${OriginalClassName}_${UpperCamelCaseMethod}`.
 
 Note: For test-only methods, use `@CalledByNativeForTesting` which will ensure
 that it is stripped in our release binaries.
