@@ -12,12 +12,15 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/shelf/shelf.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "ash/system/unified/notification_counter_view.h"
 #include "ash/test/ash_test_base.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -315,6 +318,156 @@ TEST_F(NotificationIconsControllerTest, NotificationItemInQuietMode) {
                                                            /*by_user=*/false);
   EXPECT_FALSE(
       GetNotificationIconsController()->tray_items().back()->GetVisible());
+}
+
+// This is a large test that captures the nominal cases that can impact the name
+// of the NotificationCenterTray. This test lives in
+// NotificationIconsControllerTest and not NotificationCenterTrayTest because
+// most of the logic to calculate the tray's accessible name lives in
+// |NotificationIconsController::GetAccessibleNameString|. This test looks at
+// each part of that function and tests the logic.
+TEST_F(NotificationIconsControllerTest, NotificationCenterTrayAccessibleName) {
+  NotificationCenterTray* tray =
+      GetPrimaryShelf()->GetStatusAreaWidget()->notification_center_tray();
+  NotificationIconsController* controller = GetNotificationIconsController();
+
+  // In quiet mode, the tray's accessible name should be the same as the
+  // QuietModeView's tooltip text.
+  UpdateDisplay("800x700");
+  message_center::MessageCenter::Get()->SetQuietMode(true);
+  EXPECT_TRUE(controller->quiet_mode_view()->GetVisible());
+  {
+    ui::AXNodeData node_data;
+    tray->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(
+        node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_QUIET_MODE_TOOLTIP));
+  }
+
+  // Keep quiet_mode_view object, but set it invisible. Since there are no
+  // notifications and the NotificationCounterView is not visible, the
+  // accessible name should be set to the NotificationCenterTray's default
+  // string option.
+  message_center::MessageCenter::Get()->SetQuietMode(false);
+  EXPECT_FALSE(controller->quiet_mode_view()->GetVisible());
+  EXPECT_FALSE(controller->notification_counter_view()->GetVisible());
+  EXPECT_FALSE(controller->TrayItemHasNotification());
+  {
+    ui::AXNodeData node_data;
+    tray->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(
+        node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+        l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_ACCESSIBLE_NAME));
+  }
+
+  // Ensure that the accessible name is correctly set when there is a
+  // notification but the NotificationCounterView is not visible because there
+  // are fewer than 3 notifications.
+  AddNotification(true /* is_pinned */, false /* is_critical_warning */);
+  EXPECT_TRUE(controller->TrayItemHasNotification());
+  EXPECT_TRUE(controller->TrayNotificationIconsCount() == 1);
+  // The status object will hold all the status information that will be
+  // concatenated into the accessible name. This series of logic is following
+  // and testing the logic in
+  // NotificationIconsController::GetAccessibleNameString().
+  std::vector<std::u16string> status;
+  status.push_back(l10n_util::GetPluralStringFUTF16(
+      IDS_ASH_STATUS_TRAY_NOTIFICATIONS_IMPORTANT_COUNT_ACCESSIBLE_NAME,
+      controller->TrayNotificationIconsCount()));
+  for (NotificationIconTrayItemView* tray_item : controller->tray_items()) {
+    status.push_back(tray_item->GetAccessibleNameString());
+  }
+  // This is an empty string because NotificationCounterView is not visible.
+  status.push_back(std::u16string());
+  {
+    ui::AXNodeData node_data;
+    tray->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              l10n_util::GetStringFUTF16(
+                  IDS_ASH_STATUS_TRAY_NOTIFICATIONS_ICONS_ACCESSIBLE_NAME,
+                  status, nullptr));
+  }
+
+  // Add more notifications, which will make the NotificationCounterView
+  // visible, to test that the accessible name will be set correctly.
+  AddNotification(true /* is_pinned */, false /* is_critical_warning */);
+  AddNotification(true /* is_pinned */, false /* is_critical_warning */);
+  AddNotification(true /* is_pinned */, false /* is_critical_warning */);
+  controller->notification_counter_view()->Update();
+  // Follow the logic in NotificationIconsController::GetAccessibleNameString().
+  {
+    status = std::vector<std::u16string>();
+    status.push_back(l10n_util::GetPluralStringFUTF16(
+        IDS_ASH_STATUS_TRAY_NOTIFICATIONS_IMPORTANT_COUNT_ACCESSIBLE_NAME,
+        controller->TrayNotificationIconsCount()));
+    for (NotificationIconTrayItemView* tray_item : controller->tray_items()) {
+      status.push_back(tray_item->GetAccessibleNameString());
+    }
+    status.push_back(l10n_util::GetPluralStringFUTF16(
+        IDS_ASH_STATUS_TRAY_NOTIFICATIONS_HIDDEN_COUNT_TOOLTIP, 2));
+    ui::AXNodeData node_data;
+    tray->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              l10n_util::GetStringFUTF16(
+                  IDS_ASH_STATUS_TRAY_NOTIFICATIONS_ICONS_ACCESSIBLE_NAME,
+                  status, nullptr));
+  }
+
+  // Update the tray item tooltip texts for test purposes.
+  for (NotificationIconTrayItemView* tray_item : controller->tray_items()) {
+    tray_item->image_view()->SetTooltipText(u"test");
+  }
+
+  // Follow the logic in NotificationIconsController::GetAccessibleNameString().
+  {
+    status = std::vector<std::u16string>();
+    status.push_back(l10n_util::GetPluralStringFUTF16(
+        IDS_ASH_STATUS_TRAY_NOTIFICATIONS_IMPORTANT_COUNT_ACCESSIBLE_NAME,
+        controller->TrayNotificationIconsCount()));
+    for (NotificationIconTrayItemView* tray_item : controller->tray_items()) {
+      status.push_back(tray_item->GetAccessibleNameString());
+    }
+    status.push_back(l10n_util::GetPluralStringFUTF16(
+        IDS_ASH_STATUS_TRAY_NOTIFICATIONS_HIDDEN_COUNT_TOOLTIP, 2));
+    ui::AXNodeData node_data;
+    tray->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              l10n_util::GetStringFUTF16(
+                  IDS_ASH_STATUS_TRAY_NOTIFICATIONS_ICONS_ACCESSIBLE_NAME,
+                  status, nullptr));
+  }
+
+  message_center::MessageCenter::Get()->RemoveAllNotifications(
+      /*by_user=*/false, message_center::MessageCenter::RemoveType::ALL);
+  EXPECT_FALSE(controller->TrayItemHasNotification());
+
+  // Force visibility of the notification_counter_view() for the purposes of the
+  // next test.
+  controller->notification_counter_view()->SetVisible(true);
+  EXPECT_TRUE(controller->notification_counter_view()->GetVisible());
+
+  // If there are no notifications but the NotificationCounterView is visible,
+  // the accessible name should be the same as the NotificationCounterView's
+  // image tooltip text.
+  {
+    ui::AXNodeData node_data;
+    tray->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              controller->notification_counter_view()
+                  ->image_view()
+                  ->GetCachedTooltipText());
+  }
+
+  // If the NotificationCounterView's image tooltip text is updated, the tray
+  // accessible name should match.
+  controller->notification_counter_view()->image_view()->SetTooltipText(
+      u"Test");
+  {
+    ui::AXNodeData node_data;
+    tray->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              u"Test");
+  }
 }
 
 }  // namespace ash
