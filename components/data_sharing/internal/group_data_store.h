@@ -52,11 +52,13 @@ class GroupDataStore {
   ~GroupDataStore();
 
   void StoreGroupData(const VersionToken& version_token,
+                      const base::Time& last_updated_timestamp,
                       const GroupData& group_data);
   void DeleteGroups(const std::vector<GroupId>& groups_ids);
 
   std::optional<VersionToken> GetGroupVersionToken(
       const GroupId& group_id) const;
+  base::Time GetGroupLastUpdatedTimestamp(const GroupId& group_id) const;
   std::optional<GroupData> GetGroupData(const GroupId& group_id) const;
   std::vector<GroupId> GetAllGroupIds() const;
 

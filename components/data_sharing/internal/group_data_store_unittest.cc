@@ -55,12 +55,12 @@ class GroupDataStoreTest : public testing::Test {
   void InitStoreAndWaitForDBLoading() {
     base::RunLoop run_loop;
     store_ = std::make_unique<GroupDataStore>(
-        temp_dir_.GetPath(), base::BindLambdaForTesting(
-                         [&run_loop](GroupDataStore::DBInitStatus status) {
-                           EXPECT_EQ(status,
-                                     GroupDataStore::DBInitStatus::kSuccess);
-                           run_loop.Quit();
-                         }));
+        temp_dir_.GetPath(),
+        base::BindLambdaForTesting(
+            [&run_loop](GroupDataStore::DBInitStatus status) {
+              EXPECT_EQ(status, GroupDataStore::DBInitStatus::kSuccess);
+              run_loop.Quit();
+            }));
     run_loop.Run();
   }
 
@@ -77,8 +77,9 @@ TEST_F(GroupDataStoreTest, ShouldStoreAndGetGroupData) {
   group_data.display_name = "Test group";
 
   const VersionToken version_token("test_version_token");
+  const base::Time last_updated_timestamp = base::Time::Now();
 
-  store().StoreGroupData(version_token, group_data);
+  store().StoreGroupData(version_token, last_updated_timestamp, group_data);
 
   auto stored_group_data = store().GetGroupData(group_id);
   ASSERT_TRUE(stored_group_data.has_value());
@@ -88,6 +89,11 @@ TEST_F(GroupDataStoreTest, ShouldStoreAndGetGroupData) {
   auto stored_version_token = store().GetGroupVersionToken(group_id);
   ASSERT_TRUE(stored_version_token.has_value());
   EXPECT_THAT(*stored_version_token, Eq(version_token));
+
+  auto stored_last_updated_timestamp =
+      store().GetGroupLastUpdatedTimestamp(group_id);
+  EXPECT_THAT(stored_last_updated_timestamp.InMillisecondsSinceUnixEpoch(),
+              Eq(last_updated_timestamp.InMillisecondsSinceUnixEpoch()));
 }
 
 TEST_F(GroupDataStoreTest, ShouldDeleteSingleGroup) {
@@ -101,8 +107,8 @@ TEST_F(GroupDataStoreTest, ShouldDeleteSingleGroup) {
 
   const VersionToken version_token("test_version_token");
 
-  store().StoreGroupData(version_token, group_data1);
-  store().StoreGroupData(version_token, group_data2);
+  store().StoreGroupData(version_token, base::Time::Now(), group_data1);
+  store().StoreGroupData(version_token, base::Time::Now(), group_data2);
   ASSERT_TRUE(store().GetGroupData(group_id1).has_value());
   ASSERT_TRUE(store().GetGroupVersionToken(group_id1).has_value());
   ASSERT_TRUE(store().GetGroupData(group_id2).has_value());
@@ -128,8 +134,8 @@ TEST_F(GroupDataStoreTest, ShouldDeleteMultipleGroups) {
 
   const VersionToken version_token("test_version_token");
 
-  store().StoreGroupData(version_token, group_data1);
-  store().StoreGroupData(version_token, group_data2);
+  store().StoreGroupData(version_token, base::Time::Now(), group_data1);
+  store().StoreGroupData(version_token, base::Time::Now(), group_data2);
   ASSERT_TRUE(store().GetGroupData(group_id1).has_value());
   ASSERT_TRUE(store().GetGroupVersionToken(group_id1).has_value());
   ASSERT_TRUE(store().GetGroupData(group_id2).has_value());
@@ -154,8 +160,8 @@ TEST_F(GroupDataStoreTest, ShouldGetAllGroupIds) {
   GroupData group_data2;
   group_data2.group_token.group_id = group_id2;
 
-  store().StoreGroupData(version_token, group_data1);
-  store().StoreGroupData(version_token, group_data2);
+  store().StoreGroupData(version_token, base::Time::Now(), group_data1);
+  store().StoreGroupData(version_token, base::Time::Now(), group_data2);
 
   std::vector<GroupId> stored_group_ids = store().GetAllGroupIds();
   EXPECT_THAT(stored_group_ids, UnorderedElementsAre(group_id1, group_id2));
@@ -170,7 +176,7 @@ TEST_F(GroupDataStoreTest, ShouldPersistChanges) {
   const VersionToken version_token("test_version_token");
 
   // Store some group data first.
-  store().StoreGroupData(version_token, group_data);
+  store().StoreGroupData(version_token, base::Time::Now(), group_data);
   ASSERT_TRUE(store().GetGroupData(group_id).has_value());
   ASSERT_TRUE(store().GetGroupVersionToken(group_id).has_value());
 

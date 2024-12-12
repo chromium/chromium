@@ -13,10 +13,13 @@ package data_sharing_pb;
 message GroupMetadata {
   // Group data gets updated whenever corresponding CollaborationGroup changes.
   // This field is derived from
-  // `CollaborationGroupSpecifics::changed_at_timestamp_millis_since_unix_epoch`
-  // that triggered last successful update. In other words, if it doesn't match
-  // the value in CollaborationGroup, then GroupData should be considered stale.
+  // `CollaborationGroupSpecifics::consistency_token` that triggered last
+  // successful update. In other words, if it doesn't match the value in
+  // CollaborationGroup, then GroupData should be considered stale.
   optional string last_processed_version_token = 1;
+
+  // Timestamp of the last update (local time), used for periodic polling.
+  optional int64 last_updated_timestamp_millis_since_unix_epoch = 2;
 };
 
 message GroupEntity {

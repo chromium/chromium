@@ -105,6 +105,7 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
   void FetchGroupsFromSDK(const std::vector<GroupId>& added_or_updated_groups);
   void OnGroupsFetchedFromSDK(
       const std::map<GroupId, VersionToken>& requested_groups_and_versions,
+      const base::Time& requested_at_timestamp,
       const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
           read_groups_result);
 

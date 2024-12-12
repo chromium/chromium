@@ -243,11 +243,13 @@ void GroupDataModel::FetchGroupsFromSDK(
 
   sdk_delegate_.ReadGroups(
       params, base::BindOnce(&GroupDataModel::OnGroupsFetchedFromSDK,
-                             weak_ptr_factory_.GetWeakPtr(), group_versions));
+                             weak_ptr_factory_.GetWeakPtr(), group_versions,
+                             base::Time::Now()));
 }
 
 void GroupDataModel::OnGroupsFetchedFromSDK(
     const std::map<GroupId, VersionToken>& requested_groups_and_versions,
+    const base::Time& requested_at_timestamp,
     const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
         read_groups_result) {
   if (!read_groups_result.has_value()) {
@@ -277,7 +279,7 @@ void GroupDataModel::OnGroupsFetchedFromSDK(
 
     const auto old_group_data_opt = group_data_store_.GetGroupData(group_id);
     group_data_store_.StoreGroupData(requested_groups_and_versions.at(group_id),
-                                     group_data);
+                                     requested_at_timestamp, group_data);
     for (auto& observer : observers_) {
       // TODO(crbug.com/377215683): pass the actual event time (at least derived
       // from CollaborationGroupSpecifics).

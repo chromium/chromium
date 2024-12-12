@@ -61,7 +61,7 @@ GroupDataStore::DBInitStatus InitOnDBSequence(
   const base::FilePath db_path = GetGroupDataStoreDBPath(db_dir_path);
   if (!db->Open(db_path)) {
     LOG(ERROR) << "Failed to open DB " << db_path << ": "
-        << db->GetErrorMessage();
+               << db->GetErrorMessage();
     return GroupDataStore::DBInitStatus::kFailure;
   }
 
@@ -97,7 +97,8 @@ GroupDataStore::GroupDataStore(const base::FilePath& db_dir_path,
   // that these objects outlive any task posted to DB sequence.
   db_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&InitOnDBSequence, db_dir_path, base::Unretained(db_.get()),
+      base::BindOnce(&InitOnDBSequence, db_dir_path,
+                     base::Unretained(db_.get()),
                      base::Unretained(proto_table_manager_.get()),
                      base::Unretained(group_entity_data_.get())),
       base::BindOnce(&GroupDataStore::OnDBReady, weak_ptr_factory_.GetWeakPtr(),
@@ -128,6 +129,7 @@ GroupDataStore::~GroupDataStore() {
 }
 
 void GroupDataStore::StoreGroupData(const VersionToken& version_token,
+                                    const base::Time& last_updated_timestamp,
                                     const GroupData& group_data) {
   CHECK_EQ(db_init_status_, DBInitStatus::kSuccess);
 
@@ -136,6 +138,8 @@ void GroupDataStore::StoreGroupData(const VersionToken& version_token,
   data_sharing_pb::GroupEntity entity;
   entity.mutable_metadata()->set_last_processed_version_token(
       version_token.value());
+  entity.mutable_metadata()->set_last_updated_timestamp_millis_since_unix_epoch(
+      last_updated_timestamp.InMillisecondsSinceUnixEpoch());
   *entity.mutable_data() = GroupDataToProto(group_data);
   group_entity_data_->UpdateData(group_data.group_token.group_id.value(),
                                  entity);
@@ -160,6 +164,19 @@ std::optional<VersionToken> GroupDataStore::GetGroupVersionToken(
   }
 
   return VersionToken(entity.metadata().last_processed_version_token());
+}
+
+base::Time GroupDataStore::GetGroupLastUpdatedTimestamp(
+    const GroupId& group_id) const {
+  CHECK_EQ(db_init_status_, DBInitStatus::kSuccess);
+
+  data_sharing_pb::GroupEntity entity;
+  if (!group_entity_data_->TryGetData(group_id.value(), &entity)) {
+    return base::Time();
+  }
+
+  return base::Time::FromMillisecondsSinceUnixEpoch(
+      entity.metadata().last_updated_timestamp_millis_since_unix_epoch());
 }
 
 std::optional<GroupData> GroupDataStore::GetGroupData(
