@@ -320,6 +320,7 @@ enum WebDXFeature {
   kWritingSuggestions = 262,
   kInk = 263,
   kVirtualKeyboard = 264,
+  kNonCookieStorageAccess = 265,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
