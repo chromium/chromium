@@ -3516,6 +3516,9 @@
         <message name="IDS_SEA_PEN_FREEFORM_ERROR_NO_INTERNET" desc="Error message displayed when there is no internet connection.">
           Make sure you're connected to the internet and try again.
         </message>
+        <message name="IDS_SEA_PEN_FREEFORM_ERROR_PERSON" desc="Error message displayed when the generated images contain a person.">
+          For now, results with people won't be shown. Try another prompt.
+        </message>
         <message name="IDS_SEA_PEN_FREEFORM_ERROR_UNSUPPORTED_LANGUAGE" desc="Error message displayed when the search query uses an unsupported language.">
           This language isn't supported at this time
         </message>

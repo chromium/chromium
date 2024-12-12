@@ -57,6 +57,7 @@ ash::LobsterErrorCode MantaToLobsterStatusCode(
     case manta::MantaStatusCode::kGenericError:
     case manta::MantaStatusCode::kMalformedResponse:
     case manta::MantaStatusCode::kNoIdentityManager:
+    case manta::MantaStatusCode::kImageHasPerson:
       return ash::LobsterErrorCode::kUnknown;
     case manta::MantaStatusCode::kInvalidInput:
       return ash::LobsterErrorCode::kInvalidArgument;

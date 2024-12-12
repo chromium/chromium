@@ -34,15 +34,16 @@ suite('SeaPenErrorElementTest', function() {
         {thumbnailResponseStatusCode: MantaStatusCode.kNoInternetConnection});
     await waitAfterNextRender(seaPenErrorElement);
 
-    const errorMessage = seaPenErrorElement.shadowRoot!.querySelector(
-                             '.error-message') as HTMLElement;
+    const errorMessage =
+        seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>(
+            '.error-message');
     assertTrue(!!errorMessage);
     assertEquals(
         seaPenErrorElement.i18n('seaPenErrorNoInternet'),
         errorMessage!.innerText);
 
-    const errorIllo = seaPenErrorElement.shadowRoot!.querySelector(
-                          'iron-icon') as HTMLElement;
+    const errorIllo =
+        seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>('iron-icon');
     assertTrue(!!errorIllo);
     assertEquals(
         errorIllo.getAttribute('icon'),
@@ -56,15 +57,16 @@ suite('SeaPenErrorElementTest', function() {
         {thumbnailResponseStatusCode: MantaStatusCode.kNoInternetConnection});
     await waitAfterNextRender(seaPenErrorElement);
 
-    const errorMessage = seaPenErrorElement.shadowRoot!.querySelector(
-                             '.error-message') as HTMLElement;
+    const errorMessage =
+        seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>(
+            '.error-message');
     assertTrue(!!errorMessage);
     assertEquals(
         seaPenErrorElement.i18n('seaPenFreeformErrorNoInternet'),
         errorMessage!.innerText);
 
-    const errorIllo = seaPenErrorElement.shadowRoot!.querySelector(
-                          'iron-icon') as HTMLElement;
+    const errorIllo =
+        seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>('iron-icon');
     assertTrue(!!errorIllo);
     assertEquals(
         errorIllo.getAttribute('icon'),
@@ -77,15 +79,16 @@ suite('SeaPenErrorElementTest', function() {
         {thumbnailResponseStatusCode: MantaStatusCode.kResourceExhausted});
     await waitAfterNextRender(seaPenErrorElement);
 
-    const errorMessage = seaPenErrorElement.shadowRoot!.querySelector(
-                             '.error-message') as HTMLElement;
+    const errorMessage =
+        seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>(
+            '.error-message');
     assertTrue(!!errorMessage, 'an error message should be displayed');
     assertEquals(
         seaPenErrorElement.i18n('seaPenErrorResourceExhausted'),
         errorMessage!.innerText);
 
-    const errorIllo = seaPenErrorElement.shadowRoot!.querySelector(
-                          'iron-icon') as HTMLElement;
+    const errorIllo =
+        seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>('iron-icon');
     assertTrue(!!errorIllo);
     assertEquals(
         errorIllo.getAttribute('icon'),
@@ -98,15 +101,16 @@ suite('SeaPenErrorElementTest', function() {
         {thumbnailResponseStatusCode: MantaStatusCode.kPerUserQuotaExceeded});
     await waitAfterNextRender(seaPenErrorElement);
 
-    const errorMessage = seaPenErrorElement.shadowRoot!.querySelector(
-                             '.error-message') as HTMLElement;
+    const errorMessage =
+        seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>(
+            '.error-message');
     assertTrue(!!errorMessage, 'an error message should be displayed');
     assertEquals(
         seaPenErrorElement.i18n('seaPenErrorResourceExhausted'),
         errorMessage!.innerText);
 
-    const errorIllo = seaPenErrorElement.shadowRoot!.querySelector(
-                          'iron-icon') as HTMLElement;
+    const errorIllo =
+        seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>('iron-icon');
     assertTrue(!!errorIllo);
     assertEquals(
         errorIllo.getAttribute('icon'),
@@ -119,14 +123,15 @@ suite('SeaPenErrorElementTest', function() {
         {thumbnailResponseStatusCode: MantaStatusCode.kGenericError});
     await waitAfterNextRender(seaPenErrorElement);
 
-    const errorMessage = seaPenErrorElement.shadowRoot!.querySelector(
-                             '.error-message') as HTMLElement;
+    const errorMessage =
+        seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>(
+            '.error-message');
     assertTrue(!!errorMessage, 'an error message should be displayed');
     assertEquals(
         seaPenErrorElement.i18n('seaPenErrorGeneric'), errorMessage!.innerText);
 
-    const errorIllo = seaPenErrorElement.shadowRoot!.querySelector(
-                          'iron-icon') as HTMLElement;
+    const errorIllo =
+        seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>('iron-icon');
     assertTrue(!!errorIllo);
     assertEquals(
         errorIllo.getAttribute('icon'),
@@ -140,14 +145,15 @@ suite('SeaPenErrorElementTest', function() {
         {thumbnailResponseStatusCode: MantaStatusCode.kUnsupportedLanguage});
     await waitAfterNextRender(seaPenErrorElement);
 
-    const errorMessage = seaPenErrorElement.shadowRoot!.querySelector(
-                             '.error-message') as HTMLElement;
+    const errorMessage =
+        seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>(
+            '.error-message');
     assertTrue(!!errorMessage, 'an error message should be displayed');
     assertEquals(
         seaPenErrorElement.i18n('seaPenErrorGeneric'), errorMessage!.innerText);
 
-    const errorIllo = seaPenErrorElement.shadowRoot!.querySelector(
-                          'iron-icon') as HTMLElement;
+    const errorIllo =
+        seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>('iron-icon');
     assertTrue(!!errorIllo);
     assertEquals(
         errorIllo.getAttribute('icon'),
@@ -161,14 +167,15 @@ suite('SeaPenErrorElementTest', function() {
         {thumbnailResponseStatusCode: MantaStatusCode.kBlockedOutputs});
     await waitAfterNextRender(seaPenErrorElement);
 
-    const errorMessage = seaPenErrorElement.shadowRoot!.querySelector(
-                             '.error-message') as HTMLElement;
+    const errorMessage =
+        seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>(
+            '.error-message');
     assertTrue(!!errorMessage, 'an error message should be displayed');
     assertEquals(
         seaPenErrorElement.i18n('seaPenErrorGeneric'), errorMessage!.innerText);
 
-    const errorIllo = seaPenErrorElement.shadowRoot!.querySelector(
-                          'iron-icon') as HTMLElement;
+    const errorIllo =
+        seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>('iron-icon');
     assertTrue(!!errorIllo);
     assertEquals(
         errorIllo.getAttribute('icon'),
@@ -184,15 +191,17 @@ suite('SeaPenErrorElementTest', function() {
         });
         await waitAfterNextRender(seaPenErrorElement);
 
-        const errorMessage = seaPenErrorElement.shadowRoot!.querySelector(
-                                 '.error-message') as HTMLElement;
+        const errorMessage =
+            seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>(
+                '.error-message');
         assertTrue(!!errorMessage, 'an error message should be displayed');
         assertEquals(
             seaPenErrorElement.i18n('seaPenFreeformErrorUnsupportedLanguage'),
             errorMessage!.innerText);
 
-        const errorIllo = seaPenErrorElement.shadowRoot!.querySelector(
-                              'iron-icon') as HTMLElement;
+        const errorIllo =
+            seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>(
+                'iron-icon');
         assertTrue(!!errorIllo);
         assertEquals(
             errorIllo.getAttribute('icon'),
@@ -206,15 +215,39 @@ suite('SeaPenErrorElementTest', function() {
         {thumbnailResponseStatusCode: MantaStatusCode.kBlockedOutputs});
     await waitAfterNextRender(seaPenErrorElement);
 
-    const errorMessage = seaPenErrorElement.shadowRoot!.querySelector(
-                             '.error-message') as HTMLElement;
+    const errorMessage =
+        seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>(
+            '.error-message');
     assertTrue(!!errorMessage, 'an error message should be displayed');
     assertEquals(
         seaPenErrorElement.i18n('seaPenFreeformErrorBlockedOutputs'),
         errorMessage!.innerText);
 
-    const errorIllo = seaPenErrorElement.shadowRoot!.querySelector(
-                          'iron-icon') as HTMLElement;
+    const errorIllo =
+        seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>('iron-icon');
+    assertTrue(!!errorIllo);
+    assertEquals(
+        errorIllo.getAttribute('icon'),
+        'personalization-shared-illo:generic_error');
+  });
+
+  test('display no people error state with SeaPenTextInput', async () => {
+    loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
+    seaPenErrorElement = initElement(
+        SeaPenErrorElement,
+        {thumbnailResponseStatusCode: MantaStatusCode.kImageHasPerson});
+    await waitAfterNextRender(seaPenErrorElement);
+
+    const errorMessage =
+        seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>(
+            '.error-message');
+    assertTrue(!!errorMessage, 'an error message should be displayed');
+    assertEquals(
+        seaPenErrorElement.i18n('seaPenFreeformErrorPerson'),
+        errorMessage!.innerText);
+
+    const errorIllo =
+        seaPenErrorElement.shadowRoot!.querySelector<HTMLElement>('iron-icon');
     assertTrue(!!errorIllo);
     assertEquals(
         errorIllo.getAttribute('icon'),

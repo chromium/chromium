@@ -114,7 +114,8 @@ enum MantaStatusCode {
   kRestrictedCountry = 9,
   kNoIdentityManager = 10,
   kPerUserQuotaExceeded = 11,
-  kMax = kPerUserQuotaExceeded,
+  kImageHasPerson = 12,
+  kMax = kImageHasPerson,
 };
 
 // An interface to provide SeaPen updates to the renderer process, e.g. when the

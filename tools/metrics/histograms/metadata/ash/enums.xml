@@ -1426,6 +1426,7 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="9" label="kRestrictedCountry"/>
   <int value="10" label="kNoIdentityManager"/>
   <int value="11" label="kPerUserQuotaExceeded"/>
+  <int value="12" label="kImageHasPerson"/>
 </enum>
 
 <enum name="ModifyGlanceablesTaskResult">

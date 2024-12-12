@@ -40,6 +40,7 @@ void AddSeaPenStrings(content::WebUIDataSource* source) {
       {"seaPenErrorNoInternet", IDS_SEA_PEN_ERROR_NO_INTERNET},
       {"seaPenErrorResourceExhausted", IDS_SEA_PEN_ERROR_RESOURCE_EXHAUSTED},
       {"seaPenErrorGeneric", IDS_SEA_PEN_ERROR_GENERIC},
+      {"seaPenFreeformErrorPerson", IDS_SEA_PEN_FREEFORM_ERROR_PERSON},
       {"seaPenExperimentLabel", IDS_SEA_PEN_EXPERIMENT_LABEL},
       {"seaPenUnavailableLabel", IDS_SEA_PEN_UNAVAILABLE_LABEL},
       {"seaPenThumbnailsLoading", IDS_SEA_PEN_THUMBNAILS_LOADING},
