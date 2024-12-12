@@ -282,7 +282,6 @@ TabHandleLayer::TabHandleLayer(LayerTitleCache* layer_title_cache)
       end_divider_(cc::slim::UIResourceLayer::Create()),
       decoration_tab_(cc::slim::NinePatchLayer::Create()),
       tab_outline_(cc::slim::NinePatchLayer::Create()),
-      brightness_(1.0f),
       foreground_(false) {
   decoration_tab_->SetIsDrawable(true);
 

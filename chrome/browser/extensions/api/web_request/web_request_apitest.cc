@@ -231,8 +231,7 @@ class EventRouterInterceptorForStopListenerRemoval
   EventRouterInterceptorForStopListenerRemoval(
       content::BrowserContext* browser_context,
       int worker_renderer_process_id)
-      : browser_context_(browser_context),
-        worker_renderer_process_id_(worker_renderer_process_id) {
+      : browser_context_(browser_context) {
     auto* event_router = extensions::EventRouter::Get(browser_context_);
     CHECK(event_router) << "There is no EventRouter for browser context when "
                            "creating the event router interceptor.";
@@ -261,7 +260,6 @@ class EventRouterInterceptorForStopListenerRemoval
 
  private:
   raw_ptr<content::BrowserContext> browser_context_;
-  int worker_renderer_process_id_;
 };
 
 // Sends an XHR request to the provided host, port, and path, and responds when

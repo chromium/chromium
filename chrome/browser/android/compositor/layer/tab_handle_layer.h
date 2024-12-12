@@ -75,7 +75,6 @@ class TabHandleLayer : public Layer {
   scoped_refptr<cc::slim::NinePatchLayer> tab_outline_;
   scoped_refptr<cc::slim::Layer> title_layer_;
 
-  float brightness_;
   float opacity_;
   bool foreground_;
 };

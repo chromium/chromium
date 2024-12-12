@@ -342,6 +342,9 @@ bool CookieSettings::ShouldAlwaysAllowCookies(
       first_party_url.SchemeIs(extension_scheme_)) {
     return true;
   }
+#else
+  // Suppress -Wunused-private-field warning.
+  (void)extension_scheme_;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   return false;
