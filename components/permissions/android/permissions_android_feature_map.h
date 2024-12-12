@@ -9,7 +9,6 @@
 
 namespace permissions {
 // Alphabetical:
-BASE_DECLARE_FEATURE(kAndroidApproximateLocationPermissionSupport);
 BASE_DECLARE_FEATURE(kAndroidCancelPermissionPromptOnTouchOutside);
 }  // namespace permissions
 

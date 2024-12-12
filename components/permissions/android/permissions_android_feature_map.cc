@@ -20,7 +20,6 @@ namespace {
 // this file or in other locations in the code base (e.g.
 // components/permissions/features.h).
 const base::Feature* kFeaturesExposedToJava[] = {
-    &kAndroidApproximateLocationPermissionSupport,
     &kAndroidCancelPermissionPromptOnTouchOutside,
     &features::kOneTimePermission,
 };
@@ -33,10 +32,6 @@ base::android::FeatureMap* GetFeatureMap() {
 }
 
 }  // namespace
-
-BASE_FEATURE(kAndroidApproximateLocationPermissionSupport,
-             "AndroidApproximateLocationPermissionSupport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables tapping outside the permission prompt scrim to dismiss a permission
 // prompt. Do not remove flag (killswitch).
