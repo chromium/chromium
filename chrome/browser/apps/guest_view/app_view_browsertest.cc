@@ -303,8 +303,11 @@ IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewCannotOpenNewWindow) {
   TestHelper("testBasicConnect", "app_view/shim", skeleton_app->id(),
              NO_TEST_SERVER);
 
-  auto* guest_rfh =
-      test_guest_view_manager()->WaitForSingleGuestRenderFrameHostCreated();
+  auto* guest = test_guest_view_manager()->WaitForSingleGuestViewCreated();
+  test_guest_view_manager()->WaitUntilAttached(guest);
+  content::WaitForLoadStop(guest->web_contents());
+  auto* guest_rfh = guest->GetGuestMainFrame();
+
   // Try to open new windows. Since it's inside an appview, nothing should
   // happen.
   EXPECT_TRUE(content::ExecJs(guest_rfh, "window.open('', 'attempt1');"));

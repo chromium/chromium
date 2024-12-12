@@ -268,16 +268,18 @@ void AppViewGuest::CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
 }
 
 void AppViewGuest::DidInitialize(const base::Value::Dict& create_params) {
-  if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
-    ExtensionsAPIClient::Get()->AttachWebContentsHelpers(web_contents());
-  }
-
-  if (!url_.is_valid()) {
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
     return;
   }
 
-  GetController().LoadURL(url_, content::Referrer(), ui::PAGE_TRANSITION_LINK,
-                          std::string());
+  ExtensionsAPIClient::Get()->AttachWebContentsHelpers(web_contents());
+  LoadURL();
+}
+
+void AppViewGuest::DidAttachToEmbedder() {
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    LoadURL();
+  }
 }
 
 void AppViewGuest::MaybeRecreateGuestContents(
@@ -360,6 +362,15 @@ void AppViewGuest::LaunchAppAndFireEvent(
   embed_request.Set(appview::kData, std::move(data));
   AppRuntimeEventRouter::DispatchOnEmbedRequestedEvent(
       browser_context(), std::move(embed_request), extension);
+}
+
+void AppViewGuest::LoadURL() {
+  if (!url_.is_valid()) {
+    return;
+  }
+
+  GetController().LoadURL(url_, content::Referrer(), ui::PAGE_TRANSITION_LINK,
+                          std::string());
 }
 
 void AppViewGuest::SetAppDelegateForTest(AppDelegate* delegate) {

@@ -36,6 +36,7 @@ class ExtensionOptionsGuest
                        const base::Value::Dict& create_params,
                        GuestPageCreatedCallback callback) final;
   void DidInitialize(const base::Value::Dict& create_params) final;
+  void DidAttachToEmbedder() final;
   void MaybeRecreateGuestContents(
       content::RenderFrameHost* outer_contents_frame) final;
   void GuestViewDidStopLoading() final;

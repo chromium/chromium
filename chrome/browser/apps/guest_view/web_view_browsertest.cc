@@ -2369,9 +2369,10 @@ IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, NavigateBackFromSSLError) {
                          "document.body.appendChild(w);",
                          failure_url)));
   GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
+  auto* guest = GetGuestViewManager()->GetLastGuestViewCreated();
+  GetGuestViewManager()->WaitUntilAttached(guest);
 
   // The navigation should fail and show an interstitial in the guest.
-  auto* guest = GetGuestViewManager()->GetLastGuestViewCreated();
   EXPECT_FALSE(WaitForLoadStop(guest->web_contents()));
   ASSERT_TRUE(guest->GetGuestMainFrame()->IsErrorDocument());
   ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
@@ -3043,7 +3044,13 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
 // have an opener relationship, and ensures that we can shutdown safely. See
 // https://crbug.com/1450397.
 IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, DestroyOpenerBeforeAttachment) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+  // This test doesn't work with MPArch based <webview>s as they can't navigate
+  // before attachment is complete. The scenario this test attempts to repro is
+  // not possible if the guest can't navigate before attachment (it will not be
+  // able to open a window before attachment).
+  // TODO(crbug.com/40202416): Remove this test entirely when we remove the
+  // inner WebContents implementation.
+  SKIP_FOR_MPARCH();
 
   TestHelper("testDestroyOpenerBeforeAttachment", "web_view/newwindow",
              NEEDS_TEST_SERVER);
@@ -7223,6 +7230,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, SubframeProcessReuse) {
   LoadAppWithGuest("web_view/simple");
   guest_view::GuestViewBase* guest = GetGuestView();
   ASSERT_TRUE(guest);
+  GetGuestViewManager()->WaitUntilAttached(guest);
 
   // Navigate <webview> to a cross-site page with a same-site iframe.
   const GURL start_url =
@@ -7243,6 +7251,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, SubframeProcessReuse) {
   GetGuestViewManager()->WaitForNumGuestsCreated(2u);
   auto* guest2 = GetGuestViewManager()->GetLastGuestViewCreated();
   ASSERT_NE(guest, guest2);
+  GetGuestViewManager()->WaitUntilAttached(guest2);
 
   // Navigate second <webview> cross-site.  Use NavigateToURL() to swap
   // BrowsingInstances.

@@ -117,11 +117,20 @@ void ExtensionOptionsGuest::CreateInnerPage(
 
 void ExtensionOptionsGuest::DidInitialize(
     const base::Value::Dict& create_params) {
-  if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
-    ExtensionsAPIClient::Get()->AttachWebContentsHelpers(web_contents());
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    return;
   }
+
+  ExtensionsAPIClient::Get()->AttachWebContentsHelpers(web_contents());
   GetController().LoadURL(options_page_, content::Referrer(),
                           ui::PAGE_TRANSITION_LINK, std::string());
+}
+
+void ExtensionOptionsGuest::DidAttachToEmbedder() {
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    GetController().LoadURL(options_page_, content::Referrer(),
+                            ui::PAGE_TRANSITION_LINK, std::string());
+  }
 }
 
 void ExtensionOptionsGuest::MaybeRecreateGuestContents(

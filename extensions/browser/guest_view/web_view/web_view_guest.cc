@@ -427,6 +427,11 @@ void WebViewGuest::CreateInnerPageWithStoragePartition(
 }
 
 void WebViewGuest::DidAttachToEmbedder() {
+  if (pending_first_navigation_) {
+    CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+    std::move(pending_first_navigation_).Run();
+  }
+
   ApplyAttributes(attach_params());
 }
 
@@ -1830,6 +1835,14 @@ void WebViewGuest::LoadURLWithParams(
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback,
     bool force_navigation) {
+  if (!attached() && base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    pending_first_navigation_ =
+        base::BindOnce(&WebViewGuest::LoadURLWithParams, GetWeakPtr(), url,
+                       referrer, transition_type,
+                       std::move(navigation_handle_callback), force_navigation);
+    return;
+  }
+
   if (!url.is_valid()) {
     LoadAbort(true /* is_top_level */, url, net::ERR_INVALID_URL);
     NavigateGuest(url::kAboutBlankURL, std::move(navigation_handle_callback),

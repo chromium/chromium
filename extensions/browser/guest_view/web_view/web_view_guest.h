@@ -432,6 +432,12 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // The current UA override.
   blink::UserAgentOverride ua_override_;
 
+  // Set when `LoadURLWithParams` is called before a guest is attached, in
+  // order to run it after the guest attaches. Note: If this method is called
+  // multiple times, we replace the callback; i.e. we drop the previous
+  // navigations.
+  base::OnceClosure pending_first_navigation_;
+
   // This is used to ensure pending tasks will not fire after this object is
   // destroyed.
   base::WeakPtrFactory<WebViewGuest> weak_ptr_factory_{this};

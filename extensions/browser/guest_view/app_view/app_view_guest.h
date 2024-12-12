@@ -61,6 +61,7 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
                        const base::Value::Dict& create_params,
                        GuestPageCreatedCallback callback) final;
   void DidInitialize(const base::Value::Dict& create_params) final;
+  void DidAttachToEmbedder() final;
   void MaybeRecreateGuestContents(
       content::RenderFrameHost* outer_contents_frame) final;
   const char* GetAPINamespace() const final;
@@ -106,6 +107,8 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
       base::Value::Dict data,
       GuestPageCreatedCallback callback,
       std::unique_ptr<LazyContextTaskQueue::ContextInfo> context_info);
+
+  void LoadURL();
 
   GURL url_;
   std::string guest_extension_id_;
