@@ -73,6 +73,7 @@ public class AutomotiveBackButtonToolbarCoordinator {
                     mTouchEventProvider.addTouchEventObserver(mEdgeSwipeGestureDetector);
                     mBackButtonToolbarForAutomotive.setVisibility(View.GONE);
                     mIsFullscreen = true;
+                    mEdgeSwipeGestureDetector.readyForNewScroll();
                 }
 
                 @Override
