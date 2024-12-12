@@ -912,6 +912,10 @@ bool ExternalCanvasResource::
       "blink",
       "ExternalCanvasResource::PrepareAcceleratedTransferableResource");
 
+  if (!ContextProviderWrapper()) {
+    return false;
+  }
+
   *out_resource = viz::TransferableResource::MakeGpu(
       client_si_, client_si_->GetTextureTarget(),
       GetSyncTokenWithOptionalVerification(false), client_si_->size(),
