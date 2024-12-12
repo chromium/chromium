@@ -8,7 +8,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "media/mojo/mojom/traits_test_service.mojom.h"
+#include "media/mojo/mojom/traits_test_service.test-mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"

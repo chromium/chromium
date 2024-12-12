@@ -24,7 +24,7 @@
 #include "media/base/color_plane_layout.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
-#include "media/mojo/mojom/traits_test_service.mojom.h"
+#include "media/mojo/mojom/traits_test_service.test-mojom.h"
 #include "media/video/fake_gpu_memory_buffer.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
