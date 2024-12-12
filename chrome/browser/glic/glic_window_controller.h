@@ -33,7 +33,7 @@ class GlicWindowController {
   ~GlicWindowController();
 
   // Shows the glic window.
-  void Show();
+  void Show(const views::View* glic_button_view);
 
   // Sets the size of the glic window to the specified dimensions. Returns true
   // if the operation succeeded.

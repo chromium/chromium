@@ -25,7 +25,8 @@ void GlicController::Show() {
     return;
   }
 
-  glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile)->LaunchUI();
+  glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile)->LaunchUI(
+      nullptr);
 #endif
 }
 

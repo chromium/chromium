@@ -11,6 +11,7 @@
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/ui/webui/glic/glic.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "ui/views/view.h"
 
 namespace content {
 class BrowserContext;
@@ -29,8 +30,9 @@ class GlicKeyedService : public KeyedService {
   GlicKeyedService& operator=(const GlicKeyedService&) = delete;
   ~GlicKeyedService() override;
 
-  // Launches the Glic UI.
-  void LaunchUI();
+  // Launches the Glic UI anchored at the given View object. When started from
+  // the launcher, no anchor view is provided.
+  void LaunchUI(const views::View* glic_button_view);
 
   GlicWindowController* window_controller() { return window_controller_.get(); }
 

@@ -60,15 +60,28 @@ namespace glic {
 GlicWindowController::GlicWindowController(Profile* profile)
     : profile_(profile) {}
 
-void GlicWindowController::Show() {
+void GlicWindowController::Show(const views::View* glic_button_view) {
   // TODO(crbug.com/379943498): possibly bring to front or activate in this case
   if (widget_) {
     return;
   }
 
-  // TODO(crbug.com/379362838): Determine initial rect based on entrypoint
-  std::tie(widget_, glic_view_) =
-      glic::GlicView::CreateWidget(profile_, {100, 100, 400, 800});
+  if (!glic_button_view) {
+    // TODO(crbug.com/382311793): Position the window when opened from the
+    // launcher.
+    return;
+  }
+
+  // Initial position determined by glic view bounds.
+  gfx::Point top_right_bounds =
+      glic_button_view->GetBoundsInScreen().top_right();
+  const int width = 400;
+  const int height = 800;
+  const int padding = GetLayoutConstant(TAB_STRIP_PADDING);
+
+  std::tie(widget_, glic_view_) = glic::GlicView::CreateWidget(
+      profile_, {top_right_bounds.x() - width - padding,
+                 top_right_bounds.y() + padding, width, height});
   widget_->Show();
   window_event_observer_ =
       std::make_unique<WindowEventObserver>(this, glic_view_);

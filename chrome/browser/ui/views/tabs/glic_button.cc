@@ -51,7 +51,7 @@ void GlicButton::NotifyClick(const ui::Event& event) {
 #if BUILDFLAG(ENABLE_GLIC)
   glic::GlicKeyedServiceFactory::GetGlicKeyedService(
       tab_strip_controller_->GetProfile())
-      ->LaunchUI();
+      ->LaunchUI(this);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
