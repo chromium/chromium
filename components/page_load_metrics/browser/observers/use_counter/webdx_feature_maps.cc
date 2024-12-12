@@ -299,6 +299,11 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kReferrerPolicy},
           {WebFeature::kHTMLLinkElementReferrerPolicyAttribute,
            WebDXFeature::kReferrerPolicy},
+          {WebFeature::kV8Ink_RequestPresenter_Method, WebDXFeature::kInk},
+          {WebFeature::kVirtualKeyboardHide, WebDXFeature::kVirtualKeyboard},
+          {WebFeature::kVirtualKeyboardOverlayPolicy,
+           WebDXFeature::kVirtualKeyboard},
+          {WebFeature::kVirtualKeyboardShow, WebDXFeature::kVirtualKeyboard},
       }};
 
   return *kMap;

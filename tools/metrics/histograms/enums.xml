@@ -34194,6 +34194,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="260" label="ReferrerPolicy"/>
   <int value="261" label="UrlCanparse"/>
   <int value="262" label="WritingSuggestions"/>
+  <int value="263" label="Ink"/>
+  <int value="264" label="VirtualKeyboard"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

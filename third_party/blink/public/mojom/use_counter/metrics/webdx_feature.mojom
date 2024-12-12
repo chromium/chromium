@@ -318,6 +318,8 @@ enum WebDXFeature {
   kReferrerPolicy = 260,
   kUrlCanparse = 261,
   kWritingSuggestions = 262,
+  kInk = 263,
+  kVirtualKeyboard = 264,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
