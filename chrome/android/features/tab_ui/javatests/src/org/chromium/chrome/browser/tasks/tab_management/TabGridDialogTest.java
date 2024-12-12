@@ -203,7 +203,7 @@ public class TabGridDialogTest {
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(
                             ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(15)
+                    .setRevision(16)
                     .build();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
