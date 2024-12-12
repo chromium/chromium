@@ -8726,7 +8726,7 @@ should be kept until we remove incident reporting. -->
     expires_after="2025-10-22">
   <owner>olivierli@chromium.org</owner>
   <owner>leszeks@chromium.org</owner>
-  <owner>chrome-catan@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
   <summary>
     The size in bytes of data being stored in the code cache. Recorded on
     receiving the cached code. Recorded only if the size in non-zero.

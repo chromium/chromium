@@ -3846,7 +3846,7 @@ chromium-metrics-reviews@google.com.
     name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint.NonTabWebUI{WebUIName}"
     units="ms" expires_after="2025-06-08">
   <owner>anthonyvd@chromium.org</owner>
-  <owner>chrome-catan@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
   <summary>
     Measures the time from navigation start to first contentful paint. This is
     only recorded for non-tab webUI pages, such as side-panel content.
@@ -4042,7 +4042,7 @@ chromium-metrics-reviews@google.com.
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.NonTabWebUI{WebUIName}"
     units="ms" expires_after="2025-06-08">
   <owner>anthonyvd@chromium.org</owner>
-  <owner>chrome-catan@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
     largest content (text or image) is first painted, for main frame documents

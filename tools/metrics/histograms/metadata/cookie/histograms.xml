@@ -690,7 +690,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Cookie.OnCookiesAccessed.BatchSize" units="accesses"
     expires_after="2025-04-13">
   <owner>olivierli@chromium.org</owner>
-  <owner>chrome-catan@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
   <summary>
     Records the number of cookie access details batches received in
     RenderFrameHostImpl. Recorded every time accesses are reported from the
@@ -701,7 +701,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Cookie.OnCookiesAccessed.TotalAccesses" units="accesses"
     expires_after="2025-04-13">
   <owner>olivierli@chromium.org</owner>
-  <owner>chrome-catan@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
   <summary>
     Records the number of cookie access details received in RenderFrameHostImpl.
     Recorded every time accesses are reported from the network service.
