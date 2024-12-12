@@ -239,7 +239,8 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
   EXPECT_THAT(spares_before_navigation, Contains(window->web_contents()
                                                      ->GetPrimaryMainFrame()
                                                      ->GetProcess()
-                                                     ->GetDeprecatedID()));
+                                                     ->GetID()));
+
   histogram_tester.ExpectUniqueSample(
       "BrowserRenderProcessHost.SpareRendererDispatchResult",
       SpareRendererDispatchResult::kUsed, 1);
@@ -255,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
               Not(Contains(window->web_contents()
                                ->GetPrimaryMainFrame()
                                ->GetProcess()
-                               ->GetDeprecatedID())));
+                               ->GetID())));
 
   // Check if a fresh spare is available (depending on the operating mode).
   if (RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes()) {
@@ -422,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
   EXPECT_THAT(spares_before_navigation, Not(Contains(window->web_contents()
                                                          ->GetPrimaryMainFrame()
                                                          ->GetProcess()
-                                                         ->GetDeprecatedID())));
+                                                         ->GetID())));
 
   // Check if a fresh spare is available (depending on the operating mode).
   // Note this behavior is identical to what would have happened if the
@@ -440,7 +441,8 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
   spare_manager.WarmupSpare(browser_context());
   ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
   RenderProcessHost* spare_renderer = spare_manager.GetSpares().back();
-  int spare_rph_id = spare_renderer->GetDeprecatedID();
+
+  ChildProcessId spare_rph_id = spare_renderer->GetID();
   mojo::Remote<mojom::TestService> service;
   ASSERT_NE(nullptr, spare_renderer);
   spare_renderer->BindReceiver(service.BindNewPipeAndPassReceiver());
@@ -457,8 +459,7 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
 
   // The initial spare is gone from the list of spares.
   EXPECT_THAT(spare_manager.GetSpares(),
-              Not(Contains(Property(&RenderProcessHost::GetDeprecatedID,
-                                    spare_rph_id))));
+              Not(Contains(Property(&RenderProcessHost::GetID, spare_rph_id))));
 }
 
 // A mock ContentBrowserClient that only considers a spare renderer to be a

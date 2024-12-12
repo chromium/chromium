@@ -16354,8 +16354,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        UtilizationOfSpareRenderProcessHost) {
   GURL first_url = embedded_test_server()->GetURL("a.com", "/title1.html");
   GURL second_url = embedded_test_server()->GetURL("b.com", "/title2.html");
-  std::vector<int> prev_spare_ids;
-  std::vector<int> curr_spare_ids;
+  std::vector<ChildProcessId> prev_spare_ids;
+  std::vector<ChildProcessId> curr_spare_ids;
   RenderProcessHost* prev_host = nullptr;
   RenderProcessHost* curr_host = nullptr;
 
@@ -16373,7 +16373,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), first_url));
   curr_spare_ids = spare_manager.GetSpareIds();
   curr_host = shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
-  EXPECT_FALSE(base::Contains(curr_spare_ids, curr_host->GetDeprecatedID()));
+  EXPECT_FALSE(base::Contains(curr_spare_ids, curr_host->GetID()));
+
   // No process swap when navigating away from the initial blank page.
   EXPECT_EQ(prev_host, curr_host);
   // We should always keep a spare RenderProcessHost around in site-per-process
@@ -16407,7 +16408,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_NE(prev_host, curr_host);
   // If present, the spare RenderProcessHost should have been be used.
   if (!prev_spare_ids.empty()) {
-    EXPECT_TRUE(base::Contains(prev_spare_ids, curr_host->GetDeprecatedID()));
+    EXPECT_TRUE(base::Contains(prev_spare_ids, curr_host->GetID()));
   }
   // A new spare should be warmed-up in site-per-process mode.
   if (AreAllSitesIsolatedForTesting()) {
@@ -16429,7 +16430,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_NE(prev_host, curr_host);
   // If present, the spare RenderProcessHost should have been used.
   if (!prev_spare_ids.empty()) {
-    EXPECT_TRUE(base::Contains(prev_spare_ids, curr_host->GetDeprecatedID()));
+    EXPECT_TRUE(base::Contains(prev_spare_ids, curr_host->GetID()));
   }
   // A new spare should be warmed-up in site-per-process mode.
   if (AreAllSitesIsolatedForTesting()) {

@@ -6148,7 +6148,7 @@ IN_PROC_BROWSER_TEST_P(
       spare_manager.GetSpares(),
       testing::Each(testing::Property(&RenderProcessHost::GetPriority,
                                       base::Process::Priority::kBestEffort)));
-  std::vector<int> spare_rph_ids = spare_manager.GetSpareIds();
+  std::vector<ChildProcessId> spare_rph_ids = spare_manager.GetSpareIds();
   ASSERT_FALSE(spare_rph_ids.empty());
 
   // Start a navigation to b.com to ensure a cross-process navigation is
@@ -6168,8 +6168,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // In this test case, a spare RenderProcessHost will be used, so verify it
   // and ensure it is ready.
-  EXPECT_THAT(spare_rph_ids,
-              testing::Contains(speculative_rph->GetDeprecatedID()));
+  EXPECT_THAT(spare_rph_ids, testing::Contains(speculative_rph->GetID()));
 
   // If LoadUrl finished before the task to call
   // RenderProcessHostImpl::OnChannelConnected is run, wait for the task to be
