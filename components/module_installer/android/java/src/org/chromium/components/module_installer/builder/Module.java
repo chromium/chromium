@@ -15,7 +15,6 @@ import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.build.BuildConfig;
 import org.chromium.components.module_installer.engine.InstallEngine;
 import org.chromium.components.module_installer.engine.InstallListener;
 
@@ -156,7 +155,7 @@ public class Module<T> {
     private ModuleDescriptor getModuleDescriptor() {
         ModuleDescriptor ret = mModuleDescriptor;
         if (ret == null) {
-            if (BuildConfig.IS_BUNDLE) {
+            if (BundleUtils.isBundle()) {
                 ret =
                         (ModuleDescriptor)
                                 instantiateReflectively(

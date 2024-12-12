@@ -59,12 +59,6 @@ public class BuildConfig {
     public static long VERSION_CODE = 1;
 #endif
 
-#if defined(_IS_BUNDLE)
-    public static boolean IS_BUNDLE = true;
-#else
-    public static boolean IS_BUNDLE;
-#endif
-
 #if defined(_IS_INCREMENTAL_INSTALL)
     public static boolean IS_INCREMENTAL_INSTALL = true;
 #else

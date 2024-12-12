@@ -57,6 +57,7 @@ import org.chromium.android_webview.common.ProductionSupportedFlagList;
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction;
 import org.chromium.base.BuildInfo;
+import org.chromium.base.BundleUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -434,7 +435,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                     VersionConstants.PRODUCT_VERSION,
                     BuildConfig.VERSION_CODE,
                     BuildConfig.MIN_SDK_VERSION,
-                    BuildConfig.IS_BUNDLE,
+                    BundleUtils.isBundle(),
                     multiProcess,
                     packageId);
 
@@ -639,7 +640,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     }
 
     public static boolean preloadInZygote() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P && BuildConfig.IS_BUNDLE) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P && BundleUtils.isBundle()) {
             // Apply workaround if we're a bundle on O, where the split APK handling bug exists.
             SplitApkWorkaround.apply();
         }

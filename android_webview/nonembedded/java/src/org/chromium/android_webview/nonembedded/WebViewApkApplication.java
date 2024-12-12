@@ -20,6 +20,7 @@ import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.android_webview.services.NonembeddedSafeModeActionsList;
+import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
@@ -57,16 +58,18 @@ public class WebViewApkApplication extends Application {
     @Override
     protected void attachBaseContext(Context context) {
         super.attachBaseContext(context);
+        ContextUtils.initApplicationContext(this);
+
         Log.i(
                 TAG,
                 "version=%s (%s) minSdkVersion=%s isBundle=%s processName=%s",
                 VersionConstants.PRODUCT_VERSION,
                 BuildConfig.VERSION_CODE,
                 BuildConfig.MIN_SDK_VERSION,
-                BuildConfig.IS_BUNDLE,
+                // BundleUtils uses getApplicationContext, so logging after we init it.
+                BundleUtils.isBundle(),
                 ContextUtils.getProcessName());
 
-        ContextUtils.initApplicationContext(this);
         maybeInitProcessGlobals();
 
         // MonochromeApplication has its own locale configuration already, so call this here

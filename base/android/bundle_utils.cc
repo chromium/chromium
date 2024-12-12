@@ -67,7 +67,7 @@ std::string BundleUtils::ResolveLibraryPath(const std::string& library_name,
 
 // static
 bool BundleUtils::IsBundle() {
-  return Java_BundleUtils_isBundleForNative(AttachCurrentThread());
+  return Java_BundleUtils_isBundle(AttachCurrentThread());
 }
 
 // static

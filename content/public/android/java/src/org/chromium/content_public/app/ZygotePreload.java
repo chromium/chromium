@@ -46,7 +46,7 @@ public class ZygotePreload implements android.app.ZygotePreload {
                 VersionConstants.PRODUCT_VERSION,
                 BuildConfig.VERSION_CODE,
                 BuildConfig.MIN_SDK_VERSION,
-                BuildConfig.IS_BUNDLE);
+                appInfo.splitNames != null && appInfo.splitNames.length > 0);
         try {
             // The current thread time is the best approximation we have of the zygote start time
             // since Process.getStartUptimeMillis() is not reliable in the zygote process. This will

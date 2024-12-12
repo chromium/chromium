@@ -1958,10 +1958,6 @@ if (!is_robolectric && enable_java_templates) {
         defines += [ "_IS_CHROME_BRANDED" ]
       }
 
-      if (defined(invoker.is_bundle) && invoker.is_bundle) {
-        defines += [ "_IS_BUNDLE" ]
-      }
-
       if (defined(invoker.isolated_splits_enabled) &&
           invoker.isolated_splits_enabled) {
         defines += [ "_ISOLATED_SPLITS_ENABLED" ]
@@ -2707,7 +2703,6 @@ if (!is_robolectric && enable_java_templates) {
                                  "disable_strict_mode_context",
                                  "isolated_splits_enabled",
                                ])
-        is_bundle = _is_bundle_module
         assertions_implicitly_enabled = _assertions_implicitly_enabled
         is_incremental_install = _incremental_apk
         version_code = _version_code
