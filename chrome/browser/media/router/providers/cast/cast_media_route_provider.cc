@@ -298,10 +298,6 @@ void CastMediaRouteProvider::DetachRoute(const std::string& route_id) {
   NOTIMPLEMENTED();
 }
 
-void CastMediaRouteProvider::EnableMdnsDiscovery() {
-  NOTIMPLEMENTED();
-}
-
 void CastMediaRouteProvider::DiscoverSinksNow() {
   app_discovery_service_->Refresh();
 }

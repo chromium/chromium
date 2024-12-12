@@ -202,8 +202,6 @@ void TestMediaRouteProvider::DetachRoute(const std::string& route_id) {
       "Close route");
 }
 
-void TestMediaRouteProvider::EnableMdnsDiscovery() {}
-
 void TestMediaRouteProvider::DiscoverSinksNow() {}
 
 void TestMediaRouteProvider::BindMediaController(

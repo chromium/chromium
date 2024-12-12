@@ -581,10 +581,6 @@ void DialMediaRouteProvider::DetachRoute(const std::string& route_id) {
   NOTIMPLEMENTED();
 }
 
-void DialMediaRouteProvider::EnableMdnsDiscovery() {
-  NOTIMPLEMENTED();
-}
-
 void DialMediaRouteProvider::DiscoverSinksNow() {
   media_sink_service_->DiscoverSinksNow();
 }

@@ -201,8 +201,6 @@ void WiredDisplayMediaRouteProvider::DetachRoute(const std::string& route_id) {
   NOTREACHED();
 }
 
-void WiredDisplayMediaRouteProvider::EnableMdnsDiscovery() {}
-
 void WiredDisplayMediaRouteProvider::DiscoverSinksNow() {
   NotifySinkObservers();
 }

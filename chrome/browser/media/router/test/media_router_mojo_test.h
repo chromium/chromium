@@ -97,7 +97,6 @@ class MockMediaRouteProvider : public mojom::MediaRouteProvider {
   MOCK_METHOD1(OnPresentationSessionDetached,
                void(const std::string& route_id));
   MOCK_METHOD0(StartObservingMediaRoutes, void());
-  MOCK_METHOD0(EnableMdnsDiscovery, void());
   MOCK_METHOD0(DiscoverSinksNow, void());
   void BindMediaController(
       const std::string& route_id,
