@@ -1,0 +1,46 @@
+CONSOLE MESSAGE: This test logs exposed APIs from ShadowRealmGlobalScope
+CONSOLE MESSAGE: [INTERFACES]
+CONSOLE MESSAGE: interface ShadowRealm
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE:     method evaluate
+CONSOLE MESSAGE:     method importValue
+CONSOLE MESSAGE: interface ShadowRealmGlobalScope
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE: [NAMESPACES]
+CONSOLE MESSAGE: namespace console
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     method assert
+CONSOLE MESSAGE:     method clear
+CONSOLE MESSAGE:     method context
+CONSOLE MESSAGE:     method count
+CONSOLE MESSAGE:     method countReset
+CONSOLE MESSAGE:     method debug
+CONSOLE MESSAGE:     method dir
+CONSOLE MESSAGE:     method dirxml
+CONSOLE MESSAGE:     method error
+CONSOLE MESSAGE:     method group
+CONSOLE MESSAGE:     method groupCollapsed
+CONSOLE MESSAGE:     method groupEnd
+CONSOLE MESSAGE:     method info
+CONSOLE MESSAGE:     method log
+CONSOLE MESSAGE:     method profile
+CONSOLE MESSAGE:     method profileEnd
+CONSOLE MESSAGE:     method table
+CONSOLE MESSAGE:     method time
+CONSOLE MESSAGE:     method timeEnd
+CONSOLE MESSAGE:     method timeLog
+CONSOLE MESSAGE:     method timeStamp
+CONSOLE MESSAGE:     method trace
+CONSOLE MESSAGE:     method warn
+CONSOLE MESSAGE: [GLOBAL OBJECT]
+CONSOLE MESSAGE:     attribute globalThis
+CONSOLE MESSAGE:     getter isSecureContext
+CONSOLE MESSAGE:     method atob
+CONSOLE MESSAGE:     method btoa
+CONSOLE MESSAGE:     method gc
+CONSOLE MESSAGE:     method queueMicrotask
+CONSOLE MESSAGE:     method reportError
+CONSOLE MESSAGE:     method structuredClone
+

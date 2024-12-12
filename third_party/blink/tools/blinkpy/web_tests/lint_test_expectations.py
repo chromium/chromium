@@ -392,7 +392,7 @@ def check_virtual_test_suites(host, options):
 
         for exclusive_test in suite.exclusive_tests:
             if not fs.exists(port.abspath_for_test(
-                    exclusive_test)) and base not in wpt_tests:
+                    exclusive_test)) and exclusive_test not in wpt_tests:
                 failure = 'Exclusive_tests entry "{}" in virtual suite "{}" must refer to a real file or directory'.format(
                     exclusive_test, prefix)
                 failures.append(failure)

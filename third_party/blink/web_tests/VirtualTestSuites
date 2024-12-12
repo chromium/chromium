@@ -4597,7 +4597,8 @@
       "external/wpt/webidl/ecmascript-binding/global-mutable-prototype.any.shadowrealm-in-window.html",
       "external/wpt/webidl/ecmascript-binding/global-mutable-prototype.https.any.shadowrealm-in-audioworklet.html",
       "external/wpt/webidl/ecmascript-binding/global-mutable-prototype.https.any.shadowrealm-in-serviceworker.html",
-      "external/wpt/webidl/idlharness.any.shadowrealm-in-window.html"
+      "external/wpt/webidl/idlharness.any.shadowrealm-in-window.html",
+      "http/tests/shadowrealm/webexposed/global-interface-listing-shadow-realm.html"
     ],
     "exclusive_tests": "ALL",
     "args": ["--js-flags=--harmony-shadow-realm"],
