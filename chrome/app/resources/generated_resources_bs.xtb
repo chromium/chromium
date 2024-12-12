@@ -5123,7 +5123,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4586275095964870617">Otvaranje web lokacije <ph name="URL" /> u alternativnom pregledniku nije uspjelo. Kontaktirajte administratora sistema.</translation>
 <translation id="4587589328781138893">Web lokacije</translation>
 <translation id="4588749726511456218">Ubrzanje klizanja <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
-<translation id="4589197033939192905">Čini se da su domene <ph name="PASSWORD_DOMAIN" /> i <ph name="DOMAIN" /> povezane. Prije nego što upotrijebite zaporku, provjerite je li domena <ph name="DOMAIN" /> pouzdana.</translation>
+<translation id="4589197033939192905">Izgleda da su <ph name="PASSWORD_DOMAIN" /> i <ph name="DOMAIN" /> povezani. Provjerite je li <ph name="DOMAIN" /> pouzdana web lokacija prije korištenja lozinke.</translation>
 <translation id="4589713469967853491">Zapisnici su uspješno ispisani u direktorij Preuzimanja.</translation>
 <translation id="4590785647529325123">Da s uređaja izbrišete historiju pregledanja u anonimnom načinu rada, zatvorite sve anonimne kartice</translation>
 <translation id="459204634473266369">Nema sačuvanih uređaja na <ph name="PRIMARY_EMAIL" /></translation>
@@ -5769,7 +5769,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5061531353537614467">Tundra</translation>
 <translation id="5062930723426326933">Prijava nije uspjela. Povežite se na internet i pokušajte ponovo.</translation>
 <translation id="5063480226653192405">Korištenje</translation>
-<translation id="5064921774605267982">Otvori profil <ph name="PROFILE_NAME" />. Ovim profilom upravlja tvoj roditelj.</translation>
+<translation id="5064921774605267982">Otvaranje profila <ph name="PROFILE_NAME" />. Profilom upravlja roditelj.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Upravljajte sigurnim DNS-om u postavkama ChromeOS-a</translation>
 <translation id="5066534201484101197">Kliznite do kraja da se krećete između stranica</translation>
@@ -7220,6 +7220,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="6122831415929794347">Isključiti Sigurno pregledanje?</translation>
 <translation id="6124650939968185064">Sljedeće ekstenzije ovise o ovoj ekstenziji:</translation>
 <translation id="6124698108608891449">Ovoj web lokaciji je potrebno više odobrenja.</translation>
+<translation id="6125202119952209826">Pridružite se grupi kartica koju koristi <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">Nažalost, morat ćete ponovo dodati svoj račun na ovaj uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6125639926370653692">Mjesec</translation>
 <translation id="6126601353087978360">Ovdje unesite povratne informacije:</translation>
@@ -7427,7 +7428,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="6266984048393265562">Prilagodite profil</translation>
 <translation id="6267166720438879315">Odaberite potvrdu da autentificirate svoj identitet na <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Otvori koristeći aplikaciju <ph name="APP" /></translation>
-<translation id="6269050081341530851">Kada zatvorite duplikate zadržava se najstarija kopija</translation>
+<translation id="6269050081341530851">Najstarija kopija se zadržava kada zatvorite duplikate</translation>
 <translation id="6270309713620950855">Isključi zvuk podsjećanja</translation>
 <translation id="6270391203985052864">Web lokacije mogu tražiti da šalju obavještenja</translation>
 <translation id="6270486800167535228">Ekstenzija je zakačena. Prikaz više opcija odabirom</translation>
@@ -7874,6 +7875,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6607831829715835317">Više ala&amp;ta</translation>
 <translation id="6607890859198268021">Adresom e-pošte <ph name="USER_EMAIL" /> već upravlja domena <ph name="DOMAIN" />. Da koristite roditeljski nadzor s drugim Google računom, odjavite se nakon postavljanja, a zatim odaberite "Dodaj osobu" na ekranu za prijavu.</translation>
 <translation id="6608166463665411119">Poništi eSIM</translation>
+<translation id="660846213831377756">Tipke miša</translation>
 <translation id="6608773371844092260">Da postavite otisak prsta, dijete treba dodirnuti senzor za otisak prsta na desnoj strani uređaja <ph name="DEVICE_TYPE" />. Podaci otiska prsta vašeg djeteta se sigurno pohranjuju i nikada ne napuštaju uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Podaci za prijavu će se pohraniti na ovom uređaju nakon što izađete iz anonimnog načina rada. Moći ćete se ponovo prijaviti na ovu web lokaciju svojim uređajem kasnije.</translation>
 <translation id="6610002944194042868">Opcije za prevođenje</translation>
@@ -7973,7 +7975,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6679947539429331601">Sakrij na 12 sati</translation>
 <translation id="6680442031740878064">Dostupno: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Brzina</translation>
-<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [niz rezerviranog mjesta]</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [niz rezerviranog mjesta]</translation>
 <translation id="6683022854667115063">Slušalice</translation>
 <translation id="6683087162435654533">V&amp;rati sve kartice</translation>
 <translation id="6683433919380522900">Odobrenje je <ph name="PERMISSION_STATE" /></translation>
@@ -8680,6 +8682,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7189451821249468368">Nemate dovoljno nadogradnji da prijavite ovaj uređaj. Kontaktirajte prodaju da kupite još licenci. Ako mislite da vam se ova poruka prikazuje greškom, kontaktirajte podršku.</translation>
 <translation id="7189965711416741966">Otisak prsta je dodan.</translation>
 <translation id="7190883804815364931">Posljednje ažuriranje kartice</translation>
+<translation id="7190921792980745354">Blokirati kontakt <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Neki podržani linkovi će se i dalje otvarati u aplikacijama <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> i njih još <ph name="NUMBER_OF_OTHER_APPS" />.</translation>
 <translation id="7191159667348037">Nepoznati štampač (USB)</translation>
 <translation id="7191631508323321927">Hodnik</translation>
@@ -8867,7 +8870,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7330533963640151632">Postavke funkcije <ph name="FEATURE_NAME" /> za uređaj koji koristi <ph name="USER_NAME" />, koji dijeli putem računa <ph name="USER_EMAIL" />.</translation>
 <translation id="7331646370422660166">Alt i strelica nadolje</translation>
 <translation id="7332053360324989309">Namjenski radnik: <ph name="SCRIPT_URL" /></translation>
-<translation id="7332138995369063163">Dupliciranje kartica</translation>
+<translation id="7332138995369063163">Duplikati kartica</translation>
 <translation id="7333388112938984914">Nije moguće otpremiti fajlove na vezi s naplatom.</translation>
 <translation id="7333669215417470379">Napravite sigurnosnu kopiju i vratite aplikacije i postavke</translation>
 <translation id="7335974957018254119">Koristite provjeru pravopisa za</translation>

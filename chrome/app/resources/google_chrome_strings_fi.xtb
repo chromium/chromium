@@ -258,6 +258,7 @@
 <translation id="4147555960264124640">Olet kirjautumassa sisään hallinnoidulla tilillä ja antamassa tilin järjestelmänvalvojalle oikeuden hallita Google Chrome -profiiliasi. Chrome-tietosi, kuten sovelluksesi, kirjanmerkkisi, historiasi, salasanasi ja muut asetuksesi, yhdistetään pysyvästi käyttäjätiliin <ph name="USER_NAME" />. Voit poistaa nämä tiedot Google-tilien Hallintapaneelissa, mutta et voi liittää tietoja toiseen tiliin. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Asennetaan...</translation>
 <translation id="4149882025268051530">Asennusohjelma ei pystynyt purkamaan arkistotiedostoa. Lataa Google Chrome uudelleen.</translation>
+<translation id="415112847282352845">Kirjaudu sisään Chromeen, niin voit käyttää osoitteita ja muita tietoja kaikilla laitteillasi Tämä osoite tallennetaan Google-tilillesi kirjautumisen jälkeen.</translation>
 <translation id="4153934450158521343">Chrome suljetaan ja data poistetaan pian</translation>
 <translation id="4173512894976930765">Sivustot toimivat todennäköisesti odotetulla tavalla. Sinut kirjataan ulos useimmilta sivustoilta, kun suljet kaikki Chrome-ikkunat. Tämä ei kuitenkaan koske Google-tiliäsi, jos olet kirjautuneena Chromeen.</translation>
 <translation id="4175922240926474352">Chrome on estänyt tämän latauksen, koska sivusto ei käytä suojattua yhteyttä ja tiedostoa on ehkä peukaloitu</translation>

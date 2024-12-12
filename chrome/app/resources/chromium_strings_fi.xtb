@@ -94,6 +94,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="2199210295479376551">Poista tili Chromiumista</translation>
 <translation id="2210682093923538346">Vaarallinen sivusto. Chromium poisti ilmoitukset.</translation>
 <translation id="2236949375853147973">Omat tapahtumat</translation>
+<translation id="2238130810669087193">Kirjaudu sisään Chromiumiin, niin voit käyttää osoitteita ja muita tietoja kaikilla laitteillasi Tämä osoite tallennetaan Google-tilillesi kirjautumisen jälkeen.</translation>
 <translation id="2240214816234246077">Sivut, joilla et ole käynyt viime aikoina. Chromium poisti luvat: <ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Jos käytät jaettua tietokonetta, kaverisi ja perheenjäsenesi voivat selata verkkoa omista profiileistaan käsin ja muokata Chromiumista juuri itselleen sopivan.</translation>
 <translation id="2313870531055795960">Tarkistaa URL-osoitteet Chromiumiin tallennetun vaarallisten sivustojen luettelon avulla. Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chromium voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, myös osia sivujen sisällöstä.</translation>

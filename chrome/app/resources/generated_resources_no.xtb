@@ -5116,6 +5116,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4586275095964870617">Kunne ikke åpne <ph name="URL" /> i en alternativ nettleser. Kontakt systemadministrator.</translation>
 <translation id="4587589328781138893">Nettsteder</translation>
 <translation id="4588749726511456218">Rulleakselerasjon <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> og <ph name="DOMAIN" /> ser ut til å være relatert. Forsikre deg om at du stoler på <ph name="DOMAIN" />, før du bruker passordet ditt.</translation>
 <translation id="4589713469967853491">Loggene er skrevet til Nedlastinger-katalogen.</translation>
 <translation id="4590785647529325123">For å fjerne Inkognito-nettleserloggen fra enheten, lukk alle inkognitofaner</translation>
 <translation id="459204634473266369">Ingen enheter er lagret i <ph name="PRIMARY_EMAIL" /></translation>
@@ -5621,6 +5622,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4946998421534856407">Appoversikt-tasten + oppoverpil</translation>
 <translation id="4947376546135294974">Data fra nettstedet du besøker</translation>
 <translation id="4950100687509657457">Opprett profil</translation>
+<translation id="4950360215042327246">[plassholderstreng]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{en fil}other{# filer}}</translation>
 <translation id="495170559598752135">Handlinger</translation>
 <translation id="4951966678293618079">Lagre aldri passord for dette nettstedet</translation>
@@ -5759,6 +5761,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5061531353537614467">Tundra</translation>
 <translation id="5062930723426326933">Påloggingen mislyktes. Koble til Internett og prøv på nytt.</translation>
 <translation id="5063480226653192405">Bruk</translation>
+<translation id="5064921774605267982">Åpne <ph name="PROFILE_NAME" />-profilen. Denne profilen administreres av forelderen din.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Administrer sikker DNS i ChromeOS-innstillingene</translation>
 <translation id="5066534201484101197">Overrull for å navigere mellom sider</translation>
@@ -7207,6 +7210,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6122831415929794347">Vil du slå av Safe Browsing?</translation>
 <translation id="6124650939968185064">Disse utvidelsene er avhengige av denne utvidelsen:</translation>
 <translation id="6124698108608891449">Dette nettstedet trenger flere tillatelser.</translation>
+<translation id="6125202119952209826">Bli med i fanegruppen med <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">Du må dessverre legge til kontoen din på denne <ph name="DEVICE_TYPE" />-enheten på nytt.</translation>
 <translation id="6125639926370653692">Måne</translation>
 <translation id="6126601353087978360">Skriv inn tilbakemeldingen din her:</translation>
@@ -7414,6 +7418,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6266984048393265562">Tilpass profil</translation>
 <translation id="6267166720438879315">Velg sertifikat for å autentisere deg selv til <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Åpne med <ph name="APP" /></translation>
+<translation id="6269050081341530851">Den eldste kopien beholdes når du lukker duplikater</translation>
 <translation id="6270309713620950855">Påminnelse om at mikrofonen er av</translation>
 <translation id="6270391203985052864">Nettsteder kan be om å få sende deg varsler</translation>
 <translation id="6270486800167535228">Utvidelsen er festet. Velg for å se flere alternativer</translation>
@@ -7856,6 +7861,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6607831829715835317">Flere verktøy</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> administreres allerede av <ph name="DOMAIN" />. For å bruke foreldrekontroll med en annen Google-konto, logg ut etter konfigureringen og velg «Legg til person» på påloggingsskjermen.</translation>
 <translation id="6608166463665411119">Tilbakestill eSIM-kortet</translation>
+<translation id="660846213831377756">Musetaster</translation>
 <translation id="6608773371844092260">For å konfigurere fingeravtrykk, få barnet ditt til å trykke på fingeravtrykkssensoren på høyre side av <ph name="DEVICE_TYPE" />. Barnets fingeravtrykksdata lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Påloggingsdata blir lagret på denne enheten når du går ut av Inkognitomodus. Du kan logge på dette nettstedet med enheten din igjen senere.</translation>
 <translation id="6610002944194042868">Alternativer for oversettelse</translation>
@@ -7955,6 +7961,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6679947539429331601">Skjul i 12 timer</translation>
 <translation id="6680442031740878064">Tilgjengelig: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Hastighet</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [plassholderstreng]</translation>
 <translation id="6683022854667115063">Hodetelefoner</translation>
 <translation id="6683087162435654533">Gjenopprett alle faner</translation>
 <translation id="6683433919380522900">Tillatelsen er <ph name="PERMISSION_STATE" /></translation>
@@ -8661,6 +8668,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7189451821249468368">Du har ikke tilstrekkelige oppgraderinger for å registrere denne enheten. Ta kontakt med salgsavdelingen for å kjøpe flere. Hvis du tror dette er en feil, kan du ta kontakt med brukerstøtten.</translation>
 <translation id="7189965711416741966">Fingeravtrykket er lagt til.</translation>
 <translation id="7190883804815364931">Nyeste oppdatering av denne fanen</translation>
+<translation id="7190921792980745354">Vil du blokkere <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Noen støttede linker åpnes fremdeles i <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> og <ph name="NUMBER_OF_OTHER_APPS" /> apper til.</translation>
 <translation id="7191159667348037">Ukjent skriver (USB)</translation>
 <translation id="7191631508323321927">Gang</translation>
@@ -8848,6 +8856,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7330533963640151632">Innstillinger for <ph name="FEATURE_NAME" /> for enheten til <ph name="USER_NAME" />, som deler via kontoen <ph name="USER_EMAIL" />.</translation>
 <translation id="7331646370422660166">alt + nedoverpil</translation>
 <translation id="7332053360324989309">Dedikert arbeider: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">Dupliserte faner</translation>
 <translation id="7333388112938984914">Du kan ikke laste opp filer via tilkoblinger med datamåling.</translation>
 <translation id="7333669215417470379">Sikkerhetskopier og gjenopprett appene og innstillingene dine</translation>
 <translation id="7335974957018254119">Bruk stavekontroll for</translation>

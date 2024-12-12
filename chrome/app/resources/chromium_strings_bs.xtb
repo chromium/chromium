@@ -96,7 +96,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="2199210295479376551">Ukloni račun iz Chromiuma</translation>
 <translation id="2210682093923538346">Opasna web lokacija. Chromium je uklonio obavještenja.</translation>
 <translation id="2236949375853147973">Moja aktivnost</translation>
-<translation id="2238130810669087193">Da biste mogli pristupati svojim adresama i drugim podacima na svim svojim uređajima, prijavite se na Chromium. Adresa će se spremiti na vaš Google račun nakon što se prijavite.</translation>
+<translation id="2238130810669087193">Da dobijate adrese i druge stavke na svim svojim uređajima, prijavite se u Chromium. Ova adresa će se sačuvati na Google račun nakon što se prijavite.</translation>
 <translation id="2240214816234246077">Niste je posjetili već neko vrijeme. Chromium je uklonio odobrenja "<ph name="PERMISSION_1" />" i "<ph name="PERMISSION_2" />"</translation>
 <translation id="2241627712206172106">Ako dijelite računar, prijatelji i porodica mogu odvojeno pretraživati i postaviti Chromium na način koji njima odgovara.</translation>
 <translation id="2313870531055795960">Provjerava URL-ove s listom nesigurnih web lokacija pohranjenih u Chromiumu. Ako web lokacija pokuša ukrasti vašu lozinku ili kada preuzimate štetan fajl, Chromium može slati i URL-ove, uključujući dijelove sadržaja stranice, u Sigurno pregledanje.</translation>

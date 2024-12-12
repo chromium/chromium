@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Отвори све</translation>
 <translation id="1408847409015257906">Додирните Приватност и безбедност.</translation>
 <translation id="1411386976162024013">Визуелна претрага Објектива</translation>
+<translation id="1417474386970818917">Одјави и избриши</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1430915738399379752">Штампај</translation>
 <translation id="1436671784520050284">Настави са подешавањем</translation>
@@ -1009,6 +1010,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5628388627414062173">{count,plural, =1{{count} страница на листи за читање}one{{count} страница на листи за читање}few{{count} странице на листи за читање}other{{count} страница на листи за читање}}</translation>
 <translation id="5632485077360054581">Покажи ми како</translation>
 <translation id="5633237939819267663">{count,plural, =1{Обележивач је сачуван у: {title}}one{{count} обележивач је сачуван у: {title}}few{{count} обележивача су сачувана у: {title}}other{{count} обележивача је сачувано у: {title}}}</translation>
+<translation id="564170563478022912">Желите да се одјавите? Несачувани подаци налога ће бити избрисани.</translation>
 <translation id="5642707040609478753">Означи као непрочитано</translation>
 <translation id="5646284034397250191">Ознака је направљена. Датум је на чекању</translation>
 <translation id="5647096944343801045">Велика улазна тачка</translation>
@@ -1021,6 +1023,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5669335982068190158">Одјављени сте у склопу ресетовања iPhone-а. Додирните Настави у наставку да бисте се пријавили.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Верзија <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Желите да промените налог? Несачувани подаци налога ће бити избрисани.</translation>
 <translation id="5683499062697987550">Да бисте користили и чували лозинке на Google налогу, потврдите свој идентитет.</translation>
 <translation id="5684761169742812828">Ова лозинка је откривена при повреди података на интернету. Ако тренутно немате времена да је промените, Google препоручује да задржите ово упозорење да бисте се касније подсетили.</translation>
 <translation id="5694848685995373177">Сачувано је на Диску за <ph name="USER_EMAIL" />.</translation>
@@ -1222,6 +1225,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6506996418997555004">Делите групу картица <ph name="GROUP_NAME" /></translation>
 <translation id="6507973708545996744">Пријавите се да би вам листа за читање била доступна на свим уређајима.</translation>
 <translation id="6518133107902771759">Верификуј</translation>
+<translation id="6518861084553706202">Картице ће бити затворене, а избрисани подаци могу да обухватају лозинке, историју прегледања, колачиће и друго.</translation>
 <translation id="6523575793810663688">Покажи ми како</translation>
 <translation id="6524082013156754186">Сачувај на налогу</translation>
 <translation id="6527303717912515753">Дели</translation>
@@ -1429,6 +1433,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7468373585447318060">Будите у току са снижењима за све производе које пратите.</translation>
 <translation id="746872191028309255">Купујте оно што видите помоћу камере или фото-галерије.</translation>
 <translation id="7471557245617580330">Направи нову картицу</translation>
+<translation id="7473891865547856676">Не, хвала</translation>
 <translation id="747956641630879526">Скривањем ове картице искључујете праћење пакета и уклањате све податке</translation>
 <translation id="7484645889979462775">Никад за овај сајт</translation>
 <translation id="7486006552035434095">Синхронизујте уређаје</translation>
@@ -1677,6 +1682,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8545276357312221485">Проверите подешавања подразумеваног прегледача</translation>
 <translation id="854938212724803178">Имате 1 угрожену лозинку. Решите проблем одмах да бисте били безбедни.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Одбацили сте {count} упозорење}one{Одбацили сте {count} упозорење}few{Одбацили сте {count} упозорења}other{Одбацили сте {count} упозорења}}</translation>
+<translation id="8558046478684552694">Затворите групу.</translation>
 <translation id="8560253818350321773">Прво прикажи често коришћене ставке.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} опција за лозинку је доступна изнад тастатуре.}one{{count} опција за лозинку је доступна изнад тастатуре.}few{{count} опције за лозинку су доступне изнад тастатуре.}other{{count} опција за лозинку је доступно изнад тастатуре.}}</translation>
 <translation id="8564894539416715395">Страница Нова картица</translation>
@@ -1845,6 +1851,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9205189991633470489">Закључавање картица без архивирања</translation>
 <translation id="9206887540681440657">Брзина</translation>
 <translation id="9223358826628549784">Извештај о отказивању је послат.</translation>
+<translation id="926455622548529175">Промени и избриши</translation>
 <translation id="929748059769569925">Истакнути текст</translation>
 <translation id="932305336591073205">{count,plural, =1{Затвори картицу}one{Затвори картице}few{Затвори картице}other{Затвори картице}}</translation>
 <translation id="939472100615258482">Актуелни сајт</translation>

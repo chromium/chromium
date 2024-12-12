@@ -7226,6 +7226,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6122831415929794347">Želite izklopiti varno brskanje?</translation>
 <translation id="6124650939968185064">Od te razširitve so odvisne naslednje razširitve:</translation>
 <translation id="6124698108608891449">To spletno mesto potrebuje več dovoljenj.</translation>
+<translation id="6125202119952209826">Pridružite se skupini zavihkov z osebo <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">V napravi <ph name="DEVICE_TYPE" /> boste morali znova dodati račun.</translation>
 <translation id="6125639926370653692">Luna</translation>
 <translation id="6126601353087978360">Tukaj vnesite povratne informacije:</translation>
@@ -7882,6 +7883,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6607831829715835317">Več orodij</translation>
 <translation id="6607890859198268021">Račun <ph name="USER_EMAIL" /> že upravlja <ph name="DOMAIN" />. Če želite uporabiti starševski nadzor v drugem računu Google, se po nastavitvi odjavite, nato na zaslonu za prijavo izberite »Dodajanje osebe«.</translation>
 <translation id="6608166463665411119">Ponastavi kartico e-SIM</translation>
+<translation id="660846213831377756">Tipke miške</translation>
 <translation id="6608773371844092260">Če želite nastaviti prstni odtis, naj se otrok dotakne tipala prstnih odtisov na desni strani te naprave <ph name="DEVICE_TYPE" />. Podatki o prstnih odtisih otroka so varno shranjeni in nikoli ne zapustijo naprave <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Podatki za prijavo se bodo shranili v tej napravi, ko zaprete anonimni način. Pozneje se boste lahko z napravo znova prijavili v to spletno mesto.</translation>
 <translation id="6610002944194042868">Možnosti prevajanja</translation>
@@ -8688,6 +8690,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7189451821249468368">Nimate dovolj nadgradenj za včlanitev te naprave. Obrnite se na prodajni oddelek za nakup dodatnih. Če menite, da ste to sporočilo prejeli pomotoma, se obrnite na podporo.</translation>
 <translation id="7189965711416741966">Prstni odtis dodan.</translation>
 <translation id="7190883804815364931">Zadnja posodobitev tega zavihka</translation>
+<translation id="7190921792980745354">Želite blokirati člana <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Nekatere podprte povezave se bodo še vedno odprle v aplikacijah <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> in še toliko drugih aplikacijah: <ph name="NUMBER_OF_OTHER_APPS" />.</translation>
 <translation id="7191159667348037">Neznan tiskalnik (USB)</translation>
 <translation id="7191631508323321927">Hodnik</translation>

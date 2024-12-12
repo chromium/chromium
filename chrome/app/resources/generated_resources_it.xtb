@@ -7204,6 +7204,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6122831415929794347">Disattivare la Navigazione sicura?</translation>
 <translation id="6124650939968185064">Le seguenti estensioni dipendono da questa estensione:</translation>
 <translation id="6124698108608891449">Questo sito richiede altre autorizzazioni.</translation>
+<translation id="6125202119952209826">Partecipa al gruppo di schede con <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">Purtroppo devi aggiungere nuovamente il tuo account al dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6125639926370653692">Luna</translation>
 <translation id="6126601353087978360">Inserisci qui il tuo feedback:</translation>
@@ -7854,6 +7855,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6607831829715835317">A&amp;ltri strumenti</translation>
 <translation id="6607890859198268021">L'indirizzo <ph name="USER_EMAIL" /> è già gestito da <ph name="DOMAIN" />. Per utilizzare la funzionalità Controllo genitori con un altro Account Google, esci dopo la configurazione, quindi seleziona "Aggiungi persona" nella schermata di accesso.</translation>
 <translation id="6608166463665411119">Reimposta eSIM</translation>
+<translation id="660846213831377756">Tasti del mouse</translation>
 <translation id="6608773371844092260">Per configurare l'impronta, chiedi a tuo figlio di toccare il sensore di impronte digitali sul lato destro di questo <ph name="DEVICE_TYPE" />. I dati relativi all'impronta di tuo figlio vengono memorizzati in modo sicuro e non possono essere trasferiti in alcun modo da questo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">I dati di accesso verranno memorizzati su questo dispositivo quando uscirai dalla modalità di navigazione in incognito. Potrai accedere di nuovo a questo sito web con il tuo dispositivo in un secondo momento.</translation>
 <translation id="6610002944194042868">Opzioni di Traduttore</translation>
@@ -8660,6 +8662,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7189451821249468368">Non disponi di licenze Upgrade sufficienti per registrare questo dispositivo. Contatta l'ufficio vendite per acquistarne altre. Se ritieni che questo messaggio sia stato visualizzato per sbaglio, contatta l'assistenza.</translation>
 <translation id="7189965711416741966">Impronta digitale aggiunta.</translation>
 <translation id="7190883804815364931">Ultimo aggiornamento a questa scheda</translation>
+<translation id="7190921792980745354">Bloccare <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Alcuni link supportati saranno comunque aperti in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> e altre <ph name="NUMBER_OF_OTHER_APPS" /> app.</translation>
 <translation id="7191159667348037">Stampante sconosciuta (USB)</translation>
 <translation id="7191631508323321927">Corridoio</translation>
@@ -8999,7 +9002,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
     nel riquadro ChromeVox nella parte superiore dello schermo</translation>
 <translation id="7429568074268678162">Il file <ph name="FILENAME" /> potrebbe essere pericoloso. Aggiungi una password se vuoi che Chrome lo controlli oppure puoi scaricarlo direttamente.</translation>
 <translation id="7431719494109538750">Nessun dispositivo HID trovato</translation>
-<translation id="7431991332293347422">Controlla la modalità di utilizzo della cronologia di navigazione per personalizzare la Ricerca e non solo</translation>
+<translation id="7431991332293347422">Controlla come la cronologia di navigazione viene utilizzata per personalizzare la Ricerca e altro</translation>
 <translation id="7432200167665670017">Il tuo amministratore ha bloccato "<ph name="EXTENSION_NAME" />" - ID app <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">Inserisci la smart card per continuare a utilizzare il tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Mantieni</translation>
@@ -10210,7 +10213,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="828180235270931531">Altre stampanti disponibili</translation>
 <translation id="8281886186245836920">Salta</translation>
 <translation id="8284279544186306258">tutti i siti <ph name="WEBSITE_1" /></translation>
-<translation id="8284326494547611709">Sottotitoli</translation>
+<translation id="8284326494547611709">Sottotitoli codificati</translation>
 <translation id="8286036467436129157">Accedi</translation>
 <translation id="8286227656784970313">Utilizza dizionario di sistema</translation>
 <translation id="828642162569365647">La password o il PIN protegge i tuoi dati memorizzati su questo <ph name="DEVICE_TYPE" /> e qualsiasi informazione a cui accedi dal telefono. Dovrai sbloccare il tuo <ph name="DEVICE_TYPE" /> ogni volta che si riattiva dalla sospensione.</translation>

@@ -7210,6 +7210,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6122831415929794347">Desativar a Navegação segura?</translation>
 <translation id="6124650939968185064">As seguintes extensões dependem desta extensão:</translation>
 <translation id="6124698108608891449">Este site precisa de mais autorizações.</translation>
+<translation id="6125202119952209826">Adira ao grupo de separadores com <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">Infelizmente, tem de adicionar novamente a sua conta a este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6125639926370653692">Lua</translation>
 <translation id="6126601353087978360">Introduza o seu feedback aqui:</translation>
@@ -7860,6 +7861,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6607831829715835317">Mais ferrament&amp;as</translation>
 <translation id="6607890859198268021">O endereço <ph name="USER_EMAIL" /> já está a ser gerido pelo domínio <ph name="DOMAIN" />. Para utilizar o controlo parental com uma Conta Google diferente, termine sessão após a configuração e, em seguida, selecione "Adicionar pessoa" no ecrã de início de sessão.</translation>
 <translation id="6608166463665411119">Repor eSIM</translation>
+<translation id="660846213831377756">Teclas do rato</translation>
 <translation id="6608773371844092260">Para configurar a impressão digital, peça à criança para tocar no sensor de impressões digitais no lado direito deste dispositivo <ph name="DEVICE_TYPE" />. Os dados de impressões digitais da criança são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Os dados de início de sessão são armazenados neste dispositivo depois de sair do Modo de navegação anónima. Poderá iniciar sessão neste Website com o seu dispositivo novamente mais tarde.</translation>
 <translation id="6610002944194042868">Opções de tradução</translation>
@@ -8666,6 +8668,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7189451821249468368">Não tem atualizações suficientes para inscrever este dispositivo. Entre em contacto com as vendas para comprar mais. Se considera que recebeu esta mensagem por engano, contacte o apoio técnico.</translation>
 <translation id="7189965711416741966">Impressão digital adicionada.</translation>
 <translation id="7190883804815364931">Atualização mais recente relativa a este separador</translation>
+<translation id="7190921792980745354">Quer bloquear <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Alguns links suportados continuarão a ser abertos nas apps <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> e mais <ph name="NUMBER_OF_OTHER_APPS" /> apps.</translation>
 <translation id="7191159667348037">Impressora desconhecida (USB)</translation>
 <translation id="7191631508323321927">Corredor</translation>

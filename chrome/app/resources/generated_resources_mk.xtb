@@ -5125,6 +5125,7 @@
 <translation id="4586275095964870617"><ph name="URL" /> не може да се отвори во алтернативен прелистувач. Контактирајте со администраторот на системот.</translation>
 <translation id="4587589328781138893">Сајтови</translation>
 <translation id="4588749726511456218">Забрзување на лизгањето <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905">Се чини дека <ph name="PASSWORD_DOMAIN" /> и <ph name="DOMAIN" /> се поврзани. Погрижете се да имате доверба во <ph name="DOMAIN" /> пред да ја искористите лозинката.</translation>
 <translation id="4589713469967853491">Евиденцијата е успешно запишана во директориумот „Преземања“.</translation>
 <translation id="4590785647529325123">Затворете ги сите картички „Инкогнито“ за да се избрише историјата на прелистувањето во режимот „Инкогнито“ од уредот</translation>
 <translation id="459204634473266369">Нема зачувани уреди во <ph name="PRIMARY_EMAIL" /></translation>
@@ -5631,6 +5632,7 @@
 <translation id="4946998421534856407">стартер + стрелка нагоре</translation>
 <translation id="4947376546135294974">Податоци од сајтот што го посетувате</translation>
 <translation id="4950100687509657457">Создајте профил</translation>
+<translation id="4950360215042327246">[Низа за резервирано место]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{датотека}one{# датотека}other{# датотеки}}</translation>
 <translation id="495170559598752135">Дејства</translation>
 <translation id="4951966678293618079">Никогаш не зачувувај лозинки за сајтов</translation>
@@ -5769,6 +5771,7 @@
 <translation id="5061531353537614467">Тундра</translation>
 <translation id="5062930723426326933">Пријавувањето не успеа, поврзете се на интернет и обидете се повторно.</translation>
 <translation id="5063480226653192405">Користење</translation>
+<translation id="5064921774605267982">Отвори го профилот <ph name="PROFILE_NAME" />. Со овој профил управува твојот родител.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Управувајте со функцијата „Безбеден DNS“ во поставките за Chrome OS</translation>
 <translation id="5066534201484101197">Лизгајте до крај за да се движите низ страниците</translation>
@@ -7219,6 +7222,7 @@
 <translation id="6122831415929794347">Да се исклучи „Безбедно прелистување“?</translation>
 <translation id="6124650939968185064">Следните наставки зависат од оваа наставка:</translation>
 <translation id="6124698108608891449">Сајтов има потреба од повеќе дозволи.</translation>
+<translation id="6125202119952209826">Придружете се во групата картички со <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">За жал, ќе треба да ја додадете сметката на овој <ph name="DEVICE_TYPE" /> повторно.</translation>
 <translation id="6125639926370653692">Месечина</translation>
 <translation id="6126601353087978360">Внесете ги повратните информации тука:</translation>
@@ -7426,6 +7430,7 @@
 <translation id="6266984048393265562">Приспособете го профилот</translation>
 <translation id="6267166720438879315">Изберете сертификат за да се автентицирате на <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Отвори со <ph name="APP" /></translation>
+<translation id="6269050081341530851">Се задржува најстарата копија кога ќе ги затворите дупликатите</translation>
 <translation id="6270309713620950855">Исклучи звук на потсетувањето</translation>
 <translation id="6270391203985052864">Сајтовите можат да прашуваат дали да испраќаат известувања</translation>
 <translation id="6270486800167535228">Екстензијата е закачена. Изберете за да видите повеќе опции</translation>
@@ -7870,6 +7875,7 @@
 <translation id="6607831829715835317">Повеќе алат&amp;ки</translation>
 <translation id="6607890859198268021"><ph name="DOMAIN" /> веќе управува со <ph name="USER_EMAIL" />. За да користите родителски контроли со друга сметка на Google, одјавете се по поставувањето, а потоа изберете „Додајте лице“ на екранот за најавување.</translation>
 <translation id="6608166463665411119">Ресетирај ја eSIM-картичката</translation>
+<translation id="660846213831377756">Копчиња за глувче</translation>
 <translation id="6608773371844092260">За да поставите отпечаток, детето треба да го допре сензорот за отпечатоци најгоре десно на овој <ph name="DEVICE_TYPE" />. Податоците за отпечатокот на детето безбедно се складираат и никогаш не го напуштаат <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Податоците за најавување ќе се складираат во уредов откако ќе излезете од режимот „Инкогнито“. Подоцна ќе може повторно да се најавите на овој веб-сајт со уредот.</translation>
 <translation id="6610002944194042868">Опции за „Преведи“</translation>
@@ -7969,6 +7975,7 @@
 <translation id="6679947539429331601">Криј 12 часа</translation>
 <translation id="6680442031740878064">Слободен простор: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Брзина</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Низа за резервирано место]</translation>
 <translation id="6683022854667115063">Слушалки</translation>
 <translation id="6683087162435654533">&amp;Врати ги сите картички</translation>
 <translation id="6683433919380522900">Дозвола: <ph name="PERMISSION_STATE" /></translation>
@@ -8674,6 +8681,7 @@
 <translation id="7189451821249468368">Немате доволно надградби за да го регистрирате уредов. Контактирајте со службата за продажбата за да купите уште. Ако сметате дека сте ја добиле поракава по грешка, контактирајте со службата за поддршка.</translation>
 <translation id="7189965711416741966">Отпечатокот е додаден.</translation>
 <translation id="7190883804815364931">Последна промена на картичкава</translation>
+<translation id="7190921792980745354">Да се блокира <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Некои поддржани линкови сѐ уште ќе се отвораат во <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> и <ph name="NUMBER_OF_OTHER_APPS" /> други апликации.</translation>
 <translation id="7191159667348037">Непознат печатач (USB)</translation>
 <translation id="7191631508323321927">Ходник</translation>
@@ -8861,6 +8869,7 @@
 <translation id="7330533963640151632">Поставки за <ph name="FEATURE_NAME" /> за уредот на <ph name="USER_NAME" />, што се споделува со сметката <ph name="USER_EMAIL" />.</translation>
 <translation id="7331646370422660166">alt + стрелка надолу</translation>
 <translation id="7332053360324989309">Доделен работник: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">Дупликат картички</translation>
 <translation id="7333388112938984914">Не може да се прикачат датотеки додека сте на врска што се плаќа.</translation>
 <translation id="7333669215417470379">Бекап и враќање на вашите апликации и поставки</translation>
 <translation id="7335974957018254119">Користете проверка на правопис за</translation>

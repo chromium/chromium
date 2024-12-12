@@ -417,6 +417,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="2816489851009559785">Nabídka → Nastavení → Výchozí prohlížeč</translation>
 <translation id="2818821771744632548">V rámci resetování iPhonu jste byli odhlášeni z účtu <ph name="USER_NAME" />. Pokud se chcete znovu přihlásit, klepněte níže na Pokračovat.</translation>
 <translation id="2819667972867209401">Když je tato funkce zapnutá, ukládají se data do vašeho účtu Google. Když je vypnutá, ukládají se pouze do tohoto zařízení, a pokud se odhlásíte, budou smazána.</translation>
+<translation id="2827760117436553203">Nechat údaje oddělené?</translation>
 <translation id="2829172210806130158">Vyhledat na obrazovce</translation>
 <translation id="2834399722155632105">3. Klepněte na Volby hesel.</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -1213,6 +1214,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="6476800141292307438">Stránka se překládá do jazyka <ph name="LANGUAGE" />. Možnosti jsou k dispozici u dolního okraje obrazovky.</translation>
 <translation id="647867789226964031">Změňte svá hesla</translation>
 <translation id="6494931198667773526">Končí</translation>
+<translation id="6495521251906266731">Zvolte, co chcete udělat se stávajícími údaji o prohlížení v tomhle zařízení, jako jsou hesla, historie atd.</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{Přestat sledovat tuto zásilku}few{Přestat sledovat tyto zásilky}many{Přestat sledovat tyto zásilky}other{Přestat sledovat tyto zásilky}}</translation>
 <translation id="6503077044568424649">Nejnavštěvovanější</translation>
 <translation id="6503763061813913607">Oznámení bezpečnostní kontroly</translation>
@@ -1427,6 +1429,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7468373585447318060">Mějte přehled o poklesech ceny u všech produktů, které sledujete.</translation>
 <translation id="746872191028309255">Pomocí fotoaparátu nebo fotogalerie si kupte, co vidíte.</translation>
 <translation id="7471557245617580330">Vytvořit novou kartu</translation>
+<translation id="7473891865547856676">Ne, děkuji</translation>
 <translation id="747956641630879526">Skrytím této karty vypnete sledování zásilek a odstraníte všechna svá data</translation>
 <translation id="7484645889979462775">Nikdy v případě těchto stránek</translation>
 <translation id="7486006552035434095">Synchronizujte svá zařízení</translation>

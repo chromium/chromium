@@ -1401,6 +1401,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="351522771072578657">Trenutno ste u meniju</translation>
 <translation id="3517264445792388751">Administrator je onemogućio sistem fajlova</translation>
 <translation id="3518941727116570328">Obrada više predmeta</translation>
+<translation id="3519670528214225835">Pitajte <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3525130752944427905">10×14 in</translation>
 <translation id="3525435918300186947">Želi da kontroliše i reprogramira MIDI uređaje?</translation>
 <translation id="3527181387426738155">Muzika i audio</translation>
@@ -1956,6 +1957,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4451684391620232683">Tekst predstavljen korisniku:</translation>
 <translation id="4452328064229197696">Lozinka koju ste upravo koristili je pronađena pri povredi podataka. Da biste zaštitili naloge, Google menadžer lozinki preporučuje da proverite sačuvane lozinke.</translation>
 <translation id="4456937135469235202">Avanturistička putovanja</translation>
+<translation id="4458013283022578512">Unesite pitanje</translation>
 <translation id="4464826014807964867">Veb-sajtovi sa podacima iz vaše organizacije</translation>
 <translation id="4466576951214254884">Studentski krediti i stipendiranje</translation>
 <translation id="4467821340016922962">Da biste izašli iz režima celog ekrana i pregledali preuzimanje, pritisnite |<ph name="ACCELERATOR" />|</translation>
@@ -3542,6 +3544,7 @@ Dodatni detalji:
 <translation id="7388594495505979117">{0,plural, =1{Uređaj će se restartovati za 1 minut}one{Uređaj će se restartovati za # minut}few{Uređaj će se restartovati za # minuta}other{Uređaj će se restartovati za # minuta}}</translation>
 <translation id="7393161616326137353">Avanturističke igre</translation>
 <translation id="7393475648162498734">Omogućite prikaz nagrada i prednosti dostupnih za kartice pri plaćanju</translation>
+<translation id="7393971683644170444">Povezuje se sa dobavljačem kartice…</translation>
 <translation id="739728382607845710">Ikona obrađivača plaćanja</translation>
 <translation id="7399616692258236448">Zahtevi za lokaciju se automatski blokiraju za sve sajtove osim za one koje omogućite</translation>
 <translation id="7400418766976504921">URL adresa</translation>

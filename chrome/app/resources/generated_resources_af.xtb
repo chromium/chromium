@@ -7222,6 +7222,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6122831415929794347">Skakel Veiligblaai af?</translation>
 <translation id="6124650939968185064">Die volgende uitbreidings is afhanklik van hierdie uitbreiding:</translation>
 <translation id="6124698108608891449">Hierdie werf benodig nog toestemmings.</translation>
+<translation id="6125202119952209826">Sluit aan by oortjiegroep met <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">Ongelukkig moet jy weer jou rekening by hierdie <ph name="DEVICE_TYPE" /> voeg.</translation>
 <translation id="6125639926370653692">Maan</translation>
 <translation id="6126601353087978360">Voer asseblief jou terugvoer hier in:</translation>
@@ -7872,6 +7873,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6607831829715835317">Meer nutsgoed</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> word reeds deur <ph name="DOMAIN" /> bestuur. Om ouerkontroles met 'n ander Google-rekening te gebruik, moet jy ná opstelling afmeld, en dan "Voeg persoon by" op die aanmeldskerm kies.</translation>
 <translation id="6608166463665411119">Stel e-SIM terug</translation>
+<translation id="660846213831377756">Muissleutels</translation>
 <translation id="6608773371844092260">Laat jou kind aan die vingerafdruksensor aan die regterkant van hierdie <ph name="DEVICE_TYPE" /> raak om hul vingerafdruk op te stel. Jou kind se vingerafdrukdata word veilig geberg en verlaat nooit hierdie <ph name="DEVICE_TYPE" /> nie.</translation>
 <translation id="6609478180749378879">Aanmelddata sal op hierdie toestel geberg word nadat jy Incognitomodus verlaat het. Jy sal later weer met jou toestel by hierdie werf kan aanmeld.</translation>
 <translation id="6610002944194042868">Vertaalopsies</translation>
@@ -8677,6 +8679,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7189451821249468368">Jy het nie genoeg opgraderings om hierdie toestel in te skryf nie. Kontak asseblief die verkoopsafdeling om meer te koop. As jy meen dis 'n fout dat jy hierdie boodskap sien, moet jy asseblief steundienste kontak.</translation>
 <translation id="7189965711416741966">Vingerafdruk is bygevoeg.</translation>
 <translation id="7190883804815364931">Jongste opdatering vir hierdie groep</translation>
+<translation id="7190921792980745354">Blokkeer <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Sommige gesteunde skakels sal steeds in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> en <ph name="NUMBER_OF_OTHER_APPS" /> ander programme oopmaak.</translation>
 <translation id="7191159667348037">Onbekende drukker (USB)</translation>
 <translation id="7191631508323321927">Voorportaal</translation>

@@ -417,6 +417,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2816489851009559785">Menu → Impostazioni → Browser predefinito</translation>
 <translation id="2818821771744632548">Il tuo account <ph name="USER_NAME" /> è stato disconnesso durante il ripristino dell'iPhone. Per accedere di nuovo, tocca "Continua" di seguito.</translation>
 <translation id="2819667972867209401">In caso di attivazione, i dati vengono salvati nel tuo Account Google. In caso di disattivazione, i dati vengono salvati solo su questo dispositivo e vengono eliminati se ti disconnetti.</translation>
+<translation id="2827760117436553203">Mantenere i dati separati?</translation>
 <translation id="2829172210806130158">Cerca sullo schermo</translation>
 <translation id="2834399722155632105">3. Tocca Opzioni password</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -1213,6 +1214,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="6476800141292307438">Traduzione della pagina in <ph name="LANGUAGE" />. Opzioni disponibili nella parte inferiore dello schermo.</translation>
 <translation id="647867789226964031">Cambia le password</translation>
 <translation id="6494931198667773526">Fine</translation>
+<translation id="6495521251906266731">Scegli cosa fare con i dati di navigazione esistenti su questo dispositivo, ad esempio password, cronologia e altro ancora.</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{Annulla monitoraggio del pacchetto}other{Annulla monitoraggio di tutti i pacchetti}}</translation>
 <translation id="6503077044568424649">Più visitati</translation>
 <translation id="6503763061813913607">Notifiche del controllo di sicurezza</translation>
@@ -1414,7 +1416,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7419565702166471774">Utilizza sempre connessioni sicure</translation>
 <translation id="7425053386765766120">Aggiungi il metodo di pagamento…</translation>
 <translation id="7425346204213733349">Le modifiche ai preferiti, alla cronologia, alle password e ad altre impostazioni non verranno più sincronizzate con il tuo Account Google. Tuttavia, i dati esistenti rimarranno memorizzati.</translation>
-<translation id="7431991332293347422">Controlla la modalità di utilizzo della cronologia di navigazione per personalizzare la Ricerca e non solo</translation>
+<translation id="7431991332293347422">Controlla come la cronologia di navigazione viene utilizzata per personalizzare la Ricerca e altro</translation>
 <translation id="7435356471928173109">Disattivata dall'amministratore</translation>
 <translation id="7438481509621345350">Quando aprirai una nuova scheda vedrai le notizie di <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Preferito salvato in "{title}"}other{Preferiti salvati in "{title}"}}</translation>
@@ -1427,6 +1429,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7468373585447318060">Tieni sotto controllo i cali di prezzo di tutti i prodotti che monitori.</translation>
 <translation id="746872191028309255">Acquista ciò che vedi con la fotocamera o la galleria fotografica.</translation>
 <translation id="7471557245617580330">Crea nuova scheda</translation>
+<translation id="7473891865547856676">No, grazie</translation>
 <translation id="747956641630879526">Se nascondi questa scheda, il tracciamento della spedizione verrà disattivato e verranno rimossi tutti i tuoi dati</translation>
 <translation id="7484645889979462775">Mai per questo sito</translation>
 <translation id="7486006552035434095">Mantieni sincronizzati i tuoi dispositivi</translation>

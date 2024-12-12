@@ -5124,6 +5124,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4586275095964870617">Det gick inte att öppna <ph name="URL" /> i den andra webbläsaren. Kontakta systemadministratören.</translation>
 <translation id="4587589328781138893">Webbplatser</translation>
 <translation id="4588749726511456218">Scrollningsacceleration <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> och <ph name="DOMAIN" /> verkar vara relaterade. Se till att du litar på <ph name="DOMAIN" /> innan du använder lösenordet.</translation>
 <translation id="4589713469967853491">Loggarna har sparats i katalogen Nedladdningar.</translation>
 <translation id="4590785647529325123">Stäng alla inkognitoflikar om du vill radera webbhistoriken i inkognitoläget</translation>
 <translation id="459204634473266369">Inga enheter har sparats i <ph name="PRIMARY_EMAIL" /></translation>
@@ -5630,6 +5631,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4946998421534856407">Appstartaren + uppåtpil</translation>
 <translation id="4947376546135294974">Data från webbplatsen du besöker</translation>
 <translation id="4950100687509657457">Skapa profil</translation>
+<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{en fil}other{# filer}}</translation>
 <translation id="495170559598752135">Åtgärder</translation>
 <translation id="4951966678293618079">Spara aldrig lösenord för den här webbplatsen</translation>
@@ -5768,6 +5770,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5061531353537614467">Tundra</translation>
 <translation id="5062930723426326933">Inloggningen misslyckades. Anslut till internet och försök igen.</translation>
 <translation id="5063480226653192405">Användning</translation>
+<translation id="5064921774605267982">Öppna profilen <ph name="PROFILE_NAME" />. Den här profilen hanteras av din förälder.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Inställningar för att hantera säker DNS i ChromeOS</translation>
 <translation id="5066534201484101197">Navigera mellan sidor genom att scrolla för långt</translation>
@@ -7218,6 +7221,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6122831415929794347">Vill du inaktivera Säker webbsökning?</translation>
 <translation id="6124650939968185064">Följande tillägg är beroende av detta tillägg:</translation>
 <translation id="6124698108608891449">Fler behörigheter behövs för webbplatsen.</translation>
+<translation id="6125202119952209826">Gå med i flikgruppen med <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">Du måste tyvärr lägga till ditt konto på <ph name="DEVICE_TYPE" /> igen.</translation>
 <translation id="6125639926370653692">Månen</translation>
 <translation id="6126601353087978360">Ge feedback här:</translation>
@@ -7425,6 +7429,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6266984048393265562">Anpassa profil</translation>
 <translation id="6267166720438879315">Välj ett certifikat för att styrka din identitet för <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Öppna med <ph name="APP" /></translation>
+<translation id="6269050081341530851">Den äldsta kopian sparas när du stänger dubbletter</translation>
 <translation id="6270309713620950855">Påminnelse om att mikrofonen är avstängd</translation>
 <translation id="6270391203985052864">Webbplatser får be om tillåtelse att skicka aviseringar</translation>
 <translation id="6270486800167535228">Tillägget har fästs. Välj för att visa fler alternativ</translation>
@@ -7867,6 +7872,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6607831829715835317">Fler verkt&amp;yg</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> hanteras redan av <ph name="DOMAIN" />. Om du vill använda föräldrakontroller med ett annat Google-konto loggar du ut efter konfigureringen och väljer Lägg till person på inloggningsskärmen.</translation>
 <translation id="6608166463665411119">Återställ eSIM-kortet</translation>
+<translation id="660846213831377756">Musknappar</translation>
 <translation id="6608773371844092260">Låt ditt barn trycka på fingeravtryckssensorn på höger sida av <ph name="DEVICE_TYPE" /> för att ställa in fingeravtryck. Ditt barns fingeravtrycksdata lagras på ett säkert sätt och lämnar aldrig denna <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Inloggningsuppgifterna sparas på enheten när du har avslutat inkognitoläget. Du kan logga in på den här webbplatsen med enheten igen senare.</translation>
 <translation id="6610002944194042868">Översättningsalternativ</translation>
@@ -7966,6 +7972,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6679947539429331601">Dölj i 12 timmar</translation>
 <translation id="6680442031740878064">Tillgängligt: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Hastighet</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [Placeholder String]</translation>
 <translation id="6683022854667115063">Hörlurar</translation>
 <translation id="6683087162435654533">Åt&amp;erställ alla flikar</translation>
 <translation id="6683433919380522900">Behörigheten är <ph name="PERMISSION_STATE" /></translation>
@@ -8672,6 +8679,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7189451821249468368">Du har inte tillräckligt med uppgraderingar för att registrera enheten. Kontakta säljavdelningen om du vill köpa fler. Om du anser att detta meddelande visas på felaktig grund kontaktar du supporten.</translation>
 <translation id="7189965711416741966">Fingeravtrycket har lagts till.</translation>
 <translation id="7190883804815364931">Senaste uppdateringen av den här fliken</translation>
+<translation id="7190921792980745354">Vill du blockera <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Vissa länkar som stöds öppnas fortfarande i <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> och <ph name="NUMBER_OF_OTHER_APPS" /> andra appar.</translation>
 <translation id="7191159667348037">Okänd skrivare (USB)</translation>
 <translation id="7191631508323321927">Hall</translation>
@@ -8859,6 +8867,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7330533963640151632">Inställningar för <ph name="FEATURE_NAME" /> för enheten som tillhör <ph name="USER_NAME" /> och som delar via kontot <ph name="USER_EMAIL" />.</translation>
 <translation id="7331646370422660166">alt + nedåtpil</translation>
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">Flikdubbletter</translation>
 <translation id="7333388112938984914">Det går inte att ladda upp filer via en anslutning med datapriser.</translation>
 <translation id="7333669215417470379">Säkerhetskopiera och återställa appar och inställningar</translation>
 <translation id="7335974957018254119">Använd stavningskontroll för</translation>

@@ -5106,6 +5106,7 @@
 <translation id="4586275095964870617"><ph name="URL" /> сілтемесін балама браузерде ашу мүмкін болмады. Жүйе әкімшісіне хабарласыңыз.</translation>
 <translation id="4587589328781138893">Сайттар</translation>
 <translation id="4588749726511456218">Айналдыруды үдету <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> және <ph name="DOMAIN" /> бір-бірімен байланысты сияқты. Құпия сөзді <ph name="DOMAIN" /> сайтына сенсеңіз ғана пайдаланыңыз.</translation>
 <translation id="4589713469967853491">Журналдар "Жүктеп алынғандар" каталогіне жазылды.</translation>
 <translation id="4590785647529325123">Құрылғыңыздан инкогнито режиміндегі браузерді қолдану тарихын жою үшін барлық инкогнито қойындысын жабыңыз.</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> электрондық поштасына ешбір құрылғы сақталмаған.</translation>
@@ -5611,6 +5612,7 @@
 <translation id="4946998421534856407">іске қосу тақтасы пернесі + жоғары бағыт пернесі</translation>
 <translation id="4947376546135294974">Сіз кіретін сайт деректері</translation>
 <translation id="4950100687509657457">Профиль жасау</translation>
+<translation id="4950360215042327246">[Плейсхолдер жолы]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{файл}other{# файл}}</translation>
 <translation id="495170559598752135">Әрекеттер</translation>
 <translation id="4951966678293618079">Бұл сайт үшін құпия сөздерді ешқашан сақтамау</translation>
@@ -5749,6 +5751,7 @@
 <translation id="5061531353537614467">Тундра</translation>
 <translation id="5062930723426326933">Кіру сәтсіз аяқталды, интернетке қосылып, әрекетті қайталаңыз.</translation>
 <translation id="5063480226653192405">Пайдалану</translation>
+<translation id="5064921774605267982"><ph name="PROFILE_NAME" /> профилін ашыңыз. Бұл профильді ата-анаңыз басқарады.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS параметрлерінде қауіпсіз DNS функциясын басқару</translation>
 <translation id="5066534201484101197">Беттен бетке өту үшін соңына дейін айналдырыңыз.</translation>
@@ -7195,6 +7198,7 @@
 <translation id="6122831415929794347">"Қауіпсіз шолу" функциясы өшірілсін бе?</translation>
 <translation id="6124650939968185064">Келесі кеңейтімдер осы кеңейтімге байланысты:</translation>
 <translation id="6124698108608891449">Сайтқа қосымша рұқсаттар қажет.</translation>
+<translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> қосылған қойындылар тобына қосылыңыз</translation>
 <translation id="6125479973208104919">Өкінішке қарай, аккаунтты <ph name="DEVICE_TYPE" /> құрылғысына қайта енгізу қажет.</translation>
 <translation id="6125639926370653692">Ай</translation>
 <translation id="6126601353087978360">Пікіріңізді мына жерге енгізіңіз:</translation>
@@ -7402,6 +7406,7 @@
 <translation id="6266984048393265562">Профильді бейімдеу</translation>
 <translation id="6267166720438879315">Өзіңізді <ph name="HOST_NAME" /> хостына аутентификациялау үшін сертификат таңдаңыз</translation>
 <translation id="6268252012308737255"><ph name="APP" /> қолданбасымен ашу</translation>
+<translation id="6269050081341530851">Көшірмелерді жапқан кезде, ең ескі көшірме сақталады.</translation>
 <translation id="6270309713620950855">Еске салғыш дыбысын өшіру</translation>
 <translation id="6270391203985052864">Сайттар хабарландырулар жіберу рұқсатын сұрай алады</translation>
 <translation id="6270486800167535228">Кеңейтім бекітілді. Қосымша опцияларды көру үшін таңдаңыз</translation>
@@ -7844,6 +7849,7 @@
 <translation id="6607831829715835317">Қосымша құралд&amp;ар</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> электрондық мекенжайын <ph name="DOMAIN" /> домені басқарып жатыр. Ата-ана бақылауын басқа Google аккаунтымен пайдалану үшін реттеуден кейін аккаунттан шығып, аккаунтқа кіру терезесінен "Адамды қосу" опциясын таңдаңыз.</translation>
 <translation id="6608166463665411119">eSIM картасын бастапқы күйге қайтару</translation>
+<translation id="660846213831377756">Тінтуір пернелері</translation>
 <translation id="6608773371844092260">Саусақ ізін реттеу үшін балаңыз осы <ph name="DEVICE_TYPE" /> оң жағындағы саусақ ізін оқу сканерін түртуі керек. Бала саусағының ізі туралы деректер қауіпсіз сақталған және <ph name="DEVICE_TYPE" /> құрылғысынан басқа ешқайда жіберілмейді.</translation>
 <translation id="6609478180749378879">Сіз инкогнито режимінен шыққаннан кейін де, аккаунтқа кіру деректері осы құрылғыда сақталады. Кейінірек құрылғыңызбен бұл веб-сайтқа қайта кіре аласыз.</translation>
 <translation id="6610002944194042868">Аудару опциялары</translation>
@@ -7943,6 +7949,7 @@
 <translation id="6679947539429331601">12 сағат жасыру</translation>
 <translation id="6680442031740878064">Бос: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Жылдамдық</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [плейсхолдер жолы]</translation>
 <translation id="6683022854667115063">Құлақаспап</translation>
 <translation id="6683087162435654533">Барлық қойындыны қалпына келтіру</translation>
 <translation id="6683433919380522900">Рұқсат күйі: <ph name="PERMISSION_STATE" /></translation>
@@ -8648,6 +8655,7 @@
 <translation id="7189451821249468368">Бұл құрылғыны тіркеу үшін сізде жаңа нұсқалар жеткіліксіз. Қосымша сатып алу үшін сатылымдар бөліміне хабарласыңыз. Бұл хабар сізге қателікпен жіберілген болса, қолдау қызметіне хабарласыңыз.</translation>
 <translation id="7189965711416741966">Саусақ ізі енгізілді.</translation>
 <translation id="7190883804815364931">Бұл қойындыдағы соңғы өзгеріс</translation>
+<translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> блокталсын ба?</translation>
 <translation id="7191063546666816478">Кейбір қолдау көрсету сілтемелері <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> қолданбаларында және тағы <ph name="NUMBER_OF_OTHER_APPS" /> қолданбада ашық болады.</translation>
 <translation id="7191159667348037">Белгісіз принтер (USB)</translation>
 <translation id="7191631508323321927">Дәліз</translation>
@@ -8835,6 +8843,7 @@
 <translation id="7330533963640151632"><ph name="USER_NAME" /> құрылғысына арналған, <ph name="USER_EMAIL" /> аккаунтында ортақ қолданылып жатқан <ph name="FEATURE_NAME" /> параметрлері.</translation>
 <translation id="7331646370422660166">alt + төмен бағыт пернесі</translation>
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">Көшірме қойындылар</translation>
 <translation id="7333388112938984914">Трафик саналатын байланыста файлдар жүктеп салу мүмкін емес.</translation>
 <translation id="7333669215417470379">Қолданбалар мен параметрлердің сақтық көшірмесін жасау және қалпына келтіру</translation>
 <translation id="7335974957018254119">Емлені тексеруді пайдалану</translation>

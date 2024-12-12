@@ -7208,6 +7208,7 @@ USB ડિવાઇસ</translation>
 <translation id="6122831415929794347">Safe Browsing બંધ કરીએ?</translation>
 <translation id="6124650939968185064">નીચેના એક્સ્ટેન્શન્સ આ એક્સ્ટેન્શન પર નિર્ભર કરે છે:</translation>
 <translation id="6124698108608891449">આ સાઇટ માટે વધુ પરવાનગીઓની જરૂર છે.</translation>
+<translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> સાથે ટૅબના ગ્રૂપમાં જોડાઓ</translation>
 <translation id="6125479973208104919">કમનસીબે, તમને આ <ph name="DEVICE_TYPE" />માં તમારું એકાઉન્ટ ઉમેરવાની જરૂર પડશે.</translation>
 <translation id="6125639926370653692">ચંદ્ર</translation>
 <translation id="6126601353087978360">કૃપા કરીને અહીં તમારો પ્રતિસાદ દાખલ કરો:</translation>
@@ -7860,6 +7861,7 @@ USB ડિવાઇસ</translation>
 <translation id="6607831829715835317">વધુ સા&amp;ધનો</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> પહેલેથી જ <ph name="DOMAIN" /> દ્વારા મેનેજ કરવામાં આવી રહ્યું છે. કોઈ અલગ Google એકાઉન્ટ વડે માતાપિતાના યોગ્ય નિયંત્રણોનો ઉપયોગ કરવા માટે, સેટઅપ કર્યા પછી સાઇન આઉટ કરો અને પછી સાઇન ઇન કરવાની સ્ક્રીન પર "વ્યક્તિ ઉમેરો" પસંદ કરો.</translation>
 <translation id="6608166463665411119">ઇ-સિમને રીસેટ કરો</translation>
+<translation id="660846213831377756">માઉસ કી</translation>
 <translation id="6608773371844092260">ફિંગરપ્રિન્ટનું સેટઅપ કરવા માટે, તમારા બાળકને આ <ph name="DEVICE_TYPE" />ની જમણી બાજુના ફિંગરપ્રિન્ટ સેન્સરને ટચ કરવાનું કહો. તમારા બાળકની ફિંગરપ્રિન્ટનો ડેટા સુરક્ષિત રીતે સ્ટોર કરવામાં આવે છે અને તે હંમેશાં આ <ph name="DEVICE_TYPE" />માં જ રહે છે.</translation>
 <translation id="6609478180749378879">તમે 'છૂપા મોડ'થી બહાર નીકળો, તે પછી સાઇન-ઇન ડેટા આ ડિવાઇસ પર સ્ટોર કરવામાં આવશે. તમે તમારા ડિવાઇસ વડે આ વેબસાઇટમાં થોડા સમય પછી સાઇન ઇન કરી શકશો.</translation>
 <translation id="6610002944194042868">અનુવાદ માટેના વિકલ્પો</translation>
@@ -8666,6 +8668,7 @@ USB ડિવાઇસ</translation>
 <translation id="7189451821249468368">આ ડિવાઇસની નોંધણી કરવા માટે તમે પૂરતા અપગ્રેડ ધરાવતા નથી. વધુ અપગ્રેડ ખરીદવા માટે કૃપા કરીને વેચાણ સંબંધિત ટીમનો સંપર્ક કરો. જો તમે માનતા હો કે તમને આ મેસેજ ભૂલથી દેખાઈ રહ્યો છે, તો કૃપા કરીને સપોર્ટ ટીમનો સંપર્ક કરો.</translation>
 <translation id="7189965711416741966">ફિંગરપ્રિન્ટ ઉમેરી.</translation>
 <translation id="7190883804815364931">આ ટૅબની છેલ્લી અપડેટ</translation>
+<translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" />ને બ્લૉક કરીએ?</translation>
 <translation id="7191063546666816478">અમુક સપોર્ટેડ લિંક હજી પણ <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> અને અન્ય <ph name="NUMBER_OF_OTHER_APPS" /> ઍપમાં ખૂલશે.</translation>
 <translation id="7191159667348037">અજાણ્યું પ્રિન્ટર (USB)</translation>
 <translation id="7191631508323321927">હોલવે</translation>

@@ -7222,6 +7222,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6122831415929794347">세이프 브라우징을 사용 중지하시겠습니까?</translation>
 <translation id="6124650939968185064">이 확장 프로그램에 종속되는 확장 프로그램:</translation>
 <translation id="6124698108608891449">추가 권한이 필요한 사이트입니다.</translation>
+<translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" />님이 있는 탭 그룹에 참여</translation>
 <translation id="6125479973208104919">이 <ph name="DEVICE_TYPE" />에 계정을 다시 추가해야 합니다.</translation>
 <translation id="6125639926370653692">달</translation>
 <translation id="6126601353087978360">여기에 의견을 입력해 주세요.</translation>
@@ -7872,6 +7873,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6607831829715835317">도구 더보기</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> 계정은 이미 <ph name="DOMAIN" />에서 관리하고 있습니다. 다른 Google 계정에 자녀 보호 기능을 사용하려면 설정이 완료된 후 로그아웃하고 로그인 화면에서 '사용자 추가'를 선택하세요.</translation>
 <translation id="6608166463665411119">eSIM 재설정</translation>
+<translation id="660846213831377756">마우스 키</translation>
 <translation id="6608773371844092260">지문을 설정하려면 자녀가 <ph name="DEVICE_TYPE" /> 오른쪽에 있는 지문 센서를 터치하게 하세요. 자녀의 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="6609478180749378879">시크릿 모드를 종료한 후 로그인 데이터가 기기에 저장됩니다. 나중에 다시 기기에서 이 웹사이트에 로그인할 수 있습니다.</translation>
 <translation id="6610002944194042868">번역 옵션</translation>
@@ -8678,6 +8680,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7189451821249468368">기기를 등록하는 데 필요한 업그레이드가 부족합니다. 판매처에 문의하여 추가로 구매하시기 바랍니다. 이 메시지가 잘못 표시되었다고 판단되는 경우 지원팀에 문의하세요.</translation>
 <translation id="7189965711416741966">지문이 추가되었습니다.</translation>
 <translation id="7190883804815364931">이 탭의 최종 업데이트</translation>
+<translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" />님을 차단하시겠습니까?</translation>
 <translation id="7191063546666816478">지원되는 링크 일부는 <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> 외 <ph name="NUMBER_OF_OTHER_APPS" />개의 다른 앱에서 계속 열 수 있습니다.</translation>
 <translation id="7191159667348037">알 수 없는 프린터(USB)</translation>
 <translation id="7191631508323321927">복도</translation>

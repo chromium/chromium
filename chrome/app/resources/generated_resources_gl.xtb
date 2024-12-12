@@ -7207,6 +7207,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6122831415929794347">Queres desactivar a función Navegación segura?</translation>
 <translation id="6124650939968185064">As seguintes extensións dependen desta extensión:</translation>
 <translation id="6124698108608891449">Este sitio necesita máis permisos.</translation>
+<translation id="6125202119952209826">Unirte ao grupo de pestanas con <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">Terás que engadir a túa conta a este dispositivo <ph name="DEVICE_TYPE" /> de novo.</translation>
 <translation id="6125639926370653692">Lúa</translation>
 <translation id="6126601353087978360">Pon aquí o teu comentario:</translation>
@@ -7857,6 +7858,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6607831829715835317">Máis &amp;ferramentas</translation>
 <translation id="6607890859198268021">O enderezo <ph name="USER_EMAIL" /> xa está xestionado por <ph name="DOMAIN" />. Para usar os controis parentais cunha Conta de Google diferente, pecha sesión ao rematar a configuración. A continuación, vai á páxina de inicio de sesión e selecciona Engadir persoa.</translation>
 <translation id="6608166463665411119">Restablecer eSIM</translation>
+<translation id="660846213831377756">Teclas do rato</translation>
 <translation id="6608773371844092260">Para configurar a impresión dixital, pídelle ao teu fillo ou filla que toque o sensor correspondente situado na parte dereita deste dispositivo (<ph name="DEVICE_TYPE" />). Os datos da súa impresión dixital almacenaranse de maneira segura neste dispositivo (<ph name="DEVICE_TYPE" />) e nunca sairán del.</translation>
 <translation id="6609478180749378879">Os datos de inicio de sesión almacenaranse neste dispositivo cando saias do modo de incógnito. Poderás iniciar sesión de novo neste sitio web desde o teu dispositivo máis tarde.</translation>
 <translation id="6610002944194042868">Opcións de tradución</translation>
@@ -8662,6 +8664,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7189451821249468368">Non tes licenzas suficientes para inscribir este dispositivo. Ponte en contacto co departamento de vendas para comprar máis. Se cres que esta mensaxe apareceu por erro, ponte en contacto co servizo de asistencia.</translation>
 <translation id="7189965711416741966">Engadiuse a impresión dixital.</translation>
 <translation id="7190883804815364931">Última actualización desta pestana</translation>
+<translation id="7190921792980745354">Queres bloquear a <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Algunhas ligazóns compatibles seguirán abríndose nas aplicacións <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> e <ph name="NUMBER_OF_OTHER_APPS" /> máis.</translation>
 <translation id="7191159667348037">Impresora descoñecida (USB)</translation>
 <translation id="7191631508323321927">Corredor</translation>

@@ -7206,6 +7206,7 @@
 <translation id="6122831415929794347">要關閉安全瀏覽嗎？</translation>
 <translation id="6124650939968185064">下列擴充功能依賴此擴充功能：</translation>
 <translation id="6124698108608891449">此網站需要更多權限。</translation>
+<translation id="6125202119952209826">加入<ph name="OWNER_FIRST_NAME" />所在的分頁群組</translation>
 <translation id="6125479973208104919">抱歉，您需要再次在 <ph name="DEVICE_TYPE" /> 上新增帳戶。</translation>
 <translation id="6125639926370653692">月亮</translation>
 <translation id="6126601353087978360">請在此輸入您的意見：</translation>
@@ -7856,6 +7857,7 @@
 <translation id="6607831829715835317">更多工具(&amp;L)</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> 目前已由 <ph name="DOMAIN" /> 管理。如要以其他 Google 帳戶使用家長監護功能，請在設定後登出，然後在登入畫面上選取「新增使用者」。</translation>
 <translation id="6608166463665411119">重設 eSIM 卡</translation>
+<translation id="660846213831377756">滑鼠按鍵</translation>
 <translation id="6608773371844092260">如要設定指紋，請讓子女輕觸 <ph name="DEVICE_TYPE" /> 右側的指紋感應器。子女的指紋資料會安全儲存在此 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
 <translation id="6609478180749378879">離開無痕模式後，登入資料會儲存在此裝置中。您可在日後透過裝置再次登入此網站。</translation>
 <translation id="6610002944194042868">翻譯選項</translation>
@@ -8662,6 +8664,7 @@
 <translation id="7189451821249468368">您沒有足夠升級，無法註冊這部裝置。如要購買更多升級，請與銷售人員聯絡。如果您認為這則訊息有誤，請與支援團隊聯絡。</translation>
 <translation id="7189965711416741966">已加入指紋。</translation>
 <translation id="7190883804815364931">此分頁最近的更新</translation>
+<translation id="7190921792980745354">要封鎖<ph name="MEMBER_FULL_NAME" />嗎？</translation>
 <translation id="7191063546666816478">部分支援連結將仍會在 <ph name="APP_NAME" />、<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" /> 和另外 <ph name="NUMBER_OF_OTHER_APPS" /> 個應用程式中開啟。</translation>
 <translation id="7191159667348037">不明打印機 (USB)</translation>
 <translation id="7191631508323321927">走廊</translation>

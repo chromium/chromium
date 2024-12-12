@@ -257,6 +257,7 @@
 <translation id="4147555960264124640">您目前登录的账号是一个受管理账号，该账号的管理员将能够控制您的 Google Chrome 个人资料。您的 Chrome 数据（例如您的应用、书签、历史记录、密码和其他设置）将永远与 <ph name="USER_NAME" /> 相关联。您可以通过 Google 账号信息中心删除这些数据，但无法将这些数据与其他账号相关联。<ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">正在安装...</translation>
 <translation id="4149882025268051530">安装程序无法解压缩存档文件。请重新下载 Google Chrome。</translation>
+<translation id="415112847282352845">如需将您的地址等信息同步到您的所有设备上，请登录 Chrome。登录后，该地址将保存到您的 Google 账号。</translation>
 <translation id="4153934450158521343">Chrome 即将关闭并删除数据</translation>
 <translation id="4173512894976930765">网站很可能会按预期运行。关闭所有 Chrome 窗口后，您将会从大多数网站退出账号；但如果您已登录 Chrome，则您的 Google 账号不会退出。</translation>
 <translation id="4175922240926474352">由于网站未使用安全连接，且文件可能已被篡改，因此 Chrome 阻止了此次下载</translation>

@@ -258,6 +258,7 @@
 <translation id="4147555960264124640">Du er ved at logge ind med en managerstyret konto og give dens administrator kontrol over din profil i Google Chrome. Dine Chrome-data, f.eks. dine apps, bogmærker, historikdata, adgangskoder og andre indstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse data via kontrolpanelet for Google Konti, men du kan ikke knytte disse data til en anden konto. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Installerer...</translation>
 <translation id="4149882025268051530">Installationsprogrammet kunne ikke pakke arkivet ud. Download Google Chrome igen.</translation>
+<translation id="415112847282352845">For at kunne se dine adresser m.m. på alle dine enheder skal du logge ind i Chrome. Denne adresse gemmes på din Google-konto, når du er logget ind.</translation>
 <translation id="4153934450158521343">Chrome lukkes snart, og dataene slettes</translation>
 <translation id="4173512894976930765">Websites fungerer sandsynligvis som forventet. Du logges ud af de fleste websites, når du lukker alle Chrome-vinduer, med undtagelse af din Google-konto, hvis du er logget ind i Chrome.</translation>
 <translation id="4175922240926474352">Chrome har blokeret denne download, fordi websitet ikke anvender en sikker forbindelse, og der kan være blevet manipuleret med filen</translation>

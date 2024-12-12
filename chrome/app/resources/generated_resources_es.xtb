@@ -7206,6 +7206,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6122831415929794347">¿Desactivar Navegación segura?</translation>
 <translation id="6124650939968185064">Las siguientes extensiones dependen de esta extensión:</translation>
 <translation id="6124698108608891449">Este sitio web necesita más permisos.</translation>
+<translation id="6125202119952209826">Unirte al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">Debes volver a añadir una cuenta a este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6125639926370653692">Luna</translation>
 <translation id="6126601353087978360">Escribe tus comentarios aquí:</translation>
@@ -7856,6 +7857,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6607831829715835317">Más herramientas</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> ya lo gestiona <ph name="DOMAIN" />. Para usar el control parental con otra cuenta de Google, cierra sesión después de completar la configuración y selecciona "Añadir perfil" en la pantalla de inicio de sesión.</translation>
 <translation id="6608166463665411119">Restablecer eSIM</translation>
+<translation id="660846213831377756">Teclas del ratón</translation>
 <translation id="6608773371844092260">Para configurar la huella digital, pídele a tu hijo/a que toque el sensor de huellas digitales, que está en el lado derecho de este <ph name="DEVICE_TYPE" />. Los datos de la huella digital de tu hijo/a se almacenan de forma segura y nunca salen de este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Los datos de inicio de sesión se almacenarán en este dispositivo cuando salgas del modo Incógnito. Podrás volver a iniciar sesión en este sitio web con tu dispositivo más tarde.</translation>
 <translation id="6610002944194042868">Opciones del Traductor</translation>
@@ -8662,6 +8664,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7189451821249468368">No tienes las licencias necesarias para registrar este dispositivo. Ponte en contacto con el departamento de ventas para comprar más. Si crees que este mensaje ha aparecido por error, ponte en contacto con el servicio de asistencia.</translation>
 <translation id="7189965711416741966">Huella digital añadida.</translation>
 <translation id="7190883804815364931">Última actualización de esta pestaña</translation>
+<translation id="7190921792980745354">¿Bloquear a <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Algunos enlaces compatibles se seguirán abriendo en <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> y en otras <ph name="NUMBER_OF_OTHER_APPS" /> aplicaciones.</translation>
 <translation id="7191159667348037">Impresora desconocida (USB)</translation>
 <translation id="7191631508323321927">Pasillo</translation>

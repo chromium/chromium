@@ -262,6 +262,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4147555960264124640">Du loggar in med ett hanterat konto och ger dess administratör kontroll över din Google Chrome-profil. Dina Chrome-uppgifter, t.ex. dina appar, bokmärken, din historik, dina lösenord och andra inställningar, knyts permanent till <ph name="USER_NAME" />. Du kommer att kunna ta bort dessa uppgifter via instrumentpanelen i Google Konton, men du kommer inte att kunna koppla dessa uppgifter till ett annat konto. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Installerar...</translation>
 <translation id="4149882025268051530">Det gick inte att packa upp arkivet med installationsfilen. Ladda ned Google Chrome igen.</translation>
+<translation id="415112847282352845">Logga in i Chrome om du vill få tillgång till dina adresser med mera på alla dina enheter. Adressen sparas i ditt Google-konto när du har loggat in.</translation>
 <translation id="4153934450158521343">Chrome avslutas snart och data raderas</translation>
 <translation id="4173512894976930765">Webbplatser bör fungera som förväntat. Du loggas ut från de flesta webbplatser när du stänger alla fönster i Chrome, med undantag för Google-kontot om du är inloggad i Chrome.</translation>
 <translation id="4175922240926474352">Den här nedladdningen blockerades av Chrome eftersom webbplatsen inte använder en säker anslutning och filen kan ha manipulerats</translation>

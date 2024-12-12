@@ -214,7 +214,7 @@
 <translation id="1901600657316773839">Zadrži odabir</translation>
 <translation id="1904580727789512086">URL-ovi koje posjećujete spremaju se na vaš Google račun</translation>
 <translation id="1911619930368729126">Prenesi na Google disk</translation>
-<translation id="1923342640370224680">Posljednji sat</translation>
+<translation id="1923342640370224680">Prethodni sat</translation>
 <translation id="1941314575388338491">Dodirnite dvaput da biste kopirali.</translation>
 <translation id="1943478190258551035">Izbornik → Postavke</translation>
 <translation id="1952728750904661634">Prijavite se upravljanim računom</translation>
@@ -1429,6 +1429,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7468373585447318060">Pratite sniženja cijena za sve proizvode koje pratite.</translation>
 <translation id="746872191028309255">Kupujte ono što vidite pomoću kamere ili galerije fotografija.</translation>
 <translation id="7471557245617580330">Napravi novu karticu</translation>
+<translation id="7473891865547856676">Ne, hvala</translation>
 <translation id="747956641630879526">Ako sakrijete tu karticu, isključit će se praćenje paketa i ukloniti svi vaši podaci</translation>
 <translation id="7484645889979462775">Nikad za ovu web lokaciju</translation>
 <translation id="7486006552035434095">Sinkronizirajte svoje uređaje</translation>
@@ -1597,7 +1598,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8182037667962849780">{count,plural, =1{Za {website_1}}=2{Za {website_1}, {website_2}}=3{Za {website_1}, {website_2} i još 1}one{Za {website_1}, {website_2} i još {more_count}}few{Za {website_1}, {website_2} i još {more_count}}other{Za {website_1}, {website_2} i još {more_count}}}</translation>
 <translation id="8189615296021678665">Dodirnite Spremi da biste lako pristupili ovoj zaporci sljedeći put kad se prijavite.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vaši uređaji<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8195191503358432289">Dodavanje zaporke</translation>
+<translation id="8195191503358432289">Dodajte zaporku</translation>
 <translation id="8202744799033457229">Prikaz povijesti</translation>
 <translation id="8205564605687841303">Odustani</translation>
 <translation id="820568752112382238">Najposjećenije web-lokacije</translation>

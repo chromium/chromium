@@ -7221,6 +7221,7 @@
 <translation id="6122831415929794347">להשבית את 'גלישה בטוחה'?</translation>
 <translation id="6124650939968185064">התוספים הבאים תלויים בתוסף הזה:</translation>
 <translation id="6124698108608891449">האתר הזה צריך הרשאות נוספות.</translation>
+<translation id="6125202119952209826">הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">יהיה עליך להוסיף את החשבון שלך ב-<ph name="DEVICE_TYPE" /> פעם נוספת.</translation>
 <translation id="6125639926370653692">ירח</translation>
 <translation id="6126601353087978360">יש להזין את המשוב שלך כאן:</translation>
@@ -7875,6 +7876,7 @@
 <translation id="6607831829715835317">כלים &amp;נוספים</translation>
 <translation id="6607890859198268021">‏החשבון <ph name="USER_EMAIL" /> כבר מנוהל על ידי <ph name="DOMAIN" />. כדי להשתמש בבקרת הורים בחשבון Google אחר, יש לצאת לאחר ההגדרה ולבחור באפשרות "הוספת משתמש" במסך הכניסה.</translation>
 <translation id="6608166463665411119">‏איפוס ה-eSIM</translation>
+<translation id="660846213831377756">מקשי העכבר</translation>
 <translation id="6608773371844092260">כדי להגדיר טביעת אצבע, על הילד או הילדה לגעת בחיישן טביעות האצבע שבצד ימין של מכשיר <ph name="DEVICE_TYPE" /> הזה. נתוני טביעות האצבע של הילד או הילדה נשמרים באופן מאובטח ואף פעם לא נשלחים ממכשיר <ph name="DEVICE_TYPE" /> הזה.</translation>
 <translation id="6609478180749378879">פרטי הכניסה יאוחסנו במכשיר הזה אחרי היציאה ממצב אנונימי. מאוחר יותר תהיה לך אפשרות להיכנס שוב לחשבון באתר הזה באמצעות המכשיר.</translation>
 <translation id="6610002944194042868">אפשרויות תרגום</translation>
@@ -8681,6 +8683,7 @@
 <translation id="7189451821249468368">אין לך מספיק שדרוגים כדי לרשום את המכשיר הזה. ניתן לרכוש עוד שדרוגים דרך מחלקת המכירות. אם לדעתך ההודעה הזו מוצגת לך בטעות, אפשר לפנות לתמיכה.</translation>
 <translation id="7189965711416741966">טביעת האצבע נוספה.</translation>
 <translation id="7190883804815364931">העדכון האחרון לכרטיסייה הזו</translation>
+<translation id="7190921792980745354">לחסום את <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">חלק מהקישורים הנתמכים ימשיכו להיפתח באפליקציות <ph name="APP_NAME" />,‏ <ph name="APP_NAME_2" />,‏ <ph name="APP_NAME_3" /> ובעוד <ph name="NUMBER_OF_OTHER_APPS" /> אפליקציות.</translation>
 <translation id="7191159667348037">‏מדפסת לא ידועה (USB)</translation>
 <translation id="7191631508323321927">מסדרון</translation>

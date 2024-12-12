@@ -417,6 +417,7 @@
 <translation id="2816489851009559785">「選單」→「設定」→「預設瀏覽器」</translation>
 <translation id="2818821771744632548">你已在重設 iPhone 時登出帳戶 (<ph name="USER_NAME" />)，如要重新登入，請輕觸下方的「繼續」。</translation>
 <translation id="2819667972867209401">開啟時，資料會儲存到 Google 帳戶；關閉後，資料只會儲存到這部裝置，並在你登出後刪除。</translation>
+<translation id="2827760117436553203">要區分資料嗎？</translation>
 <translation id="2829172210806130158">搜尋畫面</translation>
 <translation id="2834399722155632105">3. 輕觸「密碼選項」</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />，<ph name="STATE" />，<ph name="URL" /></translation>
@@ -1213,6 +1214,7 @@
 <translation id="6476800141292307438">將網頁翻譯成<ph name="LANGUAGE" />。翻譯選項位於靠近畫面底部的位置。</translation>
 <translation id="647867789226964031">變更密碼</translation>
 <translation id="6494931198667773526">結束時間</translation>
+<translation id="6495521251906266731">請選擇如何處理這部裝置上的現有瀏覽資料，例如密碼、歷史記錄等等。</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{取消追蹤這個包裹}other{取消追蹤所有包裹}}</translation>
 <translation id="6503077044568424649">最常造訪</translation>
 <translation id="6503763061813913607">安全檢查通知</translation>
@@ -1236,7 +1238,7 @@
 <translation id="6579867704846662339">你可以選擇以無痕模式開啟其他應用程式傳入的網址。</translation>
 <translation id="6583087784430677195">如要關閉，請開啟「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」並前往「自動填入密碼」部分。</translation>
 <translation id="6585048665672348661">刪除瀏覽資料…</translation>
-<translation id="6585618849026997638">你可以將重要網頁加入書籤，以便再次造訪</translation>
+<translation id="6585618849026997638">你可以將重要網頁加入書籤，方便日後查看</translation>
 <translation id="6596481460663245319">使用 Google 搜尋圖片</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 組密碼}other{# 組密碼}}</translation>
 <translation id="6601302169302852717">圖片已儲存至 <ph name="USER_EMAIL" /> 的 Google 相簿</translation>
@@ -1427,6 +1429,7 @@
 <translation id="7468373585447318060">隨時掌握所有追蹤產品的降價資訊。</translation>
 <translation id="746872191028309255">透過相機或相片庫購買所見內容。</translation>
 <translation id="7471557245617580330">新增分頁</translation>
+<translation id="7473891865547856676">不用了，謝謝</translation>
 <translation id="747956641630879526">如果隱藏這張資訊卡，系統會關閉包裹追蹤功能，並移除你的所有資料</translation>
 <translation id="7484645889979462775">一律不儲存這個網站的密碼</translation>
 <translation id="7486006552035434095">讓你的裝置保持同步</translation>

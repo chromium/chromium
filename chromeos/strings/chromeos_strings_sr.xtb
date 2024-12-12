@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Уређај има <ph name="BATTERY_PERCENTAGE" />% батерије десне слушалице.</translation>
 <translation id="3340978935015468852">подешавања</translation>
 <translation id="3347558044552027859">модерни</translation>
+<translation id="3353477144743332882">Преузмите модел за прављење резимеа и назива</translation>
 <translation id="3359218928534347896">искључите звук микрофона</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">суши</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Пречица није доступна. Притисните нову пречицу без тастера <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Искључено</translation>
 <translation id="5860491529813859533">Укључи</translation>
+<translation id="5875913454160982848">Преузмите модел транскрипције</translation>
 <translation id="5876385649737594562">Укључите да бисте изабрали опције</translation>
 <translation id="5877503382465267833">Паузирајте снимак <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Цеo екран</translation>
@@ -1588,6 +1590,7 @@
 <translation id="8503836310948963452">Још само пар минута…</translation>
 <translation id="8505011850330200833">Gemini модел захтева 2 GB меморијског простора за обраду транскрипата и прављење резимеа</translation>
 <translation id="8508640263392900755">Детаљи назива приступне тачке</translation>
+<translation id="8509574872955173831">Сазнајте више о прављењу резимеа и назива</translation>
 <translation id="8522687886059337719">Сада имате приступ новим <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />позадинама<ph name="END_LINK_WALLPAPER_SUBPAGE" /> и <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />чувару екрана<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чајџиница</translation>

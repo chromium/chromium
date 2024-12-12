@@ -7185,6 +7185,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6122831415929794347">Wyłączyć Bezpieczne przeglądanie?</translation>
 <translation id="6124650939968185064">To rozszerzenie jest wymagane przez następujące rozszerzenia:</translation>
 <translation id="6124698108608891449">Ta strona potrzebuje większych uprawnień.</translation>
+<translation id="6125202119952209826">Dołącz do grupy kart, w której jest już <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">Musisz jeszcze raz dodać swoje konto na tym urządzeniu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6125639926370653692">Księżyc</translation>
 <translation id="6126601353087978360">Wpisz swoją opinię tutaj:</translation>
@@ -7839,6 +7840,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6607831829715835317">Więcej narzę&amp;dzi</translation>
 <translation id="6607890859198268021">Konto <ph name="USER_EMAIL" /> jest już zarządzane przez domenę <ph name="DOMAIN" />. Aby korzystać z kontroli rodzicielskiej na innym koncie Google, wyloguj się po konfiguracji, a potem wybierz „Dodaj osobę” na ekranie logowania.</translation>
 <translation id="6608166463665411119">Zresetuj kartę eSIM</translation>
+<translation id="660846213831377756">Klawisze myszy</translation>
 <translation id="6608773371844092260">Aby skonfigurować odcisk palca, poproś dziecko, aby dotknęło czytnika linii papilarnych po prawej stronie tego urządzenia <ph name="DEVICE_TYPE" />. Odciski palców Twojego dziecka są przechowywane w bezpieczny sposób i wyłącznie na tym urządzeniu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Dane logowania pozostaną zapisane na tym urządzeniu po wyjściu z trybu incognito. Da Ci to później możliwość zalogowania się w witrynie za pomocą tego urządzenia.</translation>
 <translation id="6610002944194042868">Opcje tłumaczenia</translation>
@@ -8643,6 +8645,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7189451821249468368">Nie masz wystarczającej liczby licencji, by zarejestrować to urządzenie. Aby dokupić licencje, skontaktuj się z działem sprzedaży. Jeśli uważasz, że widzisz tę wiadomość z powodu błędu, skontaktuj się z zespołem pomocy.</translation>
 <translation id="7189965711416741966">Odcisk palca dodany.</translation>
 <translation id="7190883804815364931">Ostatnia aktualizacja tej karty</translation>
+<translation id="7190921792980745354">Zablokować użytkownika <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Niektóre obsługiwane linki nadal będą się otwierać w aplikacjach <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> i <ph name="NUMBER_OF_OTHER_APPS" /> innych.</translation>
 <translation id="7191159667348037">Nieznana drukarka (USB)</translation>
 <translation id="7191631508323321927">Korytarz</translation>

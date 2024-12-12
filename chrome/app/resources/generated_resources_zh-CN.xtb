@@ -5100,6 +5100,7 @@
 <translation id="4586275095964870617">无法在替代浏览器中打开 <ph name="URL" />。请与您的系统管理员联系。</translation>
 <translation id="4587589328781138893">网站</translation>
 <translation id="4588749726511456218">滚动加速<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> 和 <ph name="DOMAIN" /> 似乎相关。请先确认您信任 <ph name="DOMAIN" />，然后再使用此密码。</translation>
 <translation id="4589713469967853491">已成功将日志写入“下载内容”目录中。</translation>
 <translation id="4590785647529325123">若要删除您设备中的无痕浏览记录，请关闭所有无痕式标签页</translation>
 <translation id="459204634473266369">尚未将任何设备保存到“<ph name="PRIMARY_EMAIL" />”</translation>
@@ -5605,6 +5606,7 @@
 <translation id="4946998421534856407">启动器键 + 向上键</translation>
 <translation id="4947376546135294974">来自您正在访问的网站的数据</translation>
 <translation id="4950100687509657457">创建个人资料</translation>
+<translation id="4950360215042327246">[占位符字符串]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 个文件}other{# 个文件}}</translation>
 <translation id="495170559598752135">操作</translation>
 <translation id="4951966678293618079">一律不为此网站保存密码</translation>
@@ -5743,6 +5745,7 @@
 <translation id="5061531353537614467">苔原</translation>
 <translation id="5062930723426326933">登录失败，请连接到互联网，然后重试。</translation>
 <translation id="5063480226653192405">空间占用量</translation>
+<translation id="5064921774605267982">打开“<ph name="PROFILE_NAME" />”个人资料。这份个人资料由家长管理。</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">在 Chrome 操作系统设置中管理安全 DNS</translation>
 <translation id="5066534201484101197">滚动即可浏览各个页面</translation>
@@ -7189,6 +7192,7 @@
 <translation id="6122831415929794347">要关闭“安全浏览”功能吗？</translation>
 <translation id="6124650939968185064">需先安装此扩展程序，下列扩展程序才能正常使用：</translation>
 <translation id="6124698108608891449">此网站需要更多权限。</translation>
+<translation id="6125202119952209826">加入<ph name="OWNER_FIRST_NAME" />所在的标签页分组</translation>
 <translation id="6125479973208104919">抱歉，您需要再次向此 <ph name="DEVICE_TYPE" /> 添加您的账号。</translation>
 <translation id="6125639926370653692">月球</translation>
 <translation id="6126601353087978360">请在此处输入您的反馈：</translation>
@@ -7396,6 +7400,7 @@
 <translation id="6266984048393265562">自定义个人资料</translation>
 <translation id="6267166720438879315">请选择证书，以在 <ph name="HOST_NAME" /> 上对您本人进行身份验证</translation>
 <translation id="6268252012308737255">使用<ph name="APP" />打开</translation>
+<translation id="6269050081341530851">关闭重复标签页时，系统会保留最早的副本</translation>
 <translation id="6270309713620950855">静音状态智能推送</translation>
 <translation id="6270391203985052864">网站可以询问能否向您发送通知</translation>
 <translation id="6270486800167535228">扩展程序已固定。选择即可查看更多选项</translation>
@@ -7838,6 +7843,7 @@
 <translation id="6607831829715835317">更多工具(&amp;L)</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> 已由 <ph name="DOMAIN" /> 管理。若要通过另一 Google 账号使用家长控制功能，请在完成设置后退出登录，然后在登录屏幕上选择“添加用户”。</translation>
 <translation id="6608166463665411119">重置 eSIM 卡</translation>
+<translation id="660846213831377756">鼠标按键</translation>
 <translation id="6608773371844092260">若要设置指纹，请让您的孩子轻触此 <ph name="DEVICE_TYPE" /> 右侧的指纹传感器。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="6609478180749378879">当您退出无痕模式后，登录数据会存储在此设备中。日后您将能够使用此设备重新登录该网站。</translation>
 <translation id="6610002944194042868">翻译选项</translation>
@@ -7937,6 +7943,7 @@
 <translation id="6679947539429331601">隐藏 12 小时</translation>
 <translation id="6680442031740878064">可用空间：<ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">语速</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [占位符字符串]</translation>
 <translation id="6683022854667115063">头戴式耳机</translation>
 <translation id="6683087162435654533">恢复所有标签页(&amp;E)</translation>
 <translation id="6683433919380522900">权限已<ph name="PERMISSION_STATE" /></translation>
@@ -8643,6 +8650,7 @@
 <translation id="7189451821249468368">您没有足够的升级许可来注册此设备。请与销售代表联系，以购买更多升级许可。如果您认为自己不应看到这条消息，请与支持人员联系。</translation>
 <translation id="7189965711416741966">已添加指纹。</translation>
 <translation id="7190883804815364931">此标签页的最近更新</translation>
+<translation id="7190921792980745354">要屏蔽<ph name="MEMBER_FULL_NAME" />吗？</translation>
 <translation id="7191063546666816478">部分受支持的链接仍会在“<ph name="APP_NAME" />”、“<ph name="APP_NAME_2" />”、“<ph name="APP_NAME_3" />”和另外 <ph name="NUMBER_OF_OTHER_APPS" /> 款应用中打开。</translation>
 <translation id="7191159667348037">未知打印机 (USB)</translation>
 <translation id="7191631508323321927">走廊</translation>
@@ -8830,6 +8838,7 @@
 <translation id="7330533963640151632"><ph name="USER_NAME" />的设备的“<ph name="FEATURE_NAME" />”设置，通过账号 <ph name="USER_EMAIL" /> 分享。</translation>
 <translation id="7331646370422660166">alt + 向下键</translation>
 <translation id="7332053360324989309">Dedicated Worker：<ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">重复标签页</translation>
 <translation id="7333388112938984914">使用按流量计费的网络时无法上传文件。</translation>
 <translation id="7333669215417470379">备份和恢复您所用的应用和设置</translation>
 <translation id="7335974957018254119">支持拼写检查的语言</translation>

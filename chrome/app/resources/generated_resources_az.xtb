@@ -7203,6 +7203,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6122831415929794347">Təhlükəsiz Baxış deaktiv edilsin?</translation>
 <translation id="6124650939968185064">Aşağıdakı artırmalar bu artırmadan asılıdır:</translation>
 <translation id="6124698108608891449">Bu sayt daha çox icazə tələb edir.</translation>
+<translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> ilə tab qrupuna qoşulun</translation>
 <translation id="6125479973208104919">Təəssüf ki, hesabı <ph name="DEVICE_TYPE" /> cihazına yenidən əlavə etməlisiniz.</translation>
 <translation id="6125639926370653692">Ay</translation>
 <translation id="6126601353087978360">Rəyinizi bura daxil edin:</translation>
@@ -7853,6 +7854,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6607831829715835317">Daha çox alətlər</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> hazırda <ph name="DOMAIN" /> tərəfindən idarə olunur. Başqa Google Hesabı ilə valideyn nəzarətini istifadə etmək üçün ayarlamadan sonra çıxın, sonra giriş ekranında "Şəxs əlavə edin" seçin.</translation>
 <translation id="6608166463665411119">eSIM'i sıfırlayın</translation>
+<translation id="660846213831377756">Maus düymələri</translation>
 <translation id="6608773371844092260">Barmaq izini ayarlamaq üçün uşağınızdan bu <ph name="DEVICE_TYPE" /> cihazının sağ tərəfində olan barmaq izi sensoruna toxunmasını istəyin. Övladınızın barmaq izi datası təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazından kənara ötürülmür.</translation>
 <translation id="6609478180749378879">Anonim rejimdən çıxdıqdan sonra giriş datası bu cihazda saxlanılacaq. Bu veb sayta daha sonra cihazınızla yenidən daxil ola biləcəksiniz.</translation>
 <translation id="6610002944194042868">Tərcümə Seçimləri</translation>
@@ -8658,6 +8660,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7189451821249468368">Bu cihazı qeydiyyata almaq üçün yetərincə güncəlləməniz yoxdur. Daha çoxunu almaq üçün satış şöbəsi ilə əlaqə saxlayın. Bu mesajın səhvən göndərildiyini düünürsünüzsə, dəstək xidməti ilə əlaqə saxlayın.</translation>
 <translation id="7189965711416741966">Barmaq izi əlavə edildi.</translation>
 <translation id="7190883804815364931">Bu tabdakı son yenilik</translation>
+<translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> blok edilsin?</translation>
 <translation id="7191063546666816478">Bəzi dəstəklənən keçidlər hələ də <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> və digər <ph name="NUMBER_OF_OTHER_APPS" /> tətbiqdə açılacaq.</translation>
 <translation id="7191159667348037">Naməlum Printer (USB)</translation>
 <translation id="7191631508323321927">Dəhliz</translation>

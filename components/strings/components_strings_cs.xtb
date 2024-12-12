@@ -3487,6 +3487,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7304030187361489308">Vysoký</translation>
 <translation id="7304562222803846232">Spravovat nastavení ochrany soukromí v účtu Google</translation>
 <translation id="7305756307268530424">Začít pomaleji</translation>
+<translation id="7307063504147610123">Adresa se uložila do tohoto zařízení</translation>
 <translation id="7308436126008021607">synchronizace na pozadí</translation>
 <translation id="7309058266849426521">Přečtěte si další informace o správě ochrany soukromí v reklamách v Chromu</translation>
 <translation id="7310392214323165548">Zařízení se brzy restartuje</translation>
@@ -3691,7 +3692,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7631072086707140121">Adresa URL musí být https.</translation>
 <translation id="7631527008834753063">Televizní hry</translation>
 <translation id="7633909222644580952">Údaje o výkonu a přehledy selhání</translation>
-<translation id="7636346903338549690">Povolení používat soubory cookie třetích stran</translation>
+<translation id="7636346903338549690">Weby s povolením používat soubory cookie třetích stran</translation>
 <translation id="7637571805876720304">Odstranit platební kartu z prohlížeče Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Žádné}=1{V účtu máte 1 heslo (pro domény <ph name="DOMAIN_LIST" />)}few{V účtu máte # hesla (pro domény <ph name="DOMAIN_LIST" />)}many{V účtu máte # hesla (pro domény <ph name="DOMAIN_LIST" />)}other{V účtu máte # hesel (pro domény <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Sériové porty</translation>
@@ -4164,6 +4165,7 @@ Další podrobnosti:
 <translation id="8473626140772740486">300 × 450 mm</translation>
 <translation id="8473863474539038330">Adresy a další</translation>
 <translation id="8474910779563686872">Zobrazit podrobnosti pro vývojáře</translation>
+<translation id="8476959635632921417">Pokud tuto adresu chcete uložit a používat na všech svých zařízeních, ověřte svou totožnost</translation>
 <translation id="8479754468255770962">Sponka vlevo dole</translation>
 <translation id="8483229036294884935">Tato adresa bude smazána z vašeho účtu Google (<ph name="ACCOUNT" />)</translation>
 <translation id="8488350697529856933">Platí pro</translation>

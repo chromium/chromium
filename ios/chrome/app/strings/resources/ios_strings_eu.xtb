@@ -417,6 +417,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2816489851009559785">Menua → Ezarpenak → Arakatzaile lehenetsia</translation>
 <translation id="2818821771744632548">iPhone-a berrezarri duzunez, <ph name="USER_NAME" /> kontuko saioa amaitu zaizu. Saioa berriro hasteko, sakatu Egin aurrera.</translation>
 <translation id="2819667972867209401">Aktibatuta badago, datuak Google-ko kontuan gordetzen dira. Desaktibatuta badago, datuak gailu honetan soilik gordetzen dira. Saioa amaitzen baduzu, datu horiek ezabatuko dira.</translation>
+<translation id="2827760117436553203">Datuak bereiz mantendu nahi dituzu?</translation>
 <translation id="2829172210806130158">Bilatu pantailan</translation>
 <translation id="2834399722155632105">3. Sakatu Password Options (pasahitzen aukerak).</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -1213,6 +1214,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="6476800141292307438">Orria itzultzen ari gara. <ph name="LANGUAGE" /> erabiliko da orria bistaratzeko. Pantailaren behealdean agertzen dira dauden aukerak.</translation>
 <translation id="647867789226964031">Aldatu pasahitzak</translation>
 <translation id="6494931198667773526">Amaiera</translation>
+<translation id="6495521251906266731">Aukeratu zer egin nahi duzun gailu honetan lehendik dauden arakatze-datuekin (adibidez, pasahitzak, historia eta abar).</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{Utzi paketearen jarraipena egiteari}other{Utzi pakete guztien jarraipena egiteari}}</translation>
 <translation id="6503077044568424649">Bisitatuenak</translation>
 <translation id="6503763061813913607">Segurtasun-egiaztapenaren jakinarazpenak</translation>
@@ -1427,6 +1429,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7468373585447318060">Jakin ezazu noiz jaisten diren jarraitzen diezun produktu guztien prezioak.</translation>
 <translation id="746872191028309255">Arakatu ikusten dituzun produktuak kameraren edo argazki-galeriaren bidez.</translation>
 <translation id="7471557245617580330">Sortu beste fitxa bat</translation>
+<translation id="7473891865547856676">Ez, eskerrik asko</translation>
 <translation id="747956641630879526">Txartela ezkutatzen baduzu, paketeen jarraipena desaktibatuko da, eta zure datu guztiak kenduko dira</translation>
 <translation id="7484645889979462775">Inoiz ez webgune honetan</translation>
 <translation id="7486006552035434095">Mantendu gailuak sinkronizatuta</translation>

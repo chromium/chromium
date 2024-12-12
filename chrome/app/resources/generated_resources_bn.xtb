@@ -5125,6 +5125,7 @@
 <translation id="4586275095964870617">অন্য ব্রাউজারে <ph name="URL" /> খোলা যায়নি। আপনার সিস্টেম অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="4587589328781138893">সাইট</translation>
 <translation id="4588749726511456218">অ্যাক্সিলারেশন স্ক্রল করুন <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> ও <ph name="DOMAIN" /> একই বলে মনে হচ্ছে। আপনার পাসওয়ার্ড ব্যবহার করার আগে নিশ্চিত করুন যে আপনি <ph name="DOMAIN" />-কে বিশ্বাস করেন।</translation>
 <translation id="4589713469967853491">ডাউনলোড ডিরেক্টরিতে লগ সেভ করা হয়েছে।</translation>
 <translation id="4590785647529325123">আপনার ডিভাইস থেকে 'ছদ্মবেশী মোড'-এ করা ব্রাউজিংয়ের ইতিহাস মুছে ফেলতে, সব 'ছদ্মবেশী ট্যাব' বন্ধ করুন</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />-এ কোনও ডিভাইস সেভ করা নেই</translation>
@@ -5631,6 +5632,7 @@
 <translation id="4946998421534856407">launcher + up arrow</translation>
 <translation id="4947376546135294974">আপনি ভিজিট করছেন এমন সাইট থেকে পাওয়া ডেটা</translation>
 <translation id="4950100687509657457">প্রোফাইল তৈরি করুন</translation>
+<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{একটি ফাইল}one{#টি ফাইল}other{#টি ফাইল}}</translation>
 <translation id="495170559598752135">ক্রিয়াসমূহ</translation>
 <translation id="4951966678293618079">এই সাইটের জন্য কখনও পাসওয়ার্ড সেভ করবেন না</translation>
@@ -5769,6 +5771,7 @@
 <translation id="5061531353537614467">তুন্দ্রা</translation>
 <translation id="5062930723426326933">সাইন-ইন করা যায়নি, অনুগ্রহ করে ইন্টারনেটে কানেক্ট করে আবার চেষ্টা করুন৷</translation>
 <translation id="5063480226653192405">ব্যবহার</translation>
+<translation id="5064921774605267982"><ph name="PROFILE_NAME" /> প্রোফাইল খুলুন। এই প্রোফাইল আপনার অভিভাবক ম্যানেজ করেন।</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS সেটিংসে নিরাপদ ডিএনএস ম্যানেজ করুন</translation>
 <translation id="5066534201484101197">একটি পৃষ্ঠা থেকে অন্য পৃষ্ঠাতে নেভিগেট করতে ওভারস্ক্রল করুন</translation>
@@ -7220,6 +7223,7 @@
 <translation id="6122831415929794347">Safe Browsing বন্ধ করতে চান?</translation>
 <translation id="6124650939968185064">নিম্নলিখিত এক্সটেনশনগুলি এই এক্সটেনশনটির উপর নির্ভর করে:</translation>
 <translation id="6124698108608891449">এই সাইটকে আরও অনুমতি দিতে হবে।</translation>
+<translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" />-এর সাথে ট্যাব গ্রুপে যোগ দিন</translation>
 <translation id="6125479973208104919">দুর্ভাগ্যবশত, আপনাকে এই <ph name="DEVICE_TYPE" />এ আবার অ্যাকাউন্ট তৈরি করতে হবে।</translation>
 <translation id="6125639926370653692">চাঁদ</translation>
 <translation id="6126601353087978360">এখানে আপনার মতামত লিখুন:</translation>
@@ -7427,6 +7431,7 @@
 <translation id="6266984048393265562">প্রোফাইল কাস্টমাইজ করুন</translation>
 <translation id="6267166720438879315">নিজেকে <ph name="HOST_NAME" /> এ প্রমাণীকৃত করতে একটি সার্টিফিকেট বেছে নিন</translation>
 <translation id="6268252012308737255"><ph name="APP" /> দিয়ে খুলুন</translation>
+<translation id="6269050081341530851">আপনি ডুপ্লিকেট বন্ধ করলে, সবথেকে পুরনো কপি রেখে দেওয়া হয়</translation>
 <translation id="6270309713620950855">মিউট নাজ</translation>
 <translation id="6270391203985052864">সাইট আপনাকে বিজ্ঞপ্তি পাঠানোর আগে অনুমতি চাইতে পারে</translation>
 <translation id="6270486800167535228">এক্সটেনশন পিন করা হয়েছে। আরও বিকল্প দেখতে, বেছে নিন</translation>
@@ -7871,6 +7876,7 @@
 <translation id="6607831829715835317">আরও সরঞ্জা&amp;ম</translation>
 <translation id="6607890859198268021"><ph name="DOMAIN" /> আগে থেকেই <ph name="USER_EMAIL" /> ম্যানেজ করছে। অন্য Google অ্যাকাউন্ট থেকে অভিভাবকীয় নিয়ন্ত্রণ ব্যবহার করতে চাইলে, সেট আপ করার পরে সাইন-আউট করুন এবং সাইন-ইন স্ক্রিনে "ব্যক্তিকে যোগ করুন" বিকল্প বেছে নিন।</translation>
 <translation id="6608166463665411119">ই-সিম রিসেট করুন</translation>
+<translation id="660846213831377756">মাউস কী</translation>
 <translation id="6608773371844092260">ফিঙ্গারপ্রিন্ট সেট-আপ সেট করার জন্য, আপনার সন্তানকে <ph name="DEVICE_TYPE" />-এর ডানদিকে থাকা ফিঙ্গারপ্রিন্ট সেন্সর টাচ করতে বলুন। আপনার সন্তানের ফিঙ্গারপ্রিন্ট ডেটা নিরাপদে সেভ করা হয় এবং সবসময় <ph name="DEVICE_TYPE" />-এ থাকে।</translation>
 <translation id="6609478180749378879">আপনি 'ছদ্মবেশী মোড' থেকে বেরিয়ে আসার পরেই সাইন-ইন সংক্রান্ত ডেটা এই ডিভাইসে স্টোর করা হবে। আপনি আবার পরে এই ওয়েবসাইটে আপনার ডিভাইস দিয়ে সাইন-ইন করতে পারবেন।</translation>
 <translation id="6610002944194042868">অনুবাদের বিকল্প</translation>
@@ -7970,6 +7976,7 @@
 <translation id="6679947539429331601">১২ ঘণ্টার জন্য লুকান</translation>
 <translation id="6680442031740878064">খালি জায়গা: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">দ্রুততা</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Placeholder String]</translation>
 <translation id="6683022854667115063">হেডফোন</translation>
 <translation id="6683087162435654533">'সব ট্যাব' রিস্টোর করুন</translation>
 <translation id="6683433919380522900">অনুমতি <ph name="PERMISSION_STATE" />-এ সেট আছে</translation>
@@ -8676,6 +8683,7 @@
 <translation id="7189451821249468368">এই ডিভাইসটি এনরোল করার জন্য প্রয়োজনীয় আপগ্রেড আপনার কাছে নেই। আরও কেনাকাটা করার জন্য, সেলস টিমের সাথে যোগাযোগ করুন। আপনার যদি মনে হয়, কোনও সমস্যার কারণে আপনি এই মেসেজটি দেখতে পাচ্ছেন, তাহলে সহায়তা টিমের সাথে যোগাযোগ করুন।</translation>
 <translation id="7189965711416741966">আঙ্গুলের ছাপ যোগ করা হয়েছে।</translation>
 <translation id="7190883804815364931">এই ট্যাবে শেষ আপডেট</translation>
+<translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" />-কে ব্লক করতে চান?</translation>
 <translation id="7191063546666816478">কিছু সহায়তা প্রদান করার লিঙ্ক <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> এবং অন্য <ph name="NUMBER_OF_OTHER_APPS" />টি অ্যাপে এখনও খুলবে।</translation>
 <translation id="7191159667348037">অজানা প্রিন্টার (USB)</translation>
 <translation id="7191631508323321927">হলওয়ে</translation>
@@ -8863,6 +8871,7 @@
 <translation id="7330533963640151632"><ph name="USER_NAME" />-এর ডিভাইসের জন্য <ph name="FEATURE_NAME" /> সেটিংস, <ph name="USER_EMAIL" /> অ্যাকাউন্টের অধীনে শেয়ার করা হচ্ছে।</translation>
 <translation id="7331646370422660166">alt + নিম্নমুখী তীরচিহ্ন</translation>
 <translation id="7332053360324989309">ডেডিকেটেড ওয়ার্কার: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">ডুপ্লিকেট ট্যাব</translation>
 <translation id="7333388112938984914">মিটারড কানেকশনে ফাইল আপলোড করা যাচ্ছে না।</translation>
 <translation id="7333669215417470379">আপনার অ্যাপ এবং সেটিংসের ব্যাক-আপ নিয়ে সেগুলি রিস্টোর করুন</translation>
 <translation id="7335974957018254119">এই ভাষাগুলির জন্য বানান পরীক্ষা করা যায়</translation>

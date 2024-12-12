@@ -7215,6 +7215,7 @@
 <translation id="6122831415929794347">የጥንቃቄ አሰሳ ይጥፋ?</translation>
 <translation id="6124650939968185064">የሚከተሉት ቅጥያዎች በዚህ ቅጥያ ላይ ይወሰናሉ፦</translation>
 <translation id="6124698108608891449">ይህ ጣቢያ ተጨማሪ ፈቃዶችን ይፈልጋል።</translation>
+<translation id="6125202119952209826">ከ<ph name="OWNER_FIRST_NAME" /> ጋር የትር ቡድን ይቀላቀላሉ</translation>
 <translation id="6125479973208104919">የአጋጣሚ ነገር ሆኖ መለያዎን እንደገና ወደዚህ <ph name="DEVICE_TYPE" /> ማከል አለብዎት።</translation>
 <translation id="6125639926370653692">ጨረቃ</translation>
 <translation id="6126601353087978360">እባክዎ የእርስዎን ግብረመልስ እዚህ ያስገቡ፦</translation>
@@ -7867,6 +7868,7 @@
 <translation id="6607831829715835317">&amp;ተጨማሪ መሣሪያዎች</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> አስቀድሞ በ<ph name="DOMAIN" /> የሚተዳደር ነው በተለየ የGoogle መለያ የወላጅ መቆጣጠሪያዎችን ለመጠቀም ከቅንብር በኋላ ዘግተው ይውጡ፣ ከዚያ በመለያ መግቢያ ገጹ ላይ «ሰው አክል» የሚለውን ይምረጡ።</translation>
 <translation id="6608166463665411119">ኢሲምን ዳግም አስጀምር</translation>
+<translation id="660846213831377756">የመዳፊት ቁልፎች</translation>
 <translation id="6608773371844092260">የጣት አሻራን ለማዋቀር ከዚህ <ph name="DEVICE_TYPE" /> በቀኝ-እጅ በኩል የሚገኘውን የጣት አሻራ ዳሳሽ ልጅዎ እንዲነካው ያድርጉ። የልጅዎ የጣት አሻራ ውሂብ ደህንነቱ በተጠበቀ ሁኔታ ይከማቻል እና በጭራሽ ከዚህ <ph name="DEVICE_TYPE" /> አይወጣም።</translation>
 <translation id="6609478180749378879">ከማንነትን የማያሳውቅ ሁነታ ከወጡ በኋላ በዚህ መሣሪያ ውስጥ የመለያ መግቢያ ውሂብ ይከማቻል። ቆይተው እንደገና በመሣሪያዎ ወደዚህ ድር ጣቢያ ለመግባት ይችላሉ።</translation>
 <translation id="6610002944194042868">የትርጉም አማራጮች</translation>
@@ -8673,6 +8675,7 @@
 <translation id="7189451821249468368">ይህን መሣሪያ ለማስመዝገብ በቂ ማላቂያዎች የለዎትም። ተጨማሪ ለመግዛት እባክዎ ሽያጭን ያነጋግሩ። ይህን መልዕክት የሚያዩት በስህተት ነው ብለው ካመኑ እባክዎ ድጋፍን ያነጋግሩ።</translation>
 <translation id="7189965711416741966">የጣት አሻራ ታክሏል።</translation>
 <translation id="7190883804815364931">የዚህ ትር የመጨረሻ ዝማኔ</translation>
+<translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> ይታገድ?</translation>
 <translation id="7191063546666816478">አንዳንድ የሚደገፉ አገናኞች አሁንም በ<ph name="APP_NAME" />፣ <ph name="APP_NAME_2" />፣ <ph name="APP_NAME_3" /> እና በ<ph name="NUMBER_OF_OTHER_APPS" /> ሌሎች መተግበሪያዎች ውስጥ ይከፈታሉ።</translation>
 <translation id="7191159667348037">ያልታወቀ አታሚ (ዩኤስቢ)</translation>
 <translation id="7191631508323321927">ኮሪደር</translation>

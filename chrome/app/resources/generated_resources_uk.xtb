@@ -5127,6 +5127,7 @@
 <translation id="4586275095964870617">Не вдалося відкрити <ph name="URL" /> в альтернативному веб-переглядачі. Зв’яжіться із системним адміністратором.</translation>
 <translation id="4587589328781138893">Сайти</translation>
 <translation id="4588749726511456218">Прискорення прокручування <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905">Схоже, вебсайти <ph name="PASSWORD_DOMAIN" /> і <ph name="DOMAIN" /> пов’язані. Перш ніж використати пароль, переконайтеся, що довіряєте сайту <ph name="DOMAIN" />.</translation>
 <translation id="4589713469967853491">Журнали записано в каталог "Завантаження".</translation>
 <translation id="4590785647529325123">Щоб видалити з пристрою історію вебперегляду в анонімному режимі, закрийте всі анонімні вкладки</translation>
 <translation id="459204634473266369">В обліковому записі <ph name="PRIMARY_EMAIL" /> немає збережених пристроїв</translation>
@@ -5632,6 +5633,7 @@
 <translation id="4946998421534856407">клавіша Панелі запуску + стрілка вгору</translation>
 <translation id="4947376546135294974">Дані із сайту, який ви відвідуєте</translation>
 <translation id="4950100687509657457">Створити профіль</translation>
+<translation id="4950360215042327246">[Рядок-заповнювач]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{файл}one{# файл}few{# файли}many{# файлів}other{# файлу}}</translation>
 <translation id="495170559598752135">Дії</translation>
 <translation id="4951966678293618079">Ніколи не зберігати паролі для цього сайту</translation>
@@ -5770,6 +5772,7 @@
 <translation id="5061531353537614467">Тундра</translation>
 <translation id="5062930723426326933">Помилка входу. Під’єднайтеся до Інтернету та повторіть спробу.</translation>
 <translation id="5063480226653192405">Використання</translation>
+<translation id="5064921774605267982">Відкрити профіль <ph name="PROFILE_NAME" />. Цим профілем керує один із батьків.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Керувати захищеним DNS-сервером у налаштуваннях ОС Chrome</translation>
 <translation id="5066534201484101197">Використовувати надмірне прокручування, щоб переходити між сторінками</translation>
@@ -7216,6 +7219,7 @@
 <translation id="6122831415929794347">Вимкнути Безпечний перегляд?</translation>
 <translation id="6124650939968185064">Від цього розширення залежать такі розширення:</translation>
 <translation id="6124698108608891449">Цьому сайту потрібні додаткові дозволи.</translation>
+<translation id="6125202119952209826">Приєднатися до групи вкладок, з якою працює <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">На жаль, потрібно ще раз додати обліковий запис на пристрої <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6125639926370653692">Місяць</translation>
 <translation id="6126601353087978360">Введіть свій відгук тут:</translation>
@@ -7423,6 +7427,7 @@
 <translation id="6266984048393265562">Налаштувати профіль</translation>
 <translation id="6267166720438879315">Виберіть сертифікат, щоб ідентифікувати себе на <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Відкрити за допомогою додатка <ph name="APP" /></translation>
+<translation id="6269050081341530851">Коли ви закриваєте дублікати, зберігається найстаріша копія</translation>
 <translation id="6270309713620950855">Нагадування про вимкнений мікрофон</translation>
 <translation id="6270391203985052864">Сайти можуть просити дозвіл надсилати сповіщення</translation>
 <translation id="6270486800167535228">Розширення закріплено. Виберіть, щоб побачити більше варіантів.</translation>
@@ -7871,6 +7876,7 @@
 <translation id="6607831829715835317">Інші інстру&amp;менти</translation>
 <translation id="6607890859198268021">Обліковим записом <ph name="USER_EMAIL" /> уже керує домен <ph name="DOMAIN" />. Щоб увімкнути батьківський контроль для іншого облікового запису Google, після налаштування вийдіть, а тоді виберіть "Додати користувача" на екрані входу.</translation>
 <translation id="6608166463665411119">Скинути eSIM-карту</translation>
+<translation id="660846213831377756">Клавіші миші</translation>
 <translation id="6608773371844092260">Щоб налаштувати відбиток пальця, дитина має торкнутися сканера на правому боці цього пристрою <ph name="DEVICE_TYPE" />. <ph name="DEVICE_TYPE" /> надійно зберігає дані про відбиток і нікуди не надсилає їх.</translation>
 <translation id="6609478180749378879">Дані для входу зберігатимуться на цьому пристрої після виходу з режиму анонімного перегляду. Ви зможете знову ввійти на цей сайт зі свого пристрою пізніше.</translation>
 <translation id="6610002944194042868">Параметри перекладу</translation>
@@ -7970,6 +7976,7 @@
 <translation id="6679947539429331601">Сховати на 12 годин</translation>
 <translation id="6680442031740878064">Доступно: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Оцінити</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [рядок-заповнювач]</translation>
 <translation id="6683022854667115063">Навушники</translation>
 <translation id="6683087162435654533">Відновити всі вкладки</translation>
 <translation id="6683433919380522900">Дозвіл: <ph name="PERMISSION_STATE" /></translation>
@@ -8676,6 +8683,7 @@
 <translation id="7189451821249468368">Не вдається зареєструвати цей пристрій, оскільки у вас немає потрібних оновлень ліцензії. Щоб придбати їх, зв'яжіться з продавцем. Якщо ви вважаєте, що це повідомлення з'явилося помилково, зв'яжіться зі службою підтримки.</translation>
 <translation id="7189965711416741966">Відбиток додано.</translation>
 <translation id="7190883804815364931">Останнє оновлення цієї вкладки</translation>
+<translation id="7190921792980745354">Заблокувати користувача <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Деякі підтримувані посилання все ще відкриватимуться в <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> та інших (<ph name="NUMBER_OF_OTHER_APPS" />) додатках.</translation>
 <translation id="7191159667348037">Невідомий принтер (USB)</translation>
 <translation id="7191631508323321927">Коридор</translation>
@@ -8863,6 +8871,7 @@
 <translation id="7330533963640151632">Налаштування функції "<ph name="FEATURE_NAME" />" для пристрою, яким користується <ph name="USER_NAME" /> (з обліковим записом <ph name="USER_EMAIL" />).</translation>
 <translation id="7331646370422660166">alt + стрілка вниз</translation>
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">Повторювані вкладки</translation>
 <translation id="7333388112938984914">Не можна завантажувати файли, коли використовується підключення з тарифікацією.</translation>
 <translation id="7333669215417470379">Створюйте резервні копії додатків і налаштувань та відновлюйте їх</translation>
 <translation id="7335974957018254119">Використовувати перевірку орфографії для таких мов:</translation>

@@ -3488,6 +3488,7 @@
 <translation id="7304030187361489308">ଉଚ୍ଚ</translation>
 <translation id="7304562222803846232">Google ଆକାଉଣ୍ଟର ଗୋପନୀୟତା ସେଟିଂସକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="7305756307268530424">ଧୀର ଗତିରେ ଆରମ୍ଭ କରନ୍ତୁ</translation>
+<translation id="7307063504147610123">ଏହି ଡିଭାଇସରେ ଠିକଣା ସେଭ କରାଯାଇଛି</translation>
 <translation id="7308436126008021607">ପୃଷ୍ଠପଟ ସିଙ୍କ୍</translation>
 <translation id="7309058266849426521">Chromeରେ ଆପଣଙ୍କ ବିଜ୍ଞାପନ ଗୋପନୀୟତା ପରିଚାଳନା କରିବା ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ।</translation>
 <translation id="7310392214323165548">ଡିଭାଇସଟି ଅତି ଶୀଘ୍ର ରିଷ୍ଟାର୍ଟ ହେବ</translation>
@@ -4152,7 +4153,7 @@
 <translation id="8449836157089738489">ସମସ୍ତ URLକୁ ନୂଆ ଟାବ ଗ୍ରୁପରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="84561192812921051">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ରିମୋଟ ଭାବେ ଆପଣଙ୍କର ପ୍ରୋଫାଇଲ ଏବଂ ବ୍ରାଉଜରରେ ପରିବର୍ତ୍ତନ କରିପାରିବେ, ରିପୋର୍ଟିଂ ମାଧ୍ୟମରେ ବ୍ରାଉଜର ବିଷୟରେ ସୂଚନାକୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ଏବଂ ଅନ୍ୟ ଜରୁରୀ ଟାସ୍କଗୁଡ଼ିକୁ କରିପାରିବେ। ଏହି ଡିଭାଇସରେ କରାଯାଉଥିବା କାର୍ଯ୍ୟକଳାପ Chrome ବାହାରେ ମଧ୍ୟ ପରିଚାଳନା କରାଯାଇପାରେ।  <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">ନିମ୍ନ ସିଟ ବନ୍ଦ ଅଛି।</translation>
-<translation id="8456775115498700722">ବର୍ତ୍ତମାନ ଆପଣଙ୍କ <ph name="CARD_ISSUER_NAME" /> ଆକାଉଣ୍ଟକୁ Google Pay ସହ ଲିଙ୍କ କରାଯାଇଥିବା ଯୋଗୁଁ ଆପଣ ଆପଣଙ୍କ <ph name="CARD_ISSUER_NAME" />କୁ ଅଟୋଫିଲ କରିପାରିବେ।</translation>
+<translation id="8456775115498700722">ବର୍ତ୍ତମାନ ଆପଣଙ୍କ <ph name="CARD_ISSUER_NAME" /> ଆକାଉଣ୍ଟକୁ Google Pay ସହ ଲିଙ୍କ କରାଯାଇଥିବା ଯୋଗୁଁ ଆପଣ ଆପଣଙ୍କ <ph name="CARD_ISSUER_NAME" /> କାର୍ଡଗୁଡ଼ିକୁ ଅଟୋଫିଲ କରିପାରିବେ।</translation>
 <translation id="8457125768502047971">ଅନିର୍ଦ୍ଦିଷ୍ଟ</translation>
 <translation id="8458202188076138974">ଲେଟର ଏକ୍ସଟ୍ରା</translation>
 <translation id="8460854335417802511">ଏହାକୁ ଚାଲୁ କରନ୍ତୁ</translation>
@@ -4165,6 +4166,7 @@
 <translation id="8473626140772740486">300 x 450 ମିମି</translation>
 <translation id="8473863474539038330">ଠିକଣାଗୁଡ଼ିକ ଏବଂ ଅଧିକ</translation>
 <translation id="8474910779563686872">ଡେଭେଲପରଙ୍କ ବିବରଣୀ ଦେଖାନ୍ତୁ</translation>
+<translation id="8476959635632921417">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଏହି ଠିକଣା ସେଭ କରି ବ୍ୟବହାର କରିବା ପାଇଁ ଏହା ପ୍ରକୃତରେ ଆପଣ ଅଟନ୍ତି ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8479754468255770962">ତଳ ବାମ ପଟରେ ଷ୍ଟାପଲ୍</translation>
 <translation id="8483229036294884935">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ <ph name="ACCOUNT" />ରୁ ଏହି ଠିକଣା ଡିଲିଟ ହୋଇଯିବ</translation>
 <translation id="8488350697529856933">ରେ ଲାଗୁ ହୋଇଥାଏ</translation>

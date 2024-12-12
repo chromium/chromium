@@ -4006,7 +4006,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3794792524918736965">Activează Windows Hello</translation>
 <translation id="379509625511193653">Dezactivat</translation>
 <translation id="3796215473395753611">alt + săgeată în sus</translation>
-<translation id="3796421550129770366"><ph name="LANGUAGE" />, folosește tasta săgeată spre dreapta pentru a previzualiza vocea</translation>
+<translation id="3796421550129770366"><ph name="LANGUAGE" />, folosește tasta săgeată spre dreapta pentru a asculta o mostră a vocii selectate</translation>
 <translation id="3796648294839530037">Rețele preferate:</translation>
 <translation id="3797739167230984533"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> este gestionat<ph name="END_LINK" /> de organizația ta</translation>
 <translation id="3797900183766075808">&amp;Caută „<ph name="SEARCH_TERMS" />” pe <ph name="SEARCH_ENGINE" /></translation>
@@ -7206,6 +7206,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6122831415929794347">Dezactivezi Navigarea sigură?</translation>
 <translation id="6124650939968185064">De această extensie depind următoarele extensii:</translation>
 <translation id="6124698108608891449">Acest site are nevoie de mai multe permisiuni.</translation>
+<translation id="6125202119952209826">Alătură-te grupului de file cu <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">Din păcate, va trebui să îți adaugi din nou contul pe acest dispozitiv <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6125639926370653692">Lună</translation>
 <translation id="6126601353087978360">Introdu feedbackul aici:</translation>
@@ -7858,6 +7859,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6607831829715835317">Mai multe instru&amp;mente</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> este deja gestionat de <ph name="DOMAIN" />. Pentru a folosi controlul parental cu alt Cont Google, deconectează-te după configurare, apoi selectează „Adaugă o persoană” în ecranul de conectare.</translation>
 <translation id="6608166463665411119">Resetează profilul eSIM</translation>
+<translation id="660846213831377756">Tastele mouse-ului</translation>
 <translation id="6608773371844092260">Pentru a configura amprenta, solicită-i copilului tău să atingă senzorul de amprentă în partea dreaptă a acestui <ph name="DEVICE_TYPE" />. Datele privind amprentele copilului sunt stocate în siguranță și nu părăsesc niciodată dispozitivul <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Datele de conectare vor fi stocate pe acest dispozitiv după ce ieși din modul incognito. Vei putea să te reconectezi la site folosind dispozitivul.</translation>
 <translation id="6610002944194042868">Opțiuni de traducere</translation>
@@ -8664,6 +8666,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7189451821249468368">Nu deții suficiente upgrade-uri pentru a înscrie acest dispozitiv. Contactează departamentul de vânzări pentru a achiziționa upgrade-uri suplimentare. În cazul în care consideri că acest mesaj este afișat din greșeală, contactează serviciul de asistență.</translation>
 <translation id="7189965711416741966">Amprentă adăugată.</translation>
 <translation id="7190883804815364931">Ultima modificare a acestei file</translation>
+<translation id="7190921792980745354">Blochezi pe <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Unele linkuri acceptate se vor deschide în continuare în <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> și alte <ph name="NUMBER_OF_OTHER_APPS" /> aplicații.</translation>
 <translation id="7191159667348037">Imprimantă necunoscută (USB)</translation>
 <translation id="7191631508323321927">Hol</translation>

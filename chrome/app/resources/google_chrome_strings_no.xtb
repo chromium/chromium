@@ -258,6 +258,7 @@
 <translation id="4147555960264124640">Du er i ferd med å logge deg på med en administrert konto og gir administratoren kontroll over Chrome-profilen din. Chrome-dataene dine, som apper, bokmerker, loggen, passord og andre innstillinger, blir permanent knyttet til <ph name="USER_NAME" />. Du kan slette disse dataene via kontooversikten for Google, men du kan ikke knytte disse dataene til en annen konto. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Installerer …</translation>
 <translation id="4149882025268051530">Installasjonsprogrammet fikk ikke dekomprimert arkivet. Last ned Google Chrome på nytt.</translation>
+<translation id="415112847282352845">For å få adressene dine med mer på alle enhetene dine, logg på Chrome. Denne adressen blir lagret i Google-kontoen din når du logger på.</translation>
 <translation id="4153934450158521343">Chrome lukkes snart og sletter data</translation>
 <translation id="4173512894976930765">Nettsteder fungerer sannsynligvis som forventet. Du blir logget av de fleste nettsteder når du lukker alle Chrome-vinduer, unntatt Google-kontoen din hvis du er logget på Chrome.</translation>
 <translation id="4175922240926474352">Chrome har blokkert denne nedlastingen fordi nettstedet ikke bruker en sikker tilkobling, så filen kan ha blitt tuklet med</translation>

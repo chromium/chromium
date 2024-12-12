@@ -417,6 +417,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="2816489851009559785">Kieslys → Instellings → Verstekblaaier</translation>
 <translation id="2818821771744632548">Jy is as deel van jou iPhone-terugstelling uit jou rekening, <ph name="USER_NAME" />, afgemeld. Tik op “Gaan voort” hier onder om weer aan te meld.</translation>
 <translation id="2819667972867209401">Wanneer dit aan is, word data in jou Google-rekening gestoor. Wanneer dit af is, word data net op hierdie toestel gestoor en word uitgevee wanneer jy afmeld.</translation>
+<translation id="2827760117436553203">Hou data apart?</translation>
 <translation id="2829172210806130158">Deursoek jou skerm</translation>
 <translation id="2834399722155632105">3. Tik op Wagwoordopsies</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -1213,6 +1214,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="6476800141292307438">Vertaal tans die bladsy in <ph name="LANGUAGE" />. Opsies is naby die onderkant van die skerm beskikbaar.</translation>
 <translation id="647867789226964031">Verander jou wagwoorde</translation>
 <translation id="6494931198667773526">Eindig</translation>
+<translation id="6495521251906266731">Kies wat om met die bestaande blaaierdata op hierdie toestel te doen, soos wagwoorde, geskiedenis en meer.</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{Stop nasporing van hierdie pakkie}other{Stop nasporing van hierdie pakkie}}</translation>
 <translation id="6503077044568424649">Mees besoekte</translation>
 <translation id="6503763061813913607">Kennisgewings vir veiligheidskontrole</translation>
@@ -1427,6 +1429,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7468373585447318060">Bly op hoogte van prysdalings op al die produkte wat jy naspoor.</translation>
 <translation id="746872191028309255">Koop dit wat jy sien met jou kamera of fotogalery.</translation>
 <translation id="7471557245617580330">Skep nuwe oortjie</translation>
+<translation id="7473891865547856676">Nee, Dankie</translation>
 <translation id="747956641630879526">As jy hierdie kaart versteek, sal Pakkienasporing afgeskakel word en al jou data sal verwyder word</translation>
 <translation id="7484645889979462775">Nooit vir hierdie werf nie</translation>
 <translation id="7486006552035434095">Hou jou toestelle gesinkroniseer</translation>

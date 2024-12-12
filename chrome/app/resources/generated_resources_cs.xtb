@@ -4907,7 +4907,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4434611816075088065">Nic jiného teď vaši pozornost nevyžaduje</translation>
 <translation id="443475966875174318">Aktualizovat nebo odstranit nekompatibilní aplikace</translation>
 <translation id="443503224864902151">Budete odhlášeni z většiny webů. Zůstanete přihlášeni k účtu Google, aby bylo možné vymazat synchronizovaná data.</translation>
-<translation id="4437879751057074691">Nabídka k uložení hesel a přístupových klíčů</translation>
+<translation id="4437879751057074691">Nabízet ukládání hesel a přístupových klíčů</translation>
 <translation id="4437947179446780764">Přidat vlastního poskytovatele služby DNS</translation>
 <translation id="4438043733494739848">Průhledné</translation>
 <translation id="4441124369922430666">Chcete tuto aplikaci automaticky spustit, když se zařízení zapne?</translation>
@@ -5110,6 +5110,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4586275095964870617">Adresu <ph name="URL" /> se v alternativním prohlížeči nepodařilo otevřít. Kontaktujte svého administrátora systému.</translation>
 <translation id="4587589328781138893">Weby</translation>
 <translation id="4588749726511456218">Zrychlení posouvání <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905">Weby <ph name="PASSWORD_DOMAIN" /> a <ph name="DOMAIN" /> spolu pravděpodobně souvisejí. Před použitím hesla zvažte, zda webu <ph name="DOMAIN" /> důvěřujete.</translation>
 <translation id="4589713469967853491">Protokoly byly úspěšně zaznamenány do složky Stažené soubory.</translation>
 <translation id="4590785647529325123">Pokud ze zařízení chcete vymazat historii anonymního prohlížení, zavřete všechny anonymní karty</translation>
 <translation id="459204634473266369">Do účtu <ph name="PRIMARY_EMAIL" /> nejsou uložena žádná zařízení</translation>
@@ -5615,6 +5616,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4946998421534856407">spouštěč + šipka nahoru</translation>
 <translation id="4947376546135294974">Data z navštíveného webu</translation>
 <translation id="4950100687509657457">Vytvořit profil</translation>
+<translation id="4950360215042327246">[Zástupný řetězec]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{soubor}few{# soubory}many{# souboru}other{# souborů}}</translation>
 <translation id="495170559598752135">Akce</translation>
 <translation id="4951966678293618079">Pro tento web hesla nikdy neukládat</translation>
@@ -5753,6 +5755,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5061531353537614467">Tundra</translation>
 <translation id="5062930723426326933">Přihlášení se nezdařilo. Připojte se prosím k internetu a zkuste to znovu.</translation>
 <translation id="5063480226653192405">Použití</translation>
+<translation id="5064921774605267982">Otevřít profil <ph name="PROFILE_NAME" />. Tenhle profil spravuje tvůj rodič.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Spravovat zabezpečené DNS v nastavení systému ChromeOS</translation>
 <translation id="5066534201484101197">Přecházení mezi stránkami přílišným posunutím</translation>
@@ -7199,6 +7202,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6122831415929794347">Vypnout Bezpečné prohlížení?</translation>
 <translation id="6124650939968185064">Na tomto rozšíření závisejí následující rozšíření:</translation>
 <translation id="6124698108608891449">Web potřebuje další oprávnění.</translation>
+<translation id="6125202119952209826">Přidat se ke skupině karet s uživatelem <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">Do zařízení <ph name="DEVICE_TYPE" /> je nutné znovu přidat účet.</translation>
 <translation id="6125639926370653692">Měsíc</translation>
 <translation id="6126601353087978360">Sem zadejte svoji zpětnou vazbu:</translation>
@@ -7406,6 +7410,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6266984048393265562">Upravit profil</translation>
 <translation id="6267166720438879315">Vyberte certifikát pro ověření na serveru <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Otevřít v aplikaci <ph name="APP" /></translation>
+<translation id="6269050081341530851">Když zavřete duplicitní karty, zůstane vám nejstarší kopie</translation>
 <translation id="6270309713620950855">Připomenutí ztlumení</translation>
 <translation id="6270391203985052864">Weby mohou žádat o oprávnění zasílat vám oznámení</translation>
 <translation id="6270486800167535228">Rozšíření je připnuto. Výběrem zobrazíte další možnosti</translation>
@@ -7852,6 +7857,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6607831829715835317">Další nástro&amp;je</translation>
 <translation id="6607890859198268021">Účet <ph name="USER_EMAIL" /> už spravuje doména <ph name="DOMAIN" />. Pokud chcete rodičovskou kontrolu použít s jiným účtem Google, po dokončení nastavení se odhlaste a potom na přihlašovací obrazovce vyberte Přidat uživatele.</translation>
 <translation id="6608166463665411119">Resetovat eSIM kartu</translation>
+<translation id="660846213831377756">Klávesy myši</translation>
 <translation id="6608773371844092260">Pokud chcete nastavit otisk prstu, nechte dítě dotknout se snímače otisků prstů na pravé straně zařízení <ph name="DEVICE_TYPE" />. Otisk prstu dítěte je bezpečně uložen a nikdy neopouští <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Přihlašovací údaje zůstanou v tomto zařízení uložené i po ukončení anonymního režimu. Pomocí zařízení se k těmto webovým stránkám budete moci později opět přihlásit.</translation>
 <translation id="6610002944194042868">Možnosti Překladače</translation>
@@ -7951,6 +7957,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6679947539429331601">Na 12 hodin skrýt</translation>
 <translation id="6680442031740878064">Volné místo: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Ohodnotit</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [zástupný řetězec]</translation>
 <translation id="6683022854667115063">Sluchátka</translation>
 <translation id="6683087162435654533">&amp;Obnovit všechny karty</translation>
 <translation id="6683433919380522900">Oprávnění je <ph name="PERMISSION_STATE" /></translation>
@@ -8657,6 +8664,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7189451821249468368">Nemáte dostatečný počet upgradů k registraci tohoto zařízení. Kontaktujte obchodní oddělení a kupte si další. Pokud se domníváte, že se jedná o chybu, kontaktujte podporu.</translation>
 <translation id="7189965711416741966">Otisk byl přidán.</translation>
 <translation id="7190883804815364931">Poslední aktualizace této karty</translation>
+<translation id="7190921792980745354">Blokovat uživatele <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Některé podporované odkazy se budou nadále otevírat v aplikaci <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> a dalších aplikacích (<ph name="NUMBER_OF_OTHER_APPS" />).</translation>
 <translation id="7191159667348037">Neznámá tiskárna (USB)</translation>
 <translation id="7191631508323321927">Chodba</translation>
@@ -8844,6 +8852,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7330533963640151632">Nastavení funkce <ph name="FEATURE_NAME" /> pro zařízení uživatele <ph name="USER_NAME" />. Sdílení bude probíhat pod e‑mailem <ph name="USER_EMAIL" />.</translation>
 <translation id="7331646370422660166">alt + šipka dolů</translation>
 <translation id="7332053360324989309">Vyhrazený pracovník: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">Duplicitní karty</translation>
 <translation id="7333388112938984914">Při měřeném připojení nelze nahrávat soubory.</translation>
 <translation id="7333669215417470379">Zálohujte a obnovte své aplikace a nastavení</translation>
 <translation id="7335974957018254119">Používat kontrolu pravopisu pro</translation>
@@ -9260,7 +9269,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7634337648687970851">Obnovení místních dat aktuálně není podporováno.</translation>
 <translation id="7634566076839829401">Něco se pokazilo. Zkuste to znovu.</translation>
 <translation id="7635048370253485243">Připnuto administrátorem</translation>
-<translation id="7636346903338549690">Povolení používat soubory cookie třetích stran</translation>
+<translation id="7636346903338549690">Weby s povolením používat soubory cookie třetích stran</translation>
 <translation id="7636919061354591437">Nainstalovat na toto zařízení</translation>
 <translation id="7637253234491814483">Dotkněte se snímače otisků prstů v pravém horním rohu klávesnice vedle vypínače. Váš otisk prstu je bezpečně uložen a nikdy neopouští <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7637593984496473097">Nedostatek místa na disku</translation>

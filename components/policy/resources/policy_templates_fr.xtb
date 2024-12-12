@@ -265,6 +265,7 @@ Si vous activez cette règle, les utilisateurs peuvent utiliser le matériel sur
 <translation id="117080706484659953">Autorisez la détection du champ d'application des règles sur <ph name="MAC_OS_NAME" /></translation>
 <translation id="1171106901454883937">Activer les rapports sur les informations sur la version de l'appareil</translation>
 <translation id="1173493742686115032">Activer <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> sur toutes les pages Web</translation>
+<translation id="1176740714945046981">Active la fonctionnalité de retour à une version antérieure pour les AWI. Par défaut, seules les versions les plus récentes des AWI sont installées. Si vous définissez cette option sur <ph name="TRUE" />, vous pouvez également installer des versions antérieures. Pour activer le retour à une version antérieure, vous devez spécifier la valeur de la version souhaitée à l'aide du champ "pinned_version". Si aucune valeur n'est fournie pour "allow_downgrades" ou qu'il est défini sur <ph name="FALSE" />, le retour à une version antérieure est désactivé pour cette AWI.</translation>
 <translation id="1177624681620856105"> Cette règle permet de spécifier si la case "Toujours ouvrir" doit être affichée ou non dans une invite de confirmation du lancement d'un protocole externe.
 
       Si cette règle est définie sur "True", lorsqu'une invite de confirmation de lancement d'un protocole externe s'affiche, l'utilisateur peut sélectionner l'option "Toujours autoriser" pour ignorer par la suite les invites de confirmation concernant son lancement.
@@ -3217,6 +3218,17 @@ Si elle est désactivée, la fonctionnalité d'écriture prédictive est désact
 <translation id="3387211681524224831">Si cette règle est activée, l'historique de navigation n'est pas enregistré, la synchronisation des onglets est désactivée et les utilisateurs ne peuvent pas modifier ce paramètre.
 
       Si cette règle est désactivée ou si elle n'est pas configurée, l'historique de navigation est enregistré.</translation>
+<translation id="3387875422525138489">Cette règle permet d'établir la liste des applis Web isolées (AWI) qui s'installent de manière autonome.
+      Les AWI sont des applis avec des propriétés de sécurité utiles qui ne sont pas disponibles pour les pages Web normales. Elles sont empaquetées dans un bundle Web signé. La clé publique de ce bundle sert à créer l'ID du bundle Web qui identifie l'AWI.
+      Pour l'instant, cette règle ne fonctionne que pour les sessions Invité gérées.
+
+      Chaque élément de la règle correspond à un objet avec deux champs obligatoires : l'<ph name="URL_LABEL" /> du fichier manifeste de mise à jour et l'ID de bundle Web de l'appli Web isolée.
+
+      Chaque élément peut également comporter ces champs facultatifs :
+
+        * <ph name="UPDATE_CHANNEL_OPTION" /> : le nom du canal de version/mise à jour de l'AWI. Si cette règle n'est pas définie, "default" est utilisé.
+        * <ph name="PINNED_VERSION_OPTION" /> : version spécifique à installer. Le système tentera d'installer cette version si elle est disponible sur le canal de mise à jour spécifié. Par défaut, épingler une AWI sur une version spécifique empêche sa mise à jour au-delà de cette version. Pour retirer l'épingle, supprimez ce champ.
+        * <ph name="ALLOW_DOWNGRADES_OPTION" /> : permet d'installer des versions antérieures de l'AWI. Pour cela, vous devez définir le champ "pinned_version". Si aucune valeur n'est fournie ou s'il est défini sur <ph name="FALSE" />, le retour à une version antérieure est désactivé pour cette AWI.</translation>
 <translation id="3387999258705169775">Comportement par défaut pour la limitation imbriquée de la fonction setTimeout().</translation>
 <translation id="3388628790024977864">Interdire le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="GOOGLE_DRIVE_NAME" /> et <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Activer l'authentification gnubby pour l'hôte d'accès à distance</translation>

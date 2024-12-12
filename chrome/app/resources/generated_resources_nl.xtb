@@ -7200,6 +7200,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6122831415929794347">Safe Browsing uitzetten?</translation>
 <translation id="6124650939968185064">De volgende extensies zijn afhankelijk van deze extensie:</translation>
 <translation id="6124698108608891449">Deze site heeft meer rechten nodig.</translation>
+<translation id="6125202119952209826">Lid worden van tabbladgroep met <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">Je moet je account opnieuw toevoegen aan deze <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6125639926370653692">Maan</translation>
 <translation id="6126601353087978360">Geef hieronder je feedback op:</translation>
@@ -7850,6 +7851,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6607831829715835317">Meer hu&amp;lpprogramma's</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> wordt al beheerd door <ph name="DOMAIN" />. Als je ouderlijk toezicht wilt gebruiken met een ander Google-account, log je uit na het instellen en selecteer je 'Persoon toevoegen' op het inlogscherm.</translation>
 <translation id="6608166463665411119">E-simkaart resetten</translation>
+<translation id="660846213831377756">Muisknoppen</translation>
 <translation id="6608773371844092260">Als je een vingerafdruk wilt instellen, laat je je kind de vingerafdruksensor aan de rechterkant van deze <ph name="DEVICE_TYPE" /> aanraken. De vingerafdrukgegevens van je kind worden beveiligd opgeslagen en blijven uitsluitend op deze <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="6609478180749378879">Nadat je de incognitomodus hebt afgesloten, worden de inloggegevens opgeslagen op dit apparaat. Je kunt later weer inloggen bij deze website met je apparaat.</translation>
 <translation id="6610002944194042868">Opties voor vertalen</translation>
@@ -8656,6 +8658,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7189451821249468368">Je hebt niet voldoende upgrades om dit apparaat in te schrijven. Neem contact op met de salesafdeling om meer upgrades te kopen. Als je denkt dat dit bericht ten onrechte wordt weergegeven, neem je contact op met support.</translation>
 <translation id="7189965711416741966">Vingerafdruk is toegevoegd.</translation>
 <translation id="7190883804815364931">Nieuwste update voor dit tabblad</translation>
+<translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> blokkeren?</translation>
 <translation id="7191063546666816478">Bepaalde ondersteunde links worden nog steeds geopend in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> en <ph name="NUMBER_OF_OTHER_APPS" /> andere apps.</translation>
 <translation id="7191159667348037">Onbekende printer (USB)</translation>
 <translation id="7191631508323321927">Gang</translation>

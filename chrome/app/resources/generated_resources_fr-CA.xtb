@@ -7209,6 +7209,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6122831415929794347">Désactiver la navigation sécurisée?</translation>
 <translation id="6124650939968185064">Les extensions suivantes dépendent de cette extension :</translation>
 <translation id="6124698108608891449">Ce site a besoin d'autorisations supplémentaires.</translation>
+<translation id="6125202119952209826">Se joindre au groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">Malheureusement, vous devez ajouter à nouveau votre compte à ce <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6125639926370653692">Lune</translation>
 <translation id="6126601353087978360">Veuillez entrer vos commentaires ici :</translation>
@@ -7861,6 +7862,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6607831829715835317">Autres outi&amp;ls</translation>
 <translation id="6607890859198268021">L'adresse <ph name="USER_EMAIL" /> est déjà gérée par <ph name="DOMAIN" />. Pour utiliser les contrôles parentaux avec un autre compte Google, déconnectez-vous après la configuration, puis sélectionnez « Ajouter une personne » à l'écran de connexion.</translation>
 <translation id="6608166463665411119">Réinitialiser la carte eSIM</translation>
+<translation id="660846213831377756">Touches de la souris</translation>
 <translation id="6608773371844092260">Pour configurer l'empreinte digitale, demandez à votre enfant de toucher le capteur d'empreintes digitales sur le côté droit de ce <ph name="DEVICE_TYPE" />. Les données liées à l'empreinte digitale de votre enfant sont stockées de façon sécurisée et ne quittent jamais ce <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Les données de connexion seront stockées sur cet appareil lorsque vous quitterez le mode de navigation privée. Vous pourrez vous reconnecter à ce site Web avec votre appareil plus tard.</translation>
 <translation id="6610002944194042868">Options de traduction</translation>
@@ -8666,6 +8668,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7189451821249468368">Vous n'avez pas suffisamment de mises à niveau pour inscrire cet appareil. Veuillez communiquer avec le service commercial pour en acheter d'autres. Si vous pensez que ce message s'affiche par erreur, veuillez communiquer avec l'assistance technique.</translation>
 <translation id="7189965711416741966">Empreinte digitale ajoutée.</translation>
 <translation id="7190883804815364931">Dernière mise à jour de cet onglet</translation>
+<translation id="7190921792980745354">Bloquer <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Certains liens pris en charge continueront de s'ouvrir dans <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> et <ph name="NUMBER_OF_OTHER_APPS" /> autres applications.</translation>
 <translation id="7191159667348037">Imprimante inconnue (USB)</translation>
 <translation id="7191631508323321927">Vestibule</translation>

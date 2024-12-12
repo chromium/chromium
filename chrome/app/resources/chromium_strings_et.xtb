@@ -94,6 +94,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="2199210295479376551">Eemalda konto Chromiumist</translation>
 <translation id="2210682093923538346">Ohtlik sait. Chromium eemaldas märguanded.</translation>
 <translation id="2236949375853147973">Minu tegevused</translation>
+<translation id="2238130810669087193">Kõigis seadmetes aadresside ja muude võimaluste kasutamiseks logige sisse Chromiumi. See aadress salvestatakse pärast sisselogimist teie Google’i kontole.</translation>
 <translation id="2240214816234246077">Te pole hiljuti külastanud. Chromium eemaldas <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Kui jagate arvutit, saavad sõbrad ja pereliikmed eraldi sirvida ning seadistada Chromiumi just nii, nagu neile meeldib.</translation>
 <translation id="2313870531055795960">Kontrollib URL-e Chromiumi talletatud ohtlike saitide loendi alusel. Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chromium saata URL-id ja lehe sisu osad teenusesse Google'i ohutu sirvimine.</translation>

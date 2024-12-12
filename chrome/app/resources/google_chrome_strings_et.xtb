@@ -260,6 +260,7 @@
 <translation id="4147555960264124640">Logite sisse hallatud kontoga ja annate selle administraatorile üle Google Chrome'i profiili juhtimise. Teie Chrome'i andmed, nagu rakendused, järjehoidjad, ajalugu, paroolid ja muud seaded seotakse jäädavalt kasutajaga <ph name="USER_NAME" />. Saate need andmed Google'i kontode juhtpaneeli kaudu kustutada, kuid te ei saa neid seostada teise kontoga. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Installimine ...</translation>
 <translation id="4149882025268051530">Installijal ei õnnestunud arhiivi lahti pakkida. Palun laadige Google Chrome uuesti alla.</translation>
+<translation id="415112847282352845">Kõigis seadmetes aadresside ja muude võimaluste kasutamiseks logige sisse Chrome’i. See aadress salvestatakse pärast sisselogimist teie Google’i kontole.</translation>
 <translation id="4153934450158521343">Chrome sulgub peagi ja kustutab andmed</translation>
 <translation id="4173512894976930765">Tõenäoliselt töötavad saidid ootuspäraselt. Kui sulgete kõik Chrome'i aknad, logitakse teid välja enamikust saitidest, v.a Google'i kontost, kui olete Chrome'is sisse logitud</translation>
 <translation id="4175922240926474352">Chrome blokeeris selle allalaadimise, kuna sait ei kasuta turvalist ühendust ja faili võidi muuta</translation>

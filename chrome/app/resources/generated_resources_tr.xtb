@@ -5107,6 +5107,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4586275095964870617"><ph name="URL" /> alternatif tarayıcıda açılamadı. Lütfen sistem yöneticinizle iletişime geçin.</translation>
 <translation id="4587589328781138893">Siteler</translation>
 <translation id="4588749726511456218">Kaydırma hızlandırma <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> ve <ph name="DOMAIN" /> ilişkili görünüyor. Şifrenizi kullanmadan önce <ph name="DOMAIN" /> web sitesine güvendiğinizden emin olun.</translation>
 <translation id="4589713469967853491">Günlükler, İndirilenler dizinine yazıldı.</translation>
 <translation id="4590785647529325123">Gizli mod tarama geçmişini cihazınızdan silmek için tüm Gizli sekmeleri kapatın</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> hesabına kayıtlı cihaz yok</translation>
@@ -5613,6 +5614,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4946998421534856407">başlatıcı  + yukarı ok</translation>
 <translation id="4947376546135294974">Ziyaret ettiğiniz sitedeki veriler</translation>
 <translation id="4950100687509657457">Profil oluştur</translation>
+<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{bir dosya}other{# dosya}}</translation>
 <translation id="495170559598752135">İşlemler</translation>
 <translation id="4951966678293618079">Bu sitedeki şifreleri hiçbir zaman kaydetme</translation>
@@ -5751,6 +5753,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5061531353537614467">Tundra</translation>
 <translation id="5062930723426326933">Oturum açma başarısız oldu. Lütfen İnternet'e bağlanın ve tekrar deneyin.</translation>
 <translation id="5063480226653192405">Kullanım</translation>
+<translation id="5064921774605267982"><ph name="PROFILE_NAME" /> profilini açın. Bu profil, ebeveyniniz tarafından yönetiliyor.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS ayarlarında güvenli DNS'yi yönetin</translation>
 <translation id="5066534201484101197">Sayfalar arasında gezinmek için kaydırma sonu efektini kullan</translation>
@@ -7201,6 +7204,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6122831415929794347">Güvenli Tarama kapatılsın mı?</translation>
 <translation id="6124650939968185064">Aşağıdaki uzantılar bu uzantıya bağımlıdır:</translation>
 <translation id="6124698108608891449">Bu site, daha fazla izne ihtiyaç duyuyor.</translation>
+<translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> kullanıcısının bulunduğu sekme grubuna katılın</translation>
 <translation id="6125479973208104919">Ne yazık ki hesabınızı bu <ph name="DEVICE_TYPE" /> cihaza tekrar eklemeniz gerekecek.</translation>
 <translation id="6125639926370653692">Ay</translation>
 <translation id="6126601353087978360">Lütfen geri bildiriminizi buraya girin:</translation>
@@ -7266,7 +7270,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6169967265765719844">Steam aracılığıyla yüklenen oyunların ve uygulamaların izinleri, <ph name="LINK_BEGIN" />Steam uygulama ayarlarından<ph name="LINK_END" /> yönetilebilir.</translation>
 <translation id="6170470584681422115">Sandviç</translation>
 <translation id="6170498031581934115">ADB hata ayıklama işlevi etkinleştirilemedi. Ayarlar'a gidip tekrar deneyin.</translation>
-<translation id="6170675927290506430">Bildirim ayarlarına git</translation>
+<translation id="6170675927290506430">Bildirim ayarlarına gidin</translation>
 <translation id="6171779718418683144">Her ziyarette sor</translation>
 <translation id="617213288191670920">Dil eklenmedi</translation>
 <translation id="6173623053897475761">PIN'inizi tekrar yazın</translation>
@@ -7408,6 +7412,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6266984048393265562">Profili özelleştir</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> sunucusunda kimliğinizi doğrulamak için bir sertifika seçin</translation>
 <translation id="6268252012308737255"><ph name="APP" /> ile aç</translation>
+<translation id="6269050081341530851">Yinelenen sekmeleri kapattığınızda en eski kopya saklanır</translation>
 <translation id="6270309713620950855">Otomatik hatırlatmayı kapat</translation>
 <translation id="6270391203985052864">Siteler bildirim gönderme izni isteyebilir</translation>
 <translation id="6270486800167535228">Uzantı sabitlendi. Diğer seçenekleri görmek için seçin</translation>
@@ -7850,6 +7855,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6607831829715835317">Diğer araç&amp;lar</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> zaten <ph name="DOMAIN" /> tarafından yönetiliyor. Ebeveyn denetimlerini farklı bir Google Hesabıyla kullanmak için kurulumdan sonra oturumu kapatıp oturum açma ekranında "Kişi ekle"yi seçin.</translation>
 <translation id="6608166463665411119">eSIM'i sıfırla</translation>
+<translation id="660846213831377756">Fare tuşları</translation>
 <translation id="6608773371844092260">Parmak izini ayarlamak için çocuğunuzun, bu <ph name="DEVICE_TYPE" /> cihazının sağ tarafındaki parmak izi sensörüne dokunması gerekir. Çocuğunuzun parmak izi verileri güvenli bir şekilde depolanır ve her zaman <ph name="DEVICE_TYPE" /> cihazınızda tutulur.</translation>
 <translation id="6609478180749378879">Gizli moddan çıktıktan sonra oturum açma verileriniz bu cihazda saklanır. Daha sonra cihazınızla bu web sitesinde tekrar oturum açabilirsiniz.</translation>
 <translation id="6610002944194042868">Çeviri Seçenekleri</translation>
@@ -7949,6 +7955,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6679947539429331601">12 saat boyunca gizle</translation>
 <translation id="6680442031740878064">Kullanılabilir alan: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Hız</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Placeholder String]</translation>
 <translation id="6683022854667115063">Kulaklık</translation>
 <translation id="6683087162435654533">Tüm Sekmeleri Geri Yükle</translation>
 <translation id="6683433919380522900">İzin durumu: <ph name="PERMISSION_STATE" /></translation>
@@ -8655,6 +8662,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7189451821249468368">Bu cihazı kaydetmek için yeterli yükseltmeye sahip değilsiniz. Daha fazla yazılım satın almak için lütfen satış birimiyle bağlantı kurun. Bu mesajın yanlışlıkla görüntülendiğini düşünüyorsanız lütfen destekle bağlantı kurun.</translation>
 <translation id="7189965711416741966">Parmak izi eklendi.</translation>
 <translation id="7190883804815364931">Bu Sekmede Yapılan Son Güncelleme</translation>
+<translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> engellensin mi?</translation>
 <translation id="7191063546666816478">Bazı desteklenen bağlantılar <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> ve diğer <ph name="NUMBER_OF_OTHER_APPS" /> uygulamada açılmaya devam eder.</translation>
 <translation id="7191159667348037">Bilinmeyen Yazıcı (USB)</translation>
 <translation id="7191631508323321927">Koridor</translation>
@@ -8842,6 +8850,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7330533963640151632"><ph name="USER_EMAIL" /> hesabından yaptığı paylaşımlar için <ph name="USER_NAME" /> kullanıcısına ait cihazın <ph name="FEATURE_NAME" /> ayarları.</translation>
 <translation id="7331646370422660166">alt + aşağı ok</translation>
 <translation id="7332053360324989309">Özel Çalışan: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">Yinelenen sekmeler</translation>
 <translation id="7333388112938984914">Sayaçlı bağlantı kullanılırken dosya yüklenemez.</translation>
 <translation id="7333669215417470379">Uygulamalarınız ile ayarlarınızı yedekleyin ve geri yükleyin</translation>
 <translation id="7335974957018254119">Şu diller için yazım denetimi kullan:</translation>

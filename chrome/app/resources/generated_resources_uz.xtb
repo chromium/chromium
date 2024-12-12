@@ -7207,6 +7207,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6122831415929794347">Saytlarni xavfsiz kezish faolsizlantirilsinmi?</translation>
 <translation id="6124650939968185064">Bu kengaytma quyidagi kengaytmalar bilan bog‘liq:</translation>
 <translation id="6124698108608891449">Bu saytga yana boshqa ruxsatlar kerak.</translation>
+<translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> ulashgan varaqlar guruhiga qoʻshilish</translation>
 <translation id="6125479973208104919">Afsuski bu <ph name="DEVICE_TYPE" /> qurilmangizga o‘z hisobingizni qayta qo‘shishingiz zarur.</translation>
 <translation id="6125639926370653692">Oy</translation>
 <translation id="6126601353087978360">Fikr-mulohazangizni shu yerga yozing:</translation>
@@ -7857,6 +7858,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6607831829715835317">Qo‘shimcha &amp;asboblar</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> <ph name="DOMAIN" /> tomonidan boshqariladi. Ota-ona nazoratini boshqa Google hisobidan boshqarishni istasangiz, sozlangandan keyin hisobdan chiqing va kirish oynasida “Foydalanuvchini kiritish” bandini tanlang.</translation>
 <translation id="6608166463665411119">eSIM kartani asliga qaytarish</translation>
+<translation id="660846213831377756">Sinchqoncha tugmalari</translation>
 <translation id="6608773371844092260">Barmoq izini sozlash uchun farzandingiz <ph name="DEVICE_TYPE" /> qurilmasining oʻng orqasidagi barmoq izi skaneriga teginishiga ruxsat bering. Farzandingiz barmoq izlari yaxshi himoya ostida va faqat <ph name="DEVICE_TYPE" /> qurilmasida saqlanadi.</translation>
 <translation id="6609478180749378879">Inkognito rejimini tark etganingizdan keyin kirish maʼlumotlari shu qurilmada saqlanadi. Bu saytga keyinchalik shu qurilma orqali yana kira olasiz.</translation>
 <translation id="6610002944194042868">Tarjima parametrlari</translation>
@@ -8662,6 +8664,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7189451821249468368">Bu qurilmani qayd qilish uchun sizdagi DT litsenziyalari yetarli emas. Xarid qilish uchun savdo boʻlimiga murojaat qiling. Bu xabar xato boʻlsa, yordam xizmatiga murojaat qiling.</translation>
 <translation id="7189965711416741966">Barmoq izi qo‘shildi.</translation>
 <translation id="7190883804815364931">Bu varaqqa oid oxirgi xabar</translation>
+<translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> bloklansinmi?</translation>
 <translation id="7191063546666816478">Ayrim tegishli havolalar <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> va yana <ph name="NUMBER_OF_OTHER_APPS" /> ta ilovada ochilaveradi.</translation>
 <translation id="7191159667348037">Notanish printer (USB)</translation>
 <translation id="7191631508323321927">Koridor</translation>

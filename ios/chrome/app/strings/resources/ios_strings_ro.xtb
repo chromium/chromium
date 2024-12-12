@@ -417,6 +417,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="2816489851009559785">Meniu → Setări → Browser prestabilit</translation>
 <translation id="2818821771744632548">Te-ai deconectat de la contul <ph name="USER_NAME" /> în cadrul procesului de resetare a dispozitivului iPhone. Pentru a te conecta din nou, atinge Continuă mai jos.</translation>
 <translation id="2819667972867209401">Când opțiunea este activată, datele se salvează în Contul Google. Când este dezactivată, datele se salvează numai pe acest dispozitiv și se șterg dacă te deconectezi.</translation>
+<translation id="2827760117436553203">Păstrezi datele separat?</translation>
 <translation id="2829172210806130158">Caută pe ecran</translation>
 <translation id="2834399722155632105">3. Atinge Opțiuni pentru parolă</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -1213,6 +1214,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="6476800141292307438">Se traduce această pagină în <ph name="LANGUAGE" />. Sunt disponibile opțiuni în partea de jos a ecranului.</translation>
 <translation id="647867789226964031">Schimbă parolele</translation>
 <translation id="6494931198667773526">Se termină</translation>
+<translation id="6495521251906266731">Alege ce să faci cu datele de navigare existente de pe acest dispozitiv, cum ar fi parolele, istoricul și altele.</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{Anulează urmărirea coletului}few{Anulează urmărirea tuturor coletelor}other{Anulează urmărirea tuturor coletelor}}</translation>
 <translation id="6503077044568424649">Cele mai vizitate</translation>
 <translation id="6503763061813913607">Notificări pentru Verificarea de siguranță</translation>
@@ -1427,6 +1429,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7468373585447318060">Află despre scăderile de prețuri pentru toate produsele pe care le urmărești.</translation>
 <translation id="746872191028309255">Cumpără ceea ce vezi folosind camera foto sau galeria foto.</translation>
 <translation id="7471557245617580330">Creează o nouă filă</translation>
+<translation id="7473891865547856676">Nu, mulțumesc</translation>
 <translation id="747956641630879526">Dacă ascunzi acest card, urmărirea coletelor va fi dezactivată, iar toate datele se vor elimina</translation>
 <translation id="7484645889979462775">Niciodată pentru acest site</translation>
 <translation id="7486006552035434095">Menține dispozitivele sincronizate</translation>

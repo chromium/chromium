@@ -417,6 +417,7 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="2816489851009559785">Menüü → Seaded → Vaikebrauser</translation>
 <translation id="2818821771744632548">Teid logiti iPhone'i lähtestamise raames teie kontolt <ph name="USER_NAME" /> välja. Uuesti sisselogimiseks puudutage allpool nuppu „Jätka”.</translation>
 <translation id="2819667972867209401">Kui see on sees, salvestatakse andmed teie Google'i kontole. Kui see on väljas, salvestatakse andmed ainult sellesse seadmesse ja kustutatakse väljalogimisel.</translation>
+<translation id="2827760117436553203">Kas hoida andmed eraldi?</translation>
 <translation id="2829172210806130158">Ekraanilt otsimine</translation>
 <translation id="2834399722155632105">3. Puudutage valikut Paroolivalikud.</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -1213,6 +1214,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="6476800141292307438">Leht tõlgitakse <ph name="LANGUAGE" /> keelde. Valikud leiate ekraanikuva allosast.</translation>
 <translation id="647867789226964031">Muutke oma paroole</translation>
 <translation id="6494931198667773526">Lõpp</translation>
+<translation id="6495521251906266731">Valige, mida teha selles seadmes olevate sirvimisandmetega, nagu paroolid, ajalugu ja muu.</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{Peata selle saadetise jälgimine}other{Peata kõigi saadetiste jälgimine}}</translation>
 <translation id="6503077044568424649">Populaarsed</translation>
 <translation id="6503763061813913607">Ohutuskontrolli märguanded</translation>
@@ -1427,6 +1429,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7468373585447318060">Olge kursis kõikide teie jälgitavate toodete hinnaalandustega.</translation>
 <translation id="746872191028309255">Ostke, mida näete oma kaameras või fotogaleriis.</translation>
 <translation id="7471557245617580330">Loo uus vaheleht</translation>
+<translation id="7473891865547856676">Tänan, ei</translation>
 <translation id="747956641630879526">Selle kaardi peitmine lülitab saadetise jälgimise välja ja eemaldab kõik teie andmed</translation>
 <translation id="7484645889979462775">Selle saidi puhul mitte kunagi</translation>
 <translation id="7486006552035434095">Hoidke oma seadmed sünkroonituna</translation>

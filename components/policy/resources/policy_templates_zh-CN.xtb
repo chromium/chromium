@@ -265,6 +265,7 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 <translation id="117080706484659953">允许在 <ph name="MAC_OS_NAME" /> 上检测政策范围</translation>
 <translation id="1171106901454883937">启用设备版本信息报告功能</translation>
 <translation id="1173493742686115032">允许在所有网页上使用 <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /></translation>
+<translation id="1176740714945046981">为 IWA 启用降级功能。默认情况下，系统仅会安装较新版本的 IWA。如果设置为 <ph name="TRUE" />，您还可以安装旧版本。如需启用降级功能，必须使用“pinned_version”字段指定所需的版本值。如果“allow_downgrades”未经设置或设为 <ph name="FALSE" />，系统会停用该 IWA 的降级功能。</translation>
 <translation id="1177624681620856105"> 此政策用于控制在出现外部协议启动确认提示时是否显示“始终打开”复选框。
 
       如果您将此政策设为 true 或不设置此政策，当系统显示外部协议确认提示时，用户可选择“始终打开”，以跳过系统未来会在此网站中显示的所有针对该协议的确认提示。
@@ -3204,6 +3205,17 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3387211681524224831">如果此政策已启用，系统将不会保存浏览记录，并且会停用标签页同步功能，用户则无法更改相关设置。
 
       如果此政策已停用或未设置，系统将会保存浏览记录。</translation>
+<translation id="3387875422525138489">设置此政策将指定一系列静默安装的独立式 Web 应用 (IWA)。
+      IWA 拥有普通网页不具备的实用安全属性。IWA 会被打包成经过签名的 Web 软件包。经过签名的 Web 软件包的公钥用于创建可标识 IWA 的 Web 软件包 ID。
+      截至目前，此政策仅适用于受管理的访客会话。
+
+      此政策的每个列表项都是一个对象，包含两个必填字段：更新清单<ph name="URL_LABEL" />和 IWA 的 Web 软件包 ID。
+
+     每个列表项还可以包含以下可选字段：
+
+        * <ph name="UPDATE_CHANNEL_OPTION" />：IWA 发布/更新渠道名称。如果未设置此政策，系统会使用“default”。
+        * <ph name="PINNED_VERSION_OPTION" />：要安装的特定版本。如果指定的更新渠道上有此版本，系统会尝试安装此版本。默认情况下，将 IWA 固定到特定版本后，它将无法更新到该版本之后的版本。若要取消固定，请移除此字段。
+        * <ph name="ALLOW_DOWNGRADES_OPTION" />：支持安装旧版 IWA。这需要设置“pinned_version”字段。如果此政策未经设置或设为 <ph name="FALSE" />，系统会停用该 IWA 的降级功能。</translation>
 <translation id="3387999258705169775">为嵌套的 setTimeout() 函数强制限制值的默认行为。</translation>
 <translation id="3388628790024977864">禁止 <ph name="GOOGLE_DRIVE_NAME" />和 <ph name="GOOGLE_WORKSPACE_NAME" /> 使用<ph name="CLOUD_UPLOAD_NAME" />流程</translation>
 <translation id="3389088527709746815">针对远程访问主机启用 gnubby 身份验证</translation>

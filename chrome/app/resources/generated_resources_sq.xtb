@@ -5107,6 +5107,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4586275095964870617"><ph name="URL" /> nuk mund të hapej në një shfletues alternativ. Kontakto me administratorin e sistemit.</translation>
 <translation id="4587589328781138893">Sajtet</translation>
 <translation id="4588749726511456218">Përshpejtimi i lëvizjes <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905">Me sa duket <ph name="PASSWORD_DOMAIN" /> dhe <ph name="DOMAIN" /> janë të lidhura. Sigurohu që i beson <ph name="DOMAIN" /> përpara se të përdorësh fjalëkalimin tënd.</translation>
 <translation id="4589713469967853491">Evidencat janë shkruar me sukses te direktoria "Shkarkimet".</translation>
 <translation id="4590785647529325123">Për të fshirë historikun e shfletimit në modalitetin "I fshehtë" nga pajisja jote, mbylli të gjitha skedat e fshehta</translation>
 <translation id="459204634473266369">Nuk u ruajt asnjë pajisje te <ph name="PRIMARY_EMAIL" /></translation>
@@ -5612,6 +5613,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4946998421534856407">nisësi + shigjeta lart</translation>
 <translation id="4947376546135294974">Të dhënat nga sajti që po viziton</translation>
 <translation id="4950100687509657457">Krijo një profil</translation>
+<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{një skedar}other{# skedarë}}</translation>
 <translation id="495170559598752135">Veprimet</translation>
 <translation id="4951966678293618079">Mos i ruaj asnjëherë fjalëkalimet për këtë sajt</translation>
@@ -5750,6 +5752,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5061531353537614467">Tundër</translation>
 <translation id="5062930723426326933">Identifikimi dështoi. Lidhu me internetin dhe provo sërish.</translation>
 <translation id="5063480226653192405">Përdorimi</translation>
+<translation id="5064921774605267982">Hap profilin e <ph name="PROFILE_NAME" />. Ky profil menaxhohet nga prindi yt.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Menaxho DNS-në e sigurt te cilësimet e ChromeOS</translation>
 <translation id="5066534201484101197">Lëviz përtej pikës fundore për të naviguar mes faqeve</translation>
@@ -7199,6 +7202,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6122831415929794347">Të çaktivizohet "Shfletimi i sigurt"?</translation>
 <translation id="6124650939968185064">Shtesat vijuese varen nga kjo shtesë:</translation>
 <translation id="6124698108608891449">Ky sajt ka nevojë për më shumë autorizime.</translation>
+<translation id="6125202119952209826">Bashkohu në grupin e skedave me <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">Fatkeqësisht, do të duhet të shtosh përsëri llogarinë tënde në këtë pajisje <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6125639926370653692">Hëna</translation>
 <translation id="6126601353087978360">Shkruaji këtu komentet e tua:</translation>
@@ -7406,6 +7410,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6266984048393265562">Personalizo profilin</translation>
 <translation id="6267166720438879315">Zgjidh një certifikatë për të verifikuar veten te <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Hape me <ph name="APP" /></translation>
+<translation id="6269050081341530851">Kopja më e vjetër e mbajtur kur ti mbyll dublikatat</translation>
 <translation id="6270309713620950855">Shtyrja e vendosjes në heshtje</translation>
 <translation id="6270391203985052864">Sajtet mund të kërkojnë të dërgojnë njoftime</translation>
 <translation id="6270486800167535228">Shtesa është gozhduar. Zgjidh që të shikosh më shumë opsione</translation>
@@ -7848,6 +7853,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6607831829715835317">Vegla të tj&amp;era</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> po menaxhohet tashmë nga <ph name="DOMAIN" />. Për t'i përdorur kontrollet prindërore me një "Llogari tjetër të Google", dil pas konfigurimit dhe më pas zgjidh "Shto një person" në ekranin e identifikimit.</translation>
 <translation id="6608166463665411119">Rivendos kartën eSIM</translation>
+<translation id="660846213831377756">Butonat e miut</translation>
 <translation id="6608773371844092260">Për të konfiguruar gjurmën e gishtit, vëre fëmijën tënd të prekë sensorin e gjurmës së gishtit në anën e djathtë të kësaj pajisjeje <ph name="DEVICE_TYPE" />. Të dhënat e gjurmës së gishtit të fëmijës tënd ruhen në mënyrë të sigurt dhe nuk largohen kurrë nga kjo pajisje <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Të dhënat e identifikimit do të ruhen në këtë pajisje pasi të dalësh nga modaliteti "I fshehtë". Do të mund të identifikohesh në këtë faqe interneti me pajisjen tënde përsëri.</translation>
 <translation id="6610002944194042868">Opsionet e "Përkthe"</translation>
@@ -7947,6 +7953,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6679947539429331601">Fshihe për 12 orë</translation>
 <translation id="6680442031740878064">Në dispozicion: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Shpejtësia</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Placeholder String]</translation>
 <translation id="6683022854667115063">Kufje</translation>
 <translation id="6683087162435654533">R&amp;estauro të gjitha skedat</translation>
 <translation id="6683433919380522900">Leja është "<ph name="PERMISSION_STATE" />"</translation>
@@ -8652,6 +8659,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7189451821249468368">Nuk ke përmirësime të mjaftueshme për të regjistruar këtë pajisje. Kontakto me ekipin e shitjeve për të blerë më shumë. Nëse beson se po e shikon gabimisht këtë mesazh, kontakto me ekipin e mbështetjes.</translation>
 <translation id="7189965711416741966">Gjurma e gishtit u shtua.</translation>
 <translation id="7190883804815364931">Përditësimi i fundit për këtë skedë</translation>
+<translation id="7190921792980745354">Të bllokohet <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Disa lidhje të mbështetura do të vazhdojnë të hapen në <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> dhe <ph name="NUMBER_OF_OTHER_APPS" /> aplikacione të tjera.</translation>
 <translation id="7191159667348037">Printer i panjohur (USB)</translation>
 <translation id="7191631508323321927">Korridor</translation>
@@ -8839,6 +8847,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7330533963640151632">Cilësimet e "<ph name="FEATURE_NAME" />" për pajisjen e <ph name="USER_NAME" />, e cila ndan duke përdorur llogarinë <ph name="USER_EMAIL" />.</translation>
 <translation id="7331646370422660166">alt + shigjeta poshtë</translation>
 <translation id="7332053360324989309">Procesi i posaçëm i punës: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">Skedat dublikatë</translation>
 <translation id="7333388112938984914">Nuk mund të ngarkosh skedarë ndërsa ke një lidhje me matje.</translation>
 <translation id="7333669215417470379">Rezervo dhe restauro aplikacionet dhe cilësimet e tua</translation>
 <translation id="7335974957018254119">Përdor kontrollin drejtshkrimor për</translation>

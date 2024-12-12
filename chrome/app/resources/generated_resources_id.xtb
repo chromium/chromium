@@ -7221,6 +7221,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6122831415929794347">Nonaktifkan Safe Browsing?</translation>
 <translation id="6124650939968185064">Ekstensi berikut bergantung pada ekstensi ini:</translation>
 <translation id="6124698108608891449">Situs ini memerlukan izin lainnya.</translation>
+<translation id="6125202119952209826">Bergabung ke grup tab dengan <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">Sayangnya, Anda harus menambahkan akun ke perangkat <ph name="DEVICE_TYPE" /> ini lagi.</translation>
 <translation id="6125639926370653692">Bulan</translation>
 <translation id="6126601353087978360">Berikan masukan Anda di sini:</translation>
@@ -7871,6 +7872,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6607831829715835317">Fitur &amp;lainnya</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> telah dikelola oleh <ph name="DOMAIN" />. Untuk menggunakan kontrol orang tua dengan Akun Google lain, logout setelah penyiapan selesai, lalu pilih "Tambahkan pengguna" di layar login.</translation>
 <translation id="6608166463665411119">Reset eSIM</translation>
+<translation id="660846213831377756">Tombol mouse</translation>
 <translation id="6608773371844092260">Untuk menyiapkan sidik jari, minta anak Anda menyentuh sensor sidik jari di sisi kanan <ph name="DEVICE_TYPE" /> ini. Data sidik jari anak Anda disimpan dengan aman dan tidak pernah dikirim ke luar <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="6609478180749378879">Data login akan disimpan di perangkat ini setelah Anda keluar dari mode Samaran. Anda dapat login ke situs ini dengan perangkat Anda lagi nanti.</translation>
 <translation id="6610002944194042868">Opsi Terjemahan</translation>
@@ -8677,6 +8679,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7189451821249468368">Anda tidak memiliki cukup upgrade untuk mendaftarkan perangkat ini. Hubungi pihak penjualan untuk membeli yang lainnya. Jika Anda yakin Anda tidak seharusnya mendapatkan pesan ini, hubungi dukungan.</translation>
 <translation id="7189965711416741966">Sidik jari ditambahkan.</translation>
 <translation id="7190883804815364931">Pembaruan Terakhir untuk Tab ini</translation>
+<translation id="7190921792980745354">Blokir <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Beberapa link yang didukung akan tetap dibuka di <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, dan <ph name="NUMBER_OF_OTHER_APPS" /> aplikasi lainnya.</translation>
 <translation id="7191159667348037">Printer Tidak Dikenal (USB)</translation>
 <translation id="7191631508323321927">Lorong</translation>
@@ -9015,7 +9018,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7429415133937917139">Menyimulasikan keluaran penampil braille yang dapat diperbarui di panel ChromeVox pada bagian atas layar.</translation>
 <translation id="7429568074268678162"><ph name="FILENAME" /> mungkin berbahaya. Tambahkan sandi jika Anda ingin Chrome memverifikasinya atau Anda dapat mendownloadnya langsung.</translation>
 <translation id="7431719494109538750">Tidak ditemukan perangkat HID</translation>
-<translation id="7431991332293347422">Kontrol cara histori browsing digunakan untuk mempersonalisasi Penelusuran dan lainnya</translation>
+<translation id="7431991332293347422">Kontrol cara histori penjelajahan digunakan untuk mempersonalisasi Penelusuran dan lainnya</translation>
 <translation id="7432200167665670017">Admin Anda telah memblokir "<ph name="EXTENSION_NAME" />" - ID Aplikasi <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">Pasang kartu smart agar tetap menggunakan <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Simpan</translation>

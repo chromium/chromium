@@ -5122,6 +5122,7 @@
 <translation id="4586275095964870617"><ph name="URL" /> ကို အရန်ဘရောင်ဇာတွင် ဖွင့်၍မရပါ။ သင်၏ စနစ်စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ။</translation>
 <translation id="4587589328781138893">ဝဘ်ဆိုက်များ</translation>
 <translation id="4588749726511456218">လှိမ့်သည့် အရှိန်မြှင့်ခြင်း <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> နှင့် <ph name="DOMAIN" /> တို့ ဆက်စပ်ပုံရသည်။ သင့်စကားဝှက်မသုံးမီ <ph name="DOMAIN" /> ကို ယုံကြည်ကြောင်း သေချာပါစေ။</translation>
 <translation id="4589713469967853491">'ဒေါင်းလုဒ်များ' ဖိုင်လမ်းညွှန်သို့ မှတ်တမ်းများ ရေးထည့်ပြီးပါပြီ။</translation>
 <translation id="4590785647529325123">သင်၏စက်မှ ရုပ်ဖျက် ကြည့်ရှုမှုမှတ်တမ်းကို ဖျက်ရန် ရုပ်ဖျက်တဘ်အားလုံး ပိတ်ပါ</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> တွင် သိမ်းထားသောစက်များ မရှိပါ</translation>
@@ -5628,6 +5629,7 @@
 <translation id="4946998421534856407">Launcher + အပေါ်ညွှန်မြား</translation>
 <translation id="4947376546135294974">သင်ဝင်ကြည့်နေသော ဝဘ်ဆိုက်မှဒေတာ</translation>
 <translation id="4950100687509657457">ပရိုဖိုင် ပြုလုပ်ရန်</translation>
+<translation id="4950360215042327246">[နေရာအစားထိုး အက္ခရာတွဲ]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ဖိုင်တစ်ဖိုင်}other{ဖိုင် # ဖိုင်}}</translation>
 <translation id="495170559598752135">လုပ်ဆောင်ချက်များ</translation>
 <translation id="4951966678293618079">ဤဝဘ်ဆိုက်အတွက် စကားဝှက်များ ဘယ်တော့မှ မသိမ်းပါနှင့်</translation>
@@ -5766,6 +5768,7 @@
 <translation id="5061531353537614467">တန်ဒြာ</translation>
 <translation id="5062930723426326933">လက်မှတ်ထိုး ဝင်မှု မအောင်မြင်ခဲ့ပါ၊ ကျေးဇူးပြုပြီး အင်တာနက်သို့ ဆက်ပြီး ထပ်စမ်းပါ။</translation>
 <translation id="5063480226653192405">အသုံးပြုပုံ</translation>
+<translation id="5064921774605267982"><ph name="PROFILE_NAME" /> ပရိုဖိုင် ဖွင့်ပါ။ ဤပရိုဖိုင်ကို သင့်မိဘက စီမံသည်။</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS ဆက်တင်များတွင် လုံခြုံသည့် DNS ကို စီမံရန်</translation>
 <translation id="5066534201484101197">စာမျက်နှာများအကြား ရွှေ့ကြည့်ရန် အဆုံးအထိလှိမ့်ပါ</translation>
@@ -7215,6 +7218,7 @@
 <translation id="6122831415929794347">'ဘေးကင်းစွာ အသုံးပြုခြင်း' ကို ပိတ်လိုသလား။</translation>
 <translation id="6124650939968185064">အောက်ပါ တိုးချဲ့မှုများသည် ဒီတိုးချဲ့မှု အပေါ်မှာ မူတည်နေ:</translation>
 <translation id="6124698108608891449">ဤဝဘ်ဆိုက်အတွက် နောက်ထပ်ခွင့်ပြုချက်များ လိုအပ်သည်။</translation>
+<translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> နှင့်အတူ တဘ်အုပ်စုတွင် ပါဝင်ခြင်း</translation>
 <translation id="6125479973208104919">ဝမ်းနည်းပါသည်။ သင်၏အကောင့်ကို ဤ <ph name="DEVICE_TYPE" /> သို့ ထပ်မံထည့်သွင်းရပါမည်။</translation>
 <translation id="6125639926370653692">လ</translation>
 <translation id="6126601353087978360">သင့်အကြံပြုချက်ကို ဤနေရာတွင် ထည့်ပါ-</translation>
@@ -7423,6 +7427,7 @@
 <translation id="6266984048393265562">ပရိုဖိုင်ကို စိတ်ကြိုက်လုပ်ရန်</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> သို့သင်ကိုယ်တိုင် စစ်မှန်ကြောင်း သက်သေပြရန် အသိမှတ်ပြုလက်မှတ် ရွေးပါ</translation>
 <translation id="6268252012308737255"><ph name="APP" />ဖြင့် ဖွင့်ရန်</translation>
+<translation id="6269050081341530851">မိတ္တူပွားများကို ပိတ်သောအခါ အဟောင်းဆုံးမိတ္တူကို သိမ်းထားသည်</translation>
 <translation id="6270309713620950855">သတိပေးနှိုးဆော်ချက် အသံပိတ်ရန်</translation>
 <translation id="6270391203985052864">ဝဘ်ဆိုက်များက အကြောင်းကြားချက်များပို့ရန် တောင်းဆိုနိုင်သည်</translation>
 <translation id="6270486800167535228">နောက်ဆက်တွဲကို ပင်ထိုးထားသည်။ နောက်ထပ်နည်းလမ်းများ မြင်ရရန် ရွေးပါ</translation>
@@ -7863,6 +7868,7 @@
 <translation id="6607831829715835317">နောက်ထပ် ကိရိ&amp;ယာများ</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> ကို <ph name="DOMAIN" /> က စီမံနေပါသည်။ မတူညီသော Google Account ဖြင့် မိဘ အထိန်းအချုပ်များကိုသုံးရန် စနစ်ထည့်သွင်းပြီးပါက ထွက်ပါ၊ ထို့နောက် လက်မှတ်ထိုး ဝင်သည့်ဖန်သားပြင်ရှိ "လူထည့်ရန်" ကို ရွေးပါ။</translation>
 <translation id="6608166463665411119">eSIM ပြင်ဆင်သတ်မှတ်ရန်</translation>
+<translation id="660846213831377756">မောက်စ်ကီးများ</translation>
 <translation id="6608773371844092260">လက်ဗွေစနစ်ထည့်သွင်းရန် ဤ <ph name="DEVICE_TYPE" /> ၏ ညာဘက်ရှိ လက်ဗွေအာရုံခံကိရိယာအား သင့်ကလေးကို ထိခိုင်းပါ။ သင့်ကလေး၏လက်ဗွေဒေတာကို ဤ <ph name="DEVICE_TYPE" /> တွင်သာ လုံခြုံစွာ သိမ်းထားသည်။</translation>
 <translation id="6609478180749378879">'ရုပ်ဖျက်မုဒ်' မှထွက်ပြီးသောအခါ လက်မှတ်ထိုးဝင်ခြင်းဆိုင်ရာ ဒေတာကို ဤစက်တွင် သိမ်းထားပါမည်။ ဤဝဘ်ဆိုက်သို့ နောင်တွင် သင့်စက်ဖြင့် ထပ်မံလက်မှတ်ထိုးဝင်နိုင်ပါမည်။</translation>
 <translation id="6610002944194042868">ဘာသာပြန်ရန် ရွေးစရာများ</translation>
@@ -7962,6 +7968,7 @@
 <translation id="6679947539429331601">၁၂ နာရီကြာ ဖျောက်ရန်</translation>
 <translation id="6680442031740878064">ရနိုင်သည့် နေရာလွတ်− <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">အဆင့်သတ်မှတ်ရန်</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [နေရာအစားထိုး အက္ခရာတွဲ]</translation>
 <translation id="6683022854667115063">နားကြပ်</translation>
 <translation id="6683087162435654533">တဘ်အားလုံး ပြန်&amp;ယူရန်</translation>
 <translation id="6683433919380522900">ခွင့်ပြုချက်မှာ <ph name="PERMISSION_STATE" /> ဖြစ်သည်</translation>
@@ -8667,6 +8674,7 @@
 <translation id="7189451821249468368">ဤစက်ကို စာရင်းသွင်းရန် လုံလောက်သည့် အဆင့်မြှင့်တင်မှုများ မရှိပါ။ နောက်ထပ်ဝယ်ယူရန် ရောင်းချသူထံ ဆက်သွယ်ပါ။ ဤမက်ဆေ့ဂျ်ကို မှားယွင်း၍ မြင်ရခြင်းဖြစ်သည်ဟု ယူဆပါက အကူအညီရယူရန် ဆက်သွယ်ပါ။</translation>
 <translation id="7189965711416741966">လက်ဗွေကို ထည့်ပြီးပြီ။</translation>
 <translation id="7190883804815364931">ဤတဘ်သို့ နောက်ဆုံးအပ်ဒိတ်</translation>
+<translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> ကို ပိတ်ထားမလား။</translation>
 <translation id="7191063546666816478">ပံ့ပိုးထားသောလင့်ခ်အချို့ကို <ph name="APP_NAME" />၊ <ph name="APP_NAME_2" />၊ <ph name="APP_NAME_3" /> နှင့် အခြားအက်ပ် <ph name="NUMBER_OF_OTHER_APPS" /> ခုတွင် ဖွင့်နိုင်ပါဦးမည်။</translation>
 <translation id="7191159667348037">အမျိုးအမည်မသိ ပရင်တာ (USB)</translation>
 <translation id="7191631508323321927">စင်္ကြံ</translation>
@@ -8854,6 +8862,7 @@
 <translation id="7330533963640151632"><ph name="USER_EMAIL" /> ဖြင့် မျှဝေသည့်<ph name="USER_NAME" /> ၏ စက်အတွက် <ph name="FEATURE_NAME" /> ဆက်တင်များ။</translation>
 <translation id="7331646370422660166">Alt + အောက်ညွှန်မြား</translation>
 <translation id="7332053360324989309">သီးသန့် ဆောင်ရွက်စနစ်- <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">မိတ္တူပွားတဘ်များ</translation>
 <translation id="7333388112938984914">အခပေးဒေတာ ချိတ်ဆက်မှုသုံးနေစဉ် ဖိုင်အပ်လုဒ်လုပ်၍ မရပါ။</translation>
 <translation id="7333669215417470379">သင့်အက်ပ်နှင့် ဆက်တင်များ အရန်သိမ်းခြင်းနှင့် ပြန်ယူခြင်း</translation>
 <translation id="7335974957018254119">အောက်ပါအတွက် စာလုံးပေါင်းစစ်ဆေးခြင်း အသုံးပြုပါ−</translation>

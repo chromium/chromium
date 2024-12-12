@@ -7205,6 +7205,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6122831415929794347">¿Quieres desactivar la Navegación segura?</translation>
 <translation id="6124650939968185064">Las siguientes extensiones dependen de esta extensión:</translation>
 <translation id="6124698108608891449">Este sitio necesita más permisos.</translation>
+<translation id="6125202119952209826">Únete al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">Lamentablemente, debes volver a agregar tu cuenta a este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6125639926370653692">Luna</translation>
 <translation id="6126601353087978360">Ingresa tus comentarios aquí:</translation>
@@ -7855,6 +7856,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6607831829715835317">Más herramientas</translation>
 <translation id="6607890859198268021"><ph name="DOMAIN" /> ya administra <ph name="USER_EMAIL" />. Para usar los controles parentales con otra Cuenta de Google, sal de tu cuenta después de finalizar la configuración y, luego, selecciona "Agregar persona" en la pantalla de acceso.</translation>
 <translation id="6608166463665411119">Restablecer eSIM</translation>
+<translation id="660846213831377756">Teclas del mouse</translation>
 <translation id="6608773371844092260">Para configurar una huella dactilar, haz que tu hijo toque el sensor de huellas dactilares en el lado derecho del dispositivo <ph name="DEVICE_TYPE" />. Los datos de la huella dactilar de tu hijo se almacenan de forma segura y no salen nunca de este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Los datos de acceso se almacenarán en este dispositivo cuando salgas del modo Incógnito. Más tarde, podrás volver a acceder a este sitio web con tu dispositivo.</translation>
 <translation id="6610002944194042868">Opciones de traducción</translation>
@@ -8661,6 +8663,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7189451821249468368">No tienes suficientes actualizaciones para inscribir este dispositivo; comunícate con el vendedor para adquirir más. Si crees que recibiste este mensaje por error, comunícate con el servicio de asistencia.</translation>
 <translation id="7189965711416741966">Se agregó la huella digital.</translation>
 <translation id="7190883804815364931">Última actualización de esta pestaña</translation>
+<translation id="7190921792980745354">¿Quieres bloquear a <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Algunos vínculos compatibles se seguirán abriendo en <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> y otras <ph name="NUMBER_OF_OTHER_APPS" /> apps.</translation>
 <translation id="7191159667348037">Impresora desconocida (USB)</translation>
 <translation id="7191631508323321927">Pasillo</translation>

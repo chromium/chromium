@@ -5121,6 +5121,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4586275095964870617"><ph name="URL" /> не можа да се отвори в алтернативен браузър. Моля, свържете се със системния си администратор.</translation>
 <translation id="4587589328781138893">Сайтове</translation>
 <translation id="4588749726511456218">Ускоряване на превъртането. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905">Изглежда, че <ph name="PASSWORD_DOMAIN" /> и <ph name="DOMAIN" /> са свързани. Уверете се, че имате доверие на <ph name="DOMAIN" />, преди да използвате паролата си.</translation>
 <translation id="4589713469967853491">Регистрационните файлове бяха записани успешно в директорията „Изтегляния“.</translation>
 <translation id="4590785647529325123">За да изтриете историята на сърфиране в режим „инкогнито“ на устройството си, затворете всички раздели в този режим.</translation>
 <translation id="459204634473266369">Няма запазени устройства в(ъв) <ph name="PRIMARY_EMAIL" /></translation>
@@ -5627,6 +5628,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4946998421534856407">клавиша „стартов панел“ + стрелката за нагоре</translation>
 <translation id="4947376546135294974">Данни от сайта, който посещавате</translation>
 <translation id="4950100687509657457">Създаване на потребителски профил</translation>
+<translation id="4950360215042327246">[Заместващ низ]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{файл}other{# файла}}</translation>
 <translation id="495170559598752135">Действия</translation>
 <translation id="4951966678293618079">Без запазване на паролите за този сайт</translation>
@@ -5765,6 +5767,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5061531353537614467">Тундра</translation>
 <translation id="5062930723426326933">Влизането не бе успешно. Моля, свържете се с интернет и опитайте отново.</translation>
 <translation id="5063480226653192405">Употреба</translation>
+<translation id="5064921774605267982">Отваряне на потребителския профил <ph name="PROFILE_NAME" />. Той се управлява от родителя ви.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Управление на опциите за сигурен DNS в настройките на Chrome OS</translation>
 <translation id="5066534201484101197">Продължаващо превъртане за навигиране между страниците</translation>
@@ -7216,6 +7219,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6122831415929794347">Да се изключи ли „Безопасно сърфиране“?</translation>
 <translation id="6124650939968185064">От това разширение зависят следните разширения:</translation>
 <translation id="6124698108608891449">За този сайт са необходими още разрешения.</translation>
+<translation id="6125202119952209826">Присъединяване към групата раздели с(ъс) <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">За съжаление, трябва отново да добавите профила си към това устройство <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6125639926370653692">Луна</translation>
 <translation id="6126601353087978360">Моля, въведете отзивите си тук:</translation>
@@ -7423,6 +7427,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6266984048393265562">Персонализиране на потребителския профил</translation>
 <translation id="6267166720438879315">Изберете сертификат, за удостоверите самоличността си пред <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Отваряне чрез <ph name="APP" /></translation>
+<translation id="6269050081341530851">Най-старото копие се запазва, когато затворите дубликатите</translation>
 <translation id="6270309713620950855">Спиране на подсещането</translation>
 <translation id="6270391203985052864">Сайтовете могат да извеждат подкани за изпращане на известия</translation>
 <translation id="6270486800167535228">Разширението е фиксирано. Изберете, за да видите още опции</translation>
@@ -7865,6 +7870,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6607831829715835317">Още инструме&amp;нти</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> вече се управлява от <ph name="DOMAIN" />. За да използвате родителски контроли с друг профил в Google, излезте от този след настройването и изберете „Добавяне на човек“ на екрана за вход.</translation>
 <translation id="6608166463665411119">Нулиране на електронната SIM карта</translation>
+<translation id="660846213831377756">Бутони на мишката</translation>
 <translation id="6608773371844092260">За да настрои отпечатък, детето ви трябва да докосне сензора за отпечатъци от дясната страна на устройството <ph name="DEVICE_TYPE" />. Данните за отпечатъка му се съхраняват надеждно и никога не напускат устройството <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Данните за вход в профила ще бъдат съхранени на това устройство, след като излезете от режим „инкогнито“. По-късно ще можете отново да влезете в профила си в този уебсайт от устройството си.</translation>
 <translation id="6610002944194042868">Опции за превод</translation>
@@ -7964,6 +7970,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6679947539429331601">Скриване за 12 часа</translation>
 <translation id="6680442031740878064">Свободно място: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Скорост</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [Заместващ низ]</translation>
 <translation id="6683022854667115063">Слушалки</translation>
 <translation id="6683087162435654533">Възстановяване на всички раздели</translation>
 <translation id="6683433919380522900">Разрешението е „<ph name="PERMISSION_STATE" />“</translation>
@@ -8670,6 +8677,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7189451821249468368">Нямате достатъчно надстройки, за да запишете това устройство. Моля, свържете се с екипа за продажби, за да купите още. Ако смятате, че виждате това съобщение по погрешка, обърнете се към екипа за поддръжка.</translation>
 <translation id="7189965711416741966">Отпечатъкът е добавен.</translation>
 <translation id="7190883804815364931">Последна актуализация на този раздел</translation>
+<translation id="7190921792980745354">Да се блокира ли <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Някои поддържани връзки ще продължат да се отварят в(ъв) <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> и още <ph name="NUMBER_OF_OTHER_APPS" /> приложения.</translation>
 <translation id="7191159667348037">Неизвестен принтер (USB)</translation>
 <translation id="7191631508323321927">Коридор</translation>
@@ -8857,6 +8865,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7330533963640151632">Настройки за функцията „<ph name="FEATURE_NAME" />“ за устройството на <ph name="USER_NAME" />, което споделя чрез профила <ph name="USER_EMAIL" />.</translation>
 <translation id="7331646370422660166">Alt + стрелката за надолу</translation>
 <translation id="7332053360324989309">Специализиран изпълнител: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">Дублирани раздели</translation>
 <translation id="7333388112938984914">Не можете да качвате файлове, докато използвате връзка с отчитане.</translation>
 <translation id="7333669215417470379">Създаване на резервно копие и възстановяване на приложенията и настройките ви</translation>
 <translation id="7335974957018254119">Проверка на правописа за</translation>

@@ -7225,6 +7225,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6122831415929794347">Išjungti saugų naršymą?</translation>
 <translation id="6124650939968185064">Toliau pateikti plėtiniai priklauso nuo šio plėtinio:</translation>
 <translation id="6124698108608891449">Šiai svetainei reikia daugiau leidimų.</translation>
+<translation id="6125202119952209826">Prisijungimas prie skirtukų grupės su <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">Deja, reikės vėl pridėti paskyrą šiame „<ph name="DEVICE_TYPE" />“.</translation>
 <translation id="6125639926370653692">Mėnulis</translation>
 <translation id="6126601353087978360">Atsiliepimą įveskite čia:</translation>
@@ -7881,6 +7882,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6607831829715835317">Daugiau įrank&amp;ių</translation>
 <translation id="6607890859198268021"><ph name="DOMAIN" /> jau valdo <ph name="USER_EMAIL" />. Norėdami naudoti tėvų kontrolę kitoje „Google“ paskyroje, baigę sąranką atsijunkite ir prisijungimo ekrane pasirinkite „Pridėti asmenį“.</translation>
 <translation id="6608166463665411119">Nustatyti „eSIM“ kortelę iš naujo</translation>
+<translation id="660846213831377756">Pelės klavišai</translation>
 <translation id="6608773371844092260">Jei norite nustatyti piršto atspaudą, paprašykite, kad vaikas paliestų piršto atspaudo jutiklį dešinėje šio „<ph name="DEVICE_TYPE" />“ pusėje. Vaiko piršto atspaudo duomenys patikimai saugomi ir niekada nepatenka už „<ph name="DEVICE_TYPE" />“ ribų.</translation>
 <translation id="6609478180749378879">Prisijungimo duomenys bus saugomi šiame įrenginyje, kai išjungsite inkognito režimą. Vėl galėsite prisijungti prie šios svetainės naudodami savo įrenginį vėliau.</translation>
 <translation id="6610002944194042868">Vertimo parinktys</translation>
@@ -8687,6 +8689,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7189451821249468368">Neturite pakankamai licencijų naujovinimų, kad galėtumėte užregistruoti šį įrenginį. Susisiekite su pardavimo atstovu, kad įsigytumėte daugiau. Jei manote, kad šį pranešimą gavote per klaidą, susisiekite su palaikymo komanda.</translation>
 <translation id="7189965711416741966">Piršto antspaudas pridėtas.</translation>
 <translation id="7190883804815364931">Paskutinis šio skirtuko atnaujinimas</translation>
+<translation id="7190921792980745354">Blokuoti <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Kai kurios palaikomos nuorodos vis tiek bus atidarytos „<ph name="APP_NAME" />“, „<ph name="APP_NAME_2" />“, „<ph name="APP_NAME_3" />“ ir dar tiek programų: <ph name="NUMBER_OF_OTHER_APPS" />.</translation>
 <translation id="7191159667348037">Nežinomas spausdintuvas (USB)</translation>
 <translation id="7191631508323321927">Koridorius</translation>

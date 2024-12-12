@@ -417,6 +417,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="2816489851009559785">Izvēlne → Iestatījumi → Noklusējuma pārlūks</translation>
 <translation id="2818821771744632548">Jūs tikāt izrakstīts no konta <ph name="USER_NAME" />, veicot iPhone tālruņa atiestatīšanu. Lai atkal pierakstītos, pieskarieties pie Turpināt.</translation>
 <translation id="2819667972867209401">Ja šis iestatījums ir ieslēgts, dati tiek saglabāti jūsu Google kontā. Ja tas ir izslēgts, dati tiek saglabāti tikai šajā ierīcē un tiek dzēsti, kad izrakstāties.</translation>
+<translation id="2827760117436553203">Vai glabāt datus atsevišķi?</translation>
 <translation id="2829172210806130158">Meklējiet ekrānā.</translation>
 <translation id="2834399722155632105">3. Pieskarieties pogai Paroles iespējas.</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -1213,6 +1214,7 @@ Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbī
 <translation id="6476800141292307438">Lapa tiek tulkota <ph name="LANGUAGE" /> valodā. Pieejamās opcijas redzamas ekrāna apakšdaļā.</translation>
 <translation id="647867789226964031">Paroļu nomaiņa</translation>
 <translation id="6494931198667773526">Beigas</translation>
+<translation id="6495521251906266731">Izvēlieties, kā rīkoties ar šajā ierīcē esošajiem pārlūkošanas datiem, piemēram, parolēm, vēsturi un citiem datiem.</translation>
 <translation id="6502142762807385617">{COUNT,plural, =1{Atcelt šī sūtījuma izsekošanu}zero{Atcelt visu sūtījumu izsekošanu}one{Atcelt visu sūtījumu izsekošanu}other{Atcelt visu sūtījumu izsekošanu}}</translation>
 <translation id="6503077044568424649">Visapmeklētākais</translation>
 <translation id="6503763061813913607">Drošības pārbaudes paziņojumi</translation>
@@ -1427,6 +1429,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7468373585447318060">Sekojiet līdzi cenu kritumam visiem izsekotajiem produktiem.</translation>
 <translation id="746872191028309255">Iepērcieties, izmantojot redzamos objektus vai fotoattēlu galeriju.</translation>
 <translation id="7471557245617580330">Izveidot jaunu cilni</translation>
+<translation id="7473891865547856676">Nē, paldies!</translation>
 <translation id="747956641630879526">Paslēpjot šo kartīti, tiks izslēgta paku izsekošana un noņemti visi jūsu dati</translation>
 <translation id="7484645889979462775">Nekad šai vietnei</translation>
 <translation id="7486006552035434095">Jūsu ierīču sinhonizēšana</translation>

@@ -258,6 +258,7 @@
 <translation id="4147555960264124640">Esteu a punt d'iniciar la sessió amb un compte gestionat i d'atorgar el control del vostre perfil de Google Chrome a l'administrador corresponent. Les vostres dades de Chrome, com ara aplicacions, adreces d'interès, historial, contrasenyes i altres opcions, s'enllaçaran permanentment amb <ph name="USER_NAME" />. Podreu suprimir aquestes dades mitjançant el tauler de control de comptes de Google, però no les podreu associar amb un altre compte. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">S'està instal·lant...</translation>
 <translation id="4149882025268051530">L'instal·lador no ha pogut descomprimir el fitxer. Torna a baixar Google Chrome.</translation>
+<translation id="415112847282352845">Per obtenir les teves adreces i altres dades en tots els dispositius, inicia la sessió a Chrome. Aquesta adreça es desarà al teu Compte de Google després d'iniciar-hi la sessió.</translation>
 <translation id="4153934450158521343">Chrome es tancarà aviat i les dades se suprimiran</translation>
 <translation id="4173512894976930765">És probable que els llocs web funcionin de la manera prevista. Quan tanquis totes les finestres de Chrome, se't tancarà la sessió de la majoria de llocs web, tret del Compte de Google si tens la sessió iniciada a Chrome.</translation>
 <translation id="4175922240926474352">Chrome ha bloquejat aquesta baixada perquè el lloc web no utilitza una connexió segura i és possible que el fitxer s'hagi manipulat</translation>

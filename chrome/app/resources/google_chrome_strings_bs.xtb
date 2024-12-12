@@ -262,7 +262,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="4147555960264124640">Prijavljujete se upravljanim računom i dajete njegovom administratoru kontrolu nad svojim Google Chrome profilom. Vaši podaci iz Chromea, kao što su vaše aplikacije, oznake, historija, lozinke i druge postavke, bit će trajno vezani za korisnika <ph name="USER_NAME" />. Moći ćete izbrisati ove podatke na kontrolnoj tabli Google računa, ali nećete moći povezati ove podatke s drugim računom. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Instaliranje…</translation>
 <translation id="4149882025268051530">Aplikacija za instaliranje nije uspjela dekompresirati arhivu. Ponovo preuzmite Google Chrome.</translation>
-<translation id="415112847282352845">Da biste mogli pristupati svojim adresama i drugim podacima na svim svojim uređajima, prijavite se na Chrome Adresa će se spremiti na vaš Google račun nakon što se prijavite.</translation>
+<translation id="415112847282352845">Da dobijate adrese i druge stavke na svim svojim uređajima, prijavite se u Chrome. Ova adresa će se sačuvati na Google račun nakon što se prijavite.</translation>
 <translation id="4153934450158521343">Chrome će se uskoro zatvoriti i izbrisati podatke</translation>
 <translation id="4173512894976930765">Web lokacije vjerovatno neće funkcionirati kako se očekuje. Kada zatvorite sve prozore Chromea, odjavit ćete se s većine web lokacija, osim s Google računa ako ste prijavljeni u Chrome.</translation>
 <translation id="4175922240926474352">Chrome je blokirao ovo preuzimanje jer web lokacija ne koristi sigurnu vezu i fajl je možda neovlašteno izmijenjen</translation>

@@ -7221,6 +7221,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6122831415929794347">Turn off Safe Browsing?</translation>
 <translation id="6124650939968185064">The following extensions depend on this extension:</translation>
 <translation id="6124698108608891449">This site needs more permissions.</translation>
+<translation id="6125202119952209826">Join tab group with <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">Unfortunately, you'll need to add your account to this <ph name="DEVICE_TYPE" /> again.</translation>
 <translation id="6125639926370653692">Moon</translation>
 <translation id="6126601353087978360">Please enter your feedback here:</translation>
@@ -7871,6 +7872,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6607831829715835317">More too&amp;ls</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> is already being managed by <ph name="DOMAIN" />. To use parental controls with a different Google Account, sign out after setup, then select 'Add person' on the sign-in screen.</translation>
 <translation id="6608166463665411119">Reset eSIM</translation>
+<translation id="660846213831377756">Mouse keys</translation>
 <translation id="6608773371844092260">To set up fingerprint, have your child touch the fingerprint sensor at the right hand side of this <ph name="DEVICE_TYPE" />. Your child's fingerprint data is stored securely and never leaves this <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Sign-in data will be stored on this device after you exit Incognito mode. You'll be able to sign in to this website with your device again later.</translation>
 <translation id="6610002944194042868">Translate Options</translation>
@@ -8677,6 +8679,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7189451821249468368">You do not have enough upgrades to enrol this device. Please contact sales to purchase more. If you believe that you're seeing this message in error, please contact support.</translation>
 <translation id="7189965711416741966">Fingerprint added.</translation>
 <translation id="7190883804815364931">Last update to this tab</translation>
+<translation id="7190921792980745354">Block <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Some supported links will still open in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> and <ph name="NUMBER_OF_OTHER_APPS" /> other apps.</translation>
 <translation id="7191159667348037">Unknown printer (USB)</translation>
 <translation id="7191631508323321927">Hallway</translation>

@@ -7216,6 +7216,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6122831415929794347">Ungependa kuzima kipengele cha Kuvinjari Salama?</translation>
 <translation id="6124650939968185064">Viendelezi vinavyofuata vinategemea kiendelezi hiki:</translation>
 <translation id="6124698108608891449">Tovuti hii inahitaji ruhusa zaidi.</translation>
+<translation id="6125202119952209826">Jiunge na kikundi cha vichupo kilicho na <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">Kwa bahati mbaya, utahitaji kuongeza akaunti yako kwenye kifaa hiki cha <ph name="DEVICE_TYPE" /> tena.</translation>
 <translation id="6125639926370653692">Mwezi</translation>
 <translation id="6126601353087978360">Tafadhali weka maoni yako hapa:</translation>
@@ -7866,6 +7867,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6607831829715835317">Zana zaidi</translation>
 <translation id="6607890859198268021">Tayari <ph name="USER_EMAIL" /> inasimamiwa na <ph name="DOMAIN" />. Ili utumie vidhibiti vya wazazi na Akaunti tofauti ya Google, ondoka katika akaunti baada ya kuweka mipangilio, kisha uchague "Ongeza mtu" kwenye skrini ya kuingia katika akaunti.</translation>
 <translation id="6608166463665411119">Weka upya mipangilio ya eSIM</translation>
+<translation id="660846213831377756">Vitufe vya kipanya</translation>
 <translation id="6608773371844092260">Ili uweke mipangilio ya alama bainifu, weka kidole cha mtoto wako kwenye kitambuzi cha alama ya kidole upande wa kulia wa <ph name="DEVICE_TYPE" /> hii. Data ya alama ya kidole ya mtoto wako inahifadhiwa kwa usalama na itasalia kwenye <ph name="DEVICE_TYPE" /> hii.</translation>
 <translation id="6609478180749378879">Ukifunga Hali fiche, data ya kuingia katika akaunti itahifadhiwa kwenye kifaa hiki. Utaweza kuingia katika akaunti kwenye tovuti hii ukitumia kifaa chako baadaye.</translation>
 <translation id="6610002944194042868">Chaguo za Tafsiri</translation>
@@ -8672,6 +8674,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7189451821249468368">Huna leseni za kutosha kusajili kifaa hiki. Tafadhali wasiliana na huduma ya mauzo ili ununue nyingine. Ikiwa unaamini kuwa unaona ujumbe huu kimakosa, tafadhali wasiliana na kituo cha usaidizi.</translation>
 <translation id="7189965711416741966">Imeongeza alama bainifu.</translation>
 <translation id="7190883804815364931">Sasisho la Mwisho kwenye Kichupo Hiki</translation>
+<translation id="7190921792980745354">Ungependa kumzuia <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Baadhi ya viungo vinavyotumika bado vitafunguka kwenye <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> na programu zingine <ph name="NUMBER_OF_OTHER_APPS" />.</translation>
 <translation id="7191159667348037">Printa Isiyojulikana (USB)</translation>
 <translation id="7191631508323321927">Ushoroba</translation>

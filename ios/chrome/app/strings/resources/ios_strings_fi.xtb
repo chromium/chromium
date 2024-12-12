@@ -12,7 +12,7 @@
 <translation id="1035980983510608210">Jos suljet kaikki välilehdet, myös kiinnitetyt välilehdet suljetaan.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Poista käytöstä</translation>
-<translation id="1041322626941363065">Varoita, jos salasanoja vaarantuu tietosuojaloukkauksessa</translation>
+<translation id="1041322626941363065">Varoitus, jos salasanoja vaarantuu tietosuojaloukkauksessa</translation>
 <translation id="1044891598689252897">Sivustot toimivat normaalisti</translation>
 <translation id="104491362976654916">Offline-sivu</translation>
 <translation id="1049743911850919806">Incognito</translation>
@@ -1429,6 +1429,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7468373585447318060">Seuraa kaikkien seuraamiesi tuotteiden hinnanalennuksia.</translation>
 <translation id="746872191028309255">Tee ostoksia kameran tai kuvagallerian kautta.</translation>
 <translation id="7471557245617580330">Luo uusi välilehti</translation>
+<translation id="7473891865547856676">Ei kiitos</translation>
 <translation id="747956641630879526">Tämän kortin piilottaminen laittaa lähetyksen seurannan pois päältä ja poistaa kaiken datan</translation>
 <translation id="7484645889979462775">Ei koskaan tälle sivustolle</translation>
 <translation id="7486006552035434095">Pidä laitteesi synkronoituina</translation>

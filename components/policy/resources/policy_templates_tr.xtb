@@ -264,6 +264,7 @@ Politika, Etkin değerine ayarlanırsa kullanıcıların, <ph name="CHALLENGE_US
 <translation id="117080706484659953"><ph name="MAC_OS_NAME" /> işletim sisteminde politika kapsamını algılamaya izin ver</translation>
 <translation id="1171106901454883937">Cihaz sürüm bilgisi raporlamasını etkinleştir</translation>
 <translation id="1173493742686115032"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> öğesini tüm web sayfalarında etkinleştir</translation>
+<translation id="1176740714945046981">Yalıtılmış web uygulamaları (IWA'lar) için eski sürüme geçirme özelliğini etkinleştirir. Varsayılan olarak yalnızca IWA'ların yeni sürümleri yüklenir. <ph name="TRUE" /> değerine ayarlandığında eski sürümleri de yükleyebilirsiniz. Eski sürüme geçirmeyi etkinleştirmek için "pinned_version" alanı kullanılarak istenen sürüm değeri belirtilmelidir. "allow_downgrades" belirtilmezse veya <ph name="FALSE" /> değerine ayarlanırsa ilgili IWA için eski sürüme geçirme devre dışı bırakılır.</translation>
 <translation id="1177624681620856105"> Bu politika, harici protokol başlatma onayı istemlerinde "Her zaman aç" onay kutusunun gösterilip gösterilmeyeceğini kontrol eder.
 
       Bu politika True (Doğru) değerine ayarlanırsa veya hiç ayarlanmazsa bir harici protokol onayı gösterildiğinde, kullanıcı ileride bu sitede tüm protokol onay istemlerini atlamak için "Her zaman izin ver"i seçebilir.
@@ -3270,6 +3271,17 @@ Bu politika, Devre Dışı değerine ayarlanırsa fiziksel klavyede tahmine daya
 <translation id="3387211681524224831">Politika, Etkin değerine ayarlanırsa tarama geçmişi kaydedilmez, sekme senkronizasyonu kapalı olur ve kullanıcılar bu ayarı değiştiremez.
 
       Politika, Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa tarama geçmişi kaydedilir.</translation>
+<translation id="3387875422525138489">Politika ayarlanırsa sessiz bir şekilde yüklenen izole web uygulamalarının (IWA) listesi belirtilir.
+      IWA'lar, normal web sayfalarında mevcut olmayan yararlı güvenlik özelliklerine sahip uygulamalardır. Bunlar, imzalanmış Web Bundle'da yer alır. İmzalanmış Web Bundle'ın ortak anahtarı, IWA'yı tanımlayan Web Bundle kimliğini oluşturmak için kullanılır.
+      Bu politika şimdilik yalnızca yönetilen misafir oturumunda geçerlidir.
+
+      Politikanın her liste öğesi, iki zorunlu alan içeren bir nesnedir: <ph name="URL_LABEL" /> güncelleme manifesti ve yalıtılmış web uygulamasının web paketi kimliği.
+
+      Her öğede şu isteğe bağlı alanlar da bulunabilir:
+
+        * <ph name="UPDATE_CHANNEL_OPTION" />: IWA sürüm/güncelleme kanalının adı. Ayarlanmazsa "varsayılan" kullanılır.
+        * <ph name="PINNED_VERSION_OPTION" />:  Yüklenecek sürüm. Sistem, belirtilen güncelleme kanalında varsa bu sürümü yüklemeyi dener. IWA'yı belirli bir sürüme sabitlerseniz bu sürümden sonraki sürümlere güncellenmesi varsayılan olarak engellenir. Sabitlemeyi kaldırmak için bu alanı kaldırın.
+        * <ph name="ALLOW_DOWNGRADES_OPTION" />: IWA'nın eski sürümlerinin yüklenmesini etkinleştirir. Bunun için "pinned_version" alanının ayarlanması gerekir. Belirtilmez veya <ph name="FALSE" /> değerine ayarlanırsa ilgili IWA için eski sürüme geçirme devre dışı bırakılır.</translation>
 <translation id="3387999258705169775">setTimeout() fonksiyonu iç içe yerleştirilmiş zaman aşımı için varsayılan davranış.</translation>
 <translation id="3388628790024977864"><ph name="GOOGLE_DRIVE_NAME" /> ve <ph name="GOOGLE_WORKSPACE_NAME" /> için <ph name="CLOUD_UPLOAD_NAME" /> akışına izin verme</translation>
 <translation id="3389088527709746815">Uzaktan erişim ana makinesi için gnubby kimlik doğrulamayı etkinleştir</translation>
@@ -4172,7 +4184,7 @@ Bu politika:
 
 * Yetişkinlere uygun içerik için siteleri filtreleme seçeneğine ayarlanırsa pornografik siteler filtrelenir.
 
-Politika, hem kullanıcının gittiği URL hem de iframe'ler için geçerlidir. <ph name="URL_ALLOWLIST_POLICY_NAME" /> politikası bu politikaya göre daha önceliklidir ve Google Güvenli Arama API kararlarını geçersiz kılmak için kullanılabilir.</translation>
+Politika, hem kullanıcının gittiği URL hem de iframe'ler için geçerlidir. <ph name="URL_ALLOWLIST_POLICY_NAME" /> politikası bu politikaya göre daha önceliklidir ve Google Safe Search API kararlarını geçersiz kılmak için kullanılabilir.</translation>
 <translation id="4051723201852944592">Pencere Kapamayı Etkinleştir</translation>
 <translation id="4052529125939620019">CryptoToken bileşen uzantısını başlangıçta yükle</translation>
 <translation id="4053157306171963473">Cihaz etkinlik zamanı raporlamasını devre dışı bırak</translation>

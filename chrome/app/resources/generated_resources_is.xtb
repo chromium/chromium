@@ -7222,6 +7222,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6122831415929794347">Viltu slökkva á öruggri vefnotkun?</translation>
 <translation id="6124650939968185064">Eftirfarandi viðbætur reiða sig á þessa viðbót:</translation>
 <translation id="6124698108608891449">Þetta vefsvæði þarf fleiri heimildir.</translation>
+<translation id="6125202119952209826">Taktu þátt í flipahópnum sem <ph name="OWNER_FIRST_NAME" /> er í</translation>
 <translation id="6125479973208104919">Þú mun því miður þurfa að bæta reikningnum þínum aftur við þetta <ph name="DEVICE_TYPE" /> tæki.</translation>
 <translation id="6125639926370653692">Tungl</translation>
 <translation id="6126601353087978360">Sláðu ábendinguna inn hér:</translation>
@@ -7874,6 +7875,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6607831829715835317">F&amp;leiri verkfæri</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> er þegar stjórnað af <ph name="DOMAIN" />. Skráðu þig út eftir uppsetningu og veldu „Bæta notanda við“ á innskráningarskjánum til að nota barnalæsingar á öðrum Google reikningi.</translation>
 <translation id="6608166463665411119">Endurstilla eSIM</translation>
+<translation id="660846213831377756">Músarhnappar</translation>
 <translation id="6608773371844092260">Til að skrá fingrafar skaltu láta barnið snerta fingrafaralesarann hægra megin í <ph name="DEVICE_TYPE" />. Fingrafaragögn barnsins eru í öruggri geymslu og fara aldrei út fyrir þetta <ph name="DEVICE_TYPE" />-tæki.</translation>
 <translation id="6609478180749378879">Innskráningargögn verða geymd í þessu tæki eftir að þú lokar huliðsstillingu. Þú getur skráð þig aftur inn á þetta vefsvæði með tækinu þínu síðar.</translation>
 <translation id="6610002944194042868">Valkostir þýðinga</translation>
@@ -8679,6 +8681,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7189451821249468368">Þú ert ekki með tilskildar uppfærslur til að skrá þetta tæki. Hafðu samband við söludeild til að kaupa uppfærslur. Ef þú telur að þessi villuboð ættu ekki að birtast þér skaltu hafa samband við þjónustudeild.</translation>
 <translation id="7189965711416741966">Fingrafari bætt við.</translation>
 <translation id="7190883804815364931">Síðasta breyting á þessum flipa</translation>
+<translation id="7190921792980745354">Setja <ph name="MEMBER_FULL_NAME" /> á bannlista?</translation>
 <translation id="7191063546666816478">Sumir studdir tenglar munu áfram opnast í <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> og <ph name="NUMBER_OF_OTHER_APPS" /> forritum í viðbót.</translation>
 <translation id="7191159667348037">Óþekktur prentari (USB)</translation>
 <translation id="7191631508323321927">Gangur</translation>

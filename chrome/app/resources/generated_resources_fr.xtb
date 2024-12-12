@@ -5110,6 +5110,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4586275095964870617">Impossible d'ouvrir <ph name="URL" /> dans le navigateur secondaire. Veuillez contacter votre administrateur système.</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4588749726511456218">Accélération du défilement <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> et <ph name="DOMAIN" /> semblent liés. Assurez-vous de pouvoir faire confiance à <ph name="DOMAIN" /> avant d'utiliser votre mot de passe.</translation>
 <translation id="4589713469967853491">Les journaux ont bien été écrits dans le répertoire des téléchargements.</translation>
 <translation id="4590785647529325123">Pour supprimer l'historique de navigation privée de votre appareil, fermez tous les onglets de navigation privée</translation>
 <translation id="459204634473266369">Aucun appareil enregistré sur <ph name="PRIMARY_EMAIL" /></translation>
@@ -5615,6 +5616,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4946998421534856407">Lanceur d'applications+Flèche vers le haut</translation>
 <translation id="4947376546135294974">Données du site que vous consultez</translation>
 <translation id="4950100687509657457">Créer un profil</translation>
+<translation id="4950360215042327246">[Placeholder String]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{un fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="495170559598752135">Actions</translation>
 <translation id="4951966678293618079">Ne jamais enregistrer les mots de passe pour ce site</translation>
@@ -5753,6 +5755,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5061531353537614467">Toundra</translation>
 <translation id="5062930723426326933">Échec de la connexion. Veuillez vous connecter à Internet, puis réessayer.</translation>
 <translation id="5063480226653192405">Utilisation</translation>
+<translation id="5064921774605267982">Ouvrir le profil <ph name="PROFILE_NAME" />. Ce profil est géré par ton parent.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Gérer le DNS sécurisé dans les paramètres Chrome OS</translation>
 <translation id="5066534201484101197">Utiliser le défilement hors limites pour changer de page</translation>
@@ -7203,6 +7206,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6122831415929794347">Désactiver la navigation sécurisée ?</translation>
 <translation id="6124650939968185064">Les extensions suivantes dépendent de cette extension :</translation>
 <translation id="6124698108608891449">Ce site a besoin d'autres autorisations.</translation>
+<translation id="6125202119952209826">Rejoindre le groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">Malheureusement, vous devrez ajouter à nouveau votre compte sur cet appareil <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6125639926370653692">Lune</translation>
 <translation id="6126601353087978360">Veuillez saisir vos commentaires ici :</translation>
@@ -7410,6 +7414,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6266984048393265562">Personnaliser le profil</translation>
 <translation id="6267166720438879315">Sélectionnez un certificat pour vous authentifier sur <ph name="HOST_NAME" />.</translation>
 <translation id="6268252012308737255">Ouvrir avec <ph name="APP" /></translation>
+<translation id="6269050081341530851">La copie la plus ancienne est conservée lorsque vous fermez les doublons</translation>
 <translation id="6270309713620950855">Rappel micro</translation>
 <translation id="6270391203985052864">Les sites peuvent vous demander l'autorisation d'envoyer des notifications</translation>
 <translation id="6270486800167535228">L'extension est épinglée. Sélectionner pour afficher plus d'options</translation>
@@ -7854,6 +7859,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6607831829715835317">Plus d'outi&amp;ls</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> est déjà géré par <ph name="DOMAIN" />. Pour utiliser le contrôle parental avec un autre compte Google, déconnectez-vous une fois la configuration terminée, puis sélectionnez "Ajouter une personne" sur l'écran de connexion.</translation>
 <translation id="6608166463665411119">Réinitialiser l'eSIM</translation>
+<translation id="660846213831377756">Touches pour la souris</translation>
 <translation id="6608773371844092260">Pour configurer l'empreinte de votre enfant, demandez-lui d'appuyer sur le lecteur d'empreinte digitale sur le côté droit de ce <ph name="DEVICE_TYPE" />. Les données liées à son empreinte sont stockées de façon sécurisée et ne quittent jamais ce <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Les données de connexion seront stockées sur l'appareil lorsque vous quitterez le mode navigation privée. Vous pourrez vous reconnecter à ce site Web avec votre appareil plus tard.</translation>
 <translation id="6610002944194042868">Options de traduction</translation>
@@ -7953,6 +7959,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6679947539429331601">Masquer pendant 12 heures</translation>
 <translation id="6680442031740878064">Espace disponible : <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Cadence</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> - [Placeholder String]</translation>
 <translation id="6683022854667115063">Casque audio</translation>
 <translation id="6683087162435654533">R&amp;estaurer tous les onglets</translation>
 <translation id="6683433919380522900">L'autorisation est définie sur : <ph name="PERMISSION_STATE" /></translation>
@@ -8659,6 +8666,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7189451821249468368">Vous n'avez pas suffisamment de licences de mise à niveau pour enregistrer cet appareil. Veuillez contacter le service commercial pour en acheter d'autres. Si vous pensez que ce message s'affiche par erreur, veuillez contacter l'assistance technique.</translation>
 <translation id="7189965711416741966">Empreinte digitale ajoutée.</translation>
 <translation id="7190883804815364931">Dernière modification apportée à cet onglet</translation>
+<translation id="7190921792980745354">Bloquer <ph name="MEMBER_FULL_NAME" /> ?</translation>
 <translation id="7191063546666816478">Certains liens compatibles continueront à s'ouvrir dans <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> et <ph name="NUMBER_OF_OTHER_APPS" /> autres applis.</translation>
 <translation id="7191159667348037">Imprimante inconnue (USB)</translation>
 <translation id="7191631508323321927">Couloir</translation>
@@ -8846,6 +8854,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7330533963640151632">Paramètres de <ph name="FEATURE_NAME" /> pour l'appareil de <ph name="USER_NAME" /> dans le compte <ph name="USER_EMAIL" />.</translation>
 <translation id="7331646370422660166">Alt+Flèche vers le bas</translation>
 <translation id="7332053360324989309">Nœud de calcul dédié : <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">Onglets en double</translation>
 <translation id="7333388112938984914">Impossible d'importer des fichiers lorsque la connexion est limitée.</translation>
 <translation id="7333669215417470379">Sauvegarder et restaurer vos applis et paramètres</translation>
 <translation id="7335974957018254119">Utiliser le correcteur orthographique</translation>
@@ -10293,7 +10302,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8342861492835240085">Sélectionner une collection</translation>
 <translation id="8345848587667658367">Vous pouvez désormais afficher les photos, notifications, applis et contenus multimédias récents de votre téléphone</translation>
 <translation id="8347227221149377169">Tâches d'impression</translation>
-<translation id="8348430946834215779">Utilisez HTTPS autant que possible et recevez un avertissement avant de charger des sites qui ne le prennent pas en charge</translation>
+<translation id="8348430946834215779">Utiliser HTTPS autant que possible et recevoir un avertissement avant de charger des sites qui ne le prennent pas en charge</translation>
 <translation id="8348896480272971199">Vérifiez votre connexion Internet, puis réessayez.</translation>
 <translation id="8349325309815489209">Extensions autorisées sur ce site</translation>
 <translation id="8349826889576450703">lanceur d'applications</translation>

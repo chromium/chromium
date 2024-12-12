@@ -5113,6 +5113,7 @@
 <translation id="4586275095964870617">Не удалось открыть страницу <ph name="URL" /> в альтернативном браузере. Обратитесь к системному администратору.</translation>
 <translation id="4587589328781138893">Сайты</translation>
 <translation id="4588749726511456218">Ускорение прокрутки (<ph name="LINK_BEGIN" />узнать больше<ph name="LINK_END" />)</translation>
+<translation id="4589197033939192905">Похоже, ресурсы <ph name="PASSWORD_DOMAIN" /> и <ph name="DOMAIN" /> связаны. Используйте свой пароль, только если доверяете домену <ph name="DOMAIN" />.</translation>
 <translation id="4589713469967853491">Журналы записаны в каталоге "Скачанные файлы".</translation>
 <translation id="4590785647529325123">Чтобы удалить с устройства историю браузера в режиме инкогнито, закройте все вкладки инкогнито</translation>
 <translation id="459204634473266369">В аккаунте <ph name="PRIMARY_EMAIL" /> нет сохраненных устройств.</translation>
@@ -5618,6 +5619,7 @@
 <translation id="4946998421534856407">Клавиша панели запуска + Стрелка вверх</translation>
 <translation id="4947376546135294974">Данные с сайта, на котором вы находитесь</translation>
 <translation id="4950100687509657457">Создание профиля</translation>
+<translation id="4950360215042327246">[Строка-плейсхолдер]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
 <translation id="495170559598752135">Действия</translation>
 <translation id="4951966678293618079">Никогда не сохранять пароли для этого сайта</translation>
@@ -5756,6 +5758,7 @@
 <translation id="5061531353537614467">Тундра</translation>
 <translation id="5062930723426326933">Вход не выполнен. Подключитесь к Интернету и повторите попытку.</translation>
 <translation id="5063480226653192405">Использование</translation>
+<translation id="5064921774605267982">Открыть профиль "<ph name="PROFILE_NAME" />". Профилем управляет один из родителей.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Управление безопасным DNS-сервером в настройках Chrome OS</translation>
 <translation id="5066534201484101197">Перемещение между страницами при достижении конца прокрутки</translation>
@@ -7206,6 +7209,7 @@
 <translation id="6122831415929794347">Отключить Безопасный просмотр?</translation>
 <translation id="6124650939968185064">От этих расширений зависят следующие:</translation>
 <translation id="6124698108608891449">Для работы этого сайта требуются дополнительные разрешения.</translation>
+<translation id="6125202119952209826">Присоединитесь к группе, в которой состоит <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125479973208104919">Необходимо заново добавить аккаунт на <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6125639926370653692">Луна</translation>
 <translation id="6126601353087978360">Оставьте отзыв в поле ниже.</translation>
@@ -7413,6 +7417,7 @@
 <translation id="6266984048393265562">Настроить профиль</translation>
 <translation id="6267166720438879315">Выберите сертификат для аутентификации на <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Открыть в приложении <ph name="APP" /></translation>
+<translation id="6269050081341530851">Если закрыть одинаковые вкладки, останется самая старая из них.</translation>
 <translation id="6270309713620950855">Напоминать включить микрофон</translation>
 <translation id="6270391203985052864">Сайты могут запрашивать разрешения на отправку уведомлений</translation>
 <translation id="6270486800167535228">Расширение закреплено. Выберите, чтобы увидеть больше вариантов</translation>
@@ -7861,6 +7866,7 @@
 <translation id="6607831829715835317">Дополнительные инстру&amp;менты</translation>
 <translation id="6607890859198268021">Аккаунт <ph name="USER_EMAIL" /> уже находится в домене <ph name="DOMAIN" />. Чтобы использовать родительский контроль в другом аккаунте Google, выйдите после настройки и на экране входа выберите "Добавить пользователя".</translation>
 <translation id="6608166463665411119">Сбросить eSIM</translation>
+<translation id="660846213831377756">Кнопки мыши</translation>
 <translation id="6608773371844092260">Чтобы настроить разблокировку по отпечатку, попросите ребенка приложить палец к сканеру отпечатков на правой боковой части устройства <ph name="DEVICE_TYPE" />. Данные отпечатков пальцев ребенка надежно защищены и хранятся только на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">После выхода из режима инкогнито учетные данные сохранятся на устройстве. Вы сможете снова использовать их на этом сайте в будущем.</translation>
 <translation id="6610002944194042868">Параметры перевода</translation>
@@ -7960,6 +7966,7 @@
 <translation id="6679947539429331601">Скрыть на 12 часов</translation>
 <translation id="6680442031740878064">Доступно: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Скорость речи</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [Строка-плейсхолдер]</translation>
 <translation id="6683022854667115063">Наушники</translation>
 <translation id="6683087162435654533">Восстановить все вкладки</translation>
 <translation id="6683433919380522900">Статус разрешения: "<ph name="PERMISSION_STATE" />"</translation>
@@ -8666,6 +8673,7 @@
 <translation id="7189451821249468368">Недостаточно лицензий для регистрации устройства. Чтобы решить эту проблему, свяжитесь с отделом продаж. Если вы считаете, что произошла ошибка, обратитесь в службу поддержки.</translation>
 <translation id="7189965711416741966">Отпечаток добавлен.</translation>
 <translation id="7190883804815364931">Последнее обновление вкладки</translation>
+<translation id="7190921792980745354">Заблокировать пользователя <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Некоторые поддерживаемые ссылки будут по-прежнему открываться в приложениях "<ph name="APP_NAME" />", "<ph name="APP_NAME_2" />", "<ph name="APP_NAME_3" />" и ещё в нескольких сервисах (<ph name="NUMBER_OF_OTHER_APPS" />).</translation>
 <translation id="7191159667348037">Неизвестный принтер (USB)</translation>
 <translation id="7191631508323321927">Коридор</translation>
@@ -8853,6 +8861,7 @@
 <translation id="7330533963640151632">Настройки функции "<ph name="FEATURE_NAME" />" для устройства пользователя <ph name="USER_NAME" /> с аккаунтом <ph name="USER_EMAIL" />.</translation>
 <translation id="7331646370422660166">Alt + Стрелка вниз</translation>
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">Одинаковые вкладки</translation>
 <translation id="7333388112938984914">Загрузка файлов недоступна, когда используется подключение с тарификацией.</translation>
 <translation id="7333669215417470379">Резервное копирование и восстановление приложений и настроек</translation>
 <translation id="7335974957018254119">Для каких языков применяется проверка правописания</translation>

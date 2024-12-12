@@ -5106,6 +5106,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4586275095964870617"><ph name="URL" /> konnte nicht in einem alternativen Browser geöffnet werden. Bitte setze dich mit dem Systemadministrator in Verbindung.</translation>
 <translation id="4587589328781138893">Websites</translation>
 <translation id="4588749726511456218">Beschleunigtes Scrollen <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
+<translation id="4589197033939192905"><ph name="PASSWORD_DOMAIN" /> und <ph name="DOMAIN" /> scheinen zusammenzuhängen. Du solltest dein Passwort nur dann verwenden, wenn du <ph name="DOMAIN" /> vertraust.</translation>
 <translation id="4589713469967853491">Protokolle erfolgreich in Downloadverzeichnis geschrieben.</translation>
 <translation id="4590785647529325123">Schließe alle Inkognitotabs, um den Inkognito-Browserverlauf vom Gerät zu löschen</translation>
 <translation id="459204634473266369">Keine Geräte in <ph name="PRIMARY_EMAIL" /> gespeichert</translation>
@@ -5611,6 +5612,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4946998421534856407">Launcher-Taste + Aufwärtspfeil</translation>
 <translation id="4947376546135294974">Daten von der Website, die du besuchst</translation>
 <translation id="4950100687509657457">Profil erstellen</translation>
+<translation id="4950360215042327246">[Platzhalterstring]</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{eine Datei}other{# Dateien}}</translation>
 <translation id="495170559598752135">Aktionen</translation>
 <translation id="4951966678293618079">Passwörter für diese Website niemals speichern</translation>
@@ -5749,6 +5751,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5061531353537614467">Tundra</translation>
 <translation id="5062930723426326933">Fehler bei der Anmeldung. Bitte stelle eine Internetverbindung her und versuche es erneut.</translation>
 <translation id="5063480226653192405">Verwendung</translation>
+<translation id="5064921774605267982">Profil „<ph name="PROFILE_NAME" />“ öffnen. Dieses Profil wird von deinen Eltern verwaltet.</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Sicheres DNS in den Chrome OS-Einstellungen verwalten</translation>
 <translation id="5066534201484101197">Zum Wechseln zwischen Seiten Overscroll verwenden</translation>
@@ -7195,6 +7198,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6122831415929794347">Safe Browsing deaktivieren?</translation>
 <translation id="6124650939968185064">Die folgenden Erweiterungen hängen von dieser Erweiterung ab:</translation>
 <translation id="6124698108608891449">Diese Website benötigt weitere Berechtigungen.</translation>
+<translation id="6125202119952209826">Tabgruppe mit <ph name="OWNER_FIRST_NAME" /> beitreten</translation>
 <translation id="6125479973208104919">Du musst dein Konto dem <ph name="DEVICE_TYPE" /> erneut hinzufügen.</translation>
 <translation id="6125639926370653692">Mond</translation>
 <translation id="6126601353087978360">Bitte gib dein Feedback hier ein:</translation>
@@ -7402,6 +7406,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6266984048393265562">Profil anpassen</translation>
 <translation id="6267166720438879315">Wähle ein Zertifikat für die Authentifizierung bei <ph name="HOST_NAME" /> aus.</translation>
 <translation id="6268252012308737255">Öffnen mit <ph name="APP" /></translation>
+<translation id="6269050081341530851">Älteste Kopie wird beim Schließen von Duplikaten beibehalten</translation>
 <translation id="6270309713620950855">Automatische Erinnerung bei Stummschaltung</translation>
 <translation id="6270391203985052864">Websites können fragen, ob du Benachrichtigungen erhalten möchtest</translation>
 <translation id="6270486800167535228">Erweiterung ist angepinnt. Auswählen, um weitere Optionen zu sehen</translation>
@@ -7844,6 +7849,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6607831829715835317">Weitere Too&amp;ls</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> wird schon von <ph name="DOMAIN" /> verwaltet. Wenn du die Jugendschutzeinstellungen auf ein anderes Google-Konto anwenden möchtest, melde dich nach der Einrichtung ab und wähle auf dem Anmeldebildschirm "Person hinzufügen" aus.</translation>
 <translation id="6608166463665411119">eSIM zurücksetzen</translation>
+<translation id="660846213831377756">Tastaturmaus</translation>
 <translation id="6608773371844092260">Bitte dein Kind, seinen Finger auf den Fingerabdrucksensor rechts an diesem <ph name="DEVICE_TYPE" /> zu legen, um den Fingerabdruck einzurichten. Sein Fingerabdruck wird sicher gespeichert und verlässt dieses <ph name="DEVICE_TYPE" /> nie.</translation>
 <translation id="6609478180749378879">Nach dem Verlassen des Inkognitomodus werden Anmeldedaten auf diesem Gerät gespeichert. Du kannst dich später erneut mit deinem Gerät auf dieser Website anmelden.</translation>
 <translation id="6610002944194042868">Übersetzungsoptionen</translation>
@@ -7943,6 +7949,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6679947539429331601">12 Stunden lang ausblenden</translation>
 <translation id="6680442031740878064">Verfügbar: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Geschwindigkeit</translation>
+<translation id="6682261381769522894"><ph name="WINDOW_TITLE" /> – [Platzhalterstring]</translation>
 <translation id="6683022854667115063">Kopfhörer</translation>
 <translation id="6683087162435654533">Alle Tabs wi&amp;ederherstellen</translation>
 <translation id="6683433919380522900">Aktivierte Berechtigung: <ph name="PERMISSION_STATE" /></translation>
@@ -8649,6 +8656,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7189451821249468368">Du hast nicht genügend Upgrades zum Anmelden dieses Geräts. Weitere Upgrades kannst du beim Vertrieb erwerben. Wenn du glaubst, dass du diese Meldung fälschlicherweise erhalten hast, kontaktiere bitte den Support.</translation>
 <translation id="7189965711416741966">Fingerabdruck hinzugefügt.</translation>
 <translation id="7190883804815364931">Letzte Aktualisierung dieses Tabs</translation>
+<translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> blockieren?</translation>
 <translation id="7191063546666816478">Einige unterstützte Links werden weiterhin in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> und <ph name="NUMBER_OF_OTHER_APPS" /> anderen Apps geöffnet.</translation>
 <translation id="7191159667348037">Unbekannter Drucker (USB)</translation>
 <translation id="7191631508323321927">Flur</translation>
@@ -8836,6 +8844,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7330533963640151632"><ph name="FEATURE_NAME" />-Einstellungen für das Gerät von <ph name="USER_NAME" />. Die Freigabe erfolgt unter dem Konto <ph name="USER_EMAIL" />.</translation>
 <translation id="7331646370422660166">Alt + Abwärtspfeil</translation>
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332138995369063163">Tab-Duplikate</translation>
 <translation id="7333388112938984914">Dateien können nicht hochgeladen werden, wenn eine getaktete Verbindung verwendet wird.</translation>
 <translation id="7333669215417470379">Apps und Einstellungen sichern und wiederherstellen</translation>
 <translation id="7335974957018254119">Rechtschreibprüfung verwenden für</translation>
