@@ -19,6 +19,8 @@ optimization_guide::proto::ContentAttributeType ConvertAttributeType(
   switch (type) {
     case blink::mojom::AIPageContentAttributeType::kRoot:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT;
+    case blink::mojom::AIPageContentAttributeType::kContainer:
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER;
     case blink::mojom::AIPageContentAttributeType::kIframe:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME;
     case blink::mojom::AIPageContentAttributeType::kParagraph:

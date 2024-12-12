@@ -58,7 +58,7 @@ TEST_F(AIPageContentAgentTest, Basic) {
       "<body>"
       "  <style>"
       "    div {"
-      "      position: fixed;"
+      "      position: absolute;"
       "      top: -10px;"
       "      left: -20px;"
       "    }"
@@ -103,7 +103,7 @@ TEST_F(AIPageContentAgentTest, Image) {
       "<body>"
       "  <style>"
       "    img {"
-      "      position: fixed;"
+      "      position: absolute;"
       "      top: -10px;"
       "      left: -20px;"
       "      width: 30px;"
@@ -820,6 +820,203 @@ TEST_F(AIPageContentAgentTest, LandmarkSectionsWithAriaRoles) {
             mojom::blink::AIPageContentAttributeType::kFooter);
   ASSERT_EQ(footer.text_info.size(), 1u);
   EXPECT_EQ(footer.text_info[0]->text_content, "Footer");
+}
+
+TEST_F(AIPageContentAgentTest, FixedPosition) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "     <body>"
+      "       <style>"
+      "       .fixed {"
+      "         position: fixed;"
+      "         top: 50px;"
+      "         left: 50px;"
+      "         width: 200px;"
+      "       }"
+      "       .sticky {"
+      "         position: sticky;"
+      "         top: 50px;"
+      "         left: 3000px;"
+      "         width: 200px;"
+      "       }"
+      "       .normal {"
+      "         width: 250px;"
+      "         height: 80px;"
+      "         margin-top: 20px;"
+      "       }"
+      "       </style>"
+      "       <div class='fixed'>"
+      "         This element stays in place when the page is scrolled."
+      "       </div>"
+      "       <div class='sticky'>"
+      "         This element stays in place when the page is scrolled."
+      "       </div>"
+      "       <div class='normal'>"
+      "         This element flows naturally with the document."
+      "       </div>"
+      "     </body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto content = agent->GetAIPageContentSync();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  ASSERT_EQ(root.children_nodes.size(), 2u);
+
+  // The normal element's text is part of the root node's text info.
+  EXPECT_FALSE(root.content_attributes->geometry->is_fixed_or_sticky_position);
+  EXPECT_EQ(
+      root.content_attributes->text_info[0]->text_content.SimplifyWhiteSpace(),
+      "This element flows naturally with the document.");
+
+  const auto& fixed_element = *root.children_nodes[0]->content_attributes;
+  EXPECT_EQ(fixed_element.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kContainer);
+  EXPECT_TRUE(fixed_element.geometry->is_fixed_or_sticky_position);
+  EXPECT_FALSE(fixed_element.geometry->scrolls_overflow_x);
+  EXPECT_FALSE(fixed_element.geometry->scrolls_overflow_y);
+  EXPECT_EQ(fixed_element.text_info[0]->text_content.SimplifyWhiteSpace(),
+            "This element stays in place when the page is scrolled.");
+
+  const auto& sticky_element = *root.children_nodes[1]->content_attributes;
+  EXPECT_EQ(sticky_element.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kContainer);
+  EXPECT_TRUE(sticky_element.geometry->is_fixed_or_sticky_position);
+  EXPECT_FALSE(sticky_element.geometry->scrolls_overflow_x);
+  EXPECT_FALSE(sticky_element.geometry->scrolls_overflow_y);
+  EXPECT_EQ(sticky_element.text_info[0]->text_content.SimplifyWhiteSpace(),
+            "This element stays in place when the page is scrolled.");
+}
+
+TEST_F(AIPageContentAgentTest, ScrollContainer) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "     <body>"
+      "       <style>"
+      "       .scrollable-x {"
+      "         width: 100px;"
+      "         height: 50px;"
+      "         overflow-x: scroll;"
+      "         overflow-y: clip;"
+      "       }"
+      "       .scrollable-y {"
+      "         width: 300px;"
+      "         height: 50px;"
+      "         overflow-x: clip;"
+      "         overflow-y: scroll;"
+      "       }"
+      "       .auto-scroll-x {"
+      "         width: 100px;"
+      "         height: 50px;"
+      "         overflow-x: auto;"
+      "         overflow-y: clip;"
+      "       }"
+      "       .auto-scroll-y {"
+      "         width: 300px;"
+      "         height: 50px;"
+      "         overflow-x: clip;"
+      "         overflow-y: auto;"
+      "       }"
+      "       .normal {"
+      "         width: 250px;"
+      "         height: 80px;"
+      "         margin-top: 20px;"
+      "       }"
+      "       </style>"
+      "       <div class='scrollable-x'>"
+      "ABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVW"
+      "XYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRST"
+      "UVWXYZ"
+      "       </div>"
+      "       <div class='scrollable-y'>"
+      "         Some long text to make it scrollable."
+      "         Some long text to make it scrollable."
+      "         Some long text to make it scrollable."
+      "         Some long text to make it scrollable."
+      "       </div>"
+      "       <div class='auto-scroll-x'>"
+      "ABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVW"
+      "XYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRST"
+      "UVWXYZ"
+      "       </div>"
+      "       <div class='auto-scroll-y'>"
+      "         Some long text to make it scrollable."
+      "         Some long text to make it scrollable."
+      "         Some long text to make it scrollable."
+      "         Some long text to make it scrollable."
+      "       </div>"
+      "     </body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto content = agent->GetAIPageContentSync();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  ASSERT_EQ(root.children_nodes.size(), 4u);
+
+  EXPECT_TRUE(root.content_attributes->geometry->scrolls_overflow_x);
+  EXPECT_TRUE(root.content_attributes->geometry->scrolls_overflow_y);
+
+  const auto& scrollable_x_element =
+      *root.children_nodes[0]->content_attributes;
+  EXPECT_EQ(scrollable_x_element.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kContainer);
+  EXPECT_FALSE(scrollable_x_element.geometry->is_fixed_or_sticky_position);
+  EXPECT_TRUE(scrollable_x_element.geometry->scrolls_overflow_x);
+  EXPECT_FALSE(scrollable_x_element.geometry->scrolls_overflow_y);
+  EXPECT_EQ(
+      scrollable_x_element.text_info[0]->text_content.SimplifyWhiteSpace(),
+      "ABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVW"
+      "XYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRST"
+      "UVWXYZ");
+
+  const auto& scrollable_y_element =
+      *root.children_nodes[1]->content_attributes;
+  EXPECT_EQ(scrollable_y_element.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kContainer);
+  EXPECT_FALSE(scrollable_y_element.geometry->is_fixed_or_sticky_position);
+  EXPECT_FALSE(scrollable_y_element.geometry->scrolls_overflow_x);
+  EXPECT_TRUE(scrollable_y_element.geometry->scrolls_overflow_y);
+  EXPECT_EQ(scrollable_y_element.text_info[0]->text_content.SimplifyWhiteSpace(),
+            "Some long text to make it scrollable. Some long text to make it "
+            "scrollable. Some long text to make it scrollable. Some long text "
+            "to make it scrollable.");
+
+  const auto& auto_scroll_x_element =
+      *root.children_nodes[2]->content_attributes;
+  EXPECT_EQ(auto_scroll_x_element.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kContainer);
+  EXPECT_FALSE(auto_scroll_x_element.geometry->is_fixed_or_sticky_position);
+  EXPECT_TRUE(auto_scroll_x_element.geometry->scrolls_overflow_x);
+  EXPECT_FALSE(auto_scroll_x_element.geometry->scrolls_overflow_y);
+  EXPECT_EQ(
+      auto_scroll_x_element.text_info[0]->text_content.SimplifyWhiteSpace(),
+      "ABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVW"
+      "XYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRST"
+      "UVWXYZ");
+
+  const auto& auto_scroll_y_element =
+      *root.children_nodes[3]->content_attributes;
+  EXPECT_EQ(auto_scroll_y_element.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kContainer);
+  EXPECT_FALSE(auto_scroll_y_element.geometry->is_fixed_or_sticky_position);
+  EXPECT_FALSE(auto_scroll_y_element.geometry->scrolls_overflow_x);
+  EXPECT_TRUE(auto_scroll_y_element.geometry->scrolls_overflow_y);
+  EXPECT_EQ(
+      auto_scroll_y_element.text_info[0]->text_content.SimplifyWhiteSpace(),
+      "Some long text to make it scrollable. Some long text to make it "
+      "scrollable. Some long text to make it scrollable. Some long text "
+      "to make it scrollable.");
 }
 
 }  // namespace

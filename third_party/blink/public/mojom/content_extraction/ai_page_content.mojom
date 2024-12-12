@@ -20,6 +20,7 @@ import "third_party/blink/public/mojom/tokens/tokens.mojom";
 enum AIPageContentAttributeType {
   kRoot,
   kIframe,
+  kContainer,
 
   // Text chunks.
   kParagraph,
@@ -50,6 +51,16 @@ struct AIPageContentGeometry {
 
   // Subset of this node visible on the page. Empty if offscreen.
   gfx.mojom.Rect visible_bounding_box;
+
+  // Whether the content node is fixed or sticky position. This may suggest
+  // that the node is a header, footer, or sidebar.
+  bool is_fixed_or_sticky_position;
+
+  // Whether the content node can scroll in the x direction.
+  bool scrolls_overflow_x;
+
+  // Whether the content node can scroll in the y direction.
+  bool scrolls_overflow_y;
 };
 
 enum AIPageContentTextSize {

@@ -177,6 +177,16 @@ std::optional<mojom::blink::AIPageContentAttributeType> GetAttributeType(
   }
 
   // TODO: Add FormData for attribute_type = FORM.
+
+  // If an object is fixed or sticky position or scrolls, set it as its own
+  // container. Keep container at the bottom of the list as it is the least
+  // specific.
+  if (object.Style()->GetPosition() == EPosition::kFixed ||
+      object.Style()->GetPosition() == EPosition::kSticky ||
+      object.Style()->ScrollsOverflow()) {
+    return mojom::blink::AIPageContentAttributeType::kContainer;
+  }
+
   return std::nullopt;
 }
 
@@ -448,6 +458,12 @@ void AIPageContentAgent::AddNodeGeometry(
   object.MapToVisualRectInAncestorSpace(nullptr, visible_bounding_box,
                                         kVisualRectFlags);
   geometry.visible_bounding_box = ToEnclosingRect(visible_bounding_box);
+
+  geometry.is_fixed_or_sticky_position =
+      object.Style()->GetPosition() == EPosition::kFixed ||
+      object.Style()->GetPosition() == EPosition::kSticky;
+  geometry.scrolls_overflow_x = object.Style()->ScrollsOverflowX();
+  geometry.scrolls_overflow_y = object.Style()->ScrollsOverflowY();
 }
 
 void AIPageContentAgent::ProcessTable(
