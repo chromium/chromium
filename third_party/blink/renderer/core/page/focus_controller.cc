@@ -184,35 +184,83 @@ Element* AdjustNextForCarouselFocusOrder(const Element& current,
   }
   return next;
 }
-// End of carousel helpers.
 
-const Element* MaybeAdjustSearchElementForFocusGroup(const Element& element,
-                                                     bool get_last) {
-  auto* scroll_marker = DynamicTo<ScrollMarkerPseudoElement>(element);
-  if (!scroll_marker) {
-    return &element;
+// All the same as above, but backwards.
+Element* GetPreviousInCarouselOrDomOrder(const Element& current,
+                                         const ContainerNode* stay_within,
+                                         bool& should_continue_search) {
+  should_continue_search = true;
+  // As per https://drafts.csswg.org/css-overflow-5/#focus-order,
+  // we should go to ::scroll-marker-group from active ::scroll-marker.
+  // And we do it here, since ::scroll-marker is not child of
+  // ::scroll-marker-group in DOM tree, but only in layout tree.
+  // Return early here, as we are sure that it should be next element
+  // from PreviousInDomOrder.
+  if (auto* scroll_marker = DynamicTo<ScrollMarkerPseudoElement>(current)) {
+    should_continue_search = false;
+    DCHECK(scroll_marker->ScrollMarkerGroup());
+    return scroll_marker->ScrollMarkerGroup();
   }
-  CHECK(scroll_marker->ScrollMarkerGroup());
-  const auto& scroll_markers =
-      scroll_marker->ScrollMarkerGroup()->ScrollMarkers();
-  return get_last ? scroll_markers.back() : scroll_markers.front();
-}
-
-// https://open-ui.org/components/focusgroup.explainer/#last-focused-memory
-Element* MaybeRestoreFocusedElementForFocusGroup(Element* element) {
-  if (!element) {
+  // If we found a scroller with preceding Carousel pseudos, we should
+  // return the last of them instead, or ::scroll-marker for
+  // ::scroll-marker-group(before) (look at Carousel focus order).
+  if (ElementHasPrecedingCarouselPseudoElement(current)) {
+    // This order is described in
+    // https://drafts.csswg.org/css-overflow-5/#scroll-buttons
+    static std::array<PseudoId, 5> order = {
+        kPseudoIdScrollRightButton, kPseudoIdScrollLeftButton,
+        kPseudoIdScrollDownButton, kPseudoIdScrollUpButton,
+        kPseudoIdScrollMarkerGroupBefore};
+    for (auto pseudo_id : order) {
+      if (Element* pseudo = current.GetPseudoElement(pseudo_id)) {
+        should_continue_search = false;
+        if (Element* scroll_marker =
+                GetSelectedScrollMarkerFromScrollMarkerGroup(*pseudo)) {
+          return scroll_marker;
+        }
+        return pseudo;
+      }
+    }
+  }
+  Element* previous =
+      ElementTraversal::PreviousIncludingPseudo(current, stay_within);
+  if (!previous) {
     return nullptr;
   }
-  auto* scroll_marker = DynamicTo<ScrollMarkerPseudoElement>(element);
-  if (!scroll_marker) {
-    return element;
+  // If we go from preceding Carousel pseudos to scroller, we should skip
+  // scroller.
+  if ((current.IsScrollButtonPseudoElement() ||
+       current.IsScrollMarkerGroupBeforePseudoElement()) &&
+      !previous->IsScrollButtonPseudoElement() &&
+      !previous->IsScrollMarkerGroupBeforePseudoElement()) {
+    return ElementTraversal::PreviousIncludingPseudo(*current.parentElement(),
+                                                     stay_within);
   }
-  CHECK(scroll_marker->ScrollMarkerGroup());
-  if (!scroll_marker->ScrollMarkerGroup()->Selected()) {
+  // If no special case, just find regular previous element.
+  return previous;
+}
+
+Element* AdjustPreviousForCarouselFocusOrder(const Element& current,
+                                             Element* previous) {
+  if (!previous) {
+    return nullptr;
+  }
+  // If we went from non ::scroll-button() to preceding Carousel pseudo,
+  // we should return scroller (look at Carousel focus order).
+  if (!current.IsScrollButtonPseudoElement() &&
+      (previous->IsScrollMarkerGroupBeforePseudoElement() ||
+       previous->IsScrollButtonPseudoElement())) {
+    return previous->parentElement();
+  }
+  // If we found ::scroll-marker-group, we should
+  // return its active ::scroll-marker, if it exists.
+  if (Element* scroll_marker =
+          GetSelectedScrollMarkerFromScrollMarkerGroup(*previous)) {
     return scroll_marker;
   }
-  return scroll_marker->ScrollMarkerGroup()->Selected();
+  return previous;
 }
+// End of carousel helpers.
 
 bool IsOpenPopoverWithInvoker(const Node* node) {
   auto* popover = DynamicTo<HTMLElement>(node);
@@ -442,17 +490,22 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
   const Element* PreviousInDomOrder(const Element& current) {
     Element* previous;
     if (RuntimeEnabledFeatures::PseudoElementsFocusableEnabled()) {
-      const Element* adjusted_current =
-          MaybeAdjustSearchElementForFocusGroup(current, /*get_last=*/false);
-      previous =
-          ElementTraversal::PreviousIncludingPseudo(*adjusted_current, root_);
+      bool should_continue_search = true;
+      previous = GetPreviousInCarouselOrDomOrder(current, root_,
+                                                 should_continue_search);
+      if (!should_continue_search) {
+        return previous;
+      }
       if (previous == root_) {
         return nullptr;
       }
-      while (previous && !IsOwnedByRoot(*previous)) {
+      // We skip every ::scroll-marker we find inside scroller,
+      // since we only want to get to it from ::scroll-marker-group.
+      while (previous && (!IsOwnedByRoot(*previous) ||
+                          previous->IsScrollMarkerPseudoElement())) {
         previous = ElementTraversal::PreviousIncludingPseudo(*previous, root_);
       }
-      previous = MaybeRestoreFocusedElementForFocusGroup(previous);
+      previous = AdjustPreviousForCarouselFocusOrder(current, previous);
     } else {
       previous = ElementTraversal::Previous(current, root_);
       if (previous == root_) {

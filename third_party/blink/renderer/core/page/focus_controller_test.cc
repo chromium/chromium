@@ -387,7 +387,7 @@ TEST_F(FocusControllerTestWithIframes,
                 password, mojom::blink::FocusType::kForward));
 }
 
-TEST_F(FocusControllerTest, FullCarouselFocusOrderForward) {
+TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       .scroller { overflow: hidden; width: 100px; height: 100px; }
@@ -489,6 +489,10 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrderForward) {
     EXPECT_EQ(order[i + 1], GetFocusController().FindFocusableElementAfter(
                                 *order[i], mojom::blink::FocusType::kForward));
   }
+  for (std::size_t i = 0u; i < order.size() - 1; ++i) {
+    EXPECT_EQ(order[i], GetFocusController().FindFocusableElementAfter(
+                            *order[i + 1], mojom::blink::FocusType::kBackward));
+  }
 
   before_second_scroll_marker->Focus();
   GetFocusController().SetActive(true);
@@ -507,7 +511,7 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrderForward) {
                                   mojom::blink::FocusType::kForward));
 }
 
-TEST_F(FocusControllerTest, CarouselWithOnlyButtonsFocusOrderForward) {
+TEST_F(FocusControllerTest, CarouselWithOnlyButtonsFocusOrder) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       .scroller { overflow: hidden; width: 100px; height: 100px; }
@@ -579,6 +583,10 @@ TEST_F(FocusControllerTest, CarouselWithOnlyButtonsFocusOrderForward) {
     EXPECT_EQ(order[i + 1], GetFocusController().FindFocusableElementAfter(
                                 *order[i], mojom::blink::FocusType::kForward));
   }
+  for (std::size_t i = 0u; i < order.size() - 1; ++i) {
+    EXPECT_EQ(order[i], GetFocusController().FindFocusableElementAfter(
+                            *order[i + 1], mojom::blink::FocusType::kBackward));
+  }
 
   before_up_button->Focus();
   GetFocusController().SetActive(true);
@@ -588,7 +596,7 @@ TEST_F(FocusControllerTest, CarouselWithOnlyButtonsFocusOrderForward) {
   EXPECT_EQ(0.5, style->Opacity());
 }
 
-TEST_F(FocusControllerTest, CarouselWithOnlyScrollMarkersFocusOrderForward) {
+TEST_F(FocusControllerTest, CarouselWithOnlyScrollMarkersFocusOrder) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       .scroller { overflow: hidden; width: 100px; height: 100px; }
@@ -655,10 +663,14 @@ TEST_F(FocusControllerTest, CarouselWithOnlyScrollMarkersFocusOrderForward) {
     EXPECT_EQ(order[i + 1], GetFocusController().FindFocusableElementAfter(
                                 *order[i], mojom::blink::FocusType::kForward));
   }
+  for (std::size_t i = 0u; i < order.size() - 1; ++i) {
+    EXPECT_EQ(order[i], GetFocusController().FindFocusableElementAfter(
+                            *order[i + 1], mojom::blink::FocusType::kBackward));
+  }
 }
 
 TEST_F(FocusControllerTest,
-       CarouselWithOnlyScrollMarkersAndChildrenFocusOrderForward) {
+       CarouselWithOnlyScrollMarkersAndChildrenFocusOrder) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       .scroller { overflow: hidden; width: 100px; height: 100px; }
@@ -711,10 +723,13 @@ TEST_F(FocusControllerTest,
     EXPECT_EQ(order[i + 1], GetFocusController().FindFocusableElementAfter(
                                 *order[i], mojom::blink::FocusType::kForward));
   }
+  for (std::size_t i = 0u; i < order.size() - 1; ++i) {
+    EXPECT_EQ(order[i], GetFocusController().FindFocusableElementAfter(
+                            *order[i + 1], mojom::blink::FocusType::kBackward));
+  }
 }
 
-TEST_F(FocusControllerTest,
-       CarouselWithOnlyScrollMarkerGroupFocusOrderForward) {
+TEST_F(FocusControllerTest, CarouselWithOnlyScrollMarkerGroupFocusOrder) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       .scroller { overflow: hidden; width: 100px; height: 100px; }
@@ -749,10 +764,13 @@ TEST_F(FocusControllerTest,
     EXPECT_EQ(order[i + 1], GetFocusController().FindFocusableElementAfter(
                                 *order[i], mojom::blink::FocusType::kForward));
   }
+  for (std::size_t i = 0u; i < order.size() - 1; ++i) {
+    EXPECT_EQ(order[i], GetFocusController().FindFocusableElementAfter(
+                            *order[i + 1], mojom::blink::FocusType::kBackward));
+  }
 }
 
-TEST_F(FocusControllerTest,
-       FullCarouselWithExtraPseudoElementsFocusOrderForward) {
+TEST_F(FocusControllerTest, FullCarouselWithExtraPseudoElementsFocusOrder) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       .scroller { overflow: hidden; width: 100px; height: 100px; }
@@ -854,6 +872,10 @@ TEST_F(FocusControllerTest,
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {
     EXPECT_EQ(order[i + 1], GetFocusController().FindFocusableElementAfter(
                                 *order[i], mojom::blink::FocusType::kForward));
+  }
+  for (std::size_t i = 0u; i < order.size() - 1; ++i) {
+    EXPECT_EQ(order[i], GetFocusController().FindFocusableElementAfter(
+                            *order[i + 1], mojom::blink::FocusType::kBackward));
   }
 }
 
