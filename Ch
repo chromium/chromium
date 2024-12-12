@@ -1,0 +1,10 @@
+String formatLocalizedNumber(double number, unsigned fractionDigits)
+{
+    NumberFormat* formatter = numberFormatter();
+    if (!formatter)
+        return String();
+    UnicodeString result;
+    formatter->setMaximumFractionDigits(clampToInteger(fractionDigits));
+    formatter->setGroupingUsed(FALSE); // added this line to fix the problem
+    formatter->format(number, result);
+    return String(result.getBuffer(), result.length());
