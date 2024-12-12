@@ -593,9 +593,6 @@ bool WebRequestAPI::MayHaveWebsocketProxiesForExtensionTelemetry() const {
              browser_context_) &&
          base::FeatureList::IsEnabled(
              safe_browsing::kExtensionTelemetryReportContactedHosts) &&
-         base::FeatureList::IsEnabled(
-             safe_browsing::
-                 kExtensionTelemetryReportHostsContactedViaWebSocket) &&
          !base::FeatureList::IsEnabled(
              safe_browsing::
                  kExtensionTelemetryInterceptRemoteHostsContactedInRenderer);

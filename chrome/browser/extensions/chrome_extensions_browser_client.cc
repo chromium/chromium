@@ -856,10 +856,7 @@ void ChromeExtensionsBrowserClient::NotifyExtensionRemoteHostContacted(
           safe_browsing::kExtensionTelemetryReportContactedHosts) &&
       url.SchemeIsHTTPOrHTTPS()) {
     protocol = safe_browsing::RemoteHostInfo::HTTP_HTTPS;
-  } else if (base::FeatureList::IsEnabled(
-                 safe_browsing::
-                     kExtensionTelemetryReportHostsContactedViaWebSocket) &&
-             url.SchemeIsWSOrWSS()) {
+  } else if (url.SchemeIsWSOrWSS()) {
     protocol = safe_browsing::RemoteHostInfo::WEBSOCKET;
   } else {
     return;

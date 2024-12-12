@@ -177,10 +177,6 @@ BASE_FEATURE(kExtensionTelemetryReportContactedHosts,
              "SafeBrowsingExtensionTelemetryReportContactedHosts",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kExtensionTelemetryReportHostsContactedViaWebSocket,
-             "SafeBrowsingExtensionTelemetryReportHostsContactedViaWebsocket",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(
     kExtensionTelemetryInterceptRemoteHostsContactedInRenderer,
     "SafeBrowsingExtensionTelmetryInterceptRemoteHostsContactedInRenderer",
@@ -358,7 +354,6 @@ base::Value::List GetFeatureStatusList() {
       &kExtensionTelemetryForEnterprise,
       &kExtensionTelemetryInterceptRemoteHostsContactedInRenderer,
       &kExtensionTelemetryReportContactedHosts,
-      &kExtensionTelemetryReportHostsContactedViaWebSocket,
       &kExtensionTelemetryTabsExecuteScriptSignal,
       &kExternalAppRedirectTelemetry,
       &kHashPrefixRealTimeLookups,

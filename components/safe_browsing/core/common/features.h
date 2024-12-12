@@ -171,9 +171,6 @@ BASE_DECLARE_FEATURE(kExtensionTelemetryTabsExecuteScriptSignal);
 // Enables reporting of remote hosts contacted by extensions in telemetry.
 BASE_DECLARE_FEATURE(kExtensionTelemetryReportContactedHosts);
 
-// Enables reporting of remote hosts contacted by extensions via websockets;
-BASE_DECLARE_FEATURE(kExtensionTelemetryReportHostsContactedViaWebSocket);
-
 // Enables intercepting remote hosts contacted by extensions in renderer
 // throttles.
 BASE_DECLARE_FEATURE(
