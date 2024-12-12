@@ -160,9 +160,6 @@ std::optional<size_t> ViewAccessibility::GetIndexOf(
 }
 
 void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
-  data->AddStringAttribute(ax::mojom::StringAttribute::kClassName,
-                           view_->GetClassName());
-
   if (is_widget_closed_) {
     // Views may misbehave if their widget is closed; set "null-like" attributes
     // rather than possibly crashing.
@@ -880,6 +877,14 @@ void ViewAccessibility::OnTooltipTextChanged(
       RemoveDescription();
     }
   }
+}
+
+void ViewAccessibility::OnViewAddedToWidget() {
+  // Ideally, we would like to set the class name when the object is created,
+  // this would be done in the ctor, but due to inheritance and the
+  // implementation of `GetClassName`, it would not work. As such, we set it
+  // here, since at this point the view object is fully initialized.
+  SetClassName(view_->GetClassName());
 }
 
 void ViewAccessibility::SetPlaceholder(const std::string& placeholder) {

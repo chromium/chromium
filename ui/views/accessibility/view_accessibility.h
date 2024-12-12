@@ -371,6 +371,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void OnTooltipTextChanged(
       std::optional<std::u16string> old_tooltip_text = std::nullopt);
 
+  void OnViewAddedToWidget();
+
   void SetPlaceholder(const std::string& placeholder);
 
   void AddAction(ax::mojom::Action action);

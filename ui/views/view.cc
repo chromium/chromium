@@ -3149,6 +3149,7 @@ void View::PropagateAddNotifications(const ViewHierarchyChangedDetails& details,
   ViewHierarchyChangedImpl(details);
   if (is_added_to_widget) {
     AddedToWidget();
+    GetViewAccessibility().OnViewAddedToWidget();
     observers_.Notify(&ViewObserver::OnViewAddedToWidget, this);
   }
 }
