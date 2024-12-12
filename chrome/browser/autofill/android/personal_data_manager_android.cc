@@ -701,14 +701,13 @@ ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetProfileLabels(
 
   FieldType excluded_field = include_name_in_label ? UNKNOWN_TYPE : NAME_FULL;
 
-  std::vector<std::u16string> labels;
   // TODO(crbug.com/40283168): Replace by `profiles`.
-  AutofillProfile::CreateInferredLabels(
+  std::vector<std::u16string> labels = AutofillProfile::CreateInferredLabels(
       std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>(
           profiles.begin(), profiles.end()),
       address_only ? std::make_optional(suggested_fields) : std::nullopt,
       /*triggering_field_type=*/std::nullopt, {excluded_field},
-      minimal_fields_shown, g_browser_process->GetApplicationLocale(), &labels);
+      minimal_fields_shown, g_browser_process->GetApplicationLocale());
 
   return base::android::ToJavaArrayOfStrings(env, labels);
 }

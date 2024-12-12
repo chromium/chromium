@@ -158,17 +158,16 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
   if (base::FeatureList::IsEnabled(features::kAutofillImprovedLabels) &&
       !features::kAutofillImprovedLabelsParamOnlyWithMainTextChangesParam
            .Get()) {
-    AutofillProfile::CreateInferredLabels(
+    differentiating_labels = AutofillProfile::CreateInferredLabels(
         profile_ptrs, /*suggested_fields=*/std::nullopt, trigger_field_type,
         {trigger_field_type},
         GetNumberOfMinimalFieldsToShow(trigger_field_type), app_locale,
-        &differentiating_labels,
         /*use_improved_labels_order=*/true);
   } else {
-    AutofillProfile::CreateInferredLabels(
+    differentiating_labels = AutofillProfile::CreateInferredLabels(
         profile_ptrs, field_types, /*triggering_field_type=*/std::nullopt,
         {trigger_field_type},
-        /*minimal_fields_shown=*/1, app_locale, &differentiating_labels);
+        /*minimal_fields_shown=*/1, app_locale);
   }
   return differentiating_labels;
 }

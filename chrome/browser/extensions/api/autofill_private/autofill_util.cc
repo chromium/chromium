@@ -190,12 +190,13 @@ AddressEntryList GenerateAddressList(
     const autofill::PersonalDataManager& personal_data) {
   const std::vector<const autofill::AutofillProfile*>& profiles =
       personal_data.address_data_manager().GetProfilesForSettings();
-  std::vector<std::u16string> labels;
   // TODO(crbug.com/40283168): Replace by `profiles`.
-  autofill::AutofillProfile::CreateDifferentiatingLabels(
-      std::vector<raw_ptr<const autofill::AutofillProfile, VectorExperimental>>(
-          profiles.begin(), profiles.end()),
-      ExtensionsBrowserClient::Get()->GetApplicationLocale(), &labels);
+  std::vector<std::u16string> labels =
+      autofill::AutofillProfile::CreateDifferentiatingLabels(
+          std::vector<
+              raw_ptr<const autofill::AutofillProfile, VectorExperimental>>(
+              profiles.begin(), profiles.end()),
+          ExtensionsBrowserClient::Get()->GetApplicationLocale());
   DCHECK_EQ(labels.size(), profiles.size());
 
   AddressEntryList list;

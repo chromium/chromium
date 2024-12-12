@@ -840,21 +840,19 @@ void AutofillProfile::MergeFormGroupTokenQuality(
 }
 
 // static
-void AutofillProfile::CreateDifferentiatingLabels(
+std::vector<std::u16string> AutofillProfile::CreateDifferentiatingLabels(
     const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
         profiles,
-    const std::string& app_locale,
-    std::vector<std::u16string>* labels) {
+    const std::string& app_locale) {
   const size_t kMinimalFieldsShown = 2;
-  CreateInferredLabels(profiles, /*suggested_fields=*/std::nullopt,
-                       /*triggering_field_type=*/std::nullopt,
-                       /*excluded_fields=*/{}, kMinimalFieldsShown, app_locale,
-                       labels);
-  DCHECK_EQ(profiles.size(), labels->size());
+  return CreateInferredLabels(profiles, /*suggested_fields=*/std::nullopt,
+                              /*triggering_field_type=*/std::nullopt,
+                              /*excluded_fields=*/{}, kMinimalFieldsShown,
+                              app_locale);
 }
 
 // static
-void AutofillProfile::CreateInferredLabels(
+std::vector<std::u16string> AutofillProfile::CreateInferredLabels(
     const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
         profiles,
     const std::optional<FieldTypeSet> suggested_fields,
@@ -862,7 +860,6 @@ void AutofillProfile::CreateInferredLabels(
     FieldTypeSet excluded_fields,
     size_t minimal_fields_shown,
     const std::string& app_locale,
-    std::vector<std::u16string>* labels,
     bool use_improved_labels_order) {
   // TODO(crbug.com/380273791): Clean up after launch.
   CHECK(!triggering_field_type ||
@@ -898,13 +895,14 @@ void AutofillProfile::CreateInferredLabels(
     labels_to_profiles[{main_text, label}].push_back(i);
   }
 
-  labels->resize(profiles.size());
+  std::vector<std::u16string> labels;
+  labels.resize(profiles.size());
   for (auto& it : labels_to_profiles) {
     if (it.second.size() == 1) {
       // This label is unique, so use it without any further ado.
       std::u16string label = it.first.second;
       size_t profile_index = it.second.front();
-      (*labels)[profile_index] = label;
+      labels[profile_index] = label;
     } else {
       // We have more than one profile with the same label, so add
       // differentiating fields.
@@ -912,6 +910,7 @@ void AutofillProfile::CreateInferredLabels(
                                  minimal_fields_shown, app_locale, labels);
     }
   }
+  return labels;
 }
 
 std::u16string AutofillProfile::ConstructInferredLabel(
@@ -1057,7 +1056,7 @@ void AutofillProfile::CreateInferredLabelsHelper(
     const std::vector<FieldType>& field_types,
     size_t num_fields_to_include,
     const std::string& app_locale,
-    std::vector<std::u16string>* labels) {
+    std::vector<std::u16string>& labels) {
   // For efficiency, we first construct a map of fields to their text values and
   // each value's frequency.
   std::map<FieldType, std::map<std::u16string, size_t>>
@@ -1118,7 +1117,7 @@ void AutofillProfile::CreateInferredLabelsHelper(
         break;
     }
 
-    (*labels)[it] = profile->ConstructInferredLabel(
+    labels[it] = profile->ConstructInferredLabel(
         label_fields, label_fields.size(), app_locale);
   }
 }

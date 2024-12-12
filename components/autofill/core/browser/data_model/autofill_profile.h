@@ -213,11 +213,10 @@ class AutofillProfile : public AutofillDataModel {
   // 3. E-mail.
   // 4. Phone.
   // 5. Company name.
-  static void CreateDifferentiatingLabels(
+  static std::vector<std::u16string> CreateDifferentiatingLabels(
       const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
           profiles,
-      const std::string& app_locale,
-      std::vector<std::u16string>* labels);
+      const std::string& app_locale);
 
   // Creates inferred labels for `profiles`, according to the rules above and
   // stores them in `labels`. The inferred labels both provide a way to
@@ -236,7 +235,7 @@ class AutofillProfile : public AutofillDataModel {
   // `minimal_fields_shown` fields, if possible.
   // TODO(crbug.com/380273791): Possibly make `suggested_fields` non-optional
   // after launch.
-  static void CreateInferredLabels(
+  static std::vector<std::u16string> CreateInferredLabels(
       const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
           profiles,
       const std::optional<FieldTypeSet> suggested_fields,
@@ -244,7 +243,6 @@ class AutofillProfile : public AutofillDataModel {
       FieldTypeSet excluded_fields,
       size_t minimal_fields_shown,
       const std::string& app_locale,
-      std::vector<std::u16string>* labels,
       bool use_improved_labels_order = false);
 
   // Builds inferred label from the first |num_fields_to_include| non-empty
@@ -368,7 +366,7 @@ class AutofillProfile : public AutofillDataModel {
       const std::vector<FieldType>& field_types,
       size_t num_fields_to_include,
       const std::string& app_locale,
-      std::vector<std::u16string>* labels);
+      std::vector<std::u16string>& labels);
 
   // Utilities for listing and lookup of the data members that constitute
   // user-visible profile information.
