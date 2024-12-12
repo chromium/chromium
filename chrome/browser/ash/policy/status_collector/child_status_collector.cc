@@ -31,6 +31,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "chrome/browser/ash/child_accounts/child_user_service.h"
+#include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
+#include "chrome/browser/ash/child_accounts/time_limits/app_activity_report_interface.h"
 #include "chrome/browser/ash/policy/status_collector/child_activity_storage.h"
 #include "chrome/browser/ash/policy/status_collector/status_collector_state.h"
 #include "chrome/browser/browser_process.h"
@@ -211,7 +214,7 @@ void ChildStatusCollector::OnAppActivityReportSubmitted() {
   DCHECK(last_report_params_);
   if (last_report_params_->anything_reported) {
     ash::app_time::AppActivityReportInterface* app_activity_reporting =
-        ash::app_time::AppActivityReportInterface::Get(profile_);
+        ash::ChildUserServiceFactory::GetForBrowserContext(profile_);
     DCHECK(app_activity_reporting);
     app_activity_reporting->AppActivityReportSubmitted(
         last_report_params_->generation_time);
@@ -290,7 +293,7 @@ bool ChildStatusCollector::GetActivityTimes(
 bool ChildStatusCollector::GetAppActivity(
     em::ChildStatusReportRequest* status) {
   ash::app_time::AppActivityReportInterface* app_activity_reporting =
-      ash::app_time::AppActivityReportInterface::Get(profile_);
+      ash::ChildUserServiceFactory::GetForBrowserContext(profile_);
   DCHECK(app_activity_reporting);
 
   last_report_params_ =
