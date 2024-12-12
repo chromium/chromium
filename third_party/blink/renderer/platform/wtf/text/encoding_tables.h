@@ -30,6 +30,7 @@
 #include <array>
 #include <iterator>
 #include <optional>
+#include <type_traits>
 #include <utility>
 
 #include "base/dcheck_is_on.h"
