@@ -79,6 +79,31 @@ class PLATFORM_EXPORT IDLMemberInstaller final {
                                 v8::Local<v8::Signature> signature,
                                 base::span<const AttributeConfig> configs);
 
+  struct NoAllocDirectCallAttributeConfig {
+    NoAllocDirectCallAttributeConfig& operator=(
+        const NoAllocDirectCallAttributeConfig&) = delete;
+
+    AttributeConfig attribute_config;
+    raw_ptr<const v8::CFunction> v8_cfunction_for_set;
+  };
+
+  static void InstallAttributes(
+      v8::Isolate* isolate,
+      const DOMWrapperWorld& world,
+      v8::Local<v8::Template> instance_template,
+      v8::Local<v8::Template> prototype_template,
+      v8::Local<v8::Template> interface_template,
+      v8::Local<v8::Signature> signature,
+      base::span<const NoAllocDirectCallAttributeConfig> configs);
+  static void InstallAttributes(
+      v8::Isolate* isolate,
+      const DOMWrapperWorld& world,
+      v8::Local<v8::Object> instance_object,
+      v8::Local<v8::Object> prototype_object,
+      v8::Local<v8::Object> interface_object,
+      v8::Local<v8::Signature> signature,
+      base::span<const NoAllocDirectCallAttributeConfig> configs);
+
   // Web IDL constant
   struct ConstantCallbackConfig {
     ConstantCallbackConfig& operator=(const ConstantCallbackConfig&) = delete;

@@ -333,6 +333,10 @@ interface Internals {
     UnionTypesTest unionTypesTest();
     InternalsUkmRecorder initializeUKMRecorder();
     CallbackFunctionTest callbackFunctionTest();
+    // Creates and returns an `NADCAttributeTest` object, which provides test
+    // functions to test attributes with the IDL extended attributei
+    // `NoAllocDirectCall`.
+    NADCAttributeTest nadcAttributeTest();
 
     DOMString selectedHTMLForClipboard();
     DOMString selectedTextForClipboard();

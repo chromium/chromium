@@ -609,6 +609,17 @@
     "args": ["--js-flags=--wasm-tiering-budget=100 --allow-natives-syntax"],
     "expires": "Jul 1, 2025"
   },
+  "The fast api bindings test requires access to V8 internals, so only the",
+  "virtual test should be run.",
+  {
+    "prefix": "fast-api",
+    "owners": ["ahaas@chromium.org", "caseq@chromium.org", "mlippautz@chromium.org"],
+    "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
+    "bases": ["bindings/fast-api-attributes.html"],
+    "exclusive_tests": "ALL",
+    "args": ["--js-flags=--allow_natives_syntax"],
+    "expires": "Dec 30, 2026"
+  },
 
   "==== Tests incompatible with the default WPT Origin Isolation start here ==VV",
   "The section below lists web tests that are incompatible with the WPT Origin",

@@ -106,7 +106,7 @@ interface mixin BaseRenderingContext2D {
 
     // FIXME: factor out to CanvasDrawingStyles
     // line caps/joins
-    attribute unrestricted double lineWidth; // (default 1)
+    [NoAllocDirectCall=Setter] attribute unrestricted double lineWidth; // (default 1)
     attribute DOMString lineCap; // "butt", "round", "square" (default "butt")
     attribute DOMString lineJoin; // "round", "bevel", "miter" (default "miter")
     attribute unrestricted double miterLimit; // (default 10)
