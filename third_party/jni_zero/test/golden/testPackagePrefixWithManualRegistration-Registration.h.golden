@@ -121,97 +121,75 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1J
 namespace {
 
 bool RegisterNative_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI(JNIEnv* env) {
-  static const JNINativeMethod kMethods[] = {{
-        "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_bar",
-        "(Ljava/lang/Object;)Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1bar)
-    }, {
-        "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_foo",
-        "()V",
-        reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1foo)
-    }, {
-        "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_hasPhalange",
-        "()Z",
-        reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1hasPhalange)
-    }, {
-        "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnClass",
-        "()Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnClass)
-    }, {
-        "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnClasses",
-        "()Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnClasses)
-    }, {
-        "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedAppObjects",
-        "(Ljava/lang/Object;)Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedAppObjects)
-    }, {
-        "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedInts",
-        "()Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedInts)
-    }, {
-        "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString",
-        "()Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedString)
-    }, {
-        "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedStrings",
-        "()Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedStrings)
-    }, {
-        "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnObject",
-        "()Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnObject)
-    }, {
-        "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnObjects",
-        "()Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnObjects)
-    }, {
-        "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnString",
-        "()Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnString)
-    }, {
-        "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnStrings",
-        "()Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnStrings)
-    }, {
-        "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnStruct",
-        "()Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnStruct)
-    }, {
-        "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnStructs",
-        "()Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnStructs)
-    }, {
-        "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnThrowable",
-        "()Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnThrowable)
-    }, {
-        "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnThrowables",
-        "()Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnThrowables)
-    }, {
-        "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_revString",
-        "(Ljava/lang/Object;)Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1revString)
-    }, {
-        "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_sendSamplesToNative",
-        "(Ljava/lang/Object;)Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1sendSamplesToNative)
-    }, {
-        "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_sendToNative",
-        "(Ljava/lang/Object;)Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1sendToNative)
-    }, {
-        "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives",
-        "(ILjava/lang/Object;JLjava/lang/Object;SLjava/lang/Object;CLjava/lang/Object;BLjava/lang/Object;DLjava/lang/Object;FLjava/lang/Object;ZLjava/lang/Object;)Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1testAllPrimitives)
-    }, {
-        "this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes",
-        "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V",
-        reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1testSpecialTypes)
-    },
-};
+  static const JNINativeMethod kMethods[] = {
+        {"this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_bar",
+         "(Ljava/lang/Object;)Ljava/lang/Object;",
+         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1bar)},
+         {"this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_foo",
+         "()V",
+         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1foo)},
+         {"this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_hasPhalange",
+         "()Z",
+         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1hasPhalange)},
+         {"this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnClass",
+         "()Ljava/lang/Object;",
+         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnClass)},
+         {"this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnClasses",
+         "()Ljava/lang/Object;",
+         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnClasses)},
+         {"this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedAppObjects",
+         "(Ljava/lang/Object;)Ljava/lang/Object;",
+         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedAppObjects)},
+         {"this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedInts",
+         "()Ljava/lang/Object;",
+         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedInts)},
+         {"this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString",
+         "()Ljava/lang/Object;",
+         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedString)},
+         {"this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedStrings",
+         "()Ljava/lang/Object;",
+         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedStrings)},
+         {"this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnObject",
+         "()Ljava/lang/Object;",
+         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnObject)},
+         {"this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnObjects",
+         "()Ljava/lang/Object;",
+         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnObjects)},
+         {"this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnString",
+         "()Ljava/lang/Object;",
+         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnString)},
+         {"this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnStrings",
+         "()Ljava/lang/Object;",
+         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnStrings)},
+         {"this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnStruct",
+         "()Ljava/lang/Object;",
+         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnStruct)},
+         {"this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnStructs",
+         "()Ljava/lang/Object;",
+         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnStructs)},
+         {"this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnThrowable",
+         "()Ljava/lang/Object;",
+         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnThrowable)},
+         {"this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnThrowables",
+         "()Ljava/lang/Object;",
+         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1returnThrowables)},
+         {"this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_revString",
+         "(Ljava/lang/Object;)Ljava/lang/Object;",
+         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1revString)},
+         {"this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_sendSamplesToNative",
+         "(Ljava/lang/Object;)Ljava/lang/Object;",
+         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1sendSamplesToNative)},
+         {"this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_sendToNative",
+         "(Ljava/lang/Object;)Ljava/lang/Object;",
+         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1sendToNative)},
+         {"this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives",
+         "(ILjava/lang/Object;JLjava/lang/Object;SLjava/lang/Object;CLjava/lang/Object;BLjava/lang/Object;DLjava/lang/Object;FLjava/lang/Object;ZLjava/lang/Object;)Ljava/lang/Object;",
+         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1testAllPrimitives)},
+         {"this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes",
+         "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V",
+         reinterpret_cast<void*>(Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1SampleForAnnotationProcessor_1testSpecialTypes)},
 
+  };
   jni_zero::ScopedJavaLocalRef<jclass> native_clazz =
       jni_zero::GetClass(env, "this/is/a/package/prefix/org/jni_zero/GEN_JNI");
   if (env->RegisterNatives(native_clazz.obj(), kMethods, std::size(kMethods)) < 0) {

@@ -21,17 +21,15 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_J_module_1N_MqDgXQiH(JNIEnv* env, jclass jcal
 namespace {
 
 bool RegisterNative_J_module_1N(JNIEnv* env) {
-  static const JNINativeMethod kMethods[] = {{
-        "MejItBT4",
-        "(Z)Z",
-        reinterpret_cast<void*>(Java_J_module_1N_MejItBT4)
-    }, {
-        "MqDgXQiH",
-        "()V",
-        reinterpret_cast<void*>(Java_J_module_1N_MqDgXQiH)
-    },
-};
+  static const JNINativeMethod kMethods[] = {
+        {"MejItBT4",
+         "(Z)Z",
+         reinterpret_cast<void*>(Java_J_module_1N_MejItBT4)},
+         {"MqDgXQiH",
+         "()V",
+         reinterpret_cast<void*>(Java_J_module_1N_MqDgXQiH)},
 
+  };
   jni_zero::ScopedJavaLocalRef<jclass> native_clazz =
       jni_zero::GetClass(env, "J/module_N");
   if (env->RegisterNatives(native_clazz.obj(), kMethods, std::size(kMethods)) < 0) {

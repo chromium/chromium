@@ -32,17 +32,15 @@ JNI_ZERO_BOUNDARY_EXPORT jboolean Java_J_module_1N__1Z_1Z(
 namespace {
 
 bool RegisterNative_J_module_1N(JNIEnv* env) {
-  static const JNINativeMethod kMethods[] = {{
-        "_V",
-        "(I)V",
-        reinterpret_cast<void*>(Java_J_module_1N__1V)
-    }, {
-        "_Z_Z",
-        "(IZ)Z",
-        reinterpret_cast<void*>(Java_J_module_1N__1Z_1Z)
-    },
-};
+  static const JNINativeMethod kMethods[] = {
+        {"_V",
+         "()V",
+         reinterpret_cast<void*>(Java_J_module_1N__1V)},
+         {"_Z_Z",
+         "(Z)Z",
+         reinterpret_cast<void*>(Java_J_module_1N__1Z_1Z)},
 
+  };
   jni_zero::ScopedJavaLocalRef<jclass> native_clazz =
       jni_zero::GetClass(env, "J/module_N");
   if (env->RegisterNatives(native_clazz.obj(), kMethods, std::size(kMethods)) < 0) {
