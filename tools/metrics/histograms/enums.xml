@@ -10934,6 +10934,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5218"
       label="CSSEnvironmentVariable_SafeAreaInsetBottom_FastPath"/>
   <int value="5219" label="SrcSetUsedHigherDensityImageFromCache"/>
+  <int value="5220" label="HTMLElementWritingSuggestions"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -34192,6 +34193,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="259" label="Closewatcher"/>
   <int value="260" label="ReferrerPolicy"/>
   <int value="261" label="UrlCanparse"/>
+  <int value="262" label="WritingSuggestions"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

@@ -291,6 +291,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kReferrerPolicyHeader, WebDXFeature::kReferrerPolicy},
           {WebFeature::kHTMLAnchorElementReferrerPolicyAttribute,
            WebDXFeature::kReferrerPolicy},
+          {WebFeature::kHTMLElementWritingSuggestions,
+           WebDXFeature::kWritingSuggestions},
           {WebFeature::kHTMLIFrameElementReferrerPolicyAttribute,
            WebDXFeature::kReferrerPolicy},
           {WebFeature::kHTMLImageElementReferrerPolicyAttribute,

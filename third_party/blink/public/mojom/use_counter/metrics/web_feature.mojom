@@ -4603,6 +4603,7 @@ enum WebFeature {
   kNonNoneTouchActionWouldLoseEditableHandwriting = 5217,
   kCSSEnvironmentVariable_SafeAreaInsetBottom_FastPath = 5218,
   kSrcSetUsedHigherDensityImageFromCache = 5219,
+  kHTMLElementWritingSuggestions = 5220,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

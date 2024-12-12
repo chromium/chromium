@@ -317,6 +317,7 @@ enum WebDXFeature {
   kClosewatcher = 259,
   kReferrerPolicy = 260,
   kUrlCanparse = 261,
+  kWritingSuggestions = 262,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
