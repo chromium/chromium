@@ -349,13 +349,11 @@ def _OnStaleMd5(changes, options, javac_cmd, javac_args, java_files, kt_files):
   logging.info('Starting _OnStaleMd5')
 
   # Use the build server for errorprone runs.
-  if (options.enable_errorprone and not options.skip_build_server
-      and server_utils.MaybeRunCommand(
-          name=options.target_name,
-          argv=sys.argv,
-          stamp_file=options.jar_path,
-          force=options.use_build_server,
-          experimental=options.experimental_build_server)):
+  if (options.enable_errorprone and not options.skip_build_server and
+      server_utils.MaybeRunCommand(name=options.target_name,
+                                   argv=sys.argv,
+                                   stamp_file=options.jar_path,
+                                   use_build_server=options.use_build_server)):
     logging.info('Using build server')
     return
 
@@ -591,9 +589,6 @@ def _ParseOptions(argv):
   parser.add_option('--use-build-server',
                     action='store_true',
                     help='Always use the build server.')
-  parser.add_option('--experimental-build-server',
-                    action='store_true',
-                    help='Use experimental build server features.')
   parser.add_option('--java-srcjars',
                     action='append',
                     default=[],

@@ -32,7 +32,7 @@ SERVER_SCRIPT = pathlib.Path(
 ) / 'build' / 'android' / 'fast_local_dev_server.py'
 
 
-def MaybeRunCommand(name, argv, stamp_file, force, experimental=False):
+def MaybeRunCommand(name, argv, stamp_file, use_build_server=False):
   """Returns True if the command was successfully sent to the build server."""
 
   if platform.system() == "Darwin":
@@ -46,12 +46,11 @@ def MaybeRunCommand(name, argv, stamp_file, force, experimental=False):
   if BUILD_SERVER_ENV_VARIABLE in os.environ:
     return False
 
+  if not use_build_server:
+    return False
+
   autoninja_tty = os.environ.get('AUTONINJA_STDOUT_NAME')
   autoninja_build_id = os.environ.get('AUTONINJA_BUILD_ID')
-  if experimental and not autoninja_tty:
-    raise RuntimeError('experimental_build_server=true is set but autoninja '
-                       'is not patched. Please make sure you are using a '
-                       'patched autoninja script.')
 
   with contextlib.closing(socket.socket(socket.AF_UNIX)) as sock:
     try:
@@ -60,13 +59,9 @@ def MaybeRunCommand(name, argv, stamp_file, force, experimental=False):
       # [Errno 111] Connection refused. Either the server has not been started
       #             or the server is not currently accepting new connections.
       if e.errno == 111:
-        if force:
-          raise RuntimeError(
-              '\n\nBuild server is not running and '
-              'android_static_analysis="build_server" is set.\nPlease run '
-              'this command in a separate terminal:\n\n'
-              '$ build/android/fast_local_dev_server.py\n\n') from None
-        return False
+        raise RuntimeError(
+            '\n\nBuild server is not running and '
+            'android_static_analysis="build_server" is set.\n\n') from None
       raise e
 
     SendMessage(

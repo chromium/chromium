@@ -244,9 +244,6 @@ def main(argv):
   parser.add_argument('--use-build-server',
                       action='store_true',
                       help='Always use the build server.')
-  parser.add_argument('--experimental-build-server',
-                      action='store_true',
-                      help='Use experimental build server features.')
   parser.add_argument('--gn-target', required=True)
   parser.add_argument('--input-jar', required=True)
   parser.add_argument('--direct-classpath-jars')
@@ -268,8 +265,7 @@ def main(argv):
   if server_utils.MaybeRunCommand(name=args.target_name,
                                   argv=sys.argv,
                                   stamp_file=args.stamp,
-                                  force=args.use_build_server,
-                                  experimental=args.experimental_build_server):
+                                  use_build_server=args.use_build_server):
     return
 
   args.sdk_classpath_jars = action_helpers.parse_gn_list(
