@@ -1484,23 +1484,6 @@ void CaptureModeSession::OnScannerActionsFetched(
   }
 }
 
-void CaptureModeSession::SetActionButtonsEnabled(bool enabled) {
-  // This should only be called after Scanner actions have been added, so the
-  // action container view should always be defined here.
-  CHECK(action_container_view_);
-
-  for (views::View* action_button : action_container_view_->children()) {
-    action_button->SetEnabled(enabled);
-  }
-
-  // As `action_container_view_` is non-null here,
-  // `UpdateActionContainerWidget()` must have been previously called, so
-  // calling it again would be equivalent to calling
-  // `UpdateActionContainerWidgetBounds()`.
-  // Setting the enabled state of a button does not affect any bounds, so there
-  // is no need to call either method here.
-}
-
 void CaptureModeSession::MaybeShowDisclaimer(
     base::RepeatingClosure accept_callback) {
   if (capture_mode_util::GetActiveUserPrefService()->GetBoolean(
@@ -1578,34 +1561,9 @@ void CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess() {
 
 void CaptureModeSession::OnScannerActionButtonPressed(
     const ScannerActionViewModel& scanner_action) {
-  SetActionButtonsEnabled(false);
-  scanner_action.ExecuteAction(
-      base::BindOnce(&CaptureModeSession::OnScannerActionExecuted,
-                     weak_ptr_factory_.GetWeakPtr()));
-  // We need to update the action container widget bounds since a loading
-  // throbber will be added to the action button when it is pressed.
-  // TODO(crbug.com/378023303): The loading throbber is only temporary and will
-  // be removed once the finalized loading animation is implemented. Remove the
-  // below call when the loading throbber is removed.
-  UpdateActionContainerWidget();
-}
-
-void CaptureModeSession::OnScannerActionExecuted(bool success) {
-  // Note that the currently selected region may not be the same as the region
-  // which had the Scanner action button which triggered this.
-  if (success) {
-    controller_->Stop();
-  } else {
-    // If this is an action from an old region, and this is run while a new
-    // action from a new region is being executed, this may incorrectly
-    // re-enable the new region's actions before the new action is finished.
-    //
-    // TODO: b/377379657 - Gracefully handle this case by either cancelling
-    // actions that are being executed when selecting a new region, or by
-    // ensuring that new regions cannot be selected while an action is being
-    // executed.
-    SetActionButtonsEnabled(true);
-  }
+  scanner_action.ExecuteAction();
+  // End the session. `this` is destroyed here.
+  controller_->Stop();
 }
 
 void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {

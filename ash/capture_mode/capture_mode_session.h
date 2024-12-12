@@ -436,10 +436,6 @@ class ASH_EXPORT CaptureModeSession
   // `action_container_widget_` exists.
   void RemoveAllActionButtons();
 
-  // Sets the enabled state of all existing action buttons. Action buttons that
-  // are added after this is called will still be enabled by default.
-  void SetActionButtonsEnabled(bool enabled);
-
   // Checks if the controller needs to show the disclaimer and shows if
   // necessary. `accept_callback` is run if disclaimer is accepted.
   // Takes a repeating closure because the button that triggers this (Smart
@@ -465,10 +461,6 @@ class ASH_EXPORT CaptureModeSession
   // Called back when a Scanner action button is pressed.
   void OnScannerActionButtonPressed(
       const ScannerActionViewModel& scanner_action);
-
-  // Called back when a Scanner action triggered by an action button press
-  // finishes executing.
-  void OnScannerActionExecuted(bool success);
 
   // Creates the feedback button widget if it wasn't previously created and
   // should be shown, and updates the widget's bounds and visibility.

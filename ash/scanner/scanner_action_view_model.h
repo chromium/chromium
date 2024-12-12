@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/scanner/scanner_action_handler.h"
 #include "ash/scanner/scanner_unpopulated_action.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 
 namespace gfx {
@@ -40,7 +41,10 @@ class ASH_EXPORT ScannerActionViewModel {
 
   // Executes this action, running the provided callback with a success value
   // when the execution finishes.
-  void ExecuteAction(ScannerCommandCallback action_finished_callback) const;
+  // TODO: crbug.com/378023303 - Remove `action_finished_callback` since it's no
+  // longer needed for the new action progress UI.
+  void ExecuteAction(ScannerCommandCallback action_finished_callback =
+                         base::DoNothing()) const;
 
  private:
   ScannerUnpopulatedAction unpopulated_action_;
