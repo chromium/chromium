@@ -43,6 +43,7 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
     virtual void OnGroupUpdated(const GroupId& group_id,
                                 const base::Time& event_time) = 0;
     virtual void OnGroupDeleted(const GroupId& group_id,
+                                const std::optional<GroupData>& group_data,
                                 const base::Time& event_time) = 0;
 
     virtual void OnMemberAdded(const GroupId& group_id,

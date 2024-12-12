@@ -29,10 +29,29 @@ namespace data_sharing {
 namespace {
 
 using base::test::RunClosure;
+using testing::_;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::IsEmpty;
 using testing::Optional;
+
+bool OptionalGroupMetadataDataMatches(std::optional<GroupData> a,
+                                      std::optional<GroupData> b) {
+  if (!a.has_value() && !b.has_value()) {
+    return true;
+  }
+  if (a.has_value() != b.has_value()) {
+    return false;
+  }
+  // Both have values, compare the GroupData.
+  return a->group_token.group_id == b->group_token.group_id &&
+         a->group_token.access_token == b->group_token.access_token &&
+         a->display_name == b->display_name;
+}
+
+MATCHER_P(OptionalGroupMetadataDataEq, expected_group_data, "") {
+  return OptionalGroupMetadataDataMatches(expected_group_data, arg);
+}
 
 // TODO(crbug.com/301390275): move helpers to work with CollaborationGroup
 // entities to test utils files, they are used across multiple files.
@@ -112,7 +131,9 @@ class MockModelObserver : public GroupDataModel::Observer {
               (override));
   MOCK_METHOD(void,
               OnGroupDeleted,
-              (const GroupId& group_id, const base::Time& event_time),
+              (const GroupId& group_id,
+               const std::optional<GroupData>& group_data,
+               const base::Time& event_time),
               (override));
   MOCK_METHOD(void,
               OnMemberAdded,
@@ -248,11 +269,17 @@ class GroupDataModelTest : public testing::Test {
   void WaitForGroupDeleted(const GroupId& group_id) {
     // Unlike additions/updates deletions might be handled synchronously, so we
     // need to check whether the group was already deleted.
-    if (!model().GetGroup(group_id).has_value()) {
+    std::optional<GroupData> group_data = model().GetGroup(group_id);
+    if (!group_data.has_value()) {
       return;
     }
+    ASSERT_TRUE(group_data.has_value());
+
     base::RunLoop run_loop;
-    EXPECT_CALL(observer_, OnGroupDeleted(group_id, NotNullTime()))
+    EXPECT_CALL(
+        observer_,
+        OnGroupDeleted(group_id, OptionalGroupMetadataDataEq(group_data),
+                       NotNullTime()))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
     run_loop.Run();
   }
@@ -395,12 +422,15 @@ TEST_F(GroupDataModelTest, ShouldDeleteGroup) {
 
   const GroupId group_id = MimicGroupAddedServerSide("group");
   WaitForGroupAdded(group_id);
-  ASSERT_TRUE(model().GetGroup(group_id).has_value());
+  std::optional<GroupData> group_data = model().GetGroup(group_id);
+  ASSERT_TRUE(group_data.has_value());
 
   // Unlike additions/updates deletions are handled synchronously, once
   // CollaborationGroupSyncBridge received the update - no need to wait for
   // observer call with RunLoop.
-  EXPECT_CALL(model_observer(), OnGroupDeleted(group_id, NotNullTime()));
+  EXPECT_CALL(model_observer(),
+              OnGroupDeleted(group_id, OptionalGroupMetadataDataEq(group_data),
+                             NotNullTime()));
   MimicGroupDeletedServerSide(group_id);
 
   EXPECT_FALSE(model().GetGroup(group_id).has_value());

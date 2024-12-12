@@ -34,6 +34,8 @@ class EmptyDataSharingService : public DataSharingService {
   std::optional<GroupMemberPartialData> GetPossiblyRemovedGroupMember(
       const GroupId& group_id,
       const GaiaId& member_gaia_id) override;
+  std::optional<GroupData> GetPossiblyRemovedGroup(
+      const GroupId& group_id) override;
   void ReadGroupDeprecated(
       const GroupId& group_id,
       base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback)

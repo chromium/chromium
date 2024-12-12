@@ -178,6 +178,11 @@ void GroupDataModel::ProcessGroupChanges(bool is_initial_load) {
                                bridge_groups.begin(), bridge_groups.end(),
                                std::back_inserter(deleted_group_ids));
 
+  std::unordered_map<GroupId, std::optional<GroupData>> deleted_groups;
+  for (const auto& group_id : deleted_group_ids) {
+    deleted_groups.emplace(group_id, group_data_store_.GetGroupData(group_id));
+  }
+
   group_data_store_.DeleteGroups(deleted_group_ids);
   if (is_initial_load) {
     // This is the first ProcessGroupChanges() call after startup, so notify
@@ -194,7 +199,8 @@ void GroupDataModel::ProcessGroupChanges(bool is_initial_load) {
     for (auto& observer : observers_) {
       MaybeRecordGroupEvent(group_id, GroupEvent::EventType::kGroupRemoved,
                             event_time);
-      observer.OnGroupDeleted(group_id, event_time);
+      observer.OnGroupDeleted(group_id, deleted_groups.at(group_id),
+                              event_time);
     }
   }
 

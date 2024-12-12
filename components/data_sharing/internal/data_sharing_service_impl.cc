@@ -177,6 +177,15 @@ DataSharingServiceImpl::GetPossiblyRemovedGroupMember(
                                                           member_gaia_id);
 }
 
+std::optional<GroupData> DataSharingServiceImpl::GetPossiblyRemovedGroup(
+    const GroupId& group_id) {
+  if (deleted_groups_this_session_.find(group_id) ==
+      deleted_groups_this_session_.end()) {
+    return std::nullopt;
+  }
+  return deleted_groups_this_session_.at(group_id);
+}
+
 void DataSharingServiceImpl::ReadGroupDeprecated(
     const GroupId& group_id,
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {
@@ -373,8 +382,14 @@ void DataSharingServiceImpl::OnGroupUpdated(const GroupId& group_id,
   }
 }
 
-void DataSharingServiceImpl::OnGroupDeleted(const GroupId& group_id,
-                                            const base::Time& event_time) {
+void DataSharingServiceImpl::OnGroupDeleted(
+    const GroupId& group_id,
+    const std::optional<GroupData>& group_data,
+    const base::Time& event_time) {
+  if (group_data) {
+    CHECK(group_id == group_data->group_token.group_id);
+    deleted_groups_this_session_.emplace(group_id, *group_data);
+  }
   for (auto& observer : observers_) {
     observer.OnGroupRemoved(group_id, event_time);
   }
