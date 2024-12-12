@@ -21,7 +21,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
-#include "components/origin_trials/common/features.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/browser_context.h"
@@ -414,12 +413,12 @@ WebTestContentBrowserClient::CreateThrottlesForNavigation(
   std::vector<std::unique_ptr<content::NavigationThrottle>> throttles =
       ShellContentBrowserClient::CreateThrottlesForNavigation(
           navigation_handle);
-  if (origin_trials::features::IsPersistentOriginTrialsEnabled()) {
-    throttles.push_back(std::make_unique<WebTestOriginTrialThrottle>(
-        navigation_handle, navigation_handle->GetWebContents()
-                               ->GetBrowserContext()
-                               ->GetOriginTrialsControllerDelegate()));
-  }
+
+  throttles.push_back(std::make_unique<WebTestOriginTrialThrottle>(
+      navigation_handle, navigation_handle->GetWebContents()
+                             ->GetBrowserContext()
+                             ->GetOriginTrialsControllerDelegate()));
+
   return throttles;
 }
 

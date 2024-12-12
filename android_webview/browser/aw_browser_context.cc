@@ -54,7 +54,6 @@
 #include "components/keyed_service/core/simple_key_map.h"
 #include "components/origin_trials/browser/leveldb_persistence_provider.h"
 #include "components/origin_trials/browser/origin_trials.h"
-#include "components/origin_trials/common/features.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
@@ -541,9 +540,6 @@ AwBrowserContext::RetrieveInProgressDownloadManager() {
 
 content::OriginTrialsControllerDelegate*
 AwBrowserContext::GetOriginTrialsControllerDelegate() {
-  if (!origin_trials::features::IsPersistentOriginTrialsEnabled())
-    return nullptr;
-
   if (!origin_trials_controller_delegate_) {
     origin_trials_controller_delegate_ =
         std::make_unique<origin_trials::OriginTrials>(

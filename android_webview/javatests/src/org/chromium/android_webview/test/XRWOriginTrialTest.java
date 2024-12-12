@@ -51,7 +51,7 @@ import java.util.Map;
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @CommandLineFlags.Add({
     "origin-trial-public-key=dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=",
-    "enable-features=PersistentOriginTrials,WebViewXRequestedWithHeaderControl"
+    "enable-features=WebViewXRequestedWithHeaderControl"
 })
 public class XRWOriginTrialTest extends AwParameterizedTest {
     private static final String ORIGIN_TRIAL_HEADER = "Origin-Trial";

@@ -28,8 +28,7 @@ OriginTrialService* OriginTrialServiceFactory::GetForProfile(Profile* profile) {
 
 // static
 ProfileSelections OriginTrialServiceFactory::CreateProfileSelections() {
-  if (!base::FeatureList::IsEnabled(net::features::kTopLevelTpcdOriginTrial) ||
-      !base::FeatureList::IsEnabled(features::kPersistentOriginTrials)) {
+  if (!base::FeatureList::IsEnabled(net::features::kTopLevelTpcdOriginTrial)) {
     return ProfileSelections::BuildNoProfilesSelected();
   }
 

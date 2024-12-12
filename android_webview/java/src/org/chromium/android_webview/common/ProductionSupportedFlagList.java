@@ -488,10 +488,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(CcFeatures.PRESERVE_DISCARDABLE_IMAGE_MAP_QUALITY),
         Flag.baseFeature(BlinkFeatures.SCROLLBAR_COLOR),
         Flag.baseFeature(
-                ContentFeatures.PERSISTENT_ORIGIN_TRIALS,
-                "If enabled, servers will be able to use persistent origin trials "
-                        + "on this device."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_DRAG_DROP_FILES,
                 "If enabled, files can be dropped into WebView"),
         Flag.baseFeature(

@@ -37,10 +37,7 @@ import java.util.Map;
 @Batch(Batch.PER_CLASS)
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-@CommandLineFlags.Add({
-    "origin-trial-public-key=dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=",
-    "enable-features=PersistentOriginTrials"
-})
+@CommandLineFlags.Add({"origin-trial-public-key=dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA="})
 public class AwPersistentOriginTrialTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 

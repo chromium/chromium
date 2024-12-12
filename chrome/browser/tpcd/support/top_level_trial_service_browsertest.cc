@@ -60,8 +60,7 @@ class TopLevelTpcdTrialBrowserTest : public InProcessBrowserTest {
 
   void SetUp() override {
     features_.InitWithFeaturesAndParameters(
-        {{::features::kPersistentOriginTrials, {}},
-         {net::features::kTopLevelTpcdTrialSettings, {}},
+        {{net::features::kTopLevelTpcdTrialSettings, {}},
          {content_settings::features::kTrackingProtection3pcd, {}}},
         {});
 

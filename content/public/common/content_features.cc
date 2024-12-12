@@ -744,14 +744,6 @@ BASE_FEATURE(kPepperCrossOriginRedirectRestriction,
              "PepperCrossOriginRedirectRestriction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables Persistent Origin Trials. It causes tokens for an origin to be stored
-// and persisted for the next navigation. This way, an origin trial can affect
-// things before receiving the response, for instance it can affect the next
-// navigation's network request.
-BASE_FEATURE(kPersistentOriginTrials,
-             "PersistentOriginTrials",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, browser-initiated prefetch is allowed.
 // Please see crbug.com/40946257 for more details.
 BASE_FEATURE(kPrefetchBrowserInitiatedTriggers,

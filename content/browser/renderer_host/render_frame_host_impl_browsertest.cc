@@ -838,9 +838,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 // A separate class needed to test with Origin Trial tokens.
 class RenderFrameHostImplWithTokensBrowserTest : public ContentBrowserTest {
  public:
-  RenderFrameHostImplWithTokensBrowserTest() {
-    test_features_.InitAndEnableFeature(::features::kPersistentOriginTrials);
-  }
+  RenderFrameHostImplWithTokensBrowserTest() = default;
 
   ~RenderFrameHostImplWithTokensBrowserTest() override = default;
 

@@ -200,7 +200,6 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
           network::features::kReduceAcceptLanguage,
 #endif  // BUILDFLAG(IS_CHROMEOS)
           features::kMainNodeAnnotations,
-          features::kPersistentOriginTrials,
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
           omnibox::kOnDeviceTailModel,
           omnibox::kOnDeviceHeadProviderNonIncognito,

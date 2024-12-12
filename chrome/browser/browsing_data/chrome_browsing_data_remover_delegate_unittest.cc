@@ -4594,9 +4594,7 @@ TEST_F(
 class ChromeBrowsingDataRemoverDelegateOriginTrialsTest
     : public ChromeBrowsingDataRemoverDelegateTest {
  public:
-  ChromeBrowsingDataRemoverDelegateOriginTrialsTest() {
-    feature_list_.InitAndEnableFeature(features::kPersistentOriginTrials);
-  }
+  ChromeBrowsingDataRemoverDelegateOriginTrialsTest() = default;
 
  protected:
   blink::ScopedTestOriginTrialPolicy origin_trial_policy_;

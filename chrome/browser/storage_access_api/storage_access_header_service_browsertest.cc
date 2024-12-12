@@ -126,8 +126,7 @@ class StorageAccessHeaderServiceBrowserTest : public PlatformBrowserTest {
   }
 
   void SetUp() override {
-    features_.InitWithFeatures({::features::kPersistentOriginTrials,
-                                network::features::kStorageAccessHeadersTrial},
+    features_.InitWithFeatures({network::features::kStorageAccessHeadersTrial},
                                {network::features::kStorageAccessHeaders});
     PlatformBrowserTest::SetUp();
   }
