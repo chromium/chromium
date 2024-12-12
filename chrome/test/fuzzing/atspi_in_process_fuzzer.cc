@@ -33,6 +33,7 @@
 #include "chrome/test/fuzzing/in_process_proto_fuzzer.h"
 #include "sql/database.h"
 #include "sql/statement.h"
+#include "sql/test/test_helpers.h"
 #include "testing/libfuzzer/libfuzzer_exports.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_auralinux.h"
@@ -958,11 +959,14 @@ Database* Database::GetInstance() {
 
 Database::Database() {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
-      .exclusive_locking = false,  // centipede may run several fuzzers at once
-      .page_size = sql::DatabaseOptions::kDefaultPageSize,
-      .cache_size = 0,
-  });
+  db_ = std::make_unique<sql::Database>(
+      sql::DatabaseOptions{
+          .exclusive_locking =
+              false,  // centipede may run several fuzzers at once
+          .page_size = sql::DatabaseOptions::kDefaultPageSize,
+          .cache_size = 0,
+      },
+      sql::test::kTestTag);
   base::FilePath db_path;
   CHECK(base::PathService::Get(base::DIR_TEMP, &db_path));
   db_path = db_path.AppendASCII("atspi_in_process_fuzzer_controls.db");

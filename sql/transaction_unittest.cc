@@ -9,6 +9,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "sql/database.h"
 #include "sql/statement.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sql {
@@ -17,8 +18,6 @@ namespace {
 
 class SQLTransactionTest : public testing::Test {
  public:
-  ~SQLTransactionTest() override = default;
-
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(
@@ -36,7 +35,7 @@ class SQLTransactionTest : public testing::Test {
 
  protected:
   base::ScopedTempDir temp_dir_;
-  Database db_;
+  Database db_{test::kTestTag};
 };
 
 TEST_F(SQLTransactionTest, Commit) {
@@ -207,7 +206,7 @@ TEST_F(SQLTransactionTest, NestedRollback) {
 }
 
 TEST(SQLTransactionDatabaseDestroyedTest, BeginIsNoOp) {
-  auto db = std::make_unique<Database>();
+  auto db = std::make_unique<Database>(test::kTestTag);
   ASSERT_TRUE(db->OpenInMemory());
   Transaction transaction(db.get());
   db.reset();
@@ -215,7 +214,7 @@ TEST(SQLTransactionDatabaseDestroyedTest, BeginIsNoOp) {
 }
 
 TEST(SQLTransactionDatabaseDestroyedTest, RollbackIsNoOp) {
-  auto db = std::make_unique<Database>();
+  auto db = std::make_unique<Database>(test::kTestTag);
   ASSERT_TRUE(db->OpenInMemory());
   Transaction transaction(db.get());
   ASSERT_TRUE(transaction.Begin());
@@ -227,7 +226,7 @@ TEST(SQLTransactionDatabaseDestroyedTest, RollbackIsNoOp) {
 }
 
 TEST(SQLTransactionDatabaseDestroyedTest, CommitIsNoOp) {
-  auto db = std::make_unique<Database>();
+  auto db = std::make_unique<Database>(test::kTestTag);
   ASSERT_TRUE(db->OpenInMemory());
   Transaction transaction(db.get());
   ASSERT_TRUE(transaction.Begin());

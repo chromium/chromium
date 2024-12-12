@@ -401,7 +401,7 @@ TEST_F(InterestGroupStorageTest, DatabaseInitialized_CreateDatabase) {
   EXPECT_TRUE(base::PathExists(db_path()));
 
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     // [interest_groups], [join_history], [bid_history], [win_history],
@@ -416,7 +416,7 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesOldVersion) {
 
   // Create an empty database with old schema version (version=1).
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     sql::MetaTable meta_table;
@@ -438,7 +438,7 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesOldVersion) {
   }
 
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     // [interest_groups], [join_history], [bid_history], [win_history],
@@ -453,7 +453,7 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesNewVersion) {
 
   // Create an empty database with a newer schema version (version=1000000).
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     sql::MetaTable meta_table;
@@ -475,7 +475,7 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesNewVersion) {
   }
 
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     // [interest_groups], [join_history], [bid_history], [win_history],

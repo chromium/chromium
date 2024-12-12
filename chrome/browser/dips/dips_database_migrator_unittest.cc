@@ -137,7 +137,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV1ToLatestVersion) {
   ASSERT_TRUE(LoadDatabase("v1.sql"));
 
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     // Verify pre-migration conditions.
@@ -212,7 +212,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV1ToV2) {
   ASSERT_TRUE(LoadDatabase("v1.sql"));
 
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     // Verify pre-migration conditions.
@@ -345,7 +345,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV2ToV3) {
   ASSERT_TRUE(LoadDatabase("v2.sql"));
 
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     // Verify pre-migration conditions.
@@ -399,7 +399,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV3ToV4) {
   ASSERT_TRUE(LoadDatabase("v3.sql"));
 
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     // Verify pre-migration conditions.
@@ -445,7 +445,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV4ToV5) {
   ASSERT_TRUE(LoadDatabase("v4.sql"));
 
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     // Verify pre-migration conditions.
@@ -490,7 +490,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV5ToV6) {
   ASSERT_TRUE(LoadDatabase("v5.sql"));
 
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     // Verify pre-migration conditions.
@@ -532,7 +532,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV6ToV7) {
   ASSERT_TRUE(LoadDatabase("v6.sql"));
 
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     // Verify pre-migration conditions.
@@ -574,7 +574,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV7ToV8) {
   ASSERT_TRUE(LoadDatabase("v7.sql"));
 
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     // Verify pre-migration conditions.

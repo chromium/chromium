@@ -334,7 +334,7 @@ class LoginDatabaseMigrationToOSCryptTest : public LoginDatabaseIOSTest {
   }
 
   std::vector<std::string> GetEncryptedPasswordValues() const {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     CHECK(db.Open(database_path_));
 
     sql::Statement s(db.GetCachedStatement(
@@ -352,7 +352,7 @@ class LoginDatabaseMigrationToOSCryptTest : public LoginDatabaseIOSTest {
   }
 
   std::vector<std::string> GetEncryptedPasswordNoteValues() const {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     CHECK(db.Open(database_path_));
 
     sql::Statement s(db.GetCachedStatement(SQL_FROM_HERE,
@@ -370,7 +370,7 @@ class LoginDatabaseMigrationToOSCryptTest : public LoginDatabaseIOSTest {
   }
 
   void ReplacePasswordValue(const std::string& new_value) {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     CHECK(db.Open(get_database_path()));
     sql::Statement new_password_value(db.GetCachedStatement(
         SQL_FROM_HERE, "UPDATE logins SET password_value = ?"));
@@ -379,7 +379,7 @@ class LoginDatabaseMigrationToOSCryptTest : public LoginDatabaseIOSTest {
   }
 
   void ReplaceNoteValue(const std::string& new_value) {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     CHECK(db.Open(get_database_path()));
     sql::Statement new_note_value(db.GetCachedStatement(
         SQL_FROM_HERE, "UPDATE password_notes SET value = ?"));

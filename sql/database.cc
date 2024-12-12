@@ -1071,12 +1071,14 @@ bool Database::Raze() {
     return false;
   }
 
-  sql::Database null_db(sql::DatabaseOptions{
-      .exclusive_locking = true,
-      .page_size = options_.page_size,
-      .cache_size = 0,
-      .enable_views_discouraged = options_.enable_views_discouraged,
-  });
+  sql::Database null_db(
+      sql::DatabaseOptions{
+          .exclusive_locking = true,
+          .page_size = options_.page_size,
+          .cache_size = 0,
+          .enable_views_discouraged = options_.enable_views_discouraged,
+      },
+      "RazeNullDB");
   if (!null_db.OpenInMemory()) {
     DLOG(FATAL) << "Unable to open in-memory database.";
     return false;

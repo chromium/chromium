@@ -22,6 +22,7 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ASCIIToUTF16;
@@ -322,7 +323,7 @@ TEST_P(KeywordTableTestEncryption, KeywordBadHash) {
   }
   CloseDatabase();
   if (GetParam().tamper) {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(file_));
     EXPECT_TRUE(
         db.Execute("UPDATE keywords SET url='http://bad.com/' WHERE id=1"));

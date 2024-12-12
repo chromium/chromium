@@ -188,7 +188,7 @@ template <>
 template <class T>
 std::vector<T> GetColumnValuesFromDatabase(const base::FilePath& database_path,
                                            const std::string& column_name) {
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   std::vector<T> results;
   CHECK(db.Open(database_path));
 
@@ -210,7 +210,7 @@ std::vector<T> GetColumnValuesFromDatabase(const base::FilePath& database_path,
 void UpdatePasswordValueForUsername(const base::FilePath& database_path,
                                     const std::u16string& username,
                                     const std::u16string& password) {
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   CHECK(db.Open(database_path));
 
   sql::Statement s(db.GetCachedStatement(
@@ -2022,7 +2022,7 @@ TEST_P(LoginDatabaseTest, Init_NoCrashOnFailedRollback) {
   // current version (in reality, this could happen if, e.g., someone opened a
   // Canary-created profile with Chrome Stable.
   {
-    sql::Database connection;
+    sql::Database connection(sql::test::kTestTag);
     sql::MetaTable meta_table;
     ASSERT_TRUE(connection.Open(database_path));
     ASSERT_TRUE(meta_table.Init(&connection, kCurrentVersionNumber + 1,
@@ -2054,7 +2054,7 @@ TEST_P(LoginDatabaseTest, ShouldNotDowngradeDatabaseVersion) {
   }
   {
     // Overwrite the current version to be |kDBFutureVersion|
-    sql::Database connection;
+    sql::Database connection(sql::test::kTestTag);
     sql::MetaTable meta_table;
     ASSERT_TRUE(connection.Open(database_path));
     // Set the DB version to be coming from the future.
@@ -2071,7 +2071,7 @@ TEST_P(LoginDatabaseTest, ShouldNotDowngradeDatabaseVersion) {
   }
   {
     // The DB version should remain the same.
-    sql::Database connection;
+    sql::Database connection(sql::test::kTestTag);
     sql::MetaTable meta_table;
     ASSERT_TRUE(connection.Open(database_path));
     ASSERT_TRUE(meta_table.Init(&connection, kDBFutureVersion,
@@ -2205,7 +2205,7 @@ void LoginDatabaseMigrationTest::MigrationToVCurrent(
   {
     // On versions < 15 |kCompatibleVersionNumber| was set to 1, but
     // the migration should bring it to the correct value.
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     sql::MetaTable meta_table;
     ASSERT_TRUE(db.Open(database_path_));
     ASSERT_TRUE(
@@ -2329,7 +2329,7 @@ PasswordForm LoginDatabaseUndecryptableLoginsTest::AddDummyLogin(
   }
 
   if (should_be_corrupted) {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     EXPECT_TRUE(db.Open(database_path()));
 
     // Change encrypted password in the database if the login should be

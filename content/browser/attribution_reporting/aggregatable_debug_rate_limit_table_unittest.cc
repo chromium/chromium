@@ -22,6 +22,7 @@
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/statement_id.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -99,7 +100,7 @@ class AggregatableDebugRateLimitTableTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  sql::Database db_;
+  sql::Database db_{sql::test::kTestTag};
   ConfigurableStorageDelegate delegate_;
   AggregatableDebugRateLimitTable table_{&delegate_};
 };

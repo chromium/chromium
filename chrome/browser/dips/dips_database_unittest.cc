@@ -1701,7 +1701,7 @@ TEST_F(DIPSDatabaseInitializationTest, InitializeEmptyDBWithLatestSchema) {
 
   // Validate aspects of current schema.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
     ValidateSchemaAndMetadataMatchLatestVersion(&db);
   }
@@ -1715,7 +1715,7 @@ TEST_F(DIPSDatabaseInitializationTest, RazeIfIncompatible_TooNew) {
   //
   // Verify pre migration conditions.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     // Matches what is in "v2.sql" file:
@@ -1752,7 +1752,7 @@ TEST_F(DIPSDatabaseInitializationTest, RazeIfIncompatible_TooNew) {
 
   // Verify post migration conditions.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     // We should be on the latest schema version after razing.
@@ -1771,7 +1771,7 @@ TEST_F(DIPSDatabaseInitializationTest, MigrateOldSchemaToLatestVersion) {
   ASSERT_NO_FATAL_FAILURE(LoadDatabase("v2.sql"));
 
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     EXPECT_EQ(GetDatabaseVersion(&db), 2);
@@ -1781,7 +1781,7 @@ TEST_F(DIPSDatabaseInitializationTest, MigrateOldSchemaToLatestVersion) {
   InitializeDatabase();
 
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     ValidateSchemaAndMetadataMatchLatestVersion(&db);

@@ -26,6 +26,10 @@ class Database;
 
 namespace sql::test {
 
+// A convenience tag to use in tests as an argument to sql::Database
+// constructors.
+inline constexpr char kTestTag[] = "Test";
+
 // Read a database's page size. Returns nullopt in case of error.
 std::optional<int> ReadDatabasePageSize(const base::FilePath& db_path);
 

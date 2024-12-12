@@ -46,6 +46,7 @@ using sql::test::ExecuteWithResults;
 
 class SQLiteFeaturesTest : public testing::Test {
  public:
+  SQLiteFeaturesTest() : db_(sql::test::kTestTag) {}
   ~SQLiteFeaturesTest() override = default;
 
   void SetUp() override {
@@ -98,7 +99,7 @@ TEST_F(SQLiteFeaturesTest, FTS3) {
 // "*"}.  Test that fts3 works correctly.
 TEST_F(SQLiteFeaturesTest, FTS3_Prefix) {
   db_.Close();
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   db.SetEnableVirtualTablesForTesting(true);
   ASSERT_TRUE(db.Open(db_path_));
 

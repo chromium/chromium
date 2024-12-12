@@ -34,6 +34,8 @@
 
 namespace {
 
+constexpr const char kDatabaseTag[] = "FirefoxImporter";
+
 // Original definition is in:
 //   toolkit/components/places/nsINavBookmarksService.idl
 enum BookmarkItemType {
@@ -180,7 +182,7 @@ void FirefoxImporter::ImportHistory() {
   if (!base::PathExists(file))
     return;
 
-  sql::Database db;
+  sql::Database db(kDatabaseTag);
   if (!db.Open(file))
     return;
 
@@ -225,7 +227,7 @@ void FirefoxImporter::ImportBookmarks() {
   if (!base::PathExists(file))
     return;
 
-  sql::Database db;
+  sql::Database db(kDatabaseTag);
   if (!db.Open(file))
     return;
 
@@ -425,7 +427,7 @@ void FirefoxImporter::ImportAutofillFormData() {
   if (!base::PathExists(file))
     return;
 
-  sql::Database db;
+  sql::Database db(kDatabaseTag);
   if (!db.Open(file))
     return;
 
@@ -598,7 +600,7 @@ void FirefoxImporter::LoadFavicons(
   if (!base::PathExists(file))
     return;
 
-  sql::Database db;
+  sql::Database db(kDatabaseTag);
   if (!db.Open(file))
     return;
 

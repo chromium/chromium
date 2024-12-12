@@ -30,6 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/dom_action_types.h"
 #include "sql/statement.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace constants = activity_log_constants;
@@ -161,7 +162,7 @@ TEST_F(ActivityDatabaseTest, Init) {
   ActivityDatabase* activity_db = OpenDatabase(db_file);
   activity_db->Close();
 
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   ASSERT_TRUE(db.Open(db_file));
   ASSERT_TRUE(db.DoesTableExist("actions"));
   db.Close();
@@ -181,7 +182,7 @@ TEST_F(ActivityDatabaseTest, RecordAction) {
   Record(activity_db, action);
   activity_db->Close();
 
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   ASSERT_TRUE(db.Open(db_file));
 
   ASSERT_EQ(1, CountActions(&db, "brewster"));

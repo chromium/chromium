@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "sql/database.h"
+#include "sql/test/test_helpers.h"
 
 namespace history {
 
@@ -34,7 +35,7 @@ void HistoryUnitTestBase::ExecuteSQLScript(const base::FilePath& sql_path,
   sql_time.push_back(base::StringPrintf("%" PRId64, now));  // time_slot
   sql = base::ReplaceStringPlaceholders(sql, sql_time, nullptr);
 
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(connection.Open(db_path));
   ASSERT_TRUE(connection.Execute(sql));
 }

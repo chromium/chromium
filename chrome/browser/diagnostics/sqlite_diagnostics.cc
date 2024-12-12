@@ -105,7 +105,8 @@ class SqliteIntegrityTest : public DiagnosticsTest {
 
     int errors = 0;
     {  // Scope the statement and database so they close properly.
-      sql::Database database({.page_size = 4096, .cache_size = 500});
+      sql::Database database({.page_size = 4096, .cache_size = 500},
+                             /*tag=*/"SQLiteDiagnostics");
       scoped_refptr<ErrorRecorder> recorder(new ErrorRecorder);
 
       // Set the error callback so that we can get useful results in a debug

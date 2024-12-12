@@ -221,7 +221,7 @@ bool SQLitePersistentStoreBackendBase::MigrateDatabaseSchema() {
   // Metatable is corrupted. Try to recover.
   if (cur_version.value() < current_version_number_) {
     meta_table_.Reset();
-    db_ = std::make_unique<sql::Database>();
+    db_ = std::make_unique<sql::Database>(histogram_tag_);
     bool recovered = sql::Database::Delete(path_) && db()->Open(path_) &&
                      meta_table_.Init(db(), current_version_number_,
                                       compatible_version_number_);

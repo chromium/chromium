@@ -52,6 +52,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "sql/statement.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1566,7 +1567,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
             // the only way to verify the ciphertext is to inspect the database
             // manually. This is safe to do here because the database has been
             // unloaded above.
-            sql::Database db;
+            sql::Database db(sql::test::kTestTag);
             ASSERT_TRUE(
                 db.Open(temp_dir_.GetPath().AppendASCII(kTestTokenDatabase)));
             sql::Statement s(db.GetUniqueStatement(

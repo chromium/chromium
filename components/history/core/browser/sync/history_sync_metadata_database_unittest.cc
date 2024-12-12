@@ -13,6 +13,7 @@
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using sync_pb::DataTypeState;
@@ -55,7 +56,7 @@ class HistorySyncMetadataDatabaseTest : public testing::Test {
   void TearDown() override { db_.Close(); }
 
  private:
-  sql::Database db_;
+  sql::Database db_{sql::test::kTestTag};
   sql::MetaTable meta_table_;
 
   HistorySyncMetadataDatabase metadata_db_;

@@ -162,7 +162,7 @@ bool CorruptSizeInHeader(const base::FilePath& db_path) {
     // This function doesn't reliably work if connections to the DB are still
     // open. The database is opened in excusive mode. Open will fail if any
     // other connection exists on the database.
-    sql::Database db({.wal_mode = true});
+    sql::Database db({.wal_mode = true}, kTestTag);
     if (!db.Open(db_path))
       return false;
     int wal_log_size = 0;
@@ -201,7 +201,7 @@ bool CorruptSizeInHeader(const base::FilePath& db_path) {
 
 bool CorruptSizeInHeaderWithLock(const base::FilePath& db_path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   if (!db.Open(db_path))
     return false;
 
@@ -219,7 +219,7 @@ bool CorruptIndexRootPage(const base::FilePath& db_path,
   if (!page_size.has_value())
     return false;
 
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   if (!db.Open(db_path))
     return false;
 
@@ -290,7 +290,7 @@ bool CreateDatabaseFromSQL(const base::FilePath& db_path,
   if (!base::ReadFileToString(sql_path, &sql))
     return false;
 
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   if (!db.Open(db_path))
     return false;
 

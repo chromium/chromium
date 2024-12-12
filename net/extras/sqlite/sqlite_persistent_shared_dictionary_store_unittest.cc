@@ -610,7 +610,7 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
     ASSERT_FALSE(store_);
 
     std::unique_ptr<sql::Database> db =
-        std::make_unique<sql::Database>(sql::DatabaseOptions{});
+        std::make_unique<sql::Database>(sql::test::kTestTag);
     ASSERT_TRUE(db->Open(GetStroeFilePath()));
 
     sql::MetaTable meta_table;
@@ -3059,7 +3059,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
 
 TEST_F(SQLitePersistentSharedDictionaryStoreTest, MigrateFromV1ToV3) {
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(GetStroeFilePath()));
     CreateV1Schema(&db);
     ASSERT_EQ(GetDBCurrentVersionNumber(&db), 1);
@@ -3068,7 +3068,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, MigrateFromV1ToV3) {
   EXPECT_EQ(GetTotalDictionarySize(), 0u);
   DestroyStore();
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(GetStroeFilePath()));
     ASSERT_EQ(GetDBCurrentVersionNumber(&db), 3);
   }
@@ -3076,7 +3076,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, MigrateFromV1ToV3) {
 
 TEST_F(SQLitePersistentSharedDictionaryStoreTest, MigrateFromV2ToV3) {
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(GetStroeFilePath()));
     CreateV2Schema(&db);
     ASSERT_EQ(GetDBCurrentVersionNumber(&db), 2);
@@ -3085,7 +3085,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, MigrateFromV2ToV3) {
   EXPECT_EQ(GetTotalDictionarySize(), 0u);
   DestroyStore();
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(GetStroeFilePath()));
     ASSERT_EQ(GetDBCurrentVersionNumber(&db), 3);
   }

@@ -302,7 +302,7 @@ class AttributionStorageSqlTest : public testing::Test {
   }
 
   void ExpectAllTablesEmpty() {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     static constexpr const char* kTables[] = {
@@ -326,7 +326,7 @@ class AttributionStorageSqlTest : public testing::Test {
   ConfigurableStorageDelegate* delegate() { return delegate_; }
 
   void ExpectImpressionRows(size_t expected) {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
     size_t rows;
     sql::test::CountTableRows(&raw_db, "sources", &rows);
@@ -339,7 +339,7 @@ class AttributionStorageSqlTest : public testing::Test {
   }
 
   void StoreAttributionSource(const AttributionSourceRecord& record) {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     ASSERT_TRUE(raw_db.Open(db_path()));
 
     static constexpr char kStoreSourceSql[] =
@@ -383,7 +383,7 @@ class AttributionStorageSqlTest : public testing::Test {
   }
 
   void StoreAttributionReport(const AttributionReportRecord& record) {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     ASSERT_TRUE(raw_db.Open(db_path()));
 
     static constexpr char kStoreReportSql[] =
@@ -495,7 +495,7 @@ TEST_F(AttributionStorageSqlTest, VersionTooNew_RazesDB) {
   CloseDatabase();
 
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     sql::MetaTable meta;
@@ -754,7 +754,7 @@ TEST_F(AttributionStorageSqlTest, ClearData_KeepRateLimitData) {
 
   CloseDatabase();
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
     size_t impression_rows;
     sql::test::CountTableRows(&raw_db, "sources", &impression_rows);
@@ -772,7 +772,7 @@ TEST_F(AttributionStorageSqlTest, ClearData_KeepRateLimitData) {
   CloseDatabase();
 
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
     size_t impression_rows;
     sql::test::CountTableRows(&raw_db, "sources", &impression_rows);
@@ -808,7 +808,7 @@ TEST_F(AttributionStorageSqlTest, DeleteAttributionDataByDataKey) {
 
   CloseDatabase();
 
-  sql::Database raw_db;
+  sql::Database raw_db(sql::test::kTestTag);
   ASSERT_TRUE(raw_db.Open(db_path()));
   {
     sql::Statement s(raw_db.GetUniqueStatement("SELECT * FROM reports"));
@@ -830,7 +830,7 @@ TEST_F(AttributionStorageSqlTest, MaxSourcesPerOrigin) {
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
   CloseDatabase();
-  sql::Database raw_db;
+  sql::Database raw_db(sql::test::kTestTag);
   EXPECT_TRUE(raw_db.Open(db_path()));
   size_t impression_rows;
   sql::test::CountTableRows(&raw_db, "sources", &impression_rows);
@@ -854,7 +854,7 @@ TEST_F(AttributionStorageSqlTest, MaxReportsPerDestination) {
       MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
   CloseDatabase();
-  sql::Database raw_db;
+  sql::Database raw_db(sql::test::kTestTag);
   EXPECT_TRUE(raw_db.Open(db_path()));
   size_t conversion_rows;
   sql::test::CountTableRows(&raw_db, "reports", &conversion_rows);
@@ -1110,7 +1110,7 @@ TEST_F(AttributionStorageSqlTest, NegativeTriggerMoment_HistogramRecorded) {
   CloseDatabase();
 
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     ASSERT_TRUE(raw_db.Open(db_path()));
 
     sql::Statement statement(raw_db.GetUniqueStatement(sql));
@@ -1236,7 +1236,7 @@ TEST_F(AttributionStorageSqlTest,
     CloseDatabase();
 
     {
-      sql::Database raw_db;
+      sql::Database raw_db(sql::test::kTestTag);
       ASSERT_TRUE(raw_db.Open(db_path())) << test_case.sql;
 
       sql::Statement statement(raw_db.GetUniqueStatement(test_case.sql));
@@ -1287,7 +1287,7 @@ TEST_F(AttributionStorageSqlTest, DeserializeFilterData_RemovesReservedKeys) {
   }
 
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     ASSERT_TRUE(raw_db.Open(db_path()));
 
     static constexpr char kUpdateSql[] = "UPDATE sources SET filter_data=?";
@@ -1337,7 +1337,7 @@ TEST_F(AttributionStorageSqlTest, ReportTablesStoreDestinationOrigin) {
 
   CloseDatabase();
 
-  sql::Database raw_db;
+  sql::Database raw_db(sql::test::kTestTag);
   ASSERT_TRUE(raw_db.Open(db_path()));
 
   {
@@ -1365,7 +1365,7 @@ TEST_F(AttributionStorageSqlTest, FakeReportUsesSourceOriginAsContext) {
 
   CloseDatabase();
 
-  sql::Database raw_db;
+  sql::Database raw_db(sql::test::kTestTag);
   ASSERT_TRUE(raw_db.Open(db_path()));
 
   {
@@ -1417,7 +1417,7 @@ TEST_F(AttributionStorageSqlTest,
       CloseDatabase();
 
       {
-        sql::Database raw_db;
+        sql::Database raw_db(sql::test::kTestTag);
         ASSERT_TRUE(raw_db.Open(db_path()))
             << update_sql << "," << test_case.time_from_source;
 
@@ -1446,7 +1446,7 @@ TEST_F(AttributionStorageSqlTest, EpsilonNotStored_RecalculatedWhenHandled) {
   }
 
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     ASSERT_TRUE(raw_db.Open(db_path()));
 
     static constexpr char kGetSql[] =
@@ -1499,7 +1499,7 @@ TEST_F(AttributionStorageSqlTest,
   }
 
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     ASSERT_TRUE(raw_db.Open(db_path()));
 
     static constexpr char kGetSql[] =
@@ -2490,7 +2490,7 @@ TEST_F(AttributionStorageSqlTest, SourceRemainingAggregatableBudget) {
     CloseDatabase();
 
     {
-      sql::Database raw_db;
+      sql::Database raw_db(sql::test::kTestTag);
       ASSERT_TRUE(raw_db.Open(db_path()));
 
       sql::Statement update_statement(raw_db.GetUniqueStatement(kUpdateSql));
@@ -2572,7 +2572,7 @@ TEST_F(AttributionStorageSqlTest,
     CloseDatabase();
 
     {
-      sql::Database raw_db;
+      sql::Database raw_db(sql::test::kTestTag);
       ASSERT_TRUE(raw_db.Open(db_path()));
 
       sql::Statement read_statement(raw_db.GetUniqueStatement(kReadSql));

@@ -15,6 +15,7 @@
 #include "components/sqlite_proto/test_proto.pb.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,7 +44,7 @@ TEST(ProtoTableTest, PutReinitializeAndGet) {
   // existing database state.
 
   base::test::TaskEnvironment env;
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   CHECK(db.OpenInMemory());
 
   auto manager = base::MakeRefCounted<ProtoTableManager>(
@@ -100,7 +101,7 @@ TEST(ProtoTableTest, ReinitializingWithDifferentVersionClearsTables) {
   // existing database state.
 
   base::test::TaskEnvironment env;
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   CHECK(db.OpenInMemory());
 
   constexpr int kInitialVersion = 1;
@@ -153,7 +154,7 @@ TEST(ProtoTableTest, InitializingWithoutWrittenVersionClearsTables) {
   // ProtoTableManager correctly clears the database.
 
   base::test::TaskEnvironment env;
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   CHECK(db.OpenInMemory());
 
   constexpr int kInitialVersion = 1;
@@ -209,7 +210,7 @@ TEST(ProtoTableTest, LoadingUnexpectedlyLargeVersionClearsTables) {
   // correctly clears the database.
 
   base::test::TaskEnvironment env;
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   CHECK(db.OpenInMemory());
 
   constexpr int kInitialVersion = 1;

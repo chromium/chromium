@@ -16,6 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "sql/database.h"
 #include "sql/test/scoped_error_expecter.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"
 
@@ -32,7 +33,7 @@ class StatementTest : public testing::Test {
 
  protected:
   base::ScopedTempDir temp_dir_;
-  Database db_{"Test"};
+  Database db_{test::kTestTag};
 };
 
 TEST_F(StatementTest, Assign) {

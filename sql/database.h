@@ -280,10 +280,16 @@ class COMPONENT_EXPORT(SQL) Database {
   //
   // Most operations on the new instance will fail until Open() / OpenInMemory()
   // is called.
-  explicit Database(DatabaseOptions options, std::string_view tag = {});
+  //
+  // `tag` is a string uniquely identifying this database for metrics. This
+  // class automatically uses `tag` to determine which histogram to record to
+  // for timing and error histograms. Tests that don't care about those
+  // histograms values can use `sql::test::kTestTag` from
+  // sql/test/test_helpers.h.
+  Database(DatabaseOptions options, std::string_view tag);
 
   // Convenience constructor for callers that use default options.
-  explicit Database(std::string_view tag = {});
+  explicit Database(std::string_view tag);
 
   Database(const Database&) = delete;
   Database& operator=(const Database&) = delete;

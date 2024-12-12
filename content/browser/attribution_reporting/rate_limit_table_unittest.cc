@@ -33,6 +33,7 @@
 #include "net/base/schemeful_site.h"
 #include "sql/database.h"
 #include "sql/statement.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
@@ -286,7 +287,7 @@ class RateLimitTableTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  sql::Database db_;
+  sql::Database db_{sql::test::kTestTag};
   ConfigurableStorageDelegate delegate_;
   RateLimitTable table_{&delegate_};
 };

@@ -131,7 +131,7 @@ TEST_P(SqlRecoveryTest, ShouldAttemptRecovery) {
   EXPECT_FALSE(Recovery::ShouldAttemptRecovery(nullptr, SQLITE_CORRUPT));
 
   // Do not attempt to recover closed databases.
-  Database invalid_db;
+  Database invalid_db(test::kTestTag);
   EXPECT_FALSE(Recovery::ShouldAttemptRecovery(&invalid_db, SQLITE_CORRUPT));
 
   // Do not attempt to recover in-memory databases.
@@ -630,7 +630,7 @@ TEST_P(SqlRecoveryTest, RecoverIfPossibleWithPerDatabaseUma) {
 
 TEST_P(SqlRecoveryTest, RecoverDatabaseWithView) {
   db_.Close();
-  sql::Database db({.enable_views_discouraged = true});
+  sql::Database db({.enable_views_discouraged = true}, test::kTestTag);
   ASSERT_TRUE(db.Open(db_path_));
 
   ASSERT_TRUE(db.Execute(
@@ -797,7 +797,7 @@ void TestPageSize(const base::FilePath& db_prefix,
   const base::FilePath db_path = db_prefix.InsertBeforeExtensionASCII(
       base::NumberToString(initial_page_size));
   Database::Delete(db_path);
-  Database db({.page_size = initial_page_size});
+  Database db({.page_size = initial_page_size}, test::kTestTag);
   ASSERT_TRUE(db.Open(db_path));
   ASSERT_TRUE(db.Execute(kCreateSql));
   ASSERT_TRUE(db.Execute(kInsertSql1));
@@ -807,7 +807,7 @@ void TestPageSize(const base::FilePath& db_prefix,
   db.Close();
 
   // Re-open the database while setting a new |options.page_size| in the object.
-  Database recover_db({.page_size = final_page_size});
+  Database recover_db({.page_size = final_page_size}, test::kTestTag);
   ASSERT_TRUE(recover_db.Open(db_path));
   // Recovery will use the page size set in the database object, which may not
   // match the file's page size.
@@ -819,7 +819,8 @@ void TestPageSize(const base::FilePath& db_prefix,
   recover_db.Close();
 
   // Make sure the page size is read from the file.
-  Database recovered_db({.page_size = DatabaseOptions::kDefaultPageSize});
+  Database recovered_db({.page_size = DatabaseOptions::kDefaultPageSize},
+                        test::kTestTag);
   ASSERT_TRUE(recovered_db.Open(db_path));
   ASSERT_EQ(expected_final_page_size,
             ExecuteWithResult(&recovered_db, "PRAGMA page_size"));
@@ -884,7 +885,7 @@ TEST_P(SqlRecoveryTest, CannotRecoverNullDb) {
 // whether the database is in-memory and will instead likely result in
 // unexpected behavior or crashes.
 TEST_P(SqlRecoveryTest, CannotRecoverInMemoryDb) {
-  Database in_memory_db;
+  Database in_memory_db(test::kTestTag);
   ASSERT_TRUE(in_memory_db.OpenInMemory());
 
   EXPECT_CHECK_DEATH(std::ignore = Recovery::RecoverDatabase(
@@ -900,7 +901,7 @@ TEST_P(SqlRecoveryTest, PRE_RecoverFormerlyWalDbAfterCrash) {
       temp_dir_.GetPath().AppendASCII("recovery_wal_test.sqlite");
 
   // Open the DB in WAL mode to set journal_mode="wal".
-  Database wal_db{{.wal_mode = true}};
+  Database wal_db{{.wal_mode = true}, test::kTestTag};
   ASSERT_TRUE(wal_db.Open(wal_db_path));
 
   EXPECT_TRUE(wal_db.UseWALMode());
@@ -915,7 +916,7 @@ TEST_P(SqlRecoveryTest, RecoverFormerlyWalDbAfterCrash) {
   base::FilePath wal_db_path =
       temp_dir_.GetPath().AppendASCII("recovery_wal_test.sqlite");
 
-  Database non_wal_db{{.wal_mode = false}};
+  Database non_wal_db{{.wal_mode = false}, test::kTestTag};
   ASSERT_TRUE(non_wal_db.Open(wal_db_path));
 
   auto run_recovery = base::BindLambdaForTesting([&]() {
