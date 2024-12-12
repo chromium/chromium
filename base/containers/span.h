@@ -125,6 +125,8 @@
 // span:
 // - Explicit construction of `span<T, N>`, which `CHECK()`s if the size doesn't
 //   match.
+// - Construction of `span(T*, fixed_extent<N>)`, which is equivalent to the
+//   above.
 // - `to_fixed_extent<N>()`, which returns `std::nullopt` if the size doesn't
 //   match.
 // - `first<N>()`, `last<N>()`, and `subspan<Index, N>()`, which `CHECK()` if
@@ -164,6 +166,11 @@
 // https://eel.is/c++draft/views contains the latest C++ draft of `std::span`
 // and related utilities. Chromium aims to follow the draft except where noted
 // below; please report other divergences you find.
+//
+// Differences from [span.syn]:
+// - For convenience, provides `fixed_extent<N>` as an alias to
+//   `std::integral_constant<size_t, N>`, to aid in constructing fixed-extent
+//   spans from pointers.
 //
 // Differences from [span.overview]:
 // - `span` takes an optional third template argument that can be used to
@@ -243,6 +250,13 @@ namespace base {
 
 // [span.syn]: Constants
 inline constexpr size_t dynamic_extent = std::numeric_limits<size_t>::max();
+
+// Provides a compile-time fixed extent to the `count` argument of the span
+// constructor.
+//
+// (Not in `std::`.)
+template <size_t N>
+using fixed_extent = std::integral_constant<size_t, N>;
 
 // [views.span]: class template `span<>`
 template <typename ElementType,

@@ -48,10 +48,8 @@ TEST(SpanTest, DeductionGuides) {
         std::is_same_v<decltype(span(v.begin(), v.size())), span<const int>>);
     static_assert(
         std::is_same_v<decltype(span(v.data(), v.size())), span<const int>>);
-    static_assert(
-        std::is_same_v<decltype(span(v.cbegin(),
-                                     std::integral_constant<size_t, 0>())),
-                       span<const int, 0>>);
+    static_assert(std::is_same_v<decltype(span(v.cbegin(), fixed_extent<0>())),
+                                 span<const int, 0>>);
   }
 
   {
@@ -62,10 +60,8 @@ TEST(SpanTest, DeductionGuides) {
         std::is_same_v<decltype(span(v.begin(), v.size())), span<int>>);
     static_assert(
         std::is_same_v<decltype(span(v.data(), v.size())), span<int>>);
-    static_assert(
-        std::is_same_v<decltype(span(v.cbegin(),
-                                     std::integral_constant<size_t, 0>())),
-                       span<const int, 0>>);
+    static_assert(std::is_same_v<decltype(span(v.cbegin(), fixed_extent<0>())),
+                                 span<const int, 0>>);
   }
 
   {
@@ -185,8 +181,8 @@ TEST(SpanTest, ConstructFromDataAndSize) {
   CHECK_GE(vector.size(), 6);
   // SAFETY: the `CHECK_GE()` just above ensures the `6` below is a valid extent
   // of `vector.data()`.
-  auto static_span_from_constant = UNSAFE_BUFFERS(
-      base::span(vector.data(), std::integral_constant<size_t, 6>()));
+  auto static_span_from_constant =
+      UNSAFE_BUFFERS(span(vector.data(), fixed_extent<6>()));
   static_assert(
       std::same_as<decltype(static_span_from_constant), span<int, 6>>);
   EXPECT_EQ(vector.data(), static_span_from_constant.data());
