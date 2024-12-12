@@ -477,10 +477,6 @@ void ToolbarButton::OnGestureEvent(ui::GestureEvent* event) {
   LabelButton::OnGestureEvent(event);
 }
 
-std::u16string ToolbarButton::GetTooltipText(const gfx::Point& p) const {
-  return GetCachedTooltipText();
-}
-
 void ToolbarButton::ShowContextMenuForViewImpl(
     View* source,
     const gfx::Point& point,
