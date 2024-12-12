@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
@@ -41,7 +42,6 @@ import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManage
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerType;
-import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupOverflowMenuCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.tab_ui.R;
@@ -533,7 +533,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         mColorPickerCoordinator =
                 new ColorPickerCoordinator(
                         mContext,
-                        ColorPickerUtils.getTabGroupColorIdList(),
+                        TabGroupColorUtils.getTabGroupColorIdList(),
                         ((ViewStub) mContentView.findViewById(R.id.color_picker_stub)).inflate(),
                         ColorPickerType.TAB_GROUP,
                         isIncognito,

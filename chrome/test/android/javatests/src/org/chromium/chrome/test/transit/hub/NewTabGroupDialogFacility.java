@@ -27,6 +27,7 @@ import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
+import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.test.R;
@@ -91,7 +92,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
 
         // TODO(crbug.com/345489175): Partially cut off in android_30_google_apis_x86.textpb
         elements.declareView(COLOR_PICKER_CONTAINER, ViewElement.displayingAtLeastOption(50));
-        @TabGroupColorId List<Integer> colors = ColorPickerUtils.getTabGroupColorIdList();
+        @TabGroupColorId List<Integer> colors = TabGroupColorUtils.getTabGroupColorIdList();
         for (@TabGroupColorId Integer color : colors) {
             if (mSelectedColor != null) {
                 elements.declareView(

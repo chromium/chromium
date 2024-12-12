@@ -8,12 +8,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.collection.ArrayMap;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -123,6 +125,21 @@ public class TabGroupColorUtils {
         ContextUtils.getApplicationContext().deleteSharedPreferences(TAB_GROUP_COLORS_FILE_NAME);
     }
 
+    /**
+     * This method returns the color id list attributed to tab groups specifically.
+     *
+     * @return An array list of ids from 0 to n representing all colors in the palette
+     */
+    public static List<Integer> getTabGroupColorIdList() {
+        // The color ids used here can be found in {@link TabGroupColorId}. Note that it is assumed
+        // the id list is contiguous from 0 to size-1.
+        List<Integer> colors = new ArrayList<>(TabGroupColorId.NUM_ENTRIES);
+        for (int i = 0; i < TabGroupColorId.NUM_ENTRIES; i++) {
+            colors.add(i);
+        }
+        return colors;
+    }
+
     private static SharedPreferences getSharedPreferences() {
         return ContextUtils.getApplicationContext()
                 .getSharedPreferences(TAB_GROUP_COLORS_FILE_NAME, Context.MODE_PRIVATE);
@@ -131,10 +148,10 @@ public class TabGroupColorUtils {
     /** Get a map that indicates the current usage count of each tab group color. */
     private static Map<Integer, Integer> getCurrentColorCountMap(
             TabGroupModelFilter tabGroupModelFilter) {
-        int colorListSize = TabGroupColorId.NUM_ENTRIES;
-        Map<Integer, Integer> colorCountMap = new ArrayMap<>(colorListSize);
-        for (int i = 0; i < colorListSize; i++) {
-            colorCountMap.put(i, 0);
+        List<Integer> colorList = getTabGroupColorIdList();
+        Map<Integer, Integer> colorCountMap = new LinkedHashMap<>(colorList.size());
+        for (Integer colorId : colorList) {
+            colorCountMap.put(colorId, 0);
         }
 
         Set<Integer> rootIds = tabGroupModelFilter.getAllTabGroupRootIds();
@@ -161,10 +178,6 @@ public class TabGroupColorUtils {
             if (entry.getValue() < colorCount) {
                 colorCount = entry.getValue();
                 colorId = entry.getKey();
-            } else if (entry.getValue() == colorCount) {
-                if (entry.getKey() < colorId) {
-                    colorId = entry.getKey();
-                }
             }
         }
 

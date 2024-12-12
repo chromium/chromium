@@ -20,6 +20,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class ColorPickerMediatorUnitTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mColorIds = ColorPickerUtils.getTabGroupColorIdList();
+        mColorIds = TabGroupColorUtils.getTabGroupColorIdList();
 
         for (int color : mColorIds) {
             PropertyModel model =
