@@ -274,7 +274,7 @@ public class HubToolbarMediatorUnitTest {
 
         mFocusedPaneSupplier.set(null);
         assertEquals(
-                new HubColorSchemeUpdate(HubColorScheme.DEFAULT, HubColorScheme.DEFAULT),
+                new HubColorSchemeUpdate(HubColorScheme.DEFAULT, HubColorScheme.INCOGNITO),
                 mModel.get(COLOR_SCHEME));
     }
 

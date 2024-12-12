@@ -123,7 +123,7 @@ public class HubPaneHostMediator {
         int prevColorScheme =
                 mPropertyModel.get(COLOR_SCHEME) == null
                         ? newColorScheme
-                        : mPropertyModel.get(COLOR_SCHEME).previousColorScheme;
+                        : mPropertyModel.get(COLOR_SCHEME).newColorScheme;
 
         mPropertyModel.set(COLOR_SCHEME, new HubColorSchemeUpdate(newColorScheme, prevColorScheme));
         View view = pane == null ? null : pane.getRootView();

@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.ACTION_BUTTON_DATA;
+import static org.chromium.chrome.browser.hub.HubPaneHostProperties.COLOR_SCHEME;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.EDGE_TO_EDGE_BOTTOM_INSETS;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 
@@ -47,6 +48,8 @@ public class HubPaneHostMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private @Mock Pane mPane;
+    private @Mock Pane mIncognitoPane;
+    private @Mock PaneManager mPaneManager;
     private @Mock FullButtonData mButtonData;
     private @Mock ViewGroup mRootView;
     private @Mock EdgeToEdgeController mEdgeToEdgeController;
@@ -66,6 +69,14 @@ public class HubPaneHostMediatorUnitTest {
 
         when(mPane.getRootView()).thenReturn(mRootView);
         when(mPane.getActionButtonDataSupplier()).thenReturn(mActionButtonSupplier);
+
+        when(mPaneManager.getPaneForId(PaneId.TAB_SWITCHER)).thenReturn(mPane);
+        when(mPaneManager.getPaneForId(PaneId.INCOGNITO_TAB_SWITCHER)).thenReturn(mIncognitoPane);
+
+        when(mPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
+        when(mPane.getColorScheme()).thenReturn(HubColorScheme.DEFAULT);
+        when(mIncognitoPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
+        when(mIncognitoPane.getColorScheme()).thenReturn(HubColorScheme.INCOGNITO);
     }
 
     @Test
@@ -177,5 +188,25 @@ public class HubPaneHostMediatorUnitTest {
     public void testDisableEdgeToEdgeOnNativePage() {
         new HubPaneHostMediator(mModel, mPaneSupplier, mEdgeToEdgeSupplier);
         assertFalse("Expecting observers for edge to edge.", mEdgeToEdgeSupplier.hasObservers());
+    }
+
+    @Test
+    @SmallTest
+    public void testHubColorScheme() {
+        new HubPaneHostMediator(mModel, mPaneSupplier, mEdgeToEdgeSupplier);
+        mPaneSupplier.set(mPane);
+        assertEquals(
+                new HubColorSchemeUpdate(HubColorScheme.DEFAULT, HubColorScheme.DEFAULT),
+                mModel.get(COLOR_SCHEME));
+
+        mPaneSupplier.set(mIncognitoPane);
+        assertEquals(
+                new HubColorSchemeUpdate(HubColorScheme.INCOGNITO, HubColorScheme.DEFAULT),
+                mModel.get(COLOR_SCHEME));
+
+        mPaneSupplier.set(null);
+        assertEquals(
+                new HubColorSchemeUpdate(HubColorScheme.DEFAULT, HubColorScheme.INCOGNITO),
+                mModel.get(COLOR_SCHEME));
     }
 }
