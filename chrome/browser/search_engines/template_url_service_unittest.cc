@@ -137,36 +137,6 @@ std::unique_ptr<TemplateURLData> CreateTestSearchEngine() {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-// Creates a `TemplateURLData` corresponding to a enterprise search engine set
-// by policy, with some fake data generated from `keyword` and the
-// `featured_by_policy` field set according to the corresponding parameter.
-std::unique_ptr<TemplateURLData> CreateEnterpriseSearchEntry(
-    const std::string& keyword,
-    bool featured_by_policy) {
-  auto data = std::make_unique<TemplateURLData>();
-  data->SetShortName(base::UTF8ToUTF16(keyword + "name"));
-  data->SetKeyword(base::UTF8ToUTF16(keyword));
-  data->SetURL(std::string("https://") + keyword + ".com/q={searchTerms}");
-  data->created_by_policy = TemplateURLData::CreatedByPolicy::kSiteSearch;
-  data->enforced_by_policy = false;
-  data->featured_by_policy = featured_by_policy;
-  data->is_active = TemplateURLData::ActiveStatus::kTrue;
-  data->favicon_url =
-      GURL(std::string("https://") + keyword + ".com/favicon.ico");
-  data->safe_for_autoreplace = false;
-  data->date_created = base::Time();
-  data->last_modified = base::Time();
-  return data;
-}
-
-// Creates a `TemplateURLData` corresponding to a enterprise search engine set
-// by policy, with some fake data generated from `keyword` and
-// `featured_by_policy` set as false.
-std::unique_ptr<TemplateURLData> CreateEnterpriseSearchEntry(
-    const std::string& keyword) {
-  return CreateEnterpriseSearchEntry(keyword, /*featured_by_policy=*/false);
-}
-
 // Creates a `TemplateURLData` with some fake data generated from `keyword`
 // and with the `safe_for_autoreplace` field set according to the
 // corresponding parameter.
@@ -2603,7 +2573,98 @@ TEST_P(TemplateURLServiceTest, EmitTemplateURLActiveOnStartupHistogram) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-TEST_P(TemplateURLServiceTest, EnterpriseSearchPolicyBeforeLoading) {
+
+struct EnterpriseSearchTestParam {
+  bool choice_enabled;
+  TemplateURLData::CreatedByPolicy created_by_policy;
+};
+
+static std::string EnterpriseSearchTestParamToTestSuffix(
+    const ::testing::TestParamInfo<EnterpriseSearchTestParam>& info) {
+  // Note: ensures this only runs for site search and search aggregator
+  // policies.
+  CHECK(info.param.created_by_policy ==
+            TemplateURLData::CreatedByPolicy::kSiteSearch ||
+        info.param.created_by_policy ==
+            TemplateURLData::CreatedByPolicy::kSearchAggregator);
+  return base::StringPrintf(
+      "%s_%s",
+      info.param.choice_enabled ? "SearchEngineChoiceEnabled"
+                                : "SearchEngineChoiceDisabled",
+      info.param.created_by_policy ==
+              TemplateURLData::CreatedByPolicy::kSiteSearch
+          ? "SiteSearch"
+          : "SearchAggregator");
+}
+
+class TemplateURLServiceEnterpriseSearchTest
+    : public TemplateURLServiceTestBase,
+      public testing::WithParamInterface<EnterpriseSearchTestParam> {
+ public:
+  TemplateURLServiceEnterpriseSearchTest()
+      : TemplateURLServiceTestBase(GetParam().choice_enabled),
+        created_by_policy_(GetParam().created_by_policy) {
+    EXPECT_EQ(
+        IsSearchEngineChoiceEnabled(),
+        base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger));
+  }
+
+ protected:
+  // Creates a `TemplateURLData` corresponding to a enterprise search engine set
+  // by policy, with some fake data generated from `keyword` and the
+  // `featured_by_policy` field set according to the corresponding parameter.
+  std::unique_ptr<TemplateURLData> CreateEnterpriseSearchEntry(
+      const std::string& keyword,
+      bool featured_by_policy) {
+    auto data = std::make_unique<TemplateURLData>();
+    data->SetShortName(base::UTF8ToUTF16(keyword + "name"));
+    data->SetKeyword(base::UTF8ToUTF16(keyword));
+    data->SetURL(std::string("https://") + keyword + ".com/q={searchTerms}");
+    data->created_by_policy = created_by_policy_;
+    data->enforced_by_policy = false;
+    data->featured_by_policy = featured_by_policy;
+    data->is_active = TemplateURLData::ActiveStatus::kTrue;
+    data->favicon_url =
+        GURL(std::string("https://") + keyword + ".com/favicon.ico");
+    data->safe_for_autoreplace = false;
+    data->date_created = base::Time();
+    data->last_modified = base::Time();
+    return data;
+  }
+
+  // Creates a `TemplateURLData` corresponding to a enterprise search engine set
+  // by policy, with some fake data generated from `keyword` and
+  // `featured_by_policy` set as false.
+  std::unique_ptr<TemplateURLData> CreateEnterpriseSearchEntry(
+      const std::string& keyword) {
+    return CreateEnterpriseSearchEntry(keyword, /*featured_by_policy=*/false);
+  }
+
+  TemplateURLData::CreatedByPolicy created_by_policy_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    TemplateURLServiceEnterpriseSearchTest,
+    ::testing::Values(
+        EnterpriseSearchTestParam{
+            .choice_enabled = false,
+            .created_by_policy = TemplateURLData::CreatedByPolicy::kSiteSearch},
+        EnterpriseSearchTestParam{
+            .choice_enabled = false,
+            .created_by_policy =
+                TemplateURLData::CreatedByPolicy::kSearchAggregator},
+        EnterpriseSearchTestParam{
+            .choice_enabled = true,
+            .created_by_policy = TemplateURLData::CreatedByPolicy::kSiteSearch},
+        EnterpriseSearchTestParam{
+            .choice_enabled = true,
+            .created_by_policy =
+                TemplateURLData::CreatedByPolicy::kSearchAggregator}),
+    &EnterpriseSearchTestParamToTestSuffix);
+
+TEST_P(TemplateURLServiceEnterpriseSearchTest,
+       EnterpriseSearchPolicyBeforeLoading) {
   constexpr char kKeyword1[] = "enterprise_search_1";
   constexpr char kKeyword2[] = "enterprise_search_2";
 
@@ -2652,7 +2713,8 @@ TEST_P(TemplateURLServiceTest, EnterpriseSearchPolicyBeforeLoading) {
   }
 }
 
-TEST_P(TemplateURLServiceTest, EnterpriseSearchPolicyAfterLoading) {
+TEST_P(TemplateURLServiceEnterpriseSearchTest,
+       EnterpriseSearchPolicyAfterLoading) {
   constexpr char kKeyword1[] = "enterprise_search_1";
   constexpr char kKeyword2[] = "enterprise_search_2";
 
@@ -2678,7 +2740,7 @@ TEST_P(TemplateURLServiceTest, EnterpriseSearchPolicyAfterLoading) {
   }
 }
 
-TEST_P(TemplateURLServiceTest, EnterpriseSearchPolicyUpdates) {
+TEST_P(TemplateURLServiceEnterpriseSearchTest, EnterpriseSearchPolicyUpdates) {
   constexpr char kKeyword1[] = "enterprise_search_1";
   constexpr char kKeyword2[] = "enterprise_search_2";
   constexpr char kKeyword3[] = "enterprise_search_3";
@@ -2752,7 +2814,7 @@ TEST_P(TemplateURLServiceTest, EnterpriseSearchPolicyUpdates) {
   EXPECT_FALSE(model()->GetTemplateURLForKeyword(kKeyword4U16));
 }
 
-TEST_P(TemplateURLServiceTest,
+TEST_P(TemplateURLServiceEnterpriseSearchTest,
        NonFeaturedEnterpriseSearchPolicyConflictWithExistingEngines) {
   constexpr char kKeyword1[] = "enterprise_search_1";
   constexpr char kKeyword2[] = "enterprise_search_2";
@@ -2821,7 +2883,7 @@ TEST_P(TemplateURLServiceTest,
   }
 }
 
-TEST_P(TemplateURLServiceTest,
+TEST_P(TemplateURLServiceEnterpriseSearchTest,
        FeaturedEnterpriseSearchPolicyConflictWithExistingEngines) {
   constexpr char kKeyword1[] = "enterprise_search_1";
   constexpr char kKeywordWithAt1[] = "@enterprise_search_1";
@@ -2904,7 +2966,7 @@ TEST_P(TemplateURLServiceTest,
   }
 }
 
-TEST_P(TemplateURLServiceTest,
+TEST_P(TemplateURLServiceEnterpriseSearchTest,
        NonFeaturedEnterpriseSearchPolicyConflictWithDSP) {
   base::HistogramTester histogram_tester;
 
@@ -2950,7 +3012,7 @@ TEST_P(TemplateURLServiceTest,
   AssertEquals(dse, model()->GetTemplateURLForKeyword(dse->keyword()));
 }
 
-TEST_P(TemplateURLServiceTest,
+TEST_P(TemplateURLServiceEnterpriseSearchTest,
        NonFeaturedEnterpriseSearchPolicyConflictWithUserDefinedDSP) {
   constexpr char kKeyword[] = "keyword";
   constexpr char16_t kKeywordU16[] = u"keyword";
@@ -3000,7 +3062,7 @@ TEST_P(TemplateURLServiceTest,
   AssertEquals(user_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
 }
 
-TEST_P(TemplateURLServiceTest,
+TEST_P(TemplateURLServiceEnterpriseSearchTest,
        NonFeaturedEnterpriseSearchPolicyConflictWithDSPSetByExtension) {
   constexpr char kKeyword[] = "keyword";
   constexpr char16_t kKeywordU16[] = u"keyword";
@@ -3047,7 +3109,7 @@ TEST_P(TemplateURLServiceTest,
   AssertEquals(extension_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
 }
 
-TEST_P(TemplateURLServiceTest,
+TEST_P(TemplateURLServiceEnterpriseSearchTest,
        FeaturedEnterpriseSearchPolicyConflictWithUserDefinedDSP) {
   constexpr char kKeyword[] = "@keyword";
   constexpr char16_t kKeywordU16[] = u"@keyword";
@@ -3099,7 +3161,7 @@ TEST_P(TemplateURLServiceTest,
   AssertEquals(user_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
 }
 
-TEST_P(TemplateURLServiceTest,
+TEST_P(TemplateURLServiceEnterpriseSearchTest,
        FeaturedEnterpriseSearchPolicyConflictWithDSPSetByExtension) {
   constexpr char kKeyword[] = "@keyword";
   constexpr char16_t kKeywordU16[] = u"@keyword";
@@ -3148,7 +3210,7 @@ TEST_P(TemplateURLServiceTest,
   AssertEquals(extension_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
 }
 
-TEST_P(TemplateURLServiceTest,
+TEST_P(TemplateURLServiceEnterpriseSearchTest,
        FeaturedEnterpriseSearchPolicyConflictWithStarterPack) {
   constexpr char kBookmarksKeyword[] = "@bookmarks";
   constexpr char16_t kBookmarksKeywordU16[] = u"@bookmarks";
@@ -3197,6 +3259,44 @@ TEST_P(TemplateURLServiceTest,
                model()->GetTemplateURLForKeyword(kBookmarksKeywordU16));
 }
 
+TEST_P(TemplateURLServiceEnterpriseSearchTest, SearchEngineRemoval) {
+  constexpr char kKeyword[] = "enterprise_search";
+  constexpr char kKeywordWithAt[] = "@enterprise_search";
+  constexpr char16_t kKeywordU16[] = u"enterprise_search";
+  constexpr char16_t kKeywordWithAtU16[] = u"@enterprise_search";
+
+  // Reset the model to ensure an `EnterpriseSearchManager` instance is
+  // created.
+  test_util()->ResetModel(/*verify_load=*/true);
+
+  // Set a managed preference that establishes enterprise search providers.
+  EnterpriseSearchManager::OwnedTemplateURLDataVector
+      initial_enterprise_search_engines;
+  initial_enterprise_search_engines.push_back(
+      CreateEnterpriseSearchEntry(kKeyword));
+  initial_enterprise_search_engines.push_back(
+      CreateEnterpriseSearchEntry(kKeywordWithAt));
+
+  SetManagedSearchSettingsPreference(initial_enterprise_search_engines,
+                                     test_util()->profile());
+
+  // Ensure managed enterprise search engines can be accessed.
+  for (auto& engine : initial_enterprise_search_engines) {
+    const TemplateURL* actual_turl =
+        model()->GetTemplateURLForKeyword(engine->keyword());
+    ASSERT_TRUE(actual_turl);
+    ExpectSimilar(engine.get(), &actual_turl->data());
+  }
+
+  // Update the policy deleting all engines.
+  SetManagedSearchSettingsPreference(
+      EnterpriseSearchManager::OwnedTemplateURLDataVector(),
+      test_util()->profile());
+
+  // Ensure the deleted enterprise search engine can no longer be accessed.
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(kKeywordU16));
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(kKeywordWithAtU16));
+}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

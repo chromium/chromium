@@ -2176,7 +2176,9 @@ void TemplateURLService::RemoveFromMaps(const TemplateURL* template_url) {
   }
 
   if (template_url->created_by_policy() ==
-      TemplateURLData::CreatedByPolicy::kSiteSearch) {
+          TemplateURLData::CreatedByPolicy::kSiteSearch ||
+      template_url->created_by_policy() ==
+          TemplateURLData::CreatedByPolicy::kSearchAggregator) {
     enterprise_search_keyword_to_turl_.erase(keyword);
   }
 
@@ -2199,7 +2201,9 @@ void TemplateURLService::AddToMaps(TemplateURL* template_url) {
   }
 
   if (template_url->created_by_policy() ==
-      TemplateURLData::CreatedByPolicy::kSiteSearch) {
+          TemplateURLData::CreatedByPolicy::kSiteSearch ||
+      template_url->created_by_policy() ==
+          TemplateURLData::CreatedByPolicy::kSearchAggregator) {
     enterprise_search_keyword_to_turl_[keyword] = template_url;
   }
 
@@ -2627,10 +2631,6 @@ void TemplateURLService::ApplyEnterpriseSearchChanges(
                  /*new_values=*/*search_engine));
     }
   }
-
-  // TODO(b/314162426): Check interaction with DSP not set by policy.
-  // TODO(b/309456406): Override existing SE if keywords starts with "@" and
-  //                    this is a featured site search entry.
 }
 
 void TemplateURLService::EnterpriseSearchChanged(
@@ -3044,7 +3044,9 @@ bool TemplateURLService::RemoveDuplicateReplaceableEnginesOf(
   // Do not replace existing search engines if `candidate` was created by the
   // policy.
   if (candidate->created_by_policy() ==
-      TemplateURLData::CreatedByPolicy::kSiteSearch) {
+          TemplateURLData::CreatedByPolicy::kSiteSearch ||
+      candidate->created_by_policy() ==
+          TemplateURLData::CreatedByPolicy::kSearchAggregator) {
     return false;
   }
 
