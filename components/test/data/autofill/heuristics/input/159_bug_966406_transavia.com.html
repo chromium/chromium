@@ -1,6 +1,57 @@
 <!DOCTYPE html>
 <html lang="fr" class="no-js" prefix="og: http://ogp.me/ns#">
 <head>
+    
+
+<script type="text/javascript">
+        var appInsights = window.appInsights ||
+            function(a) {
+                function b(a) {
+                    c[a] = function() {
+                        var b = arguments;
+                        c.queue.push(function() { c[a].apply(c, b) })
+                    }
+                }
+
+                var c = { config: a }, d = document, e = window;
+                setTimeout(function() {
+                    var b = d.createElement("script");
+                    b.src =
+                        a.url || "https://az416426.vo.msecnd.net/scripts/a/ai.0.js", d.getElementsByTagName("script")[0]
+                        .parentNode.appendChild(b)
+                });
+                try {
+                    c.cookie = d.cookie
+                } catch (a) {
+                }
+                c.queue = [];
+                for (var f = ["Event", "Exception", "Metric", "PageView", "Trace", "Dependency"]; f.length;)
+                    b("track" + f.pop());
+                if (b("setAuthenticatedUserContext"), b("clearAuthenticatedUserContext"), b("startTrackEvent"),
+                    b("stopTrackEvent"), b("startTrackPage"), b("stopTrackPage"), b("flush"), !a
+                        .disableExceptionTracking) {
+                    f = "onerror", b("_" + f);
+                    var g = e[f];
+                    e[f] = function(a, b, d, e, h) {
+                        var i = g && g(a, b, d, e, h);
+                        return!0 !== i && c["_" + f](a, b, d, e, h), i
+                    }
+                }
+                return c
+            }({
+                instrumentationKey: 'e85ed266-fd09-4fa6-b294-dcd6d59c5190'
+            });
+
+        function getCookie(name) {
+            var v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+            return v ? v[2] : null;
+        }
+
+        window.appInsights =
+            appInsights, appInsights.queue && 0 === appInsights.queue.length && appInsights.trackPageView(),
+            appInsights.config.isCookieUseDisabled = (getCookie("cookies_accepted") === "false");
+</script>
+
 
         <meta name="robots" content="index, follow">
 
@@ -9,7 +60,7 @@
 
     <title>Se connecter</title>
 
-
+    
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -40,10 +91,10 @@
 
 
 
-
-
-
-
+    
+    
+    
+    
     <link rel="alternate" hreflang="nl-NL" href="/nl-NL/mijn-transavia/account/logon/" />
     <link rel="alternate" hreflang="en-NL" href="/en-NL/my-transavia/account/logon/" />
     <link rel="alternate" hreflang="en-UK" href="/en-UK/my-transavia/account/logon/" />
@@ -61,21 +112,81 @@
     <meta name="msapplication-TileImage" content="/static/img/favicon/mstile-144x144.png">
     <meta name="application-name" content="Transavia">
 
-
+    
 
     <link href="/static/css/transavia?v=RjpFgADw9gM0bgvI-Z33sBYwclf8JUKvc4gmQsiDiNI1" rel="stylesheet"/>
 
 
-
+    
 
     <meta name="theme-color" content="#00d66c">
 <link rel="manifest" href="/fr-FR/api/mobile/manifest/">
+    <script>
+        (function () {
+            function isLocalStorageSupported() {
+                var a = 'TransaviaLocalStorageTest';
+                try {
+                    localStorage.setItem(a, a);
+                    localStorage.removeItem(a);
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            }
 
+            if (isLocalStorageSupported() && localStorage.getItem('NexaFontLoaded')) {
+                document.documentElement.className += ' fonts-loaded';
+            }
+        })();
+    </script>
+    <script>
+        window.transavia = {};
+        window.transavia.facebook = {
+            appId: '1066697690043809',
+            version: 'v2.8'
+        }
+    </script>
+    
+
+    
+
+<script>
+    (function ()
+    {
+        var relay_id = "1194-v1";
+        (function(a, d, e, b, f, c, s) {
+            a[b] = a[b] || function () { a[b].q.push(arguments); };
+            a[b].q = []; c = d.createElement(e); c.async = 1; c.src = "//tdn.r42tag.com/lib/" + f + ".js";
+            s = d.getElementsByTagName(e)[0]; s.parentNode.insertBefore(c, s);
+        })
+
+        (window, document, "script", "_st", relay_id);
+
+        var _waq = window._waq || (window._waq = []);
+        _waq.default_consent_level = { level: -1 };
+
+            window._waq.push({eventName:"pageview",eventData:{
+  "page_url": "/fr-FR/mon-transavia/compte/logon/",
+  "environment": "PROD",
+  "server_id": "",
+  "page_name": "customeraccounts/logon",
+  "page_type": "my-transavia",
+  "language": "FR",
+  "country_code": "FR",
+  "booking_type": "One-Way",
+  "passenger_name_record": "",
+  "userId": "",
+  "existing_total_price_booking": "0.00",
+  "user_uid": "",
+  "user_logged_in": "no"
+}});
+    })();
+</script>
 </head>
 
 
 <body >
-
+    
 
 
 
@@ -83,7 +194,7 @@
     <a href="/" class="header_logo">
         <img src="/static/img/logos/transavia-logo.svg" alt="Logo Transavia">
     </a>
-
+    
 
 <nav class="navigation navigation--vertical navigation--bbl" data-navigation data-module="[{&quot;path&quot;:&quot;ui/HamburgerNavigation&quot;}]">
     <div class="header_bar">
@@ -99,7 +210,7 @@
     </a>
 </p>
         <script type="text/template" data-horizontal-primary-navigation-template>
-
+            
 
 <div class="primary-navigation primary-navigation--horizontal navigation_horizontal-primary-navigation is-hidden" data-prevent-wrapping-item>
     <ul class="bulletless primary-navigation_list">
@@ -636,7 +747,7 @@
 <div class="HV-gc">
     <div class="HV-gu--bp25--y1-1 HV-gu--bp25--x1-2 HV-gu--bp25--66p HV-gu--bp30--y1-1 HV-gu--bp30--x1-2 HV-gu--bp30--50p">
         <div class="HV-gs-type-e--bp0">
-
+            
 
 <form method="get" action="https://www.transavia.com/fr-FR/questions-frequemment-posees/resultats/" id="search"  >
         <div class="textfield textfield--merge-input-and-button">
@@ -664,7 +775,7 @@
 
         </script>
         <script type="text/template" data-horizontal-secondary-navigation-template>
-
+            
 
 <div class="secondary-navigation secondary-navigation--horizontal navigation_horizontal-secondary-navigation is-hidden" data-prevent-wrapping-item>
     <ul class="bulletless secondary-navigation_list">
@@ -712,7 +823,7 @@
 </ul>
         </div>
     </script>
-
+    
     <div id="navigation" class="navigation_collapsed-navigation">
         <div class="navigation_collapsed-navigation-content">
             <p class="navigation_button-close-wrapper">
@@ -723,7 +834,7 @@
             <div class="navigation_container">
                 <div class="navigation_vertical-primary-and-secondary-navigation-wrapper">
                     <div class="primary-navigation primary-navigation--vertical navigation_primary-navigation" data-vertical-primary-navigation>
-
+                        
 
 <ul class="bulletless primary-navigation_list">
             <li class="primary-navigation_item">
@@ -744,7 +855,7 @@
                             <span class="icon-font icon-up-small"></span>
                             Planifiez et r&#233;servez
                         </a>
-
+                        
 <div class="toggle-content-level-1" id="sub-navigation-planifiezetrservez">
     <div class="sub-navigation sub-navigation--vertical">
         <div class="sub-navigation-level-1--vertical">
@@ -833,7 +944,7 @@
                             <span class="icon-font icon-up-small"></span>
                             G&#233;rez votre r&#233;servation
                         </a>
-
+                        
 <div class="toggle-content-level-1" id="sub-navigation-grezvotrerservation">
     <div class="sub-navigation sub-navigation--vertical">
         <div class="sub-navigation-level-1--vertical">
@@ -897,7 +1008,7 @@
                             <span class="icon-font icon-up-small"></span>
                             Services
                         </a>
-
+                        
 <div class="toggle-content-level-1" id="sub-navigation-services">
     <div class="sub-navigation sub-navigation--vertical">
         <div class="sub-navigation-level-1--vertical">
@@ -955,7 +1066,7 @@
             </ul>
         </div>
 <div class="HV-gs-type-e--bp0">
-
+    
 
 <form method="get" action="https://www.transavia.com/fr-FR/questions-frequemment-posees/resultats/" id="search"  >
         <div class="textfield textfield--merge-input-and-button">
@@ -1074,19 +1185,19 @@
 
 
 <div data-module='[{"path": "ui/PreventZoom"}]' class="theme theme-green">
-
+    
 
 
     <div class="HV-gs-main--bp0 HV-gs-main--bp10" id="top">
+        
 
 
-
-
+        
 
 <div class="content-block content-block-bg-image block-0 block-b366e042-fa6c-46d7-94fb-c3aa5c1f4bf3 theme-landing-header--header-top ">
     <section>
         <div class="HV-gw--bp0 HV-gw--bp5 HV-gw--bp10">
-
+            
 
 <section class="personal-account-login">
     <div class="HV-gs-main--bp0 HV-gs-main--bp10">
@@ -1106,14 +1217,14 @@
                             },
                             "conditions": "media:{(min-width:48em)}"
                         }]'>
-
+                    
 
 <div class="HV-gu--bp0--y1-2 HV-gu-collapse--bp20--x1-2 HV-gu--bp20--y1-1 HV-gu--bp20--50p flex-container HV-gu--preserve-last-margin">
     <div class="panel panel--collapse-right--bp20 flex-item panel-personal-account position-relative">
         <header>
             <div class="panel_section" data-title>
                 <h1 class="h4 no-margin-bottom">
-                    <span class="icon-font icon-mainbooker"></span> Se connecter sur Mon Transavia
+                    <span class="icon-font icon-mainbooker"></span> Se connecter sur Mon Transavia 
                 </h1>
             </div>
             <div class="panel_section no-padding-top no-padding-bottom">
@@ -1134,7 +1245,7 @@
             <div data-container-selector class="is-open">
                 <div data-toggled-content-selector>
                     <!-- gigya -->
-
+                    
 
 <div data-module='[
                     {
@@ -1173,17 +1284,22 @@
                                             }
                                         ]'>
 </div>
-
+<script>
+    transaviaGigya = {
+        "customLangParams": {"account_temporarily_locked_out":"Votre compte est temporairement bloqué.","and":"","available":"","checking":"","choose_file":"","email_address_is_invalid":"L\u0027adresse e-mail que vous avez saisie n’est pas correcte. ","email_already_exists":"Un compte a déjà été créé avec cette adresse e-mail. ","fair":"","invalid_fieldname":"","invalid_login_or_password":"Cette combinaison d\u0027adresse e-mail et de mot de passe n\u0027existe pas. ","invalid_username_or_password":"Cette combinaison d\u0027adresse e-mail et de mot de passe n\u0027existe pas. ","login_identifier_exists":"","maximum_size_of_3mb.":"","no_file_chosen":"","not_available":"","num_characters_total":"","num_of_the_following_groups":"","old_password_cannot_be_the_same_as_new_password":"","password_strength_colon":"","password_does_not_meet_complexity_requirements":"Votre mot de passe est trop faible. Choisissez un mot de passe plus fort. ","password_must_contain_at_least":"","passwords_do_not_match":"","please_enter_a_valid_fieldname":"","please_enter_fieldname":"","profilePhoto_fileSizeError":"","sorry_we_are_not_able_to_process_your_registration":"Désolés, nous n\u0027avons pas pu traiter votre demande. ","strong":"","the_characters_you_entered_didn\u0027t_match_the_word_verification._please_try_again":"","there_are_errors_in_your_form_please_try_again":"Certains champs ne sont pas remplis correctement. Veuillez réessayer. ","there_is_no_user_with_that_username_or_email":"L\u0027adresse e-mail que vous avez saisie n’est pas correcte. ","these_passwords_do_not_match":"","this_field_is_required":"Ce champ est requis.","too_weak":"Votre mot de passe est trop faible. Choisissez un mot de passe plus fort. ","unique_identifier_exists":"","username_already_exists":"","very_strong":"","weak":"","wrong_password":"","your_age_does_not_meet_the_minimal_age_requirement":""},
+        "responseErrorMessages": {"400006":{"default":"Un contretemps a eu lieu. Veuillez r\u0026eacute;essayer.","gigya-change-password-screen":"Votre nouveau mot de passe ne peut \u0026ecirc;tre identique \u0026agrave; votre ancien mot de passe.","gigya-reset-password-screen":"Oups, le lien vous permettant de choisir un nouveau mot de passe a expir\u0026eacute;. Retournez sur la page de connexion et cliquez \u0026agrave; nouveau sur \u0026laquo; Mot de passe oubli\u0026eacute; \u0026raquo;."},"400097":"Mettez votre navigateur \u0026agrave; jour pour pouvoir utiliser Mon Transavia.","400106":"H\u0026eacute;las, aucune connexion internet n\u0027est disponible pour le moment","403002":"Votre session est expir\u0026eacute;e.\u0026nbsp;","403042":"Cette combinaison d\u0027adresse e-mail et de mot de passe n\u0027existe pas.\u0026nbsp;","403047":"Il n\u0027existe aucun compte li\u0026eacute; \u0026agrave; cette adresse e-mail.","403120":"","504001":"Votre session est termin\u0026eacute;e.","504002":"Un contretemps a eu lieu. Veuillez r\u0026eacute;essayer.","default":"Un contretemps a eu lieu.\u0026nbsp;Veuillez r\u0026eacute;essayer."}
+    }
+</script>
                     <div class="gigya-screen-set" id="PersonalAccount-RegistrationLogin" style="display: none;"
                          data-on-pending-verification-screen="PersonalAccount-RegistrationLogin/gigya-verification-pending-screen">
-
+                        
 
 
 <div id="gigya-login-screen" data-caption="" data-width="auto" class="gigya-screen">
     <div class="panel_section no-padding-top">
         <form class="gigya-login-form" id="gigya-login-form">
             <div class="fields">
-
+                
 <div class="field textfield">
     <label for="loginID">Adresse e-mail</label>
     <div class="textfield">
@@ -1207,7 +1323,7 @@
         <span class="notification-message notification-inline notification-error gigya-error-msg" data-bound-to="password"></span>
     </div>
 </div>
-
+                
 
 <div class="margin-bottom-1rem is-hidden" data-error>
     <div class="notification notification-error">
@@ -1283,7 +1399,7 @@
         </div>
     </div>
 </div>
-
+                    
 
 <div class="HV-gu--bp0--y2-2 HV-gu-collapse--bp20--x2-2 HV-gu--bp20--y1-1 HV-gu--bp20--50p flex-container">
     <div class="panel panel--collapse-left--bp20 flex-item panel-bbl">
@@ -1316,20 +1432,20 @@
                                     "siteKey": "6LeCwmoUAAAAAJc7kVyrp1_r4SLvDR_RW3c_iCu2",
                                     "lang": "fr"
                                 }}'>
-
+                    
                     <input name="__RequestVerificationToken" type="hidden" value="xVbGbH73BBfmqkduV7j_3q_nwOd3LLj8-vBhzhSC1P_IpX1-_tSi3n-rEw-vgvIJNv9IkrF-iKPm_q3gisLAzy0OEs5QFJaEtRNZFjadNcs1" />
                     <div class="panel_section no-padding-top">
+                        
 
 
-
-
+                        
 
 
                         <div class="fields">
                             <div class="field textfield field-block">
                                 <!-- field-error -->
                                 <label for="retrieveBookingByLastname_RecordLocator">Num&#233;ro de r&#233;servation</label>
-
+                                
 
 
     <div class="tooltip-dialog" data-module="ui/TooltipDialog" data-options='' title="Si vous avez effectué votre réservation sur notre site internet ou via notre Service Clients, vous trouverez votre numéro de réservation sur la confirmation de réservation reçue par e-mail. Si vous avez réservé votre vol depuis un tour opérateur ou un agent de voyage, vous trouverez votre numéro de réservation sur les documents de voyage transmis par votre tour opérateur ou votre agent de voyage.">
@@ -1418,9 +1534,9 @@
                                 </div>
                             </div>
                             <div class="field no-padding-bottom">
-
+                                
                                 <button type="submit" class="button button-primary">Consulter la réservation</button>
-
+                                
                                     <p><div  id="recaptcha"></div></p>
                             </div>
                         </div>
@@ -1444,10 +1560,15 @@
     </div>
 </section>
 
-
+<script>
+    transaviaGigya = {
+        "customLangParams": {"account_temporarily_locked_out":"Votre compte est temporairement bloqué.","and":"","available":"","checking":"","choose_file":"","email_address_is_invalid":"L\u0027adresse e-mail que vous avez saisie n’est pas correcte. ","email_already_exists":"Un compte a déjà été créé avec cette adresse e-mail. ","fair":"","invalid_fieldname":"","invalid_login_or_password":"Cette combinaison d\u0027adresse e-mail et de mot de passe n\u0027existe pas. ","invalid_username_or_password":"Cette combinaison d\u0027adresse e-mail et de mot de passe n\u0027existe pas. ","login_identifier_exists":"","maximum_size_of_3mb.":"","no_file_chosen":"","not_available":"","num_characters_total":"","num_of_the_following_groups":"","old_password_cannot_be_the_same_as_new_password":"","password_strength_colon":"","password_does_not_meet_complexity_requirements":"Votre mot de passe est trop faible. Choisissez un mot de passe plus fort. ","password_must_contain_at_least":"","passwords_do_not_match":"","please_enter_a_valid_fieldname":"","please_enter_fieldname":"","profilePhoto_fileSizeError":"","sorry_we_are_not_able_to_process_your_registration":"Désolés, nous n\u0027avons pas pu traiter votre demande. ","strong":"","the_characters_you_entered_didn\u0027t_match_the_word_verification._please_try_again":"","there_are_errors_in_your_form_please_try_again":"Certains champs ne sont pas remplis correctement. Veuillez réessayer. ","there_is_no_user_with_that_username_or_email":"L\u0027adresse e-mail que vous avez saisie n’est pas correcte. ","these_passwords_do_not_match":"","this_field_is_required":"Ce champ est requis.","too_weak":"Votre mot de passe est trop faible. Choisissez un mot de passe plus fort. ","unique_identifier_exists":"","username_already_exists":"","very_strong":"","weak":"","wrong_password":"","your_age_does_not_meet_the_minimal_age_requirement":""},
+        "responseErrorMessages": {"400006":{"default":"Un contretemps a eu lieu. Veuillez r\u0026eacute;essayer.","gigya-change-password-screen":"Votre nouveau mot de passe ne peut \u0026ecirc;tre identique \u0026agrave; votre ancien mot de passe.","gigya-reset-password-screen":"Oups, le lien vous permettant de choisir un nouveau mot de passe a expir\u0026eacute;. Retournez sur la page de connexion et cliquez \u0026agrave; nouveau sur \u0026laquo; Mot de passe oubli\u0026eacute; \u0026raquo;."},"400097":"Mettez votre navigateur \u0026agrave; jour pour pouvoir utiliser Mon Transavia.","400106":"H\u0026eacute;las, aucune connexion internet n\u0027est disponible pour le moment","403002":"Votre session est expir\u0026eacute;e.\u0026nbsp;","403042":"Cette combinaison d\u0027adresse e-mail et de mot de passe n\u0027existe pas.\u0026nbsp;","403047":"Il n\u0027existe aucun compte li\u0026eacute; \u0026agrave; cette adresse e-mail.","403120":"","504001":"Votre session est termin\u0026eacute;e.","504002":"Un contretemps a eu lieu. Veuillez r\u0026eacute;essayer.","default":"Un contretemps a eu lieu.\u0026nbsp;Veuillez r\u0026eacute;essayer."}
+    }
+</script>
         </div>
     </section>
-
+    
 
 
 <style type="text/css">
@@ -1480,19 +1601,19 @@
     </div>
 
 </div>
+    
+
+    
 
 
+<footer class="footer">  
 
-
-
-<footer class="footer">
-
-
+    
     <div class="services">
         <h2 class="h4">Pouvons-nous vous aider ?</h2>
         <div class="HV-gw--bp0 HV-gw--bp5 HV-gw--bp10 HV-gw-column-centered-type-a">
             <div class="HV-gs--bp0 HV-gs--bp10">
-
+                
 
 <form method="get" action="https://www.transavia.com/fr-FR/questions-frequemment-posees/resultats/" id="search2"  >
         <div class="textfield textfield--merge-input-and-button">
@@ -1631,12 +1752,112 @@
 </footer>
 
 
+    <script src='/scripts/transavia?v=iky6_DM23Ru25us9lJ7Sxlp6uV0jcSg9Rho4VkJVpag1' defer='defer'></script>
 
 
 
+    
 
 
 
+    <script>
+    document.addEventListener &&
+        document.addEventListener("DOMContentLoaded",
+            function(event) {
+                //replace no-js with js
+                this.documentElement.classList.remove('no-js');
+                this.documentElement.classList.add('js');
 
+                // setup requirejs
+                requirejs.config({
+                            baseUrl: '/Scripts/js/',
+
+                    urlArgs: 'q=d4FawOtw57y-SyF--YxYGKNOYIdaGM2J8mD_QW_R_Ao1',
+                    shim: {
+                        "vendor/fontfaceobserver": {
+                            "exports": "FontFaceObserver"
+                        }
+                    },
+                    paths: {
+                        'jquery': 'vendor/jquery-2.1.1',
+                        'conditioner': 'vendor/conditioner/conditioner-1.0.1',
+                        'utils/contains': 'vendor/conditioner/utils/contains',
+                        'utils/extendClassOptions': 'vendor/conditioner/utils/extendClassOptions',
+                        'utils/matchesSelector': 'vendor/conditioner/utils/matchesSelector',
+                        'utils/mergeObjects': 'vendor/conditioner/utils/mergeObjects',
+                        'utils/Observer': 'vendor/conditioner/utils/Observer',
+                        'utils/Promise': 'vendor/conditioner/utils/Promise',
+                        'monitors': 'extends/conditioner/monitors',
+                        'extends/observerContracts': 'config/contracts'
+                    }
+                });
+                require(['ui/NexaFontObserver'],
+                    function(nexaFontObserver) {
+                        nexaFontObserver();
+                    });
+
+                var packages = Array.prototype.slice.call(document.querySelectorAll('[data-package]'))
+                    .map(function(element) {
+                        return 'packages/' + element.getAttribute('data-package');
+                    });
+
+                requirejs(packages,
+                    function() {
+                        requirejs(['conditioner', 'autoInitialize'],
+                            function(conditioner, autoInitialize) {
+                                conditioner.init({
+                                    'modules': {
+                                        
+        'ui/DatePickerInput': {
+        'options': {
+        prevText: 'Pr&#233;c&#233;dent',
+        nextText: 'Prochaine',
+        monthNames: ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'],
+        monthNamesShort: ['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'],
+        dayNames: ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'],
+        dayNamesShort: ['dim.','lun.','mar.','mer.','jeu.','ven.','sam.'],
+        dayNamesMin: ['d','l','m','m','j','v','s'],
+        firstDay: 1
+        }
+        }
+    ,
+'ui/FormValidator': {'options':{"forms":{"access-booking":{"messages":{"retrieveBookingByLastname.RecordLocator":{"required":"Pouvez-vous s’il vous plaît vérifier votre numéro de réservation.","rangelength":"Votre numéro de réservation comprend entre 4 et 12 caractères. Astuce! Vous pouvez trouver ce numéro sur la confirmation de réservation que vous avez reçu par e-mail."},"retrieveBookingByLastname.LastName":{"rangelength":"Merci d’indiquer le nom de famille d’un des passagers de la réservation.","required":"Pouvez-vous s’il vous plaît indiquer le nom d’un des passagers. "},"retrieveBookingByLastname.Day":{"number":"$name *TODO*"},"retrieveBookingByLastname.Month":{"number":"$name *TODO*"},"retrieveBookingByLastname.Year":{"number":"$name *TODO*"}},"rules":{"retrieveBookingByLastname.RecordLocator":{"required":true,"rangelength":[4,12]},"retrieveBookingByLastname.LastName":{"rangelength":[1,255],"required":true},"retrieveBookingByLastname.Day":{"number":true},"retrieveBookingByLastname.Month":{"number":true},"retrieveBookingByLastname.Year":{"number":true}}}}}}
+
+                                    }
+                                });
+                                autoInitialize();
+                            });
+                    });
+            });
+
+    
+
+    </script>
+
+    
+
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                registrations.forEach(function(registration) {
+                    registration.unregister();
+                });
+                caches.keys().then(function(keys) {
+                    return Promise.all(keys.map(function(key) {
+                        return caches.delete(key);
+                    }));
+                });
+            });
+        });
+    }
+</script>
+
+    <script type="text/javascript">
+    
+    </script>
+
+    
+    
 </body>
 </html>
