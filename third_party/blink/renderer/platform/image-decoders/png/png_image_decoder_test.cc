@@ -16,6 +16,7 @@
 #include "skia/buildflags.h"
 #include "skia/rusty_png_feature.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 #include "third_party/blink/renderer/platform/image-decoders/png/png_decoder_factory.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -50,10 +51,16 @@ namespace blink {
 namespace {
 
 std::unique_ptr<ImageDecoder> CreatePNGDecoder(
-    ImageDecoder::AlphaOption alpha_option) {
+    ImageDecoder::AlphaOption alpha_option,
+    ColorBehavior color_behavior) {
   return CreatePngImageDecoder(alpha_option, ImageDecoder::kDefaultBitDepth,
-                               ColorBehavior::kTransformToSRGB,
+                               color_behavior,
                                ImageDecoder::kNoDecodedImageByteLimit);
+}
+
+std::unique_ptr<ImageDecoder> CreatePNGDecoder(
+    ImageDecoder::AlphaOption alpha_option) {
+  return CreatePNGDecoder(alpha_option, ColorBehavior::kTransformToSRGB);
 }
 
 std::unique_ptr<ImageDecoder> CreatePNGDecoder() {
@@ -1733,6 +1740,20 @@ TEST_P(PNGTests, cicp) {
   const skcms_ICCProfile* png_profile = transform->SrcProfile();
   ASSERT_TRUE(png_profile);
   EXPECT_TRUE(skcms_TransferFunction_isPQish(&png_profile->trc[0].parametric));
+}
+
+TEST_P(PNGTests, IgnoringColorProfile) {
+  const char* png_file = "/images/resources/cicp_pq.png";
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(png_file);
+  ASSERT_TRUE(data);
+
+  auto decoder = CreatePNGDecoder(ImageDecoder::kAlphaNotPremultiplied,
+                                  ColorBehavior::kIgnore);
+  decoder->SetData(data.get(), true);
+  auto* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  ASSERT_FALSE(decoder->Failed());
+  ASSERT_FALSE(decoder->HasEmbeddedColorProfile());
 }
 
 TEST_P(PNGTests, HDRMetadata) {

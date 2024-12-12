@@ -96,8 +96,10 @@ void SkiaImageDecoderBase::OnSetData(scoped_refptr<SegmentReader> data) {
                      static_cast<unsigned>(image_info.height()))) {
           return;
         }
-        if (const skcms_ICCProfile* profile = codec_->getICCProfile()) {
-          SetEmbeddedColorProfile(std::make_unique<ColorProfile>(*profile));
+        if (!IgnoresColorSpace()) {
+          if (const skcms_ICCProfile* profile = codec_->getICCProfile()) {
+            SetEmbeddedColorProfile(std::make_unique<ColorProfile>(*profile));
+          }
         }
         return;
       }
