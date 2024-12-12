@@ -7,9 +7,11 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <unordered_set>
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -17,11 +19,15 @@
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/scheme_host_port_matcher.h"
 #include "net/base/schemeful_site.h"
+#include "net/base/url_util.h"
+#include "services/network/public/cpp/features.h"
 #include "url_matcher_with_bypass.h"
 
 namespace ip_protection {
 
 namespace {
+using ::masked_domain_list::Resource;
+using ::masked_domain_list::ResourceOwner;
 
 bool HasSubdomainCoverage(std::string_view domain) {
   return domain.starts_with(".") || domain.starts_with("*");
@@ -67,6 +73,38 @@ std::map<std::string, std::set<std::string>> PartitionDomains(
   return domains_by_partition;
 }
 
+// TODO(crbug.com/326399905): Add logic for excluding a domain X if any other
+// domain owned by X's resource owner is on the exclusion list.
+std::set<std::string> ExcludeDomainsFromMDL(
+    const std::set<std::string>& mdl_domains,
+    const std::unordered_set<std::string>& excluded_domains) {
+  if (excluded_domains.empty()) {
+    return mdl_domains;
+  }
+
+  std::set<std::string> filtered_domains;
+  for (const auto& mdl_domain : mdl_domains) {
+    std::string mdl_superdomain(mdl_domain);
+
+    bool shouldInclude = true;
+
+    // Exclude mdl_domain if any of its superdomains are in excluded_domains.
+    while (!mdl_superdomain.empty()) {
+      if (excluded_domains.contains(mdl_superdomain)) {
+        shouldInclude = false;
+        break;
+      }
+      mdl_superdomain = net::GetSuperdomain(mdl_superdomain);
+    }
+
+    if (shouldInclude) {
+      filtered_domains.insert(mdl_domain);
+    }
+  }
+
+  return filtered_domains;
+}
+
 }  // namespace
 
 // static
@@ -104,24 +142,62 @@ std::string UrlMatcherWithBypass::PartitionMapKey(std::string_view domain) {
   return std::string(domain);
 }
 
+// static
+std::set<std::string> UrlMatcherWithBypass::GetEligibleDomains(
+    const masked_domain_list::ResourceOwner& resource_owner,
+    std::unordered_set<std::string> excluded_domains) {
+  const int experiment_group_id =
+      network::features::kMaskedDomainListExperimentGroup.Get();
+  // Default group ID is 0 for the experiment_group_id field on the Resource
+  // proto.
+  const bool in_default_group = experiment_group_id == 0;
+
+  // Create a set of eligible domains.
+  std::set<std::string> eligible_domains;
+  for (const Resource& resource : resource_owner.owned_resources()) {
+    if ((in_default_group && !resource.exclude_default_group()) ||
+        base::Contains(resource.experiment_group_ids(), experiment_group_id)) {
+      eligible_domains.insert(resource.domain());
+    }
+  }
+
+  // If there are any excluded domains, remove them from the list of eligible
+  // domains.
+  if (!excluded_domains.empty()) {
+    eligible_domains =
+        ExcludeDomainsFromMDL(eligible_domains, excluded_domains);
+  }
+
+  return eligible_domains;
+}
+
 UrlMatcherWithBypass::UrlMatcherWithBypass() = default;
 UrlMatcherWithBypass::~UrlMatcherWithBypass() = default;
 
-void UrlMatcherWithBypass::AddMaskedDomainListRules(
-    const std::set<std::string>& domains,
-    base::optional_ref<const masked_domain_list::ResourceOwner>
-        resource_owner) {
+void UrlMatcherWithBypass::AddRules(
+    const masked_domain_list::ResourceOwner& resource_owner,
+    const std::unordered_set<std::string>& excluded_domains,
+    bool create_bypass_matcher) {
   net::SchemeHostPortMatcher* bypass_matcher = nullptr;
 
-  if (resource_owner.has_value()) {
-    bypass_matchers_.emplace_back(BuildBypassMatcher(resource_owner.value()));
+  // Extract eligble domains from resource_owner --> if 0 domains, exit early.
+  std::set<std::string> eligible_domains =
+      GetEligibleDomains(resource_owner, excluded_domains);
+  if (eligible_domains.empty()) {
+    return;
+  }
+
+  // Build the bypass matcher if requested by the caller.
+  if (create_bypass_matcher) {
+    bypass_matchers_.emplace_back(BuildBypassMatcher(resource_owner));
     bypass_matcher = bypass_matchers_.back().get();
   } else {
     bypass_matcher = &empty_bypass_matcher_;
   }
 
+  // Add the eligible domains to the match_list_with_bypass_map_.
   for (const auto& [partition_key, partitioned_domains] :
-       PartitionDomains(domains)) {
+       PartitionDomains(eligible_domains)) {
     net::SchemeHostPortMatcher matcher;
     for (const auto& domain : partitioned_domains) {
       DCHECK(domain.ends_with(partition_key));
@@ -133,11 +209,6 @@ void UrlMatcherWithBypass::AddMaskedDomainListRules(
           .matcher = std::move(matcher), .bypass_matcher = bypass_matcher});
     }
   }
-}
-
-void UrlMatcherWithBypass::AddRulesWithoutBypass(
-    const std::set<std::string>& domains) {
-  AddMaskedDomainListRules(domains, std::nullopt);
 }
 
 void UrlMatcherWithBypass::Clear() {

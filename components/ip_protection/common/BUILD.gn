@@ -515,6 +515,9 @@ source_set("url_matcher_with_bypass") {
     "//net",
     "//url",
   ]
+  deps = [
+    "//services/network/public/cpp",
+  ]
 }
 
 source_set("url_matcher_with_bypass_unittest") {
@@ -523,8 +526,10 @@ source_set("url_matcher_with_bypass_unittest") {
   deps = [
     ":url_matcher_with_bypass",
     "//base",
+    "//base/test:test_support",
     "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
     "//net",
+    "//services/network/public/cpp",
     "//testing/gtest",
     "//url",
   ]
