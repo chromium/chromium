@@ -264,23 +264,6 @@ def __rules(ctx):
             "timeout": "2m",
         },
         {
-            "name": "clang/solink_module",
-            "action": "(.*)?solink_module",
-            "handler": "clang_link",
-            "exclude_input_patterns": [
-                "*.cc",
-                "*.h",
-                "*.js",
-                "*.pak",
-                "*.py",
-                "*.stamp",
-            ],
-            "remote": config.get(ctx, "remote-link"),
-            "canonicalize_dir": True,
-            "platform_ref": "large",
-            "timeout": "2m",
-        },
-        {
             "name": "clang/link",
             "action": "(.*_)?link",
             "handler": "clang_link",
