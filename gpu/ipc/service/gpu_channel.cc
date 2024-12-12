@@ -1115,15 +1115,6 @@ void GpuChannel::CreateCommandBuffer(
   ScopedCreateCommandBufferResponder responder(std::move(callback));
   TRACE_EVENT1("gpu", "GpuChannel::CreateCommandBuffer", "route_id", route_id);
 
-#if BUILDFLAG(IS_ANDROID)
-  if (init_params->surface_handle != kNullSurfaceHandle && !is_gpu_host_) {
-    LOG(ERROR)
-        << "ContextResult::kFatalFailure: "
-           "attempt to create a view context on a non-privileged channel";
-    return;
-  }
-#endif
-
   if (gpu_channel_manager_->delegate()->IsExiting()) {
     LOG(ERROR) << "ContextResult::kTransientFailure: trying to create command "
                   "buffer during process shutdown.";

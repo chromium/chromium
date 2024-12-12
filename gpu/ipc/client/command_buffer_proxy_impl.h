@@ -92,8 +92,7 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   ~CommandBufferProxyImpl() override;
 
   // Connect to a command buffer in the GPU process.
-  ContextResult Initialize(gpu::SurfaceHandle surface_handle,
-                           CommandBufferProxyImpl* share_group,
+  ContextResult Initialize(CommandBufferProxyImpl* share_group,
                            gpu::SchedulingPriority stream_priority,
                            const gpu::ContextCreationAttribs& attribs,
                            const GURL& active_url);

@@ -247,10 +247,9 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
   auto impl = std::make_unique<gpu::CommandBufferProxyImpl>(
       GetGpuChannel(), content::kGpuStreamIdDefault,
       base::SingleThreadTaskRunner::GetCurrentDefault());
-  ASSERT_EQ(
-      impl->Initialize(gpu::kNullSurfaceHandle, nullptr,
-                       content::kGpuStreamPriorityDefault, attributes, GURL()),
-      gpu::ContextResult::kSuccess);
+  ASSERT_EQ(impl->Initialize(nullptr, content::kGpuStreamPriorityDefault,
+                             attributes, GURL()),
+            gpu::ContextResult::kSuccess);
 
   // Creating a transfer buffer works normally.
   int32_t id = -1;

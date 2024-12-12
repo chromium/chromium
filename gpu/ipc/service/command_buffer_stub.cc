@@ -114,9 +114,6 @@ CommandBufferStub::CommandBufferStub(
       context_type_(init_params.attribs.context_type),
       active_url_(init_params.active_url),
       initialized_(false),
-#if BUILDFLAG(IS_ANDROID)
-      offscreen_(init_params.surface_handle == kNullSurfaceHandle),
-#endif
       use_virtualized_gl_context_(false),
       command_buffer_id_(command_buffer_id),
       sequence_id_(sequence_id),
@@ -311,11 +308,7 @@ void CommandBufferStub::Destroy() {
 
   if (initialized_) {
     GpuChannelManager* gpu_channel_manager = channel_->gpu_channel_manager();
-    // If we are currently shutting down the GPU process to help with recovery
-    // (exit_on_context_lost workaround), then don't tell the browser about
-    // offscreen context destruction here since it's not client-invoked, and
-    // might bypass the 3D API blocking logic.
-    if (offscreen() && !active_url_.is_empty() &&
+    if (!active_url_.is_empty() &&
         !gpu_channel_manager->delegate()->IsExiting()) {
       gpu_channel_manager->delegate()->DidDestroyOffscreenContext(
           active_url_.url());

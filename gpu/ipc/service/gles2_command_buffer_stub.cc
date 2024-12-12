@@ -179,40 +179,12 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
   }
 
   gl::GLSurface* default_surface = manager->default_offscreen_surface();
-
-#if BUILDFLAG(IS_ANDROID)
-  const bool offscreen = init_params.surface_handle == kNullSurfaceHandle;
-#else
-  constexpr bool offscreen = true;
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-  if (!offscreen) {
-    // To use virtualized contexts we need on screen surface format match the
-    // offscreen.
-    auto surface_format = default_surface->GetFormat();
-    surface_ = ImageTransportSurface::CreateNativeGLSurface(
-        display, init_params.surface_handle, surface_format);
-    // CreateNativeGLSurface should have already initialized the surface, and
-    // doubly initializing it can lead to errors.
-    if (!surface_) {
-      surface_ = nullptr;
-      LOG(ERROR) << "ContextResult::kSurfaceFailure: Failed to create surface.";
-      return gpu::ContextResult::kSurfaceFailure;
-    }
-    if (!features::UseGpuVsync()) {
-      surface_->SetVSyncEnabled(false);
-    }
-  } else
-#endif
-  {
-    if (default_surface->GetGLDisplay() == display) {
-      surface_ = default_surface;
-    } else {
-      // The default surface was created on a different display, create a
-      // new surface on the requested display.
-      surface_ = gl::init::CreateOffscreenGLSurface(display, gfx::Size());
-    }
+  if (default_surface->GetGLDisplay() == display) {
+    surface_ = default_surface;
+  } else {
+    // The default surface was created on a different display, create a
+    // new surface on the requested display.
+    surface_ = gl::init::CreateOffscreenGLSurface(display, gfx::Size());
   }
 
   if (context_group_->use_passthrough_cmd_decoder()) {
@@ -323,9 +295,9 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
   }
 
   // Initialize the decoder with either the view or pbuffer GLContext.
-  auto result = gles2_decoder_->Initialize(surface_, context, offscreen,
-                                           gpu::gles2::DisallowedFeatures(),
-                                           init_params.attribs);
+  auto result = gles2_decoder_->Initialize(
+      surface_, context, /*offscreen=*/true, gpu::gles2::DisallowedFeatures(),
+      init_params.attribs);
   if (result != gpu::ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize decoder.";
     return result;
@@ -346,8 +318,9 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
   command_buffer_->SetSharedStateBuffer(MakeBackingFromSharedMemory(
       std::move(shared_state_shm), std::move(shared_state_mapping)));
 
-  if (offscreen && !active_url_.is_empty())
+  if (!active_url_.is_empty()) {
     manager->delegate()->DidCreateOffscreenContext(active_url_.url());
+  }
 
   if (use_virtualized_gl_context_) {
     // If virtualized GL contexts are in use, then real GL context state
