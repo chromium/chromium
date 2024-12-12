@@ -87,6 +87,7 @@ _CONFIG = [
             'base::File',
             'base::FileErrorOr',
             'base::FilePath',
+            'base::FindOrNull',
             'base::FunctionRef',
             'base::GetUniqueIdForProcess',
             'base::HashingLRUCache',
