@@ -718,7 +718,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sRedirectExplicitCTAIntentsToExistingActivity =
             newCachedFlag(REDIRECT_EXPLICIT_CTA_INTENTS_TO_EXISTING_ACTIVITY, true);
     public static final CachedFlag sSafetyHubMagicStack =
-            newCachedFlag(SAFETY_HUB_MAGIC_STACK, true);
+            newCachedFlag(SAFETY_HUB_MAGIC_STACK, false);
     public static final CachedFlag sSafetyHubWeakAndReusedPasswords =
             newCachedFlag(SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS, false);
     public static final CachedFlag sSearchInCCT = newCachedFlag(SEARCH_IN_CCT, false);
