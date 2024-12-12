@@ -8,6 +8,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
@@ -39,6 +40,11 @@ constexpr int kDefaultRealTimeUrlLookupReferrerLength = 2;
 const float kProbabilityForSendingSampledRequests = 0.01;
 
 constexpr char kCookieHistogramPrefix[] = "SafeBrowsing.RT.Request.HadCookie";
+
+GURL* GetRealTimeLookupUrlTestOverride() {
+  static base::NoDestructor<GURL> test_override;
+  return test_override.get();
+}
 
 }  // namespace
 
@@ -181,6 +187,11 @@ void RealTimeUrlLookupService::Shutdown() {
 }
 
 GURL RealTimeUrlLookupService::GetRealTimeLookupUrl() const {
+  GURL* url_for_tests = GetRealTimeLookupUrlTestOverride();
+  if (url_for_tests->is_valid()) {
+    return *url_for_tests;
+  }
+
   return GURL(
       "https://safebrowsing.google.com/safebrowsing/clientreport/realtime");
 }
@@ -235,6 +246,11 @@ bool RealTimeUrlLookupService::CanCheckUrl(const GURL& url) {
     return true;
   }
   return CanGetReputationOfUrl(url);
+}
+
+// static
+void RealTimeUrlLookupService::OverrideUrlForTesting(const GURL& url) {
+  *GetRealTimeLookupUrlTestOverride() = url;
 }
 
 bool RealTimeUrlLookupService::ShouldIncludeCredentials() const {

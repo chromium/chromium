@@ -52,6 +52,9 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   using ClientConfiguredForTokenFetchesCallback =
       base::RepeatingCallback<bool(bool user_has_enabled_enhanced_protection)>;
 
+  // Set the URL used for lookups in tests.
+  static void OverrideUrlForTesting(const GURL& url);
+
   // |cache_manager|, |sync_service|, and |pref_service| may be null in tests.
   // |token_fetcher| may also be null, but in that case the passed-in
   // |client_token_config_callback| should return false to ensure that access
