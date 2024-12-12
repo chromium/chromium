@@ -105,8 +105,6 @@ suite('SelectionOverlay', function() {
       ]),
     ]);
     callbackRouterRemote.textReceived(text);
-    await flushTasks();
-
     const semanticEventArgs = await testBrowserProxy.handler.getArgs(
         'recordLensOverlaySemanticEvent');
     const semanticEvent = semanticEventArgs[semanticEventArgs.length - 1];
@@ -114,7 +112,7 @@ suite('SelectionOverlay', function() {
     await waitAfterNextRender(selectionOverlayElement);
   }
 
-  async function addWordsWithTranslations() {
+  function addWordsWithTranslations() {
     const text = createText([
       createParagraph(
           [
@@ -159,7 +157,7 @@ suite('SelectionOverlay', function() {
     return flushTasks();
   }
 
-  async function addObjects() {
+  function addObjects() {
     objects =
         [
           {x: 80, y: 20, width: 25, height: 10},
@@ -204,6 +202,7 @@ suite('SelectionOverlay', function() {
             SemanticEvent.kTextGleamsViewEnd, penultimateSemanticEvent);
       });
 
+  // <if expr="not chromeos_lacros">
   test(
       'verify that starting a drag on a word does not trigger region search',
       async () => {
@@ -225,6 +224,7 @@ suite('SelectionOverlay', function() {
         assertEquals(
             0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
       });
+  // </if>
 
   test(
       `verify that starting a drag off a word and continuing onto a word triggers region search`,
@@ -287,7 +287,7 @@ suite('SelectionOverlay', function() {
                 .regionSelectionCanvas.height);
       });
 
-  test(
+    test(
       'verify object selection canvas resizes when selection overlay resizes',
       async () => {
         selectionOverlayElement.style.display = 'block';
@@ -318,15 +318,15 @@ suite('SelectionOverlay', function() {
                 .objectSelectionCanvas.height);
       });
 
-  test(
+    test(
       `verify that text respond to taps, even when an object is underneath`,
       async () => {
         await Promise.all([addWords(), addObjects()]);
 
         await simulateClick(selectionOverlayElement, {x: 80, y: 20});
 
-        const textQuery = await testBrowserProxy.handler.whenCalled(
-            'issueTextSelectionRequest');
+        const textQuery =
+            await testBrowserProxy.handler.whenCalled('issueTextSelectionRequest');
         assertDeepEquals('test', textQuery);
         assertEquals(
             0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
@@ -364,6 +364,7 @@ suite('SelectionOverlay', function() {
         verifyRegionRequest(expectedRect, /*expectedIsClick=*/ false);
       });
 
+  // <if expr="not chromeos_lacros">
   test(
       'verify that region search over text triggers detected text options',
       async () => {
@@ -512,6 +513,7 @@ suite('SelectionOverlay', function() {
         assertTrue(selectionOverlayElement
                        .getShowSelectedRegionContextMenuForTesting());
       });
+  // </if>
 
   test('verify that region search triggers post selection', async () => {
     await simulateDrag(
@@ -658,7 +660,7 @@ suite('SelectionOverlay', function() {
     const wordElBoundingBox = wordEl.getBoundingClientRect();
     await simulateDrag(
         selectionOverlayElement, {
-          x: wordElBoundingBox.left + (wordElBoundingBox.width / 2),
+          x: wordElBoundingBox.left + (wordElBoundingBox.width / 3),
           y: wordElBoundingBox.top + (wordElBoundingBox.height / 2),
         },
         {
@@ -684,7 +686,7 @@ suite('SelectionOverlay', function() {
     const wordElBoundingBox = wordEl.getBoundingClientRect();
     await simulateDrag(
         selectionOverlayElement, {
-          x: wordElBoundingBox.left + (wordElBoundingBox.width / 2),
+          x: wordElBoundingBox.left + (wordElBoundingBox.width / 3),
           y: wordElBoundingBox.top + (wordElBoundingBox.height / 2),
         },
         {
@@ -730,7 +732,7 @@ suite('SelectionOverlay', function() {
         const wordElBoundingBox = wordEl.getBoundingClientRect();
         await simulateDrag(
             selectionOverlayElement, {
-              x: wordElBoundingBox.left + (wordElBoundingBox.width / 2),
+              x: wordElBoundingBox.left + (wordElBoundingBox.width / 3),
               y: wordElBoundingBox.top + (wordElBoundingBox.height / 2),
             },
             {
@@ -863,8 +865,8 @@ suite('SelectionOverlay', function() {
       });
 
   test(
-      `verify that post selection corners are draggable over text and
-      objects`, async () => {
+      `verify that post selection corners are draggable over text and objects`,
+      async () => {
         await Promise.all([addWords(), addObjects()]);
         // Add the post selection to have top left corner overlap with text
         // and objects
@@ -893,7 +895,6 @@ suite('SelectionOverlay', function() {
         };
         verifyRegionRequest(expectedRect, /*expectedIsClick=*/ false);
       });
-
   test(
       'verify that completing a drag calls closePreselectionBubble',
       async () => {
