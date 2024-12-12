@@ -29,6 +29,10 @@
 
 namespace blink {
 
+BASE_FEATURE(kUseSharedBitmapProviderForSoftwareCompositing,
+             "UseSharedBitmapProviderForSoftwareCompositing",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 CanvasRenderingContextHost::CanvasRenderingContextHost(HostType host_type,
                                                        const gfx::Size& size)
     : CanvasResourceHost(size), host_type_(host_type) {}
@@ -217,7 +221,13 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
   // If either of the other modes failed and / or it was not possible to do, we
   // will backup with a SharedBitmap, and if that was not possible with a Bitmap
   // provider.
-  if (!provider && dispatcher) {
+  bool use_shared_bitmap_provider =
+      base::FeatureList::IsEnabled(
+          kUseSharedBitmapProviderForSoftwareCompositing)
+          ? !SharedGpuContext::IsGpuCompositingEnabled()
+          : !!dispatcher;
+
+  if (!provider && use_shared_bitmap_provider) {
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
         Size(), sk_color_type, alpha_type, sk_color_space, kShouldInitialize,
         SharedGpuContext::SharedImageInterfaceProvider(), this);
@@ -305,10 +315,13 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
   // If either of the other modes failed and / or it was not possible to do, we
   // will backup with a SharedBitmap, and if that was not possible with a Bitmap
   // provider.
-  // If dispatcher is null and go for CreateSharedBitmapProvider, there will be
-  // an error message. "ERROR:texture_layer_impl.cc(92)] Gpu compositor has
-  // software resource in TextureLayer". blink_web_tests would fail.
-  if (!provider && dispatcher) {
+  bool use_shared_bitmap_provider =
+      base::FeatureList::IsEnabled(
+          kUseSharedBitmapProviderForSoftwareCompositing)
+          ? !SharedGpuContext::IsGpuCompositingEnabled()
+          : !!dispatcher;
+
+  if (!provider && use_shared_bitmap_provider) {
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
         Size(), sk_color_type, alpha_type, sk_color_space, kShouldInitialize,
         SharedGpuContext::SharedImageInterfaceProvider(), this);
