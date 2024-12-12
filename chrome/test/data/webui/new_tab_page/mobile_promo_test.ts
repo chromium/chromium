@@ -8,7 +8,9 @@ import type {MobilePromoElement} from 'chrome://new-tab-page/lazy_load.js';
 import type {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import {isMac} from 'chrome://resources/js/platform.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -115,5 +117,37 @@ suite('MobilePromoTest', () => {
     assertTrue(isVisible(mobilePromo.$.promoContainer));
     assertFalse(mobilePromo.$.dismissPromoButtonToast.open);
     assertEquals(1, newTabPageHandler.getCallCount('onUndoDismissMobilePromo'));
+  });
+
+  test('restores promo if undo command is fired via keyboard', async () => {
+    newTabPageHandler.setResultFor(
+        'getMobilePromoQrCode', Promise.resolve({qrCode: 'abc'}));
+    const mobilePromo = await (createMobilePromo(true));
+
+    const parts = mobilePromo.$.titleAndDismissContainer.children;
+    assertEquals(2, parts.length);
+    const dismissPromoButton = parts[1] as HTMLElement;
+    dismissPromoButton.click();
+    await microtasksFinished();
+
+    assertEquals(0, newTabPageHandler.getCallCount('onUndoDismissMobilePromo'));
+    // Simulate 'ctrl+z' key combo (or meta+z for Mac).
+    keyDownOn(document.documentElement, 0, isMac ? 'meta' : 'ctrl', 'z');
+    await microtasksFinished();
+
+    assertTrue(isVisible(mobilePromo.$.promoContainer));
+    assertFalse(mobilePromo.$.dismissPromoButtonToast.open);
+    assertEquals(1, newTabPageHandler.getCallCount('onUndoDismissMobilePromo'));
+  });
+
+  test('ignores undo command if no promo was blocklisted', async () => {
+    newTabPageHandler.setResultFor(
+        'getMobilePromoQrCode', Promise.resolve({qrCode: 'abc'}));
+    await (createMobilePromo(true));
+
+    // Simulate 'ctrl+z' key combo (or meta+z for Mac).
+    keyDownOn(document.documentElement, 0, isMac ? 'meta' : 'ctrl', 'z');
+
+    assertEquals(0, newTabPageHandler.getCallCount('onUndoDismissMobilePromo'));
   });
 });
