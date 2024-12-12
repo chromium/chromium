@@ -3559,16 +3559,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.ProfileStore.TotalAccountsBeforeInitialSync"
-    units="accounts" expires_after="M134">
-  <owner>vasilii@chromium.org</owner>
-  <owner>mamir@chromium.org</owner>
-  <summary>
-    Records the number of locally saved passwords just before the password Sync
-    was successfully turned on.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.PromoCard.ActionButtonClicked"
     enum="PasswordManagerPromoCard" expires_after="2025-06-08">
   <owner>vasilii@chromium.org</owner>
