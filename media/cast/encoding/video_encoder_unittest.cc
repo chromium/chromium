@@ -273,9 +273,7 @@ TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
     }
   }
 
-  // Flush the encoder and wait until all queued frames have been delivered.
-  // Then, shut it all down.
-  video_encoder()->EmitFrames();
+  // Wait until all queued frames have been delivered then shut everything down.
   while (encoded_frames.size() < static_cast<size_t>(count_frames_accepted))
     RunTasksAndAdvanceClock();
   DestroyEncoder();
@@ -328,8 +326,13 @@ TEST_P(VideoEncoderTest, CanBeDestroyedBeforeVEAIsCreated) {
       [](std::unique_ptr<SenderEncodedFrame> encoded_frame) {}));
 
   // Send a frame to spawn creation of the ExternalVideoEncoder instance.
-  video_encoder()->EncodeVideoFrame(CreateTestVideoFrame(gfx::Size(128, 72)),
-                                    Now());
+  const bool encode_result = video_encoder()->EncodeVideoFrame(
+      CreateTestVideoFrame(gfx::Size(128, 72)), Now());
+
+  // Hardware encoders should fail to encode at this point, since the VEA has
+  // not responded yet. Since software encoders don't use VEA, they should
+  // succeed.
+  ASSERT_EQ(encode_result, !GetParam().use_hardware_encoder);
 
   // Destroy the encoder, and confirm the VEA Factory did not respond yet.
   DestroyEncoder();

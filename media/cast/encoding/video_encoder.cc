@@ -46,6 +46,4 @@ std::unique_ptr<VideoEncoder> VideoEncoder::Create(
       status_change_cb, std::move(output_cb));
 }
 
-void VideoEncoder::EmitFrames() {}
-
 }  // namespace media::cast

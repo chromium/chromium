@@ -84,13 +84,6 @@ void SizeAdaptableVideoEncoderBase::GenerateKeyFrame() {
   }
 }
 
-void SizeAdaptableVideoEncoderBase::EmitFrames() {
-  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
-  if (encoder_) {
-    encoder_->EmitFrames();
-  }
-}
-
 StatusChangeCallback
 SizeAdaptableVideoEncoderBase::CreateEncoderStatusChangeCallback() {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
@@ -126,12 +119,7 @@ void SizeAdaptableVideoEncoderBase::TrySpawningReplacementEncoder(
   // If prior frames are still encoding in the current encoder, let them finish
   // first.
   if (frames_in_encoder_ > 0) {
-    encoder_->EmitFrames();
-    // Check again, since EmitFrames() is a synchronous operation for some
-    // encoders.
-    if (frames_in_encoder_ > 0) {
-      return;
-    }
+    return;
   }
 
   if (frames_in_encoder_ == kEncoderIsInitializing) {

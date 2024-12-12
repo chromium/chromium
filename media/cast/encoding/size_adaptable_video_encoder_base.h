@@ -50,7 +50,6 @@ class SizeAdaptableVideoEncoderBase : public VideoEncoder {
                         base::TimeTicks reference_time) final;
   void SetBitRate(int new_bit_rate) final;
   void GenerateKeyFrame() final;
-  void EmitFrames() final;
 
  protected:
   // Accessors for subclasses.
