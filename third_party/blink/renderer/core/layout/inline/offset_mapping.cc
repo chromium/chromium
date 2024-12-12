@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 
 #include <algorithm>
@@ -302,11 +297,12 @@ const OffsetMappingUnit* OffsetMapping::GetMappingUnitForPosition(
   if (range_start == range_end || units_[range_start].DOMStart() > offset)
     return nullptr;
   // Find the last unit where unit.dom_start <= offset
-  auto unit = std::prev(std::upper_bound(
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  auto unit = std::prev(UNSAFE_TODO(std::upper_bound(
       units_.begin() + range_start, units_.begin() + range_end, offset,
       [](unsigned offset, const OffsetMappingUnit& unit) {
         return offset < unit.DOMStart();
-      }));
+      })));
   if (unit->DOMEnd() < offset)
     return nullptr;
   return &*unit;
@@ -332,22 +328,25 @@ OffsetMapping::UnitVector OffsetMapping::GetMappingUnitsForDOMRange(
     return UnitVector();
 
   // Find the first unit where unit.dom_end >= start_offset
-  auto result_begin = std::lower_bound(
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  auto result_begin = UNSAFE_TODO(std::lower_bound(
       units_.begin() + range_start, units_.begin() + range_end, start_offset,
       [](const OffsetMappingUnit& unit, unsigned offset) {
         return unit.DOMEnd() < offset;
-      });
+      }));
 
   // Find the next of the last unit where unit.dom_start <= end_offset
-  auto result_end =
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  auto result_end = UNSAFE_TODO(
       std::upper_bound(result_begin, units_.begin() + range_end, end_offset,
                        [](unsigned offset, const OffsetMappingUnit& unit) {
                          return offset < unit.DOMStart();
-                       });
+                       }));
 
   UnitVector result;
   result.reserve(base::checked_cast<wtf_size_t>(result_end - result_begin));
-  for (const auto& unit : base::span(result_begin, result_end)) {
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  for (const auto& unit : UNSAFE_TODO(base::span(result_begin, result_end))) {
     // If the unit isn't fully within the range, create a new unit that's
     // within the range.
     const unsigned clamped_start = std::max(unit.DOMStart(), start_offset);
@@ -386,7 +385,8 @@ OffsetMapping::GetMappingUnitsForLayoutObject(
                      return unit.GetLayoutObject() != layout_object;
                    });
   DCHECK_LT(begin, end);
-  return base::span(begin, end);
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  return UNSAFE_TODO(base::span(begin, end));
 }
 
 base::span<const OffsetMappingUnit>
@@ -407,7 +407,8 @@ OffsetMapping::GetMappingUnitsForTextContentOffsetRange(unsigned start,
   // Find the next of the last unit where unit.text_content_start < end
   auto result_end = std::ranges::upper_bound(
       units_, end, std::less_equal<>{}, &OffsetMappingUnit::TextContentStart);
-  return base::span(result_begin, result_end);
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  return UNSAFE_TODO(base::span(result_begin, result_end));
 }
 
 std::optional<unsigned> OffsetMapping::GetTextContentOffset(
@@ -429,14 +430,16 @@ Position OffsetMapping::StartOfNextNonCollapsedContent(
   const auto node_and_offset = ToNodeOffsetPair(position);
   const Node& node = node_and_offset.first;
   const unsigned offset = node_and_offset.second;
-  while (unit != units_.data() + units_.size() &&
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  while (unit != UNSAFE_TODO(units_.data() + units_.size()) &&
          unit->AssociatedNode() == node) {
     if (unit->DOMEnd() > offset &&
         unit->GetType() != OffsetMappingUnitType::kCollapsed) {
       const unsigned result = std::max(offset, unit->DOMStart());
       return CreatePositionForOffsetMapping(node, result);
     }
-    ++unit;
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+    UNSAFE_TODO(++unit);
   }
   return Position();
 }
@@ -460,7 +463,8 @@ Position OffsetMapping::EndOfLastNonCollapsedContent(
     if (unit == units_.data()) {
       break;
     }
-    --unit;
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+    UNSAFE_TODO(--unit);
   }
   return Position();
 }

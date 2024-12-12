@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
 
 #include "base/not_fatal_until.h"
@@ -410,7 +405,8 @@ void FragmentItemsBuilder::ConvertToPhysical(const PhysicalSize& outer_size) {
   WritingModeConverter line_converter(
       {ToLineWritingMode(GetWritingMode()), TextDirection::kLtr});
 
-  for (auto iter = items_.begin(); iter != items_.end(); ++iter) {
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  for (auto iter = items_.begin(); iter != items_.end(); UNSAFE_TODO(++iter)) {
     FragmentItem* item = &iter->item;
     item->SetOffset(converter.ToPhysical(iter->offset, item->Size()));
 
@@ -424,7 +420,8 @@ void FragmentItemsBuilder::ConvertToPhysical(const PhysicalSize& outer_size) {
         const PhysicalRect line_box_bounds = item->RectInContainerFragment();
         line_converter.SetOuterSize(line_box_bounds.size);
         while (--descendants_count) {
-          ++iter;
+          // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+          UNSAFE_TODO(++iter);
           CHECK_NE(iter, items_.end(), base::NotFatalUntil::M130);
           item = &iter->item;
           item->SetOffset(
@@ -440,7 +437,8 @@ void FragmentItemsBuilder::ConvertToPhysical(const PhysicalSize& outer_size) {
 
 void FragmentItemsBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
   DCHECK(!is_converted_to_physical_);
-  for (auto iter = items_.begin(); iter != items_.end(); ++iter) {
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  for (auto iter = items_.begin(); iter != items_.end(); UNSAFE_TODO(++iter)) {
     if (iter->item->Type() == FragmentItem::kLine) {
       iter->offset.block_offset += delta;
       std::advance(iter, iter->item->DescendantsCount() - 1);

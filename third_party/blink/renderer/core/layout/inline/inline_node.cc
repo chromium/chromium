@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 
 #include <memory>
@@ -246,12 +241,13 @@ class ReusingTextShaper final {
     HeapVector<Member<const ShapeResult>> shape_results;
     if (!reusable_items_)
       return shape_results;
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
     for (auto item = std::lower_bound(
              reusable_items_->begin(), reusable_items_->end(), start_offset,
              [](const InlineItem& item, unsigned offset) {
                return item.EndOffset() <= offset;
              });
-         item != reusable_items_->end(); ++item) {
+         item != reusable_items_->end(); UNSAFE_TODO(++item)) {
       if (end_offset <= item->StartOffset())
         break;
       if (item->EndOffset() < start_offset)
@@ -710,7 +706,8 @@ class InlineNodeDataEditor final {
     // Copy items before replaced range
     auto end = data_->items.end();
     auto it = data_->items.begin();
-    for (; it != end && it->end_offset_ < start_offset; ++it) {
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+    for (; it != end && it->end_offset_ < start_offset; UNSAFE_TODO(++it)) {
       CHECK(it != data_->items.end(), base::NotFatalUntil::M130);
       items.push_back(*it);
     }
@@ -727,8 +724,10 @@ class InlineNodeDataEditor final {
       }
 
       // Skip items in replaced range.
-      while (it != end && it->end_offset_ < end_offset)
-        ++it;
+      while (it != end && it->end_offset_ < end_offset) {
+        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+        UNSAFE_TODO(++it);
+      }
 
       if (it == end)
         break;
@@ -752,12 +751,14 @@ class InlineNodeDataEditor final {
       }
 
       // Copy items after replaced range
-      ++it;
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+      UNSAFE_TODO(++it);
       while (it != end) {
         DCHECK_LE(end_offset, it->start_offset_);
         items.push_back(*it);
         ShiftItem(&items.back(), diff);
-        ++it;
+        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+        UNSAFE_TODO(++it);
       }
       break;
     }
@@ -1697,8 +1698,11 @@ String CreateTextContentForStickyImagesQuirk(
   memcpy(characters, text, length * sizeof(CharType));
   for (const InlineItem& item : items) {
     if (item.Type() == InlineItem::kAtomicInline && item.IsImage()) {
-      DCHECK_EQ(characters[item.StartOffset()], kObjectReplacementCharacter);
-      characters[item.StartOffset()] = kNoBreakSpaceCharacter;
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+      DCHECK_EQ(UNSAFE_TODO(characters[item.StartOffset()]),
+                kObjectReplacementCharacter);
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+      UNSAFE_TODO(characters[item.StartOffset()]) = kNoBreakSpaceCharacter;
     }
   }
   return buffer.Release();
@@ -1841,7 +1845,8 @@ static LayoutUnit ComputeContentSize(InlineNode node,
     // may break text into multiple lines, and may remove trailing spaces. For
     // max size, use the original text widths from InlineItem instead.
     void AddTextUntil(ItemIterator end) {
-      for (; next_item != end; ++next_item) {
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+      for (; next_item != end; UNSAFE_TODO(++next_item)) {
         if (next_item->Type() == InlineItem::kOpenTag &&
             next_item->GetLayoutObject()->IsInlineRubyText()) {
           ++annotation_nesting_level;
@@ -1861,7 +1866,9 @@ static LayoutUnit ComputeContentSize(InlineNode node,
       // Add all text up to the end of the line. There may be spaces that were
       // removed during the line breaking.
       CHECK_LE(line_info.EndItemIndex(), items_data.items.size());
-      AddTextUntil(items_data.items.begin() + line_info.EndItemIndex());
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+      AddTextUntil(
+          UNSAFE_TODO(items_data.items.begin() + line_info.EndItemIndex()));
       max_size = floats->ComputeMaxSizeForLine(position.ClampNegativeToZero(),
                                                max_size);
       position = LayoutUnit();

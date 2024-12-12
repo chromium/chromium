@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/inline/inline_item_segment.h"
 
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
@@ -117,8 +112,9 @@ unsigned InlineItemSegments::OffsetForSegment(
 #if DCHECK_IS_ON()
 void InlineItemSegments::CheckOffset(unsigned offset,
                                      const InlineItemSegment* segment) const {
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
   DCHECK(segment >= segments_.data() &&
-         segment < segments_.data() + segments_.size());
+         segment < UNSAFE_TODO(segments_.data() + segments_.size()));
   DCHECK_GE(offset, OffsetForSegment(*segment));
   DCHECK_LT(offset, segment->EndOffset());
 }
@@ -153,9 +149,10 @@ InlineItemSegments::Iterator InlineItemSegments::Ranges(
                                    : segments_.size();
   CHECK_GT(end_segment_index, segment_index);
   CHECK_LE(end_segment_index, segments_.size());
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
   segment = std::upper_bound(
-      segment, segment + (end_segment_index - segment_index), start_offset,
-      [](unsigned offset, const InlineItemSegment& segment) {
+      segment, UNSAFE_TODO(segment + (end_segment_index - segment_index)),
+      start_offset, [](unsigned offset, const InlineItemSegment& segment) {
         return offset < segment.EndOffset();
       });
   CheckOffset(start_offset, segment);
@@ -244,7 +241,8 @@ void InlineItemSegments::ComputeItemIndex(const HeapVector<InlineItem>& items) {
     while (segment_index < segments_.size() &&
            item.StartOffset() >= segment->EndOffset()) {
       ++segment_index;
-      ++segment;
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+      UNSAFE_TODO(++segment);
     }
     items_to_segments_[item_index++] = segment_index;
   }
