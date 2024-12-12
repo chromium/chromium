@@ -486,12 +486,8 @@ bool PermissionDecisionAutoBlocker::RecordDisplayAndEmbargo(
     ContentSettingsType permission) {
   DCHECK_EQ(permission,
             ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION);
-  if (base::FeatureList::IsEnabled(
-          features::kBlockRepeatedAutoReauthnPrompts)) {
-    PlaceUnderEmbargo(url, permission, kPermissionDisplayEmbargoKey);
-    return true;
-  }
-  return false;
+  PlaceUnderEmbargo(url, permission, kPermissionDisplayEmbargoKey);
+  return true;
 }
 
 void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(

@@ -141,8 +141,7 @@ class PermissionDecisionAutoBlocker : public PermissionDecisionAutoBlockerBase,
   std::set<GURL> GetEmbargoedOrigins(
       std::vector<ContentSettingsType> content_types);
 
-  // Records that a prompt was displayed for |permission|. If
-  // features::kBlockRepeatedAutoReauthnPrompts is enabled, it will place |url|
+  // Records that a prompt was displayed for |permission| and places |url|
   // under embargo for |permission|.
   bool RecordDisplayAndEmbargo(const GURL& url, ContentSettingsType permission);
 
