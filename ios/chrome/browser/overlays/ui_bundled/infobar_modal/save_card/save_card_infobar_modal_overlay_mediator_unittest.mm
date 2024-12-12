@@ -256,6 +256,34 @@ TEST_F(SaveCardInfobarModalOverlayMediatorWithLocalSave,
   EXPECT_FALSE(consumer.inLoadingState);
 }
 
+// Tests that calling -saveCardWithCardholderName goes straight to confirmation
+// without showing the loading spinner when the card is saved locally.
+TEST_F(SaveCardInfobarModalOverlayMediatorWithLocalSave,
+       OnSaveShowConfirmation) {
+  base::HistogramTester histogramTester;
+
+  FakeSaveCardModalConsumer* consumer =
+      [[FakeSaveCardModalConsumer alloc] init];
+  mediator_.consumer = consumer;
+  NSString* cardholderName = @"name";
+  NSString* month = @"3";
+  NSString* year = @"23";
+
+  EXPECT_CALL(*delegate_,
+              UpdateAndAccept(base::SysNSStringToUTF16(cardholderName),
+                              base::SysNSStringToUTF16(month),
+                              base::SysNSStringToUTF16(year)));
+  [mediator_ saveCardWithCardholderName:cardholderName
+                        expirationMonth:month
+                         expirationYear:year];
+
+  EXPECT_FALSE(consumer.inLoadingState);
+
+  histogramTester.ExpectUniqueSample(
+      "Autofill.CreditCardUpload.ConfirmationShown.CardNotUploaded",
+      /*sample=*/true, 1);
+}
+
 class SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest
     : public SaveCardInfobarModalOverlayMediatorTest {
  public:
@@ -273,8 +301,8 @@ class SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Tests that calling saveCardWithCardholderName shows loading state when
-// loading and confirmation flag is enabled.
+// Tests that calling saveCardWithCardholderName shows loading state when the
+// card is uploaded.
 TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
        OnSaveShowLoading) {
   FakeSaveCardModalConsumer* consumer =
