@@ -1771,7 +1771,12 @@ void PdfViewWebPlugin::HandleSetBackgroundColorMessage(
 
 void PdfViewWebPlugin::HandleSetPresentationModeMessage(
     const base::Value::Dict& message) {
-  engine_->SetReadOnly(message.FindBool("enablePresentationMode").value());
+  const bool presentation_mode =
+      message.FindBool("enablePresentationMode").value();
+  engine_->SetReadOnly(presentation_mode);
+  if (presentation_mode) {
+    cursor_ = ui::mojom::CursorType::kPointer;
+  }
 }
 
 void PdfViewWebPlugin::HandleSetTwoUpViewMessage(

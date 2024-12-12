@@ -447,6 +447,11 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
     return document_load_state_;
   }
 
+  void set_cursor_type_for_testing(ui::mojom::CursorType cursor_type) {
+    cursor_ = cursor_type;
+  }
+  const ui::Cursor& cursor_for_testing() const { return cursor_; }
+
   int GetContentRestrictionsForTesting() const {
     return GetContentRestrictions();
   }

@@ -1452,6 +1452,31 @@ TEST_F(PdfViewWebPluginTest, HandleSetBackgroundColorMessage) {
   EXPECT_EQ(SK_ColorGREEN, plugin_->GetBackgroundColor());
 }
 
+TEST_F(PdfViewWebPluginTest, HandleSetPresentationModeMessage) {
+  EXPECT_FALSE(engine_ptr_->IsReadOnly());
+  plugin_->set_cursor_type_for_testing(ui::mojom::CursorType::kIBeam);
+
+  base::Value::Dict message;
+  message.Set("type", "setPresentationMode");
+  message.Set("enablePresentationMode", true);
+  plugin_->OnMessage(message);
+
+  // After entering presentation mode, PDFiumEngine is read-only and the cursor
+  // type has been reset to a pointer.
+  EXPECT_TRUE(engine_ptr_->IsReadOnly());
+  EXPECT_EQ(ui::mojom::CursorType::kPointer,
+            plugin_->cursor_for_testing().type());
+
+  message.Set("enablePresentationMode", false);
+  plugin_->OnMessage(message);
+
+  // After exiting presentation mode, PDFiumEngine is no longer read-only.
+  // The cursor remains as a pointer until the next input event updates it.
+  EXPECT_FALSE(engine_ptr_->IsReadOnly());
+  EXPECT_EQ(ui::mojom::CursorType::kPointer,
+            plugin_->cursor_for_testing().type());
+}
+
 TEST_F(PdfViewWebPluginTest, HandleInputEvent) {
   UpdatePluginGeometryWithoutWaiting(2.0f, {0, 0, 20, 20});
 
