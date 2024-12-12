@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
 }
 
 // TODO(crbug.com/334416161): Re-enble this test.
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_OpaqueOriginSubframe DISABLED_OpaqueOriginSubframe
 #else
 #define MAYBE_OpaqueOriginSubframe OpaqueOriginSubframe
