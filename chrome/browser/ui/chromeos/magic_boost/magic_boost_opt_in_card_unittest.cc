@@ -73,10 +73,6 @@ class MagicBoostOptInCardTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
 
     // Replace the production `MagicBoostController` with a mock for testing
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    card_controller_.BindMagicBoostControllerCrosapiForTesting(
-        receiver_.BindNewPipeAndPassRemote());
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
     card_controller_.SetMagicBoostControllerCrosapiForTesting(
         &crosapi_controller_);
 
@@ -84,7 +80,6 @@ class MagicBoostOptInCardTest : public ChromeViewsTestBase {
     // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
     // the unit tests).
     mock_magic_boost_state_ = std::make_unique<ash::MockMagicBoostState>();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
     card_controller_.SetOptInFeature(OptInFeatures::kHmrOnly);
   }

@@ -17,12 +17,6 @@
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#endif
-
 namespace gfx {
 class Rect;
 }  // namespace gfx
@@ -78,13 +72,8 @@ class MagicBoostCardController
   void SetOptInFeature(const OptInFeatures& features);
   const OptInFeatures& GetOptInFeatures() const;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void BindMagicBoostControllerCrosapiForTesting(
-      mojo::PendingRemote<crosapi::mojom::MagicBoostController> pending_remote);
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
   void SetMagicBoostControllerCrosapiForTesting(
       crosapi::mojom::MagicBoostController* delegate);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   base::WeakPtr<MagicBoostCardController> GetWeakPtr();
 
@@ -102,10 +91,6 @@ class MagicBoostCardController
   bool is_orca_included_ = false;
 
   views::UniqueWidgetPtr opt_in_widget_;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  mojo::Remote<crosapi::mojom::MagicBoostController> remote_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   OptInFeatures opt_in_features_;
 

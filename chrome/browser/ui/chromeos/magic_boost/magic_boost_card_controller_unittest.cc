@@ -33,11 +33,9 @@ class MagicBoostCardControllerTest : public ChromeViewsTestBase {
 // Sets the default functions for the test to create image with the lottie
 // resource id. Otherwise there's no `g_parse_lottie_as_still_image_` set in the
 // `ResourceBundle`.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     ui::ResourceBundle::SetLottieParsingFunctions(
         &lottie::ParseLottieAsStillImage,
         &lottie::ParseLottieAsThemedStillImage);
-#endif
   }
 
   // ChromeViewsTestBase:
@@ -45,13 +43,8 @@ class MagicBoostCardControllerTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
 
     // Replace the production `MagicBoostController` with a mock for testing
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    card_controller_.BindMagicBoostControllerCrosapiForTesting(
-        receiver_.BindNewPipeAndPassRemote());
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
     card_controller_.SetMagicBoostControllerCrosapiForTesting(
         &crosapi_controller_);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     card_controller_.SetOptInFeature(OptInFeatures::kHmrOnly);
 
     magic_boost_state_ = std::make_unique<ash::MockMagicBoostState>();
@@ -65,7 +58,6 @@ class MagicBoostCardControllerTest : public ChromeViewsTestBase {
   }
 
  protected:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Providing a mock MahiMediaAppEvnetsProxy to satisfy
   // MagicBoostCardController.
   testing::NiceMock<::ash::MockMahiMediaAppEventsProxy>
@@ -74,7 +66,6 @@ class MagicBoostCardControllerTest : public ChromeViewsTestBase {
       scoped_mahi_media_app_events_proxy_{&mock_mahi_media_app_events_proxy_};
 
   testing::NiceMock<ash::MockEditorPanelManager> mock_editor_manager_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::unique_ptr<ash::MockMagicBoostState> magic_boost_state_;
   MagicBoostCardController card_controller_;
