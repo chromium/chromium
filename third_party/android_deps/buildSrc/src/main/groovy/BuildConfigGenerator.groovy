@@ -132,6 +132,7 @@ class BuildConfigGenerator extends DefaultTask {
       'androidx_localbroadcastmanager_localbroadcastmanager',
       'androidx_media3_media3',
       'androidx_multidex_multidex',
+      'androidx_pdf_pdf',
       'androidx_privacysandbox_ads_ads_adservices',
       'androidx_test',
     ]

@@ -88,8 +88,10 @@ dependencies {
     compile 'androidx.mediarouter:mediarouter:{{androidx_dependency_version}}'
     compile 'androidx.navigation:navigation-compose:{{androidx_dependency_version}}'
     compile 'androidx.navigation:navigation-runtime:{{androidx_dependency_version}}'
-    compile 'androidx.pdf:pdf-viewer:{{androidx_dependency_version}}'
-    compile 'androidx.pdf:pdf-viewer-fragment:{{androidx_dependency_version}}'
+    // Take pdf library 1.0.0-alpha05 until beta release is thoroughly tested.
+    // TODO(https://crbug.com/383610568): Switch to beta version of pdf library once ready.
+    compile 'androidx.pdf:pdf-viewer:1.0.0-alpha05'
+    compile 'androidx.pdf:pdf-viewer-fragment:1.0.0-alpha05'
     compile 'androidx.preference:preference:{{androidx_dependency_version}}'
     // Privacy Sandbox is less stable than others. Use only release versions.
     compile 'androidx.privacysandbox.ads:ads-adservices:1.1.0-beta07'
