@@ -52,6 +52,12 @@ BASE_FEATURE(kUseVideoFrameSinkBundle,
              "UseVideoFrameSinkBundle",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When VideoFrameSubmitter::ReclaimResources() is called in background,
+// trigger a clean of recycled video frames.
+BASE_FEATURE(kClearVideoFrameResourcesInBackground,
+             "ClearVideoFrameResourcesInBackground",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Builds a cc::FrameInfo representing a video frame, which is considered
 // Compositor-only.
 cc::FrameInfo CreateFrameInfo(cc::FrameInfo::FrameFinalState final_state) {
@@ -581,6 +587,17 @@ void VideoFrameSubmitter::ReclaimResources(
     WTF::Vector<viz::ReturnedResource> resources) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   resource_provider_->ReceiveReturnsFromParent(std::move(resources));
+
+  // We've already submitted an empty frame so post a delayed task to clear
+  // frame resources.
+  if (!ShouldSubmit() && !last_frame_id_.has_value() &&
+      base::FeatureList::IsEnabled(kClearVideoFrameResourcesInBackground)) {
+    task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&VideoFrameSubmitter::ClearFrameResources,
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::Seconds(5));
+  }
 }
 
 void VideoFrameSubmitter::OnReceivedContextProvider(
@@ -1007,6 +1024,17 @@ void VideoFrameSubmitter::NotifyOpacityIfNeeded(Opacity new_opacity) {
 
   opacity_ = new_opacity;
   surface_embedder_->OnOpacityChanged(new_opacity == Opacity::kIsOpaque);
+}
+
+void VideoFrameSubmitter::ClearFrameResources() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // If we are allowed to submit real frames, then don't clear frame resources.
+  if (ShouldSubmit()) {
+    return;
+  }
+
+  resource_provider_->ClearFrameResources();
 }
 
 }  // namespace blink

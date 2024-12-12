@@ -116,6 +116,8 @@ class MEDIA_EXPORT VideoResourceUpdater
                   float draw_opacity,
                   int sorting_context_id);
 
+  void ClearFrameResources();
+
   // TODO(kylechar): This is only public for testing, make private.
   VideoFrameExternalResource CreateExternalResourceFromVideoFrame(
       scoped_refptr<VideoFrame> video_frame);

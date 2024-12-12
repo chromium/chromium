@@ -160,6 +160,8 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   // has changed.
   void NotifyOpacityIfNeeded(Opacity new_opacity);
 
+  void ClearFrameResources();
+
   raw_ptr<cc::VideoFrameProvider> video_frame_provider_ = nullptr;
   bool is_media_stream_ = false;
   scoped_refptr<viz::RasterContextProvider> context_provider_;
