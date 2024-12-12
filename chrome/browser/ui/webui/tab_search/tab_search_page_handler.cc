@@ -398,7 +398,7 @@ void TabSearchPageHandler::ExcludeFromStaleTabs(int32_t tab_id) {
 
   tab_declutter_controller_->ExcludeFromStaleTabs(details->tab);
 
-  std::erase(stale_tabs_, details->tab);
+  RemoveStaleTab(details->tab);
 
   page_->UnusedTabsChanged(GetMojoUnusedTabs());
 }
@@ -408,14 +408,19 @@ void TabSearchPageHandler::ExcludeFromDuplicateTabs(const GURL& url) {
     return;
   }
 
-  tab_declutter_controller_->ExcludeFromDuplicateTabs(url);
+  CHECK(duplicate_tabs_.count(url.GetWithoutRef()) > 0);
 
-  // TODO(crbug.com/376879701): Erase from local duplicates list
+  tab_declutter_controller_->ExcludeFromDuplicateTabs(url.GetWithoutRef());
+
+  auto tabs = duplicate_tabs_[url.GetWithoutRef()];
+  for (tabs::TabInterface* tab : tabs) {
+    RemoveDuplicateTab(tab);
+  }
 
   page_->UnusedTabsChanged(GetMojoUnusedTabs());
 }
 
-void TabSearchPageHandler::RegisterTabDeclutterCallbacks(
+void TabSearchPageHandler::RegisterInactiveTabDeclutterCallbacks(
     tabs::TabInterface* tab) {
   std::vector<base::CallbackListSubscription> subscriptions;
 
@@ -424,35 +429,105 @@ void TabSearchPageHandler::RegisterTabDeclutterCallbacks(
                           base::Unretained(this))));
 
   subscriptions.push_back(tab->RegisterWillDetach(base::BindRepeating(
-      &TabSearchPageHandler::OnStaleTabWillDetach, base::Unretained(this))));
+      [](TabSearchPageHandler* handler, tabs::TabInterface* tab,
+         tabs::TabInterface::DetachReason reason) {
+        handler->OnUnusedTabWillDetach(tab, reason, UnusedTabType::kInactive);
+      },
+      base::Unretained(this))));
 
-  subscriptions.push_back(tab->RegisterPinnedStateChanged(
-      base::BindRepeating(&TabSearchPageHandler::OnStaleTabPinnedStateChanged,
-                          base::Unretained(this))));
+  subscriptions.push_back(tab->RegisterPinnedStateChanged(base::BindRepeating(
+      [](TabSearchPageHandler* handler, tabs::TabInterface* tab,
+         bool new_pinned_state) {
+        handler->OnUnusedTabPinnedStateChanged(tab, new_pinned_state,
+                                               UnusedTabType::kInactive);
+      },
+      base::Unretained(this))));
 
   subscriptions.push_back(tab->RegisterGroupChanged(base::BindRepeating(
-      &TabSearchPageHandler::OnStaleTabGroupChanged, base::Unretained(this))));
+      [](TabSearchPageHandler* handler, tabs::TabInterface* tab,
+         std::optional<tab_groups::TabGroupId> new_group) {
+        handler->OnUnusedTabGroupChanged(tab, new_group,
+                                         UnusedTabType::kInactive);
+      },
+      base::Unretained(this))));
 
-  tab_declutter_subscriptions_map_[tab] = std::move(subscriptions);
+  inactive_tab_subscriptions_map_[tab] = std::move(subscriptions);
+}
+
+void TabSearchPageHandler::RegisterDuplicateTabDeclutterCallbacks(
+    tabs::TabInterface* tab) {
+  std::vector<base::CallbackListSubscription> subscriptions;
+
+  subscriptions.push_back(tab->RegisterWillDetach(base::BindRepeating(
+      [](TabSearchPageHandler* handler, tabs::TabInterface* tab,
+         tabs::TabInterface::DetachReason reason) {
+        handler->OnUnusedTabWillDetach(tab, reason, UnusedTabType::kDuplicate);
+      },
+      base::Unretained(this))));
+
+  subscriptions.push_back(tab->RegisterPinnedStateChanged(base::BindRepeating(
+      [](TabSearchPageHandler* handler, tabs::TabInterface* tab,
+         bool new_pinned_state) {
+        handler->OnUnusedTabPinnedStateChanged(tab, new_pinned_state,
+                                               UnusedTabType::kDuplicate);
+      },
+      base::Unretained(this))));
+
+  subscriptions.push_back(tab->RegisterGroupChanged(base::BindRepeating(
+      [](TabSearchPageHandler* handler, tabs::TabInterface* tab,
+         std::optional<tab_groups::TabGroupId> new_group) {
+        handler->OnUnusedTabGroupChanged(tab, new_group,
+                                         UnusedTabType::kDuplicate);
+      },
+      base::Unretained(this))));
+
+  duplicate_tab_subscriptions_map_[tab] = std::move(subscriptions);
 }
 
 void TabSearchPageHandler::UnregisterTabCallbacks() {
-  tab_declutter_subscriptions_map_.clear();
+  inactive_tab_subscriptions_map_.clear();
+  duplicate_tab_subscriptions_map_.clear();
 }
 
 void TabSearchPageHandler::RemoveStaleTab(tabs::TabInterface* tab) {
   CHECK(tab);
   CHECK(std::find(stale_tabs_.begin(), stale_tabs_.end(), tab) !=
         stale_tabs_.end());
-  CHECK(tab_declutter_subscriptions_map_.find(tab) !=
-        tab_declutter_subscriptions_map_.end());
+  CHECK(inactive_tab_subscriptions_map_.find(tab) !=
+        inactive_tab_subscriptions_map_.end());
 
   // Remove the TabInterface from stale_tabs_
   stale_tabs_.erase(std::remove(stale_tabs_.begin(), stale_tabs_.end(), tab),
                     stale_tabs_.end());
 
   // Unregister the subscriptions for this TabInterface
-  tab_declutter_subscriptions_map_.erase(tab);
+  inactive_tab_subscriptions_map_.erase(tab);
+}
+
+void TabSearchPageHandler::RemoveDuplicateTab(tabs::TabInterface* tab) {
+  CHECK(tab);
+  CHECK(duplicate_tab_subscriptions_map_.find(tab) !=
+        duplicate_tab_subscriptions_map_.end());
+
+  GURL tab_url;
+
+  tab_url = tab->GetContents()->GetLastCommittedURL().GetWithoutRef();
+  CHECK(duplicate_tabs_.find(tab_url) != duplicate_tabs_.end());
+
+  CHECK(tab_url.is_valid());
+
+  auto& tabs = duplicate_tabs_[tab_url];
+  auto tab_iter = std::find(tabs.begin(), tabs.end(), tab);
+
+  CHECK(tab_iter != tabs.end());
+  tabs.erase(tab_iter);
+
+  if (tabs.empty()) {
+    duplicate_tabs_.erase(tab_url);
+  }
+
+  // Unregister the subscriptions for this TabInterface
+  duplicate_tab_subscriptions_map_.erase(tab);
 }
 
 void TabSearchPageHandler::BrowserWindowInterfaceChanged() {
@@ -487,23 +562,40 @@ void TabSearchPageHandler::OnStaleTabDidEnterForeground(
   page_->UnusedTabsChanged(GetMojoUnusedTabs());
 }
 
-void TabSearchPageHandler::OnStaleTabWillDetach(
+void TabSearchPageHandler::OnUnusedTabWillDetach(
     tabs::TabInterface* tab,
-    tabs::TabInterface::DetachReason reason) {
-  RemoveStaleTab(static_cast<tabs::TabInterface*>(tab));
+    tabs::TabInterface::DetachReason reason,
+    UnusedTabType type) {
+  if (type == UnusedTabType::kInactive) {
+    RemoveStaleTab(tab);
+  } else {
+    RemoveDuplicateTab(tab);
+  }
   page_->UnusedTabsChanged(GetMojoUnusedTabs());
 }
 
-void TabSearchPageHandler::OnStaleTabPinnedStateChanged(tabs::TabInterface* tab,
-                                                        bool new_pinned_state) {
-  RemoveStaleTab(tab);
+void TabSearchPageHandler::OnUnusedTabPinnedStateChanged(
+    tabs::TabInterface* tab,
+    bool new_pinned_state,
+    UnusedTabType type) {
+  if (type == UnusedTabType::kInactive) {
+    RemoveStaleTab(tab);
+  } else {
+    RemoveDuplicateTab(tab);
+  }
+
   page_->UnusedTabsChanged(GetMojoUnusedTabs());
 }
 
-void TabSearchPageHandler::OnStaleTabGroupChanged(
+void TabSearchPageHandler::OnUnusedTabGroupChanged(
     tabs::TabInterface* tab,
-    std::optional<tab_groups::TabGroupId> new_group) {
-  RemoveStaleTab(tab);
+    std::optional<tab_groups::TabGroupId> new_group,
+    UnusedTabType type) {
+  if (type == UnusedTabType::kInactive) {
+    RemoveStaleTab(tab);
+  } else {
+    RemoveDuplicateTab(tab);
+  }
   page_->UnusedTabsChanged(GetMojoUnusedTabs());
 }
 
@@ -1028,10 +1120,16 @@ void TabSearchPageHandler::UpdateUnusedTabs() {
   }
 
   duplicate_tabs_ = duplicate_tabs;
-  stale_tabs_ = FilterDuplicateTabsFromStaleTabs(stale_tabs, duplicate_tabs);
+  stale_tabs_ = FilterDuplicateTabsFromStaleTabs(stale_tabs, duplicate_tabs_);
 
   for (tabs::TabInterface* tab : stale_tabs_) {
-    RegisterTabDeclutterCallbacks(tab);
+    RegisterInactiveTabDeclutterCallbacks(tab);
+  }
+
+  for (auto& [url, tabs] : duplicate_tabs_) {
+    for (auto& tab : tabs) {
+      RegisterDuplicateTabDeclutterCallbacks(tab);
+    }
   }
 }
 
@@ -1058,11 +1156,18 @@ void TabSearchPageHandler::OnUnusedTabsProcessed(
   UnregisterTabCallbacks();
 
   duplicate_tabs_ = duplicate_tabs;
-  stale_tabs_ = FilterDuplicateTabsFromStaleTabs(stale_tabs, duplicate_tabs);
+  stale_tabs_ = FilterDuplicateTabsFromStaleTabs(stale_tabs, duplicate_tabs_);
 
   for (tabs::TabInterface* tab : stale_tabs_) {
-    RegisterTabDeclutterCallbacks(tab);
+    RegisterInactiveTabDeclutterCallbacks(tab);
   }
+
+  for (auto& [url, tabs] : duplicate_tabs_) {
+    for (auto& tab : tabs) {
+      RegisterDuplicateTabDeclutterCallbacks(tab);
+    }
+  }
+
   page_->UnusedTabsChanged(GetMojoUnusedTabs());
 }
 
