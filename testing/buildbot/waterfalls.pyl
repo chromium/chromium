@@ -1243,22 +1243,6 @@
         },
         'os_type': 'android',
       },
-      'chromeos-arm-generic-cfi-thin-lto-chrome-reclient': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-      },
-      'linux-chrome-reclient': {
-        'additional_compile_targets': [
-           # same build target as linux-chrome even if it doesn't run the tests
-           'base_unittests',
-           'chrome',
-           'chrome/installer/linux',
-           'chrome_sizes',
-           'variations_smoke_tests',
-        ],
-        # no tests. stay compile only.
-      },
       'linux-finch-smoke-chrome': {
         'mixins': [
           'chrome-finch-swarming-pool',
@@ -1278,27 +1262,6 @@
           'isolated_scripts': 'chrome_finch_smoke_tests',
         },
         'os_type': 'mac',
-      },
-      'mac-chrome-reclient': {
-        'additional_compile_targets': [
-           # same build target as mac-chrome even if it doesn't run the tests
-          'chrome',
-          'chrome/installer/mac',
-          'chrome_sizes',
-          'variations_smoke_tests',
-        ],
-        # no tests, stay compile only.
-      },
-      'win-chrome-reclient': {
-        'additional_compile_targets': [
-           # same build target as win-chrome even if it doesn't run the tests
-          'base_unittests',
-          'chrome',
-          'chrome_official_builder',
-          'chrome_sizes',
-          'variations_smoke_tests',
-        ],
-        # no tests, stay compile only.
       },
       'win-finch-smoke-chrome': {
         'mixins': [
