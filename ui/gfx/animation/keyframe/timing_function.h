@@ -5,6 +5,8 @@
 #ifndef UI_GFX_ANIMATION_KEYFRAME_TIMING_FUNCTION_H_
 #define UI_GFX_ANIMATION_KEYFRAME_TIMING_FUNCTION_H_
 
+#include <stddef.h>
+
 #include <memory>
 #include <vector>
 

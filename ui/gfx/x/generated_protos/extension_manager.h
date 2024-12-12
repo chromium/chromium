@@ -24,6 +24,8 @@
 #ifndef UI_GFX_X_GENERATED_PROTOS_EXTENSION_MANAGER_H_
 #define UI_GFX_X_GENERATED_PROTOS_EXTENSION_MANAGER_H_
 
+#include <stdint.h>
+
 #include <memory>
 
 #include "base/component_export.h"
