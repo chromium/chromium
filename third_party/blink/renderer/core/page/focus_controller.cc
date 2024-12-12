@@ -490,7 +490,7 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
   const Element* PreviousInDomOrder(const Element& current) {
     Element* previous;
     if (RuntimeEnabledFeatures::PseudoElementsFocusableEnabled()) {
-      bool should_continue_search = true;
+      bool should_continue_search;
       previous = GetPreviousInCarouselOrDomOrder(current, root_,
                                                  should_continue_search);
       if (!should_continue_search) {
