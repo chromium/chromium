@@ -20,11 +20,6 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/forms/layout_text_control.h"
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -163,8 +158,9 @@ bool HasValidAvgCharWidth(const Font& font) {
     font_families_with_invalid_char_width_map = new HashSet<AtomicString>;
 
     for (size_t i = 0; i < std::size(kFontFamiliesWithInvalidCharWidth); ++i) {
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
       font_families_with_invalid_char_width_map->insert(
-          AtomicString(kFontFamiliesWithInvalidCharWidth[i]));
+          AtomicString(UNSAFE_TODO(kFontFamiliesWithInvalidCharWidth[i])));
     }
   }
 

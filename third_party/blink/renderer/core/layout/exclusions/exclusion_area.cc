@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/exclusions/exclusion_area.h"
 
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -37,7 +32,8 @@ std::ostream& operator<<(std::ostream& os, const PrintableEFloat& printable) {
   const unsigned index = static_cast<unsigned>(printable.value);
   if (index >= std::size(kStrings))
     return os << "EFloat::" << index;
-  return os << "EFloat::" << kStrings[index];
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  return os << "EFloat::" << UNSAFE_TODO(kStrings[index]);
 }
 
 struct PrintableKind {
@@ -53,7 +49,8 @@ std::ostream& operator<<(std::ostream& os, const PrintableKind& printable) {
   const unsigned index = static_cast<unsigned>(printable.value);
   if (index >= std::size(kStrings))
     return os << "Kind::" << index;
-  return os << kStrings[index];
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  return os << UNSAFE_TODO(kStrings[index]);
 }
 
 }  // namespace

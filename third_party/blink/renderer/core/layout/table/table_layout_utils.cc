@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/table/table_layout_utils.h"
 
 #include "third_party/blink/renderer/core/layout/block_layout_algorithm_utils.h"
@@ -76,9 +71,11 @@ void EnsureDistributableColumnExists(wtf_size_t start_column_index,
       std::min(span, column_constraints->data.size() - start_column_index);
   TableTypes::Column* start_column =
       &column_constraints->data[start_column_index];
-  TableTypes::Column* end_column = start_column + effective_span;
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  TableTypes::Column* end_column = UNSAFE_TODO(start_column + effective_span);
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
   for (TableTypes::Column* column = start_column; column != end_column;
-       ++column) {
+       UNSAFE_TODO(++column)) {
     if (!column->is_collapsed) {
       column->is_mergeable = false;
       return;
@@ -487,8 +484,9 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
   LayoutUnit total_auto_max_inline_size;
   LayoutUnit total_fixed_max_inline_size;
 
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
   for (const TableTypes::Column* column = start_column; column != end_column;
-       ++column) {
+       UNSAFE_TODO(++column)) {
     all_columns_count++;
     DCHECK(column->min_inline_size);
     DCHECK(column->max_inline_size);
@@ -503,29 +501,30 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
       total_percent += *column->percent;
       LayoutUnit percent_inline_size =
           column->ResolvePercentInlineSize(target_inline_size);
-      guess_sizes[kMinGuess] += *column->min_inline_size;
-      guess_sizes[kPercentageGuess] += percent_inline_size;
-      guess_sizes[kSpecifiedGuess] += percent_inline_size;
-      guess_sizes[kMaxGuess] += percent_inline_size;
-      guess_size_total_increases[kPercentageGuess] +=
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+      UNSAFE_TODO(guess_sizes[kMinGuess]) += *column->min_inline_size;
+      UNSAFE_TODO(guess_sizes[kPercentageGuess]) += percent_inline_size;
+      UNSAFE_TODO(guess_sizes[kSpecifiedGuess]) += percent_inline_size;
+      UNSAFE_TODO(guess_sizes[kMaxGuess]) += percent_inline_size;
+      UNSAFE_TODO(guess_size_total_increases[kPercentageGuess]) +=
           percent_inline_size - *column->min_inline_size;
     } else if (column->is_constrained) {  // Fixed column
       fixed_columns_count++;
       total_fixed_max_inline_size += *column->max_inline_size;
-      guess_sizes[kMinGuess] += *column->min_inline_size;
-      guess_sizes[kPercentageGuess] += *column->min_inline_size;
-      guess_sizes[kSpecifiedGuess] += *column->max_inline_size;
-      guess_sizes[kMaxGuess] += *column->max_inline_size;
-      guess_size_total_increases[kSpecifiedGuess] +=
+      UNSAFE_TODO(guess_sizes[kMinGuess]) += *column->min_inline_size;
+      UNSAFE_TODO(guess_sizes[kPercentageGuess]) += *column->min_inline_size;
+      UNSAFE_TODO(guess_sizes[kSpecifiedGuess]) += *column->max_inline_size;
+      UNSAFE_TODO(guess_sizes[kMaxGuess]) += *column->max_inline_size;
+      UNSAFE_TODO(guess_size_total_increases[kSpecifiedGuess]) +=
           *column->max_inline_size - *column->min_inline_size;
     } else {  // Auto column
       auto_columns_count++;
       total_auto_max_inline_size += *column->max_inline_size;
-      guess_sizes[kMinGuess] += *column->min_inline_size;
-      guess_sizes[kPercentageGuess] += *column->min_inline_size;
-      guess_sizes[kSpecifiedGuess] += *column->min_inline_size;
-      guess_sizes[kMaxGuess] += *column->max_inline_size;
-      guess_size_total_increases[kMaxGuess] +=
+      UNSAFE_TODO(guess_sizes[kMinGuess]) += *column->min_inline_size;
+      UNSAFE_TODO(guess_sizes[kPercentageGuess]) += *column->min_inline_size;
+      UNSAFE_TODO(guess_sizes[kSpecifiedGuess]) += *column->min_inline_size;
+      UNSAFE_TODO(guess_sizes[kMaxGuess]) += *column->max_inline_size;
+      UNSAFE_TODO(guess_size_total_increases[kMaxGuess]) +=
           *column->max_inline_size - *column->min_inline_size;
     }
   }
@@ -537,11 +536,14 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
   // Target inline size must be wider than sum of min inline sizes.
   // This is always true for assignable_table_inline_size, but not for
   // colspan_cells.
-  target_inline_size = std::max(target_inline_size, guess_sizes[kMinGuess]);
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  target_inline_size =
+      std::max(target_inline_size, UNSAFE_TODO(guess_sizes[kMinGuess]));
 
   unsigned starting_guess = kAboveMax;
   for (unsigned i = kMinGuess; i != kAboveMax; ++i) {
-    if (guess_sizes[i] >= target_inline_size) {
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+    if (UNSAFE_TODO(guess_sizes[i]) >= target_inline_size) {
       starting_guess = i;
       break;
     }
@@ -551,8 +553,9 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
     case kMinGuess: {
       // All columns are their min inline-size.
       LayoutUnit* computed_size = computed_sizes.data();
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
       for (const TableTypes::Column* column = start_column;
-           column != end_column; ++column, ++computed_size) {
+           column != end_column; UNSAFE_TODO(++column, ++computed_size)) {
         if (column->is_mergeable) {
           continue;
         }
@@ -562,15 +565,17 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
     case kPercentageGuess: {
       // Percent columns grow in proportion to difference between their
       // percentage size and their minimum size.
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
       LayoutUnit percent_inline_size_increase =
-          guess_size_total_increases[kPercentageGuess];
+          UNSAFE_TODO(guess_size_total_increases[kPercentageGuess]);
       LayoutUnit distributable_inline_size =
-          target_inline_size - guess_sizes[kMinGuess];
+          target_inline_size - UNSAFE_TODO(guess_sizes[kMinGuess]);
       LayoutUnit remaining_deficit = distributable_inline_size;
       LayoutUnit* computed_size = computed_sizes.data();
       LayoutUnit* last_computed_size = nullptr;
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
       for (const TableTypes::Column* column = start_column;
-           column != end_column; ++column, ++computed_size) {
+           column != end_column; UNSAFE_TODO(++column, ++computed_size)) {
         if (column->is_mergeable) {
           continue;
         }
@@ -601,15 +606,16 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
     } break;
     case kSpecifiedGuess: {
       // Fixed columns grow, auto gets min, percent gets %max.
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
       LayoutUnit fixed_inline_size_increase =
-          guess_size_total_increases[kSpecifiedGuess];
+          UNSAFE_TODO(guess_size_total_increases[kSpecifiedGuess]);
       LayoutUnit distributable_inline_size =
-          target_inline_size - guess_sizes[kPercentageGuess];
+          target_inline_size - UNSAFE_TODO(guess_sizes[kPercentageGuess]);
       LayoutUnit remaining_deficit = distributable_inline_size;
       LayoutUnit* last_computed_size = nullptr;
       LayoutUnit* computed_size = computed_sizes.data();
       for (const TableTypes::Column* column = start_column;
-           column != end_column; ++column, ++computed_size) {
+           column != end_column; UNSAFE_TODO(++column, ++computed_size)) {
         if (column->is_mergeable) {
           continue;
         }
@@ -639,23 +645,27 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
     } break;
     case kMaxGuess: {
       // Auto columns grow, fixed gets max, percent gets %max.
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
       LayoutUnit auto_inline_size_increase =
-          guess_size_total_increases[kMaxGuess];
+          UNSAFE_TODO(guess_size_total_increases[kMaxGuess]);
       LayoutUnit distributable_inline_size =
-          target_inline_size - guess_sizes[kSpecifiedGuess];
+          UNSAFE_TODO(target_inline_size - guess_sizes[kSpecifiedGuess]);
       // When the inline-sizes match exactly, this usually means that table
       // inline-size is auto, and that columns should be wide enough to
       // accommodate content without wrapping.
       // Instead of using the distributing math to compute final column
       // inline-size, we use the max inline-size. Using distributing math can
       // cause rounding errors, and unintended line wrap.
-      bool is_exact_match = target_inline_size == guess_sizes[kMaxGuess];
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+      bool is_exact_match =
+          target_inline_size == UNSAFE_TODO(guess_sizes[kMaxGuess]);
       LayoutUnit remaining_deficit =
           is_exact_match ? LayoutUnit() : distributable_inline_size;
       LayoutUnit* last_computed_size = nullptr;
       LayoutUnit* computed_size = computed_sizes.data();
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
       for (const TableTypes::Column* column = start_column;
-           column != end_column; ++column, ++computed_size) {
+           column != end_column; UNSAFE_TODO(++column, ++computed_size)) {
         if (column->is_mergeable) {
           continue;
         }
@@ -684,15 +694,17 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
       }
     } break;
     case kAboveMax: {
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
       LayoutUnit distributable_inline_size =
-          target_inline_size - guess_sizes[kMaxGuess];
+          target_inline_size - UNSAFE_TODO(guess_sizes[kMaxGuess]);
       if (auto_columns_count > 0) {
         // Grow auto columns if available.
         LayoutUnit remaining_deficit = distributable_inline_size;
         LayoutUnit* last_computed_size = nullptr;
         LayoutUnit* computed_size = computed_sizes.data();
+        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
         for (const TableTypes::Column* column = start_column;
-             column != end_column; ++column, ++computed_size) {
+             column != end_column; UNSAFE_TODO(++column, ++computed_size)) {
           if (column->is_mergeable) {
             continue;
           }
@@ -723,8 +735,9 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
         LayoutUnit remaining_deficit = distributable_inline_size;
         LayoutUnit* last_computed_size = nullptr;
         LayoutUnit* computed_size = computed_sizes.data();
+        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
         for (const TableTypes::Column* column = start_column;
-             column != end_column; ++column, ++computed_size) {
+             column != end_column; UNSAFE_TODO(++column, ++computed_size)) {
           if (column->is_mergeable) {
             continue;
           }
@@ -757,8 +770,9 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
         LayoutUnit remaining_deficit = distributable_inline_size;
         LayoutUnit* last_computed_size = nullptr;
         LayoutUnit* computed_size = computed_sizes.data();
+        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
         for (const TableTypes::Column* column = start_column;
-             column != end_column; ++column, ++computed_size) {
+             column != end_column; UNSAFE_TODO(++column, ++computed_size)) {
           if (column->is_mergeable || !column->percent) {
             continue;
           }
@@ -847,8 +861,10 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumnsFixed(
       }
     }
     LayoutUnit* column_size = column_sizes.data();
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
     for (auto column = column_constraints.data.begin();
-         column != column_constraints.data.end(); ++column, ++column_size) {
+         column != column_constraints.data.end();
+         UNSAFE_TODO(++column, ++column_size)) {
       if (!TreatAsFixed(*column)) {
         continue;
       }
@@ -886,8 +902,10 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumnsFixed(
       }
     }
     LayoutUnit* column_size = column_sizes.data();
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
     for (auto column = column_constraints.data.begin();
-         column != column_constraints.data.end(); ++column, ++column_size) {
+         column != column_constraints.data.end();
+         UNSAFE_TODO(++column, ++column_size)) {
       if (!column->percent) {
         continue;
       }
@@ -911,8 +929,10 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumnsFixed(
   bool distribute_zero_inline_size =
       zero_inline_size_constrained_colums_count == all_columns_count;
 
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
   for (auto column = column_constraints.data.begin();
-       column != column_constraints.data.end(); ++column, ++column_size) {
+       column != column_constraints.data.end();
+       UNSAFE_TODO(++column, ++column_size)) {
     if (column->percent || TreatAsFixed(*column)) {
       continue;
     }
@@ -945,15 +965,18 @@ void DistributeColspanCellToColumnsFixed(
             column_constraints->data.size() - colspan_cell.start_column);
   TableTypes::Column* start_column =
       &column_constraints->data[colspan_cell.start_column];
-  TableTypes::Column* end_column = start_column + colspan_cell.span;
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  TableTypes::Column* end_column =
+      UNSAFE_TODO(start_column + colspan_cell.span);
   DCHECK_NE(start_column, end_column);
 
   // Inline sizes for redistribution exclude border spacing.
   LayoutUnit total_inner_border_spacing;
   unsigned effective_span = 0;
   bool is_first_column = true;
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
   for (TableTypes::Column* column = start_column; column != end_column;
-       ++column) {
+       UNSAFE_TODO(++column)) {
     if (column->is_mergeable) {
       continue;
     }
@@ -992,8 +1015,9 @@ void DistributeColspanCellToColumnsFixed(
   }
 
   TableTypes::Column* last_column = nullptr;
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
   for (TableTypes::Column* column = start_column; column < end_column;
-       ++column) {
+       UNSAFE_TODO(++column)) {
     if (column->is_mergeable) {
       continue;
     }
@@ -1035,13 +1059,15 @@ void DistributeColspanCellToColumnsAuto(
                column_constraints->data.size() - colspan_cell.start_column);
   TableTypes::Column* start_column =
       &column_constraints->data[colspan_cell.start_column];
-  TableTypes::Column* end_column = start_column + effective_span;
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  TableTypes::Column* end_column = UNSAFE_TODO(start_column + effective_span);
 
   // Inline sizes for redistribution exclude border spacing.
   LayoutUnit total_inner_border_spacing;
   bool is_first_column = true;
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
   for (TableTypes::Column* column = start_column; column != end_column;
-       ++column) {
+       UNSAFE_TODO(++column)) {
     if (!column->is_mergeable) {
       if (!is_first_column) {
         total_inner_border_spacing += inline_border_spacing;
@@ -1068,8 +1094,9 @@ void DistributeColspanCellToColumnsAuto(
     unsigned percent_columns_count = 0;
     unsigned nonpercent_columns_count = 0;
     LayoutUnit nonpercent_columns_max_inline_size;
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
     for (TableTypes::Column* column = start_column; column != end_column;
-         ++column) {
+         UNSAFE_TODO(++column)) {
       if (!column->max_inline_size) {
         column->max_inline_size = LayoutUnit();
       }
@@ -1092,8 +1119,9 @@ void DistributeColspanCellToColumnsAuto(
     if (surplus_percent > 0.0f && all_columns_count > percent_columns_count) {
       // Distribute surplus percent to non-percent columns in proportion to
       // max_inline_size.
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
       for (TableTypes::Column* column = start_column; column != end_column;
-           ++column) {
+           UNSAFE_TODO(++column)) {
         if (column->percent || column->is_mergeable) {
           continue;
         }
@@ -1117,8 +1145,9 @@ void DistributeColspanCellToColumnsAuto(
   // TODO(atotic) See crbug.com/531752 for discussion about differences
   // between FF/Chrome.
   // Minimum inline size gets distributed with standard distribution algorithm.
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
   for (TableTypes::Column* column = start_column; column != end_column;
-       ++column) {
+       UNSAFE_TODO(++column)) {
     if (!column->min_inline_size) {
       column->min_inline_size = LayoutUnit();
     }
@@ -1130,8 +1159,9 @@ void DistributeColspanCellToColumnsAuto(
       DistributeInlineSizeToComputedInlineSizeAuto(
           colspan_cell_min_inline_size, start_column, end_column, true);
   LayoutUnit* computed_size = computed_sizes.data();
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
   for (TableTypes::Column* column = start_column; column != end_column;
-       ++column, ++computed_size) {
+       UNSAFE_TODO(++column, ++computed_size)) {
     column->min_inline_size =
         std::max(*column->min_inline_size, *computed_size);
   }
@@ -1140,8 +1170,9 @@ void DistributeColspanCellToColumnsAuto(
       end_column, /* treat_target_size_as_constrained */
       colspan_cell.cell_inline_constraint.is_constrained);
   computed_size = computed_sizes.data();
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
   for (TableTypes::Column* column = start_column; column != end_column;
-       ++column, ++computed_size) {
+       UNSAFE_TODO(++column, ++computed_size)) {
     column->max_inline_size =
         std::max(std::max(*column->min_inline_size, *column->max_inline_size),
                  *computed_size);
@@ -1884,8 +1915,9 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumns(
         assignable_table_inline_size, column_constraints);
   } else {
     const TableTypes::Column* start_column = &column_constraints.data[0];
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
     const TableTypes::Column* end_column =
-        start_column + column_constraints.data.size();
+        UNSAFE_TODO(start_column + column_constraints.data.size());
     return DistributeInlineSizeToComputedInlineSizeAuto(
         assignable_table_inline_size, start_column, end_column,
         /* treat_target_size_as_constrained */ true);

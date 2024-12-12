@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEXIBLE_BOX_ALGORITHM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEXIBLE_BOX_ALGORITHM_H_
 
@@ -177,10 +172,13 @@ class FlexItemVectorView {
     return vector_->at(start_ + i);
   }
 
-  FlexItem* begin() { return vector_->data() + start_; }
-  const FlexItem* begin() const { return vector_->data() + start_; }
-  FlexItem* end() { return vector_->data() + end_; }
-  const FlexItem* end() const { return vector_->data() + end_; }
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  FlexItem* begin() { return UNSAFE_TODO(vector_->data() + start_); }
+  const FlexItem* begin() const {
+    return UNSAFE_TODO(vector_->data() + start_);
+  }
+  FlexItem* end() { return UNSAFE_TODO(vector_->data() + end_); }
+  const FlexItem* end() const { return UNSAFE_TODO(vector_->data() + end_); }
 
  private:
   FlexItemVector* vector_;
