@@ -108,6 +108,9 @@ message RTLookupRequest {
   }
   // Whether the URL sent to Safe Browsing is mainframe URL or subframe URL.
   optional FrameType frame_type = 10;
+
+  // The Android app that launched Chrome.
+  optional ReferringAppInfo referring_app_info = 15;
 }
 
 message RTLookupResponse {
