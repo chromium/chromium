@@ -10,32 +10,49 @@
 
 namespace passage_embeddings {
 
-// Exists to hold the feature params used to run the passage embedder.
-BASE_FEATURE(kPassageEmbeddings,
-             "PassageEmbeddings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPassageEmbedder,
+             "PassageEmbedder",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kUserInitiatedPriorityNumThreads(
-    &kPassageEmbeddings,
+    &kPassageEmbedder,
     "UserInitiatedPriorityNumThreads",
     4);
 
 const base::FeatureParam<int> kPassivePriorityNumThreads(
-    &kPassageEmbeddings,
+    &kPassageEmbedder,
     "PassivePriorityNumThreads",
     1);
 
-const base::FeatureParam<int> kEmbedderCacheSize(&kPassageEmbeddings,
+const base::FeatureParam<int> kEmbedderCacheSize(&kPassageEmbedder,
                                                  "EmbedderCacheSize",
                                                  1000);
 
-const base::FeatureParam<base::TimeDelta> kEmbedderTimeout(&kPassageEmbeddings,
+const base::FeatureParam<base::TimeDelta> kEmbedderTimeout(&kPassageEmbedder,
                                                            "EmbedderTimeout",
                                                            base::Seconds(60));
 
 const base::FeatureParam<base::TimeDelta> kEmbeddingsServiceTimeout(
-    &kPassageEmbeddings,
+    &kPassageEmbedder,
     "EmbeddingsServiceTimeout",
     base::Seconds(60));
+
+const base::FeatureParam<base::TimeDelta> kPassageExtractionDelay(
+    &kPassageEmbedder,
+    "PassageExtractionDelay",
+    base::Seconds(5));
+
+const base::FeatureParam<int> kMaxWordsPerAggregatePassage(
+    &kPassageEmbedder,
+    "MaxWordsPerAggregatePassage",
+    200);
+
+const base::FeatureParam<int> kMaxPassagesPerPage(&kPassageEmbedder,
+                                                  "MaxPassagesPerPage",
+                                                  30);
+
+const base::FeatureParam<int> kMinWordsPerPassage(&kPassageEmbedder,
+                                                  "MinWordsPerPassage",
+                                                  5);
 
 }  // namespace passage_embeddings

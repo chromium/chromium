@@ -17,6 +17,7 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
 #include "chrome/browser/fingerprinting_protection/chrome_fingerprinting_protection_web_contents_helper_factory.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
+#include "chrome/browser/passage_embeddings/embedder_tab_observer.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_tab_observer.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -157,6 +158,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       collaboration_messaging_tab_data_ =
           std::make_unique<tab_groups::CollaborationMessagingTabData>();
     }
+
+    embedder_tab_observer_ =
+        std::make_unique<passage_embeddings::EmbedderTabObserver>(
+            tab.GetContents());
   }
 
   customize_chrome_side_panel_controller_ =

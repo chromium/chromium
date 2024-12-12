@@ -78,6 +78,7 @@
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/omnibox/autocomplete_controller_emitter_factory.h"
+#include "chrome/browser/passage_embeddings/embedder_service_factory.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
 #include "components/services/on_device_translation/buildflags/buildflags.h"
 
@@ -1062,6 +1063,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_ANDROID)
   PageColorsFactory::GetInstance();
 #endif
+  passage_embeddings::EmbedderServiceFactory::GetInstance();
   password_manager::PasswordManagerLogRouterFactory::GetInstance();
   password_manager::PasswordRequirementsServiceFactory::GetInstance();
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)

@@ -63,6 +63,10 @@ namespace page_actions {
 class PageActionController;
 }  // namespace page_actions
 
+namespace passage_embeddings {
+class EmbedderTabObserver;
+}  // namespace passage_embeddings
+
 namespace tab_groups {
 class CollaborationMessagingTabData;
 }  // namespace tab_groups
@@ -237,6 +241,9 @@ class TabFeatures {
   // Contains the recent collaboration message for a shared tab.
   std::unique_ptr<tab_groups::CollaborationMessagingTabData>
       collaboration_messaging_tab_data_;
+
+  std::unique_ptr<passage_embeddings::EmbedderTabObserver>
+      embedder_tab_observer_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

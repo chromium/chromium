@@ -479,6 +479,7 @@ include_rules = [
   "+services/network/url_request_context_owner.h",
   "+services/network/url_request_context_builder_mojo.h",
   "+services/on_device_model/public",
+  "+services/passage_embeddings/public/mojom",
   "+services/preferences/public/cpp",
   "+services/preferences/public/mojom",
   "+services/proxy_resolver",  # Android runs the packaged proxy resolver
