@@ -169,54 +169,6 @@ TEST_F(PageContentAnnotationsModelManagerTest, PageVisibility) {
   EXPECT_EQ(result[0].visibility_score(), std::nullopt);
 }
 
-TEST_F(PageContentAnnotationsModelManagerTest, PageVisibilityDisabled) {
-  base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kPageVisibilityBatchAnnotations);
-
-  SendPageVisibilityModelToExecutor();
-
-  base::RunLoop run_loop;
-  std::vector<BatchAnnotationResult> result;
-  BatchAnnotationCallback callback = base::BindOnce(
-      [](base::RunLoop* run_loop,
-         std::vector<BatchAnnotationResult>* out_result,
-         const std::vector<BatchAnnotationResult>& in_result) {
-        *out_result = in_result;
-        run_loop->Quit();
-      },
-      &run_loop, &result);
-
-  model_manager()->Annotate(std::move(callback), {"input"},
-                            AnnotationType::kContentVisibility);
-  run_loop.Run();
-
-  EXPECT_FALSE(model_observer_tracker()->DidRegisterForTarget(
-      optimization_guide::proto::OptimizationTarget::
-          OPTIMIZATION_TARGET_PAGE_VISIBILITY,
-      nullptr));
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotations.BatchRequestedSize."
-      "ContentVisibility",
-      1, 1);
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotations.BatchSuccess.ContentVisibility",
-      false, 1);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PageContentAnnotations.JobExecutionTime."
-      "ContentVisibility",
-      1);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PageContentAnnotations.JobScheduleTime."
-      "ContentVisibility",
-      1);
-
-  ASSERT_EQ(result.size(), 1U);
-  EXPECT_EQ(result[0].input(), "input");
-  EXPECT_EQ(result[0].visibility_score(), std::nullopt);
-}
-
 TEST_F(PageContentAnnotationsModelManagerTest, CalledTwice) {
   SendPageVisibilityModelToExecutor();
 
