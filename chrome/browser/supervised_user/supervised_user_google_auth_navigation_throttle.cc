@@ -39,6 +39,17 @@
 #include "chrome/browser/supervised_user/supervised_user_verification_page.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+namespace {
+bool IsYouTubeInfrastructureSubframe(content::NavigationHandle* handle) {
+  if (handle->GetNavigatingFrameType() != content::FrameType::kSubframe) {
+    return false;
+  }
+  return handle->GetURL().DomainIs("accounts.youtube.com");
+}
+}  // namespace
+#endif
+
 // static
 std::unique_ptr<SupervisedUserGoogleAuthNavigationThrottle>
 SupervisedUserGoogleAuthNavigationThrottle::MaybeCreate(
@@ -167,6 +178,13 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
      !SupervisedUserVerificationPage::ShouldShowPage(
           *child_account_service_)) {
     // This interstitial should only be displayed for YouTube request.
+    return content::NavigationThrottle::PROCEED;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kExemptYouTubeInfrastructureFromBlocking) &&
+      IsYouTubeInfrastructureSubframe(navigation_handle())) {
+    // Controls integration between google.com and youtube.com.
     return content::NavigationThrottle::PROCEED;
   }
 

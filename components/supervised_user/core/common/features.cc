@@ -137,6 +137,10 @@ BASE_FEATURE(kCloseSignTabsFromReauthenticationInterstitial,
 BASE_FEATURE(kAllowSupervisedUserReauthenticationForSubframes,
              "EnableSupervisedUserReauthenticationForSubframes",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kExemptYouTubeInfrastructureFromBlocking,
+             "ExemptYouTubeInfrastructureFromBlocking",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // TODO: crbug.com/378636321 - Clean up the

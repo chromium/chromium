@@ -96,6 +96,10 @@ BASE_DECLARE_FEATURE(kCloseSignTabsFromReauthenticationInterstitial);
 // `kForceSupervisedUserReauthenticationForYouTube` or
 // `kForceSupervisedUserReauthenticationForBlockedSites` is enabled.
 BASE_DECLARE_FEATURE(kAllowSupervisedUserReauthenticationForSubframes);
+
+// Specifies if infrastructure-related YouTube endpoints should be still
+// reachable even if parental controls related restrict YouTube access.
+BASE_DECLARE_FEATURE(kExemptYouTubeInfrastructureFromBlocking);
 #endif
 
 // Fallback to sending un-credentialed filtering requests for supervised users
