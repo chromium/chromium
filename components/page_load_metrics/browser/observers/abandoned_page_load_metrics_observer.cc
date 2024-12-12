@@ -114,7 +114,7 @@ const char kMilestoneDidCommit[] = "DidCommit";
 const char kMilestoneParseStart[] = "ParseStart";
 const char kFirstContentfulPaint[] = "FirstContentfulPaint";
 const char kDOMContentLoaded[] = "DOMContentLoaded";
-const char kLoadEventStarted[] = "LoadStarted";
+const char kLoadEventStarted[] = "LoadEventStarted";
 const char kLargestContentfulPaint[] = "LargestContentfulPaint";
 
 const char kAFTStart[] = "AFTStart";
