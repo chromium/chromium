@@ -136,6 +136,11 @@ void FilePathWatcherFSEventsChangeTracker::DispatchEvents(
     //
     // The `kFSEventStreamEventFlagRootChanged` flag signals that there has been
     // a change along the root path.
+    //
+    // TODO(crbug.com/381136602): Consider implementing queueing for calls to
+    // `DispatchEvents` so that we can wait and avoid processing 'root changed'
+    // events when possible, instead of reporting an event immediately when a
+    // 'root changed' event occurs.
     if (event_flags & kFSEventStreamEventFlagRootChanged) {
       // The event path should always be the same path as the target for a root
       // changed event. In the case that it's not, skip processing the event.
@@ -159,8 +164,8 @@ void FilePathWatcherFSEventsChangeTracker::DispatchEvents(
       }
 
       // Otherwise, a rename has occurred on the target path (which represents a
-      // move into-scope), or the target has been created initially. Both
-      // scenarios are reported as 'create' events.
+      // move into-scope), or the target has been created. Both scenarios are
+      // reported as 'create' events.
       coalesce_next_target_creation_ = true;
       ReportChangeEvent(
           {file_path_type, FilePathWatcher::ChangeType::kCreated, target_});
@@ -276,11 +281,28 @@ void FilePathWatcherFSEventsChangeTracker::DispatchEvents(
       continue;
     }
 
-    // If `kFSEventStreamEventFlagItemRemoved` is present, prioritize reporting
-    // that the file has been deleted.
-    if (event_flags & kFSEventStreamEventFlagItemRemoved) {
-      // Skip over coalesced delete events, that have already been reported for
-      // a delete event on the target path.
+    // When the `kFSEventStreamEventFlagItemCreated`,
+    // `kFSEventStreamEventFlagItemInodeMetaMod` and
+    // `kFSEventStreamEventFlagItemModified` flags are present, this is a
+    // signal that the contents of a file have been modified.
+    if ((event_flags & kFSEventStreamEventFlagItemCreated) &&
+        (event_flags & kFSEventStreamEventFlagItemInodeMetaMod) &&
+        (event_flags & kFSEventStreamEventFlagItemModified)) {
+      // Only report a 'modified' event if the removed event flag is not
+      // present.
+      if (!(event_flags & kFSEventStreamEventFlagItemRemoved)) {
+        ReportChangeEvent({file_path_type,
+                           FilePathWatcher::ChangeType::kModified, event_path});
+        continue;
+      }
+
+      // Otherwise, both a 'created' and a 'modified' event should be reported.
+      // The 'deleted' event is reported if it has not been coalesced.
+      ReportChangeEvent(
+          {file_path_type, FilePathWatcher::ChangeType::kCreated, event_path});
+      ReportChangeEvent(
+          {file_path_type, FilePathWatcher::ChangeType::kModified, event_path});
+
       if (coalesce_target_deletion && event_path == target_) {
         coalesce_next_target_deletion_ = false;
         continue;
@@ -290,46 +312,91 @@ void FilePathWatcherFSEventsChangeTracker::DispatchEvents(
       continue;
     }
 
-    // When both the `kFSEventStreamEventFlagItemInodeMetaMod` and
-    // `kFSEventStreamEventFlagItemModified` flags are present, this is a signal
-    // that the contents of a file have been modified. This takes precedence
-    // over reporting a 'create' event, given that it's possible for the
-    // `kFSEventStreamEventFlagItemCreated` flag to be reported in the same
-    // `event_flags` batch as both of the
-    // `kFSEventStreamEventFlagItemInodeMetaMod` and
-    // `kFSEventStreamEventFlagItemModified` flags.
-    if ((event_flags & kFSEventStreamEventFlagItemInodeMetaMod) &&
-        (event_flags & kFSEventStreamEventFlagItemModified)) {
-      ReportChangeEvent(
-          {file_path_type, FilePathWatcher::ChangeType::kModified, event_path});
-      continue;
-    }
-
-    // The `kFSEventStreamEventFlagItemCreated` flag signals a create event.
-    // The `kFSEventStreamEventFlagItemCreated` flag takes precedence over the
-    // `kFSEventStreamEventFlagItemModified` flag, in the scenario that both the
-    // `kFSEventStreamEventFlagItemCreated` and the
-    // `kFSEventStreamEventFlagItemModified` flag are present in the same batch
-    // of `event_flags`.
-    if (event_flags & kFSEventStreamEventFlagItemCreated) {
-      // If the current event is for the target path, skip reporting a duplicate
-      // create event, since we've already reported one earlier as a result of
-      // the previous root changed event.
-      if (coalesce_target_creation && event_path == target_) {
-        coalesce_next_target_creation_ = false;
+    if (event_flags & kFSEventStreamEventFlagItemRemoved) {
+      // Skip this event if it's been coalesced.
+      if (event_path == target_ && coalesce_target_deletion) {
+        coalesce_next_target_deletion_ = false;
         continue;
       }
-      ReportChangeEvent(
-          {file_path_type, FilePathWatcher::ChangeType::kCreated, event_path});
-      continue;
+
+      struct stat file_recreated_stat;
+      bool file_recreated_after_deletion =
+          (stat(event_path.value().c_str(), &file_recreated_stat) == 0) &&
+          (file_recreated_stat.st_ino == event_inode.value_or(0));
+
+      // It's possible the file has been re-created immediately after deletion.
+      // Report the 'deleted' event first.
+      if (file_recreated_after_deletion) {
+        ReportChangeEvent({file_path_type,
+                           FilePathWatcher::ChangeType::kDeleted, event_path});
+      } else {
+        // The file has been deleted and does not exist.
+        if (event_flags & kFSEventStreamEventFlagItemCreated) {
+          // Special handling if the file does not exist, but there's a created
+          // event flag present. We have to handle this flag to make sure
+          // no events are missed.
+          if (event_path == target_ && coalesce_target_creation) {
+            // In this case, we previously reported a 'created' event in
+            // evaluating a 'root changed' event on the prior call to
+            // `DispatchEvents`. The target does not exist, despite being
+            // reported as 'created' based on the previous 'root changed' event.
+            //
+            // Based on testing, this means that the target was deleted
+            // immediately before being re-created, which is why the previous
+            // 'root changed' event was reported as a 'created' event instead of
+            // 'deleted', and `coalesce_target_creation` evaluates to `true`.
+            // This seems to be an FSEvents peculiarty that could be corrected /
+            // handled by implementing queueuing for calls to `DispatchEvents`
+            // (crbug.com/381136602).
+            //
+            // While this is considered an edge case scenario, in order to
+            // achieve "best effort" reporting of change events for this edge
+            // case, we need to additionally reset the
+            // `coalesce_target_creation` bit. The current event represents a
+            // 'deleted' event, and the `coalesce_target_creation` bit was set
+            // unexpectedly as a result of the previous call to
+            // `DispatchEvents`, as described above. This prevents erroneously
+            // coalescing the potential, following 'created' event that arrives
+            // in the next iteration of `events`.
+            coalesce_target_creation = false;
+            coalesce_next_target_creation_ = false;
+          } else if (!(event_flags & kFSEventStreamEventFlagItemModified)) {
+            // Otherwise, based on testing, only report the a 'created' event
+            // before reporting a 'deleted' event if the modified event flag is
+            // *not* present.
+            ReportChangeEvent({file_path_type,
+                               FilePathWatcher::ChangeType::kCreated,
+                               event_path});
+          }
+        }
+        // Since the file has not been re-created after deletion, do not report
+        // any events after the 'deleted' event is reported.
+        ReportChangeEvent({file_path_type,
+                           FilePathWatcher::ChangeType::kDeleted, event_path});
+        continue;
+      }
     }
 
-    // Otherwise, if the `kFSEventStreamEventFlagItemModified` flag is present,
-    // report a 'modified' event.
+    if (event_flags & kFSEventStreamEventFlagItemCreated) {
+      // Even if the 'created' event has been coalesced as a result of the
+      // target being created initially as a 'root changed' event, we still
+      // want to carry on and process a modified event flag if it exists in
+      // `event_flags`.
+      //
+      // This is a "best effort" attempt to maintain the expectation that a new
+      // file write will result in two events (created + modified), even when
+      // this occurs as a result of `target_`'s initial creation.
+      if (event_path == target_ && coalesce_target_creation) {
+        coalesce_next_target_creation_ = false;
+      } else {
+        ReportChangeEvent({file_path_type,
+                           FilePathWatcher::ChangeType::kCreated, event_path});
+      }
+    }
+
     if (event_flags & kFSEventStreamEventFlagItemModified) {
       ReportChangeEvent(
           {file_path_type, FilePathWatcher::ChangeType::kModified, event_path});
-      continue;
     }
   }
 }
