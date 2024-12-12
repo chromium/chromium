@@ -6,29 +6,36 @@
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "invalidations": [
-        [9, 9, 276, 58]
+        [9, 9, 277, 58]
       ]
     },
     {
       "name": "LayoutTextControlMultiLine (inline) TEXTAREA id='editor'",
       "position": [1, 1],
-      "bounds": [268, 28],
+      "bounds": [246, 27],
       "drawsContent": false,
       "transform": 1
     },
     {
       "name": "Scroll corner of LayoutTextControlMultiLine (inline) TEXTAREA id='editor'",
-      "position": [225, 7],
-      "bounds": [44, 44],
+      "position": [224, 5],
+      "bounds": [46, 46],
       "invalidations": [
-        [0, 0, 44, 44]
+        [0, 0, 46, 46]
       ],
       "transform": 1
     },
     {
       "name": "HorizontalScrollbar",
-      "position": [1, 29],
-      "bounds": [246, 22],
+      "position": [1, 28],
+      "bounds": [246, 23],
+      "contentsOpaque": true,
+      "transform": 1
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [247, 1],
+      "bounds": [23, 27],
       "contentsOpaque": true,
       "transform": 1
     },
@@ -52,9 +59,9 @@
     {
       "name": "LayoutTextControlMultiLine (inline) TEXTAREA id='editor'",
       "position": [-3, -3],
-      "bounds": [276, 58],
+      "bounds": [277, 58],
       "invalidations": [
-        [0, 0, 276, 58]
+        [0, 0, 277, 58]
       ],
       "transform": 1
     }
@@ -76,7 +83,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [-455, 0, 0, 1]
+        [-477, 0, 0, 1]
       ]
     }
   ]

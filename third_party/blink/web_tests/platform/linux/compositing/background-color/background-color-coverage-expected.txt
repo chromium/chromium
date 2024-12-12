@@ -1,0 +1,164 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='green1'",
+      "bounds": [170, 170],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='green2'",
+      "bounds": [170, 170],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV id='green3'",
+      "bounds": [110, 110],
+      "backgroundColor": "#008000",
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='brown1'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#664D00",
+      "transform": 3
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='brown2'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#664D00",
+      "transform": 4
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='brown3'",
+      "bounds": [100, 100],
+      "drawsContent": false,
+      "transform": 5
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='brown3'",
+      "bounds": [85, 85],
+      "drawsContent": false,
+      "transform": 5
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [0, 85],
+      "bounds": [100, 15],
+      "transform": 5
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [85, 0],
+      "bounds": [15, 85],
+      "contentsOpaque": true,
+      "transform": 5
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='brown3'",
+      "bounds": [85, 10000],
+      "contentsOpaque": true,
+      "backgroundColor": "#664D00",
+      "transform": 5
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='brown4'",
+      "bounds": [100, 100],
+      "drawsContent": false,
+      "transform": 6
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='brown4'",
+      "bounds": [85, 85],
+      "drawsContent": false,
+      "transform": 6
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [0, 85],
+      "bounds": [100, 15],
+      "transform": 6
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [85, 0],
+      "bounds": [15, 85],
+      "contentsOpaque": true,
+      "transform": 6
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='brown4'",
+      "bounds": [85, 10000],
+      "contentsOpaque": true,
+      "backgroundColor": "#664D00",
+      "transform": 6
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [200, 0, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [400, 0, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 200, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [200, 200, 0, 1]
+      ]
+    },
+    {
+      "id": 5,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [400, 200, 0, 1]
+      ]
+    },
+    {
+      "id": 6,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [600, 200, 0, 1]
+      ]
+    }
+  ]
+}
+

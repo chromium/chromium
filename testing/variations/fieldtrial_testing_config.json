@@ -9796,6 +9796,22 @@
             ]
         }
     ],
+    "FluentScrollbar": [
+        {
+            "platforms": [
+                "linux",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FluentScrollbar"
+                    ]
+                }
+            ]
+        }
+    ],
     "FlushPersistentSystemProfileOnWrite": [
         {
             "platforms": [

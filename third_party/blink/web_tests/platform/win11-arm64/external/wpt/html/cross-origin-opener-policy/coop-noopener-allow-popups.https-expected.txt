@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Timeout while running cleanup for test named "\n    Cross-Origin-Opener-Policy: noopener-allow-popups means that the opener\n    has no access to the openee.\n 3".
+[NOTRUN] \n    Cross-Origin-Opener-Policy: noopener-allow-popups means that the opener\n    has no access to the openee.\n 4
+[NOTRUN] \n    Cross-Origin-Opener-Policy: noopener-allow-popups means that the opener\n    has no access to the openee.\n 5
+[NOTRUN] \n    Cross-Origin-Opener-Policy: noopener-allow-popups means that the opener\n    has no access to the openee.\n 6
+[NOTRUN] \n    Cross-Origin-Opener-Policy: noopener-allow-popups means that the opener\n    has no access to the openee.\n 7
+[NOTRUN] noopener-allow-popups ensures that the opener cannot script the openee, even after a navigation: unsafe-none
+Harness: the test ran to completion.
