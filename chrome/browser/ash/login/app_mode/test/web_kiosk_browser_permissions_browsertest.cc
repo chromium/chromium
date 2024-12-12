@@ -63,20 +63,14 @@ class WebKioskBrowserPermissionsTest
 
   content::WebContents* GetKioskAppWebContents() {
     BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(initial_browser());
+        BrowserView::GetBrowserViewForBrowser(kiosk_app_browser());
     return browser_view ? browser_view->GetActiveWebContents() : nullptr;
   }
 
   void AllowBrowserPermissionsForOrigin(const std::string& origin) {
-    initial_browser()->profile()->GetPrefs()->SetList(
+    kiosk_app_browser()->profile()->GetPrefs()->SetList(
         prefs::kKioskBrowserPermissionsAllowedForOrigins,
         base::Value::List().Append(origin));
-  }
-
-  Browser* initial_browser() {
-    Browser* initial_browser = BrowserList::GetInstance()->get(0);
-    CHECK(initial_browser);
-    return initial_browser;
   }
 
  private:
