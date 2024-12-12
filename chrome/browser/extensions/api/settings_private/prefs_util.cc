@@ -781,6 +781,15 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilityFaceGazePrecisionClickSpeedFactor] =
       settings_api::PrefType::kNumber;
+  (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeEnabledSentinel] =
+      settings_api::PrefType::kBoolean;
+  (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeEnabledSentinelShowDialog] =
+      settings_api::PrefType::kBoolean;
+  (*s_allowlist)
+      [ash::prefs::kAccessibilityFaceGazeCursorControlEnabledSentinel] =
+          settings_api::PrefType::kBoolean;
+  (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeActionsEnabledSentinel] =
+      settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilityCaretBlinkInterval] =
       settings_api::PrefType::kNumber;
   (*s_allowlist)[ash::prefs::kAccessibilityDisableTrackpadEnabled] =

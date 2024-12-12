@@ -342,6 +342,14 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
       prefs()->FindPreference(prefs::kAccessibilityFaceGazePrecisionClick));
   EXPECT_TRUE(prefs()->FindPreference(
       prefs::kAccessibilityFaceGazePrecisionClickSpeedFactor));
+  EXPECT_TRUE(
+      prefs()->FindPreference(prefs::kAccessibilityFaceGazeEnabledSentinel));
+  EXPECT_TRUE(prefs()->FindPreference(
+      prefs::kAccessibilityFaceGazeEnabledSentinelShowDialog));
+  EXPECT_TRUE(prefs()->FindPreference(
+      prefs::kAccessibilityFaceGazeCursorControlEnabledSentinel));
+  EXPECT_TRUE(prefs()->FindPreference(
+      prefs::kAccessibilityFaceGazeActionsEnabledSentinel));
   EXPECT_TRUE(prefs()->FindPreference(prefs::kAccessibilityCaretBlinkInterval));
   EXPECT_TRUE(
       prefs()->FindPreference(prefs::kAccessibilityFlashNotificationsEnabled));

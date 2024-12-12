@@ -1512,6 +1512,17 @@ Style notes:
 You can also use the keyboard shortcut. First, highlight text, then press <ph name="modifier">$1<ex>launcher</ex></ph> + s.
       </message>
 
+      <!-- FaceGaze dialog strings -->
+      <message name="IDS_ASH_FACEGAZE_DISABLE_CONFIRMATION_TEXT" desc="The text for the modal dialog shown when the user disables FaceGaze, to confirm they meant to disable the feature.">
+        Are you sure you want to turn off face control?
+      </message>
+      <message name="IDS_ASH_FACEGAZE_CURSOR_CONTROL_DISABLE_CONFIRMATION_TEXT" desc="The text for the modal dialog shown when the user disables cursor control in FaceGaze, to confirm they meant to disable the feature." translateable="false">
+        Are you sure you want to turn off mouse cursor control?
+      </message>
+      <message name="IDS_ASH_FACEGAZE_ACTIONS_DISABLE_CONFIRMATION_TEXT" desc="The text for the modal dialog shown when the user disables performing actions using facial gestures in FaceGaze, to confirm they meant to disable the feature." translateable="false">
+        Are you sure you want to turn off facial gestures?
+      </message>
+
       <!-- Accessibility nudges -->
       <message name="IDS_ASH_ACCESSIBILITY_NUDGE_DICTATION_NO_FOCUSED_TEXT_FIELD" desc="Displayed in a nudge when Dictation is stopped automatically because there is no focused text field.">
         Go to a text field to use Dictation
