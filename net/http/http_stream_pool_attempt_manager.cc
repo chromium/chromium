@@ -138,10 +138,34 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
     return manager_->GetSSLConfig(this);
   }
 
-  bool IsWaitingSSLConfig() { return !ssl_config_waiting_callback_.is_null(); }
+  bool IsWaitingSSLConfig() const {
+    return !ssl_config_waiting_callback_.is_null();
+  }
 
   CompletionOnceCallback TakeSSLConfigWaitingCallback() {
     return std::move(ssl_config_waiting_callback_);
+  }
+
+  base::Value::Dict GetInfoAsValue() const {
+    base::Value::Dict dict;
+    if (attempt_) {
+      dict.Set("attempt_state", attempt_->GetInfoAsValue());
+      dict.Set("ip_endpoint", attempt_->ip_endpoint().ToString());
+    }
+    dict.Set("is_slow", is_slow_);
+    dict.Set("is_aborted", is_aborted_);
+    dict.Set("started", !start_time_.is_null());
+    if (!start_time_.is_null()) {
+      base::TimeDelta elapsed = base::TimeTicks::Now() - start_time_;
+      dict.Set("elapsed_ms", static_cast<int>(elapsed.InMilliseconds()));
+    }
+    if (result_.has_value()) {
+      dict.Set("result", *result_);
+    }
+    if (cancel_reason_.has_value()) {
+      dict.Set("cancel_reason", static_cast<int>(*cancel_reason_));
+    }
+    return dict;
   }
 
  private:
@@ -153,7 +177,10 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
   // Timer to start a next attempt. When fired, `this` is treated as a slow
   // attempt but `this` is not timed out yet.
   base::OneShotTimer slow_timer_;
+  // Set to true when `slow_timer_` is fired. See the comment of `slow_timer_`.
   bool is_slow_ = false;
+  // Set to true when `this` and `attempt_` should abort. Currently used to
+  // handle ECH failure.
   bool is_aborted_ = false;
   CompletionOnceCallback ssl_config_waiting_callback_;
 };
@@ -728,19 +755,7 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() {
       if (entry->IsWaitingSSLConfig()) {
         ++ssl_config_num_waiting_callbacks;
       }
-
-      base::Value::Dict attempt_dict;
-      if (entry->attempt()) {
-        attempt_dict.Set("attempt_state", entry->attempt()->GetInfoAsValue());
-        attempt_dict.Set("ip_endpoint",
-                         entry->attempt()->ip_endpoint().ToString());
-      }
-      attempt_dict.Set("is_slow", entry->is_slow());
-      attempt_dict.Set("is_aborted", entry->is_aborted());
-      base::TimeDelta elapsed = base::TimeTicks::Now() - entry->start_time();
-      attempt_dict.Set("elapsed_ms",
-                       static_cast<int>(elapsed.InMilliseconds()));
-      in_flight_attempts.Append(std::move(attempt_dict));
+      in_flight_attempts.Append(entry->GetInfoAsValue());
     }
     dict.Set("in_flight_attempts", std::move(in_flight_attempts));
   }
