@@ -805,7 +805,6 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     // The only resources that should be coming in here are
     // CanvasResourceSharedImage instances, since that is the only type of
     // resource that this class creates.
-    CHECK(resource->UsesClientSharedImage());
     return resource->GetClientSharedImage()->usage().HasAll(
         shared_image_usage_flags_);
   }

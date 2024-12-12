@@ -184,18 +184,14 @@ bool CanvasResource::PrepareTransferableResource(
     return true;
 
   if (CreatesAcceleratedTransferableResources()) {
-    return UsesClientSharedImage()
-               ? PrepareAcceleratedTransferableResourceFromClientSI(
-                     out_resource, needs_verified_synctoken)
-               : PrepareAcceleratedTransferableResourceWithoutClientSI(
-                     out_resource);
+    return PrepareAcceleratedTransferableResourceFromClientSI(
+        out_resource, needs_verified_synctoken);
   }
 
   // Create a TransferableResource to be used with the software compositor.
   TRACE_EVENT0("blink",
                "CanvasResource::PrepareUnacceleratedTransferableResource");
 
-  CHECK(UsesClientSharedImage());
   auto client_shared_image = GetClientSharedImage();
   if (!client_shared_image) {
     return false;
@@ -217,7 +213,6 @@ bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
   TRACE_EVENT0("blink",
                "CanvasResource::PrepareAcceleratedTransferableResource");
   CHECK(CreatesAcceleratedTransferableResources());
-  CHECK(UsesClientSharedImage());
 
   // Gpu compositing is a prerequisite for compositing an accelerated resource
   DCHECK(SharedGpuContext::IsGpuCompositingEnabled());
@@ -903,29 +898,6 @@ ExternalCanvasResource::ContextProviderWrapper() const {
   // The context provider is not thread-safe, nor is the WeakPtr that holds it.
   DCHECK(!is_cross_thread());
   return context_provider_wrapper_;
-}
-
-bool ExternalCanvasResource::
-    PrepareAcceleratedTransferableResourceWithoutClientSI(
-        viz::TransferableResource* out_resource) {
-  TRACE_EVENT0(
-      "blink",
-      "ExternalCanvasResource::PrepareAcceleratedTransferableResource");
-
-  if (!ContextProviderWrapper()) {
-    return false;
-  }
-
-  *out_resource = viz::TransferableResource::MakeGpu(
-      client_si_, client_si_->GetTextureTarget(),
-      GetSyncTokenWithOptionalVerification(false), client_si_->size(),
-      client_si_->format(), IsOverlayCandidate(),
-      GetTransferableResourceSource());
-  out_resource->color_space = client_si_->color_space();
-  out_resource->hdr_metadata = GetHDRMetadata();
-  out_resource->origin = client_si_->surface_origin();
-
-  return true;
 }
 
 ExternalCanvasResource::ExternalCanvasResource(
