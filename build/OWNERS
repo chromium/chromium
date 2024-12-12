@@ -17,6 +17,7 @@ file://tools/clang/scripts/OWNERS
 smaier@chromium.org
 wnwen@chromium.org
 mheikal@chromium.org
+hnakashima@chromium.org
 
 # NOTE: keep this in sync with global-owners-override@chromium.org owners
 # by emailing lsc-policy@chromium.org when this list changes.
