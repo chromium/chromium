@@ -137,6 +137,7 @@ void IncludeVariations(scoped_refptr<feedback::FeedbackData> feedback_data) {
                                 status);
   // Variations is at best effort.
   if (status == variations::VariationsStateEncryptionStatus::kSuccess) {
+    // This is a binary file.
     feedback_data->AddFile(kVariationsStateAttachmentName,
                            std::string(ciphertext.begin(), ciphertext.end()));
   }
