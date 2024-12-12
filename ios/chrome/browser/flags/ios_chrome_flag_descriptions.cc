@@ -654,6 +654,15 @@ const char kIPHForSafariSwitcherName[] = "IPH for Safari Switcher";
 const char kIPHForSafariSwitcherDescription[] =
     "Enables displaying IPH for users who are considered Safari Switcher";
 
+const char kLensClearcutBackgroundUploadEnabledName[] =
+    "Lens clearcut background upload";
+const char kLensClearcutBackgroundUploadEnabledDescription[] =
+    "Enables uploading of clearcut logs in the background.";
+
+const char kLensClearcutLoggerFastQosEnabledName[] =
+    "Lens clearcut logger fast QOS";
+const char kLensClearcutLoggerFastQosEnabledDescription[] = "Enables fast QOS.";
+
 const char kLensFiltersAblationModeEnabledName[] =
     "Lens filters ablation mode enabled";
 const char kLensFiltersAblationModeEnabledDescription[] =

@@ -5737,6 +5737,16 @@
     "expiry_milestone": 129
   },
   {
+    "name": "lens-clearcut-background-upload-enabled",
+    "owners": ["cmyang@google.com"],
+    "expiry_milestone": 140
+  },
+  {
+    "name": "lens-clearcut-logger-fast-qos-enabled",
+    "owners": ["cmyang@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "lens-filters-ablation-mode-enabled",
     "owners": ["cmyang@google.com", "ericappelbaum@google.com"],
     "expiry_milestone": 135

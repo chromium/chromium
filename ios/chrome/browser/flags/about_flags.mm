@@ -2230,6 +2230,15 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensUnaryHttpTransportEnabledName,
      flag_descriptions::kLensUnaryHttpTransportEnabledDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensUnaryHttpTransportEnabled)},
+    {"lens-clearcut-background-upload-enabled",
+     flag_descriptions::kLensClearcutBackgroundUploadEnabledName,
+     flag_descriptions::kLensClearcutBackgroundUploadEnabledDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kLensClearcutBackgroundUploadEnabled)},
+    {"lens-clearcut-logger-fast-qos-enabled",
+     flag_descriptions::kLensClearcutLoggerFastQosEnabledName,
+     flag_descriptions::kLensClearcutLoggerFastQosEnabledDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensClearcutLoggerFastQosEnabled)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

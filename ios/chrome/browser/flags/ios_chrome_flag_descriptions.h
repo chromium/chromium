@@ -568,6 +568,15 @@ extern const char kIOSReactivationNotificationsDescription[];
 extern const char kIPHForSafariSwitcherName[];
 extern const char kIPHForSafariSwitcherDescription[];
 
+// Title and description for the flag to enable clearcut log background
+// uploading.
+extern const char kLensClearcutBackgroundUploadEnabledName[];
+extern const char kLensClearcutBackgroundUploadEnabledDescription[];
+
+// Title and description for the flag to enable fast QOS for clearcut logging.
+extern const char kLensClearcutLoggerFastQosEnabledName[];
+extern const char kLensClearcutLoggerFastQosEnabledDescription[];
+
 // Title and description for the flag to enable the Lens filters ablation mode.
 extern const char kLensFiltersAblationModeEnabledName[];
 extern const char kLensFiltersAblationModeEnabledDescription[];

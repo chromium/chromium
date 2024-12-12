@@ -34,4 +34,10 @@ BASE_DECLARE_FEATURE(kLensUnaryApisWithHttpTransportEnabled);
 // Whether to use HTTP transport for unary requests.
 BASE_DECLARE_FEATURE(kLensUnaryHttpTransportEnabled);
 
+// Whether to enable background uploading for clearcut logs.
+BASE_DECLARE_FEATURE(kLensClearcutBackgroundUploadEnabled);
+
+// Whether to use fast QOS for clearcut logging.
+BASE_DECLARE_FEATURE(kLensClearcutLoggerFastQosEnabled);
+
 #endif  // IOS_CHROME_BROWSER_UI_LENS_FEATURES_H_
