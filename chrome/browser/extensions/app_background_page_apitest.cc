@@ -515,6 +515,12 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, OpenPopupFromBGPage) {
   base::FilePath app_dir;
   ASSERT_TRUE(CreateApp(app_manifest, &app_dir));
   ASSERT_TRUE(LoadExtension(app_dir));
+
+  // The background page should load.
+  BackgroundContentsTestWaiter background_waiter(profile());
+  const Extension* extension = GetSingleLoadedExtension();
+  background_waiter.WaitForBackgroundContents(extension->id());
+
   ASSERT_TRUE(RunExtensionTest("app_background_page/bg_open")) << message_;
 }
 
