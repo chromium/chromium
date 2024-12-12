@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.task_manager.ui;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.chrome.browser.task_manager.TaskManagerServiceBridge.GpuMemoryUsage;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableLongPropertyKey;
@@ -65,6 +66,12 @@ class TaskManagerProperties {
     /** Property key for task id. */
     static final ReadableLongPropertyKey TASK_ID = new ReadableLongPropertyKey();
 
+    /** Property key for whether the task is selected. */
+    static final WritableBooleanPropertyKey IS_SELECTED = new WritableBooleanPropertyKey();
+
+    /** Property key for whether the task is killable. */
+    static final ReadableBooleanPropertyKey IS_KILLABLE = new ReadableBooleanPropertyKey();
+
     /** Property key for task name. */
     static final WritableObjectPropertyKey<String> TASK_NAME = new WritableObjectPropertyKey<>();
 
@@ -80,18 +87,18 @@ class TaskManagerProperties {
     /** Property key for process id. */
     static final WritableLongPropertyKey PROCESS_ID = new WritableLongPropertyKey();
 
-    /** Property key for whether the task is selected. */
-    static final WritableBooleanPropertyKey IS_SELECTED = new WritableBooleanPropertyKey();
-
-    /** Property key for whether the task is killable. */
-    static final ReadableBooleanPropertyKey IS_KILLABLE = new ReadableBooleanPropertyKey();
+    /** Property key for GPU memory. */
+    static final WritableObjectPropertyKey<GpuMemoryUsage> GPU_MEMORY =
+            new WritableObjectPropertyKey<>();
 
     /**
      * All the property keys that can appear as a column. Sorted in order to appear in the context
      * menu and the header.
      */
     static final PropertyKey[] ALL_COLUMN_KEYS =
-            new PropertyKey[] {TASK_NAME, MEMORY_FOOTPRINT, CPU, NETWORK_USAGE, PROCESS_ID};
+            new PropertyKey[] {
+                TASK_NAME, MEMORY_FOOTPRINT, CPU, NETWORK_USAGE, PROCESS_ID, GPU_MEMORY
+            };
 
     /**
      * Returns whether the initial sort ordering of this column should be ascending or not. Keep the
@@ -108,6 +115,8 @@ class TaskManagerProperties {
             return false;
         } else if (columnKey == PROCESS_ID) {
             return true;
+        } else if (columnKey == GPU_MEMORY) {
+            return false;
         }
         throw new IllegalArgumentException("column key " + columnKey + " not supported");
     }

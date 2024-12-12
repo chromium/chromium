@@ -42,5 +42,11 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_weight="1"
     />
+    <TextView
+        android:id="@+id/gpu_memory_id"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+    />
 
 </LinearLayout>

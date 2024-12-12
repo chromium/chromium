@@ -196,6 +196,10 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
                             view.getContext(), model.get(TaskManagerProperties.NETWORK_USAGE)));
         } else if (key == TaskManagerProperties.PROCESS_ID) {
             textView.setText(String.valueOf(model.get(TaskManagerProperties.PROCESS_ID)));
+        } else if (key == TaskManagerProperties.GPU_MEMORY) {
+            textView.setText(
+                    PropertyStringifier.getMemoryUsageText(
+                            view.getContext(), model.get(TaskManagerProperties.GPU_MEMORY)));
         } else {
             throw new IllegalArgumentException("column key " + key + " not supported");
         }
@@ -228,6 +232,8 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
             return R.string.task_manager_net_column;
         } else if (columnKey == TaskManagerProperties.PROCESS_ID) {
             return R.string.task_manager_process_id_column;
+        } else if (columnKey == TaskManagerProperties.GPU_MEMORY) {
+            return R.string.task_manager_video_memory_column;
         } else {
             throw new IllegalArgumentException("column key " + columnKey + " not supported");
         }
@@ -248,6 +254,8 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
             return R.id.network_usage;
         } else if (columnKey == TaskManagerProperties.PROCESS_ID) {
             return R.id.process_id;
+        } else if (columnKey == TaskManagerProperties.GPU_MEMORY) {
+            return R.id.gpu_memory_id;
         } else {
             throw new IllegalArgumentException("column key " + columnKey + " not supported");
         }

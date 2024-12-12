@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.task_manager.ui;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.ALL_COLUMN_KEYS;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.COLUMNS;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.CPU;
+import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.GPU_MEMORY;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.IS_KILLABLE;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.IS_SELECTED;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.MEMORY_FOOTPRINT;
@@ -202,6 +203,8 @@ class TaskManagerMediator {
             return RefreshType.NETWORK_USAGE;
         } else if (columnKey == PROCESS_ID) {
             return 0;
+        } else if (columnKey == GPU_MEMORY) {
+            return RefreshType.GPU_MEMORY;
         }
         throw new IllegalArgumentException();
     }
@@ -233,6 +236,8 @@ class TaskManagerMediator {
                 task.model.set(NETWORK_USAGE, mBridge.getNetworkUsage(taskId));
             } else if (columnKey == PROCESS_ID) {
                 task.model.set(PROCESS_ID, mBridge.getProcessId(taskId));
+            } else if (columnKey == GPU_MEMORY) {
+                task.model.set(GPU_MEMORY, mBridge.getGpuMemoryUsage(taskId));
             } else {
                 throw new IllegalArgumentException("column key " + columnKey + " not supported");
             }
@@ -363,6 +368,9 @@ class TaskManagerMediator {
                         return Long.compare(a.model.get(NETWORK_USAGE), b.model.get(NETWORK_USAGE));
                     } else if (descriptor.key == PROCESS_ID) {
                         return Long.compare(a.model.get(PROCESS_ID), b.model.get(PROCESS_ID));
+                    } else if (descriptor.key == GPU_MEMORY) {
+                        return Long.compare(
+                                a.model.get(GPU_MEMORY).bytes, b.model.get(GPU_MEMORY).bytes);
                     } else {
                         throw new IllegalArgumentException(
                                 "column key " + descriptor.key + " not supported");

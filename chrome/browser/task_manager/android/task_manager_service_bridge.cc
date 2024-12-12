@@ -59,6 +59,14 @@ static jlong JNI_TaskManagerServiceBridge_GetProcessId(JNIEnv* env,
   return TaskManagerInterface::GetTaskManager()->GetProcessId(task_id);
 }
 
+static jni_zero::ScopedJavaLocalRef<jobject>
+JNI_TaskManagerServiceBridge_GetGpuMemoryUsage(JNIEnv* env, TaskId task_id) {
+  bool has_duplicates;
+  jlong bytes = TaskManagerInterface::GetTaskManager()->GetGpuMemoryUsage(
+      task_id, &has_duplicates);
+  return Java_GpuMemoryUsage_Constructor(env, bytes, has_duplicates);
+}
+
 static jboolean JNI_TaskManagerServiceBridge_IsTaskKillable(JNIEnv* env,
                                                             TaskId task_id) {
   return TaskManagerInterface::GetTaskManager()->IsTaskKillable(task_id);
