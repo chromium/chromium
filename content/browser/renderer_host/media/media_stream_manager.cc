@@ -4105,8 +4105,7 @@ void MediaStreamManager::OnStreamStarted(const std::string& label) {
   MediaStreamUI::SourceCallback device_changed_callback;
   if (request->stream_controls().dynamic_surface_switching_requested &&
       ChangeSourceSupported(
-          blink::ToMediaStreamDevicesList(request->stream_devices_set)) &&
-      base::FeatureList::IsEnabled(features::kDesktopCaptureChangeSource)) {
+          blink::ToMediaStreamDevicesList(request->stream_devices_set))) {
     device_changed_callback = base::BindRepeating(
         &MediaStreamManager::ChangeMediaStreamSourceFromBrowser,
         base::Unretained(this), label);

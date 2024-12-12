@@ -124,11 +124,6 @@ BASE_FEATURE(kCriticalClientHint,
              "CriticalClientHint",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable changing source dynamically for desktop capture.
-BASE_FEATURE(kDesktopCaptureChangeSource,
-             "DesktopCaptureChangeSource",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables caching of media devices for the purpose of enumerating them.
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kDeviceMonitorMac,
