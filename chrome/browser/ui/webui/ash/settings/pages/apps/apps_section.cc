@@ -242,9 +242,6 @@ base::span<const SearchConcept> GetTurnOnIsolatedWebAppsSearchConcepts() {
 }
 
 void AddAppManagementStrings(content::WebUIDataSource* html_source) {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
   webui::LocalizedString kLocalizedStrings[] = {
       {"appManagementAppDetailsTitle", IDS_APP_MANAGEMENT_APP_DETAILS_TITLE},
       {"appManagementAppDetailsTooltipWebA11y",
@@ -317,8 +314,7 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
       {"appManagementIntentSettingsTitle",
        IDS_APP_MANAGEMENT_INTENT_SETTINGS_TITLE},
       {"appManagementIntentSharingOpenAppLabel",
-       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_OPEN_IN_APP_TITLE
-                        : IDS_APP_MANAGEMENT_INTENT_SHARING_APP_OPEN},
+       IDS_OS_SETTINGS_OPEN_IN_APP_TITLE},
       {"appManagementPermissionItemClickTogglePermission",
        IDS_OS_SETTINGS_PERMISSION_ITEM_CLICK_TOGGLE_PERMISSION},
       {"appManagementIntentSharingOpenBrowserLabel",
@@ -329,17 +325,16 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
       {"appManagementMicrophonePermissionLabel", IDS_APP_MANAGEMENT_MICROPHONE},
       {"appManagementMorePermissionsLabel", IDS_APP_MANAGEMENT_MORE_SETTINGS},
       {"appManagementMorePermissionsLabelAndroidApp",
-       IDS_OS_SETTINGS_REVAMP_APP_PERMISSIONS_TITLE_ANDROID},
+       IDS_OS_SETTINGS_APP_PERMISSIONS_TITLE_ANDROID},
       {"appManagementMorePermissionsLabelWebApp",
-       IDS_OS_SETTINGS_REVAMP_APP_PERMISSIONS_TITLE_WEB_APP},
+       IDS_OS_SETTINGS_APP_PERMISSIONS_TITLE_WEB_APP},
       {"appManagementMorePermissionsLabelChromeApp",
-       IDS_OS_SETTINGS_REVAMP_APP_PERMISSIONS_TITLE_CHROME_APP},
+       IDS_OS_SETTINGS_APP_PERMISSIONS_TITLE_CHROME_APP},
       {"appManagementNoAppsFound", IDS_APP_MANAGEMENT_NO_APPS_FOUND},
       {"appManagementNoPermissions",
        IDS_APPLICATION_INFO_APP_NO_PERMISSIONS_TEXT},
       {"appManagementNotificationsLabel",
-       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_APP_NOTIFICATIONS_TITLE
-                        : IDS_APP_MANAGEMENT_NOTIFICATIONS},
+       IDS_OS_SETTINGS_APP_NOTIFICATIONS_TITLE},
       {"appManagementParentAppPermissionExplanation",
        IDS_APP_MANAGEMENT_PARENT_APP_PERMISSION_EXPLANATION},
       {"appManagementPermissionAllowed", IDS_APP_MANAGEMENT_PERMISSION_ALLOWED},
@@ -499,18 +494,10 @@ AppsSection::AppsSection(Profile* profile,
                          ArcAppListPrefs* arc_app_list_prefs,
                          apps::AppServiceProxy* app_service_proxy)
     : OsSettingsSection(profile, search_tag_registry),
-      startup_subsection_(
-          !ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? std::make_optional<StartupSection>(profile, search_tag_registry)
-              : std::nullopt),
       pref_service_(pref_service),
       arc_app_list_prefs_(arc_app_list_prefs),
       app_service_proxy_(app_service_proxy),
       is_arc_allowed_(arc::IsArcAllowedForProfile(profile)) {
-  if (!ash::features::IsOsSettingsRevampWayfindingEnabled()) {
-    CHECK(startup_subsection_);
-  }
-
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetAppsSearchConcepts());
 
@@ -562,9 +549,6 @@ AppsSection::~AppsSection() {
 }
 
 void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
   webui::LocalizedString kLocalizedStrings[] = {
       {"appsPageTitle", IDS_SETTINGS_APPS_TITLE},
       {"appsMenuItemDescription", IDS_OS_SETTINGS_APPS_MENU_ITEM_DESCRIPTION},
@@ -580,17 +564,15 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_MANAGE_ISOLATED_WEB_APPS_SUBPAGE_TITLE},
 
       {"appNotificationsManagerLabel",
-       IDS_OS_SETTINGS_REVAMP_NOTIFICATIONS_MANAGER_LABEL},
+       IDS_OS_SETTINGS_NOTIFICATIONS_MANAGER_LABEL},
       {"appNotificationsManagerSublabel",
-       IDS_OS_SETTINGS_REVAMP_NOTIFICATIONS_MANAGER_LINK_DESCRIPTION},
+       IDS_OS_SETTINGS_NOTIFICATIONS_MANAGER_LINK_DESCRIPTION},
       {"doNotDisturbToggleDescription",
-       kIsRevampEnabled
-           ? IDS_OS_SETTINGS_REVAMP_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESCRIPTION
-           : IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESCRIPTION},
+       IDS_OS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESCRIPTION},
       {"appNotificationsLinkToBrowserSettingsDescription",
        IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TO_BROWSER_SETTINGS_DESCRIPTION},
       {"appNotificationsRowSublabel",
-       IDS_OS_SETTINGS_REVAMP_APP_NOTIFICATIONS_LINK_DESCRIPTION},
+       IDS_OS_SETTINGS_APP_NOTIFICATIONS_LINK_DESCRIPTION},
       {"appNotificationsCountDescription",
        IDS_SETTINGS_APP_NOTIFICATIONS_SUBLABEL_TEXT},
       {"appNotificationsDoNotDisturbEnabledDescription",
@@ -671,11 +653,6 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddPluginVmLoadTimeData(html_source);
   AddBorealisStrings(html_source);
   AddAppParentalControlsStrings(html_source);
-
-  // Startup subsection exists only when OsSettingsRevampWayfinding is disabled.
-  if (startup_subsection_) {
-    startup_subsection_->AddLoadTimeData(html_source);
-  }
 }
 
 void AppsSection::AddHandlers(content::WebUI* web_ui) {
@@ -784,7 +761,7 @@ void AppsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::kPluginVmUsbPreferencesSubpagePath);
 
   // Google Play Store.
-  generator->RegisterTopLevelSubpage(IDS_SETTINGS_ANDROID_APPS_LABEL,
+  generator->RegisterTopLevelSubpage(IDS_OS_SETTINGS_ANDROID_APPS_LABEL,
                                      mojom::Subpage::kGooglePlayStore,
                                      mojom::SearchResultIcon::kGooglePlay,
                                      mojom::SearchResultDefaultRank::kMedium,
@@ -812,11 +789,6 @@ void AppsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::SearchResultIcon::kAppsParentalControls,
       mojom::SearchResultDefaultRank::kMedium,
       mojom::kAppParentalControlsSubpagePath);
-
-  // Startup subsection exists only when OsSettingsRevampWayfinding is disabled.
-  if (startup_subsection_) {
-    startup_subsection_->RegisterHierarchy(generator);
-  }
 }
 
 void AppsSection::OnAppRegistered(const std::string& app_id,
@@ -825,37 +797,23 @@ void AppsSection::OnAppRegistered(const std::string& app_id,
 }
 
 void AppsSection::AddAndroidAppStrings(content::WebUIDataSource* html_source) {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
   webui::LocalizedString kLocalizedStrings[] = {
-      {"androidAppsPageLabel", kIsRevampEnabled
-                                   ? IDS_OS_SETTINGS_REVAMP_ANDROID_APPS_LABEL
-                                   : IDS_SETTINGS_ANDROID_APPS_LABEL},
+      {"androidAppsPageLabel", IDS_OS_SETTINGS_ANDROID_APPS_LABEL},
       {"androidAppsEnable", IDS_SETTINGS_TURN_ON},
-      {"androidAppsManageApps",
-       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_ANDROID_APPS_MANAGE_APPS
-                        : IDS_SETTINGS_ANDROID_APPS_MANAGE_APPS},
-      {"androidAppsRemove", kIsRevampEnabled
-                                ? IDS_OS_SETTINGS_REVAMP_ANDROID_APPS_REMOVE
-                                : IDS_SETTINGS_ANDROID_APPS_REMOVE},
+      {"androidAppsManageApps", IDS_OS_SETTINGS_ANDROID_APPS_MANAGE_APPS},
+      {"androidAppsRemove", IDS_OS_SETTINGS_ANDROID_APPS_REMOVE},
       {"androidAppsRemoveButton", IDS_SETTINGS_ANDROID_APPS_REMOVE_BUTTON},
       {"androidAppsDisableDialogTitle",
-       kIsRevampEnabled
-           ? IDS_OS_SETTINGS_REVAMP_ANDROID_APPS_DISABLE_DIALOG_TITLE
-           : IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_TITLE},
+       IDS_OS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_TITLE},
       {"androidAppsDisableDialogMessage",
-       kIsRevampEnabled
-           ? IDS_OS_SETTINGS_REVAMP_ANDROID_APPS_DISABLE_DIALOG_MESSAGE
-           : IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_MESSAGE},
+       IDS_OS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_MESSAGE},
       {"androidAppsDisableDialogRemove",
-       kIsRevampEnabled ? IDS_SETTINGS_ANDROID_APPS_REMOVE_BUTTON
-                        : IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_REMOVE},
+       IDS_SETTINGS_ANDROID_APPS_REMOVE_BUTTON},
       {"arcvmSharedUsbDevicesDescription",
        IDS_SETTINGS_APPS_ARC_VM_SHARED_USB_DEVICES_DESCRIPTION},
       {"androidAppsEnableButtonRole",
        IDS_SETTINGS_ANDROID_APPS_ENABLE_BUTTON_ROLE},
-      {"androidOpenGooglePlay", IDS_OS_SETTINGS_REVAMP_OPEN_GOOGLE_PLAY},
+      {"androidOpenGooglePlay", IDS_OS_SETTINGS_OPEN_GOOGLE_PLAY},
       {"appLanguageDeviceLanguageLabel",
        IDS_OS_SETTINGS_APP_LANGUAGE_DEVICE_LANGUAGE_LABEL},
       {"appLanguageDialogTitle", IDS_OS_SETTINGS_APP_LANGUAGE_DIALOG_TITLE},
@@ -875,23 +833,12 @@ void AppsSection::AddAndroidAppStrings(content::WebUIDataSource* html_source) {
                                       : IDS_SETTINGS_ANDROID_SETTINGS_TITLE);
   html_source->AddString(
       "androidAppsSubtext",
-      kIsRevampEnabled
-          ? l10n_util::GetStringFUTF16(
-                IDS_OS_SETTINGS_REVAMP_ANDROID_APPS_SUBTEXT,
-                GetHelpUrlWithBoard(chrome::kAndroidAppsLearnMoreURL))
-          : l10n_util::GetStringFUTF16(
-                IDS_SETTINGS_ANDROID_APPS_SUBTEXT, ui::GetChromeOSDeviceName(),
-                GetHelpUrlWithBoard(chrome::kAndroidAppsLearnMoreURL)));
-  if (kIsRevampEnabled) {
-    html_source->AddLocalizedString(
-        "androidAppsSubtextDescription",
-        IDS_OS_SETTINGS_REVAMP_ANDROID_APPS_SUBTEXT_DESCRIPTION);
-  } else {
-    html_source->AddString("androidAppsSubtextDescription",
-                           l10n_util::GetStringFUTF16(
-                               IDS_SETTINGS_ANDROID_APPS_SUBTEXT_DESCRIPTION,
-                               ui::GetChromeOSDeviceName()));
-  }
+      l10n_util::GetStringFUTF16(
+          IDS_OS_SETTINGS_ANDROID_APPS_SUBTEXT,
+          GetHelpUrlWithBoard(chrome::kAndroidAppsLearnMoreURL)));
+  html_source->AddLocalizedString(
+      "androidAppsSubtextDescription",
+      IDS_OS_SETTINGS_ANDROID_APPS_SUBTEXT_DESCRIPTION);
 }
 
 void AppsSection::AddPluginVmLoadTimeData(
@@ -948,22 +895,16 @@ void AppsSection::UpdateAndroidSearchTags() {
 }
 
 void AppsSection::OnQuietModeChanged(bool in_quiet_mode) {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
   updater.RemoveSearchTags(GetTurnOnAppNotificationSearchConcepts());
   updater.RemoveSearchTags(GetTurnOffAppNotificationSearchConcepts());
   updater.RemoveSearchTags(GetAppNotificationsSearchConcepts());
-  if (kIsRevampEnabled) {
-    updater.RemoveSearchTags(GetAppNotificationsManagerSearchConcepts());
-  }
+  updater.RemoveSearchTags(GetAppNotificationsManagerSearchConcepts());
   updater.RemoveSearchTags(GetAppBadgingSearchConcepts());
 
   updater.AddSearchTags(GetAppNotificationsSearchConcepts());
-  if (kIsRevampEnabled) {
-    updater.AddSearchTags(GetAppNotificationsManagerSearchConcepts());
-  }
+  updater.AddSearchTags(GetAppNotificationsManagerSearchConcepts());
   updater.AddSearchTags(GetAppBadgingSearchConcepts());
 
   if (!MessageCenterAsh::Get()->IsQuietMode()) {

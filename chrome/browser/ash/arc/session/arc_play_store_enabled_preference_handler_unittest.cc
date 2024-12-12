@@ -210,10 +210,9 @@ TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, PrefChangeRevokesConsent) {
 
   ArcPlayTermsOfServiceConsent play_consent;
   play_consent.set_status(UserConsentTypes::NOT_GIVEN);
-  play_consent.set_confirmation_grd_id(
-      IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_REMOVE);
+  play_consent.set_confirmation_grd_id(IDS_SETTINGS_ANDROID_APPS_REMOVE_BUTTON);
   play_consent.add_description_grd_ids(
-      IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_MESSAGE);
+      IDS_OS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_MESSAGE);
   play_consent.set_consent_flow(
       UserConsentTypes::ArcPlayTermsOfServiceConsent::SETTING_CHANGE);
   EXPECT_CALL(*auditor, RecordArcPlayConsent(
