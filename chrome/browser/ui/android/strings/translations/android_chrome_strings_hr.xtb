@@ -155,7 +155,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="1702543251015153180">Želite li promijeniti postavke tamne teme?</translation>
 <translation id="1702907158640575240">Upravljani preglednik</translation>
 <translation id="1710099199314114079">Promjena ili zatvaranje kartica</translation>
-<translation id="1718835860248848330">Posljednji sat</translation>
+<translation id="1718835860248848330">Prethodni sat</translation>
 <translation id="1724977129262658800">Otključajte da biste izmijenili zaporku</translation>
 <translation id="1726477445370128854">Možete pregledavati i pretraživati brže kad Chrome predučitava stranice za koje misli da biste ih mogli posjetiti</translation>
 <translation id="1728803206919861584">Želite li spremiti pristupni ključ izvan anonimnog načina?</translation>
@@ -568,7 +568,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3699022356773522638">Preuzeti datoteku?</translation>
 <translation id="3700759344784597882">Kada je uključeno, zaporke se spremaju na vaš račun. Kad je isključeno, zaporke se spremaju samo na ovaj uređaj.</translation>
 <translation id="3701167022068948696">Ispravi odmah</translation>
-<translation id="3701515417135397388">Upozori ako je zaporka ugrožena zbog povrede podataka</translation>
+<translation id="3701515417135397388">Upozori ako je zaporka ugrožena zbog neovlaštenog pristupa podacima</translation>
 <translation id="3714981814255182093">Otvaranje Trake za traženje</translation>
 <translation id="3716182511346448902">Ova stranica upotrebljava previše memorije, pa ju je Chrome pauzirao.</translation>
 <translation id="3718765429352682176">Možete vidjeti povijest iz drugih aplikacija koje otvaraju veze u Chromeu.</translation>

@@ -365,7 +365,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2723001399770238859">audio</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> isn't available right now.</translation>
 <translation id="2760805590727089264">MM / YY</translation>
-<translation id="2760989362628427051">Turn on dark theme when your device's dark theme or Battery Saver is on</translation>
+<translation id="2760989362628427051">Turn on dark theme when your device's Dark theme or Battery Saver is on</translation>
 <translation id="2762000892062317888">just now</translation>
 <translation id="276969039800130567">Signed in as <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2776236159752647997">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" /></translation>

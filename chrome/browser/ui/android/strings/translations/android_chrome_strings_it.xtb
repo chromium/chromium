@@ -544,7 +544,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3563767357928833671">Contenuti degli Appunti visualizzati</translation>
 <translation id="3566639033325271639">Aggiorna impostazioni</translation>
 <translation id="3568945271227339929">Nessuna password compromessa</translation>
-<translation id="357465026686164600">Telefono come token di sicurezza</translation>
+<translation id="357465026686164600">Smartphone come token di sicurezza</translation>
 <translation id="3577473026931028326">Si è verificato un errore. Riprova.</translation>
 <translation id="3577558748185201054">Gestisci i tuoi interessi e le tue preferenze</translation>
 <translation id="3587482841069643663">Tutti</translation>
@@ -715,7 +715,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4452411734226507615">Chiudi la scheda <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Preferito aggiunto in: <ph name="FOLDER_NAME" /></translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 preferito}other{# preferiti}}</translation>
-<translation id="4461614516424362539">Quando colleghi un altro dispositivo con un codice QR, questo può usare il telefono come token di sicurezza. Se lo rimuovi, dovrai scansionare un codice QR per ricollegarlo.</translation>
+<translation id="4461614516424362539">Quando colleghi un altro dispositivo con un codice QR, questo può usare lo smartphone come token di sicurezza. Se lo rimuovi, dovrai scansionare un codice QR per ricollegarlo.</translation>
 <translation id="4478161224666880173">Puoi usare il tuo account <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> su questo sito. Per continuare, accedi a <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Installazione di <ph name="MODULE" /> per Chrome…</translation>
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Preferito salvato in "<ph name="FOLDER_NAME" />". Viene salvato solo su questo dispositivo.}other{Preferiti salvati in "<ph name="FOLDER_NAME" />". Vengono salvati solo su questo dispositivo.}}</translation>
@@ -829,7 +829,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4885273946141277891">Numero di istanze di Chrome non supportato.</translation>
 <translation id="4905823827770127520">Includi un link alla pagina</translation>
 <translation id="4908869848243824489">Discover di Google</translation>
-<translation id="4910889077668685004">App di pagamento</translation>
+<translation id="4910889077668685004">App per pagamenti</translation>
 <translation id="4912413785358399818">Sposta scheda</translation>
 <translation id="4913169188695071480">Interrompi aggiornamento</translation>
 <translation id="4918086044614829423">Accetto</translation>
@@ -840,7 +840,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4932247056774066048">Poiché stai uscendo da un account gestito da <ph name="DOMAIN_NAME" />, i tuoi dati di Chrome verranno eliminati da questo dispositivo. Rimarranno memorizzati nel tuo Account Google.</translation>
 <translation id="4943703118917034429">Realtà virtuale</translation>
 <translation id="4943872375798546930">Nessun risultato</translation>
-<translation id="4950924971025849764">Quando hai eseguito l'accesso allo stesso Account Google, gli altri dispositivi possono utilizzare questo telefono come token di sicurezza.</translation>
+<translation id="4950924971025849764">Quando hai eseguito l'accesso allo stesso Account Google, gli altri dispositivi possono utilizzare questo smartphone come token di sicurezza.</translation>
 <translation id="4957722034734105353">Scopri di più...</translation>
 <translation id="4961107849584082341">Traduci questa pagina in qualsiasi lingua</translation>
 <translation id="4964614743143953889">Chrome ti avvisa in caso di siti e download non sicuri</translation>
@@ -1013,7 +1013,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5797949256525811424">Argomento bloccato</translation>
 <translation id="580893287573699959">Gestisci gli argomenti e i siti che ti interessano</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# ora fa}other{# ore fa}}</translation>
-<translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC Tutti i diritti riservati.</translation>
+<translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Tutti i diritti riservati.</translation>
 <translation id="5814749351757353073">Rimani al passo con i tuoi siti preferiti</translation>
 <translation id="5822875253699806474">Per tornare rapidamente ai siti che hai visitato, sincronizza le tue schede e la cronologia</translation>
 <translation id="5828921839638612740">Puoi eliminare i dati nelle Impostazioni di Chrome</translation>
@@ -1387,7 +1387,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7352651011704765696">Si è verificato un problema</translation>
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Condividi 1 elemento selezionato}other{Condividi # elementi selezionati}}</translation>
-<translation id="7359002509206457351">Accedi ai metodi di pagamento</translation>
+<translation id="7359002509206457351">Accesso ai metodi di pagamento</translation>
 <translation id="7363349185727752629">Una guida alle scelte relative alla tua privacy</translation>
 <translation id="7364103838544876661">Altre opzioni per eliminare i dati di navigazione</translation>
 <translation id="7375125077091615385">Tipo:</translation>
@@ -1400,7 +1400,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7411224099004328643">Utente dell'Account Google</translation>
 <translation id="741204030948306876">Sì, accetto</translation>
 <translation id="7419565702166471774">Utilizza sempre connessioni sicure</translation>
-<translation id="7431991332293347422">Controlla la modalità di utilizzo della cronologia di navigazione per personalizzare la Ricerca e non solo</translation>
+<translation id="7431991332293347422">Controlla come la cronologia di navigazione viene utilizzata per personalizzare la Ricerca e altro</translation>
 <translation id="7435356471928173109">Disattivata dall'amministratore</translation>
 <translation id="7437998757836447326">Esci da Chrome</translation>
 <translation id="7453467225369441013">Verrai disconnesso dalla maggior parte dei siti, ma non dal tuo Account Google.</translation>
@@ -1783,7 +1783,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="9104217018994036254">Elenco di dispositivi con cui condividere una scheda.</translation>
 <translation id="9104858485806491627">{INACTIVE_TIME_DAYS,plural, =1{Non usate per almeno 1 giorno}other{Non usate per almeno # giorni}}</translation>
 <translation id="9106148373857059373">Flusso di salvataggio dei preferiti chiuso</translation>
-<translation id="9108312223223904744">Assistenza relativa a Telefono come token di sicurezza</translation>
+<translation id="9108312223223904744">Assistenza relativa a Smartphone come token di sicurezza</translation>
 <translation id="9108808586816295166">Il sistema DNS sicuro potrebbe non essere sempre disponibile</translation>
 <translation id="910908805481542201">Aiutami a risolvere il problema</translation>
 <translation id="9131209053278896908">I siti bloccati vengono mostrati qui</translation>
