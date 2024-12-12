@@ -253,10 +253,34 @@ test(() => {
   const disconnectedDestination = document.createElement('div');
   const p = disconnectedOrigin.appendChild(document.createElement('p'));
 
+  assert_throws_dom("HIERARCHY_REQUEST_ERR", () => {
+    disconnectedDestination.moveBefore(p, null);
+  });
+}, "Moving a node from a disconnected container to a disconnected new parent " +
+   "without a shared ancestor throws a HIERARCHY_REQUEST_ERR");
+
+test(() => {
+  const disconnectedOrigin = document.createElement('div');
+  const disconnectedDestination = disconnectedOrigin.appendChild(document.createElement('div'));
+  const p = disconnectedOrigin.appendChild(document.createElement('p'));
+
   disconnectedDestination.moveBefore(p, null);
 
   assert_equals(disconnectedDestination.firstChild, p, "<p> Was successfully moved");
-}, "Moving a node from a disconnected container to a disconnected new parent succeeds");
+}, "Moving a node from a disconnected container to a disconnected new parent in the same tree succeeds");
+
+test(() => {
+  const disconnectedOrigin = document.createElement('div');
+  const disconnectedHost = disconnectedOrigin.appendChild(document.createElement('div'));
+  const p = disconnectedOrigin.appendChild(document.createElement('p'));
+  const shadow = disconnectedHost.attachShadow({mode: "closed"});
+  const disconnectedDestination = shadow.appendChild(document.createElement('div'));
+
+  disconnectedDestination.moveBefore(p, null);
+
+  assert_equals(disconnectedDestination.firstChild, p, "<p> Was successfully moved");
+}, "Moving a node from a disconnected container to a disconnected new parent in the same tree succeeds," +
+   "also across shadow-roots");
 
 test(() => {
   const disconnectedOrigin = document.createElement('div');
@@ -285,7 +309,7 @@ promise_test(async t => {
     });
 
   const oldParent = document.createElement('div');
-  const newParent = document.createElement('div');
+  const newParent = oldParent.appendChild(document.createElement('div'));
   const element = oldParent.appendChild(document.createElement(element_name));
   t.add_cleanup(() => {
     element.remove();

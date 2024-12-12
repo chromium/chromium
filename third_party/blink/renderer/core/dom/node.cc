@@ -855,7 +855,7 @@ Node* Node::moveBefore(Node* new_child,
       isConnected() == new_child->isConnected() &&
       // "If parent’s shadow-including root is not the same as node’s
       // shadow-including root, then..."
-      GetDocument() == new_child->GetDocument() &&
+      ShadowIncludingRoot() == new_child->ShadowIncludingRoot() &&
       // "If node is not an Element or a CharacterData node, then ..."
       (new_child->IsElementNode() || new_child->IsCharacterDataNode());
   // These three conditions below are caught by `EnsurePreInsertionValidity()`
