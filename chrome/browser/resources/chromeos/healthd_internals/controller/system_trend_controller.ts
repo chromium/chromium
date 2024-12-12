@@ -90,7 +90,7 @@ export class SystemTrendController {
 
   setBatteryData(dataSeriesList: DataSeries[]) {
     this.dataCollection.battery.dataList = dataSeriesList;
-    this.element.setupDataSeriesList();
+    this.element.refreshData(CategoryTypeEnum.BATTERY);
   }
 
   setCpuFrequencyData(dataSeriesList: DataSeries[]) {
@@ -100,33 +100,33 @@ export class SystemTrendController {
       this.dataCollection.cpuFrequency.selectedIndices =
           [0, dataSeriesList.length - 1];
     }
-    this.element.setupDataSeriesList();
+    this.element.refreshData(CategoryTypeEnum.CPU_FREQUENCY);
   }
 
   setCpuUsageData(dataSeriesList: DataSeries[]) {
     this.dataCollection.cpuUsage.dataList = dataSeriesList;
     // The first one is overall usage.
     this.dataCollection.cpuUsage.selectedIndices = [0];
-    this.element.setupDataSeriesList();
+    this.element.refreshData(CategoryTypeEnum.CPU_USAGE);
   }
 
   setMemoryData(dataSeriesList: DataSeries[]) {
     this.dataCollection.memory.dataList = dataSeriesList;
     // The first one is available memory.
     this.dataCollection.memory.selectedIndices = [0];
-    this.element.setupDataSeriesList();
+    this.element.refreshData(CategoryTypeEnum.MEMORY);
   }
 
   setThermalData(dataSeriesList: DataSeries[]) {
     this.dataCollection.thermal.dataList = dataSeriesList;
-    this.element.setupDataSeriesList();
+    this.element.refreshData(CategoryTypeEnum.THERMAL);
   }
 
   setZramData(dataSeriesList: DataSeries[]) {
     this.dataCollection.zram.dataList = dataSeriesList;
     // The first one is total used zram.
     this.dataCollection.zram.selectedIndices = [0];
-    this.element.setupDataSeriesList();
+    this.element.refreshData(CategoryTypeEnum.ZRAM);
   }
 
   /**

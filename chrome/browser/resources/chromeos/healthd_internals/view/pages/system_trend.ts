@@ -67,7 +67,7 @@ export class HealthdInternalsSystemTrendElement extends PolymerElement
     super.connectedCallback();
 
     this.updateHelper = new UiUpdateHelper(() => {
-      this.$.lineChart.update();
+      this.$.lineChart.refreshLineChart();
     });
 
     this.$.lineChart.addEventListener('time-range-changed', () => {
@@ -117,11 +117,23 @@ export class HealthdInternalsSystemTrendElement extends PolymerElement
     this.updateHelper.updateUiUpdateInterval(intervalSeconds);
   }
 
-  setupDataSeriesList() {
-    this.$.lineChart.setupDataSeriesLists(
-        this.selectedCategory, this.controller.getData(this.selectedCategory));
+  /**
+   * Updates the line chart with the latest data if the `targetCategory` matches
+   * the currently selected category.
+   */
+  refreshData(targetCategory: CategoryTypeEnum) {
+    // We don't need to render data when the selected category is not matched.
+    if (targetCategory !== this.selectedCategory) {
+      return;
+    }
+    this.$.lineChart.setupDataSeries(
+        targetCategory, this.controller.getData(targetCategory));
+    this.$.lineChart.refreshLineChart();
   }
 
+  /**
+   * Helper function to handle `time-range-changed` events.
+   */
   private updateDisplayedTimeInfo() {
     const [startTime, endTime] = this.$.lineChart.getVisibleTimeSpan();
     this.displayedStartTime = new Date(startTime).toLocaleTimeString();
@@ -129,15 +141,17 @@ export class HealthdInternalsSystemTrendElement extends PolymerElement
     this.displayedDuration = toReadableDuration(endTime - startTime);
   }
 
+  /**
+   * Updates the visibility for the chart summary table.
+   */
   private toggleChartSummaryTable() {
     this.isSummaryTableDisplayed = !this.isSummaryTableDisplayed;
-    this.$.lineChart.renderChartSummaryTable(this.isSummaryTableDisplayed);
+    this.$.lineChart.toggleChartSummaryTable(this.isSummaryTableDisplayed);
   }
 
   private onCategoryChanged() {
     this.selectedCategory = this.$.categorySelector.value as CategoryTypeEnum;
-    this.setupDataSeriesList();
-    this.$.lineChart.update()
+    this.refreshData(this.selectedCategory);
   }
 }
 
