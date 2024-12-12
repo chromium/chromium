@@ -6,6 +6,7 @@
 #define COMPONENTS_GWP_ASAN_CLIENT_THREAD_LOCAL_RANDOM_BIT_GENERATOR_H_
 
 #include <limits>
+#include <random>
 
 #include "base/compiler_specific.h"
 #include "base/rand_util.h"
