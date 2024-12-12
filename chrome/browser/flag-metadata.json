@@ -329,11 +329,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "arc-file-picker-experiment",
-    "owners": [ "youkichihosoi@chromium.org", "niwa@chromium.org" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "arc-friendlier-error-dialog",
     "owners": [ "yaoqq@chromium.org", "arc-framework@google.com" ],
     "expiry_milestone": 139
