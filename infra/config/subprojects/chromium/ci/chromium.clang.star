@@ -731,7 +731,7 @@ ci.builder(
     ),
     gn_args = gn_args.config(
         configs = [
-            "lacros_on_linux",
+            "chromeos_on_linux",
             "release",
             "clang_tot",
             "x64",
@@ -770,7 +770,7 @@ ci.builder(
     ),
     gn_args = gn_args.config(
         configs = [
-            "lacros_on_linux",
+            "chromeos_on_linux",
             "debug",
             "clang_tot",
             "x64",

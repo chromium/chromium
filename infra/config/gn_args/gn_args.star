@@ -816,18 +816,7 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "lacros",
-    args = {
-        "target_os": "chromeos",
-        "chromeos_is_browser_only": True,
-    },
-)
-
-gn_args.config(
-    name = "lacros_on_linux",
-    args = {
-        "chromeos_is_browser_only": True,
-    },
+    name = "chromeos_on_linux",
     configs = [
         "chromeos",
     ],
