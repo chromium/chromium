@@ -113,34 +113,6 @@ FlexItem::FlexItem(const FlexibleBoxAlgorithm* algorithm,
       << "Use LayoutUnit::Max() for no max size";
 }
 
-LayoutUnit FlexItem::FlowAwareMarginBefore() const {
-  switch (algorithm_->CrossAxisDirection()) {
-    case PhysicalDirection::kDown:
-      return physical_margins_.top;
-    case PhysicalDirection::kUp:
-      return physical_margins_.bottom;
-    case PhysicalDirection::kRight:
-      return physical_margins_.left;
-    case PhysicalDirection::kLeft:
-      return physical_margins_.right;
-  }
-  NOTREACHED();
-}
-
-LayoutUnit FlexItem::FlowAwareMarginAfter() const {
-  switch (algorithm_->CrossAxisDirection()) {
-    case PhysicalDirection::kDown:
-      return physical_margins_.bottom;
-    case PhysicalDirection::kUp:
-      return physical_margins_.top;
-    case PhysicalDirection::kRight:
-      return physical_margins_.right;
-    case PhysicalDirection::kLeft:
-      return physical_margins_.left;
-  }
-  NOTREACHED();
-}
-
 LayoutUnit FlexItem::MainAxisMarginExtent() const {
   return algorithm_->IsHorizontalFlow() ? physical_margins_.HorizontalSum()
                                         : physical_margins_.VerticalSum();
@@ -149,26 +121,6 @@ LayoutUnit FlexItem::MainAxisMarginExtent() const {
 LayoutUnit FlexItem::CrossAxisMarginExtent() const {
   return algorithm_->IsHorizontalFlow() ? physical_margins_.VerticalSum()
                                         : physical_margins_.HorizontalSum();
-}
-
-LayoutUnit FlexItem::MarginBoxAscent(bool is_last_baseline,
-                                     bool is_wrap_reverse) const {
-  DCHECK(layout_result_);
-  LogicalBoxFragment baseline_fragment(
-      baseline_writing_direction_,
-      To<PhysicalBoxFragment>(layout_result_->GetPhysicalFragment()));
-
-  const auto font_baseline = algorithm_->StyleRef().GetFontBaseline();
-  LayoutUnit baseline =
-      is_last_baseline
-          ? baseline_fragment.LastBaselineOrSynthesize(font_baseline)
-          : baseline_fragment.FirstBaselineOrSynthesize(font_baseline);
-  if (is_wrap_reverse != is_last_baseline)
-    baseline = baseline_fragment.BlockSize() - baseline;
-
-  return baseline_group_ == BaselineGroup::kMajor
-             ? FlowAwareMarginBefore() + baseline
-             : FlowAwareMarginAfter() + baseline;
 }
 
 ItemPosition FlexItem::Alignment() const {
@@ -504,12 +456,6 @@ bool FlexibleBoxAlgorithm::ShouldApplyMinSizeAutoForChild(
   const Length& min = IsHorizontalFlow() ? child.StyleRef().MinWidth()
                                          : child.StyleRef().MinHeight();
   return min.HasAuto();
-}
-
-PhysicalDirection FlexibleBoxAlgorithm::CrossAxisDirection() const {
-  const WritingDirectionMode writing_direction = style_->GetWritingDirection();
-  return style_->ResolvedIsColumnFlexDirection() ? writing_direction.InlineEnd()
-                                                 : writing_direction.BlockEnd();
 }
 
 // static

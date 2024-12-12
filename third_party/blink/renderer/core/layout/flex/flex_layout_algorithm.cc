@@ -211,6 +211,32 @@ LayoutUnit FlexLayoutAlgorithm::MainAxisContentExtent(
   return ChildAvailableSize().inline_size;
 }
 
+LayoutUnit FlexLayoutAlgorithm::BaselineAscent(
+    const FlexItem& item,
+    const PhysicalBoxFragment& fragment,
+    ItemPosition alignment) const {
+  LogicalBoxFragment baseline_fragment(item.baseline_writing_direction_,
+                                       fragment);
+
+  const bool is_last_baseline = alignment == ItemPosition::kLastBaseline;
+  const auto font_baseline = Style().GetFontBaseline();
+  LayoutUnit baseline =
+      is_last_baseline
+          ? baseline_fragment.LastBaselineOrSynthesize(font_baseline)
+          : baseline_fragment.FirstBaselineOrSynthesize(font_baseline);
+  if (is_wrap_reverse_ != is_last_baseline) {
+    baseline = baseline_fragment.BlockSize() - baseline;
+  }
+
+  const PhysicalToFlex margins(
+      GetConstraintSpace().GetWritingDirection(), is_column_,
+      item.physical_margins_.top, item.physical_margins_.right,
+      item.physical_margins_.bottom, item.physical_margins_.left);
+  return item.baseline_group_ == BaselineGroup::kMajor
+             ? margins.CrossStart() + baseline
+             : margins.CrossEnd() + baseline;
+}
+
 namespace {
 
 enum AxisEdge { kStart, kCenter, kEnd };
@@ -1204,8 +1230,11 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
       if (flex_item.layout_result_ &&
           (alignment == ItemPosition::kBaseline ||
            alignment == ItemPosition::kLastBaseline)) {
-        const LayoutUnit ascent = flex_item.MarginBoxAscent(
-            alignment == ItemPosition::kLastBaseline, is_wrap_reverse_);
+        const LayoutUnit ascent =
+            BaselineAscent(flex_item,
+                           To<PhysicalBoxFragment>(
+                               flex_item.layout_result_->GetPhysicalFragment()),
+                           alignment);
         const LayoutUnit descent = cross_axis_margin_size - ascent;
         if (flex_item.baseline_group_ == BaselineGroup::kMajor) {
           max_major_ascent = std::max(max_major_ascent, ascent);
@@ -1571,8 +1600,8 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
         if (alignment == ItemPosition::kBaseline ||
             alignment == ItemPosition::kLastBaseline) {
           const bool is_major = item.baseline_group_ == BaselineGroup::kMajor;
-          const LayoutUnit ascent = item.MarginBoxAscent(
-              alignment == ItemPosition::kLastBaseline, is_wrap_reverse_);
+          const LayoutUnit ascent =
+              BaselineAscent(item, physical_fragment, alignment);
           const LayoutUnit max_ascent = is_major ? line_output.major_baseline
                                                  : line_output.minor_baseline;
           const LayoutUnit baseline_delta = max_ascent - ascent;
@@ -1605,8 +1634,8 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
         flex_item.margin_block_end = logical_margins.block_end;
       }
 
-      if (PropagateFlexItemInfo(item, flex_line_idx, offset,
-                                physical_fragment.Size(), physical_margins) ==
+      if (PropagateFlexItemInfo(item, physical_fragment, physical_margins,
+                                flex_line_idx, offset) ==
           LayoutResult::kNeedsRelayoutWithNoChildScrollbarChanges) {
         status = LayoutResult::kNeedsRelayoutWithNoChildScrollbarChanges;
       }
@@ -2173,17 +2202,17 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
 
 LayoutResult::EStatus FlexLayoutAlgorithm::PropagateFlexItemInfo(
     const FlexItem& flex_item,
+    const PhysicalBoxFragment& physical_fragment,
+    const PhysicalBoxStrut& physical_margins,
     wtf_size_t flex_line_idx,
-    LogicalOffset offset,
-    PhysicalSize fragment_size,
-    const PhysicalBoxStrut& physical_margins) {
+    LogicalOffset offset) {
   LayoutResult::EStatus status = LayoutResult::kSuccess;
 
   if (layout_info_for_devtools_) [[unlikely]] {
     // If this is a "devtools layout", execution speed isn't critical but we
     // have to not adversely affect execution speed of a regular layout.
     PhysicalRect item_rect;
-    item_rect.size = fragment_size;
+    item_rect.size = physical_fragment.Size();
 
     LogicalSize logical_flexbox_size =
         LogicalSize(container_builder_.InlineSize(), total_block_size_);
@@ -2196,9 +2225,8 @@ LayoutResult::EStatus FlexLayoutAlgorithm::PropagateFlexItemInfo(
     item_rect.Expand(physical_margins);
     DCHECK_GE(layout_info_for_devtools_->lines.size(), 1u);
     DevtoolsFlexInfo::Item item(
-        item_rect, flex_item.MarginBoxAscent(
-                       flex_item.Alignment() == ItemPosition::kLastBaseline,
-                       is_wrap_reverse_));
+        item_rect,
+        BaselineAscent(flex_item, physical_fragment, flex_item.Alignment()));
     layout_info_for_devtools_->lines[flex_line_idx].items.push_back(item);
   }
 

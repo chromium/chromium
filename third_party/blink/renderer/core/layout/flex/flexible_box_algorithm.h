@@ -107,15 +107,8 @@ class FlexItem {
 
   ItemPosition Alignment() const;
 
-  // Returns the cross-start margin value ignoring flex-wrap.
-  LayoutUnit FlowAwareMarginBefore() const;
-  // Returns the cross-end margin value ignoring flex-wrap.
-  LayoutUnit FlowAwareMarginAfter() const;
-
   LayoutUnit MainAxisMarginExtent() const;
   LayoutUnit CrossAxisMarginExtent() const;
-
-  LayoutUnit MarginBoxAscent(bool is_last_baseline, bool is_wrap_reverse) const;
 
   static LayoutUnit AlignmentOffset(LayoutUnit available_free_space,
                                     ItemPosition position,
@@ -305,10 +298,6 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
   bool IsMultiline() const { return style_->FlexWrap() != EFlexWrap::kNowrap; }
   static bool IsHorizontalFlow(const ComputedStyle&);
   static bool IsColumnFlow(const ComputedStyle&);
-  // Returns the physical direction of the cross axis.
-  // This function is aware of `writing-mode`, `flex-direction`, and
-  // no `flex-wrap`.
-  PhysicalDirection CrossAxisDirection() const;
 
   bool ShouldApplyMinSizeAutoForChild(const LayoutBox& child) const;
 

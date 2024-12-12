@@ -82,16 +82,20 @@ class CORE_EXPORT FlexLayoutAlgorithm
       Vector<EBreakBetween>* row_break_between_outputs,
       FlexBreakTokenData::FlexBreakBeforeRow* break_before_row);
   LayoutResult::EStatus PropagateFlexItemInfo(
-      const FlexItem& flex_item,
+      const FlexItem&,
+      const PhysicalBoxFragment&,
+      const PhysicalBoxStrut& physical_margins,
       wtf_size_t flex_line_idx,
-      LogicalOffset offset,
-      PhysicalSize fragment_size,
-      const PhysicalBoxStrut& physical_margins);
-  void LayoutColumnReverse(LayoutUnit main_axis_content_size);
+      LogicalOffset offset);
 
   // This is same method as FlexItem but we need that logic before FlexItem is
   // constructed.
   LayoutUnit MainAxisContentExtent(LayoutUnit sum_hypothetical_main_size) const;
+
+  // Returns the position of the baseline, given a physical fragment.
+  LayoutUnit BaselineAscent(const FlexItem&,
+                            const PhysicalBoxFragment&,
+                            ItemPosition alignment) const;
 
   void HandleOutOfFlowPositionedItems(
       HeapVector<Member<LayoutBox>>& oof_children);
