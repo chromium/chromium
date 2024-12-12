@@ -120,6 +120,8 @@
       </div>
 
       <!-- Modifications -->
+      <!-- TODO(crbug.com/40928765): make entire modifications panel into
+        its own component and merge this with the constraint-list  -->
       <div slot="panel" id="modifications" role="tabpanel">
         <div class="vertical-box">
           <h3 role="heading">$i18n{trust}</h3>
@@ -135,12 +137,10 @@
                 Error
               </div>
             </div>
-
           </div>
-          <div class="horizontal-row">
-            <div class="modifications-row-label">$i18n{constraints}</div>
-            <constraint-list id="constraints"></constraint-list>
-          </div>
+          <!-- TODO(crbug.com/40928765): only show constraint list
+            if trust = trusted -->
+          <constraint-list id="constraints"></constraint-list>
         </div>
       </div>
     </cr-tab-box>

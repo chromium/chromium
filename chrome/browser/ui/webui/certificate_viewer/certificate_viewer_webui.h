@@ -148,6 +148,16 @@ class CertificateViewerDialogHandler : public content::WebUIMessageHandler {
                             CertificateTrust::CertificateTrustType new_trust,
                             bool success);
 
+  void HandleAddConstraint(const base::Value::List& args);
+  void HandleDeleteConstraint(const base::Value::List& args);
+  void UpdateConstraintsDone(
+      const base::Value& callback_id,
+      const chrome_browser_server_certificate_database::Constraints
+          new_constraints,
+      bool success);
+
+  bool CanModifyMetadata() const;
+
   // Helper function to get the certificate index. Returns -1 if the index is
   // out of range.
   int GetCertificateIndex(int requested_index) const;

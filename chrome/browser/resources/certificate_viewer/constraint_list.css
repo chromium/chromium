@@ -5,8 +5,33 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #scheme=relative
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #include=cr-icons-lit cr-shared-style-lit cr-hidden-style-lit
  * #css_wrapper_metadata_end */
 
 .constraint {
   padding-bottom: 7px;
+}
+
+.modifications-row-label {
+  width: 150px;
+}
+
+
+/* TODO(crbug.com/40928765): Try using shared colors from cr_shared_vars.css */
+.horizontal-row {
+  color: #616161;
+  display: flex;
+  flex-direction: row;
+  align-content: flex-start;
+  padding-top: 10px;
+  padding-inline-start: 20px;
+  padding-bottom: 10px;
+}
+
+.error {
+  margin: 4px 10px;
+  color: rgb(179, 38, 30);
 }

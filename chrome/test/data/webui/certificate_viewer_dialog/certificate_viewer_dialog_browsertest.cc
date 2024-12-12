@@ -142,8 +142,8 @@ class CertificateViewerUIWithMetadataCertTest : public CertificateViewerUITest {
     cert_metadata.mutable_trust()->set_trust_type(
         chrome_browser_server_certificate_database::CertificateTrust::
             CERTIFICATE_TRUST_TYPE_UNSPECIFIED);
-    cert_metadata.mutable_constraints()->add_dns_names("*.example.com");
-    cert_metadata.mutable_constraints()->add_dns_names("*.domainname.com");
+    cert_metadata.mutable_constraints()->add_dns_names("example.com");
+    cert_metadata.mutable_constraints()->add_dns_names("domainname.com");
     chrome_browser_server_certificate_database::CIDR* cidr =
         cert_metadata.mutable_constraints()->add_cidrs();
     cidr->set_ip(std::string(
@@ -176,6 +176,9 @@ class CertificateViewerUIWithMetadataCertEditTest
   net::ServerCertificateDatabase::CertInformation written_cert_info_;
 };
 
+// TODO(crbug.com/40928765): change to not test C++ code.
+// TODO(crbug.com/40928765): add C++ unit test of handler since Mocha tests are
+// meant to be unit tests of the TS/HTML/CSS code.
 IN_PROC_BROWSER_TEST_F(CertificateViewerUIWithMetadataCertEditTest,
                        EditTrustState) {
   RunTestCase("EditTrustState");
@@ -192,9 +195,9 @@ IN_PROC_BROWSER_TEST_F(CertificateViewerUIWithMetadataCertEditTest,
   cert_info.cert_metadata.mutable_trust()->set_trust_type(
       chrome_browser_server_certificate_database::CertificateTrust::
           CERTIFICATE_TRUST_TYPE_TRUSTED);
-  cert_info.cert_metadata.mutable_constraints()->add_dns_names("*.example.com");
+  cert_info.cert_metadata.mutable_constraints()->add_dns_names("example.com");
   cert_info.cert_metadata.mutable_constraints()->add_dns_names(
-      "*.domainname.com");
+      "domainname.com");
   chrome_browser_server_certificate_database::CIDR* cidr =
       cert_info.cert_metadata.mutable_constraints()->add_cidrs();
   cidr->set_ip(std::string(
@@ -202,6 +205,36 @@ IN_PROC_BROWSER_TEST_F(CertificateViewerUIWithMetadataCertEditTest,
   cidr->set_prefix_length(24);
 
   EXPECT_THAT(written_cert_info_, CertInfoEquals(std::ref(cert_info)));
+}
+
+IN_PROC_BROWSER_TEST_F(CertificateViewerUIWithMetadataCertEditTest,
+                       AddConstraintDNS) {
+  RunTestCase("AddConstraintDNS");
+}
+
+IN_PROC_BROWSER_TEST_F(CertificateViewerUIWithMetadataCertEditTest,
+                       AddConstraintCIDR) {
+  RunTestCase("AddConstraintCIDR");
+}
+
+IN_PROC_BROWSER_TEST_F(CertificateViewerUIWithMetadataCertEditTest,
+                       AddConstraintError) {
+  RunTestCase("AddConstraintError");
+}
+
+IN_PROC_BROWSER_TEST_F(CertificateViewerUIWithMetadataCertEditTest,
+                       DeleteConstraintDNS) {
+  RunTestCase("DeleteConstraintDNS");
+}
+
+IN_PROC_BROWSER_TEST_F(CertificateViewerUIWithMetadataCertEditTest,
+                       DeleteConstraintCIDR) {
+  RunTestCase("DeleteConstraintCIDR");
+}
+
+IN_PROC_BROWSER_TEST_F(CertificateViewerUIWithMetadataCertEditTest,
+                       DeleteConstraintError) {
+  RunTestCase("DeleteConstraintError");
 }
 
 class CertificateViewerUIWithMetadataCertEditErrorTest
