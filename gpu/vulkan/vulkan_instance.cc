@@ -9,8 +9,11 @@
 
 #include "gpu/vulkan/vulkan_instance.h"
 
+#include <string_view>
 #include <vector>
 
+#include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
@@ -70,6 +73,15 @@ VulkanWarningCallback(VkDebugReportFlagsEXT flags,
   return VK_FALSE;
 }
 #endif  // DCHECK_IS_ON()
+
+#if BUILDFLAG(IS_ANDROID) || DCHECK_IS_ON()
+bool ContainsExtension(const std::vector<VkExtensionProperties>& extensions,
+                       std::string_view extension_name) {
+  return std::ranges::any_of(extensions, [&extension_name](auto& ext_property) {
+    return ext_property.extensionName == extension_name;
+  });
+}
+#endif
 
 }  // namespace
 
@@ -156,18 +168,34 @@ bool VulkanInstance::CreateInstance(
     }
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  {
+    // Check if two extensions that we set as required in vkCreateInstance() are
+    // always available on Android. These extensions were promoted in Vulkan 1.1
+    // and this function would have returned if 1.1 isn't supported. In theory
+    // they should always be supported.
+    // TODO(crbug.com/381535049): Remove after confirming if extensions are ever
+    // missing on Vulkan 1.1 devices.
+    bool memory_extension =
+        ContainsExtension(vulkan_info_.instance_extensions,
+                          VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME);
+    bool semaphore_extension = ContainsExtension(
+        vulkan_info_.instance_extensions,
+        VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME);
+
+    if (!memory_extension || !semaphore_extension) {
+      base::debug::Alias(&memory_extension);
+      base::debug::Alias(&semaphore_extension);
+      base::debug::DumpWithoutCrashing();
+    }
+  }
+#endif
+
 #if DCHECK_IS_ON()
   for (const char* enabled_extension :
        vulkan_info_.enabled_instance_extensions) {
-    bool found = false;
-    for (const VkExtensionProperties& ext_property :
-         vulkan_info_.instance_extensions) {
-      if (strcmp(ext_property.extensionName, enabled_extension) == 0) {
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
+    if (!ContainsExtension(vulkan_info_.instance_extensions,
+                           enabled_extension)) {
       DLOG(ERROR) << "Required extension " << enabled_extension
                   << " missing from enumerated Vulkan extensions. "
                      "vkCreateInstance will likely fail.";
