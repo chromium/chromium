@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_embed_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
@@ -2068,29 +2069,38 @@ TEST_F(ContextMenuControllerTest, AttributionSrc) {
       },
   };
 
-  for (const auto& test_case : kTestCases) {
-    Persistent<HTMLAnchorElement> anchor =
-        MakeGarbageCollected<HTMLAnchorElement>(*GetDocument());
-    anchor->setInnerText("abc");
+  for (bool use_anchor : {true, false}) {
+    for (const auto& test_case : kTestCases) {
+      Persistent<HTMLAnchorElementBase> anchor;
+      if (use_anchor) {
+        anchor = MakeGarbageCollected<HTMLAnchorElement>(*GetDocument());
+      } else {
+        anchor = MakeGarbageCollected<HTMLAreaElement>(*GetDocument());
+      }
 
-    if (test_case.href)
-      anchor->SetHref(AtomicString(test_case.href));
+      anchor->setInnerText("abc");
 
-    if (test_case.attributionsrc) {
-      anchor->setAttribute(html_names::kAttributionsrcAttr,
-                           AtomicString(test_case.attributionsrc));
+      if (test_case.href) {
+        anchor->SetHref(AtomicString(test_case.href));
+      }
+
+      if (test_case.attributionsrc) {
+        anchor->setAttribute(html_names::kAttributionsrcAttr,
+                             AtomicString(test_case.attributionsrc));
+      }
+
+      GetPage()->SetAttributionSupport(
+          network::mojom::AttributionSupport::kWeb);
+
+      GetDocument()->body()->AppendChild(anchor);
+      ASSERT_TRUE(ShowContextMenuForElement(anchor, kMenuSourceMouse));
+
+      ContextMenuData context_menu_data =
+          GetWebFrameClient().GetContextMenuData();
+
+      EXPECT_EQ(context_menu_data.impression.has_value(),
+                test_case.impression_expected);
     }
-
-    GetPage()->SetAttributionSupport(network::mojom::AttributionSupport::kWeb);
-
-    GetDocument()->body()->AppendChild(anchor);
-    ASSERT_TRUE(ShowContextMenuForElement(anchor, kMenuSourceMouse));
-
-    ContextMenuData context_menu_data =
-        GetWebFrameClient().GetContextMenuData();
-
-    EXPECT_EQ(context_menu_data.impression.has_value(),
-              test_case.impression_expected);
   }
 }
 

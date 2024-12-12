@@ -779,7 +779,9 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
       data.referrer_policy = network::mojom::ReferrerPolicy::kNever;
 
     data.link_text = anchor->innerText().Utf8();
+  }
 
+  if (auto* anchor = DynamicTo<HTMLAnchorElementBase>(result.URLElement())) {
     if (AttributionSrcLoader* attribution_src_loader =
             selected_frame->GetAttributionSrcLoader()) {
       data.impression = attribution_src_loader->PrepareContextMenuNavigation(
