@@ -10,7 +10,7 @@ namespace chromeos {
 namespace test {
 
 bool FakeMagicBoostState::IsMagicBoostAvailable() {
-  return true;
+  return is_magic_boost_available_;
 }
 
 bool FakeMagicBoostState::CanShowNoticeBannerForHMR() {
@@ -28,6 +28,14 @@ void FakeMagicBoostState::AsyncWriteConsentStatus(
 
 void FakeMagicBoostState::AsyncWriteHMREnabled(bool enabled) {
   UpdateHMREnabled(enabled);
+}
+
+void FakeMagicBoostState::SetMagicBoostAvailability(bool available) {
+  is_magic_boost_available_ = available;
+}
+
+void FakeMagicBoostState::SetMagicBoostEnabled(bool enabled) {
+  UpdateMagicBoostEnabled(enabled);
 }
 
 }  // namespace test

@@ -51,6 +51,7 @@ class SearchSection : public OsSettingsSection,
   // QuickAnswersStateObserver:
   void OnSettingsEnabled(bool enabled) override;
   void OnEligibilityChanged(bool eligible) override;
+  void OnFeatureTypeChanged() override;
 
   // chromeos::MagicBoostState::Observer:
   void OnMagicBoostEnabledUpdated(bool enabled) override;

@@ -38,6 +38,7 @@ enum class ConsentResultType {
 // A checked observer which receives Quick Answers state change.
 class QuickAnswersStateObserver : public base::CheckedObserver {
  public:
+  virtual void OnFeatureTypeChanged() {}
   virtual void OnSettingsEnabled(bool enabled) {}
   virtual void OnConsentStatusUpdated(
       quick_answers::prefs::ConsentStatus status) {}
@@ -112,6 +113,7 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
   void RemoveObserver(QuickAnswersStateObserver* observer);
 
   // chromeos::MagicBoostState::Observer:
+  void OnMagicBoostEnabledUpdated(bool enabled) override;
   void OnHMREnabledUpdated(bool enabled) override;
   void OnHMRConsentStatusUpdated(
       chromeos::HMRConsentStatus consent_status) override;
@@ -209,6 +211,7 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
   base::ObserverList<QuickAnswersStateObserver> observers_;
 
  private:
+  void MaybeNotifyFeatureTypeChanged();
   void MaybeNotifyConsentStatusChanged();
 
   // Holds consent status of Quick Answers capability as a Quick Answers
@@ -256,6 +259,8 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
       FeatureType feature_type) const;
 
   // Last notified values in the current feature type.
+  base::expected<QuickAnswersState::FeatureType, Error>
+      last_notified_feature_type_ = base::unexpected(Error::kUninitialized);
   base::expected<bool, Error> last_notified_is_eligible_ =
       base::unexpected(Error::kUninitialized);
   base::expected<bool, Error> last_notified_is_enabled_ =

@@ -592,6 +592,10 @@ void SearchSection::OnEligibilityChanged(bool eligible) {
   UpdateQuickAnswersSearchTags();
 }
 
+void SearchSection::OnFeatureTypeChanged() {
+  UpdateQuickAnswersSearchTags();
+}
+
 void SearchSection::OnMagicBoostEnabledUpdated(bool enabled) {
   // This is triggered on magic boost prefs value changes, which means magic
   // boost must be available.
