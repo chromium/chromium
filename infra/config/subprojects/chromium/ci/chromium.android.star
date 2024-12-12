@@ -4353,7 +4353,7 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.chrome_public_test_apk.filter",
                 ],
                 swarming = targets.swarming(
-                    shards = 40,
+                    shards = 50,
                 ),
             ),
             "chrome_public_unit_test_apk": targets.mixin(
