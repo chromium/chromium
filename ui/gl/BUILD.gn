@@ -145,6 +145,8 @@ component("gl") {
     "shader_tracking.h",
     "shared_gl_fence_egl.cc",
     "shared_gl_fence_egl.h",
+    "startup_trace.cc",
+    "startup_trace.h",
     "sync_control_vsync_provider.cc",
     "sync_control_vsync_provider.h",
     "trace_util.cc",

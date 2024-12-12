@@ -61,6 +61,7 @@
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "services/tracing/public/cpp/trace_startup.h"
+#include "services/tracing/public/cpp/trace_startup_config.h"
 #include "third_party/angle/src/gpu_info_util/SystemInfo.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/platform/platform_event_source.h"
@@ -72,6 +73,7 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gpu_switching_manager.h"
 #include "ui/gl/init/gl_factory.h"
+#include "ui/gl/startup_trace.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -143,6 +145,7 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
  private:
   // SandboxHelper:
   void PreSandboxStartup(const gpu::GpuPreferences& gpu_prefs) override {
+    GPU_STARTUP_TRACE_EVENT("gpu_main::PreSandboxStartup");
     // Warm up resources that don't need access to GPUInfo.
     {
       TRACE_EVENT0("gpu", "Warm up rand");
@@ -175,6 +178,7 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
   bool EnsureSandboxInitialized(gpu::GpuWatchdogThread* watchdog_thread,
                                 const gpu::GPUInfo* gpu_info,
                                 const gpu::GpuPreferences& gpu_prefs) override {
+    GPU_STARTUP_TRACE_EVENT("gpu_main::EnsureSandboxInitialized");
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     return StartSandboxLinux(watchdog_thread, gpu_info, gpu_prefs);
 #elif BUILDFLAG(IS_WIN)
@@ -193,6 +197,7 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
 
 void LoadMetalShaderCacheIfNecessary() {
 #if BUILDFLAG(IS_MAC)
+  GPU_STARTUP_TRACE_EVENT("gpu_main::LoadMetalShaderCacheIfNecessary");
   if (base::FeatureList::IsEnabled(features::kUseBuiltInMetalShaderCache)) {
     gpu::BuiltInShaderCacheLoader::StartLoading();
   }
@@ -203,6 +208,10 @@ void LoadMetalShaderCacheIfNecessary() {
 
 // Main function for starting the Gpu process.
 int GpuMain(MainFunctionParams parameters) {
+  if (tracing::TraceStartupConfig::GetInstance().IsEnabled()) {
+    gl::StartupTrace::Startup();
+  }
+
   TRACE_EVENT0("gpu", "GpuMain");
   base::CurrentProcess::GetInstance().SetProcessType(
       base::CurrentProcessType::PROCESS_GPU);
@@ -314,6 +323,7 @@ int GpuMain(MainFunctionParams parameters) {
             base::MessagePumpType::DEFAULT);
 #endif
   }
+  gl::StartupTrace::GetInstance()->BindToCurrentThread();
 
   base::PlatformThread::SetName("CrGpuMain");
   mojo::InterfaceEndpointClient::SetThreadNameSuffixForMetrics("GpuMain");
@@ -345,7 +355,10 @@ int GpuMain(MainFunctionParams parameters) {
 
   // Since GPU initialization calls into skia, it's important to initialize skia
   // before it.
-  InitializeSkia();
+  {
+    GPU_STARTUP_TRACE_EVENT("gpu_main::InitializeSkia");
+    InitializeSkia();
+  }
 
   // The ThreadPool must have been created before invoking |gpu_init| as it
   // needs the ThreadPool (in angle::InitializePlatform()). Do not start it
@@ -439,6 +452,9 @@ int GpuMain(MainFunctionParams parameters) {
         /*wall_time_based_metrics_enabled_for_testing=*/true);
   }
 
+  DCHECK(tracing::IsTracingInitialized());
+  gl::StartupTrace::StarupDone();
+
   {
     TRACE_EVENT0("gpu", "Run Message Loop");
     run_loop.Run();
@@ -454,6 +470,7 @@ bool StartSandboxLinux(gpu::GpuWatchdogThread* watchdog_thread,
                        const gpu::GPUInfo* gpu_info,
                        const gpu::GpuPreferences& gpu_prefs) {
   TRACE_EVENT0("gpu,startup", "Initialize sandbox");
+  GPU_STARTUP_TRACE_EVENT("Initialize sandbox");
 
   if (watchdog_thread) {
     // SandboxLinux needs to be able to ensure that the thread
@@ -517,6 +534,7 @@ bool StartSandboxLinux(gpu::GpuWatchdogThread* watchdog_thread,
 #if BUILDFLAG(IS_WIN)
 bool StartSandboxWindows(const sandbox::SandboxInterfaceInfo* sandbox_info) {
   TRACE_EVENT0("gpu,startup", "Lower token");
+  GPU_STARTUP_TRACE_EVENT("Lower token");
 
   // For Windows, if the target_services interface is not zero, the process
   // is sandboxed and we must call LowerToken() before rendering untrusted
