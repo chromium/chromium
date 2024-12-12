@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/location_bar/merchant_trust_chip_button_controller.h"
+#include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_merchant_trust_content_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
@@ -26,6 +27,7 @@
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondWebContentsElementId);
 
 optimization_guide::OptimizationMetadata GetMerchantTrustMetadata() {
   optimization_guide::OptimizationMetadata optimization_metadata;
@@ -102,10 +104,32 @@ class MerchantTrustChipButtonInteractiveUITest : public InteractiveBrowserTest {
     });
   }
 
+  auto WasChipAnimatedForWebContents(ElementSpecifier id, bool value) {
+    return CheckElement(
+        id, base::BindOnce([](ui::TrackedElement* el) {
+          return AsInstrumentedWebContents(el)->web_contents()->GetUserData(
+                     MerchantTrustChipButtonController::kChipAnimated) !=
+                 nullptr;
+        }),
+        value);
+  }
+
+  auto IsChipFullyCollapsed(bool value) {
+    return CheckView(MerchantTrustChipButtonController::kElementIdForTesting,
+                     base::BindOnce([](OmniboxChipButton* view) {
+                       return view->is_fully_collapsed();
+                     }),
+                     value);
+  }
+
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
   GURL GetURL() {
     return https_server()->GetURL("a.test", "/permissions/requests.html");
+  }
+
+  GURL GetAnotherURL() {
+    return https_server()->GetURL("a.test", "/title1.html");
   }
 
  private:
@@ -197,4 +221,29 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
       WaitForShow(PermissionChipView::kElementIdForTesting),
       // ...and the merchant chip is not.
       WaitForHide(MerchantTrustChipButtonController::kElementIdForTesting));
+}
+
+IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
+                       AnimateOnlyOncePerTab) {
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      // The merchant chip is shown and expanded.
+      WaitForShow(MerchantTrustChipButtonController::kElementIdForTesting),
+      WaitForEvent(MerchantTrustChipButtonController::kElementIdForTesting,
+                   kOmniboxChipButtonExpanded),
+      // Animation was recorded.
+      WasChipAnimatedForWebContents(kWebContentsElementId, true),
+      // Switch to the second tab.
+      AddInstrumentedTab(kSecondWebContentsElementId, GetAnotherURL()),
+      // The merchant chip is hidden - no merchant trust data for the tab and no
+      // animation.
+      WaitForHide(MerchantTrustChipButtonController::kElementIdForTesting),
+      WasChipAnimatedForWebContents(kSecondWebContentsElementId, false),
+      // Switch to the first one, the chip was already animated.
+      SelectTab(kTabStripElementId, 0),
+      WasChipAnimatedForWebContents(kWebContentsElementId, true),
+      // The merchant chip is shown again for the first tab but not expanded.
+      WaitForShow(MerchantTrustChipButtonController::kElementIdForTesting),
+      IsChipFullyCollapsed(true));
 }

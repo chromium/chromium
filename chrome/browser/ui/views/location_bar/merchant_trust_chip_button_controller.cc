@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
@@ -20,6 +21,22 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_class_properties.h"
+
+namespace {
+
+// A duration of the expand animation.
+constexpr auto kExpandAnimationDuration = base::Milliseconds(350);
+// A duration of the collapse animation.
+constexpr auto kCollapseAnimationDuration = base::Milliseconds(250);
+// A delay before collapsing an expanded chip.
+constexpr auto kCollapseDelay = base::Seconds(12);
+
+base::TimeDelta GetAnimationDuration(base::TimeDelta duration) {
+  return gfx::Animation::ShouldRenderRichAnimation() ? duration
+                                                     : base::TimeDelta();
+}
+
+}  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MerchantTrustChipButtonController,
                                       kElementIdForTesting);
@@ -38,7 +55,7 @@ MerchantTrustChipButtonController::MerchantTrustChipButtonController(
   chip_button_->SetTheme(OmniboxChipTheme::kLowVisibility);
   chip_button_->SetCallback(base::BindRepeating(
       &MerchantTrustChipButtonController::OpenPageInfoSubpage,
-      base::Unretained(this)));
+      weak_factory_.GetWeakPtr()));
   chip_button_->SetProperty(views::kElementIdentifierKey, kElementIdForTesting);
 }
 
@@ -47,19 +64,26 @@ MerchantTrustChipButtonController::~MerchantTrustChipButtonController() =
 
 void MerchantTrustChipButtonController::UpdateWebContents(
     content::WebContents* contents) {
-  if (contents) {
+  if (contents && contents != web_contents()) {
     Observe(contents);
+    // Fetch the data when the web contents changes. `PrimaryPageChanged()` only
+    // covers changes to the currently observed web contents.
+    FetchData();
   }
+}
 
-  if (!service_ || !web_contents()) {
-    return;
-  }
+void MerchantTrustChipButtonController::PrimaryPageChanged(
+    content::Page& page) {
+  FetchData();
+}
 
+void MerchantTrustChipButtonController::FetchData() {
+  DCHECK(service_);
   service_->GetMerchantTrustInfo(
       web_contents()->GetVisibleURL(),
       base::BindOnce(
           &MerchantTrustChipButtonController::OnMerchantTrustDataFetched,
-          base::Unretained(this)));
+          weak_factory_.GetWeakPtr()));
 }
 
 void MerchantTrustChipButtonController::OnMerchantTrustDataFetched(
@@ -68,10 +92,22 @@ void MerchantTrustChipButtonController::OnMerchantTrustDataFetched(
   merchant_data_ = merchant_data;
 
   if (ShouldBeVisible()) {
-    // TODO(crbug.com/378854906): Animate expand when needed.
+    // Reset if animation is in progress. Animate expand when visibility
+    // changes.
+    chip_button_->ResetAnimation(0.0);
+    if (!chip_button_->GetVisible()) {
+      if (!web_contents()->GetUserData(kChipAnimated)) {
+        chip_button_->AnimateExpand(
+            GetAnimationDuration(kExpandAnimationDuration));
+        web_contents()->SetUserData(
+            kChipAnimated, std::make_unique<base::SupportsUserData::Data>());
+      }
+    }
     Show();
+    StartCollapseTimer();
   } else {
-    // TODO(crbug.com/378854906): Animate collapse when needed.
+    // Don't animate collapse because the chip gets hidden instantly when
+    // switching tabs.
     Hide();
   }
 }
@@ -92,6 +128,18 @@ void MerchantTrustChipButtonController::Hide() {
   location_icon_view_->SetCornerRadii(gfx::RoundedCornersF(
       location_icon_view_->GetPreferredSize().height() / 2));
   chip_button_->SetVisible(false);
+}
+
+void MerchantTrustChipButtonController::StartCollapseTimer() {
+  collapse_timer_.Start(
+      FROM_HERE, GetAnimationDuration(kCollapseDelay),
+      base::BindOnce(&MerchantTrustChipButtonController::Collapse,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void MerchantTrustChipButtonController::Collapse() {
+  chip_button_->AnimateCollapse(
+      GetAnimationDuration(kCollapseAnimationDuration));
 }
 
 void MerchantTrustChipButtonController::OpenPageInfoSubpage() {
