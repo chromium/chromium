@@ -5,6 +5,7 @@
 #ifndef SKIA_EXT_SKIA_HISTOGRAM_H_
 #define SKIA_EXT_SKIA_HISTOGRAM_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <atomic>
