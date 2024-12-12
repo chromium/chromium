@@ -55,10 +55,7 @@ base::TimeDelta MeasurementIntervalFor4GbDevices() {
 }
 
 base::TimeDelta MeasurementIntervalFor6GbDevices() {
-  static const base::FeatureParam<base::TimeDelta> kMeasurementInterval{
-      &content::features::kUserLevelMemoryPressureSignalOn6GbDevices,
-      "measurement_interval", kDefaultMeasurementInterval};
-  return kMeasurementInterval.Get();
+  return kDefaultMeasurementInterval;
 }
 
 // The memory threshold: 738 was selected at around the 99th percentile of
@@ -88,10 +85,7 @@ uint64_t MemoryThresholdParamFor4GbDevices() {
 constexpr size_t kMemoryThresholdMBOf6GbDevices = 494;
 
 uint64_t MemoryThresholdParamFor6GbDevices() {
-  static const base::FeatureParam<int> kMemoryThresholdParam{
-      &content::features::kUserLevelMemoryPressureSignalOn6GbDevices,
-      "memory_threshold_mb", kMemoryThresholdMBOf6GbDevices};
-  return base::as_unsigned(kMemoryThresholdParam.Get()) * k1MB;
+  return kMemoryThresholdMBOf6GbDevices * k1MB;
 }
 
 }  // namespace
