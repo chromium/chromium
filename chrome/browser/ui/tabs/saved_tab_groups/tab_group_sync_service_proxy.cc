@@ -256,6 +256,13 @@ std::vector<LocalTabGroupID> TabGroupSyncServiceProxy::GetDeletedGroupIds()
   return std::vector<LocalTabGroupID>();
 }
 
+std::optional<std::u16string>
+TabGroupSyncServiceProxy::GetTitleForPreviouslyExistingSharedTabGroup(
+    const CollaborationId& collaboration_id) const {
+  NOTIMPLEMENTED();
+  return std::nullopt;
+}
+
 void TabGroupSyncServiceProxy::OpenTabGroup(
     const base::Uuid& sync_group_id,
     std::unique_ptr<TabGroupActionContext> context) {

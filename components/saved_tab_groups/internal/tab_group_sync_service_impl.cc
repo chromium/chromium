@@ -656,6 +656,17 @@ std::vector<LocalTabGroupID> TabGroupSyncServiceImpl::GetDeletedGroupIds()
   return GetDeletedGroupIdsFromPref();
 }
 
+std::optional<std::u16string>
+TabGroupSyncServiceImpl::GetTitleForPreviouslyExistingSharedTabGroup(
+    const CollaborationId& collaboration_id) const {
+  if (titles_for_previously_existing_shared_tab_groups_.find(
+          collaboration_id) ==
+      titles_for_previously_existing_shared_tab_groups_.end()) {
+    return std::nullopt;
+  }
+  return titles_for_previously_existing_shared_tab_groups_.at(collaboration_id);
+}
+
 void TabGroupSyncServiceImpl::OpenTabGroup(
     const base::Uuid& sync_group_id,
     std::unique_ptr<TabGroupActionContext> context) {
@@ -843,6 +854,14 @@ void TabGroupSyncServiceImpl::SavedTabGroupRemovedFromSync(
   std::pair<base::Uuid, std::optional<LocalTabGroupID>> id_pair;
   id_pair.first = removed_group.saved_guid();
   id_pair.second = removed_group.local_group_id();
+
+  // For shared tab groups, we need to be able to know that a group has been
+  // removed and inform a user about it through a message. To facilitate this,
+  // we store the last known tab group title before removal.
+  if (removed_group.is_shared_tab_group()) {
+    titles_for_previously_existing_shared_tab_groups_.emplace(
+        removed_group.collaboration_id().value(), removed_group.title());
+  }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&TabGroupSyncServiceImpl::HandleTabGroupRemoved,

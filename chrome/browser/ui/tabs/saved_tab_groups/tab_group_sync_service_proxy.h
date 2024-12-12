@@ -83,6 +83,8 @@ class TabGroupSyncServiceProxy : public TabGroupSyncService,
   std::optional<SavedTabGroup> GetGroup(
       const EitherGroupID& either_id) const override;
   std::vector<LocalTabGroupID> GetDeletedGroupIds() const override;
+  std::optional<std::u16string> GetTitleForPreviouslyExistingSharedTabGroup(
+      const CollaborationId& collaboration_id) const override;
 
   void OpenTabGroup(const base::Uuid& sync_group_id,
                     std::unique_ptr<TabGroupActionContext> context) override;

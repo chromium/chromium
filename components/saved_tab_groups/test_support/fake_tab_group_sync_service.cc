@@ -302,6 +302,12 @@ std::vector<LocalTabGroupID> FakeTabGroupSyncService::GetDeletedGroupIds()
   return deleted_group_ids;
 }
 
+std::optional<std::u16string>
+FakeTabGroupSyncService::GetTitleForPreviouslyExistingSharedTabGroup(
+    const CollaborationId& collaboration_id) const {
+  return std::nullopt;
+}
+
 void FakeTabGroupSyncService::OpenTabGroup(
     const base::Uuid& sync_group_id,
     std::unique_ptr<TabGroupActionContext> context) {

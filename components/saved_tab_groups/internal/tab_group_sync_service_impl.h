@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -111,6 +112,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   std::optional<SavedTabGroup> GetGroup(
       const EitherGroupID& either_id) const override;
   std::vector<LocalTabGroupID> GetDeletedGroupIds() const override;
+  std::optional<std::u16string> GetTitleForPreviouslyExistingSharedTabGroup(
+      const CollaborationId& collaboration_id) const override;
+
   void OpenTabGroup(const base::Uuid& sync_group_id,
                     std::unique_ptr<TabGroupActionContext> context) override;
   void UpdateLocalTabGroupMapping(const base::Uuid& sync_id,
@@ -329,6 +333,12 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // updates.
   std::unique_ptr<std::vector<SavedTabGroup>>
       shared_tab_groups_available_at_startup_for_messaging_;
+
+  // Temporary in-memory mapping from collaboration ID to title for tab groups
+  // that we/ have previously known about. This is to facilitate displaying of
+  // tab group titles in the UI when a user is removed from a tab group.
+  std::unordered_map<CollaborationId, std::u16string>
+      titles_for_previously_existing_shared_tab_groups_;
 
   // Keeps track of API calls received before the service is initialized.
   // Once the initialization is complete, these callbacks are run in the order

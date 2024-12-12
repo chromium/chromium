@@ -419,6 +419,32 @@ TEST_F(TabGroupSyncServiceTest, GetDeletedGroupIdsUsingPrefs) {
   EXPECT_EQ(0u, deleted_ids.size());
 }
 
+TEST_F(TabGroupSyncServiceTest, GetTitleForPreviouslyExistingSharedTabGroup) {
+  std::string collaboration_id_str = "collaboration_id";
+  CollaborationId collaboration_id = CollaborationId(collaboration_id_str);
+
+  // First ensure our test group is shared.
+  tab_group_sync_service_->MakeTabGroupShared(local_group_id_1_,
+                                              collaboration_id_str);
+  WaitForPostedTasks();
+
+  // Making a tab group shared changes its GUID, so we find the new GUID.
+  std::optional<SavedTabGroup> shared_group_1 =
+      tab_group_sync_service_->GetGroup(local_group_id_1_);
+  ASSERT_TRUE(shared_group_1.has_value());
+
+  // Delete a group from sync. It should save the current title.
+  model_->RemovedFromSync(shared_group_1->saved_guid());
+  WaitForPostedTasks();
+
+  // We should also have saved the last known title of the shared tab group.
+  std::optional<std::u16string> title =
+      tab_group_sync_service_->GetTitleForPreviouslyExistingSharedTabGroup(
+          collaboration_id);
+  ASSERT_TRUE(title.has_value());
+  EXPECT_EQ(group_1_.title(), title);
+}
+
 TEST_F(TabGroupSyncServiceTest,
        GetDeletedGroupIdsUsingPrefsWhileRemovedFromLocal) {
   // Delete a group from local. It should not add the entry to the prefs.
