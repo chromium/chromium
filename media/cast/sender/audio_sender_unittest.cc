@@ -78,7 +78,6 @@ class AudioSenderTest : public ::testing::Test {
     audio_config_.rtp_timebase = kDefaultAudioSamplingRate;
     audio_config_.channels = 2;
     audio_config_.max_bitrate = kDefaultAudioEncoderBitrate;
-    audio_config_.rtp_payload_type = RtpPayloadType::AUDIO_OPUS;
 
     openscreen::cast::SessionConfig openscreen_audio_config =
         ToOpenscreenSessionConfig(audio_config_, /* is_pli_enabled= */ true);

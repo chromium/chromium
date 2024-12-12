@@ -74,7 +74,7 @@ OpenscreenFrameSender::OpenscreenFrameSender(
       sender_(std::move(sender)),
       client_(client),
       max_frame_rate_(config.max_frame_rate),
-      is_audio_(config.rtp_payload_type <= RtpPayloadType::AUDIO_LAST),
+      is_audio_(config.is_audio()),
       min_playout_delay_(config.min_playout_delay),
       max_playout_delay_(config.max_playout_delay) {
   CHECK_GT(sender_->config().rtp_timebase, 0);

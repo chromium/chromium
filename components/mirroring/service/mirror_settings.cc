@@ -20,7 +20,6 @@
 using media::ResolutionChangePolicy;
 using media::cast::AudioCodecParams;
 using media::cast::FrameSenderConfig;
-using media::cast::RtpPayloadType;
 using media::cast::VideoCodecParams;
 
 namespace mirroring {
@@ -85,7 +84,6 @@ MirrorSettings::~MirrorSettings() = default;
 
 // static
 FrameSenderConfig MirrorSettings::GetDefaultAudioConfig(
-    RtpPayloadType payload_type,
     media::AudioCodec codec) {
   FrameSenderConfig config;
   config.sender_ssrc = 1;
@@ -93,8 +91,7 @@ FrameSenderConfig MirrorSettings::GetDefaultAudioConfig(
   const base::TimeDelta playout_delay = GetPlayoutDelay();
   config.min_playout_delay = playout_delay;
   config.max_playout_delay = playout_delay;
-  config.rtp_payload_type = payload_type;
-  config.rtp_timebase = (payload_type == RtpPayloadType::REMOTE_AUDIO)
+  config.rtp_timebase = (codec == media::AudioCodec::kUnknown)
                             ? media::cast::kRemotingRtpTimebase
                             : kAudioTimebase;
   config.channels = kAudioChannels;
@@ -107,7 +104,6 @@ FrameSenderConfig MirrorSettings::GetDefaultAudioConfig(
 
 // static
 FrameSenderConfig MirrorSettings::GetDefaultVideoConfig(
-    RtpPayloadType payload_type,
     media::VideoCodec codec) {
   FrameSenderConfig config;
   config.sender_ssrc = 11;
@@ -115,8 +111,7 @@ FrameSenderConfig MirrorSettings::GetDefaultVideoConfig(
   const base::TimeDelta playout_delay = GetPlayoutDelay();
   config.min_playout_delay = playout_delay;
   config.max_playout_delay = playout_delay;
-  config.rtp_payload_type = payload_type;
-  config.rtp_timebase = (payload_type == RtpPayloadType::REMOTE_VIDEO)
+  config.rtp_timebase = (codec == media::VideoCodec::kUnknown)
                             ? media::cast::kRemotingRtpTimebase
                             : kVideoTimebase;
   config.channels = 1;

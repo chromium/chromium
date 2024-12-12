@@ -162,8 +162,7 @@ RemotingSender::RemotingSender(
                               base::Unretained(this)),
           std::move(pipe))),
       stream_sender_(this, std::move(stream_sender)),
-      is_audio_(config.rtp_payload_type <=
-                media::cast::RtpPayloadType::REMOTE_AUDIO),
+      is_audio_(config.is_audio()),
       frame_factory_(
           std::make_unique<SenderEncodedFrameFactory>(config.rtp_timebase,
                                                       *frame_sender_,

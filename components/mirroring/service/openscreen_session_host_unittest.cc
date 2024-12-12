@@ -913,7 +913,6 @@ TEST_F(OpenscreenSessionHostTest,
   // Oh no! The encoder had a problem.
   FrameSenderConfig config;
   config.use_hardware_encoder = true;
-  config.rtp_payload_type = media::cast::RtpPayloadType::VIDEO_VP8;
   config.video_codec_params =
       media::cast::VideoCodecParams{media::VideoCodec::kVP8};
   PushEncoderStatusChange(
