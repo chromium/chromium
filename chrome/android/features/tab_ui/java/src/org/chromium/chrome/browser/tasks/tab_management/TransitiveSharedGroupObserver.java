@@ -12,6 +12,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -29,20 +30,24 @@ public class TransitiveSharedGroupObserver implements Destroyable {
             mGroupMembersSupplier;
     private final TransitiveObservableSupplier<SharedGroupObserver, String>
             mCollaborationIdSupplier;
-    private final DataSharingService mDataSharingService;
     private final TabGroupSyncService mTabGroupSyncService;
+    private final DataSharingService mDataSharingService;
+    private final CollaborationService mCollaborationService;
 
     private @Nullable Token mCurrentTabGroupId;
 
     /**
      * @param tabGroupSyncService Used to fetch the current collaboration id of the group.
-     * @param dataSharingService Used to fetch and observe current share data.
+     * @param dataSharingService Used to observe current share data.
+     * @param collaborationService Used to fetch current shared data.
      */
     public TransitiveSharedGroupObserver(
             @NonNull TabGroupSyncService tabGroupSyncService,
-            @NonNull DataSharingService dataSharingService) {
+            @NonNull DataSharingService dataSharingService,
+            @NonNull CollaborationService collaborationService) {
         mTabGroupSyncService = tabGroupSyncService;
         mDataSharingService = dataSharingService;
+        mCollaborationService = collaborationService;
 
         mGroupSharedStateSupplier =
                 new TransitiveObservableSupplier<>(
@@ -78,7 +83,10 @@ public class TransitiveSharedGroupObserver implements Destroyable {
                 tabGroupId == null
                         ? null
                         : new SharedGroupObserver(
-                                tabGroupId, mTabGroupSyncService, mDataSharingService);
+                                tabGroupId,
+                                mTabGroupSyncService,
+                                mDataSharingService,
+                                mCollaborationService);
 
         swapSharedGroupObserver(newObserver);
     }

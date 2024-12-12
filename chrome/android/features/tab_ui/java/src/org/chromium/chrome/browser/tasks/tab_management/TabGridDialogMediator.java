@@ -188,9 +188,9 @@ public class TabGridDialogMediator
 
     private final ValueChangedCallback<TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
+    private final Callback<String> mOnCollaborationIdChanged = this::onCollaborationIdChanged;
     private final Callback<Integer> mOnGroupSharedStateChanged = this::onGroupSharedStateChanged;
     private final Callback<List<GroupMember>> mOnGroupMembersChanged = this::onGroupMembersChanged;
-    private final Callback<String> mOnCollaborationIdChanged = this::onCollaborationIdChanged;
     private final Activity mActivity;
     private final DialogController mDialogController;
     private final PropertyModel mModel;
@@ -275,16 +275,18 @@ public class TabGridDialogMediator
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
             mDataSharingService = DataSharingServiceFactory.getForProfile(mOriginalProfile);
             mTransitiveSharedGroupObserver =
-                    new TransitiveSharedGroupObserver(mTabGroupSyncService, mDataSharingService);
+                    new TransitiveSharedGroupObserver(
+                            mTabGroupSyncService, mDataSharingService, mCollaborationService);
+            // This should be the first supplier set as the other suppliers depend on its value.
+            mTransitiveSharedGroupObserver
+                    .getCollaborationIdSupplier()
+                    .addObserver(mOnCollaborationIdChanged);
             mTransitiveSharedGroupObserver
                     .getGroupSharedStateSupplier()
                     .addObserver(mOnGroupSharedStateChanged);
             mTransitiveSharedGroupObserver
                     .getGroupMembersSupplier()
                     .addObserver(mOnGroupMembersChanged);
-            mTransitiveSharedGroupObserver
-                    .getCollaborationIdSupplier()
-                    .addObserver(mOnCollaborationIdChanged);
             mMessagingBackendService =
                     MessagingBackendServiceFactory.getForProfile(mOriginalProfile);
             mPersistentMessageObserver =
@@ -1052,19 +1054,6 @@ public class TabGridDialogMediator
         mTransitiveSharedGroupObserver.setTabGroupId(tab.getTabGroupId());
     }
 
-    private void onGroupMembersChanged(@Nullable List<GroupMember> members) {
-        if (mSharedImageTilesCoordinator == null) return;
-
-        @Nullable
-        String collaborationId = mTransitiveSharedGroupObserver.getCollaborationIdSupplier().get();
-        if (members != null && TabShareUtils.isCollaborationIdValid(collaborationId)) {
-            mSharedImageTilesCoordinator.onGroupMembersChanged(collaborationId, members);
-        } else {
-            mSharedImageTilesCoordinator.onGroupMembersChanged(
-                    /* collaborationId= */ null, /* members= */ null);
-        }
-    }
-
     private void onCollaborationIdChanged(@Nullable String collaborationId) {
         if (TabShareUtils.isCollaborationIdValid(collaborationId)) {
             showOrUpdateCollaborationActivityMessageCard();
@@ -1095,6 +1084,19 @@ public class TabGridDialogMediator
         } else {
             mModel.set(TabGridDialogProperties.SHOW_SHARE_BUTTON, false);
             mModel.set(TabGridDialogProperties.SHOW_IMAGE_TILES, true);
+        }
+    }
+
+    private void onGroupMembersChanged(@Nullable List<GroupMember> members) {
+        if (mSharedImageTilesCoordinator == null) return;
+
+        @Nullable
+        String collaborationId = mTransitiveSharedGroupObserver.getCollaborationIdSupplier().get();
+        if (members != null && TabShareUtils.isCollaborationIdValid(collaborationId)) {
+            mSharedImageTilesCoordinator.onGroupMembersChanged(collaborationId, members);
+        } else {
+            mSharedImageTilesCoordinator.onGroupMembersChanged(
+                    /* collaborationId= */ null, /* members= */ null);
         }
     }
 

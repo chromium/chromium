@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -15,7 +14,6 @@ import static org.chromium.components.data_sharing.SharedGroupTestHelper.COLLABO
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER1;
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER2;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +24,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
@@ -44,23 +43,20 @@ public class TransitiveSharedGroupObserverUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private DataSharingService mDataSharingService;
     @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private DataSharingService mDataSharingService;
+    @Mock private CollaborationService mCollaborationService;
     @Mock private Callback<Integer> mOnSharedGroupStateChanged;
     @Mock private Callback<String> mOnSharedGroupCollaborationIdChanged;
     @Mock private Callback<List<GroupMember>> mOnGroupMembersChanged;
 
     private SharedGroupTestHelper mSharedGroupTestHelper;
 
-    @Before
-    public void setUp() {
-        mSharedGroupTestHelper = new SharedGroupTestHelper(mDataSharingService);
-    }
-
     @Test
     public void testDestroy_NoTabGroupId() {
         TransitiveSharedGroupObserver observer =
-                new TransitiveSharedGroupObserver(mTabGroupSyncService, mDataSharingService);
+                new TransitiveSharedGroupObserver(
+                        mTabGroupSyncService, mDataSharingService, mCollaborationService);
         verify(mDataSharingService, never()).addObserver(any());
 
         observer.destroy();
@@ -70,7 +66,8 @@ public class TransitiveSharedGroupObserverUnitTest {
     @Test
     public void testDestroy_WithTabGroupId() {
         TransitiveSharedGroupObserver observer =
-                new TransitiveSharedGroupObserver(mTabGroupSyncService, mDataSharingService);
+                new TransitiveSharedGroupObserver(
+                        mTabGroupSyncService, mDataSharingService, mCollaborationService);
         observer.setTabGroupId(TAB_GROUP_ID_1);
         verify(mDataSharingService).addObserver(any());
 
@@ -81,7 +78,8 @@ public class TransitiveSharedGroupObserverUnitTest {
     @Test
     public void testChangeTabGroupId_WithData() {
         TransitiveSharedGroupObserver observer =
-                new TransitiveSharedGroupObserver(mTabGroupSyncService, mDataSharingService);
+                new TransitiveSharedGroupObserver(
+                        mTabGroupSyncService, mDataSharingService, mCollaborationService);
         observer.getGroupSharedStateSupplier().addObserver(mOnSharedGroupStateChanged);
         observer.getGroupMembersSupplier().addObserver(mOnGroupMembersChanged);
         observer.getCollaborationIdSupplier().addObserver(mOnSharedGroupCollaborationIdChanged);
@@ -89,16 +87,20 @@ public class TransitiveSharedGroupObserverUnitTest {
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.collaborationId = COLLABORATION_ID1;
         when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(savedTabGroup);
+        when(mCollaborationService.getGroupData(COLLABORATION_ID1))
+                .thenReturn(SharedGroupTestHelper.newGroupData(COLLABORATION_ID1, GROUP_MEMBER1));
         observer.setTabGroupId(TAB_GROUP_ID_1);
-        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1);
 
         verify(mOnSharedGroupStateChanged).onResult(GroupSharedState.COLLABORATION_ONLY);
         verify(mOnGroupMembersChanged).onResult(List.of(GROUP_MEMBER1));
         verify(mOnSharedGroupCollaborationIdChanged).onResult(COLLABORATION_ID1);
 
         savedTabGroup.collaborationId = COLLABORATION_ID2;
+        when(mCollaborationService.getGroupData(COLLABORATION_ID2))
+                .thenReturn(
+                        SharedGroupTestHelper.newGroupData(
+                                COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2));
         observer.setTabGroupId(TAB_GROUP_ID_2);
-        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID2, GROUP_MEMBER1, GROUP_MEMBER2);
 
         verify(mOnSharedGroupStateChanged).onResult(GroupSharedState.HAS_OTHER_USERS);
         verify(mOnGroupMembersChanged).onResult(List.of(GROUP_MEMBER1, GROUP_MEMBER2));
@@ -108,7 +110,7 @@ public class TransitiveSharedGroupObserverUnitTest {
         observer.setTabGroupId(TAB_GROUP_ID_3);
 
         verify(mOnSharedGroupStateChanged).onResult(GroupSharedState.NOT_SHARED);
-        verify(mOnGroupMembersChanged, times(2)).onResult(null);
+        verify(mOnGroupMembersChanged).onResult(null);
         verify(mOnSharedGroupCollaborationIdChanged).onResult(null);
 
         observer.destroy();

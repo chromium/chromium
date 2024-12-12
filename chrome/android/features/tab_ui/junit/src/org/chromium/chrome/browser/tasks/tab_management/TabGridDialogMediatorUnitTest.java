@@ -11,6 +11,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -108,6 +109,7 @@ import org.chromium.components.collaboration.messaging.TabGroupMessageMetadata;
 import org.chromium.components.collaboration.messaging.TabMessageMetadata;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
+import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -187,6 +189,7 @@ public class TabGridDialogMediatorUnitTest {
     @Captor private ArgumentCaptor<PropertyModel> mCollaborationActivityMessageCardCaptor;
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
     @Captor private ArgumentCaptor<PropertyModel> mMessageCardModelCaptor;
+    @Captor private ArgumentCaptor<DataSharingService.Observer> mDataSharingServiceObserverCaptor;
 
     @Captor
     private ArgumentCaptor<MessagingBackendService.PersistentMessageObserver>
@@ -201,7 +204,6 @@ public class TabGridDialogMediatorUnitTest {
     private Activity mActivity;
     private PropertyModel mModel;
     private TabGridDialogMediator mMediator;
-    private SharedGroupTestHelper mSharedGroupTestHelper;
 
     @Before
     public void setUp() {
@@ -221,7 +223,6 @@ public class TabGridDialogMediatorUnitTest {
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
         mockPersistentMessages(/* added= */ 1, /* navigated= */ 2, /* removed= */ 3);
-        mSharedGroupTestHelper = new SharedGroupTestHelper(mDataSharingService);
 
         mTab1 = prepareTab(TAB1_ID, TAB1_TITLE);
         mTab2 = prepareTab(TAB2_ID, TAB2_TITLE);
@@ -1573,11 +1574,12 @@ public class TabGridDialogMediatorUnitTest {
 
     @Test
     public void testUpdateShareData_Incognito() {
-        reset(mSharedImageTilesCoordinator);
         assertFalse(mModel.get(TabGridDialogProperties.SHOW_SHARE_BUTTON));
         assertFalse(mModel.get(TabGridDialogProperties.SHOW_IMAGE_TILES));
 
         resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
+        verify(mSharedImageTilesCoordinator)
+                .onGroupMembersChanged(COLLABORATION_ID1, List.of(GROUP_MEMBER1));
 
         when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(true);
         resetForDataSharing(/* isShared= */ false);
@@ -1589,7 +1591,6 @@ public class TabGridDialogMediatorUnitTest {
 
     @Test
     public void testShowOrUpdateCollaborationActivityMessageCard() {
-        reset(mSharedImageTilesCoordinator);
         assertFalse(mModel.get(TabGridDialogProperties.SHOW_SHARE_BUTTON));
         assertFalse(mModel.get(TabGridDialogProperties.SHOW_IMAGE_TILES));
 
@@ -1767,12 +1768,24 @@ public class TabGridDialogMediatorUnitTest {
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, rootId, TAB_GROUP_ID);
 
+        GroupData groupData = SharedGroupTestHelper.newGroupData(COLLABORATION_ID1, members);
+        if (isShared) {
+            when(mCollaborationService.getGroupData(COLLABORATION_ID1)).thenReturn(groupData);
+        } else {
+            when(mCollaborationService.getGroupData(any())).thenReturn(null);
+        }
+
         setupSyncedGroup(isShared);
 
         mMediator.onReset(tabGroup);
-
+        verify(mDataSharingService, atLeastOnce())
+                .addObserver(mDataSharingServiceObserverCaptor.capture());
+        DataSharingService.Observer observer = mDataSharingServiceObserverCaptor.getValue();
+        assertNotNull(observer);
         if (isShared) {
-            mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, members);
+            observer.onGroupChanged(groupData);
+        } else {
+            observer.onGroupRemoved(COLLABORATION_ID1);
         }
     }
 

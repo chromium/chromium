@@ -79,7 +79,11 @@ public class TabGroupColorViewProvider implements Destroyable {
         if (servicesExist && collaborationService.getServiceStatus().isAllowedToJoin()) {
             mDataSharingService = dataSharingService;
             mSharedGroupObserver =
-                    new SharedGroupObserver(tabGroupId, tabGroupSyncService, dataSharingService);
+                    new SharedGroupObserver(
+                            tabGroupId,
+                            tabGroupSyncService,
+                            dataSharingService,
+                            collaborationService);
             mSharedGroupObserver.getGroupMembersSupplier().addObserver(mOnGroupMembersChanged);
             mSharedGroupObserver
                     .getGroupSharedStateSupplier()
