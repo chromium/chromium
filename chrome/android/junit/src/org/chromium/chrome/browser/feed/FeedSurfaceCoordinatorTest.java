@@ -116,6 +116,7 @@ import java.util.concurrent.TimeUnit;
 @EnableFeatures({
     ChromeFeatureList.KID_FRIENDLY_CONTENT_FEED,
     ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+    ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP,
     ChromeFeatureList.FEED_LOW_MEMORY_IMPROVEMENT
 })
 public class FeedSurfaceCoordinatorTest {

@@ -1047,8 +1047,13 @@ public class FeedSurfaceCoordinator
         return mSectionHeaderModel;
     }
 
-    /** @return The {@link View} for this class. */
+    /**
+     * @return The {@link View} for this class.
+     */
+    // TODO(crbug.com/327387704): Remove after uno phase 2 follow-up launch.
+    @Deprecated
     View getSigninPromoView() {
+        assert !ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP);
         if (mSigninPromoView == null) {
             LayoutInflater inflater = LayoutInflater.from(mRootView.getContext());
             mSigninPromoView =
@@ -1059,7 +1064,7 @@ public class FeedSurfaceCoordinator
     }
 
     /** Update header views in the Feed. */
-    void updateHeaderViews(boolean isSignInPromoVisible) {
+    void updateHeaderViews(@Nullable View signinPromoView) {
         if (!mMediator.hasStreams()) return;
 
         List<View> headers = new ArrayList<>();
@@ -1069,8 +1074,9 @@ public class FeedSurfaceCoordinator
 
         headers.add(mSectionHeaderView);
 
-        if (isSignInPromoVisible) {
-            headers.add(getSigninPromoView());
+        if (signinPromoView != null) {
+            mSigninPromoView = signinPromoView;
+            headers.add(signinPromoView);
         }
         setHeaders(headers);
     }
@@ -1081,10 +1087,6 @@ public class FeedSurfaceCoordinator
 
     public void setMediatorForTesting(FeedSurfaceMediator mediator) {
         mMediator = mediator;
-    }
-
-    public View getSignInPromoViewForTesting() {
-        return getSigninPromoView();
     }
 
     public View getSectionHeaderViewForTesting() {

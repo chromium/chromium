@@ -171,6 +171,8 @@ public class SigninPromoCoordinatorTest {
                                 SigninPreferencesManager.SyncPromoAccessPointId.NTP));
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME);
     }
 
     @Test

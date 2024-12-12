@@ -29,8 +29,30 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
     @VisibleForTesting static final int MAX_IMPRESSIONS_NTP = 5;
     // 14 days in hours.
     @VisibleForTesting static final int NTP_SYNC_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS = 336;
+    @VisibleForTesting static final int NTP_SYNC_PROMO_RESET_AFTER_DAYS = 30;
 
-    private final String mPromoShowCountPreferenceName;
+    /**
+     * If the signin promo card has been hidden for longer than the {@link
+     * #NTP_SYNC_PROMO_RESET_AFTER_DAYS}, resets the impression counts, {@link
+     * ChromePreferenceKeys#SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME} and {@link
+     * ChromePreferenceKeys#SIGNIN_PROMO_NTP_LAST_SHOWN_TIME} to allow the promo card to show again.
+     */
+    public static void resetNtpSyncPromoLimitsIfHiddenForTooLong() {
+        final long currentTime = System.currentTimeMillis();
+        final long resetAfterMs = NTP_SYNC_PROMO_RESET_AFTER_DAYS * DateUtils.DAY_IN_MILLIS;
+        final long lastShownTime =
+                ChromeSharedPreferences.getInstance()
+                        .readLong(ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME, 0L);
+        if (lastShownTime <= 0) return;
+
+        if (currentTime - lastShownTime >= resetAfterMs) {
+            ChromeSharedPreferences.getInstance().writeInt(getPromoShowCountPreferenceName(), 0);
+            ChromeSharedPreferences.getInstance()
+                    .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME);
+            ChromeSharedPreferences.getInstance()
+                    .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME);
+        }
+    }
 
     public NtpSigninPromoDelegate(
             Context context,
@@ -38,10 +60,6 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
             SigninAndHistorySyncActivityLauncher launcher,
             Runnable onPromoStateChange) {
         super(context, profile, launcher, onPromoStateChange);
-
-        mPromoShowCountPreferenceName =
-                ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                        SigninPreferencesManager.SyncPromoAccessPointId.NTP);
     }
 
     @Override
@@ -98,12 +116,12 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
 
     @Override
     void recordImpression() {
-        ChromeSharedPreferences.getInstance().incrementInt(mPromoShowCountPreferenceName);
+        ChromeSharedPreferences.getInstance().incrementInt(getPromoShowCountPreferenceName());
     }
 
     @Override
     boolean isMaxImpressionsReached() {
-        return ChromeSharedPreferences.getInstance().readInt(mPromoShowCountPreferenceName)
+        return ChromeSharedPreferences.getInstance().readInt(getPromoShowCountPreferenceName())
                 >= MAX_IMPRESSIONS_NTP;
     }
 
@@ -115,5 +133,10 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
                 ChromeSharedPreferences.getInstance()
                         .readLong(ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME, 0L);
         return firstShownTime > 0 && currentTime - firstShownTime >= timeSinceFirstShownLimitMs;
+    }
+
+    private static String getPromoShowCountPreferenceName() {
+        return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
+                SigninPreferencesManager.SyncPromoAccessPointId.NTP);
     }
 }

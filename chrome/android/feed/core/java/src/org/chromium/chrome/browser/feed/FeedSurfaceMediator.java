@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -52,6 +53,8 @@ import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.signin_promo.NtpSigninPromoDelegate;
+import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.ClosedReason;
 import org.chromium.chrome.browser.xsurface.feed.StreamType;
@@ -134,11 +137,12 @@ public class FeedSurfaceMediator
     }
 
     /**
-     * The {@link SignInPromo} for the Feed.
-     * TODO(huayinz): Update content and visibility through a ModelChangeProcessor.
+     * The {@link SignInPromo} for the Feed. TODO(huayinz): Update content and visibility through a
+     * ModelChangeProcessor.
      */
-    private class FeedSignInPromo extends SignInPromo {
-        FeedSignInPromo(SigninManager signinManager, SyncPromoController syncPromoController) {
+    private class LegacyFeedSignInPromo extends SignInPromo {
+        LegacyFeedSignInPromo(
+                SigninManager signinManager, SyncPromoController syncPromoController) {
             super(signinManager, syncPromoController);
             maybeUpdateSignInPromo();
         }
@@ -148,7 +152,7 @@ public class FeedSurfaceMediator
             if (isVisible() == visible) return;
 
             super.setVisibilityInternal(visible);
-            mCoordinator.updateHeaderViews(visible);
+            mCoordinator.updateHeaderViews(visible ? mCoordinator.getSigninPromoView() : null);
             maybeUpdateSignInPromo();
         }
 
@@ -175,7 +179,65 @@ public class FeedSurfaceMediator
         @Override
         public void onDismissPromo() {
             super.onDismissPromo();
-            mCoordinator.updateHeaderViews(false);
+            mCoordinator.updateHeaderViews(/* signinPromoView= */ null);
+        }
+    }
+
+    /**
+     * Wrapper class on top of {@link SigninPromoCoordinator} to also account for suggestions
+     * available signal.
+     */
+    private class FeedSigninPromo {
+        private final SigninPromoCoordinator mSigninPromoCoordinator;
+        private final View mPromoView;
+        private boolean mCanShowPersonalizedSuggestions;
+        private boolean mCanShowPromo;
+
+        FeedSigninPromo(boolean canShowPersonalizedSuggestions) {
+            mSigninPromoCoordinator =
+                    new SigninPromoCoordinator(
+                            mContext,
+                            mProfile,
+                            new NtpSigninPromoDelegate(
+                                    mContext,
+                                    mProfile,
+                                    SigninAndHistorySyncActivityLauncherImpl.get(),
+                                    this::onPromoStateChange));
+            mCanShowPersonalizedSuggestions = canShowPersonalizedSuggestions;
+            mCanShowPromo =
+                    mSigninPromoCoordinator.canShowPromo() && mCanShowPersonalizedSuggestions;
+
+            mPromoView = mSigninPromoCoordinator.buildPromoView((ViewGroup) mCoordinator.getView());
+            mSigninPromoCoordinator.setView(mPromoView);
+        }
+
+        boolean canShowPromo() {
+            return mCanShowPromo;
+        }
+
+        View getPromoView() {
+            return mPromoView;
+        }
+
+        void setCanShowPersonalizedSuggestions(boolean canShow) {
+            mCanShowPersonalizedSuggestions = canShow;
+            onPromoStateChange();
+        }
+
+        void destroy() {
+            mSigninPromoCoordinator.destroy();
+            mCoordinator.updateHeaderViews(/* signinPromoView= */ null);
+        }
+
+        void onPromoStateChange() {
+            boolean canShowPromo =
+                    mSigninPromoCoordinator.canShowPromo() && mCanShowPersonalizedSuggestions;
+            if (mCanShowPromo == canShowPromo) {
+                return;
+            }
+
+            mCanShowPromo = canShowPromo;
+            mCoordinator.updateHeaderViews(mCanShowPromo ? mPromoView : null);
         }
     }
 
@@ -229,7 +291,8 @@ public class FeedSurfaceMediator
     private HasContentListener mHasContentListener;
     private ContentChangedListener mStreamContentChangedListener;
     private MemoryPressureCallback mMemoryPressureCallback;
-    private @Nullable SignInPromo mSignInPromo;
+    private @Nullable FeedSigninPromo mSigninPromo;
+    private @Nullable SignInPromo mLegacySignInPromo;
     private RecyclerViewAnimationFinishDetector mRecyclerViewAnimationFinishDetector =
             new RecyclerViewAnimationFinishDetector();
 
@@ -803,7 +866,13 @@ public class FeedSurfaceMediator
 
     private void initStreamHeaderViews() {
         boolean signInPromoVisible = shouldShowSigninPromo();
-        mCoordinator.updateHeaderViews(signInPromoVisible);
+        if (signInPromoVisible && mSigninPromo != null) {
+            mCoordinator.updateHeaderViews(mSigninPromo.getPromoView());
+        } else if (signInPromoVisible && mLegacySignInPromo != null) {
+            mCoordinator.updateHeaderViews(mCoordinator.getSigninPromoView());
+        } else {
+            mCoordinator.updateHeaderViews(/* signinPromoView= */ null);
+        }
     }
 
     /**
@@ -812,26 +881,38 @@ public class FeedSurfaceMediator
      * @return Whether the SignPromo should be visible.
      */
     private boolean shouldShowSigninPromo() {
-        SyncPromoController.resetNtpSyncPromoLimitsIfHiddenForTooLong();
-        AccountPickerBottomSheetStrings bottomSheetStrings =
-                new AccountPickerBottomSheetStrings.Builder(
-                                R.string.signin_account_picker_bottom_sheet_title)
-                        .build();
-        SyncPromoController promoController =
-                new SyncPromoController(
-                        mProfile,
-                        bottomSheetStrings,
-                        SigninAccessPoint.NTP_FEED_TOP_PROMO,
-                        SyncConsentActivityLauncherImpl.get(),
-                        SigninAndHistorySyncActivityLauncherImpl.get());
-        if (!SignInPromo.shouldCreatePromo() || !promoController.canShowSyncPromo()) {
-            return false;
+        // TODO(crbug.com/327387704): Move SignInPromo.shouldCreatePromo inside FeedSigninPromo
+        //  after phase 2 follow-up launch.
+        boolean shouldCreatePromo = SignInPromo.shouldCreatePromo();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
+            if (!shouldCreatePromo) {
+                return false;
+            }
+            if (mSigninPromo == null) {
+                mSigninPromo = new FeedSigninPromo(isSuggestionsVisible());
+            }
+            return mSigninPromo.canShowPromo();
+        } else {
+            AccountPickerBottomSheetStrings bottomSheetStrings =
+                    new AccountPickerBottomSheetStrings.Builder(
+                                    R.string.signin_account_picker_bottom_sheet_title)
+                            .build();
+            SyncPromoController promoController =
+                    new SyncPromoController(
+                            mProfile,
+                            bottomSheetStrings,
+                            SigninAccessPoint.NTP_FEED_TOP_PROMO,
+                            SyncConsentActivityLauncherImpl.get(),
+                            SigninAndHistorySyncActivityLauncherImpl.get());
+            if (!shouldCreatePromo || !promoController.canShowSyncPromo()) {
+                return false;
+            }
+            if (mLegacySignInPromo == null) {
+                mLegacySignInPromo = new LegacyFeedSignInPromo(mSigninManager, promoController);
+                mLegacySignInPromo.setCanShowPersonalizedSuggestions(isSuggestionsVisible());
+            }
+            return mLegacySignInPromo.isVisible();
         }
-        if (mSignInPromo == null) {
-            mSignInPromo = new FeedSignInPromo(mSigninManager, promoController);
-            mSignInPromo.setCanShowPersonalizedSuggestions(isSuggestionsVisible());
-        }
-        return mSignInPromo.isVisible();
     }
 
     /** Clear any dependencies related to the {@link Stream}. */
@@ -847,9 +928,13 @@ public class FeedSurfaceMediator
         MemoryPressureListener.removeCallback(mMemoryPressureCallback);
         mMemoryPressureCallback = null;
 
-        if (mSignInPromo != null) {
-            mSignInPromo.destroy();
-            mSignInPromo = null;
+        if (mLegacySignInPromo != null) {
+            mLegacySignInPromo.destroy();
+            mLegacySignInPromo = null;
+        }
+        if (mSigninPromo != null) {
+            mSigninPromo.destroy();
+            mSigninPromo = null;
         }
 
         unbindStream();
@@ -948,8 +1033,11 @@ public class FeedSurfaceMediator
         // Update toggleswitch item, which is last item in list.
         mSectionHeaderModel.set(SectionHeaderListProperties.MENU_MODEL_LIST_KEY, buildMenuItems());
 
-        if (mSignInPromo != null) {
-            mSignInPromo.setCanShowPersonalizedSuggestions(suggestionsVisible);
+        if (mLegacySignInPromo != null) {
+            mLegacySignInPromo.setCanShowPersonalizedSuggestions(suggestionsVisible);
+        }
+        if (mSigninPromo != null) {
+            mSigninPromo.setCanShowPersonalizedSuggestions(suggestionsVisible);
         }
         if (suggestionsVisible) mCoordinator.getSurfaceLifecycleManager().show();
         mStreamContentChanged = true;
@@ -1285,7 +1373,7 @@ public class FeedSurfaceMediator
     }
 
     public SignInPromo getSignInPromoForTesting() {
-        return mSignInPromo;
+        return mLegacySignInPromo;
     }
 
     void manualRefresh(Callback<Boolean> callback) {
