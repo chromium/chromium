@@ -4,6 +4,7 @@
 
 #include "gpu/config/webgpu_blocklist_impl.h"
 
+#include <array>
 #include <sstream>
 #include <string_view>
 
