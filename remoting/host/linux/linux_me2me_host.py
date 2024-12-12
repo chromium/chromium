@@ -340,6 +340,31 @@ def get_pipewire_session_manager():
   return session_manager
 
 
+def get_wireplumber_version():
+  """Returns the WirePlumber version installed on this system, or None if the
+  version could not be obtained."""
+
+  try:
+    version_output = subprocess.check_output(["wireplumber", "--version"],
+                                             universal_newlines=True)
+  except subprocess.CalledProcessError as e:
+    logging.warning("Failed to execute wireplumber: "  + str(e))
+    return None
+
+  match = re.search(r"wireplumber (\S+)$", version_output, re.MULTILINE)
+  if not match:
+    logging.warning("Failed to determine wireplumber version.")
+    return None
+
+  try:
+    wireplumber_version = version.parse(match[1])
+  except version.InvalidVersion as e:
+    logging.warning("Failed to parse wireplumber version: " + str(e))
+    return None
+
+  return wireplumber_version
+
+
 def terminate_process(pid, name):
   """Terminates the process with the given |pid|. Initially sends SIGTERM, but
   falls back to SIGKILL if the process fails to exit after 10 seconds. |name|
@@ -679,6 +704,20 @@ class Desktop(abc.ABC):
           self.pipewire_session_manager, "-c",
           os.path.join(runtime_path, self.pipewire_session_manager + ".conf")]
 
+      # The WirePlumber config template does not work with versions 0.5 or
+      # later. Instead, launch it with the system config, and use the
+      # customized "chrome-remote-desktop" profile from the installed config
+      # fragment.
+      if self.pipewire_session_manager.endswith("wireplumber"):
+        wireplumber_version = get_wireplumber_version()
+        if wireplumber_version is None:
+          logging.error("Failed to get WirePlumber version.")
+          return False
+        if wireplumber_version >= version.parse("0.5"):
+          session_manager_cmd = [
+              self.pipewire_session_manager,
+              "--profile", "chrome-remote-desktop"]
+
       # Terminate any stale processes before relaunching.
       for command in [pipewire_cmd, pipewire_pulse_cmd, session_manager_cmd]:
         terminate_command_if_running(command)
@@ -686,13 +725,14 @@ class Desktop(abc.ABC):
       self.pipewire_proc = subprocess.Popen(pipewire_cmd, env=self.child_env)
       self.pipewire_pulse_proc = subprocess.Popen(pipewire_pulse_cmd,
                                                   env=self.child_env)
+
+      # Directs native PipeWire clients to the correct instance.
+      self.child_env["PIPEWIRE_REMOTE"] = instance_name
+
       # MEDIA_SESSION_CONFIG_DIR is needed to use an absolute path with
       # pipewire-media-session.
       self.pipewire_session_manager_proc = subprocess.Popen(session_manager_cmd,
           env={**self.child_env, "MEDIA_SESSION_CONFIG_DIR": "/"})
-
-      # Directs native PipeWire clients to the correct instance
-      self.child_env["PIPEWIRE_REMOTE"] = instance_name
 
       return True
     except (IOError, OSError) as e:

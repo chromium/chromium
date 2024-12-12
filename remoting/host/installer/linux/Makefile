@@ -19,6 +19,7 @@ INSTALL_DIR = $(DESTDIR)/opt/google/chrome-remote-desktop
 CHROME_NATIVE_MESSAGING_DIR = $(DESTDIR)/etc/opt/chrome/native-messaging-hosts
 FIREFOX_NATIVE_MESSAGING_DIR = $(DESTDIR)/usr/lib/mozilla/native-messaging-hosts
 SYSTEM_WIDE_DESKTOP_ENTRIES_DIR = $(DESTDIR)/usr/share/applications
+WIREPLUMBER_CONFIG_DIR = $(DESTDIR)/usr/share/wireplumber/wireplumber.conf.d
 
 CORE_LIBNAME = $(BUILD_DIR)/libremoting_core.so
 CORE_DEBUGFILE = $(CORE_LIBNAME).debug
@@ -53,6 +54,7 @@ install:
 	install -d "$(CHROME_NATIVE_MESSAGING_DIR)"
 	install -d "$(FIREFOX_NATIVE_MESSAGING_DIR)"
 	install -d "$(SYSTEM_WIDE_DESKTOP_ENTRIES_DIR)"
+	install -d "$(WIREPLUMBER_CONFIG_DIR)"
 
 	install "$(SRC_DIR)/remoting/host/linux/linux_me2me_host.py" \
 	  "$(INSTALL_DIR)/chrome-remote-desktop"
@@ -152,3 +154,7 @@ install:
 
 	install -m 0644 \
           "$(BUILD_DIR)/gen/remoting/CREDITS.txt" "$(DOC_DIR)/CREDITS.txt"
+
+	install -m 0644 \
+          "$(SRC_DIR)/remoting/host/linux/wireplumber.conf.fragment" \
+	  "$(WIREPLUMBER_CONFIG_DIR)/chrome-remote-desktop.conf"

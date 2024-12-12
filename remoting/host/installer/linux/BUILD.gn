@@ -68,6 +68,7 @@ action("remoting_me2me_host_deb_installer") {
     "//remoting/host/linux/pipewire.conf.template",
     "//remoting/host/linux/pipewire-media-session.conf.template",
     "//remoting/host/linux/pipewire-pulse.conf.template",
+    "//remoting/host/linux/wireplumber.conf.fragment",
     "//remoting/host/linux/wireplumber.conf.template",
     "$root_gen_dir/remoting/CREDITS.txt",
     "$root_out_dir/icudtl.dat",
