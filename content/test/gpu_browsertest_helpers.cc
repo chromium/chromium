@@ -60,8 +60,8 @@ scoped_refptr<viz::ContextProviderCommandBuffer> GpuBrowsertestCreateContext(
   constexpr bool support_locking = false;
   return base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
       std::move(gpu_channel_host), content::kGpuStreamIdDefault,
-      content::kGpuStreamPriorityDefault, gpu::kNullSurfaceHandle, GURL(),
-      automatic_flushes, support_locking, gpu::SharedMemoryLimits(), attributes,
+      content::kGpuStreamPriorityDefault, GURL(), automatic_flushes,
+      support_locking, gpu::SharedMemoryLimits(), attributes,
       viz::command_buffer_metrics::ContextType::FOR_TESTING);
 }
 

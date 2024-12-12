@@ -150,7 +150,6 @@ class MockContextProviderCommandBuffer
             std::move(channel),
             content::kGpuStreamIdDefault,
             content::kGpuStreamPriorityDefault,
-            gpu::kNullSurfaceHandle,
             GURL(),
             false,
             true,

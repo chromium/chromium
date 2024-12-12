@@ -49,9 +49,8 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateAndBindContextProvider(
   scoped_refptr<viz::ContextProviderCommandBuffer> context_provider =
       base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
           std::move(gpu_channel_host), content::kGpuStreamIdDefault,
-          gpu::SchedulingPriority::kNormal, gpu::kNullSurfaceHandle,
-          GURL("chrome://gpu/VideoEffects"), true /* automatic flushes */,
-          false /* support locking */,
+          gpu::SchedulingPriority::kNormal, GURL("chrome://gpu/VideoEffects"),
+          true /* automatic flushes */, false /* support locking */,
           context_type == gpu::CONTEXT_TYPE_WEBGPU
               ? gpu::SharedMemoryLimits::ForWebGPUContext()
               : gpu::SharedMemoryLimits::ForOOPRasterContext(),

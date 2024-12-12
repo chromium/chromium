@@ -87,8 +87,8 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateContextProvider(
   GURL url("chrome://gpu/VizProcessTransportFactory::CreateContextProvider");
   return base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
       std::move(gpu_channel_host), kGpuStreamIdDefault, kGpuStreamPriorityUI,
-      gpu::kNullSurfaceHandle, std::move(url), kAutomaticFlushes,
-      supports_locking, memory_limits, attributes, type);
+      std::move(url), kAutomaticFlushes, supports_locking, memory_limits,
+      attributes, type);
 }
 
 bool IsContextLost(viz::RasterContextProvider* context_provider) {
