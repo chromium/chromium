@@ -161,7 +161,7 @@ class CORE_EXPORT CSSPropertyValueSet
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
 
  protected:
-  static constexpr unsigned kMaxArraySize = (1 << 26) - 1;
+  static constexpr unsigned kMaxArraySize = (1 << 25) - 1;
 
   explicit CSSPropertyValueSet(CSSParserMode css_parser_mode)
       : array_size_(0),
@@ -183,10 +183,11 @@ class CORE_EXPORT CSSPropertyValueSet
 
   unsigned ComputeHash() const;
 
-  const uint32_t array_size_ : 26;
+  const uint32_t array_size_ : 25;  // Only for immutable sets.
   const uint32_t css_parser_mode_ : 4;
   const uint32_t is_mutable_ : 1;
   const uint32_t contains_cursor_hand_ : 1;
+  uint32_t may_have_logical_properties_ : 1 = false;  // Only for mutable sets.
 
   // EmptyValue() means “not computed yet”. DeletedValue() means “invalid”
   // (see GetHash()).
@@ -402,7 +403,6 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
   friend class CSSPropertyValueSet;
 
   HeapVector<CSSPropertyValue, 4> property_vector_;
-  bool may_have_logical_properties_{false};
 };
 
 template <>
