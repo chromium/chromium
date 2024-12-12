@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_test_util.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 
 namespace autofill {
 
@@ -182,21 +183,10 @@ CreateAutofillWalletSpecificsForLinkedBnplIssuer(int64_t instrument_id,
 
   sync_pb::PaymentInstrument* payment_instrument_specifics =
       wallet_specifics.mutable_payment_instrument();
-
-  payment_instrument_specifics->set_instrument_id(instrument_id);
-
-  sync_pb::BnplIssuerDetails* bnpl_issuer_details =
-      payment_instrument_specifics->mutable_bnpl_issuer_details();
-  bnpl_issuer_details->set_issuer_id(std::move(issuer_id));
-  sync_pb::EligiblePriceRange* eligible_price_range =
-      bnpl_issuer_details->add_eligible_price_range();
-  eligible_price_range->set_currency(currency);
-  eligible_price_range->set_min_price_in_micros(price_lower_bound);
-  eligible_price_range->set_max_price_in_micros(price_upper_bound);
-
-  payment_instrument_specifics->add_supported_rails(
-      sync_pb::PaymentInstrument_SupportedRail::
-          PaymentInstrument_SupportedRail_CARD_NUMBER);
+  *payment_instrument_specifics =
+      test::CreatePaymentInstrumentWithLinkedBnplIssuer(
+          instrument_id, std::move(issuer_id), std::move(currency),
+          price_lower_bound, price_upper_bound);
   return wallet_specifics;
 }
 

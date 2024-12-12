@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
+#include "components/autofill/core/browser/data_model/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
@@ -206,6 +207,11 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   bool HasMaskedBankAccounts() const;
   // Returns the masked bank accounts that can be suggested to the user.
   base::span<const BankAccount> GetMaskedBankAccounts() const;
+
+  // Returns the linked BNPL issuers that can be shown to the user. If the "Save
+  // and fill payment methods" toggle is off, this will return no BNPL issuers
+  // automatically.
+  base::span<const BnplIssuer> GetLinkedBnplIssuers() const;
 
   // Returns true if the user has at least 1 eWallet account.
   bool HasEwalletAccounts() const;
@@ -576,6 +582,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Cached versions of the masked bank accounts.
   std::vector<BankAccount> masked_bank_accounts_;
 
+  // Cached versions of the linked BNPL issuers.
+  std::vector<BnplIssuer> linked_bnpl_issuers_;
+
   // Cached versions of the eWallet accounts.
   std::vector<Ewallet> ewallet_accounts_;
 
@@ -688,6 +697,11 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // subsequent updates via ChromeSync invalidations.
   void OnPaymentInstrumentsRefreshed(
       const std::vector<sync_pb::PaymentInstrument>& payment_instruments);
+
+  // If a payment instrument contains linked BNPL issuer details, caches the
+  // relevant information in `linked_bnpl_issuers_`.
+  void CacheIfLinkedBnplPaymentInstrument(
+      sync_pb::PaymentInstrument& payment_instrument);
 
   // Checks whether a payment instrument contains eWallet details. If yes,
   // caches relevant information in `ewallet_accounts_`.

@@ -32,6 +32,7 @@
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
+#include "components/autofill/core/browser/data_model/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit_test_api.h"
 #include "components/autofill/core/browser/data_model/ewallet.h"
@@ -2306,6 +2307,147 @@ TEST_F(
   EXPECT_EQ(2u, ewallet_accounts.size());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+// Tests that no linked BNPL issuers are returned if the BNPL sync flag is off.
+TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_FlagOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableBuyNowPayLaterSyncing);
+  sync_pb::PaymentInstrument payment_instrument =
+      test::CreatePaymentInstrumentWithLinkedBnplIssuer(
+          1234L, /*issuer_id=*/"some_bnpl_issuer", "USD",
+          /*min_price_in_micros=*/0,
+          /*max_price_in_micros=*/35000000);
+  ASSERT_TRUE(
+      GetServerDataTable()->SetPaymentInstruments({payment_instrument}));
+
+  base::span<const BnplIssuer> linked_bnpl_issuers =
+      payments_data_manager().GetLinkedBnplIssuers();
+  // Since the PaymentsDataManager was initialized before adding the linked BNPL
+  // issuer payment instruments to the WebDatabase, `GetLinkedBnplIssuers()` is
+  // expected to return an empty list.
+  EXPECT_TRUE(linked_bnpl_issuers.empty());
+
+  // Refresh the PaymentsDataManager. Under normal circumstances with the flag
+  // on, this step would load the linked BNPL issuers from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  // Verify that no linked BNPL issuers are loaded into PaymentsDataManager
+  // because the experiment is turned off.
+  EXPECT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
+}
+
+// Tests that no linked BNPL issuers are returned if the "Save and fill payment
+// methods" toggle is off.
+TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_PaymentMethodsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableBuyNowPayLaterSyncing);
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithLinkedBnplIssuer(
+          1234L, /*issuer_id=*/"some_bnpl_issuer", "USD",
+          /*min_price_in_micros=*/0,
+          /*max_price_in_micros=*/35000000);
+  sync_pb::PaymentInstrument payment_instrument_2 =
+      test::CreatePaymentInstrumentWithLinkedBnplIssuer(
+          2345L, /*issuer_id=*/"zip", "USD", /*min_price_in_micros=*/0,
+          /*max_price_in_micros=*/35000000);
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstruments(
+      {payment_instrument_1, payment_instrument_2}));
+
+  // `Refresh()` must be called to ensure that the linked BNPL issuer payment
+  // instruments are loaded again from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  // Disable payment methods prefs.
+  prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
+
+  // Verify that no linked BNPL issuers are loaded into PaymentsDataManager
+  // because the AutofillPaymentMethodsEnabled pref is set to false.
+  EXPECT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
+}
+
+// If the conditions are met to return a linked BNPL issuer, this test ensures
+// it is returned and verifies that they had the expected values upon returning.
+TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableBuyNowPayLaterSyncing);
+  int64_t instrument_id = 1234L;
+  std::string issuer_id = "some_bnpl_issuer";
+  std::string currency = "USD";
+  uint64_t min_price_in_micros = 50000000;
+  uint64_t max_price_in_micros = 35000000;
+  sync_pb::PaymentInstrument payment_instrument =
+      test::CreatePaymentInstrumentWithLinkedBnplIssuer(
+          instrument_id, issuer_id, currency, min_price_in_micros,
+          max_price_in_micros);
+  ASSERT_TRUE(
+      GetServerDataTable()->SetPaymentInstruments({payment_instrument}));
+
+  // Since the PaymentsDataManager was initialized before adding the linked BNPL
+  // issuer payment instruments to the WebDatabase, `GetLinkedBnplIssuers()` is
+  // expected to return an empty list.
+  base::span<const BnplIssuer> linked_bnpl_issuers =
+      payments_data_manager().GetLinkedBnplIssuers();
+  EXPECT_TRUE(linked_bnpl_issuers.empty());
+
+  // `Refresh()` must be called to ensure that the linked BNPL issuer payment
+  // instruments are loaded again from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  linked_bnpl_issuers = payments_data_manager().GetLinkedBnplIssuers();
+
+  ASSERT_EQ(linked_bnpl_issuers.size(), 1U);
+  EXPECT_EQ(linked_bnpl_issuers[0],
+            BnplIssuer(instrument_id, issuer_id,
+                       /*eligible_price_ranges=*/
+                       {BnplIssuer::EligiblePriceRange(
+                           currency, /*price_lower_bound=*/min_price_in_micros,
+                           /*price_upper_bound=*/max_price_in_micros)}));
+}
+
+// If the conditions are met to return a linked BNPL issuer, but it does not
+// have an eligible price range this test ensures it is not returned.
+TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_NoEligiblePriceRange) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableBuyNowPayLaterSyncing);
+  int64_t instrument_id = 1234L;
+  std::string issuer_id = "some_bnpl_issuer";
+  std::string currency = "USD";
+  uint64_t min_price_in_micros = 50000000;
+  uint64_t max_price_in_micros = 35000000;
+  sync_pb::PaymentInstrument payment_instrument =
+      test::CreatePaymentInstrumentWithLinkedBnplIssuer(
+          instrument_id, issuer_id, currency, min_price_in_micros,
+          max_price_in_micros);
+  sync_pb::BnplIssuerDetails* bnpl_issuer_details =
+      payment_instrument.mutable_bnpl_issuer_details();
+  bnpl_issuer_details->clear_eligible_price_range();
+  ASSERT_TRUE(
+      GetServerDataTable()->SetPaymentInstruments({payment_instrument}));
+
+  // Since the PaymentsDataManager was initialized before adding the linked BNPL
+  // issuer payment instruments to the WebDatabase, `GetLinkedBnplIssuers()` is
+  // expected to return an empty list.
+  base::span<const BnplIssuer> linked_bnpl_issuers =
+      payments_data_manager().GetLinkedBnplIssuers();
+  EXPECT_TRUE(linked_bnpl_issuers.empty());
+
+  // `Refresh()` must be called to ensure that the linked BNPL issuer payment
+  // instruments are loaded again from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  linked_bnpl_issuers = payments_data_manager().GetLinkedBnplIssuers();
+
+  EXPECT_TRUE(linked_bnpl_issuers.empty());
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(PaymentsDataManagerTest,
        OnBenefitsPrefChange_PrefIsOn_LoadsCardBenefits) {

@@ -402,6 +402,15 @@ sync_pb::PaymentInstrument CreatePaymentInstrumentWithIban(
 sync_pb::PaymentInstrument CreatePaymentInstrumentWithEwalletAccount(
     int64_t instrument_id);
 
+// Returns a payment instrument with a linked BNPL issuer based on the data
+// provided.
+sync_pb::PaymentInstrument CreatePaymentInstrumentWithLinkedBnplIssuer(
+    int64_t instrument_id,
+    std::string issuer_id,
+    std::string currency,
+    uint64_t min_price_in_micros,
+    uint64_t max_price_in_micros);
+
 // Returns a BNPL issuer with fake data.
 BnplIssuer GetTestBnplIssuer();
 

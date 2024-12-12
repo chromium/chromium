@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/data_model/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/data_model/ewallet.h"
+#include "components/autofill/core/browser/data_model/payment_instrument.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
@@ -424,9 +425,11 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
                               &pending_payment_instruments_query_,
                               &payment_instruments);
         ewallet_accounts_.clear();
+        linked_bnpl_issuers_.clear();
         for (sync_pb::PaymentInstrument& payment_instrument :
              payment_instruments) {
           CacheIfEwalletPaymentInstrument(payment_instrument);
+          CacheIfLinkedBnplPaymentInstrument(payment_instrument);
         }
         OnPaymentInstrumentsRefreshed(payment_instruments);
         break;
@@ -791,6 +794,13 @@ bool PaymentsDataManager::HasMaskedBankAccounts() const {
     return false;
   }
   return !masked_bank_accounts_.empty();
+}
+
+base::span<const BnplIssuer> PaymentsDataManager::GetLinkedBnplIssuers() const {
+  if (!IsAutofillPaymentMethodsEnabled()) {
+    return {};
+  }
+  return linked_bnpl_issuers_;
 }
 
 bool PaymentsDataManager::HasEwalletAccounts() const {
@@ -2020,9 +2030,9 @@ bool PaymentsDataManager::AreBnplIssuersSupported() const {
 }
 
 bool PaymentsDataManager::ArePaymentInstrumentsSupported() const {
-  // Currently only eWallet accounts are using generic payment instrument proto
-  // for read from table.
-  return AreEwalletAccountsSupported();
+  // Currently only eWallet accounts and linked BNPL issuers are using generic
+  // payment instrument proto for read from table.
+  return AreEwalletAccountsSupported() || AreBnplIssuersSupported();
 }
 
 bool PaymentsDataManager::ArePaymentInstrumentCreationOptionsSupported() const {
@@ -2149,6 +2159,37 @@ void PaymentsDataManager::OnPaymentInstrumentsRefreshed(
         updated_urls,
         base::span_from_ref(AutofillImageFetcherBase::ImageSize::kLarge));
   }
+}
+
+void PaymentsDataManager::CacheIfLinkedBnplPaymentInstrument(
+    sync_pb::PaymentInstrument& payment_instrument) {
+  if (!payment_instrument.has_bnpl_issuer_details()) {
+    return;
+  }
+
+  sync_pb::BnplIssuerDetails bnpl_issuer_details =
+      payment_instrument.bnpl_issuer_details();
+
+  std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
+  eligible_price_ranges.reserve(
+      bnpl_issuer_details.eligible_price_range_size());
+  for (const auto& eligible_price_range :
+       bnpl_issuer_details.eligible_price_range()) {
+    eligible_price_ranges.emplace_back(
+        eligible_price_range.currency(),
+        eligible_price_range.min_price_in_micros(),
+        eligible_price_range.max_price_in_micros());
+  }
+
+  // A linked BNPL issuer is only valid if there is at least one eligible price
+  // range.
+  if (eligible_price_ranges.empty()) {
+    return;
+  }
+
+  linked_bnpl_issuers_.emplace_back(payment_instrument.instrument_id(),
+                                    bnpl_issuer_details.issuer_id(),
+                                    std::move(eligible_price_ranges));
 }
 
 void PaymentsDataManager::CacheIfEwalletPaymentInstrument(

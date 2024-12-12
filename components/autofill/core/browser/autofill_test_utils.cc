@@ -1073,6 +1073,29 @@ sync_pb::PaymentInstrument CreatePaymentInstrumentWithEwalletAccount(
   return payment_instrument;
 }
 
+sync_pb::PaymentInstrument CreatePaymentInstrumentWithLinkedBnplIssuer(
+    int64_t instrument_id,
+    std::string issuer_id,
+    std::string currency,
+    uint64_t min_price_in_micros,
+    uint64_t max_price_in_micros) {
+  sync_pb::PaymentInstrument payment_instrument;
+  payment_instrument.set_instrument_id(instrument_id);
+  payment_instrument.add_supported_rails(
+      sync_pb::PaymentInstrument::SupportedRail::
+          PaymentInstrument_SupportedRail_CARD_NUMBER);
+
+  sync_pb::BnplIssuerDetails* bnpl_issuer_details =
+      payment_instrument.mutable_bnpl_issuer_details();
+  bnpl_issuer_details->set_issuer_id(std::move(issuer_id));
+  sync_pb::EligiblePriceRange* eligible_price_range =
+      bnpl_issuer_details->add_eligible_price_range();
+  eligible_price_range->set_min_price_in_micros(min_price_in_micros);
+  eligible_price_range->set_max_price_in_micros(max_price_in_micros);
+  eligible_price_range->set_currency(std::move(currency));
+  return payment_instrument;
+}
+
 BnplIssuer GetTestBnplIssuer() {
   std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
   // Currency: USD, price lower bound: $50, price upper bound: $200.
