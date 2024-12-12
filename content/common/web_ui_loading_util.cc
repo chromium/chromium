@@ -4,6 +4,8 @@
 
 #include "content/common/web_ui_loading_util.h"
 
+#include "base/check.h"
+#include "base/debug/crash_logging.h"
 #include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -82,7 +84,11 @@ bool SendData(
   mojo::ScopedDataPipeConsumerHandle pipe_consumer_handle;
   MojoResult create_result = mojo::CreateDataPipe(
       &options, pipe_producer_handle, pipe_consumer_handle);
-  CHECK_EQ(create_result, MOJO_RESULT_OK);
+  if (create_result != MOJO_RESULT_OK) {
+    SCOPED_CRASH_KEY_NUMBER("WebUI", "mojo_CreateDataPipe_result",
+                            create_result);
+    CHECK(false);
+  }
 
   base::span<uint8_t> buffer;
   MojoResult result = pipe_producer_handle->BeginWriteData(
