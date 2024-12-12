@@ -30,7 +30,6 @@
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/buildflags.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
-#include "services/tracing/public/cpp/perfetto/producer_client.h"
 #include "third_party/perfetto/protos/perfetto/trace/interned_data/interned_data.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/profiling/profile_common.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/profiling/profile_packet.pbzero.h"
@@ -224,7 +223,6 @@ class TracingSamplerProfilerDataSource
 
   TracingSamplerProfilerDataSource()
       : DataSourceBase(mojom::kSamplerProfilerSourceName) {
-    PerfettoTracedProcess::Get()->AddDataSource(this);
     g_sampler_profiler_ds_for_test = this;
   }
 
@@ -743,8 +741,6 @@ void TracingSamplerProfiler::ResetDataSourceForTesting() {
 // static
 void TracingSamplerProfiler::RegisterDataSource() {
   TracingSamplerProfilerDataSource::Get()->RegisterDataSource();
-  PerfettoTracedProcess::Get()->AddDataSource(
-      TracingSamplerProfilerDataSource::Get());
 }
 
 // static

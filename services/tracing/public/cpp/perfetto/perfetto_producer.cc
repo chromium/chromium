@@ -39,16 +39,6 @@ std::unique_ptr<perfetto::TraceWriter> PerfettoProducer::CreateTraceWriter(
                                                        buffer_exhausted_policy);
 }
 
-void PerfettoProducer::DeleteSoonForTesting(
-    std::unique_ptr<PerfettoProducer> perfetto_producer) {
-  PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner()->DeleteSoon(
-      FROM_HERE, std::move(perfetto_producer));
-}
-
-void PerfettoProducer::ResetSequenceForTesting() {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
-
 base::tracing::PerfettoTaskRunner* PerfettoProducer::task_runner() {
   return task_runner_;
 }

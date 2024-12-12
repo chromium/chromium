@@ -12,14 +12,14 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
-#include "base/test/trace_test_utils.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/tracing/perfetto/perfetto_service.h"
-#include "services/tracing/perfetto/producer_host.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
-#include "services/tracing/public/cpp/perfetto/producer_client.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/consumer.h"
+#include "third_party/perfetto/include/perfetto/ext/tracing/core/producer.h"
+#include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_writer.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
 #include "third_party/perfetto/protos/perfetto/common/observable_events.pb.h"
 
@@ -32,92 +32,72 @@ namespace tracing {
 const char kPerfettoTestString[] = "d00df00d";
 const size_t kLargeMessageSize = 1 * 1024 * 1024;
 
-class TestDataSource : public PerfettoTracedProcess::DataSourceBase {
+// third_party/perfetto/src/tracing/test/mock_producer.h
+class MockProducer : public perfetto::Producer {
  public:
-  static std::unique_ptr<TestDataSource> CreateAndRegisterDataSource(
-      const std::string& data_source_name,
-      size_t send_packet_count);
-  ~TestDataSource() override;
+  MockProducer();
+  ~MockProducer() override;
 
-  void WritePacketBigly();
+  void Connect(PerfettoService* service,
+               const std::string& producer_name,
+               uid_t uid = 42,
+               pid_t pid = 1025);
+  void RegisterDataSource(const std::string& name);
+  void UnregisterDataSource(const std::string& name);
 
-  // DataSourceBase implementation
-  void StartTracingImpl(
-      PerfettoProducer* producer,
-      const perfetto::DataSourceConfig& data_source_config) override;
-  void StopTracingImpl(
-      base::OnceClosure stop_complete_callback = base::OnceClosure()) override;
-  void Flush(base::RepeatingClosure flush_complete_callback) override;
-
-  const perfetto::DataSourceConfig& config() { return config_; }
-
-  void set_send_packet_count(size_t count) { send_packet_count_ = count; }
-
-  void set_start_tracing_callback(base::OnceClosure start_tracing_callback);
-
- private:
-  TestDataSource(const std::string& data_source_name, size_t send_packet_count);
-
-  size_t send_packet_count_;
-  raw_ptr<tracing::PerfettoProducer, AcrossTasksDanglingUntriaged> producer_ =
-      nullptr;
-  perfetto::DataSourceConfig config_;
-  base::OnceClosure start_tracing_callback_ = base::OnceClosure();
-};
-
-// This class is owned by PerfettoTracedProcess, and its lifetime is indirectly
-// controlled by the handle returned from Create().
-class MockProducerClient : public ProducerClient {
- public:
-  class Handle {
-   public:
-    explicit Handle(MockProducerClient* client) : client_(client) {}
-    ~Handle();
-
-    MockProducerClient* operator->() { return client_; }
-    MockProducerClient* operator*() { return client_; }
-
-   private:
-    const raw_ptr<MockProducerClient, AcrossTasksDanglingUntriaged> client_;
-  };
-
-  ~MockProducerClient() override;
-
-  static std::unique_ptr<Handle> Create(
-      uint32_t num_data_sources = 0,
-      base::OnceClosure client_enabled_callback = base::OnceClosure(),
-      base::OnceClosure client_disabled_callback = base::OnceClosure());
-
-  void SetupDataSource(const std::string& data_source_name);
-
-  void StartDataSource(uint64_t id,
-                       const perfetto::DataSourceConfig& data_source_config,
-                       StartDataSourceCallback callback) override;
-
-  void StopDataSource(uint64_t id, StopDataSourceCallback callback) override;
-
-  void CommitData(const perfetto::CommitDataRequest& commit,
-                  CommitDataCallback callback = {}) override;
-
-  void SetAgentEnabledCallback(base::OnceClosure client_enabled_callback);
-
-  void SetAgentDisabledCallback(base::OnceClosure client_disabled_callback);
-
-  const std::vector<std::string>& all_client_commit_data_requests() const {
-    return all_client_commit_data_requests_;
+  perfetto::TracingService::ProducerEndpoint* endpoint() {
+    return service_endpoint_.get();
   }
 
- private:
-  MockProducerClient(uint32_t num_data_sources,
-                     base::OnceClosure client_enabled_callback,
-                     base::OnceClosure client_disabled_callback);
+  std::unique_ptr<perfetto::TraceWriter> CreateTraceWriter(
+      perfetto::DataSourceInstanceID,
+      perfetto::BufferExhaustedPolicy buffer_exhausted_policy =
+          perfetto::BufferExhaustedPolicy::kDefault);
 
-  uint32_t num_data_sources_active_ = 0;
-  uint32_t num_data_sources_expected_;
-  base::OnceClosure client_enabled_callback_;
-  base::OnceClosure client_disabled_callback_;
-  std::vector<std::string> all_client_commit_data_requests_;
-  std::unique_ptr<ProducerClient> old_producer_;
+  perfetto::DataSourceConfig GetDataSourceConfig(
+      perfetto::DataSourceInstanceID);
+
+  static void WritePackets(perfetto::TraceWriter&, size_t num_packets);
+  static void WritePacketBigly(perfetto::TraceWriter&);
+
+  MOCK_METHOD(void,
+              OnSetupDataSource,
+              (const std::string& name, perfetto::DataSourceInstanceID),
+              ());
+  MOCK_METHOD(void,
+              OnStartDataSource,
+              (const std::string& name, perfetto::DataSourceInstanceID),
+              ());
+  MOCK_METHOD(void,
+              OnStopDataSource,
+              (const std::string& name, perfetto::DataSourceInstanceID),
+              ());
+  MOCK_METHOD(void, OnFlush, (), ());
+
+  // perfetto::Producer
+  MOCK_METHOD(void, OnConnect, (), (override));
+  MOCK_METHOD(void, OnDisconnect, (), (override));
+  MOCK_METHOD(void, OnTracingSetup, (), (override));
+  void SetupDataSource(perfetto::DataSourceInstanceID,
+                       const perfetto::DataSourceConfig&) override;
+  void StartDataSource(perfetto::DataSourceInstanceID,
+                       const perfetto::DataSourceConfig&) override;
+  void StopDataSource(perfetto::DataSourceInstanceID) override;
+  void Flush(perfetto::FlushRequestID,
+             const perfetto::DataSourceInstanceID*,
+             size_t,
+             perfetto::FlushFlags) override;
+  MOCK_METHOD(void,
+              ClearIncrementalState,
+              (const perfetto::DataSourceInstanceID*, size_t),
+              (override));
+
+ private:
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  std::string producer_name_;
+  std::unique_ptr<perfetto::TracingService::ProducerEndpoint> service_endpoint_;
+  std::map<perfetto::DataSourceInstanceID, perfetto::DataSourceConfig>
+      data_source_instances_;
 };
 
 class MockConsumerBase : public perfetto::Consumer {
@@ -200,56 +180,6 @@ class MockConsumer : public MockConsumerBase {
   perfetto::TraceConfig trace_config_;
 };
 
-class MockProducerHost : public ProducerHost {
- public:
-  MockProducerHost(
-      const std::string& producer_name,
-      const std::string& data_source_name,
-      PerfettoService* service,
-      MockProducerClient* producer_client,
-      base::OnceClosure datasource_registered_callback = base::OnceClosure());
-  ~MockProducerHost() override;
-
-  void RegisterDataSource(
-      const perfetto::DataSourceDescriptor& registration_info) override;
-
-  void OnConnect() override;
-
-  void OnCommit(const perfetto::CommitDataRequest& commit_data_request);
-
-  const std::vector<std::string>& all_host_commit_data_requests() const {
-    return all_host_commit_data_requests_;
-  }
-
- protected:
-  const std::string producer_name_;
-  base::OnceClosure datasource_registered_callback_;
-  std::vector<std::string> all_host_commit_data_requests_;
-  mojo::Receiver<mojom::ProducerHost> receiver_{this};
-};
-
-class MockProducer {
- public:
-  MockProducer(const std::string& producer_name,
-               const std::string& data_source_name,
-               PerfettoService* service,
-               base::OnceClosure on_datasource_registered,
-               base::OnceClosure on_tracing_started,
-               size_t num_packets = 10);
-  virtual ~MockProducer();
-
-  void WritePacketBigly(base::OnceClosure on_write_complete);
-
-  MockProducerClient* producer_client() { return **producer_client_; }
-
-  TestDataSource* data_source() { return data_source_.get(); }
-
- private:
-  std::unique_ptr<TestDataSource> data_source_;
-  std::unique_ptr<MockProducerClient::Handle> producer_client_;
-  std::unique_ptr<MockProducerHost> producer_host_;
-};
-
 // Base class for various tracing unit tests, ensuring cleanup of
 // PerfettoTracedProcess. Tracing tasks are run on the test thread.
 class TracingUnitTest : public testing::Test {
@@ -265,7 +195,6 @@ class TracingUnitTest : public testing::Test {
 
  private:
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
-  std::unique_ptr<base::test::TracingEnvironment> tracing_environment_;
   std::unique_ptr<PerfettoTracedProcess::TestHandle> test_handle_;
   bool setup_called_ = false;
   bool teardown_called_ = false;

@@ -218,7 +218,6 @@ class CastDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
     DETACH_FROM_SEQUENCE(perfetto_sequence_checker_);
-    tracing::PerfettoTracedProcess::Get()->AddDataSource(this);
     perfetto::DataSourceDescriptor dsd;
     dsd.set_name(tracing::mojom::kSystemTraceDataSourceName);
     DataSourceProxy::Register(dsd, this);
@@ -278,8 +277,7 @@ class CastDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
 }  // namespace
 
 CastTracingAgent::CastTracingAgent() {
-  tracing::PerfettoTracedProcess::Get()->AddDataSource(
-      &CastDataSource::GetInstance());
+  CastDataSource::GetInstance();
 }
 
 CastTracingAgent::~CastTracingAgent() = default;

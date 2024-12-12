@@ -56,18 +56,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
   virtual void NewDataSourceAdded(
       const PerfettoTracedProcess::DataSourceBase* const data_source) = 0;
 
-  static void DeleteSoonForTesting(
-      std::unique_ptr<PerfettoProducer> perfetto_producer);
-
-  // In tests, PerfettoProducers may leak between tests, but their task sequence
-  // may become invalid (e.g. TaskEnvironment is destroyed). This resets the
-  // PerfettoProducer's sequence checker, so that it can later be rebound to a
-  // new test's sequence. Note that this only resets the producer's sequence
-  // checker - and there may be other sequence checkers elsewhere, e.g. in
-  // PosixSystemProducer's socket (which would fail on disconnect if the system
-  // producer's sequence is reset while it is connected).
-  void ResetSequenceForTesting();
-
  protected:
   friend class MockProducerHost;
 
@@ -107,9 +95,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
  private:
   const raw_ptr<base::tracing::PerfettoTaskRunner, DanglingUntriaged>
       task_runner_;
-
-  // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<PerfettoProducer> weak_ptr_factory_{this};
 };
 }  // namespace tracing
 #endif  // SERVICES_TRACING_PUBLIC_CPP_PERFETTO_PERFETTO_PRODUCER_H_

@@ -140,7 +140,6 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
   CrOSDataSource()
       : DataSourceBase(tracing::mojom::kSystemTraceDataSourceName) {
     DETACH_FROM_SEQUENCE(ui_sequence_checker_);
-    tracing::PerfettoTracedProcess::Get()->AddDataSource(this);
     perfetto::DataSourceDescriptor dsd;
     dsd.set_name(tracing::mojom::kSystemTraceDataSourceName);
     DataSourceProxy::Register(dsd, this);
@@ -232,10 +231,8 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
 }  // namespace
 
 CrOSTracingAgent::CrOSTracingAgent() {
-  tracing::PerfettoTracedProcess::Get()->AddDataSource(
-      &CrOSDataSource::GetInstance());
+  CrOSDataSource::GetInstance();
 }
-
 CrOSTracingAgent::~CrOSTracingAgent() = default;
 
 }  // namespace content

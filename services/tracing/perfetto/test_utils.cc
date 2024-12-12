@@ -12,6 +12,7 @@
 #include "base/tracing/perfetto_platform.h"
 #include "services/tracing/public/cpp/perfetto/shared_memory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/perfetto/include/perfetto/ext/tracing/core/client_identity.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/commit_data_request.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_packet.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_writer.h"
@@ -22,6 +23,58 @@
 
 namespace tracing {
 namespace {
+
+// A proxy task runner which can be dynamically pointed to route tasks into a
+// different task runner.
+class RebindableTaskRunner : public base::SequencedTaskRunner {
+ public:
+  RebindableTaskRunner();
+
+  void set_task_runner(scoped_refptr<base::SequencedTaskRunner> task_runner) {
+    task_runner_ = task_runner;
+  }
+
+  // base::SequencedTaskRunner implementation.
+  bool PostDelayedTask(const base::Location& from_here,
+                       base::OnceClosure task,
+                       base::TimeDelta delay) override;
+  bool PostNonNestableDelayedTask(const base::Location& from_here,
+                                  base::OnceClosure task,
+                                  base::TimeDelta delay) override;
+  bool RunsTasksInCurrentSequence() const override;
+
+ private:
+  ~RebindableTaskRunner() override;
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+};
+
+RebindableTaskRunner::RebindableTaskRunner() = default;
+RebindableTaskRunner::~RebindableTaskRunner() = default;
+
+bool RebindableTaskRunner::PostDelayedTask(const base::Location& from_here,
+                                           base::OnceClosure task,
+                                           base::TimeDelta delay) {
+  return task_runner_->PostDelayedTask(from_here, std::move(task), delay);
+}
+
+bool RebindableTaskRunner::PostNonNestableDelayedTask(
+    const base::Location& from_here,
+    base::OnceClosure task,
+    base::TimeDelta delay) {
+  return task_runner_->PostNonNestableDelayedTask(from_here, std::move(task),
+                                                  delay);
+}
+
+bool RebindableTaskRunner::RunsTasksInCurrentSequence() const {
+  return task_runner_->RunsTasksInCurrentSequence();
+}
+
+RebindableTaskRunner* GetClientLibTaskRunner() {
+  static base::NoDestructor<scoped_refptr<RebindableTaskRunner>> task_runner(
+      base::MakeRefCounted<RebindableTaskRunner>());
+  return task_runner.get()->get();
+}
 
 perfetto::TraceConfig GetDefaultTraceConfig(
     const std::vector<std::string>& data_sources) {
@@ -37,174 +90,91 @@ perfetto::TraceConfig GetDefaultTraceConfig(
 
 }  // namespace
 
-// static
-std::unique_ptr<TestDataSource> TestDataSource::CreateAndRegisterDataSource(
-    const std::string& data_source_name,
-    size_t send_packet_count) {
-  auto data_source = std::unique_ptr<TestDataSource>(
-      new TestDataSource(data_source_name, send_packet_count));
-  PerfettoTracedProcess::Get()->AddDataSource(data_source.get());
-  return data_source;
+MockProducer::MockProducer() = default;
+MockProducer::~MockProducer() = default;
+
+void MockProducer::Connect(PerfettoService* service,
+                           const std::string& producer_name,
+                           uid_t uid,
+                           pid_t pid) {
+  producer_name_ = producer_name;
+  service_endpoint_ = service->GetService()->ConnectProducer(
+      this, perfetto::ClientIdentity(uid, pid), producer_name, 0,
+      /*in_process=*/true,
+      perfetto::TracingService::ProducerSMBScrapingMode::kDefault, 0, nullptr);
+}
+void MockProducer::RegisterDataSource(const std::string& name) {
+  perfetto::DataSourceDescriptor ds_desc;
+  ds_desc.set_name(name);
+  service_endpoint_->RegisterDataSource(ds_desc);
 }
 
-TestDataSource::TestDataSource(const std::string& data_source_name,
-                               size_t send_packet_count)
-    : DataSourceBase(data_source_name), send_packet_count_(send_packet_count) {
+void MockProducer::UnregisterDataSource(const std::string& name) {
+  service_endpoint_->UnregisterDataSource(name);
 }
 
-TestDataSource::~TestDataSource() = default;
+void MockProducer::SetupDataSource(perfetto::DataSourceInstanceID ds_id,
+                                   const perfetto::DataSourceConfig& cfg) {
+  EXPECT_FALSE(data_source_instances_.count(ds_id));
+  data_source_instances_.emplace(ds_id, cfg);
+  OnSetupDataSource(cfg.name(), ds_id);
+}
 
-void TestDataSource::WritePacketBigly() {
+void MockProducer::StartDataSource(perfetto::DataSourceInstanceID ds_id,
+                                   const perfetto::DataSourceConfig& cfg) {
+  // The data source might have been seen already through
+  // WaitForDataSourceSetup().
+  if (data_source_instances_.count(ds_id) == 0) {
+    data_source_instances_.emplace(ds_id, cfg);
+  }
+  OnStartDataSource(cfg.name(), ds_id);
+}
+
+void MockProducer::StopDataSource(perfetto::DataSourceInstanceID ds_id) {
+  ASSERT_EQ(1u, data_source_instances_.count(ds_id));
+  std::string name = data_source_instances_[ds_id].name();
+  data_source_instances_.erase(ds_id);
+  OnStopDataSource(name, ds_id);
+}
+
+std::unique_ptr<perfetto::TraceWriter> MockProducer::CreateTraceWriter(
+    perfetto::DataSourceInstanceID ds_id,
+    perfetto::BufferExhaustedPolicy buffer_exhausted_policy) {
+  PERFETTO_DCHECK(data_source_instances_.count(ds_id));
+  perfetto::BufferID buf_id = static_cast<perfetto::BufferID>(
+      data_source_instances_[ds_id].target_buffer());
+  return service_endpoint_->CreateTraceWriter(buf_id, buffer_exhausted_policy);
+}
+
+perfetto::DataSourceConfig MockProducer::GetDataSourceConfig(
+    perfetto::DataSourceInstanceID ds_id) {
+  PERFETTO_DCHECK(data_source_instances_.count(ds_id));
+  return data_source_instances_.at(ds_id);
+}
+
+void MockProducer::WritePackets(perfetto::TraceWriter& writer,
+                                size_t num_packets) {
+  for (size_t i = 0; i < 10; i++) {
+    auto tp = writer.NewTracePacket();
+    tp->set_for_testing()->set_str(kPerfettoTestString);
+  }
+}
+
+void MockProducer::WritePacketBigly(perfetto::TraceWriter& writer) {
   auto payload = base::HeapArray<char>::Uninit(kLargeMessageSize);
   std::ranges::fill(payload, '.');
   payload.as_span().back() = 0;
 
-  std::unique_ptr<perfetto::TraceWriter> writer =
-      producer_->CreateTraceWriter(config_.target_buffer());
-  CHECK(writer);
-
-  writer->NewTracePacket()->set_for_testing()->set_str(payload.data(),
-                                                       payload.size());
+  writer.NewTracePacket()->set_for_testing()->set_str(payload.data(),
+                                                      payload.size());
 }
 
-void TestDataSource::StartTracingImpl(
-    PerfettoProducer* producer,
-    const perfetto::DataSourceConfig& data_source_config) {
-  producer_ = producer;
-  config_ = data_source_config;
-
-  if (send_packet_count_ > 0) {
-    std::unique_ptr<perfetto::TraceWriter> writer =
-        producer_->CreateTraceWriter(config_.target_buffer());
-    CHECK(writer);
-
-    for (size_t i = 0; i < send_packet_count_; i++) {
-      writer->NewTracePacket()->set_for_testing()->set_str(kPerfettoTestString);
-    }
-  }
-  if (!start_tracing_callback_.is_null()) {
-    std::move(start_tracing_callback_).Run();
-  }
-}
-
-void TestDataSource::StopTracingImpl(base::OnceClosure stop_complete_callback) {
-  CHECK(producer_);
-  producer_ = nullptr;
-  std::move(stop_complete_callback).Run();
-}
-
-void TestDataSource::Flush(base::RepeatingClosure flush_complete_callback) {
-  if (flush_complete_callback) {
-    flush_complete_callback.Run();
-  }
-}
-void TestDataSource::set_start_tracing_callback(
-    base::OnceClosure start_tracing_callback) {
-  start_tracing_callback_ = std::move(start_tracing_callback);
-}
-
-MockProducerClient::MockProducerClient(
-    uint32_t num_data_sources,
-    base::OnceClosure client_enabled_callback,
-    base::OnceClosure client_disabled_callback)
-    : ProducerClient(PerfettoTracedProcess::Get()->GetTaskRunner()),
-      num_data_sources_expected_(num_data_sources),
-      client_enabled_callback_(std::move(client_enabled_callback)),
-      client_disabled_callback_(std::move(client_disabled_callback)) {
-  // Create SMB immediately since we never call ProducerClient's Connect().
-  CHECK(InitSharedMemoryIfNeeded());
-}
-
-MockProducerClient::~MockProducerClient() = default;
-
-// static
-std::unique_ptr<MockProducerClient::Handle> MockProducerClient::Create(
-    uint32_t num_data_sources,
-    base::OnceClosure client_enabled_callback,
-    base::OnceClosure client_disabled_callback) {
-  std::unique_ptr<MockProducerClient> client(new MockProducerClient(
-      num_data_sources, std::move(client_enabled_callback),
-      std::move(client_disabled_callback)));
-  auto handle = std::make_unique<Handle>(client.get());
-
-  // Transfer ownership of the client to PerfettoTracedProcess.
-  PerfettoTracedProcess::Get()
-      ->GetTaskRunner()
-      ->GetOrCreateTaskRunner()
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              [](std::unique_ptr<MockProducerClient> client) {
-                auto* raw_client = client.get();
-                raw_client->old_producer_ =
-                    PerfettoTracedProcess::Get()->SetProducerClientForTesting(
-                        std::move(client));
-              },
-              std::move(client)));
-  return handle;
-}
-
-MockProducerClient::Handle::~Handle() {
-  // Replace the previous client in PerfettoTracedProcess, deleting the mock
-  // as a side-effect.
-  PerfettoTracedProcess::Get()
-      ->GetTaskRunner()
-      ->GetOrCreateTaskRunner()
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              [](std::unique_ptr<ProducerClient> old_producer) {
-                PerfettoTracedProcess::Get()->SetProducerClientForTesting(
-                    std::move(old_producer));
-              },
-              std::move(client_->old_producer_)));
-}
-
-void MockProducerClient::SetupDataSource(const std::string& data_source_name) {}
-
-void MockProducerClient::StartDataSource(
-    uint64_t id,
-    const perfetto::DataSourceConfig& data_source_config,
-    StartDataSourceCallback callback) {
-  ProducerClient::StartDataSource(id, std::move(data_source_config),
-                                  std::move(callback));
-
-  CHECK_LT(num_data_sources_active_, num_data_sources_expected_);
-  if (++num_data_sources_active_ == num_data_sources_expected_ &&
-      client_enabled_callback_) {
-    std::move(client_enabled_callback_).Run();
-  }
-}
-
-void MockProducerClient::StopDataSource(uint64_t id,
-                                        StopDataSourceCallback callback) {
-  ProducerClient::StopDataSource(id, std::move(callback));
-
-  CHECK_GT(num_data_sources_active_, 0u);
-  if (--num_data_sources_active_ == 0 && client_disabled_callback_) {
-    std::move(client_disabled_callback_).Run();
-  }
-}
-
-void MockProducerClient::CommitData(const perfetto::CommitDataRequest& commit,
-                                    CommitDataCallback callback) {
-  // Only write out commits that have actual data in it; Perfetto
-  // might send two commits from different threads (one always empty),
-  // which causes TSan to complain.
-  if (commit.chunks_to_patch_size() || commit.chunks_to_move_size()) {
-    all_client_commit_data_requests_.push_back(commit.SerializeAsString());
-  }
-  ProducerClient::CommitData(commit, callback);
-}
-
-void MockProducerClient::SetAgentEnabledCallback(
-    base::OnceClosure client_enabled_callback) {
-  client_enabled_callback_ = std::move(client_enabled_callback);
-}
-
-void MockProducerClient::SetAgentDisabledCallback(
-    base::OnceClosure client_disabled_callback) {
-  client_disabled_callback_ = std::move(client_disabled_callback);
+void MockProducer::Flush(perfetto::FlushRequestID flush_req_id,
+                         const perfetto::DataSourceInstanceID* ds_id,
+                         size_t,
+                         perfetto::FlushFlags) {
+  OnFlush();
+  service_endpoint_->NotifyFlushComplete(flush_req_id);
 }
 
 MockConsumerBase::MockConsumerBase(
@@ -364,99 +334,15 @@ void MockConsumer::CheckForAllDataSourcesStopped() {
   }
 }
 
-MockProducerHost::MockProducerHost(
-    const std::string& producer_name,
-    const std::string& data_source_name,
-    PerfettoService* service,
-    MockProducerClient* producer_client,
-    base::OnceClosure datasource_registered_callback)
-    : producer_name_(producer_name),
-      datasource_registered_callback_(
-          std::move(datasource_registered_callback)) {
-  mojo::PendingRemote<mojom::ProducerClient> client;
-  mojo::PendingRemote<mojom::ProducerHost> host_remote;
-  auto client_receiver = client.InitWithNewPipeAndPassReceiver();
-  Initialize(std::move(client), service->GetService(), producer_name_,
-             static_cast<ChromeBaseSharedMemory*>(
-                 producer_client->shared_memory_for_testing())
-                 ->CloneRegion(),
-             PerfettoProducer::kSMBPageSizeBytes);
-  receiver_.Bind(host_remote.InitWithNewPipeAndPassReceiver());
-  producer_client->BindClientAndHostPipesForTesting(std::move(client_receiver),
-                                                    std::move(host_remote));
-  producer_client->SetupDataSource(data_source_name);
-}
-
-MockProducerHost::~MockProducerHost() = default;
-
-void MockProducerHost::RegisterDataSource(
-    const perfetto::DataSourceDescriptor& registration_info) {
-  ProducerHost::RegisterDataSource(registration_info);
-
-  on_commit_callback_for_testing_ =
-      base::BindRepeating(&MockProducerHost::OnCommit, base::Unretained(this));
-
-  if (datasource_registered_callback_) {
-    std::move(datasource_registered_callback_).Run();
-  }
-}
-
-void MockProducerHost::OnConnect() {}
-
-void MockProducerHost::OnCommit(
-    const perfetto::CommitDataRequest& commit_data_request) {
-  if (!commit_data_request.chunks_to_patch_size() &&
-      !commit_data_request.chunks_to_move_size()) {
-    return;
-  }
-
-  all_host_commit_data_requests_.push_back(
-      commit_data_request.SerializeAsString());
-}
-
-MockProducer::MockProducer(const std::string& producer_name,
-                           const std::string& data_source_name,
-                           PerfettoService* service,
-                           base::OnceClosure on_datasource_registered,
-                           base::OnceClosure on_tracing_started,
-                           size_t num_packets) {
-  // Construct MockProducerClient before TestDataSource to avoid a race.
-  //
-  // TestDataSource calls AddDataSource on the global PerfettoTracedProcess,
-  // which PostTasks to the threadpool in the task it will access the
-  // |producer_client_| pointer that the PerfettoTracedProcess owns. However in
-  // the constructor for MockProducerClient we will set the |producer_client_|
-  // from the real client to the mock, however this is done on a different
-  // sequence and thus we have a race. By setting the pointer before we
-  // construct the data source the TestDataSource can not race.
-  producer_client_ = MockProducerClient::Create(
-      /* num_data_sources = */ 1, std::move(on_tracing_started));
-  data_source_ = TestDataSource::CreateAndRegisterDataSource(data_source_name,
-                                                             num_packets);
-
-  producer_host_ = std::make_unique<MockProducerHost>(
-      producer_name, data_source_name, service, **producer_client_,
-      std::move(on_datasource_registered));
-}
-
-MockProducer::~MockProducer() = default;
-
-void MockProducer::WritePacketBigly(base::OnceClosure on_write_complete) {
-  PerfettoTracedProcess::Get()
-      ->GetTaskRunner()
-      ->GetOrCreateTaskRunner()
-      ->PostTaskAndReply(FROM_HERE,
-                         base::BindOnce(&TestDataSource::WritePacketBigly,
-                                        base::Unretained(data_source())),
-                         std::move(on_write_complete));
-}
-
 TracingUnitTest::TracingUnitTest()
     : task_environment_(std::make_unique<base::test::TaskEnvironment>(
-          base::test::TaskEnvironment::MainThreadType::IO)),
-      tracing_environment_(std::make_unique<base::test::TracingEnvironment>(
-          *task_environment_,
-          base::SingleThreadTaskRunner::GetCurrentDefault())) {}
+          base::test::TaskEnvironment::MainThreadType::IO)) {
+  // Also tell PerfettoTracedProcess to use the current task environment.
+  auto* client_lib_task_runner = GetClientLibTaskRunner();
+  client_lib_task_runner->set_task_runner(
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+  test_handle_ = PerfettoTracedProcess::SetupForTesting(client_lib_task_runner);
+}
 
 TracingUnitTest::~TracingUnitTest() {
   CHECK(setup_called_ && teardown_called_);
@@ -465,30 +351,19 @@ TracingUnitTest::~TracingUnitTest() {
 void TracingUnitTest::SetUp() {
   setup_called_ = true;
 
-  // Also tell PerfettoTracedProcess to use the current task environment.
-  test_handle_ = PerfettoTracedProcess::SetupForTesting(
-      base::SingleThreadTaskRunner::GetCurrentDefault());
-  PerfettoTracedProcess::Get()->OnThreadPoolAvailable(
-      /* enable_consumer */ true);
-
   // Wait for any posted construction tasks to execute.
   RunUntilIdle();
 }
 
 void TracingUnitTest::TearDown() {
   teardown_called_ = true;
-  tracing_environment_.reset();
 
   // Wait for any posted destruction tasks to execute.
   RunUntilIdle();
 
-  // From here on, no more tasks should be posted.
-  task_environment_.reset();
-
   // Clear task runner and data sources.
   PerfettoTracedProcess::Get()->GetTaskRunner()->ResetTaskRunnerForTesting(
       nullptr);
-  PerfettoTracedProcess::Get()->ClearDataSourcesForTesting();
   test_handle_.reset();
 }
 

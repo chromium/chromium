@@ -35,8 +35,6 @@ class TracingService;
 }  // namespace mojom
 
 class PerfettoProducer;
-class ProducerClient;
-class SystemProducer;
 
 // This represents global process level state that the Perfetto tracing system
 // expects to exist. This includes a single base implementation of DataSources
@@ -183,22 +181,11 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   // legacy TraceLog to become the trace producer for this process.
   void ConnectProducer(mojo::PendingRemote<mojom::PerfettoService>);
 
-  ProducerClient* producer_client() const;
-
   ~PerfettoTracedProcess() override;
 
   // Returns the task runner used by any Perfetto service. Can be called on any
   // thread.
   static base::tracing::PerfettoTaskRunner* GetTaskRunner();
-
-  // Add a new data source to the PerfettoTracedProcess; the caller retains
-  // ownership and is responsible for making sure the data source outlives the
-  // PerfettoTracedProcess. Except for tests, this means the data source should
-  // never be destroyed. Can be called on any thread.
-  void AddDataSource(DataSourceBase*);
-  // Returns a copy of the set of currently registered data sources. Can be
-  // called on any thread.
-  std::set<raw_ptr<DataSourceBase, SetExperimental>> data_sources();
 
   // Attempt to enable startup tracing for the current process and given
   // producer. Returns false on failure, e.g. because another concurrent tracing
@@ -219,18 +206,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   // Overrides SetAllowSystemTracingConsumerCallback() for testing.
   void SetAllowSystemTracingConsumerForTesting(bool allow);
 
-  // If the provided |producer| can begin tracing then |start_tracing| will be
-  // invoked (unless cancelled by the Perfetto service) at some point later
-  // using the GetTaskRunner()'s sequence and this function will return true.
-  // Otherwise the return value will be false and start_tracing will not be
-  // invoked at all. This function must be called on GetTaskRunners()'s
-  // sequence.
-  bool CanStartTracing(PerfettoProducer* producer,
-                       base::OnceCallback<void()> start_tracing);
-
-  // Can be called on any thread, but only after OnThreadPoolAvailable().
-  void ActivateSystemTriggers(const std::vector<std::string>& triggers);
-
   // Sets the task runner used by the tracing infrastructure in this process.
   // The returned handle will automatically tear down tracing when destroyed, so
   // it should be kept valid until the test terminates.
@@ -248,16 +223,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   };
   static std::unique_ptr<TestHandle> SetupForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr);
-
-  // Sets the ProducerClient (or SystemProducer) and returns the old pointer. If
-  // tests want to restore the state of the world they should store the pointer
-  // and call this method again with it as the parameter when finished.
-  std::unique_ptr<ProducerClient> SetProducerClientForTesting(
-      std::unique_ptr<ProducerClient> client);
-  std::unique_ptr<SystemProducer> SetSystemProducerForTesting(
-      std::unique_ptr<SystemProducer> producer);
-
-  void ClearDataSourcesForTesting();
 
   base::tracing::PerfettoPlatform* perfetto_platform_for_testing() const {
     return platform_.get();
@@ -300,15 +265,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
           GUARDED_BY(allow_system_consumer_lock_);
   bool system_consumer_enabled_for_testing_
       GUARDED_BY(allow_system_consumer_lock_) = false;
-
-  base::Lock data_sources_lock_;
-  // The canonical set of DataSourceBases alive in this process. These will be
-  // registered with the tracing service.
-  std::set<raw_ptr<DataSourceBase, SetExperimental>> data_sources_;
-
-  // A PerfettoProducer that connects to the chrome Perfetto service through
-  // mojo.
-  std::unique_ptr<ProducerClient> producer_client_;
 
   // Platform implementation for the Perfetto client library.
   std::unique_ptr<base::tracing::PerfettoPlatform> platform_;

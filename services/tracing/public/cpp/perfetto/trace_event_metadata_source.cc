@@ -78,7 +78,6 @@ TraceEventMetadataSource::TraceEventMetadataSource()
     : DataSourceBase(mojom::kMetaDataSourceName),
       origin_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   g_trace_event_metadata_source_for_testing = this;
-  PerfettoTracedProcess::Get()->AddDataSource(this);
   AddGeneratorFunction(base::BindRepeating(
       &TraceEventMetadataSource::WriteMetadataPacket, base::Unretained(this)));
   AddGeneratorFunction(base::BindRepeating(

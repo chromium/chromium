@@ -89,7 +89,6 @@ source_set("tests") {
 
   sources = [
     "perfetto/consumer_host_unittest.cc",
-    "perfetto/perfetto_integration_unittest.cc",
     "perfetto/privacy_filtering_check_unittest.cc",
     "public/cpp/perfetto/perfetto_config_unittest.cc",
     "public/cpp/perfetto/trace_packet_tokenizer_unittest.cc",

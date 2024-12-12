@@ -75,8 +75,6 @@ target(tracing_lib_type, "cpp") {
       "perfetto/perfetto_traced_process.h",
       "perfetto/perfetto_tracing_backend.cc",
       "perfetto/perfetto_tracing_backend.h",
-      "perfetto/producer_client.cc",
-      "perfetto/producer_client.h",
       "perfetto/shared_memory.cc",
       "perfetto/shared_memory.h",
       "perfetto/system_trace_writer.h",

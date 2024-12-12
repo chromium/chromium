@@ -26,7 +26,6 @@ TracingObserver::TracingObserver()
   perfetto::DataSourceDescriptor dsd;
   dsd.set_name(name());
   DataSourceProxy::Register(dsd, this);
-  tracing::PerfettoTracedProcess::Get()->AddDataSource(this);
 }
 
 TracingObserver::~TracingObserver() = default;

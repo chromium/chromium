@@ -228,10 +228,6 @@ void TracingControllerImpl::AddAgents() {
       base::Unretained(this)));
   metadata_source->AddGeneratorFunction(base::BindRepeating(
       &TracingControllerImpl::GenerateMetadataPacket, base::Unretained(this)));
-#if BUILDFLAG(IS_ANDROID)
-  tracing::PerfettoTracedProcess::Get()->AddDataSource(
-      tracing::JavaHeapProfiler::GetInstance());
-#endif
 }
 
 void TracingControllerImpl::GenerateMetadataPacketFieldTrials(
