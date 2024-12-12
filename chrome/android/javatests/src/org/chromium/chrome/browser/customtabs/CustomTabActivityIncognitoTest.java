@@ -28,6 +28,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RemoteViews;
@@ -58,6 +59,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.OnFinishedForTest;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
@@ -423,6 +425,9 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "crbug.com/350394860")
     public void ensureAddCustomTopMenuItemHasNoEffect() throws Exception {
         Bitmap expectedIcon = createVectorDrawableBitmap(R.drawable.ic_credit_card_black, 77, 48);
         Intent intent = createTestCustomTabIntent();
@@ -445,6 +450,9 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "crbug.com/350394860")
     public void ensureAddRemoteViewsHasNoEffect() throws Exception {
         Intent intent = createTestCustomTabIntent();
         Bitmap expectedIcon = createVectorDrawableBitmap(R.drawable.ic_credit_card_black, 77, 48);

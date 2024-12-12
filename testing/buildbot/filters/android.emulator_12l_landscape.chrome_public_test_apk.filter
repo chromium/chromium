@@ -1,6 +1,5 @@
 # crbug.com/351944004
 -org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testSmallDrag_Down_FoldersOnly
--org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testLaunchPartialCustomTabActivity_SideSheet
 -org.chromium.chrome.browser.tasks.tab_management.TabListContainerViewBinderTest.testSetInitialScrollIndex_Grid
 -org.chromium.chrome.browser.webapps.WebApkIntegrationTest.testWebApkServiceIntegration
 -org.chromium.chrome.browser.webapps.WebappNavigationTest.testCloseButtonReturnsToUrlBeforeRedirects

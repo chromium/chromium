@@ -113,6 +113,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -652,6 +653,9 @@ public class CustomTabActivityTest {
      */
     @Test
     @SmallTest
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "crbug.com/350394860")
     public void testActionButtonBadRatio() {
         Bitmap expectedIcon = createTestBitmap(60, 20);
         Intent intent = createMinimalCustomTabIntent();
@@ -674,6 +678,9 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "crbug.com/350394860")
     public void testBottomBar() {
         final int numItems = 3;
         final Bitmap expectedIcon = createTestBitmap(48, 24);
@@ -767,6 +774,9 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     @Feature({"UiCatalogue"})
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "crbug.com/350394860")
     public void testRemoteViews() {
         Intent intent = createMinimalCustomTabIntent();
 
@@ -847,6 +857,9 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "crbug.com/350394860")
     public void testRecordRetainableSession_WithoutWarmupAndSession() {
         Context context = ApplicationProvider.getApplicationContext();
         Activity emptyActivity = startBlankUiTestActivity();
@@ -943,6 +956,7 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(sdk_equals = VERSION_CODES.UPSIDE_DOWN_CAKE, message = "crbug.com/350394860")
     public void testCreateNewTab() throws Exception {
         final String testUrl =
                 mTestServer.getURL("/chrome/test/data/android/customtabs/test_window_open.html");
@@ -2186,6 +2200,8 @@ public class CustomTabActivityTest {
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
     @MinAndroidSdkLevel(Build.VERSION_CODES.O_MR1)
+    // crbug.com/350394860
+    @DisableIf.Device(DeviceFormFactor.TABLET)
     public void testLaunchPartialCustomTabActivity_SideSheet() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
@@ -2318,6 +2334,8 @@ public class CustomTabActivityTest {
     @SmallTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
+    // crbug.com/350394860
+    @DisableIf.Device(value = DeviceFormFactor.TABLET)
     public void testLaunchPartialCustomTabActivity_startActivityForResult() {
         CustomTabsIntent customTabsIntent =
                 new CustomTabsIntent.Builder().setInitialActivityHeightPx(200).build();

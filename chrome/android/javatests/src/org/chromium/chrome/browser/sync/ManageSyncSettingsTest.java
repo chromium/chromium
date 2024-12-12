@@ -32,6 +32,7 @@ import static java.util.Map.entry;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Instrumentation.ActivityResult;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -1163,6 +1164,9 @@ public class ManageSyncSettingsTest {
     @LargeTest
     @Feature({"Sync", "RenderTest"})
     @EnableFeatures({ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS})
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "crbug.com/326040498")
     public void testSigninSettingsBatchUploadEntryDescriptionPassword() throws Exception {
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
         when(mReauthenticatorMock.getBiometricAvailabilityStatus())
@@ -1205,6 +1209,9 @@ public class ManageSyncSettingsTest {
     @LargeTest
     @Feature({"Sync", "RenderTest"})
     @EnableFeatures({ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS})
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "crbug.com/326040498")
     public void testSigninSettingsBatchUploadEntryDescriptionOther() throws Exception {
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
         when(mReauthenticatorMock.getBiometricAvailabilityStatus())
@@ -1247,6 +1254,9 @@ public class ManageSyncSettingsTest {
     @LargeTest
     @Feature({"Sync", "RenderTest"})
     @EnableFeatures({ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS})
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "crbug.com/326040498")
     public void testSigninSettingsBatchUploadEntryDescriptionPasswordAndOther() throws Exception {
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
         when(mReauthenticatorMock.getBiometricAvailabilityStatus())

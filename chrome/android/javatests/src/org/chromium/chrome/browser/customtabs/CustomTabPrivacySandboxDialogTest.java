@@ -17,6 +17,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
@@ -35,6 +36,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -262,6 +264,9 @@ public class CustomTabPrivacySandboxDialogTest {
         ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
                 + ":force-show-notice-row-for-testing/true/notice-required/true"
     })
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "crbug.com/350394860")
     public void adsNoticeCct_AppIDNullShowDialog() {
         HistogramWatcher shouldShowWatcher =
                 HistogramWatcher.newSingleRecordWatcher(

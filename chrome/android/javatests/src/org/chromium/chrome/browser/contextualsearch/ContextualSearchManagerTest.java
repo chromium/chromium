@@ -237,6 +237,9 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
+            message = "crbug.com/383144566")
     public void testPromotesToTab() throws Exception {
         // -------- SET UP ---------
         // Track Tab creation with this helper.
@@ -306,6 +309,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @DisabledTest(message = "crbug.com/383144566")
     public void testAcceptedPrivacy() throws Exception {
         mPolicy.overrideDecidedStateForTesting(true);
 
@@ -541,6 +545,9 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.S_V2,
+            message = "crbug.com/383144566")
     public void testQuickActionCaptionAndImage() throws Exception {
         CompositorAnimationHandler.setTestingMode(true);
 
