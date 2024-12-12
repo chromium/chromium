@@ -152,13 +152,13 @@ struct StitchedAnchorQuery : public GarbageCollected<StitchedAnchorQuery>,
 };
 
 // This collects |StitchedAnchorQuery| for each containing block.
-struct StitchedAnchorQueries {
+struct StitchedAnchorQueryCollector {
   STACK_ALLOCATED();
 
  public:
-  StitchedAnchorQueries(const LayoutBox& root,
-                        const HeapHashSet<Member<const LayoutObject>>&
-                            anchored_oof_containers_and_ancestors)
+  StitchedAnchorQueryCollector(const LayoutBox& root,
+                               const HeapHashSet<Member<const LayoutObject>>&
+                                   anchored_oof_containers_and_ancestors)
       : anchored_oof_containers_and_ancestors_(
             anchored_oof_containers_and_ancestors),
         root_(root) {}
@@ -335,7 +335,7 @@ struct StitchedAnchorQueries {
 
 }  // namespace
 
-LogicalAnchorQueryMap::LogicalAnchorQueryMap(
+StitchedAnchorQueries::StitchedAnchorQueries(
     const LayoutBox& root_box,
     const LogicalFragmentLinkVector& children,
     WritingDirectionMode writing_direction)
@@ -344,7 +344,7 @@ LogicalAnchorQueryMap::LogicalAnchorQueryMap(
   SetChildren(children);
 }
 
-void LogicalAnchorQueryMap::SetChildren(
+void StitchedAnchorQueries::SetChildren(
     const LogicalFragmentLinkVector& children) {
   children_ = &children;
 
@@ -361,7 +361,7 @@ void LogicalAnchorQueryMap::SetChildren(
   }
 }
 
-const LogicalAnchorQuery* LogicalAnchorQueryMap::AnchorQuery(
+const LogicalAnchorQuery* StitchedAnchorQueries::AnchorQuery(
     const LayoutObject& containing_block) const {
   DCHECK(&containing_block);
   DCHECK(containing_block.CanContainAbsolutePositionObjects() ||
@@ -385,7 +385,7 @@ const LogicalAnchorQuery* LogicalAnchorQueryMap::AnchorQuery(
 // Update |queries_| for the given |layout_object| and its ancestors. This is
 // `const`, modifies `mutable` caches only, so that other `const` functions such
 // as |AnchorQuery| can call.
-void LogicalAnchorQueryMap::Update(const LayoutObject& layout_object) const {
+void StitchedAnchorQueries::Update(const LayoutObject& layout_object) const {
   // Compute descendants to collect anchor queries from. This helps reducing the
   // number of descendants to traverse.
   HeapHashSet<Member<const LayoutObject>> anchored_oof_containers_and_ancestors;
@@ -395,7 +395,7 @@ void LogicalAnchorQueryMap::Update(const LayoutObject& layout_object) const {
   }
 
   // Traverse descendants and collect anchor queries for each containing block.
-  StitchedAnchorQueries stitched_anchor_queries(
+  StitchedAnchorQueryCollector stitched_anchor_queries(
       root_box_, anchored_oof_containers_and_ancestors);
   stitched_anchor_queries.AddFragmentainerChildren(*children_,
                                                    writing_direction_);

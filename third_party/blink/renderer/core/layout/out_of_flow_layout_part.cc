@@ -1462,7 +1462,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       }
     }
   }
-  LogicalAnchorQueryMap stitched_anchor_queries(
+  StitchedAnchorQueries stitched_anchor_queries(
       *builder_for_anchor_query->Node().GetLayoutBox(),
       builder_for_anchor_query->Children(),
       builder_for_anchor_query->GetWritingDirection());
@@ -1721,7 +1721,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
 AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
     const ContainingBlockInfo& container_info,
     const BlockNode& candidate,
-    const LogicalAnchorQueryMap* anchor_queries) const {
+    const StitchedAnchorQueries* anchor_queries) const {
   const LayoutObject* implicit_anchor = nullptr;
   const LayoutBox& candidate_layout_box = *candidate.GetLayoutBox();
   if (const Element* element =
@@ -2011,7 +2011,7 @@ void SortNonOverflowingCandidates(
 
 OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     const NodeInfo& node_info,
-    const LogicalAnchorQueryMap* anchor_queries) {
+    const StitchedAnchorQueries* anchor_queries) {
   // See non_overflowing_scroll_range.h for documentation.
   HeapVector<NonOverflowingScrollRange> non_overflowing_scroll_ranges;
 

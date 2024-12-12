@@ -27,7 +27,7 @@ class Element;
 class LayoutBox;
 class LayoutObject;
 class LogicalAnchorQuery;
-class LogicalAnchorQueryMap;
+class StitchedAnchorQueries;
 class PaintLayer;
 struct LogicalAnchorReference;
 
@@ -280,10 +280,10 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
     DCHECK(anchor_query_);
   }
 
-  // This constructor takes |LogicalAnchorQueryMap| and |containing_block|
+  // This constructor takes |StitchedAnchorQueries| and |containing_block|
   // instead of |LogicalAnchorQuery|.
   AnchorEvaluatorImpl(const LayoutBox& query_box,
-                      const LogicalAnchorQueryMap& anchor_queries,
+                      const StitchedAnchorQueries& anchor_queries,
                       const LayoutObject* implicit_anchor,
                       const LayoutObject& containing_block,
                       const WritingModeConverter& container_converter,
@@ -380,7 +380,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
 
   const LayoutBox* query_box_ = nullptr;
   mutable const LogicalAnchorQuery* anchor_query_ = nullptr;
-  mutable const LogicalAnchorQueryMap* anchor_queries_ = nullptr;
+  mutable const StitchedAnchorQueries* anchor_queries_ = nullptr;
   const LayoutObject* implicit_anchor_ = nullptr;
   const LayoutObject* containing_block_ = nullptr;
   const WritingModeConverter container_converter_{

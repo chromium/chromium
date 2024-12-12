@@ -27,14 +27,14 @@ class LayoutObject;
 // 2. When the containing block is in block fragmentation context, all OOFs are
 // added to their fragmentainers.
 // In such cases, traversing descendants is needed to compute anchor queries.
-class CORE_EXPORT LogicalAnchorQueryMap {
+class CORE_EXPORT StitchedAnchorQueries {
   STACK_ALLOCATED();
 
  public:
   // This constructor is for when the size of the container is not known yet.
   // This happens when laying out OOFs in a block fragmentation context, and
   // assumes children are fragmentainers.
-  LogicalAnchorQueryMap(const LayoutBox& root_box,
+  StitchedAnchorQueries(const LayoutBox& root_box,
                         const LogicalFragmentLinkVector& children,
                         WritingDirectionMode writing_direction);
 
