@@ -684,7 +684,7 @@ uint32_t CalculateMaxFramerateFromMacroBlocksPerSecond(
 
   uint64_t max_possible_framerate = std::floor(
       (max_macroblocks_per_second * kMacroBlockWidth * kMacroBlockHeight) /
-      max_framerate_and_resolution.resoluion.Area64());
+      max_framerate_and_resolution.resolution.Area64());
 
   return std::clamp(static_cast<uint32_t>(max_possible_framerate), 1u,
                     max_framerate_and_resolution.frame_rate);
@@ -709,8 +709,8 @@ std::vector<FramerateAndResolution> GetMaxFramerateAndResolutionsFromMFT(
     RETURN_ON_HR_FAILURE(
         MFSetAttributeSize(
             media_type.Get(), MF_MT_FRAME_SIZE,
-            kDefaultMaxFramerateAndResolution.resoluion.width(),
-            kDefaultMaxFramerateAndResolution.resoluion.height()),
+            kDefaultMaxFramerateAndResolution.resolution.width(),
+            kDefaultMaxFramerateAndResolution.resolution.height()),
         "Set attribute size failed", framerate_and_resolutions);
     // Frame rate,30, is dummy value for pass through.
     RETURN_ON_HR_FAILURE(
@@ -772,7 +772,7 @@ std::vector<FramerateAndResolution> GetMaxFramerateAndResolutionsFromMFT(
     FramerateAndResolution framerate_and_resolution = {
         CalculateMaxFramerateFromMacroBlocksPerSecond(
             max_framerate_and_resolution, max_macroblocks_per_second),
-        max_framerate_and_resolution.resoluion};
+        max_framerate_and_resolution.resolution};
 
     // Only if the calculated framerate >= the default framerate, we then
     // consider this resolution & framerate combination is supported.
@@ -1141,14 +1141,15 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
 
     for (auto& max_framerate_and_resolution : max_framerate_and_resolutions) {
       DVLOG(3) << __func__ << ": " << codec << " codec, max resolution width: "
-               << max_framerate_and_resolution.resoluion.width() << ", height: "
-               << max_framerate_and_resolution.resoluion.height()
+               << max_framerate_and_resolution.resolution.width()
+               << ", height: "
+               << max_framerate_and_resolution.resolution.height()
                << ", min resolution width: " << min_resolution.width()
                << ", height: " << min_resolution.height()
                << ", framerate: " << max_framerate_and_resolution.frame_rate;
 
       SupportedProfile profile(VIDEO_CODEC_PROFILE_UNKNOWN,
-                               max_framerate_and_resolution.resoluion,
+                               max_framerate_and_resolution.resolution,
                                max_framerate_and_resolution.frame_rate *
                                    kDefaultFrameRateDenominator,
                                kDefaultFrameRateDenominator, bitrate_mode,
@@ -1364,6 +1365,23 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
                        "Unsupported frame size"});
     return false;
+  }
+
+  for (auto& [framerate, resolution] : max_framerate_and_resolutions_) {
+    // TODO(crbug.com/382015342): Add implementation for checking bitrate
+    // limits.
+    encoder_info_.resolution_rate_limits.emplace_back(
+        resolution, /*min_start_bitrate_bps=*/0, /*min_bitrate_bps=*/0,
+        /*max_bitrate_bps=*/0, /*max_framerate_numerator=*/framerate,
+        /*max_framerate_denominator=*/1);
+
+    resolution.Transpose();
+    encoder_info_.resolution_rate_limits.emplace_back(
+        resolution,
+        /*min_start_bitrate_bps=*/0, /*min_bitrate_bps=*/0,
+        /*max_bitrate_bps=*/0, /*max_framerate_numerator=*/framerate,
+        /*max_framerate_denominator=*/1);
+    resolution.Transpose();
   }
 
   encoder_info_.implementation_name = "MediaFoundationVideoEncodeAccelerator";

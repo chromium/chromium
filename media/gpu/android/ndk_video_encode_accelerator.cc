@@ -574,6 +574,26 @@ void NdkVideoEncodeAccelerator::NotifyEncoderInfo() {
     AMediaCodec_releaseName(media_codec_->codec(), name_ptr);
   }
 
+  for (const auto& info : GetEncoderInfoCache()) {
+    if (info.name == codec_name) {
+      // Skip software HEVC encoders, as it only supports the maximum 512x512
+      // resolution at 30fps, and it is also filtered out by
+      // GetSupportedProfiles().
+      if (info.profile.profile == VideoCodecProfile::HEVCPROFILE_MAIN &&
+          info.profile.is_software_codec) {
+        continue;
+      }
+
+      // TODO(crbug.com/382015342): Set the bitrate limits when we can get them
+      // through MediaCodec API.
+      encoder_info_.resolution_rate_limits.emplace_back(
+          info.profile.max_resolution, /*min_start_bitrate_bps=*/0,
+          /*min_bitrate_bps=*/0, /*max_bitrate_bps=*/0,
+          info.profile.max_framerate_numerator,
+          info.profile.max_framerate_denominator);
+    }
+  }
+
   encoder_info_.implementation_name =
       "NdkVideoEncodeAccelerator(" + codec_name + ")";
   encoder_info_.supports_native_handle = false;

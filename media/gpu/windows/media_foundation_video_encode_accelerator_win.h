@@ -41,7 +41,7 @@ namespace media {
 
 struct FramerateAndResolution {
   uint32_t frame_rate;
-  gfx::Size resoluion;
+  gfx::Size resolution;
 };
 
 class VideoRateControlWrapper;
