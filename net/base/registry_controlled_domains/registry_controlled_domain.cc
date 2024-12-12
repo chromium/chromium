@@ -78,6 +78,9 @@ struct MappedHostComponent {
 
   size_t canonical_begin;
   size_t canonical_end;
+
+  // True if this component could be canonicalized.
+  bool is_canonical;
 };
 
 // Used as the output of functions that calculate the registry length in a
@@ -274,6 +277,7 @@ size_t DoPermissiveGetHostRegistryLength(T host,
     mapping.original_begin = begin;
     mapping.original_end = current;
     mapping.canonical_begin = canon_output.length();
+    mapping.is_canonical = true;
 
     // Try to append the canonicalized version of this component.
     int current_len = static_cast<int>(current - begin);
@@ -282,6 +286,7 @@ size_t DoPermissiveGetHostRegistryLength(T host,
             &canon_output)) {
       // Failed to canonicalize this component; append as-is.
       AppendInvalidString(host.substr(begin, current_len), &canon_output);
+      mapping.is_canonical = false;
     }
 
     mapping.canonical_end = canon_output.length();
@@ -295,20 +300,36 @@ size_t DoPermissiveGetHostRegistryLength(T host,
   size_t canonical_rcd_len =
       GetRegistryLengthImpl(canonical_host, unknown_filter, private_filter)
           .registry_length;
-  if (canonical_rcd_len == 0 || canonical_rcd_len == std::string::npos)
+  if (canonical_rcd_len == 0 || canonical_rcd_len == std::string::npos) {
     return canonical_rcd_len;  // Error or no registry controlled domain.
+  }
 
   // Find which host component the result started in.
   size_t canonical_rcd_begin = canonical_host.length() - canonical_rcd_len;
+
   for (const auto& mapping : components) {
     // In the common case, GetRegistryLengthImpl will identify the beginning
     // of a component and we can just return where that component was in the
     // original string.
-    if (canonical_rcd_begin == mapping.canonical_begin)
+    if (canonical_rcd_begin == mapping.canonical_begin) {
       return host.length() - mapping.original_begin;
+    }
 
-    if (canonical_rcd_begin >= mapping.canonical_end)
+    if (canonical_rcd_begin >= mapping.canonical_end) {
       continue;
+    }
+
+    // Skip brute-force search if the component cannot be canonicalized.
+    // In practice, we should only get here if mapping is the last item in
+    // components. If the mapping cannot be canonicalized, RCD can only
+    // fall into the middle of it if the mapping is the last in components,
+    // such as "%EF%2E%FF%FE.er". In contrast, a hostname like
+    // "%EF%2E%FF%FE.test.er" will hit one of the two canonical_rcd_begin checks
+    // above because its RCD is "test.er" and the RCD doesn't fall in the middle
+    // of a component.
+    if (!mapping.is_canonical) {
+      continue;
+    }
 
     // The registry controlled domain begin was identified as being in the
     // middle of this dot-separated domain component in the non-canonical
@@ -347,7 +368,10 @@ size_t DoPermissiveGetHostRegistryLength(T host,
     }
   }
 
-  NOTREACHED();
+  // We may get here if the host has components that can't be canonicalized.
+  // This should only happen in fuzzing and tests, as invalid hostnames will get
+  // blocked much earlier in the stack.
+  return 0;
 }
 
 bool SameDomainOrHost(std::string_view host1,

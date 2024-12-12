@@ -641,8 +641,27 @@ TEST_F(RegistryControlledDomainTest, Permissive) {
   // Invalid characters at the beginning are OK if the suffix still matches.
   EXPECT_EQ(2U, PermissiveGetHostRegistryLength("*%00#?.Jp"));
 
-  // Escaped period, this will add new components.
+  // Escaped period, this will add new components (Www.Google.jp).
   EXPECT_EQ(4U, PermissiveGetHostRegistryLength("Www.Googl%45%2e%4Ap"));
+
+  // Escaped period, the last component is invalid (Www.Google.%p).
+  EXPECT_EQ(0U, PermissiveGetHostRegistryLength("Www.Googl%45%2e%25p"));
+
+  // The last component is invalid (Www.Google.%p).
+  EXPECT_EQ(0U, PermissiveGetHostRegistryLength("Www.Google.%25p"));
+
+  // Escaped period. er is a wildcard registry.
+  EXPECT_EQ(13U, PermissiveGetHostRegistryLength("Www.Googl%45%2eEr"));
+
+  // Escaped period. The first component is invalid because of %FF%FE.
+  // er is a wildcard registry.
+  EXPECT_EQ(0U, PermissiveGetHostRegistryLength("%EF%2E%FF%FE.er"));
+
+  // First component is invalid. Note that the RCD (test.er) doesn't fall into
+  // the middle of a component here, so this doesn't execute the brute search
+  // at the end of DoPermissiveGetHostRegistryLength, nor the is_canonical check
+  // right before the search.
+  EXPECT_EQ(7U, PermissiveGetHostRegistryLength("%EF%2E%FF%FE.test.er"));
 
 // IDN cases (not supported when not linking ICU).
 #if !BUILDFLAG(USE_PLATFORM_ICU_ALTERNATIVES)
