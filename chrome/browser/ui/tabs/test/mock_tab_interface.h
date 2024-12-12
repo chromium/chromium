@@ -50,10 +50,6 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
               (override));
   MOCK_METHOD(bool, CanShowModalUI, (), (const, override));
   MOCK_METHOD(std::unique_ptr<ScopedTabModalUI>, ShowModalUI, (), (override));
-  MOCK_METHOD(base::CallbackListSubscription,
-              RegisterModalUIChanged,
-              (TabInterfaceCallback),
-              (override));
   MOCK_METHOD(bool, IsInNormalWindow, (), (const override));
   MOCK_METHOD(BrowserWindowInterface*,
               GetBrowserWindowInterface,

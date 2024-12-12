@@ -208,11 +208,6 @@ std::unique_ptr<ScopedTabModalUI> TabModel::ShowModalUI() {
   return std::make_unique<ScopedTabModalUIImpl>(this);
 }
 
-base::CallbackListSubscription TabModel::RegisterModalUIChanged(
-    TabInterface::TabInterfaceCallback callback) {
-  return modal_ui_changed_callback_list_.Add(std::move(callback));
-}
-
 bool TabModel::IsInNormalWindow() const {
   return GetModelForTabInterface()->delegate()->IsNormalWindow();
 }
@@ -265,12 +260,10 @@ TabModel::ScopedTabModalUIImpl::ScopedTabModalUIImpl(TabModel* tab)
     : tab_(tab) {
   CHECK(!tab_->showing_modal_ui_);
   tab_->showing_modal_ui_ = true;
-  tab_->modal_ui_changed_callback_list_.Notify(tab_.get());
 }
 
 TabModel::ScopedTabModalUIImpl::~ScopedTabModalUIImpl() {
   tab_->showing_modal_ui_ = false;
-  tab_->modal_ui_changed_callback_list_.Notify(tab_.get());
 }
 
 void TabModel::WriteIntoTrace(perfetto::TracedValue context) const {

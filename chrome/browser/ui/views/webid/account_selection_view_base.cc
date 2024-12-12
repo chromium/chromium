@@ -662,8 +662,6 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   CHECK(!account->is_filtered_out);
   account_image_view->SetAccountImage(*account, *image_fetcher_, avatar_size);
   auto row = std::make_unique<views::View>();
-  row->SetProperty(views::kElementIdentifierKey,
-                   kFedCmAccountChooserDialogAccountElementId);
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets::VH(

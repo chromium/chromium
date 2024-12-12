@@ -70,9 +70,6 @@ FedCmAccountSelectionView::FedCmAccountSelectionView(
                           weak_ptr_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(tab_->RegisterWillDetach(base::BindRepeating(
       &FedCmAccountSelectionView::WillDetach, weak_ptr_factory_.GetWeakPtr())));
-  tab_subscriptions_.push_back(tab_->RegisterModalUIChanged(
-      base::BindRepeating(&FedCmAccountSelectionView::ModalUIChanged,
-                          weak_ptr_factory_.GetWeakPtr())));
 }
 
 FedCmAccountSelectionView::~FedCmAccountSelectionView() {
@@ -861,10 +858,6 @@ void FedCmAccountSelectionView::WillDiscardContents(
   Close(/*notify_delegate=*/true);
 }
 
-void FedCmAccountSelectionView::ModalUIChanged(tabs::TabInterface* tab) {
-  UpdateDialogVisibilityAndPosition();
-}
-
 void FedCmAccountSelectionView::WillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {
@@ -1072,10 +1065,6 @@ void FedCmAccountSelectionView::TabForegrounded(tabs::TabInterface* tab) {
 
 void FedCmAccountSelectionView::TabWillEnterBackground(
     tabs::TabInterface* tab) {
-  // The reason this does not use UpdateDialogVisibilityAndPosition() is because
-  // the tab has not yet entered the background, and so tab->IsInForeground()
-  // returns true. If it's important to simplify this then we should add
-  // TabInterface::RegisterDidEnterBackground().
   if (GetDialogWidget()) {
     HideDialogWidget();
   }
@@ -1223,11 +1212,6 @@ void FedCmAccountSelectionView::UpdateDialogVisibilityAndPosition() {
 
     // Or if we want to hide until Show*() is called.
     if (hide_dialog_widget_after_idp_login_popup_) {
-      should_show_dialog = false;
-    }
-
-    // Or if a tab modal UI is showing (which means we can't show a new modal).
-    if (!tab_->CanShowModalUI()) {
       should_show_dialog = false;
     }
   }

@@ -6,7 +6,6 @@
 // from webpages, and requires communication with multiple remote endpoints.
 // This test suite does not do any of that at the moment.
 
-#include "build/build_config.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
 #include "chrome/browser/ui/views/webid/fake_delegate.h"
@@ -24,7 +23,7 @@ class FedCmCUJTest : public InteractiveBrowserTest {
   auto OpenAccounts(blink::mojom::RpMode mode) {
     return Do([this, mode]() {
       delegate_ = std::make_unique<FakeDelegate>(
-          browser()->GetActiveTabInterface()->GetContents());
+          browser()->tab_strip_model()->GetActiveWebContents());
       account_selection_view_ = std::make_unique<FedCmAccountSelectionView>(
           delegate_.get(), browser()->GetActiveTabInterface());
       idps_ = {base::MakeRefCounted<content::IdentityProviderData>(
@@ -49,26 +48,11 @@ class FedCmCUJTest : public InteractiveBrowserTest {
     return OpenAccounts(blink::mojom::RpMode::kActive);
   }
 
-  // Opens the bubble version of the account chooser.
-  auto OpenAccountsBubble() {
-    return OpenAccounts(blink::mojom::RpMode::kPassive);
-  }
-
-  auto ShowTabModalUI() {
-    return Do([this]() {
-      tab_modal_ui_ = browser()->GetActiveTabInterface()->ShowModalUI();
-    });
-  }
-  auto HideTabModalUI() {
-    return Do([this]() { tab_modal_ui_.reset(); });
-  }
-
  protected:
   std::unique_ptr<FakeDelegate> delegate_;
   std::vector<IdentityProviderDataPtr> idps_;
   std::vector<IdentityRequestAccountPtr> accounts_;
   std::unique_ptr<FedCmAccountSelectionView> account_selection_view_;
-  std::unique_ptr<tabs::ScopedTabModalUI> tab_modal_ui_;
 };
 
 // Shows the account picker. Selects an account.
@@ -76,22 +60,6 @@ IN_PROC_BROWSER_TEST_F(FedCmCUJTest, SelectAccount) {
   RunTestSequence(OpenAccountsModal(),
                   WaitForShow(kFedCmAccountChooserDialogAccountElementId),
                   PressButton(kFedCmAccountChooserDialogAccountElementId), );
-}
-
-// TODO(https://crbug.com/382867817): Fix this on windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_BubbleHidesWhenModalUIShown DISABLED_BubbleHidesWhenModalUIShown
-#else
-#define MAYBE_BubbleHidesWhenModalUIShown BubbleHidesWhenModalUIShown
-#endif
-// Shows the bubble account picker. It should hide when a modal UI is shown. It
-// should re-show when the modal UI goes away.
-IN_PROC_BROWSER_TEST_F(FedCmCUJTest, MAYBE_BubbleHidesWhenModalUIShown) {
-  RunTestSequence(
-      OpenAccountsBubble(),
-      WaitForShow(kFedCmAccountChooserDialogAccountElementId), ShowTabModalUI(),
-      WaitForHide(kFedCmAccountChooserDialogAccountElementId), HideTabModalUI(),
-      WaitForShow(kFedCmAccountChooserDialogAccountElementId), );
 }
 
 }  // namespace
