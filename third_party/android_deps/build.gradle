@@ -123,8 +123,6 @@ dependencies {
     compile "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.7.2"
     compile "org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.22"
 
-    compile 'com.google.android.gms:play-services-ads-identifier:17.0.0'
-
     // Needed by androidx.datastore
     compile "com.squareup.okio:okio-jvm:3.9.0"
     // Needed by androidx.appcompat -> androidx.cursoradaptor
