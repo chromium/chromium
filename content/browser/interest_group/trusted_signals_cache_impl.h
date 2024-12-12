@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -152,8 +153,11 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
 
     // Attempts to start the network fetch, if it hasn't started already. Not
     // guaranteed to immediately start the fetch, as it may currently be
-    // retrieving the coordinator key. Fetches will not start until this is
-    // invoked for at least one of the Handles that share a Fetch.
+    // retrieving the coordinator key. If this isn't called within
+    // `kAutoStartDelay` of a fetch being created, it will automatically be
+    // invoked for the fetch. Note that since fetches may be reused, it's
+    // possible for a fetch of any age to be assigned to a new Handle, and for
+    // another Handle to start the fetch assigned to a Handle.
     //
     // Handles that share a `compression_group_token` always share a Fetch,
     // though other Handles may share the fetch as well.
@@ -170,6 +174,10 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   };
 
   static constexpr size_t kNonceCacheSize = 50;
+
+  // If StartFetch() isn't called on any handle for a request that has been
+  // around this long, automatically call SetFetchCanStart() for the fetch.
+  static constexpr base::TimeDelta kAutoStartDelay = base::Milliseconds(10);
 
   TrustedSignalsCacheImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,

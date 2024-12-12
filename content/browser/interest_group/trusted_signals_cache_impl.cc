@@ -864,6 +864,14 @@ TrustedSignalsCacheImpl::FindOrCreateCompressionGroupDataAndQueueFetch(
         base::BindOnce(&TrustedSignalsCacheImpl::GetCoordinatorKey,
                        fetch_it->second.weak_ptr_factory.GetWeakPtr(),
                        fetch_it));
+
+    // Automatically start fetch if no consumer starts it soon enough.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&TrustedSignalsCacheImpl::SetFetchCanStart,
+                       fetch_it->second.weak_ptr_factory.GetWeakPtr(),
+                       fetch_it),
+        kAutoStartDelay);
   }
 
   Fetch* fetch = &fetch_it->second;

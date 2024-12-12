@@ -1319,6 +1319,150 @@ TYPED_TEST(TrustedSignalsCacheTest, GetAfterFetchFails) {
   client.WaitForError();
 }
 
+// Check that fetches are automatically started after kAutoStartDelay has
+// elapsed.
+TYPED_TEST(TrustedSignalsCacheTest, AutoStart) {
+  base::TimeDelta kTinyTime = base::Milliseconds(1);
+
+  auto params = this->CreateDefaultParams();
+  auto [handle, partition_id] =
+      this->RequestTrustedSignals(params, /*start_fetch=*/false);
+
+  // Request should only start once `kAutoStartDelay` has elapsed
+  this->task_environment_.FastForwardBy(
+      TrustedSignalsCacheImpl::kAutoStartDelay - kTinyTime);
+  EXPECT_EQ(this->trusted_signals_cache_->num_pending_fetches(), 0u);
+  this->task_environment_.FastForwardBy(kTinyTime);
+  EXPECT_EQ(this->trusted_signals_cache_->num_pending_fetches(), 1u);
+
+  auto fetch = this->WaitForSignalsFetch();
+  ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                      partition_id);
+  RespondToFetchWithSuccess(fetch);
+
+  TestTrustedSignalsCacheClient client(handle, this->cache_mojo_pipe_);
+  client.WaitForSuccess();
+}
+
+// Check that fetches are automatically started after kAutoStartDelay, even if a
+// second request is merged into it.
+TYPED_TEST(TrustedSignalsCacheTest, AutoStartTwoRequests) {
+  base::TimeDelta kTinyTime = base::Milliseconds(1);
+
+  auto params = this->CreateDefaultParams();
+  auto [handle1, partition_id1] =
+      this->RequestTrustedSignals(params, /*start_fetch=*/false);
+
+  // After a delay less than `kAutoStartDelay`, create a second request that
+  // matches the first one. The old fetch should be reused.
+  this->task_environment_.FastForwardBy(
+      TrustedSignalsCacheImpl::kAutoStartDelay - kTinyTime);
+  auto [handle2, partition_id2] =
+      this->RequestTrustedSignals(params, /*start_fetch=*/false);
+  EXPECT_EQ(handle1, handle2);
+  EXPECT_EQ(partition_id1, partition_id2);
+
+  // No fetches should have been started.
+  EXPECT_EQ(this->trusted_signals_cache_->num_pending_fetches(), 0u);
+
+  // After exactly `kAutoStartDelay`, the fetch should be started.
+  this->task_environment_.FastForwardBy(kTinyTime);
+  EXPECT_EQ(this->trusted_signals_cache_->num_pending_fetches(), 1u);
+
+  auto fetch = this->WaitForSignalsFetch();
+  ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                      partition_id1);
+  RespondToFetchWithSuccess(fetch);
+
+  TestTrustedSignalsCacheClient client(handle1, this->cache_mojo_pipe_);
+  client.WaitForSuccess();
+}
+
+// Check that manually starting a request that has already automatically started
+// doesn't cause any issues.
+TYPED_TEST(TrustedSignalsCacheTest, AutoStartThenManuallyStart) {
+  auto params = this->CreateDefaultParams();
+  auto [handle, partition_id] =
+      this->RequestTrustedSignals(params, /*start_fetch=*/false);
+
+  this->task_environment_.FastForwardBy(
+      TrustedSignalsCacheImpl::kAutoStartDelay);
+  EXPECT_EQ(this->trusted_signals_cache_->num_pending_fetches(), 1u);
+
+  // This should not cause another fetch to be started, nor cause a crash.
+  handle->StartFetch();
+  EXPECT_EQ(this->trusted_signals_cache_->num_pending_fetches(), 1u);
+
+  // Can safely call StartFetch() more than once, and no new fetches should be
+  // started.
+  handle->StartFetch();
+  handle->StartFetch();
+  handle->StartFetch();
+  handle->StartFetch();
+  EXPECT_EQ(this->trusted_signals_cache_->num_pending_fetches(), 1u);
+
+  auto fetch = this->WaitForSignalsFetch();
+  ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                      partition_id);
+  RespondToFetchWithSuccess(fetch);
+
+  TestTrustedSignalsCacheClient client(handle, this->cache_mojo_pipe_);
+  client.WaitForSuccess();
+}
+
+// Check that the auto-start delay passing after a request was manually started
+// doesn't cause issues. Test 3 cases: Auto start duration passes while Fetch is
+// live, after Fetch has completed but cache entry is still live, and after
+// cache entry has been destroyed.
+TYPED_TEST(TrustedSignalsCacheTest, ManuallyStartThenAutoStart) {
+  enum class TestCase {
+    kAutoStartDuringFetch,
+    kAutoStartAfterFetch,
+    kAutoStartAfterHandleDestroyed,
+  };
+
+  for (TestCase test_case :
+       {TestCase::kAutoStartDuringFetch, TestCase::kAutoStartAfterFetch,
+        TestCase::kAutoStartAfterHandleDestroyed}) {
+    SCOPED_TRACE(static_cast<int>(test_case));
+
+    // Start with a clean slate for each test.
+    this->CreateCache();
+
+    auto params = this->CreateDefaultParams();
+    // Create request and start the fetch.
+    auto [handle, partition_id] = this->RequestTrustedSignals(params);
+
+    // Wait for fetch creation.
+    auto fetch = this->WaitForSignalsFetch();
+    ValidateFetchParams(fetch, params, /*expected_compression_group_id=*/0,
+                        partition_id);
+
+    if (test_case == TestCase::kAutoStartDuringFetch) {
+      this->task_environment_.FastForwardBy(
+          TrustedSignalsCacheImpl::kAutoStartDelay);
+    }
+    EXPECT_EQ(this->trusted_signals_cache_->num_pending_fetches(), 0u);
+
+    RespondToFetchWithSuccess(fetch);
+    if (test_case == TestCase::kAutoStartAfterFetch) {
+      this->task_environment_.FastForwardBy(
+          TrustedSignalsCacheImpl::kAutoStartDelay);
+    }
+    EXPECT_EQ(this->trusted_signals_cache_->num_pending_fetches(), 0u);
+
+    TestTrustedSignalsCacheClient client(handle, this->cache_mojo_pipe_);
+    client.WaitForSuccess();
+
+    handle.reset();
+    if (test_case == TestCase::kAutoStartAfterHandleDestroyed) {
+      this->task_environment_.FastForwardBy(
+          TrustedSignalsCacheImpl::kAutoStartDelay);
+    }
+    EXPECT_EQ(this->trusted_signals_cache_->num_pending_fetches(), 0u);
+  }
+}
+
 // Test the case where a Handle is destroyed without ever calling StartFetch()
 // on it.
 TYPED_TEST(TrustedSignalsCacheTest, HandleDestroyedWithoutStartingFetch) {
@@ -1367,7 +1511,8 @@ TYPED_TEST(TrustedSignalsCacheTest, HandleDestroyedWithoutStartingFetch) {
     handle.reset();
 
     // No fetches should have been started.
-    this->task_environment_.RunUntilIdle();
+    this->task_environment_.FastForwardBy(
+        TrustedSignalsCacheImpl::kAutoStartDelay - base::Milliseconds(1));
     EXPECT_EQ(this->trusted_signals_cache_->num_pending_fetches(), 0u);
 
     TestTrustedSignalsCacheClient client(compression_group_token,
