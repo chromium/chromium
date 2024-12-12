@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] PerformanceObserver buffering independent of durationThreshold
-  assert_greater_than_equal: The entry's duration should be greater than or equal to 104 ms. expected a number greater than or equal to 104 but got 32
-Harness: the test ran to completion.
