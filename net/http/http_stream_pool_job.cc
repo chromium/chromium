@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "net/base/load_states.h"
@@ -65,6 +66,25 @@ HttpStreamPool::Job::Job(Delegate* delegate,
 
 HttpStreamPool::Job::~Job() {
   CHECK(group_);
+
+  // Record histograms only when `this` has a result. If `this` doesn't have a
+  // result that means JobController destroyed `this` since another job
+  // completed.
+  if (result_.has_value()) {
+    const std::string_view suffix = *result_ == OK ? "Success" : "Failure";
+    base::UmaHistogramTimes(
+        base::StrCat({"Net.HttpStreamPool.JobCompleteTime.", suffix}),
+        base::TimeTicks::Now() - create_time_);
+    base::UmaHistogramTimes(
+        base::StrCat({"Net.HttpStreamPool.JobCreateToResumeTime.", suffix}),
+        CreateToResumeTime());
+
+    if (*result_ != OK) {
+      base::UmaHistogramSparse("Net.NetworkTransaction.JobErrorCode",
+                               -*result_);
+    }
+  }
+
   // `group_` may be deleted after this call.
   group_.ExtractAsDangling()->OnJobComplete(this);
 }
@@ -107,6 +127,7 @@ void HttpStreamPool::Job::AddConnectionAttempts(
 void HttpStreamPool::Job::OnStreamReady(std::unique_ptr<HttpStream> stream,
                                         NextProto negotiated_protocol) {
   CHECK(delegate_);
+  CHECK(!result_.has_value());
 
   int result = OK;
   if (!allowed_alpns_.Has(negotiated_protocol)) {
@@ -125,6 +146,7 @@ void HttpStreamPool::Job::OnStreamReady(std::unique_ptr<HttpStream> stream,
     return;
   }
 
+  result_ = OK;
   group_->http_network_session()->proxy_resolution_service()->ReportSuccess(
       delegate_->proxy_info());
   delegate_->OnStreamReady(this, std::move(stream), negotiated_protocol);
@@ -135,6 +157,8 @@ void HttpStreamPool::Job::OnStreamFailed(
     const NetErrorDetails& net_error_details,
     ResolveErrorInfo resolve_error_info) {
   CHECK(delegate_);
+  CHECK(!result_.has_value());
+  result_ = status;
   delegate_->OnStreamFailed(this, status, net_error_details,
                             resolve_error_info);
 }
@@ -142,11 +166,15 @@ void HttpStreamPool::Job::OnStreamFailed(
 void HttpStreamPool::Job::OnCertificateError(int status,
                                              const SSLInfo& ssl_info) {
   CHECK(delegate_);
+  CHECK(!result_.has_value());
+  result_ = status;
   delegate_->OnCertificateError(this, status, ssl_info);
 }
 
 void HttpStreamPool::Job::OnNeedsClientAuth(SSLCertRequestInfo* cert_info) {
   CHECK(delegate_);
+  CHECK(!result_.has_value());
+  result_ = ERR_SSL_CLIENT_AUTH_CERT_NEEDED;
   delegate_->OnNeedsClientAuth(this, cert_info);
 }
 

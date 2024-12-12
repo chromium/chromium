@@ -2425,6 +2425,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpStreamPool.JobCompleteTime.{Result}" units="ms"
+    expires_after="2025-02-27">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Time from when an HttpStreamPool::Job is created to when the job is
+    completed. Recorded for each job that has a result upon destruction of the
+    job.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="Job failed"/>
+    <variant name="Success" summary="Job succeeded"/>
+  </token>
+</histogram>
+
+<histogram name="Net.HttpStreamPool.JobCreateToResultTime.{Result}" units="ms"
+    expires_after="2025-02-27">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Time from when an HttpStreamPool::Job is created to when the job is resumed.
+    This is the time the job was paused to wait for a failing AttemptManager.
+    Recorded for each job that has a result upon destruction of the job.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="Job failed"/>
+    <variant name="Success" summary="Job succeeded"/>
+  </token>
+</histogram>
+
+<histogram name="Net.HttpStreamPool.JobErrorCode" enum="NetErrorCodes"
+    expires_after="2025-02-27">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The net error for an HttpStreamPool::Job. Recorded for each job that has a
+    result upon destruction of the job.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpStreamPool.StreamAttemptCancelReason"
     enum="StreamCloseReason" expires_after="2025-02-27">
   <owner>bashi@chromium.org</owner>

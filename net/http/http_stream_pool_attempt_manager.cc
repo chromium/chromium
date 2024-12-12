@@ -61,7 +61,7 @@ StreamSocketHandle::SocketReuseType GetReuseTypeFromIdleStreamSocket(
              : StreamSocketHandle::SocketReuseType::kUnusedIdle;
 }
 
-std::string_view GetResultHistogramPrefix(std::optional<int> result) {
+std::string_view GetResultHistogramSuffix(std::optional<int> result) {
   if (result.has_value()) {
     return *result == OK ? "Success" : "Failure";
   }
@@ -82,7 +82,7 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
   ~InFlightAttempt() override {
     base::UmaHistogramTimes(
         base::StrCat({"Net.HttpStreamPool.StreamAttemptTime.",
-                      GetResultHistogramPrefix(result_)}),
+                      GetResultHistogramSuffix(result_)}),
         base::TimeTicks::Now() - start_time_);
 
     if (cancel_reason_.has_value()) {

@@ -160,6 +160,8 @@ class HttpStreamPool::Job {
   const base::TimeTicks create_time_;
   base::TimeTicks resume_time_;
 
+  std::optional<int> result_;
+
   ConnectionAttempts connection_attempts_;
 
   base::WeakPtrFactory<Job> weak_ptr_factory_{this};
