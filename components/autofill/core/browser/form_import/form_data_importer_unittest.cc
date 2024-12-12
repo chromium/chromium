@@ -922,7 +922,9 @@ TEST_F(FormDataImporterTest, InvalidPhoneNumber) {
                                              {profile_without_number});
 }
 
-TEST_F(FormDataImporterTest, PlusAddressesExcluded) {
+// Tests that active plus addresses are not part of the values captured during
+// form submissions.
+TEST_F(FormDataImporterTest, ActivePlusAddressesExcluded) {
   const std::string kDummyPlusAddress = "plus+plus@plus.plus";
 
   // Save `kDummyPlusAddress` into the `plus_address_service`, and configure the
@@ -939,6 +941,37 @@ TEST_F(FormDataImporterTest, PlusAddressesExcluded) {
   // excluded from imports.
   TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
   SetValueForType(type_value_pairs, EMAIL_ADDRESS, kDummyPlusAddress);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+
+  // Create a default profile, but remove the email address, since extraction
+  // should skip the known plus address.
+  AutofillProfile expected_profile = ConstructDefaultProfile();
+  expected_profile.ClearFields({EMAIL_ADDRESS});
+
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
+                                             {expected_profile});
+}
+
+// Tests that strings matching the plus address format are not part of the
+// values captured during form submissions.
+TEST_F(FormDataImporterTest, MatchedPlusAddressesExcluded) {
+  const std::string kMatchedPlusAddress = "plus+plus@grelay.com";
+
+  // Save `kDummyPlusAddress` into the `plus_address_service`, and configure the
+  // `autofill_client_` to use it.
+  auto plus_address_delegate =
+      std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>();
+  ON_CALL(*plus_address_delegate, IsPlusAddress)
+      .WillByDefault([](const std::string& address) {
+        return address.ends_with("@grelay.com");
+      });
+  autofill_client_->set_plus_address_delegate(std::move(plus_address_delegate));
+
+  // Next, make a form with the `kDummyPlusAddress` filled in, which should be
+  // excluded from imports.
+  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
+  SetValueForType(type_value_pairs, EMAIL_ADDRESS, kMatchedPlusAddress);
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromTypeValuePairs(type_value_pairs);
 

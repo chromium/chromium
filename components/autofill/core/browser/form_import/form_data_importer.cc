@@ -498,7 +498,8 @@ FormDataImporter::GetAddressObservedFieldValues(
     // When the experimental plus addresses feature is enabled, and the value is
     // a plus address, exclude it from the resulting address profile.
     if (plus_address_delegate &&
-        plus_address_delegate->IsPlusAddress(base::UTF16ToUTF8(value))) {
+        (plus_address_delegate->IsPlusAddress(base::UTF16ToUTF8(value)) ||
+         plus_address_delegate->MatchesPlusAddressFormat(value))) {
       continue;
     }
     // Don't import from ac=unrecognized fields.
