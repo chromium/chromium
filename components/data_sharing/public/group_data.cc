@@ -88,6 +88,15 @@ GroupEvent& GroupEvent::operator=(const GroupEvent&) = default;
 GroupEvent::GroupEvent(GroupEvent&&) = default;
 GroupEvent& GroupEvent::operator=(GroupEvent&&) = default;
 
+GroupEvent::GroupEvent(EventType event_type,
+                       const GroupId& group_id,
+                       const std::optional<GaiaId>& affected_member_gaia_id,
+                       const base::Time& event_time)
+    : event_type(event_type),
+      group_id(group_id),
+      affected_member_gaia_id(affected_member_gaia_id),
+      event_time(event_time) {}
+
 GroupEvent::~GroupEvent() = default;
 
 TabPreview::TabPreview(const GURL& url) : url(url) {}

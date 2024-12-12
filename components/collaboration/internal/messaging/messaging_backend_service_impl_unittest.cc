@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "components/collaboration/internal/messaging/data_sharing_change_notifier.h"
@@ -19,7 +20,7 @@
 using base::test::RunOnceClosure;
 
 using testing::_;
-using testing::A;
+using testing::Return;
 using testing::SaveArg;
 using testing::Truly;
 
@@ -105,7 +106,7 @@ class MockDataSharingChangeNotifier : public DataSharingChangeNotifier {
               RemoveObserver,
               (DataSharingChangeNotifier::Observer * observer),
               (override));
-  MOCK_METHOD(void, Initialize, (), (override));
+  MOCK_METHOD(FlushCallback, Initialize, (), (override));
   MOCK_METHOD(bool, IsInitialized, (), (override));
 };
 
@@ -134,12 +135,20 @@ class MessagingBackendServiceImplTest : public testing::Test {
     EXPECT_CALL(*unowned_data_sharing_change_notifier_, AddObserver(_))
         .Times(1)
         .WillOnce(SaveArg<0>(&ds_notifier_observer_));
-    EXPECT_CALL(*unowned_data_sharing_change_notifier_, Initialize());
+    EXPECT_CALL(*unowned_data_sharing_change_notifier_, Initialize())
+        .WillOnce(Return(base::DoNothing()));
     EXPECT_CALL(*unowned_data_sharing_change_notifier_, RemoveObserver(_));
 
     auto mock_messaging_backend_store =
         std::make_unique<MockMessagingBackendStore>();
     unowned_messaging_backend_store_ = mock_messaging_backend_store.get();
+    EXPECT_CALL(*unowned_messaging_backend_store_, Initialize(_))
+        .Times(1)
+        .WillOnce(
+            [&](base::OnceCallback<void(bool)> on_store_initialized_callback) {
+              on_store_initialized_callback_ =
+                  std::move(on_store_initialized_callback);
+            });
 
     service_ = std::make_unique<MessagingBackendServiceImpl>(
         std::move(tab_group_change_notifier),
@@ -152,6 +161,7 @@ class MessagingBackendServiceImplTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment;
 
+  base::OnceCallback<void(bool)> on_store_initialized_callback_;
   std::unique_ptr<tab_groups::MockTabGroupSyncService>
       mock_tab_group_sync_service_;
   std::unique_ptr<MessagingBackendServiceImpl> service_;
@@ -165,9 +175,11 @@ class MessagingBackendServiceImplTest : public testing::Test {
 TEST_F(MessagingBackendServiceImplTest, TestInitialization) {
   CreateService();
   EXPECT_FALSE(service_->IsInitialized());
-  tg_notifier_observer_->OnTabGroupChangeNotifierInitialized();
+  std::move(on_store_initialized_callback_).Run(/*success=*/true);
   EXPECT_FALSE(service_->IsInitialized());
   ds_notifier_observer_->OnDataSharingChangeNotifierInitialized();
+  EXPECT_FALSE(service_->IsInitialized());
+  tg_notifier_observer_->OnTabGroupChangeNotifierInitialized();
   EXPECT_TRUE(service_->IsInitialized());
 }
 

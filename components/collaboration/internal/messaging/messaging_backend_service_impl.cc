@@ -31,11 +31,9 @@ MessagingBackendServiceImpl::MessagingBackendServiceImpl(
       store_(std::move(messaging_backend_store)),
       tab_group_sync_service_(tab_group_sync_service),
       data_sharing_service_(data_sharing_service) {
-  tab_group_change_notifier_observer_.Observe(tab_group_change_notifier_.get());
-  tab_group_change_notifier_->Initialize();
-  data_sharing_change_notifier_observer_.Observe(
-      data_sharing_change_notifier_.get());
-  data_sharing_change_notifier_->Initialize();
+  store_->Initialize(
+      base::BindOnce(&MessagingBackendServiceImpl::OnStoreInitialized,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 MessagingBackendServiceImpl::~MessagingBackendServiceImpl() = default;
@@ -58,8 +56,7 @@ void MessagingBackendServiceImpl::RemovePersistentMessageObserver(
 }
 
 bool MessagingBackendServiceImpl::IsInitialized() {
-  return tab_group_change_notifier_initialized_ &&
-         data_sharing_change_notifier_initialized_;
+  return initialized_;
 }
 
 std::vector<PersistentMessage> MessagingBackendServiceImpl::GetMessagesForTab(
@@ -92,12 +89,28 @@ std::vector<ActivityLogItem> MessagingBackendServiceImpl::GetActivityLog(
   return std::vector<ActivityLogItem>();
 }
 
-void MessagingBackendServiceImpl::OnTabGroupChangeNotifierInitialized() {
-  tab_group_change_notifier_initialized_ = true;
+void MessagingBackendServiceImpl::OnStoreInitialized(bool success) {
+  if (!success) {
+    DVLOG(2) << "Failed to initialize MessagingBackendServiceImpl.";
+    return;
+  }
+  data_sharing_change_notifier_observer_.Observe(
+      data_sharing_change_notifier_.get());
+  data_sharing_flush_callback_ = data_sharing_change_notifier_->Initialize();
 }
 
 void MessagingBackendServiceImpl::OnDataSharingChangeNotifierInitialized() {
-  data_sharing_change_notifier_initialized_ = true;
+  tab_group_change_notifier_observer_.Observe(tab_group_change_notifier_.get());
+  tab_group_change_notifier_->Initialize();
+}
+
+void MessagingBackendServiceImpl::OnTabGroupChangeNotifierInitialized() {
+  initialized_ = true;
+  for (auto& observer : persistent_message_observers_) {
+    observer.OnMessagingBackendServiceInitialized();
+  }
+  CHECK(data_sharing_flush_callback_);
+  std::move(data_sharing_flush_callback_).Run();
 }
 
 void MessagingBackendServiceImpl::OnTabGroupAdded(

@@ -79,6 +79,8 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
   void OnDataSharingChangeNotifierInitialized() override;
 
  private:
+  void OnStoreInitialized(bool success);
+
   // Provides functionality to go from observing the TabGroupSyncService to
   // a delta based observer API.
   std::unique_ptr<TabGroupChangeNotifier> tab_group_change_notifier_;
@@ -98,11 +100,12 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
                           DataSharingChangeNotifier::Observer>
       data_sharing_change_notifier_observer_{this};
 
-  // Whether the TabGroupChangeNotifier has been initialized.
-  bool tab_group_change_notifier_initialized_ = false;
+  // Whether initialization has completed.
+  bool initialized_ = false;
 
-  // Whether the DataSharingChangeNotifier has been initialized.
-  bool data_sharing_change_notifier_initialized_ = false;
+  // A callback invoked when we are ready to flush all the events from the
+  // data sharing service.
+  DataSharingChangeNotifier::FlushCallback data_sharing_flush_callback_;
 
   // Service providing information about tabs and tab groups.
   raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
@@ -116,6 +119,8 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
 
   // The list of observers for any changes to persistent messages.
   base::ObserverList<PersistentMessageObserver> persistent_message_observers_;
+
+  base::WeakPtrFactory<MessagingBackendServiceImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace collaboration::messaging

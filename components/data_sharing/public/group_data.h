@@ -117,6 +117,11 @@ struct GroupEvent {
   GroupEvent(GroupEvent&&);
   GroupEvent& operator=(GroupEvent&&);
 
+  GroupEvent(EventType event_type,
+             const GroupId& group_id,
+             const std::optional<GaiaId>& affected_member_gaia_id,
+             const base::Time& event_time);
+
   ~GroupEvent();
 
   EventType event_type;
