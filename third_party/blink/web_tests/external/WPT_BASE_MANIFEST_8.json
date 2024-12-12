@@ -363621,15 +363621,15 @@
       []
      ],
      "scrollWidthHeight-contain-layout-expected.txt": [
-      "452c3acd369af729fd8900b3e0c7f75433a1d6a0",
+      "042c8eed90149ef3ae55e8045a317c0ca5c35036",
       []
      ],
      "scrollWidthHeight-negative-margin-002-expected.txt": [
-      "cac4713d86a25d91c877a4887c28931c3e5345f6",
+      "f0690d432e60a54c58e4cc497d28cc112cee9cbe",
       []
      ],
      "scrollWidthHeightWhenNotScrollable-expected.txt": [
-      "1af39257afc270f47fd24287a1722b81a1ff81b8",
+      "729999dc7061ff46497f00f566e763996ee24a4e",
       []
      ],
      "scrollingElement-expected.txt": [
@@ -374456,11 +374456,11 @@
        []
       ],
       "ba-fledge-util.sub.js": [
-       "d981e6a056e978d41879cb5b7b05285d5b931351",
+       "3aef43d70d6ea79a5fe743543de865ba4266ba5f",
        []
       ],
       "ba-public-keys": [
-       "60580a74d06a78db23d0d551a9d4a014bee77994",
+       "32b1c1babe5b6da9441e5ffc44f7eecc33454fa0",
        []
       ],
       "bidding-logic.sub.py": [
@@ -440936,7 +440936,7 @@
       ]
      ],
      "comp_name_from_content.html": [
-      "32a9a7b3c43b0f25fc09045c1a630a71c784b265",
+      "b0c92c8142c28a5dde5fd87ed1077b88421765bd",
       [
        null,
        {
@@ -504879,7 +504879,7 @@
       ]
      ],
      "scrollWidthHeight-contain-layout.html": [
-      "1afab08850664326132ebeb7adbca2337be6ef61",
+      "f787f1a156f773aac904fbdad42a1365564ccc0d",
       [
        null,
        {}
@@ -504893,7 +504893,14 @@
       ]
      ],
      "scrollWidthHeight-negative-margin-002.html": [
-      "418b631f4ba1801157bc4431a28a92bc8d18f888",
+      "1192680c0351cf63259974e2ef46de93158fb83a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scrollWidthHeight-overflow-visible-margin-collapsing.html": [
+      "322c91afc0838c17ddf9a23f2597017fa8a999fe",
       [
        null,
        {}
@@ -504907,7 +504914,7 @@
       ]
      ],
      "scrollWidthHeightWhenNotScrollable.xht": [
-      "8eb08d55203a5a12a6c1bca93342ea51a1d780a2",
+      "463d31772eb8a7c962fed6eae95bcbe0c746b477",
       [
        null,
        {}
@@ -617817,7 +617824,7 @@
          ]
         ],
         "selectedcontent.tentative.html": [
-         "77ff46a3b33437584309d19e23567760a11faeb1",
+         "eef68a9237fb7f5e71345d3c2bcc1d77509d6156",
          [
           null,
           {
@@ -618687,7 +618694,7 @@
         ]
        ],
        "dialog-requestclose.tentative.html": [
-        "18486f791b4a6c6e2f23f4c9f1c566f9f3dbf8a1",
+        "5cbad9c651935e8296d1fad3c94433965b9303db",
         [
          null,
          {
@@ -681882,7 +681889,7 @@
      ]
     ],
     "requestStorageAccess-cross-origin-iframe-navigation-relax.sub.https.window.js": [
-     "7ccb9824e699a3a269fa257b2c889d50f89d8f88",
+     "1cede45d59d8ef13ec40ab18ff107bf97ba1324a",
      [
       "storage-access-api/requestStorageAccess-cross-origin-iframe-navigation-relax.sub.https.window.html",
       {
@@ -681908,7 +681915,7 @@
      ]
     ],
     "requestStorageAccess-cross-origin-iframe-navigation.sub.https.window.js": [
-     "691c8c86b62005880c0babeb686cfc18113579ec",
+     "ce0d69cfaa54c77b7d60562b6d04884bf680dc1f",
      [
       "storage-access-api/requestStorageAccess-cross-origin-iframe-navigation.sub.https.window.html",
       {
