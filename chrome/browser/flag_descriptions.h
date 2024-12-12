@@ -1400,9 +1400,6 @@ extern const char kLensOverlayLatencyOptimizationsDescription[];
 extern const char kLensImageFormatOptimizationsName[];
 extern const char kLensImageFormatOptimizationsDescription[];
 
-extern const char kLensImageTranslateName[];
-extern const char kLensImageTranslateDescription[];
-
 extern const char kLinkedServicesSettingName[];
 extern const char kLinkedServicesSettingDescription[];
 

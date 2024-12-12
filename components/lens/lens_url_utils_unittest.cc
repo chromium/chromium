@@ -32,15 +32,6 @@ TEST(LensUrlUtilsTest, GetImageSearcParameterTest) {
   EXPECT_THAT(query_param, MatchesRegex("ep=ccm&re=df&s=4&st=\\d+"));
 }
 
-// TODO(378584534): Remove this test once the Lens entrypoint is updated.
-TEST(LensUrlUtilsTest, GetImageTranslateParameterTest) {
-  lens::EntryPoint lens_image_translate_ep = lens::EntryPoint::
-      CHROME_TRANSLATE_IMAGE_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM;
-  std::string query_param =
-      lens::GetQueryParametersForLensRequest(lens_image_translate_ep);
-  EXPECT_THAT(query_param, MatchesRegex("ep=ctrcm&re=df&s=4&st=\\d+"));
-}
-
 TEST(LensUrlUtilsTest, GetVideoFrameSearchQueryParameterTest) {
   auto lens_ep = lens::EntryPoint::CHROME_VIDEO_FRAME_SEARCH_CONTEXT_MENU_ITEM;
   std::string query_param = lens::GetQueryParametersForLensRequest(lens_ep);

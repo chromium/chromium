@@ -40,7 +40,6 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -76,8 +75,6 @@
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sync/test/test_sync_service.h"
-#include "components/translate/core/browser/language_state.h"
-#include "components/translate/core/browser/translate_manager.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -593,18 +590,13 @@ class RenderViewContextMenuPrefsTest
     menu->AppendImageItems();
   }
 
-  void SetUserSelectedDefaultSearchProvider(
-      const std::string& base_url,
-      bool supports_image_search,
-      bool supports_image_translate = true) {
+  void SetUserSelectedDefaultSearchProvider(const std::string& base_url,
+                                            bool supports_image_search) {
     TemplateURLData data;
     data.SetShortName(u"t");
     data.SetURL(base_url + "?q={searchTerms}");
     if (supports_image_search) {
       data.image_url = base_url;
-    }
-    if (supports_image_translate) {
-      data.image_translate_url = base_url;
     }
     TemplateURL* template_url =
         template_url_service_->Add(std::make_unique<TemplateURL>(data));
@@ -1304,9 +1296,8 @@ TEST_F(RenderViewContextMenuHideAutofillSuggestionsTest,
 // Verify that the Lens Image Search menu item is disabled on non-image content
 TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchNonImage) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {lens::features::kLensStandalone, lens::features::kEnableImageTranslate},
-      {lens::features::kLensOverlay});
+  features.InitWithFeatures({lens::features::kLensStandalone},
+                            {lens::features::kLensOverlay});
   SetUserSelectedDefaultSearchProvider("https://www.google.com",
                                        /*supports_image_search=*/true);
   content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
@@ -1317,8 +1308,6 @@ TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchNonImage) {
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS));
 }
 
 // Verify that the Lens Image Search menu item is disabled when there is the
@@ -1343,9 +1332,8 @@ TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchNoBrowser) {
 // Verify that the Lens Image Search menu item is enabled on image content
 TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchEnabled) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {lens::features::kLensStandalone, lens::features::kEnableImageTranslate},
-      {lens::features::kLensOverlay});
+  features.InitWithFeatures({lens::features::kLensStandalone},
+                            {lens::features::kLensOverlay});
   SetUserSelectedDefaultSearchProvider("https://www.google.com",
                                        /*supports_image_search=*/true);
   content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
@@ -1357,17 +1345,14 @@ TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchEnabled) {
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS));
 }
 
 // Verify that the Lens Image Search menu item is enabled for Progressive Web
 // Apps
 TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchForProgressiveWebApp) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {lens::features::kLensStandalone, lens::features::kEnableImageTranslate},
-      {lens::features::kLensOverlay});
+  features.InitWithFeatures({lens::features::kLensStandalone},
+                            {lens::features::kLensOverlay});
   SetUserSelectedDefaultSearchProvider("https://www.google.com",
                                        /*supports_image_search=*/true);
   content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
@@ -1379,17 +1364,14 @@ TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchForProgressiveWebApp) {
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS));
 }
 
 // Verify that the Lens Image Search menu item is enabled for third-party
 // default search engines that support image search.
 TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchEnabledFor3pDse) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {lens::features::kLensStandalone, lens::features::kEnableImageTranslate},
-      {lens::features::kLensOverlay});
+  features.InitWithFeatures({lens::features::kLensStandalone},
+                            {lens::features::kLensOverlay});
   SetUserSelectedDefaultSearchProvider("https://www.bing.com",
                                        /*supports_image_search=*/true);
   content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
@@ -1401,17 +1383,14 @@ TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchEnabledFor3pDse) {
 
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS));
 }
 
 // Verify that the Lens Image Search menu item is disabled for third-part
 // default search engines that do not support image search.
 TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchDisabledFor3pDse) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {lens::features::kLensStandalone, lens::features::kEnableImageTranslate},
-      {lens::features::kLensOverlay});
+  features.InitWithFeatures({lens::features::kLensStandalone},
+                            {lens::features::kLensOverlay});
   SetUserSelectedDefaultSearchProvider("https://www.yahoo.com",
                                        /*supports_image_search=*/false);
   content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
@@ -1423,101 +1402,6 @@ TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchDisabledFor3pDse) {
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS));
-}
-
-// Verify that the Translate image menu item is enabled on image content when
-// the page is translated
-TEST_F(RenderViewContextMenuPrefsTest, LensTranslateImageEnabled) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {lens::features::kLensStandalone, lens::features::kEnableImageTranslate},
-      {lens::features::kLensOverlay});
-  SetUserSelectedDefaultSearchProvider("https://www.google.com",
-                                       /*supports_image_search=*/true,
-                                       /*supports_image_translate=*/true);
-  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
-  params.has_image_contents = true;
-  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
-                                 params);
-  ChromeTranslateClient::CreateForWebContents(web_contents());
-  translate::LanguageState* language_state =
-      ChromeTranslateClient::FromWebContents(web_contents())
-          ->GetTranslateManager()
-          ->GetLanguageState();
-  language_state->SetSourceLanguage("zh-CN");
-  language_state->SetCurrentLanguage("fr");
-  language_state->SetTranslateEnabled(true);
-  menu.SetBrowser(GetBrowser());
-  menu.Init();
-
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
-  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB));
-  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS));
-}
-
-// Verify that the Translate image menu item is enabled for third-party
-// default search engines that support image translate.
-TEST_F(RenderViewContextMenuPrefsTest, LensTranslateImageEnabledFor3pDse) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {lens::features::kLensStandalone, lens::features::kEnableImageTranslate},
-      {lens::features::kLensOverlay});
-  SetUserSelectedDefaultSearchProvider("https://www.bing.com",
-                                       /*supports_image_search=*/true,
-                                       /*supports_image_translate=*/true);
-  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
-  params.has_image_contents = true;
-  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
-                                 params);
-  ChromeTranslateClient::CreateForWebContents(web_contents());
-  translate::LanguageState* language_state =
-      ChromeTranslateClient::FromWebContents(web_contents())
-          ->GetTranslateManager()
-          ->GetLanguageState();
-  language_state->SetSourceLanguage("zh-CN");
-  language_state->SetCurrentLanguage("fr");
-  language_state->SetTranslateEnabled(true);
-  menu.SetBrowser(GetBrowser());
-  menu.Init();
-
-  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
-  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS));
-}
-
-// Verify that the Translate image menu item is disabled for third-party
-// default search engines that do not support image translate.
-TEST_F(RenderViewContextMenuPrefsTest, LensTranslateImageDisabledFor3pDse) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {lens::features::kLensStandalone, lens::features::kEnableImageTranslate},
-      {lens::features::kLensOverlay});
-  SetUserSelectedDefaultSearchProvider("https://www.bing.com",
-                                       /*supports_image_search=*/true,
-                                       /*supports_image_translate=*/false);
-  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
-  params.has_image_contents = true;
-  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
-                                 params);
-  ChromeTranslateClient::CreateForWebContents(web_contents());
-  translate::LanguageState* language_state =
-      ChromeTranslateClient::FromWebContents(web_contents())
-          ->GetTranslateManager()
-          ->GetLanguageState();
-  language_state->SetSourceLanguage("zh-CN");
-  language_state->SetCurrentLanguage("fr");
-  language_state->SetTranslateEnabled(true);
-  menu.SetBrowser(GetBrowser());
-  menu.Init();
-
-  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS));
 }
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)

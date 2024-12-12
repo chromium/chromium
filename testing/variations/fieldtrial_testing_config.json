@@ -10156,24 +10156,6 @@
             ]
         }
     ],
-    "GoogleLensDesktopContentMenuTranslate": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LensEnableImageTranslate"
-                    ]
-                }
-            ]
-        }
-    ],
     "GoogleLensDesktopImageFormatOptimizations": [
         {
             "platforms": [

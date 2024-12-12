@@ -30,10 +30,6 @@ BASE_DECLARE_FEATURE(kEnableLatencyLogging);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kEnableRegionSearchKeyboardShortcut);
 
-// Enables context menu option for translating image feature.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kEnableImageTranslate);
-
 // Enables the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlay);

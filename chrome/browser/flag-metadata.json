@@ -3327,11 +3327,6 @@
     "expiry_milestone": 137
   },
   {
-    "name": "enable-lens-image-translate",
-    "owners": ["nguyenbryan@google.com", "stanfield@google.com", "lens-chrome@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-lens-in-omnibox-copied-image",
     "owners": [ "schechter@chromium.org", "hujasonx@chromium.org" ],
     "expiry_milestone": 125

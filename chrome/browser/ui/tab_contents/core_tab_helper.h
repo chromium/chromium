@@ -74,8 +74,7 @@ class CoreTabHelper : public content::WebContentsObserver,
   // force_open_in_new_tab is set.
   void SearchWithLens(content::RenderFrameHost* render_frame_host,
                       const GURL& src_url,
-                      lens::EntryPoint entry_point,
-                      bool is_image_translate);
+                      lens::EntryPoint entry_point);
 
   // Opens the Lens experience for an `image`, which will be resized if needed.
   // If the search engine supports opening requests in side panel, then the
@@ -89,11 +88,6 @@ class CoreTabHelper : public content::WebContentsObserver,
   // panel, then the request will open in the side panel instead of a new tab.
   void SearchByImage(content::RenderFrameHost* render_frame_host,
                      const GURL& src_url);
-
-  // Same as above, with ability to specify that the image should be translated.
-  void SearchByImage(content::RenderFrameHost* render_frame_host,
-                     const GURL& src_url,
-                     bool is_image_translate);
 
   // Performs an image search for the provided `image`, which will be resized if
   // needed. If the search engine supports opening requests in side panel, then
@@ -127,7 +121,6 @@ class CoreTabHelper : public content::WebContentsObserver,
           chrome_render_frame,
       const GURL& src_url,
       const std::string& additional_query_params,
-      bool is_image_translate,
       int thumbnail_min_area,
       int thumbnail_max_width,
       int thumbnail_max_height,
@@ -135,7 +128,6 @@ class CoreTabHelper : public content::WebContentsObserver,
 
   void DoSearchByImage(const GURL& src_url,
                        const std::string& additional_query_params,
-                       bool is_image_translate,
                        const std::vector<unsigned char>& thumbnail_data,
                        const std::string& content_type,
                        const gfx::Size& original_size,
@@ -165,17 +157,11 @@ class CoreTabHelper : public content::WebContentsObserver,
                          int thumbnail_min_area,
                          int thumbnail_max_width,
                          int thumbnail_max_height,
-                         const std::string& additional_query_params,
-                         bool is_image_translate);
+                         const std::string& additional_query_params);
 
   // Searches the `original_image`, which will be downscaled if needed.
   void SearchByImageImpl(const gfx::Image& original_image,
                          const std::string& additional_query_params);
-
-  // Sets search args used for image translation if the current page is
-  // currently being translated.
-  void MaybeSetSearchArgsForImageTranslate(
-      TemplateURLRef::SearchTermsArgs& search_args);
 
   // The time when we started to create the new tab page.  This time is from
   // before we created this WebContents.

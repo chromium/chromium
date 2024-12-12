@@ -26,10 +26,6 @@ BASE_FEATURE(kEnableRegionSearchKeyboardShortcut,
              "LensEnableRegionSearchKeyboardShortcut",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableImageTranslate,
-             "LensEnableImageTranslate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensOverlay,
              "LensOverlay",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

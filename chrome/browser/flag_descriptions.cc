@@ -2463,13 +2463,6 @@ const char kLensOverlayLatencyOptimizationsName[] =
 const char kLensOverlayLatencyOptimizationsDescription[] =
     "Enables latency optimizations for the Lens overlay.";
 
-const char kLensImageTranslateName[] =
-    "Translate text in images with Google Lens";
-const char kLensImageTranslateDescription[] =
-    "Enables a context menu item to translate text in images using Google "
-    "Lens. The context menu item appears when the current page is being "
-    "translated.";
-
 const char kLinkedServicesSettingName[] = "Linked Services Setting";
 const char kLinkedServicesSettingDescription[] =
     "Add Linked Services Setting to the Sync Settings page.";

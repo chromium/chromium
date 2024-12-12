@@ -169,9 +169,6 @@ class RenderViewContextMenu
   // Returns the correct IDC for the Search by Image context menu string
   int GetSearchForImageIdc() const;
 
-  // Returns the correct IDC for the Translate Image context menu string
-  int GetTranslateImageIdc() const;
-
   // Returns the correct IDC for the Region Search context menu string
   int GetRegionSearchIdc() const;
 
@@ -371,11 +368,11 @@ class RenderViewContextMenu
   void ExecExitFullscreen();
   void ExecCopyLinkText();
   void ExecCopyImageAt();
-  void ExecSearchLensForImage(int event_flags, bool is_image_translate);
+  void ExecSearchLensForImage(int event_flags);
   void ExecAddANote();
   void ExecRegionSearch(int event_flags,
                         bool is_google_default_search_provider);
-  void ExecSearchWebForImage(bool is_image_translate);
+  void ExecSearchWebForImage();
   void ExecLoadImage();
   void ExecLoop();
   void ExecControls();

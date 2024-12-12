@@ -8984,10 +8984,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "LensOverlay")},
 #endif
 
-    {"enable-lens-image-translate", flag_descriptions::kLensImageTranslateName,
-     flag_descriptions::kLensImageTranslateDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(lens::features::kEnableImageTranslate)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"biometric-reauth-password-filling",
      flag_descriptions::kBiometricReauthForPasswordFillingName,

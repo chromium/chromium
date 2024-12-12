@@ -506,8 +506,8 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        // Removed: {IDC_CONTENT_CONTEXT_PDF_OCR_ALWAYS, 127},
        // Removed: {IDC_CONTENT_CONTEXT_PDF_OCR_ONCE, 128},
        {IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK, 129},
-       {IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB, 130},
-       {IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS, 131},
+       // Removed: {IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB, 130},
+       // Removed: {IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS, 131},
        {IDC_CONTENT_CONTEXT_COPYVIDEOFRAME, 132},
        {IDC_CONTENT_CONTEXT_SAVEPLUGINAS, 133},
        // Removed: {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS, 134},
@@ -570,8 +570,8 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_RESHARELINKTOTEXT, 24},
        {IDC_OPEN_LINK_IN_PROFILE_FIRST, 25},
        // Removed: {IDC_CONTENT_CONTEXT_ADD_A_NOTE, 26},
-       {IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB, 27},
-       {IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS, 28},
+       // Removed: {IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB, 27},
+       // Removed: {IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS, 28},
        {IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB, 29},
        {IDC_CONTENT_CONTEXT_OPENLINKPREVIEW, 30},
        // To add new items:
@@ -1404,14 +1404,6 @@ int RenderViewContextMenu::GetSearchForImageIdc() const {
   return IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE;
 }
 
-int RenderViewContextMenu::GetTranslateImageIdc() const {
-  if (base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
-      search::DefaultSearchProviderIsGoogle(GetProfile())) {
-    return IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS;
-  }
-  return IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB;
-}
-
 int RenderViewContextMenu::GetRegionSearchIdc() const {
   return search::DefaultSearchProviderIsGoogle(GetProfile())
              ? IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH
@@ -1525,8 +1517,7 @@ void RenderViewContextMenu::RecordUsedItem(int id) {
 
   // Log UKM for Lens context menu items.
   if (id == IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH ||
-      id == IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE ||
-      id == IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS) {
+      id == IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE) {
     // Enum id should correspond to the RenderViewContextMenuItem enum.
     ukm::SourceId source_id =
         source_web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId();
@@ -2113,24 +2104,6 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
   menu_model_.SetElementIdentifierAt(command_index, kSearchForImageItem);
 
   MaybePrepareForLensQuery();
-
-  auto* service = TemplateURLServiceFactory::GetForProfile(GetProfile());
-
-  if (base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
-      base::FeatureList::IsEnabled(lens::features::kEnableImageTranslate) &&
-      provider && !provider->image_translate_url().empty() &&
-      provider->image_translate_url_ref().IsValid(
-          service->search_terms_data())) {
-    ChromeTranslateClient* chrome_translate_client =
-        ChromeTranslateClient::FromWebContents(embedder_web_contents_);
-    if (chrome_translate_client &&
-        chrome_translate_client->GetLanguageState().IsPageTranslated()) {
-      menu_model_.AddItem(
-          GetTranslateImageIdc(),
-          l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_TRANSLATEIMAGE,
-                                     GetImageSearchProviderName(provider)));
-    }
-  }
 }
 
 void RenderViewContextMenu::AppendAudioItems() {
@@ -2970,8 +2943,6 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_OPENIMAGENEWTAB:
     case IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE:
     case IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE:
-    case IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB:
-    case IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS:
       return navigation_allowed && params_.src_url.is_valid() &&
              (params_.src_url.scheme() != content::kChromeUIScheme);
 
@@ -3356,19 +3327,11 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE:
-      ExecSearchWebForImage(/*is_image_translate=*/false);
+      ExecSearchWebForImage();
       break;
 
     case IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE:
-      ExecSearchLensForImage(event_flags, /*is_image_translate=*/false);
-      break;
-
-    case IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB:
-      ExecSearchWebForImage(/*is_image_translate=*/true);
-      break;
-
-    case IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS:
-      ExecSearchLensForImage(event_flags, /*is_image_translate=*/true);
+      ExecSearchLensForImage(event_flags);
       break;
 
     case IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE:
@@ -4372,8 +4335,7 @@ void RenderViewContextMenu::ExecCopyImageAt() {
   }
 }
 
-void RenderViewContextMenu::ExecSearchLensForImage(int event_flags,
-                                                   bool is_image_translate) {
+void RenderViewContextMenu::ExecSearchLensForImage(int event_flags) {
   CoreTabHelper* core_tab_helper =
       CoreTabHelper::FromWebContents(source_web_contents_);
   if (!core_tab_helper) {
@@ -4425,12 +4387,7 @@ void RenderViewContextMenu::ExecSearchLensForImage(int event_flags,
                   CONTEXT_MENU_SEARCH_IMAGE_WITH_GOOGLE_LENS);
     core_tab_helper->SearchWithLens(
         render_frame_host, params().src_url,
-        is_image_translate
-            ? lens::EntryPoint::
-                  CHROME_TRANSLATE_IMAGE_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM
-            : lens::EntryPoint::
-                  CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM,
-        is_image_translate);
+        lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM);
   }
 }
 
@@ -4512,7 +4469,7 @@ void RenderViewContextMenu::ExecRegionSearch(
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
-void RenderViewContextMenu::ExecSearchWebForImage(bool is_image_translate) {
+void RenderViewContextMenu::ExecSearchWebForImage() {
   CoreTabHelper* core_tab_helper =
       CoreTabHelper::FromWebContents(source_web_contents_);
   if (!core_tab_helper) {
@@ -4524,8 +4481,7 @@ void RenderViewContextMenu::ExecSearchWebForImage(bool is_image_translate) {
   }
   lens::RecordAmbientSearchQuery(
       lens::AmbientSearchEntryPoint::CONTEXT_MENU_SEARCH_IMAGE_WITH_WEB);
-  core_tab_helper->SearchByImage(render_frame_host, params().src_url,
-                                 is_image_translate);
+  core_tab_helper->SearchByImage(render_frame_host, params().src_url);
 }
 
 void RenderViewContextMenu::ExecLoadImage() {
