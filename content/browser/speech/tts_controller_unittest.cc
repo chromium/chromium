@@ -74,9 +74,6 @@ class MockTtsPlatformImpl : public TtsPlatform {
   void Shutdown() override {}
   void FinalizeVoiceOrdering(std::vector<VoiceData>& voices) override {}
   void RefreshVoices() override {}
-  content::ExternalPlatformDelegate* GetExternalPlatformDelegate() override {
-    return nullptr;
-  }
 
   void SetPlatformImplSupported(bool state) { platform_supported_ = state; }
   void SetPlatformImplInitialized(bool state) { platform_initialized_ = state; }
@@ -599,12 +596,6 @@ TEST_F(TtsControllerTest, TestGetMatchingVoice) {
   }
 }
 
-// Note: The following tests are disabled since they do not apply for Lacros
-// build. TtsPlatformImpl is not supported for Lacros when lacros tts support
-// feature is disabled.
-// TODO(crbug.com/40189267): Add new tests for lacros with tts support feature
-// being enabled.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(TtsControllerTest, TestTtsControllerShutdown) {
   std::unique_ptr<TtsUtterance> utterance1 = TtsUtterance::Create();
   utterance1->SetShouldClearQueue(false);
@@ -1008,7 +999,6 @@ TEST_F(TtsControllerTest, EngineIdSetNoDelegateSpeakPauseResumeStop) {
   EXPECT_FALSE(TtsControllerCurrentUtterance());
   EXPECT_FALSE(controller()->IsSpeaking());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_F(TtsControllerTest, PauseResumeNoUtterance) {
   // Pause should not call the platform API when there is no utterance.
@@ -1039,7 +1029,6 @@ TEST_F(TtsControllerTest, PlatformNotSupported) {
   EXPECT_EQ(0, platform_impl()->stop_speaking_called());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(TtsControllerTest, SpeakWhenLoadingPlatformImpl) {
   platform_impl()->SetPlatformImplInitialized(false);
 
@@ -1093,14 +1082,9 @@ TEST_F(TtsControllerTest, GetVoicesOnlineOffline) {
   EXPECT_EQ(1U, controller_voices.size());
   EXPECT_EQ("offline", controller_voices[0].name);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(TtsControllerTest, SpeakWhenLoadingBuiltInEngine) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  platform_impl()->SetPlatformImplSupported(false);
-#endif
-
   engine_delegate()->set_is_built_in_tts_engine_initialized(false);
 
   std::vector<VoiceData> voices;

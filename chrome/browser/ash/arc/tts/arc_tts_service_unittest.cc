@@ -86,8 +86,6 @@ class TestableTtsController : public content::TtsController {
     return nullptr;
   }
   void RefreshVoices() override {}
-  void SetRemoteTtsEngineDelegate(
-      content::RemoteTtsEngineDelegate* delegate) override {}
   void SetTtsPlatform(content::TtsPlatform* tts_platform) override {}
   int QueueSize() override { return 0; }
   void StripSSML(

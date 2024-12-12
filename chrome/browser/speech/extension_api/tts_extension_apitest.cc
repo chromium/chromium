@@ -87,13 +87,7 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
  public:
   MockTtsPlatformImpl() : should_fake_get_voices_(false) {}
 
-  bool PlatformImplSupported() override {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    return false;
-#else
-    return true;
-#endif
-  }
+  bool PlatformImplSupported() override { return true; }
   bool PlatformImplInitialized() override { return true; }
 
   void WillSpeakUtteranceWithVoice(
@@ -169,10 +163,6 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
   }
 
   void RefreshVoices() override {}
-
-  content::ExternalPlatformDelegate* GetExternalPlatformDelegate() override {
-    return nullptr;
-  }
 
   void set_should_fake_get_voices(bool val) { should_fake_get_voices_ = val; }
 
@@ -367,7 +357,6 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          TtsApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_P(TtsApiTest, PlatformSpeakOptionalArgs) {
   EXPECT_CALL(mock_platform_impl_, IsSpeaking());
 
@@ -591,7 +580,6 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, RegisterEngine) {
                                {.ignore_manifest_warnings = true}))
       << message_;
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // https://crbug.com/709115 tracks test flakiness.
 #if BUILDFLAG(IS_POSIX)
@@ -606,7 +594,6 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, MAYBE_EngineError) {
   ASSERT_TRUE(RunExtensionTest("tts_engine/engine_error")) << message_;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_P(TtsApiTest, EngineWordCallbacks) {
   EXPECT_CALL(mock_platform_impl_, IsSpeaking());
   EXPECT_CALL(mock_platform_impl_, StopSpeaking()).WillRepeatedly(Return(true));
@@ -620,7 +607,6 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, LangMatching) {
 
   ASSERT_TRUE(RunExtensionTest("tts_engine/lang_matching")) << message_;
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_P(TtsApiTest, NetworkSpeechEngine) {
   // Simulate online network state.

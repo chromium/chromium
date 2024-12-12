@@ -44,7 +44,6 @@ class WebTestTtsPlatform : public content::TtsPlatform {
   void Shutdown() override;
   void FinalizeVoiceOrdering(std::vector<content::VoiceData>& voices) override;
   void RefreshVoices() override;
-  content::ExternalPlatformDelegate* GetExternalPlatformDelegate() override;
 
  private:
   static const int kInvalidUtteranceId = -1;

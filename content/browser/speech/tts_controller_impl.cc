@@ -157,18 +157,6 @@ TtsControllerImpl::~TtsControllerImpl() {
 
 void TtsControllerImpl::SpeakOrEnqueue(
     std::unique_ptr<TtsUtterance> utterance) {
-  auto* external_delegate = GetTtsPlatform()->GetExternalPlatformDelegate();
-  if (external_delegate) {
-    GetTtsPlatform()->GetExternalPlatformDelegate()->Enqueue(
-        std::move(utterance));
-    return;
-  }
-
-  SpeakOrEnqueueInternal(std::move(utterance));
-}
-
-void TtsControllerImpl::SpeakOrEnqueueInternal(
-    std::unique_ptr<TtsUtterance> utterance) {
   if (!ShouldSpeakUtterance(utterance.get())) {
     utterance->Finish();
     return;
@@ -214,12 +202,6 @@ void TtsControllerImpl::Stop() {
 }
 
 void TtsControllerImpl::Stop(const GURL& source_url) {
-  auto* external_delegate = GetTtsPlatform()->GetExternalPlatformDelegate();
-  if (external_delegate) {
-    external_delegate->Stop(source_url);
-    return;
-  }
-
   StopAndClearQueue(source_url);
 }
 
@@ -248,9 +230,6 @@ void TtsControllerImpl::StopCurrentUtterance() {
   if (engine_delegate_ && current_utterance_ &&
       !current_utterance_->GetEngineId().empty() && !spoken_by_remote_engine) {
     engine_delegate_->Stop(current_utterance_.get());
-  } else if (current_utterance_ && !current_utterance_->GetEngineId().empty() &&
-             spoken_by_remote_engine && remote_engine_delegate_) {
-    remote_engine_delegate_->Stop(current_utterance_.get());
   } else if (TtsPlatformReady()) {
     GetTtsPlatform()->ClearError();
     GetTtsPlatform()->StopSpeaking();
@@ -267,12 +246,6 @@ void TtsControllerImpl::StopCurrentUtterance() {
 void TtsControllerImpl::Pause() {
   base::RecordAction(base::UserMetricsAction("TextToSpeech.Pause"));
 
-  auto* external_delegate = GetTtsPlatform()->GetExternalPlatformDelegate();
-  if (external_delegate) {
-    external_delegate->Pause();
-    return;
-  }
-
   if (paused_)
     return;
 
@@ -282,9 +255,6 @@ void TtsControllerImpl::Pause() {
   if (engine_delegate_ && current_utterance_ &&
       !current_utterance_->GetEngineId().empty() && !spoken_by_remote_engine) {
     engine_delegate_->Pause(current_utterance_.get());
-  } else if (current_utterance_ && !current_utterance_->GetEngineId().empty() &&
-             spoken_by_remote_engine && remote_engine_delegate_) {
-    remote_engine_delegate_->Pause(current_utterance_.get());
   } else if (current_utterance_) {
     DCHECK(TtsPlatformReady());
     GetTtsPlatform()->ClearError();
@@ -294,11 +264,6 @@ void TtsControllerImpl::Pause() {
 
 void TtsControllerImpl::Resume() {
   base::RecordAction(base::UserMetricsAction("TextToSpeech.Resume"));
-  auto* external_delegate = GetTtsPlatform()->GetExternalPlatformDelegate();
-  if (external_delegate) {
-    external_delegate->Resume();
-    return;
-  }
 
   if (!paused_)
     return;
@@ -309,9 +274,6 @@ void TtsControllerImpl::Resume() {
   if (engine_delegate_ && current_utterance_ &&
       !current_utterance_->GetEngineId().empty() && !spoken_by_remote_engine) {
     engine_delegate_->Resume(current_utterance_.get());
-  } else if (current_utterance_ && !current_utterance_->GetEngineId().empty() &&
-             spoken_by_remote_engine && remote_engine_delegate_) {
-    remote_engine_delegate_->Resume(current_utterance_.get());
   } else if (current_utterance_) {
     DCHECK(TtsPlatformReady());
     GetTtsPlatform()->ClearError();
@@ -430,19 +392,6 @@ void TtsControllerImpl::OnTtsUtteranceBecameInvalid(int utterance_id) {
 void TtsControllerImpl::GetVoices(BrowserContext* browser_context,
                                   const GURL& source_url,
                                   std::vector<VoiceData>* out_voices) {
-  auto* external_delegate = GetTtsPlatform()->GetExternalPlatformDelegate();
-  if (external_delegate) {
-    external_delegate->GetVoicesForBrowserContext(browser_context, source_url,
-                                                  out_voices);
-    return;
-  }
-
-  GetVoicesInternal(browser_context, source_url, out_voices);
-}
-
-void TtsControllerImpl::GetVoicesInternal(BrowserContext* browser_context,
-                                          const GURL& source_url,
-                                          std::vector<VoiceData>* out_voices) {
   // Initialize GetTtsPlatform first, so that engine_delegate_ can be set
   // if necessary.
   TtsPlatform* tts_platform = GetTtsPlatform();
@@ -460,15 +409,6 @@ void TtsControllerImpl::GetVoicesInternal(BrowserContext* browser_context,
   }
 
   tts_platform->FinalizeVoiceOrdering(*out_voices);
-
-  // Append lacros voices after ash voices.
-  if (remote_engine_delegate_) {
-    std::vector<VoiceData> crosapi_voices;
-    remote_engine_delegate_->GetVoices(browser_context, &crosapi_voices);
-    out_voices->insert(out_voices->end(),
-                       std::make_move_iterator(crosapi_voices.begin()),
-                       std::make_move_iterator(crosapi_voices.end()));
-  }
 
   if (!allow_remote_voices_) {
     auto it =
@@ -515,15 +455,8 @@ void TtsControllerImpl::VoicesChanged() {
   for (auto& delegate : voices_changed_delegates_)
     delegate.OnVoicesChanged();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!GetTtsPlatform()->PlatformImplSupported()) {
-    if (!current_utterance_ && !utterance_list_.empty())
-      SpeakNextUtterance();
-  }
-#else
   if (!current_utterance_ && !utterance_list_.empty())
     SpeakNextUtterance();
-#endif
 }
 
 void TtsControllerImpl::AddVoicesChangedDelegate(
@@ -681,13 +614,7 @@ void TtsControllerImpl::SpeakNow(std::unique_ptr<TtsUtterance> utterance) {
     DCHECK(!voice.engine_id.empty());
     SetCurrentUtterance(std::move(utterance));
     current_utterance_->SetEngineId(voice.engine_id);
-    if (voice.from_remote_tts_engine) {
-      DCHECK(remote_engine_delegate_);
-      TtsUtteranceImpl* utterance_impl =
-          AsUtteranceImpl(current_utterance_.get());
-      utterance_impl->set_spoken_by_remote_engine(true);
-      remote_engine_delegate_->Speak(current_utterance_.get(), voice);
-    } else if (engine_delegate_) {
+    if (engine_delegate_) {
       engine_delegate_->Speak(current_utterance_.get(), voice);
     }
 
@@ -1125,10 +1052,5 @@ void TtsControllerImpl::SetTtsControllerDelegateForTesting(
   delegate_ = delegate;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-void TtsControllerImpl::SetRemoteTtsEngineDelegate(
-    RemoteTtsEngineDelegate* delegate) {
-  remote_engine_delegate_ = delegate;
-}
 
 }  // namespace content

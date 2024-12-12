@@ -48,10 +48,6 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/speech/tts_client_lacros.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 using extensions::EventRouter;
 using extensions::Extension;
 using extensions::ExtensionSystem;
@@ -654,19 +650,6 @@ ExtensionTtsEngineSendTtsEventFunction::Run() {
   if (!GetTtsEventType(*event_type, &tts_event_type)) {
     EXTENSION_FUNCTION_VALIDATE(false);
   } else {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // TODO(crbug.com/40259646): Remove the workaround for enable lacros tts
-    // support for testing and call
-    // tts_crosapi_util::ShouldEnableLacrosTtsSupport() instead.
-    if (content::TtsPlatform::GetInstance()->PlatformImplSupported()) {
-      TtsClientLacros::GetForBrowserContext(browser_context())
-          ->OnLacrosSpeechEngineTtsEvent(utterance_id, tts_event_type,
-                                         char_index, length, error_message);
-      return RespondNow(NoArguments());
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-    // If lacros_tts_support is not enabled, TTS events routes to TtsController.
     content::TtsController::GetInstance()->OnTtsEvent(
         utterance_id, tts_event_type, char_index, length, error_message);
   }

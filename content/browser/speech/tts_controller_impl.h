@@ -111,8 +111,6 @@ class CONTENT_EXPORT TtsControllerImpl
       const std::string& utterance,
       base::OnceCallback<void(const std::string&)> callback) override;
 
-  void SetRemoteTtsEngineDelegate(RemoteTtsEngineDelegate* delegate) override;
-
  protected:
   TtsControllerImpl();
   ~TtsControllerImpl() override;
@@ -123,12 +121,6 @@ class CONTENT_EXPORT TtsControllerImpl
  private:
   friend class TestTtsControllerImpl;
   friend struct base::DefaultSingletonTraits<TtsControllerImpl>;
-
-  void GetVoicesInternal(BrowserContext* browser_context,
-                         const GURL& source_url,
-                         std::vector<VoiceData>* out_voices);
-
-  void SpeakOrEnqueueInternal(std::unique_ptr<TtsUtterance> utterance);
 
   // Get the platform TTS implementation (or injected mock).
   TtsPlatform* GetTtsPlatform();
@@ -215,9 +207,6 @@ class CONTENT_EXPORT TtsControllerImpl
   void SetTtsControllerDelegateForTesting(TtsControllerDelegate* delegate);
   raw_ptr<TtsControllerDelegate, DanglingUntriaged> delegate_ = nullptr;
 #endif
-
-  raw_ptr<RemoteTtsEngineDelegate, DanglingUntriaged> remote_engine_delegate_ =
-      nullptr;
 
   raw_ptr<TtsEngineDelegate, DanglingUntriaged> engine_delegate_ = nullptr;
 
