@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "pdf/loader/document_loader_impl.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -343,8 +339,10 @@ bool DocumentLoaderImpl::SaveBuffer(uint32_t input_size) {
 
     const size_t new_chunk_data_len =
         std::min(DataStream::kChunkSize - chunk_.data_size, input.size());
-    memcpy(chunk_.chunk_data->data() + chunk_.data_size, input.data(),
-           new_chunk_data_len);
+    UNSAFE_TODO({
+      memcpy(chunk_.chunk_data->data() + chunk_.data_size, input.data(),
+             new_chunk_data_len);
+    });
     chunk_.data_size += new_chunk_data_len;
     if (chunk_.data_size == DataStream::kChunkSize ||
         (document_size > 0 && document_size <= EndOfCurrentChunk())) {

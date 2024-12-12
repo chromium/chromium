@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "pdf/accessibility.h"
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_test_base.h"
@@ -94,27 +90,32 @@ TEST_P(AccessibilityTest, GetAccessibilityPage) {
   bool using_test_fonts = UsingTestFonts();
 
   ASSERT_EQ(kExpectedTextRunCount, text_runs.size());
-  for (size_t i = 0; i < kExpectedTextRunCount; ++i) {
-    const auto& expected = kExpectedTextRuns[i];
-    EXPECT_EQ(expected.len, text_runs[i].len) << i;
-    EXPECT_FLOAT_EQ(expected.font_size, text_runs[i].style.font_size) << i;
-    EXPECT_FLOAT_EQ(expected.bounds_x, text_runs[i].bounds.x()) << i;
-    EXPECT_FLOAT_EQ(expected.bounds_y, text_runs[i].bounds.y()) << i;
-    float expected_bounds_w =
-        GetExpectedBoundsWidth(using_test_fonts, i, expected.bounds_w);
-    EXPECT_FLOAT_EQ(expected_bounds_w, text_runs[i].bounds.width()) << i;
-    EXPECT_FLOAT_EQ(expected.bounds_h, text_runs[i].bounds.height()) << i;
-    EXPECT_EQ(AccessibilityTextDirection::kLeftToRight, text_runs[i].direction);
-  }
+  UNSAFE_TODO({
+    for (size_t i = 0; i < kExpectedTextRunCount; ++i) {
+      const auto& expected = kExpectedTextRuns[i];
+      EXPECT_EQ(expected.len, text_runs[i].len) << i;
+      EXPECT_FLOAT_EQ(expected.font_size, text_runs[i].style.font_size) << i;
+      EXPECT_FLOAT_EQ(expected.bounds_x, text_runs[i].bounds.x()) << i;
+      EXPECT_FLOAT_EQ(expected.bounds_y, text_runs[i].bounds.y()) << i;
+      float expected_bounds_w =
+          GetExpectedBoundsWidth(using_test_fonts, i, expected.bounds_w);
+      EXPECT_FLOAT_EQ(expected_bounds_w, text_runs[i].bounds.width()) << i;
+      EXPECT_FLOAT_EQ(expected.bounds_h, text_runs[i].bounds.height()) << i;
+      EXPECT_EQ(AccessibilityTextDirection::kLeftToRight,
+                text_runs[i].direction);
+    }
+  });
 
   ASSERT_EQ(kExpectedCharCount, chars.size());
-  for (size_t i = 0; i < kExpectedCharCount; ++i) {
-    const auto& expected = kExpectedChars[i];
-    EXPECT_EQ(expected.unicode_character, chars[i].unicode_character) << i;
-    double expected_char_width =
-        GetExpectedCharWidth(using_test_fonts, i, expected.char_width);
-    EXPECT_NEAR(expected_char_width, chars[i].char_width, 0.001) << i;
-  }
+  UNSAFE_TODO({
+    for (size_t i = 0; i < kExpectedCharCount; ++i) {
+      const auto& expected = kExpectedChars[i];
+      EXPECT_EQ(expected.unicode_character, chars[i].unicode_character) << i;
+      double expected_char_width =
+          GetExpectedCharWidth(using_test_fonts, i, expected.char_width);
+      EXPECT_NEAR(expected_char_width, chars[i].char_width, 0.001) << i;
+    }
+  });
 }
 
 TEST_P(AccessibilityTest, GetAccessibilityImageInfo) {
@@ -141,12 +142,15 @@ TEST_P(AccessibilityTest, GetAccessibilityImageInfo) {
   EXPECT_EQ(chars.size(), page_info.char_count);
   ASSERT_EQ(page_objects.images.size(), std::size(kExpectedImageInfo));
 
-  for (size_t i = 0; i < page_objects.images.size(); ++i) {
-    EXPECT_EQ(page_objects.images[i].alt_text, kExpectedImageInfo[i].alt_text);
-    EXPECT_EQ(kExpectedImageInfo[i].bounds, page_objects.images[i].bounds);
-    EXPECT_EQ(page_objects.images[i].text_run_index,
-              kExpectedImageInfo[i].text_run_index);
-  }
+  UNSAFE_TODO({
+    for (size_t i = 0; i < page_objects.images.size(); ++i) {
+      EXPECT_EQ(page_objects.images[i].alt_text,
+                kExpectedImageInfo[i].alt_text);
+      EXPECT_EQ(kExpectedImageInfo[i].bounds, page_objects.images[i].bounds);
+      EXPECT_EQ(page_objects.images[i].text_run_index,
+                kExpectedImageInfo[i].text_run_index);
+    }
+  });
 }
 
 TEST_P(AccessibilityTest, GetUnderlyingTextRangeForRect) {
@@ -459,16 +463,18 @@ TEST_P(AccessibilityTest, GetAccessibilityLinkInfo) {
   EXPECT_EQ(chars.size(), page_info.char_count);
   ASSERT_EQ(page_objects.links.size(), std::size(expected_link_info));
 
-  for (size_t i = 0; i < page_objects.links.size(); ++i) {
-    const AccessibilityLinkInfo& link_info = page_objects.links[i];
-    EXPECT_EQ(link_info.url, expected_link_info[i].url);
-    EXPECT_EQ(link_info.index_in_page, expected_link_info[i].index_in_page);
-    EXPECT_EQ(expected_link_info[i].bounds, link_info.bounds);
-    EXPECT_EQ(link_info.text_range.index,
-              expected_link_info[i].text_range.index);
-    EXPECT_EQ(link_info.text_range.count,
-              expected_link_info[i].text_range.count);
-  }
+  UNSAFE_TODO({
+    for (size_t i = 0; i < page_objects.links.size(); ++i) {
+      const AccessibilityLinkInfo& link_info = page_objects.links[i];
+      EXPECT_EQ(link_info.url, expected_link_info[i].url);
+      EXPECT_EQ(link_info.index_in_page, expected_link_info[i].index_in_page);
+      EXPECT_EQ(expected_link_info[i].bounds, link_info.bounds);
+      EXPECT_EQ(link_info.text_range.index,
+                expected_link_info[i].text_range.index);
+      EXPECT_EQ(link_info.text_range.count,
+                expected_link_info[i].text_range.count);
+    }
+  });
 }
 
 TEST_P(AccessibilityTest, GetAccessibilityHighlightInfo) {
@@ -498,19 +504,21 @@ TEST_P(AccessibilityTest, GetAccessibilityHighlightInfo) {
   EXPECT_EQ(chars.size(), page_info.char_count);
   ASSERT_EQ(page_objects.highlights.size(), std::size(kExpectedHighlightInfo));
 
-  for (size_t i = 0; i < page_objects.highlights.size(); ++i) {
-    const AccessibilityHighlightInfo& highlight_info =
-        page_objects.highlights[i];
-    EXPECT_EQ(highlight_info.index_in_page,
-              kExpectedHighlightInfo[i].index_in_page);
-    EXPECT_EQ(kExpectedHighlightInfo[i].bounds, highlight_info.bounds);
-    EXPECT_EQ(highlight_info.text_range.index,
-              kExpectedHighlightInfo[i].text_range.index);
-    EXPECT_EQ(highlight_info.text_range.count,
-              kExpectedHighlightInfo[i].text_range.count);
-    EXPECT_EQ(highlight_info.color, kExpectedHighlightInfo[i].color);
-    EXPECT_EQ(highlight_info.note_text, kExpectedHighlightInfo[i].note_text);
-  }
+  UNSAFE_TODO({
+    for (size_t i = 0; i < page_objects.highlights.size(); ++i) {
+      const AccessibilityHighlightInfo& highlight_info =
+          page_objects.highlights[i];
+      EXPECT_EQ(highlight_info.index_in_page,
+                kExpectedHighlightInfo[i].index_in_page);
+      EXPECT_EQ(kExpectedHighlightInfo[i].bounds, highlight_info.bounds);
+      EXPECT_EQ(highlight_info.text_range.index,
+                kExpectedHighlightInfo[i].text_range.index);
+      EXPECT_EQ(highlight_info.text_range.count,
+                kExpectedHighlightInfo[i].text_range.count);
+      EXPECT_EQ(highlight_info.color, kExpectedHighlightInfo[i].color);
+      EXPECT_EQ(highlight_info.note_text, kExpectedHighlightInfo[i].note_text);
+    }
+  });
 }
 
 TEST_P(AccessibilityTest, GetAccessibilityTextFieldInfo) {
@@ -546,23 +554,25 @@ TEST_P(AccessibilityTest, GetAccessibilityTextFieldInfo) {
   ASSERT_EQ(page_objects.form_fields.text_fields.size(),
             std::size(kExpectedTextFieldInfo));
 
-  for (size_t i = 0; i < page_objects.form_fields.text_fields.size(); ++i) {
-    const AccessibilityTextFieldInfo& text_field_info =
-        page_objects.form_fields.text_fields[i];
-    EXPECT_EQ(kExpectedTextFieldInfo[i].name, text_field_info.name);
-    EXPECT_EQ(kExpectedTextFieldInfo[i].value, text_field_info.value);
-    EXPECT_EQ(kExpectedTextFieldInfo[i].is_read_only,
-              text_field_info.is_read_only);
-    EXPECT_EQ(kExpectedTextFieldInfo[i].is_required,
-              text_field_info.is_required);
-    EXPECT_EQ(kExpectedTextFieldInfo[i].is_password,
-              text_field_info.is_password);
-    EXPECT_EQ(kExpectedTextFieldInfo[i].index_in_page,
-              text_field_info.index_in_page);
-    EXPECT_EQ(kExpectedTextFieldInfo[i].text_run_index,
-              text_field_info.text_run_index);
-    EXPECT_EQ(kExpectedTextFieldInfo[i].bounds, text_field_info.bounds);
-  }
+  UNSAFE_TODO({
+    for (size_t i = 0; i < page_objects.form_fields.text_fields.size(); ++i) {
+      const AccessibilityTextFieldInfo& text_field_info =
+          page_objects.form_fields.text_fields[i];
+      EXPECT_EQ(kExpectedTextFieldInfo[i].name, text_field_info.name);
+      EXPECT_EQ(kExpectedTextFieldInfo[i].value, text_field_info.value);
+      EXPECT_EQ(kExpectedTextFieldInfo[i].is_read_only,
+                text_field_info.is_read_only);
+      EXPECT_EQ(kExpectedTextFieldInfo[i].is_required,
+                text_field_info.is_required);
+      EXPECT_EQ(kExpectedTextFieldInfo[i].is_password,
+                text_field_info.is_password);
+      EXPECT_EQ(kExpectedTextFieldInfo[i].index_in_page,
+                text_field_info.index_in_page);
+      EXPECT_EQ(kExpectedTextFieldInfo[i].text_run_index,
+                text_field_info.text_run_index);
+      EXPECT_EQ(kExpectedTextFieldInfo[i].bounds, text_field_info.bounds);
+    }
+  });
 }
 
 TEST_P(AccessibilityTest, SelectionActionHandling) {

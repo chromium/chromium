@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "pdf/loader/url_loader_wrapper_impl.h"
 
 #include <stddef.h>
@@ -20,6 +15,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -96,14 +92,20 @@ bool IsDoubleEndLineAtEnd(const char* buffer, int size) {
   if (size < 2)
     return false;
 
-  if (buffer[size - 1] == '\n' && buffer[size - 2] == '\n')
-    return true;
+  UNSAFE_TODO({
+    if (buffer[size - 1] == '\n' && buffer[size - 2] == '\n') {
+      return true;
+    }
+  });
 
-  if (size < 4)
+  if (size < 4) {
     return false;
+  }
 
-  return buffer[size - 1] == '\n' && buffer[size - 2] == '\r' &&
-         buffer[size - 3] == '\n' && buffer[size - 4] == '\r';
+  UNSAFE_TODO({
+    return buffer[size - 1] == '\n' && buffer[size - 2] == '\r' &&
+           buffer[size - 3] == '\n' && buffer[size - 4] == '\r';
+  });
 }
 
 }  // namespace
@@ -221,7 +223,7 @@ void URLLoaderWrapperImpl::ParseHeaders(const std::string& response_headers) {
         const char* boundary = strstr(type.c_str(), "boundary=");
         DCHECK(boundary);
         if (boundary) {
-          multipart_boundary_ = std::string(boundary + 9);
+          UNSAFE_TODO({ multipart_boundary_ = std::string(boundary + 9); });
           is_multipart_ = !multipart_boundary_.empty();
         }
       }
@@ -272,7 +274,7 @@ void URLLoaderWrapperImpl::DidRead(base::OnceCallback<void(int)> callback,
       if (GetByteRangeFromHeaders(std::string(buffer_.data(), i), &start_pos,
                                   &end_pos)) {
         byte_range_ = gfx::Range(start_pos, end_pos);
-        start += i;
+        UNSAFE_TODO({ start += i; });
         length -= i;
       }
       break;

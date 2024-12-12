@@ -4,11 +4,6 @@
 
 #include "pdf/pdf_view_web_plugin.h"
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -21,6 +16,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/queue.h"
 #include "base/debug/crash_logging.h"
@@ -1633,8 +1629,11 @@ void PdfViewWebPlugin::HandleGetNamedDestinationMessage(
     std::ostringstream view_stream;
     view_stream << named_destination->view;
     if (named_destination->xyz_params.empty()) {
-      for (unsigned long i = 0; i < named_destination->num_params; ++i)
-        view_stream << "," << named_destination->params[i];
+      UNSAFE_TODO({
+        for (unsigned long i = 0; i < named_destination->num_params; ++i) {
+          view_stream << "," << named_destination->params[i];
+        }
+      });
     } else {
       view_stream << "," << named_destination->xyz_params;
     }

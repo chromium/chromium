@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "pdf/pdfium/pdfium_engine.h"
 
 #include <stdint.h>
@@ -15,6 +10,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/hash/md5.h"
@@ -624,7 +620,7 @@ TEST_P(PDFiumEngineTest, GetNamedDestination) {
   EXPECT_EQ(0u, valid_page_obj->page);
   EXPECT_EQ("XYZ", valid_page_obj->view);
   ASSERT_EQ(3u, valid_page_obj->num_params);
-  EXPECT_EQ(1.2f, valid_page_obj->params[2]);
+  UNSAFE_TODO({ EXPECT_EQ(1.2f, valid_page_obj->params[2]); });
 
   // A destination with an invalid page object
   std::optional<PDFiumEngine::NamedDestination> invalid_page_obj =
