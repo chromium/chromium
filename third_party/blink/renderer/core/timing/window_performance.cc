@@ -531,11 +531,6 @@ void WindowPerformance::EventTimingProcessingStart(
 
   const AtomicString& event_type = event.type();
 
-  // TODO(crbug.com/40930016): remove support for pointermove
-  if (event_type == event_type_names::kPointermove) {
-    return;
-  }
-
   // Event Counts API.
   eventCounts()->Add(event_type);
 
@@ -608,17 +603,6 @@ void WindowPerformance::EventTimingProcessingEnd(
     return;
   }
   const AtomicString& event_type = event.type();
-
-  // TODO(crbug.com/40930016): remove support for pointermove
-  if (event_type == event_type_names::kPointermove) {
-    // A trusted pointermove must be a PointerEvent.
-    const PointerEvent* pointer_event = DynamicTo<PointerEvent>(event);
-    if (pointer_event) {
-      NotifyPotentialDrag(pointer_event->pointerId());
-    }
-    return;
-  }
-
   auto iter = std::find_if(event_timing_entries_.rbegin(),
                            event_timing_entries_.rend(), [](const auto& event) {
                              return event->GetEventTimingReportingInfo()
@@ -1434,10 +1418,6 @@ void WindowPerformance::OnBeginMainFrame(viz::BeginFrameId frame_id) {
   if (source_id) {
     begin_main_frame_source_id_ = source_id;
   }
-}
-
-void WindowPerformance::NotifyPotentialDrag(PointerId pointer_id) {
-  responsiveness_metrics_->NotifyPotentialDrag(pointer_id);
 }
 
 void WindowPerformance::OnPageScroll() {

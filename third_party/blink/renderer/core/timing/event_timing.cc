@@ -103,8 +103,7 @@ std::optional<EventTiming> EventTiming::TryCreate(
     const Event& event,
     EventTarget* hit_test_target) {
   auto* performance = DOMWindowPerformance::performance(*window);
-  if (!performance || (!IsEventTypeForEventTiming(event) &&
-                       event.type() != event_type_names::kPointermove)) {
+  if (!performance || !IsEventTypeForEventTiming(event)) {
     return std::nullopt;
   }
 

@@ -169,8 +169,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
     return *responsiveness_metrics_;
   }
 
-  void NotifyPotentialDrag(PointerId pointer_id);
-
   const Event* GetCurrentEventTimingEvent() { return current_event_.Get(); }
 
   void CreateNavigationTimingInstance(

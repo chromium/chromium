@@ -15,7 +15,6 @@
 #include "components/page_load_metrics/renderer/page_timing_metadata_recorder.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
-#include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/web/web_local_frame_observer.h"
@@ -83,7 +82,6 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
                                  base::TimeTicks max_event_queued_main_thread,
                                  base::TimeTicks max_event_commit_finish,
                                  base::TimeTicks max_event_end,
-                                 blink::UserInteractionType interaction_type,
                                  uint64_t interaction_offset) override;
   void DidChangeCpuTiming(base::TimeDelta time) override;
   void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior) override;

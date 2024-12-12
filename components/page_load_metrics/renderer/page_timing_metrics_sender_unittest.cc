@@ -9,7 +9,6 @@
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/renderer/fake_page_timing_sender.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-shared.h"
@@ -383,18 +382,16 @@ TEST_F(PageTimingMetricsSenderTest, SendInteractions) {
   // max_event_queued and max_event_commit_finish is irrelevant to this test.
   metrics_sender_->DidObserveUserInteraction(
       interaction_start_1, base::TimeTicks(), base::TimeTicks(),
-      interaction_end_1, blink::UserInteractionType::kKeyboard, 0);
-  validator_.UpdateExpectedInteractionTiming(
-      interaction_duration_1, mojom::UserInteractionType::kKeyboard, 0,
-      interaction_start_1);
+      interaction_end_1, 0);
+  validator_.UpdateExpectedInteractionTiming(interaction_duration_1, 0,
+                                             interaction_start_1);
 
   // max_event_queued and max_event_commit_finish is irrelevant to this test.
   metrics_sender_->DidObserveUserInteraction(
       interaction_start_2, base::TimeTicks(), base::TimeTicks(),
-      interaction_end_2, blink::UserInteractionType::kTapOrClick, 1);
-  validator_.UpdateExpectedInteractionTiming(
-      interaction_duration_2, mojom::UserInteractionType::kTapOrClick, 1,
-      interaction_start_2);
+      interaction_end_2, 1);
+  validator_.UpdateExpectedInteractionTiming(interaction_duration_2, 1,
+                                             interaction_start_2);
 
   // Fire the timer to trigger sending of features via an SendTiming call.
   metrics_sender_->mock_timer()->Fire();

@@ -51,7 +51,6 @@
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
 #include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
@@ -613,7 +612,6 @@ class BLINK_EXPORT WebLocalFrameClient {
       base::TimeTicks max_event_queued_main_thread,
       base::TimeTicks max_event_commit_finish,
       base::TimeTicks max_event_end,
-      UserInteractionType interaction_type,
       uint64_t interaction_offset) {}
 
   // The first scroll delay, which measures the time between the user's first

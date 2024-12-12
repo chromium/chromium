@@ -698,7 +698,8 @@ TEST_P(WindowPerformanceTest, OneKeyboardInteraction) {
       10);
   GetUkmRecorder()->ExpectEntryMetric(
       ukm_entry,
-      ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName, 0);
+      ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName,
+      static_cast<int64_t>(UserInteractionType::kKeyboard));
 
   // Check UMA recording.
   GetHistogramTester().ExpectTotalCount(
@@ -777,7 +778,8 @@ TEST_P(WindowPerformanceTest, HoldingDownAKey) {
         expected_durations[i].second);
     GetUkmRecorder()->ExpectEntryMetric(
         entry,
-        ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName, 0);
+        ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName,
+        static_cast<int64_t>(UserInteractionType::kKeyboard));
   }
 
   // Check UMA recording.
@@ -858,7 +860,8 @@ TEST_P(WindowPerformanceTest, PressMultipleKeys) {
         expected_durations[i].second);
     GetUkmRecorder()->ExpectEntryMetric(
         entry,
-        ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName, 0);
+        ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName,
+        static_cast<int64_t>(UserInteractionType::kKeyboard));
   }
 }
 
@@ -913,7 +916,8 @@ TEST_P(WindowPerformanceTest, KeyupFinishLastButCallbackInvokedFirst) {
       8);
   GetUkmRecorder()->ExpectEntryMetric(
       ukm_entry,
-      ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName, 0);
+      ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName,
+      static_cast<int64_t>(UserInteractionType::kKeyboard));
 
   // Check UMA recording.
   GetHistogramTester().ExpectTotalCount(
@@ -973,7 +977,8 @@ TEST_P(WindowPerformanceTest, TapOrClick) {
       17);
   GetUkmRecorder()->ExpectEntryMetric(
       ukm_entry,
-      ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName, 1);
+      ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName,
+      static_cast<int64_t>(UserInteractionType::kTapOrClick));
 
   // Check UMA recording.
   GetHistogramTester().ExpectTotalCount(
@@ -1046,7 +1051,8 @@ TEST_P(WindowPerformanceTest, PageVisibilityChanged) {
       9);
   GetUkmRecorder()->ExpectEntryMetric(
       ukm_entry,
-      ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName, 1);
+      ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName,
+      static_cast<int64_t>(UserInteractionType::kTapOrClick));
 
   EXPECT_EQ(1ul, performance_->interactionCount());
 }
@@ -1123,68 +1129,6 @@ TEST_P(WindowPerformanceTest, GPUCrashedAndFrameSourceIdChanged) {
       ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName, 1);
 
   EXPECT_EQ(1ul, performance_->interactionCount());
-}
-
-TEST_P(WindowPerformanceTest, Drag) {
-  // Pointerdown
-  base::TimeTicks pointerdwon_timestamp = GetTimeOrigin();
-  base::TimeTicks processing_start_pointerdown = GetTimeStamp(1);
-  base::TimeTicks processing_end_pointerdown = GetTimeStamp(2);
-  base::TimeTicks presentation_time_pointerdown = GetTimeStamp(5);
-  PointerId pointer_id = 4;
-  RegisterPointerEvent(event_type_names::kPointerdown, pointerdwon_timestamp,
-                       processing_start_pointerdown, processing_end_pointerdown,
-                       pointer_id);
-  SimulatePaintAndResolvePresentationPromise(presentation_time_pointerdown);
-  // Notify drag.
-  performance_->NotifyPotentialDrag(pointer_id);
-  // Pointerup
-  base::TimeTicks pointerup_timestamp = GetTimeStamp(3);
-  base::TimeTicks processing_start_pointerup = GetTimeStamp(5);
-  base::TimeTicks processing_end_pointerup = GetTimeStamp(6);
-  base::TimeTicks presentation_time_pointerup = GetTimeStamp(10);
-  RegisterPointerEvent(event_type_names::kPointerup, pointerup_timestamp,
-                       processing_start_pointerup, processing_end_pointerup,
-                       pointer_id);
-  SimulatePaintAndResolvePresentationPromise(presentation_time_pointerup);
-  // Click
-  base::TimeTicks click_timestamp = GetTimeStamp(13);
-  base::TimeTicks processing_start_click = GetTimeStamp(15);
-  base::TimeTicks processing_end_click = GetTimeStamp(16);
-  base::TimeTicks presentation_time_click = GetTimeStamp(20);
-  RegisterPointerEvent(event_type_names::kClick, click_timestamp,
-                       processing_start_click, processing_end_click,
-                       pointer_id);
-  SimulatePaintAndResolvePresentationPromise(presentation_time_click);
-
-  // Flush UKM logging mojo request.
-  RunPendingTasks();
-
-  // Check UKM recording.
-  auto entries = GetUkmRecorder()->GetEntriesByName(
-      ukm::builders::Responsiveness_UserInteraction::kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  const ukm::mojom::UkmEntry* ukm_entry = entries[0];
-  GetUkmRecorder()->ExpectEntryMetric(
-      ukm_entry,
-      ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName, 7);
-  GetUkmRecorder()->ExpectEntryMetric(
-      ukm_entry,
-      ukm::builders::Responsiveness_UserInteraction::kTotalEventDurationName,
-      17);
-  GetUkmRecorder()->ExpectEntryMetric(
-      ukm_entry,
-      ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName, 2);
-
-  // Check UMA recording.
-  GetHistogramTester().ExpectTotalCount(
-      "Blink.Responsiveness.UserInteraction.MaxEventDuration.AllTypes", 1);
-  GetHistogramTester().ExpectTotalCount(
-      "Blink.Responsiveness.UserInteraction.MaxEventDuration.Keyboard", 0);
-  GetHistogramTester().ExpectTotalCount(
-      "Blink.Responsiveness.UserInteraction.MaxEventDuration.TapOrClick", 0);
-  GetHistogramTester().ExpectTotalCount(
-      "Blink.Responsiveness.UserInteraction.MaxEventDuration.Drag", 1);
 }
 
 TEST_P(WindowPerformanceTest, Scroll) {
@@ -1311,7 +1255,8 @@ TEST_P(WindowPerformanceTest, ArtificialPointerupOrClick) {
       12);
   GetUkmRecorder()->ExpectEntryMetric(
       ukm_entry,
-      ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName, 1);
+      ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName,
+      static_cast<int64_t>(UserInteractionType::kTapOrClick));
 
   // Check UMA recording.
   GetHistogramTester().ExpectTotalCount(
@@ -1651,23 +1596,9 @@ TEST_P(WindowPerformanceTest, InteractionID) {
   EXPECT_EQ(pointerdown_entry->interactionId(),
             pointerup_entry->interactionId());
   EXPECT_EQ(pointerup_entry->interactionId(), click_entry->interactionId());
-
-  // Drag with max duration 50, total duration 80.
-  PointerId pointer_id_2 = 20;
-  pointerdown_entry = CreatePerformanceEventTiming(
-      event_type_names::kPointerdown, std::nullopt, pointer_id_2,
-      GetTimeStamp(150), GetTimeStamp(200));
-  SimulateInteractionId(pointerdown_entry);
-  performance_->NotifyPotentialDrag(20);
-  pointerup_entry = CreatePerformanceEventTiming(
-      event_type_names::kPointerup, std::nullopt, pointer_id_2,
-      GetTimeStamp(200), GetTimeStamp(230));
-  SimulateInteractionId(pointerup_entry);
-  EXPECT_GT(pointerdown_entry->interactionId(), 0u);
-  EXPECT_EQ(pointerdown_entry->interactionId(),
-            pointerup_entry->interactionId());
-
+  //
   // Scroll should not be reported in ukm.
+  PointerId pointer_id_2 = 20;
   pointerdown_entry = CreatePerformanceEventTiming(
       event_type_names::kPointerdown, std::nullopt, pointer_id_2,
       GetTimeStamp(300), GetTimeStamp(315));
@@ -1691,11 +1622,10 @@ TEST_P(WindowPerformanceTest, InteractionID) {
   auto expected_ukm = std::to_array<ExpectedUkm>({
       {25, 40, UserInteractionType::kKeyboard},
       {70, 90, UserInteractionType::kTapOrClick},
-      {50, 80, UserInteractionType::kDrag},
   });
   auto entries = GetUkmRecorder()->GetEntriesByName(
       ukm::builders::Responsiveness_UserInteraction::kEntryName);
-  EXPECT_EQ(3u, entries.size());
+  EXPECT_EQ(2u, entries.size());
   for (size_t i = 0; i < entries.size(); ++i) {
     const ukm::mojom::UkmEntry* ukm_entry = entries[i];
     GetUkmRecorder()->ExpectEntryMetric(
@@ -1782,7 +1712,7 @@ class InteractionIdTest : public WindowPerformanceTest {
       GetUkmRecorder()->ExpectEntryMetric(
           ukm_entry,
           ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName,
-          static_cast<int>(expected_ukms[i].interaction_type_));
+          static_cast<int64_t>(expected_ukms[i].interaction_type_));
     }
   }
 };

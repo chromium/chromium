@@ -1628,7 +1628,7 @@ message WebContentInteraction {
     INTERACTION_UNSPECIFIED = 0;
     INTERACTION_KEYBOARD = 1;
     INTERACTION_CLICK_TAP = 2;
-    INTERACTION_DRAG = 3;
+    INTERACTION_DRAG = 3 [deprecated = true];
   }
 
   optional Type type = 1;

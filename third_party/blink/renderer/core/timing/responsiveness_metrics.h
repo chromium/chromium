@@ -82,7 +82,7 @@ class CORE_EXPORT ResponsivenessMetrics
   };
 
   // Wrapper class to store PerformanceEventTiming, pointerdown and pointerup
-  // timestamps, and whether drag has been detected on a HeapHashMap.
+  // timestamps, on a HeapHashMap.
   class PointerEntryAndInfo : public GarbageCollected<PointerEntryAndInfo> {
    public:
     PointerEntryAndInfo(PerformanceEventTiming* entry,
@@ -97,8 +97,6 @@ class CORE_EXPORT ResponsivenessMetrics
     void Trace(Visitor*) const;
     PerformanceEventTiming* GetEntry() const { return entry_.Get(); }
     Vector<EventTimestamps>& GetTimeStamps() { return timestamps_; }
-    void SetIsDrag() { is_drag_ = true; }
-    bool IsDrag() const { return is_drag_; }
 
    private:
     // The PerformanceEventTiming entry that has not been sent to observers
@@ -110,8 +108,6 @@ class CORE_EXPORT ResponsivenessMetrics
     // for a pointerdown, the second for a pointerup, and optionally the third
     // for a click.
     Vector<EventTimestamps> timestamps_;
-    // Whether drag has been detected.
-    bool is_drag_;
   };
 
   explicit ResponsivenessMetrics(WindowPerformance*);
@@ -124,10 +120,6 @@ class CORE_EXPORT ResponsivenessMetrics
 
   // Stop UKM sampling for testing.
   void StopUkmSamplingForTesting() { sampling_ = false; }
-
-  // The use might be dragging. The function will be called whenever we have a
-  // pointermove.
-  void NotifyPotentialDrag(PointerId pointer_id);
 
   // Assigns an interactionId and records interaction latency for pointer
   // events. Returns true if the entry is ready to be surfaced in
@@ -149,12 +141,9 @@ class CORE_EXPORT ResponsivenessMetrics
 
   void Trace(Visitor*) const;
 
-  perfetto::protos::pbzero::WebContentInteraction::Type
-  UserInteractionTypeToProto(UserInteractionType interaction_type) const;
-
   void EmitInteractionToNextPaintTraceEvent(
       const ResponsivenessMetrics::EventTimestamps& event,
-      UserInteractionType interaction_type,
+      bool is_pointer_event,
       base::TimeDelta total_event_duration);
 
   void SetCurrentInteractionEventQueuedTimestamp(base::TimeTicks queued_time);
@@ -175,7 +164,7 @@ class CORE_EXPORT ResponsivenessMetrics
       const WTF::Vector<ResponsivenessMetrics::EventTimestamps>& timestamps,
       uint32_t interaction_offset);
 
-  void RecordDragTapOrClickUKM(LocalDOMWindow*, PointerEntryAndInfo&);
+  void RecordTapOrClickUKM(LocalDOMWindow*, PointerEntryAndInfo&);
 
   void RecordKeyboardUKM(LocalDOMWindow* window,
                          const WTF::Vector<EventTimestamps>& event_timestamps,

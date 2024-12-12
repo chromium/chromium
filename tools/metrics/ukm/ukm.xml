@@ -19458,15 +19458,15 @@ be describing additional metrics about the same event.
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Metrics that are associated with user interactions and recorded when users
-    interact with web pages. Currently we are interested in keyboard, tap, click
-    and drag. A user interaction often encompasses multiple input events. For
-    keyboard interactions, we only care about keydown and keyup. For tap, click
-    and drag, we only measure pointerdown, pointerup and click.
+    interact with web pages. Currently we are interested in keyboard, tap or
+    click. A user interaction often encompasses multiple input events. For
+    keyboard interactions, we only care about keydown and keyup. For tap or
+    click we only measure pointerdown, pointerup and click.
   </summary>
   <metric name="InteractionType" enum="UserInteractionType">
     <summary>
       The type of the user interaction that triggered input event sequence, not
-      the input event type. It can be keyboard, tap, click or drag.
+      the input event type. It can be keyboard, tap, click.
     </summary>
   </metric>
   <metric name="MaxEventDuration">

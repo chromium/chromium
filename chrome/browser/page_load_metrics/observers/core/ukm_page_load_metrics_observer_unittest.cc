@@ -77,7 +77,6 @@ using UserInteractionLatenciesPtr =
 using UserInteractionLatencies =
     page_load_metrics::mojom::UserInteractionLatencies;
 using UserInteractionLatency = page_load_metrics::mojom::UserInteractionLatency;
-using UserInteractionType = page_load_metrics::mojom::UserInteractionType;
 
 namespace {
 
@@ -1316,14 +1315,11 @@ TEST_F(UkmPageLoadMetricsObserverTest, NormalizedUserInteractionLatencies) {
 
   base::TimeTicks current_time = base::TimeTicks::Now();
   max_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(50), UserInteractionType::kKeyboard, 1,
-      current_time + base::Milliseconds(1000)));
+      base::Milliseconds(50), 1, current_time + base::Milliseconds(1000)));
   max_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(100), UserInteractionType::kTapOrClick, 2,
-      current_time + base::Milliseconds(2000)));
+      base::Milliseconds(100), 2, current_time + base::Milliseconds(2000)));
   max_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(150), UserInteractionType::kDrag, 3,
-      current_time + base::Milliseconds(3000)));
+      base::Milliseconds(150), 3, current_time + base::Milliseconds(3000)));
 
   tester()->SimulateInputTimingUpdate(input_timing);
 
@@ -1367,8 +1363,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
       input_timing.max_event_durations->get_user_interaction_latencies();
 
   max_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(50), UserInteractionType::kKeyboard, 0,
-      base::TimeTicks::Now()));
+      base::Milliseconds(50), 0, base::TimeTicks::Now()));
 
   tester()->SimulateInputTimingUpdate(input_timing);
 
