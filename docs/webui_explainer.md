@@ -1258,22 +1258,24 @@ Alternatively, a `<webview>` tag can be used, which runs in a separate
 StoragePartition, a separate frame tree, and restricts postMessage communication
 by default. Note that `<webview>` is only available on desktop platforms.
 
-## JavaScript Error Reporting
+## Error Reporting
 
-By default, errors in the JavaScript or TypeScript of a WebUI page will generate
-error reports which appear in Google's internal [go/crash](http://go/crash)
-reports page. These error reports will only be generated for Google Chrome
-builds, not Chromium or other Chromium-based browsers.
+By default, DevTools error messages in a WebUI page will generate error reports
+and will appear in Google's internal [go/crash](http://go/crash) reports page.
+These error reports will only be generated for Google Chrome builds, not
+Chromium or other Chromium-based browsers.
 
-Specifically, an error report will be generated when the JavaScript or
-TypeScript for a WebUI-based chrome:// page does one of the following:
+Specifically, an error report will be generated when a WebUI-based chrome://
+page does one of the following:
 * Generates an uncaught exception,
 * Has a promise which is rejected, and no rejection handler is provided, or
 * Calls `console.error()`.
+* Generates any other [error level](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/public/mojom/devtools/console_message.mojom;l=11;drc=047c7dc4ee1ce908d7fea38ca063fa2f80f92c77)
+DevTools message, e.g. bad websocket.
 
-Such errors will appear alongside other crashes in the
-`product_name=Chrome_ChromeOS` or `product_name=Chrome_Linux` lists on
-[go/crash](http://go/crash).
+Such errors will appear alongside other crashes on [go/crash](http://go/crash)
+with a product data type of [JavascriptError](https://crash.corp.google.com/browse?q=product_name%3D%27Chrome_Mac%27+AND+EXISTS+%28SELECT+1+FROM+UNNEST%28productdata%29+WHERE+key%3D%27type%27+AND+value%3D%27JavascriptError%27%29&stbtiq=&reportid=&index=0).
+They will also appear locally on the chrome://crashes page.
 
 The signature of the error is the error message followed by the URL on which the
 error appeared. For example, if chrome://settings/lazy_load.js throws a
@@ -1318,8 +1320,10 @@ error, JavaScript errors are currently all classified as "WARNING" level when
 computing stability metrics.
 
 ### Known issues
-1. Error reporting is currently enabled only on ChromeOS and Linux.
-2. Errors are only reported for chrome:// URLs.
+1. Android does not support error reporting.
+2. Errors are only reported for chrome:// URLs, except for pages that don't
+create a WebUI object (chrome://dino and chrome://network-error). Other schemes,
+e.g. chrome-untrusted:// and chrome-extension:// are not supported either.
 3. Unhandled promise rejections do not have a good stack.
 4. The line numbers and column numbers in the stacks are for the minified
    JavaScript and do not correspond to the line and column numbers of the
