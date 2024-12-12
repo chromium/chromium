@@ -117,8 +117,9 @@ NGFlexItem* FlexItemIterator::FindNextItem(
         NGFlexItem* flex_item =
             const_cast<NGFlexItem*>(&flex_line.line_items[flex_item_idx_++]);
         if (!item_break_token ||
-            flex_item->ng_input_node == item_break_token->InputNode())
+            flex_item->block_node == item_break_token->InputNode()) {
           return flex_item;
+        }
       }
     }
     // If the current column had a break token, but later columns do not, that

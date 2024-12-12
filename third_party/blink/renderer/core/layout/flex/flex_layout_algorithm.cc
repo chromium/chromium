@@ -215,10 +215,10 @@ LayoutUnit FlexLayoutAlgorithm::MainAxisContentExtent(
 LayoutUnit FlexLayoutAlgorithm::BaselineAscent(
     const FlexItem& item,
     const PhysicalBoxFragment& fragment) const {
-  LogicalBoxFragment baseline_fragment(item.baseline_writing_direction_,
+  LogicalBoxFragment baseline_fragment(item.baseline_writing_direction,
                                        fragment);
 
-  const bool is_last_baseline = item.alignment_ == ItemPosition::kLastBaseline;
+  const bool is_last_baseline = item.alignment == ItemPosition::kLastBaseline;
   const auto font_baseline = Style().GetFontBaseline();
   LayoutUnit baseline =
       is_last_baseline
@@ -230,9 +230,9 @@ LayoutUnit FlexLayoutAlgorithm::BaselineAscent(
 
   const PhysicalToFlex margins(
       GetConstraintSpace().GetWritingDirection(), is_column_,
-      item.physical_margins_.top, item.physical_margins_.right,
-      item.physical_margins_.bottom, item.physical_margins_.left);
-  return item.baseline_group_ == BaselineGroup::kMajor
+      item.initial_margins.top, item.initial_margins.right,
+      item.initial_margins.bottom, item.initial_margins.left);
+  return item.baseline_group == BaselineGroup::kMajor
              ? margins.CrossStart() + baseline
              : margins.CrossEnd() + baseline;
 }
@@ -398,7 +398,7 @@ void FlexLayoutAlgorithm::SetReadingFlowNodes(
   HeapVector<Member<blink::Node>> reading_flow_nodes;
   // Add flex item if it is a DOM node
   auto AddItemIfNeeded = [&](const NGFlexItem& item) {
-    if (blink::Node* node = item.ng_input_node.GetDOMNode()) {
+    if (blink::Node* node = item.block_node.GetDOMNode()) {
       reading_flow_nodes.push_back(node);
     }
   };
@@ -653,7 +653,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         border_padding_in_child_writing_mode.ConvertToPhysical(
             child_style.GetWritingDirection()));
 
-    const unsigned main_axis_auto_margin_count =
+    const uint8_t main_axis_auto_margin_count =
         is_horizontal_flow_ ? child_style.MarginLeft().IsAuto() +
                                   child_style.MarginRight().IsAuto()
                             : child_style.MarginTop().IsAuto() +
@@ -720,7 +720,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
               !Node().GetLayoutBox()->NeedsLayout()) {
             disable_side_effects.emplace();
           }
-          layout_result = child.Layout(child_space, /* break_token */ nullptr);
+          layout_result = child.Layout(child_space);
           DCHECK(layout_result);
         }
         intrinsic_size = layout_result->IntrinsicBlockSize();
@@ -833,7 +833,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     // Blink's FlexibleBoxAlgorithm expects it to be content + scrollbar widths,
     // but no padding or border.
     DCHECK_GE(flex_base_border_box, main_axis_border_padding);
-    const LayoutUnit flex_base_content_size =
+    const LayoutUnit base_content_size =
         flex_base_border_box - main_axis_border_padding;
 
     std::optional<Length> auto_min_length;
@@ -904,7 +904,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     DCHECK_GE(min_max_sizes_in_main_axis_direction.min_size, LayoutUnit());
     DCHECK_GE(min_max_sizes_in_main_axis_direction.max_size, LayoutUnit());
 
-    const BoxStrut scrollbars = ComputeScrollbarsForNonAnonymous(child);
+    const BoxStrut initial_scrollbars = ComputeScrollbarsForNonAnonymous(child);
 
     auto AspectRatioProvidesBlockMainSize = [&]() -> bool {
       if (is_main_axis_inline_axis) {
@@ -943,17 +943,18 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         /* is_parallel_context */ !is_column_,
         /* is_last_baseline */ alignment == ItemPosition::kLastBaseline,
         /* is_flipped */ is_wrap_reverse_);
+
     algorithm_.all_items_.emplace_back(
-        child, item_index++, flex_grow, flex_shrink,
-        main_axis_auto_margin_count, flex_base_content_size,
+        child, item_index++, flex_grow, flex_shrink, base_content_size,
         min_max_sizes_in_main_axis_direction, main_axis_border_padding,
-        physical_child_margins, scrollbars, baseline_writing_mode,
-        baseline_group, alignment, is_initial_block_size_indefinite,
-        is_used_flex_basis_indefinite, depends_on_min_max_sizes,
-        is_horizontal_flow_, max_content_contribution);
+        physical_child_margins, initial_scrollbars, main_axis_auto_margin_count,
+        alignment, baseline_writing_mode, baseline_group,
+        is_initial_block_size_indefinite, is_used_flex_basis_indefinite,
+        depends_on_min_max_sizes, is_horizontal_flow_,
+        max_content_contribution);
     // Save the layout result so that we can maybe reuse it later.
     if (layout_result && !is_main_axis_inline_axis) {
-      algorithm_.all_items_.back().layout_result_ = layout_result;
+      algorithm_.all_items_.back().layout_result = layout_result;
     }
   }
 }
@@ -1161,22 +1162,22 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
       FlexItem& flex_item = line->line_items_[i];
       NGFlexItem& flex_item_output = flex_line_outputs->back().line_items[i];
 
-      flex_item_output.item_index = flex_item.item_index_;
-      flex_item_output.ng_input_node = flex_item.ng_input_node_;
+      flex_item_output.item_index = flex_item.item_index;
+      flex_item_output.block_node = flex_item.block_node;
       flex_item_output.main_axis_final_size = flex_item.FlexedBorderBoxSize();
       flex_item_output.is_initial_block_size_indefinite =
-          flex_item.is_initial_block_size_indefinite_;
+          flex_item.is_initial_block_size_indefinite;
       flex_item_output.is_used_flex_basis_indefinite =
-          flex_item.is_used_flex_basis_indefinite_;
+          flex_item.is_used_flex_basis_indefinite;
 
       main_axis_free_space -= flex_item.FlexedMarginBoxSize();
-      main_axis_auto_margin_count += flex_item.main_axis_auto_margin_count_;
+      main_axis_auto_margin_count += flex_item.main_axis_auto_margin_count;
 
       const LayoutUnit cross_axis_size = ([&]() {
         const ConstraintSpace space = BuildSpaceForLayout(
-            flex_item.ng_input_node_, flex_item.FlexedBorderBoxSize(),
-            flex_item.is_initial_block_size_indefinite_,
-            flex_item.max_content_contribution_);
+            flex_item.block_node, flex_item.FlexedBorderBoxSize(),
+            flex_item.is_initial_block_size_indefinite,
+            flex_item.max_content_contribution);
 
         // We need to get the item's cross-axis size given its new main size.
         //
@@ -1188,32 +1189,31 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
         // Even when we only need inline-size, we have to lay out the item if:
         //  * This is the item's last chance to layout (i.e. doesn't stretch).
         //  * The item has not yet been laid out.
-        if (DoesItemStretch(flex_item.ng_input_node_) &&
-            flex_item.layout_result_) {
-          const auto& item_style = flex_item.ng_input_node_.Style();
+        if (DoesItemStretch(flex_item.block_node) && flex_item.layout_result) {
+          const auto& item_style = flex_item.block_node.Style();
           DCHECK_NE(is_horizontal_flow_, item_style.IsHorizontalWritingMode());
           const BoxStrut border_padding =
-              ComputeBorders(space, flex_item.ng_input_node_) +
+              ComputeBorders(space, flex_item.block_node) +
               ComputePadding(space, item_style);
-          if (flex_item.ng_input_node_.IsReplaced()) {
-            return ComputeReplacedSize(flex_item.ng_input_node_, space,
+          if (flex_item.block_node.IsReplaced()) {
+            return ComputeReplacedSize(flex_item.block_node, space,
                                        border_padding)
                 .inline_size;
           }
-          return ComputeInlineSizeForFragment(space, flex_item.ng_input_node_,
+          return ComputeInlineSizeForFragment(space, flex_item.block_node,
                                               border_padding);
         }
 
         if (is_computing_multiline_column_intrinsic_size) {
-          return *flex_item.max_content_contribution_;
+          return *flex_item.max_content_contribution;
         }
 
         DCHECK((space.CacheSlot() == LayoutResultCacheSlot::kLayout) ||
-               !flex_item.layout_result_);
-        flex_item.layout_result_ = flex_item.ng_input_node_.Layout(space);
-        DCHECK_EQ(flex_item.layout_result_->Status(), LayoutResult::kSuccess);
+               !flex_item.layout_result);
+        flex_item.layout_result = flex_item.block_node.Layout(space);
+        DCHECK_EQ(flex_item.layout_result->Status(), LayoutResult::kSuccess);
         const PhysicalSize size =
-            flex_item.layout_result_->GetPhysicalFragment().Size();
+            flex_item.layout_result->GetPhysicalFragment().Size();
         return is_horizontal_flow_ ? size.height : size.width;
       })();
 
@@ -1228,14 +1228,14 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
       // TODO(crbug.com/1272533): We may not have a layout-result during
       // min/max calculations. This is incorrect, and we should produce a
       // layout-result when baseline aligned.
-      if (flex_item.layout_result_ &&
-          (flex_item.alignment_ == ItemPosition::kBaseline ||
-           flex_item.alignment_ == ItemPosition::kLastBaseline)) {
+      if (flex_item.layout_result &&
+          (flex_item.alignment == ItemPosition::kBaseline ||
+           flex_item.alignment == ItemPosition::kLastBaseline)) {
         const LayoutUnit ascent = BaselineAscent(
             flex_item, To<PhysicalBoxFragment>(
-                           flex_item.layout_result_->GetPhysicalFragment()));
+                           flex_item.layout_result->GetPhysicalFragment()));
         const LayoutUnit descent = cross_axis_margin_size - ascent;
-        if (flex_item.baseline_group_ == BaselineGroup::kMajor) {
+        if (flex_item.baseline_group == BaselineGroup::kMajor) {
           max_major_ascent = std::max(max_major_ascent, ascent);
           max_major_descent = std::max(max_major_descent, descent);
           cross_axis_margin_size = max_major_ascent + max_major_descent;
@@ -1484,17 +1484,15 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
       const FlexItem& item = algorithm_.FlexItemAtIndex(flex_item.item_index);
 
       const LayoutResult* layout_result = nullptr;
-      if (DoesItemStretch(flex_item.ng_input_node)) {
+      if (DoesItemStretch(flex_item.block_node)) {
         ConstraintSpace child_space = BuildSpaceForLayout(
-            flex_item.ng_input_node, flex_item.main_axis_final_size,
+            flex_item.block_node, flex_item.main_axis_final_size,
             flex_item.is_initial_block_size_indefinite,
             /* override_inline_size */ std::nullopt,
             line_output.line_cross_size);
-        layout_result =
-            flex_item.ng_input_node.Layout(child_space,
-                                           /* break_token */ nullptr);
+        layout_result = flex_item.block_node.Layout(child_space);
       } else {
-        layout_result = item.layout_result_;
+        layout_result = item.layout_result;
       }
 
       flex_item.has_descendant_that_depends_on_percentage_block_size =
@@ -1544,7 +1542,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
       const LayoutUnit cross_axis_size =
           is_column_ ? fragment.InlineSize() : fragment.BlockSize();
 
-      PhysicalBoxStrut physical_margins = item.physical_margins_;
+      PhysicalBoxStrut physical_margins = item.initial_margins;
       const PhysicalToFlex<LayoutUnit&> margin(
           writing_direction, is_column_, physical_margins.top,
           physical_margins.right, physical_margins.bottom,
@@ -1595,9 +1593,9 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
         }
 
         LayoutUnit baseline_offset;
-        if (item.alignment_ == ItemPosition::kBaseline ||
-            item.alignment_ == ItemPosition::kLastBaseline) {
-          const bool is_major = item.baseline_group_ == BaselineGroup::kMajor;
+        if (item.alignment == ItemPosition::kBaseline ||
+            item.alignment == ItemPosition::kLastBaseline) {
+          const bool is_major = item.baseline_group == BaselineGroup::kMajor;
           const LayoutUnit ascent = BaselineAscent(item, physical_fragment);
           const LayoutUnit max_ascent = is_major ? line_output.major_baseline
                                                  : line_output.minor_baseline;
@@ -1605,8 +1603,8 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
           baseline_offset = is_major ? baseline_delta : space - baseline_delta;
         }
         return line_cross_axis_offset + margin.CrossStart() +
-               FlexItem::AlignmentOffset(space, item.alignment_,
-                                         baseline_offset, is_wrap_reverse_);
+               FlexibleBoxAlgorithm::AlignmentOffset(
+                   space, item.alignment, baseline_offset, is_wrap_reverse_);
       })();
 
       main_axis_offset += margin.MainStart();
@@ -1850,8 +1848,8 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       if (!is_column_)
         container_builder_.SetLineCount(flex_line_idx);
       if (IsEarlyBreakTarget(*early_break_, container_builder_,
-                             flex_item->ng_input_node)) {
-        container_builder_.AddBreakBeforeChild(flex_item->ng_input_node,
+                             flex_item->block_node)) {
+        container_builder_.AddBreakBeforeChild(flex_item->block_node,
                                                kBreakAppealPerfect,
                                                /* is_forced_break */ false);
         if (early_break_->Type() == EarlyBreak::kLine) {
@@ -1873,7 +1871,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         continue;
       } else {
         early_break_in_child =
-            EnterEarlyBreakInChild(flex_item->ng_input_node, *early_break_);
+            EnterEarlyBreakInChild(flex_item->block_node, *early_break_);
       }
     }
 
@@ -1898,7 +1896,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     }
 
     std::optional<LayoutUnit> line_cross_size_for_stretch =
-        DoesItemStretch(flex_item->ng_input_node)
+        DoesItemStretch(flex_item->block_node)
             ? std::optional<LayoutUnit>(line_output.line_cross_size)
             : std::nullopt;
 
@@ -1920,11 +1918,11 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     const bool min_block_size_should_encompass_intrinsic_size =
         MinBlockSizeShouldEncompassIntrinsicSize(*flex_item);
     ConstraintSpace child_space = BuildSpaceForLayout(
-        flex_item->ng_input_node, flex_item->main_axis_final_size,
+        flex_item->block_node, flex_item->main_axis_final_size,
         flex_item->is_initial_block_size_indefinite,
         /* override_inline_size */ std::nullopt, line_cross_size_for_stretch,
         offset.block_offset, min_block_size_should_encompass_intrinsic_size);
-    const LayoutResult* layout_result = flex_item->ng_input_node.Layout(
+    const LayoutResult* layout_result = flex_item->block_node.Layout(
         child_space, item_break_token, early_break_in_child);
 
     BreakStatus break_status = BreakStatus::kContinue;
@@ -1948,7 +1946,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
           BreakStatus row_break_status = BreakBeforeRowIfNeeded(
               line_output, row_block_offset,
               (*row_break_between_outputs)[flex_line_idx], flex_line_idx,
-              flex_item->ng_input_node, row_container_separation,
+              flex_item->block_node, row_container_separation,
               is_first_for_row);
           if (row_break_status == BreakStatus::kBrokeBefore) {
             ConsumeRemainingFragmentainerSpace(offset_in_stitched_container,
@@ -1985,7 +1983,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         }
       }
       break_status = BreakBeforeChildIfNeeded(
-          flex_item->ng_input_node, *layout_result,
+          flex_item->block_node, *layout_result,
           FragmentainerOffsetForChildren() + offset.block_offset,
           has_container_separation, !is_column_, current_column_break_info);
 
@@ -2056,7 +2054,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     if (is_column_) {
       LayoutUnit cloned_block_decorations;
       if (!is_at_block_end &&
-          flex_item->ng_input_node.Style().BoxDecorationBreak() ==
+          flex_item->block_node.Style().BoxDecorationBreak() ==
               EBoxDecorationBreak::kClone) {
         cloned_block_decorations = fragment.BoxDecorations().BlockSum();
       }
@@ -2229,21 +2227,20 @@ LayoutResult::EStatus FlexLayoutAlgorithm::PropagateFlexItemInfo(
   // Detect if the flex-item had its scrollbar state change. If so we need
   // to relayout as the input to the flex algorithm is incorrect.
   if (!ignore_child_scrollbar_changes_) {
-    if (flex_item.scrollbars_ !=
-        ComputeScrollbarsForNonAnonymous(flex_item.ng_input_node_)) {
+    if (flex_item.initial_scrollbars !=
+        ComputeScrollbarsForNonAnonymous(flex_item.block_node)) {
       status = LayoutResult::kNeedsRelayoutWithNoChildScrollbarChanges;
     }
 
     // The flex-item scrollbars may not have changed, but an descendant's
     // scrollbars might have causing the min/max sizes to be incorrect.
-    if (flex_item.depends_on_min_max_sizes_ &&
-        flex_item.ng_input_node_.GetLayoutBox()
-            ->IntrinsicLogicalWidthsDirty()) {
+    if (flex_item.depends_on_min_max_sizes &&
+        flex_item.block_node.GetLayoutBox()->IntrinsicLogicalWidthsDirty()) {
       status = LayoutResult::kNeedsRelayoutWithNoChildScrollbarChanges;
     }
   } else {
-    DCHECK_EQ(flex_item.scrollbars_,
-              ComputeScrollbarsForNonAnonymous(flex_item.ng_input_node_));
+    DCHECK_EQ(flex_item.initial_scrollbars,
+              ComputeScrollbarsForNonAnonymous(flex_item.block_node));
   }
   return status;
 }
@@ -2295,7 +2292,7 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
 
   LayoutUnit largest_outer_min_content_contribution;
   for (const FlexItem& item : algorithm_.all_items_) {
-    const BlockNode& child = item.ng_input_node_;
+    const BlockNode& child = item.block_node;
 
     const ConstraintSpace space = BuildSpaceForIntrinsicInlineSize(child);
     MinMaxSizesResult min_max_content_contributions =
@@ -2305,14 +2302,14 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
 
     MinMaxSizes item_final_contribution;
     const LayoutUnit flex_base_size_border_box =
-        item.flex_base_content_size_ + item.main_axis_border_padding_;
+        item.base_content_size + item.main_axis_border_padding;
     const LayoutUnit hypothetical_main_size_border_box =
-        item.hypothetical_main_content_size_ + item.main_axis_border_padding_;
+        item.hypothetical_content_size + item.main_axis_border_padding;
 
     if (algorithm_.IsMultiline()) {
       const LayoutUnit main_axis_margins =
-          is_horizontal_flow_ ? item.physical_margins_.HorizontalSum()
-                              : item.physical_margins_.VerticalSum();
+          is_horizontal_flow_ ? item.initial_margins.HorizontalSum()
+                              : item.initial_margins.VerticalSum();
       largest_outer_min_content_contribution = std::max(
           largest_outer_min_content_contribution,
           min_max_content_contributions.sizes.min_size + main_axis_margins);
@@ -2320,10 +2317,10 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
       const LayoutUnit min_contribution =
           min_max_content_contributions.sizes.min_size;
       const bool cant_move = (min_contribution > flex_base_size_border_box &&
-                              item.flex_grow_ == 0.f) ||
+                              item.flex_grow == 0.f) ||
                              (min_contribution < flex_base_size_border_box &&
-                              item.flex_shrink_ == 0.f);
-      if (cant_move && !item.is_used_flex_basis_indefinite_) {
+                              item.flex_shrink == 0.f);
+      if (cant_move && !item.is_used_flex_basis_indefinite) {
         item_final_contribution.min_size = hypothetical_main_size_border_box;
       } else {
         item_final_contribution.min_size = min_contribution;
@@ -2333,10 +2330,10 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
     const LayoutUnit max_contribution =
         min_max_content_contributions.sizes.max_size;
     const bool cant_move = (max_contribution > flex_base_size_border_box &&
-                            item.flex_grow_ == 0.f) ||
+                            item.flex_grow == 0.f) ||
                            (max_contribution < flex_base_size_border_box &&
-                            item.flex_shrink_ == 0.f);
-    if (cant_move && !item.is_used_flex_basis_indefinite_) {
+                            item.flex_shrink == 0.f);
+    if (cant_move && !item.is_used_flex_basis_indefinite) {
       item_final_contribution.max_size = hypothetical_main_size_border_box;
     } else {
       item_final_contribution.max_size = max_contribution;
@@ -2345,8 +2342,8 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
     container_sizes += item_final_contribution;
 
     const LayoutUnit main_axis_margins =
-        is_horizontal_flow_ ? item.physical_margins_.HorizontalSum()
-                            : item.physical_margins_.VerticalSum();
+        is_horizontal_flow_ ? item.initial_margins.HorizontalSum()
+                            : item.initial_margins.VerticalSum();
     container_sizes += main_axis_margins;
   }
 
@@ -2644,10 +2641,11 @@ bool FlexLayoutAlgorithm::MinBlockSizeShouldEncompassIntrinsicSize(
   if (item.has_descendant_that_depends_on_percentage_block_size)
     return false;
 
-  if (item.ng_input_node.IsMonolithic())
+  if (item.block_node.IsMonolithic()) {
     return false;
+  }
 
-  const auto& item_style = item.ng_input_node.Style();
+  const auto& item_style = item.block_node.Style();
 
   // NOTE: We currently assume that writing-mode roots are monolithic, but
   // this may change in the future.
@@ -2668,18 +2666,18 @@ bool FlexLayoutAlgorithm::MinBlockSizeShouldEncompassIntrinsicSize(
     // can't shrink or its min-height is auto.
     if (item_style.LogicalHeight().HasAutoOrContentOrIntrinsic() &&
         (!can_shrink || algorithm_.ShouldApplyMinSizeAutoForChild(
-                            *item.ng_input_node.GetLayoutBox()))) {
+                            *item.block_node.GetLayoutBox()))) {
       return true;
     }
   } else {
     // Don't grow if the item's block-size should be the same as its container.
-    if (WillChildCrossSizeBeContainerCrossSize(item.ng_input_node) &&
+    if (WillChildCrossSizeBeContainerCrossSize(item.block_node) &&
         !Style().LogicalHeight().HasAutoOrContentOrIntrinsic()) {
       return false;
     }
 
     // Only allow growth if the item's cross size is auto.
-    if (DoesItemComputedCrossSizeHaveAuto(item.ng_input_node)) {
+    if (DoesItemComputedCrossSizeHaveAuto(item.block_node)) {
       return true;
     }
   }

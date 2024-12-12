@@ -34,6 +34,7 @@
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/layout/baseline_utils.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
+#include "third_party/blink/renderer/core/layout/flex/flex_item.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -44,111 +45,11 @@
 
 namespace blink {
 
-class FlexItem;
 class FlexLayoutAlgorithm;
 class FlexLine;
 class FlexibleBoxAlgorithm;
-struct MinMaxSizes;
 
 typedef HeapVector<FlexItem, 8> FlexItemVector;
-
-class FlexItem {
-  DISALLOW_NEW();
-
- public:
-  // Parameters:
-  // - |flex_base_content_size| includes scrollbar size but not border/padding.
-  // - |min_max_main_sizes| is the resolved min and max size properties in the
-  //   main axis direction (not intrinsic widths). It does not include
-  //   border/padding.
-  //   |min_max_cross_sizes| does include cross_axis_border_padding.
-  FlexItem(BlockNode,
-           wtf_size_t item_index,
-           float flex_grow,
-           float flex_shrink,
-           unsigned main_axis_auto_margin_count,
-           LayoutUnit flex_base_content_size,
-           MinMaxSizes min_max_main_sizes,
-           LayoutUnit main_axis_border_padding,
-           PhysicalBoxStrut physical_margins,
-           BoxStrut scrollbars,
-           WritingMode baseline_writing_mode,
-           BaselineGroup baseline_group,
-           ItemPosition alignment,
-           bool is_initial_block_size_indefinite,
-           bool is_used_flex_basis_indefinite,
-           bool depends_on_min_max_sizes,
-           bool is_horizontal_flow,
-           std::optional<LayoutUnit> max_content_contribution);
-
-  LayoutUnit HypotheticalMainAxisMarginBoxSize() const {
-    return hypothetical_main_content_size_ + main_axis_border_padding_ +
-           MainAxisMarginExtent();
-  }
-
-  LayoutUnit FlexBaseMarginBoxSize() const {
-    return flex_base_content_size_ + main_axis_border_padding_ +
-           MainAxisMarginExtent();
-  }
-
-  LayoutUnit FlexedBorderBoxSize() const {
-    return flexed_content_size_ + main_axis_border_padding_;
-  }
-
-  LayoutUnit FlexedMarginBoxSize() const {
-    return flexed_content_size_ + main_axis_border_padding_ +
-           MainAxisMarginExtent();
-  }
-
-  LayoutUnit ClampSizeToMinAndMax(LayoutUnit size) const {
-    return min_max_main_sizes_.ClampSizeToMinAndMax(size);
-  }
-
-  LayoutUnit MainAxisMarginExtent() const {
-    return is_horizontal_flow_ ? physical_margins_.HorizontalSum()
-                               : physical_margins_.VerticalSum();
-  }
-  LayoutUnit CrossAxisMarginExtent() const {
-    return is_horizontal_flow_ ? physical_margins_.VerticalSum()
-                               : physical_margins_.HorizontalSum();
-  }
-
-  static LayoutUnit AlignmentOffset(LayoutUnit available_free_space,
-                                    ItemPosition position,
-                                    LayoutUnit baseline_offset,
-                                    bool is_wrap_reverse);
-
-  void Trace(Visitor*) const;
-
-  const BlockNode ng_input_node_;
-
-  const wtf_size_t item_index_;
-  const float flex_grow_;
-  const float flex_shrink_;
-  const unsigned main_axis_auto_margin_count_;
-  const LayoutUnit flex_base_content_size_;
-  const MinMaxSizes min_max_main_sizes_;
-  const LayoutUnit hypothetical_main_content_size_;
-  const LayoutUnit main_axis_border_padding_;
-  const PhysicalBoxStrut physical_margins_;
-  const BoxStrut scrollbars_;
-  const WritingDirectionMode baseline_writing_direction_;
-  const BaselineGroup baseline_group_;
-  const ItemPosition alignment_;
-
-  const bool is_initial_block_size_indefinite_;
-  const bool is_used_flex_basis_indefinite_;
-  const bool depends_on_min_max_sizes_;
-  const bool is_horizontal_flow_;
-  bool frozen_;
-
-  LayoutUnit flexed_content_size_;
-
-  // The above fields are used by the flex algorithm. The following fields, by
-  // contrast, are just convenient storage.
-  Member<const LayoutResult> layout_result_;
-  std::optional<LayoutUnit> max_content_contribution_;
-};
 
 class FlexItemVectorView {
   DISALLOW_NEW();
@@ -256,6 +157,11 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
   static ItemPosition AlignmentForChild(const ComputedStyle& flexbox_style,
                                         const ComputedStyle& child_style);
 
+  static LayoutUnit AlignmentOffset(LayoutUnit available_free_space,
+                                    ItemPosition position,
+                                    LayoutUnit baseline_offset,
+                                    bool is_wrap_reverse);
+
   static LayoutUnit ContentDistributionSpaceBetweenChildren(
       LayoutUnit available_free_space,
       const StyleContentAlignmentData&,
@@ -284,7 +190,5 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
 };
 
 }  // namespace blink
-
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::FlexItem)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEXIBLE_BOX_ALGORITHM_H_

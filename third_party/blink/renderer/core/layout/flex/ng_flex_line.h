@@ -14,11 +14,11 @@ struct NGFlexItem {
   DISALLOW_NEW();
 
  public:
-  NGFlexItem() : ng_input_node(nullptr) {}
+  NGFlexItem() : block_node(nullptr) {}
 
-  const ComputedStyle& Style() const { return ng_input_node.Style(); }
+  const ComputedStyle& Style() const { return block_node.Style(); }
 
-  void Trace(Visitor* visitor) const { visitor->Trace(ng_input_node); }
+  void Trace(Visitor* visitor) const { visitor->Trace(block_node); }
 
   wtf_size_t item_index;
   LayoutUnit main_axis_final_size;
@@ -32,7 +32,7 @@ struct NGFlexItem {
   bool is_initial_block_size_indefinite = false;
   bool is_used_flex_basis_indefinite = false;
   bool has_descendant_that_depends_on_percentage_block_size = false;
-  BlockNode ng_input_node;
+  BlockNode block_node;
 };
 
 struct NGFlexLine {

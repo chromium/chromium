@@ -75,56 +75,12 @@ ContentDistributionType BoxPackToContentDistribution(EBoxPack box_pack) {
 
 }  // namespace
 
-FlexItem::FlexItem(BlockNode node,
-                   wtf_size_t item_index,
-                   float flex_grow,
-                   float flex_shrink,
-                   unsigned main_axis_auto_margin_count,
-                   LayoutUnit flex_base_content_size,
-                   MinMaxSizes min_max_main_sizes,
-                   LayoutUnit main_axis_border_padding,
-                   PhysicalBoxStrut physical_margins,
-                   BoxStrut scrollbars,
-                   WritingMode baseline_writing_mode,
-                   BaselineGroup baseline_group,
-                   ItemPosition alignment,
-                   bool is_initial_block_size_indefinite,
-                   bool is_used_flex_basis_indefinite,
-                   bool depends_on_min_max_sizes,
-                   bool is_horizontal_flow,
-                   std::optional<LayoutUnit> max_content_contribution)
-    : ng_input_node_(node),
-      item_index_(item_index),
-      flex_grow_(flex_grow),
-      flex_shrink_(flex_shrink),
-      main_axis_auto_margin_count_(main_axis_auto_margin_count),
-      flex_base_content_size_(flex_base_content_size),
-      min_max_main_sizes_(min_max_main_sizes),
-      hypothetical_main_content_size_(
-          min_max_main_sizes.ClampSizeToMinAndMax(flex_base_content_size)),
-      main_axis_border_padding_(main_axis_border_padding),
-      physical_margins_(physical_margins),
-      scrollbars_(scrollbars),
-      baseline_writing_direction_({baseline_writing_mode, TextDirection::kLtr}),
-      baseline_group_(baseline_group),
-      alignment_(alignment),
-      is_initial_block_size_indefinite_(is_initial_block_size_indefinite),
-      is_used_flex_basis_indefinite_(is_used_flex_basis_indefinite),
-      depends_on_min_max_sizes_(depends_on_min_max_sizes),
-      is_horizontal_flow_(is_horizontal_flow),
-      frozen_(false),
-      max_content_contribution_(max_content_contribution) {}
-
-void FlexItem::Trace(Visitor* visitor) const {
-  visitor->Trace(ng_input_node_);
-  visitor->Trace(layout_result_);
-}
-
 // static
-LayoutUnit FlexItem::AlignmentOffset(LayoutUnit available_free_space,
-                                     ItemPosition position,
-                                     LayoutUnit baseline_offset,
-                                     bool is_wrap_reverse) {
+LayoutUnit FlexibleBoxAlgorithm::AlignmentOffset(
+    LayoutUnit available_free_space,
+    ItemPosition position,
+    LayoutUnit baseline_offset,
+    bool is_wrap_reverse) {
   switch (position) {
     case ItemPosition::kLegacy:
     case ItemPosition::kAuto:
