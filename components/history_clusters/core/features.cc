@@ -51,10 +51,6 @@ BASE_FEATURE(kUserVisibleDebug,
              "JourneysUserVisibleDebug",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPersistContextAnnotationsInHistoryDb,
-             "JourneysPersistContextAnnotationsInHistoryDb",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kHistoryClustersInternalsPage,
              "HistoryClustersInternalsPage",
              base::FEATURE_DISABLED_BY_DEFAULT);

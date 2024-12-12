@@ -266,15 +266,6 @@ struct Config {
   // Does nothing if `kJourneys` is disabled.
   bool user_visible_debug = false;
 
-  // Enables persisting context annotations in the History DB. They are always
-  // calculated anyways. This just enables storing them. This is expected to be
-  // enabled for all users shortly. This just provides a killswitch.
-  // This flag is to enable us to turn on persisting context annotations WITHOUT
-  // exposing the Memories UI in general. If EITHER this flag or `kJourneys` is
-  // enabled, users will have context annotations persisted into their History
-  // DB.
-  bool persist_context_annotations_in_history_db = false;
-
   // Enables the history clusters internals page.
   bool history_clusters_internals_page = false;
 

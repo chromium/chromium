@@ -282,9 +282,6 @@ Config::Config() {
     user_visible_debug =
         base::FeatureList::IsEnabled(internal::kUserVisibleDebug);
 
-    persist_context_annotations_in_history_db = base::FeatureList::IsEnabled(
-        internal::kPersistContextAnnotationsInHistoryDb);
-
     history_clusters_internals_page =
         base::FeatureList::IsEnabled(internal::kHistoryClustersInternalsPage);
 

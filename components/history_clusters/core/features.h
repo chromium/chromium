@@ -46,11 +46,6 @@ BASE_DECLARE_FEATURE(kNonUserVisibleDebug);
 // Does nothing if `kJourneys` is disabled.
 BASE_DECLARE_FEATURE(kUserVisibleDebug);
 
-// This flag is to enable us to turn on persisting context annotations WITHOUT
-// exposing the Journeys UI in general. If EITHER this flag or `kJourneys` is
-// enabled, users will have context annotations persisted into their History DB.
-BASE_DECLARE_FEATURE(kPersistContextAnnotationsInHistoryDb);
-
 // Enables the history clusters internals page.
 BASE_DECLARE_FEATURE(kHistoryClustersInternalsPage);
 

@@ -215,14 +215,9 @@ void HistoryClustersService::CompleteVisitContextAnnotationsIfReady(
       visit_context_annotations.status.navigation_end_signals &&
       (visit_context_annotations.status.ukm_page_end_signals ||
        !visit_context_annotations.status.expect_ukm_page_end_signals)) {
-    // If the main Journeys feature is enabled, we want to persist visits.
-    // And if the persist-only switch is enabled, we also want to persist them.
-    if (IsJourneysEnabledAndVisible() ||
-        GetConfig().persist_context_annotations_in_history_db) {
-      history_service_->SetOnCloseContextAnnotationsForVisit(
-          visit_context_annotations.visit_row.visit_id,
-          visit_context_annotations.context_annotations);
-    }
+    history_service_->SetOnCloseContextAnnotationsForVisit(
+        visit_context_annotations.visit_row.visit_id,
+        visit_context_annotations.context_annotations);
     incomplete_visit_context_annotations_.erase(nav_id);
   }
 }
