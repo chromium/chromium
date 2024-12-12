@@ -145,10 +145,6 @@ bool IsAdAuctionHeadersEligible(
 bool IsAdAuctionHeadersEligibleForNavigation(
     const FrameTreeNode& frame,
     const url::Origin& navigation_request_origin) {
-  if (!base::FeatureList::IsEnabled(features::kEnableIFrameAdAuctionHeaders)) {
-    return false;
-  }
-
   // Fenced frames disallow most permissions policies which would let this
   // function return false regardless, but adding this check to be more
   // explicit.
