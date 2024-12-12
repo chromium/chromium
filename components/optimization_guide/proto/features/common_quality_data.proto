@@ -159,7 +159,7 @@ message AXRelativeBounds {
   repeated float transform = 6;
 }
 
-// Next ID: 9
+// Next ID: 10
 message PageContext {
   // The URL of the page that the form is on.
   string url = 1;
@@ -176,6 +176,12 @@ message PageContext {
 
   // The offset of the focused element into the |inner_text|.
   uint64 inner_text_offset = 5;
+
+  // The text passages of the page. Those passages are the result of the
+  // HtmlChunker algorithm implemented in Chrome (used by the History Search
+  // feature). See
+  // https://github.com/google/labs-prototypes/tree/main/seeds/chunker-python
+  repeated string page_passages = 9;
 
   // A base64 encoded PNG of the tab screenshot.
   string tab_screenshot = 6;
@@ -1266,8 +1272,11 @@ enum AnnotatedPageContentVersion {
   ANNOTATED_PAGE_CONTENT_VERSION_1_0 = 1;
 }
 
-// In the future, this will be expanded to include more types of content.
-// Next ID: 12;
+// Content node types that are currently exposed by the Page Content Agent.
+// When adding new types, please also update AIPageContentAttributeType in
+// third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.
+// See crrev.com/c/6072788 for an example.
+// Next ID: 20;
 enum ContentAttributeType {
   CONTENT_ATTRIBUTE_UNKNOWN = 0;
 
@@ -1294,6 +1303,23 @@ enum ContentAttributeType {
   CONTENT_ATTRIBUTE_TABLE = 10;
 
   CONTENT_ATTRIBUTE_TABLE_CELL = 11;
+
+  // Landmark/section chunks.
+  CONTENT_ATTRIBUTE_HEADER = 12;
+
+  CONTENT_ATTRIBUTE_NAV = 13;
+
+  CONTENT_ATTRIBUTE_SEARCH = 14;
+
+  CONTENT_ATTRIBUTE_MAIN = 15;
+
+  CONTENT_ATTRIBUTE_ARTICLE = 16;
+
+  CONTENT_ATTRIBUTE_SECTION = 17;
+
+  CONTENT_ATTRIBUTE_ASIDE = 18;
+
+  CONTENT_ATTRIBUTE_FOOTER = 19;
 }
 
 // Next ID: 5
