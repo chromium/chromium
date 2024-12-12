@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.10.2](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.10.1...chromium-bidi-v0.10.2) (2024-12-11)
+
+
+### Bug Fixes
+
+* avoid extra getFrameOwner call ([#2839](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2839)) ([0ff2876](https://github.com/GoogleChromeLabs/chromium-bidi/commit/0ff28760906e411635c9685cf4a6ba34fdd02183))
+* implement the pattern matching according to the spec  ([#2832](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2832)) ([4563b2b](https://github.com/GoogleChromeLabs/chromium-bidi/commit/4563b2b1a365c2518f61fc2e2922ccd099b5c238))
+* stop calling bringToFront before taking screenshots ([#2830](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2830)) ([6017898](https://github.com/GoogleChromeLabs/chromium-bidi/commit/6017898ea4d06a5531ddf690bedbaa25c2147f0e))
+
 ## [0.10.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.10.0...chromium-bidi-v0.10.1) (2024-11-25)
 
 
