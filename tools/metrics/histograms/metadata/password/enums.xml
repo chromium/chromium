@@ -155,7 +155,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Password manager"/>
   <int value="9" label="iOS"/>
   <int value="10" label="Manual fallback address"/>
-  <int value="11" label="Manual fallback payments"/>
+  <int value="11" label="(Deprecated in M133) Manual fallback payments"/>
   <int value="12" label="Manual fallback passwords"/>
   <int value="13" label="(Deprecated in M133) Manual fallback plus addresses"/>
   <int value="14" label="Show prompt after dialog closed non manual fallback"/>

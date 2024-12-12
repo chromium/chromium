@@ -148,14 +148,7 @@ GURL StripAuthAndParams(const GURL& gurl) {
 
 bool IsAutofillManuallyTriggered(
     AutofillSuggestionTriggerSource trigger_source) {
-  return IsPaymentsAutofillManuallyTriggered(trigger_source) ||
-         IsPasswordsAutofillManuallyTriggered(trigger_source);
-}
-
-bool IsPaymentsAutofillManuallyTriggered(
-    AutofillSuggestionTriggerSource trigger_source) {
-  return trigger_source ==
-         AutofillSuggestionTriggerSource::kManualFallbackPayments;
+  return IsPasswordsAutofillManuallyTriggered(trigger_source);
 }
 
 bool IsPasswordsAutofillManuallyTriggered(

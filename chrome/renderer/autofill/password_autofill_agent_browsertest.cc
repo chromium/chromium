@@ -2722,9 +2722,6 @@ TEST_F(PasswordAutofillAgentTest,
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions).Times(0);
   autofill_agent_->TriggerSuggestions(
       form_util::GetFieldRendererId(username_element_),
-      AutofillSuggestionTriggerSource::kManualFallbackPayments);
-  autofill_agent_->TriggerSuggestions(
-      form_util::GetFieldRendererId(username_element_),
       AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
 
   // However, the popup is requested for password manual fallback.

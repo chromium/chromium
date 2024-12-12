@@ -614,9 +614,7 @@ enum AutofillSuggestionTriggerSource {
   // trigger sources. They are all treated as `kiOS`. See crbug.com/1448447.
   kiOS = 9,
   // kManualFallbackAddress = 10 is deprecated
-  // Suggestions triggered by selecting the Autofill payment methods manual
-  // fallback entry from the Chrome context menu.
-  kManualFallbackPayments = 11,
+  // kManualFallbackPayments = 11 is deprecated
   // Suggestions triggered by selecting the Autofill password manager manual
   // fallback entry from the Chrome context menu.
   kManualFallbackPasswords = 12,

@@ -1322,8 +1322,7 @@ void AutofillAgent::ShowSuggestions(
 
   // Manual fallbacks override any prioritization done based on the field type.
   // TODO(crbug.com/333990908): Test manual fallback on different form types.
-  if (IsPaymentsAutofillManuallyTriggered(trigger_source) ||
-      IsPlusAddressesManuallyTriggered(trigger_source)) {
+  if (IsPlusAddressesManuallyTriggered(trigger_source)) {
     QueryAutofillSuggestions(element, trigger_source);
     return;
   }

@@ -120,7 +120,6 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
 #else
       return AutofillTriggerSource::kPopup;
 #endif  // BUILDFLAG(IS_ANDROID)
-    case AutofillSuggestionTriggerSource::kManualFallbackPayments:
     case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
     case AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses:
       // Manual fallbacks are both a suggestion trigger source (e.g. through the
@@ -657,10 +656,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       }
       break;
     case SuggestionType::kVirtualCreditCardEntry:
-      // If triggered on a non payments form, don't preview the value.
-      if (IsPaymentsManualFallbackOnNonPaymentsField()) {
-        break;
-      }
       FillAutofillFormData(
           suggestion.type, suggestion.payload, /*metadata=*/std::nullopt,
           /*is_preview=*/true,
@@ -1251,18 +1246,6 @@ void AutofillExternalDelegate::InsertDataListValues(
         Suggestion::Text(datalist[i].value, Suggestion::Text::IsPrimary(true));
     suggestions[i].labels = {{Suggestion::Text(datalist[i].text)}};
   }
-}
-
-bool AutofillExternalDelegate::IsPaymentsManualFallbackOnNonPaymentsField()
-    const {
-  if (trigger_source_ ==
-      AutofillSuggestionTriggerSource::kManualFallbackPayments) {
-    const AutofillField* field = GetQueriedAutofillField();
-    return !field || !FieldTypeGroupSet({FieldTypeGroup::kCreditCard,
-                                         FieldTypeGroup::kStandaloneCvcField})
-                          .contains(field->Type().group());
-  }
-  return false;
 }
 
 AutofillSuggestionTriggerSource

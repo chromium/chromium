@@ -236,8 +236,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   // version.
   void InsertDataListValues(std::vector<Suggestion>& suggestions) const;
 
-  bool IsPaymentsManualFallbackOnNonPaymentsField() const;
-
   // Returns the text (i.e. |Suggestion| value) for Chrome autofill options.
   std::u16string GetSettingsSuggestionValue() const;
 
