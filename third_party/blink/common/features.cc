@@ -2753,6 +2753,12 @@ BASE_FEATURE(kWebAppManifestLockScreen,
              "WebAppManifestLockScreen",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allow denormals in AudioWorklet and ScriptProcessorNode, to enable strict
+// JavaScript denormal compliance.  See https://crbug.com/382005099.
+BASE_FEATURE(kWebAudioAllowDenormalInProcessing,
+             "WebAudioAllowDenormalInProcessing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Parameters can be used to control to which latency hints the feature is
 // applied.
 BASE_FEATURE_PARAM(bool,
