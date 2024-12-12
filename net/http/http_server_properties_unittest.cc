@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/http/http_server_properties.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -37,7 +33,7 @@
 
 namespace net {
 
-const base::TimeDelta BROKEN_ALT_SVC_EXPIRE_DELAYS[10] = {
+const std::array<base::TimeDelta, 10> BROKEN_ALT_SVC_EXPIRE_DELAYS = {
     base::Seconds(300),    base::Seconds(600),   base::Seconds(1200),
     base::Seconds(2400),   base::Seconds(4800),  base::Seconds(9600),
     base::Seconds(19200),  base::Seconds(38400), base::Seconds(76800),

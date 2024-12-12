@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/spdy/spdy_write_queue.h"
 
+#include <array>
 #include <cstddef>
 #include <cstring>
 #include <string>
@@ -262,10 +258,12 @@ TEST_F(SpdyWriteQueueTest, RemovePendingWritesForStreamsAfter) {
   stream3->set_stream_id(5);
   // No stream id assigned.
   std::unique_ptr<SpdyStream> stream4 = MakeTestStream(DEFAULT_PRIORITY);
-  base::WeakPtr<SpdyStream> streams[] = {
-    stream1->GetWeakPtr(), stream2->GetWeakPtr(),
-    stream3->GetWeakPtr(), stream4->GetWeakPtr()
-  };
+  auto streams = std::to_array<base::WeakPtr<SpdyStream>>({
+      stream1->GetWeakPtr(),
+      stream2->GetWeakPtr(),
+      stream3->GetWeakPtr(),
+      stream4->GetWeakPtr(),
+  });
 
   for (int i = 0; i < 100; ++i) {
     write_queue.Enqueue(DEFAULT_PRIORITY, spdy::SpdyFrameType::HEADERS,

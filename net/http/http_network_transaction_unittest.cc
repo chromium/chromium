@@ -14,6 +14,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -2109,19 +2110,20 @@ void HttpNetworkTransactionTestBase::KeepAliveConnectionResendRequestTest(
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   // Written data for successfully sending both requests.
-  MockWrite data1_writes[] = {MockWrite("GET / HTTP/1.1\r\n"
-                                        "Host: www.foo.com\r\n"
-                                        "Connection: keep-alive\r\n\r\n"),
-                              MockWrite("GET / HTTP/1.1\r\n"
-                                        "Host: www.foo.com\r\n"
-                                        "Connection: keep-alive\r\n\r\n")};
+  auto data1_writes =
+      std::to_array<MockWrite>({MockWrite("GET / HTTP/1.1\r\n"
+                                          "Host: www.foo.com\r\n"
+                                          "Connection: keep-alive\r\n\r\n"),
+                                MockWrite("GET / HTTP/1.1\r\n"
+                                          "Host: www.foo.com\r\n"
+                                          "Connection: keep-alive\r\n\r\n")});
 
   // Read results for the first request.
-  MockRead data1_reads[] = {
+  auto data1_reads = std::to_array<MockRead>({
       MockRead("HTTP/1.1 200 OK\r\nContent-Length: 5\r\n\r\n"),
       MockRead("hello"),
       MockRead(ASYNC, OK),
-  };
+  });
 
   if (write_failure) {
     ASSERT_FALSE(read_failure);
@@ -2142,7 +2144,8 @@ void HttpNetworkTransactionTestBase::KeepAliveConnectionResendRequestTest(
   StaticSocketDataProvider data2(data2_reads, base::span<MockWrite>());
   session_deps_.socket_factory->AddSocketDataProvider(&data2);
 
-  const char* const kExpectedResponseData[] = {"hello", "world"};
+  const auto kExpectedResponseData =
+      std::to_array<const char*>({"hello", "world"});
 
   uint32_t first_socket_log_id = NetLogSource::kInvalidId;
   for (int i = 0; i < 2; ++i) {
@@ -2750,7 +2753,7 @@ TEST_P(HttpNetworkTransactionTest, KeepAliveAfterUnreadBody) {
   session_deps_.socket_factory->AddSocketDataProvider(&data);
 
   const int kNumUnreadBodies = std::size(data_writes) - 1;
-  std::string response_lines[kNumUnreadBodies];
+  std::array<std::string, kNumUnreadBodies> response_lines;
 
   uint32_t first_socket_log_id = NetLogSource::kInvalidId;
   for (size_t i = 0; i < kNumUnreadBodies; ++i) {
@@ -2784,7 +2787,7 @@ TEST_P(HttpNetworkTransactionTest, KeepAliveAfterUnreadBody) {
     base::RunLoop().RunUntilIdle();
   }
 
-  const char* const kStatusLines[] = {
+  const auto kStatusLines = std::to_array<const char*>({
       "HTTP/1.1 204 No Content",
       "HTTP/1.1 205 Reset Content",
       "HTTP/1.1 304 Not Modified",
@@ -2794,7 +2797,7 @@ TEST_P(HttpNetworkTransactionTest, KeepAliveAfterUnreadBody) {
       "HTTP/1.1 301 Moved Permanently",
       "HTTP/1.1 200 Hunky-Dory",
       "HTTP/1.1 200 Hunky-Dory",
-  };
+  });
 
   static_assert(kNumUnreadBodies == std::size(kStatusLines),
                 "forgot to update kStatusLines");
@@ -13186,7 +13189,7 @@ TEST_P(HttpNetworkTransactionTest, ResendRequestOnWriteBodyError) {
       base::byte_span_from_cstring("foo")));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
-  HttpRequestInfo request[2];
+  std::array<HttpRequestInfo, 2> request;
   // Transaction 1: a GET request that succeeds.  The socket is recycled
   // after use.
   request[0].method = "GET";
@@ -13243,7 +13246,8 @@ TEST_P(HttpNetworkTransactionTest, ResendRequestOnWriteBodyError) {
   session_deps_.socket_factory->AddSocketDataProvider(&data1);
   session_deps_.socket_factory->AddSocketDataProvider(&data2);
 
-  const char* const kExpectedResponseData[] = {"hello world", "welcome"};
+  const auto kExpectedResponseData =
+      std::to_array<const char*>({"hello world", "welcome"});
 
   for (int i = 0; i < 2; ++i) {
     HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -20010,7 +20014,7 @@ TEST_P(HttpNetworkTransactionTest, ClientAuthCertCache_Proxy_Fail) {
 
   // Repeat the test for connecting to an HTTPS endpoint, then for connecting to
   // an HTTP endpoint.
-  HttpRequestInfo requests[2];
+  std::array<HttpRequestInfo, 2> requests;
   requests[0].url = GURL("https://www.example.com/");
   requests[0].method = "GET";
   requests[0].load_flags = LOAD_NORMAL;

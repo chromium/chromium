@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/base/network_isolation_key.h"
 
+#include <array>
 #include <optional>
 
 #include "base/test/scoped_feature_list.h"
@@ -146,7 +142,7 @@ TEST(NetworkIsolationKeyTest, Operators) {
   if (nonce2 < nonce1)
     std::swap(nonce1, nonce2);
   // These are in ascending order.
-  const NetworkIsolationKey kKeys[] = {
+  const auto kKeys = std::to_array<NetworkIsolationKey>({
       NetworkIsolationKey(),
       // Site with unique origins are still sorted by scheme, so data is before
       // file, and file before http.
@@ -164,7 +160,7 @@ TEST(NetworkIsolationKeyTest, Operators) {
                           SchemefulSite(GURL("https://a.test/")), nonce1),
       NetworkIsolationKey(SchemefulSite(GURL("https://a.test/")),
                           SchemefulSite(GURL("https://a.test/")), nonce2),
-  };
+  });
 
   for (size_t first = 0; first < std::size(kKeys); ++first) {
     NetworkIsolationKey key1 = kKeys[first];

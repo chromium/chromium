@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/http/http_vary_data.h"
 
 #include <algorithm>
+#include <array>
 
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
@@ -42,14 +38,14 @@ struct TestTransaction {
 
 TEST(HttpVaryDataTest, IsInvalid) {
   // Only first of these result in an invalid vary data object.
-  const char* const kTestResponses[] = {
-    "HTTP/1.1 200 OK\n\n",
-    "HTTP/1.1 200 OK\nVary: *\n\n",
-    "HTTP/1.1 200 OK\nVary: cookie, *, bar\n\n",
-    "HTTP/1.1 200 OK\nVary: cookie\nFoo: 1\nVary: *\n\n",
-  };
+  const auto kTestResponses = std::to_array<const char*>({
+      "HTTP/1.1 200 OK\n\n",
+      "HTTP/1.1 200 OK\nVary: *\n\n",
+      "HTTP/1.1 200 OK\nVary: cookie, *, bar\n\n",
+      "HTTP/1.1 200 OK\nVary: cookie\nFoo: 1\nVary: *\n\n",
+  });
 
-  const bool kExpectedValid[] = {false, true, true, true};
+  const auto kExpectedValid = std::to_array<bool>({false, true, true, true});
 
   for (size_t i = 0; i < std::size(kTestResponses); ++i) {
     TestTransaction t;

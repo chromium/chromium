@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/reporting/reporting_delivery_agent.h"
 
+#include <array>
 #include <optional>
 #include <vector>
 
@@ -626,7 +622,7 @@ TEST_F(ReportingDeliveryAgentTest, ConcurrentRemoveDuringPermissionsCheck) {
 // if the reports are from different origins or NAKs, but does combine all
 // reports for the same (NAK, origin).
 TEST_F(ReportingDeliveryAgentTest, OnlyBatchSameNakAndOrigin) {
-  const ReportingEndpointGroupKey kGroupKeys[] = {
+  const auto kGroupKeys = std::to_array<ReportingEndpointGroupKey>({
       ReportingEndpointGroupKey(kNak_, kOrigin_, kGroup_,
                                 ReportingTargetType::kDeveloper),
       ReportingEndpointGroupKey(kNak_, kOtherOrigin_, kGroup_,
@@ -635,7 +631,7 @@ TEST_F(ReportingDeliveryAgentTest, OnlyBatchSameNakAndOrigin) {
                                 ReportingTargetType::kDeveloper),
       ReportingEndpointGroupKey(kOtherNak_, kOtherOrigin_, kGroup_,
                                 ReportingTargetType::kDeveloper),
-  };
+  });
   for (const ReportingEndpointGroupKey& group_key : kGroupKeys) {
     ASSERT_TRUE(SetEndpointInCache(group_key, kEndpoint_, kExpires_));
   }

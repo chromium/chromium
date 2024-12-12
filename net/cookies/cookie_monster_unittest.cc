@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/cookies/cookie_monster.h"
 
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -509,7 +505,7 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
     this->DeleteAll(cm);
     int next_cookie_id = 0;
     // A list of cookie IDs, indexed by secure status, then by priority.
-    std::vector<int> id_list[2][3];
+    std::array<std::array<std::vector<int>, 3>, 2> id_list;
     // A list of all the cookies stored, along with their properties.
     std::vector<std::pair<bool, CookiePriority>> cookie_data;
 
@@ -548,7 +544,7 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
 
     int num_cookies = static_cast<int>(cookie_data.size());
     // A list of cookie IDs, indexed by secure status, then by priority.
-    std::vector<int> surviving_id_list[2][3];
+    std::array<std::array<std::vector<int>, 3>, 2> surviving_id_list;
 
     // Parse the list of cookies
     std::string cookie_str = this->GetCookies(cm, https_www_foo_.url());
@@ -594,8 +590,11 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
     EXPECT_EQ(expected_secure, num_secure);
 
     // Validate each priority.
-    size_t expected_count[3] = {expected_low_count, expected_medium_count,
-                                expected_high_count};
+    std::array<size_t, 3> expected_count = {
+        expected_low_count,
+        expected_medium_count,
+        expected_high_count,
+    };
     for (int i = 0; i < 3; ++i) {
       size_t num_for_priority =
           surviving_id_list[0][i].size() + surviving_id_list[1][i].size();
@@ -2898,7 +2897,7 @@ TEST_F(CookieMonsterTest, BackingStoreCommunication) {
   auto store = base::MakeRefCounted<MockSimplePersistentCookieStore>();
   base::Time expires(base::Time::Now() + base::Seconds(100));
 
-  const CookiesInputInfo input_info[] = {
+  const auto input_info = std::to_array<CookiesInputInfo>({
       {GURL("https://a.b.foo.com"), "a", "1", "a.b.foo.com", "/path/to/cookie",
        expires, true /* secure */, false, CookieSameSite::NO_RESTRICTION,
        COOKIE_PRIORITY_DEFAULT},
@@ -2907,7 +2906,8 @@ TEST_F(CookieMonsterTest, BackingStoreCommunication) {
        COOKIE_PRIORITY_DEFAULT},
       {GURL("https://foo.com"), "c", "3", "foo.com", "/another/path/to/cookie",
        base::Time::Now() + base::Seconds(100), false, false,
-       CookieSameSite::STRICT_MODE, COOKIE_PRIORITY_DEFAULT}};
+       CookieSameSite::STRICT_MODE, COOKIE_PRIORITY_DEFAULT},
+  });
   const int INPUT_DELETE = 1;
 
   // Create new cookies and flush them to the store.
@@ -5108,7 +5108,7 @@ TEST_F(CookieMonsterTest, LeaveSecureCookiesAlone_PathMatch) {
   auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
 
   // A path that is later in this list will path-match all the paths before it.
-  const char* kPaths[] = {"/", "/1", "/1/2", "/1/2/3"};
+  auto kPaths = std::to_array<const char*>({"/", "/1", "/1/2", "/1/2/3"});
   // This path does not match any, aside from the root path.
   const char* kOtherDirectory = "/9";
 
@@ -5395,7 +5395,7 @@ TEST_F(CookieMonsterTest, SetCanonicalCookieDoesNotBlockForLoadAll) {
 }
 
 TEST_F(CookieMonsterTest, DeleteDuplicateCTime) {
-  const char* const kNames[] = {"A", "B", "C"};
+  const auto kNames = std::to_array<const char*>({"A", "B", "C"});
 
   // Tests that DeleteCanonicalCookie properly distinguishes different cookies
   // (e.g. different name or path) with identical ctime on same domain.
@@ -5570,7 +5570,8 @@ TEST_F(CookieMonsterTest, CookiesWithoutSameSiteMustBeSecure) {
     CookieEffectiveSameSite expected_effective_samesite =
         CookieEffectiveSameSite::NO_RESTRICTION;
     base::TimeDelta creation_time_delta = base::TimeDelta();
-  } test_cases[] = {
+  };
+  auto test_cases = std::to_array<TestCase>({
       // Feature enabled:
       // Cookie set from a secure URL with SameSite enabled is not rejected.
       {true, "A=B; SameSite=Lax", CookieInclusionStatus(),
@@ -5604,14 +5605,13 @@ TEST_F(CookieMonsterTest, CookiesWithoutSameSiteMustBeSecure) {
       {false,
        "A=B; Max-Age=1000000",  // not-recently-set persistent cookie.
        CookieInclusionStatus(), CookieEffectiveSameSite::LAX_MODE, kLongAge},
-  };
+  });
 
   auto cm = std::make_unique<CookieMonster>(nullptr, nullptr);
   GURL secure_url("https://www.example1.test");
   GURL insecure_url("http://www.example2.test");
 
-  int length = sizeof(test_cases) / sizeof(test_cases[0]);
-  for (int i = 0; i < length; ++i) {
+  for (size_t i = 0; i < test_cases.size(); ++i) {
     TestCase test = test_cases[i];
 
     GURL url = test.is_url_secure ? secure_url : insecure_url;

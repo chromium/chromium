@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -1070,14 +1071,14 @@ TEST(HttpStreamParser, TruncatedHeaders) {
     MockRead(SYNCHRONOUS, 0, 2),  // EOF
   };
 
-  base::span<MockRead> reads[] = {
+  auto reads = std::to_array<base::span<MockRead>>({
       truncated_status_reads,
       truncated_after_status_reads,
       truncated_in_header_reads,
       truncated_after_header_reads,
       truncated_after_final_newline_reads,
       not_truncated_reads,
-  };
+  });
 
   MockWrite writes[] = {
     MockWrite(SYNCHRONOUS, 0, "GET / HTTP/1.1\r\n\r\n"),

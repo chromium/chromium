@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -1364,8 +1365,11 @@ TEST_F(PasswordGenerationAgentTest, ShortPasswordMaskedAfterChangingFocus) {
 TEST_F(PasswordGenerationAgentTest, GenerationAvailableByRendererIds) {
   LoadHTMLWithUserGesture(kMultipleAccountCreationFormHTML);
 
-  constexpr const char* kPasswordElementsIds[] = {"password", "first_password",
-                                                  "second_password"};
+  constexpr auto kPasswordElementsIds = std::to_array<const char*>({
+      "password",
+      "first_password",
+      "second_password",
+  });
 
   WebDocument document = GetMainFrame()->GetDocument();
   std::vector<WebInputElement> password_elements;

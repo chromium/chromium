@@ -9,6 +9,7 @@
 
 #include "net/base/priority_queue.h"
 
+#include <array>
 #include <cstddef>
 
 #include "base/functional/bind.h"
@@ -34,26 +35,36 @@ typedef PriorityQueue<int>::Priority Priority;
 constexpr Priority kNumPriorities = 7;
 constexpr size_t kNumElements = 8;
 constexpr size_t kNumQueues = 3;
-constexpr Priority kPriorities[kNumQueues][kNumElements] = {
-    {3, 2, 1, 1, 5, 2, 5, 1},
-    {6, 2, 1, 0, 6, 2, 5, 0},
-    {3, 2, 2, 2, 3, 2, 3, 2}};
-constexpr int kFirstMinOrder[kNumQueues][kNumElements] = {
-    {2, 3, 7, 1, 5, 0, 4, 6},
-    {3, 7, 2, 1, 5, 6, 0, 4},
-    {1, 2, 3, 5, 7, 0, 4, 6}};
-constexpr int kLastMaxOrderErase[kNumQueues][kNumElements] = {
-    {6, 4, 0, 5, 1, 7, 3, 2},
-    {4, 0, 6, 5, 1, 2, 7, 3},
-    {6, 4, 0, 7, 5, 3, 2, 1}};
-constexpr int kFirstMaxOrder[kNumQueues][kNumElements] = {
-    {4, 6, 0, 1, 5, 2, 3, 7},
-    {0, 4, 6, 1, 5, 2, 3, 7},
-    {0, 4, 6, 1, 2, 3, 5, 7}};
-constexpr int kLastMinOrder[kNumQueues][kNumElements] = {
-    {7, 3, 2, 5, 1, 0, 6, 4},
-    {7, 3, 2, 5, 1, 6, 4, 0},
-    {7, 5, 3, 2, 1, 6, 4, 0}};
+constexpr std::array<std::array<Priority, kNumElements>, kNumQueues>
+    kPriorities = {{
+        {3, 2, 1, 1, 5, 2, 5, 1},
+        {6, 2, 1, 0, 6, 2, 5, 0},
+        {3, 2, 2, 2, 3, 2, 3, 2},
+    }};
+constexpr std::array<std::array<int, kNumElements>, kNumQueues> kFirstMinOrder =
+    {{
+        {2, 3, 7, 1, 5, 0, 4, 6},
+        {3, 7, 2, 1, 5, 6, 0, 4},
+        {1, 2, 3, 5, 7, 0, 4, 6},
+    }};
+constexpr std::array<std::array<int, kNumElements>, kNumQueues>
+    kLastMaxOrderErase = {{
+        {6, 4, 0, 5, 1, 7, 3, 2},
+        {4, 0, 6, 5, 1, 2, 7, 3},
+        {6, 4, 0, 7, 5, 3, 2, 1},
+    }};
+constexpr std::array<std::array<int, kNumElements>, kNumQueues> kFirstMaxOrder =
+    {{
+        {4, 6, 0, 1, 5, 2, 3, 7},
+        {0, 4, 6, 1, 5, 2, 3, 7},
+        {0, 4, 6, 1, 2, 3, 5, 7},
+    }};
+constexpr std::array<std::array<int, kNumElements>, kNumQueues> kLastMinOrder =
+    {{
+        {7, 3, 2, 5, 1, 0, 6, 4},
+        {7, 3, 2, 5, 1, 6, 4, 0},
+        {7, 5, 3, 2, 1, 6, 4, 0},
+    }};
 
 class PriorityQueueTest : public testing::TestWithParam<size_t> {
  public:
@@ -199,8 +210,12 @@ TEST_P(PriorityQueueTest, EraseFromMiddle) {
   queue_.Erase(pointers_[2]);
   queue_.Erase(pointers_[0]);
 
-  const int expected_order[kNumQueues][kNumElements - 2] = {
-      {3, 7, 1, 5, 4, 6}, {3, 7, 1, 5, 6, 4}, {1, 3, 5, 7, 4, 6}};
+  const std::array<std::array<int, kNumElements - 2>, kNumQueues>
+      expected_order = {{
+          {3, 7, 1, 5, 4, 6},
+          {3, 7, 1, 5, 6, 4},
+          {1, 3, 5, 7, 4, 6},
+      }};
 
   for (const auto& value : expected_order[GetParam()]) {
     EXPECT_EQ(value, queue_.FirstMin().value());
@@ -216,10 +231,12 @@ TEST_P(PriorityQueueTest, InsertAtFront) {
   queue_.InsertAtFront(11, 1);
   queue_.InsertAtFront(12, 1);
 
-  const int expected_order[kNumQueues][kNumElements + 5] = {
-      {10, 12, 11, 2, 3, 7, 9, 1, 5, 0, 4, 6, 8},
-      {10, 3, 7, 12, 11, 2, 9, 1, 5, 6, 8, 0, 4},
-      {10, 12, 11, 9, 1, 2, 3, 5, 7, 0, 4, 6, 8}};
+  const std::array<std::array<int, kNumElements + 5>, kNumQueues>
+      expected_order = {{
+          {10, 12, 11, 2, 3, 7, 9, 1, 5, 0, 4, 6, 8},
+          {10, 3, 7, 12, 11, 2, 9, 1, 5, 6, 8, 0, 4},
+          {10, 12, 11, 9, 1, 2, 3, 5, 7, 0, 4, 6, 8},
+      }};
 
   for (const auto& value : expected_order[GetParam()]) {
     EXPECT_EQ(value, queue_.FirstMin().value());
