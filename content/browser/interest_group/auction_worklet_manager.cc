@@ -57,12 +57,6 @@ namespace content {
 
 namespace {
 
-// If on, worklet assignment/failure callbacks will be executed in chunks rather
-// than all at once.
-BASE_FEATURE(kFledgeSplitUpWorkletAssignment,
-             "FledgeSplitUpWorkletAssignment",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // We use sequence numbers with handles to make sure they are assigned in FIFO
 // order.
 using HandleKey = std::pair<uint64_t, AuctionWorkletManager::WorkletHandle*>;
@@ -242,8 +236,6 @@ class AuctionWorkletManager::WorkletOwner
   // a raw pointer to it.
   std::vector<std::unique_ptr<DebuggableAuctionWorklet>> worklet_debugs_;
 
-  // If true, we will split callback notifications into small batches.
-  bool split_up_notifications_;
   // True if any notifications are pending - that is, there's either a
   // notification task posted, or one is currently running (at which point,
   // WorkletOwner methods may be recursively invoked).
@@ -298,9 +290,7 @@ AuctionWorkletManager::WorkletOwner::WorkletOwner(
     WorkletKey worklet_info,
     size_t number_of_bidder_threads)
     : worklet_manager_(worklet_manager),
-      worklet_info_(std::move(worklet_info)),
-      split_up_notifications_(
-          base::FeatureList::IsEnabled(kFledgeSplitUpWorkletAssignment)) {
+      worklet_info_(std::move(worklet_info)) {
   // If `trusted_signals_coordinator` in `worklet_info_` has a value and
   // `kFledgeTrustedSignalsKVv2Support` is enabled, call
   // `GetBiddingAndAuctionServerKey` to fetch `trusted_signals_kvv2_public_key_`
@@ -441,10 +431,7 @@ void AuctionWorkletManager::WorkletOwner::DispatchSomeNotifications() {
   // drop all the handles.
   scoped_refptr<WorkletOwner> guard(this);
 
-  size_t max_notifications = std::numeric_limits<size_t>::max();
-  if (split_up_notifications_) {
-    max_notifications = kBatchSize;
-  }
+  size_t max_notifications = kBatchSize;
 
   // Note that this logic needs to be kept in sync with the code in
   // MaybeQueueNotifications() to figure out if any notifications need to be
