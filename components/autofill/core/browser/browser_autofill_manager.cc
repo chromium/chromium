@@ -592,12 +592,15 @@ void MaybeImportFromSubmittedForm(AutofillClient& client,
       // saved.
       fields_for_autocomplete.back().set_should_autocomplete(false);
     }
+    const std::u16string& value = autofill_field->value_for_import();
     if (plus_address_delegate &&
-        plus_address_delegate->IsPlusAddress(
-            base::UTF16ToUTF8(autofill_field->value_for_import()))) {
+        (plus_address_delegate->IsPlusAddress(base::UTF16ToUTF8(value)) ||
+         plus_address_delegate->MatchesPlusAddressFormat(value))) {
       // Similarly to CVC, any plus addresses needn't be saved to autocomplete.
       // Note that the feature is experimental, and `plus_address_delegate`
       // will be null if the feature is not enabled (it's disabled by default).
+      // If the plus address format happens to change or gets extended, we still
+      // keep filtering existing plus addresses.
       fields_for_autocomplete.back().set_should_autocomplete(false);
     }
   }

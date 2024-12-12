@@ -20,6 +20,10 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
 
   MOCK_METHOD(bool, IsPlusAddress, (const std::string&), (const override));
   MOCK_METHOD(bool,
+              MatchesPlusAddressFormat,
+              (const std::u16string&),
+              (const override));
+  MOCK_METHOD(bool,
               IsPlusAddressFillingEnabled,
               (const url::Origin& origin),
               (const override));

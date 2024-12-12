@@ -7799,7 +7799,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, ManualFallbackPlusAddress) {
 // Test that plus address inputs are forced to !should_autocomplete
 // for `SingleFieldFillRouter::OnWillSubmitForm()`.
 TEST_F(BrowserAutofillManagerPlusAddressTest,
-       DontSavePlusAddressInAutocompleteHistory) {
+       DontSaveActivePlusAddressInAutocompleteHistory) {
   const std::string kDummyPlusAddress = "plus+plus@plus.plus";
   ON_CALL(plus_address_delegate(), IsPlusAddress)
       .WillByDefault([&](const std::string& address) {
@@ -7826,6 +7826,41 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   EXPECT_EQ(form.fields().size(), form_seen_by_autocomplete.fields().size());
   EXPECT_FALSE(form_seen_by_autocomplete.fields()[0].should_autocomplete());
   EXPECT_TRUE(form_seen_by_autocomplete.fields()[1].should_autocomplete());
+}
+
+// Test that inputs matching the plus address format are forced to
+// !should_autocomplete for `SingleFieldFillRouter::OnWillSubmitForm()`.
+TEST_F(BrowserAutofillManagerPlusAddressTest,
+       DontSaveMatchedPlusAddressInAutocompleteHistory) {
+  const std::u16string kInvalidPlusAddressFormat = u"plus+plus@plus.plus";
+  const std::u16string kValidPlusAddressFormat = u"plus+plus@grelay.com";
+  ON_CALL(plus_address_delegate(), IsPlusAddress).WillByDefault(Return(false));
+  ON_CALL(plus_address_delegate(), MatchesPlusAddressFormat)
+      .WillByDefault([&](const std::u16string& address) {
+        return address.ends_with(u"@grelay.com");
+      });
+  FormData form_seen_by_autocomplete;
+  EXPECT_CALL(single_field_fill_router(),
+              OnWillSubmitForm(_, _, /*is_autocomplete_enabled=*/true))
+      .WillOnce(SaveArg<0>(&form_seen_by_autocomplete));
+
+  FormData form = test::GetFormData(
+      {.fields = {{.role = EMAIL_ADDRESS, .name = u"email"},
+                  {.role = EMAIL_ADDRESS, .name = u"unfilled-email"}}});
+
+  // First, note the field with the empty value.
+  FormsSeen({form});
+
+  test_api(form).field(0).set_value(kInvalidPlusAddressFormat);
+  test_api(form).field(1).set_value(kValidPlusAddressFormat);
+
+  // Submit the form, capturing it as it is passed to the autocomplete history
+  // manager. The first field should not be autocomplete eligible.
+  FormSubmitted(form);
+
+  EXPECT_EQ(form.fields().size(), form_seen_by_autocomplete.fields().size());
+  EXPECT_TRUE(form_seen_by_autocomplete.fields()[0].should_autocomplete());
+  EXPECT_FALSE(form_seen_by_autocomplete.fields()[1].should_autocomplete());
 }
 
 // Test that plus address inputs are forced to !should_autocomplete

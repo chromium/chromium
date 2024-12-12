@@ -287,6 +287,12 @@ TEST_F(PlusAddressServiceTest, BasicTest) {
             profile.plus_address);
 }
 
+TEST_F(PlusAddressServiceTest, MatchesPlusAddressFormat) {
+  EXPECT_FALSE(service().MatchesPlusAddressFormat(u"invalid_email"));
+  EXPECT_FALSE(service().MatchesPlusAddressFormat(u"asd@foo.com"));
+  EXPECT_TRUE(service().MatchesPlusAddressFormat(u"asd@grelay.com"));
+}
+
 TEST_F(PlusAddressServiceTest, GetPlusProfileByFacet) {
   const PlusProfile profile = test::CreatePlusProfile();
   EXPECT_FALSE(service().IsPlusAddress(*profile.plus_address));

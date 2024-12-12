@@ -68,6 +68,9 @@ class AutofillPlusAddressDelegate {
   virtual bool IsPlusAddress(
       const std::string& potential_plus_address) const = 0;
 
+  // Checks whether `value` matches the the plus address string format.
+  virtual bool MatchesPlusAddressFormat(const std::u16string& value) const = 0;
+
   // Returns whether plus address filling is supported for the given `origin`.
   // This is true iff:
   // - the `PlusAddressService` is enabled and

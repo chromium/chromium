@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
@@ -62,6 +63,8 @@ using autofill::FormFieldData;
 using autofill::Suggestion;
 using autofill::SuggestionType;
 using PasswordFormClassification = autofill::PasswordFormClassification;
+
+constexpr char16_t kPlusAddressDomain[] = u"@grelay.com";
 
 affiliations::FacetURI OriginToFacet(const url::Origin& origin) {
   // For a valid `origin`, `origin.GetURL().spec()` is always a valid spec.
@@ -267,6 +270,12 @@ bool PlusAddressServiceImpl::IsPlusAddress(
     const std::string& potential_plus_address) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return plus_address_cache_.IsPlusAddress(potential_plus_address);
+}
+
+bool PlusAddressServiceImpl::MatchesPlusAddressFormat(
+    const std::u16string& value) const {
+  return autofill::IsValidEmailAddress(value) &&
+         value.ends_with(kPlusAddressDomain);
 }
 
 bool PlusAddressServiceImpl::IsPlusAddressFillingEnabled(
