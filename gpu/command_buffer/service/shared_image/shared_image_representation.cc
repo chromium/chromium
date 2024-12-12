@@ -460,8 +460,7 @@ SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::CreateSkImageForPlane(
 
   auto surface_origin = representation()->surface_origin();
   auto alpha_type = SkAlphaType::kOpaque_SkAlphaType;
-  auto color_type =
-      viz::ToClosestSkColorType(/*gpu_compositing=*/true, format, plane_index);
+  auto color_type = viz::ToClosestSkColorType(format, plane_index);
   return SkImages::BorrowTextureFrom(
       context_state->gr_context(),
       promise_image_texture(plane_index)->backendTexture(), surface_origin,
@@ -697,8 +696,7 @@ sk_sp<SkImage> SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::
   CHECK_EQ(static_cast<int>(graphite_textures_.size()),
            format.NumberOfPlanes());
   auto alpha_type = SkAlphaType::kOpaque_SkAlphaType;
-  auto color_type =
-      viz::ToClosestSkColorType(/*gpu_compositing=*/true, format, plane_index);
+  auto color_type = viz::ToClosestSkColorType(format, plane_index);
   return SkImages::WrapTexture(context_state->gpu_main_graphite_recorder(),
                                graphite_texture(plane_index), color_type,
                                alpha_type, /*colorSpace=*/nullptr,

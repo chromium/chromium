@@ -258,8 +258,7 @@ void ImageContextImpl::CreateFallbackImage(
           context_state->gpu_main_graphite_recorder()->createBackendTexture(
               sk_size, tex_info));
 
-      SkColorType color_type =
-          ToClosestSkColorType(/*gpu_compositing=*/true, format(), plane_index);
+      SkColorType color_type = ToClosestSkColorType(format(), plane_index);
 
       auto sk_surface = SkSurfaces::WrapBackendTexture(
           context_state->gpu_main_graphite_recorder(),

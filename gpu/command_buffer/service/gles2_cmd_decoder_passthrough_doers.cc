@@ -2628,7 +2628,7 @@ error::Error GLES2DecoderPassthroughImpl::DoWritePixelsYUVINTERNAL(
 
   size_t prev_byte_size = 0;
   for (int plane = 0; plane < yuv_info.numPlanes(); plane++) {
-    auto color_type = viz::ToClosestSkColorType(true, dest_format, plane);
+    auto color_type = viz::ToClosestSkColorType(dest_format, plane);
     auto plane_size =
         dest_format.GetPlaneSize(plane, gfx::Size(src_width, src_height));
     SkImageInfo src_info =

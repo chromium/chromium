@@ -419,8 +419,8 @@ IOSurfaceImageBacking::SkiaGaneshRepresentation::BeginWriteAccess(
   for (int plane_index = 0; plane_index < format().NumberOfPlanes();
        plane_index++) {
     // Use the color type per plane for multiplanar formats.
-    SkColorType sk_color_type = viz::ToClosestSkColorType(
-        /*gpu_compositing=*/true, format(), plane_index);
+    SkColorType sk_color_type =
+        viz::ToClosestSkColorType(format(), plane_index);
     // Gray is not a renderable single channel format, but alpha is.
     if (sk_color_type == kGray_8_SkColorType) {
       sk_color_type = kAlpha_8_SkColorType;
@@ -571,8 +571,7 @@ IOSurfaceImageBacking::SkiaGraphiteRepresentation::BeginWriteAccess(
   int num_planes = format().NumberOfPlanes();
   write_surfaces_.reserve(num_planes);
   for (int plane = 0; plane < num_planes; plane++) {
-    SkColorType sk_color_type = viz::ToClosestSkColorType(
-        /*gpu_compositing=*/true, format(), plane);
+    SkColorType sk_color_type = viz::ToClosestSkColorType(format(), plane);
     // Gray is not a renderable single channel format, but alpha is.
     if (sk_color_type == kGray_8_SkColorType) {
       sk_color_type = kAlpha_8_SkColorType;

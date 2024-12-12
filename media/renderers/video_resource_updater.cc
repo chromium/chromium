@@ -1105,8 +1105,8 @@ bool VideoResourceUpdater::WriteRGBPixelsToTexture(
 
   // Copy pixels into texture.
   auto* ri = RasterInterface();
-  auto color_type = viz::ToClosestSkColorType(
-      /*gpu_compositing=*/true, output_si_format, /*plane_index=*/0);
+  auto color_type =
+      viz::ToClosestSkColorType(output_si_format, /*plane_index=*/0);
   SkImageInfo info = SkImageInfo::Make(plane_size.width(), plane_size.height(),
                                        color_type, kPremul_SkAlphaType);
   SkPixmap pixmap = SkPixmap(info, source_pixels, bytes_per_row);
@@ -1232,8 +1232,7 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
       pixels_stride_in_bytes = upload_image_stride;
     }
 
-    auto color_type = viz::ToClosestSkColorType(
-        /*gpu_compositing=*/true, yuv_si_format, plane_index);
+    auto color_type = viz::ToClosestSkColorType(yuv_si_format, plane_index);
     SkImageInfo info = SkImageInfo::Make(resource_size_pixels.width(),
                                          resource_size_pixels.height(),
                                          color_type, kPremul_SkAlphaType);

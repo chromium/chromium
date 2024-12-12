@@ -115,8 +115,7 @@ SkPixmap DawnFallbackImageRepresentation::MappedStagingBufferToPixmap(
 
   auto info =
       SkImageInfo::Make(gfx::SizeToSkISize(staging_buffer.plane_size),
-                        viz::ToClosestSkColorType(
-                            /*gpu_compositing=*/true, format(), plane_index),
+                        viz::ToClosestSkColorType(format(), plane_index),
                         alpha_type(), color_space().ToSkColorSpace());
   return SkPixmap(info, pixels_pointer, staging_buffer.bytes_per_row);
 }

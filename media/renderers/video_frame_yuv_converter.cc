@@ -144,8 +144,7 @@ void ConvertYuvVideoFrameToRgbSharedImage(
   SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
 
   for (int plane = 0; plane < si_format.NumberOfPlanes(); ++plane) {
-    SkColorType color_type =
-        viz::ToClosestSkColorType(/*gpu_compositing=*/true, si_format, plane);
+    SkColorType color_type = viz::ToClosestSkColorType(si_format, plane);
     gfx::Size plane_size =
         si_format.GetPlaneSize(plane, video_frame->coded_size());
     SkImageInfo info = SkImageInfo::Make(gfx::SizeToSkISize(plane_size),

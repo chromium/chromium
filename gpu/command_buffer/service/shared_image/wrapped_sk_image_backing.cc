@@ -370,8 +370,7 @@ WrappedSkImageBacking::GetPromiseTextures() {
 }
 
 SkColorType WrappedSkImageBacking::GetSkColorType(int plane_index) {
-  return viz::ToClosestSkColorType(/*gpu_compositing=*/true, format(),
-                                   plane_index);
+  return viz::ToClosestSkColorType(format(), plane_index);
 }
 
 std::vector<sk_sp<SkSurface>> WrappedSkImageBacking::GetSkSurfaces(

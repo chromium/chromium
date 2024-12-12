@@ -694,8 +694,7 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, Dawn_SamplingVideoTexture) {
     gfx::Size plane_size = format.GetPlaneSize(plane_index, size);
     auto info =
         SkImageInfo::Make(gfx::SizeToSkISize(plane_size),
-                          viz::ToClosestSkColorType(
-                              /*gpu_compositing=*/true, format, plane_index),
+                          viz::ToClosestSkColorType(format, plane_index),
                           alpha_type, color_space.ToSkColorSpace());
     pixmaps[plane_index] =
         SkPixmap(info, plane_datas[plane_index].data(), info.minRowBytes());
