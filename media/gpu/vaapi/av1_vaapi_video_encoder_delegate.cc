@@ -10,6 +10,7 @@
 #include "media/gpu/vaapi/av1_vaapi_video_encoder_delegate.h"
 
 #include <bit>
+#include <bitset>
 #include <utility>
 
 #include "base/bits.h"

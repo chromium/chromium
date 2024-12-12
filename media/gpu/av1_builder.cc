@@ -9,6 +9,8 @@
 
 #include "media/gpu/av1_builder.h"
 
+#include <iterator>
+
 #include "base/check_op.h"
 
 namespace media {
