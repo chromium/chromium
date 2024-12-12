@@ -82,6 +82,7 @@ ts_library("build_ts") {
     "//components/signin/core/browser/resources:build_ts",
     "//components/sync/service/resources:build_ts",
     "//content/browser/resources/indexed_db:build_ts",
+    "//content/browser/resources/service_worker:build_ts",
     "//content/browser/resources/traces_internals:build_ts",
     "//ui/webui/resources/cr_components/certificate_manager:build_ts",
     "//ui/webui/resources/cr_components/customize_color_scheme_mode:build_ts",

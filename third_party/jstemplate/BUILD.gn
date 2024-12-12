@@ -17,7 +17,7 @@ ts_library("library") {
   # Don't add new entries in the list below. jstemplate should be avoided since
   # it requires unsafe-eval CSP header to work. Use Lit templates instead.
   # TODO(crbug.com/40433145): Replace remaining usages with alternatives.
-  visibility = [ "//content/browser/resources/service_worker:build_ts" ]
+  visibility = []
   composite = true
   definitions = [ "jstemplate.d.ts" ]
 }

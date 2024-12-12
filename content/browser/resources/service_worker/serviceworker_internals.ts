@@ -2,134 +2,337 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/js/jstemplate_compiled.js';
-
 import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
-
-function initialize() {
-  addWebUiListener('partition-data', onPartitionData);
-  addWebUiListener('running-state-changed', onRunningStateChanged);
-  addWebUiListener('error-reported', onErrorReported);
-  addWebUiListener('console-message-reported', onConsoleMessageReported);
-  addWebUiListener('version-state-changed', onVersionStateChanged);
-  addWebUiListener('version-router-rules-changed', onVersionRouterRulesChanged);
-  addWebUiListener('registration-completed', onRegistrationCompleted);
-  addWebUiListener('registration-deleted', onRegistrationDeleted);
-  update();
-}
-
-function update() {
-  sendWithPromise('GetOptions').then(onOptions);
-  chrome.send('getAllRegistrations');
-}
+import {html, render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 interface Options {
   debug_on_start: boolean;
 }
 
 interface Registration {
-  active: Version;
+  active?: Version;
+  ancestor_chain_bit: string;
+  navigation_preload_enabled: boolean;
+  navigation_preload_header_length: number;
+  nonce: string;
+  origin: string;
   registration_id: string;
-  unregistered: boolean;
-  waiting: Version;
+  scope: string;
+  storage_key: string;
+  third_party_storage_partitioning_enabled: boolean;
+  top_level_site: string;
+  unregistered?: boolean;  // Augmented by the frontend.
+  waiting?: Version;
+}
+
+interface Client {
+  client_id: string;
+  url: string;
 }
 
 interface Version {
+  clients: Client[];
+  devtools_agent_route_id: number;
+  fetch_handler_existence: string;
+  fetch_handler_type: string;
+  process_host_id: number;
+  process_id: number;
+  router_rules?: string;
+  running_status: string;
+  script_url: string;
+  status: string;
+  thread_id: number;
   version_id: string;
-  log: string;
+}
+
+interface PartitionsDataEntry {
+  partitionPath: string;
+  registrations: PartitionData;
 }
 
 interface PartitionData {
   liveRegistrations: Registration[];
-  storedRegistrations: Registration[];
   liveVersions: Version[];
+  storedRegistrations: Registration[];
 }
 
-interface CmdArgs {}
-
-interface WithPartitionId {
-  partition_id: number;
+interface PartitionDataProcessed {
+  partitionId: number;
+  partitionPath: string;
+  storedRegistrations: Registration[];
+  unregisteredRegistrations: Registration[];
+  unregisteredVersions: Version[];
 }
 
-interface WithVersionId {
-  version_id: string;
+function getVersionHtml(version: Version, partitionId: number) {
+  // clang-format off
+  return html`
+    <div class="serviceworker-version">
+      <div class="serviceworker-status">
+        <span>Installation Status:</span>
+        <span class="value">${version.status}</span>
+      </div>
+      <div class="serviceworker-running-status">
+        <span>Running Status:</span>
+        <span class="value">${version.running_status}</span>
+      </div>
+      <div class="serviceworker-fetch-handler-existence">
+        <span>Fetch handler existence:</span>
+        <span>${version.fetch_handler_existence}</span>
+      </div>
+      <div class="serviceworker-fetch-handler-type">
+        <span>Fetch handler type:</span>
+        <span>${version.fetch_handler_type}</span>
+      </div>
+      ${version.router_rules ? html`
+        <div class="serviceworker-router-rules">
+          <span>Static router rules:</span>
+          <span>${version.router_rules}</span>
+        </div>
+      ` : ''}
+      <div class="serviceworker-script_url">
+        <span>Script:</span>
+        <span>${version.script_url}</span>
+      </div>
+      <div class="serviceworker-vid">
+        <span>Version ID:</span>
+        <span class="value">${version.version_id}</span>
+      </div>
+      <div class="serviceworker-pid">
+        <span>Renderer process ID:</span>
+        <span class="value">${version.process_id}</span>
+      </div>
+      <div class="serviceworker-tid">
+        <span>Renderer thread ID:</span>
+        <span>${version.thread_id}</span>
+      </div>
+      <div class="serviceworker-rid">
+        <span>DevTools agent route ID:</span>
+        <span>${version.devtools_agent_route_id}</span>
+      </div>
+      ${version.clients.map(item => html`
+        <div class="serviceworker-clients">
+          <div>Client: </div>
+          <div class="serviceworker-client">
+            <div>ID: ${item.client_id}</div>
+            <div>URL: ${item.url}</div>
+          </div>
+        </div>
+      `)}
+      <div>
+        <div>Log:</div>
+        <textarea class="serviceworker-log" rows="3" cols="120" readonly
+            .value="${getLogsForversion(partitionId, version)}"></textarea>
+      </div>
+      <div class="worker-controls">
+        ${version.running_status === 'RUNNING' ? html`
+          <button data-command="stop"
+              @click="${onButtonClick.bind(null, {
+                partition_id: partitionId,
+                version_id: version.version_id,
+              })}">
+            Stop
+          </button>
+          <button data-command="inspect"
+              @click="${onButtonClick.bind(null, {
+                process_host_id: version.process_host_id,
+                devtools_agent_route_id: version.devtools_agent_route_id,
+              })}">
+            Inspect
+          </button>
+        ` : ''}
+      </div>
+    </div>`;
+  // clang-format on
 }
 
-interface WithCmdArgs {
-  cmdArgs: CmdArgs;
+function getRegistrationHtml(registration: Registration, partitionId: number) {
+  // clang-format off
+  return html`
+    <div class="serviceworker-registration"
+        data-registration-id="${registration.registration_id}">
+      <div class="serviceworker-scope">
+        <span>Scope:</span>
+        <span class="value">${registration.scope}</span>
+      </div>
+      <!-- Storage Partitioning -->
+      ${registration.third_party_storage_partitioning_enabled ? html`
+        <div class="serviceworker-storage-key-wrapper">
+          Storage key:
+          <div class="serviceworker-storage-key">
+            <div class="serviceworker-origin">
+              <span>Origin:</span>
+              <span class="value">${registration.origin}</span>
+            </div>
+            <div class="serviceworker-top-level-site">
+              <span>Top level site:</span>
+              <span class="value">${registration.top_level_site}</span>
+            </div>
+            <div class="serviceworker-ancestor-chain-bit">
+              <span>Ancestor chain bit:</span>
+              <span class="value">${registration.ancestor_chain_bit}</span>
+            </div>
+            ${registration.nonce !== '<null>' ? html `
+              <div class="serviceworker-nonce">
+                <span>Nonce:</span>
+                <span>${registration.nonce}</span>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      ` : ''}
+      <!-- Storage Partitioning ends -->
+      <div class="serviceworker-rid">
+        <span>Registration ID:</span>
+        <span>${registration.registration_id}</span>
+        <span ?hidden="${!registration.unregistered}">(unregistered)</span>
+      </div>
+      <div class="serviceworker-navigation-preload-enabled">
+        <span>Navigation preload enabled:</span>
+        <span>${registration.navigation_preload_enabled}</span>
+      </div>
+      <div class="serviceworker-navigation-preload-header-length">
+        <span>Navigation preload header length:</span>
+        <span>${registration.navigation_preload_header_length}</span>
+      </div>
+
+      ${registration.active ? html`
+        <div>
+          Active worker:
+          ${getVersionHtml(registration.active, partitionId)}
+        </div>
+      ` : ''}
+
+      ${registration.waiting ? html`
+        <div>
+          Waiting worker:
+          ${getVersionHtml(registration.waiting, partitionId)}
+        </div>
+      ` : ''}
+
+      ${!registration.unregistered ? html`
+        <div class="registration-controls">
+          <button data-command="unregister"
+              @click="${onButtonClick.bind(null, {
+                partition_id: partitionId,
+                scope: registration.scope,
+                storage_key: registration.storage_key,
+              })}">
+            Unregister
+          </button>
+          ${registration.active?.running_status !== 'RUNNING' ? html`
+            <button data-command="start"
+                @click="${onButtonClick.bind(null, {
+                  partition_id: partitionId,
+                  scope: registration.scope,
+                  storage_key: registration.storage_key,
+                })}">
+              Start
+            </button>
+          ` : ''}
+        </div>
+      ` : ''}
+    </div>`;
+  // clang-format on
+}
+
+function getServiceWorkerListHtml(data: PartitionDataProcessed) {
+  if (data.storedRegistrations.length + data.unregisteredRegistrations.length +
+          data.unregisteredVersions.length ===
+      0) {
+    return html``;
+  }
+
+  // clang-format off
+  return html`
+    <div class="serviceworker-summary">
+      <span>
+        ${data.partitionPath !== '' ? html`
+          <span>Registrations in: </span>
+          <span>${data.partitionPath}</span>
+        ` : html`
+          <span>Registrations: Incognito </span>
+        `}
+      </span>
+      <span>(${data.storedRegistrations.length})</span>
+    </div>
+    ${data.storedRegistrations.map(item => html`
+      <div class="serviceworker-item">
+        ${getRegistrationHtml(item, data.partitionId)}
+      </div>
+    `)}
+    ${data.unregisteredRegistrations.map(item => html`
+      <div class="serviceworker-item">
+        ${getRegistrationHtml(item, data.partitionId)}
+      </div>
+    `)}
+    ${data.unregisteredVersions.map(item => html`
+      <div class="serviceworker-item">
+        Unregistered worker:
+        ${getVersionHtml(item, data.partitionId)}
+      </div>
+    `)}`;
+  // clang-format on
+}
+
+function getServiceWorkerOptionsHtml(options: Options) {
+  // clang-format off
+  return html`
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" ?checked="${options.debug_on_start}"
+            @change="${onDebugOnStartChange}">
+          <span>
+            Open DevTools window and pause JavaScript execution on Service Worker startup for debugging.
+          </span>
+      </label>
+    </div>
+  </div>`;
+  // clang-format on
+}
+
+function onDebugOnStartChange(e: Event) {
+  const input = e.target as HTMLInputElement;
+  chrome.send('SetOption', ['debug_on_start', input.checked]);
 }
 
 function onOptions(options: Options) {
-  let template: HTMLElement|undefined;
-  const container = getRequiredElement('serviceworker-options');
-  template = container.children[0] as HTMLElement|undefined;
-
-  if (!template) {
-    template = jstGetTemplate('serviceworker-options-template');
-    container.appendChild(template);
-  }
-  assert(template);
-  jstProcess(new JsEvalContext(options), template);
-  const inputs =
-      container.querySelectorAll<HTMLInputElement>('input[type=\'checkbox\']');
-  for (const input of inputs) {
-    input.onclick = _event => {
-      chrome.send('SetOption', [input.className, input.checked]);
-    };
-  }
+  render(
+      getServiceWorkerOptionsHtml(options),
+      getRequiredElement('serviceworker-options'));
 }
 
-function progressNodeFor(link: HTMLElement): HTMLElement {
-  const node = link.parentNode!.querySelector<HTMLElement>('.operation-status');
-  assert(node);
-  return node;
+async function onButtonClick(cmdArgs: Record<string, any>, e: Event) {
+  const command = (e.target as HTMLElement).dataset['command'];
+  assert(command);
+  assert(COMMANDS.includes(command));
+  await sendWithPromise(command, cmdArgs);
+  update();
 }
 
-// All commands are completed with 'onOperationComplete'.
-const COMMANDS: string[] = ['stop', 'inspect', 'unregister', 'start'];
-
-function commandHandler(command: string) {
-  return function(event: Event) {
-    const link = event.target as HTMLElement & WithCmdArgs;
-    progressNodeFor(link).style.display = 'inline';
-    sendWithPromise(command, link.cmdArgs).then(() => {
-      progressNodeFor(link).style.display = 'none';
-      update();
-    });
-    return false;
-  };
-}
-
-const allLogMessages = new Map<number, Map<string, string>>();
-
-// Set log for a worker version.
-function fillLogForVersion(
-    container: HTMLElement, partitionId: number, version: Version) {
-  if (!version) {
-    return;
+function getLogsForversion(partitionId: number, version: Version): string {
+  const logMessages = allLogMessages.get(partitionId) || null;
+  if (logMessages === null) {
+    return '';
   }
 
+  return logMessages.get(version.version_id) || '';
+}
+
+function addLogForversion(
+    partitionId: number, versionId: string, message: string) {
   let logMessages = allLogMessages.get(partitionId) || null;
   if (logMessages === null) {
     logMessages = new Map();
     allLogMessages.set(partitionId, logMessages);
   }
 
-  version.log = logMessages.get(version.version_id) || '';
-
-  const logAreas =
-      container
-          .querySelectorAll<HTMLTextAreaElement&WithPartitionId&WithVersionId>(
-              'textarea.serviceworker-log');
-  for (const logArea of logAreas) {
-    if (logArea.partition_id === partitionId &&
-        logArea.version_id === version.version_id) {
-      logArea.value = version.log;
-    }
-  }
+  const previous = logMessages.get(versionId) || '';
+  logMessages.set(versionId, previous + message);
 }
+
 
 // Get the unregistered workers.
 // |unregisteredRegistrations| will be filled with the registrations which
@@ -171,107 +374,91 @@ function getUnregisteredWorkers(
 // Fired once per partition from the backend.
 function onPartitionData(
     registrations: PartitionData, partitionId: number, partitionPath: string) {
-  const unregisteredRegistrations: Registration[] = [];
-  const unregisteredVersions: Version[] = [];
-  const storedRegistrations = registrations.storedRegistrations;
-  getUnregisteredWorkers(
-      storedRegistrations, registrations.liveRegistrations,
-      registrations.liveVersions, unregisteredRegistrations,
-      unregisteredVersions);
-  let template: HTMLElement|undefined;
-  const container = getRequiredElement('serviceworker-list');
-  // Existing templates are keyed by partition_id. This allows
-  // the UI to be updated in-place rather than refreshing the
-  // whole page.
-  for (let i = 0; i < container.childNodes.length; ++i) {
-    if ((container.children[i] as HTMLElement & WithPartitionId)
-            .partition_id === partitionId) {
-      template = container.children[i] as HTMLElement;
-    }
-  }
-  // This is probably the first time we're loading.
-  if (!template) {
-    template = jstGetTemplate('serviceworker-list-template');
-    container.appendChild(template);
-  }
-  const fillLogFunc = fillLogForVersion.bind(null, container, partitionId);
-  storedRegistrations.forEach(function(registration) {
-    [registration.active, registration.waiting].forEach(fillLogFunc);
-  });
-  unregisteredRegistrations.forEach(function(registration) {
-    [registration.active, registration.waiting].forEach(fillLogFunc);
-  });
-  unregisteredVersions.forEach(fillLogFunc);
-  jstProcess(
-      new JsEvalContext({
-        stored_registrations: storedRegistrations,
-        unregistered_registrations: unregisteredRegistrations,
-        unregistered_versions: unregisteredVersions,
-        partition_id: partitionId,
-        partition_path: partitionPath,
-      }),
-      template);
-  for (const command of COMMANDS) {
-    const handler = commandHandler(command);
-    const links = container.querySelectorAll<HTMLElement>('button.' + command);
-    for (const link of links) {
-      link.onclick = handler;
-    }
-  }
+  // Update data model for `partitionId`.
+  partitionsData.set(partitionId, {registrations, partitionPath});
+
+  // Trigger re-rendering of corresponding DOM subtree.
+  renderPartitionData(partitionId);
 }
 
-function onRunningStateChanged() {
-  update();
+function renderPartitionData(partitionId: number) {
+  const entry = partitionsData.get(partitionId) || null;
+  assert(entry);
+
+  const unregisteredRegistrations: Registration[] = [];
+  const unregisteredVersions: Version[] = [];
+  getUnregisteredWorkers(
+      entry.registrations.storedRegistrations,
+      entry.registrations.liveRegistrations, entry.registrations.liveVersions,
+      unregisteredRegistrations, unregisteredVersions);
+
+  const container = getRequiredElement('serviceworker-list');
+
+  // Existing instantiated templates are keyed by `partitionId`. This allows the
+  // UI of a given partition to be updated in-place rather than refreshing the
+  // whole page.
+  let partitionDiv = container.querySelector<HTMLElement>(
+      `[data-partition-id='${partitionId}']`);
+
+  if (partitionDiv === null) {
+    // First time rendering for `partitionId`, create a DOM node for it.
+    partitionDiv = document.createElement('div');
+    partitionDiv.dataset['partitionId'] = String(partitionId);
+    container.appendChild(partitionDiv);
+  }
+
+  assert(partitionDiv);
+  render(
+      getServiceWorkerListHtml({
+        storedRegistrations: entry.registrations.storedRegistrations,
+        unregisteredRegistrations,
+        unregisteredVersions,
+        partitionId,
+        partitionPath: entry.partitionPath,
+      }),
+      partitionDiv);
 }
 
 function onErrorReported(
     partitionId: number, versionId: string, errorInfo: any) {
-  outputLogMessage(
+  // Update data model.
+  addLogForversion(
       partitionId, versionId, 'Error: ' + JSON.stringify(errorInfo) + '\n');
+
+  // Trigger re-rendering of corresponding DOM subtree.
+  renderPartitionData(partitionId);
 }
 
 function onConsoleMessageReported(
     partitionId: number, versionId: string, message: any) {
-  outputLogMessage(
+  // Update data model.
+  addLogForversion(
       partitionId, versionId, 'Console: ' + JSON.stringify(message) + '\n');
+
+  // Trigger re-rendering of corresponding DOM subtree.
+  renderPartitionData(partitionId);
 }
 
-function onVersionStateChanged() {
+
+const COMMANDS: string[] = ['stop', 'inspect', 'unregister', 'start'];
+const allLogMessages = new Map<number, Map<string, string>>();
+const partitionsData: Map<number, PartitionsDataEntry> = new Map();
+
+function initialize() {
+  addWebUiListener('partition-data', onPartitionData);
+  addWebUiListener('running-state-changed', update);
+  addWebUiListener('error-reported', onErrorReported);
+  addWebUiListener('console-message-reported', onConsoleMessageReported);
+  addWebUiListener('version-state-changed', update);
+  addWebUiListener('version-router-rules-changed', update);
+  addWebUiListener('registration-completed', update);
+  addWebUiListener('registration-deleted', update);
   update();
 }
 
-function onVersionRouterRulesChanged() {
-  update();
-}
-
-function onRegistrationCompleted() {
-  update();
-}
-
-function onRegistrationDeleted() {
-  update();
-}
-
-function outputLogMessage(
-    partitionId: number, versionId: string, message: string) {
-  let logMessages = allLogMessages.get(partitionId) || null;
-  if (logMessages === null) {
-    logMessages = new Map();
-    allLogMessages.set(partitionId, logMessages);
-  }
-
-  logMessages.set(versionId, (logMessages.get(versionId) || '') + message);
-
-  const logAreas =
-      document
-          .querySelectorAll<HTMLTextAreaElement&WithPartitionId&WithVersionId>(
-              'textarea.serviceworker-log');
-  for (const logArea of logAreas) {
-    if (logArea.partition_id === partitionId &&
-        logArea.version_id === versionId) {
-      logArea.value += message;
-    }
-  }
+function update() {
+  sendWithPromise('GetOptions').then(onOptions);
+  chrome.send('getAllRegistrations');
 }
 
 document.addEventListener('DOMContentLoaded', initialize);
