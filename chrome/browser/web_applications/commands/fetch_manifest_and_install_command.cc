@@ -242,6 +242,7 @@ void FetchManifestAndInstallCommand::StartWithLock(
   if (!AreWebAppsUserInstallable(
           Profile::FromBrowserContext(web_contents_->GetBrowserContext()))) {
     Abort(webapps::InstallResultCode::kWebAppDisabled);
+    return;
   }
 
   data_retriever_ = noop_lock_->web_contents_manager().CreateDataRetriever();
