@@ -314,6 +314,10 @@ bool IsSigninPending(signin::IdentityManager* identity_manager) {
 
 SignedInState GetSignedInState(
     const signin::IdentityManager* identity_manager) {
+  if (!identity_manager) {
+    return SignedInState::kSignedOut;
+  }
+
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
             identity_manager->GetPrimaryAccountId(
