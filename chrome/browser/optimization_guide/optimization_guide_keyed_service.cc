@@ -205,15 +205,23 @@ void OptimizationGuideKeyedService::DeterminePerformanceClass(
         base::UmaHistogramEnumeration(
             "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
             perf_class);
-        ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-            "SyntheticOnDeviceModelPerformanceClass",
-            SyntheticTrialGroupForPerformanceClass(perf_class),
-            variations::SyntheticTrialAnnotationMode::kCurrentLog);
+        RegisterPerformanceClassSyntheticTrial(perf_class);
         return perf_class;
       })
           .Then(base::BindOnce(&OnDeviceModelComponentStateManager::
                                    DevicePerformanceClassChanged,
                                on_device_component_state_manager)));
+}
+
+// static
+void OptimizationGuideKeyedService::RegisterPerformanceClassSyntheticTrial(
+    OnDeviceModelPerformanceClass perf_class) {
+  if (perf_class != OnDeviceModelPerformanceClass::kUnknown) {
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        "SyntheticOnDeviceModelPerformanceClass",
+        SyntheticTrialGroupForPerformanceClass(perf_class),
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  }
 }
 
 OptimizationGuideKeyedService::OptimizationGuideKeyedService(
@@ -387,6 +395,10 @@ void OptimizationGuideKeyedService::InitializeModelExecution(Profile* profile) {
               on_device_component_manager_->GetWeakPtr()),
           optimization_guide::features::GetOnDeviceStartupMetricDelay());
     }
+    // If the perf class was previously determined, register that.
+    RegisterPerformanceClassSyntheticTrial(
+        optimization_guide::PerformanceClassFromPref(
+            *g_browser_process->local_state()));
 
     auto* variations_service = g_browser_process->variations_service();
     auto dogfood_status =

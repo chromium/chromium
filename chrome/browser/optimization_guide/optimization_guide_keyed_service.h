@@ -244,6 +244,8 @@ class OptimizationGuideKeyedService
   static void DeterminePerformanceClass(
       base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
           on_device_component_state_manager);
+  static void RegisterPerformanceClassSyntheticTrial(
+      optimization_guide::OnDeviceModelPerformanceClass perf_class);
 
   // Initializes |this|.
   void Initialize();
