@@ -686,11 +686,13 @@ public class SigninFirstRunFragmentTest {
             sdk_is_greater_than = Build.VERSION_CODES.S_V2,
             message = "https://crbug.com/339896162")
     public void testContinueButtonWithAnAccountOtherThanTheSignedInAccount() {
-        mSigninTestRule.addAccount(TestAccounts.ACCOUNT2);
-        final CoreAccountInfo primaryAccount = mSigninTestRule.addTestAccountThenSignin();
+        final AccountInfo targetPrimaryAccount = TestAccounts.ACCOUNT1;
+        final AccountInfo primaryAccount = TestAccounts.ACCOUNT2;
+        mSigninTestRule.addAccount(targetPrimaryAccount);
+        mSigninTestRule.addAccountThenSignin(primaryAccount);
         Assert.assertNotEquals(
                 "The primary account should be a different account!",
-                TestAccounts.ACCOUNT2.getEmail(),
+                targetPrimaryAccount.getEmail(),
                 primaryAccount.getEmail());
         launchActivityWithFragment();
 
@@ -699,13 +701,13 @@ public class SigninFirstRunFragmentTest {
                         .getActivity()
                         .getString(
                                 R.string.sync_promo_continue_as,
-                                TestAccounts.ACCOUNT2.getGivenName());
+                                targetPrimaryAccount.getGivenName());
         onView(withText(continueAsText)).perform(click());
 
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return TestAccounts.ACCOUNT2.equals(
+                    return targetPrimaryAccount.equals(
                             IdentityServicesProvider.get()
                                     .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
                                     .getPrimaryAccountInfo(ConsentLevel.SIGNIN));

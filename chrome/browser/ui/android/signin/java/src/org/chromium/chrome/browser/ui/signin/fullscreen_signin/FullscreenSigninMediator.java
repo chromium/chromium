@@ -405,14 +405,39 @@ public class FullscreenSigninMediator
                     mModel.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED)
                             ? SigninAccessPoint.FORCED_SIGNIN
                             : mAccessPoint;
-            FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
-                    selectedAccount,
-                    signinManager,
-                    accessPoint,
-                    signInCallback,
-                    mContext,
-                    mModalDialogManager);
+            if (signedInAccount != null) {
+                // If there already exists another signed-in account, first sign-out and then
+                // sign-in with the selected account.
+                signOutThenSignInWithSelectedAccount(
+                        selectedAccount, signinManager, accessPoint, signInCallback);
+            } else {
+                FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
+                        selectedAccount,
+                        signinManager,
+                        accessPoint,
+                        signInCallback,
+                        mContext,
+                        mModalDialogManager);
+            }
         }
+    }
+
+    private void signOutThenSignInWithSelectedAccount(
+            CoreAccountInfo selectedAccount,
+            SigninManager signinManager,
+            @SigninAccessPoint int accessPoint,
+            @Nullable SignInCallback signInCallback) {
+        SignOutCallback signOutCallback =
+                () ->
+                        FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
+                                selectedAccount,
+                                signinManager,
+                                accessPoint,
+                                signInCallback,
+                                mContext,
+                                mModalDialogManager);
+        signinManager.signOut(
+                SignoutReason.ABORT_SIGNIN, signOutCallback, /* forceWipeData= */ false);
     }
 
     private @AccountConsistencyPromoAction int getSigninPromoAction() {
