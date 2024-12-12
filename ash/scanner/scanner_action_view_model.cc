@@ -12,10 +12,8 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scanner/scanner_action_handler.h"
 #include "ash/scanner/scanner_command_delegate.h"
-#include "ash/scanner/scanner_controller.h"
 #include "ash/scanner/scanner_metrics.h"
 #include "ash/scanner/scanner_unpopulated_action.h"
-#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -186,18 +184,6 @@ void ExecutePopulatedAction(manta::proto::ScannerAction::ActionCase action_case,
                        std::move(record_metrics_callback));
 }
 
-void OnActionFinished(ScannerCommandCallback action_finished_callback,
-                      bool success) {
-  // TODO: crbug.com/378023303 - Remove `action_finished_callback` when it's no
-  // longer needed after the new action progress UI is implemented.
-  std::move(action_finished_callback).Run(success);
-
-  // `Shell` can be null in tests.
-  if (Shell::HasInstance()) {
-    Shell::Get()->scanner_controller()->OnActionFinished();
-  }
-}
-
 }  // namespace
 
 ScannerActionViewModel::ScannerActionViewModel(
@@ -268,15 +254,9 @@ const gfx::VectorIcon& ScannerActionViewModel::GetIcon() const {
 
 void ScannerActionViewModel::ExecuteAction(
     ScannerCommandCallback action_finished_callback) const {
-  // `Shell` can be null in tests.
-  if (Shell::HasInstance()) {
-    Shell::Get()->scanner_controller()->OnActionStarted();
-  }
-
   unpopulated_action_.PopulateToVariant(base::BindOnce(
       &ExecutePopulatedAction, unpopulated_action_.action_case(),
-      base::TimeTicks::Now(), delegate_,
-      base::BindOnce(&OnActionFinished, std::move(action_finished_callback))));
+      base::TimeTicks::Now(), delegate_, std::move(action_finished_callback)));
 }
 
 }  // namespace ash

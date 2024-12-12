@@ -30,6 +30,41 @@ namespace {
 constexpr char kScannerActionNotificationId[] = "scanner_action_notification";
 constexpr char kScannerNotifierId[] = "ash.scanner";
 
+// Shows an action progress notification. Note that this will remove the
+// previous action notification if there is one.
+void ShowActionProgressNotification() {
+  message_center::RichNotificationData optional_fields;
+  // Show an infinite loading progress bar.
+  optional_fields.progress = -1;
+  optional_fields.never_timeout = true;
+
+  auto* message_center = message_center::MessageCenter::Get();
+  message_center->RemoveNotification(kScannerActionNotificationId,
+                                     /*by_user=*/false);
+  // TODO: crbug.com/375967525 - Finalize the action notification strings and
+  // icon.
+  constexpr char16_t kPlaceholderActionProgressTitle[] = u"Creating...";
+  message_center->AddNotification(CreateSystemNotificationPtr(
+      message_center::NOTIFICATION_TYPE_PROGRESS, kScannerActionNotificationId,
+      kPlaceholderActionProgressTitle,
+      /*message=*/u"",
+      /*display_source=*/u"", GURL(),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kScannerNotifierId,
+                                 NotificationCatalogName::kScannerAction),
+      optional_fields, /*delegate=*/nullptr, kCaptureModeIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL));
+}
+
+// Should be called when an action finishes execution.
+void OnActionFinished(bool success) {
+  message_center::MessageCenter::Get()->RemoveNotification(
+      kScannerActionNotificationId,
+      /*by_user=*/false);
+  // TODO: crbug.com/382182688 - Show an error message if the action was not
+  // successful.
+}
+
 }  // namespace
 
 ScannerController::ScannerController(std::unique_ptr<ScannerDelegate> delegate)
@@ -96,37 +131,8 @@ void ScannerController::OnSessionUIClosed() {
 
 void ScannerController::ExecuteAction(
     const ScannerActionViewModel& scanner_action) {
-  scanner_action.ExecuteAction();
-}
-
-void ScannerController::OnActionStarted() {
-  message_center::RichNotificationData optional_fields;
-  // Show an infinite loading progress bar.
-  optional_fields.progress = -1;
-  optional_fields.never_timeout = true;
-
-  auto* message_center = message_center::MessageCenter::Get();
-  message_center->RemoveNotification(kScannerActionNotificationId,
-                                     /*by_user=*/false);
-  // TODO: crbug.com/375967525 - Finalize the action notification strings and
-  // icon.
-  constexpr char16_t kPlaceholderActionProgressTitle[] = u"Creating...";
-  message_center->AddNotification(CreateSystemNotificationPtr(
-      message_center::NOTIFICATION_TYPE_PROGRESS, kScannerActionNotificationId,
-      kPlaceholderActionProgressTitle,
-      /*message=*/u"",
-      /*display_source=*/u"", GURL(),
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kScannerNotifierId,
-                                 NotificationCatalogName::kScannerAction),
-      optional_fields, /*delegate=*/nullptr, kCaptureModeIcon,
-      message_center::SystemNotificationWarningLevel::NORMAL));
-}
-
-void ScannerController::OnActionFinished() {
-  message_center::MessageCenter::Get()->RemoveNotification(
-      kScannerActionNotificationId,
-      /*by_user=*/false);
+  scanner_action.ExecuteAction(base::BindOnce(&OnActionFinished));
+  ShowActionProgressNotification();
 }
 
 bool ScannerController::HasActiveSessionForTesting() const {

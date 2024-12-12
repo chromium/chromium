@@ -55,21 +55,7 @@ class ASH_EXPORT ScannerController : public SessionObserver {
   void OnSessionUIClosed();
 
   // Executes the action described by `scanner_action`.
-  // TODO: crbug.com/378023303 - Refactor and combine this with
-  // `OnActionStarted`.
   void ExecuteAction(const ScannerActionViewModel& scanner_action);
-
-  // Should be called when an action starts execution. This will show a progress
-  // notification.
-  // TODO: crbug.com/378023303 - Some actions might not need a progress
-  // notification.
-  void OnActionStarted();
-
-  // Should be called when an action finishes execution. This will hide the
-  // action progress notification.
-  // TODO: crbug.com/382182688 - Show an error message if the action was not
-  // successful.
-  void OnActionFinished();
 
   bool HasActiveSessionForTesting() const;
 

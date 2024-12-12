@@ -41,10 +41,7 @@ class ASH_EXPORT ScannerActionViewModel {
 
   // Executes this action, running the provided callback with a success value
   // when the execution finishes.
-  // TODO: crbug.com/378023303 - Remove `action_finished_callback` since it's no
-  // longer needed for the new action progress UI.
-  void ExecuteAction(ScannerCommandCallback action_finished_callback =
-                         base::DoNothing()) const;
+  void ExecuteAction(ScannerCommandCallback action_finished_callback) const;
 
  private:
   ScannerUnpopulatedAction unpopulated_action_;
