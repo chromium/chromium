@@ -17,6 +17,7 @@
 #include "components/dbus/xdg/request.h"
 #include "dbus/bus.h"
 #include "dbus/object_proxy.h"
+#include "ui/base/accelerators/command.h"
 
 namespace dbus_xdg {
 class Request;
@@ -69,13 +70,13 @@ class GlobalShortcutListenerLinux : public GlobalShortcutListener {
   };
 
   struct SessionContext {
-    SessionContext(Observer* observer, const CommandMap& commands);
+    SessionContext(Observer* observer, const ui::CommandMap& commands);
     ~SessionContext();
 
     scoped_refptr<dbus::Bus> bus;
     raw_ptr<dbus::ObjectProxy> session_proxy;
     const raw_ptr<Observer> observer;
-    CommandMap commands;
+    ui::CommandMap commands;
     bool bind_shortcuts_called = false;
     std::unique_ptr<dbus_xdg::Request> request;
   };
@@ -93,7 +94,7 @@ class GlobalShortcutListenerLinux : public GlobalShortcutListener {
   bool IsRegistrationHandledExternally() const override;
   void OnCommandsChanged(const ExtensionId& extension_id,
                          const std::string& profile_id,
-                         const CommandMap& commands,
+                         const ui::CommandMap& commands,
                          Observer* observer) override;
 
   void OnCreateSession(

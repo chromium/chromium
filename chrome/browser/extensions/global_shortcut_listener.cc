@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/command.h"
 
 using content::BrowserThread;
 
@@ -110,11 +111,10 @@ bool GlobalShortcutListener::IsRegistrationHandledExternally() const {
   return false;
 }
 
-void GlobalShortcutListener::OnCommandsChanged(
-    const ExtensionId& extension_id,
-    const std::string& profile_id,
-    const extensions::CommandMap& commands,
-    Observer* observer) {}
+void GlobalShortcutListener::OnCommandsChanged(const ExtensionId& extension_id,
+                                               const std::string& profile_id,
+                                               const ui::CommandMap& commands,
+                                               Observer* observer) {}
 
 void GlobalShortcutListener::NotifyKeyPressed(
     const ui::Accelerator& accelerator) {

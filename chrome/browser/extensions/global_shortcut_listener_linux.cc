@@ -23,6 +23,7 @@
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/command.h"
 #include "ui/base/linux/xdg_shortcut.h"
 
 namespace extensions {
@@ -152,7 +153,7 @@ bool GlobalShortcutListenerLinux::IsRegistrationHandledExternally() const {
 void GlobalShortcutListenerLinux::OnCommandsChanged(
     const ExtensionId& extension_id,
     const std::string& profile_id,
-    const CommandMap& commands,
+    const ui::CommandMap& commands,
     Observer* observer) {
   // If starting the service failed, there's no need to add the command list.
   if (!service_started_.value_or(true)) {
@@ -363,7 +364,7 @@ std::string GlobalShortcutListenerLinux::SessionKey::GetTokenKey() const {
 
 GlobalShortcutListenerLinux::SessionContext::SessionContext(
     Observer* observer,
-    const CommandMap& commands)
+    const ui::CommandMap& commands)
     : observer(observer), commands(commands) {}
 
 GlobalShortcutListenerLinux::SessionContext::~SessionContext() {

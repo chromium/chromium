@@ -12,6 +12,7 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
+#include "ui/base/accelerators/command.h"
 
 namespace extensions {
 
@@ -81,7 +82,7 @@ void ExtensionCommandsGlobalRegistry::AddExtensionKeybindings(
   }
   extensions::CommandService* command_service =
       extensions::CommandService::Get(browser_context_);
-  extensions::CommandMap commands;
+  ui::CommandMap commands;
   if (instance->IsRegistrationHandledExternally()) {
     if (!command_service->GetNamedCommands(
             extension->id(), extensions::CommandService::ALL,

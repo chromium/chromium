@@ -8,8 +8,8 @@
 #include <map>
 
 #include "base/memory/raw_ptr.h"
-#include "extensions/common/command.h"
 #include "extensions/common/extension_id.h"
+#include "ui/base/accelerators/command.h"
 
 namespace ui {
 class Accelerator;
@@ -75,7 +75,7 @@ class GlobalShortcutListener {
   // Called when an extension's commands are registered.
   virtual void OnCommandsChanged(const ExtensionId& extension_id,
                                  const std::string& profile_id,
-                                 const extensions::CommandMap& commands,
+                                 const ui::CommandMap& commands,
                                  Observer* observer);
 
  protected:

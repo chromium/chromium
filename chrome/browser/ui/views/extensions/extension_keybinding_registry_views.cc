@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/accelerator_priority.h"
 #include "extensions/common/extension.h"
+#include "ui/base/accelerators/command.h"
 #include "ui/views/focus/focus_manager.h"
 
 ExtensionKeybindingRegistryViews::ExtensionKeybindingRegistryViews(
@@ -37,14 +38,14 @@ void ExtensionKeybindingRegistryViews::AddExtensionKeybindings(
       extensions::CommandService::Get(profile_);
   // Add all the active keybindings (except page actions and browser actions,
   // which are handled elsewhere).
-  extensions::CommandMap commands;
+  ui::CommandMap commands;
   if (!command_service->GetNamedCommands(
           extension->id(),
           extensions::CommandService::ACTIVE,
           extensions::CommandService::REGULAR,
           &commands))
     return;
-  extensions::CommandMap::const_iterator iter = commands.begin();
+  ui::CommandMap::const_iterator iter = commands.begin();
   for (; iter != commands.end(); ++iter) {
     if (!command_name.empty() && (iter->second.command_name() != command_name))
       continue;

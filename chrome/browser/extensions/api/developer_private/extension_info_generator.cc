@@ -72,6 +72,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/accelerators/command.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -193,7 +194,7 @@ developer::RuntimeError ConstructRuntimeError(const RuntimeError& error) {
 void ConstructCommands(CommandService* command_service,
                        const ExtensionId& extension_id,
                        std::vector<developer::Command>* commands) {
-  auto construct_command = [](const Command& command, bool active,
+  auto construct_command = [](const ui::Command& command, bool active,
                               bool is_extension_action) {
     developer::Command command_value;
     command_value.description =
@@ -223,13 +224,13 @@ void ConstructCommands(CommandService* command_service,
     }
   }
 
-  CommandMap named_commands;
+  ui::CommandMap named_commands;
   if (command_service->GetNamedCommands(extension_id,
                                         CommandService::ALL,
                                         CommandService::ANY_SCOPE,
                                         &named_commands)) {
     for (auto& pair : named_commands) {
-      Command& command_to_use = pair.second;
+      ui::Command& command_to_use = pair.second;
       // TODO(devlin): For some reason beyond my knowledge, FindCommandByName
       // returns different data than GetNamedCommands, including the
       // accelerators, but not the descriptions - and even then, only if the

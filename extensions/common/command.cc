@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -17,6 +19,7 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
+#include "ui/base/accelerators/command.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 
 namespace extensions {
@@ -258,23 +261,17 @@ std::string NormalizeShortcutSuggestion(std::string_view suggestion,
 
 }  // namespace
 
-Command::Command() : global_(false) {}
-
 Command::Command(std::string_view command_name,
                  std::u16string_view description,
                  std::string_view accelerator,
                  bool global)
-    : command_name_(command_name), description_(description), global_(global) {
+    : ui::Command(command_name, description, global) {
   if (!accelerator.empty()) {
     std::u16string error;
-    accelerator_ = ParseImpl(accelerator, CommandPlatform(), 0,
-                             !IsActionRelatedCommand(command_name), &error);
+    set_accelerator(ParseImpl(accelerator, CommandPlatform(), 0,
+                              !IsActionRelatedCommand(command_name), &error));
   }
 }
-
-Command::Command(const Command& other) = default;
-
-Command::~Command() = default;
 
 // static
 std::string Command::CommandPlatform() {
@@ -522,10 +519,10 @@ bool Command::Parse(const base::Value::Dict& command,
 
     if (iter->first == key) {
       // This platform is our platform, so grab this key.
-      accelerator_ = accelerator;
-      command_name_ = command_name;
-      description_ = description;
-      global_ = global;
+      set_accelerator(accelerator);
+      set_command_name(command_name);
+      set_description(description);
+      set_global(global);
     }
   }
   return true;

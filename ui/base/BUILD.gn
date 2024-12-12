@@ -117,6 +117,8 @@ component("base") {
   sources = [
     "accelerators/accelerator.cc",
     "accelerators/accelerator.h",
+    "accelerators/command.cc",
+    "accelerators/command.h",
     "class_property.cc",
     "class_property.h",
     "default_style.h",
