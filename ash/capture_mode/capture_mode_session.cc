@@ -1475,12 +1475,9 @@ void CaptureModeSession::OnScannerActionsFetched(
         base::BindRepeating(&CaptureModeSession::OnScannerActionButtonPressed,
                             weak_ptr_factory_.GetWeakPtr(), std::move(action));
 
-    if (ActionButtonView* action_button =
-            AddActionButton(std::move(pressed_callback), std::move(text), &icon,
-                            ActionButtonRank{ActionButtonType::kScanner, i},
-                            ActionButtonViewID::kScannerButton)) {
-      action_button->set_show_throbber_when_pressed(true);
-    }
+    AddActionButton(std::move(pressed_callback), std::move(text), &icon,
+                    ActionButtonRank{ActionButtonType::kScanner, i},
+                    ActionButtonViewID::kScannerButton);
   }
 }
 

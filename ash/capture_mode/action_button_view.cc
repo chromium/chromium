@@ -13,7 +13,6 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/system_shadow.h"
 #include "ash/style/typography.h"
-#include "base/check.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -27,7 +26,6 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/throbber.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
@@ -50,9 +48,6 @@ constexpr int kActionButtonRadius = 18;
 
 // The size of the icon in an action button.
 constexpr int kActionButtonIconSize = 20;
-
-// The diameter of the loading throbber in an action button.
-constexpr int kActionButtonThrobberDiameter = 20;
 
 }  // namespace
 
@@ -86,10 +81,6 @@ ActionButtonView::ActionButtonView(views::Button::PressedCallback callback,
 
   SetAccessibleName(text);
   UpdateColorsAndIcon();
-
-  throbber_ = AddChildView(
-      std::make_unique<views::Throbber>(kActionButtonThrobberDiameter));
-  throbber_->SetVisible(false);
 }
 
 ActionButtonView::~ActionButtonView() = default;
@@ -130,25 +121,6 @@ void ActionButtonView::OnThemeChanged() {
 void ActionButtonView::OnEnabledChanged() {
   views::Button::OnEnabledChanged();
   UpdateColorsAndIcon();
-}
-
-void ActionButtonView::StateChanged(ButtonState old_state) {
-  if (!show_throbber_when_pressed_) {
-    return;
-  }
-
-  CHECK(throbber_);
-  const ButtonState button_state = GetState();
-  if (button_state == ButtonState::STATE_PRESSED) {
-    throbber_->SetVisible(true);
-    throbber_->Start();
-  } else if (button_state == STATE_NORMAL) {
-    // The button state is `STATE_PRESSED` then `STATE_DISABLED` while the
-    // action is in progress, but may become `STATE_NORMAL` again if the action
-    // is not successfully executed. If that happens, hide the loading throbber.
-    throbber_->Stop();
-    throbber_->SetVisible(false);
-  }
 }
 
 void ActionButtonView::UpdateColorsAndIcon() {

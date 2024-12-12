@@ -22,7 +22,6 @@ namespace views {
 class BoxLayout;
 class ImageView;
 class Label;
-class Throbber;
 }  // namespace views
 
 namespace ash {
@@ -45,16 +44,11 @@ class ASH_EXPORT ActionButtonView : public views::Button {
 
   ActionButtonRank rank() const { return rank_; }
 
-  void set_show_throbber_when_pressed(bool show_throbber_when_pressed) {
-    show_throbber_when_pressed_ = show_throbber_when_pressed;
-  }
-
   // views::Button:
   void AddedToWidget() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnThemeChanged() override;
   void OnEnabledChanged() override;
-  void StateChanged(ButtonState old_state) override;
 
   // Collapses the action button, hiding its label so that only the icon
   // shows.
@@ -84,12 +78,6 @@ class ASH_EXPORT ActionButtonView : public views::Button {
   // The label containing the action button text. This label is hidden when the
   // action button is collapsed.
   raw_ptr<views::Label> label_ = nullptr;
-
-  // Loading throbber shown when the button's action is in progress.
-  // TODO(crbug.com/378023303): The loading throbber is only temporary and
-  // should be removed once the finalized loading animation is implemented.
-  raw_ptr<views::Throbber> throbber_ = nullptr;
-  bool show_throbber_when_pressed_ = false;
 };
 
 }  // namespace ash
