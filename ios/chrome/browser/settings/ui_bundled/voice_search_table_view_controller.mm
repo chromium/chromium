@@ -48,6 +48,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
+
+  // Whether Settings have been dismissed and the relevant C++ objects have been
+  // cleaned up. See crbug.com/40838020
+  BOOL _settingsAreDismissed;
 }
 // Updates all cells to check the selected language and uncheck all the other.
 - (void)markAsCheckedLanguageAtIndex:(NSUInteger)index;
@@ -250,6 +254,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 
   [self markAsCheckedLanguageAtIndex:indexOfSelectedLanguage];
+}
+
+#pragma mark - SettingsControllerProtocol
+
+- (void)settingsWillBeDismissed {
+  DCHECK(!_settingsAreDismissed);
+  _prefObserverBridge.reset();
+  _selectedLanguage.Destroy();
+  _ttsEnabled.Destroy();
+  _prefChangeRegistrar.RemoveAll();
+  _prefs = nullptr;
+  _settingsAreDismissed = YES;
 }
 
 #pragma mark - Private methods
