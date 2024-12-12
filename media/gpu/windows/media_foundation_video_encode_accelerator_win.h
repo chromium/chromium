@@ -313,7 +313,6 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // Video encoder info that includes accelerator name, QP validity, etc.
   VideoEncoderInfo encoder_info_;
-  bool encoder_info_sent_ = false;
 
   ComMFActivate activate_;
   ComMFTransform encoder_;

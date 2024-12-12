@@ -1393,8 +1393,13 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
       !workarounds_.disable_media_foundation_frame_size_change;
 
   if (state_ == kInitializing) {
-    return InitializeMFT(nullptr);
+    if (!InitializeMFT(nullptr)) {
+      return false;
+    }
   }
+
+  // Notify encoder info change to client after initialization succeeded.
+  client_->NotifyEncoderInfoChange(encoder_info_);
 
   return true;
 }
@@ -1479,13 +1484,6 @@ bool MediaFoundationVideoEncodeAccelerator::InitializeMFT(
     return false;
   }
   encoder_needs_input_counter_ = 0;
-
-  if (rate_ctrl_) {
-    // Software rate control should always have a trusted QP. We are safe to
-    // report encoder info right away.
-    client_->NotifyEncoderInfoChange(encoder_info_);
-    encoder_info_sent_ = true;
-  }
 
   if (!base::FeatureList::IsEnabled(kMediaFoundationD3DVideoProcessing) ||
       input_format_ == PIXEL_FORMAT_NV12) {
@@ -3064,7 +3062,7 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   // the QP is trusted (`encoder_info_.reports_average_qp` is true, which it is
   // by default).
   std::optional<int32_t> frame_qp;
-  bool should_notify_encoder_info_change = false;
+  bool should_notify_reports_average_qp_change = false;
   // If there exists a valid qp in sample metadata, do not query HMFT for
   // MFSampleExtension_VideoEncodeQP.
   if (metadata.qp.has_value()) {
@@ -3078,7 +3076,7 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
     if (vendor_ == DriverVendor::kIntel) {
       if ((FAILED(hr) || !IsValidQp(codec_, frame_qp_from_sample)) &&
           encoder_info_.reports_average_qp) {
-        should_notify_encoder_info_change = true;
+        should_notify_reports_average_qp_change = true;
         encoder_info_.reports_average_qp = false;
       }
     }
@@ -3087,9 +3085,8 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
       frame_qp = AVEncQPtoQindex(codec_, frame_qp_from_sample & 0xfffful);
     }
   }
-  if (!encoder_info_sent_ || should_notify_encoder_info_change) {
+  if (should_notify_reports_average_qp_change) {
     client_->NotifyEncoderInfoChange(encoder_info_);
-    encoder_info_sent_ = true;
   }
 
   const bool keyframe = MFGetAttributeUINT32(
