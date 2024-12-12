@@ -20,15 +20,19 @@ class WebState;
 
 // A wrapper/helper around the `optimization_guide::proto::PageContext` proto
 // which handles populating all the necessary PageContext fields asynchronously.
-// Hopefully generic enough for use with any optimization guide feature.
+// By default, no async tasks will be executed, only the title and URL fields
+// will be set (synchronous work). Please use the setters below to "enable" some
+// or all of those async tasks before calling `populatePageContextFieldsAsync`.
+// There are performance implications to enabling some of these, especially if
+// the caller is populating PageContext protos for lots of tabs. When adding a
+// new async task, ensure a related setter is also created to keep the
+// disable-by-default behaviour.
 @interface PageContextWrapper : NSObject
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 // Initializer which takes everything needed to construct the PageContext proto
-// as arguments. Once all the async work is completed by calling
-// `populatePageContextFieldsAsync`, the `completionCallback` will be executed
-// (which will relinquish ownership of the proto to the callback's handler).
+// as arguments.
 - (instancetype)
       initWithWebState:(web::WebState*)webState
     completionCallback:
@@ -38,11 +42,23 @@ class WebState;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Initiates the synchronous and asynchronous work of populating all the
-// PageContext fields, and executes the `completionCallback` when all async work
-// is complete. Relinquishes ownership of the PageContext proto back to the
-// handler of the callback.
+// Initiates the asynchronous work of populating all the PageContext fields, and
+// executes the `completionCallback` when all async work is complete.
+// Relinquishes ownership of the PageContext proto back to the handler of the
+// callback.
 - (void)populatePageContextFieldsAsync;
+
+// Boolean flags for enabling/disabling the async tasks that the PageContext
+// wrapper can execute.
+
+// Whether a snapshot of the associated WebState should be fetched. If the
+// WebState is currently visible, updates the snapshot taken instead of getting
+// the previously saved snapshot.
+@property(nonatomic, assign) BOOL shouldGetSnapshot;
+
+// Whether a full page PDF of the associated WebState should be fetched. This
+// force-realizes the associated WebState.
+@property(nonatomic, assign) BOOL shouldGetFullPagePDF;
 
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 

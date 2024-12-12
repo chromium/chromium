@@ -7,6 +7,8 @@
 #import <memory>
 
 #import "base/barrier_closure.h"
+#import "base/check.h"
+#import "base/check_op.h"
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -16,17 +18,14 @@
 
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
-// The amount of async tasks which need to complete before the
-// `completionCallback` can be executed. This needs to be kept up to date with
-// any async tasks added in `populatePageContextFieldsAsync`. Currently, the
-// tasks are:
-// 1. Get a snapshot of the tab.
-const int kAsyncTasksCount = 1;
-
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 @implementation PageContextWrapper {
   base::WeakPtr<web::WebState> _webState;
+
+  // The amount of async tasks this specific instance of the PageContext wrapper
+  // needs to complete before executing the `completionCallback`.
+  NSInteger _asyncTasksToComplete;
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
@@ -52,6 +51,7 @@ const int kAsyncTasksCount = 1;
             completionCallback {
   self = [super init];
   if (self) {
+    _asyncTasksToComplete = 0;
     _webState = webState->GetWeakPtr();
     _completion_callback = std::move(completionCallback);
 
@@ -64,34 +64,74 @@ const int kAsyncTasksCount = 1;
 }
 
 - (void)populatePageContextFieldsAsync {
-  __weak PageContextWrapper* weakSelf = self;
+  CHECK_GE(_asyncTasksToComplete, 0);
+
+  if (_asyncTasksToComplete == 0) {
+    [self asyncWorkCompletedForPageContext];
+    return;
+  }
 
   // Use a `BarrierClosure` to ensure all async tasks are completed before
-  // executing the overall completion callback. If new async tasks are added
-  // below, the `kAsyncTasksCount` constant should be incremented. The
-  // BarrierClosure will wait until the `barrier` callback is itself run
-  // `kAsyncTasksCount` times.
+  // executing the overall completion callback. The BarrierClosure will wait
+  // until the `barrier` callback is itself run `_asyncTasksToComplete` times.
+  __weak PageContextWrapper* weakSelf = self;
   base::RepeatingClosure barrier =
-      base::BarrierClosure(kAsyncTasksCount, base::BindOnce(^{
+      base::BarrierClosure(_asyncTasksToComplete, base::BindOnce(^{
                              [weakSelf asyncWorkCompletedForPageContext];
                            }));
 
   // Asynchronous work. *IMPORTANT NOTES*:
-  // When adding async tasks below, `kAsyncTasksCount` should be incremented.
-  // Also, every code path for a given task should eventually execute the
-  // `barrier` callback, otherwise the `BarrierClosure` will never execute its
-  // completion block.
+  // When adding async tasks below, an accompanying setter should also be
+  // created to follow the disabled-by-default pattern (which
+  // increments/decrements `_asyncTasksToComplete` accordingly). Also, if a
+  // given task is enabled, every code path for that task should eventually
+  // execute the `barrier` callback, otherwise the `BarrierClosure` will never
+  // execute its completion block.
 
-  // Take WebState snapshot.
-  if (_webState->CanTakeSnapshot()) {
-    CGRect rect = [_webState->GetView() bounds];
-    _webState->TakeSnapshot(rect, base::BindRepeating(^(UIImage* image) {
-                              [weakSelf encodeImageAndSetTabScreenshot:image];
-                              barrier.Run();
-                            }));
-  } else {
-    barrier.Run();
+  // Take WebState snapshot, if enabled.
+  if (_shouldGetSnapshot) {
+    if (_webState->CanTakeSnapshot()) {
+      CGRect rect = [_webState->GetView() bounds];
+      _webState->TakeSnapshot(rect, base::BindRepeating(^(UIImage* image) {
+                                [weakSelf encodeImageAndSetTabScreenshot:image];
+                                barrier.Run();
+                              }));
+    } else {
+      barrier.Run();
+    }
   }
+
+  // Create WebState full page PDF, if enabled.
+  if (_shouldGetFullPagePDF) {
+    _webState->CreateFullPagePdf(base::BindOnce(^(NSData* PDFData) {
+      [weakSelf encodeAndSetFullPagePDF:PDFData];
+      barrier.Run();
+    }));
+  }
+}
+
+#pragma mark - Setters
+
+// Sets the flag to enabled/disabled, and increments/decrements accordingly the
+// total amount of async tasks gating the completion callback.
+- (void)setShouldGetSnapshot:(BOOL)enabled {
+  if (_shouldGetSnapshot == enabled) {
+    return;
+  }
+
+  _asyncTasksToComplete += enabled ? 1 : -1;
+  _shouldGetSnapshot = enabled;
+}
+
+// Sets the flag to enabled/disabled, and increments/decrements accordingly the
+// total amount of async tasks gating the completion callback.
+- (void)setShouldGetFullPagePDF:(BOOL)enabled {
+  if (_shouldGetFullPagePDF == enabled) {
+    return;
+  }
+
+  _asyncTasksToComplete += enabled ? 1 : -1;
+  _shouldGetFullPagePDF = enabled;
 }
 
 #pragma mark - Private
@@ -108,6 +148,17 @@ const int kAsyncTasksCount = 1;
   NSData* imageData = UIImagePNGRepresentation(image);
   NSString* base64String = [imageData base64EncodedStringWithOptions:0];
   _page_context->set_tab_screenshot(base::SysNSStringToUTF8(base64String));
+}
+
+// If it exists, convert the PDF data to base64 encoded string and set it in the
+// PageContext proto.
+- (void)encodeAndSetFullPagePDF:(NSData*)PDFData {
+  if (!PDFData) {
+    return;
+  }
+
+  NSString* base64String = [PDFData base64EncodedStringWithOptions:0];
+  _page_context->set_pdf_data(base::SysNSStringToUTF8(base64String));
 }
 
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
