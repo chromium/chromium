@@ -35,6 +35,12 @@ group("updater") {
       "//chrome/updater/tools",
     ]
   }
+
+  # These packages have problematic license files that we need to avoid for
+  # updater redistribution.
+  if (!is_component_build) {
+    assert_no_deps = [ "//third_party/libaom" ]
+  }
 }
 
 group("all") {

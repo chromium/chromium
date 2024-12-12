@@ -197,4 +197,11 @@ TEST(EnterpriseCompanionStatusTest, SuccessAndErrorNotEqual) {
   EXPECT_NE(success, error2);
 }
 
+TEST(EnterpriseCompanionStatusTest, ConstantsCorrect) {
+  EXPECT_EQ(EnterpriseCompanionStatus::Success().space(), kStatusOk);
+  EXPECT_EQ(
+      EnterpriseCompanionStatus(ApplicationError::kInstallationFailed).space(),
+      kStatusApplicationError);
+}
+
 }  // namespace enterprise_companion
