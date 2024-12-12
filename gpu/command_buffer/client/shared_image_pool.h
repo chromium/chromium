@@ -15,6 +15,7 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_pool_id.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/gpu_export.h"
@@ -90,7 +91,7 @@ class GPU_EXPORT ClientImage : public base::RefCounted<ClientImage> {
   void SetReleaseSyncToken(SyncToken release_sync_token);
 
   // Only used for testing purposes.
-  int GetPoolIdForTesting() const;
+  const PoolId& GetPoolIdForTesting() const;
 
  protected:
   friend class base::RefCounted<ClientImage>;
@@ -114,8 +115,8 @@ class GPU_EXPORT ClientImage : public base::RefCounted<ClientImage> {
   // the client.
   base::TimeTicks last_used_time_ = base::TimeTicks::Now();
 
-  // Unique identifier to identify the pool this image belongs to.
-  int pool_id_;
+  // Unique unguessable identifier to identify the pool this image belongs to.
+  PoolId pool_id_;
 };
 
 // This class is designed to handle bulk of functionality of the image pool.
@@ -133,6 +134,7 @@ class GPU_EXPORT SharedImagePoolBase {
 
  protected:
   SharedImagePoolBase(
+      const PoolId& pool_id,
       const ImageInfo& image_info,
       const scoped_refptr<SharedImageInterface> sii,
       std::optional<uint8_t> max_pool_size,
@@ -145,7 +147,7 @@ class GPU_EXPORT SharedImagePoolBase {
   void ReconfigureInternal(const ImageInfo& image_info);
 
   // Unique identifier to identify this pool and all images generated from it.
-  const int pool_id_;
+  const PoolId pool_id_;
 
   // Information used to create new ClientSharedImage.
   ImageInfo image_info_;
@@ -249,7 +251,8 @@ class GPU_EXPORT SharedImagePool : public SharedImagePoolBase {
       scoped_refptr<SharedImageInterface> sii,
       std::optional<uint8_t> max_pool_size,
       std::optional<base::TimeDelta> unused_resource_expiration_time)
-      : SharedImagePoolBase(image_info,
+      : SharedImagePoolBase(PoolId::Create(),
+                            image_info,
                             std::move(sii),
                             std::move(max_pool_size),
                             std::move(unused_resource_expiration_time)) {}

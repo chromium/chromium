@@ -20,8 +20,8 @@ class GPU_EXPORT PoolId {
   // Creates a new PoolId with a cryptographically random value.
   static PoolId Create();
 
-  // Generates a debug string representation of the PoolId.
-  std::string ToDebugString() const;
+  // Generates a string representation of the PoolId.
+  std::string ToString() const;
 
   bool operator==(const PoolId& other) const { return token_ == other.token_; }
 

@@ -14,7 +14,7 @@ PoolId PoolId::Create() {
   return PoolId(base::UnguessableToken::Create());
 }
 
-std::string PoolId::ToDebugString() const {
+std::string PoolId::ToString() const {
   return token_.ToString();
 }
 
