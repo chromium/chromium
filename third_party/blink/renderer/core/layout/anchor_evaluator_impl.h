@@ -211,9 +211,6 @@ class CORE_EXPORT LogicalAnchorQuery
  public:
   using Base = AnchorQueryBase<LogicalAnchorReference>;
 
-  // Returns an empty instance.
-  static const LogicalAnchorQuery& Empty();
-
   const LogicalAnchorReference* AnchorReference(const LayoutBox& query_box,
                                                 const AnchorKey&) const;
 
@@ -383,7 +380,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
 
   const LayoutBox* query_box_ = nullptr;
   mutable const LogicalAnchorQuery* anchor_query_ = nullptr;
-  const LogicalAnchorQueryMap* anchor_queries_ = nullptr;
+  mutable const LogicalAnchorQueryMap* anchor_queries_ = nullptr;
   const LayoutObject* implicit_anchor_ = nullptr;
   const LayoutObject* containing_block_ = nullptr;
   const WritingModeConverter container_converter_{

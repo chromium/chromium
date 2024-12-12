@@ -111,13 +111,6 @@ void LogicalAnchorReference::InsertInReverseTreeOrderInto(
   }
 }
 
-// static
-const LogicalAnchorQuery& LogicalAnchorQuery::Empty() {
-  DEFINE_STATIC_LOCAL(Persistent<LogicalAnchorQuery>, empty,
-                      (MakeGarbageCollected<LogicalAnchorQuery>()));
-  return *empty;
-}
-
 namespace {
 
 bool IsScopedByElement(const ScopedCSSName* lookup_name,
@@ -444,8 +437,13 @@ const LogicalAnchorQuery* AnchorEvaluatorImpl::AnchorQuery() const {
     return anchor_query_;
   if (anchor_queries_) {
     DCHECK(containing_block_);
-    anchor_query_ = &anchor_queries_->AnchorQuery(*containing_block_);
-    DCHECK(anchor_query_);
+    anchor_query_ = anchor_queries_->AnchorQuery(*containing_block_);
+    if (!anchor_query_) {
+      // The above operation is expensive. If there were no anchors for the
+      // containing block, make sure that we don't try again every time this
+      // function is called.
+      anchor_queries_ = nullptr;
+    }
     return anchor_query_;
   }
   return nullptr;

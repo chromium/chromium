@@ -43,7 +43,7 @@ class CORE_EXPORT LogicalAnchorQueryMap {
   // Get |LogicalAnchorQuery| in the stitched coordinate system for the given
   // containing block. If there is no anchor query for the containing block,
   // returns an empty instance.
-  const LogicalAnchorQuery& AnchorQuery(
+  const LogicalAnchorQuery* AnchorQuery(
       const LayoutObject& containing_block) const;
 
   // Update |children| when their anchor queries are changed.

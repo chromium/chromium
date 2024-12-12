@@ -361,23 +361,25 @@ void LogicalAnchorQueryMap::SetChildren(
   }
 }
 
-const LogicalAnchorQuery& LogicalAnchorQueryMap::AnchorQuery(
+const LogicalAnchorQuery* LogicalAnchorQueryMap::AnchorQuery(
     const LayoutObject& containing_block) const {
   DCHECK(&containing_block);
   DCHECK(containing_block.CanContainAbsolutePositionObjects() ||
          containing_block.CanContainFixedPositionObjects());
 
-  if (!has_anchor_queries_)
-    return LogicalAnchorQuery::Empty();
+  if (!has_anchor_queries_) {
+    return nullptr;
+  }
 
   // Update |queries_| if it hasn't computed for |containing_block|.
   if (!computed_for_ || !computed_for_->IsDescendantOf(&containing_block))
     Update(containing_block);
 
   const auto& it = queries_.find(&containing_block);
-  if (it != queries_.end())
-    return *it->value;
-  return LogicalAnchorQuery::Empty();
+  if (it != queries_.end()) {
+    return it->value;
+  }
+  return nullptr;
 }
 
 // Update |queries_| for the given |layout_object| and its ancestors. This is
