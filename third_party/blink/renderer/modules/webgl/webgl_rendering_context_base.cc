@@ -5620,22 +5620,20 @@ gfx::Rect WebGLRenderingContextBase::SafeGetImageSize(Image* image) {
 
 SkColorInfo WebGLRenderingContextBase::CanvasRenderingContextSkColorInfo()
     const {
-  // This selection of alpha type disregards whether or not the drawing buffer
-  // is premultiplied. This is to match historical behavior that may or may not
-  // have been intentional.
-  const SkAlphaType alpha_type =
-      CreationAttributes().alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType;
   SkColorType color_type = kN32_SkColorType;
   if (drawing_buffer_ && drawing_buffer_->StorageFormat() == GL_RGBA16F) {
     color_type = kRGBA_F16_SkColorType;
   }
   return SkColorInfo(
-      color_type, alpha_type,
+      color_type, GetAlphaType(),
       PredefinedColorSpaceToSkColorSpace(drawing_buffer_color_space_));
 }
 
 SkAlphaType WebGLRenderingContextBase::GetAlphaType() const {
-  return CanvasRenderingContextSkColorInfo().alphaType();
+  // This selection of alpha type disregards whether or not the drawing buffer
+  // is premultiplied. This is to match historical behavior that may or may not
+  // have been intentional.
+  return CreationAttributes().alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType;
 }
 
 gfx::Rect WebGLRenderingContextBase::GetImageDataSize(ImageData* pixels) {
