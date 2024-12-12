@@ -15,6 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using ::testing::ElementsAre;
 using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::StrictMock;
@@ -62,6 +63,13 @@ std::optional<RegistrationFetcher::RegistrationCompleteParams> NullFetcher() {
   return std::nullopt;
 }
 
+std::optional<RegistrationFetcher::RegistrationCompleteParams>
+ContinueFalseFetcher() {
+  unexportable_keys::UnexportableKeyId key_id;
+  return std::make_optional<RegistrationFetcher::RegistrationCompleteParams>(
+      SessionTerminationParams{kSessionId}, std::move(key_id), kTestUrl);
+}
+
 RegistrationFetcher::FetcherType TestFetcherFactory(std::string session_id,
                                                     std::string url_string) {
   static std::string g_session_id;
@@ -92,6 +100,17 @@ class ScopedNullFetcher {
   ~ScopedNullFetcher() { RegistrationFetcher::SetFetcherForTesting(nullptr); }
 };
 
+class ScopedContinueFalseFetcher {
+ public:
+  ScopedContinueFalseFetcher() {
+    RegistrationFetcher::SetFetcherForTesting(ContinueFalseFetcher);
+  }
+
+  ~ScopedContinueFalseFetcher() {
+    RegistrationFetcher::SetFetcherForTesting(nullptr);
+  }
+};
+
 class TestDeferCompletion {
  public:
   enum class CallbackType { kRestart, kContinue };
@@ -120,6 +139,28 @@ class TestDeferCompletion {
  private:
   base::OnceCallback<void(CallbackType)> completion_callback_;
   base::WeakPtrFactory<TestDeferCompletion> weak_factory_{this};
+};
+
+class FakeDeviceBoundSessionObserver {
+ public:
+  const std::vector<SessionKey>& notifications() const {
+    return notifications_;
+  }
+
+  void ClearNotifications() { notifications_.clear(); }
+
+  void OnSessionAccessed(const SessionKey& session_key) {
+    notifications_.push_back(session_key);
+  }
+
+  SessionService::OnAccessCallback GetCallback() {
+    return base::BindRepeating(
+        &FakeDeviceBoundSessionObserver::OnSessionAccessed,
+        base::Unretained(this));
+  }
+
+ private:
+  std::vector<SessionKey> notifications_;
 };
 
 class SessionServiceImplTest : public TestWithTaskEnvironment {
@@ -417,14 +458,13 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestRestart) {
 
   // Defer the request.
   // Set AccessCallback for DeferRequestForRefresh().
-  base::test::TestFuture<SessionKey> future_2;
-  request->SetDeviceBoundSessionAccessCallback(
-      future_2.GetRepeatingCallback<const SessionKey&>());
+  FakeDeviceBoundSessionObserver observer;
+  request->SetDeviceBoundSessionAccessCallback(observer.GetCallback());
 
   // Set RestartCallback and ContinueCallback.
-  base::test::TestFuture<TestDeferCompletion::CallbackType> future_3;
+  base::test::TestFuture<TestDeferCompletion::CallbackType> future;
   TestDeferCompletion defer_completion(
-      future_3.GetCallback<TestDeferCompletion::CallbackType>());
+      future.GetCallback<TestDeferCompletion::CallbackType>());
 
   // Set up the fetcher for a successful refresh.
   ScopedTestFetcher scoped_test_fetcher(kSessionId, kUrlString);
@@ -433,12 +473,11 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestRestart) {
                                    defer_completion.GetContinueCb());
 
   // Check access callback triggered by DeferRequestForRefresh.
-  SessionKey session_key = future_2.Take();
-  EXPECT_EQ(session_key.site, site);
-  EXPECT_EQ(session_key.id.value(), kSessionId);
+  ASSERT_THAT(observer.notifications(),
+              ElementsAre(SessionKey(site, Session::Id(kSessionId))));
 
   // Check the restart callback is called for successful fetcher.
-  EXPECT_EQ(future_3.Take(), TestDeferCompletion::CallbackType::kRestart);
+  EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);
 }
 
 TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue) {
@@ -550,14 +589,13 @@ TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
 
   // Defer the request.
   // Set AccessCallback for DeferRequestForRefresh().
-  base::test::TestFuture<SessionKey> future_2;
-  request->SetDeviceBoundSessionAccessCallback(
-      future_2.GetRepeatingCallback<const SessionKey&>());
+  FakeDeviceBoundSessionObserver observer;
+  request->SetDeviceBoundSessionAccessCallback(observer.GetCallback());
 
   // Set RestartCallback and ContinueCallback.
-  base::test::TestFuture<TestDeferCompletion::CallbackType> future_3;
+  base::test::TestFuture<TestDeferCompletion::CallbackType> future;
   TestDeferCompletion defer_completion(
-      future_3.GetCallback<TestDeferCompletion::CallbackType>());
+      future.GetCallback<TestDeferCompletion::CallbackType>());
 
   // Set up the fetcher for a successful refresh with a new session ID
   // which doesn't equal to the refreshing one.
@@ -567,15 +605,34 @@ TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
                                    defer_completion.GetContinueCb());
 
   // Check access callback triggered by DeferRequestForRefresh.
-  SessionKey session_key = future_2.Take();
-  EXPECT_EQ(session_key.site, site);
-  EXPECT_EQ(session_key.id.value(), kSessionId);
+  EXPECT_THAT(observer.notifications(),
+              ElementsAre(SessionKey(site, Session::Id(kSessionId)),
+                          SessionKey(site, Session::Id(kSessionId2))));
 
   // Check the restart callback is called for successful fetcher.
-  EXPECT_EQ(future_3.Take(), TestDeferCompletion::CallbackType::kRestart);
+  EXPECT_EQ(future.Take(), TestDeferCompletion::CallbackType::kRestart);
 
   ASSERT_TRUE(service().GetSession(site, Session::Id(kSessionId2)));
   ASSERT_FALSE(service().GetSession(site, Session::Id(kSessionId)));
+}
+
+TEST_F(SessionServiceImplTest, SessionTerminationFromContinueFalse) {
+  AddSessionsForTesting({{kSessionId, kUrlString}});
+
+  ASSERT_TRUE(
+      service().GetSession(SchemefulSite(kTestUrl), Session::Id(kSessionId)));
+
+  {
+    ScopedContinueFalseFetcher scoped_fetcher;
+    auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+        kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+        "challenge", /*authorization=*/std::nullopt);
+    service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
+                                   IsolationInfo::CreateTransient());
+  }
+
+  EXPECT_FALSE(
+      service().GetSession(SchemefulSite(kTestUrl), Session::Id(kSessionId)));
 }
 
 }  // namespace

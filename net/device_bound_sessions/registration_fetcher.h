@@ -37,7 +37,7 @@ class RegistrationRequestParam;
 class NET_EXPORT RegistrationFetcher {
  public:
   struct NET_EXPORT RegistrationCompleteParams {
-    RegistrationCompleteParams(SessionParams params,
+    RegistrationCompleteParams(ParsedSessionParams params,
                                unexportable_keys::UnexportableKeyId key_id,
                                const GURL& url);
     RegistrationCompleteParams(RegistrationCompleteParams&& other) noexcept;
@@ -46,7 +46,7 @@ class NET_EXPORT RegistrationFetcher {
 
     ~RegistrationCompleteParams();
 
-    SessionParams params;
+    ParsedSessionParams params;
     unexportable_keys::UnexportableKeyId key_id;
     GURL url;
   };

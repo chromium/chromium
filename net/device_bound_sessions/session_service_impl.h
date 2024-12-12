@@ -104,6 +104,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       OnAccessCallback on_access_callback,
       std::optional<RegistrationFetcher::RegistrationCompleteParams> params);
   void OnRefreshRequestCompletion(
+      OnAccessCallback on_access_callback,
       SchemefulSite site,
       Session::Id session_id,
       std::optional<RegistrationFetcher::RegistrationCompleteParams> result);

@@ -6,6 +6,7 @@
 #define NET_DEVICE_BOUND_SESSIONS_SESSION_PARAMS_H_
 
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "net/base/net_export.h"
@@ -58,6 +59,13 @@ struct NET_EXPORT SessionParams final {
   Scope scope;
   std::vector<Credential> credentials;
 };
+
+struct SessionTerminationParams {
+  std::string session_id;
+};
+
+using ParsedSessionParams =
+    std::variant<SessionParams, SessionTerminationParams>;
 
 }  // namespace net::device_bound_sessions
 

@@ -73,7 +73,7 @@ std::vector<SessionParams::Credential> ParseCredentials(
 
 }  // namespace
 
-std::optional<SessionParams> ParseSessionInstructionJson(
+std::optional<ParsedSessionParams> ParseSessionInstructionJson(
     std::string_view response_json) {
   // TODO(kristianm): Skip XSSI-escapes, see for example:
   // https://hg.mozilla.org/mozilla-central/rev/4cee9ec9155e
@@ -96,10 +96,16 @@ std::optional<SessionParams> ParseSessionInstructionJson(
     return std::nullopt;
   }
 
+  std::optional<bool> continue_value = maybe_root->FindBool("continue");
+  if (continue_value.has_value() && *continue_value == false) {
+    return SessionTerminationParams(*session_id);
+  }
+
   std::string* refresh_url = maybe_root->FindString("refresh_url");
 
   std::vector<SessionParams::Credential> credentials;
   base::Value::List* credentials_list = maybe_root->FindList("credentials");
+
   if (credentials_list) {
     credentials = ParseCredentials(*credentials_list);
   }

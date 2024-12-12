@@ -15,8 +15,12 @@ namespace net::device_bound_sessions {
 // Utilities for parsing the JSON session specification
 // https://github.com/WICG/dbsc/blob/main/README.md#session-registration-instructions-json
 
-// Parse the full JSON as a string
-std::optional<SessionParams> ParseSessionInstructionJson(
+// Parse the full JSON as a string. Returns:
+// - A SessionParams describing the session to be created on success
+// - A SessionTerminationParams describing the session to be terminated
+//   when the JSON contains "continue": false
+// - std::nullopt if parsing fails (e.g. invalid JSON)
+std::optional<ParsedSessionParams> ParseSessionInstructionJson(
     std::string_view response_json);
 
 }  // namespace net::device_bound_sessions

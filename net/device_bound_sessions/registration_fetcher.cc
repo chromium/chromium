@@ -290,7 +290,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
 
   void OnResponseCompleted() {
     if (!data_received_.empty()) {
-      std::optional<SessionParams> params =
+      std::optional<ParsedSessionParams> params =
           ParseSessionInstructionJson(data_received_);
       if (params) {
         RunCallbackAndDeleteSelf(
@@ -331,7 +331,7 @@ RegistrationFetcher::FetcherType g_mock_fetcher = nullptr;
 }  // namespace
 
 RegistrationFetcher::RegistrationCompleteParams::RegistrationCompleteParams(
-    SessionParams params,
+    ParsedSessionParams params,
     unexportable_keys::UnexportableKeyId key_id,
     const GURL& url)
     : params(std::move(params)), key_id(std::move(key_id)), url(url) {}
