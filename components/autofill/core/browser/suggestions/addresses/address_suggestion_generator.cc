@@ -619,6 +619,12 @@ std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
   // This defines the maximum number of characters typed until suggestions are
   // no longer displayed.
   static constexpr size_t kMaxNumberCharactersToMatch = 10;
+  // Defines the required number of characters that need to be missing between
+  // the typed data and the profile data. This makes sure the value
+  // offered by the feature is higher, by for example not displaying a
+  // suggestion to fill "Tomas" when the user typed "Tom", since at this point
+  // users are more likely to simply finish typing.
+  static constexpr size_t kMinMissingCharactersNumber = 3;
   // Field types we are interested in showing suggestions for.
   // TODO(crbug.com/381994105): Add a finch parameter to easily experiment with
   // adding and removing field types.
@@ -669,6 +675,11 @@ std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
 
     if (!IsValidAddressSuggestionForFieldContents(
             profile_data, normalized_field_contents, type)) {
+      continue;
+    }
+
+    if (profile_data.size() - normalized_field_contents.size() <
+        kMinMissingCharactersNumber) {
       continue;
     }
 

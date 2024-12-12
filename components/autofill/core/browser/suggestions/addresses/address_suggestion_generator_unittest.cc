@@ -146,15 +146,15 @@ TEST_F(AddressSuggestionGeneratorTest,
   EXPECT_EQ(GetSuggestionsOnTypingForProfile(address_data(), u"La").size(), 0u);
   // Expects that suggestions are returned if the field content matches
   // prefix data from the top profile, even when the field content
-  // has more than 3 characters.
+  // has more than 3 characters. Note that a suggestion for `FIRST_NAME` is not
+  // returned because the string value it would fill in the field and the typed
+  // data is not large enough.
   EXPECT_THAT(
       GetSuggestionsOnTypingForProfile(address_data(), u"Lar"),
-      ElementsAre(
-          EqualsSuggestion(SuggestionType::kAddressEntryOnTyping, u"Larry"),
-          EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
-                           u"Larry page"),
-          EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsSuggestion(SuggestionType::kManageAddress)));
+      ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
+                                   u"Larry page"),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kManageAddress)));
   // Expects that NO suggestion is returned if the field content matches
   // `NAME_FULL` prefix from the a profile that is not the top one (for now we
   // only support suggestions form one profile), and the field content has at
