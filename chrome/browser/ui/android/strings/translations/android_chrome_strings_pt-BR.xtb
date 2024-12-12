@@ -214,7 +214,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="1969037871259811890">A exclusão dos seus dados de navegação não desconecta você da Conta do Google. Para fazer isso, <ph name="BEGIN_LINK1" />saia do Chrome<ph name="END_LINK1" />.</translation>
 <translation id="197288927597451399">Manter</translation>
 <translation id="1973912524893600642">Manter dados</translation>
-<translation id="1974060860693918893">Avançado</translation>
+<translation id="1974060860693918893">Avançadas</translation>
 <translation id="1984417487208496350">Sem proteção (não recomendado)</translation>
 <translation id="1986685561493779662">Esse nome já existe</translation>
 <translation id="200114059308480249">Incluir o texto ao redor nas pesquisas do Google?</translation>
@@ -1102,7 +1102,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="6150706324143004339">Atualize o Chrome para usar e salvar dados dele na sua Conta do Google</translation>
 <translation id="6154478581116148741">Ative o bloqueio da tela em Configurações para exportar suas senhas deste dispositivo</translation>
 <translation id="6162892189396105610">Pré-carrega páginas que o Chrome acredita que você irá acessar.</translation>
-<translation id="6170675927290506430">Acessar as configurações de notificação</translation>
+<translation id="6170675927290506430">Acessar configurações de notificação</translation>
 <translation id="6186394685773237175">Não foram encontradas senhas comprometidas</translation>
 <translation id="6192907950379606605">Ver descrições de imagens</translation>
 <translation id="6193448654517602979">Selecionar guias</translation>
@@ -1605,7 +1605,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8279945625179116733">Com a proteção do app <ph name="APP_NAME" /></translation>
 <translation id="8281886186245836920">Pular</translation>
 <translation id="8282297628636750033">Aplicar o tema escuro para sites</translation>
-<translation id="8282950411412455249">Acesse as configurações de segurança</translation>
+<translation id="8282950411412455249">Acessar configurações de segurança</translation>
 <translation id="8306751933352925837">As senhas deixarão de funcionar neste dispositivo em breve. Para continuar usando suas senhas, atualize o Google Play Services. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8307517230426267469"><ph name="GIVEN_NAME" /> removeu a guia "<ph name="TAB_NAME" />"</translation>
 <translation id="8310451567823644042">As senhas vão deixar de funcionar em breve</translation>

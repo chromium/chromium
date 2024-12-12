@@ -492,7 +492,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1328928545650070438">Spuštanje obrva</translation>
 <translation id="1329466763986822896">Poboljšajte privatnost za ovu žarišnu točku</translation>
 <translation id="1331065030686329928">Upravljajte grupom kartica <ph name="GROUP_NAME" /></translation>
-<translation id="1331977651797684645">To sam bio ja.</translation>
+<translation id="1331977651797684645">To sam bio/bila ja.</translation>
 <translation id="1333489022424033687">Neke značajke na web-lokaciji <ph name="ORIGIN" /> možda neće raditi dok ne izbrišete podatke koje su druge web-lokacije pohranile na vašem uređaju</translation>
 <translation id="1333965224356556482">Ne dopuštaj web-lokacijama prikazivanje vaše lokacije</translation>
 <translation id="1335282218035876586">Chromebook više ne prima sigurnosna i softverska ažuriranja. Nadogradite Chromebook za najbolji doživljaj.</translation>
@@ -9739,7 +9739,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7925108652071887026">Podaci automatskog popunjavanja</translation>
 <translation id="792514962475806987">Razina zumiranja za usidreno povećalo:</translation>
 <translation id="7925285046818567682">Čekanje <ph name="HOST_NAME" />...</translation>
-<translation id="7926423016278357561">To nisam bio ja.</translation>
+<translation id="7926423016278357561">To nisam bio/bila ja.</translation>
 <translation id="7926975587469166629">Nadimak kartice</translation>
 <translation id="7928175190925744466">Već ste promijenili ovu zaporku?</translation>
 <translation id="7929468958996190828"><ph name="BEGIN_LINK" />Osvježite odmah<ph name="END_LINK" /> ili pokušajte ponovo kasnije nakon što otvorite nove slične kartice</translation>
