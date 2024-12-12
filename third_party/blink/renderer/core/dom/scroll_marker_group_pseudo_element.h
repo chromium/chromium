@@ -132,6 +132,8 @@ class ScrollMarkerGroupPseudoElement : public PseudoElement,
 
   bool IsScrollMarkerGroupPseudoElement() const final { return true; }
 
+  int DefaultTabIndex() const override { return 0; }
+
   void AddToFocusGroup(ScrollMarkerPseudoElement& scroll_marker);
   void RemoveFromFocusGroup(const ScrollMarkerPseudoElement& scroll_marker);
   void ClearFocusGroup();
@@ -140,7 +142,7 @@ class ScrollMarkerGroupPseudoElement : public PseudoElement,
   }
   // Set selected scroll marker. Returns true if the selected marker changed.
   CORE_EXPORT bool SetSelected(ScrollMarkerPseudoElement& scroll_marker);
-  ScrollMarkerPseudoElement* Selected() { return selected_marker_; }
+  ScrollMarkerPseudoElement* Selected() const { return selected_marker_; }
   void ActivateNextScrollMarker();
   void ActivatePrevScrollMarker();
   void ActivateScrollMarker(ScrollMarkerPseudoElement* scroll_marker);

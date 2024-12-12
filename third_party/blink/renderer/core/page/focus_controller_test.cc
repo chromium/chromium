@@ -387,159 +387,474 @@ TEST_F(FocusControllerTestWithIframes,
                 password, mojom::blink::FocusType::kForward));
 }
 
-TEST_F(FocusControllerTest, ScrollMarkersAreFocusable) {
+TEST_F(FocusControllerTest, FullCarouselFocusOrderForward) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
-      #scroller {
-        overflow-y: scroll;
-        width: 200px;
-        height: 200px;
-        scroll-marker-group: after;
-        &::scroll-marker-group {
-          display: block;
-          height: 100px;
-        }
-        div { height: 200px; }
-        div::scroll-marker { content: '-'; }
-        div::scroll-marker:focus { opacity: 0.5; }
-      }
+      .scroller { overflow: hidden; width: 100px; height: 100px; }
+      .before { scroll-marker-group: before; }
+      .after { scroll-marker-group: after; }
+      .scroller::scroll-marker-group { height: 100px; }
+      .scroller::scroll-button(up) { content: "u"; }
+      .scroller::scroll-button(down) { content: "d"; }
+      .scroller::scroll-button(left) { content: "l"; }
+      .scroller::scroll-button(right) { content: "r"; }
+      .scroller::scroll-button(up):focus { outline: 1px solid blue; }
+      .scroller::scroll-button(down):focus { outline: 1px solid blue; }
+      .scroller::scroll-button(left):focus { outline: 1px solid blue; }
+      .scroller::scroll-button(right):focus { outline: 1px solid blue; }
+      .item { width: 100px; height: 100px; }
+      .item::scroll-marker:focus { outline: 1px solid blue; opacity: 0.5; }
+      .item::scroll-marker { content: "*" }
+      .item::scroll-marker:target-current { color: red; }
     </style>
     <input id="pre-input">
-    <div id="scroller">
-      <div>X</div>
-      <div>Y</div>
-      <div>Z</div>
+    <div id="before-scroller" class="before scroller" tabindex="0">
+      <div id="01" class="item" tabindex="0">1</div>
+      <div id="02" class="item" tabindex="0">2</div>
+      <div id="03" class="item">3</div>
+    </div>
+
+    <div id="after-scroller" class="after scroller" tabindex="0">
+      <div id="11" class="item" tabindex="0">1</div>
+      <div id="12" class="item">2</div>
+      <div id="13" class="item" tabindex="0">3</div>
     </div>
     <input id="post-input">
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* scroller = GetElementById("scroller");
   Element* pre_input = GetElementById("pre-input");
+  Element* before_scroller = GetElementById("before-scroller");
+  Element* after_scroller = GetElementById("after-scroller");
   Element* post_input = GetElementById("post-input");
 
-  auto* scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
-      scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter));
-  ASSERT_TRUE(scroll_marker_group);
+  Element* before_up_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollUpButton);
+  Element* before_down_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollDownButton);
+  Element* before_left_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollLeftButton);
+  Element* before_right_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollRightButton);
 
-  Element* first_scroll_marker =
-      scroller->firstElementChild()->GetPseudoElement(kPseudoIdScrollMarker);
-  ASSERT_TRUE(first_scroll_marker);
+  Element* before_first_child = before_scroller->firstElementChild();
+  Element* before_second_child = before_first_child->nextElementSibling();
 
-  Element* second_scroll_marker =
-      scroller->firstElementChild()->nextElementSibling()->GetPseudoElement(
-          kPseudoIdScrollMarker);
-  ASSERT_TRUE(second_scroll_marker);
+  auto* before_scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
+      before_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
+  Element* before_first_scroll_marker =
+      before_first_child->GetPseudoElement(kPseudoIdScrollMarker);
+  Element* before_second_scroll_marker =
+      before_second_child->GetPseudoElement(kPseudoIdScrollMarker);
 
-  Element* last_scroll_marker =
-      scroller->lastElementChild()->GetPseudoElement(kPseudoIdScrollMarker);
-  ASSERT_TRUE(last_scroll_marker);
+  Element* after_up_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollUpButton);
+  Element* after_down_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollDownButton);
+  Element* after_left_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollLeftButton);
+  Element* after_right_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollRightButton);
 
-  EXPECT_EQ(scroller, GetFocusController().FindFocusableElementAfter(
-                          *pre_input, mojom::blink::FocusType::kForward));
-  EXPECT_EQ(first_scroll_marker,
-            GetFocusController().FindFocusableElementAfter(
-                *scroller, mojom::blink::FocusType::kForward));
-  EXPECT_EQ(post_input,
-            GetFocusController().FindFocusableElementAfter(
-                *first_scroll_marker, mojom::blink::FocusType::kForward));
+  Element* after_first_child = after_scroller->firstElementChild();
+  Element* after_last_child = after_scroller->lastElementChild();
 
-  EXPECT_EQ(pre_input, GetFocusController().FindFocusableElementAfter(
-                           *scroller, mojom::blink::FocusType::kBackward));
-  EXPECT_EQ(scroller,
-            GetFocusController().FindFocusableElementAfter(
-                *first_scroll_marker, mojom::blink::FocusType::kBackward));
-  EXPECT_EQ(first_scroll_marker,
-            GetFocusController().FindFocusableElementAfter(
-                *post_input, mojom::blink::FocusType::kBackward));
+  auto* after_scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
+      after_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter));
+  Element* after_first_scroll_marker =
+      after_first_child->GetPseudoElement(kPseudoIdScrollMarker);
 
-  second_scroll_marker->Focus();
+  std::array<Element*, 20> order = {pre_input,
+                                    before_scroll_marker_group,
+                                    before_first_scroll_marker,
+                                    before_up_button,
+                                    before_down_button,
+                                    before_left_button,
+                                    before_right_button,
+                                    before_scroller,
+                                    before_first_child,
+                                    before_second_child,
+                                    after_up_button,
+                                    after_down_button,
+                                    after_left_button,
+                                    after_right_button,
+                                    after_scroller,
+                                    after_first_child,
+                                    after_last_child,
+                                    after_scroll_marker_group,
+                                    after_first_scroll_marker,
+                                    post_input};
+
+  for (std::size_t i = 0u; i < order.size() - 1; ++i) {
+    EXPECT_EQ(order[i + 1], GetFocusController().FindFocusableElementAfter(
+                                *order[i], mojom::blink::FocusType::kForward));
+  }
+
+  before_second_scroll_marker->Focus();
   GetFocusController().SetActive(true);
   GetFocusController().SetFocused(true);
-  scroll_marker_group->SetSelected(
-      *To<ScrollMarkerPseudoElement>(second_scroll_marker));
-  const auto* style = second_scroll_marker->GetComputedStyle();
-  EXPECT_TRUE(second_scroll_marker->IsFocused());
+  before_scroll_marker_group->SetSelected(
+      *To<ScrollMarkerPseudoElement>(before_second_scroll_marker));
+  const auto* style = before_second_scroll_marker->GetComputedStyle();
+  EXPECT_TRUE(before_second_scroll_marker->IsFocused());
   EXPECT_EQ(0.5, style->Opacity());
-
-  // Focusgroup restores last focused element.
-  EXPECT_EQ(scroller, GetFocusController().FindFocusableElementAfter(
-                          *pre_input, mojom::blink::FocusType::kForward));
-  EXPECT_EQ(second_scroll_marker,
-            GetFocusController().FindFocusableElementAfter(
-                *scroller, mojom::blink::FocusType::kForward));
-  EXPECT_EQ(second_scroll_marker,
-            GetFocusController().FindFocusableElementAfter(
-                *post_input, mojom::blink::FocusType::kBackward));
-  EXPECT_EQ(post_input,
-            GetFocusController().FindFocusableElementAfter(
-                *second_scroll_marker, mojom::blink::FocusType::kForward));
-  EXPECT_EQ(scroller,
-            GetFocusController().FindFocusableElementAfter(
-                *second_scroll_marker, mojom::blink::FocusType::kBackward));
+  EXPECT_EQ(
+      before_second_scroll_marker,
+      GetFocusController().FindFocusableElementAfter(
+          *before_scroll_marker_group, mojom::blink::FocusType::kForward));
+  EXPECT_EQ(before_up_button, GetFocusController().FindFocusableElementAfter(
+                                  *before_second_scroll_marker,
+                                  mojom::blink::FocusType::kForward));
 }
 
-TEST_F(FocusControllerTest, ScrollButtonsAreFocusable) {
+TEST_F(FocusControllerTest, CarouselWithOnlyButtonsFocusOrderForward) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
-      #scroller {
-        overflow: scroll;
-        width: 200px;
-        height: 200px;
-        &::scroll-button(inline-start), &::scroll-button(inline-end) { content: "-" }
-        &::scroll-button(inline-start):focus,&::scroll-button(inline-end):focus { opacity: 0.5 }
-      }
-      #spacer { width: 400px; height: 400px; }
+      .scroller { overflow: hidden; width: 100px; height: 100px; }
+      .scroller::scroll-button(up) { content: "u"; }
+      .scroller::scroll-button(down) { content: "d"; }
+      .scroller::scroll-button(left) { content: "l"; }
+      .scroller::scroll-button(right) { content: "r"; }
+      .scroller::scroll-button(up):focus { outline: 1px solid blue; opacity: 0.5; }
+      .scroller::scroll-button(down):focus { outline: 1px solid blue; }
+      .scroller::scroll-button(left):focus { outline: 1px solid blue; }
+      .scroller::scroll-button(right):focus { outline: 1px solid blue; }
+      .item { width: 100px; height: 100px; }
     </style>
     <input id="pre-input">
-    <div id="scroller">
-      <div id="spacer"></div>
+    <div id="before-scroller" class="before scroller" tabindex="0">
+      <div id="01" class="item" tabindex="0">1</div>
+      <div id="02" class="item" tabindex="0">2</div>
+      <div id="03" class="item">3</div>
     </div>
-    <input id='post-input'>
+
+    <div id="after-scroller" class="after scroller" tabindex="0">
+      <div id="11" class="item" tabindex="0">1</div>
+      <div id="12" class="item">2</div>
+      <div id="13" class="item" tabindex="0">3</div>
+    </div>
+    <input id="post-input">
   )HTML");
+
   UpdateAllLifecyclePhasesForTest();
-  Element* scroller = GetElementById("scroller");
   Element* pre_input = GetElementById("pre-input");
+  Element* before_scroller = GetElementById("before-scroller");
+  Element* after_scroller = GetElementById("after-scroller");
   Element* post_input = GetElementById("post-input");
 
-  PseudoElement* scroll_left_button =
-      scroller->GetPseudoElement(kPseudoIdScrollLeftButton);
-  ASSERT_TRUE(scroll_left_button);
-  PseudoElement* scroll_right_button =
-      scroller->GetPseudoElement(kPseudoIdScrollRightButton);
-  ASSERT_TRUE(scroll_right_button);
+  Element* before_up_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollUpButton);
+  Element* before_down_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollDownButton);
+  Element* before_left_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollLeftButton);
+  Element* before_right_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollRightButton);
 
-  EXPECT_EQ(scroller, GetFocusController().FindFocusableElementAfter(
-                          *pre_input, mojom::blink::FocusType::kForward));
-  EXPECT_EQ(scroll_left_button,
-            GetFocusController().FindFocusableElementAfter(
-                *scroller, mojom::blink::FocusType::kForward));
-  EXPECT_EQ(scroll_right_button,
-            GetFocusController().FindFocusableElementAfter(
-                *scroll_left_button, mojom::blink::FocusType::kForward));
-  EXPECT_EQ(post_input,
-            GetFocusController().FindFocusableElementAfter(
-                *scroll_right_button, mojom::blink::FocusType::kForward));
+  Element* before_first_child = before_scroller->firstElementChild();
+  Element* before_second_child =
+      before_scroller->firstElementChild()->nextElementSibling();
 
-  EXPECT_EQ(pre_input, GetFocusController().FindFocusableElementAfter(
-                           *scroller, mojom::blink::FocusType::kBackward));
-  EXPECT_EQ(scroller,
-            GetFocusController().FindFocusableElementAfter(
-                *scroll_left_button, mojom::blink::FocusType::kBackward));
-  EXPECT_EQ(scroll_left_button,
-            GetFocusController().FindFocusableElementAfter(
-                *scroll_right_button, mojom::blink::FocusType::kBackward));
-  EXPECT_EQ(scroll_right_button,
-            GetFocusController().FindFocusableElementAfter(
-                *post_input, mojom::blink::FocusType::kBackward));
+  Element* after_up_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollUpButton);
+  Element* after_down_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollDownButton);
+  Element* after_left_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollLeftButton);
+  Element* after_right_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollRightButton);
 
-  scroll_right_button->Focus();
+  Element* after_first_child = after_scroller->firstElementChild();
+  Element* after_last_child = after_scroller->lastElementChild();
+
+  std::array<Element*, 16> order = {
+      pre_input,          before_up_button,    before_down_button,
+      before_left_button, before_right_button, before_scroller,
+      before_first_child, before_second_child, after_up_button,
+      after_down_button,  after_left_button,   after_right_button,
+      after_scroller,     after_first_child,   after_last_child,
+      post_input};
+
+  for (std::size_t i = 0u; i < order.size() - 1; ++i) {
+    EXPECT_EQ(order[i + 1], GetFocusController().FindFocusableElementAfter(
+                                *order[i], mojom::blink::FocusType::kForward));
+  }
+
+  before_up_button->Focus();
   GetFocusController().SetActive(true);
   GetFocusController().SetFocused(true);
-
-  const ComputedStyle* style = scroll_right_button->GetComputedStyle();
-  EXPECT_TRUE(scroll_right_button->IsFocused());
+  const auto* style = before_up_button->GetComputedStyle();
+  EXPECT_TRUE(before_up_button->IsFocused());
   EXPECT_EQ(0.5, style->Opacity());
+}
+
+TEST_F(FocusControllerTest, CarouselWithOnlyScrollMarkersFocusOrderForward) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      .scroller { overflow: hidden; width: 100px; height: 100px; }
+      .before { scroll-marker-group: before; }
+      .after { scroll-marker-group: after; }
+      .scroller::scroll-marker-group { height: 100px; }
+      .item { width: 100px; height: 100px; }
+      .item::scroll-marker:focus { outline: 1px solid blue; opacity: 0.5; }
+      .item::scroll-marker { content: "*" }
+      .item::scroll-marker:target-current { color: red; }
+    </style>
+    <input id="pre-input">
+    <div id="before-scroller" class="before scroller" tabindex="0">
+      <div id="01" class="item" tabindex="0">1</div>
+      <div id="02" class="item" tabindex="0">2</div>
+      <div id="03" class="item">3</div>
+    </div>
+
+    <div id="after-scroller" class="after scroller" tabindex="0">
+      <div id="11" class="item" tabindex="0">1</div>
+      <div id="12" class="item">2</div>
+      <div id="13" class="item" tabindex="0">3</div>
+    </div>
+    <input id="post-input">
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  Element* pre_input = GetElementById("pre-input");
+  Element* before_scroller = GetElementById("before-scroller");
+  Element* after_scroller = GetElementById("after-scroller");
+  Element* post_input = GetElementById("post-input");
+
+  Element* before_first_child = before_scroller->firstElementChild();
+  Element* before_second_child =
+      before_scroller->firstElementChild()->nextElementSibling();
+
+  auto* before_scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
+      before_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
+  Element* before_first_scroll_marker =
+      before_first_child->GetPseudoElement(kPseudoIdScrollMarker);
+
+  Element* after_first_child = after_scroller->firstElementChild();
+  Element* after_last_child = after_scroller->lastElementChild();
+
+  auto* after_scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
+      after_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter));
+  Element* after_first_scroll_marker =
+      after_first_child->GetPseudoElement(kPseudoIdScrollMarker);
+
+  std::array<Element*, 12> order = {pre_input,
+                                    before_scroll_marker_group,
+                                    before_first_scroll_marker,
+                                    before_scroller,
+                                    before_first_child,
+                                    before_second_child,
+                                    after_scroller,
+                                    after_first_child,
+                                    after_last_child,
+                                    after_scroll_marker_group,
+                                    after_first_scroll_marker,
+                                    post_input};
+
+  for (std::size_t i = 0u; i < order.size() - 1; ++i) {
+    EXPECT_EQ(order[i + 1], GetFocusController().FindFocusableElementAfter(
+                                *order[i], mojom::blink::FocusType::kForward));
+  }
+}
+
+TEST_F(FocusControllerTest,
+       CarouselWithOnlyScrollMarkersAndChildrenFocusOrderForward) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      .scroller { overflow: hidden; width: 100px; height: 100px; }
+      .before { scroll-marker-group: before; }
+      .after { scroll-marker-group: after; }
+      .scroller::scroll-marker-group { height: 100px; }
+      .item { width: 100px; height: 100px; }
+    </style>
+    <input id="pre-input">
+    <div id="before-scroller" class="before scroller" tabindex="0">
+      <div id="01" class="item" tabindex="0">1</div>
+      <div id="02" class="item" tabindex="0">2</div>
+      <div id="03" class="item">3</div>
+    </div>
+
+    <div id="after-scroller" class="after scroller" tabindex="0">
+      <div id="11" class="item" tabindex="0">1</div>
+      <div id="12" class="item">2</div>
+      <div id="13" class="item" tabindex="0">3</div>
+    </div>
+    <input id="post-input">
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  Element* pre_input = GetElementById("pre-input");
+  Element* before_scroller = GetElementById("before-scroller");
+  Element* after_scroller = GetElementById("after-scroller");
+  Element* post_input = GetElementById("post-input");
+
+  Element* before_first_child = before_scroller->firstElementChild();
+  Element* before_second_child =
+      before_scroller->firstElementChild()->nextElementSibling();
+
+  auto* before_scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
+      before_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
+
+  Element* after_first_child = after_scroller->firstElementChild();
+  Element* after_last_child = after_scroller->lastElementChild();
+
+  auto* after_scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
+      after_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter));
+
+  std::array<Element*, 10> order = {
+      pre_input,          before_scroll_marker_group, before_scroller,
+      before_first_child, before_second_child,        after_scroller,
+      after_first_child,  after_last_child,           after_scroll_marker_group,
+      post_input};
+
+  for (std::size_t i = 0u; i < order.size() - 1; ++i) {
+    EXPECT_EQ(order[i + 1], GetFocusController().FindFocusableElementAfter(
+                                *order[i], mojom::blink::FocusType::kForward));
+  }
+}
+
+TEST_F(FocusControllerTest,
+       CarouselWithOnlyScrollMarkerGroupFocusOrderForward) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      .scroller { overflow: hidden; width: 100px; height: 100px; }
+      .before { scroll-marker-group: before; }
+      .after { scroll-marker-group: after; }
+      .scroller::scroll-marker-group { height: 100px; }
+    </style>
+    <input id="pre-input">
+    <div id="before-scroller" class="before scroller" tabindex="0"></div>
+
+    <div id="after-scroller" class="after scroller" tabindex="0"></div>
+    <input id="post-input">
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  Element* pre_input = GetElementById("pre-input");
+  Element* before_scroller = GetElementById("before-scroller");
+  Element* after_scroller = GetElementById("after-scroller");
+  Element* post_input = GetElementById("post-input");
+
+  auto* before_scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
+      before_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
+
+  auto* after_scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
+      after_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter));
+
+  std::array<Element*, 6> order = {
+      pre_input,      before_scroll_marker_group, before_scroller,
+      after_scroller, after_scroll_marker_group,  post_input};
+
+  for (std::size_t i = 0u; i < order.size() - 1; ++i) {
+    EXPECT_EQ(order[i + 1], GetFocusController().FindFocusableElementAfter(
+                                *order[i], mojom::blink::FocusType::kForward));
+  }
+}
+
+TEST_F(FocusControllerTest,
+       FullCarouselWithExtraPseudoElementsFocusOrderForward) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      .scroller { overflow: hidden; width: 100px; height: 100px; }
+      .before { scroll-marker-group: before; }
+      .after { scroll-marker-group: after; }
+      .scroller::after { content: "after"; }
+      .scroller::before { content: "before"; }
+      .scroller::scroll-marker-group { height: 100px; }
+      .scroller::scroll-button(up) { content: "u"; }
+      .scroller::scroll-button(down) { content: "d"; }
+      .scroller::scroll-button(left) { content: "l"; }
+      .scroller::scroll-button(right) { content: "r"; }
+      .scroller::scroll-button(up):focus { outline: 1px solid blue; }
+      .scroller::scroll-button(down):focus { outline: 1px solid blue; }
+      .scroller::scroll-button(left):focus { outline: 1px solid blue; }
+      .scroller::scroll-button(right):focus { outline: 1px solid blue; }
+      .item { width: 100px; height: 100px; }
+      .item::scroll-marker:focus { outline: 1px solid blue; opacity: 0.5; }
+      .item::scroll-marker { content: "*" }
+      .item::scroll-marker:target-current { color: red; }
+    </style>
+    <input id="pre-input">
+    <div id="before-scroller" class="before scroller" tabindex="0">
+      <div id="01" class="item" tabindex="0">1</div>
+      <div id="02" class="item" tabindex="0">2</div>
+      <div id="03" class="item">3</div>
+    </div>
+
+    <div id="after-scroller" class="after scroller" tabindex="0">
+      <div id="11" class="item" tabindex="0">1</div>
+      <div id="12" class="item">2</div>
+      <div id="13" class="item" tabindex="0">3</div>
+    </div>
+    <input id="post-input">
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  Element* pre_input = GetElementById("pre-input");
+  Element* before_scroller = GetElementById("before-scroller");
+  Element* after_scroller = GetElementById("after-scroller");
+  Element* post_input = GetElementById("post-input");
+
+  Element* before_up_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollUpButton);
+  Element* before_down_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollDownButton);
+  Element* before_left_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollLeftButton);
+  Element* before_right_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollRightButton);
+
+  Element* before_first_child = before_scroller->firstElementChild();
+  Element* before_second_child =
+      before_scroller->firstElementChild()->nextElementSibling();
+
+  auto* before_scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
+      before_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
+  Element* before_first_scroll_marker =
+      before_first_child->GetPseudoElement(kPseudoIdScrollMarker);
+
+  Element* after_up_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollUpButton);
+  Element* after_down_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollDownButton);
+  Element* after_left_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollLeftButton);
+  Element* after_right_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollRightButton);
+
+  Element* after_first_child = after_scroller->firstElementChild();
+  Element* after_last_child = after_scroller->lastElementChild();
+
+  auto* after_scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
+      after_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter));
+  Element* after_first_scroll_marker =
+      after_first_child->GetPseudoElement(kPseudoIdScrollMarker);
+
+  std::array<Element*, 20> order = {pre_input,
+                                    before_scroll_marker_group,
+                                    before_first_scroll_marker,
+                                    before_up_button,
+                                    before_down_button,
+                                    before_left_button,
+                                    before_right_button,
+                                    before_scroller,
+                                    before_first_child,
+                                    before_second_child,
+                                    after_up_button,
+                                    after_down_button,
+                                    after_left_button,
+                                    after_right_button,
+                                    after_scroller,
+                                    after_first_child,
+                                    after_last_child,
+                                    after_scroll_marker_group,
+                                    after_first_scroll_marker,
+                                    post_input};
+
+  for (std::size_t i = 0u; i < order.size() - 1; ++i) {
+    EXPECT_EQ(order[i + 1], GetFocusController().FindFocusableElementAfter(
+                                *order[i], mojom::blink::FocusType::kForward));
+  }
 }
 
 }  // namespace blink
