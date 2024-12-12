@@ -18,8 +18,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
@@ -39,16 +37,12 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
 
     private Runnable mPendingRunnableOnInputConnection;
 
-    private boolean mOptimizeImmHideCalls;
-
     public InputMethodManagerWrapperImpl(
             Context context, WindowAndroid windowAndroid, Delegate delegate) {
         if (DEBUG_LOGS) Log.i(TAG, "Constructor");
         mContext = context;
         mWindowAndroid = windowAndroid;
         mDelegate = delegate;
-        mOptimizeImmHideCalls =
-                ContentFeatureMap.isEnabled(ContentFeatureList.OPTIMIZE_IMM_HIDE_CALLS);
     }
 
     @Override
@@ -168,7 +162,7 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
         if (DEBUG_LOGS) Log.i(TAG, "hideSoftInputFromWindow");
         mPendingRunnableOnInputConnection = null;
         InputMethodManager manager = getInputMethodManager();
-        if (manager == null || (mOptimizeImmHideCalls && !manager.isAcceptingText())) return false;
+        if (manager == null || !manager.isAcceptingText()) return false;
         StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites(); // crbug.com/616283
         try {
             return manager.hideSoftInputFromWindow(windowToken, flags, resultReceiver);

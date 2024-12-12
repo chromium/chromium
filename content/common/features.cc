@@ -340,14 +340,6 @@ BASE_FEATURE_PARAM(size_t,
                    "count",
                    1u);
 
-// Enables skipping of calls to hideSoftInputFromWindow when there is not a
-// keyboard currently visible.
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kOptimizeImmHideCalls,
-             "OptimizeImmHideCalls",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // This feature enables Permissions Policy verification in the Browser process
 // in content/. Additionally only for //chrome Permissions Policy verification
 // is enabled in components/permissions/permission_context_base.cc
