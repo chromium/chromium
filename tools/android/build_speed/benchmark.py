@@ -238,41 +238,31 @@ def _server(outdir: pathlib.Path):
     cmd = [str(_SRC_ROOT / 'build/android/fast_local_dev_server.py')]
     # Avoid the build server's output polluting benchmark results, but allow
     # stderr to get through in case the build server fails with an error.
-    # TODO(wnwen): Switch to using subprocess.run and check=True to quit if the
-    #     server cannot be started.
-    server_proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL)
+    server_proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, text=True)
     logging.debug('Started fast local dev server.')
     # Give the server 1 second to fail fast.
-    server_proc.wait(1)
+    try:
+        server_proc.wait(1)
+    except subprocess.TimeoutExpired:
+        pass
     returncode = server_proc.poll()
-    # Ensure that the server started correctly.
     if returncode is not None:
+        # The server failed to start.
+        stdout, _ = server_proc.communicate()
+        print(stdout)
+        logging.error(f'Failed to start fast local dev server: {returncode}, '
+                      'perhaps the server is already running?')
         raise Exception(f"Failed to start fast local dev server: {returncode}")
     try:
         yield
     finally:
-        # Ensure that the original server_proc is still running.
         returncode = server_proc.poll()
         if returncode is not None:
             # The server failed to remain running.
+            stdout, _ = server_proc.communicate()
+            print(stdout)
             raise Exception(f"The fast local dev server died: {returncode}")
-
         logging.debug('Terminating fast local dev server.')
-        build_id = subprocess.run(cmd +
-                                  ['--get-build-id-for-outdir',
-                                   str(outdir)],
-                                  check=True,
-                                  capture_output=True).stdout
-        assert build_id != ''
-        logging.debug(f'Cancelling fast local dev server BUILD_ID={build_id}.')
-        subprocess.run(cmd + ['--cancel-build', build_id],
-                       check=True,
-                       stdout=subprocess.DEVNULL)
-        logging.debug(f'Wait for fast local dev server BUILD_ID={build_id}.')
-        subprocess.run(cmd + ['--wait-for-build', build_id],
-                       check=True,
-                       stdout=subprocess.DEVNULL)
-        logging.debug('Terminating fast local dev server process...')
         # Since Popen's default context manager just waits on exit, we need to
         # use our custom context manager to actually terminate the build server
         # when the current build is done to avoid skewing the next benchmark.
