@@ -536,6 +536,21 @@ void PdfAccessibilityTree::SetAccessibilityPageInfo(
                      std::move(chars), std::move(page_objects)));
 }
 
+void PdfAccessibilityTree::OnHasSearchifyText() {
+  // TODO(crbug.com/360803943): Look into if `render_frame()` can be null, why
+  // it is assumed to be not null in `SetOcrCompleteStatus()`, and create a
+  // better distinction between `render_frame()` and `render_frame_`.
+  // TODO(accessibility): remove this dependency.
+  content::RenderAccessibility* render_accessibility =
+      render_frame() ? render_frame()->GetRenderAccessibility() : nullptr;
+  bool screen_reader_mode =
+      (render_accessibility &&
+       render_accessibility->GetAXMode().has_mode(ui::AXMode::kScreenReader));
+  base::UmaHistogramBoolean(
+      "Accessibility.ScreenAI.Searchify.ScreenReaderModeEnabled",
+      screen_reader_mode);
+}
+
 void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
     const chrome_pdf::AccessibilityPageInfo& page_info,
     const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs,

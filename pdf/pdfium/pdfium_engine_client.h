@@ -208,7 +208,8 @@ class PDFiumEngineClient {
   // See the comment for `OnSearchifyStateChange` in pdf/pdfium/pdfium_engine.h.
   virtual void OnSearchifyStateChange(bool busy) = 0;
 
-  // Notifies that at least one page is searchified.
+  // Notifies that at least one page is searchified. This function is called at
+  // most once.
   virtual void OnHasSearchifyText() = 0;
 #endif
 };

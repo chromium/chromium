@@ -211,6 +211,9 @@ class MockPdfAccessibilityDataHandler : public PdfAccessibilityDataHandler {
                std::vector<AccessibilityCharInfo>,
                AccessibilityPageObjects),
               (override));
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  MOCK_METHOD(void, OnHasSearchifyText, (), (override));
+#endif
 };
 
 class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {

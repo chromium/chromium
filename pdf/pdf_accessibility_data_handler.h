@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include "services/screen_ai/buildflags/buildflags.h"
+
 namespace chrome_pdf {
 
 struct AccessibilityCharInfo;
@@ -28,6 +30,12 @@ class PdfAccessibilityDataHandler {
       std::vector<AccessibilityTextRunInfo> text_runs,
       std::vector<AccessibilityCharInfo> chars,
       AccessibilityPageObjects page_objects) = 0;
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // Notifies that at least one page is searchified. This function is called at
+  // most once.
+  virtual void OnHasSearchifyText() = 0;
+#endif
 };
 
 }  // namespace chrome_pdf

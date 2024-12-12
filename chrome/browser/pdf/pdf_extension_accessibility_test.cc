@@ -1515,17 +1515,31 @@ IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, HelloWorld) {
   base::HistogramTester histograms;
   RunPDFAXTreeDumpTest("hello-world-in-image.pdf",
                        GetExpectedStatus(/*has_content=*/true));
+
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histograms.ExpectBucketCount("Accessibility.PDF.HasAccessibleText2",
-                               /*sample=*/false,
-                               /*expected_count=*/1);
-  histograms.ExpectTotalCount("Accessibility.PDF.HasAccessibleText2",
-                              /*expected_count=*/1);
+  histograms.ExpectUniqueSample("Accessibility.PDF.HasAccessibleText2",
+                                /*sample=*/false,
+                                /*expected_count=*/1);
+
+  int expected_count = (IsSearchifyEnabled() && IsOcrAvailable()) ? 1 : 0;
+  // Screen Reader is always enabled for this test.
+  // TODO(crbug.com/360803943): Try adding Searchify browser test without
+  // screen reader.
+  histograms.ExpectUniqueSample(
+      "Accessibility.ScreenAI.Searchify.ScreenReaderModeEnabled",
+      /*sample=*/true, expected_count);
 }
 
 IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, ThreePagePDF) {
+  base::HistogramTester histograms;
   RunPDFAXTreeDumpTest("inaccessible-text-in-three-page.pdf",
                        GetExpectedStatus(/*has_content=*/true));
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  int expected_count = (IsSearchifyEnabled() && IsOcrAvailable()) ? 1 : 0;
+  histograms.ExpectUniqueSample(
+      "Accessibility.ScreenAI.Searchify.ScreenReaderModeEnabled",
+      /*sample=*/true, expected_count);
 }
 
 IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, TestBatchingWithTwentyPagePDF) {

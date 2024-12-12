@@ -1509,6 +1509,7 @@ void PdfViewWebPlugin::OnHasSearchifyText() {
   base::Value::Dict message;
   message.Set("type", "setHasSearchifyText");
   client_->PostMessage(std::move(message));
+  pdf_accessibility_data_handler_->OnHasSearchifyText();
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 

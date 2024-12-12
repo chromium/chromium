@@ -2960,6 +2960,22 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.Searchify.ScreenReaderModeEnabled"
+    enum="Boolean" expires_after="2025-11-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks if screen reader mode was enabled in the browser when PDF Searchifier
+    added text to a PDF. This metric is recorded only once for each PDF, and
+    records the status when searchify adds the first text to the page. If screen
+    reader status changes after the first page is searchified, it's not
+    recorded. The metric is recorded when browser is in screen reader compatible
+    mode and it does not necessarily mean that a screen reader is running on the
+    OS.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.Service.Initialization"
     enum="BooleanSuccess" expires_after="2025-04-13">
   <owner>rhalavati@chromium.org</owner>
