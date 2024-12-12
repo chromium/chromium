@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] outer <svg> in foreignObject (in document)
-  assert_equals: expected null but got Element node <svg id="top-svg">\n      <rect width="10" height="10"></r...
-[FAIL] outer <svg> in foreignObject (not in document)
-  assert_equals: expected null but got Element node <svg id="top-svg">\n      <rect width="10" height="10"></r...
-Harness: the test ran to completion.
-

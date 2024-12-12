@@ -558,6 +558,9 @@ void SVGElement::InvalidateRelativeLengthClients() {
 }
 
 SVGSVGElement* SVGElement::ownerSVGElement() const {
+  if (IsOutermostSVGSVGElement()) {
+    return nullptr;
+  }
   ContainerNode* n = ParentOrShadowHostNode();
   while (n) {
     if (auto* svg_svg_element = DynamicTo<SVGSVGElement>(n))
