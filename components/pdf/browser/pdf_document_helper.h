@@ -97,6 +97,9 @@ class PDFDocumentHelper
   void GetPdfBytes(uint32_t size_limit,
                    pdf::mojom::PdfListener::GetPdfBytesCallback callback);
 
+  void GetPageText(int32_t page_index,
+                   pdf::mojom::PdfListener::GetPageTextCallback callback);
+
  private:
   friend class content::DocumentUserData<PDFDocumentHelper>;
 

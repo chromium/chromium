@@ -126,6 +126,7 @@ constexpr char kDocumentWithNamedElementWithFragment[] =
 constexpr char kDocumentWithImage[] = "/test_visual.html";
 constexpr char kDocumentWithDynamicColor[] = "/lens/dynamic_color.html";
 constexpr char kPdfDocument[] = "/pdf/test.pdf";
+constexpr char kMultiPagePdf[] = "/pdf/test-bookmarks.pdf";
 constexpr char kPdfDocumentWithForm[] = "/pdf/submit_form.pdf";
 constexpr char kDocumentWithNonAsciiCharacters[] = "/non-ascii.html";
 
@@ -4396,7 +4397,7 @@ class LensOverlayControllerBrowserPDFContextualizationTest
                        {{"use-pdfs-as-context", "true"},
                         {"use-inner-html-as-context", "true"},
                         {"file-upload-limit-bytes",
-                         base::NumberToString(file_size_limit_bytes_)}}});
+                         base::NumberToString(kFileSizeLimitBytes)}}});
     return enabled;
   }
 
@@ -4405,7 +4406,7 @@ class LensOverlayControllerBrowserPDFContextualizationTest
   }
 
  protected:
-  const uint32_t file_size_limit_bytes_ = 10000;
+  static constexpr uint32_t kFileSizeLimitBytes = 10000;
 };
 
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
@@ -4440,6 +4441,35 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   ASSERT_TRUE(fake_controller);
   EXPECT_TRUE(fake_controller->fake_overlay_page_
                   .last_received_should_show_contextual_searchbox_);
+}
+
+IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
+                       PartialPdfIncludedInRequest) {
+  // Open the PDF document and wait for it to finish loading.
+  const GURL url = embedded_test_server()->GetURL(kPdfDocument);
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(url);
+  ASSERT_TRUE(extension_host);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_TRUE(controller);
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return controller->state() == State::kOverlay; }));
+
+  // Verify pdf content was included in the query.
+  auto* fake_query_controller =
+      static_cast<lens::TestLensOverlayQueryController*>(
+          controller->get_lens_overlay_query_controller_for_testing());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return fake_query_controller->last_sent_partial_content().size() == 1;
+  }));
+  ASSERT_EQ(u"this is some text\r\nsome more text",
+            fake_query_controller->last_sent_partial_content()[0]);
 }
 
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
@@ -4538,7 +4568,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   // Verify the document is over the size limit.
   auto file_size = GetFileSizeForTestDataFile(kPdfDocument12KbFileName);
   ASSERT_TRUE(file_size.has_value());
-  ASSERT_GT(file_size.value(), file_size_limit_bytes_);
+  ASSERT_GT(file_size.value(), kFileSizeLimitBytes);
 
   // Open the PDF document that is over our size limit and wait for it to finish
   // loading.
@@ -4783,11 +4813,68 @@ IN_PROC_BROWSER_TEST_P(
       true, /*expected_count=*/1);
 }
 
+class LensOverlayControllerBrowserPDFIncreaseLimitTest
+    : public LensOverlayControllerBrowserPDFContextualizationTest {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
+    auto enabled = PDFExtensionTestBase::GetEnabledFeatures();
+    enabled.push_back({lens::features::kLensOverlayContextualSearchbox,
+                       {{"use-pdfs-as-context", "true"},
+                        {"use-inner-html-as-context", "true"},
+                        {"pdf-text-character-limit", "50"},
+                        {"file-upload-limit-bytes",
+                         base::NumberToString(kFileSizeLimitBytes)}}});
+    return enabled;
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
+    return {};
+  }
+
+ protected:
+  static constexpr uint32_t kFileSizeLimitBytes = 200000;
+};
+
+IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFIncreaseLimitTest,
+                       PartialPdfCharacterLimitReached_IncludedInRequest) {
+  // Open the PDF document and wait for it to finish loading.
+  const GURL url = embedded_test_server()->GetURL(kMultiPagePdf);
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(url);
+  ASSERT_TRUE(extension_host);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_TRUE(controller);
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return controller->state() == State::kOverlay; }));
+
+  // Verify the first two pages were sent, excluding the last page of the PDF.
+  auto* fake_query_controller =
+      static_cast<lens::TestLensOverlayQueryController*>(
+          controller->get_lens_overlay_query_controller_for_testing());
+
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return 2u == fake_query_controller->last_sent_partial_content().size();
+  }));
+  ASSERT_EQ(u"1 First Section\r\nThis is the first section.\r\n1",
+            fake_query_controller->last_sent_partial_content()[0]);
+  ASSERT_EQ(u"1.1 First Subsection\r\nThis is the first subsection.\r\n2",
+            fake_query_controller->last_sent_partial_content()[1]);
+}
+
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(LensOverlayControllerBrowserPDFTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     LensOverlayControllerBrowserPDFContextualizationTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    LensOverlayControllerBrowserPDFIncreaseLimitTest);
 
 // Test with --enable-pixel-output-in-tests enabled, required to actually grab
 // screenshots for color extraction.

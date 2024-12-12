@@ -1198,6 +1198,9 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
+  // kFakeContentBytes needs to outlive the query controller, so initialize it
+  // here.
+  const std::vector<uint8_t> kFakeContentBytes({1, 2, 3, 4});
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
@@ -1222,11 +1225,10 @@ TEST_F(LensOverlayQueryControllerTest,
 
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   std::map<std::string, std::string> additional_search_query_params;
-  std::vector<uint8_t> fake_content_bytes({1, 2, 3, 4});
   query_controller.StartQueryFlow(
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(), fake_content_bytes,
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakeContentBytes,
       lens::MimeType::kPdf, 0, base::TimeTicks::Now());
   ASSERT_TRUE(full_image_response_future.Wait());
 
@@ -1333,6 +1335,9 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
+  // kFakeContentBytes needs to outlive the query controller, so initialize it
+  // here.
+  const std::vector<uint8_t> kFakeContentBytes({1, 2, 3, 4});
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
@@ -1357,11 +1362,10 @@ TEST_F(LensOverlayQueryControllerTest,
 
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   std::map<std::string, std::string> additional_search_query_params;
-  std::vector<uint8_t> fake_content_bytes({1, 2, 3, 4});
   query_controller.StartQueryFlow(
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(), fake_content_bytes,
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakeContentBytes,
       lens::MimeType::kHtml, 0, base::TimeTicks::Now());
   ASSERT_TRUE(full_image_response_future.Wait());
   query_controller.SendContextualTextQuery(
@@ -1467,6 +1471,9 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
+  // kFakeContentBytes needs to outlive the query controller, so initialize it
+  // here.
+  const std::vector<uint8_t> kFakeContentBytes({1, 2, 3, 4});
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
@@ -1491,11 +1498,10 @@ TEST_F(LensOverlayQueryControllerTest,
 
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   std::map<std::string, std::string> additional_search_query_params;
-  std::vector<uint8_t> fake_content_bytes({1, 2, 3, 4});
   query_controller.StartQueryFlow(
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(), fake_content_bytes,
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakeContentBytes,
       lens::MimeType::kPlainText, 0, base::TimeTicks::Now());
   ASSERT_TRUE(full_image_response_future.Wait());
   query_controller.SendContextualTextQuery(
@@ -1601,6 +1607,9 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
+  // kFakeContentBytes needs to outlive the query controller, so initialize it
+  // here.
+  const std::vector<uint8_t> kFakeContentBytes({1, 2, 3, 4});
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
@@ -1629,11 +1638,10 @@ TEST_F(LensOverlayQueryControllerTest,
 
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   std::map<std::string, std::string> additional_search_query_params;
-  std::vector<uint8_t> fake_content_bytes({1, 2, 3, 4});
   query_controller.StartQueryFlow(
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(), fake_content_bytes,
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakeContentBytes,
       lens::MimeType::kPlainText, 0, base::TimeTicks::Now());
   ASSERT_TRUE(full_image_response_future.Wait());
   query_controller.SendContextualTextQuery(
@@ -1660,6 +1668,10 @@ TEST_F(LensOverlayQueryControllerTest,
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
   base::test::TestFuture<const std::string&> thumbnail_created_future;
+  // kFakeContentBytes and kNewFakeContentBytes needs to outlive the query
+  // controller, so initialize it here.
+  const std::vector<uint8_t> kFakeContentBytes({1, 2, 3, 4});
+  const std::vector<uint8_t> kNewFakeContentBytes({5, 6, 7, 8});
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), GetSuggestInputsCallback(),
@@ -1684,7 +1696,6 @@ TEST_F(LensOverlayQueryControllerTest,
 
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   std::map<std::string, std::string> additional_search_query_params;
-  std::vector<uint8_t> fake_content_bytes({1, 2, 3, 4});
   query_controller.StartQueryFlow(
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
@@ -1693,7 +1704,7 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // Immediately send a page content update request.
   query_controller.SendPageContentUpdateRequest(
-      fake_content_bytes, lens::MimeType::kPlainText, GURL(kTestPageUrl));
+      kFakeContentBytes, lens::MimeType::kPlainText, GURL(kTestPageUrl));
 
   ASSERT_TRUE(full_image_response_future.Wait());
 
@@ -1706,9 +1717,8 @@ TEST_F(LensOverlayQueryControllerTest,
             1);
 
   // Send a new page content update request.
-  std::vector<uint8_t> new_fake_content_bytes({5, 6, 7, 8});
   query_controller.SendPageContentUpdateRequest(
-      new_fake_content_bytes, lens::MimeType::kPlainText, GURL(kTestPageUrl));
+      kNewFakeContentBytes, lens::MimeType::kPlainText, GURL(kTestPageUrl));
 
   // The new page content request should have a different sequence ID.
   ASSERT_EQ(query_controller.sent_request_id().sequence_id(), 1);

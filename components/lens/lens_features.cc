@@ -307,6 +307,9 @@ constexpr base::FeatureParam<bool>
 constexpr base::FeatureParam<size_t> kLensOverlayFileUploadLimitBytes{
     &kLensOverlayContextualSearchbox, "file-upload-limit-bytes", 200000000};
 
+constexpr base::FeatureParam<size_t> kLensOverlayPdfTextCharacterLimit{
+    &kLensOverlayContextualSearchbox, "pdf-text-character-limit", 2500};
+
 const base::FeatureParam<base::TimeDelta> kLensOverlaySurveyResultsTime{
     &kLensOverlaySurvey, "results-time", base::Seconds(1)};
 
@@ -528,6 +531,13 @@ bool GetLensOverlaySendLensVisualInteractionDataForLensSuggest() {
 
 uint32_t GetLensOverlayFileUploadLimitBytes() {
   size_t limit = kLensOverlayFileUploadLimitBytes.Get();
+  return base::IsValueInRangeForNumericType<uint32_t>(limit)
+             ? static_cast<uint32_t>(limit)
+             : 0;
+}
+
+uint32_t GetLensOverlayPdfSuggestCharacterTarget() {
+  size_t limit = kLensOverlayPdfTextCharacterLimit.Get();
   return base::IsValueInRangeForNumericType<uint32_t>(limit)
              ? static_cast<uint32_t>(limit)
              : 0;

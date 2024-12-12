@@ -4,6 +4,7 @@
 
 module pdf.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
@@ -33,6 +34,10 @@ interface PdfListener {
   // returned in `bytes`.
   GetPdfBytes(uint32 size_limit)
       => (GetPdfBytesStatus status, array<uint8> bytes, uint32 page_count);
+
+  // Get the text contained on the given page of the PDF. `page_index` should be
+  // the range [0, # of pages).
+  GetPageText(int32 page_index) => (mojo_base.mojom.String16 text);
 };
 
 // Browser-side interface used by PDF renderers.

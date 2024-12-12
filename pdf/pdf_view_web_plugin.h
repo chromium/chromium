@@ -394,6 +394,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void SetSelectionBounds(const gfx::PointF& base,
                           const gfx::PointF& extent) override;
   void GetPdfBytes(uint32_t size_limit, GetPdfBytesCallback callback) override;
+  void GetPageText(int32_t page_index, GetPageTextCallback callback) override;
 
   // UrlLoader::Client:
   bool IsValid() const override;

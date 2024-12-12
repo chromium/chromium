@@ -9,6 +9,7 @@
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/numerics/checked_math.h"
 #include "base/process/kill.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -1540,6 +1541,7 @@ void LensOverlayController::StorePageContentAndContinueInitialization(
     std::optional<uint32_t> page_count) {
   initialization_data->page_content_bytes_ = bytes;
   initialization_data->page_content_type_ = content_type;
+  initialization_data->pdf_page_count_ = page_count;
   InitializeOverlay(std::move(initialization_data));
 
   RecordDocumentMetrics(page_count);
@@ -1600,12 +1602,72 @@ void LensOverlayController::OnPdfBytesReceived(
     const std::vector<uint8_t>& bytes,
     uint32_t page_count) {
   // TODO(b/370530197): Show user error message if status is not success.
-  if (status != pdf::mojom::PdfListener::GetPdfBytesStatus::kSuccess) {
+  if (status != pdf::mojom::PdfListener::GetPdfBytesStatus::kSuccess ||
+      page_count == 0) {
     std::move(callback).Run(std::vector<uint8_t>(), lens::MimeType::kPdf,
                             page_count);
     return;
   }
   std::move(callback).Run(bytes, lens::MimeType::kPdf, page_count);
+}
+
+void LensOverlayController::GetPartialPdfText(uint32_t page_count) {
+  pdf::PDFDocumentHelper* pdf_helper =
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(tab_->GetContents());
+  if (!pdf_helper ||
+      lens::features::GetLensOverlayPdfSuggestCharacterTarget() == 0) {
+    return;
+  }
+
+  // Fetch the first page of text which will be then recursively fetch following
+  // pages.
+  initialization_data_->pdf_pages_text_.clear();
+  pdf_helper->GetPageText(
+      0, base::BindOnce(&LensOverlayController::GetPartialPdfTextCallback,
+                        weak_factory_.GetWeakPtr(), /*page_index=*/0,
+                        page_count, /*total_characters_retrieved=*/0));
+}
+
+void LensOverlayController::GetPartialPdfTextCallback(
+    uint32_t page_index,
+    uint32_t total_page_count,
+    uint32_t total_characters_retrieved,
+    const std::u16string& page_text) {
+  // Sanity checks that the input is expected.
+  CHECK_GE(total_page_count, 1u);
+  CHECK_LT(page_index, total_page_count);
+  CHECK_EQ(initialization_data_->pdf_pages_text_.size(), page_index);
+
+  // Add the page text to the list of pages and update the total characters
+  // retrieved count.
+  initialization_data_->pdf_pages_text_.push_back(page_text);
+  // Ensure no integer overflow. If overflow, set the total characters retrieved
+  // to the max value so the loop will exit.
+  base::CheckedNumeric<uint32_t> total_characters_retrieved_check =
+      total_characters_retrieved;
+  total_characters_retrieved_check += page_text.size();
+  total_characters_retrieved = total_characters_retrieved_check.ValueOrDefault(
+      std::numeric_limits<uint32_t>::max());
+
+  pdf::PDFDocumentHelper* pdf_helper =
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(tab_->GetContents());
+
+  // Stop the loop if the character limit is reached or if the page index is
+  // out of bounds or the PDF helper no longer exists.
+  if (!pdf_helper ||
+      total_characters_retrieved >=
+          lens::features::GetLensOverlayPdfSuggestCharacterTarget() ||
+      page_index + 1 >= total_page_count) {
+    lens_overlay_query_controller_->SendPartialPageContentRequest(
+        initialization_data_->pdf_pages_text_);
+    return;
+  }
+
+  pdf_helper->GetPageText(
+      page_index + 1,
+      base::BindOnce(&LensOverlayController::GetPartialPdfTextCallback,
+                     weak_factory_.GetWeakPtr(), page_index + 1,
+                     total_page_count, total_characters_retrieved));
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -1700,6 +1762,10 @@ void LensOverlayController::UpdatePageContextualization(
     return;
   }
 
+  // Since the page content has changed so let the query controller know to
+  // avoid dangling pointers.
+  lens_overlay_query_controller_->ResetPageContentData();
+
   initialization_data_->page_content_bytes_ = bytes;
   initialization_data_->page_content_type_ = content_type;
 
@@ -1710,6 +1776,12 @@ void LensOverlayController::UpdatePageContextualization(
   UpdateGhostLoaderState(
       /*suppress_ghost_loader=*/bytes.empty(),
       /*reset_loading_state=*/false);
+
+  // If the new page is a PDF, fetch the text from the page to be used as early
+  // suggest signals.
+  if (content_type == lens::MimeType::kPdf) {
+    GetPartialPdfText(page_count.value_or(0));
+  }
 
   lens_overlay_query_controller_->SendPageContentUpdateRequest(
       initialization_data_->page_content_bytes_,
@@ -1847,6 +1919,11 @@ void LensOverlayController::CloseUIPart2(
         ->RemoveObserver(this);
   }
 
+  // LensOverlayQueryController points to initialization data and therefore must
+  // be reset before the initialization data to avoid dangling pointers.
+  lens_overlay_query_controller_.reset();
+  initialization_data_.reset();
+
   tab_contents_view_observer_.Reset();
   omnibox_tab_helper_observer_.Reset();
   find_tab_observer_.Reset();
@@ -1854,9 +1931,7 @@ void LensOverlayController::CloseUIPart2(
   side_panel_page_.reset();
   receiver_.reset();
   page_.reset();
-  initialization_data_.reset();
   languages_controller_.reset();
-  lens_overlay_query_controller_.reset();
   scoped_tab_modal_ui_.reset();
   pending_side_panel_url_.reset();
   pending_text_query_.reset();
@@ -1917,6 +1992,13 @@ void LensOverlayController::InitializeOverlay(
 
   InitializeOverlayUI(*initialization_data_);
   base::UmaHistogramBoolean("Lens.Overlay.Shown", true);
+
+  // If PDF content was extracted from the page, fetch the text from the PDF to
+  // be used as early suggest signals.
+  if (initialization_data_->page_content_type_ == lens::MimeType::kPdf) {
+    CHECK(initialization_data_->pdf_page_count_.has_value());
+    GetPartialPdfText(initialization_data_->pdf_page_count_.value());
+  }
 
   // If the StartQueryFlow optimization is enabled, the page contents will not
   // be sent with the initial image request, so we need to send it here.

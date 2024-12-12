@@ -139,12 +139,19 @@ void TestLensOverlayQueryController::SendPageContentUpdateRequest(
       new_content_bytes, new_content_type, new_page_url);
 }
 
+void TestLensOverlayQueryController::SendPartialPageContentRequest(
+    base::span<const std::u16string> partial_content) {
+  last_sent_partial_content_ = partial_content;
+  LensOverlayQueryController::SendPartialPageContentRequest(partial_content);
+}
+
 void TestLensOverlayQueryController::ResetTestingState() {
   last_lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
   last_queried_region_.reset();
   last_queried_text_.clear();
   last_queried_region_bytes_ = std::nullopt;
   last_sent_underlying_content_bytes_ = base::span<const uint8_t>();
+  last_sent_partial_content_ = base::span<const std::u16string>();
   last_sent_underlying_content_type_ = lens::MimeType::kUnknown;
   last_sent_page_url_ = GURL();
   num_interaction_requests_sent_ = 0;

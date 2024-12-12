@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_QUERY_CONTROLLER_H_
 
 #include <optional>
+#include <string>
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
@@ -108,11 +108,22 @@ class LensOverlayQueryController {
   // ending translate mode.
   virtual void SendEndTranslateModeQuery();
 
+  // Resets the page content data to avoid using stale data in the request flow.
+  // Caller should call this before changing the page content data this class
+  // points to, to avoid dangling pointers.
+  virtual void ResetPageContentData();
+
   // Sends a request to the server to update the page content.
   virtual void SendPageContentUpdateRequest(
       base::span<const uint8_t> new_content_bytes,
       lens::MimeType new_content_type,
       GURL new_page_url);
+
+  // Sends a request to the server with a portion of the page content.
+  // `partial_content` should be a subset of the full page content. This request
+  // is used to give the server an early signal of the page content.
+  virtual void SendPartialPageContentRequest(
+      base::span<const std::u16string> partial_content);
 
   // Sends a region search interaction. Expected to be called multiple times. If
   // region_bytes are included, those will be sent to Lens instead of cropping
@@ -599,12 +610,15 @@ class LensOverlayQueryController {
   // The bytes of the content the user is viewing. Owned by
   // LensOverlayController. Will be empty if no bytes to the underlying page
   // could be provided.
-  // TODO(367764863) Rewrite to base::raw_span.
-  RAW_PTR_EXCLUSION base::span<const uint8_t> underlying_content_bytes_;
+  base::raw_span<const uint8_t> underlying_content_bytes_;
 
   // The mime type of underlying_content_bytes. Will be kNone if
   // underlying_content_bytes_ is empty.
   lens::MimeType underlying_content_type_;
+
+  // A span of text that represents a part of the content held in underlying
+  // content bytes.
+  base::raw_span<const std::u16string> partial_content_;
 
   // Whether or not the parent interaction query has been sent. This should
   // always be the first interaction in a query flow.

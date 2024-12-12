@@ -1539,6 +1539,15 @@ void PdfViewWebPlugin::GetPdfBytes(uint32_t size_limit,
                           page_count);
 }
 
+void PdfViewWebPlugin::GetPageText(int32_t page_index,
+                                   GetPageTextCallback callback) {
+  if (page_index < 0 || page_index >= engine_->GetNumberOfPages()) {
+    std::move(callback).Run(std::u16string());
+    return;
+  }
+  std::move(callback).Run(engine_->GetPageText(page_index));
+}
+
 bool PdfViewWebPlugin::IsValid() const {
   return client_->HasFrame();
 }

@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_CONTROLLER_H_
 
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -605,6 +607,13 @@ class LensOverlayController : public LensSearchboxClient,
     // empty.
     lens::MimeType page_content_type_ = lens::MimeType::kUnknown;
 
+    // The page count of the PDF document if page_content_type_ is kPdf.
+    std::optional<uint32_t> pdf_page_count_;
+
+    // The partial representation of a PDF document. The element at a given
+    // index holds the text of the PDF page at the same index.
+    std::vector<std::u16string> pdf_pages_text_;
+
     // Bounding boxes for significant regions identified in the screenshot.
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes_;
 
@@ -703,6 +712,19 @@ class LensOverlayController : public LensSearchboxClient,
                           pdf::mojom::PdfListener::GetPdfBytesStatus status,
                           const std::vector<uint8_t>& bytes,
                           uint32_t pdf_page_count);
+
+  // Starts the process of fetching the text from the PDF to be used for suggest
+  // signals.
+  void GetPartialPdfText(uint32_t total_page_count);
+
+  // Gets the partial text from the PDF to be used for suggest. Schedules for
+  // the next page of text to be fetched, from the PDF in page order until
+  // either 1) all the text is received or 2) the character limit is reached.
+  // This method should only be called by GetPartialPdfText.
+  void GetPartialPdfTextCallback(uint32_t page_index,
+                                 uint32_t total_page_count,
+                                 uint32_t total_characters_retrieved,
+                                 const std::u16string& page_text);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
   // Callback for when the inner text is retrieved from the underlying page.
