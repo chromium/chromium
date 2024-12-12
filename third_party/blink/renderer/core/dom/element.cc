@@ -9256,8 +9256,8 @@ static bool NeedsURLResolutionForInlineStyle(const Element& element,
   if (!style) {
     return false;
   }
-  for (unsigned i = 0; i < style->PropertyCount(); ++i) {
-    if (style->PropertyAt(i).Value().MayContainUrl()) {
+  for (const CSSPropertyValue& property : style->Properties()) {
+    if (property.Value().MayContainUrl()) {
       return true;
     }
   }
@@ -9266,8 +9266,8 @@ static bool NeedsURLResolutionForInlineStyle(const Element& element,
 
 static void ReResolveURLsInInlineStyle(const Document& document,
                                        MutableCSSPropertyValueSet& style) {
-  for (unsigned i = 0; i < style.PropertyCount(); ++i) {
-    const CSSValue& value = style.PropertyAt(i).Value();
+  for (const CSSPropertyValue& property : style.Properties()) {
+    const CSSValue& value = property.Value();
     if (value.MayContainUrl()) {
       value.ReResolveUrl(document);
     }

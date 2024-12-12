@@ -1278,10 +1278,8 @@ function main(metadata) {
     // The background-image and list-style-image (for ul or ol) are the CSS
     // properties that make use of images. We iterate to make sure we include
     // any other image properties there might be.
-    unsigned property_count = style_declaration->PropertyCount();
-    for (unsigned i = 0; i < property_count; ++i) {
-      const CSSValue& css_value = style_declaration->PropertyAt(i).Value();
-      RetrieveResourcesForCSSValue(css_value, document);
+    for (const CSSPropertyValue& property : style_declaration->Properties()) {
+      RetrieveResourcesForCSSValue(property.Value(), document);
     }
   }
 

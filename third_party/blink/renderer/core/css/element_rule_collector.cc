@@ -197,11 +197,9 @@ bool EvaluateAndAddContainerQueries(
 }
 
 bool AffectsAnimations(const RuleData& rule_data) {
-  const CSSPropertyValueSet& properties = rule_data.Rule()->Properties();
-  unsigned count = properties.PropertyCount();
-  for (unsigned i = 0; i < count; ++i) {
-    auto reference = properties.PropertyAt(i);
-    CSSPropertyID id = reference.Id();
+  for (const CSSPropertyValue& property :
+       rule_data.Rule()->Properties().Properties()) {
+    CSSPropertyID id = property.PropertyID();
     if (id == CSSPropertyID::kAll) {
       return true;
     }

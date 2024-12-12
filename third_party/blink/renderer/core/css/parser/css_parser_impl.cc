@@ -236,14 +236,15 @@ static inline void FilterProperties(
     if (property.IsImportant() != important) {
       continue;
     }
-    if (property.Id() == CSSPropertyID::kVariable) {
+    if (property.PropertyID() == CSSPropertyID::kVariable) {
       const AtomicString& name = property.CustomPropertyName();
       if (seen_custom_properties.Contains(name)) {
         continue;
       }
       seen_custom_properties.insert(name);
     } else {
-      const unsigned property_id_index = GetCSSPropertyIDIndex(property.Id());
+      const unsigned property_id_index =
+          GetCSSPropertyIDIndex(property.PropertyID());
       if (seen_properties.test(property_id_index)) {
         continue;
       }
@@ -257,10 +258,10 @@ static ImmutableCSSPropertyValueSet* CreateCSSPropertyValueSet(
     HeapVector<CSSPropertyValue, 64>& parsed_properties,
     CSSParserMode mode,
     const Document* document) {
-  if (mode != kHTMLQuirksMode &&
-      (parsed_properties.size() < 2 ||
-       (parsed_properties.size() == 2 &&
-        parsed_properties[0].Id() != parsed_properties[1].Id()))) {
+  if (mode != kHTMLQuirksMode && (parsed_properties.size() < 2 ||
+                                  (parsed_properties.size() == 2 &&
+                                   parsed_properties[0].PropertyID() !=
+                                       parsed_properties[1].PropertyID()))) {
     // Fast path for the situations where we can trivially detect that there can
     // be no collision between properties, and don't need to reorder, make
     // bitsets, or similar.

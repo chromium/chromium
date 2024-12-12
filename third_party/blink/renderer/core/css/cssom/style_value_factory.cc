@@ -317,8 +317,8 @@ CSSStyleValueVector StyleValueFactory::FromString(
           parser_context, parsed_properties, StyleRule::RuleType::kStyle)) {
     if (parsed_properties.size() == 1) {
       const auto result = StyleValueFactory::CssValueToStyleValueVector(
-          CSSPropertyName(parsed_properties[0].Id()),
-          *parsed_properties[0].Value());
+          CSSPropertyName(parsed_properties[0].PropertyID()),
+          parsed_properties[0].Value());
       // TODO(801935): Handle list-valued properties.
       if (result.size() == 1U) {
         result[0]->SetCSSText(css_text);

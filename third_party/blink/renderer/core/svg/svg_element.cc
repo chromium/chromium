@@ -798,9 +798,8 @@ void SVGElement::AddPropertyToPresentationAttributeStyleWithCache(
       AddPropertyToPresentationAttributeStyle(style, property_id, value);
       if (unsigned count = style->PropertyCount()) {
         // Cache the value if it was added.
-        CSSPropertyValueSet::PropertyReference last_decl =
-            style->PropertyAt(--count);
-        if (last_decl.Id() == property_id) {
+        const CSSPropertyValue& last_decl = style->PropertyAt(--count);
+        if (last_decl.PropertyID() == property_id) {
           engine.AddCachedFillOrClipPathURIValue(value, last_decl.Value());
         }
       }

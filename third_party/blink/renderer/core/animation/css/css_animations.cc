@@ -356,8 +356,7 @@ StringKeyframeVector ProcessKeyframesRule(
   StringKeyframeVector keyframes;
   const HeapVector<Member<StyleRuleKeyframe>>& style_keyframes =
       keyframes_rule->Keyframes();
-  for (wtf_size_t i = 0; i < style_keyframes.size(); ++i) {
-    const StyleRuleKeyframe* style_keyframe = style_keyframes[i].Get();
+  for (const StyleRuleKeyframe* style_keyframe : style_keyframes) {
     auto* keyframe = MakeGarbageCollected<StringKeyframe>(tree_scope);
     const Vector<KeyframeOffset>& offsets = style_keyframe->Keys();
     DCHECK(!offsets.empty());
@@ -365,9 +364,7 @@ StringKeyframeVector ProcessKeyframesRule(
     has_named_range_keyframes |= SetOffsets(*keyframe, offsets[0]);
     keyframe->SetEasing(default_timing_function);
     const CSSPropertyValueSet& properties = style_keyframe->Properties();
-    for (unsigned j = 0; j < properties.PropertyCount(); j++) {
-      CSSPropertyValueSet::PropertyReference property_reference =
-          properties.PropertyAt(j);
+    for (const CSSPropertyValue& property_reference : properties.Properties()) {
       CSSPropertyRef ref(property_reference.Name(), document);
       const CSSProperty& property = ref.GetProperty();
       if (property.PropertyID() == CSSPropertyID::kAnimationComposition) {

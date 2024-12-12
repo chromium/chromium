@@ -180,7 +180,7 @@ class TestCascade {
         ParseDeclarationBlock(name + ":" + value, kHTMLStandardMode);
     DCHECK(set);
     DCHECK(set->PropertyCount());
-    CSSPropertyValueSet::PropertyReference reference = set->PropertyAt(0);
+    const CSSPropertyValue& reference = set->PropertyAt(0);
     return StyleCascade::Resolve(state, reference.Name(), reference.Value());
   }
 

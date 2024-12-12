@@ -1493,11 +1493,7 @@ bool CanApplyInlineStyleIncrementally(Element* element,
 
   const CSSPropertyValueSet* inline_style = element->InlineStyle();
   if (inline_style) {
-    int num_properties = inline_style->PropertyCount();
-    for (int property_idx = 0; property_idx < num_properties; ++property_idx) {
-      CSSPropertyValueSet::PropertyReference property =
-          inline_style->PropertyAt(property_idx);
-
+    for (const CSSPropertyValue& property : inline_style->Properties()) {
       // If a script mutated inline style properties that are not idempotent,
       // we would not normally even reach this path (we wouldn't get a changed
       // signal saying “inline incremental style modified”, just “style
@@ -1505,7 +1501,7 @@ bool CanApplyInlineStyleIncrementally(Element* element,
       // _before_ this calculation, and their continued existence blocks us from
       // reusing the style (because e.g. the StyleAdjuster is not necessarily
       // idempotent in such cases).
-      if (!CSSProperty::Get(property.Id()).IsIdempotent()) {
+      if (!CSSProperty::Get(property.PropertyID()).IsIdempotent()) {
         return false;
       }
 
@@ -1819,11 +1815,7 @@ void StyleResolver::ApplyBaseStyle(
 
     const CSSPropertyValueSet* inline_style = element->InlineStyle();
     if (inline_style) {
-      int num_properties = inline_style->PropertyCount();
-      for (int property_idx = 0; property_idx < num_properties;
-           ++property_idx) {
-        CSSPropertyValueSet::PropertyReference property =
-            inline_style->PropertyAt(property_idx);
+      for (const CSSPropertyValue& property : inline_style->Properties()) {
         StyleBuilder::ApplyProperty(
             property.Name(), state,
             property.Value().EnsureScopedValue(&GetDocument()));

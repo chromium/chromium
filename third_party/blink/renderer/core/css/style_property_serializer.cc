@@ -102,11 +102,9 @@ StylePropertySerializer::CSSPropertyValueSetForSerializer::
     return;
   }
 
-  CSSPropertyValueSet::PropertyReference all_property =
-      property_set_->PropertyAt(all_index_);
+  const CSSPropertyValue& all_property = property_set_->PropertyAt(all_index_);
   for (unsigned i = 0; i < property_set_->PropertyCount(); ++i) {
-    CSSPropertyValueSet::PropertyReference property =
-        property_set_->PropertyAt(i);
+    const CSSPropertyValue& property = property_set_->PropertyAt(i);
     if (property.IsAffectedByAll()) {
       if (all_property.IsImportant() && !property.IsImportant()) {
         continue;
@@ -120,10 +118,10 @@ StylePropertySerializer::CSSPropertyValueSetForSerializer::
       }
       need_to_expand_all_ = true;
     }
-    if (!IsCSSPropertyIDWithName(property.Id())) {
+    if (!IsCSSPropertyIDWithName(property.PropertyID())) {
       continue;
     }
-    longhand_property_used_.set(GetCSSPropertyIDIndex(property.Id()));
+    longhand_property_used_.set(GetCSSPropertyIDIndex(property.PropertyID()));
   }
 }
 
@@ -167,8 +165,7 @@ StylePropertySerializer::CSSPropertyValueSetForSerializer::PropertyAt(
         property_set_->PropertyAt(real_index));
   }
 
-  CSSPropertyValueSet::PropertyReference property =
-      property_set_->PropertyAt(all_index_);
+  const CSSPropertyValue& property = property_set_->PropertyAt(all_index_);
   return StylePropertySerializer::PropertyValueForSerializer(
       CSSProperty::Get(property_id).GetCSSPropertyName(), &property.Value(),
       property.IsImportant());
@@ -184,21 +181,23 @@ bool StylePropertySerializer::CSSPropertyValueSetForSerializer::
   // If all is not expanded, we need to process "all" and properties which
   // are not overwritten by "all".
   if (!need_to_expand_all_) {
-    CSSPropertyValueSet::PropertyReference property =
-        property_set_->PropertyAt(index);
-    if (property.Id() == CSSPropertyID::kAll || !property.IsAffectedByAll()) {
+    const CSSPropertyValue& property = property_set_->PropertyAt(index);
+    if (property.PropertyID() == CSSPropertyID::kAll ||
+        !property.IsAffectedByAll()) {
       return true;
     }
-    if (!IsCSSPropertyIDWithName(property.Id())) {
+    if (!IsCSSPropertyIDWithName(property.PropertyID())) {
       return false;
     }
-    return longhand_property_used_.test(GetCSSPropertyIDIndex(property.Id()));
+    return longhand_property_used_.test(
+        GetCSSPropertyIDIndex(property.PropertyID()));
   }
 
   // Custom property declarations are never overridden by "all" and are only
   // traversed for the indices into the property set.
   if (IsIndexInPropertySet(index)) {
-    return property_set_->PropertyAt(index).Id() == CSSPropertyID::kVariable;
+    return property_set_->PropertyAt(index).PropertyID() ==
+           CSSPropertyID::kVariable;
   }
 
   CSSPropertyID property_id = IndexToPropertyID(index);

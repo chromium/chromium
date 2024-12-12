@@ -114,8 +114,7 @@ class CORE_EXPORT StylePropertySerializer {
     STACK_ALLOCATED();
 
    public:
-    explicit PropertyValueForSerializer(
-        CSSPropertyValueSet::PropertyReference property)
+    explicit PropertyValueForSerializer(const CSSPropertyValue& property)
         : value_(&property.Value()),
           name_(property.Name()),
           is_important_(property.IsImportant()) {}
