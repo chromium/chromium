@@ -619,10 +619,7 @@ class PanActionTrackingWebFrameWidget
 
 class PanActionPointerEventTest : public PointerEventManagerTest {
  public:
-  PanActionPointerEventTest() {
-    feature_list_.InitWithFeatures({blink::features::kStylusPointerAdjustment},
-                                   {});
-  }
+  PanActionPointerEventTest() = default;
 
   frame_test_helpers::TestWebFrameWidget* CreateWebFrameWidget(
       base::PassKey<WebLocalFrame> pass_key,
@@ -671,9 +668,6 @@ class PanActionPointerEventTest : public PointerEventManagerTest {
     event.pointer_type = pointer_type;
     return event;
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(PanActionPointerEventTest, PanActionStylusWritable) {

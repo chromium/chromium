@@ -562,11 +562,6 @@ public final class ProductionSupportedFlagList {
                         + " text in the currently focused element to Android. These rectangles "
                         + "are sent for <input> and <textarea> elements."),
         Flag.baseFeature(
-                BlinkFeatures.STYLUS_POINTER_ADJUSTMENT,
-                "When enabled, a hover icon is shown over editable HTML elements when"
-                        + " using a stylus and the rectangle to trigger stylus writing on"
-                        + " editable elements is expanded."),
-        Flag.baseFeature(
                 BlinkFeatures.STYLUS_RICH_GESTURES,
                 "When enabled, stylus input can be used to draw rich gestures which "
                         + "affect text in editable web content."),

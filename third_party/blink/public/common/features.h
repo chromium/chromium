@@ -1690,9 +1690,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSubSampleWindowProxyUsageMetrics);
 
 // Stylus gestures for editable web content.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStylusRichGestures);
-// Apply touch adjustment for stylus pointer events. This feature allows
-// enabling functions like writing into a nearby input element.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStylusPointerAdjustment);
 
 // If enabled, reads and decodes navigation body data off the main thread.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThreadedBodyLoader);

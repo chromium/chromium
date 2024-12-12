@@ -2581,10 +2581,6 @@ BASE_FEATURE(kSubSampleWindowProxyUsageMetrics,
              "SubSampleWindowProxyUsageMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kStylusPointerAdjustment,
-             "StylusPointerAdjustment",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kStylusRichGestures,
              "StylusRichGestures",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -11,7 +11,6 @@
 
 #include "base/auto_reset.h"
 #include "base/metrics/field_trial_params.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
@@ -395,12 +394,10 @@ bool PointerEventManager::ShouldAdjustPointerEvent(
 
 bool PointerEventManager::ShouldAdjustStylusPointerEvent(
     const WebPointerEvent& pointer_event) const {
-  return base::FeatureList::IsEnabled(
-             blink::features::kStylusPointerAdjustment) &&
-         (pointer_event.pointer_type ==
-              WebPointerProperties::PointerType::kPen ||
-          pointer_event.pointer_type ==
-              WebPointerProperties::PointerType::kEraser);
+  return pointer_event.pointer_type ==
+             WebPointerProperties::PointerType::kPen ||
+         pointer_event.pointer_type ==
+             WebPointerProperties::PointerType::kEraser;
 }
 
 void PointerEventManager::AdjustPointerEvent(WebPointerEvent& pointer_event) {
