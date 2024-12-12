@@ -914,6 +914,12 @@
           other {Close after <ph name="DAY_COUNT_MANY">%1$d<ex>15</ex></ph> days}
         }
       </message>
+      <message name="IDS_ARCHIVE_SETTINGS_ARCHIVE_DUPLICATE_TABS_SUMMARY" desc="The summary for toggle to allow duplicate tabs to be archived.">
+        All duplicate tabs will now also be archived, with the exception of the most recently used copy.
+      </message>
+      <message name="IDS_ARCHIVE_SETTINGS_ARCHIVE_DUPLICATE_TABS_TITLE" desc="The title for toggle to allow duplicate tabs to be archived.">
+        Archive duplicate tabs
+      </message>
       <message name="IDS_ARCHIVE_SETTINGS_ALLOW_AUTODELETE_SUMMARY" desc="The summary for toggle to allow tabs to be deleted automatically.">
         Inactive tabs will automatically be closed. You can always find them in History.
       </message>

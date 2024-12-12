@@ -291,7 +291,7 @@ public class TabArchiver implements TabWindowManager.Observer {
                             HashMap<Token, Boolean> groupIdToArchiveEligibilityMap =
                                     new HashMap<>();
                             HashMap<GURL, Long> tabUrlToLastActiveTimestampMap = new HashMap<>();
-                            if (shouldArchiveDuplicateTabs()) {
+                            if (mTabArchiveSettings.isArchiveDuplicateTabsEnabled()) {
                                 recordTabUrlLastActiveTimestamps(
                                         tabUrlToLastActiveTimestampMap, model);
                             }
@@ -400,7 +400,7 @@ public class TabArchiver implements TabWindowManager.Observer {
                 isTimestampWithinTargetHours(
                         timestampMillis, mTabArchiveSettings.getArchiveTimeDeltaHours());
         boolean isDuplicateTabEligibleForArchive =
-                shouldArchiveDuplicateTabs()
+                mTabArchiveSettings.isArchiveDuplicateTabsEnabled()
                         ? isDuplicateTab(tabUrlToLastActiveTimestampMap, tab)
                         : false;
         RecordHistogram.recordCount1000Histogram(
@@ -480,10 +480,6 @@ public class TabArchiver implements TabWindowManager.Observer {
         // Strip the root id to avoid re-using the old rootId from the tab state file.
         tabState.rootId = Tab.INVALID_TAB_ID;
         return tabState;
-    }
-
-    private boolean shouldArchiveDuplicateTabs() {
-        return ChromeFeatureList.sAndroidTabDeclutterArchiveDuplicateTabs.isEnabled();
     }
 
     @VisibleForTesting

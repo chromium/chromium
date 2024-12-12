@@ -804,6 +804,8 @@ public final class ChromePreferenceKeys {
             "org.chromium.chrome.browser.tabmodel.TabPersistentStore."
                     + "HAS_RUN_MULTI_INSTANCE_FILE_MIGRATION";
 
+    public static final String TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS_ENABLED =
+            "Chrome.Tab.ArchiveDuplicateTabsEnabled";
     public static final String TAB_DECLUTTER_ARCHIVE_ENABLED = "Chrome.Tab.ArchiveEnabled";
     public static final String TAB_DECLUTTER_ARCHIVE_TIME_DELTA_HOURS =
             "Chrome.Tab.ArchiveTimeDeltaHours";
@@ -1051,6 +1053,7 @@ public final class ChromePreferenceKeys {
                 SWAA_TIMESTAMP,
                 SWAA_STATUS,
                 TABBED_ACTIVITY_LAST_VISIBLE_TIME_MS,
+                TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS_ENABLED,
                 TAB_DECLUTTER_ARCHIVE_ENABLED,
                 TAB_DECLUTTER_ARCHIVE_TIME_DELTA_HOURS,
                 TAB_DECLUTTER_AUTO_DELETE_ENABLED,
