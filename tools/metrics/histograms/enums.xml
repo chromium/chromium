@@ -17046,6 +17046,7 @@ from previous Chrome versions.
       label="OmniboxMostVisitedTilesTitleWrapAround:enabled"/>
   <int value="-1338306372" label="BrowserTouchBar:enabled"/>
   <int value="-1338237485" label="HardwareSecureDecryptionExperiment:disabled"/>
+  <int value="-1337873095" label="CompareManagementInterface:disabled"/>
   <int value="-1337433513" label="FilesGoogleDriveSettingsPage:disabled"/>
   <int value="-1337185440" label="enable-webvr"/>
   <int value="-1336110789" label="CastMediaRouteProvider:disabled"/>
@@ -20676,6 +20677,7 @@ from previous Chrome versions.
   <int value="120519004" label="NavigationPredictor:disabled"/>
   <int value="120880746" label="NtpPhotosModuleSoftOptOut:disabled"/>
   <int value="121684313" label="QuickUnlockPin:enabled"/>
+  <int value="121692330" label="CompareManagementInterface:enabled"/>
   <int value="121858954" label="enable-supervised-user-safesites"/>
   <int value="121911155" label="DesktopPWAsElidedExtensionsMenu:enabled"/>
   <int value="121994167" label="kOmniboxCR23SteadyStateIcons:disabled"/>

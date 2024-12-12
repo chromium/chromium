@@ -31,6 +31,12 @@ const char kCompareConfirmationToastName[] = "Added to set confirmation toast";
 const char kCompareConfirmationToastDescription[] =
     "Enable to show the added to set confirmation in a toast.";
 
+const char kCompareManagementInterfaceName[] =
+    "Comparison table management from main Compare UI";
+const char kCompareManagementInterfaceDescription[] =
+    "Enable showing the comparison tables list in the Compare UI and enable "
+    "the new \"Comparison tables\" context menu under \"Bookmarks and Lists\".";
+
 const char kShoppingIconColorVariantName[] =
     "Enable color variant for shopping icons";
 const char kShoppingIconColorVariantDescription[] =

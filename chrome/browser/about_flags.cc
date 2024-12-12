@@ -6922,6 +6922,11 @@ const FeatureEntry kFeatureEntries[] = {
      commerce::flag_descriptions::kCompareConfirmationToastDescription,
      kOsDesktop, FEATURE_VALUE_TYPE(commerce::kCompareConfirmationToast)},
 
+    {"compare-management-interface",
+     commerce::flag_descriptions::kCompareManagementInterfaceName,
+     commerce::flag_descriptions::kCompareManagementInterfaceDescription,
+     kOsDesktop, FEATURE_VALUE_TYPE(commerce::kCompareManagementInterface)},
+
     {"shopping-list", commerce::flag_descriptions::kShoppingListName,
      commerce::flag_descriptions::kShoppingListDescription,
      kOsAndroid | kOsDesktop, FEATURE_VALUE_TYPE(commerce::kShoppingList)},

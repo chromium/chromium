@@ -24,6 +24,9 @@ extern const char kProductSpecificationsMultiSpecificsDescription[];
 extern const char kCompareConfirmationToastName[];
 extern const char kCompareConfirmationToastDescription[];
 
+extern const char kCompareManagementInterfaceName[];
+extern const char kCompareManagementInterfaceDescription[];
+
 extern const char kShoppingIconColorVariantName[];
 extern const char kShoppingIconColorVariantDescription[];
 

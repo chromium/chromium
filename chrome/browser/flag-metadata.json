@@ -1505,6 +1505,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "compare-management-interface",
+    "owners": ["chazzy@chromium.org", "mdjones@chromium.org", "chrome-shopping-eng@google.com"],
+    "expiry_milestone": 136
+  },
+  {
     "name": "compose-nudge-display-at-cursor",
     "owners": ["//components/compose/OWNERS", "chrome-compose-frontend@google.com"],
     "expiry_milestone": 136
