@@ -793,7 +793,7 @@ mojom("vulkan_interface") {
 
 mojom("test_interfaces") {
   testonly = true
-  sources = [ "traits_test_service.mojom" ]
+  sources = [ "traits_test_service.test-mojom" ]
 
   public_deps = [
     ":gpu_preferences_interface",
