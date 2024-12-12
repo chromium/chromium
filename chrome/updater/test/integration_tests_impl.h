@@ -416,7 +416,8 @@ void ExpectUpdateSequence(
     const base::Version& to_version,
     bool do_fault_injection,
     bool skip_download,
-    const base::Version& updater_version = base::Version(kUpdaterVersion));
+    const base::Version& updater_version = base::Version(kUpdaterVersion),
+    const std::string& event_regex = ".*");
 
 void ExpectUpdateSequenceBadHash(UpdaterScope scope,
                                  ScopedServer* test_server,
@@ -435,7 +436,8 @@ void ExpectInstallSequence(UpdaterScope scope,
                            const base::Version& to_version,
                            bool do_fault_injection,
                            bool skip_download,
-                           const base::Version& updater_version);
+                           const base::Version& updater_version,
+                           const std::string& event_regex);
 
 void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer* test_server);
 

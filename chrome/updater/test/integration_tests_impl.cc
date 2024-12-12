@@ -295,7 +295,8 @@ void ExpectUpdateSequence(
     const base::FilePath& crx_path,
     const std::string& run_action,
     const std::string& arguments,
-    const base::Version& updater_version = base::Version(kUpdaterVersion)) {
+    const base::Version& updater_version = base::Version(kUpdaterVersion),
+    const std::string& event_regex = ".*") {
   ASSERT_TRUE(base::PathExists(crx_path));
 
   // First request: update check.
@@ -344,6 +345,7 @@ void ExpectUpdateSequence(
                                R"("nextversion":"%s","previousversion":"%s".*)",
                                event_type, to_version.GetString().c_str(),
                                from_version.GetString().c_str())}),
+                           request::GetContentMatcher({event_regex}),
                            request::GetScopeMatcher(scope)},
                           ")]}'\n");
 }
@@ -1314,7 +1316,8 @@ void ExpectUpdateSequence(UpdaterScope scope,
                           const base::Version& to_version,
                           bool do_fault_injection,
                           bool skip_download,
-                          const base::Version& updater_version) {
+                          const base::Version& updater_version,
+                          const std::string& event_regex) {
   base::FilePath test_data_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
   base::FilePath crx_path = test_data_path.Append(FILE_PATH_LITERAL("updater"))
@@ -1322,7 +1325,8 @@ void ExpectUpdateSequence(UpdaterScope scope,
   ExpectUpdateSequence(scope, test_server, app_id, install_data_index, priority,
                        /*event_type=*/3, from_version, to_version,
                        do_fault_injection, skip_download, crx_path,
-                       kDoNothingCRXRun, /*arguments=*/{}, updater_version);
+                       kDoNothingCRXRun, /*arguments=*/{}, updater_version,
+                       event_regex);
 }
 
 void ExpectUpdateSequenceBadHash(UpdaterScope scope,
@@ -1385,7 +1389,8 @@ void ExpectInstallSequence(UpdaterScope scope,
                            const base::Version& to_version,
                            bool do_fault_injection,
                            bool skip_download,
-                           const base::Version& updater_version) {
+                           const base::Version& updater_version,
+                           const std::string& event_regex) {
   base::FilePath test_data_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
   base::FilePath crx_path = test_data_path.Append(FILE_PATH_LITERAL("updater"))
@@ -1393,7 +1398,8 @@ void ExpectInstallSequence(UpdaterScope scope,
   ExpectUpdateSequence(scope, test_server, app_id, install_data_index, priority,
                        /*event_type=*/2, from_version, to_version,
                        do_fault_injection, skip_download, crx_path,
-                       kDoNothingCRXRun, /*arguments=*/{}, updater_version);
+                       kDoNothingCRXRun, /*arguments=*/{}, updater_version,
+                       event_regex);
 }
 
 void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer* test_server) {

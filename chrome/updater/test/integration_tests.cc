@@ -578,10 +578,12 @@ class IntegrationTest : public ::testing::Test {
       const base::Version& to_version,
       bool do_fault_injection = false,
       bool skip_download = false,
-      const base::Version& updater_version = base::Version(kUpdaterVersion)) {
+      const base::Version& updater_version = base::Version(kUpdaterVersion),
+      const std::string& event_regex = ".*") {
     test_commands_->ExpectUpdateSequence(
         test_server, app_id, install_data_index, priority, from_version,
-        to_version, do_fault_injection, skip_download, updater_version);
+        to_version, do_fault_injection, skip_download, updater_version,
+        event_regex);
   }
 
   void ExpectUpdateSequenceBadHash(ScopedServer* test_server,
@@ -608,10 +610,12 @@ class IntegrationTest : public ::testing::Test {
       const base::Version& to_version,
       bool do_fault_injection = false,
       bool skip_download = false,
-      const base::Version& updater_version = base::Version(kUpdaterVersion)) {
+      const base::Version& updater_version = base::Version(kUpdaterVersion),
+      const std::string& event_regex = ".*") {
     test_commands_->ExpectInstallSequence(
         test_server, app_id, install_data_index, priority, from_version,
-        to_version, do_fault_injection, skip_download, updater_version);
+        to_version, do_fault_injection, skip_download, updater_version,
+        event_regex);
   }
 
   void StressUpdateService() { test_commands_->StressUpdateService(); }
@@ -1571,6 +1575,21 @@ TEST_F(IntegrationTest, SetTagRoundTrip) {
   ASSERT_NO_FATAL_FAILURE(SetAppTag("test", "abc"));
   ASSERT_NO_FATAL_FAILURE(ExpectAppTag("test", "abc"));
 
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, InstallId) {
+  ScopedServer test_server(test_commands_);
+  const std::string kAppId("test");
+  const base::Version v1("1");
+  ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
+      &test_server, kAppId, "", UpdateService::Priority::kForeground,
+      base::Version({0, 0, 0, 0}), v1, false, false,
+      base::Version(kUpdaterVersion), "\"iid\":\"my_install_id\""));
+  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+      kAppId, /*is_silent_install=*/true,
+      base::StrCat({"appguid=", kAppId, "&iid=my_install_id"})));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
@@ -3078,7 +3097,8 @@ class IntegrationTestUserInSystem : public IntegrationTest {
         to_version,
         /*do_fault_injection=*/false,
         /*skip_download=*/false,
-        /*updater_version=*/base::Version(kUpdaterVersion));
+        /*updater_version=*/base::Version(kUpdaterVersion),
+        /*event_regex=*/".*");
   }
 
   void InstallUserUpdaterAndApp(
