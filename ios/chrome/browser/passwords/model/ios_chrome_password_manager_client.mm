@@ -265,7 +265,7 @@ IOSChromePasswordManagerClient::GetStoreResultFilter() const {
   return &credentials_filter_;
 }
 
-autofill::LogManager* IOSChromePasswordManagerClient::GetLogManager() {
+autofill::LogManager* IOSChromePasswordManagerClient::GetCurrentLogManager() {
   return log_manager_.get();
 }
 

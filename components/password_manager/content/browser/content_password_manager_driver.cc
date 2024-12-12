@@ -130,7 +130,7 @@ ContentPasswordManagerDriver::ContentPasswordManagerDriver(
   // ContentPasswordManagerDriverFactory::RequestSendLoggingAvailability() will
   // call ContentPasswordManagerDriver::SendLoggingAvailability() on `this` to
   // do it actually.
-  if (autofill::LogManager* log_manager = client_->GetLogManager()) {
+  if (autofill::LogManager* log_manager = client_->GetCurrentLogManager()) {
     // RenderFrameHost might be a speculative one: it hasn't committed its
     // document. We don't know if its is safe to use the whole
     // PasswordAutofillAgent interface. For this reason, we use directly
@@ -355,7 +355,7 @@ ContentPasswordManagerDriver::GetPasswordAutofillManager() {
 
 void ContentPasswordManagerDriver::SendLoggingAvailability() {
   if (const auto& agent = GetPasswordAutofillAgent()) {
-    agent->SetLoggingState(client_->GetLogManager()->IsLoggingActive());
+    agent->SetLoggingState(client_->GetCurrentLogManager()->IsLoggingActive());
   }
 }
 
@@ -418,7 +418,7 @@ void ContentPasswordManagerDriver::PasswordFormsParsed(
 
   auto logger =
       std::make_unique<password_manager::BrowserSavePasswordProgressLogger>(
-          client_->GetLogManager());
+          client_->GetCurrentLogManager());
   std::vector<autofill::FormData> forms = raw_forms;
   for (auto& form : forms) {
     SetFrameAndFormMetaData(render_frame_host_, form);
@@ -531,7 +531,7 @@ void ContentPasswordManagerDriver::RecordSavePasswordProgress(
   // chrome://password-manager-internals based debugging.
   if (GetLastCommittedURL().SchemeIs(content::kChromeUIScheme))
     return;
-  LOG_AF(client_->GetLogManager())
+  LOG_AF(client_->GetCurrentLogManager())
       << autofill::Tag{"div"}
       << autofill::Attrib{"class", "preserve-white-space"} << log
       << autofill::CTag{"div"};

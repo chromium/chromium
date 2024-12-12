@@ -461,7 +461,7 @@ bool CreditCardSaveManager::IsCreditCardUploadEnabled() {
       client_->GetSyncService(), *client_->GetPrefs(),
       payments_data_manager().GetCountryCodeForExperimentGroup(),
       payments_data_manager().GetPaymentsSigninStateForMetrics(),
-      client_->GetLogManager());
+      client_->GetCurrentLogManager());
 }
 
 void CreditCardSaveManager::OnDidUploadCard(
@@ -1352,7 +1352,7 @@ void CreditCardSaveManager::LogCardUploadDecisions(
 
 void CreditCardSaveManager::LogCardUploadDecisionsToAutofillInternals(
     int upload_decision_metrics) {
-  LogManager* log_manager = client_->GetLogManager();
+  LogManager* log_manager = client_->GetCurrentLogManager();
 
   auto final_decision =
       (upload_decision_metrics_ & autofill_metrics::UPLOAD_OFFERED)

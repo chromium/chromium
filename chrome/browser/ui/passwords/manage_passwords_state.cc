@@ -368,9 +368,9 @@ bool ManagePasswordsState::AddForm(const PasswordForm& form) {
 
 void ManagePasswordsState::SetState(password_manager::ui::State state) {
   DCHECK(client_);
-  if (client_->GetLogManager()->IsLoggingActive()) {
+  if (client_->GetCurrentLogManager()->IsLoggingActive()) {
     password_manager::BrowserSavePasswordProgressLogger logger(
-        client_->GetLogManager());
+        client_->GetCurrentLogManager());
     logger.LogNumber(autofill::SavePasswordProgressLogger::STRING_NEW_UI_STATE,
                      state);
   }

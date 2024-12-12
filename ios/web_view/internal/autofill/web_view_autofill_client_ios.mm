@@ -298,7 +298,7 @@ bool WebViewAutofillClientIOS::IsLastQueriedField(FieldGlobalId field_id) {
   return [bridge_ isLastQueriedField:field_id];
 }
 
-LogManager* WebViewAutofillClientIOS::GetLogManager() const {
+LogManager* WebViewAutofillClientIOS::GetCurrentLogManager() {
   return log_manager_.get();
 }
 

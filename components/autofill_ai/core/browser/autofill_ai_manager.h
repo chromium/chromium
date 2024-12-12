@@ -196,7 +196,7 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   // expected to be called on field focus.
   void UpdateFieldFocusabilityInCache(const autofill::FormData& form);
 
-  autofill::LogManager* GetLogManager() const;
+  autofill::LogManager* GetCurrentLogManager();
 
   // Current state for retrieving predictions.
   PredictionRetrievalState prediction_retrieval_state_ =

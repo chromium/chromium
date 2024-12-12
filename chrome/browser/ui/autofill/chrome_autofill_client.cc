@@ -836,7 +836,7 @@ bool ChromeAutofillClient::IsContextSecure() const {
          security_level != security_state::DANGEROUS;
 }
 
-LogManager* ChromeAutofillClient::GetLogManager() const {
+LogManager* ChromeAutofillClient::GetCurrentLogManager() {
   return log_manager_.get();
 }
 

@@ -493,9 +493,14 @@ class AutofillClient {
   // If the context is secure.
   virtual bool IsContextSecure() const = 0;
 
-  // Returns a LogManager instance. May be null for platforms that don't support
-  // this.
-  virtual LogManager* GetLogManager() const;
+  // Returns a LogManager instance (for chrome://autofill-internals). Note that
+  // the return value may change over the lifetime of an AutofillClient from
+  // null to non-null, so callers should not store the result of this function,
+  // but call GetCurrentLogManager() again instead.
+  // - May return null if logging is disabled (but a non null return value does
+  // not guarantee that logging is enabled).
+  // - May return null for platforms that don't support this.
+  virtual LogManager* GetCurrentLogManager();
 
   virtual autofill_metrics::FormInteractionsUkmLogger&
   GetFormInteractionsUkmLogger() = 0;

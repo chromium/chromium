@@ -41,7 +41,7 @@ class PasswordReuseDetectionManagerClient {
   virtual void MaybeLogPasswordReuseDetectedEvent() = 0;
 
   // Returns a LogManager instance.
-  virtual autofill::LogManager* GetLogManager() = 0;
+  virtual autofill::LogManager* GetCurrentLogManager() = 0;
 
   // Returns the PasswordReuseManager associated with this instance.
   virtual password_manager::PasswordReuseManager* GetPasswordReuseManager()

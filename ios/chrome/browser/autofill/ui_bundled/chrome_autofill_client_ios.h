@@ -123,7 +123,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
                    bool is_refill) override;
   bool IsContextSecure() const override;
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
-  LogManager* GetLogManager() const override;
+  LogManager* GetCurrentLogManager() override;
   autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()
       override;
   const AutofillAblationStudy& GetAblationStudy() const override;

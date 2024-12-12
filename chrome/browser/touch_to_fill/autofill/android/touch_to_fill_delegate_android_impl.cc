@@ -176,7 +176,7 @@ bool TouchToFillDelegateAndroidImpl::IntendsToShowTouchToFill(
     FieldGlobalId field_id,
     const FormData& form) {
   TriggerOutcome outcome = DryRun(form_id, field_id, form).outcome;
-  LOG_AF(manager_->client().GetLogManager())
+  LOG_AF(manager_->client().GetCurrentLogManager())
       << LoggingScope::kTouchToFill << LogMessage::kTouchToFill
       << "dry run before parsing for form " << form_id << " and field "
       << field_id << " was " << (outcome == TriggerOutcome::kShown ? "" : "un")
@@ -228,7 +228,7 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
                                     dry_run.outcome);
     }
   }
-  LOG_AF(manager_->client().GetLogManager())
+  LOG_AF(manager_->client().GetCurrentLogManager())
       << LoggingScope::kTouchToFill << LogMessage::kTouchToFill
       << "dry run after parsing for form " << form.global_id() << " and field "
       << field.global_id() << " was "

@@ -351,7 +351,7 @@ class AutofillManager
   // Does not touch the LifecycleState, which is controlled by the caller.
   virtual void Reset();
 
-  LogManager* log_manager() { return client().GetLogManager(); }
+  LogManager* log_manager() { return client().GetCurrentLogManager(); }
 
   // Retrieves the page language from |client_|
   LanguageCode GetCurrentPageLanguage();

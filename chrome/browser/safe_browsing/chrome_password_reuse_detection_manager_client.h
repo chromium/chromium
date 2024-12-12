@@ -54,7 +54,7 @@ class ChromePasswordReuseDetectionManagerClient
 
   // PasswordReuseDetectionManagerClient implementation.
   void MaybeLogPasswordReuseDetectedEvent() override;
-  autofill::LogManager* GetLogManager() override;
+  autofill::LogManager* GetCurrentLogManager() override;
   password_manager::PasswordReuseManager* GetPasswordReuseManager()
       const override;
   bool IsHistorySyncAccountEmail(const std::string& username) override;

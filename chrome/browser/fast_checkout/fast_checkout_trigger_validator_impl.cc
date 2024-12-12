@@ -159,7 +159,7 @@ FastCheckoutTriggerValidatorImpl::HasValidPersonalData() const {
 
 void FastCheckoutTriggerValidatorImpl::LogAutofillInternals(
     std::string message) const {
-  LOG_AF(autofill_client_->GetLogManager())
+  LOG_AF(autofill_client_->GetCurrentLogManager())
       << autofill::LoggingScope::kFastCheckout
       << autofill::LogMessage::kFastCheckout << message;
 }

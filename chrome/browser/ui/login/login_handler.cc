@@ -112,10 +112,10 @@ void LoginHandler::SetAuth(const std::u16string& username,
   std::unique_ptr<password_manager::BrowserSavePasswordProgressLogger> logger;
   password_manager::PasswordManagerClient* client =
       GetPasswordManagerClientFromWebContent();
-  if (client && client->GetLogManager()->IsLoggingActive()) {
+  if (client && client->GetCurrentLogManager()->IsLoggingActive()) {
     logger =
         std::make_unique<password_manager::BrowserSavePasswordProgressLogger>(
-            client->GetLogManager());
+            client->GetCurrentLogManager());
     logger->LogMessage(
         autofill::SavePasswordProgressLogger::STRING_SET_AUTH_METHOD);
   }
@@ -383,9 +383,9 @@ void LoginHandler::ShowLoginPrompt(const GURL& request_url) {
 
   password_manager::PasswordManagerClient* client =
       GetPasswordManagerClientFromWebContent();
-  if (client && client->GetLogManager()->IsLoggingActive()) {
+  if (client && client->GetCurrentLogManager()->IsLoggingActive()) {
     password_manager::BrowserSavePasswordProgressLogger logger(
-        client->GetLogManager());
+        client->GetCurrentLogManager());
     logger.LogMessage(
         autofill::SavePasswordProgressLogger::STRING_SHOW_LOGIN_PROMPT_METHOD);
   }

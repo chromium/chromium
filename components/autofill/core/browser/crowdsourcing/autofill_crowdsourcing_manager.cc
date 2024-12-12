@@ -746,7 +746,7 @@ bool AutofillCrowdsourcingManager::StartQueryRequest(
 
   std::string query_data;
   if (CheckCacheForQueryRequest(queried_form_signatures, &query_data)) {
-    LOG_AF(client_->GetLogManager())
+    LOG_AF(client_->GetCurrentLogManager())
         << LoggingScope::kAutofillServer << LogMessage::kCachedAutofillQuery
         << Br{} << query;
     if (scoped_callback_runner) {
@@ -758,7 +758,7 @@ bool AutofillCrowdsourcingManager::StartQueryRequest(
     return true;
   }
 
-  LOG_AF(client_->GetLogManager())
+  LOG_AF(client_->GetCurrentLogManager())
       << LoggingScope::kAutofillServer << LogMessage::kSendAutofillQuery << Br{}
       << "Signatures: " << query;
   return StartRequest(FormRequestData{
@@ -814,7 +814,7 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
 
   // For debugging purposes, even throttled uploads are logged. If no log
   // manager is active, the function can exit early for throttled uploads.
-  LogManager* log_manager = client_->GetLogManager();
+  LogManager* log_manager = client_->GetCurrentLogManager();
   const bool needs_logging = log_manager && log_manager->IsLoggingActive();
   if (!needs_logging && !allow_upload)
     return false;

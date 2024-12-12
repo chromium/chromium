@@ -109,7 +109,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
       override;
   bool IsLastQueriedField(FieldGlobalId field_id) override;
 
-  LogManager* GetLogManager() const override;
+  LogManager* GetCurrentLogManager() override;
 
   void set_bridge(id<CWVAutofillClientIOSBridge> bridge);
 

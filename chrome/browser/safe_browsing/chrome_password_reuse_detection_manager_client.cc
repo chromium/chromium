@@ -183,7 +183,7 @@ void ChromePasswordReuseDetectionManagerClient::
 #endif  // BUILDFLAG(IS_ANDROID)
 
 autofill::LogManager*
-ChromePasswordReuseDetectionManagerClient::GetLogManager() {
+ChromePasswordReuseDetectionManagerClient::GetCurrentLogManager() {
   return log_manager_.get();
 }
 

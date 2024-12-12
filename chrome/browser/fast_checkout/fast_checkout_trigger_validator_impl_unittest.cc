@@ -35,7 +35,7 @@ class MockBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
 class MockAutofillClient : public autofill::TestContentAutofillClient {
  public:
   using autofill::TestContentAutofillClient::TestContentAutofillClient;
-  MOCK_METHOD(autofill::LogManager*, GetLogManager, (), (const override));
+  MOCK_METHOD(autofill::LogManager*, GetCurrentLogManager, (), (override));
   MOCK_METHOD(bool, IsContextSecure, (), (const override));
   MOCK_METHOD(GeoIpCountryCode,
               GetVariationConfigCountryCode,

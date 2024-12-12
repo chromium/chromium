@@ -160,7 +160,7 @@ GetSaveProgressLogger(password_manager::PasswordManagerClient* client) {
     return std::nullopt;
   }
 
-  autofill::LogManager* log_manager = client->GetLogManager();
+  autofill::LogManager* log_manager = client->GetCurrentLogManager();
   if (!log_manager || !log_manager->IsLoggingActive()) {
     return std::nullopt;
   }

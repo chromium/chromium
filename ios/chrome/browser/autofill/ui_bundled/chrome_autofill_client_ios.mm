@@ -406,7 +406,7 @@ ChromeAutofillClientIOS::GetCurrentFormInteractionsFlowId() {
   return {};
 }
 
-LogManager* ChromeAutofillClientIOS::GetLogManager() const {
+LogManager* ChromeAutofillClientIOS::GetCurrentLogManager() {
   return log_manager_.get();
 }
 

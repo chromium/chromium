@@ -88,7 +88,7 @@ void UpdateMetadataForUsage(PasswordForm* credential) {
 }
 
 bool IsLoggingActive(password_manager::PasswordManagerClient* client) {
-  autofill::LogManager* log_manager = client->GetLogManager();
+  autofill::LogManager* log_manager = client->GetCurrentLogManager();
   return log_manager && log_manager->IsLoggingActive();
 }
 

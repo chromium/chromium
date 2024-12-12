@@ -126,7 +126,7 @@ FastCheckoutClient* AutofillClient::GetFastCheckoutClient() {
   return nullptr;
 }
 
-LogManager* AutofillClient::GetLogManager() const {
+LogManager* AutofillClient::GetCurrentLogManager() {
   return nullptr;
 }
 

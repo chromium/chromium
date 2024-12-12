@@ -358,7 +358,7 @@ FormFiller::FormFiller(BrowserAutofillManager& manager) : manager_(manager) {}
 FormFiller::~FormFiller() = default;
 
 LogManager* FormFiller::log_manager() {
-  return manager_->client().GetLogManager();
+  return manager_->client().GetCurrentLogManager();
 }
 
 void FormFiller::Reset() {

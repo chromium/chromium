@@ -310,9 +310,9 @@ void AutofillAiManager::OnReceivedPredictions(
     const autofill::FormFieldData& trigger_field,
     AutofillAiModelExecutor::PredictionsOrError predictions_or_error,
     std::optional<std::string> model_execution_id) {
-  LOG_AF(GetLogManager()) << LoggingScope::kAutofillAi
-                          << LogMessage::kAutofillAi
-                          << "Received predictions:" <<
+  LOG_AF(GetCurrentLogManager())
+      << LoggingScope::kAutofillAi << LogMessage::kAutofillAi
+      << "Received predictions:" <<
       [&] {
         LogBuffer buffer;
         if (!predictions_or_error.has_value()) {
@@ -484,7 +484,7 @@ void AutofillAiManager::OnFormSeen(const autofill::FormStructure& form) {
           if (!manager) {
             return;
           }
-          LOG_AF(manager->GetLogManager())
+          LOG_AF(manager->GetCurrentLogManager())
               << LoggingScope::kAutofillAi << LogMessage::kAutofillAi
               << "Has data for " << form_id;
           if (has_data) {
@@ -541,7 +541,7 @@ void AutofillAiManager::MaybeImportForm(
         const bool autofill_ai_shows_bubble =
             self && form_annotation_response &&
             !form_annotation_response->to_be_upserted_entries.empty();
-        LOG_AF(self ? self->GetLogManager() : nullptr)
+        LOG_AF(self ? self->GetCurrentLogManager() : nullptr)
             << LoggingScope::kAutofillAi << LogMessage::kAutofillAi << "Form "
             << form->global_id() << " submission is "
             << (autofill_ai_shows_bubble ? "" : "not ")
@@ -567,26 +567,27 @@ void AutofillAiManager::MaybeImportForm(
   if (!client_->IsAutofillAiEnabledPref()) {
     // `autofill::prefs::kAutofillAiEnabled` is disabled.
     skip_import = true;
-    LOG_AF(GetLogManager()) << LoggingScope::kAutofillAi
-                            << LogMessage::kAutofillAi << "Pref is disabled";
+    LOG_AF(GetCurrentLogManager())
+        << LoggingScope::kAutofillAi << LogMessage::kAutofillAi
+        << "Pref is disabled";
   } else if (!annotation_service) {
     // The import is skipped because the annotation service is not available.
     skip_import = true;
-    LOG_AF(GetLogManager())
+    LOG_AF(GetCurrentLogManager())
         << LoggingScope::kAutofillAi << LogMessage::kAutofillAi
         << "Annotation service is not available";
   } else if (!annotation_service->ShouldAddFormSubmissionForURL(
                  form->source_url())) {
     // The import is disabled because the origin criteria is not fulfilled.
     skip_import = true;
-    LOG_AF(GetLogManager())
+    LOG_AF(GetCurrentLogManager())
         << LoggingScope::kAutofillAi << LogMessage::kAutofillAi << "Form "
         << form->global_id() << " is ineligible due to URL "
         << form->source_url();
   } else if (!IsFormEligibleForImportByFieldCriteria(*form.get())) {
     // The form does not contain enough values that can be imported.
     skip_import = true;
-    LOG_AF(GetLogManager())
+    LOG_AF(GetCurrentLogManager())
         << LoggingScope::kAutofillAi << LogMessage::kAutofillAi << "Form "
         << form->global_id() << " is ineligible due to field criteria.";
   }
@@ -640,7 +641,7 @@ void AutofillAiManager::HasDataStored(HasDataCallback callback) {
     user_annotations_service->RetrieveAllEntries(base::BindOnce(
         [](base::WeakPtr<AutofillAiManager> self, HasDataCallback callback,
            const user_annotations::UserAnnotationsEntries entries) {
-          LOG_AF(self ? self->GetLogManager() : nullptr)
+          LOG_AF(self ? self->GetCurrentLogManager() : nullptr)
               << LoggingScope::kAutofillAi << LogMessage::kAutofillAi
               << "Received user annotation entries:" << [&] {
                    LogBuffer buffer;
@@ -701,8 +702,8 @@ void AutofillAiManager::OnFailedToGenerateSuggestions() {
   }
 }
 
-autofill::LogManager* AutofillAiManager::GetLogManager() const {
-  return client_->GetAutofillClient().GetLogManager();
+autofill::LogManager* AutofillAiManager::GetCurrentLogManager() {
+  return client_->GetAutofillClient().GetCurrentLogManager();
 }
 
 base::WeakPtr<AutofillAiManager> AutofillAiManager::GetWeakPtr() {

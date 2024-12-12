@@ -593,7 +593,7 @@ bool VotesUploader::UploadPasswordVote(
       &form_structure, &available_field_types);
 
   if (password_manager_util::IsLoggingActive(client_)) {
-    BrowserSavePasswordProgressLogger logger(client_->GetLogManager());
+    BrowserSavePasswordProgressLogger logger(client_->GetCurrentLogManager());
     logger.LogFormStructure(Logger::STRING_PASSWORD_FORM_VOTE, form_structure,
                             password_attributes);
   }
@@ -647,7 +647,7 @@ void VotesUploader::UploadFirstLoginVotes(
       form_to_upload.username_element_renderer_id, &form_structure);
 
   if (password_manager_util::IsLoggingActive(client_)) {
-    BrowserSavePasswordProgressLogger logger(client_->GetLogManager());
+    BrowserSavePasswordProgressLogger logger(client_->GetCurrentLogManager());
     logger.LogFormStructure(Logger::STRING_FIRSTUSE_FORM_VOTE, form_structure,
                             std::nullopt);
   }
@@ -1169,7 +1169,7 @@ bool VotesUploader::MaybeSendSingleUsernameVote(
   // Upload a vote on the username form if available.
   if (!available_field_types.empty()) {
     if (password_manager_util::IsLoggingActive(client_)) {
-      BrowserSavePasswordProgressLogger logger(client_->GetLogManager());
+      BrowserSavePasswordProgressLogger logger(client_->GetCurrentLogManager());
       logger.LogFormStructure(Logger::STRING_USERNAME_FIRST_FLOW_VOTE,
                               *form_to_upload, std::nullopt);
     }

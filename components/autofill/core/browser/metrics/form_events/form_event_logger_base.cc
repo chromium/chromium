@@ -306,7 +306,7 @@ void FormEventLoggerBase::RecordFunnelMetrics() {
   if (!has_parsed_form_) {
     return;
   }
-  LogBuffer logs(IsLoggingActive(client().GetLogManager()));
+  LogBuffer logs(IsLoggingActive(client().GetCurrentLogManager()));
   for (std::string_view form_type : GetParsedFormTypesAsStringViews()) {
     LOG_AF(logs) << Tr{} << "Form Type: " << form_type;
   }
@@ -323,7 +323,7 @@ void FormEventLoggerBase::RecordFunnelMetrics() {
     RecordSubmissionAfterFill(logs);
   }
 
-  LOG_AF(client().GetLogManager())
+  LOG_AF(client().GetCurrentLogManager())
       << LoggingScope::kMetrics << LogMessage::kFunnelMetrics << Tag{"table"}
       << std::move(logs) << CTag{"table"};
 }
@@ -376,7 +376,7 @@ void FormEventLoggerBase::RecordKeyMetrics() {
     return;
   }
 
-  LogBuffer logs(IsLoggingActive(client().GetLogManager()));
+  LogBuffer logs(IsLoggingActive(client().GetCurrentLogManager()));
   for (std::string_view form_type : GetParsedFormTypesAsStringViews()) {
     LOG_AF(logs) << Tr{} << "Form Type: " << form_type;
   }
@@ -405,7 +405,7 @@ void FormEventLoggerBase::RecordKeyMetrics() {
     RecordFormSubmission(logs);
   }
 
-  LOG_AF(client().GetLogManager())
+  LOG_AF(client().GetCurrentLogManager())
       << LoggingScope::kMetrics << LogMessage::kKeyMetrics << Tag{"table"}
       << std::move(logs) << CTag{"table"};
 }

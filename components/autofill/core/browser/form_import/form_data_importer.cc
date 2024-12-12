@@ -340,7 +340,7 @@ size_t FormDataImporter::ExtractAddressProfiles(
     std::vector<FormDataImporter::AddressProfileImportCandidate>*
         address_profile_import_candidates) {
   // Create a buffer to collect logging output for the autofill-internals.
-  LogManager* log_manager = client_->GetLogManager();
+  LogManager* log_manager = client_->GetCurrentLogManager();
   LogBuffer import_log_buffer(IsLoggingActive(log_manager));
   LOG_AF(import_log_buffer) << LoggingScope::kAddressProfileFormImport;
   // Print the full form into the logging scope.

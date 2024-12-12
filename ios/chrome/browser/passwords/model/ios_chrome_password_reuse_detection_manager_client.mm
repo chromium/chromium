@@ -58,7 +58,7 @@ const GURL& IOSChromePasswordReuseDetectionManagerClient::GetLastCommittedURL()
 }
 
 autofill::LogManager*
-IOSChromePasswordReuseDetectionManagerClient::GetLogManager() {
+IOSChromePasswordReuseDetectionManagerClient::GetCurrentLogManager() {
   return log_manager_.get();
 }
 

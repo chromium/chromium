@@ -111,7 +111,7 @@ class TestAutofillClientTemplate : public T {
     if (!crowdsourcing_manager_) {
       crowdsourcing_manager_ =
           std::make_unique<testing::NiceMock<MockAutofillCrowdsourcingManager>>(
-              this, GetLogManager());
+              this, GetCurrentLogManager());
     }
     return *crowdsourcing_manager_;
   }
@@ -352,7 +352,7 @@ class TestAutofillClientTemplate : public T {
     return last_committed_primary_main_frame_url_.SchemeIs("https");
   }
 
-  LogManager* GetLogManager() const override { return log_manager_.get(); }
+  LogManager* GetCurrentLogManager() override { return log_manager_.get(); }
 
   autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()
       override {
