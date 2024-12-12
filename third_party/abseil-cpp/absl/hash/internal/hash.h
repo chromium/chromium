@@ -339,7 +339,7 @@ struct is_uniquely_represented<
 template <>
 struct is_uniquely_represented<bool> : std::false_type {};
 
-#if ABSL_HAVE_INTRINSIC_INT128
+#ifdef ABSL_HAVE_INTRINSIC_INT128
 // Specialize the trait for GNU extension types.
 template <>
 struct is_uniquely_represented<__int128> : std::true_type {};

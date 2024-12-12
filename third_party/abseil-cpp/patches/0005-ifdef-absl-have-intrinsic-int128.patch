@@ -1,0 +1,20 @@
+diff --git a/native_client b/native_client
+index 6944e6b79dbd1..f9cb132c419b9 160000
+--- a/native_client
++++ b/native_client
+@@ -1 +1 @@
+-Subproject commit 6944e6b79dbd1b9776681c025bd4f4c281bb4791
++Subproject commit f9cb132c419b9e019853103e88c518026b9f5083
+diff --git a/third_party/abseil-cpp/absl/hash/internal/hash.h b/third_party/abseil-cpp/absl/hash/internal/hash.h
+index b4006b2b8940e..93fefde1ae7dc 100644
+--- a/third_party/abseil-cpp/absl/hash/internal/hash.h
++++ b/third_party/abseil-cpp/absl/hash/internal/hash.h
+@@ -339,7 +339,7 @@ struct is_uniquely_represented<
+ template <>
+ struct is_uniquely_represented<bool> : std::false_type {};
+ 
+-#if ABSL_HAVE_INTRINSIC_INT128
++#ifdef ABSL_HAVE_INTRINSIC_INT128
+ // Specialize the trait for GNU extension types.
+ template <>
+ struct is_uniquely_represented<__int128> : std::true_type {};
