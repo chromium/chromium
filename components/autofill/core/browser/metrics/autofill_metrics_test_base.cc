@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager_test_api.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
+#include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
@@ -165,6 +166,22 @@ void AutofillMetricsBaseTest::OnDidGetRealPan(
     payments::PaymentsAutofillClient::PaymentsRpcResult result,
     const std::string& real_pan,
     bool is_virtual_card) {
+  // FPAN risk-based authentication is implemented in some platforms. If
+  // risk-based authentication is available, simulate a CVC authentication
+  // challenge is required.
+  if (autofill_manager()
+          .GetCreditCardAccessManager()
+          .IsMaskedServerCardRiskBasedAuthAvailable()) {
+    autofill_manager()
+        .GetCreditCardAccessManager()
+        .OnRiskBasedAuthenticationResponseReceived(
+            CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
+                .with_result(CreditCardRiskBasedAuthenticator::
+                                 RiskBasedAuthenticationResponse::Result::
+                                     kAuthenticationRequired)
+                .with_context_token("fake context token"));
+  }
+
   payments::FullCardRequest* full_card_request =
       autofill_manager()
           .client()
