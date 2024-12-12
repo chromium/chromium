@@ -940,6 +940,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.Shared.GroupDeleted" enum="Boolean"
+    expires_after="2025-05-25">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    [ All platforms ] Tracks the number of times a shared tab group was deleted.
+
+    Recorded when a shared tab group is deleted.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Shared.LastTabClosed" enum="Boolean"
+    expires_after="2025-05-25">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    [ All platforms ] Tracks the number of times the last tab was closed in a
+    shared tab group.
+
+    Recorded when the last tab is closed in a shared tab group.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.Shared.LoadFromDiskResult"
     enum="SharedTabGroupDataLoadFromDiskResult" expires_after="2025-10-10">
   <owner>rushans@google.com</owner>
@@ -969,6 +992,41 @@ chromium-metrics-reviews@google.com.
     [ Desktop ] Tracks the type of recall action a user explicitly performs on a
     shared tab group such as closing a group but not deleting it, or opening a
     group from the bookmarks bar. Recorded when a user triggers a recall action.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Shared.TabGroupAge" units="minutes"
+    expires_after="2025-05-25">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    [ All platforms ] Tracks the age of a SavedTabGroup (since creation).
+    Recorded once per group on startup 10 seconds after TabGroupSyncService
+    initialization.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Shared.TotalTabGroupCount" units="groups"
+    expires_after="2025-05-25">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    [ All platforms ] Tracks the number of total shared tab groups on startup
+    which includes both open and closed tab groups.
+
+    Recorded on startup 10 seconds after TabGroupSyncService initialization.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Shared.TotalTabGroupTabCount" units="tabs"
+    expires_after="2025-05-25">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    [ All platforms ] Tracks the number of tabs in a shared tab group.
+
+    Recorded once per group on startup 10 seconds after TabGroupSyncService
+    initialization.
   </summary>
 </histogram>
 
@@ -1409,11 +1467,10 @@ chromium-metrics-reviews@google.com.
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
-    Tracks the number of total tab groups on startup which includes both open
-    and closed tab groups.
+    [ All platforms ] Tracks the number of total tab groups on startup which
+    includes both open and closed tab groups.
 
     Recorded on startup 10 seconds after TabGroupSyncService initialization.
-    Android and iOS only.
   </summary>
 </histogram>
 

@@ -41,6 +41,10 @@ void RecordGroupDeletedMetric(const SavedTabGroup& removed_group) {
 
   base::RecordAction(
       base::UserMetricsAction("TabGroups_SavedTabGroups_Deleted"));
+
+  if (removed_group.is_shared_tab_group()) {
+    base::UmaHistogramBoolean("TabGroups.Shared.GroupDeleted", true);
+  }
 }
 
 // Compare function for 2 SavedTabGroup.
@@ -421,6 +425,7 @@ void SavedTabGroupModel::RemoveTabFromGroupLocally(const base::Uuid& group_id,
 
   // Remove the group from the model if the last tab will be removed from it.
   if (group.saved_tabs().size() == 1) {
+    base::UmaHistogramBoolean("TabGroups.Shared.LastTabClosed", true);
     RemovedLocally(group_id);
     return;
   }
