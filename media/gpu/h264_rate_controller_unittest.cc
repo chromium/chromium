@@ -49,7 +49,6 @@ class H264RateControllerTest : public testing::Test {
         VideoEncodeAccelerator::Config::ContentType::kCamera;
     rate_controller_settings_.frame_size.SetSize(kCommonFrameWidth,
                                                  kCommonFrameHeight);
-    rate_controller_settings_.fixed_delta_qp = false;
     rate_controller_settings_.num_temporal_layers = 1;
     rate_controller_settings_.gop_max_duration = kCommonGopMaxDuration;
     rate_controller_settings_.frame_rate_max = kCommonFpsMax;
@@ -492,7 +491,7 @@ TEST_F(H264RateControllerTest,
 
   rate_controller_settings_.content_type =
       VideoEncodeAccelerator::Config::ContentType::kDisplay;
-  rate_controller_settings_.fixed_delta_qp = true;
+  rate_controller_settings_.fixed_delta_qp = 0;
   rate_controller_settings_.num_temporal_layers = 2;
   rate_controller_settings_.layer_settings[0].avg_bitrate =
       kCommonAvgBitrate * 2 / 3;

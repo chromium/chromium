@@ -18,9 +18,6 @@ namespace {
 // Base temporal layer index.
 constexpr size_t kBaseLayerIndex = 0;
 
-// Delta QP between layers in Fixed Delta QP mode. It is arbitrary chosen value.
-constexpr int kFixedLayerDeltaQP = 4;
-
 // Maximum FPS used in the tradeoff calculation between FPS and maximum QP.
 constexpr float kFpsMax = 60;
 
@@ -403,11 +400,12 @@ void H264RateController::EstimateInterFrameQP(size_t temporal_id,
   // statistical model is employed for QP estimation.
   if (fixed_delta_qp_ && temporal_id > kBaseLayerIndex &&
       !curr_layer.is_buffer_full()) {
-    int delta_qp = kFixedLayerDeltaQP;
+    int delta_qp = fixed_delta_qp_.value();
     // delta_qp is reduced if the QP estimation for the last base layer frame is
     // lower than the minimum QP.
     if (base_layer.undershoot_delta_qp() > 0) {
-      delta_qp = std::max(delta_qp - base_layer.undershoot_delta_qp(), 0);
+      delta_qp = std::max(
+          fixed_delta_qp_.value() - base_layer.undershoot_delta_qp(), 0);
     }
     curr_layer.update_curr_frame_qp(base_layer.curr_frame_qp() + delta_qp);
     return;
@@ -852,12 +850,13 @@ uint32_t H264RateController::ClipInterFrameQP(uint32_t curr_qp,
   } else if (num_temporal_layers_ > 1 && temporal_id == kBaseLayerIndex) {
     if (temporal_layers_[kBaseLayerIndex + 1]->curr_frame_qp() >
         temporal_layers_[kBaseLayerIndex]->curr_frame_qp() +
-            kFixedLayerDeltaQP) {
-      // Delta QP more than 4 means enhancement layer QP has been raised due to
-      // HRD overflow. Make sure the following base layer QP follows.
+            fixed_delta_qp_.value_or(0)) {
+      // Delta QP greater than `fixed_delta_qp_` const means enhancement layer
+      // QP has been raised due to HRD overflow. Make sure the following base
+      // layer QP follows.
       min_qp = std::max(min_qp,
                         temporal_layers_[kBaseLayerIndex + 1]->curr_frame_qp() -
-                            kFixedLayerDeltaQP);
+                            fixed_delta_qp_.value_or(0));
     }
   }
 

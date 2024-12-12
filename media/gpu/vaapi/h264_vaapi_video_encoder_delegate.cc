@@ -219,7 +219,6 @@ std::optional<H264RateControlConfigRTC> CreateRateControlConfig(
   rc_cfg.num_temporal_layers = num_temporal_layers;
   // Type of the video content (camera or display).
   rc_cfg.content_type = encode_params.content_type;
-  rc_cfg.fixed_delta_qp = false;
   rc_cfg.ease_hrd_reduction = true;
 
   // Fill temporal layers variables.
