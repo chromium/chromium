@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <array>
+
 // This file contains intentional memory errors, some of which may lead to
 // crashes if the test is ran without special memory testing tools. We use these
 // errors to verify the sanity of the tools.
@@ -234,7 +236,7 @@ TEST(ToolsSanityTest, DISABLED_AddressSanitizerLocalOOBCrashTest) {
   // Intentionally crash to make sure AddressSanitizer is instrumenting
   // the local variables.
   // This test should not be ran on bots.
-  int array[5];
+  std::array<int, 5> array;
   // Work around the OOB warning reported by Clang.
   int* volatile access = &array[5];
   *access = 43;

@@ -9,6 +9,7 @@
 
 #include "base/profiler/stack_copier.h"
 
+#include <array>
 #include <cstring>
 #include <iterator>
 #include <memory>
@@ -53,8 +54,8 @@ union alignas(StackBuffer::kPlatformStackAlignment) TestStackBuffer {
 }  // namespace
 
 TEST(StackCopierTest, RewritePointerIfInOriginalStack_InStack) {
-  uintptr_t original_stack[4];
-  uintptr_t stack_copy[4];
+  std::array<uintptr_t, 4> original_stack;
+  std::array<uintptr_t, 4> stack_copy;
   EXPECT_EQ(reinterpret_cast<uintptr_t>(&stack_copy[2]),
             CopyFunctions::RewritePointerIfInOriginalStack(
                 reinterpret_cast<uint8_t*>(&original_stack[0]),
@@ -67,8 +68,8 @@ TEST(StackCopierTest, RewritePointerIfInOriginalStack_NotInStack) {
   // We use this variable only for its address, which is outside of
   // original_stack.
   uintptr_t non_stack_location;
-  uintptr_t original_stack[4];
-  uintptr_t stack_copy[4];
+  std::array<uintptr_t, 4> original_stack;
+  std::array<uintptr_t, 4> stack_copy;
 
   EXPECT_EQ(reinterpret_cast<uintptr_t>(&non_stack_location),
             CopyFunctions::RewritePointerIfInOriginalStack(

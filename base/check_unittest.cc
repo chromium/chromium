@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -257,7 +258,7 @@ TEST(CheckDeathTest, CheckOpStrings) {
 }
 
 TEST(CheckDeathTest, CheckOpPointers) {
-  uint8_t arr[] = {3, 2, 1, 0};
+  auto arr = std::to_array<uint8_t>({3, 2, 1, 0});
   uint8_t* arr_start = &arr[0];
   // Print pointers and not the binary data in `arr`.
 #if BUILDFLAG(IS_WIN)

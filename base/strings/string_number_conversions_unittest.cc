@@ -15,6 +15,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include <array>
 #include <cmath>
 #include <limits>
 #include <string_view>
@@ -702,12 +703,13 @@ TEST(StringNumberConversionsTest, HexStringToUInt64) {
 
 // Tests for HexStringToBytes, HexStringToString, HexStringToSpan.
 TEST(StringNumberConversionsTest, HexStringToBytesStringSpan) {
-  static const struct {
+  struct Cases {
     const std::string input;
     const char* output;
     size_t output_len;
     bool success;
-  } cases[] = {
+  };
+  static const auto cases = std::to_array<Cases>({
       {"0", "", 0, false},  // odd number of characters fails
       {"00", "\0", 1, true},
       {"42", "\x42", 1, true},
@@ -725,7 +727,7 @@ TEST(StringNumberConversionsTest, HexStringToBytesStringSpan) {
       {"0123456789ABCDEF", "\x01\x23\x45\x67\x89\xAB\xCD\xEF", 8, true},
       {"0123456789ABCDEF012345", "\x01\x23\x45\x67\x89\xAB\xCD\xEF\x01\x23\x45",
        11, true},
-  };
+  });
 
   for (size_t test_i = 0; test_i < std::size(cases); ++test_i) {
     const auto& test = cases[test_i];
@@ -790,11 +792,12 @@ TEST(StringNumberConversionsTest, HexStringToBytesStringSpan) {
 }
 
 TEST(StringNumberConversionsTest, StringToDouble) {
-  static const struct {
+  struct Cases {
     std::string input;
     double output;
     bool success;
-  } cases[] = {
+  };
+  static const auto cases = std::to_array<Cases>({
       // Test different forms of zero.
       {"0", 0.0, true},
       {"+0", 0.0, true},
@@ -868,7 +871,7 @@ TEST(StringNumberConversionsTest, StringToDouble) {
       // crbug.org/588726
       {"-0.0010000000000000000000000000000000000000001e-256",
        -1.0000000000000001e-259, true},
-  };
+  });
 
   for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(
@@ -947,8 +950,16 @@ TEST(StringNumberConversionsTest, HexEncode) {
   EXPECT_EQ(HexEncode(base::span<uint8_t>()), "");
   EXPECT_EQ(HexEncode(std::string()), "");
 
-  const uint8_t kBytes[] = {0x01, 0xff, 0x02, 0xfe, 0x03, 0x80, 0x81};
-  EXPECT_EQ(HexEncode(kBytes, sizeof(kBytes)), "01FF02FE038081");
+  const auto kBytes = std::to_array<uint8_t>({
+      0x01,
+      0xff,
+      0x02,
+      0xfe,
+      0x03,
+      0x80,
+      0x81,
+  });
+  EXPECT_EQ(HexEncode(kBytes.data(), sizeof(kBytes)), "01FF02FE038081");
   EXPECT_EQ(HexEncode(kBytes), "01FF02FE038081");  // Implicit span conversion.
 
   const std::string kString = "\x01\xff";

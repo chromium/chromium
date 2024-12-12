@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/i18n/string_search.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
 #include <vector>
 
@@ -355,7 +351,7 @@ TEST(StringSearchTest, RepeatingStringSearch) {
 
   // Case sensitive.
   {
-    const MatchResult kExpectation[] = {{16, 3}};
+    const auto kExpectation = std::to_array<MatchResult>({{16, 3}});
 
     RepeatingStringSearch searcher(kPattern, kTarget, /*case_sensitive=*/true);
     std::vector<MatchResult> results;
@@ -375,7 +371,7 @@ TEST(StringSearchTest, RepeatingStringSearch) {
 
   // Case insensitive.
   {
-    const MatchResult kExpectation[] = {{16, 3}, {41, 3}};
+    const auto kExpectation = std::to_array<MatchResult>({{16, 3}, {41, 3}});
 
     RepeatingStringSearch searcher(kPattern, kTarget, /*case_sensitive=*/false);
     std::vector<MatchResult> results;

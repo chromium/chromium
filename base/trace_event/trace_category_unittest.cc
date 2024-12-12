@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
+#include "base/trace_event/trace_category.h"
 
 #include <string.h>
 
+#include <array>
 #include <memory>
 
 #include "base/containers/span.h"
@@ -18,7 +16,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "base/trace_event/category_registry.h"
-#include "base/trace_event/trace_category.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -133,7 +130,7 @@ TEST_F(TraceCategoryTest, Basic) {
 // simultaneously. Should never end up with distinct entries with the same name.
 TEST_F(TraceCategoryTest, ThreadRaces) {
   const int kNumThreads = 32;
-  std::unique_ptr<Thread> threads[kNumThreads];
+  std::array<std::unique_ptr<Thread>, kNumThreads> threads;
   for (int i = 0; i < kNumThreads; i++) {
     threads[i] = std::make_unique<Thread>("test thread");
     threads[i]->Start();

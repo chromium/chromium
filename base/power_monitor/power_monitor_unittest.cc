@@ -4,6 +4,7 @@
 
 #include "base/power_monitor/power_monitor.h"
 
+#include <array>
 #include <optional>
 
 #include "base/test/power_monitor_test.h"
@@ -40,7 +41,7 @@ TEST_F(PowerMonitorTest, PowerNotifications) {
 
   PowerMonitorInitialize();
 
-  PowerMonitorTestObserver observers[kObservers];
+  std::array<PowerMonitorTestObserver, kObservers> observers;
   auto* power_monitor = PowerMonitor::GetInstance();
   for (auto& index : observers) {
     power_monitor->AddPowerSuspendObserver(&index);

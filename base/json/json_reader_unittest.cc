@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <cmath>
 #include <string_view>
 #include <utility>
@@ -827,9 +828,14 @@ TEST_P(JSONReaderTest, StringOptimizations) {
 // parser implementation against buffer overflow. Best run with DCHECKs so
 // that the one in NextChar fires.
 TEST_P(JSONReaderTest, InvalidSanity) {
-  const char* const kInvalidJson[] = {
-      "/* test *", "{\"foo\"", "{\"foo\":", "  [", "\"\\u123g\"", "{\n\"eh:\n}",
-  };
+  const auto kInvalidJson = std::to_array<const char*>({
+      "/* test *",
+      "{\"foo\"",
+      "{\"foo\":",
+      "  [",
+      "\"\\u123g\"",
+      "{\n\"eh:\n}",
+  });
 
   for (size_t i = 0; i < std::size(kInvalidJson); ++i) {
     LOG(INFO) << "Sanity test " << i << ": <" << kInvalidJson[i] << ">";
@@ -840,8 +846,8 @@ TEST_P(JSONReaderTest, InvalidSanity) {
 }
 
 TEST_P(JSONReaderTest, IllegalTrailingNull) {
-  const char json[] = {'"', 'n', 'u', 'l', 'l', '"', '\0'};
-  std::string json_string(json, sizeof(json));
+  const auto json = std::to_array<char>({'"', 'n', 'u', 'l', 'l', '"', '\0'});
+  std::string json_string(json.data(), sizeof(json));
   auto root = JSONReader::ReadAndReturnValueWithError(json_string);
   EXPECT_FALSE(root.has_value());
   EXPECT_NE("", root.error().message);
@@ -995,11 +1001,12 @@ TEST_P(JSONReaderTest, InvalidUTF16HighSurrogatesAndEscapes) {
 }
 
 TEST_P(JSONReaderTest, ParseNumberErrors) {
-  const struct {
+  struct Cases {
     const char* input;
     bool parse_success;
     double value;
-  } kCases[] = {
+  };
+  const auto kCases = std::to_array<Cases>({
       // clang-format off
       {"1", true, 1},
       {"2.", false, 0},
@@ -1011,7 +1018,7 @@ TEST_P(JSONReaderTest, ParseNumberErrors) {
       {"2e+", false, 0},
       {"2e+2", true, 200},
       // clang-format on
-  };
+  });
 
   for (unsigned int i = 0; i < std::size(kCases); ++i) {
     auto test_case = kCases[i];
@@ -1033,7 +1040,7 @@ TEST_P(JSONReaderTest, ParseNumberErrors) {
 }
 
 TEST_P(JSONReaderTest, UnterminatedInputs) {
-  const char* const kCases[] = {
+  const auto kCases = std::to_array<const char*>({
       // clang-format off
       "/",
       "//",
@@ -1052,7 +1059,7 @@ TEST_P(JSONReaderTest, UnterminatedInputs) {
       "\"\\",
       "\"\\/",
       // clang-format on
-  };
+  });
 
   for (unsigned int i = 0; i < std::size(kCases); ++i) {
     auto* test_case = kCases[i];
@@ -1067,11 +1074,12 @@ TEST_P(JSONReaderTest, UnterminatedInputs) {
 }
 
 TEST_P(JSONReaderTest, LineColumnCounting) {
-  const struct {
+  struct Cases {
     const char* input;
     int error_line;
     int error_column;
-  } kCases[] = {
+  };
+  const auto kCases = std::to_array<Cases>({
       // For all but the "q_is_not_etc" case, the error (indicated by ^ in the
       // comments) is seeing a digit when expecting ',' or ']'.
       {
@@ -1125,7 +1133,7 @@ TEST_P(JSONReaderTest, LineColumnCounting) {
           2,
           4,
       },
-  };
+  });
 
   for (unsigned int i = 0; i < std::size(kCases); ++i) {
     auto test_case = kCases[i];
@@ -1142,18 +1150,19 @@ TEST_P(JSONReaderTest, LineColumnCounting) {
 TEST_P(JSONReaderTest, ChromiumExtensions) {
   // All of these cases should parse with JSON_PARSE_CHROMIUM_EXTENSIONS but
   // fail with JSON_PARSE_RFC.
-  const struct {
+  struct Cases {
     // The JSON input.
     const char* input;
     // What JSON_* option permits this extension.
     int option;
-  } kCases[] = {
+  };
+  const auto kCases = std::to_array<Cases>({
       {"{ /* comment */ \"foo\": 3 }", JSON_ALLOW_COMMENTS},
       {"{ // comment\n \"foo\": 3 }", JSON_ALLOW_COMMENTS},
       {"[\"\\xAB\"]", JSON_ALLOW_X_ESCAPES},
       {"[\"\n\"]", JSON_ALLOW_NEWLINES_IN_STRINGS},
       {"[\"\r\"]", JSON_ALLOW_NEWLINES_IN_STRINGS},
-  };
+  });
 
   for (size_t i = 0; i < std::size(kCases); ++i) {
     SCOPED_TRACE(testing::Message() << "case " << i);

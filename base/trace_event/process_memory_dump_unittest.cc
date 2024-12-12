@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -322,7 +323,7 @@ TEST(ProcessMemoryDumpTest, Suballocations) {
 
   // Finally check that AddSuballocation() has created also the
   // edges between the pictures and the anonymous allocator child dumps.
-  bool found_edge[2]{false, false};
+  std::array<bool, 2> found_edge = {false, false};
   for (const auto& e : pmd->allocator_dumps_edges()) {
     found_edge[0] |= (e.first == pic1_dump->guid() &&
                       e.second.target == anon_node_1_it->second->guid());

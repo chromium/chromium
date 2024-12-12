@@ -14,6 +14,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <cstdlib>
 #include <limits>
 #include <map>
@@ -47,7 +48,6 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
 #include "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"  // nogncheck
 
 namespace base::trace_event {
@@ -1197,8 +1197,8 @@ TEST_F(TraceEventTestFixture, DataCapturedManyThreads) {
 
   const int num_threads = 4;
   const int num_events = 4000;
-  Thread* threads[num_threads];
-  WaitableEvent* task_complete_events[num_threads];
+  std::array<Thread*, num_threads> threads;
+  std::array<WaitableEvent*, num_threads> task_complete_events;
   for (int i = 0; i < num_threads; i++) {
     threads[i] = new Thread(StringPrintf("Thread %d", i));
     task_complete_events[i] =

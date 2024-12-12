@@ -9,6 +9,8 @@
 
 #include "base/threading/thread_local_storage.h"
 
+#include <array>
+
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/threading/simple_thread.h"
@@ -289,9 +291,9 @@ TEST(ThreadLocalStorageTest, MAYBE_TLSDestructors) {
   // threads that set the TLS, while the destructor cleans it up.
   // After the threads finish, verify that the value is cleaned up.
   const int kNumThreads = 5;
-  int values[kNumThreads];
-  ThreadLocalStorageRunner* thread_delegates[kNumThreads];
-  DelegateSimpleThread* threads[kNumThreads];
+  std::array<int, kNumThreads> values;
+  std::array<ThreadLocalStorageRunner*, kNumThreads> thread_delegates;
+  std::array<DelegateSimpleThread*, kNumThreads> threads;
 
   // Spawn the threads.
   for (int index = 0; index < kNumThreads; index++) {

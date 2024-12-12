@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <cstdlib>
 #include <memory>
 #include <set>
@@ -665,7 +666,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, StopSafely) {
 
   WithTargetThread(
       BindLambdaForTesting([](SamplingProfilerThreadToken target_thread_token) {
-        SamplingParams params[2];
+        std::array<SamplingParams, 2> params;
 
         // Providing an initial delay makes it more likely that both will be
         // scheduled before either starts to run. Once started, samples will
@@ -679,7 +680,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, StopSafely) {
         params[1].sampling_interval = Milliseconds(1);
         params[1].samples_per_profile = 100000;
 
-        SampleRecordedCounter samples_recorded[std::size(params)];
+        std::array<SampleRecordedCounter, std::size(params)> samples_recorded;
         ModuleCache module_cache1, module_cache2;
         TestProfilerInfo profiler_info0(target_thread_token, params[0],
                                         &module_cache1, &samples_recorded[0]);

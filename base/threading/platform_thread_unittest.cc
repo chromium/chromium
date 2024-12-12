@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/threading/platform_thread.h"
 
 #include <stddef.h>
+
+#include <array>
 
 #include "base/compiler_specific.h"
 #include "base/process/process.h"
@@ -81,8 +78,8 @@ TEST(PlatformThreadTest, TrivialJoin) {
 }
 
 TEST(PlatformThreadTest, TrivialJoinTimesTen) {
-  TrivialThread thread[10];
-  PlatformThreadHandle handle[std::size(thread)];
+  std::array<TrivialThread, 10> thread;
+  std::array<PlatformThreadHandle, std::size(thread)> handle;
 
   for (auto& n : thread)
     ASSERT_FALSE(n.run_event().IsSignaled());
@@ -108,8 +105,8 @@ TEST(PlatformThreadTest, TrivialDetach) {
 }
 
 TEST(PlatformThreadTest, TrivialDetachTimesTen) {
-  TrivialThread thread[10];
-  PlatformThreadHandle handle[std::size(thread)];
+  std::array<TrivialThread, 10> thread;
+  std::array<PlatformThreadHandle, std::size(thread)> handle;
 
   for (auto& n : thread)
     ASSERT_FALSE(n.run_event().IsSignaled());
@@ -216,8 +213,8 @@ TEST(PlatformThreadTest, Function) {
 TEST(PlatformThreadTest, FunctionTimesTen) {
   PlatformThreadId main_thread_id = PlatformThread::CurrentId();
 
-  FunctionTestThread thread[10];
-  PlatformThreadHandle handle[std::size(thread)];
+  std::array<FunctionTestThread, 10> thread;
+  std::array<PlatformThreadHandle, std::size(thread)> handle;
 
   for (const auto& n : thread)
     ASSERT_FALSE(n.IsRunning());

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/task/sequence_manager/work_queue_sets.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 
@@ -406,14 +402,14 @@ TEST_F(WorkQueueSetsTest, CollectSkippedOverLowerPriorityTasks) {
 TEST_F(WorkQueueSetsTest, CompareDelayedTasksWithSameEnqueueOrder) {
   constexpr int kNumQueues = 3;
 
-  WorkQueue* queues[kNumQueues] = {
+  std::array<WorkQueue*, kNumQueues> queues = {
       NewTaskQueue("queue0", WorkQueue::QueueType::kDelayed),
       NewTaskQueue("queue1", WorkQueue::QueueType::kDelayed),
       NewTaskQueue("queue2", WorkQueue::QueueType::kDelayed),
   };
 
   const EnqueueOrder kEnqueueOrder = EnqueueOrder::FromIntForTesting(5);
-  TaskOrder task_orders[kNumQueues] = {
+  std::array<TaskOrder, kNumQueues> task_orders = {
       TaskOrder::CreateForTesting(kEnqueueOrder, TimeTicks() + Seconds(1),
                                   /*sequence_num=*/4),
       TaskOrder::CreateForTesting(kEnqueueOrder, TimeTicks() + Seconds(2),
@@ -439,7 +435,7 @@ TEST_F(WorkQueueSetsTest, CompareDelayedTasksWithSameEnqueueOrder) {
 TEST_F(WorkQueueSetsTest, CompareDelayedTasksWithSameEnqueueOrderAndRunTime) {
   constexpr int kNumQueues = 3;
 
-  WorkQueue* queues[kNumQueues] = {
+  std::array<WorkQueue*, kNumQueues> queues = {
       NewTaskQueue("queue0", WorkQueue::QueueType::kDelayed),
       NewTaskQueue("queue1", WorkQueue::QueueType::kDelayed),
       NewTaskQueue("queue2", WorkQueue::QueueType::kDelayed),
@@ -447,7 +443,7 @@ TEST_F(WorkQueueSetsTest, CompareDelayedTasksWithSameEnqueueOrderAndRunTime) {
 
   const EnqueueOrder kEnqueueOrder = EnqueueOrder::FromIntForTesting(5);
   constexpr TimeTicks delayed_run_time = TimeTicks() + Seconds(1);
-  TaskOrder task_orders[kNumQueues] = {
+  std::array<TaskOrder, kNumQueues> task_orders = {
       TaskOrder::CreateForTesting(kEnqueueOrder, delayed_run_time,
                                   /*sequence_num=*/2),
       TaskOrder::CreateForTesting(kEnqueueOrder, delayed_run_time,
@@ -472,7 +468,7 @@ TEST_F(WorkQueueSetsTest, CompareDelayedTasksWithSameEnqueueOrderAndRunTime) {
 
 TEST_F(WorkQueueSetsTest, CompareDelayedAndImmediateTasks) {
   constexpr int kNumQueues = 5;
-  WorkQueue* queues[kNumQueues] = {
+  std::array<WorkQueue*, kNumQueues> queues = {
       NewTaskQueue("queue0", WorkQueue::QueueType::kImmediate),
       NewTaskQueue("queue1", WorkQueue::QueueType::kDelayed),
       NewTaskQueue("queue2", WorkQueue::QueueType::kDelayed),
@@ -481,7 +477,7 @@ TEST_F(WorkQueueSetsTest, CompareDelayedAndImmediateTasks) {
   };
 
   // TaskOrders in increasing order.
-  TaskOrder task_orders[kNumQueues] = {
+  std::array<TaskOrder, kNumQueues> task_orders = {
       // Immediate.
       TaskOrder::CreateForTesting(EnqueueOrder::FromIntForTesting(10),
                                   TimeTicks(),

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/task/post_job.h"
 
+#include <array>
 #include <atomic>
 #include <iterator>
 #include <numeric>
@@ -71,7 +67,7 @@ TEST(PostJobTest, TaskIds) {
   static constexpr size_t kNumTasksToRun = 1000;
   base::test::TaskEnvironment task_environment;
 
-  size_t concurrent_array[kNumConcurrentThreads] = {};
+  std::array<size_t, kNumConcurrentThreads> concurrent_array = {};
   std::atomic_size_t remaining_tasks{kNumTasksToRun};
   base::JobHandle handle = base::PostJob(
       FROM_HERE, {}, BindLambdaForTesting([&](base::JobDelegate* job) {

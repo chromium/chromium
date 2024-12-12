@@ -598,7 +598,7 @@ TEST_F(ThreadControllerWithMessagePumpTest, PrioritizeYieldingToNative) {
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
         clock_.Advance(Seconds(5));
-        MockCallback<OnceClosure> tasks[5];
+        std::array<MockCallback<OnceClosure>, 5> tasks;
 
         // A: Post 5 application tasks, 4 immediate 1 delayed.
         // B: Run one of them (enter active)
@@ -1168,7 +1168,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
-        MockCallback<OnceClosure> tasks[5];
+        std::array<MockCallback<OnceClosure>, 5> tasks;
 
         // A: Post 2 tasks
         // B: Run one of them (enter active)
@@ -1317,7 +1317,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
-        MockCallback<OnceClosure> tasks[2];
+        std::array<MockCallback<OnceClosure>, 2> tasks;
         size_t run_level_depth = delegate->RunDepth();
 
         // A: Post 2 application tasks
@@ -1435,7 +1435,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
-        MockCallback<OnceClosure> tasks[2];
+        std::array<MockCallback<OnceClosure>, 2> tasks;
 
         // A: Post 2 application tasks
         // B: Run one of them (enter active)
@@ -1519,7 +1519,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
-        MockCallback<OnceClosure> tasks[2];
+        std::array<MockCallback<OnceClosure>, 2> tasks;
         size_t run_level_depth = delegate->RunDepth();
 
         // A: Post 2 application tasks
@@ -1612,7 +1612,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
-        MockCallback<OnceClosure> tasks[2];
+        std::array<MockCallback<OnceClosure>, 2> tasks;
         size_t run_level_depth = delegate->RunDepth();
 
         // A: Post 1 application task
@@ -1821,7 +1821,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
-        MockCallback<OnceClosure> tasks[2];
+        std::array<MockCallback<OnceClosure>, 2> tasks;
 
         // A: Post 2 application tasks
         // B: Run the first task

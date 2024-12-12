@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <string_view>
 #include <utility>
 
@@ -349,7 +350,7 @@ TEST_F(FileProxyTest, WriteAndFlush) {
   EXPECT_EQ(File::FILE_OK, error_);
 
   // Verify the written data.
-  char read_buffer[10];
+  std::array<char, 10> read_buffer;
   EXPECT_GE(std::size(read_buffer), write_span.size());
   EXPECT_EQ(write_span.size(), base::ReadFile(TestPath(), read_buffer));
   for (size_t i = 0; i < write_span.size(); ++i) {
@@ -415,7 +416,7 @@ TEST_F(FileProxyTest, SetLength_Shrink) {
   GetFileInfo(TestPath(), &info);
   ASSERT_EQ(7, info.size);
 
-  char buffer[7];
+  std::array<char, 7> buffer;
   EXPECT_EQ(7, base::ReadFile(TestPath(), buffer));
   int i = 0;
   for (; i < 7; ++i)
@@ -443,7 +444,7 @@ TEST_F(FileProxyTest, SetLength_Expand) {
   GetFileInfo(TestPath(), &info);
   ASSERT_EQ(53, info.size);
 
-  char buffer[53];
+  std::array<char, 53> buffer;
   EXPECT_EQ(53, base::ReadFile(TestPath(), buffer));
   int i = 0;
   for (; i < 10; ++i)

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/task/thread_pool/task_source_sort_key.h"
 
+#include <array>
 #include <iterator>
 
 #include "base/task/task_traits.h"
@@ -21,7 +17,7 @@ namespace internal {
 namespace {
 
 // Keys are manually ordered from the least important to the most important.
-const TaskSourceSortKey kTestKeys[] = {
+const auto kTestKeys = std::to_array<TaskSourceSortKey>({
     {TaskPriority::BEST_EFFORT, TimeTicks() + Seconds(2000)},
     {TaskPriority::BEST_EFFORT, TimeTicks() + Seconds(1000)},
     {TaskPriority::USER_VISIBLE, TimeTicks() + Seconds(2000), 1},
@@ -30,7 +26,7 @@ const TaskSourceSortKey kTestKeys[] = {
     {TaskPriority::USER_VISIBLE, TimeTicks() + Seconds(1000)},
     {TaskPriority::USER_BLOCKING, TimeTicks() + Seconds(2000)},
     {TaskPriority::USER_BLOCKING, TimeTicks() + Seconds(1000)},
-};
+});
 
 }  // namespace
 

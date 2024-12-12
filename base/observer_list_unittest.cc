@@ -4,6 +4,7 @@
 
 #include "base/observer_list.h"
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -1035,7 +1036,7 @@ TEST_F(CheckedObserverListTest, MultiObserver) {
 
   ObserverList<UncheckedBase>::Unchecked unsafe_list;
 
-  int counts[2] = {};
+  std::array<int, 2> counts = {};
 
   auto multi_observer = std::make_unique<MultiObserver>(&counts[0], &counts[1]);
   two_list.AddObserver(multi_observer.get());

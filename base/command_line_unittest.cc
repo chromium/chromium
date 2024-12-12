@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -563,10 +564,11 @@ TEST(CommandLineTest, Move) {
       "bbbbbbbbb",
       "c",
   };
-  static constexpr CommandLine::StringViewType kArgs[] = {
-      FILE_PATH_LITERAL("beebop"),
-      FILE_PATH_LITERAL("alouie"),
-  };
+  constexpr static const auto kArgs =
+      std::to_array<CommandLine::StringViewType>({
+          FILE_PATH_LITERAL("beebop"),
+          FILE_PATH_LITERAL("alouie"),
+      });
   CommandLine initial(CommandLine::NO_PROGRAM);
   for (auto a_switch : kSwitches) {
     initial.AppendSwitch(a_switch);
