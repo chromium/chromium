@@ -50,7 +50,6 @@ static_library("assistant") {
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/assistant/public/proto",
     "//chromeos/ash/services/bluetooth_config/public/mojom",
-    "//chromeos/crosapi/cpp",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//components/language/core/browser",

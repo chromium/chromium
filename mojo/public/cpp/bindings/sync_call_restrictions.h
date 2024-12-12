@@ -21,16 +21,11 @@ class CastCdmOriginProvider;
 
 namespace content {
 class AndroidOverlaySyncHelper;
-class DesktopCapturerLacros;
 class StreamTextureFactory;
 #if BUILDFLAG(IS_WIN)
 class DCOMPTextureFactory;
 #endif
 }  // namespace content
-
-namespace crosapi {
-class ScopedAllowSyncCall;
-}  // namespace crosapi
 
 namespace gpu {
 class CommandBufferProxyImpl;
@@ -112,10 +107,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   // BEGIN ALLOWED USAGE.
   // SynchronousCompositorHost is used for Android webview.
   friend class content::SynchronousCompositorHost;
-  // Lacros-chrome is allowed to make sync calls to ash-chrome to mimic
-  // cross-platform sync APIs.
-  friend class content::DesktopCapturerLacros;
-  friend class crosapi::ScopedAllowSyncCall;
   friend class mojo::ScopedAllowSyncCallForTesting;
   friend class viz::GpuHostImpl;
   // For destroying the GL context/surface that draw to a platform window before

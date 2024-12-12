@@ -461,10 +461,7 @@ static_library("safe_browsing") {
         deps += [ "//chromeos/lacros:lacros" ]
       }
       if (is_chromeos) {
-        deps += [
-          "//chromeos/components/mgs:mgs",
-          "//chromeos/crosapi/cpp:cpp",
-        ]
+        deps += [ "//chromeos/components/mgs:mgs" ]
       }
       if (!is_android) {
         deps += [ "//chrome/browser/ui:browser_list" ]

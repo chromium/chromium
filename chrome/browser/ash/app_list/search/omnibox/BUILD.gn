@@ -38,7 +38,6 @@ static_library("omnibox") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//chromeos/ash/components/string_matching",
-    "//chromeos/crosapi/cpp",
     "//chromeos/crosapi/mojom",
     "//components/bookmarks/browser",
     "//components/favicon/core",

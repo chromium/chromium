@@ -138,7 +138,6 @@ static_library("exo") {
     "//base",
     "//cc",
     "//cc/mojo_embedder:mojo_embedder",
-    "//chromeos/crosapi/cpp:crosapi_constants",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/ui/base",

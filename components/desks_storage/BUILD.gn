@@ -34,7 +34,6 @@ static_library("desks_storage") {
   deps = [
     "//ash/public/cpp",
     "//base",
-    "//chromeos/crosapi/cpp",
     "//components/account_id",
     "//components/app_constants",
     "//components/app_restore",
