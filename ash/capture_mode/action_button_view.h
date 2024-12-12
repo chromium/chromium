@@ -47,8 +47,6 @@ class ASH_EXPORT ActionButtonView : public views::Button {
   // views::Button:
   void AddedToWidget() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  void OnThemeChanged() override;
-  void OnEnabledChanged() override;
 
   // Collapses the action button, hiding its label so that only the icon
   // shows.
@@ -58,19 +56,12 @@ class ASH_EXPORT ActionButtonView : public views::Button {
   const views::Label* label_for_testing() const { return label_; }
 
  private:
-  // Sets the color of the background and label, and sets a new icon based on
-  // the enabled state.
-  void UpdateColorsAndIcon();
-
   // Rank used to determine ordering of action buttons.
   const ActionButtonRank rank_;
 
   std::unique_ptr<SystemShadow> shadow_;
 
   raw_ptr<views::BoxLayout> box_layout_ = nullptr;
-
-  // The icon to display in the image view.
-  const raw_ptr<const gfx::VectorIcon> icon_;
 
   // The image view for the action button icon.
   raw_ptr<views::ImageView> image_view_ = nullptr;

@@ -16,7 +16,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -61,26 +60,27 @@ ActionButtonView::ActionButtonView(views::Button::PressedCallback callback,
       // nine patch layer for the shadow. We have to use the
       // `ShadowOnTextureLayer`. For more info, see https://crbug.com/1308800.
       shadow_(SystemShadow::CreateShadowOnTextureLayer(
-          SystemShadow::Type::kElevation12)),
-      icon_(icon) {
+          SystemShadow::Type::kElevation12)) {
   box_layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kFullActionButtonInsets,
       kActionButtonIconLabelSpacing));
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemBaseElevated, kActionButtonRadius));
   shadow_->SetRoundedCornerRadius(kActionButtonRadius);
   capture_mode_util::SetHighlightBorder(
       this, kActionButtonRadius,
       views::HighlightBorder::Type::kHighlightBorderNoShadow);
 
-  // An image will be set in `UpdateColorsAndIcon`.
-  image_view_ = AddChildView(std::make_unique<views::ImageView>());
+  image_view_ = AddChildView(
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          *icon, kColorAshButtonIconColor, kActionButtonIconSize)));
   label_ = AddChildView(std::make_unique<views::Label>(text));
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *label_);
 
   SetAccessibleName(text);
-  UpdateColorsAndIcon();
 }
 
 ActionButtonView::~ActionButtonView() = default;
@@ -111,36 +111,6 @@ void ActionButtonView::CollapseToIconButton() {
   }
   label_->SetVisible(false);
   box_layout_->set_inside_border_insets(kCollapsedActionButtonInsets);
-}
-
-void ActionButtonView::OnThemeChanged() {
-  views::Button::OnThemeChanged();
-  UpdateColorsAndIcon();
-}
-
-void ActionButtonView::OnEnabledChanged() {
-  views::Button::OnEnabledChanged();
-  UpdateColorsAndIcon();
-}
-
-void ActionButtonView::UpdateColorsAndIcon() {
-  // See `PillButton::UpdateBackgroundColor`.
-  const ui::ColorId background_color =
-      GetEnabled() ? cros_tokens::kCrosSysSystemBaseElevated
-                   : cros_tokens::kCrosSysDisabledContainer;
-  SetBackground(views::CreateThemedRoundedRectBackground(background_color,
-                                                         kActionButtonRadius));
-
-  // See `PillButton::UpdateTextColor` and `PillButton::UpdateIconColor`.
-  // Both return the same colors.
-  const ui::ColorId label_and_icon_color = GetEnabled()
-                                               ? cros_tokens::kCrosSysOnSurface
-                                               : cros_tokens::kCrosSysDisabled;
-  label_->SetEnabledColorId(label_and_icon_color);
-  label_->SetBackgroundColor(background_color);
-
-  image_view_->SetImage(ui::ImageModel::FromVectorIcon(
-      *icon_, label_and_icon_color, kActionButtonIconSize));
 }
 
 BEGIN_METADATA(ActionButtonView)
