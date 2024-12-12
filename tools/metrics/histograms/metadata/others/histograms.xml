@@ -6811,6 +6811,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OSCrypt.AppBound.ReEncrypt.ResultCode" enum="Hresult"
+    expires_after="2025-05-11">
+  <owner>wfh@chromium.org</owner>
+  <owner>nparker@chromium.org</owner>
+  <summary>
+    The result code of the application-bound re-encrypt operation. This is
+    logged after a re-encryption attempt is made for decrypted data if
+    application-bound encryption signals that a re-encryption is required, for
+    supported Windows installs.
+  </summary>
+</histogram>
+
+<histogram name="OSCrypt.AppBound.ReEncrypt.ResultLastError"
+    enum="WinGetLastError" expires_after="2025-05-11">
+  <owner>wfh@chromium.org</owner>
+  <owner>nparker@chromium.org</owner>
+  <summary>
+    The GetLastError code for a failed application-bound re-encrypt operation.
+    This is logged after a re-encryption attempt is made for decrypted data if
+    application-bound encryption signals that a re-encryption is required, only
+    if the call to re-encrypt fails, for supported Windows installs.
+  </summary>
+</histogram>
+
 <histogram name="OSCrypt.AppBoundEncryption.SupportLevel"
     enum="AppBoundEncryptionSupportLevel" expires_after="2025-04-13">
   <owner>wfh@chromium.org</owner>

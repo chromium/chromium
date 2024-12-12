@@ -5,6 +5,7 @@
 #include "chrome/browser/os_crypt/app_bound_encryption_win.h"
 
 #include <optional>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/containers/span.h"
@@ -19,12 +20,15 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process_info.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
 #include "chrome/browser/os_crypt/test_support.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,7 +42,13 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/mock_pref_change_callback.h"
+#include "components/prefs/pref_store.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
+
+using testing::_;
 
 namespace os_crypt {
 
@@ -94,16 +104,12 @@ class AppBoundEncryptionWinTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
-  void TearDown() override {
-    InProcessBrowserTest::TearDown();
-  }
-
   base::HistogramTester histogram_tester_;
+  std::optional<base::ScopedClosureRunner> maybe_uninstall_service_;
+  ScopedLogGrabber log_grabber_;
 
  private:
-  ScopedLogGrabber log_grabber_;
   install_static::ScopedInstallDetails scoped_install_details_;
-  std::optional<base::ScopedClosureRunner> maybe_uninstall_service_;
 };
 
 // Test App-Bound is supported for tests.
@@ -126,8 +132,11 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, EncryptDecrypt) {
   ASSERT_HRESULT_SUCCEEDED(hr);
 
   std::string returned_plaintext;
-  hr = DecryptAppBoundString(ciphertext, returned_plaintext, last_error);
-
+  std::optional<std::string> maybe_new_ciphertext;
+  hr = DecryptAppBoundString(ciphertext, returned_plaintext,
+                             ProtectionLevel::PROTECTION_PATH_VALIDATION,
+                             maybe_new_ciphertext, last_error);
+  EXPECT_FALSE(maybe_new_ciphertext);
   ASSERT_HRESULT_SUCCEEDED(hr);
   EXPECT_EQ(plaintext, returned_plaintext);
 }
@@ -138,8 +147,12 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, EncryptDecryptInvalid) {
   std::string ciphertext("invalidciphertext");
   std::string returned_plaintext;
   DWORD last_error = 0;
+  std::optional<std::string> maybe_new_ciphertext;
   const HRESULT hr =
-      DecryptAppBoundString(ciphertext, returned_plaintext, last_error);
+      DecryptAppBoundString(ciphertext, returned_plaintext,
+                            ProtectionLevel::PROTECTION_PATH_VALIDATION,
+                            maybe_new_ciphertext, last_error);
+  EXPECT_FALSE(maybe_new_ciphertext);
   EXPECT_EQ(elevation_service::Elevator::kErrorCouldNotDecryptWithSystemContext,
             hr);
 }
@@ -349,13 +362,163 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         /*policy::key::kApplicationBoundEncryptionEnabled=*/std::nullopt));
 
+class AppBoundEncryptionWinReencryptTest
+    : public AppBoundEncryptionWinTest,
+      public ::testing::WithParamInterface<
+          std::tuple</*fake_reencrypt*/ bool, /*enable_feature*/ bool>> {
+ public:
+  AppBoundEncryptionWinReencryptTest() {
+    feature_list_.InitWithFeatureState(features::kAppBoundDataReencrypt,
+                                       std::get<1>(GetParam()));
+  }
+
+ protected:
+  // Re-encrypt should only happen if both the feature is enabled, and the
+  // service is faking the re-encryption signal.
+  static bool ExpectReencrypt() {
+    return std::get<0>(GetParam()) && std::get<1>(GetParam());
+  }
+  void SetUp() override {
+    if (base::GetCurrentProcessIntegrityLevel() != base::HIGH_INTEGRITY) {
+      GTEST_SKIP() << "Elevation is required for this test.";
+    }
+    maybe_uninstall_service_ =
+        InstallService(log_grabber_, std::get<0>(GetParam()));
+    EXPECT_TRUE(maybe_uninstall_service_.has_value());
+    // Note do not call SetUp from AppBoundEncryptionWinTest, call to
+    // InProcessBrowserTest.
+    InProcessBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test the basic interface to Encrypt and Decrypt data.
+IN_PROC_BROWSER_TEST_P(AppBoundEncryptionWinReencryptTest, EncryptDecrypt) {
+  ASSERT_TRUE(install_static::IsSystemInstall());
+  const std::string plaintext("plaintext");
+  std::string ciphertext;
+  DWORD last_error;
+  base::HistogramTester histograms;
+  HRESULT hr =
+      EncryptAppBoundString(ProtectionLevel::PROTECTION_PATH_VALIDATION,
+                            plaintext, ciphertext, last_error);
+
+  ASSERT_HRESULT_SUCCEEDED(hr);
+
+  std::string returned_plaintext;
+  std::optional<std::string> maybe_new_ciphertext;
+  hr = DecryptAppBoundString(ciphertext, returned_plaintext,
+                             ProtectionLevel::PROTECTION_PATH_VALIDATION,
+                             maybe_new_ciphertext, last_error);
+  ASSERT_HRESULT_SUCCEEDED(hr);
+  EXPECT_EQ(plaintext, returned_plaintext);
+
+  if (ExpectReencrypt()) {
+    histograms.ExpectUniqueSample("OSCrypt.AppBound.ReEncrypt.ResultCode", S_OK,
+                                  1u);
+    ASSERT_TRUE(maybe_new_ciphertext);
+
+    std::optional<std::string> even_newer_ciphertext;
+    // Verify that the new replacement ciphertext returned can still be
+    // decrypted.
+    hr = DecryptAppBoundString(*maybe_new_ciphertext, returned_plaintext,
+                               ProtectionLevel::PROTECTION_PATH_VALIDATION,
+                               even_newer_ciphertext, last_error);
+    ASSERT_HRESULT_SUCCEEDED(hr);
+    EXPECT_EQ(plaintext, returned_plaintext);
+  } else {
+    histograms.ExpectTotalCount("OSCrypt.AppBound.ReEncrypt.ResultCode", 0);
+    ASSERT_FALSE(maybe_new_ciphertext);
+  }
+  histograms.ExpectTotalCount("OSCrypt.AppBound.ReEncrypt.ResultLastError", 0);
+}
+
+// This could be a unit test, but it needs the service installed to work, so
+// makes sense for it to be here alongside the other app-bound encryption tests.
+IN_PROC_BROWSER_TEST_P(AppBoundEncryptionWinReencryptTest, KeyProviderTest) {
+  const char* kPrefName = "os_crypt.app_bound_encrypted_key";
+  ASSERT_TRUE(install_static::IsSystemInstall());
+
+  TestingPrefServiceSimple prefs;
+  MockPrefChangeCallback observer(&prefs);
+  PrefChangeRegistrar registrar;
+  registrar.Init(&prefs);
+  registrar.Add(kPrefName, observer.GetCallback());
+  // The first time the GetKey is called, the provider should generate a random
+  // key, encrypt it with app-bound, then persist the encrypted key to store.
+  EXPECT_CALL(observer, OnPreferenceChanged(_)).Times(1);
+
+  os_crypt_async::AppBoundEncryptionProviderWin::RegisterLocalPrefs(
+      prefs.registry());
+
+  // `Key` has no public constructor and is move-only so use a std::optional as
+  // a handy container.
+  std::optional<os_crypt_async::Encryptor::Key> encryption_key;
+  std::string encrypted_key;
+  {
+    os_crypt_async::AppBoundEncryptionProviderWin provider(
+        &prefs, /*use_for_encryption=*/true);
+    base::test::TestFuture<const std::string&,
+                           std::optional<os_crypt_async::Encryptor::Key>>
+        future;
+    provider.GetKey(future.GetCallback());
+    auto [tag, key] = future.Take();
+    EXPECT_EQ(tag, "v20");
+    ASSERT_TRUE(key);
+    encryption_key.emplace(std::move(*key));
+    encrypted_key = prefs.GetString(kPrefName);
+    EXPECT_FALSE(encrypted_key.empty());
+  }
+  ::testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // The second time the GetKey is called, the provider should retrieve the key
+  // from store then perform a decryption via app-bound. If re-encryption is
+  // specified then a re-encryption call is made and a second write should
+  // happen to the store with the new encrypted key.
+  EXPECT_CALL(observer, OnPreferenceChanged(_))
+      .Times(ExpectReencrypt() ? 1 : 0);
+  {
+    os_crypt_async::AppBoundEncryptionProviderWin provider(
+        &prefs, /*use_for_encryption=*/true);
+    base::test::TestFuture<const std::string&,
+                           std::optional<os_crypt_async::Encryptor::Key>>
+        future;
+    provider.GetKey(future.GetCallback());
+    const auto& [_, key] = future.Get();
+    ASSERT_TRUE(key);
+    // The key returned should be the same as it's been decrypted from the
+    // store, regardless of whether it's been re-encrypted or not.
+    EXPECT_EQ(*key, *encryption_key);
+
+    if (ExpectReencrypt()) {
+      // Re-encryption should always change the encrypted value, because the
+      // underlying encryption schemes use random IVs, nonces or salts.
+      EXPECT_NE(prefs.GetString(kPrefName), encrypted_key);
+    } else {
+      EXPECT_EQ(prefs.GetString(kPrefName), encrypted_key);
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AppBoundEncryptionWinReencryptTest,
+    ::testing::Combine(::testing::Bool(), ::testing::Bool()),
+    [](const auto& info) {
+      return base::StrCat(
+          {std::get<0>(info.param) ? "FakeReencrypt" : "NoFakeReencrypt",
+           std::get<1>(info.param) ? "FeatureOn" : "FeatureOff"});
+    });
+
 class AppBoundEncryptionWinTestFeatureMaybeDisabled
     : public AppBoundEncryptionWinTest,
       public ::testing::WithParamInterface</*feature enabled*/ bool> {
  public:
   AppBoundEncryptionWinTestFeatureMaybeDisabled() {
     feature_list_.InitWithFeatureState(
-        features::kUseAppBoundEncryptionProviderForEncryption, GetParam());
+        ::features::kUseAppBoundEncryptionProviderForEncryption, GetParam());
   }
 
  private:

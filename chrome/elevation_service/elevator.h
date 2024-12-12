@@ -25,6 +25,8 @@ constexpr IID kTestElevatorClsid = {
 
 namespace switches {
 constexpr char kElevatorClsIdForTestingSwitch[] = "elevator-clsid-for-testing";
+constexpr char kFakeReencryptForTestingSwitch[] =
+    "elevator-fake-reencrypt-for-testing";
 }  // namespace switches
 
 class Elevator
@@ -37,6 +39,7 @@ class Elevator
           IElevatorChromeDev,
           IElevatorChromeCanary> {
  public:
+  // Failure codes.
   static constexpr HRESULT kErrorCouldNotObtainCallingProcess =
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA001);
   static constexpr HRESULT kErrorCouldNotGenerateValidationData =
@@ -57,6 +60,10 @@ class Elevator
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA009);
   static constexpr HRESULT kErrorUnsupportedProtectionLevel =
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA00A);
+
+  // Success codes.
+  static constexpr HRESULT kSuccessShouldReencrypt =
+      MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_ITF, 0xA001);
 
   Elevator() = default;
 

@@ -11,8 +11,10 @@
 #include <userenv.h>
 #include <wrl/client.h>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/win/com_init_util.h"
@@ -21,6 +23,7 @@
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
+#include "chrome/elevation_service/elevator.h"
 #include "chrome/install_static/install_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
@@ -30,6 +33,12 @@ namespace os_crypt {
 namespace {
 bool g_non_standard_user_data_dir_supported_for_testing = false;
 }
+
+namespace features {
+BASE_FEATURE(kAppBoundDataReencrypt,
+             "kAppBoundDataReencrypt",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace features
 
 SupportLevel GetAppBoundEncryptionSupportLevel(PrefService* local_state) {
   // Must be a system install.
@@ -157,6 +166,8 @@ HRESULT EncryptAppBoundString(ProtectionLevel protection_level,
 
 HRESULT DecryptAppBoundString(const std::string& ciphertext,
                               std::string& plaintext,
+                              ProtectionLevel protection_level,
+                              std::optional<std::string>& new_ciphertext,
                               DWORD& last_error) {
   DCHECK(!ciphertext.empty());
   base::win::AssertComInitialized();
@@ -185,6 +196,27 @@ HRESULT DecryptAppBoundString(const std::string& ciphertext,
                              &last_error);
   if (FAILED(hr)) {
     return hr;
+  }
+
+  new_ciphertext = std::nullopt;
+
+  if (base::FeatureList::IsEnabled(features::kAppBoundDataReencrypt) &&
+      hr == elevation_service::Elevator::kSuccessShouldReencrypt) {
+    DWORD encrypt_last_error;
+    base::win::ScopedBstr reencrypted_data;
+    HRESULT encrypt_hr =
+        elevator->EncryptData(protection_level, plaintext_data.Get(),
+                              reencrypted_data.Receive(), &encrypt_last_error);
+    base::UmaHistogramSparse("OSCrypt.AppBound.ReEncrypt.ResultCode",
+                             encrypt_hr);
+    if (SUCCEEDED(encrypt_hr)) {
+      new_ciphertext.emplace(
+          reinterpret_cast<std::string::value_type*>(reencrypted_data.Get()),
+          reencrypted_data.ByteLength());
+    } else {
+      base::UmaHistogramSparse("OSCrypt.AppBound.ReEncrypt.ResultLastError",
+                               encrypt_last_error);
+    }
   }
 
   plaintext.assign(
