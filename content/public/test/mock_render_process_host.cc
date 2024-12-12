@@ -19,7 +19,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
@@ -596,13 +595,13 @@ void MockRenderProcessHost::WriteIntoTrace(
   proto->set_id(GetDeprecatedID());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void MockRenderProcessHost::ReinitializeLogging(
     uint32_t logging_dest,
     base::ScopedFD log_file_descriptor) {
   NOTIMPLEMENTED();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 uint64_t MockRenderProcessHost::GetPrivateMemoryFootprint() {
   return 0;

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//content/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -575,7 +574,6 @@ source_set("browser_sources") {
     "//ui/base/mojom:ui_base_types",
   ]
   deps = [
-    "//build:chromeos_buildflags",
     "//cc",
     "//components/input",
     "//components/language_detection/content/browser",
@@ -700,10 +698,13 @@ source_set("browser_sources") {
 
   if (is_chromeos) {
     sources += [
+      "chromeos/delegate_to_browser_gpu_service_accelerator_factory.h",
       "chromeos/multi_capture_service.cc",
       "chromeos/multi_capture_service.h",
       "lock_screen_storage.h",
       "smart_card_delegate.h",
+      "tts_controller_delegate.cc",
+      "tts_controller_delegate.h",
     ]
   }
 
@@ -716,14 +717,6 @@ source_set("browser_sources") {
       "authenticator_request_client_delegate.cc",
       "authenticator_request_client_delegate.h",
       "web_authentication_request_proxy.h",
-    ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [
-      "chromeos/delegate_to_browser_gpu_service_accelerator_factory.h",
-      "tts_controller_delegate.cc",
-      "tts_controller_delegate.h",
     ]
   }
 
@@ -744,10 +737,6 @@ source_set("browser_sources") {
 
   if (use_clang_profiling_inside_sandbox) {
     sources += [ "profiling_utils.h" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup" ]
   }
 
   if (enable_video_effects) {

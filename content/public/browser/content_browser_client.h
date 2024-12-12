@@ -26,7 +26,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "components/browsing_topics/common/common_types.h"
 #include "components/download/public/common/quarantine_connection.h"
 #include "components/file_access/scoped_file_access.h"
@@ -291,12 +290,9 @@ struct SocketPermissionRequest;
 class TtsEnvironmentAndroid;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class TtsControllerDelegate;
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 class SmartCardDelegate;
+class TtsControllerDelegate;
 #endif
 
 // Embedder API (or SPI) for participating in browser logic, to be implemented
@@ -1359,7 +1355,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual SpeechRecognitionManagerDelegate*
   CreateSpeechRecognitionManagerDelegate();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Allows the embedder to return a delegate for the TtsController.
   virtual TtsControllerDelegate* GetTtsControllerDelegate();
 #endif
@@ -1712,14 +1708,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       int child_process_id,
       content::PosixFileDescriptorInfo* mappings) {}
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Populates |mappings| with all files that need to be mapped before launching
-  // a Zygote process.
-  virtual void GetAdditionalMappedFilesForZygote(
-      base::CommandLine* command_line,
-      content::PosixFileDescriptorInfo* mappings) {}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_WIN)
   // Defines flags that can be passed to PreSpawnChild.

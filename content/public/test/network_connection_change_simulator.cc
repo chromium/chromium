@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
 #include "mojo/public/cpp/bindings/remote.h"

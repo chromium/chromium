@@ -56,12 +56,6 @@ specific_include_rules = {
     "+third_party/webrtc/modules/desktop_capture/desktop_capture_options.h",
   ],
 
-  "gpu_utils\.cc": [
-    # For using chromeos::BrowserParamsProxy which is needed on LaCrOS to decide
-    # if the GPU process sandbox needs to be started early.
-    "+chromeos/startup/browser_params_proxy.h",
-  ],
-
   ".*unittest\.cc": [
     "+services/network/network_service.h",
   ],

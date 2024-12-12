@@ -740,7 +740,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void DumpProfilingData(base::OnceClosure callback) {}
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Reinitializes the child process's logging with the given settings. This
   // is needed on Chrome OS, which switches to a log file in the user's home
   // directory once they log in.

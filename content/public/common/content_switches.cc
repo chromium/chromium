@@ -5,7 +5,6 @@
 #include "content/public/common/content_switches.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/media_buildflags.h"
 
 namespace switches {
@@ -947,17 +946,11 @@ const char kPreventResizingContentsForTesting[] =
     "prevent-resizing-contents-for-testing";
 #endif
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 // Allows sending text-to-speech requests to speech-dispatcher, a common
 // Linux speech service. Because it's buggy, the user must explicitly
 // enable it so that visiting a random webpage can't cause instability.
 const char kEnableSpeechDispatcher[] = "enable-speech-dispatcher";
-
-// For lacros, we do not use environment variable to pass values. Instead we
-// use a command line flag to pass the path to the device.
-const char kLLVMProfileFile[] = "llvm-profile-file";
 #endif
 
 #if BUILDFLAG(IS_WIN)

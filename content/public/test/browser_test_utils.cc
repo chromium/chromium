@@ -154,7 +154,7 @@
 #include "content/public/test/mock_captured_surface_controller.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/grit/ash_webui_common_resources.h"
 #endif
 
@@ -427,7 +427,7 @@ class TestNavigationManagerThrottle : public NavigationThrottle {
   base::OnceClosure on_will_process_response_closure_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool HasGzipHeader(const base::RefCountedMemory& maybe_gzipped) {
   net::GZipHeader header;
   net::GZipHeader::Status header_status = net::GZipHeader::INCOMPLETE_HEADER;
@@ -462,7 +462,7 @@ void AppendGzippedResource(const base::RefCountedMemory& encoded,
     to_append->append(dest_buffer->data(), rv);
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Queries for video input devices on the current system using the getSources
 // API.
@@ -2007,7 +2007,7 @@ std::vector<WebContents*> GetAllWebContents() {
   return all_wc;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool ExecuteWebUIResourceTest(WebContents* web_contents) {
   // Inject WebUI test runner script.
   std::string script;
@@ -2049,7 +2049,7 @@ bool ExecuteWebUIResourceTest(WebContents* web_contents) {
 
   return message.compare("\"SUCCESS\"") == 0;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 std::string GetCookies(BrowserContext* browser_context,
                        const GURL& url,

@@ -14,7 +14,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/common/dips_utils.h"
 #include "tools/v8_context_snapshot/buildflags.h"

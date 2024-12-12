@@ -15,7 +15,6 @@
 #include "base/memory/singleton.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation_traits.h"
-#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/tts_utterance.h"
 #include "url/gurl.h"

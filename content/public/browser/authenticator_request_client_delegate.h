@@ -12,7 +12,6 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_authentication_request_proxy.h"
 #include "device/fido/authenticator_get_assertion_response.h"

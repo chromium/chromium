@@ -21,7 +21,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "components/language_detection/content/browser/content_language_detection_driver.h"
 #include "components/language_detection/content/common/language_detection.mojom.h"
 #include "components/language_detection/core/browser/language_detection_model_provider.h"
@@ -803,7 +802,7 @@ ContentBrowserClient::CreateSpeechRecognitionManagerDelegate() {
   return nullptr;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TtsControllerDelegate* ContentBrowserClient::GetTtsControllerDelegate() {
   return nullptr;
 }

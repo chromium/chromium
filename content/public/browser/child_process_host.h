@@ -13,7 +13,6 @@
 #include "base/clang_profiling_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/child_process_id.h"
@@ -197,7 +196,7 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   // out.
   virtual void SetBatterySaverMode(bool battery_saver_mode_enabled) = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Reinitializes the child process's logging with the given settings. This
   // is needed on Chrome OS, which switches to a log file in the user's home
   // directory once they log in.

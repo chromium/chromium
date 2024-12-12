@@ -127,14 +127,6 @@
 #include "ui/aura/test/event_generator_delegate_aura.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/files/scoped_file.h"
-#include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
-#include "chromeos/startup/browser_params_proxy.h"
-#include "chromeos/startup/startup_switches.h"  // nogncheck
-#include "mojo/public/cpp/platform/socket_utils_posix.h"
-#endif
-
 #if BUILDFLAG(IS_FUCHSIA)
 #include "base/fuchsia/system_info.h"
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
@@ -458,61 +450,6 @@ void BrowserTestBase::SetUp() {
   // tests and some use the cached values, so skipping the earlier
   // initialization is not an option.
   base::ClearCachedSystemInfoForTesting();
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // If the test is running on the lacros environment, a file descriptor needs
-  // to be obtained and used to launch lacros-chrome so that a mojo connection
-  // between lacros-chrome and ash-chrome can be established.
-  // For more details, please see:
-  // //chrome/browser/ash/crosapi/test_mojo_connection_manager.h.
-  {
-    if (!chromeos::BrowserParamsProxy::Get()->IsCrosapiDisabledForTesting()) {
-      // TODO(crbug.com/40719121): Switch to use |kLacrosMojoSocketForTesting|
-      // in
-      // //ash/constants/ash_switches.h.
-      // Please refer to the CL comments for why it can't be done now:
-      // http://crrev.com/c/2402580/2/content/public/test/browser_test_base.cc
-      CHECK(command_line->HasSwitch("lacros-mojo-socket-for-testing"));
-      std::string socket_path =
-          command_line->GetSwitchValueASCII("lacros-mojo-socket-for-testing");
-      auto channel = mojo::NamedPlatformChannel::ConnectToServer(socket_path);
-      base::ScopedFD socket_fd = channel.TakePlatformHandle().TakeFD();
-
-      // Mark the channel as blocking.
-      int flags = fcntl(socket_fd.get(), F_GETFL);
-      std::string helper_msg =
-          "On bot, open CAS outputs on test result page(Milo),"
-          "there is a ash_chrome.log file which contains ash log."
-          "For local debugging, pass in --ash-logging-path to test runner.";
-      PCHECK(flags != -1) << "Ash is probably not running. Perhaps it crashed?"
-                          << helper_msg;
-      fcntl(socket_fd.get(), F_SETFL, flags & ~O_NONBLOCK);
-
-      uint8_t buf[32];
-      std::vector<base::ScopedFD> descriptors;
-      auto size = mojo::SocketRecvmsg(socket_fd.get(), buf, sizeof(buf),
-                                      &descriptors, true /*block*/);
-      if (size < 0)
-        PLOG(ERROR) << "Error receiving message from the socket" << helper_msg;
-
-      ASSERT_EQ(1, size) << "It must receive a version number with 1 byte.";
-      ASSERT_EQ(buf[0], 1u)
-          << "Mojo connection protocol version must be 1. Version 0 is "
-          << "deprecated.";
-      ASSERT_EQ(descriptors.size(), 2u)
-          << "ash-chrome must sends 2 FDs, the first one contains startup data "
-          << "and the second one is for a crosapi Mojo connection.";
-
-      // Ok to release the FD here, too.
-      command_line->AppendSwitchASCII(
-          chromeos::switches::kCrosStartupDataFD,
-          base::NumberToString(descriptors[0].release()));
-      command_line->AppendSwitchASCII(
-          crosapi::kCrosapiMojoPlatformChannelHandle,
-          base::NumberToString(descriptors[1].release()));
-    }
-  }
 #endif
 
   if (use_software_gl && !use_software_compositing_)

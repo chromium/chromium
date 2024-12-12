@@ -10,7 +10,6 @@
 #include "base/time/time.h"
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "content/common/buildflags.h"
 #include "content/public/common/dips_utils.h"
@@ -69,10 +68,7 @@ BASE_FEATURE(kAudioServiceLaunchOnStartup,
 // Runs the audio service in a separate process.
 BASE_FEATURE(kAudioServiceOutOfProcess,
              "AudioServiceOutOfProcess",
-// TODO(crbug.com/40118868): Remove !IS_CHROMEOS_LACROS once lacros starts being
-// built with OS_CHROMEOS instead of OS_LINUX.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -978,17 +974,9 @@ BASE_FEATURE(
 
 // Run video capture service in the Browser process as opposed to a dedicated
 // utility process.
-// Camera requests from Lacros are forwarded to Ash via a Mojo connection
-// established through cros-api. Since cros-api isn't available in utility
-// processes, Lacros's video capture service has to run within the browser
-// process.
 BASE_FEATURE(kRunVideoCaptureServiceInBrowserProcess,
              "RunVideoCaptureServiceInBrowserProcess",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
              base::FEATURE_DISABLED_BY_DEFAULT
-#endif
 );
 
 // Update scheduler settings using resourced on ChromeOS.

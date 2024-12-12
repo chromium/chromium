@@ -13,11 +13,6 @@
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/utility/content_utility_client.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "sandbox/policy/switches.h"
-#include "ui/gl/gl_switches.h"
-#endif
-
 namespace content {
 
 std::optional<int> ContentMainDelegate::BasicStartupComplete() {
@@ -52,20 +47,6 @@ bool ContentMainDelegate::ShouldLockSchemeRegistry() {
 }
 
 std::optional<int> ContentMainDelegate::PreBrowserMain() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On LaCrOS, GPU sandbox failures should always be fatal because we control
-  // the driver environment on ChromeOS.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      sandbox::policy::switches::kGpuSandboxFailuresFatal, "yes");
-
-  // TODO(crbug.com/40857355): remove this workaround once SwANGLE can work with
-  // the GPU process sandbox.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kOverrideUseSoftwareGLForTests)) {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        sandbox::policy::switches::kDisableGpuSandbox);
-  }
-#endif
   return std::nullopt;
 }
 
