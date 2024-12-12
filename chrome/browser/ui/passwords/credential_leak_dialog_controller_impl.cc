@@ -32,9 +32,9 @@ CredentialLeakDialogControllerImpl::~CredentialLeakDialogControllerImpl() {
 }
 
 void CredentialLeakDialogControllerImpl::ShowCredentialLeakPrompt(
-    CredentialLeakPrompt* dialog) {
+    std::unique_ptr<CredentialLeakPrompt> dialog) {
   DCHECK(dialog);
-  credential_leak_dialog_ = dialog;
+  credential_leak_dialog_ = std::move(dialog);
   credential_leak_dialog_->ShowCredentialLeakPrompt();
 }
 
@@ -71,10 +71,7 @@ void CredentialLeakDialogControllerImpl::OnCloseDialog() {
 }
 
 void CredentialLeakDialogControllerImpl::ResetDialog() {
-  if (credential_leak_dialog_) {
-    credential_leak_dialog_->ControllerGone();
-    credential_leak_dialog_ = nullptr;
-  }
+  credential_leak_dialog_.reset();
 }
 
 std::u16string CredentialLeakDialogControllerImpl::GetAcceptButtonLabel()
