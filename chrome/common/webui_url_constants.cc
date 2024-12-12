@@ -230,22 +230,6 @@ base::span<const base::cstring_view> ChromeURLHosts() {
   return base::span(kChromeURLHosts);
 }
 
-// Add chrome://internals/* subpages here to be included in chrome://chrome-urls
-// (about:about).
-base::span<const base::cstring_view> ChromeInternalsURLPaths() {
-  static constexpr auto kChromeInternalsURLPaths =
-      std::to_array<base::cstring_view>({
-#if BUILDFLAG(IS_ANDROID)
-          kChromeUIInternalsQueryTilesPath,
-#endif  // BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(ENABLE_SESSION_SERVICE)
-          kChromeUISessionServiceInternalsPath,
-#endif
-      });
-
-  return base::span(kChromeInternalsURLPaths);
-}
-
 base::span<const base::cstring_view> ChromeDebugURLs() {
   // TODO(crbug.com/40253037): make this list comprehensive
   static constexpr auto kChromeDebugURLs = std::to_array<base::cstring_view>(

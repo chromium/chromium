@@ -474,20 +474,15 @@ std::string ChromeURLs(content::BrowserContext* browser_context) {
               : base::StrCat({"<li>", url, "</li>\n"});
     }
 
-    html +=
-        "</ul><a id=\"internals\"><h2>List of chrome://internals "
-        "pages</h2></a>\n<ul>\n";
-    const base::span<const base::cstring_view> internals_paths =
-        chrome::ChromeInternalsURLPaths();
-    std::vector<std::string_view> sorted_internals_paths = base::ToVector(
-        internals_paths,
-        [](base::cstring_view v) -> std::string_view { return v; });
-    std::ranges::sort(sorted_internals_paths);
-    for (const std::string_view path : sorted_internals_paths) {
-      html += base::StrCat({"<li><a href='chrome://internals/", path,
-                            "'>chrome://internals/", path, "</a></li>\n"});
-    }
   }
+
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+  // Add the session service internals page to the end.
+  html += base::StrCat(
+      {"<li><a href='chrome://internals/",
+       chrome::kChromeUISessionServiceInternalsPath, "'>chrome://internals/",
+       chrome::kChromeUISessionServiceInternalsPath, "</a></li>\n"});
+#endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
 
   html += "</ul>\n<h2>For Debug</h2>\n"
       "<p>The following pages are for debugging purposes only. Because they "

@@ -68,7 +68,7 @@ struct WhatsNewEditionDemoPageInfo {
 };
 
 // Provides access to browser-side user education data for
-// chrome://internals/user-education
+// chrome://user-education-internals
 interface UserEducationInternalsPageHandler {
   // Get the list of all available tutorials. Only needs to be called once
   // since the browser-side list is static and does not change.

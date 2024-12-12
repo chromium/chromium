@@ -1043,12 +1043,12 @@
     'desktop_in_product_help': {
       'filepath': 'components/feature_engagement/|'\
                   'components/user_education/|'\
-                  'chrome/browser/resources/internals/user_education/|'\
+                  'chrome/browser/resources/user_education_internals/|'\
                   'chrome/browser/resources/whats_new/|'\
                   'chrome/browser/user_education/|'\
                   'chrome/browser/ui/user_education/|'\
                   'chrome/browser/ui/views/user_education/|'\
-                  'chrome/browser/ui/webui/internals/user_education/|'\
+                  'chrome/browser/ui/webui/user_education_internals/|'\
                   'chrome/browser/ui/webui/whats_new/',
     },
     'device_bluetooth': {

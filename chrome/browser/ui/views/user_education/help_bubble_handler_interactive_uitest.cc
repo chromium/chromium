@@ -23,8 +23,6 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBrowserTabId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBrowserTabId2);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReadLaterWebContentsElementId);
-constexpr char kUserEducationInternalsUrl[] =
-    "chrome://internals/user-education";
 }  // namespace
 
 class HelpBubbleHandlerInteractiveUiTest : public InteractiveBrowserTest {
@@ -75,7 +73,8 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleHandlerInteractiveUiTest,
                        ElementBecomesVisibleOnPageLoad) {
   RunTestSequence(
       InstrumentTab(kBrowserTabId),
-      NavigateWebContents(kBrowserTabId, GURL(kUserEducationInternalsUrl)),
+      NavigateWebContents(kBrowserTabId,
+                          GURL(chrome::kChromeUIUserEducationInternalsURL)),
       InAnyContext(WaitForShow(kWebUIIPHDemoElementIdentifier)));
 }
 
@@ -83,7 +82,8 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleHandlerInteractiveUiTest,
                        ElementBecomesHiddenOnTabBackgrounded) {
   RunTestSequence(
       InstrumentTab(kBrowserTabId),
-      NavigateWebContents(kBrowserTabId, GURL(kUserEducationInternalsUrl)),
+      NavigateWebContents(kBrowserTabId,
+                          GURL(chrome::kChromeUIUserEducationInternalsURL)),
       InAnyContext(WaitForShow(kWebUIIPHDemoElementIdentifier)),
       // This will add the new tab in the foreground.
       AddInstrumentedTab(kBrowserTabId2, GURL(chrome::kChromeUIBookmarksURL)),

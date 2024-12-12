@@ -26,8 +26,8 @@ build_webui("build") {
     "user_education_whats_new_internals_card.css",
   ]
 
-  mojo_files_deps = [ "//chrome/browser/ui/webui/internals/user_education:mojo_bindings_ts__generator" ]
-  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom-webui.ts" ]
+  mojo_files_deps = [ "//chrome/browser/ui/webui/user_education_internals:mojo_bindings_ts__generator" ]
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/user_education_internals/user_education_internals.mojom-webui.ts" ]
 
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
@@ -38,7 +38,5 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
-  generate_grdp = true
-  grd_resource_path_prefix = "user-education"
   webui_context_type = "trusted"
 }

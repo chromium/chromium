@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_INTERNALS_USER_EDUCATION_USER_EDUCATION_INTERNALS_PAGE_HANDLER_IMPL_H_
-#define CHROME_BROWSER_UI_WEBUI_INTERNALS_USER_EDUCATION_USER_EDUCATION_INTERNALS_PAGE_HANDLER_IMPL_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_USER_EDUCATION_INTERNALS_USER_EDUCATION_INTERNALS_PAGE_HANDLER_IMPL_H_
+#define CHROME_BROWSER_UI_WEBUI_USER_EDUCATION_INTERNALS_USER_EDUCATION_INTERNALS_PAGE_HANDLER_IMPL_H_
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom.h"
+#include "chrome/browser/ui/webui/user_education_internals/user_education_internals.mojom.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/tutorial/tutorial_service.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -72,4 +72,4 @@ class UserEducationInternalsPageHandlerImpl
       this};
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_INTERNALS_USER_EDUCATION_USER_EDUCATION_INTERNALS_PAGE_HANDLER_IMPL_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_USER_EDUCATION_INTERNALS_USER_EDUCATION_INTERNALS_PAGE_HANDLER_IMPL_H_

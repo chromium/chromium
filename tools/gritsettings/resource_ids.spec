@@ -432,10 +432,6 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [4100],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/internals/resources.grd": {
-    "META": {"sizes": {"includes": [20]}},
-    "includes": [4120],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/intro/resources.grd": {
     "META": {"sizes": {"includes": [20],}},
     "includes": [4140],
@@ -627,6 +623,10 @@
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/usb_internals/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [5080],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/user_education_internals/resources.grd": {
+    "META": {"sizes": {"includes": [20]}},
+    "includes": [5090],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/web_app_internals/resources.grd": {
     "META": {"sizes": {"includes": [10]}},

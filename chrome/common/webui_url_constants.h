@@ -278,6 +278,10 @@ inline constexpr char kChromeUIUntrustedThemeURL[] =
     "chrome-untrusted://theme/";
 inline constexpr char kChromeUIUsbInternalsHost[] = "usb-internals";
 inline constexpr char kChromeUIUserActionsHost[] = "user-actions";
+inline constexpr char kChromeUIUserEducationInternalsHost[] =
+    "user-education-internals";
+inline constexpr char kChromeUIUserEducationInternalsURL[] =
+    "chrome://user-education-internals";
 inline constexpr char kChromeUIVersionHost[] = "version";
 inline constexpr char kChromeUIVersionURL[] = "chrome://version/";
 inline constexpr char16_t kChromeUIVersionURL16[] = u"chrome://version/";
@@ -285,7 +289,6 @@ inline constexpr char kChromeUIWebRtcLogsHost[] = "webrtc-logs";
 inline constexpr char kChromeUIWebuiGalleryHost[] = "webui-gallery";
 
 #if BUILDFLAG(IS_ANDROID)
-inline constexpr char kChromeUIInternalsQueryTilesPath[] = "query-tiles";
 inline constexpr char kChromeUIJavaCrashURL[] = "chrome://java-crash/";
 inline constexpr char kChromeUINativeBookmarksURL[] =
     "chrome-native://bookmarks/";
@@ -647,10 +650,6 @@ inline constexpr char kExtensionConfigureCommandsSubPage[] =
 
 // Gets the hosts/domains that are shown in chrome://chrome-urls.
 base::span<const base::cstring_view> ChromeURLHosts();
-
-// Gets the path strings of chrome://internals URLs that are shown in
-// chrome://chrome-urls.
-base::span<const base::cstring_view> ChromeInternalsURLPaths();
 
 // Gets the URL strings of "debug" pages which are dangerous and not for general
 // consumption.

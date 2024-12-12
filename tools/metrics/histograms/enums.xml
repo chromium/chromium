@@ -34551,6 +34551,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="-1224398205" label="chrome://prefs-internals/"/>
   <int value="-1203248739" label="chrome://scanning/"/>
   <int value="-1198437953" label="chrome://download-shelf.top-chrome/"/>
+  <int value="-1179878260" label="chrome://user-education-internals/"/>
   <int value="-1177126000" label="chrome://profile-internals/"/>
   <int value="-1176451566" label="chrome://access-code-cast/"/>
   <int value="-1169621742" label="chrome://linux-proxy-config/"/>

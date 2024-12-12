@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/user_education/show_promo_in_page.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
@@ -20,7 +21,6 @@
 
 namespace {
 
-constexpr char kPageWithAnchorURL[] = "chrome://internals/user-education";
 constexpr char16_t kBubbleBodyText[] = u"bubble body";
 
 // Gets a partially-filled params block with default values. You will still
@@ -67,7 +67,7 @@ using ShowPromoInPageBrowserTest = InteractiveBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, FocusesBrowserTabAndAnchor) {
   auto params = GetDefaultParams();
-  params.target_url = GURL(kPageWithAnchorURL);
+  params.target_url = GURL(chrome::kChromeUIUserEducationInternalsURL);
   params.overwrite_active_tab = true;
   // Set the alt text here and then check that aria-label matches.
   params.close_button_alt_text_id = IDS_CLOSE_PROMO;
@@ -91,7 +91,8 @@ IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, FocusesBrowserTabAndAnchor) {
       InstrumentTab(kTabId),
       Do([this]() { browser()->window()->SetFocusToLocationBar(true); }),
       Do(std::move(help_bubble_start_callback)),
-      WaitForWebContentsNavigation(kTabId, GURL(kPageWithAnchorURL)),
+      WaitForWebContentsNavigation(
+          kTabId, GURL(chrome::kChromeUIUserEducationInternalsURL)),
       WaitForStateChange(kTabId, bubble_is_visible),
       Log("If the CheckViewProperty() step below fails intermittently, then  "
           "there is a race condition and we should change it to a "

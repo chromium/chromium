@@ -290,6 +290,8 @@ static_library("ui") {
 
   if (enable_session_service) {
     sources += [
+      "webui/internals/internals_ui.cc",
+      "webui/internals/internals_ui.h",
       "webui/internals/sessions/session_service_internals_handler.cc",
       "webui/internals/sessions/session_service_internals_handler.h",
     ]
@@ -1418,10 +1420,6 @@ static_library("ui") {
       "webui/identity_internals_ui.h",
       "webui/inspect_ui.cc",
       "webui/inspect_ui.h",
-      "webui/internals/internals_ui.cc",
-      "webui/internals/internals_ui.h",
-      "webui/internals/user_education/user_education_internals_page_handler_impl.cc",
-      "webui/internals/user_education/user_education_internals_page_handler_impl.h",
       "webui/managed_ui_handler.cc",
       "webui/managed_ui_handler.h",
       "webui/management/management_ui.cc",
@@ -1622,6 +1620,10 @@ static_library("ui") {
       "webui/theme_handler.h",
       "webui/theme_source.cc",
       "webui/theme_source.h",
+      "webui/user_education_internals/user_education_internals_page_handler_impl.cc",
+      "webui/user_education_internals/user_education_internals_page_handler_impl.h",
+      "webui/user_education_internals/user_education_internals_ui.cc",
+      "webui/user_education_internals/user_education_internals_ui.h",
       "webui/web_app_internals/iwa_internals_handler.cc",
       "webui/web_app_internals/iwa_internals_handler.h",
       "webui/web_app_internals/web_app_internals_handler.cc",

@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
   RunTestSequence(
       InstrumentTab(kBrowserTabId),
       NavigateWebContents(kBrowserTabId,
-                          GURL("chrome://internals/user-education")),
+                          GURL(chrome::kChromeUIUserEducationInternalsURL)),
       ShowHelpBubble(kWebUIIPHDemoElementIdentifier),
 
       // Verify that the handler believes that the anchor has a help bubble.
@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
   RunTestSequence(
       InstrumentTab(kBrowserTabId),
       NavigateWebContents(kBrowserTabId,
-                          GURL("chrome://internals/user-education")),
+                          GURL(chrome::kChromeUIUserEducationInternalsURL)),
       ShowHelpBubble(kWebUIIPHDemoElementIdentifier),
 
       ExecuteJsAt(kBrowserTabId, kPathToHelpBubbleCloseButton,
