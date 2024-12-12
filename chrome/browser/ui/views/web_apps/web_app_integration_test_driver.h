@@ -276,9 +276,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void DisableWindowControlsOverlay(Site site);
   void EnableWindowControlsOverlay(Site site);
   void CreateShortcut(Site site, WindowOptions window_options);
-  // TODO(crbug.com/346323629): Remove InstallableSite and convert callsites to
-  // Site since universal install is available now.
-  void InstallMenuOption(InstallableSite site);
+  void InstallMenuOption(Site site);
   void InstallLocally(Site site);
   void InstallOmniboxIcon(InstallableSite site);
   void InstallPolicyApp(Site site,

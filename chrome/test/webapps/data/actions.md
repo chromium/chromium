@@ -20,7 +20,7 @@ The tables in this file are parsed as action templates for critical user journey
 
 TODO(dmurph): Possibly this table up into markdown-header section.
 
-| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 178) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
+| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 179) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
 | --- | --- | --- | --- | --- | --- | --- |
 | # Badging |
 | check_app_badge_empty | Site |  | 2 | Not Implemented | Check that the 'badge' on the app icon is empty |  |
@@ -53,11 +53,11 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | # Install |
 | install_omnibox_icon | InstallableSite |  | 31 | Implemented |  |  |
 | install_policy_app | Site, ShortcutOptions, WindowOptions, InstallMode |  | 32 | Implemented | Add a force-installed enterprise policy site to the user profile (must be managed profile). This installation action also opens the target site in a tab to match the expectation of installs opening the app first for some CUJs.|  |
-| install_menu_option | InstallableSite |  | 47 | Implemented |  |  |
+| install_menu_option | Site |  | 47 | Implemented | Install from the "3-dot" > "Cast, Save and Share" > "Install" |  | InstallMenu |
 | install_no_shortcut | Site | install_policy_app($1, NoShortcut, WindowOptions::All, WebApp) | 56 | Parameterized |  |  |
 | install_tabbed_no_shortcut | Site | install_policy_app($1, NoShortcut, Browser, WebApp) | 129 | Parameterized | All installation methods that result in a tabbed webapp without shortcut. |  |
 | install_windowed_no_shortcut | Site | install_policy_app($1, NoShortcut, Windowed, WebApp) | 131 | Parameterized | All installation methods that result in a windowed webapp without shortcut. |  |
-| install_by_user_windowed | InstallableSite | install_omnibox_icon($1) & install_menu_option($1) | 137 | Parameterized | All user installation methods that result in a windowed webapp without shortcut. |  |
+| install_by_user_windowed | Site | install_omnibox_icon($1) & install_menu_option($1) | 137 | Parameterized | All user installation methods that result in a windowed webapp without shortcut. |  |
 | install_windowed | Site | install_omnibox_icon($1) & install_policy_app($1, ShortcutOptions::All, Windowed, WebApp) & install_menu_option($1) | 178 | Parameterized | All installation methods that result in a windowed webapp. |  |
 | # Install & Create Shortcut Parameterized |
 | install_or_shortcut | Site | create_shortcut($1, WindowOptions::All) & install_omnibox_icon($1) & install_policy_app($1, ShortcutOptions::All, WindowOptions::All, WebApp) & install_menu_option($1) | 52 | Parameterized |  |  |
@@ -150,13 +150,13 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | sync_sign_out |  |  | 174 | Implemented | Sign out of chrome sync in the current profile |  |
 | sync_sign_in |  |  | 175 | Implemented | Sign in to chrome sync in the current profile |  |
 | switch_incognito_profile |  |  | 73 | Implemented | Switch to using incognito mode | P2 |
-| switch_active_profile | ProfileName |  | 160 | Implemented | Switch to using a different profile |  |
+| switch_active_profile | ProfileName |  | 160 | Implemented | Switch to using a different profile |  | SwitchProfile |
 | # File handling |
 | check_site_handles_file | Site, FileExtension |  | 118 | Implemented |  |  |
 | check_site_not_handles_file | Site, FileExtension |  | 122 | Implemented |  |  |
 | check_file_handling_dialog | IsShown |  | 119 | Not Implemented |  |  |
-| launch_file_expect_dialog | Site, FilesOptions, AllowDenyOptions, AskAgainOptions |  | 120 | Implemented |  |  |
-| launch_file_expect_no_dialog | Site, FilesOptions |  | 121 | Implemented |  |  |
+| launch_file_expect_dialog | Site, FilesOptions, AllowDenyOptions, AskAgainOptions |  | 120 | Implemented |  |  | LaunchFileAck |
+| launch_file_expect_no_dialog | Site, FilesOptions |  | 121 | Implemented |  |  | LaunchFileNoOp |
 | check_files_loaded_in_site | Site, FilesOptions |  | 126 | Not Implemented | Check that the appropriate file contents have loaded in in PWA windows. |  |
 | add_file_handling_policy_approval | Site |  | 124 | Not Implemented |  |  |
 | remove_file_handling_policy_approval | Site |  | 125 | Not Implemented |  |  |

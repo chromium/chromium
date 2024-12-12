@@ -711,10 +711,11 @@ WebAppSettingsPageHandler CreateAppManagementPageHandler(Profile* profile) {
 }
 #endif
 
-void WaitForAndAcceptInstallDialogForSite(InstallableSite site) {
-  std::string widget_name = site == InstallableSite::kScreenshots
-                                ? "WebAppDetailedInstallDialog"
-                                : "WebAppSimpleInstallDialog";
+void WaitForAndAcceptInstallDialogForSite(Site site) {
+  std::string widget_name =
+      (site == Site::kScreenshots)     ? "WebAppDetailedInstallDialog"
+      : (site == Site::kNotPromotable) ? "WebAppDiyInstallDialog"
+                                       : "WebAppSimpleInstallDialog";
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        widget_name);
   views::Widget* widget = waiter.WaitIfNeededAndGet();
@@ -1260,11 +1261,11 @@ void WebAppIntegrationTestDriver::CreateShortcut(Site site,
   AfterStateChangeAction();
 }
 
-void WebAppIntegrationTestDriver::InstallMenuOption(InstallableSite site) {
+void WebAppIntegrationTestDriver::InstallMenuOption(Site site) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
-  MaybeNavigateTabbedBrowserInScope(InstallableSiteToSite(site));
+  MaybeNavigateTabbedBrowserInScope(site);
   BrowserAddedWaiter browser_added_waiter;
   WebAppTestInstallWithOsHooksObserver install_observer(profile());
   install_observer.BeginListening();
@@ -1273,9 +1274,6 @@ void WebAppIntegrationTestDriver::InstallMenuOption(InstallableSite site) {
 
   CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
 
-  CHECK_NE(site, InstallableSite::kScreenshots)
-      << "Installing via menu option with detailed dialog not supported, as "
-         "waiting for a worker is impossible here. https://crbug.com/1368324.";
   WaitForAndAcceptInstallDialogForSite(site);
 
   browser_added_waiter.Wait();
@@ -1339,7 +1337,7 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
   install_observer.BeginListening();
   pwa_install_view()->ExecuteForTesting();
 
-  WaitForAndAcceptInstallDialogForSite(site);
+  WaitForAndAcceptInstallDialogForSite(InstallableSiteToSite(site));
 
   run_loop.Run();
   browser_added_waiter.Wait();
