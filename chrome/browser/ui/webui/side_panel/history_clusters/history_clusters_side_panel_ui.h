@@ -34,6 +34,10 @@ namespace page_image_service {
 class ImageServiceHandler;
 }
 
+namespace content {
+class BrowserContext;
+}
+
 class BrowserWindowInterface;
 class HistoryClustersSidePanelUI;
 
@@ -44,6 +48,7 @@ class HistoryClustersSidePanelUIConfig
 
   // DefaultTopChromeWebUIConfig::
   bool IsPreloadable() override;
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
   std::optional<int> GetCommandIdForTesting() override;
 };
 

@@ -63,8 +63,10 @@ void WaitForHistogram(const std::string& histogram_name) {
 }
 
 // Returns the command ID that can be used to trigger the WebUI.
-int GetCommandIdForURL(GURL webui_url) {
-  TopChromeWebUIConfig* config = TopChromeWebUIConfig::From(nullptr, webui_url);
+int GetCommandIdForURL(content::BrowserContext* browser_context,
+                       GURL webui_url) {
+  TopChromeWebUIConfig* config =
+      TopChromeWebUIConfig::From(browser_context, webui_url);
   CHECK(config);
   CHECK(config->GetCommandIdForTesting().has_value())
       << "A preloadable WebUI must override "
@@ -203,7 +205,7 @@ IN_PROC_BROWSER_TEST_P(WebUIContentsPreloadManagerBrowserSmokeTest,
 
     // Trigger the WebUI.
     new_browser->command_controller()->ExecuteCommand(
-        GetCommandIdForURL(webui_url));
+        GetCommandIdForURL(browser()->profile(), webui_url));
     navigation_waiter()->Wait();
 
     // Clean up.
