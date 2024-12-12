@@ -1969,17 +1969,17 @@ const ComputedStyle* StyleResolver::StyleForPage(uint32_t page_index,
     return InitialStyleForElement();
   }
   DCHECK(!GetDocument().NeedsLayoutTreeUpdateForNode(*root_element));
-  const ComputedStyle* parent_style = root_element->EnsureComputedStyle();
-  StyleResolverState state(GetDocument(), *root_element,
-                           nullptr /* StyleRecalcContext */,
-                           StyleRequest(parent_style));
-  state.CreateNewStyle(*InitialStyleForElement(), *parent_style);
-
-  if (parent_style->Display() == EDisplay::kNone) {
+  const ComputedStyle* parent_style =
+      ComputedStyle::NullifyEnsured(root_element->GetComputedStyle());
+  if (!parent_style) {
     // The root is display:none. One page box will still be created, but no
     // properties should apply.
     return InitialStyleForElement();
   }
+  StyleResolverState state(GetDocument(), *root_element,
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(parent_style));
+  state.CreateNewStyle(*InitialStyleForElement(), *parent_style);
 
   auto& builder = state.StyleBuilder();
   // Page boxes are blocks.
