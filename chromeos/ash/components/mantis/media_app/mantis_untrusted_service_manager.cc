@@ -20,6 +20,29 @@
 #include "third_party/cros_system_api/mojo/service_constants.h"
 
 namespace ash {
+namespace {
+
+using ::ash::media_app_ui::mojom::MantisUntrustedPage;
+using ::mantis::mojom::PlatformModelProgressObserver;
+
+// A helper class that wraps `MantisUntrustedPage::ReportMantisProgress()` as
+// `PlatformModelProgressObserver::Progress()`.
+class InitializeProgressObserver : public PlatformModelProgressObserver {
+ public:
+  explicit InitializeProgressObserver(
+      mojo::PendingRemote<MantisUntrustedPage> page)
+      : page_(std::move(page)) {}
+
+  // implements PlatformModelProgressObserver:
+  void Progress(double progress) override {
+    page_->ReportMantisProgress(progress);
+  }
+
+ private:
+  mojo::Remote<MantisUntrustedPage> page_;
+};
+
+}  // namespace
 
 MantisUntrustedServiceManager::MantisUntrustedServiceManager() {
   ash::mojo_service_manager::GetServiceManagerProxy()->Request(
@@ -64,14 +87,25 @@ void MantisUntrustedServiceManager::IsAvailable(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void MantisUntrustedServiceManager::Create(CreateCallback callback) {
+mojo::PendingRemote<PlatformModelProgressObserver>
+MantisUntrustedServiceManager::CreateProgressObserver(
+    mojo::PendingRemote<media_app_ui::mojom::MantisUntrustedPage> page) {
+  mojo::PendingRemote<PlatformModelProgressObserver> progress_observer;
+  progress_observers_.Add(
+      std::make_unique<InitializeProgressObserver>(std::move(page)),
+      progress_observer.InitWithNewPipeAndPassReceiver());
+  return progress_observer;
+}
+
+void MantisUntrustedServiceManager::Create(
+    mojo::PendingRemote<MantisUntrustedPage> page,
+    CreateCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   mojo::PendingRemote<mantis::mojom::MantisProcessor> processor;
   // This API is designed by CrOS service to handle multiple calls safely.
   cros_service_->Initialize(
-      // TODO(crbug.com/378333373): Handle progress observer.
-      /*progress_observer=*/mojo::NullRemote(),
+      CreateProgressObserver(std::move(page)),
       processor.InitWithNewPipeAndPassReceiver(),
       base::BindOnce(&MantisUntrustedServiceManager::OnInitializeDone,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),

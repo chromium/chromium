@@ -15,6 +15,7 @@
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 
 namespace ash {
 
@@ -34,9 +35,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_MANTIS_MEDIA_APP)
   ~MantisUntrustedServiceManager();
 
   void IsAvailable(base::OnceCallback<void(bool)> callback);
-  void Create(CreateCallback callback);
+  void Create(
+      mojo::PendingRemote<media_app_ui::mojom::MantisUntrustedPage> page,
+      CreateCallback callback);
 
  private:
+  mojo::PendingRemote<mantis::mojom::PlatformModelProgressObserver>
+  CreateProgressObserver(
+      mojo::PendingRemote<media_app_ui::mojom::MantisUntrustedPage> page);
   void OnQueryDone(
       base::OnceCallback<void(bool)> callback,
       chromeos::mojo_service_manager::mojom::ErrorOrServiceStatePtr result);
@@ -46,6 +52,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_MANTIS_MEDIA_APP)
       mantis::mojom::InitializeResult result);
 
   mojo::Remote<mantis::mojom::MantisService> cros_service_;
+  mojo::UniqueReceiverSet<mantis::mojom::PlatformModelProgressObserver>
+      progress_observers_;
+
   std::unique_ptr<MantisUntrustedService> mantis_untrusted_service_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<MantisUntrustedServiceManager> weak_ptr_factory_{this};
