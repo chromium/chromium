@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -48,6 +49,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.IntentHandler.ExternalAppId;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
@@ -718,5 +720,24 @@ public class IntentHandlerRobolectricTest {
         Assert.assertEquals(
                 GOOGLE_URL, IntentHandler.getReferrerUrlIncludingExtraHeaders(trustedIntent));
         Assert.assertNull(IntentHandler.getExtraHeadersFromIntent(trustedIntent));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
+    public void testDetermineExternalIntentSource() {
+        Activity activity = Mockito.mock(Activity.class);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.putExtra(
+                IntentHandler.EXTRA_ACTIVITY_REFERRER,
+                "android-app://com.google.android.apps.nexuslauncher");
+        assertEquals(
+                ExternalAppId.PIXEL_LAUNCHER,
+                IntentHandler.determineExternalIntentSource(intent, activity));
+
+        intent.putExtra(IntentHandler.EXTRA_ACTIVITY_REFERRER, "android.app.launcher");
+        assertEquals(
+                ExternalAppId.THIRD_PARTY_LAUNCHER,
+                IntentHandler.determineExternalIntentSource(intent, activity));
     }
 }

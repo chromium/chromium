@@ -2464,6 +2464,8 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="14" label="Viber"/>
   <int value="15" label="YouTube"/>
   <int value="16" label="Camera"/>
+  <int value="17" label="Pixel Launcher"/>
+  <int value="18" label="Third-party Launcher"/>
 </enum>
 
 <enum name="ClientSummarizedResultType">

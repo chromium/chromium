@@ -275,6 +275,8 @@ public class IntentHandler {
     private static final String PACKAGE_WHATSAPP = "com.whatsapp";
     private static final String PACKAGE_YAHOO_MAIL = "com.yahoo.mobile.client.android.mail";
     private static final String PACKAGE_VIBER = "com.viber.voip";
+    private static final String PACKAGE_PIXEL_LAUNCHER = "com.google.android.apps.nexuslauncher";
+    private static final String THIRD_PARTY_LAUNCHER_SUFFIX = "launcher";
     private static final String FACEBOOK_REFERRER_URL = "android-app://m.facebook.com";
     private static final String FACEBOOK_INTERNAL_BROWSER_REFERRER = "http://m.facebook.com";
     private static final String TWITTER_LINK_PREFIX = "http://t.co/";
@@ -310,6 +312,8 @@ public class IntentHandler {
         ExternalAppId.VIBER,
         ExternalAppId.YOUTUBE,
         ExternalAppId.CAMERA,
+        ExternalAppId.PIXEL_LAUNCHER,
+        ExternalAppId.THIRD_PARTY_LAUNCHER,
         ExternalAppId.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -331,8 +335,10 @@ public class IntentHandler {
         int VIBER = 14;
         int YOUTUBE = 15;
         int CAMERA = 16;
+        int PIXEL_LAUNCHER = 17;
+        int THIRD_PARTY_LAUNCHER = 18;
         // Update ClientAppId in enums.xml when adding new items.
-        int NUM_ENTRIES = 17;
+        int NUM_ENTRIES = 19;
     }
 
     /**
@@ -494,9 +500,15 @@ public class IntentHandler {
 
         if (externalId == ExternalAppId.OTHER && activity != null) {
             String activityReferrer = getActivityReferrer(intent, activity);
-            if (activityReferrer != null
-                    && activityReferrer.toLowerCase(Locale.getDefault()).endsWith("camera")) {
-                return ExternalAppId.CAMERA;
+            if (activityReferrer != null) {
+                String referrer = activityReferrer.toLowerCase(Locale.getDefault());
+                if (referrer.endsWith("camera")) {
+                    return ExternalAppId.CAMERA;
+                } else if (referrer.endsWith(PACKAGE_PIXEL_LAUNCHER)) {
+                    return ExternalAppId.PIXEL_LAUNCHER;
+                } else if (referrer.endsWith(THIRD_PARTY_LAUNCHER_SUFFIX)) {
+                    return ExternalAppId.THIRD_PARTY_LAUNCHER;
+                }
             }
         }
 
