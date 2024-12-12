@@ -4,6 +4,8 @@
 
 import {CHOOSE_ENTRY_PROPERTY} from './file_manager/choose_entry_const.js';
 
+const EXTENSION_ID = 'oobinhbdbiehknkpbpejbbpdbkdjmoco';
+
 interface TestMessageCommand {
   name: string;
   [key: string]: any;
@@ -1803,13 +1805,28 @@ export async function openEntryChoosingWindow(
   });
 }
 
+chrome.runtime.onMessage.addListener(
+    (msg: any, sender: chrome.runtime.MessageSender,
+     _sendResponse: (_arg: any) => void) => {
+      if (sender.id !== EXTENSION_ID) {
+        return false;
+      } else if (msg.msgType === CHOOSE_ENTRY_PROPERTY) {
+        if (msg.entryNames || (msg.entryNames === null)) {
+          window[CHOOSE_ENTRY_PROPERTY] = msg.entryNames as (string | null);
+        } else {
+          delete window[CHOOSE_ENTRY_PROPERTY];
+        }
+        return true;
+      }
+      return false;
+    });
+
 /**
  * Companion function to openEntryChoosingWindow function. This function waits
  * until entry selected in a dialog shown by chooseEntry() is set.
  * @return the entry set by the dialog shown via chooseEntry().
  */
-export async function pollForChosenEntry(caller: string):
-    Promise<Entry|Entry[]|null> {
+export async function pollForChosenEntry(caller: string): Promise<string|null> {
   await repeatUntil(() => {
     if (window[CHOOSE_ENTRY_PROPERTY] !== undefined) {
       return;

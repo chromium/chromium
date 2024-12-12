@@ -111,7 +111,7 @@ async function openFileDialogClickOkButton(
   // If the file is opened via the filesystem API, check the name matches.
   // Otherwise, the caller is responsible for verifying the returned URL.
   if (!useBrowserOpen) {
-    chrome.test.assertEq(name, (result as Entry).name);
+    chrome.test.assertEq(name, result);
   }
 
   return result;
@@ -167,10 +167,9 @@ async function saveFileDialogClickOkButton(
   };
 
   const entrySet = await setUpFileEntrySet(volume);
-  const result =
-      await remoteCall.openAndWaitForClosingDialog(
-          {type: 'saveFile'}, volume, entrySet, closer, false) as Entry;
-  chrome.test.assertEq(name, result.name);
+  const result = await remoteCall.openAndWaitForClosingDialog(
+      {type: 'saveFile'}, volume, entrySet, closer, false);
+  chrome.test.assertEq(name, result);
 }
 
 /**
@@ -566,8 +565,7 @@ export async function openMultiFileDialogDriveOfficeFile() {
   await directoryTree.navigateToPath('/My Drive');
 
   // Sort the file names so we can compare the array directly with the entries
-  // returned from pollForChosenEntry() without worrying about
-  // order.
+  // returned from pollForChosenEntry() without worrying about order.
   const selectFileNames = [
     ENTRIES.hello.nameText,
     ENTRIES.docxFile.nameText,
@@ -583,10 +581,8 @@ export async function openMultiFileDialogDriveOfficeFile() {
   const okButton = '.button-panel button.ok:enabled';
   await remoteCall.waitAndClickElement(appId, okButton);
 
-  const chosenEntries = ((await pollForChosenEntry(getCaller())) as Entry[])
-                            .map(entry => entry.name)
-                            .sort();
-  chrome.test.assertEq(selectFileNames, chosenEntries);
+  const chosenEntries = await pollForChosenEntry(getCaller());
+  chrome.test.assertEq(selectFileNames.toString(), chosenEntries);
 }
 
 /**
@@ -841,7 +837,7 @@ export async function saveFileDialogSingleFilterNoAcceptAll() {
  */
 async function showSaveAndConfirmExpecting(
     extraParams: chrome.fileSystem.ChooseEntryOptions,
-    expectName: string): Promise<string> {
+    expectName: string): Promise<string|null> {
   const caller = getCaller();
 
   const params = {
@@ -855,8 +851,7 @@ async function showSaveAndConfirmExpecting(
   await remoteCall.waitForElement(dialog, '#filename-input-textbox');
 
   await clickOkButtonExpectName(dialog, expectName, 'saveAs');
-  const entry = await pollForChosenEntry(caller) as Entry;
-  return entry.name;
+  return await pollForChosenEntry(caller);
 }
 
 /**
