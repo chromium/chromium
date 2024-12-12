@@ -118,6 +118,12 @@ void ProductSpecificationsHandler::ShowSyncSetupFlow() {
   }
 }
 
+void ProductSpecificationsHandler::GetComparisonTableUrlForUuid(
+    const base::Uuid& uuid,
+    GetComparisonTableUrlForUuidCallback callback) {
+  std::move(callback).Run(commerce::GetProductSpecsTabUrlForID(uuid));
+}
+
 void ProductSpecificationsHandler::OnProductSpecificationsSetAdded(
     const ProductSpecificationsSet& set) {
   remote_page_->OnProductSpecificationsSetAdded(ProductSpecsSetToMojo(set));

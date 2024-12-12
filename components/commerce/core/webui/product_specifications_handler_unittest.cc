@@ -268,4 +268,19 @@ TEST_F(ProductSpecificationsHandlerTest, TestGetPageTitleFromHistory_NotFound) {
   run_loop.Run();
 }
 
+TEST_F(ProductSpecificationsHandlerTest, TestGetComparisonTableUrlForUuid) {
+  base::Uuid uuid = base::Uuid::GenerateRandomV4();
+
+  base::RunLoop run_loop;
+  handler_->GetComparisonTableUrlForUuid(
+      uuid, base::BindOnce(
+                [](const base::Uuid& uuid, const GURL& url) {
+                  ASSERT_EQ(commerce::GetProductSpecsTabUrlForID(uuid), url);
+                },
+                uuid)
+                .Then(run_loop.QuitClosure()));
+
+  run_loop.Run();
+}
+
 }  // namespace commerce

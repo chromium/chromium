@@ -42,6 +42,10 @@ interface ProductSpecificationsHandler {
   // current tab.
   ShowProductSpecificationsSetForUuid(mojo_base.mojom.Uuid uuid,
       bool in_new_tab);
+
+  // Get the URL for the comparison table with the given UUID.
+  GetComparisonTableUrlForUuid(mojo_base.mojom.Uuid uuid)
+      => (url.mojom.Url url);
 };
 
 // WebUI-side handler for requests from the browser.

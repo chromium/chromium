@@ -67,6 +67,9 @@ class ProductSpecificationsHandler
   void GetPageTitleFromHistory(
       const GURL& url,
       GetPageTitleFromHistoryCallback callback) override;
+  void GetComparisonTableUrlForUuid(
+      const base::Uuid& uuid,
+      GetComparisonTableUrlForUuidCallback callback) override;
 
   // product_specifications::mojom::Page
   void OnProductSpecificationsSetAdded(
