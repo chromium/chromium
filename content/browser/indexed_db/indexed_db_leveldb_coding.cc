@@ -207,7 +207,8 @@ void EncodeSortableDouble(double value, std::string* into) {
   }
 
   std::array<uint8_t, 8u> chars;
-  base::span(chars).copy_from(base::U64ToBigEndian(modified_bits));
+  base::span(chars).copy_from_nonoverlapping(
+      base::U64ToBigEndian(modified_bits));
   into->insert(into->end(), chars.begin(), chars.end());
 }
 
@@ -219,8 +220,8 @@ bool DecodeSortableDouble(std::string_view& data, double* output) {
     return false;
   }
 
-  uint64_t host_bits = base::U64FromBigEndian(base::as_bytes(
-      base::span<const char, kLengthInBytes>{data.data(), kLengthInBytes}));
+  uint64_t host_bits =
+      base::U64FromBigEndian(base::as_byte_span(data).first<kLengthInBytes>());
   data = data.substr(kLengthInBytes);
 
   static constexpr uint64_t kSignBit = base::bits::LeftmostBit<uint64_t>();
@@ -603,7 +604,7 @@ bool DecodeBinary(std::string_view* slice, base::span<const uint8_t>* value) {
   if (slice->size() < size)
     return false;
 
-  *value = base::as_byte_span(slice->substr(0, size));
+  *value = base::as_byte_span(*slice).first(size);
   slice->remove_prefix(size);
   return true;
 }
@@ -1353,9 +1354,7 @@ std::string IndexedDBKeyToDebugString(std::string_view key) {
           break;
         case kScopesPrefixByte:
           result << "Scopes key: "
-                 << leveldb_scopes::KeyToDebugString(
-                        base::span(reinterpret_cast<const uint8_t*>(key.data()),
-                                   key.size()));
+                 << leveldb_scopes::KeyToDebugString(base::as_byte_span(key));
           break;
         case kDatabaseFreeListTypeByte: {
           DatabaseFreeListKey db_free_list_key;

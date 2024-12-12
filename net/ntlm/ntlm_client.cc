@@ -340,8 +340,7 @@ std::vector<uint8_t> NtlmClient::GenerateAuthenticateMessage(
     // set to zeros.
     DCHECK_LT(kMicOffsetV2 + kMicLenV2, authenticate_message_len);
 
-    base::span<uint8_t, kMicLenV2> mic(
-        const_cast<uint8_t*>(auth_msg.data()) + kMicOffsetV2, kMicLenV2);
+    auto mic = base::span(auth_msg).subspan<kMicOffsetV2, kMicLenV2>();
     GenerateMicV2(v2_session_key, negotiate_message_, server_challenge_message,
                   auth_msg, mic);
   }

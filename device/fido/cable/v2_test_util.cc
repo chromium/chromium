@@ -142,13 +142,13 @@ class TestNetworkContext : public network::TestNetworkContext {
 
       const std::vector<uint8_t>& pairing_id_vec =
           map.find(cbor::Value(1))->second.GetBytestring();
-      base::span<const uint8_t, kPairingIDSize> pairing_id(
-          pairing_id_vec.data(), pairing_id_vec.size());
+      auto pairing_id =
+          *base::span(pairing_id_vec).to_fixed_extent<kPairingIDSize>();
 
       const std::vector<uint8_t>& client_nonce_vec =
           map.find(cbor::Value(2))->second.GetBytestring();
-      base::span<const uint8_t, kClientNonceSize> client_nonce(
-          client_nonce_vec.data(), client_nonce_vec.size());
+      auto client_nonce =
+          *base::span(client_nonce_vec).to_fixed_extent<kClientNonceSize>();
 
       const std::string& request_type_hint =
           map.find(cbor::Value(3))->second.GetString();
@@ -516,15 +516,15 @@ class TestPlatform : public authenticator::Platform {
     if (!result || result->empty()) {
       std::move(callback).Run(
           static_cast<uint32_t>(device::CtapDeviceResponseCode::kCtap2ErrOther),
-          base::span<const uint8_t>(), /* prf_enabled= */ false);
+          {}, /* prf_enabled= */ false);
       return;
     }
-    const base::span<const uint8_t> payload = *result;
+    const base::span payload = *result;
 
     if (payload.size() == 1 ||
         payload[0] !=
             static_cast<uint8_t>(device::CtapDeviceResponseCode::kSuccess)) {
-      std::move(callback).Run(payload[0], base::span<const uint8_t>(),
+      std::move(callback).Run(payload[0], {},
                               /* prf_enabled= */ false);
       return;
     }
@@ -568,7 +568,7 @@ class TestPlatform : public authenticator::Platform {
           nullptr);
       return;
     }
-    const base::span<const uint8_t> payload = *result;
+    const base::span payload = *result;
 
     if (payload.size() == 1 ||
         payload[0] !=
@@ -652,11 +652,11 @@ class LateLinkingDevice : public authenticator::Transaction {
         network_context_factory_(std::move(network_context_factory)),
         tunnel_id_(device::cablev2::Derive<kTunnelIdSize>(
             qr_secret,
-            base::span<uint8_t>(),
+            {},
             DerivedValueType::kTunnelID)),
         eid_key_(device::cablev2::Derive<kEIDKeySize>(
             qr_secret,
-            base::span<const uint8_t>(),
+            {},
             device::cablev2::DerivedValueType::kEIDKey)),
         peer_identity_(device::fido_parsing_utils::Materialize(peer_identity)),
         secret_(fido_parsing_utils::Materialize(qr_secret)) {
@@ -873,11 +873,11 @@ class HandshakeErrorDevice : public authenticator::Transaction {
         network_context_factory_(std::move(network_context_factory)),
         tunnel_id_(device::cablev2::Derive<kTunnelIdSize>(
             qr_secret,
-            base::span<uint8_t>(),
+            {},
             DerivedValueType::kTunnelID)),
         eid_key_(device::cablev2::Derive<kEIDKeySize>(
             qr_secret,
-            base::span<const uint8_t>(),
+            {},
             device::cablev2::DerivedValueType::kEIDKey)),
         secret_(fido_parsing_utils::Materialize(qr_secret)) {
     websocket_client_ = std::make_unique<device::cablev2::WebSocketAdapter>(

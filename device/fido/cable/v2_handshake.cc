@@ -57,12 +57,12 @@ namespace {
 // will ever reach.
 constexpr uint32_t kMaxSequence = (1 << 24) - 1;
 
-bool ConstructNonce(uint32_t counter, base::span<uint8_t, 12u> out_nonce) {
+bool ConstructNonce(uint32_t counter, base::span<uint8_t, 12> out_nonce) {
   if (counter > kMaxSequence) {
     return false;
   }
 
-  auto [zeros, counter_span] = out_nonce.split_at<12u - 4u>();
+  auto [zeros, counter_span] = out_nonce.split_at<8>();
   std::ranges::fill(zeros, uint8_t{0});
   counter_span.copy_from(base::numerics::U32ToBigEndian(counter));
   return true;
@@ -425,12 +425,10 @@ std::optional<Components> Parse(const std::string& qr_url) {
 std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key,
                    RequestType request_type) {
   cbor::Value::MapValue qr_contents;
-  qr_contents.emplace(
-      0, SeedToCompressedPublicKey(
-             base::span<const uint8_t, device::cablev2::kQRSeedSize>(
-                 qr_key.data(), device::cablev2::kQRSeedSize)));
+  qr_contents.emplace(0, SeedToCompressedPublicKey(
+                             qr_key.first<device::cablev2::kQRSeedSize>()));
 
-  qr_contents.emplace(1, qr_key.subspan(device::cablev2::kQRSeedSize));
+  qr_contents.emplace(1, qr_key.subspan<device::cablev2::kQRSeedSize>());
 
   qr_contents.emplace(
       2, static_cast<int64_t>(std::size(tunnelserver::kAssignedDomains)));
@@ -466,7 +464,7 @@ std::string BytesToDigits(base::span<const uint8_t> in) {
              static_cast<int>(sizeof(digits)));
     ret += digits;
 
-    in = in.subspan(kChunkSize);
+    in = in.subspan<kChunkSize>();
   }
 
   if (in.size()) {
@@ -625,7 +623,7 @@ RequestType RequestTypeFromString(const std::string& s) {
 bssl::UniquePtr<EC_KEY> IdentityKey(base::span<const uint8_t, 32> root_secret) {
   std::array<uint8_t, 32> seed;
   seed = device::cablev2::Derive<seed.size()>(
-      root_secret, /*nonce=*/base::span<uint8_t>(),
+      root_secret, /*nonce=*/{},
       device::cablev2::DerivedValueType::kIdentityKeySeed);
   bssl::UniquePtr<EC_GROUP> p256(
       EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
@@ -704,7 +702,7 @@ namespace {
 // TODO(agl): remove support for this padding format. (Chromium started sending
 // the new format with M99.)
 std::optional<cbor::Value> DecodePaddedCBORMap8(
-    const base::span<const uint8_t> input) {
+    base::span<const uint8_t> input) {
   if (input.empty()) {
     return std::nullopt;
   }
@@ -811,9 +809,7 @@ bool Crypter::Encrypt(std::vector<uint8_t>* message_to_encrypt) {
   aes_key.Init(write_key_);
   DCHECK_EQ(nonce.size(), aes_key.NonceLength());
 
-  base::span<const uint8_t> additional_data;
-  std::vector<uint8_t> ciphertext =
-      aes_key.Seal(padded_message, nonce, additional_data);
+  std::vector<uint8_t> ciphertext = aes_key.Seal(padded_message, nonce, {});
   message_to_encrypt->swap(ciphertext);
   return true;
 }
@@ -829,14 +825,13 @@ bool Crypter::Decrypt(base::span<const uint8_t> ciphertext,
   aes_key.Init(read_key_);
   DCHECK_EQ(nonce.size(), aes_key.NonceLength());
 
-  base::span<const uint8_t> additional_data;
   std::optional<std::vector<uint8_t>> plaintext =
-      aes_key.Open(ciphertext, nonce, additional_data);
+      aes_key.Open(ciphertext, nonce, {});
 
   if (!plaintext) {
     return false;
   }
-  read_sequence_num_++;
+  ++read_sequence_num_;
 
   if (plaintext->empty()) {
     FIDO_LOG(ERROR) << "Invalid caBLE message.";
@@ -924,8 +919,7 @@ std::vector<uint8_t> HandshakeInitiator::BuildInitialMessage() {
     noise_.MixKey(es_key);
   }
 
-  std::vector<uint8_t> ciphertext =
-      noise_.EncryptAndHash(base::span<const uint8_t>());
+  std::vector<uint8_t> ciphertext = noise_.EncryptAndHash({});
 
   std::vector<uint8_t> handshake_message;
   handshake_message.reserve(sizeof(ephemeral_key_public_bytes) +
@@ -946,8 +940,7 @@ HandshakeResult HandshakeInitiator::ProcessResponse(
                     << " bytes)";
     return std::nullopt;
   }
-  auto peer_point_bytes = response.first(kP256X962Length);
-  auto ciphertext = response.subspan(kP256X962Length);
+  auto [peer_point_bytes, ciphertext] = response.split_at<kP256X962Length>();
 
   bssl::UniquePtr<EC_POINT> peer_point(
       EC_POINT_new(EC_KEY_get0_group(ephemeral_key_.get())));
@@ -1000,8 +993,7 @@ HandshakeResult RespondToHandshake(
     FIDO_LOG(DEBUG) << "Handshake truncated (" << in.size() << " bytes)";
     return std::nullopt;
   }
-  auto peer_point_bytes = in.first(kP256X962Length);
-  auto ciphertext = in.subspan(kP256X962Length);
+  auto [peer_point_bytes, ciphertext] = in.split_at<kP256X962Length>();
 
   Noise noise;
   uint8_t prologue[1];
@@ -1087,8 +1079,7 @@ HandshakeResult RespondToHandshake(
     noise.MixKey(shared_key_se);
   }
 
-  const std::vector<uint8_t> my_ciphertext =
-      noise.EncryptAndHash(base::span<const uint8_t>());
+  const std::vector<uint8_t> my_ciphertext = noise.EncryptAndHash({});
   out_response->insert(
       out_response->end(), ephemeral_key_public_bytes,
       ephemeral_key_public_bytes + sizeof(ephemeral_key_public_bytes));
