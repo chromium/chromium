@@ -69,8 +69,14 @@ RendererSettings CreateRendererSettings() {
                         &renderer_settings.slow_down_compositing_scale_factor);
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Used finch experiment to determine the best value. See b:330617490 for
+  // details.
+  renderer_settings.occlusion_culler_settings.quad_split_limit = 12;
+#else
   renderer_settings.occlusion_culler_settings.quad_split_limit =
       features::DrawQuadSplitLimit();
+#endif
 
 #if BUILDFLAG(IS_OZONE)
   if (command_line->HasSwitch(switches::kEnableHardwareOverlays)) {
