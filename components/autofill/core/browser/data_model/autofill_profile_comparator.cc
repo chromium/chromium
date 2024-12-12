@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/i18n/char_iterator.h"
+#include "base/i18n/unicodestring.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -27,6 +28,8 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
+#include "third_party/icu/source/common/unicode/ustring.h"
+#include "third_party/icu/source/i18n/unicode/translit.h"
 #include "third_party/libphonenumber/phonenumber_api.h"
 
 using i18n::phonenumbers::PhoneNumberUtil;
@@ -185,6 +188,31 @@ int32_t NormalizingIterator::GetNextChar() {
   }
 
   return iter_.get();
+}
+
+// This function changes all Katakana characters occurring in the
+// `alternative_full_name` to Hiragana using the ICU library. Characters other
+// than Katakana will remain unchanged.
+std::u16string NormalizeAlternativeNameForComparison(
+    const std::u16string& alternative_full_name) {
+  if (alternative_full_name.empty()) {
+    return alternative_full_name;
+  }
+
+  UErrorCode err = U_ZERO_ERROR;
+  std::unique_ptr<icu::Transliterator> transliterator(
+      icu::Transliterator::createInstance("Katakana-Hiragana", UTRANS_FORWARD,
+                                          err));
+  if (U_FAILURE(err)) {
+    // TODO(crbug.com/383668248): Record transliteration failure metric.
+    LOG(ERROR) << "Error creating transliterator: " << u_errorName(err);
+    return alternative_full_name;
+  }
+  icu::UnicodeString normalized_alternative_full_name(
+      alternative_full_name.c_str());
+  // Change Katakana to equivalent Hiragana characters.
+  transliterator->transliterate(normalized_alternative_full_name);
+  return base::i18n::UnicodeStringToString16(normalized_alternative_full_name);
 }
 
 }  // namespace
@@ -799,8 +827,10 @@ bool AutofillProfileComparator::HaveMergeableAlternativeNames(
     return true;
   }
 
-  return AreNamesMergeable(p1.GetInfo(ALTERNATIVE_FULL_NAME, app_locale_),
-                           p2.GetInfo(ALTERNATIVE_FULL_NAME, app_locale_));
+  return AreNamesMergeable(NormalizeAlternativeNameForComparison(
+                               p1.GetInfo(ALTERNATIVE_FULL_NAME, app_locale_)),
+                           NormalizeAlternativeNameForComparison(
+                               p2.GetInfo(ALTERNATIVE_FULL_NAME, app_locale_)));
 }
 
 bool AutofillProfileComparator::HaveMergeableEmailAddresses(

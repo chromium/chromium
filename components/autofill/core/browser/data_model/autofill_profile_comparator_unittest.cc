@@ -41,6 +41,7 @@ class AutofillProfileComparatorTest : public testing::Test {
     using Super::CompareTokens;
     using Super::GetNamePartVariants;
     using Super::HaveMergeableAddresses;
+    using Super::HaveMergeableAlternativeNames;
     using Super::HaveMergeableCompanyNames;
     using Super::HaveMergeableEmailAddresses;
     using Super::HaveMergeableNames;
@@ -546,6 +547,126 @@ TEST_F(AutofillProfileComparatorTest, HaveMergeableNames) {
   EXPECT_FALSE(comparator_.HaveMergeableNames(different, p3));
   EXPECT_FALSE(comparator_.HaveMergeableNames(different, p4));
   EXPECT_FALSE(comparator_.HaveMergeableNames(different, initials));
+}
+
+TEST_F(AutofillProfileComparatorTest, HaveMergeableAlternativeNames) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillSupportPhoneticNameForJP};
+
+  AutofillProfile empty = CreateProfileWithName("", "", "");
+
+  // Latin characters only.
+  AutofillProfile p1 = CreateProfileWithName(CreateNameInfo(
+      u"John", u"", u"Smith", u"John Smith", u"Pjohn", u"Psmith", u""));
+  AutofillProfile p1_mergeable = CreateProfileWithName(CreateNameInfo(
+      u"John", u"", u"Smith", u"John Smith", u"", u"", u"Pjohn Psmith"));
+
+  // Phonetic name using Hiragana.
+  AutofillProfile p2 = CreateProfileWithName(CreateNameInfo(
+      u"葵", u"", u"山本", u"山本・葵", u"あおい", u"やまもと", u""));
+  // The same phonetic name, but saved as alternative_full_name with separator.
+  AutofillProfile p3 = CreateProfileWithName(CreateNameInfo(
+      u"葵", u"", u"山本", u"山本・葵", u"", u"", u"やまもと・あおい"));
+  // The same phonetic name, but saved as alternative_full_name with white space
+  // separator.
+  AutofillProfile p4 = CreateProfileWithName(CreateNameInfo(
+      u"葵", u"", u"山本", u"山本・葵", u"", u"", u"やまもと あおい"));
+
+  // Semantically the same profiles as `p2`, `p3`, `p4`, but using Katakana for
+  // alternative name.
+  AutofillProfile p2_katakana = CreateProfileWithName(CreateNameInfo(
+      u"葵", u"", u"山本", u"山本・葵", u"アオイ", u"ヤマモト", u""));
+  AutofillProfile p3_katakana = CreateProfileWithName(CreateNameInfo(
+      u"葵", u"", u"山本", u"山本・葵", u"", u"", u"ヤマモト・アオイ"));
+  AutofillProfile p4_katakana = CreateProfileWithName(CreateNameInfo(
+      u"葵", u"", u"山本", u"山本・葵", u"", u"", u"ヤマモト アオイ"));
+
+  // Semantically the different profiles than `p2`, `p3`, `p4`, using Katakana
+  // for alternative name.
+  AutofillProfile p5_katakana = CreateProfileWithName(CreateNameInfo(
+      u"葵", u"", u"山本", u"山本・葵", u"レイ", u"サクラ", u""));
+  AutofillProfile p6_katakana = CreateProfileWithName(CreateNameInfo(
+      u"葵", u"", u"山本", u"山本・葵", u"", u"", u"サクラ・レイ"));
+  AutofillProfile p7_katakana = CreateProfileWithName(CreateNameInfo(
+      u"葵", u"", u"山本", u"山本・葵", u"", u"", u"サクラ レイ"));
+
+  // Base cases for latin characters.
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p1, empty));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p1, p1));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(empty, p1));
+
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p1, p1_mergeable));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p1_mergeable, p1));
+
+  // CJK characters with empty profile.
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2, empty));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p3, empty));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2_katakana, empty));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p3_katakana, empty));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(empty, p2));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(empty, p3));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(empty, p2_katakana));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(empty, p3_katakana));
+
+  // Mergeable profiles using Hiragana.
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2, p2));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p3, p3));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p4, p4));
+
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2, p3));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p3, p2));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2, p4));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p4, p2));
+
+  // Mergeable profiles using Katakana.
+  EXPECT_TRUE(
+      comparator_.HaveMergeableAlternativeNames(p2_katakana, p2_katakana));
+  EXPECT_TRUE(
+      comparator_.HaveMergeableAlternativeNames(p2_katakana, p3_katakana));
+  EXPECT_TRUE(
+      comparator_.HaveMergeableAlternativeNames(p4_katakana, p4_katakana));
+
+  EXPECT_TRUE(
+      comparator_.HaveMergeableAlternativeNames(p2_katakana, p3_katakana));
+  EXPECT_TRUE(
+      comparator_.HaveMergeableAlternativeNames(p3_katakana, p2_katakana));
+  EXPECT_TRUE(
+      comparator_.HaveMergeableAlternativeNames(p2_katakana, p4_katakana));
+  EXPECT_TRUE(
+      comparator_.HaveMergeableAlternativeNames(p4_katakana, p2_katakana));
+
+  // Mergeable profiles where one is using Katakana and the other Hiragana.
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2, p3_katakana));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p3_katakana, p2));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2_katakana, p3));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p3, p2_katakana));
+
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2, p4_katakana));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p4_katakana, p2));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2_katakana, p4));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p4, p2_katakana));
+
+  // Semantically the same profiles one using Katakana the other Hiragana.
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2, p2_katakana));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p2_katakana, p2));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p3_katakana, p3));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p3, p3_katakana));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p4_katakana, p4));
+  EXPECT_TRUE(comparator_.HaveMergeableAlternativeNames(p4, p4_katakana));
+
+  // Non mergeable profiles where one is using Katakana and the other Hiragana.
+  EXPECT_FALSE(comparator_.HaveMergeableAlternativeNames(p2, p6_katakana));
+  EXPECT_FALSE(comparator_.HaveMergeableAlternativeNames(p6_katakana, p2));
+  EXPECT_FALSE(comparator_.HaveMergeableAlternativeNames(p2, p7_katakana));
+  EXPECT_FALSE(comparator_.HaveMergeableAlternativeNames(p7_katakana, p2));
+  EXPECT_FALSE(comparator_.HaveMergeableAlternativeNames(p7_katakana, p4));
+  EXPECT_FALSE(comparator_.HaveMergeableAlternativeNames(p4, p7_katakana));
+
+  // Non mergeable profiles where both are using Katakana.
+  EXPECT_FALSE(
+      comparator_.HaveMergeableAlternativeNames(p2_katakana, p5_katakana));
+  EXPECT_FALSE(
+      comparator_.HaveMergeableAlternativeNames(p5_katakana, p2_katakana));
 }
 
 TEST_F(AutofillProfileComparatorTest, HaveMergeableEmailAddresses) {
