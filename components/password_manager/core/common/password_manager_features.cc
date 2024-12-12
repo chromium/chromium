@@ -50,7 +50,7 @@ BASE_FEATURE(kShowSuggestionsOnAutofocus,
 // TTF to the user.
 BASE_FEATURE(kPasswordSuggestionBottomSheetV2,
              "PasswordSuggestionBottomSheetV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables showing the warning about UPM migrating local passwords.
 // The feature is limited to Canary/Dev/Beta by a check in

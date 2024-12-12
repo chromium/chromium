@@ -2256,47 +2256,6 @@ TEST_F(PasswordAutofillAgentTest,
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(PasswordAutofillAgentTest, KeyboardReplacingSurfaceSuppressesPopups) {
-  SimulateOnFillPasswordForm(fill_data_);
-  SimulateSuggestionChoice(username_element_);
-  EXPECT_CALL(fake_driver_, ShowKeyboardReplacingSurface);
-  CheckSuggestionsNotShown();
-}
-
-TEST_F(PasswordAutofillAgentTest, KeyboardReplacingSurfaceClosed) {
-  fill_data_.wait_for_username = true;
-  SimulateOnFillPasswordForm(fill_data_);
-
-  // Touch to fill will be shown multiple times until
-  // KeyboardReplacingSurfaceClosed() gets called.
-  SimulateElementClick(password_element_);
-  EXPECT_TRUE(password_autofill_agent_->ShouldSuppressKeyboard());
-  EXPECT_EQ(WebAutofillState::kNotFilled, password_element_.GetAutofillState());
-
-  EXPECT_CALL(fake_driver_, ShowKeyboardReplacingSurface);
-  base::RunLoop().RunUntilIdle();
-
-  password_autofill_agent_->KeyboardReplacingSurfaceClosed(true);
-  EXPECT_FALSE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
-      password_element_));
-  EXPECT_FALSE(password_autofill_agent_->ShouldSuppressKeyboard());
-  EXPECT_EQ(WebAutofillState::kNotFilled, password_element_.GetAutofillState());
-
-  // Reload the page and simulate fill.
-  LoadHTML(kFormHTML);
-  UpdateUrlForHTML(kFormHTML);
-  UpdateUsernameAndPasswordElements();
-  SimulateOnFillPasswordForm(fill_data_);
-  SimulateElementClick(password_element_);
-
-  // After the reload touch to fill is shown again.
-  EXPECT_TRUE(password_autofill_agent_->ShouldSuppressKeyboard());
-  EXPECT_EQ(WebAutofillState::kNotFilled, password_element_.GetAutofillState());
-
-  EXPECT_CALL(fake_driver_, ShowKeyboardReplacingSurface);
-  base::RunLoop().RunUntilIdle();
-}
-
 TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_NoUsernameField) {
   LoadHTML(kVisibleFormWithNoUsernameHTML);
   UpdateUrlForHTML(kVisibleFormWithNoUsernameHTML);

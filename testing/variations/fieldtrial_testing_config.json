@@ -16351,21 +16351,6 @@
             ]
         }
     ],
-    "PasswordSuggestionBottomSheetV2": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PasswordSuggestionBottomSheetV2"
-                    ]
-                }
-            ]
-        }
-    ],
     "PasswordlessGaiaForConsumers": [
         {
             "platforms": [
