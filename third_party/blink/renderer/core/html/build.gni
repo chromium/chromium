@@ -358,6 +358,7 @@ blink_core_sources_html = [
   "html_param_element.h",
   "html_permission_element.cc",
   "html_permission_element.h",
+  "html_permission_element_strings_map.h",
   "html_picture_element.cc",
   "html_picture_element.h",
   "html_plugin_element.cc",
@@ -545,6 +546,7 @@ blink_core_sources_html = [
   "trust_token_attribute_parsing.h",
   "window_name_collection.cc",
   "window_name_collection.h",
+  "$root_gen_dir/third_party/blink/renderer/core/html/html_permission_element_strings_map.cc",
 ]
 
 # Optimizing the HTML parser for speed yields significant gains in performance

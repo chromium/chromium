@@ -25,7 +25,7 @@ action("generate_permission_element_strings_mono_grd") {
   script = "//third_party/blink/renderer/build/scripts/generate_permission_element_grd.py"
 
   outfile_grd = "$root_gen_dir/third_party/blink/public/strings/permission_element_generated_strings.grd"
-  outfile_map = "$root_gen_dir/third_party/blink/renderer/core/html/html_permission_element_strings_map.h"
+  outfile_map = "$root_gen_dir/third_party/blink/renderer/core/html/html_permission_element_strings_map.cc"
   outputs = [
     outfile_grd,
     outfile_map,

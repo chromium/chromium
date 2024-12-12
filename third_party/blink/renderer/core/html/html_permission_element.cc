@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/html_permission_element.h"
 
+#include <stdint.h>
+
 #include <optional>
 
 #include "base/functional/bind.h"
@@ -150,8 +152,8 @@ Vector<PermissionDescriptorPtr> ParsePermissionDescriptorsFromString(
   return Vector<PermissionDescriptorPtr>();
 }
 
-int GetTranslatedMessageID(int message_id,
-                           const AtomicString& language_string) {
+uint16_t GetTranslatedMessageID(uint16_t message_id,
+                                const AtomicString& language_string) {
   DCHECK(language_string.IsLowerASCII());
   if (language_string.empty()) {
     return message_id;
@@ -180,9 +182,9 @@ int GetTranslatedMessageID(int message_id,
 
 // Helper to get permission text resource ID for the given map which has only
 // one element.
-int GetUntranslatedMessageIDSinglePermission(PermissionName name,
-                                             bool granted,
-                                             bool is_precise_location) {
+uint16_t GetUntranslatedMessageIDSinglePermission(PermissionName name,
+                                                  bool granted,
+                                                  bool is_precise_location) {
   if (name == PermissionName::VIDEO_CAPTURE) {
     return granted ? IDS_PERMISSION_REQUEST_CAMERA_ALLOWED
                    : IDS_PERMISSION_REQUEST_CAMERA;
@@ -209,7 +211,7 @@ int GetUntranslatedMessageIDSinglePermission(PermissionName name,
 // Helper to get permission text resource ID for the given map which has
 // multiple elements. Currently we only support "camera microphone" grouped
 // permissions.
-int GetUntranslatedMessageIDMultiplePermissions(bool granted) {
+uint16_t GetUntranslatedMessageIDMultiplePermissions(bool granted) {
   return granted ? IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE_ALLOWED
                  : IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE;
 }
@@ -1329,12 +1331,12 @@ void HTMLPermissionElement::UpdateText() {
 
   AtomicString language_string = ComputeInheritedLanguage().LowerASCII();
 
-  int untranslated_message_id =
+  uint16_t untranslated_message_id =
       permission_count == 1
           ? GetUntranslatedMessageIDSinglePermission(
                 permission_name, permission_granted, is_precise_location_)
           : GetUntranslatedMessageIDMultiplePermissions(permission_granted);
-  int translated_message_id =
+  uint16_t translated_message_id =
       GetTranslatedMessageID(untranslated_message_id, language_string);
   CHECK(translated_message_id);
   permission_text_span_->setInnerText(
