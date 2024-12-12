@@ -29,13 +29,13 @@
 setup(() => {
   var topSVG = document.querySelector("#top-svg");
   var innerSVG = document.querySelector("#inner-svg");
-  var tests = [
+  window.tests = [
     // [Element or selector used to find element,
     //  expected ownerSVGElement value,
     //  description]
     [topSVG, null, "outer <svg> element"],
     ["rect", topSVG, "non-<svg> child of outer <svg> element"],
-    ["title", topSVG, "non-<svg> descendant of outer <svg> element"],
+    ["#top-svg title", topSVG, "non-<svg> descendant of outer <svg> element"],
     [innerSVG, topSVG, "inner <svg> descendant of outer <svg> element"],
     ["polygon", innerSVG, "non-<svg> descendant of inner <svg> element"],
     ["#svg-in-fo", null, "outer <svg> in foreignObject"],
