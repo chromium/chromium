@@ -47,7 +47,6 @@ import './os_apps_page/app_parental_controls/app_parental_controls_subpage.js';
 import './os_apps_page/app_parental_controls/block_app_item.js';
 import './os_search_page/google_assistant_subpage.js';
 import './os_search_page/search_subpage.js';
-import './os_people_page/account_manager_subpage.js';
 import './os_people_page/fingerprint_list_subpage.js';
 import './os_people_page/lock_screen_subpage.js';
 import './os_people_page/os_sync_controls_subpage.js';
@@ -305,7 +304,6 @@ export {OsSettingsEditDictionaryPageElement} from './os_languages_page/os_edit_d
 export {OsSettingsClearPersonalizedDataDialogElement} from './os_languages_page/os_japanese_clear_ime_data_dialog.js';
 export {OsSettingsLanguagesPageV2Element} from './os_languages_page/os_languages_page_v2.js';
 export {Account, AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './os_people_page/account_manager_browser_proxy.js';
-export {SettingsAccountManagerSubpageElement} from './os_people_page/account_manager_subpage.js';
 export {SettingsUsersAddUserDialogElement} from './os_people_page/add_user_dialog.js';
 export {FingerprintBrowserProxy, FingerprintBrowserProxyImpl, FingerprintInfo, FingerprintResultType} from './os_people_page/fingerprint_browser_proxy.js';
 export {SettingsFingerprintListSubpageElement} from './os_people_page/fingerprint_list_subpage.js';

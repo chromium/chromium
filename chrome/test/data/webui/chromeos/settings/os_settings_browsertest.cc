@@ -1580,10 +1580,6 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSettingsUiUserActionRecorder) {
   RunSettingsTest("os_settings_ui/user_action_recorder_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, ParentalControlsPage) {
-  RunSettingsTest("parental_controls_page/parental_controls_page_test.js");
-}
-
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, ParentalControlsSettingsCard) {
   RunSettingsTest(
       "parental_controls_page/parental_controls_settings_card_test.js");

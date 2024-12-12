@@ -299,7 +299,6 @@ build_webui_tests("build") {
     "os_languages_page/test_os_languages_metrics_proxy.ts",
 
     "os_people_page/account_manager_settings_card_test.ts",
-    "os_people_page/account_manager_subpage_test.ts",
     "os_people_page/add_user_dialog_test.ts",
     "os_people_page/additional_accounts_settings_card_test.ts",
     "os_people_page/fingerprint_list_subpage_test.ts",
@@ -379,7 +378,6 @@ build_webui_tests("build") {
     "os_settings_ui/test_os_settings_hats_browser_proxy.ts",
     "os_settings_ui/user_action_recorder_test.ts",
 
-    "parental_controls_page/parental_controls_page_test.ts",
     "parental_controls_page/parental_controls_settings_card_test.ts",
     "parental_controls_page/test_parental_controls_browser_proxy.ts",
 
