@@ -1134,50 +1134,54 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
       pointer_event->type() == event_type_names::kPointercancel) {
     ReleasePointerCapture(pointer_event->pointerId());
 
-    // Send got/lostpointercapture rightaway if necessary.
-    if (pointer_event->type() == event_type_names::kPointerup) {
-      // We also send boundary events here rightaway.  To find the new position
-      // under the pointer, we perform a hit-test again if a pointer-capture is
-      // going to be released now; otherwise we use the original hit-test target
-      // (or its ancestor in the event-path if it has been removed from DOM).
-      if (pointer_capture_target_.find(pointer_event->pointerId()) !=
-          pointer_capture_target_.end()) {
-        HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kRelease;
-        HitTestRequest request(hit_type);
-        MouseEventWithHitTestResults mev =
-            event_handling_util::PerformMouseEventHitTest(frame_, request,
-                                                          mouse_event);
-        target = mev.InnerElement();
-      } else if (RuntimeEnabledFeatures::
-                     BoundaryEventDispatchTracksNodeRemovalEnabled()) {
-        target = NonDeletedElementTarget(target, pointer_event);
-      }
-
-      // Dispatch the click event if applicable, when the flag is enabled.
-      if (consider_click_dispatch &&
-          RuntimeEnabledFeatures::ClickToCapturedPointerEnabled()) {
-        ProcessPendingPointerCapture(pointer_event);
-        mouse_event_manager_->DispatchMouseClickIfNeeded(
-            mouse_target, captured_click_target, mouse_event,
-            pointer_event->pointerId(), pointer_event->pointerType());
-        // TODO(https://crbug.com/40851596): The following call to
-        // `ProcessCaptureAndPositionOfPointerEvent()` does not see any pending
-        // capture.  Clean this up after the flag is enabled.
-      }
-
-      ProcessCaptureAndPositionOfPointerEvent(pointer_event, target,
-                                              &mouse_event);
-    } else {
-      // Don't send boundary events in this case as it is a little tricky.
-      // This case happens for the drag operation and currently we don't
-      // let the page know that the pointer left the page while dragging.
-      ProcessPendingPointerCapture(pointer_event);
-    }
-
     if (pointer_event->isPrimary()) {
       prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
           mouse_event.pointer_type)] = false;
     }
+  }
+
+  // Update `target` before processing pending pointer capture below.
+  //
+  // To find the new position under the pointer, we perform a hit-test again if
+  // a pointer-capture is going to be released now; otherwise we use the
+  // original hit-test target (or its ancestor in the event-path if it has been
+  // removed from DOM).
+  if (pointer_event->type() == event_type_names::kPointerup) {
+    if (pointer_capture_target_.find(pointer_event->pointerId()) !=
+        pointer_capture_target_.end()) {
+      HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kRelease;
+      HitTestRequest request(hit_type);
+      MouseEventWithHitTestResults mev =
+          event_handling_util::PerformMouseEventHitTest(frame_, request,
+                                                        mouse_event);
+      target = mev.InnerElement();
+    } else if (RuntimeEnabledFeatures::
+                   BoundaryEventDispatchTracksNodeRemovalEnabled()) {
+      target = NonDeletedElementTarget(target, pointer_event);
+    }
+  }
+
+  // Dispatch the click event if applicable, when the flag is enabled.
+  if (consider_click_dispatch &&
+      RuntimeEnabledFeatures::ClickToCapturedPointerEnabled()) {
+    ProcessPendingPointerCapture(pointer_event);
+    mouse_event_manager_->DispatchMouseClickIfNeeded(
+        mouse_target, captured_click_target, mouse_event,
+        pointer_event->pointerId(), pointer_event->pointerType());
+    // TODO(https://crbug.com/40851596): The following call to
+    // `ProcessCaptureAndPositionOfPointerEvent()` does not see any pending
+    // capture.  Clean this up after the flag is enabled.
+  }
+
+  // Send got/lostpointercapture rightaway if necessary.
+  if (pointer_event->type() == event_type_names::kPointerup) {
+    ProcessCaptureAndPositionOfPointerEvent(pointer_event, target,
+                                            &mouse_event);
+  } else if (pointer_event->type() == event_type_names::kPointercancel) {
+    // Don't send boundary events in this case as it is a little tricky.
+    // This case happens for the drag operation and currently we don't
+    // let the page know that the pointer left the page while dragging.
+    ProcessPendingPointerCapture(pointer_event);
   }
 
   if (mouse_event.GetType() == WebInputEvent::Type::kMouseLeave &&
