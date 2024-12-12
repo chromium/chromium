@@ -756,7 +756,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kKeyboard:
         return 'os-settings:device-keyboard';
       case SearchResultIcon.kLanguage:
-        return 'os-settings:language-revamp';
+        return 'os-settings:language';
       case SearchResultIcon.kLaptop:
         return 'os-settings:laptop-chromebook';
       case SearchResultIcon.kLock:

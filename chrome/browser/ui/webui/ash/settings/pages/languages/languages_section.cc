@@ -14,7 +14,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
-#include "chrome/browser/ui/webui/ash/settings/pages/device/inputs_section.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/languages_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -169,18 +168,7 @@ void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
 LanguagesSection::LanguagesSection(Profile* profile,
                                    SearchTagRegistry* search_tag_registry,
                                    PrefService* pref_service)
-    : OsSettingsSection(profile, search_tag_registry),
-      inputs_subsection_(
-          !ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? std::make_optional<InputsSection>(
-                    profile,
-                    search_tag_registry,
-                    pref_service,
-                    chromeos::features::IsOrcaEnabled()
-                        ? input_method::EditorMediatorFactory::GetInstance()
-                              ->GetForProfile(profile)
-                        : nullptr)
-              : std::nullopt) {
+    : OsSettingsSection(profile, search_tag_registry) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetLanguagesPageSearchConceptsV2());
   if (IsPerAppLanguageEnabled(profile)) {
@@ -209,13 +197,6 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                           IsPerAppLanguageEnabled(profile()));
 
   AddLanguagesPageStringsV2(html_source);
-
-  // Inputs subsection exists only when the OsSettingsRevampWayfinding feature
-  // is disabled. It is part of the Device section when the feature is enabled.
-  if (!ash::features::IsOsSettingsRevampWayfindingEnabled()) {
-    CHECK(inputs_subsection_);
-    inputs_subsection_->AddLoadTimeData(html_source);
-  }
 }
 
 void LanguagesSection::AddHandlers(content::WebUI* web_ui) {
@@ -228,9 +209,7 @@ int LanguagesSection::GetSectionNameMessageId() const {
 }
 
 mojom::Section LanguagesSection::GetSection() const {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::Section::kSystemPreferences
-             : mojom::Section::kLanguagesAndInput;
+  return mojom::Section::kSystemPreferences;
 }
 
 mojom::SearchResultIcon LanguagesSection::GetSectionIcon() const {
@@ -238,9 +217,7 @@ mojom::SearchResultIcon LanguagesSection::GetSectionIcon() const {
 }
 
 const char* LanguagesSection::GetSectionPath() const {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::kSystemPreferencesSectionPath
-             : mojom::kLanguagesAndInputSectionPath;
+  return mojom::kSystemPreferencesSectionPath;
 }
 
 bool LanguagesSection::LogMetric(mojom::Setting setting,
@@ -277,13 +254,6 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
         mojom::SearchResultIcon::kLanguage,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::kAppLanguagesSubpagePath);
-  }
-
-  // Inputs subsection exists only when the OsSettingsRevampWayfinding feature
-  // is disabled. It is part of the Device section when the feature is enabled.
-  if (!ash::features::IsOsSettingsRevampWayfindingEnabled()) {
-    CHECK(inputs_subsection_);
-    inputs_subsection_->RegisterHierarchy(generator);
   }
 }
 
