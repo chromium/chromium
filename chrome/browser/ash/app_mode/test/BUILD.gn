@@ -11,6 +11,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
     "kiosk_browsertest.cc",
+    "kiosk_chrome_app_browsertest.cc",
     "kiosk_file_system_volumes_browsertest.cc",
     "kiosk_web_app_offline_enabled_browsertest.cc",
     "new_windows_in_kiosk_allowed_browsertest.cc",
@@ -26,6 +27,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//content/test:test_support",
+    "//extensions/components/native_app_window",
     "//testing/gtest",
     "//ui/events:test_support",
   ]

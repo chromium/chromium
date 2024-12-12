@@ -9,4 +9,5 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/login/error_screen_handler.h",
   "+chrome/browser/ui/webui/ash/login/gaia_screen_handler.h",
   "+chrome/browser/ui/webui/ash/login/oobe_ui.h",
+  "+extensions/components/native_app_window/native_app_window_views.h",
 ]

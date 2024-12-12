@@ -5,11 +5,9 @@
 #include <string>
 #include <vector>
 
-#include "apps/test/app_window_waiter.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/scoped_observation.h"
-#include "base/test/gtest_tags.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
@@ -52,15 +50,12 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
-#include "extensions/components/native_app_window/native_app_window_views.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/views/window/non_client_view.h"
 
 namespace ash {
 
@@ -169,50 +164,6 @@ class KioskDeviceOwnedTest : public KioskBaseTest {
         user_manager::UserManager::Get()));
   }
 };
-
-IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, InstallAndLaunchApp) {
-  base::AddFeatureIdTagToTestResult(
-      "screenplay-5e6b8c54-2eab-4ac0-a484-b9738466bb9b");
-
-  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
-  WaitForAppLaunchSuccess();
-  KioskChromeAppManager::App app;
-  ASSERT_TRUE(KioskChromeAppManager::Get()->GetApp(test_app_id(), &app));
-  EXPECT_FALSE(app.was_auto_launched_with_zero_delay);
-  EXPECT_EQ(ManifestLocation::kExternalPref, GetInstalledAppLocation());
-}
-
-// This test case is to cover crbug.com/1235334.
-IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, WindowViewsBounds) {
-  ExtensionTestMessageListener app_window_loaded_listener("appWindowLoaded");
-
-  // Start app launch with network portal state.
-  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
-  EXPECT_TRUE(app_window_loaded_listener.WaitUntilSatisfied());
-
-  // Verify the primary user profile is existing.
-  Profile* app_profile = ProfileManager::GetPrimaryUserProfile();
-  ASSERT_TRUE(app_profile);
-
-  // Verify the app window and views.
-  extensions::AppWindowRegistry* app_window_registry =
-      extensions::AppWindowRegistry::Get(app_profile);
-  extensions::AppWindow* window =
-      apps::AppWindowWaiter(app_window_registry, test_app_id()).Wait();
-  ASSERT_TRUE(window);
-  native_app_window::NativeAppWindowViews* views =
-      static_cast<native_app_window::NativeAppWindowViews*>(
-          window->GetBaseWindow());
-  ASSERT_TRUE(views);
-
-  // The bounds of `frame_view` and `client_view` should be consistent when the
-  // Chrome app Kiosk session starts.
-  views::NonClientView* non_client_view = views->widget()->non_client_view();
-  const gfx::Rect& frame_view_bounds = non_client_view->frame_view()->bounds();
-  const gfx::Rect& client_view_bounds =
-      non_client_view->client_view()->bounds();
-  EXPECT_EQ(frame_view_bounds, client_view_bounds);
-}
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
                        LaunchAppNetworkDownConfigureNotAllowed) {
