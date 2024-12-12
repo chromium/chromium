@@ -106,7 +106,6 @@ class OptionalForm {
 // - password form fill, referred to as Password Autofill, and
 // - entire form fill based on one field entry, referred to as Form Autofill.
 class AutofillAgent : public content::RenderFrameObserver,
-                      public FormTracker::Observer,
                       public blink::WebAutofillClient,
                       public mojom::AutofillAgent {
  public:
@@ -231,16 +230,17 @@ class AutofillAgent : public content::RenderFrameObserver,
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  // FormTracker::Observer
+  // TODO(crbug.com/40147954): Find a better name for this method.
+  // Invoked when form needs to be saved because of `reason`, `element` is
+  // valid if the callback caused by a reason other than
+  // SaveFormReason::kWillSendSubmitEvent, |form| is valid for the callback
+  // caused by SaveFormReason::kWillSendSubmitEvent.
   void OnProvisionallySaveForm(const blink::WebFormElement& form,
                                const blink::WebFormControlElement& element,
-                               SaveFormReason source) override;
-  void OnProbablyFormSubmitted() override;
-  void OnFormSubmitted(const blink::WebFormElement& form_element) override;
-  void OnInferredFormSubmission(mojom::SubmissionSource source) override;
-
-  void AddFormObserver(Observer* observer);
-  void RemoveFormObserver(Observer* observer);
+                               FormTracker::SaveFormReason reason);
+  void OnProbablyFormSubmitted();
+  void OnFormSubmitted(const blink::WebFormElement& form_element);
+  void OnInferredFormSubmission(mojom::SubmissionSource source);
 
   // Instructs `form_tracker_` to track the autofilled `element`.
   void TrackAutofilledElement(const blink::WebFormControlElement& element);

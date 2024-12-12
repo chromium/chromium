@@ -70,44 +70,12 @@ class FieldRef {
 class FormTracker : public content::RenderFrameObserver,
                     public blink::WebLocalFrameObserver {
  public:
-  // The interface implemented by observer to get notification of form's change
-  // and submission.
-  class Observer {
-   public:
-    enum class SaveFormReason {
-      kTextFieldChanged,
-      // TODO(crbug.com/40281981): Remove after launching the feature
-      // kAutofillPreferSavedFormAsSubmittedForm.
-      kWillSendSubmitEvent,
-      kSelectChanged,
-    };
-
-    // TODO(crbug.com/40147954): Find a better name for this method.
-    // Invoked when form needs to be saved because of |source|, |element| is
-    // valid if the callback caused by source other than
-    // WILL_SEND_SUBMIT_EVENT, |form| is valid for the callback caused by
-    // WILL_SEND_SUBMIT_EVENT.
-    virtual void OnProvisionallySaveForm(
-        const blink::WebFormElement& form,
-        const blink::WebFormControlElement& element,
-        SaveFormReason source) = 0;
-
-    // Invoked when the form is probably submitted, the submitted form could be
-    // the one saved in OnProvisionallySaveForm() or others in the page.
-    virtual void OnProbablyFormSubmitted() = 0;
-
-    // Invoked when |form| is submitted. The submission might not be successful,
-    // observer needs to check whether the form exists in new page.
-    virtual void OnFormSubmitted(const blink::WebFormElement& form) = 0;
-
-    // Invoked when tracker infers the last form or element saved in
-    // OnProvisionallySaveForm() is submitted from the |source|, the tracker
-    // infers submission from the disappearance of form or element, observer
-    // might not need to check it again.
-    virtual void OnInferredFormSubmission(mojom::SubmissionSource source) = 0;
-
-   protected:
-    virtual ~Observer() = default;
+  enum class SaveFormReason {
+    kTextFieldChanged,
+    // TODO(crbug.com/40281981): Remove after launching the feature
+    // kAutofillPreferSavedFormAsSubmittedForm.
+    kWillSendSubmitEvent,
+    kSelectChanged,
   };
 
   using UserGestureRequired =
@@ -120,9 +88,6 @@ class FormTracker : public content::RenderFrameObserver,
   FormTracker& operator=(const FormTracker&) = delete;
 
   ~FormTracker() override;
-
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
 
   // Same methods as those in blink::WebAutofillClient, but invoked by
   // AutofillAgent.
@@ -187,10 +152,11 @@ class FormTracker : public content::RenderFrameObserver,
   // http://bugs.webkit.org/show_bug.cgi?id=16976 , we also don't want to
   // process element while it is changing.
   void FormControlDidChangeImpl(FieldRendererId element_id,
-                                Observer::SaveFormReason change_source);
+                                SaveFormReason change_source);
   void FireProbablyFormSubmitted();
   void FireFormSubmitted(const blink::WebFormElement& form);
-  void FireInferredFormSubmission(mojom::SubmissionSource source);
+  // Virtual for testing.
+  virtual void FireInferredFormSubmission(mojom::SubmissionSource source);
   void FireSubmissionIfFormDisappear(mojom::SubmissionSource source);
   bool CanInferFormSubmitted();
 
@@ -209,7 +175,6 @@ class FormTracker : public content::RenderFrameObserver,
   // Whether a user gesture is required to pass on text field change events.
   const UserGestureRequired user_gesture_required_;
 
-  base::ObserverList<Observer>::Unchecked observers_;
   struct {
     FormRef form;
     FieldRef formless_element;

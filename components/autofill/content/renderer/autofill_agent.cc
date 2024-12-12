@@ -476,7 +476,6 @@ AutofillAgent::AutofillAgent(
       password_generation_agent_(std::move(password_generation_agent)) {
   render_frame->GetWebFrame()->SetAutofillClient(this);
   password_autofill_agent_->Init(this);
-  AddFormObserver(this);
   registry->AddInterface<mojom::AutofillAgent>(base::BindRepeating(
       &AutofillAgent::BindPendingReceiver, base::Unretained(this)));
 }
@@ -484,9 +483,7 @@ AutofillAgent::AutofillAgent(
 // The destructor is not guaranteed to be called. Destruction happens (only)
 // through the OnDestruct() event, which posts a task to delete this object.
 // The process may be killed before this deletion can happen.
-AutofillAgent::~AutofillAgent() {
-  RemoveFormObserver(this);
-}
+AutofillAgent::~AutofillAgent() = default;
 
 WebDocument AutofillAgent::GetDocument() const {
   return unsafe_render_frame()
@@ -1853,7 +1850,7 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
 void AutofillAgent::OnProvisionallySaveForm(
     const WebFormElement& form_element,
     const WebFormControlElement& element,
-    SaveFormReason source) {
+    FormTracker::SaveFormReason source) {
   DCHECK(form_util::MaybeWasOwnedByFrame(form_element, unsafe_render_frame()));
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
 
@@ -1885,7 +1882,7 @@ void AutofillAgent::OnProvisionallySaveForm(
   };
 
   switch (source) {
-    case FormTracker::Observer::SaveFormReason::kWillSendSubmitEvent:
+    case FormTracker::SaveFormReason::kWillSendSubmitEvent:
       // TODO(crbug.com/40281981): Figure out if this is still needed, and
       // document the reason, otherwise remove.
       password_autofill_agent_->InformBrowserAboutUserInput(
@@ -1905,11 +1902,11 @@ void AutofillAgent::OnProvisionallySaveForm(
                              mojom::SubmissionSource::FORM_SUBMISSION);
       }
       break;
-    case FormTracker::Observer::SaveFormReason::kTextFieldChanged:
+    case FormTracker::SaveFormReason::kTextFieldChanged:
       update_submission_data_on_user_edit();
       OnTextFieldDidChange(element);
       break;
-    case FormTracker::Observer::SaveFormReason::kSelectChanged:
+    case FormTracker::SaveFormReason::kSelectChanged:
       update_submission_data_on_user_edit();
       OnSelectControlDidChange(element);
       break;
@@ -1979,14 +1976,6 @@ void AutofillAgent::OnInferredFormSubmission(mojom::SubmissionSource source) {
   }
   ResetLastInteractedElements();
   OnFormNoLongerSubmittable();
-}
-
-void AutofillAgent::AddFormObserver(Observer* observer) {
-  form_tracker_->AddObserver(observer);
-}
-
-void AutofillAgent::RemoveFormObserver(Observer* observer) {
-  form_tracker_->RemoveObserver(observer);
 }
 
 void AutofillAgent::TrackAutofilledElement(

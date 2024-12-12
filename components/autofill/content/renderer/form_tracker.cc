@@ -124,18 +124,6 @@ FormTracker::~FormTracker() {
   ResetLastInteractedElements();
 }
 
-void FormTracker::AddObserver(Observer* observer) {
-  DCHECK(observer);
-  DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
-  observers_.AddObserver(observer);
-}
-
-void FormTracker::RemoveObserver(Observer* observer) {
-  DCHECK(observer);
-  DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
-  observers_.RemoveObserver(observer);
-}
-
 void FormTracker::AjaxSucceeded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
   submission_triggering_events_.xhr_succeeded = true;
@@ -170,11 +158,11 @@ void FormTracker::TextFieldDidChange(const WebFormControlElement& element) {
   unsafe_render_frame()
       ->GetWebFrame()
       ->GetTaskRunner(blink::TaskType::kInternalUserInteraction)
-      ->PostTask(FROM_HERE, base::BindRepeating(
-                                &FormTracker::FormControlDidChangeImpl,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                form_util::GetFieldRendererId(element),
-                                Observer::SaveFormReason::kTextFieldChanged));
+      ->PostTask(FROM_HERE,
+                 base::BindRepeating(&FormTracker::FormControlDidChangeImpl,
+                                     weak_ptr_factory_.GetWeakPtr(),
+                                     form_util::GetFieldRendererId(element),
+                                     SaveFormReason::kTextFieldChanged));
 }
 
 void FormTracker::SelectControlDidChange(const WebFormControlElement& element) {
@@ -191,7 +179,7 @@ void FormTracker::SelectControlDidChange(const WebFormControlElement& element) {
                  base::BindRepeating(&FormTracker::FormControlDidChangeImpl,
                                      weak_ptr_factory_.GetWeakPtr(),
                                      form_util::GetFieldRendererId(element),
-                                     Observer::SaveFormReason::kSelectChanged));
+                                     SaveFormReason::kSelectChanged));
 }
 
 void FormTracker::ElementDisappeared(const blink::WebElement& element) {
@@ -250,9 +238,8 @@ void FormTracker::TrackAutofilledElement(const WebFormControlElement& element) {
   TrackElement(mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL);
 }
 
-void FormTracker::FormControlDidChangeImpl(
-    FieldRendererId element_id,
-    Observer::SaveFormReason change_source) {
+void FormTracker::FormControlDidChangeImpl(FieldRendererId element_id,
+                                           SaveFormReason change_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
   WebFormControlElement element =
       form_util::GetFormControlByRendererId(element_id);
@@ -268,9 +255,7 @@ void FormTracker::FormControlDidChangeImpl(
   } else {
     UpdateLastInteractedElement(form_util::GetFieldRendererId(element));
   }
-  for (auto& observer : observers_) {
-    observer.OnProvisionallySaveForm(form_element, element, change_source);
-  }
+  agent_->OnProvisionallySaveForm(form_element, element, change_source);
 }
 
 void FormTracker::DidCommitProvisionalLoad(ui::PageTransition transition) {
@@ -332,11 +317,8 @@ void FormTracker::WillSendSubmitEvent(const WebFormElement& form) {
     // document the reason, otherwise remove.
     UpdateLastInteractedElement(form_util::GetFormRendererId(form));
   }
-  for (auto& observer : observers_) {
-    observer.OnProvisionallySaveForm(
-        form, blink::WebFormControlElement(),
-        Observer::SaveFormReason::kWillSendSubmitEvent);
-  }
+  agent_->OnProvisionallySaveForm(form, blink::WebFormControlElement(),
+                                  SaveFormReason::kWillSendSubmitEvent);
 }
 
 void FormTracker::WillSubmitForm(const WebFormElement& form) {
@@ -362,8 +344,7 @@ void FormTracker::OnDestruct() {
 void FormTracker::FireFormSubmitted(const blink::WebFormElement& form) {
   base::UmaHistogramEnumeration(kSubmissionSourceHistogram,
                                 SubmissionSource::FORM_SUBMISSION);
-  for (auto& observer : observers_)
-    observer.OnFormSubmitted(form);
+  agent_->OnFormSubmitted(form);
   if (!base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
     ResetLastInteractedElements();
   }
@@ -373,9 +354,7 @@ void FormTracker::FireProbablyFormSubmitted() {
   if (IsTracking()) {
     base::UmaHistogramEnumeration(kSubmissionSourceHistogram,
                                   SubmissionSource::PROBABLY_FORM_SUBMITTED);
-    for (auto& observer : observers_) {
-      observer.OnProbablyFormSubmitted();
-    }
+    agent_->OnProbablyFormSubmitted();
     if (!base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
       ResetLastInteractedElements();
     }
@@ -386,9 +365,7 @@ void FormTracker::FireInferredFormSubmission(SubmissionSource source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
   if (IsTracking()) {
     base::UmaHistogramEnumeration(kSubmissionSourceHistogram, source);
-    for (auto& observer : observers_) {
-      observer.OnInferredFormSubmission(source);
-    }
+    agent_->OnInferredFormSubmission(source);
     if (source != SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL ||
         !base::FeatureList::IsEnabled(
             features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
