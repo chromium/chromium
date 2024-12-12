@@ -362,7 +362,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
   wgpu::Adapter CreatePreferredAdapter(wgpu::PowerPreference power_preference,
                                        bool force_fallback,
-                                       bool compatibility_mode) const;
+                                       wgpu::FeatureLevel feature_level) const;
 
   // Decide if a device feature is exposed to render process.
   bool IsFeatureExposed(wgpu::FeatureName feature) const;
@@ -1357,10 +1357,18 @@ WGPUFuture WebGPUDecoderImpl::RequestAdapterImpl(
   }
 #endif  // BUILDFLAG(IS_LINUX)
 
+  wgpu::FeatureLevel feature_level = wgpu::FeatureLevel::Core;
+  if (force_webgpu_compat_ ||
+      (static_cast<wgpu::FeatureLevel>(options->featureLevel) ==
+           wgpu::FeatureLevel::Compatibility &&
+       (safety_level_ == webgpu::SafetyLevel::kUnsafe ||
+        safety_level_ == webgpu::SafetyLevel::kSafeExperimental))) {
+    feature_level = wgpu::FeatureLevel::Compatibility;
+  }
+
   wgpu::Adapter adapter = CreatePreferredAdapter(
       static_cast<wgpu::PowerPreference>(options->powerPreference),
-      options->forceFallbackAdapter || force_fallback_adapter,
-      options->compatibilityMode || force_webgpu_compat_);
+      options->forceFallbackAdapter || force_fallback_adapter, feature_level);
 
   if (adapter == nullptr) {
     // There are no adapters to return since webgpu is not supported here
@@ -1673,7 +1681,7 @@ bool WebGPUDecoderImpl::use_blocklist() const {
 wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
     wgpu::PowerPreference power_preference,
     bool force_fallback,
-    bool compatibility_mode) const {
+    wgpu::FeatureLevel feature_level) const {
   // Update power_preference based on command-line flag
   // use_webgpu_power_preference_.
   switch (use_webgpu_power_preference_) {
@@ -1709,7 +1717,7 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
 
   // Prepare wgpu::RequestAdapterOptions.
   wgpu::RequestAdapterOptions adapter_options;
-  adapter_options.compatibilityMode = compatibility_mode;
+  adapter_options.featureLevel = feature_level;
   adapter_options.forceFallbackAdapter = force_fallback;
   adapter_options.powerPreference = power_preference;
 

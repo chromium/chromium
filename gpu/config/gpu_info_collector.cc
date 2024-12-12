@@ -416,7 +416,7 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
 #if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   // Check for compat adapters on GLES.
   adapter_options.backendType = wgpu::BackendType::OpenGLES;
-  adapter_options.compatibilityMode = true;
+  adapter_options.featureLevel = wgpu::FeatureLevel::Compatibility;
 
   dawn::native::opengl::RequestAdapterOptionsGetGLProc
       adapter_options_get_gl_proc = {};
@@ -922,15 +922,16 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
   };
 #endif
 
-  for (bool compatibilityMode : {false, true}) {
-    adapter_options.compatibilityMode = compatibilityMode;
+  for (wgpu::FeatureLevel featureLevel :
+       {wgpu::FeatureLevel::Compatibility, wgpu::FeatureLevel::Core}) {
+    adapter_options.featureLevel = featureLevel;
     std::vector<dawn::native::Adapter> adapters = instance->EnumerateAdapters(
         reinterpret_cast<const WGPURequestAdapterOptions*>(&adapter_options));
     for (dawn::native::Adapter& native_adapter : adapters) {
       wgpu::Adapter adapter(native_adapter.Get());
       wgpu::AdapterInfo info = {};
       adapter.GetInfo(&info);
-      if (compatibilityMode &&
+      if (featureLevel == wgpu::FeatureLevel::Compatibility &&
           info.backendType != wgpu::BackendType::OpenGLES) {
         continue;
       }
@@ -941,7 +942,7 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
         std::string gpu_str = GetDawnAdapterTypeString(info.adapterType);
         gpu_str += " " + GetDawnBackendTypeString(info.backendType);
         gpu_str += " - " + std::string(info.device);
-        if (compatibilityMode) {
+        if (featureLevel == wgpu::FeatureLevel::Compatibility) {
           gpu_str += " (Compatibility Mode)";
         }
         dawn_info_list->push_back(gpu_str);

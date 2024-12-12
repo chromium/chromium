@@ -72,6 +72,16 @@ wgpu::PowerPreference AsDawnType(V8GPUPowerPreference power_preference) {
   }
 }
 
+wgpu::FeatureLevel AsDawnFeatureLevel(const String& feature_level) {
+  CHECK(feature_level == "core" || feature_level == "compatibility");
+
+  if (feature_level == "compatibility") {
+    return wgpu::FeatureLevel::Compatibility;
+  }
+
+  return wgpu::FeatureLevel::Core;
+}
+
 wgpu::RequestAdapterOptions AsDawnType(
     const GPURequestAdapterOptions* webgpu_options) {
   DCHECK(webgpu_options);
@@ -79,10 +89,11 @@ wgpu::RequestAdapterOptions AsDawnType(
   wgpu::RequestAdapterOptions dawn_options;
   dawn_options.forceFallbackAdapter = webgpu_options->forceFallbackAdapter();
 
-  dawn_options.compatibilityMode = webgpu_options->compatibilityMode();
-  if (RuntimeEnabledFeatures::WebGPUFeatureLevelEnabled() &&
-      webgpu_options->featureLevel() == "compatibility") {
-    dawn_options.compatibilityMode = true;
+  if (webgpu_options->compatibilityMode()) {
+    dawn_options.featureLevel = wgpu::FeatureLevel::Compatibility;
+  } else if (RuntimeEnabledFeatures::WebGPUFeatureLevelEnabled()) {
+    dawn_options.featureLevel =
+        AsDawnFeatureLevel(webgpu_options->featureLevel());
   }
 
   if (webgpu_options->hasPowerPreference()) {
@@ -390,6 +401,15 @@ void GPU::RequestAdapterImpl(
         "enforced as soon as Chromium ships Compatibility Mode, potentially "
         "breaking this webpage. See "
         "https://github.com/gpuweb/gpuweb/issues/4266");
+  }
+
+  if (options->compatibilityMode() &&
+      options->featureLevel() != "compatibility") {
+    AddConsoleWarning(execution_context,
+                      "The \"compatibilityMode\" option is deprecated. Use "
+                      "\"featureLevel\": \"compatibility\" instead. See "
+                      "https://gpuweb.github.io/gpuweb/"
+                      "#dom-gpurequestadapteroptions-featurelevel");
   }
 
   wgpu::RequestAdapterOptions dawn_options = AsDawnType(options);
