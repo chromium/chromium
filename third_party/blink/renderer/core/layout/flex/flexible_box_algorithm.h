@@ -50,11 +50,6 @@ class FlexLine;
 class FlexibleBoxAlgorithm;
 struct MinMaxSizes;
 
-enum FlexSign {
-  kPositiveFlexibility,
-  kNegativeFlexibility,
-};
-
 typedef HeapVector<FlexItem, 8> FlexItemVector;
 
 class FlexItem {
@@ -183,67 +178,18 @@ class FlexLine {
   DISALLOW_NEW();
 
  public:
-  typedef Vector<FlexItem*, 8> ViolationsVector;
-
   // This will std::move the passed-in line_items.
-  FlexLine(FlexibleBoxAlgorithm* algorithm,
-           FlexItemVectorView line_items,
+  FlexLine(FlexItemVectorView line_items,
            LayoutUnit sum_flex_base_size,
-           LayoutUnit sum_hypothetical_main_size,
-           double total_flex_grow,
-           double total_flex_shrink,
-           double total_weighted_flex_shrink,
-           unsigned main_axis_auto_margin_count)
-      : algorithm_(algorithm),
-        line_items_(std::move(line_items)),
+           LayoutUnit sum_hypothetical_main_size)
+      : line_items_(std::move(line_items)),
         sum_flex_base_size_(sum_flex_base_size),
-        sum_hypothetical_main_size_(sum_hypothetical_main_size),
-        total_flex_grow_(total_flex_grow),
-        total_flex_shrink_(total_flex_shrink),
-        total_weighted_flex_shrink_(total_weighted_flex_shrink),
-        main_axis_auto_margin_count_(main_axis_auto_margin_count) {}
+        sum_hypothetical_main_size_(sum_hypothetical_main_size) {}
 
-  FlexSign Sign() const {
-    return sum_hypothetical_main_size_ < container_main_inner_size_
-               ? kPositiveFlexibility
-               : kNegativeFlexibility;
-  }
-
-  void SetContainerMainInnerSize(LayoutUnit size) {
-    container_main_inner_size_ = size;
-  }
-
-  void FreezeInflexibleItems();
-
-  // This modifies remaining_free_space.
-  void FreezeViolations(ViolationsVector& violations);
-
-  // Should be called in a loop until it returns false.
-  // This modifies remaining_free_space.
-  bool ResolveFlexibleLengths();
-
-  FlexibleBoxAlgorithm* algorithm_;
   FlexItemVectorView line_items_;
 
   const LayoutUnit sum_flex_base_size_;
   const LayoutUnit sum_hypothetical_main_size_;
-
-  double total_flex_grow_;
-  double total_flex_shrink_;
-  double total_weighted_flex_shrink_;
-
-  const unsigned main_axis_auto_margin_count_;
-
-  // This gets set by SetContainerMainInnerSize
-  LayoutUnit container_main_inner_size_;
-  // initial_free_space is the initial amount of free space in this flexbox.
-  // remaining_free_space starts out at the same value but as we place and lay
-  // out flex items we subtract from it. Note that both values can be
-  // negative.
-  // These get set by FreezeInflexibleItems, see spec:
-  // https://drafts.csswg.org/css-flexbox/#resolve-flexible-lengths step 3
-  LayoutUnit initial_free_space_;
-  LayoutUnit remaining_free_space_;
 };
 
 // This class implements the CSS Flexbox layout algorithm:

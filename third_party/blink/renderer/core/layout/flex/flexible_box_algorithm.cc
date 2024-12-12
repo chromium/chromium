@@ -176,113 +176,6 @@ LayoutUnit FlexItem::AlignmentOffset(LayoutUnit available_free_space,
   return LayoutUnit();
 }
 
-void FlexLine::FreezeViolations(ViolationsVector& violations) {
-  for (auto* violation : violations) {
-    DCHECK(!violation->frozen_);
-    remaining_free_space_ -=
-        violation->flexed_content_size_ - violation->flex_base_content_size_;
-    total_flex_grow_ -= violation->flex_grow_;
-    total_flex_shrink_ -= violation->flex_shrink_;
-    total_weighted_flex_shrink_ -=
-        violation->flex_shrink_ * violation->flex_base_content_size_;
-    // total_weighted_flex_shrink can be negative when we exceed the precision
-    // of a double when we initially calculate total_weighted_flex_shrink. We
-    // then subtract each child's weighted flex shrink with full precision, now
-    // leading to a negative result. See
-    // css3/flexbox/large-flex-shrink-assert.html
-    total_weighted_flex_shrink_ = std::max(total_weighted_flex_shrink_, 0.0);
-    violation->frozen_ = true;
-  }
-}
-
-void FlexLine::FreezeInflexibleItems() {
-  // Per https://drafts.csswg.org/css-flexbox/#resolve-flexible-lengths step 2,
-  // we freeze all items with a flex factor of 0 as well as those with a min/max
-  // size violation.
-  const FlexSign flex_sign = Sign();
-  remaining_free_space_ = container_main_inner_size_ - sum_flex_base_size_;
-
-  ViolationsVector new_inflexible_items;
-  for (auto& flex_item : line_items_) {
-    DCHECK(!flex_item.frozen_);
-    float flex_factor = (flex_sign == kPositiveFlexibility)
-                            ? flex_item.flex_grow_
-                            : flex_item.flex_shrink_;
-    if (flex_factor == 0 ||
-        (flex_sign == kPositiveFlexibility &&
-         flex_item.flex_base_content_size_ >
-             flex_item.hypothetical_main_content_size_) ||
-        (flex_sign == kNegativeFlexibility &&
-         flex_item.flex_base_content_size_ <
-             flex_item.hypothetical_main_content_size_)) {
-      flex_item.flexed_content_size_ =
-          flex_item.hypothetical_main_content_size_;
-      new_inflexible_items.push_back(&flex_item);
-    }
-  }
-  FreezeViolations(new_inflexible_items);
-  initial_free_space_ = remaining_free_space_;
-}
-
-bool FlexLine::ResolveFlexibleLengths() {
-  LayoutUnit total_violation;
-  LayoutUnit used_free_space;
-  ViolationsVector min_violations;
-  ViolationsVector max_violations;
-
-  const FlexSign flex_sign = Sign();
-  const double sum_flex_factors = (flex_sign == kPositiveFlexibility)
-                                      ? total_flex_grow_
-                                      : total_flex_shrink_;
-  if (sum_flex_factors > 0 && sum_flex_factors < 1) {
-    LayoutUnit fractional(initial_free_space_ * sum_flex_factors);
-    if (fractional.Abs() < remaining_free_space_.Abs())
-      remaining_free_space_ = fractional;
-  }
-
-  for (auto& flex_item : line_items_) {
-    if (flex_item.frozen_)
-      continue;
-
-    LayoutUnit child_size = flex_item.flex_base_content_size_;
-    double extra_space = 0;
-    if (remaining_free_space_ > 0 && total_flex_grow_ > 0 &&
-        flex_sign == kPositiveFlexibility && std::isfinite(total_flex_grow_)) {
-      extra_space =
-          remaining_free_space_ * flex_item.flex_grow_ / total_flex_grow_;
-    } else if (remaining_free_space_ < 0 && total_weighted_flex_shrink_ > 0 &&
-               flex_sign == kNegativeFlexibility &&
-               std::isfinite(total_weighted_flex_shrink_) &&
-               flex_item.flex_shrink_) {
-      extra_space = remaining_free_space_ * flex_item.flex_shrink_ *
-                    flex_item.flex_base_content_size_ /
-                    total_weighted_flex_shrink_;
-    }
-    if (std::isfinite(extra_space))
-      child_size += LayoutUnit::FromFloatRound(extra_space);
-
-    LayoutUnit adjusted_child_size = flex_item.ClampSizeToMinAndMax(child_size);
-    DCHECK_GE(adjusted_child_size, 0);
-    flex_item.flexed_content_size_ = adjusted_child_size;
-    used_free_space += adjusted_child_size - flex_item.flex_base_content_size_;
-
-    LayoutUnit violation = adjusted_child_size - child_size;
-    if (violation > 0)
-      min_violations.push_back(&flex_item);
-    else if (violation < 0)
-      max_violations.push_back(&flex_item);
-    total_violation += violation;
-  }
-
-  if (total_violation) {
-    FreezeViolations(total_violation < 0 ? max_violations : min_violations);
-  } else {
-    remaining_free_space_ -= used_free_space;
-  }
-
-  return !total_violation;
-}
-
 // static
 LayoutUnit FlexibleBoxAlgorithm::GapBetweenItems(
     const ComputedStyle& style,
@@ -352,10 +245,6 @@ FlexibleBoxAlgorithm::FlexibleBoxAlgorithm(const ComputedStyle* style,
 FlexLine* FlexibleBoxAlgorithm::ComputeNextFlexLine() {
   LayoutUnit sum_flex_base_size;
   LayoutUnit sum_hypothetical_main_size;
-  double total_flex_grow = 0;
-  double total_flex_shrink = 0;
-  double total_weighted_flex_shrink = 0;
-  unsigned main_axis_auto_margin_count = 0;
 
   bool line_has_in_flow_item = false;
 
@@ -375,11 +264,6 @@ FlexLine* FlexibleBoxAlgorithm::ComputeNextFlexLine() {
         flex_item.FlexBaseMarginBoxSize() + gap_between_items_;
     sum_hypothetical_main_size +=
         flex_item.HypotheticalMainAxisMarginBoxSize() + gap_between_items_;
-    total_flex_grow += flex_item.flex_grow_;
-    total_flex_shrink += flex_item.flex_shrink_;
-    total_weighted_flex_shrink +=
-        flex_item.flex_shrink_ * flex_item.flex_base_content_size_;
-    main_axis_auto_margin_count += flex_item.main_axis_auto_margin_count_;
   }
   if (line_has_in_flow_item) {
     // We added a gap after every item but there shouldn't be one after the last
@@ -393,10 +277,8 @@ FlexLine* FlexibleBoxAlgorithm::ComputeNextFlexLine() {
          next_item_index_ == all_items_.size());
   if (next_item_index_ > start_index) {
     return &flex_lines_.emplace_back(
-        this, FlexItemVectorView(&all_items_, start_index, next_item_index_),
-        sum_flex_base_size, sum_hypothetical_main_size, total_flex_grow,
-        total_flex_shrink, total_weighted_flex_shrink,
-        main_axis_auto_margin_count);
+        FlexItemVectorView(&all_items_, start_index, next_item_index_),
+        sum_flex_base_size, sum_hypothetical_main_size);
   }
   return nullptr;
 }

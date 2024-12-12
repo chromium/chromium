@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/layout/flex/flex_item_iterator.h"
 #include "third_party/blink/renderer/core/layout/flex/flexible_box_algorithm.h"
 #include "third_party/blink/renderer/core/layout/flex/layout_flexible_box.h"
+#include "third_party/blink/renderer/core/layout/flex/line_flexer.h"
 #include "third_party/blink/renderer/core/layout/flex/ng_flex_line.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
@@ -1135,11 +1136,11 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
   while ((line = algorithm_.ComputeNextFlexLine())) {
     const LayoutUnit main_axis_inner_size =
         MainAxisContentExtent(line->sum_hypothetical_main_size_);
-    line->SetContainerMainInnerSize(main_axis_inner_size);
-    line->FreezeInflexibleItems();
-    while (!line->ResolveFlexibleLengths()) {
-      continue;
-    }
+
+    // Flex the items.
+    LineFlexer(base::span(line->line_items_), line->sum_hypothetical_main_size_,
+               line->sum_flex_base_size_, main_axis_inner_size)
+        .Run();
 
     if (layout_info_for_devtools_) [[unlikely]] {
       layout_info_for_devtools_->lines.push_back(DevtoolsFlexInfo::Line());
@@ -1155,6 +1156,7 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
     LayoutUnit max_minor_ascent = LayoutUnit::Min();
     LayoutUnit max_major_descent = LayoutUnit::Min();
     LayoutUnit max_minor_descent = LayoutUnit::Min();
+    unsigned main_axis_auto_margin_count = 0;
 
     for (wtf_size_t i = 0; i < line->line_items_.size(); ++i) {
       FlexItem& flex_item = line->line_items_[i];
@@ -1169,6 +1171,7 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
           flex_item.is_used_flex_basis_indefinite_;
 
       main_axis_free_space -= flex_item.FlexedMarginBoxSize();
+      main_axis_auto_margin_count += flex_item.main_axis_auto_margin_count_;
 
       const LayoutUnit cross_axis_size = ([&]() {
         const ConstraintSpace space = BuildSpaceForLayout(
@@ -1252,7 +1255,7 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
     flex_line_outputs->back().sum_hypothetical_main_size =
         line->sum_hypothetical_main_size_;
     flex_line_outputs->back().main_axis_auto_margin_count =
-        line->main_axis_auto_margin_count_;
+        main_axis_auto_margin_count;
     flex_line_outputs->back().line_cross_size = line_cross_size;
     flex_line_outputs->back().major_baseline = max_major_ascent;
     flex_line_outputs->back().minor_baseline = max_minor_ascent;
