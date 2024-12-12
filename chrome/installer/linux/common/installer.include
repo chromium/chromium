@@ -57,57 +57,30 @@ process_template_includes() {
 # Replace template variables (@@VARNAME@@) in the given template file. If a
 # second argument is given, save the processed text to that filename, otherwise
 # modify the template file in place.
-process_template() (
-  # Don't worry if some of these substitution variables aren't set.
-  # Note that this function is run in a sub-shell so we don't leak this
-  # setting, since we still want unbound variables to be an error elsewhere.
-  set +u
-
+process_template() {
   local TMPLIN="$1"
-  if [ -z "$2" ]; then
-    local TMPLOUT="$TMPLIN"
-  else
-    local TMPLOUT="$2"
+  local TMPLOUT="${2:-$TMPLIN}"
+
+  # Process includes first
+  local TMPLINCL="$(process_template_includes "$TMPLIN")"
+
+  # Substitute templated variables from the environment.
+  local sed_args=""
+  for varname in $(compgen -v); do
+    if [[ "$TMPLINCL" == *"@@${varname}@@"* ]]; then
+      val=$(printf '%s' "${!varname}" | sed 's/[#\/&]/\\&/g')
+      sed_args="${sed_args}s#@@${varname}@@#${val}#g;"
+    fi
+  done
+  echo "$TMPLINCL" | sed "$sed_args" > "$TMPLOUT"
+
+  # Verify no placeholders remain
+  if grep -q '@@' "$TMPLOUT"; then
+    echo "Error: Some placeholders remain unfilled in $TMPLOUT:" >&2
+    grep '@@' "$TMPLOUT" >&2
+    exit 1
   fi
-  # Process includes first so included text also gets substitutions.
-  TMPLINCL="$(process_template_includes "$TMPLIN")"
-  sed \
-    -e "s#@@PACKAGE@@#${PACKAGE}#g" \
-    -e "s#@@PACKAGE_ORIG@@#${PACKAGE_ORIG}#g" \
-    -e "s#@@PACKAGE_FILENAME@@#${PACKAGE_FILENAME}#g" \
-    -e "s#@@PROGNAME@@#${PROGNAME}#g" \
-    -e "s#@@CHANNEL@@#${CHANNEL}#g" \
-    -e "s#@@COMPANY_FULLNAME@@#${COMPANY_FULLNAME}#g" \
-    -e "s#@@VERSION@@#${VERSION}#g" \
-    -e "s#@@PACKAGE_RELEASE@@#${PACKAGE_RELEASE}#g" \
-    -e "s#@@VERSIONFULL@@#${VERSIONFULL}#g" \
-    -e "s#@@INSTALLDIR@@#${INSTALLDIR}#g" \
-    -e "s#@@BUILDDIR@@#${OUTPUTDIR}#g" \
-    -e "s#@@STAGEDIR@@#${STAGEDIR}#g" \
-    -e "s#@@SCRIPTDIR@@#${SCRIPTDIR}#g" \
-    -e "s#@@ENROLLMENTDIR@@#${ENROLLMENTDIR}#g" \
-    -e "s#@@MENUNAME@@#${MENUNAME}#g" \
-    -e "s#@@PRODUCTURL@@#${PRODUCTURL}#g" \
-    -e "s#@@PREDEPENDS@@#${PREDEPENDS}#g" \
-    -e "s#@@DEPENDS@@#${DEPENDS}#g" \
-    -e "s#@@PROVIDES@@#${PROVIDES}#g" \
-    -e "s#@@ARCHITECTURE@@#${ARCHITECTURE}#g" \
-    -e "s#@@MAINTNAME@@#${MAINTNAME}#g" \
-    -e "s#@@MAINTMAIL@@#${MAINTMAIL}#g" \
-    -e "s#@@REPOCONFIG@@#${REPOCONFIG}#g" \
-    -e "s#@@REPOCONFIGREGEX@@#${REPOCONFIGREGEX}#g" \
-    -e "s#@@SHORTDESC@@#${SHORTDESC}#g" \
-    -e "s#@@FULLDESC@@#${FULLDESC}#g" \
-    -e "s#@@PROJECT_LICENSE@@#${PROJECT_LICENSE}#g" \
-    -e "s#@@DEVELOPER_NAME@@#${DEVELOPER_NAME}#g" \
-    -e "s#@@BUGTRACKERURL@@#${BUGTRACKERURL}#g" \
-    -e "s#@@HELPURL@@#${HELPURL}#g" \
-    -e "s#@@USR_BIN_SYMLINK_NAME@@#${USR_BIN_SYMLINK_NAME:-}#g" \
-    -e "s#@@LOGO_RESOURCES_PNG@@#${LOGO_RESOURCES_PNG}#g" \
-    -e "s#@@LOGO_RESOURCE_XPM@@#${LOGO_RESOURCE_XPM}#g" \
-    -e "s#@@DATE_RFC5322@@#$(date --rfc-email)#g" \
-    > "$TMPLOUT" <<< "$TMPLINCL"
-)
+}
 
 # Setup the installation directory hierarchy in the package staging area.
 prep_staging_common() {
