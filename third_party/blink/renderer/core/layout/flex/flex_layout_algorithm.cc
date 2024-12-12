@@ -214,12 +214,11 @@ LayoutUnit FlexLayoutAlgorithm::MainAxisContentExtent(
 
 LayoutUnit FlexLayoutAlgorithm::BaselineAscent(
     const FlexItem& item,
-    const PhysicalBoxFragment& fragment,
-    ItemPosition alignment) const {
+    const PhysicalBoxFragment& fragment) const {
   LogicalBoxFragment baseline_fragment(item.baseline_writing_direction_,
                                        fragment);
 
-  const bool is_last_baseline = alignment == ItemPosition::kLastBaseline;
+  const bool is_last_baseline = item.alignment_ == ItemPosition::kLastBaseline;
   const auto font_baseline = Style().GetFontBaseline();
   LayoutUnit baseline =
       is_last_baseline
@@ -929,33 +928,33 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         ChildAvailableSize().block_size == kIndefiniteSize &&
         is_used_flex_basis_indefinite && !AspectRatioProvidesBlockMainSize();
 
+    const float flex_grow = child_style.ResolvedFlexGrow(Style());
+    const float flex_shrink = child_style.ResolvedFlexShrink(Style());
+
     const auto container_writing_direction =
         GetConstraintSpace().GetWritingDirection();
-    bool is_last_baseline =
-        FlexibleBoxAlgorithm::AlignmentForChild(Style(), child_style) ==
-        ItemPosition::kLastBaseline;
+    const ItemPosition alignment =
+        FlexibleBoxAlgorithm::AlignmentForChild(Style(), child_style);
     const auto baseline_writing_mode = DetermineBaselineWritingMode(
         container_writing_direction, child_writing_mode,
         /* is_parallel_context */ !is_column_);
     const auto baseline_group = DetermineBaselineGroup(
         container_writing_direction, baseline_writing_mode,
-        /* is_parallel_context */ !is_column_, is_last_baseline,
+        /* is_parallel_context */ !is_column_,
+        /* is_last_baseline */ alignment == ItemPosition::kLastBaseline,
         /* is_flipped */ is_wrap_reverse_);
-    algorithm_
-        .emplace_back(child.Style(), item_index++, main_axis_auto_margin_count,
-                      flex_base_content_size,
-                      min_max_sizes_in_main_axis_direction,
-                      main_axis_border_padding, physical_child_margins,
-                      scrollbars, baseline_writing_mode, baseline_group,
-                      is_initial_block_size_indefinite,
-                      is_used_flex_basis_indefinite, depends_on_min_max_sizes)
-        .ng_input_node_ = child;
+    algorithm_.all_items_.emplace_back(
+        child, item_index++, flex_grow, flex_shrink,
+        main_axis_auto_margin_count, flex_base_content_size,
+        min_max_sizes_in_main_axis_direction, main_axis_border_padding,
+        physical_child_margins, scrollbars, baseline_writing_mode,
+        baseline_group, alignment, is_initial_block_size_indefinite,
+        is_used_flex_basis_indefinite, depends_on_min_max_sizes,
+        is_horizontal_flow_, max_content_contribution);
     // Save the layout result so that we can maybe reuse it later.
     if (layout_result && !is_main_axis_inline_axis) {
       algorithm_.all_items_.back().layout_result_ = layout_result;
     }
-    algorithm_.all_items_.back().max_content_contribution_ =
-        max_content_contribution;
   }
 }
 
@@ -1229,15 +1228,12 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
       // TODO(crbug.com/1272533): We may not have a layout-result during
       // min/max calculations. This is incorrect, and we should produce a
       // layout-result when baseline aligned.
-      const auto alignment = flex_item.Alignment();
       if (flex_item.layout_result_ &&
-          (alignment == ItemPosition::kBaseline ||
-           alignment == ItemPosition::kLastBaseline)) {
-        const LayoutUnit ascent =
-            BaselineAscent(flex_item,
-                           To<PhysicalBoxFragment>(
-                               flex_item.layout_result_->GetPhysicalFragment()),
-                           alignment);
+          (flex_item.alignment_ == ItemPosition::kBaseline ||
+           flex_item.alignment_ == ItemPosition::kLastBaseline)) {
+        const LayoutUnit ascent = BaselineAscent(
+            flex_item, To<PhysicalBoxFragment>(
+                           flex_item.layout_result_->GetPhysicalFragment()));
         const LayoutUnit descent = cross_axis_margin_size - ascent;
         if (flex_item.baseline_group_ == BaselineGroup::kMajor) {
           max_major_ascent = std::max(max_major_ascent, ascent);
@@ -1598,21 +1594,19 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
           space = space.ClampNegativeToZero();
         }
 
-        const ItemPosition alignment = item.Alignment();
         LayoutUnit baseline_offset;
-        if (alignment == ItemPosition::kBaseline ||
-            alignment == ItemPosition::kLastBaseline) {
+        if (item.alignment_ == ItemPosition::kBaseline ||
+            item.alignment_ == ItemPosition::kLastBaseline) {
           const bool is_major = item.baseline_group_ == BaselineGroup::kMajor;
-          const LayoutUnit ascent =
-              BaselineAscent(item, physical_fragment, alignment);
+          const LayoutUnit ascent = BaselineAscent(item, physical_fragment);
           const LayoutUnit max_ascent = is_major ? line_output.major_baseline
                                                  : line_output.minor_baseline;
           const LayoutUnit baseline_delta = max_ascent - ascent;
           baseline_offset = is_major ? baseline_delta : space - baseline_delta;
         }
         return line_cross_axis_offset + margin.CrossStart() +
-               FlexItem::AlignmentOffset(space, alignment, baseline_offset,
-                                         is_wrap_reverse_);
+               FlexItem::AlignmentOffset(space, item.alignment_,
+                                         baseline_offset, is_wrap_reverse_);
       })();
 
       main_axis_offset += margin.MainStart();
@@ -2227,9 +2221,8 @@ LayoutResult::EStatus FlexLayoutAlgorithm::PropagateFlexItemInfo(
     // devtools uses margin box.
     item_rect.Expand(physical_margins);
     DCHECK_GE(layout_info_for_devtools_->lines.size(), 1u);
-    DevtoolsFlexInfo::Item item(
-        item_rect,
-        BaselineAscent(flex_item, physical_fragment, flex_item.Alignment()));
+    DevtoolsFlexInfo::Item item(item_rect,
+                                BaselineAscent(flex_item, physical_fragment));
     layout_info_for_devtools_->lines[flex_line_idx].items.push_back(item);
   }
 

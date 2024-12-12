@@ -93,9 +93,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
   LayoutUnit MainAxisContentExtent(LayoutUnit sum_hypothetical_main_size) const;
 
   // Returns the position of the baseline, given a physical fragment.
-  LayoutUnit BaselineAscent(const FlexItem&,
-                            const PhysicalBoxFragment&,
-                            ItemPosition alignment) const;
+  LayoutUnit BaselineAscent(const FlexItem&, const PhysicalBoxFragment&) const;
 
   void HandleOutOfFlowPositionedItems(
       HeapVector<Member<LayoutBox>>& oof_children);

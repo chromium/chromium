@@ -75,9 +75,10 @@ ContentDistributionType BoxPackToContentDistribution(EBoxPack box_pack) {
 
 }  // namespace
 
-FlexItem::FlexItem(const FlexibleBoxAlgorithm* algorithm,
-                   const ComputedStyle& style,
+FlexItem::FlexItem(BlockNode node,
                    wtf_size_t item_index,
+                   float flex_grow,
+                   float flex_shrink,
                    unsigned main_axis_auto_margin_count,
                    LayoutUnit flex_base_content_size,
                    MinMaxSizes min_max_main_sizes,
@@ -86,14 +87,16 @@ FlexItem::FlexItem(const FlexibleBoxAlgorithm* algorithm,
                    BoxStrut scrollbars,
                    WritingMode baseline_writing_mode,
                    BaselineGroup baseline_group,
+                   ItemPosition alignment,
                    bool is_initial_block_size_indefinite,
                    bool is_used_flex_basis_indefinite,
-                   bool depends_on_min_max_sizes)
-    : algorithm_(algorithm),
-      style_(style),
+                   bool depends_on_min_max_sizes,
+                   bool is_horizontal_flow,
+                   std::optional<LayoutUnit> max_content_contribution)
+    : ng_input_node_(node),
       item_index_(item_index),
-      flex_grow_(style.ResolvedFlexGrow(algorithm_->StyleRef())),
-      flex_shrink_(style.ResolvedFlexShrink(algorithm_->StyleRef())),
+      flex_grow_(flex_grow),
+      flex_shrink_(flex_shrink),
       main_axis_auto_margin_count_(main_axis_auto_margin_count),
       flex_base_content_size_(flex_base_content_size),
       min_max_main_sizes_(min_max_main_sizes),
@@ -104,31 +107,15 @@ FlexItem::FlexItem(const FlexibleBoxAlgorithm* algorithm,
       scrollbars_(scrollbars),
       baseline_writing_direction_({baseline_writing_mode, TextDirection::kLtr}),
       baseline_group_(baseline_group),
+      alignment_(alignment),
       is_initial_block_size_indefinite_(is_initial_block_size_indefinite),
       is_used_flex_basis_indefinite_(is_used_flex_basis_indefinite),
       depends_on_min_max_sizes_(depends_on_min_max_sizes),
+      is_horizontal_flow_(is_horizontal_flow),
       frozen_(false),
-      ng_input_node_(/* LayoutBox* */ nullptr) {
-  DCHECK_GE(min_max_main_sizes.max_size, LayoutUnit())
-      << "Use LayoutUnit::Max() for no max size";
-}
-
-LayoutUnit FlexItem::MainAxisMarginExtent() const {
-  return algorithm_->IsHorizontalFlow() ? physical_margins_.HorizontalSum()
-                                        : physical_margins_.VerticalSum();
-}
-
-LayoutUnit FlexItem::CrossAxisMarginExtent() const {
-  return algorithm_->IsHorizontalFlow() ? physical_margins_.VerticalSum()
-                                        : physical_margins_.HorizontalSum();
-}
-
-ItemPosition FlexItem::Alignment() const {
-  return FlexibleBoxAlgorithm::AlignmentForChild(*algorithm_->Style(), *style_);
-}
+      max_content_contribution_(max_content_contribution) {}
 
 void FlexItem::Trace(Visitor* visitor) const {
-  visitor->Trace(style_);
   visitor->Trace(ng_input_node_);
   visitor->Trace(layout_result_);
 }

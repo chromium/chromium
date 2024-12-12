@@ -62,9 +62,10 @@ class FlexItem {
   //   main axis direction (not intrinsic widths). It does not include
   //   border/padding.
   //   |min_max_cross_sizes| does include cross_axis_border_padding.
-  FlexItem(const FlexibleBoxAlgorithm*,
-           const ComputedStyle& style,
+  FlexItem(BlockNode,
            wtf_size_t item_index,
+           float flex_grow,
+           float flex_shrink,
            unsigned main_axis_auto_margin_count,
            LayoutUnit flex_base_content_size,
            MinMaxSizes min_max_main_sizes,
@@ -73,9 +74,12 @@ class FlexItem {
            BoxStrut scrollbars,
            WritingMode baseline_writing_mode,
            BaselineGroup baseline_group,
+           ItemPosition alignment,
            bool is_initial_block_size_indefinite,
            bool is_used_flex_basis_indefinite,
-           bool depends_on_min_max_sizes);
+           bool depends_on_min_max_sizes,
+           bool is_horizontal_flow,
+           std::optional<LayoutUnit> max_content_contribution);
 
   LayoutUnit HypotheticalMainAxisMarginBoxSize() const {
     return hypothetical_main_content_size_ + main_axis_border_padding_ +
@@ -100,10 +104,14 @@ class FlexItem {
     return min_max_main_sizes_.ClampSizeToMinAndMax(size);
   }
 
-  ItemPosition Alignment() const;
-
-  LayoutUnit MainAxisMarginExtent() const;
-  LayoutUnit CrossAxisMarginExtent() const;
+  LayoutUnit MainAxisMarginExtent() const {
+    return is_horizontal_flow_ ? physical_margins_.HorizontalSum()
+                               : physical_margins_.VerticalSum();
+  }
+  LayoutUnit CrossAxisMarginExtent() const {
+    return is_horizontal_flow_ ? physical_margins_.VerticalSum()
+                               : physical_margins_.HorizontalSum();
+  }
 
   static LayoutUnit AlignmentOffset(LayoutUnit available_free_space,
                                     ItemPosition position,
@@ -112,8 +120,7 @@ class FlexItem {
 
   void Trace(Visitor*) const;
 
-  const FlexibleBoxAlgorithm* algorithm_;
-  Member<const ComputedStyle> style_;
+  const BlockNode ng_input_node_;
 
   const wtf_size_t item_index_;
   const float flex_grow_;
@@ -127,17 +134,18 @@ class FlexItem {
   const BoxStrut scrollbars_;
   const WritingDirectionMode baseline_writing_direction_;
   const BaselineGroup baseline_group_;
-
-  LayoutUnit flexed_content_size_;
+  const ItemPosition alignment_;
 
   const bool is_initial_block_size_indefinite_;
   const bool is_used_flex_basis_indefinite_;
   const bool depends_on_min_max_sizes_;
+  const bool is_horizontal_flow_;
   bool frozen_;
+
+  LayoutUnit flexed_content_size_;
 
   // The above fields are used by the flex algorithm. The following fields, by
   // contrast, are just convenient storage.
-  BlockNode ng_input_node_;
   Member<const LayoutResult> layout_result_;
   std::optional<LayoutUnit> max_content_contribution_;
 };
@@ -224,11 +232,6 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
 
   ~FlexibleBoxAlgorithm() { all_items_.clear(); }
   FlexibleBoxAlgorithm& operator=(const FlexibleBoxAlgorithm&) = delete;
-
-  template <typename... Args>
-  FlexItem& emplace_back(Args&&... args) {
-    return all_items_.emplace_back(this, std::forward<Args>(args)...);
-  }
 
   wtf_size_t NumItems() const { return all_items_.size(); }
 
