@@ -2186,6 +2186,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.Clients.WebView.PageAttemptResults"
+    enum="WebViewPageAttemptResult" expires_after="2025-10-31">
+  <owner>narms@google.com</owner>
+  <owner>android-sre@google.com</owner>
+  <summary>
+    The result of attempting to load a page. Logs a success when the load
+    reaches FirstContentfulPaint without being backgrounded, or a different
+    result if the load ends before that for any reason.
+
+    This histogram is intended to track the success rate of page loads in
+    WebView, and only logs page loads while they are in the foreground.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Clients.WebView.PageAttempts" enum="Boolean"
+    expires_after="2025-10-31">
+  <owner>narms@google.com</owner>
+  <owner>android-sre@google.com</owner>
+  <summary>
+    The count of page loads that were attempted in WebView.
+
+    This histogram is intended to track the success rate of page loads in
+    WebView, and only logs page loads that start in the foreground. This
+    histogram logs when a navigation is started and only logs to the
+    &quot;true&quot; bucket.
+  </summary>
+</histogram>
+
 <histogram
     name="PageLoad.Clients.Zstd.PaintTiming.NavigationToFirstContentfulPaint"
     units="ms" expires_after="2025-06-08">

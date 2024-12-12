@@ -466,6 +466,16 @@ chromium-metrics-reviews@google.com.
              tracking protection content setting."/>
 </enum>
 
+<!-- LINT.IfChange(WebViewPageAttemptResult) -->
+
+<enum name="WebViewPageAttemptResult">
+  <int value="0" label="Success: Reached FirstContentfulPaint"/>
+  <int value="1" label="Early Finish: Load ended before FirstContentfulPaint"/>
+  <int value="2" label="Failure"/>
+</enum>
+
+<!-- LINT.ThenChange(//android_webview/browser/page_load_metrics/service_level_page_load_metrics_observer.h:WebViewPageAttemptResult) -->
+
 </enums>
 
 </histogram-configuration>
