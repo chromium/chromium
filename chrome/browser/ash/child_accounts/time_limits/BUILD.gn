@@ -10,13 +10,11 @@ static_library("time_limits") {
   sources = [
     "app_activity_registry.cc",
     "app_activity_registry.h",
-    "app_activity_report_interface.cc",
     "app_activity_report_interface.h",
     "app_service_wrapper.cc",
     "app_service_wrapper.h",
     "app_time_controller.cc",
     "app_time_controller.h",
-    "app_time_limit_interface.cc",
     "app_time_limit_interface.h",
     "app_time_limit_utils.cc",
     "app_time_limit_utils.h",
