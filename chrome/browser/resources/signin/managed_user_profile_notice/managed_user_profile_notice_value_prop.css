@@ -67,7 +67,7 @@ main {
 }
 
 .pill .icon {
-  color: var(--cr-secondary-text-color);
+  color: var(--cr-fallback-color-on-surface-subtle);
   flex: 0 0 20px;
   height: 20px;
   width: 20px;
