@@ -331,51 +331,6 @@ bool FlexLine::ResolveFlexibleLengths() {
   return !total_violation;
 }
 
-void FlexLine::ComputeLineItemsPosition() {
-  const auto& style = algorithm_->StyleRef();
-  const bool is_wrap_reverse = style.FlexWrap() == EFlexWrap::kWrapReverse;
-
-  LayoutUnit max_major_descent = LayoutUnit::Min();
-  LayoutUnit max_minor_descent = LayoutUnit::Min();
-
-  LayoutUnit max_child_cross_axis_extent;
-  for (wtf_size_t i = 0; i < line_items_.size(); ++i) {
-    FlexItem& flex_item = line_items_[i];
-
-    LayoutUnit child_cross_axis_margin_box_extent;
-    // TODO(crbug.com/1272533): We may not have a layout-result during min/max
-    // calculations. This is incorrect, and we should produce a layout-result
-    // when baseline aligned.
-    const auto alignment = flex_item.Alignment();
-    if (flex_item.layout_result_ &&
-        (alignment == ItemPosition::kBaseline ||
-         alignment == ItemPosition::kLastBaseline)) {
-      LayoutUnit ascent = flex_item.MarginBoxAscent(
-          alignment == ItemPosition::kLastBaseline, is_wrap_reverse);
-      LayoutUnit descent =
-          (flex_item.CrossAxisMarginExtent() + flex_item.cross_axis_size_) -
-          ascent;
-      if (flex_item.baseline_group_ == BaselineGroup::kMajor) {
-        max_major_ascent_ = std::max(max_major_ascent_, ascent);
-        max_major_descent = std::max(max_major_descent, descent);
-        child_cross_axis_margin_box_extent =
-            max_major_ascent_ + max_major_descent;
-      } else {
-        max_minor_ascent_ = std::max(max_minor_ascent_, ascent);
-        max_minor_descent = std::max(max_minor_descent, descent);
-        child_cross_axis_margin_box_extent =
-            max_minor_ascent_ + max_minor_descent;
-      }
-    } else {
-      child_cross_axis_margin_box_extent =
-          flex_item.cross_axis_size_ + flex_item.CrossAxisMarginExtent();
-    }
-    max_child_cross_axis_extent = std::max(max_child_cross_axis_extent,
-                                           child_cross_axis_margin_box_extent);
-  }
-  cross_axis_extent_ = max_child_cross_axis_extent;
-}
-
 // static
 LayoutUnit FlexibleBoxAlgorithm::GapBetweenItems(
     const ComputedStyle& style,

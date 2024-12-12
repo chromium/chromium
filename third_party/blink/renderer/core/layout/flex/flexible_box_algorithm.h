@@ -147,9 +147,6 @@ class FlexItem {
 
   LayoutUnit flexed_content_size_;
 
-  // When set by the caller, this should be the size pre-stretching.
-  LayoutUnit cross_axis_size_;
-
   const bool is_initial_block_size_indefinite_;
   const bool is_used_flex_basis_indefinite_;
   const bool depends_on_min_max_sizes_;
@@ -234,13 +231,6 @@ class FlexLine {
   // This modifies remaining_free_space.
   bool ResolveFlexibleLengths();
 
-  // Computes & sets desired_position on the FlexItems on this line.
-  // Before calling this function, the items need to be laid out with
-  // flexed_content_size set as the override main axis size, and
-  // cross_axis_size needs to be set correctly on each flex item (to the size
-  // the item has without stretching).
-  void ComputeLineItemsPosition();
-
   FlexibleBoxAlgorithm* algorithm_;
   FlexItemVectorView line_items_;
 
@@ -263,12 +253,6 @@ class FlexLine {
   // https://drafts.csswg.org/css-flexbox/#resolve-flexible-lengths step 3
   LayoutUnit initial_free_space_;
   LayoutUnit remaining_free_space_;
-
-  // These get filled in by ComputeLineItemsPosition
-  LayoutUnit cross_axis_extent_;
-
-  LayoutUnit max_major_ascent_ = LayoutUnit::Min();
-  LayoutUnit max_minor_ascent_ = LayoutUnit::Min();
 };
 
 // This class implements the CSS Flexbox layout algorithm:

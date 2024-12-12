@@ -1124,6 +1124,12 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
     LayoutUnit main_axis_free_space =
         main_axis_inner_size -
         (line->line_items_.size() - 1) * algorithm_.gap_between_items_;
+    LayoutUnit line_cross_size;
+    LayoutUnit max_major_ascent = LayoutUnit::Min();
+    LayoutUnit max_minor_ascent = LayoutUnit::Min();
+    LayoutUnit max_major_descent = LayoutUnit::Min();
+    LayoutUnit max_minor_descent = LayoutUnit::Min();
+
     for (wtf_size_t i = 0; i < line->line_items_.size(); ++i) {
       FlexItem& flex_item = line->line_items_[i];
       NGFlexItem& flex_item_output = flex_line_outputs->back().line_items[i];
@@ -1138,60 +1144,89 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
 
       main_axis_free_space -= flex_item.FlexedMarginBoxSize();
 
-      ConstraintSpace child_space = BuildSpaceForLayout(
-          flex_item.ng_input_node_, flex_item.FlexedBorderBoxSize(),
-          flex_item.is_initial_block_size_indefinite_,
-          flex_item.max_content_contribution_);
+      const LayoutUnit cross_axis_size = ([&]() {
+        const ConstraintSpace space = BuildSpaceForLayout(
+            flex_item.ng_input_node_, flex_item.FlexedBorderBoxSize(),
+            flex_item.is_initial_block_size_indefinite_,
+            flex_item.max_content_contribution_);
 
-      // We need to get the item's cross axis size given its new main size. If
-      // the new main size is the item's inline size, then we have to do a
-      // layout to get its new block size. But if the new main size is the
-      // item's block size, we can skip layout in some cases and just calculate
-      // the inline size from the constraint space.
-      // Even when we only need inline size, we have to lay out the item if:
-      //  * this is the item's last chance to layout (i.e. doesn't stretch), OR
-      //  * the item has not yet been laid out. (ComputeLineItemsPosition
-      //    relies on the fragment's baseline, which comes from the post-layout
-      //    fragment)
-      if (DoesItemStretch(flex_item.ng_input_node_) &&
-          flex_item.layout_result_) {
-        const auto& item_style = flex_item.ng_input_node_.Style();
-        DCHECK_NE(is_horizontal_flow_, item_style.IsHorizontalWritingMode());
-        const BoxStrut border_padding =
-            ComputeBorders(child_space, flex_item.ng_input_node_) +
-            ComputePadding(child_space, item_style);
-        if (flex_item.ng_input_node_.IsReplaced()) {
-          LogicalSize logical_border_box_size = ComputeReplacedSize(
-              flex_item.ng_input_node_, child_space, border_padding);
-          flex_item.cross_axis_size_ = logical_border_box_size.inline_size;
-        } else {
-          flex_item.cross_axis_size_ = ComputeInlineSizeForFragment(
-              child_space, flex_item.ng_input_node_, border_padding);
+        // We need to get the item's cross-axis size given its new main size.
+        //
+        // If the new main size is the item's inline-size, then we have to do a
+        // layout to get its new block-size.
+        // But if the new main size is the item's block-size, we can skip
+        // layout in some cases and just calculate the inline-size directly.
+        //
+        // Even when we only need inline-size, we have to lay out the item if:
+        //  * This is the item's last chance to layout (i.e. doesn't stretch).
+        //  * The item has not yet been laid out.
+        if (DoesItemStretch(flex_item.ng_input_node_) &&
+            flex_item.layout_result_) {
+          const auto& item_style = flex_item.ng_input_node_.Style();
+          DCHECK_NE(is_horizontal_flow_, item_style.IsHorizontalWritingMode());
+          const BoxStrut border_padding =
+              ComputeBorders(space, flex_item.ng_input_node_) +
+              ComputePadding(space, item_style);
+          if (flex_item.ng_input_node_.IsReplaced()) {
+            return ComputeReplacedSize(flex_item.ng_input_node_, space,
+                                       border_padding)
+                .inline_size;
+          }
+          return ComputeInlineSizeForFragment(space, flex_item.ng_input_node_,
+                                              border_padding);
         }
-      } else if (is_computing_multiline_column_intrinsic_size) {
-        flex_item.cross_axis_size_ = *flex_item.max_content_contribution_;
-      } else {
-        DCHECK((child_space.CacheSlot() == LayoutResultCacheSlot::kLayout) ||
+
+        if (is_computing_multiline_column_intrinsic_size) {
+          return *flex_item.max_content_contribution_;
+        }
+
+        DCHECK((space.CacheSlot() == LayoutResultCacheSlot::kLayout) ||
                !flex_item.layout_result_);
-        flex_item.layout_result_ = flex_item.ng_input_node_.Layout(
-            child_space, nullptr /*break token*/);
-        // TODO(layout-dev): Handle abortions caused by block fragmentation.
+        flex_item.layout_result_ = flex_item.ng_input_node_.Layout(space);
         DCHECK_EQ(flex_item.layout_result_->Status(), LayoutResult::kSuccess);
-        flex_item.cross_axis_size_ =
-            is_horizontal_flow_
-                ? flex_item.layout_result_->GetPhysicalFragment().Size().height
-                : flex_item.layout_result_->GetPhysicalFragment().Size().width;
+        const PhysicalSize size =
+            flex_item.layout_result_->GetPhysicalFragment().Size();
+        return is_horizontal_flow_ ? size.height : size.width;
+      })();
+
+      // Calculate the size used to determine the line cross-axis size.
+      //
+      // Typically this is just the cross-axis size, however if we are baseline
+      // aligned we need to track the baseline(s) max ascent/descent, and use
+      // the "baseline" size instead.
+      LayoutUnit cross_axis_margin_size =
+          cross_axis_size + flex_item.CrossAxisMarginExtent();
+
+      // TODO(crbug.com/1272533): We may not have a layout-result during
+      // min/max calculations. This is incorrect, and we should produce a
+      // layout-result when baseline aligned.
+      const auto alignment = flex_item.Alignment();
+      if (flex_item.layout_result_ &&
+          (alignment == ItemPosition::kBaseline ||
+           alignment == ItemPosition::kLastBaseline)) {
+        const LayoutUnit ascent = flex_item.MarginBoxAscent(
+            alignment == ItemPosition::kLastBaseline, is_wrap_reverse_);
+        const LayoutUnit descent = cross_axis_margin_size - ascent;
+        if (flex_item.baseline_group_ == BaselineGroup::kMajor) {
+          max_major_ascent = std::max(max_major_ascent, ascent);
+          max_major_descent = std::max(max_major_descent, descent);
+          cross_axis_margin_size = max_major_ascent + max_major_descent;
+        } else {
+          max_minor_ascent = std::max(max_minor_ascent, ascent);
+          max_minor_descent = std::max(max_minor_descent, descent);
+          cross_axis_margin_size = max_minor_ascent + max_minor_descent;
+        }
       }
+      line_cross_size = std::max(line_cross_size, cross_axis_margin_size);
     }
-    line->ComputeLineItemsPosition();
     flex_line_outputs->back().main_axis_free_space = main_axis_free_space;
     flex_line_outputs->back().sum_hypothetical_main_size =
         line->sum_hypothetical_main_size_;
     flex_line_outputs->back().main_axis_auto_margin_count =
         line->main_axis_auto_margin_count_;
-    flex_line_outputs->back().line_cross_size = line->cross_axis_extent_;
-    flex_line_outputs->back().major_baseline = line->max_major_ascent_;
-    flex_line_outputs->back().minor_baseline = line->max_minor_ascent_;
+    flex_line_outputs->back().line_cross_size = line_cross_size;
+    flex_line_outputs->back().major_baseline = max_major_ascent;
+    flex_line_outputs->back().minor_baseline = max_minor_ascent;
   }
 }
 
