@@ -51,15 +51,15 @@
 # See `docs/unsafe_buffers.md`.
 
 -android_webview/
--base/allocator
--base/third_party
+-base/allocator/
+-base/third_party/
 -chrome/browser/ash/chromebox_for_meetings/
 -chrome/browser/ash/policy/
 -chrome/browser/component_updater/
 -chrome/browser/extensions/api/messaging/
 -chrome/browser/extensions/api/printing/
 -chrome/browser/local_discovery/
--chrome/browser/media/webrtc
+-chrome/browser/media/webrtc/
 -chrome/browser/platform_experience/win/
 -chrome/browser/thumbnail/
 -chrome/browser/ui/android/hats/
@@ -79,10 +79,10 @@
 -chromeos/ash/components/memory/userspace_swap/
 -chromeos/ash/components/system/
 -chromeos/ash/services/libassistant/
--chromeos/components/kcer/kcer_nss
+-chromeos/components/kcer/kcer_nss/
 -clank/
 -components/allocation_recorder/
--components/chromeos_camera
+-components/chromeos_camera/
 -components/commerce/
 -components/crash/
 -components/cronet/
@@ -114,13 +114,13 @@
 -testing/iossim/
 -third_party/
 +third_party/blink/
-+third_party/pdfium/core
-+third_party/pdfium/fpdfsdk
-+third_party/pdfium/fxbarcode
-+third_party/pdfium/fxjs
-+third_party/pdfium/xfa
++third_party/pdfium/core/
++third_party/pdfium/fpdfsdk/
++third_party/pdfium/fxbarcode/
++third_party/pdfium/fxjs/
++third_party/pdfium/xfa/
 -tools/
--url/third_party
+-url/third_party/
 -v8/
 
 # Before clearing this directory, make sure to run against a bot running
