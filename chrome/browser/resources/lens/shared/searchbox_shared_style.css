@@ -10,6 +10,7 @@
  #searchboxContainer {
   display: flex;
   font-family: Roboto, Arial, sans-serif;
+  line-height: 20px;
   z-index: 2;  /* Searchbox should render in front of the results iframe. */
   /* TODO(jdonnelly): Specify these in a color mixer and consider moving this
    * import from polymer to the top level HTML file. */
@@ -20,10 +21,10 @@
   --color-searchbox-results-action-chip:#a8c7faff;
   --color-searchbox-results-action-chip-icon: #0b57d0ff;
   --color-searchbox-results-action-chip-focus-outline: #0b57d0ff;
-  --color-searchbox-results-background-hovered:#e9e9eaff;
+  --color-searchbox-results-background-hovered: #F1F3F4;
   --color-searchbox-results-button-hover: #202124ff;
   --color-searchbox-results-dim-selected: #5f6368ff;
-  --color-searchbox-results-focus-indicator: #e9e9eaff;
+  --color-searchbox-results-focus-indicator: #F1F3F4;
   --color-searchbox-results-foreground: #202124;
   --color-searchbox-results-foreground-dimmed: #5f6368ff;
   --color-searchbox-results-icon: #5f6368ff;
@@ -50,5 +51,7 @@
   --cr-searchbox-icon-left-position: 10px;
   --cr-searchbox-icon-top-position: 1px;
   --cr-searchbox-match-font-weight: 400;
+  --cr-searchbox-match-padding: 8px;
+  --cr-searchbox-font-size: 14px;
   --cr-searchbox-icon-size-in-searchbox: 24px;
 }
