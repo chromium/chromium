@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 
 #include <memory>
@@ -113,8 +108,9 @@ scoped_refptr<SerializedScriptValue> SerializedScriptValue::Create(
     const String& data) {
   base::CheckedNumeric<size_t> data_buffer_size = data.length();
   data_buffer_size *= 2;
-  if (!data_buffer_size.IsValid())
+  if (!data_buffer_size.IsValid()) {
     return Create();
+  }
 
   DataBufferPtr data_buffer = AllocateBuffer(data_buffer_size.ValueOrDie());
   // TODO(danakj): This cast is valid, since it's at the start of the allocation
@@ -122,9 +118,11 @@ scoped_refptr<SerializedScriptValue> SerializedScriptValue::Create(
   // byte pointers to other types is problematic and can cause UB. String should
   // provide a way to copy directly to a byte array without forcing the caller
   // to do this case.
-  data.CopyTo(
-      base::span(reinterpret_cast<UChar*>(data_buffer.data()), data.length()),
-      0);
+  // SAFETY: The preceding code ensures that `data.length()` matches
+  // `data_buffer.data()` as a `UChar*`.
+  data.CopyTo(UNSAFE_BUFFERS(base::span(
+                  reinterpret_cast<UChar*>(data_buffer.data()), data.length())),
+              0);
 
   return base::AdoptRef(new SerializedScriptValue(std::move(data_buffer)));
 }
@@ -469,11 +467,10 @@ void SerializedScriptValue::CloneSharedArrayBuffers(
 
   HeapHashSet<Member<DOMArrayBufferBase>> visited;
   shared_array_buffers_contents_.Grow(array_buffers.size());
-  wtf_size_t i = 0;
-  for (auto it = array_buffers.begin(); it != array_buffers.end(); ++it) {
-    DOMSharedArrayBuffer* shared_array_buffer = *it;
-    if (visited.Contains(shared_array_buffer))
+  for (wtf_size_t i = 0; const auto& shared_array_buffer : array_buffers) {
+    if (visited.Contains(shared_array_buffer)) {
       continue;
+    }
     visited.insert(shared_array_buffer);
     shared_array_buffer->ShareContentsWith(shared_array_buffers_contents_[i]);
     i++;
@@ -566,17 +563,15 @@ SerializedScriptValue::TransferArrayBufferContents(
   if (!array_buffers.size())
     return ArrayBufferContentsArray();
 
-  for (auto it = array_buffers.begin(); it != array_buffers.end(); ++it) {
-    DOMArrayBufferBase* array_buffer = *it;
+  for (wtf_size_t i = 0; const auto& array_buffer : array_buffers) {
     if (array_buffer->IsDetached()) {
-      wtf_size_t index =
-          static_cast<wtf_size_t>(std::distance(array_buffers.begin(), it));
       exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
                                         "ArrayBuffer at index " +
-                                            String::Number(index) +
+                                            String::Number(i) +
                                             " is already detached.");
       return ArrayBufferContentsArray();
     }
+    i++;
   }
 
   contents.Grow(array_buffers.size());
@@ -591,14 +586,12 @@ SerializedScriptValue::TransferArrayBufferContents(
       static_cast<HeapHashSet<Member<DOMArrayBufferBase>>*>(buffer)->clear();
     }
   } promptly_free_array_buffers{&visited};
-  for (auto it = array_buffers.begin(); it != array_buffers.end(); ++it) {
-    DOMArrayBufferBase* array_buffer_base = *it;
+  for (wtf_size_t i = 0; auto& array_buffer_base : array_buffers) {
+    auto index = i++;
     if (visited.Contains(array_buffer_base))
       continue;
     visited.insert(array_buffer_base);
 
-    wtf_size_t index =
-        static_cast<wtf_size_t>(std::distance(array_buffers.begin(), it));
     if (array_buffer_base->IsShared()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
                                         "SharedArrayBuffer at index " +
@@ -607,7 +600,7 @@ SerializedScriptValue::TransferArrayBufferContents(
       return ArrayBufferContentsArray();
     } else {
       DOMArrayBuffer* array_buffer =
-          static_cast<DOMArrayBuffer*>(array_buffer_base);
+          static_cast<DOMArrayBuffer*>(array_buffer_base.Get());
 
       if (!array_buffer->IsDetachable(isolate)) {
         exception_state.ThrowTypeError(
