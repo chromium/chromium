@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/pdf/renderer/pdf_accessibility_tree.h"
 
 #include <map>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -1258,22 +1254,24 @@ TEST_F(PdfAccessibilityTreeTest, TestListboxNodeCreation) {
     ASSERT_EQ(std::size(kExpectedOptions[0]), listbox_node->GetChildCount());
     const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
         listbox_child_nodes = listbox_node->GetAllChildren();
-    for (size_t i = 0; i < listbox_child_nodes.size(); i++) {
-      EXPECT_EQ(ax::mojom::Role::kListBoxOption,
-                listbox_child_nodes[i]->GetRole());
-      EXPECT_NE(ax::mojom::Restriction::kReadOnly,
-                listbox_child_nodes[i]->data().GetRestriction());
-      EXPECT_EQ(kExpectedOptions[0][i].name,
-                listbox_child_nodes[i]->GetStringAttribute(
-                    ax::mojom::StringAttribute::kName));
-      EXPECT_EQ(kExpectedOptions[0][i].is_selected,
-                listbox_child_nodes[i]->GetBoolAttribute(
-                    ax::mojom::BoolAttribute::kSelected));
-      EXPECT_TRUE(
-          listbox_child_nodes[i]->HasState(ax::mojom::State::kFocusable));
-      EXPECT_EQ(kExpectedBounds[0],
-                listbox_child_nodes[i]->data().relative_bounds.bounds);
-    }
+    UNSAFE_TODO({
+      for (size_t i = 0; i < listbox_child_nodes.size(); i++) {
+        EXPECT_EQ(ax::mojom::Role::kListBoxOption,
+                  listbox_child_nodes[i]->GetRole());
+        EXPECT_NE(ax::mojom::Restriction::kReadOnly,
+                  listbox_child_nodes[i]->data().GetRestriction());
+        EXPECT_EQ(kExpectedOptions[0][i].name,
+                  listbox_child_nodes[i]->GetStringAttribute(
+                      ax::mojom::StringAttribute::kName));
+        EXPECT_EQ(kExpectedOptions[0][i].is_selected,
+                  listbox_child_nodes[i]->GetBoolAttribute(
+                      ax::mojom::BoolAttribute::kSelected));
+        EXPECT_TRUE(
+            listbox_child_nodes[i]->HasState(ax::mojom::State::kFocusable));
+        EXPECT_EQ(kExpectedBounds[0],
+                  listbox_child_nodes[i]->data().relative_bounds.bounds);
+      }
+    });
   }
 
   {
@@ -1290,22 +1288,24 @@ TEST_F(PdfAccessibilityTreeTest, TestListboxNodeCreation) {
     ASSERT_EQ(std::size(kExpectedOptions[1]), listbox_node->GetChildCount());
     const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
         listbox_child_nodes = listbox_node->GetAllChildren();
-    for (size_t i = 0; i < listbox_child_nodes.size(); i++) {
-      EXPECT_EQ(ax::mojom::Role::kListBoxOption,
-                listbox_child_nodes[i]->GetRole());
-      EXPECT_EQ(ax::mojom::Restriction::kReadOnly,
-                listbox_child_nodes[i]->data().GetRestriction());
-      EXPECT_EQ(kExpectedOptions[1][i].name,
-                listbox_child_nodes[i]->GetStringAttribute(
-                    ax::mojom::StringAttribute::kName));
-      EXPECT_EQ(kExpectedOptions[1][i].is_selected,
-                listbox_child_nodes[i]->GetBoolAttribute(
-                    ax::mojom::BoolAttribute::kSelected));
-      EXPECT_TRUE(
-          listbox_child_nodes[i]->HasState(ax::mojom::State::kFocusable));
-      EXPECT_EQ(kExpectedBounds[1],
-                listbox_child_nodes[i]->data().relative_bounds.bounds);
-    }
+    UNSAFE_TODO({
+      for (size_t i = 0; i < listbox_child_nodes.size(); i++) {
+        EXPECT_EQ(ax::mojom::Role::kListBoxOption,
+                  listbox_child_nodes[i]->GetRole());
+        EXPECT_EQ(ax::mojom::Restriction::kReadOnly,
+                  listbox_child_nodes[i]->data().GetRestriction());
+        EXPECT_EQ(kExpectedOptions[1][i].name,
+                  listbox_child_nodes[i]->GetStringAttribute(
+                      ax::mojom::StringAttribute::kName));
+        EXPECT_EQ(kExpectedOptions[1][i].is_selected,
+                  listbox_child_nodes[i]->GetBoolAttribute(
+                      ax::mojom::BoolAttribute::kSelected));
+        EXPECT_TRUE(
+            listbox_child_nodes[i]->HasState(ax::mojom::State::kFocusable));
+        EXPECT_EQ(kExpectedBounds[1],
+                  listbox_child_nodes[i]->data().relative_bounds.bounds);
+      }
+    });
   }
 }
 
@@ -1474,21 +1474,24 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
               combobox_popup_node->GetChildCount());
     const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
         popup_child_nodes = combobox_popup_node->GetAllChildren();
-    for (size_t i = 0; i < popup_child_nodes.size(); i++) {
-      EXPECT_EQ(ax::mojom::Role::kListBoxOption,
-                popup_child_nodes[i]->GetRole());
-      EXPECT_NE(ax::mojom::Restriction::kReadOnly,
-                popup_child_nodes[i]->data().GetRestriction());
-      EXPECT_EQ(kExpectedOptions[0][i].name,
-                popup_child_nodes[i]->GetStringAttribute(
-                    ax::mojom::StringAttribute::kName));
-      EXPECT_EQ(kExpectedOptions[0][i].is_selected,
-                popup_child_nodes[i]->GetBoolAttribute(
-                    ax::mojom::BoolAttribute::kSelected));
-      EXPECT_TRUE(popup_child_nodes[i]->HasState(ax::mojom::State::kFocusable));
-      EXPECT_EQ(kExpectedBounds[0],
-                popup_child_nodes[i]->data().relative_bounds.bounds);
-    }
+    UNSAFE_TODO({
+      for (size_t i = 0; i < popup_child_nodes.size(); i++) {
+        EXPECT_EQ(ax::mojom::Role::kListBoxOption,
+                  popup_child_nodes[i]->GetRole());
+        EXPECT_NE(ax::mojom::Restriction::kReadOnly,
+                  popup_child_nodes[i]->data().GetRestriction());
+        EXPECT_EQ(kExpectedOptions[0][i].name,
+                  popup_child_nodes[i]->GetStringAttribute(
+                      ax::mojom::StringAttribute::kName));
+        EXPECT_EQ(kExpectedOptions[0][i].is_selected,
+                  popup_child_nodes[i]->GetBoolAttribute(
+                      ax::mojom::BoolAttribute::kSelected));
+        EXPECT_TRUE(
+            popup_child_nodes[i]->HasState(ax::mojom::State::kFocusable));
+        EXPECT_EQ(kExpectedBounds[0],
+                  popup_child_nodes[i]->data().relative_bounds.bounds);
+      }
+    });
     EXPECT_EQ(popup_child_nodes[1]->data().id,
               combobox_input_node->GetIntAttribute(
                   ax::mojom::IntAttribute::kActivedescendantId));
@@ -1533,21 +1536,24 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
               combobox_popup_node->GetChildCount());
     const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
         popup_child_nodes = combobox_popup_node->GetAllChildren();
-    for (size_t i = 0; i < popup_child_nodes.size(); i++) {
-      EXPECT_EQ(ax::mojom::Role::kListBoxOption,
-                popup_child_nodes[i]->GetRole());
-      EXPECT_EQ(ax::mojom::Restriction::kReadOnly,
-                popup_child_nodes[i]->data().GetRestriction());
-      EXPECT_EQ(kExpectedOptions[1][i].name,
-                popup_child_nodes[i]->GetStringAttribute(
-                    ax::mojom::StringAttribute::kName));
-      EXPECT_EQ(kExpectedOptions[1][i].is_selected,
-                popup_child_nodes[i]->GetBoolAttribute(
-                    ax::mojom::BoolAttribute::kSelected));
-      EXPECT_TRUE(popup_child_nodes[i]->HasState(ax::mojom::State::kFocusable));
-      EXPECT_EQ(kExpectedBounds[1],
-                popup_child_nodes[i]->data().relative_bounds.bounds);
-    }
+    UNSAFE_TODO({
+      for (size_t i = 0; i < popup_child_nodes.size(); i++) {
+        EXPECT_EQ(ax::mojom::Role::kListBoxOption,
+                  popup_child_nodes[i]->GetRole());
+        EXPECT_EQ(ax::mojom::Restriction::kReadOnly,
+                  popup_child_nodes[i]->data().GetRestriction());
+        EXPECT_EQ(kExpectedOptions[1][i].name,
+                  popup_child_nodes[i]->GetStringAttribute(
+                      ax::mojom::StringAttribute::kName));
+        EXPECT_EQ(kExpectedOptions[1][i].is_selected,
+                  popup_child_nodes[i]->GetBoolAttribute(
+                      ax::mojom::BoolAttribute::kSelected));
+        EXPECT_TRUE(
+            popup_child_nodes[i]->HasState(ax::mojom::State::kFocusable));
+        EXPECT_EQ(kExpectedBounds[1],
+                  popup_child_nodes[i]->data().relative_bounds.bounds);
+      }
+    });
     EXPECT_EQ(popup_child_nodes[1]->data().id,
               combobox_input_node->GetIntAttribute(
                   ax::mojom::IntAttribute::kActivedescendantId));
@@ -3311,26 +3317,28 @@ TEST_P(PdfOcrRotationTest, TestTransformFromOnOcrDataReceived) {
       {{110.0f, 130.0f}, {70.0f, 50}}};
   ASSERT_LT(GetParam(), 4);
 
-  // Check the nodes from OCR results.
-  ui::AXNode* ocred_node = region_node->GetChildAtIndex(0);
-  ASSERT_TRUE(ocred_node);
-  EXPECT_EQ(ax::mojom::Role::kStaticText, ocred_node->GetRole());
-  gfx::RectF bounds = ocred_node->data().relative_bounds.bounds;
-  // The bounds already got updated inside of OnOcrDataReceived().
-  CompareRect(kExpectedTextBoundRelativeToTreeBounds0[GetParam()], bounds);
+  UNSAFE_TODO({
+    // Check the nodes from OCR results.
+    ui::AXNode* ocred_node = region_node->GetChildAtIndex(0);
+    ASSERT_TRUE(ocred_node);
+    EXPECT_EQ(ax::mojom::Role::kStaticText, ocred_node->GetRole());
+    gfx::RectF bounds = ocred_node->data().relative_bounds.bounds;
+    // The bounds already got updated inside of OnOcrDataReceived().
+    CompareRect(kExpectedTextBoundRelativeToTreeBounds0[GetParam()], bounds);
 
-  ocred_node = region_node->GetChildAtIndex(1);
-  ASSERT_TRUE(ocred_node);
-  EXPECT_EQ(ax::mojom::Role::kStaticText, ocred_node->GetRole());
-  bounds = ocred_node->data().relative_bounds.bounds;
-  // The bounds already got updated inside of OnOcrDataReceived().
-  CompareRect(kExpectedTextBoundRelativeToTreeBounds2[GetParam()], bounds);
+    ocred_node = region_node->GetChildAtIndex(1);
+    ASSERT_TRUE(ocred_node);
+    EXPECT_EQ(ax::mojom::Role::kStaticText, ocred_node->GetRole());
+    bounds = ocred_node->data().relative_bounds.bounds;
+    // The bounds already got updated inside of OnOcrDataReceived().
+    CompareRect(kExpectedTextBoundRelativeToTreeBounds2[GetParam()], bounds);
 
-  // Verify that character offsets are only scaled by 1 / kScaleFactor and are
-  // not modified by rotation.
-  std::vector<int32_t> character_offsets = ocred_node->GetIntListAttribute(
-      ax::mojom::IntListAttribute::kCharacterOffsets);
-  EXPECT_THAT(character_offsets, testing::ElementsAreArray({0, 12, 25, 37}));
+    // Verify that character offsets are only scaled by 1 / kScaleFactor and are
+    // not modified by rotation.
+    std::vector<int32_t> character_offsets = ocred_node->GetIntListAttribute(
+        ax::mojom::IntListAttribute::kCharacterOffsets);
+    EXPECT_THAT(character_offsets, testing::ElementsAreArray({0, 12, 25, 37}));
+  });
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
