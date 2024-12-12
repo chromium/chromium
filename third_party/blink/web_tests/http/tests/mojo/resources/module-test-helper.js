@@ -2,7 +2,7 @@ import {
   TestMessageTargetReceiver, TestMessageTarget_NestedEnum, TestMessageTarget,
   TestMessageTargetCallbackRouter, SubinterfaceCallbackRouter,
   SubinterfaceRemote,
-  SubinterfaceClientCallbackRouter} from "/gen/content/test/data/lite_js_test.mojom.m.js";
+  SubinterfaceClientCallbackRouter} from "/gen/content/test/data/lite_js_test.test-mojom.m.js";
 
 import {MojoEchoRemote} from "/gen/content/web_test/common/mojo_echo.mojom.m.js"
 

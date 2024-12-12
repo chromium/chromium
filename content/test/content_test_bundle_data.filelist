@@ -7297,7 +7297,7 @@ data/link_rel_prefetch_disable_network.html
 data/link_rel_prefetch_disable_network.html.mock-http-headers
 data/link_rel_prefetch_referrer_policy.html
 data/links.html
-data/lite_js_test.mojom
+data/lite_js_test.test-mojom
 data/loader/async_resource_handler.html
 data/loader/blank.html
 data/loader/change_title.js
@@ -7465,7 +7465,7 @@ data/mixed-content/non-redundant-cert-error-in-iframe.html
 data/mixed-content/redundant-cert-error-in-iframe.html
 data/mojo_bindings_web_test.test-mojom
 data/mojo_bindings_web_test_types.test-mojom
-data/mojo_web_test_helper_test.mojom
+data/mojo_web_test_helper.test-mojom
 data/navigate_on_load.html
 data/navigate_opener.html
 data/navigate-has-ua-visual-transition.html
