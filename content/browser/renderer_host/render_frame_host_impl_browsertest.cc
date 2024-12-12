@@ -5777,6 +5777,28 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
             root_frame_host()->GetWebExposedIsolationLevel());
 }
 
+// Regression test for https://crbug.com/40864543
+// The main document is using COEP, but the 204 No Content child document isn't.
+// This shouldn't crash.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       NoCrashOn204NoContentChildDocumentCOEP) {
+  // Main document sets COEP.
+  GURL main_url(embedded_test_server()->GetURL(
+      "/set-header?"
+      "Cross-Origin-Embedder-Policy: require-corp"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Iframe is a 204 No Content.
+  TestNavigationManager navigation_manager(
+      web_contents(), embedded_test_server()->GetURL("/nocontent"));
+  EXPECT_TRUE(ExecJs(root_frame_host(), R"(
+    let iframe = document.createElement('iframe');
+    iframe.src = '/nocontent'
+    document.body.appendChild(iframe);
+  )"));
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
+}
+
 class IsolatedApplicationContentBrowserClient
     : public ContentBrowserTestContentBrowserClient {
  public:
