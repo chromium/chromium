@@ -220,11 +220,21 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [_tableView deselectRowAtIndexPath:indexPath animated:NO];
   ItemIdentifier itemType = static_cast<ItemIdentifier>(
       [_dataSource itemIdentifierForIndexPath:indexPath].integerValue);
-  CHECK(itemType == ItemIdentifierBrowsingData) << itemType;
-  base::UmaHistogramEnumeration(
-      browsing_data::kDeleteBrowsingDataDialogHistogram,
-      DeleteBrowsingDataDialogAction::kBrowsingDataSelected);
-  [self.presentationHandler showBrowsingDataPageWithTimeRange:_timeRange];
+
+  if (itemType == ItemIdentifierBrowsingData) {
+    base::UmaHistogramEnumeration(
+        browsing_data::kDeleteBrowsingDataDialogHistogram,
+        DeleteBrowsingDataDialogAction::kBrowsingDataSelected);
+    [self.presentationHandler showBrowsingDataPageWithTimeRange:_timeRange];
+  } else if (itemType == ItemIdentifierTimeRange) {
+    // TODO(crbug.com/383066554): Investigate why a row other than the browsing
+    // data triggers this code path.
+    NOTREACHED(base::NotFatalUntil::M137);
+  } else {
+    // TODO(crbug.com/383066554): Investigate why a row other than the browsing
+    // data triggers this code path.
+    NOTREACHED(base::NotFatalUntil::M137) << itemType;
+  }
 }
 
 - (UIView*)tableView:(UITableView*)tableView
