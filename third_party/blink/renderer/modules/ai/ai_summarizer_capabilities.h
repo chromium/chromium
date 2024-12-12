@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_capability_availability.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_summarizer_create_core_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_summarizer_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_summarizer_length.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_summarizer_type.h"
@@ -26,13 +27,8 @@ class AISummarizerCapabilities final : public ScriptWrappable {
 
   // ai_summarizer.idl implementation
   V8AICapabilityAvailability available() { return capability_availability_; }
-  V8AICapabilityAvailability supportsType(V8AISummarizerType type) {
-    return capability_availability_;
-  }
-  V8AICapabilityAvailability supportsFormat(V8AISummarizerFormat format) {
-    return capability_availability_;
-  }
-  V8AICapabilityAvailability supportsLength(V8AISummarizerLength length) {
+  V8AICapabilityAvailability createOptionsAvailable(
+      AISummarizerCreateCoreOptions* options) {
     return capability_availability_;
   }
   V8AICapabilityAvailability languageAvailable(const WTF::String& language_tag);

@@ -5,9 +5,11 @@ promise_test(async () => {
   await createSummarizerMaybeDownload({});
   capabilities = await ai.summarizer.capabilities();
   assert_true(capabilities.available == "readily");
-  assert_true(capabilities.supportsType("tl;dr") == "readily");
-  assert_true(capabilities.supportsFormat("plain-text") == "readily");
-  assert_true(capabilities.supportsLength("long") == "readily");
+  assert_true(capabilities.createOptionsAvailable({
+    type: "tl;dr",
+    format: "plain-text",
+    length: "medium"
+  }) == "readily");
   assert_true(capabilities.languageAvailable("en") == "readily");
   assert_true(capabilities.languageAvailable("es") == "no");
 });

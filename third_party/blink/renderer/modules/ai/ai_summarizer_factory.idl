@@ -12,9 +12,7 @@
 interface AISummarizerCapabilities {
   readonly attribute AICapabilityAvailability available;
 
-  AICapabilityAvailability supportsType(AISummarizerType type);
-  AICapabilityAvailability supportsFormat(AISummarizerFormat format);
-  AICapabilityAvailability supportsLength(AISummarizerLength length);
+  AICapabilityAvailability createOptionsAvailable(AISummarizerCreateCoreOptions options);
 
   AICapabilityAvailability languageAvailable(DOMString languageTag);
 };
@@ -23,13 +21,16 @@ enum AISummarizerType { "tl;dr", "key-points", "teaser", "headline" };
 enum AISummarizerFormat { "plain-text", "markdown" };
 enum AISummarizerLength { "short", "medium", "long" };
 
-dictionary AISummarizerCreateOptions {
+dictionary AISummarizerCreateCoreOptions {
+  AISummarizerType type = "key-points";
+  AISummarizerFormat format = "markdown";
+  AISummarizerLength length = "short";
+};
+
+dictionary AISummarizerCreateOptions : AISummarizerCreateCoreOptions {
   AbortSignal signal;
   AICreateMonitorCallback monitor;
   DOMString sharedContext;
-  AISummarizerType type = "key-points";
-  AISummarizerFormat format = "markdown";
-  AISummarizerLength length = "medium";
 };
 
 [

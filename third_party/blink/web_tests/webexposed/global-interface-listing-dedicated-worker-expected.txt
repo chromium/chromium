@@ -72,10 +72,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter available
 [Worker]     method constructor
+[Worker]     method createOptionsAvailable
 [Worker]     method languageAvailable
-[Worker]     method supportsFormat
-[Worker]     method supportsLength
-[Worker]     method supportsType
 [Worker] interface AISummarizerFactory
 [Worker]     attribute @@toStringTag
 [Worker]     method capabilities
