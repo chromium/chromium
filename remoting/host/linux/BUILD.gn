@@ -67,6 +67,12 @@ if (enable_me2me_host) {
     deps = [ "//remoting/host/crash:remoting_crash_uploader" ]
   }
 
+  copy("remoting_me2me_host_copy_libremoting_core") {
+    sources = [ "$root_build_dir/libremoting_core.so" ]
+    outputs = [ "$root_build_dir/remoting/libremoting_core.so" ]
+    deps = [ "//remoting/host:remoting_core" ]
+  }
+
   remoting_localize("url_forwarder_desktop_entry") {
     sources = [ "crd-url-forwarder.desktop.jinja2" ]
     locale_list = remoting_locales_without_pseudolocales
@@ -83,6 +89,7 @@ if (enable_me2me_host) {
     deps = [
       ":remoting_me2me_host_copy_crash_uploader",
       ":remoting_me2me_host_copy_host_wrapper",
+      ":remoting_me2me_host_copy_libremoting_core",
       ":remoting_me2me_host_copy_pipewire_templates",
       ":remoting_me2me_host_copy_script",
       ":remoting_me2me_host_copy_setup_url_forwarder_script",
