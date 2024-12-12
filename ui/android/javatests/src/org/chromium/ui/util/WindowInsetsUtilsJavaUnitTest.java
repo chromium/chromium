@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 
@@ -100,6 +101,7 @@ public class WindowInsetsUtilsJavaUnitTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(VERSION_CODES.VANILLA_ICE_CREAM)
+    @DisabledTest(message = "crbug.com/362337139")
     public void testGetBoundingRects_PostV() {
         var boundingRects = List.of(new Rect(0, 0, 100, 100), new Rect(800, 0, 1600, 100));
         var insets =
