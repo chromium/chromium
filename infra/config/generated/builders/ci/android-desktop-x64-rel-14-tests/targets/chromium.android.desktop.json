@@ -4,11 +4,11 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_34_desktop_x64.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_14.android_browsertests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
         "description": "Run with android_34_desktop_x64",
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
@@ -205,11 +205,11 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_34_desktop_x64.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_14.unit_tests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
         "description": "Run with android_34_desktop_x64",
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",

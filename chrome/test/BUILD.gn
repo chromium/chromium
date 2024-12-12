@@ -1665,8 +1665,9 @@ if (is_android) {
       "//content/shell:content_shell_lib",
     ]
 
+    data_deps = [ "//testing/buildbot/filters:android_browsertests_filters" ]
     if (enable_chrome_android_internal) {
-      data_deps = [ "//clank/build/bot/filters:android_browsertests_filters" ]
+      data_deps += [ "//clank/build/bot/filters:android_browsertests_filters" ]
     }
 
     # Add unwind tables in android_browsertests apk to support enabling

@@ -382,13 +382,11 @@ targets.bundle(
             swarming = targets.swarming(
                 shards = 5,
             ),
-            experiment_percentage = 100,
         ),
         "unit_tests": targets.mixin(
             swarming = targets.swarming(
                 shards = 2,
             ),
-            experiment_percentage = 100,
         ),
     },
 )
