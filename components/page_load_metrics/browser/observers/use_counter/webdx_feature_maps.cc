@@ -310,6 +310,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kVirtualKeyboardOverlayPolicy,
            WebDXFeature::kVirtualKeyboard},
           {WebFeature::kVirtualKeyboardShow, WebDXFeature::kVirtualKeyboard},
+          {WebFeature::kDurationFormat, WebDXFeature::kIntlDurationFormat},
       }};
 
   return *kMap;
