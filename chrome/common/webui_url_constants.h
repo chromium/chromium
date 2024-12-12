@@ -93,7 +93,6 @@ inline constexpr char kChromeUIDevToolsHost[] = "devtools";
 inline constexpr char kChromeUIDevToolsRemotePath[] = "remote";
 inline constexpr char kChromeUIDevToolsURL[] =
     "devtools://devtools/bundled/inspector.html";
-inline constexpr char kChromeUIDevUiLoaderURL[] = "chrome://dev-ui-loader/";
 inline constexpr char kChromeUIDiceWebSigninInterceptChromeSigninSubPage[] =
     "chrome-signin";
 inline constexpr char kChromeUIDiceWebSigninInterceptChromeSigninURL[] =
@@ -238,7 +237,6 @@ inline constexpr char kChromeUISigninErrorURL[] = "chrome://signin-error/";
 inline constexpr char kChromeUISignInInternalsHost[] = "signin-internals";
 inline constexpr char kChromeUISigninReauthHost[] = "signin-reauth";
 inline constexpr char kChromeUISigninReauthURL[] = "chrome://signin-reauth/";
-inline constexpr char kChromeUISiteDataDeprecatedPath[] = "/siteData";
 inline constexpr char kChromeUISiteEngagementHost[] = "site-engagement";
 inline constexpr char kChromeUISuggestInternalsHost[] = "suggest-internals";
 inline constexpr char kChromeUISuggestInternalsURL[] =
@@ -335,10 +333,6 @@ inline constexpr char kChromeUISearchEngineChoiceURL[] =
 inline constexpr char kChromeUITabSearchHost[] = "tab-search.top-chrome";
 inline constexpr char kChromeUITabSearchURL[] =
     "chrome://tab-search.top-chrome/";
-inline constexpr char kChromeUIUntrustedCompanionSidePanelHost[] =
-    "companion-side-panel.top-chrome";
-inline constexpr char kChromeUIUntrustedCompanionSidePanelURL[] =
-    "chrome-untrusted://companion-side-panel.top-chrome/";
 inline constexpr char kChromeUIUntrustedFeedURL[] = "chrome-untrusted://feed/";
 inline constexpr char kChromeUIUntrustedReadAnythingSidePanelHost[] =
     "read-anything-side-panel.top-chrome";
