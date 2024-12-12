@@ -116,6 +116,10 @@ public class AccessibilityHistogramRecorder {
     public static final String ACCESSIBILITY_CREATE_ACCESSIBILITY_NODE_INFO_TOTAL_TIME =
             "Accessibility.Android.Performance.CreateAccessibilityNodeInfo.TotalTime";
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String ACCESSIBILITY_TIME_UNTIL_FIRST_ACCESSIBILITY_FOCUS =
+            "Accessibility.Android.Performance.TimeUntilFirstAccessibilityFocus";
+
     private static final int EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET = 1;
     private static final int EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET = 10000;
     private static final int EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT = 100;
@@ -155,6 +159,12 @@ public class AccessibilityHistogramRecorder {
     // an overall decrease in this number on average.
     private long mCurrentNodeConstructionStartTime;
     private long mTotalTimeCreateAccessibilityNodeInfo;
+
+    // We track the time it takes to go from native initialization (first request of the Android
+    // framework for accessibility support), to the first time a node receives accessibility focus,
+    // which happens automatically for screenreaders. Performance improvements around jank should
+    // decrease this number. We only want to track this once per instance.
+    private boolean mHasRecordedTimeToFirstAccessibilityFocus;
 
     /** Record that the Auto-disable Accessibility feature has disabled accessibility. */
     public void onDisableCalled(boolean initialCall) {
@@ -434,5 +444,26 @@ public class AccessibilityHistogramRecorder {
                 1,
                 DateUtils.MINUTE_IN_MILLIS,
                 80);
+    }
+
+    /**
+     * Record UMA histogram for the length of time from native initialization to first accessibility
+     * focus.
+     */
+    public void recordTimeToFirstAccessibilityFocus() {
+        if (mHasRecordedTimeToFirstAccessibilityFocus) return;
+
+        // We are only interested in this for TalkBack, which always focuses the root node on load.
+        if (!AccessibilityState.isTalkBackEnabled()) return;
+
+        // TODO(mschillaci): This uses a 5 sec max, check scale after initial data collection.
+        RecordHistogram.recordCustomTimesHistogram(
+                ACCESSIBILITY_TIME_UNTIL_FIRST_ACCESSIBILITY_FOCUS,
+                SystemClock.elapsedRealtime() - mTimeOfNativeInitialization,
+                1,
+                DateUtils.SECOND_IN_MILLIS * 5,
+                80);
+
+        mHasRecordedTimeToFirstAccessibilityFocus = true;
     }
 }

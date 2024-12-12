@@ -404,6 +404,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Accessibility.Android.Performance.TimeUntilFirstAccessibilityFocus"
+    units="ms" expires_after="2025-05-04">
+  <owner>mschillaci@google.com</owner>
+  <owner>lucasradaelli@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks the time it takes for the WebContentsAccessibilityImpl to start
+    native initialization, until a node on the page is given accessibility focus
+    for the first time. We restrict this to TalkBack, which we know always
+    focuses the first item on a page. The metric is recorded when the
+    AccessibilityEvent is dispatched to the view.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Android.UpdateAccessibilityServices.DidPoll"
     enum="BooleanHit" expires_after="2025-05-04">
   <owner>mschillaci@google.com</owner>

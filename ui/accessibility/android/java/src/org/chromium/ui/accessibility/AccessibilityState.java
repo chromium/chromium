@@ -63,6 +63,9 @@ public class AccessibilityState {
     public static final String AUTOFILL_COMPAT_ACCESSIBILITY_SERVICE_ID =
             "android/com.android.server.autofill.AutofillCompatAccessibilityService";
 
+    public static final String TALKBACK_SERVICE_ID =
+            "com.google.android.marvin.talkback/com.google.android.marvin.talkback.TalkBackService";
+
     // Constant value to multiply animation timeouts by for pre-Q Android versions.
     private static final int ANIMATION_TIMEOUT_MULTIPLIER = 2;
 
@@ -790,6 +793,18 @@ public class AccessibilityState {
     }
 
     /**
+     * Returns true when one of the running services is TalkBack based on list of service ids. This
+     * should not be used commonly, and is meant for identifying state while tracking metrics for
+     * performance improvements.
+     */
+    public static boolean isTalkBackEnabled() {
+        if (!sInitialized) updateAccessibilityServices();
+        return sServiceIds != null
+                && !sServiceIds.isEmpty()
+                && sServiceIds.contains(TALKBACK_SERVICE_ID);
+    }
+
+    /**
      * Return a bitmask containing the union of all event types that running accessibility services
      * listen to.
      */
@@ -1180,6 +1195,13 @@ public class AccessibilityState {
         if (!sInitialized) initializeForTesting();
 
         sEnabledServiceStringForTesting = enabledServiceString;
+    }
+
+    public static void setServiceIdsForTesting(String newServiceId) {
+        if (!sInitialized) initializeForTesting();
+
+        sServiceIds = new ArrayList<String>();
+        sServiceIds.add(newServiceId);
     }
 
     private static void initializeForTesting() {

@@ -1784,6 +1784,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // The container view is indicated by a virtualViewId of NO_ID; post these events directly
         // since there's no web-specific information to attach.
         if (virtualViewId == View.NO_ID) {
+            if (eventType == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
+                mHistogramRecorder.recordTimeToFirstAccessibilityFocus();
+            }
             mView.sendAccessibilityEvent(eventType);
             return;
         }
@@ -2056,6 +2059,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // accessibility is still enabled, throttling may result in events sent late.
         if (mView.getParent() != null && isAccessibilityEnabled()) {
             mHistogramRecorder.incrementDispatchedEvents();
+            if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
+                mHistogramRecorder.recordTimeToFirstAccessibilityFocus();
+            }
             if (mTracker != null) mTracker.addEvent(event);
             try {
                 mView.getParent().requestSendAccessibilityEvent(mView, event);
