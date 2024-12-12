@@ -223,19 +223,35 @@ MutableCSSPropertyValueSet::SetResult CSSParserImpl::ParseVariableValue(
 }
 
 static inline void FilterProperties(
-    bool important,
-    const HeapVector<CSSPropertyValue, 64>& input,
-    HeapVector<CSSPropertyValue, 64>& output,
+    HeapVector<CSSPropertyValue, 64>& values,
     wtf_size_t& unused_entries,
     std::bitset<kNumCSSProperties>& seen_properties,
     HashSet<AtomicString>& seen_custom_properties) {
+  // Move !important declarations last, using a simple insertion sort.
+  // This is O(n²), but n is typically small, and std::stable_partition
+  // wants to allocate memory to get to O(n), which is overkill here.
+  // Moreover, this is O(n) if there are no !important properties
+  // (the common case) or only !important properties.
+  wtf_size_t last_nonimportant_idx = values.size() - 1;
+  for (wtf_size_t i = values.size(); i--;) {
+    if (values[i].IsImportant()) {
+      if (i != last_nonimportant_idx) {
+        // Move this element to the end, preserving the order
+        // of the other elements.
+        CSSPropertyValue tmp = std::move(values[i]);
+        for (unsigned j = i; j < last_nonimportant_idx; ++j) {
+          values[j] = std::move(values[j + 1]);
+        }
+        values[last_nonimportant_idx] = std::move(tmp);
+      }
+      --last_nonimportant_idx;
+    }
+  }
+
   // Add properties in reverse order so that highest priority definitions are
   // reached first. Duplicate definitions can then be ignored when found.
-  for (wtf_size_t i = input.size(); i--;) {
-    const CSSPropertyValue& property = input[i];
-    if (property.IsImportant() != important) {
-      continue;
-    }
+  for (wtf_size_t i = values.size(); i--;) {
+    const CSSPropertyValue& property = values[i];
     if (property.PropertyID() == CSSPropertyID::kVariable) {
       const AtomicString& name = property.CustomPropertyName();
       if (seen_custom_properties.Contains(name)) {
@@ -250,7 +266,7 @@ static inline void FilterProperties(
       }
       seen_properties.set(property_id_index);
     }
-    output[--unused_entries] = property;
+    values[--unused_entries] = property;
   }
 }
 
@@ -267,20 +283,19 @@ static ImmutableCSSPropertyValueSet* CreateCSSPropertyValueSet(
     // bitsets, or similar.
     ImmutableCSSPropertyValueSet* result =
         ImmutableCSSPropertyValueSet::Create(parsed_properties, mode);
-    parsed_properties.clear();
+    parsed_properties.resize(0);  // clear() deallocates the backing.
     return result;
   }
 
   std::bitset<kNumCSSProperties> seen_properties;
   wtf_size_t unused_entries = parsed_properties.size();
-  HeapVector<CSSPropertyValue, 64> results(unused_entries);
   HashSet<AtomicString> seen_custom_properties;
 
-  FilterProperties(true, parsed_properties, results, unused_entries,
-                   seen_properties, seen_custom_properties);
-  FilterProperties(false, parsed_properties, results, unused_entries,
-                   seen_properties, seen_custom_properties);
+  FilterProperties(parsed_properties, unused_entries, seen_properties,
+                   seen_custom_properties);
 
+  // TODO: When we remove this use counter, we can move seen_properties
+  // into FilterProperties().
   bool count_cursor_hand = false;
   if (document && mode == kHTMLQuirksMode &&
       seen_properties.test(GetCSSPropertyIDIndex(CSSPropertyID::kCursor))) {
@@ -310,8 +325,9 @@ static ImmutableCSSPropertyValueSet* CreateCSSPropertyValueSet(
   }
 
   ImmutableCSSPropertyValueSet* result = ImmutableCSSPropertyValueSet::Create(
-      base::span(results).subspan(unused_entries), mode, count_cursor_hand);
-  parsed_properties.clear();
+      base::span(parsed_properties).subspan(unused_entries), mode,
+      count_cursor_hand);
+  parsed_properties.resize(0);  // clear() deallocates the backing.
   return result;
 }
 
@@ -370,16 +386,11 @@ bool CSSParserImpl::ParseDeclarationList(
 
   std::bitset<kNumCSSProperties> seen_properties;
   wtf_size_t unused_entries = parser.parsed_properties_.size();
-  HeapVector<CSSPropertyValue, 64> results(unused_entries);
   HashSet<AtomicString> seen_custom_properties;
-  FilterProperties(true, parser.parsed_properties_, results, unused_entries,
-                   seen_properties, seen_custom_properties);
-  FilterProperties(false, parser.parsed_properties_, results, unused_entries,
-                   seen_properties, seen_custom_properties);
-  if (unused_entries) {
-    results.EraseAt(0, unused_entries);
-  }
-  return declaration->AddParsedProperties(results);
+  FilterProperties(parser.parsed_properties_, unused_entries, seen_properties,
+                   seen_custom_properties);
+  return declaration->AddParsedProperties(
+      base::span(parser.parsed_properties_).subspan(unused_entries));
 }
 
 StyleRuleBase* CSSParserImpl::ParseNestedDeclarationsRule(
@@ -584,7 +595,7 @@ bool CSSParserImpl::ConsumeSupportsDeclaration(CSSParserTokenStream& stream) {
   observer_ = observer_copy;
 
   bool result = !parsed_properties_.empty();
-  parsed_properties_.clear();
+  parsed_properties_.resize(0);  // clear() deallocates the backing.
   return result;
 }
 

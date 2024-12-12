@@ -591,11 +591,11 @@ void MutableCSSPropertyValueSet::ParseDeclarationList(
 
 MutableCSSPropertyValueSet::SetResult
 MutableCSSPropertyValueSet::AddParsedProperties(
-    const HeapVector<CSSPropertyValue, 64>& properties) {
+    base::span<CSSPropertyValue> properties) {
   SetResult changed = kUnchanged;
   property_vector_.reserve(property_vector_.size() + properties.size());
-  for (unsigned i = 0; i < properties.size(); ++i) {
-    changed = std::max(changed, SetLonghandProperty(properties[i]));
+  for (const CSSPropertyValue& property : properties) {
+    changed = std::max(changed, SetLonghandProperty(property));
   }
   return changed;
 }

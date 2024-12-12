@@ -298,7 +298,7 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
 
   // Wrapper around SetLonghandProperty() for setting multiple properties
   // at a time.
-  SetResult AddParsedProperties(const HeapVector<CSSPropertyValue, 64>&);
+  SetResult AddParsedProperties(base::span<CSSPropertyValue>);
 
   // Wrapper around SetLonghandProperty() that does nothing if the same property
   // already exists with an !important declaration.
