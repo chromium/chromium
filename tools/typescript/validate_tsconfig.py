@@ -261,7 +261,6 @@ def validateDefinitionDeps(definitions_files, target_path, gen_dir,
   # safe for computation of gn input values.
   exceptions_list = [
       'third_party/d3/',
-      'third_party/jstemplate/',
       'third_party/material_web_components/',
       'third_party/node/node_modules/',
       'third_party/polymer/v3_0/',

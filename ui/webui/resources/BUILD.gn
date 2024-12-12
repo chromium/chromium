@@ -36,11 +36,9 @@ generate_grd("build_grd") {
     "images:build_grdp",
     "js:build_grdp",
     "mojo:build_grdp",
-    "//third_party/jstemplate:build_grdp",
     "//third_party/lit/v3_0:build_grdp",
   ]
   grdp_files = [
-    "$root_gen_dir/third_party/jstemplate/resources.grdp",
     "$root_gen_dir/third_party/lit/v3_0/resources.grdp",
     "$target_gen_dir/cr_components/commerce/resources.grdp",
     "$target_gen_dir/cr_elements/resources.grdp",

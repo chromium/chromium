@@ -61,7 +61,6 @@
       "third_party/dawn/generator/.*",
       "third_party/dawn/src/dawn/.*json",
       "third_party/hunspell_dictionaries/.*",
-      "third_party/jstemplate/.*(css|html|js)",
       "third_party/openscreen/src/DEPS",
       "third_party/polymer/v1_0/components-chromium/.*(css|html|js)",
       "third_party/vulkan-deps/DEPS",

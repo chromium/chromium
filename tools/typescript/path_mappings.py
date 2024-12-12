@@ -63,13 +63,6 @@ def _add_third_party_d3_mappings(path_mappings, root_src_dir):
   ]
 
 
-def _add_third_party_jstemplate_mappings(path_mappings, root_src_dir):
-  path_mappings[f'//third_party/jstemplate:library'] = [
-      ('chrome://resources/js/jstemplate_compiled.js',
-       f'{root_src_dir}/third_party/jstemplate/jstemplate.d.ts'),
-  ]
-
-
 def _add_third_party_lit_mappings(path_mappings, root_gen_dir):
   path_mappings[f'//third_party/lit/v3_0:build_ts'] = [
       ('//resources/lit/v3_0/lit.rollup.js',
@@ -128,7 +121,6 @@ def GetDepToPathMappings(root_gen_dir, root_src_dir, platform):
 
   _add_ui_webui_resources_mappings(path_mappings, root_gen_dir)
   _add_third_party_d3_mappings(path_mappings, root_src_dir)
-  _add_third_party_jstemplate_mappings(path_mappings, root_src_dir)
   _add_third_party_lit_mappings(path_mappings, root_gen_dir)
   _add_third_party_polymer_mappings(path_mappings, root_src_dir)
 
