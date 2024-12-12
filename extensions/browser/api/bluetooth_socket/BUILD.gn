@@ -19,11 +19,15 @@ source_set("bluetooth_socket") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
+  public_deps = [
+    "//base",
     "//content/public/browser",
+    "//device/bluetooth",
+    "//device/bluetooth/public/cpp",
+    "//extensions/browser:browser_sources",
     "//extensions/common",
     "//extensions/common/api",
   ]
 
-  public_deps = [ "//extensions/browser:browser_sources" ]
+  deps = [ "//net" ]
 }

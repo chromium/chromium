@@ -19,11 +19,10 @@ source_set("alarms") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
+  public_deps = [
     "//base",
+    "//extensions/browser:browser_sources",
     "//extensions/common",
     "//extensions/common/api",
   ]
-
-  public_deps = [ "//extensions/browser:browser_sources" ]
 }
