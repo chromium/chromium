@@ -620,6 +620,8 @@ src/webgpu/shader/execution/expression/call/builtin/subgroupAny.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupBallot.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupBitwise.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupBroadcast.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/subgroupElect.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/subgroupMinMax.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupMul.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/subgroupShuffle.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/tan.cache.ts
