@@ -109,14 +109,14 @@ SkColorInfo GPUCanvasContext::CanvasRenderingContextSkColorInfo() const {
   }
   return SkColorInfo(viz::ToClosestSkColorType(
                          /*gpu_compositing=*/true, swap_buffers_->Format()),
-                     alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque
-                         ? kOpaque_SkAlphaType
-                         : kPremul_SkAlphaType,
+                     GetAlphaType(),
                      PredefinedColorSpaceToSkColorSpace(color_space_));
 }
 
 SkAlphaType GPUCanvasContext::GetAlphaType() const {
-  return CanvasRenderingContextSkColorInfo().alphaType();
+  return alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque
+             ? kOpaque_SkAlphaType
+             : kPremul_SkAlphaType;
 }
 
 void GPUCanvasContext::Stop() {
@@ -650,9 +650,7 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
   // "dirty", so always call DidDraw() when a new texture is created.
   DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
 
-  SkAlphaType alpha_type = alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque
-                               ? kOpaque_SkAlphaType
-                               : kPremul_SkAlphaType;
+  SkAlphaType alpha_type = GetAlphaType();
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       swap_buffers_->GetNewTexture(swap_texture_descriptor_, alpha_type);
   if (!mailbox_texture) {
