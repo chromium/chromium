@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_DECISION_DETAILS_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_DECISION_DETAILS_H_
 
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 

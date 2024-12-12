@@ -5,6 +5,8 @@
 #ifndef CHROME_COMMON_PREF_NAMES_H_
 #define CHROME_COMMON_PREF_NAMES_H_
 
+#include <stddef.h>
+
 #include <iterator>
 
 #include "build/branding_buildflags.h"
