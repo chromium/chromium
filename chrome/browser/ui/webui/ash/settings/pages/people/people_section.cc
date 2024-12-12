@@ -427,21 +427,14 @@ void AddSetupPinDialogStrings(content::WebUIDataSource* html_source) {
 }
 
 void AddUsersStrings(content::WebUIDataSource* html_source) {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
   webui::LocalizedString kLocalizedStrings[] = {
       {"usersModifiedByOwnerLabel", IDS_SETTINGS_USERS_MODIFIED_BY_OWNER_LABEL},
-      {"guestBrowsingLabel",
-       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_USERS_GUEST_BROWSING_LABEL
-                        : IDS_SETTINGS_USERS_GUEST_BROWSING_LABEL},
+      {"guestBrowsingLabel", IDS_OS_SETTINGS_USERS_GUEST_BROWSING_LABEL},
       {"settingsManagedLabel", IDS_SETTINGS_USERS_MANAGED_LABEL},
       {"showOnSigninLabel", IDS_SETTINGS_USERS_SHOW_ON_SIGNIN_LABEL},
-      {"restrictSigninLabel",
-       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_USERS_RESTRICT_SIGNIN_LABEL
-                        : IDS_SETTINGS_USERS_RESTRICT_SIGNIN_LABEL},
+      {"restrictSigninLabel", IDS_OS_SETTINGS_USERS_RESTRICT_SIGNIN_LABEL},
       {"restrictSigninDescription",
-       IDS_OS_SETTINGS_REVAMP_USERS_RESTRICT_SIGNIN_DESCRIPTION},
+       IDS_OS_SETTINGS_USERS_RESTRICT_SIGNIN_DESCRIPTION},
       {"deviceOwnerLabel", IDS_SETTINGS_USERS_DEVICE_OWNER_LABEL},
       {"removeUserTooltip", IDS_SETTINGS_USERS_REMOVE_USER_TOOLTIP},
       {"userRemovedMessage", IDS_SETTINGS_USERS_USER_REMOVED_MESSAGE},
@@ -508,10 +501,6 @@ PeopleSection::PeopleSection(Profile* profile,
                              signin::IdentityManager* identity_manager,
                              PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
-      sync_subsection_(
-          !ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? std::make_optional<SyncSection>(profile, search_tag_registry)
-              : std::nullopt),
       identity_manager_(identity_manager),
       pref_service_(pref_service),
       auth_performer_(UserDataAuthClient::Get()),
@@ -520,10 +509,6 @@ PeopleSection::PeopleSection(Profile* profile,
   auto* user = BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
   if (IsGuestModeActive(user)) {
     return;
-  }
-
-  if (!ash::features::IsOsSettingsRevampWayfindingEnabled()) {
-    CHECK(sync_subsection_);
   }
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
@@ -611,12 +596,6 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddGraduationStrings(html_source, profile());
 
   ::settings::AddPasswordPromptDialogStrings(html_source);
-
-  // `sync_subsection_` is initialized only if the feature revamp wayfinding is
-  // disabled.
-  if (sync_subsection_) {
-    sync_subsection_->AddLoadTimeData(html_source);
-  }
 }
 
 void PeopleSection::AddHandlers(content::WebUI* web_ui) {
@@ -640,12 +619,6 @@ void PeopleSection::AddHandlers(content::WebUI* web_ui) {
       ShouldShowParentalControlSettings(profile())) {
     web_ui->AddMessageHandler(
         std::make_unique<ParentalControlsHandler>(profile()));
-  }
-
-  // `sync_subsection_` is initialized only if the feature revamp wayfinding is
-  // disabled.
-  if (sync_subsection_) {
-    sync_subsection_->AddHandlers(web_ui);
   }
 }
 
@@ -679,38 +652,21 @@ bool PeopleSection::LogMetric(mojom::Setting setting,
 }
 
 void PeopleSection::RegisterHierarchy(HierarchyGenerator* generator) const {
+  generator->RegisterTopLevelSetting(mojom::Setting::kAddAccount);
+  generator->RegisterTopLevelSetting(mojom::Setting::kRemoveAccount);
   generator->RegisterTopLevelSetting(mojom::Setting::kSetUpParentalControls);
   generator->RegisterTopLevelSetting(mojom::Setting::kGraduation);
 
+  // TODO(crbug.com/370837151) Remove this obsolete subpage Mojom constant and
+  // the respective route redirect.
   generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_ACCOUNT_MANAGER_PAGE_TITLE, mojom::Subpage::kMyAccounts,
       mojom::SearchResultIcon::kAvatar, mojom::SearchResultDefaultRank::kMedium,
       mojom::kMyAccountsSubpagePath);
 
-  // My accounts.
-  if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
-    // Accounts settings are up-leveled to the top level page if the revamp
-    // wayfind is enabled.
-    generator->RegisterTopLevelSetting(mojom::Setting::kAddAccount);
-    generator->RegisterTopLevelSetting(mojom::Setting::kRemoveAccount);
-  } else {
-    static constexpr mojom::Setting kMyAccountsSettings[] = {
-        mojom::Setting::kAddAccount,
-        mojom::Setting::kRemoveAccount,
-    };
-    RegisterNestedSettingBulk(mojom::Subpage::kMyAccounts, kMyAccountsSettings,
-                              generator);
-  }
-
   // Smart Lock -- main setting is on multidevice page, but is mirrored here
   generator->RegisterNestedAltSetting(mojom::Setting::kSmartLockOnOff,
                                       mojom::Subpage::kSecurityAndSignInV2);
-
-  // `sync_subsection_` is initialized only if the feature revamp wayfinding is
-  // disabled.
-  if (sync_subsection_) {
-    sync_subsection_->RegisterHierarchy(generator);
-  }
 }
 
 void PeopleSection::FetchAccounts() {
