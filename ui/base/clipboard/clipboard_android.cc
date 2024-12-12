@@ -34,6 +34,7 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_metrics.h"
+#include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_util.h"
 #include "ui/base/clipboard_jni_headers/Clipboard_jni.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -370,6 +371,8 @@ void ClipboardMap::CommitToAndroidClipboard() {
   map_state_ = MapState::kUpToDate;
   sequence_number_ = ClipboardSequenceNumberToken();
   UpdateLastModifiedTime(base::Time::Now());
+
+  ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 
 void ClipboardMap::Clear() {
@@ -381,6 +384,8 @@ void ClipboardMap::Clear() {
   map_state_ = MapState::kUpToDate;
   sequence_number_ = ClipboardSequenceNumberToken();
   UpdateLastModifiedTime(base::Time::Now());
+
+  ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 
 void ClipboardMap::MarkPasswordData() {
