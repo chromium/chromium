@@ -29,6 +29,10 @@ class MockPageInfoUiDelegate : public PageInfoUiDelegate {
               GetEmbargoResult,
               (ContentSettingsType type),
               (override));
+  MOCK_METHOD(void,
+              GetMerchantTrustInfo,
+              (page_info::MerchantDataCallback callback),
+              (override));
 };
 
 }  // namespace

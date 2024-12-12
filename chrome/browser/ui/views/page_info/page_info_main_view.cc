@@ -402,10 +402,9 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
     }
 
     if (merchant_trust_section_) {
-      // TOOD(crbug.com/378854649): Fetch data from the service.
-      merchant_trust_section_->RemoveAllChildViews();
-      merchant_trust_section_->AddChildView(CreateMerchantTrustButton());
-      extended_site_info_section_->SetVisible(true);
+      ui_delegate_->GetMerchantTrustInfo(
+          base::BindOnce(&PageInfoMainView::OnMerchantTrustDataFetched,
+                         base::Unretained(this)));
     }
   } else {
     security_content_view_ = security_container_view_->AddChildView(
@@ -544,6 +543,20 @@ void PageInfoMainView::HandleMoreInfoRequestAsync(int view_id) {
   }
 }
 
+void PageInfoMainView::OnMerchantTrustDataFetched(
+    const GURL& url,
+    std::optional<page_info::MerchantData> merchant_data) {
+  if (!merchant_data.has_value()) {
+    return;
+  }
+
+  DCHECK(merchant_trust_section_);
+  merchant_trust_section_->RemoveAllChildViews();
+  merchant_trust_section_->AddChildView(
+      CreateMerchantTrustButton(merchant_data.value()));
+  extended_site_info_section_->SetVisible(true);
+}
+
 gfx::Size PageInfoMainView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   if (site_settings_view_ == nullptr && permissions_view_ == nullptr &&
@@ -666,7 +679,8 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAdPersonalizationButton() {
   return ads_personalization_button;
 }
 
-std::unique_ptr<views::View> PageInfoMainView::CreateMerchantTrustButton() {
+std::unique_ptr<views::View> PageInfoMainView::CreateMerchantTrustButton(
+    page_info::MerchantData value) {
   // TODO(crbug.com/381215331): Add add actual string.
   auto merchant_trust_button = std::make_unique<RichHoverButton>(
       base::BindRepeating(&PageInfoNavigationHandler::OpenMerchantTrustPage,
@@ -678,10 +692,9 @@ std::unique_ptr<views::View> PageInfoMainView::CreateMerchantTrustButton() {
       views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
   merchant_trust_button->SetProperty(views::kElementIdentifierKey,
                                      kMerchantTrustElementId);
-  // TODO(crbug.com/381215331): Fetch the data from the service.
   auto* star_rating_view = merchant_trust_button->AddCustomSubtitle(
       std::make_unique<StarRatingView>());
-  star_rating_view->SetRating(3.5);
+  star_rating_view->SetRating(value.star_rating);
   return merchant_trust_button;
 }
 

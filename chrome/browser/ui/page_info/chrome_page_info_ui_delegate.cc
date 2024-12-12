@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/page_info/about_this_site_tab_helper.h"
+#include "chrome/browser/page_info/merchant_trust_service_factory.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
@@ -23,6 +24,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/page_info/core/about_this_site_service.h"
 #include "components/page_info/core/features.h"
+#include "components/page_info/core/merchant_trust_service.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permissions_client.h"
@@ -315,6 +317,13 @@ ChromePageInfoUiDelegate::GetEmbargoResult(ContentSettingsType type) {
   return permissions::PermissionsClient::Get()
       ->GetPermissionDecisionAutoBlocker(GetProfile())
       ->GetEmbargoResult(site_url_, type);
+}
+
+void ChromePageInfoUiDelegate::GetMerchantTrustInfo(
+    page_info::MerchantDataCallback callback) {
+  MerchantTrustServiceFactory::GetForProfile(GetProfile())
+      ->GetMerchantTrustInfo(web_contents_->GetVisibleURL(),
+                             std::move(callback));
 }
 
 Profile* ChromePageInfoUiDelegate::GetProfile() const {

@@ -30,6 +30,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/commerce/core/proto/merchant_trust.pb.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
@@ -125,6 +126,18 @@ optimization_guide::OptimizationMetadata GetAboutThisSiteMetadata() {
 
   auto* more_about = site_info->mutable_more_about();
   more_about->set_url("https://example.com/moreinfo");
+
+  optimization_metadata.SetAnyMetadataForTesting(metadata);
+  return optimization_metadata;
+}
+
+optimization_guide::OptimizationMetadata GetMerchantTrustMetadata() {
+  optimization_guide::OptimizationMetadata optimization_metadata;
+  commerce::MerchantTrustSignalsV2 metadata;
+  metadata.set_merchant_star_rating(3.5);
+  metadata.set_merchant_count_rating(23);
+  metadata.set_merchant_details_page_url("https://reviews.test");
+  metadata.set_reviews_summary("Test summary");
 
   optimization_metadata.SetAnyMetadataForTesting(metadata);
   return optimization_metadata;
@@ -1127,6 +1140,14 @@ class PageInfoBubbleViewMerchantTrustDialogBrowserTest
     optimization_guide_decider->AddHintForTesting(
         GetUrl(kAboutThisSiteUrl), optimization_guide::proto::ABOUT_THIS_SITE,
         GetAboutThisSiteMetadata());
+    optimization_guide_decider->AddHintForTesting(
+        GetUrl(kAboutThisSiteUrl),
+        optimization_guide::proto::MERCHANT_TRUST_SIGNALS_V2,
+        GetMerchantTrustMetadata());
+    optimization_guide_decider->AddHintForTesting(
+        GetUrl(kMerchantTrustUrl),
+        optimization_guide::proto::MERCHANT_TRUST_SIGNALS_V2,
+        GetMerchantTrustMetadata());
   }
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
@@ -1176,8 +1197,10 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewMerchantTrustDialogBrowserTest,
   ShowAndVerifyUi();
 }
 
+// TODO(crbug.com/383355629): Optimization guide doesn't support setting hints
+// for two optimization types.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewMerchantTrustDialogBrowserTest,
-                       InvokeUi_MerchantTrustAndAboutThisSite) {
+                       DISABLED_InvokeUi_MerchantTrustAndAboutThisSite) {
   set_baseline("6070208");
   ShowAndVerifyUi();
 }

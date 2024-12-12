@@ -87,6 +87,7 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
       ContentSettingsType type) override;
 
   bool IsTrackingProtection3pcdEnabled() override;
+  void GetMerchantTrustInfo(page_info::MerchantDataCallback callback) override;
 
  private:
   Profile* GetProfile() const;
