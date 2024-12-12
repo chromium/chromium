@@ -1962,24 +1962,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ads.InterestGroup.ServerAuction.KeyFetch.TotalTime2"
-    units="ms" expires_after="2024-12-08">
-  <owner>behamilton@google.com</owner>
-  <owner>pauljensen@chromium.org</owner>
-  <owner>privacy-sandbox-dev@chromium.org</owner>
-  <summary>
-    The length of time it took to fetch and parse the key requested for a
-    Bidding and Auction Services auction. This metric is only recorded on a
-    per-fetch level so it will not be recorded if the key is requested while
-    waiting for an existing fetch for the key to complete.
-
-    See
-    https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
-    for the latest version of the Protected Audience Bidding &amp; Auction
-    Services explainer.
-  </summary>
-</histogram>
-
 <histogram name="Ads.InterestGroup.ServerAuction.PrevWinsArraySize"
     units="bytes" expires_after="2025-05-11">
   <owner>caraitto@chromium.org</owner>

@@ -338,8 +338,6 @@ void BiddingAndAuctionServerKeyFetcher::CacheKeysAndRunAllCallbacks(
   PerCoordinatorFetcherState& state = fetcher_state_map_.at(coordinator);
   state.keys = keys;
   state.expiration = expiration;
-  base::UmaHistogramTimes("Ads.InterestGroup.ServerAuction.KeyFetch.TotalTime2",
-                          base::TimeTicks::Now() - state.fetch_start);
 
   while (!state.queue.empty()) {
     // We call the callback *before* removing the current request from the list.
