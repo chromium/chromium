@@ -7,6 +7,7 @@
 #include <cstdint>
 
 #include "base/containers/span.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/buildflags.h"
@@ -88,6 +89,8 @@ size_t GetCanonicalHostRegistryLengthIncludingPrivate(const std::string& host) {
 
 class RegistryControlledDomainTest : public testing::Test {
  protected:
+  void SetUp() override { ResetGetDomainAndRegistryCacheForTesting(); }
+
   void UseDomainData(base::span<const uint8_t> graph) {
     // This is undone in TearDown.
     SetFindDomainGraphForTesting(graph);
@@ -205,6 +208,31 @@ TEST_F(RegistryControlledDomainTest, TestGetDomainAndRegistry) {
   EXPECT_EQ("", GetDomainFromHost("[2001:0db8:85a3:0000:0000:8a2e:0370:7334]"));
   EXPECT_EQ("", GetDomainFromHost("localhost."));
   EXPECT_EQ("", GetDomainFromHost(".localhost."));
+}
+
+// GetDomainAndRegistry is backed by a cache, so make sure that it's working
+// correctly.
+TEST_F(RegistryControlledDomainTest, TestGetDomainAndRegistryCaching) {
+  UseDomainData(test1::kDafsa);
+
+  // Ask the same thing twice, should get the same result.
+  EXPECT_EQ("baz.jp", GetDomainFromHost("a.baz.jp"));
+  EXPECT_EQ("baz.jp", GetDomainFromHost("a.baz.jp"));
+
+  // Asking 100 different things shouldn't cause any boundary issues.
+  for (int i = 0; i < 100; ++i) {
+    EXPECT_EQ("baz.jp", GetDomainFromHost(base::StringPrintf("%d.baz.jp", i)));
+  }
+
+  // Ask a few more things multiple times, the results should be consistent.
+  for (int i = 0; i < 3; i++) {
+    EXPECT_EQ("baz.jp", GetDomainFromHost("a.baz.jp"));
+    EXPECT_EQ("baz.jp.", GetDomainFromHost("a.baz.jp."));
+    EXPECT_EQ("", GetDomainFromHost("ac.jp"));
+    EXPECT_EQ("a.b.baz.bar.jp", GetDomainFromHost("a.b.baz.bar.jp"));
+    EXPECT_EQ("pref.bar.jp", GetDomainFromHost("baz.pref.bar.jp"));
+    EXPECT_EQ("b.bar.baz.com.", GetDomainFromHost("a.b.bar.baz.com."));
+  }
 }
 
 TEST_F(RegistryControlledDomainTest, TestGetRegistryLength) {

@@ -5157,6 +5157,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.RegistryControlledDomains.GetDomainAndRegistry.CacheHit"
+    enum="BooleanCacheHit" expires_after="2025-11-11">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>src/net/base/registry_controlled_domains/OWNERS</owner>
+  <summary>
+    Whether a call to GetDomainAndRegistry was served from the cache or not.
+    Recorded on all calls to GetDomainAndRegistry.
+  </summary>
+</histogram>
+
 <histogram name="Net.Reporting.HeaderType" enum="NetReportingHeaderType"
     expires_after="2025-04-23">
   <owner>rodneyding@google.com</owner>

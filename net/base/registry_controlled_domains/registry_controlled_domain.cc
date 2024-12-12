@@ -51,9 +51,13 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/thread_local.h"
 #include "net/base/lookup_string_in_fixed_set.h"
 #include "net/base/net_module.h"
 #include "net/base/url_util.h"
@@ -81,6 +85,88 @@ struct MappedHostComponent {
 
   // True if this component could be canonicalized.
   bool is_canonical;
+};
+
+// A thread-local cache of the last `kMaxCacheSize` registry lookups. Call
+// GetCacheForThread to retrieve a thread-local instance. Implemented with a
+// circular array but could just as easily be a std::list if you want LRU, with
+// the additional overhead of the doubly-linked list pointers and seemingly
+// negligible hit rate win. See crbug.com/383728878 for more information.
+class RegistryLookupCache {
+ public:
+  constexpr static uint8_t kMaxCacheSize = 5;
+  RegistryLookupCache() = default;
+  ~RegistryLookupCache() = default;
+  RegistryLookupCache(const RegistryLookupCache&) = delete;
+  RegistryLookupCache& operator=(const RegistryLookupCache&) = delete;
+
+  // Retrieve a thread-local cache.
+  static RegistryLookupCache* GetCacheForThread(bool reset_cache = false) {
+    static base::NoDestructor<
+        base::ThreadLocalOwnedPointer<RegistryLookupCache>>
+        thread_local_cache;
+    RegistryLookupCache* cache = thread_local_cache->Get();
+    if (!cache || reset_cache) {
+      thread_local_cache->Set(std::make_unique<RegistryLookupCache>());
+      return thread_local_cache->Get();
+    }
+    return cache;
+  }
+
+  // The returned string_view is a reference to the incoming `host` and
+  // therefore has the same lifetime.
+  std::optional<std::string_view> Get(std::string_view host,
+                                      PrivateRegistryFilter private_filter) {
+    std::optional<std::string_view> result;
+
+    for (const CachedRegistryLookup& cached_result : cache_) {
+      if (cached_result.host == host &&
+          cached_result.private_filter == private_filter) {
+        result = host.substr(cached_result.offset);
+        break;
+      }
+    }
+    UMA_HISTOGRAM_BOOLEAN(
+        "Net.RegistryControlledDomains.GetDomainAndRegistry.CacheHit",
+        result.has_value());
+    return result;
+  }
+
+  // Stores the input and output of a registry lookup. Rather than make a copy
+  // of the output string, it stores the offset into the host string.
+  void Set(std::string_view host,
+           PrivateRegistryFilter private_filter,
+           size_t offset) {
+    CHECK_LE(0u, write_index_);
+    CHECK_GT(kMaxCacheSize, write_index_);
+    cache_[write_index_] = CachedRegistryLookup(host, private_filter, offset);
+    write_index_ = (write_index_ + 1) % kMaxCacheSize;
+  }
+
+ private:
+  // Stores the input parameters and the output offset of a registry lookup.
+  struct CachedRegistryLookup {
+   public:
+    CachedRegistryLookup() = default;
+    CachedRegistryLookup(std::string_view host,
+                         PrivateRegistryFilter private_filter,
+                         size_t offset)
+        : host(host),
+          private_filter(private_filter),
+          offset(base::checked_cast<uint32_t>(offset)) {}
+    ~CachedRegistryLookup() = default;
+
+    std::string host;
+    PrivateRegistryFilter private_filter;
+    uint32_t offset;
+  };
+
+  // Note that there is no ThreadChecker for this class because
+  // CalledOnValidThread will return false when called from tasks posted to
+  // SingleThreadTaskRunners bound to different sequences.
+
+  std::array<CachedRegistryLookup, kMaxCacheSize> cache_ = {};
+  uint8_t write_index_ = 0u;
 };
 
 // Used as the output of functions that calculate the registry length in a
@@ -175,8 +261,9 @@ RegistryLengthOutput GetRegistryLengthImpl(
     std::string_view host,
     UnknownRegistryFilter unknown_filter,
     PrivateRegistryFilter private_filter) {
-  if (host.empty())
+  if (host.empty()) {
     return {std::string::npos, false};
+  }
 
   // Skip leading dots.
   const size_t host_check_begin = host.find_first_not_of('.');
@@ -187,8 +274,9 @@ RegistryLengthOutput GetRegistryLengthImpl(
   // A single trailing dot isn't relevant in this determination, but does need
   // to be included in the final returned length.
   size_t host_check_end = host.size();
-  if (host.back() == '.')
+  if (host.back() == '.') {
     --host_check_end;
+  }
 
   RegistryLengthOutput output = GetRegistryLengthInTrimmedHost(
       host.substr(host_check_begin, host_check_end - host_check_begin),
@@ -203,10 +291,24 @@ RegistryLengthOutput GetRegistryLengthImpl(
   return output;
 }
 
+// DO NOT change the interface of this function without also updating the
+// RegistryLookupCache.
 std::string_view GetDomainAndRegistryImpl(
     std::string_view host,
     PrivateRegistryFilter private_filter) {
   CHECK(!host.empty());
+
+  // Because this function is called frequently, and is quite expensive, we
+  // 'memoize' previous instantiations of this function by using a thread-local
+  // cache.
+  RegistryLookupCache* cache = RegistryLookupCache::GetCacheForThread();
+
+  // Check for the origin in the cache.
+  std::optional<std::string_view> cached_result =
+      cache->Get(host, private_filter);
+  if (cached_result.has_value()) {
+    return *cached_result;
+  }
 
   // Find the length of the registry for this host.
   const RegistryLengthOutput registry_length_output =
@@ -226,9 +328,15 @@ std::string_view GetDomainAndRegistryImpl(
   // no dot.
   const size_t dot = host.rfind(
       '.', host.length() - registry_length_output.registry_length - 2);
-  if (dot == std::string::npos)
+  if (dot == std::string::npos) {
+    cache->Set(host, private_filter, 0u);
     return host;
-  return host.substr(dot + 1);
+  }
+
+  std::string_view result = host.substr(dot + 1);
+  cache->Set(host, private_filter, dot + 1);
+
+  return result;
 }
 
 // Same as GetDomainAndRegistry, but returns the domain and registry as a
@@ -532,6 +640,10 @@ void ResetFindDomainGraphForTesting() {
 void SetFindDomainGraphForTesting(base::span<const uint8_t> domains) {
   CHECK(!domains.empty());
   g_graph = domains;
+}
+
+void ResetGetDomainAndRegistryCacheForTesting() {
+  RegistryLookupCache::GetCacheForThread(/*reset_cache =*/true);
 }
 
 }  // namespace net::registry_controlled_domains

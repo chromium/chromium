@@ -318,6 +318,9 @@ NET_EXPORT_PRIVATE void ResetFindDomainGraphForTesting();
 NET_EXPORT_PRIVATE void SetFindDomainGraphForTesting(
     base::span<const uint8_t> domains);
 
+// Used for unit tests, so that each test has its own cache instance.
+NET_EXPORT_PRIVATE void ResetGetDomainAndRegistryCacheForTesting();
+
 }  // namespace net::registry_controlled_domains
 
 #endif  // NET_BASE_REGISTRY_CONTROLLED_DOMAINS_REGISTRY_CONTROLLED_DOMAIN_H_
