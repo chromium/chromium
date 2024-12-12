@@ -7,11 +7,22 @@
 
 @protocol AIPrototypingMutator;
 
+enum class AIPrototypingFeature : NSInteger;
+
 // The shared properties of each page in the menu.
 @protocol AIPrototypingViewControllerProtocol
 
+// The feature related to this page of the prototyping menu.
+@property(nonatomic, readonly) AIPrototypingFeature feature;
+
 // The mutator for this view controller to communicate to the mediator.
 @property(nonatomic, weak) id<AIPrototypingMutator> mutator;
+
+// Initializes the view controller for a given `feature`.
+- (instancetype)initForFeature:(AIPrototypingFeature)feature;
+
+// Updates the page's response field with `response`.
+- (void)updateResponseField:(NSString*)response;
 
 @end
 

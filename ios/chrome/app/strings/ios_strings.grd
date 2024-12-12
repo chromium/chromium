@@ -155,6 +155,24 @@
       <message name="IDS_IOS_AI_PROTOTYPING_SERVER_SIDE_SUBMIT" translateable="false" desc="Server side submit button text for AI prototyping menu [Length: unlimited].">
         Server Side Submit
       </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_TAB_ORGANIZATION_GROUP_TABS_BUTTON" translateable="false" desc="The label for the button that executes the Tab Organization query [Length: unlimited].">
+        Group tabs
+      </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_TAB_ORGANIZATION_GROUPING_STRATEGY_DOMAIN" translateable="false" desc="Label for the Domain Based grouping strategy of Tab Organization [Length: unlimited].">
+        Domain based
+      </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_TAB_ORGANIZATION_GROUPING_STRATEGY_LABEL" translateable="false" desc="Label for the grouping strategy section of Tab Organization [Length: unlimited].">
+        Grouping strategy
+      </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_TAB_ORGANIZATION_GROUPING_STRATEGY_TASK" translateable="false" desc="Label for the Task Based grouping strategy of Tab Organization [Length: unlimited].">
+        Task based
+      </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_TAB_ORGANIZATION_GROUPING_STRATEGY_TOPIC" translateable="false" desc="Label for the Topic Based grouping strategy of Tab Organization [Length: unlimited].">
+        Topic based
+      </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_TAB_ORGANIZATION_HEADER" translateable="false" desc="Header for AI prototyping menu's tab organization page [Length: unlimited].">
+        Tab Organization
+      </message>
       <message name="IDS_IOS_ACCNAME_CLEAR_TEXT" desc="The accessibility label for the clear text button in the location bar [Length: unlimited].">
         Clear text
       </message>

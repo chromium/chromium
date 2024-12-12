@@ -11,6 +11,7 @@
 #import "base/values.h"
 #import "components/optimization_guide/optimization_guide_buildflags.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_consumer.h"
+#import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/tab_organization_request_wrapper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -73,7 +74,8 @@
 
 - (void)executeOnDeviceQuery:(optimization_guide::proto::StringValue)request {
   if (!_on_device_session) {
-    [self.consumer updateQueryResult:@"Session is not ready for querying yet."];
+    [self.consumer updateQueryResult:@"Session is not ready for querying yet."
+                          forFeature:AIPrototypingFeature::kFreeform];
     [self startOnDeviceSession];
     return;
   }
@@ -131,7 +133,8 @@
                            static_cast<int>(result.response.error().error()));
   }
 
-  [self.consumer updateQueryResult:base::SysUTF8ToNSString(response)];
+  [self.consumer updateQueryResult:base::SysUTF8ToNSString(response)
+                        forFeature:AIPrototypingFeature::kFreeform];
 }
 
 // Handles the response from an on-device query execution.
@@ -156,7 +159,8 @@
                            static_cast<int>(result.response.error().error()));
   }
 
-  [self.consumer updateQueryResult:base::SysUTF8ToNSString(response)];
+  [self.consumer updateQueryResult:base::SysUTF8ToNSString(response)
+                        forFeature:AIPrototypingFeature::kFreeform];
 }
 
 // Handles the populated tab organization request by passing it to the model
@@ -221,7 +225,8 @@
     }
   }
 
-  [self.consumer updateQueryResult:base::SysUTF8ToNSString(response)];
+  [self.consumer updateQueryResult:base::SysUTF8ToNSString(response)
+                        forFeature:AIPrototypingFeature::kTabOrganization];
 }
 
 // Attempts to create an on-device session. If the feature's configuration
