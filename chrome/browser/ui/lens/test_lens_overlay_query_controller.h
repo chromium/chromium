@@ -64,6 +64,14 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
         next_full_image_request_should_return_error;
   }
 
+  void set_disable_page_upload_response_callback(bool disable) {
+    disable_page_upload_response_callback = disable;
+  }
+
+  void RunUploadProgressCallback() {
+    std::move(last_upload_progress_callback_).Run(1, 1);
+  }
+
   // Accessors.
   const GURL& sent_fetch_url() const { return sent_fetch_url_; }
 
@@ -190,7 +198,8 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
       const std::string& http_method,
       const base::TimeDelta& timeout,
       const std::vector<std::string>& request_headers,
-      const std::vector<std::string>& cors_exempt_headers) override;
+      const std::vector<std::string>& cors_exempt_headers,
+      const UploadProgressCallback upload_progress_callback) override;
 
   void SendLatencyGen204IfEnabled(
       lens::LensOverlayGen204Controller::LatencyType latency_type,
@@ -213,6 +222,10 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
 
   // If true, the next full image request will return an error.
   bool next_full_image_request_should_return_error_ = false;
+
+  // If true, the CreateEndpointFetcher will not automatically respond with a
+  // complete upload to the UploadProgressCallback.
+  bool disable_page_upload_response_callback = false;
 
   // The last url for which a fetch request was sent by the query controller.
   GURL sent_fetch_url_;
@@ -281,6 +294,9 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   // controller.
   base::flat_map<lens::LensOverlayGen204Controller::LatencyType, int>
       latency_gen_204_counter_;
+
+  // The last upload progress callback sent by the query controller.
+  UploadProgressCallback last_upload_progress_callback_;
 };
 
 }  // namespace lens
