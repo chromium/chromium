@@ -149,17 +149,18 @@ void LogSigninAccessPointCompleted(AccessPoint access_point,
 }
 
 void LogSignInOffered(AccessPoint access_point, PromoAction promo_action) {
-  // Do not record any histogram if no signin promo.
-  if (promo_action == PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO) {
-    return;
-  }
-
   static constexpr char signin_offered_base_histogram[] =
       "Signin.SignIn.Offered";
 
   // Log the generic offered histogram.
   base::UmaHistogramEnumeration(signin_offered_base_histogram, access_point,
                                 AccessPoint::ACCESS_POINT_MAX);
+
+  // Do not record the histogram with a promo suffix if this is invoked/recorded
+  // from a non-promo context.
+  if (promo_action == PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO) {
+    return;
+  }
 
   // Log the specific offered histogram based on the `promo_action`.
   base::UmaHistogramEnumeration(

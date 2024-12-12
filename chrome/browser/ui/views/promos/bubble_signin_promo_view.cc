@@ -186,7 +186,10 @@ BubbleSignInPromoView::BubbleSignInPromoView(
   }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-  signin_metrics::LogSignInOffered(access_point, promo_action);
+  if (promo_action !=
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO) {
+    signin_metrics::LogSignInOffered(access_point, promo_action);
+  }
 
   if (title_resource_id) {
     std::u16string title_text = l10n_util::GetStringUTF16(title_resource_id);
