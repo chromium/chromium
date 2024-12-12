@@ -26,7 +26,7 @@ class IOSCollaborationControllerDelegate
 
   // CollaborationControllerDelegate.
   void PrepareFlowUI(ResultCallback result) override;
-  void ShowError(ResultCallback result, const ErrorInfo& error) override;
+  void ShowError(const ErrorInfo& error, ResultCallback result) override;
   void Cancel(ResultCallback result) override;
   void ShowAuthenticationUi(ResultCallback result) override;
   void NotifySignInAndSyncStatusChange() override;

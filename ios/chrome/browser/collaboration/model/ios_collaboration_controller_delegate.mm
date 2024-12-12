@@ -31,8 +31,8 @@ void IOSCollaborationControllerDelegate::PrepareFlowUI(ResultCallback result) {
   // TODO(crbug.com/377306986): Implement this.
 }
 
-void IOSCollaborationControllerDelegate::ShowError(ResultCallback result,
-                                                   const ErrorInfo& error) {
+void IOSCollaborationControllerDelegate::ShowError(const ErrorInfo& error,
+                                                   ResultCallback result) {
   std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
   // TODO(crbug.com/377306986): Implement this.
 }

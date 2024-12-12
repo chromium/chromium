@@ -19,7 +19,7 @@ class MockCollaborationControllerDelegate
   MOCK_METHOD(void, PrepareFlowUI, (ResultCallback result), (override));
   MOCK_METHOD(void,
               ShowError,
-              (ResultCallback result, const ErrorInfo& error),
+              (const ErrorInfo& error, ResultCallback result),
               (override));
   MOCK_METHOD(void, Cancel, (ResultCallback result), (override));
   MOCK_METHOD(void, ShowAuthenticationUi, (ResultCallback result), (override));

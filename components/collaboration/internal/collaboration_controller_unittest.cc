@@ -213,9 +213,9 @@ TEST_F(CollaborationControllerTest, UrlHandlingError) {
 
   // Simulate an error parsing join URL.
   base::OnceCallback<void(Outcome)> error_ui_callback;
-  EXPECT_CALL(*delegate_, ShowError(IsNotNullCallback(),
-                                    ErrorInfo(ErrorInfo::Type::kGenericError)))
-      .WillOnce(MoveArg<0>(&error_ui_callback));
+  EXPECT_CALL(*delegate_, ShowError(ErrorInfo(ErrorInfo::Type::kGenericError),
+                                    IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&error_ui_callback));
   std::move(prepare_ui_callback_).Run(Outcome::kSuccess);
 
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kError);
@@ -233,9 +233,9 @@ TEST_F(CollaborationControllerTest, DelegateOutcomeError) {
 
   // Simulate a failure on the UI side.
   base::OnceCallback<void(Outcome)> error_ui_callback;
-  EXPECT_CALL(*delegate_, ShowError(IsNotNullCallback(),
-                                    ErrorInfo(ErrorInfo::Type::kGenericError)))
-      .WillOnce(MoveArg<0>(&error_ui_callback));
+  EXPECT_CALL(*delegate_, ShowError(ErrorInfo(ErrorInfo::Type::kGenericError),
+                                    IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&error_ui_callback));
   std::move(prepare_ui_callback_).Run(Outcome::kFailure);
 
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kError);
@@ -257,9 +257,9 @@ TEST_F(CollaborationControllerTest, AuthenticationError) {
   // Simulate Authentication finishing successfully on the UI, but getting
   // invalid authentication status in the service.
   base::OnceCallback<void(Outcome)> error_ui_callback;
-  EXPECT_CALL(*delegate_, ShowError(IsNotNullCallback(),
-                                    ErrorInfo(ErrorInfo::Type::kGenericError)))
-      .WillOnce(MoveArg<0>(&error_ui_callback));
+  EXPECT_CALL(*delegate_, ShowError(ErrorInfo(ErrorInfo::Type::kGenericError),
+                                    IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&error_ui_callback));
   ServiceStatus status;
   status.signin_status = SigninStatus::kNotSignedIn;
   status.sync_status = SyncStatus::kSyncEnabled;

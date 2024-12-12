@@ -51,7 +51,7 @@ class CollaborationControllerDelegate {
   virtual void PrepareFlowUI(ResultCallback result) = 0;
 
   // Request to show the error page/dialog.
-  virtual void ShowError(ResultCallback result, const ErrorInfo& error) = 0;
+  virtual void ShowError(const ErrorInfo& error, ResultCallback result) = 0;
 
   // Request to cancel and close the current UI screen.
   virtual void Cancel(ResultCallback result) = 0;
