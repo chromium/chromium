@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
@@ -21,6 +22,11 @@
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 
 namespace payments::facilitated {
+namespace {
+
+static constexpr base::TimeDelta kProgressScreenDismissDelay = base::Seconds(1);
+
+}  // namespace
 
 FacilitatedPaymentsManager::FacilitatedPaymentsManager(
     FacilitatedPaymentsDriver* driver,
@@ -280,11 +286,18 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
     ShowErrorScreen();
     return;
   }
+
   LogInitiatePurchaseActionAttempt();
   purchase_action_start_time_ = base::TimeTicks::Now();
   GetApiClient()->InvokePurchaseAction(
       account_info.value(), response_details->action_token_,
       base::BindOnce(&FacilitatedPaymentsManager::OnPurchaseActionResult,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  // Close the progress screen just after the platform screen appears.
+  ui_timer_.Start(
+      FROM_HERE, kProgressScreenDismissDelay,
+      base::BindOnce(&FacilitatedPaymentsManager::DismissProgressScreen,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -369,6 +382,12 @@ std::string FacilitatedPaymentsManager::GetInitiatePurchaseActionResultString(
       return std::string("Failed");
     case PurchaseActionResult::kResultCanceled:
       return std::string("Abandoned");
+  }
+}
+
+void FacilitatedPaymentsManager::DismissProgressScreen() {
+  if (ui_state_ == UiState::kProgressScreen) {
+    DismissPrompt();
   }
 }
 

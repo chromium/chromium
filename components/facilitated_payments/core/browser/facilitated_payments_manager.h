@@ -96,6 +96,9 @@ class FacilitatedPaymentsManager {
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerTest,
       DOMSearch_CheckAllowlistResultUnknown_PixCodeDetectionNotTriggered);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerTest,
+      ErrorScreenNotAutoDismissedAfterInvokingPurchaseAction);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            HandlesFailureToLazilyInitializeApiClient);
   FRIEND_TEST_ALL_PREFIXES(
@@ -171,6 +174,9 @@ class FacilitatedPaymentsManager {
                            PixFopSelectorShown_HistogramsLogged);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            PixPrefTurnedOff_NoApiClientTriggered);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerTest,
+      ProgressScreenAutoDismissedAfterInvokingPurchaseAction);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            RegisterPixAllowlist);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
@@ -309,6 +315,10 @@ class FacilitatedPaymentsManager {
   std::string GetInitiatePurchaseActionResultString(
       PurchaseActionResult result);
 
+  // Dismisses the FacilitatedPayments bottom sheet if the progress screen is
+  // being shown.
+  void DismissProgressScreen();
+
   // Owner.
   const raw_ref<FacilitatedPaymentsDriver> driver_;
 
@@ -345,6 +355,9 @@ class FacilitatedPaymentsManager {
 
   // Measures the time take to complete the purchase action.
   base::TimeTicks purchase_action_start_time_;
+
+  // A timer to make UI changes.
+  base::OneShotTimer ui_timer_;
 
   // Contains the details required for the `InitiatePayment` request to be sent
   // to the Payments server. Its ownership is transferred to

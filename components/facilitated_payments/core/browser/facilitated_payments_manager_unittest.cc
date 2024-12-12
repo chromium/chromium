@@ -1091,6 +1091,59 @@ TEST_F(FacilitatedPaymentsManagerTest, PixFopSelectorShown_HistogramsLogged) {
   EXPECT_EQ(ukm_entries[0].metrics.at("Shown"), true);
 }
 
+TEST_F(FacilitatedPaymentsManagerTest,
+       ProgressScreenAutoDismissedAfterInvokingPurchaseAction) {
+  // When purchase action is invoked, the progress screen would be showing.
+  manager_->ShowProgressScreen();
+  ON_CALL(*client_, GetCoreAccountInfo)
+      .WillByDefault(testing::Return(CreateLoggedInAccountInfo()));
+
+  EXPECT_CALL(GetApiClient(), InvokePurchaseAction);
+
+  auto response_details =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
+  response_details->action_token_ =
+      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+  manager_->OnInitiatePaymentResponseReceived(
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      std::move(response_details));
+
+  // The progress screen is persisted for a short duration after invoking the
+  // purchase action for a smooth transition to the platform screen.
+  EXPECT_EQ(manager_->ui_state_, UiState::kProgressScreen);
+
+  FastForwardBy(base::Seconds(1));
+
+  // The progress screen should be dismissed after a short delay.
+  EXPECT_EQ(manager_->ui_state_, UiState::kHidden);
+}
+
+TEST_F(FacilitatedPaymentsManagerTest,
+       ErrorScreenNotAutoDismissedAfterInvokingPurchaseAction) {
+  // When purchase action is invoked, the progress screen would be showing.
+  manager_->ShowProgressScreen();
+  ON_CALL(*client_, GetCoreAccountInfo)
+      .WillByDefault(testing::Return(CreateLoggedInAccountInfo()));
+
+  EXPECT_CALL(GetApiClient(), InvokePurchaseAction);
+
+  auto response_details =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
+  response_details->action_token_ =
+      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+  manager_->OnInitiatePaymentResponseReceived(
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      std::move(response_details));
+
+  // If the purchase action could not be invoked, the `PurchaseActionResult` is
+  // returned immediately. The error screen is shown.
+  manager_->OnPurchaseActionResult(PurchaseActionResult::kCouldNotInvoke);
+  FastForwardBy(base::Seconds(1));
+
+  // The error screen shouldn't be auto-dismissed.
+  EXPECT_EQ(manager_->ui_state_, UiState::kErrorScreen);
+}
+
 class FacilitatedPaymentsManagerTestForUiScreens
     : public FacilitatedPaymentsManagerTest,
       public testing::WithParamInterface<UiState> {
