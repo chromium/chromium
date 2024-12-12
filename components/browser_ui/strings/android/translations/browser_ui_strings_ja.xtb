@@ -206,7 +206,7 @@
 <translation id="4200726100658658164">位置情報の設定を開く</translation>
 <translation id="4226663524361240545">通知を受け取るとデバイスが振動します</translation>
 <translation id="4259722352634471385"><ph name="URL" /> へのアクセスがブロックされました</translation>
-<translation id="4278390842282768270">許可</translation>
+<translation id="4278390842282768270">許可されています</translation>
 <translation id="429312253194641664">サイトでメディアが再生されています</translation>
 <translation id="42981349822642051">展開</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{明日で期限切れ}other{あと # 日で期限切れ}}</translation>

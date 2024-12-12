@@ -1577,7 +1577,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="827464923811805683">Cualquier persona que tenga el enlace puede editar todas las pestañas, así que comparte con cuidado. El enlace caduca al cabo de 48 horas. <ph name="BEGIN_LINK" />Información sobre los grupos de pestañas compartidos<ph name="END_LINK" /></translation>
 <translation id="8275068909952022340">Más…</translation>
 <translation id="8278488584187265939">Personalizar la página principal</translation>
-<translation id="8281781826761538115">Predeterminada: <ph name="DEFAULT_LOCALE" /></translation>
+<translation id="8281781826761538115">Predeterminado: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Saltar</translation>
 <translation id="8282657446819506217">Abrir en un grupo de pestañas</translation>
 <translation id="828291969289324795">{count,plural, =1{Añadir pestaña al nuevo grupo}other{Añadir pestañas al nuevo grupo}}</translation>
