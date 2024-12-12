@@ -60,18 +60,6 @@ reviewer.
   <int value="12" label="The FOP selector was closed by the user"/>
 </enum>
 
-<enum name="FacilitatedPayments.PaymentNotOfferedReason">
-  <obsolete>
-    Replaced by FacilitatedPayments.PayFlowExitedReason. To be removed after
-    implementation is finished.
-  </obsolete>
-  <int value="0" label="Api not available"/>
-  <int value="1" label="Risk data empty"/>
-  <int value="2" label="Code validtor failed"/>
-  <int value="3" label="Invalid code"/>
-  <int value="4" label="Landscape screen orientation"/>
-</enum>
-
 <!-- LINT.IfChange(FacilitatedPayments.UiScreen) -->
 
 <enum name="FacilitatedPayments.UiScreen">
