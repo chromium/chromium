@@ -228,15 +228,11 @@ void OverviewItem::OnFocusedViewClosed() {
 }
 
 void OverviewItem::UpdateRoundedCorners() {
-  // TODO(sammiequon): Clean up this function.
-
-  // Do not show the rounded corners and the shadow if overview is shutting
-  // down or we're currently in entering overview animation. Also don't update
-  // or animate the window's frame header clip under these conditions. If the
-  // feature ContinuousOverviewScrollAnimation is enabled, always show rounded
-  // corners for minimized windows, and show rounded corners for non-minimized
-  // windows after the continuous scroll has ended.
   OverviewController* overview_controller = OverviewController::Get();
+
+  // If the feature ContinuousOverviewScrollAnimation is enabled, always show
+  // rounded corners for minimized windows, and show rounded corners for
+  // non-minimized windows after the continuous scroll has ended.
   bool show_rounded_corners_for_start_animation = false;
   if (features::IsContinuousOverviewScrollAnimationEnabled() &&
       !display::Screen::GetScreen()->InTabletMode()) {
@@ -248,6 +244,9 @@ void OverviewItem::UpdateRoundedCorners() {
         !overview_controller->IsInStartAnimation();
   }
 
+  // Do not show the rounded corners and the shadow if overview is shutting
+  // down or we're currently in entering overview animation. Also don't update
+  // or animate the window's frame header clip under these conditions.
   const bool is_shutting_down =
       !overview_controller || !overview_controller->InOverviewSession();
   const bool should_show_rounded_corners =

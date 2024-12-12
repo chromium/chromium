@@ -158,7 +158,6 @@ TabletModeWindowState::TabletModeWindowState(
   state_type_on_attach_ = snap || state->IsFloated()
                               ? current_state_type_
                               : state->GetWindowTypeOnMaximizable();
-  // TODO(oshima|sammiequon): consider SplitView scenario.
   WindowState::ScopedBoundsChangeAnimation bounds_animation(
       window, entering_tablet_mode && !ShouldAnimateWindowForTransition(window)
                   ? WindowState::BoundsChangeAnimationType::kAnimateZero
