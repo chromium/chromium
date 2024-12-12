@@ -157,7 +157,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="1696555181932908973">Možete isprobati druge načine da biste nastavili na <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Želite li promijeniti postavke tamne teme?</translation>
 <translation id="1702907158640575240">Upravljani preglednik</translation>
-<translation id="1718835860248848330">Posljednji sat</translation>
+<translation id="1718835860248848330">Prethodni sat</translation>
 <translation id="1724977129262658800">Otključajte da biste izmijenili zaporku</translation>
 <translation id="1726477445370128854">Možete pregledavati i pretraživati brže kad Chrome predučitava stranice za koje misli da biste ih mogli posjetiti</translation>
 <translation id="1728803206919861584">Želite li spremiti pristupni ključ izvan anonimnog načina?</translation>
@@ -572,7 +572,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3697705478071004188">Poredaj po web-lokaciji</translation>
 <translation id="3699022356773522638">Preuzeti datoteku?</translation>
 <translation id="3701167022068948696">Ispravi odmah</translation>
-<translation id="3701515417135397388">Upozori ako je zaporka ugrožena zbog povrede podataka</translation>
+<translation id="3701515417135397388">Upozori ako je zaporka ugrožena zbog neovlaštenog pristupa podacima</translation>
 <translation id="3703166520839776970">Ako se taj problem nastavi pojavljivati, odaberite "Više pojedinosti" u nastavku da biste dobili više informacija od <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3710501561113687889">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će podijeliti vaše podatke, odnosno <ph name="FIELDS_STRING" /> s ovom web-lokacijom.</translation>
 <translation id="3714981814255182093">Otvaranje Trake za traženje</translation>

@@ -1057,7 +1057,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1714644264617423774">Omogućite značajke pristupačnosti radi jednostavnije upotrebe uređaja. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464">Želite li izbrisati podatke web-lokacije i dopuštenja za web-lokaciju <ph name="SITE_NAME" /> i njezinu instaliranu aplikaciju?</translation>
 <translation id="171826447717908393">Izolirane web-aplikacije (beta)</translation>
-<translation id="1718835860248848330">Posljednji sat</translation>
+<translation id="1718835860248848330">Prethodni sat</translation>
 <translation id="1719312230114180055">Napomena: otisak prsta može biti manje siguran od snažne zaporke ili PIN-a.</translation>
 <translation id="1720244237656138008">Impresionizam</translation>
 <translation id="1720318856472900922">Autentifikacija TLS WWW poslužitelja</translation>
@@ -3283,7 +3283,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3284050785966252943">Pregled metapodataka o automatskom popunjavanju</translation>
 <translation id="3285322247471302225">Nova &amp;kartica</translation>
 <translation id="3285465040399788513">Nema dovoljno pohrane za dovršetak postavljanja. Oslobodite prostor i pokušajte ponovo.</translation>
-<translation id="3285500645985761267">Dopustite povezanim web-lokacijama da vide vaše aktivnosti u grupi</translation>
+<translation id="3285500645985761267">Dopusti povezanim web-lokacijama da vide vaše aktivnosti u grupi</translation>
 <translation id="328571385944182268">Spremiti zaporke?</translation>
 <translation id="3289668031376215426">Automatsko veliko početno slovo</translation>
 <translation id="3289856944988573801">Da biste provjerili ima li ažuriranja, upotrijebite Ethernet ili Wi-Fi.</translation>
@@ -3863,7 +3863,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3700888195348409686">Prikazivanje (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">Ne dopuštaj web-lokacijama praćenje položaja fotoaparata</translation>
 <translation id="3701167022068948696">Ispravi odmah</translation>
-<translation id="3701515417135397388">Upozori ako je zaporka ugrožena zbog povrede podataka</translation>
+<translation id="3701515417135397388">Upozori ako je zaporka ugrožena zbog neovlaštenog pristupa podacima</translation>
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />Unesite naziv prodavača i broj trgovine za koji se konfigurira demo-uređaj*. <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ako ne znate broj trgovine, možete unijeti 0000 da biste nastavili s instaliranjem demo načina. <ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />*Napomena: Google upotrebljava te podatke za prepoznavanje verzije demo načina koju uređaj treba primiti i za mjerenje upotrebe demo načina.<ph name="END_PARAGRAPH3" /></translation>
@@ -6361,7 +6361,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5477089831058413614">Konfiguriraj žarišnu točku uređaja <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Nije dopušteno automatsko preuzimanje više datoteka</translation>
 <translation id="5481682542063333508">Ponuda pomoći pri pisanju</translation>
-<translation id="5481876918948762495">Uvoz zaporki</translation>
+<translation id="5481876918948762495">Uvezite zaporke</translation>
 <translation id="5481941284378890518">Dodaj pisače u blizini</translation>
 <translation id="5482417738572414119">prijaviti se da bi Chrome mogao predlagati grupe kartica i organizirati vaše kartice</translation>
 <translation id="5483005706243021437">Ostajem ovdje</translation>
@@ -8731,7 +8731,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7211783048245131419">Još nije dodijeljen nijedan prekidač</translation>
 <translation id="7212097698621322584">Unesite svoj trenutačni PIN da biste ga promijenili. Ako ne znate PIN, vratite sigurnosni ključ na zadano, a zatim izradite novi PIN.</translation>
 <translation id="7214047272988222011">Dopušteno – <ph name="PERMISSION_DETAILS" />. Uključite <ph name="LINK_BEGIN" />pristup kameri sustava<ph name="LINK_END" />.</translation>
-<translation id="721490496276866468">Uvoz zaporki</translation>
+<translation id="721490496276866468">Uvezite zaporke</translation>
 <translation id="7217208603285112910">Jezik odabira nije <ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">Želite li izbrisati podatke web-lokacije?</translation>
 <translation id="7219473482981809164">Pronašli smo više profila dostupnih za preuzimanje. Prije nego što nastavite, odaberite one koje želite preuzeti.</translation>

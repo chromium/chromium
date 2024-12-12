@@ -4694,7 +4694,7 @@
 <translation id="4276856098224910511">インストールできません。OS のアップデートが保留中です。保留中の OS アップデートをすべて適用し、再起動してからもう一度お試しください。エラーコード: <ph name="ERROR" />。</translation>
 <translation id="4277434192562187284">XML 構成の参照元</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{1 件のサイトから権限を削除しました}other{{NUM_SITES} 件のサイトから権限を削除しました}}</translation>
-<translation id="4278390842282768270">許可</translation>
+<translation id="4278390842282768270">許可されています</translation>
 <translation id="4278498748067682896">キオスクおよびサイネージ アップグレードを使用します。これにより、デバイスはキオスクまたはサイネージ モードでのみ実行できるようになります。ユーザーがデバイスにログインできるようにするには、前の画面に戻り、Chrome Enterprise Upgrade を使用して登録してください。</translation>
 <translation id="4278779213160967034">この処理には数分かかることがあります。ファイルをダウンロードしています。</translation>
 <translation id="4279129444466079448">このデバイスにインストールできる eSIM プロファイルは <ph name="PROFILE_LIMIT" /> 個までです。さらにプロファイルを追加するには、その前にいずれかの既存のプロファイルを削除してください。</translation>
@@ -9026,7 +9026,7 @@
     画面上部の ChromeVox パネルにシミュレートします</translation>
 <translation id="7429568074268678162"><ph name="FILENAME" /> は危害を及ぼす可能性があります。Chrome でこのファイルをチェックする、もしくは直接ダウンロードするには、パスワードを追加してください。</translation>
 <translation id="7431719494109538750">HID デバイスは見つかりませんでした</translation>
-<translation id="7431991332293347422">検索などのカスタマイズに閲覧履歴がどのように使われるかを管理します</translation>
+<translation id="7431991332293347422">検索などのパーソナライズに閲覧履歴がどのように使われるかを管理します</translation>
 <translation id="7432200167665670017">「<ph name="EXTENSION_NAME" />」（アプリ ID: <ph name="EXTENSION_ID" />）は管理者によってブロックされています</translation>
 <translation id="7433708794692032816"><ph name="DEVICE_TYPE" /> を引き続き使用するにはスマートカードを挿入してください</translation>
 <translation id="7433957986129316853">そのままにする</translation>
@@ -11204,7 +11204,7 @@
 <translation id="8962083179518285172">詳細を非表示</translation>
 <translation id="8962863356073277855">URL は https://www.example.com の形式で入力してください</translation>
 <translation id="8962918469425892674">このサイトはモーション センサーまたは光センサーを使用しています。</translation>
-<translation id="8963117664422609631">サイトの設定に移動します</translation>
+<translation id="8963117664422609631">サイトの設定に移動</translation>
 <translation id="8965037249707889821">古いパスワードを入力</translation>
 <translation id="8966809848145604011">他のプロファイル</translation>
 <translation id="8967427617812342790">リーディング リストに追加</translation>

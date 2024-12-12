@@ -1213,7 +1213,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6637100877383020115">Pour améliorer l'appli, Chrome envoie les données d'utilisation et de plantage à Google. <ph name="BEGIN_UMA_LINK" />Gérer<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Toujours bloquer</translation>
 <translation id="6641780377503683465">Supprimer <ph name="INTEREST" /></translation>
-<translation id="6645629752388991326">Contrôlez quels appareils peuvent se connecter en utilisant ce téléphone comme clé de sécurité.</translation>
+<translation id="6645629752388991326">Contrôler quels appareils peuvent se connecter en utilisant ce téléphone comme clé de sécurité</translation>
 <translation id="6647441008198474441">Les URL que vous consultez sont envoyées à Google pour prédire les sites que vous êtes susceptible de visiter plus tard</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> de plus}one{<ph name="CONTACT_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> de plus}other{<ph name="CONTACT_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> de plus}}</translation>
 <translation id="6649642165559792194">Prévisualiser l'image <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
@@ -1611,7 +1611,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="831192587911042850">Ajouter le site Web actuel à la liste des sites Web que vous suivez.</translation>
 <translation id="8342727528718219152">Chrome vous indiquera les sites qui envoient peut-être trop de notifications</translation>
 <translation id="834313815369870491">Ne jamais traduire les sites</translation>
-<translation id="8348430946834215779">Utilisez HTTPS autant que possible et recevez un avertissement avant de charger des sites qui ne le prennent pas en charge</translation>
+<translation id="8348430946834215779">Utiliser HTTPS autant que possible et recevoir un avertissement avant de charger des sites qui ne le prennent pas en charge</translation>
 <translation id="8354977102499939946">Rechercher rapidement par commande vocale. Pour modifier ce raccourci, accédez aux paramètres.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> téléchargements restaurés</translation>
 <translation id="8368001212524806591">Effectuer le suivi du prix</translation>

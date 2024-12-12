@@ -1401,7 +1401,7 @@
 <translation id="7419565702166471774">常に安全な接続を使用する</translation>
 <translation id="7425053386765766120">お支払い方法を追加…</translation>
 <translation id="7425346204213733349">今後、ブックマーク、履歴、パスワード、その他の設定に行った変更は Google アカウントに同期されません。ただし、既存のデータは Google アカウントに保存されたままとなります。</translation>
-<translation id="7431991332293347422">検索などのカスタマイズに閲覧履歴がどのように使われるかを管理します</translation>
+<translation id="7431991332293347422">検索などのパーソナライズに閲覧履歴がどのように使われるかを管理します</translation>
 <translation id="7435356471928173109">管理者によってオフにされています</translation>
 <translation id="7438481509621345350">新しいタブを開くと、<ph name="CHANNEL_NAME" /> のストーリーが表示されるようになります。</translation>
 <translation id="7451023311965289370">{count,plural, =1{ブックマークが「{title}」に保存されました}other{ブックマークが「{title}」に保存されました}}</translation>
