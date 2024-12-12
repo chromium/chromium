@@ -12,6 +12,9 @@ import com.google.errorprone.annotations.DoNotMock;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * This class mirrors unguessable_token.h. Since tokens are passed by value, we don't bother to
  * maintain a native token. This implements Parcelable so that it may be sent via binder.
@@ -19,6 +22,7 @@ import org.jni_zero.JNINamespace;
  * <p>To get one of these from native, one must start with a base::UnguessableToken, then create a
  * Java object from it. See unguessable_token_android.h for information.
  */
+@NullMarked
 @DoNotMock("This is a simple value object.")
 @JNINamespace("base::android")
 public final class UnguessableToken extends TokenBase implements Parcelable {
@@ -47,7 +51,7 @@ public final class UnguessableToken extends TokenBase implements Parcelable {
     public static final Parcelable.Creator<UnguessableToken> CREATOR =
             new Parcelable.Creator<UnguessableToken>() {
                 @Override
-                public UnguessableToken createFromParcel(Parcel source) {
+                public @Nullable UnguessableToken createFromParcel(Parcel source) {
                     long high = source.readLong();
                     long low = source.readLong();
                     if (high == 0 || low == 0) {

@@ -14,6 +14,9 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +40,7 @@ import javax.annotation.concurrent.GuardedBy;
  * final String| class member. Otherwise NoDynamicStringsInTraceEventCheck error will be thrown.
  */
 @JNINamespace("base::android")
+@NullUnmarked // Cannot accurately model due to enable() / disable()
 public class EarlyTraceEvent {
     /** Single trace event. */
     @VisibleForTesting
@@ -135,11 +139,11 @@ public class EarlyTraceEvent {
     // Not final because in many configurations these objects are not used.
     @GuardedBy("sLock")
     @VisibleForTesting
-    static List<Event> sEvents;
+    static @Nullable List<Event> sEvents;
 
     @GuardedBy("sLock")
     @VisibleForTesting
-    static List<AsyncEvent> sAsyncEvents;
+    static @Nullable List<AsyncEvent> sAsyncEvents;
 
     @GuardedBy("sLock")
     @VisibleForTesting

@@ -4,10 +4,13 @@
 
 package org.chromium.base;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.io.Closeable;
 import java.io.IOException;
 
 /** Helper methods to deal with stream related tasks. */
+@NullMarked
 public class StreamUtil {
     /**
      * Handle closing a {@link java.io.Closeable} via {@link java.io.Closeable#close()} and catch

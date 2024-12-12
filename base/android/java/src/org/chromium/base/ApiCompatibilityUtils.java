@@ -25,7 +25,8 @@ import android.provider.MediaStore;
 import android.view.Display;
 import android.view.View;
 
-import androidx.annotation.NonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -40,6 +41,7 @@ import java.util.List;
  * Do not inline because we use many new APIs, and if they are inlined, they could cause dex
  * validation errors on low Android versions.
  */
+@NullMarked
 public class ApiCompatibilityUtils {
     private static final String TAG = "ApiCompatUtil";
 
@@ -58,7 +60,7 @@ public class ApiCompatibilityUtils {
      *     AppCompatResources} to parse drawable to prevent fail on {@link VectorDrawable}.
      *     (http://crbug.com/792129)
      */
-    public static Drawable getDrawable(Resources res, int id) throws NotFoundException {
+    public static @Nullable Drawable getDrawable(Resources res, int id) throws NotFoundException {
         return getDrawableForDensity(res, id, 0);
     }
 
@@ -66,7 +68,7 @@ public class ApiCompatibilityUtils {
      * @see android.content.res.Resources#getDrawableForDensity(int id, int density).
      */
     @SuppressWarnings("deprecation")
-    public static Drawable getDrawableForDensity(Resources res, int id, int density) {
+    public static @Nullable Drawable getDrawableForDensity(Resources res, int id, int density) {
         StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
         try {
             // For Android Oreo+, Resources.getDrawable(id, null) delegates to
@@ -114,7 +116,6 @@ public class ApiCompatibilityUtils {
      * @return A list of display ids. Empty if there is none or version is less than Q, or
      *     windowAndroid does not contain an activity.
      */
-    @NonNull
     public static List<Integer> getTargetableDisplayIds(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             List<Integer> displayList = new ArrayList<>();
@@ -146,8 +147,7 @@ public class ApiCompatibilityUtils {
      *
      * @param options {@ActivityOptions} to set the required mode to.
      */
-    public static void setActivityOptionsBackgroundActivityStartMode(
-            @NonNull ActivityOptions options) {
+    public static void setActivityOptionsBackgroundActivityStartMode(ActivityOptions options) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return;
         options.setPendingIntentBackgroundActivityStartMode(
                 ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED);
@@ -160,7 +160,7 @@ public class ApiCompatibilityUtils {
      * @param options {@ActivityOptions} to set the required mode to.
      */
     public static void setCreatorActivityOptionsBackgroundActivityStartMode(
-            @NonNull ActivityOptions options) {
+            ActivityOptions options) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return;
         options.setPendingIntentCreatorBackgroundActivityStartMode(
                 ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED);

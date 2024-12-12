@@ -10,10 +10,13 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * This class provides an interface to the native class for writing important data files without
  * risking data loss.
  */
+@NullMarked
 @JNINamespace("base::android")
 public class ImportantFileWriterAndroid {
 

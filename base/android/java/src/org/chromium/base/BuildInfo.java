@@ -6,6 +6,8 @@ package org.chromium.base;
 
 import static android.content.Context.UI_MODE_SERVICE;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.UiModeManager;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -25,6 +27,9 @@ import org.jni_zero.JniType;
 
 import org.chromium.build.BuildConfig;
 import org.chromium.build.NativeLibraries;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -35,19 +40,20 @@ import javax.annotation.concurrent.GuardedBy;
  * BuildInfo is a utility class providing easy access to {@link PackageInfo} information. This is
  * primarily of use for accessing package information from native code.
  */
+@NullMarked
 public class BuildInfo {
     private static final String TAG = "BuildInfo";
     private static final int MAX_FINGERPRINT_LENGTH = 128;
 
-    private static PackageInfo sBrowserPackageInfo;
-    private static ApplicationInfo sBrowserApplicationInfo;
+    private static @Nullable PackageInfo sBrowserPackageInfo;
+    private static @Nullable ApplicationInfo sBrowserApplicationInfo;
     private static boolean sInitialized;
 
     /**
      * The package name of the host app which has loaded WebView, retrieved from the application
      * context. In the context of the SDK Runtime, the package name of the app that owns this
-     * particular instance of the SDK Runtime will also be included.
-     * e.g. com.google.android.sdksandbox:com:com.example.myappwithads
+     * particular instance of the SDK Runtime will also be included. e.g.
+     * com.google.android.sdksandbox:com:com.example.myappwithads
      */
     public final String hostPackageName;
 
@@ -114,7 +120,7 @@ public class BuildInfo {
      * an empty string if we were unable to retrieve it.
      */
     @GuardedBy("mCertLock")
-    private String mHostSigningCertSha256;
+    private @Nullable String mHostSigningCertSha256;
 
     /** The versionCode of Play Services. Can be overridden in tests. */
     private String mGmsVersionCode;
@@ -183,7 +189,7 @@ public class BuildInfo {
         };
     }
 
-    private static String nullToEmpty(CharSequence seq) {
+    private static String nullToEmpty(@Nullable CharSequence seq) {
         return seq == null ? "" : seq.toString();
     }
 
@@ -224,7 +230,7 @@ public class BuildInfo {
     /**
      * @return ApplicationInfo for Chrome/WebView (as opposed to host app).
      */
-    public ApplicationInfo getBrowserApplicationInfo() {
+    public @Nullable ApplicationInfo getBrowserApplicationInfo() {
         return sBrowserApplicationInfo;
     }
 
@@ -242,6 +248,7 @@ public class BuildInfo {
         return mGmsVersionCode;
     }
 
+    @NullUnmarked // https://github.com/uber/NullAway/issues/98
     private BuildInfo() {
         sInitialized = true;
         Context appContext = ContextUtils.getApplicationContext();
@@ -265,9 +272,10 @@ public class BuildInfo {
             providedPackageVersionName =
                     commandLine.getSwitchValue(BaseSwitches.PACKAGE_VERSION_NAME);
 
-            if (commandLine.hasSwitch(BaseSwitches.HOST_VERSION_CODE)) {
-                providedHostVersionCode =
-                        Long.parseLong(commandLine.getSwitchValue(BaseSwitches.HOST_VERSION_CODE));
+            String flagValue = commandLine.getSwitchValue(BaseSwitches.HOST_VERSION_CODE);
+
+            if (flagValue != null) {
+                providedHostVersionCode = Long.parseLong(flagValue);
             }
         }
 
@@ -307,7 +315,7 @@ public class BuildInfo {
                 final int hostId = Process.myUid() - 10000;
                 final String[] packageNames = pm.getPackagesForUid(hostId);
 
-                if (packageNames.length > 0) {
+                if (packageNames != null && packageNames.length > 0) {
                     // We could end up with more than one package name if the app used a
                     // sharedUserId but these are deprecated so this is a safe bet to rely on the
                     // first package name.
@@ -316,9 +324,10 @@ public class BuildInfo {
                 }
             }
 
-            PackageInfo pi = PackageUtils.getPackageInfo(appInstalledPackageName, 0);
+            PackageInfo pi = assumeNonNull(PackageUtils.getPackageInfo(appInstalledPackageName, 0));
+            ApplicationInfo appInfo = pi.applicationInfo;
             hostPackageName = sdkQualifiedName;
-            hostPackageLabel = nullToEmpty(pm.getApplicationLabel(pi.applicationInfo));
+            hostPackageLabel = nullToEmpty(pm.getApplicationLabel(appInfo));
             hostVersionCode = packageVersionCode(pi);
 
             if (sBrowserPackageInfo != null) {
@@ -473,6 +482,7 @@ public class BuildInfo {
         return target >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
     }
 
+    @NullUnmarked
     public String getHostSigningCertSha256() {
         // We currently only make use of this certificate for calls from the storage access API
         // within WebView. So we rather lazy load this value to avoid impacting app startup.
@@ -513,7 +523,7 @@ public class BuildInfo {
         return PackageManager.GET_SIGNATURES;
     }
 
-    private Signature[] getPackageSignatures(PackageInfo pi) {
+    private Signature @Nullable [] getPackageSignatures(PackageInfo pi) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             if (pi.signingInfo == null) {
                 return null;

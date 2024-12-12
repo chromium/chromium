@@ -4,7 +4,10 @@
 
 package org.chromium.base;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Boolean {@link FeatureParam} that will return a default value before native is loaded. */
+@NullMarked
 public class MutableBooleanParamWithSafeDefault extends MutableParamWithSafeDefault<Boolean> {
     public MutableBooleanParamWithSafeDefault(
             FeatureMap featureMap, String featureName, String paramName, boolean defaultValue) {

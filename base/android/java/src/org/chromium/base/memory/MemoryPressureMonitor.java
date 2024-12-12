@@ -18,6 +18,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  *
@@ -74,6 +76,7 @@ import org.chromium.base.task.TaskTraits;
  * NOTE: This class should only be used on UiThread as defined by ThreadUtils (which is
  *       Android main thread for Chrome, but can be some other thread for WebView).</pre>
  */
+@NullMarked
 public class MemoryPressureMonitor {
     private static final int DEFAULT_THROTTLING_INTERVAL_MS = 60 * 1000;
 
@@ -84,7 +87,7 @@ public class MemoryPressureMonitor {
 
     // Pressure received (but not reported) during the current throttling interval,
     // or null if no pressure was received.
-    private @MemoryPressureLevel Integer mThrottledPressure;
+    private @MemoryPressureLevel @Nullable Integer mThrottledPressure;
 
     // Whether we need to throttle pressure signals.
     private boolean mIsInsideThrottlingInterval;
@@ -94,8 +97,8 @@ public class MemoryPressureMonitor {
     // That's for an experiment to run the broadcast receiver in the background
     private boolean mPostToBackgroundIsEnabled;
 
-    private Supplier<Integer> mCurrentPressureSupplierForTesting;
-    private MemoryPressureCallback mReportingCallbackForTesting;
+    private @Nullable Supplier<Integer> mCurrentPressureSupplierForTesting;
+    private @Nullable MemoryPressureCallback mReportingCallbackForTesting;
 
     private final Runnable mThrottlingIntervalTask = this::onThrottlingIntervalFinished;
 
@@ -270,7 +273,7 @@ public class MemoryPressureMonitor {
      * Queries current memory pressure.
      * Returns null if the pressure couldn't be determined.
      */
-    private static @MemoryPressureLevel Integer getCurrentMemoryPressure() {
+    private static @MemoryPressureLevel @Nullable Integer getCurrentMemoryPressure() {
         // We used to have a histogram here to measure the duration of each successful
         // ActivityManager.getMyMemoryState() call called
         // Android.MemoryPressureMonitor.GetMyMemoryState.Succeeded.Time. 50th percentile was 0.8ms.
@@ -290,7 +293,7 @@ public class MemoryPressureMonitor {
      * Returns null if |level| couldn't be mapped and should be ignored.
      */
     @VisibleForTesting
-    public static @MemoryPressureLevel Integer memoryPressureFromTrimLevel(int level) {
+    public static @MemoryPressureLevel @Nullable Integer memoryPressureFromTrimLevel(int level) {
         if (level >= ComponentCallbacks2.TRIM_MEMORY_COMPLETE
                 || level == ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL) {
             return MemoryPressureLevel.CRITICAL;

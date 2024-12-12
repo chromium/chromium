@@ -6,7 +6,11 @@ package org.chromium.base;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Provides Java-side code to back `jni_android` native logic. */
+@NullMarked
 public final class JniAndroid {
     private JniAndroid() {}
 
@@ -21,7 +25,7 @@ public final class JniAndroid {
      * effort not to throw; instead, any failures will be surfaced through the returned string.
      */
     @CalledByNative
-    private static String sanitizedStacktraceForUnhandledException(Throwable throwable) {
+    private static @Nullable String sanitizedStacktraceForUnhandledException(Throwable throwable) {
         if (sSimulateOomInSanitizedStacktraceForTesting) {
             return null;
         }
@@ -75,7 +79,8 @@ public final class JniAndroid {
      *     OutOfMemoryError exception, in which case that exception is returned.
      */
     @CalledByNative
-    private static Throwable handleException(Throwable throwable, String nativeStackTrace) {
+    private static @Nullable Throwable handleException(
+            Throwable throwable, String nativeStackTrace) {
         try {
             // Try to make sure the exception details at least make their way to the log even if the
             // rest of this method goes horribly wrong.

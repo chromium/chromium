@@ -4,7 +4,10 @@
 
 package org.chromium.base.task;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Used to capture stacks of where tasks are posted from. */
+@NullMarked
 class TaskOriginException extends Exception {
 
     TaskOriginException() {

@@ -4,6 +4,8 @@
 
 package org.chromium.base.library_loader;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -11,7 +13,6 @@ import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.AccessedByNative;
@@ -19,6 +20,8 @@ import org.jni_zero.AccessedByNative;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -68,6 +71,7 @@ import javax.annotation.concurrent.GuardedBy;
  *   available to then send the Bundle to Linkers in other processes, consumed
  *   by takeSharedRelrosFromBundle().
  */
+@NullMarked
 class Linker {
     private static final String TAG = "Linker";
 
@@ -93,12 +97,12 @@ class Linker {
     // process is a "RELRO producer".
     @GuardedBy("mLock")
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected LibInfo mLocalLibInfo;
+    protected @Nullable LibInfo mLocalLibInfo;
 
     // The library info that was transferred from another process. Only useful if it contains RELRO
     // FD.
     @GuardedBy("mLock")
-    private LibInfo mRemoteLibInfo;
+    private @Nullable LibInfo mRemoteLibInfo;
 
     // Whether this Linker instance should potentially create the RELRO region. Even if true, the
     // library loading can fall back to the system linker without producing the region. The default
@@ -153,7 +157,7 @@ class Linker {
         }
     }
 
-    private static Linker sLinkerForAssert;
+    private static @Nullable Linker sLinkerForAssert;
 
     Linker() {
         // Only one instance is allowed in a given process because effects of loading a library are
@@ -246,7 +250,10 @@ class Linker {
             if (mState != State.UNINITIALIZED) return;
             chooseAndReserveMemoryRange(asRelroProducer, preference, addressHint);
             if (DEBUG) {
-                Log.i(TAG, "ensureInitialized: chose address=0x%x", mLocalLibInfo.mLoadAddress);
+                Log.i(
+                        TAG,
+                        "ensureInitialized: chose address=0x%x",
+                        assumeNonNull(mLocalLibInfo).mLoadAddress);
             }
             mState = State.INITIALIZED;
         }
@@ -333,7 +340,7 @@ class Linker {
             // being ignored in native anyway. It seems the only effect of removing this check here
             // will be extra added samples to the RelroSharingStatus2 histogram. This will be a tiny
             // bit smoother to do after M99.
-            return mLocalLibInfo.mLoadAddress != 0;
+            return assumeNonNull(mLocalLibInfo).mLoadAddress != 0;
         }
         return false;
     }
@@ -386,7 +393,7 @@ class Linker {
                 Log.w(TAG, "Failed to load native library with shared RELRO, retrying without");
                 try {
                     // Retry without relocation sharing.
-                    mLocalLibInfo.mLoadAddress = 0;
+                    assumeNonNull(mLocalLibInfo).mLoadAddress = 0;
                     attemptLoadLibraryLocked(library, RelroSharingMode.NO_SHARING);
                 } catch (UnsatisfiedLinkError e2) {
                     Log.w(TAG, "Failed to load native library without RELRO sharing");
@@ -406,10 +413,11 @@ class Linker {
             if (DEBUG) Log.i(TAG, "putSharedRelrosToBundle: state=%d", mState);
             if (mState == State.DONE_PROVIDE_RELRO) {
                 assert mRelroProducer;
-                relros = mLocalLibInfo.toBundle();
+                relros = assumeNonNull(mLocalLibInfo).toBundle();
             }
             bundle.putBundle(SHARED_RELROS, relros);
             if (DEBUG && relros != null) {
+                assert mLocalLibInfo != null;
                 Log.i(
                         TAG,
                         "putSharedRelrosToBundle() puts mLoadAddress=0x%x, mLoadSize=%d, "
@@ -474,6 +482,7 @@ class Linker {
     @GuardedBy("mLock")
     private void loadWithoutProducingRelro(String libFilePath) {
         assert mRemoteLibInfo == null || libFilePath.equals(mRemoteLibInfo.mLibFilePath);
+        assert mLocalLibInfo != null;
         if (!getLinkerJni()
                 .loadLibrary(libFilePath, mLocalLibInfo, /* spawnRelroRegion= */ false)) {
             resetAndThrow(String.format("Unable to load library: %s", libFilePath), null);
@@ -485,22 +494,23 @@ class Linker {
     // System.loadLibrary() is useful. Records a histogram to count failures.
     @GuardedBy("mLock")
     private void loadAndProduceSharedRelro(String libFilePath) {
-        mLocalLibInfo.mLibFilePath = libFilePath;
-        if (getLinkerJni().loadLibrary(libFilePath, mLocalLibInfo, /* spawnRelroRegion= */ true)) {
+        var localLibInfo = assumeNonNull(mLocalLibInfo);
+        localLibInfo.mLibFilePath = libFilePath;
+        if (getLinkerJni().loadLibrary(libFilePath, localLibInfo, /* spawnRelroRegion= */ true)) {
             if (DEBUG) {
                 Log.i(
                         TAG,
                         "Successfully spawned RELRO: mLoadAddress=0x%x, mLoadSize=%d",
-                        mLocalLibInfo.mLoadAddress,
-                        mLocalLibInfo.mLoadSize);
+                        localLibInfo.mLoadAddress,
+                        localLibInfo.mLoadSize);
             }
         } else {
             Log.e(TAG, "Unable to load with Linker, using the system linker instead");
             // System.loadLibrary() below implements the fallback.
-            mLocalLibInfo.mRelroFd = -1;
+            localLibInfo.mRelroFd = -1;
         }
         RecordHistogram.recordBooleanHistogram(
-                "ChromiumAndroidLinker.RelroProvidedSuccessfully", mLocalLibInfo.mRelroFd != -1);
+                "ChromiumAndroidLinker.RelroProvidedSuccessfully", localLibInfo.mRelroFd != -1);
     }
 
     /**
@@ -567,18 +577,18 @@ class Linker {
      */
     @GuardedBy("mLock")
     private void atomicReplaceRelroLocked(boolean relroAvailableImmediately) {
-        assert mRemoteLibInfo != null;
         assert mState == State.DONE;
-        if (mRemoteLibInfo.mRelroFd == -1) return;
+        var remoteLibInfo = assumeNonNull(mRemoteLibInfo);
+        if (remoteLibInfo.mRelroFd == -1) return;
         if (DEBUG) {
             Log.i(
                     TAG,
                     "Received mRemoteLibInfo: mLoadAddress=0x%x, mLoadSize=%d",
-                    mRemoteLibInfo.mLoadAddress,
-                    mRemoteLibInfo.mLoadSize);
+                    remoteLibInfo.mLoadAddress,
+                    remoteLibInfo.mLoadSize);
         }
         if (mLocalLibInfo == null) return;
-        getLinkerJni().useRelros(mLocalLibInfo.mLoadAddress, mRemoteLibInfo);
+        getLinkerJni().useRelros(mLocalLibInfo.mLoadAddress, remoteLibInfo);
         // *Not* closing the RELRO FD after using it because the FD may need to be transferred to
         // another process after this point.
         if (DEBUG) Log.i(TAG, "Immediate RELRO availability: %b", relroAvailableImmediately);
@@ -619,7 +629,7 @@ class Linker {
     }
 
     @GuardedBy("mLock")
-    private void resetAndThrow(String message, UnsatisfiedLinkError cause) {
+    private void resetAndThrow(String message, @Nullable UnsatisfiedLinkError cause) {
         mState = State.INITIALIZED;
         Log.e(TAG, message);
         var e = new UnsatisfiedLinkError(message);
@@ -670,7 +680,7 @@ class Linker {
             }
         }
 
-        public static LibInfo fromBundle(Bundle bundle) {
+        public static @Nullable LibInfo fromBundle(Bundle bundle) {
             bundle.setClassLoader(Linker.class.getClassLoader());
             return bundle.getParcelable(EXTRA_LINKER_LIB_INFO);
         }
@@ -721,7 +731,7 @@ class Linker {
                     }
                 };
 
-        public String mLibFilePath;
+        public @Nullable String mLibFilePath;
 
         // IMPORTANT: Don't change these fields without modifying the
         // native code that accesses them directly!
@@ -743,7 +753,7 @@ class Linker {
          * @param libInfo holds the output values: |mLoadAddress| and |mLoadSize|. On failure sets
          *                the |libInfo.mLoadAddress| to 0.
          */
-        void findMemoryRegionAtRandomAddress(@NonNull LibInfo libInfo);
+        void findMemoryRegionAtRandomAddress(LibInfo libInfo);
 
         /**
          * Reserves the fixed address range starting at |libInfo.mLoadAddress| big enough to load
@@ -754,7 +764,7 @@ class Linker {
          *                returns the size in |libInfo.mLoadSize|. On failure sets the
          *                |libInfo.mLoadAddress| to 0.
          */
-        void reserveMemoryForLibrary(@NonNull LibInfo libInfo);
+        void reserveMemoryForLibrary(LibInfo libInfo);
 
         /**
          * Finds the (named) address range reservation made by the system zygote and dedicated for
@@ -765,7 +775,7 @@ class Linker {
          *                the start address and the size of the webview memory reservation to them.
          * @return whether the region was found.
          */
-        boolean findRegionReservedByWebViewZygote(@NonNull LibInfo libInfo);
+        boolean findRegionReservedByWebViewZygote(LibInfo libInfo);
 
         /**
          * Load the native library.
@@ -796,7 +806,7 @@ class Linker {
         int getRelroSharingResult();
     }
 
-    private static Linker.Natives sNativesInstance;
+    private static Linker.@Nullable Natives sNativesInstance;
 
     static void setLinkerNativesForTesting(Natives instance) {
         sNativesInstance = instance;

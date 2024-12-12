@@ -4,19 +4,20 @@
 
 package org.chromium.base.supplier;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Utilities for interactions with Suppliers. */
+@NullMarked
 public class SupplierUtils {
     private SupplierUtils() {}
 
     private static class Barrier {
         private final ThreadUtils.ThreadChecker mThreadChecker = new ThreadUtils.ThreadChecker();
         private int mWaitingCount;
-        private Runnable mCallback;
+        private @Nullable Runnable mCallback;
 
         void waitForAll(Runnable callback, Supplier... suppliers) {
             mThreadChecker.assertOnValidThread();
@@ -75,7 +76,7 @@ public class SupplierUtils {
      * @param callback The callback to be notified when all suppliers have values set.
      * @param suppliers The list of suppliers to check for values.
      */
-    public static void waitForAll(@NonNull Runnable callback, Supplier... suppliers) {
+    public static void waitForAll(Runnable callback, Supplier... suppliers) {
         assert callback != null;
         new Barrier().waitForAll(callback, suppliers);
     }

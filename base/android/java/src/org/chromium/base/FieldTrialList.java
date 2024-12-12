@@ -7,7 +7,10 @@ package org.chromium.base;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Helper to get field trial information. */
+@NullMarked
 public class FieldTrialList {
 
     private FieldTrialList() {}

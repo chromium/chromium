@@ -19,11 +19,13 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.power_monitor.BatteryPowerStatus;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Integrates native PowerMonitor with the java side. */
+@NullMarked
 @JNINamespace("base::android")
 public class PowerMonitor {
     private static boolean sIsInitRequested;
@@ -68,7 +70,7 @@ public class PowerMonitor {
                     @Override
                     public void onReceive(Context context, Intent intent) {
                         PowerMonitor.onBatteryChargingChanged(
-                                intent.getAction().equals(Intent.ACTION_POWER_DISCONNECTED));
+                                Intent.ACTION_POWER_DISCONNECTED.equals(intent.getAction()));
                     }
                 },
                 powerConnectedFilter);

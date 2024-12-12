@@ -4,7 +4,7 @@
 
 package org.chromium.base;
 
-import androidx.annotation.NonNull;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Abstract class for params that have a safe default before native is loaded. Because param values
@@ -24,9 +24,10 @@ import androidx.annotation.NonNull;
  *
  * @param <T> The boxed type of data behind held.
  */
+@NullMarked
 public abstract class MutableParamWithSafeDefault<T> extends FeatureParam<T> {
     public MutableParamWithSafeDefault(
-            FeatureMap featureMap, String featureName, String paramName, @NonNull T defaultValue) {
+            FeatureMap featureMap, String featureName, String paramName, T defaultValue) {
         super(featureMap, featureName, paramName, defaultValue);
     }
 
@@ -35,13 +36,13 @@ public abstract class MutableParamWithSafeDefault<T> extends FeatureParam<T> {
      * converts it to the correct data type. Should never return a null value, because caching
      * relies on null checks.
      */
-    protected abstract @NonNull T readValueFromFeatureMap();
+    protected abstract T readValueFromFeatureMap();
 
     /**
      * Returns the current value. Guaranteed to never be null. Subclasses should override this to
      * safely convert to their primitive type.
      */
-    protected @NonNull T getValueBoxed() {
+    protected T getValueBoxed() {
         if (mInMemoryCachedValue != null) return mInMemoryCachedValue;
 
         if (FeatureList.hasTestParam(mFeatureName, mParamName)) {

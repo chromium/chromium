@@ -10,6 +10,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,6 +25,7 @@ import java.util.Map;
  * Note: the JNI calls are relatively costly - avoid calling these methods in performance-critical
  * code.
  */
+@NullMarked
 @JNINamespace("base::android")
 /* package */ final class NativeUmaRecorder implements UmaRecorder {
     /**
@@ -34,7 +37,7 @@ import java.util.Map;
     private final Map<String, Long> mNativeHints =
             Collections.synchronizedMap(new HashMap<String, Long>());
 
-    private Map<Callback<String>, Long> mUserActionTestingCallbackNativePtrs;
+    private @Nullable Map<Callback<String>, Long> mUserActionTestingCallbackNativePtrs;
 
     @Override
     public void recordBooleanHistogram(String name, boolean sample) {

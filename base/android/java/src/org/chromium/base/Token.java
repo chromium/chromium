@@ -13,7 +13,10 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Java counterpart to the native base::Token. A {@link Token} is a random 128-bit integer. */
+@NullMarked
 @JNINamespace("base::android")
 @DoNotMock("This is a simple value object.")
 public final class Token extends TokenBase {

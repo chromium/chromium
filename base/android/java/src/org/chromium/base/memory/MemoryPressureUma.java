@@ -12,11 +12,14 @@ import androidx.annotation.IntDef;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Centralizes UMA data collection for Android-specific memory conditions. */
+@NullMarked
 public class MemoryPressureUma implements ComponentCallbacks2 {
     @IntDef({
         Notification.UNKNOWN_TRIM_LEVEL,
@@ -50,7 +53,7 @@ public class MemoryPressureUma implements ComponentCallbacks2 {
 
     private final String mHistogramName;
 
-    private static MemoryPressureUma sInstance;
+    private static @Nullable MemoryPressureUma sInstance;
 
     public static void initializeForBrowser() {
         initializeInstance("Browser");

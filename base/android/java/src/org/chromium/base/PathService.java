@@ -8,7 +8,10 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** This class provides java side access to the native PathService. */
+@NullMarked
 @JNINamespace("base::android")
 public abstract class PathService {
 

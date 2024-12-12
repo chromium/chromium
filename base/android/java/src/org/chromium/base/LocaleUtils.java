@@ -15,10 +15,14 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Locale;
 
 /** This class provides the locale related methods. */
+@NullMarked
 public class LocaleUtils {
     /** Guards this class from being instantiated. */
     private LocaleUtils() {}
@@ -195,7 +199,7 @@ public class LocaleUtils {
      * @return The default country code set during install.
      */
     @CalledByNative
-    public static String getDefaultCountryCode() {
+    public static @Nullable String getDefaultCountryCode() {
         CommandLine commandLine = CommandLine.getInstance();
         return commandLine.hasSwitch(BaseSwitches.DEFAULT_COUNTRY_CODE_AT_INSTALL)
                 ? commandLine.getSwitchValue(BaseSwitches.DEFAULT_COUNTRY_CODE_AT_INSTALL)

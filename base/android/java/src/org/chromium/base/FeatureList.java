@@ -6,19 +6,20 @@ package org.chromium.base;
 
 import android.util.ArrayMap;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /** Provides shared capabilities for feature flag support. */
+@NullMarked
 @JNINamespace("base::android")
 public class FeatureList {
     /** Test value overrides for tests without native. */
@@ -61,16 +62,19 @@ public class FeatureList {
             addFieldTrialParamOverride(param.getFeatureName(), param.getName(), testValue);
         }
 
+        @Nullable
         Boolean getFeatureFlagOverride(String featureName) {
             return mFeatureFlags.get(featureName);
         }
 
+        @Nullable
         String getFieldTrialParamOverride(String featureName, String paramName) {
             Map<String, String> featureParams = mFieldTrialParams.get(featureName);
             if (featureParams == null) return null;
             return featureParams.get(paramName);
         }
 
+        @Nullable
         Map<String, String> getAllFieldTrialParamOverridesForFeature(String featureName) {
             return mFieldTrialParams.get(featureName);
         }
@@ -234,7 +238,7 @@ public class FeatureList {
      * @param testValuesToMerge the TestValues to merge into existing ones
      * @param replace if true, replaces existing values (e.g. from @EnableFeatures annotations)
      */
-    public static void mergeTestValues(@NonNull TestValues testValuesToMerge, boolean replace) {
+    public static void mergeTestValues(TestValues testValuesToMerge, boolean replace) {
         TestValues newTestValues = new TestValues();
         if (sTestFeatures != null) {
             newTestValues.merge(sTestFeatures, /* replace= */ true);
@@ -274,7 +278,7 @@ public class FeatureList {
      * @return The test value set for the feature, or null if no test value has been set.
      * @throws IllegalArgumentException if no test value was set and default values aren't allowed.
      */
-    public static Boolean getTestValueForFeatureStrict(String featureName) {
+    public static @Nullable Boolean getTestValueForFeatureStrict(String featureName) {
         Boolean testValue = getTestValueForFeature(featureName);
         if (testValue == null && sDisableNativeForTesting) {
             throw new IllegalArgumentException(
@@ -293,7 +297,7 @@ public class FeatureList {
      * @param featureName The name of the feature to query.
      * @return The test value set for the feature, or null if no test value has been set.
      */
-    public static Boolean getTestValueForFeature(String featureName) {
+    public static @Nullable Boolean getTestValueForFeature(String featureName) {
         // TODO(crbug.com/40264751)): Copy into a local reference to avoid race conditions
         // like crbug.com/1494095 unsetting the test features. Locking down flag state will allow
         // this mitigation to be removed.
@@ -314,7 +318,8 @@ public class FeatureList {
      * @param paramName The name of the field trial parameter to query.
      * @return The test value set for the parameter, or null if no test value has been set.
      */
-    public static String getTestValueForFieldTrialParam(String featureName, String paramName) {
+    public static @Nullable String getTestValueForFieldTrialParam(
+            String featureName, String paramName) {
         // TODO(crbug.com/40264751)): Copy into a local reference to avoid race conditions
         // like crbug.com/1494095 unsetting the test features. Locking down flag state will allow
         // this mitigation to be removed.
@@ -332,7 +337,7 @@ public class FeatureList {
      * @return The test values set for the parameter, or null if no test values have been set (if
      *     test values were set for other features, an empty Map will be returned, not null).
      */
-    public static Map<String, String> getTestValuesForAllFieldTrialParamsForFeature(
+    public static @Nullable Map<String, String> getTestValuesForAllFieldTrialParamsForFeature(
             String featureName) {
         // TODO(crbug.com/40264751)): Copy into a local reference to avoid race conditions
         // like crbug.com/1494095 unsetting the test features. Locking down flag state will allow

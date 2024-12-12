@@ -6,10 +6,13 @@ package org.chromium.base;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** A set of states that represent the last state change of an Activity. */
+@NullMarked
 @Retention(RetentionPolicy.SOURCE)
 @IntDef({
     ActivityState.CREATED,

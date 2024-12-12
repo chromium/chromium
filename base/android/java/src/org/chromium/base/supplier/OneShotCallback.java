@@ -4,9 +4,8 @@
 
 package org.chromium.base.supplier;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.ref.WeakReference;
 
@@ -27,6 +26,7 @@ import java.lang.ref.WeakReference;
  *
  * @param <E> The type of the wrapped object.
  */
+@NullMarked
 public class OneShotCallback<E> {
     private final Callback<E> mCallbackWrapper = new CallbackWrapper();
     private final WeakReference<ObservableSupplier<E>> mWeakSupplier;
@@ -38,7 +38,7 @@ public class OneShotCallback<E> {
      * @param supplier The {@link ObservableSupplier} to wait for.
      * @param callback The {@link Callback} to notify with a valid value.
      */
-    public OneShotCallback(@NonNull ObservableSupplier<E> supplier, @NonNull Callback<E> callback) {
+    public OneShotCallback(ObservableSupplier<E> supplier, Callback<E> callback) {
         mWeakSupplier = new WeakReference<>(supplier);
         mCallback = callback;
 

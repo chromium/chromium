@@ -4,7 +4,10 @@
 
 package org.chromium.base.metrics;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Holds the {@link CachingUmaRecorder} used by {@link RecordHistogram}. */
+@NullMarked
 public class UmaRecorderHolder {
     private UmaRecorderHolder() {}
 
