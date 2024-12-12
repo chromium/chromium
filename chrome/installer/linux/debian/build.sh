@@ -18,7 +18,6 @@ set -u
 # have any type of "significant/visible changes" log that we could use for this?
 gen_changelog() {
   rm -f "${DEB_CHANGELOG}"
-  DATE_RFC5322="$(date --rfc-email)"
   process_template "${SCRIPTDIR}/changelog.template" "${DEB_CHANGELOG}"
   debchange -a --nomultimaint -m --changelog "${DEB_CHANGELOG}" \
     "Release Notes: ${RELEASENOTES}"
@@ -278,7 +277,7 @@ BASEREPOCONFIG="dl.google.com/linux/chrome/deb/ stable main"
 REPOCONFIG="${REPOCONFIG-deb [arch=${ARCHITECTURE}] https://${BASEREPOCONFIG}}"
 # Allowed configs include optional HTTPS support and explicit multiarch
 # platforms.
-REPOCONFIGREGEX="deb (\\[arch=[^]]*\\b${ARCHITECTURE}\\b[^]]*\\]"
+REPOCONFIGREGEX="deb (\\\\[arch=[^]]*\\\\b${ARCHITECTURE}\\\\b[^]]*\\\\]"
 REPOCONFIGREGEX+="[[:space:]]*) https?://${BASEREPOCONFIG}"
 stage_install_debian
 
