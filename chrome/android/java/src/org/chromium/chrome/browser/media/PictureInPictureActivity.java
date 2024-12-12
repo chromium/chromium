@@ -621,16 +621,25 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         mNativeOverlayWindowAndroid = intent.getLongExtra(NATIVE_POINTER_KEY, 0);
 
         intent.setExtrasClassLoader(WebContents.class.getClassLoader());
-        mInitiatorTab = TabUtils.fromWebContents(intent.getParcelableExtra(WEB_CONTENTS_KEY));
 
-        // Finish the activity if OverlayWindowAndroid has already been destroyed
-        // or InitiatorTab has been destroyed by user or crashed.
-        if (mNativeOverlayWindowAndroid != sPendingNativeOverlayWindowAndroid
-                || TabUtils.getActivity(mInitiatorTab) == null) {
-            onExitPictureInPicture(/* closeByNative= */ false);
+        // If the our native side is no longer pending, then stop.  Any time this happens, whatever
+        // replaced the pending native side also freed it.
+        if (mNativeOverlayWindowAndroid != sPendingNativeOverlayWindowAndroid) {
+            mNativeOverlayWindowAndroid = 0;
+            // Just finish up immediately, since nothing is set up anyway and there's no native side
+            // to free.
+            this.finish();
             return;
         }
         sPendingNativeOverlayWindowAndroid = 0;
+
+        // Finish the activity if OverlayWindowAndroid has already been destroyed
+        // or InitiatorTab has been destroyed by user or crashed.
+        mInitiatorTab = TabUtils.fromWebContents(intent.getParcelableExtra(WEB_CONTENTS_KEY));
+        if (TabUtils.getActivity(mInitiatorTab) == null) {
+            onExitPictureInPicture(/* closeByNative= */ false);
+            return;
+        }
 
         mTabObserver = new InitiatorTabObserver();
         mInitiatorTab.addObserver(mTabObserver);
@@ -802,7 +811,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
             int sourceY,
             int sourceWidth,
             int sourceHeight) {
-        // Dissociate OverlayWindowAndroid if there is one already.
+        // Dissociate OverlayWindowAndroid if there is one already.  This destroys the native side.
         if (sPendingNativeOverlayWindowAndroid != 0) {
             PictureInPictureActivityJni.get().destroy(sPendingNativeOverlayWindowAndroid);
         }
@@ -851,12 +860,15 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         context.startActivity(intent, optionsBundle);
     }
 
+    // Called when the native side is destroyed.
     @CalledByNative
     private static void onWindowDestroyed(long nativeOverlayWindowAndroid) {
+        // Since the native side is now gone, make sure it's not pending anymore.
         if (nativeOverlayWindowAndroid == sPendingNativeOverlayWindowAndroid) {
             sPendingNativeOverlayWindowAndroid = 0;
         }
 
+        // If any activity relies on this native side, then notify it.
         for (Activity activity : ApplicationStatus.getRunningActivities()) {
             if (!(activity instanceof PictureInPictureActivity)) continue;
 
@@ -878,6 +890,10 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
     /* package */ View getViewForTesting() {
         return mCompositorView.getView();
+    }
+
+    /* package */ static void setPendingWindowForTesting(long pending) {
+        sPendingNativeOverlayWindowAndroid = pending;
     }
 
     @NativeMethods
