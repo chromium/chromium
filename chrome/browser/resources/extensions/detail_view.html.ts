@@ -29,7 +29,8 @@ this text can be found by Ctrl + F because it isn't hidden. -->
       </span>
       ${this.showAccountUploadButton_() ? html`
         <cr-icon-button id="account-upload-button" class="no-overlap"
-          iron-icon="extensions-icons:extension_cloud_upload">
+            title="$i18n{itemUpload}" aria-label="$i18n{itemUpload}"
+            iron-icon="extensions-icons:extension_cloud_upload">
         </cr-icon-button>` : ''}
       ${this.showDevReloadButton_() ? html`
         <cr-icon-button id="dev-reload-button" class="icon-refresh no-overlap"
