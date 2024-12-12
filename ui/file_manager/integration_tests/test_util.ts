@@ -1811,8 +1811,8 @@ chrome.runtime.onMessage.addListener(
       if (sender.id !== EXTENSION_ID) {
         return false;
       } else if (msg.msgType === CHOOSE_ENTRY_PROPERTY) {
-        if (msg.entryNames || (msg.entryNames === null)) {
-          window[CHOOSE_ENTRY_PROPERTY] = msg.entryNames as (string | null);
+        if (msg.entryNames) {
+          window[CHOOSE_ENTRY_PROPERTY] = msg.entryNames as string;
         } else {
           delete window[CHOOSE_ENTRY_PROPERTY];
         }
@@ -1826,17 +1826,14 @@ chrome.runtime.onMessage.addListener(
  * until entry selected in a dialog shown by chooseEntry() is set.
  * @return the entry set by the dialog shown via chooseEntry().
  */
-export async function pollForChosenEntry(caller: string): Promise<string|null> {
+export async function pollForChosenEntry(caller: string): Promise<string> {
   await repeatUntil(() => {
     if (window[CHOOSE_ENTRY_PROPERTY] !== undefined) {
       return;
     }
     return pending(caller, 'Waiting for chooseEntry() result');
   });
-  // The "?? null" is to placate the TS type checker, which doesn't know that a
-  // post-condition of the "await repeatUntil" above finishing is that
-  // window[CHOOSE_ENTRY_PROPERTY] cannot be undefined (but it can be null).
-  return window[CHOOSE_ENTRY_PROPERTY] ?? null;
+  return window[CHOOSE_ENTRY_PROPERTY]!;
 }
 
 /** Waits until the MediaApp/Backlight shows up. */

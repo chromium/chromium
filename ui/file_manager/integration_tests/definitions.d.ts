@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 interface Window {
-  chooseEntryResult?: string|null;
+  chooseEntryResult?: string;
   step: (() => void)|null;
   autoStep(): void;
   autostep: boolean;

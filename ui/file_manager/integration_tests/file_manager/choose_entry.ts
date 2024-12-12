@@ -7,7 +7,7 @@
  * @suppress {checkTypes}
  */
 
-import {CHOOSE_ENTRY_PROPERTY} from './choose_entry_const.js';
+import {CHOOSE_ENTRY_PROPERTY, NO_ENTRIES_CHOSEN} from './choose_entry_const.js';
 
 /**
  * Extracts parameters used by chooseEntry function.
@@ -41,7 +41,7 @@ chrome.fileSystem.chooseEntry(params, (entry?: FileSystemFileEntry) => {
   // See also crbug.com/1313625
   //
   // In practice, it's (Entry | Entry[] | undefined).
-  let entryNames: (string|null) = null;
+  let entryNames: string = NO_ENTRIES_CHOSEN;
   if (!entry) {
     // No-op.
   } else if (params.acceptsMultiple) {

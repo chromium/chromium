@@ -6,6 +6,7 @@ import type {TestEntryInfo} from '../test_util.js';
 import {addEntries, ENTRIES, getCaller, openEntryChoosingWindow, pending, pollForChosenEntry, repeatUntil, sendBrowserTestCommand, sendTestMessage} from '../test_util.js';
 
 import {remoteCall} from './background.js';
+import {NO_ENTRIES_CHOSEN} from './choose_entry_const.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
@@ -201,7 +202,7 @@ async function openFileDialogExpectOkButtonDisabled(
 
   const entrySet = await setUpFileEntrySet(volume);
   chrome.test.assertEq(
-      undefined,
+      NO_ENTRIES_CHOSEN,
       await remoteCall.openAndWaitForClosingDialog(
           {type}, volume, entrySet, closer));
 }
@@ -239,7 +240,7 @@ async function openFileDialogExpectEntryDimmed(
 
   const entrySet = await setUpFileEntrySet(volume);
   chrome.test.assertEq(
-      undefined,
+      NO_ENTRIES_CHOSEN,
       await remoteCall.openAndWaitForClosingDialog(
           {type}, volume, entrySet, closer));
 }
@@ -259,7 +260,7 @@ async function openFileDialogClickCancelButton(
 
   const entrySet = await setUpFileEntrySet(volume);
   chrome.test.assertEq(
-      undefined,
+      NO_ENTRIES_CHOSEN,
       await remoteCall.openAndWaitForClosingDialog(
           {type: 'openFile'}, volume, entrySet, closer));
 }
@@ -279,7 +280,7 @@ async function openFileDialogSendEscapeKey(
 
   const entrySet = await setUpFileEntrySet(volume);
   chrome.test.assertEq(
-      undefined,
+      NO_ENTRIES_CHOSEN,
       await remoteCall.openAndWaitForClosingDialog(
           {type: 'openFile'}, volume, entrySet, closer));
 }
@@ -837,7 +838,7 @@ export async function saveFileDialogSingleFilterNoAcceptAll() {
  */
 async function showSaveAndConfirmExpecting(
     extraParams: chrome.fileSystem.ChooseEntryOptions,
-    expectName: string): Promise<string|null> {
+    expectName: string): Promise<string> {
   const caller = getCaller();
 
   const params = {

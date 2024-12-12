@@ -1252,9 +1252,9 @@ export class RemoteCallFilesApp extends RemoteCall {
       dialogParams: chrome.fileSystem.ChooseEntryOptions, volumeType: string,
       expectedSet: TestEntryInfo[], closeDialog: (a: string) => Promise<void>,
       useBrowserOpen: boolean = false,
-      debug: boolean = false): Promise<string|null> {
+      debug: boolean = false): Promise<string> {
     const caller = getCaller();
-    let resultPromise: () => Promise<string|null>;
+    let resultPromise: () => Promise<string>;
     if (useBrowserOpen) {
       await sendTestMessage({name: 'runSelectFileDialog'});
       resultPromise = async(): Promise<string> => {
@@ -1263,7 +1263,7 @@ export class RemoteCallFilesApp extends RemoteCall {
       };
     } else {
       await openEntryChoosingWindow(dialogParams);
-      resultPromise = (): Promise<string|null> => {
+      resultPromise = (): Promise<string> => {
         return pollForChosenEntry(caller);
       };
     }
