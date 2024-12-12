@@ -2041,11 +2041,9 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
              gpu::SharedImageUsageSet(usage | additional_usage_flags),
              "WebGLDrawingBuffer"},
             gpu::kNullSurfaceHandle);
-        if (client_shared_image) {
-          created_mappable_si = true;
-          back_buffer_shared_image = std::move(client_shared_image);
-          texture_target = back_buffer_shared_image->GetTextureTarget();
-        }
+        created_mappable_si = true;
+        back_buffer_shared_image = std::move(client_shared_image);
+        texture_target = back_buffer_shared_image->GetTextureTarget();
       }
     }
 
