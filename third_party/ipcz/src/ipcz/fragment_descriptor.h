@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <tuple>
+#include <type_traits>
 
 #include "ipcz/buffer_id.h"
 #include "ipcz/ipcz.h"
