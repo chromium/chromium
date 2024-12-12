@@ -1,7 +1,7 @@
 monorail: {
   component: "Speed>Tracing"
 }
-team_email: "chrome-catan@chromium.org"
+team_email: "catan-team@chromium.org"
 buganizer_public: {
   component_id: 1457213
 }
