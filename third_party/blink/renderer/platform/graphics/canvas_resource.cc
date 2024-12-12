@@ -183,28 +183,27 @@ bool CanvasResource::PrepareTransferableResource(
   if (!out_resource)
     return true;
 
-  if (CreatesAcceleratedTransferableResources()) {
-    return PrepareAcceleratedTransferableResourceFromClientSI(
-        out_resource, needs_verified_synctoken);
+  if (!CreatesAcceleratedTransferableResources()) {
+    // Create a TransferableResource to be used with the software compositor.
+    TRACE_EVENT0("blink",
+                 "CanvasResource::PrepareUnacceleratedTransferableResource");
+
+    auto client_shared_image = GetClientSharedImage();
+    if (!client_shared_image) {
+      return false;
+    }
+
+    *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
+        client_shared_image, GetSyncToken(), client_shared_image->size(),
+        client_shared_image->format(),
+        viz::TransferableResource::ResourceSource::kCanvas);
+
+    out_resource->color_space = client_shared_image->color_space();
+    return true;
   }
 
-  // Create a TransferableResource to be used with the software compositor.
-  TRACE_EVENT0("blink",
-               "CanvasResource::PrepareUnacceleratedTransferableResource");
-
-  auto client_shared_image = GetClientSharedImage();
-  if (!client_shared_image) {
-    return false;
-  }
-
-  *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
-      client_shared_image, GetSyncToken(), client_shared_image->size(),
-      client_shared_image->format(),
-      viz::TransferableResource::ResourceSource::kCanvas);
-
-  out_resource->color_space = client_shared_image->color_space();
-
-  return true;
+  return PrepareAcceleratedTransferableResourceFromClientSI(
+      out_resource, needs_verified_synctoken);
 }
 
 bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
