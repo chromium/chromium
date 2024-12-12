@@ -233,13 +233,13 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
     virtual void RecordComputedAction(const std::string& action) {}
 
     // Creates an implementation of `PdfAccessibilityDataHandler` catered to the
-    // client.
+    // client. The return value must be non-null.
     virtual std::unique_ptr<PdfAccessibilityDataHandler>
     CreateAccessibilityDataHandler(
         PdfAccessibilityActionHandler* action_handler,
         PdfAccessibilityImageFetcher* image_fetcher,
         blink::WebPluginContainer* plugin_container,
-        bool print_preview);
+        bool print_preview) = 0;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     // Performs OCR on `image` and sends the recognized text to `callback`.
