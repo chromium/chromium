@@ -825,18 +825,35 @@ TEST_F(FacilitatedPaymentsManagerTest,
       /*expected_bucket_count=*/1);
 }
 
-// Test that when a purchase action result is received, the UI prompt is
-// dismissed.
+// Test that when Chrome fails to invoke purchase action, the error screen is
+// shown.
 TEST_F(FacilitatedPaymentsManagerTest,
-       OnPurchaseActionResult_UiPromptDismissed) {
-  // `DismissPrompt` is called once whenever a purchase action result is
-  // received, and again when the test fixture destroys the `manager_`.
-  EXPECT_CALL(*client_, DismissPrompt()).Times(3);
+       OnPurchaseActionResult_CouldNotInvoke_ErrorScreenShown) {
+  EXPECT_CALL(*client_, ShowErrorScreen);
 
-  for (PurchaseActionResult result : {PurchaseActionResult::kResultOk,
-                                      PurchaseActionResult::kResultCanceled}) {
-    manager_->OnPurchaseActionResult(result);
-  }
+  manager_->OnPurchaseActionResult(PurchaseActionResult::kCouldNotInvoke);
+}
+
+// Test that when Chrome is successful in invoking the purchase action, the UI
+// screen is dismissed.
+TEST_F(FacilitatedPaymentsManagerTest,
+       OnPurchaseActionResult_ResultOk_UiScreenDismissed) {
+  // `DismissPrompt` is called once when the purchase action result is
+  // received, and again when the test fixture destroys the `manager_`.
+  EXPECT_CALL(*client_, DismissPrompt).Times(2);
+
+  manager_->OnPurchaseActionResult(PurchaseActionResult::kResultOk);
+}
+
+// Test that when Chrome is successful in invoking the purchase action, the UI
+// screen is dismissed.
+TEST_F(FacilitatedPaymentsManagerTest,
+       OnPurchaseActionResult_ResultCanceled_UiScreenDismissed) {
+  // `DismissPrompt` is called once when the purchase action result is
+  // received, and again when the test fixture destroys the `manager_`.
+  EXPECT_CALL(*client_, DismissPrompt).Times(2);
+
+  manager_->OnPurchaseActionResult(PurchaseActionResult::kResultCanceled);
 }
 
 // Test that when an InitiatePurchaseAction request is sent, the attempt is

@@ -290,10 +290,15 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
 
 void FacilitatedPaymentsManager::OnPurchaseActionResult(
     PurchaseActionResult result) {
-  // When server responds to the purchase action, Google Play Services takes
-  // over, and the progress screen gets dismissed. Calling `DismissPrompt`
-  // clears the associated Java objects.
-  DismissPrompt();
+  switch (result) {
+    case PurchaseActionResult::kCouldNotInvoke:
+      ShowErrorScreen();
+      break;
+    case PurchaseActionResult::kResultOk:  // Intentional fallthrough.
+    case PurchaseActionResult::kResultCanceled:
+      DismissPrompt();
+      break;
+  }
   // Logs the general histograms.
   std::string result_string = GetInitiatePurchaseActionResultString(result);
   LogInitiatePurchaseActionResultAndLatency(

@@ -140,8 +140,14 @@ class FacilitatedPaymentsManager {
                            OnPixPaymentPromptResult_FopSelected);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            OnPixPaymentPromptResult_FopSelectorDeclined);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerTest,
+      OnPurchaseActionResult_CouldNotInvoke_ErrorScreenShown);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerTest,
+      OnPurchaseActionResult_ResultCanceled_UiScreenDismissed);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           OnPurchaseActionResult_UiPromptDismissed);
+                           OnPurchaseActionResult_ResultOk_UiScreenDismissed);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            PayflowExitedReason_ApiClientNotAvailable);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
