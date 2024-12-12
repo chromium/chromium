@@ -11619,6 +11619,36 @@
             ]
         }
     ],
+    "IOSInterruptibleCoordinatorAlwaysDismissedName": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "IOSInterruptibleCoordinatorAlwaysDismissedName",
+                    "enable_features": [
+                        "IOSInterruptibleCoordinatorAlwaysDismissedName"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSInterruptibleCoordinatorStoppedSynchronously": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "IOSInterruptibleCoordinatorStoppedSynchronously",
+                    "enable_features": [
+                        "IOSInterruptibleCoordinatorStoppedSynchronously"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSKeepsRenderProcessAlive": [
         {
             "platforms": [
@@ -12437,21 +12467,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "InstallAndroidUnwindDfm"
-                    ]
-                }
-            ]
-        }
-    ],
-    "InterruptibleCoordinatorStoppedSynchronously": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "InterruptibleCoordinatorStoppedSynchronously",
-                    "enable_features": [
-                        "InterruptibleCoordinatorStoppedSynchronously"
                     ]
                 }
             ]
