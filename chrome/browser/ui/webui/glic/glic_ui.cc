@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/glic/guest_util.h"
 #include "chrome/browser/ui/webui/glic/glic_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
@@ -43,11 +44,7 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
 
   // Set up guest URL via cli flag or default to finch param value.
-  bool hasGlicGuestURL = command_line->HasSwitch(::switches::kGlicGuestURL);
-  source->AddString("glicGuestURL", hasGlicGuestURL
-                                        ? command_line->GetSwitchValueASCII(
-                                              ::switches::kGlicGuestURL)
-                                        : features::kGlicGuestURL.Get());
+  source->AddString("glicGuestURL", GetGuestURL().spec());
 
   // Set up guest api source.
   source->AddString(

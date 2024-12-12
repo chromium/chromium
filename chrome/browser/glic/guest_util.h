@@ -5,11 +5,17 @@
 #ifndef CHROME_BROWSER_GLIC_GUEST_UTIL_H_
 #define CHROME_BROWSER_GLIC_GUEST_UTIL_H_
 
+#include "url/gurl.h"
+#include "url/origin.h"
+
 namespace content {
 class WebContents;
 }
 
 namespace glic {
+
+GURL GetGuestURL();
+url::Origin GetGuestOrigin();
 
 // If `guest_contents` is the glic guest, do glic-specific setup and return
 // true, otherwise return false.
