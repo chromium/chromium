@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
+#import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
+#import "ios/chrome/browser/safety_check_notifications/utils/utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_consumer.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -103,6 +105,10 @@ bool DidPasswordCheckupFail(PasswordCheckState currentState) {
 
 - (void)toggleSafetyCheckNotifications {
   CHECK(IsSafetyCheckNotificationsEnabled());
+
+  LogSafetyCheckNotificationOptInSource(
+      SafetyCheckNotificationsOptInSource::kPasswordCheckupPageOptIn,
+      SafetyCheckNotificationsOptInSource::kPasswordCheckupPageOptOut);
 
   [self.delegate toggleSafetyCheckNotifications];
 }

@@ -20,13 +20,19 @@ enum class ContentSuggestionsModuleType;
 // anymore.
 - (void)neverShowModuleType:(ContentSuggestionsModuleType)type;
 
-// Indicates that the user has tapped the context menu item to enable
-// notifications.
-- (void)enableNotifications:(ContentSuggestionsModuleType)type;
+// Indicates that the user has enabled notifications. The source of the action
+// is specified by the `viaContextMenu` parameter, which is YES if the user
+// enabled notifications via the context menu, and NO if the action originated
+// from the top-right action button.
+- (void)enableNotifications:(ContentSuggestionsModuleType)type
+             viaContextMenu:(BOOL)viaContextMenu;
 
-// Indicates that the user has tapped the context menu item to disable
-// notifications.
-- (void)disableNotifications:(ContentSuggestionsModuleType)type;
+// Indicates that the user has disabled notifications. The source of the action
+// is specified by the `viaContextMenu` parameter, which is YES if the user
+// disabled notifications via the context menu, and NO if the action originated
+// from the top-right action button.
+- (void)disableNotifications:(ContentSuggestionsModuleType)type
+              viaContextMenu:(BOOL)viaContextMenu;
 
 // Indicates that the user has tapped the context menu item to edit the Magic
 // Stack modules.

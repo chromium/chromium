@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/standalone_module_delegate.h"
 
 class FaviconLoader;
-@protocol NotificationsModuleDelegate;
+@protocol MagicStackModuleContainerDelegate;
 class PrefService;
 @class SendTabPromoItem;
 
@@ -36,7 +36,7 @@ class PrefService;
 
 // Delegate used to communicate notification events back to the owner of this
 // class.
-@property(nonatomic, weak) id<NotificationsModuleDelegate>
+@property(nonatomic, weak) id<MagicStackModuleContainerDelegate>
     notificationsDelegate;
 
 // Default initializer.

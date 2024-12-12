@@ -2762,6 +2762,17 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.Notifications.SafetyCheck.NotificationsOptInSource"
+    enum="IOSSafetyCheckNotificationsOptInSource" expires_after="2025-09-17">
+  <owner>bwwilliams@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Logs the source where the user opted in or opted out of receiving Safety
+    Check notifications.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Notifications.SafetyCheck.Requested"
     enum="IOSSafetyCheckNotificationType" expires_after="2025-09-17">
   <owner>bwwilliams@google.com</owner>

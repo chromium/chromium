@@ -79,6 +79,8 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/safety_check/model",
     "//ios/chrome/browser/safety_check/model:factory",
+    "//ios/chrome/browser/safety_check_notifications/utils",
+    "//ios/chrome/browser/safety_check_notifications/utils:constants",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/segmentation_platform/model",
     "//ios/chrome/browser/settings/ui_bundled/notifications:utils",

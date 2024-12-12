@@ -31,6 +31,8 @@
 #import "ios/chrome/browser/passwords/model/password_store_observer_bridge.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
+#import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
+#import "ios/chrome/browser/safety_check_notifications/utils/utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_consumer.h"
@@ -74,19 +76,6 @@ namespace {
 constexpr NSInteger kLeadingSymbolImagePointSize = 22;
 
 typedef NSArray<TableViewItem*>* ItemArray;
-
-typedef NS_ENUM(NSInteger, SafteyCheckItemType) {
-  // CheckTypes section.
-  UpdateItemType = kItemTypeEnumZero,
-  PasswordItemType,
-  SafeBrowsingItemType,
-  HeaderItem,
-  // CheckStart section.
-  CheckStartItemType,
-  TimestampFooterItem,
-  // Notifications opt-in section.
-  NotificationsOptInItemType,
-};
 
 // The minimum time each of the three checks should show a running state. This
 // is to prevent any check that finshes quicky from causing the UI to appear
@@ -454,7 +443,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 #pragma mark - SafetyCheckServiceDelegate
 
 - (void)didSelectItem:(TableViewItem*)item {
-  SafteyCheckItemType type = static_cast<SafteyCheckItemType>(item.type);
+  SafetyCheckItemType type = static_cast<SafetyCheckItemType>(item.type);
   switch (type) {
     // Few selections are handled here explicitly, but all states are laid out
     // to have one location that shows all actions that are taken from the
@@ -531,6 +520,10 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       break;
     }
     case NotificationsOptInItemType: {
+      LogSafetyCheckNotificationOptInSource(
+          SafetyCheckNotificationsOptInSource::kSafetyCheckPageOptIn,
+          SafetyCheckNotificationsOptInSource::kSafetyCheckPageOptOut);
+
       [self.delegate toggleSafetyCheckNotifications];
       break;
     }
@@ -541,7 +534,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 }
 
 - (BOOL)isItemClickable:(TableViewItem*)item {
-  SafteyCheckItemType type = static_cast<SafteyCheckItemType>(item.type);
+  SafetyCheckItemType type = static_cast<SafetyCheckItemType>(item.type);
   switch (type) {
     case UpdateItemType:
       return self.updateCheckRowState == UpdateCheckRowStateOutOfDate;
@@ -562,7 +555,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 }
 
 - (BOOL)isItemWithErrorInfo:(TableViewItem*)item {
-  SafteyCheckItemType type = static_cast<SafteyCheckItemType>(item.type);
+  SafetyCheckItemType type = static_cast<SafetyCheckItemType>(item.type);
   return (type != CheckStartItemType && type != NotificationsOptInItemType);
 }
 
@@ -609,7 +602,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 
 // Computes the text needed for a popover on `itemType` if available.
 - (NSAttributedString*)popoverInfoForType:(NSInteger)itemType {
-  SafteyCheckItemType type = static_cast<SafteyCheckItemType>(itemType);
+  SafetyCheckItemType type = static_cast<SafetyCheckItemType>(itemType);
   switch (type) {
     case PasswordItemType:
       return [self passwordCheckErrorInfo];

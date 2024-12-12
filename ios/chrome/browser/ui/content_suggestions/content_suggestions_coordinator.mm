@@ -77,6 +77,8 @@
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
+#import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
+#import "ios/chrome/browser/safety_check_notifications/utils/utils.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
@@ -133,7 +135,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_table_view_controller.h"
-#import "ios/chrome/browser/ui/content_suggestions/notifications_module_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/magic_stack_parcel_list_half_sheet_table_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_mediator.h"
@@ -167,6 +168,29 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
+namespace {
+
+// Logs the user's decision to opt-in or opt-out of Safety Check notifications
+// from the Magic Stack. Determines the source based on the `viaContextMenu`
+// flag: if `true`, the action is logged as originating from the long-press
+// menu; otherwise, it is logged as originating from the top-right action
+// button.
+void LogSafetyCheckNotificationOptIn(bool viaContextMenu) {
+  if (viaContextMenu) {
+    LogSafetyCheckNotificationOptInSource(
+        SafetyCheckNotificationsOptInSource::kMagicStackLongPressMenuOptIn,
+        SafetyCheckNotificationsOptInSource::kMagicStackLongPressMenuOptOut);
+  } else {
+    LogSafetyCheckNotificationOptInSource(
+        SafetyCheckNotificationsOptInSource::
+            kMagicStackTopRightActionButtonOptIn,
+        SafetyCheckNotificationsOptInSource::
+            kMagicStackTopRightActionButtonOptOut);
+  }
+}
+
+}  // namespace
+
 using segmentation_platform::TipIdentifier;
 
 @interface ContentSuggestionsCoordinator () <
@@ -177,7 +201,6 @@ using segmentation_platform::TipIdentifier;
     MagicStackModuleContainerDelegate,
     MagicStackParcelListHalfSheetTableViewControllerDelegate,
     TipsPasswordsCoordinatorDelegate,
-    NotificationsModuleDelegate,
     NotificationsOptInAlertCoordinatorDelegate,
     NotificationsOptInCoordinatorDelegate,
     PriceTrackingPromoActionDelegate,
@@ -924,12 +947,15 @@ using segmentation_platform::TipIdentifier;
   NOTREACHED();
 }
 
-- (void)enableNotifications:(ContentSuggestionsModuleType)type {
+- (void)enableNotifications:(ContentSuggestionsModuleType)type
+             viaContextMenu:(BOOL)viaContextMenu {
   // This is only supported for Set Up List, Tips, Send Tab, and Safety Check
   // modules.
   CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck ||
         type == ContentSuggestionsModuleType::kSendTabPromo);
+
+  LogSafetyCheckNotificationOptIn(viaContextMenu);
 
   // Ask user for permission to opt-in to notifications.
   [_notificationsOptInAlertCoordinator stop];
@@ -955,12 +981,15 @@ using segmentation_platform::TipIdentifier;
   [_notificationsOptInAlertCoordinator start];
 }
 
-- (void)disableNotifications:(ContentSuggestionsModuleType)type {
+- (void)disableNotifications:(ContentSuggestionsModuleType)type
+              viaContextMenu:(BOOL)viaContextMenu {
   // This is only supported for Set Up List, Tips, Send Tab, and Safety Check
   // modules.
   CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck ||
         type == ContentSuggestionsModuleType::kSendTabPromo);
+
+  LogSafetyCheckNotificationOptIn(viaContextMenu);
 
   id<SystemIdentity> identity =
       self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
@@ -1303,7 +1332,8 @@ using segmentation_platform::TipIdentifier;
                             UNNotificationSettings* settings) {
     if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
       for (PushNotificationClientId clientId : clientIds) {
-        [self enableNotifications:[self contentSuggestionsModuleType:clientId]];
+        [self enableNotifications:[self contentSuggestionsModuleType:clientId]
+                   viaContextMenu:NO];
       }
     }
   }];

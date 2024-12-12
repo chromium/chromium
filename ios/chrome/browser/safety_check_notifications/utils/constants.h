@@ -9,6 +9,26 @@
 
 #import "base/time/time.h"
 
+// Enum for the `IOS.Notifications.SafetyCheck.NotificationsOptInSource`
+// histogram.
+//
+// Must be in sync with `IOSSafetyCheckNotificationsOptInSource` enum in
+// `tools/metrics/histograms/metadata/ios/enums.xml`.
+//
+// LINT.IfChange(SafetyCheckNotificationsOptInSource)
+enum class SafetyCheckNotificationsOptInSource {
+  kSafetyCheckPageOptIn = 0,
+  kSafetyCheckPageOptOut = 1,
+  kPasswordCheckupPageOptIn = 2,
+  kPasswordCheckupPageOptOut = 3,
+  kMagicStackLongPressMenuOptIn = 4,
+  kMagicStackLongPressMenuOptOut = 5,
+  kMagicStackTopRightActionButtonOptIn = 6,
+  kMagicStackTopRightActionButtonOptOut = 7,
+  kMaxValue = kMagicStackTopRightActionButtonOptOut,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSSafetyCheckNotificationsOptInSource)
+
 // Enum for the `IOS.Notifications.SafetyCheck.Interaction` histogram.
 //
 // Must be in sync with `IOSSafetyCheckNotificationType` enum in

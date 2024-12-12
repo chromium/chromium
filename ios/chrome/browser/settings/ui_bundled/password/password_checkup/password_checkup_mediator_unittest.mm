@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_mediator.h"
 
 #import "base/test/bind.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -17,11 +18,14 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
+#import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
+#import "ios/chrome/browser/safety_check_notifications/utils/test_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_consumer.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -242,4 +246,48 @@ TEST_F(PasswordCheckupMediatorTest,
   [mediator() reconfigureNotificationsSection:NO];
 
   EXPECT_OCMOCK_VERIFY(consumer());
+}
+
+// Verifies that the `kPasswordCheckupPageOptIn` value is correctly logged
+// in the `IOS.Notifications.SafetyCheck.NotificationsOptInSource` histogram
+// when notifications are enabled.
+TEST_F(PasswordCheckupMediatorTest, FiresOptInForSafetyCheckNotifications) {
+  feature_list_.InitAndEnableFeature(kSafetyCheckNotifications);
+
+  // Configure notifications to be disabled initially.
+  UpdateSafetyCheckNotificationsPermission(NO);
+
+  base::HistogramTester histogram_tester;
+
+  // Simulate the toggle action.
+  [mediator() toggleSafetyCheckNotifications];
+
+  // Verify the histogram was fired for opting in.
+  histogram_tester.ExpectUniqueSample(
+      "IOS.Notifications.SafetyCheck.NotificationsOptInSource",
+      static_cast<int>(
+          SafetyCheckNotificationsOptInSource::kPasswordCheckupPageOptIn),
+      1);
+}
+
+// Verifies that the `kPasswordCheckupPageOptOut` value is correctly logged
+// in the `IOS.Notifications.SafetyCheck.NotificationsOptInSource` histogram
+// when notifications are disabled.
+TEST_F(PasswordCheckupMediatorTest, FiresOptOutForSafetyCheckNotifications) {
+  feature_list_.InitAndEnableFeature(kSafetyCheckNotifications);
+
+  // Configure notifications to be enabled initially.
+  UpdateSafetyCheckNotificationsPermission(YES);
+
+  base::HistogramTester histogram_tester;
+
+  // Simulate the toggle action.
+  [mediator() toggleSafetyCheckNotifications];
+
+  // Verify the histogram was fired for opting out.
+  histogram_tester.ExpectUniqueSample(
+      "IOS.Notifications.SafetyCheck.NotificationsOptInSource",
+      static_cast<int>(
+          SafetyCheckNotificationsOptInSource::kPasswordCheckupPageOptOut),
+      1);
 }

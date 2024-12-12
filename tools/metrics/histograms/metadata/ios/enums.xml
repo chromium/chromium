@@ -823,6 +823,21 @@ the generic promo launch. -->
   <int value="1" label="No issues"/>
 </enum>
 
+<!-- LINT.IfChange(IOSSafetyCheckNotificationsOptInSource) -->
+
+<enum name="IOSSafetyCheckNotificationsOptInSource">
+  <int value="0" label="SafetyCheckPageOptIn"/>
+  <int value="1" label="SafetyCheckPageOptOut"/>
+  <int value="2" label="PasswordCheckupPageOptIn"/>
+  <int value="3" label="PasswordCheckupPageOptOut"/>
+  <int value="4" label="MagicStackLongPressMenuOptIn"/>
+  <int value="5" label="MagicStackLongPressMenuOptOut"/>
+  <int value="6" label="MagicStackTopRightActionButtonOptIn"/>
+  <int value="7" label="MagicStackTopRightActionButtonOptOut"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/safety_check_notifications/utils/constants.h:SafetyCheckNotificationsOptInSource) -->
+
 <!-- LINT.IfChange(IOSSafetyCheckNotificationType) -->
 
 <enum name="IOSSafetyCheckNotificationType">

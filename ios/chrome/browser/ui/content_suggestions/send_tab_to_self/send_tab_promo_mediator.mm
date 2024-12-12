@@ -10,7 +10,7 @@
 #import "components/send_tab_to_self/pref_names.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
-#import "ios/chrome/browser/ui/content_suggestions/notifications_module_delegate.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/send_tab_to_self/send_tab_promo_item.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
@@ -59,7 +59,7 @@
   CHECK(moduleType == ContentSuggestionsModuleType::kSendTabPromo);
   base::UmaHistogramBoolean(
       "IOS.Notifications.SendTab.MagicStack.AllowNotificationsPressed", true);
-  [self.notificationsDelegate enableNotifications:moduleType];
+  [self.notificationsDelegate enableNotifications:moduleType viaContextMenu:NO];
 }
 
 #pragma mark - Private

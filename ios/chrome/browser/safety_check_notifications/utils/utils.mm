@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/safety_check_notifications/utils/utils.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -115,6 +118,18 @@ double InactiveThresholdForNotifications() {
 }
 
 }  // namespace
+
+void LogSafetyCheckNotificationOptInSource(
+    SafetyCheckNotificationsOptInSource opt_in_source,
+    SafetyCheckNotificationsOptInSource opt_out_source) {
+  bool is_notifications_enabled = push_notification_settings::
+      GetMobileNotificationPermissionStatusForClient(
+          PushNotificationClientId::kSafetyCheck, "");
+
+  base::UmaHistogramEnumeration(
+      "IOS.Notifications.SafetyCheck.NotificationsOptInSource",
+      is_notifications_enabled ? opt_out_source : opt_in_source);
+}
 
 UNNotificationRequest* PasswordNotificationRequest(
     PasswordSafetyCheckState state,
