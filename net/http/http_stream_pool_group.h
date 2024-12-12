@@ -34,7 +34,18 @@ class HttpStream;
 class HttpStreamPoolHandle;
 class StreamSocket;
 
-// Maintains active/idle text-based HTTP streams.
+// Maintains active/idle text-based HTTP streams. If new streams are needed,
+// creates an HttpStreamPool::AttemptManager and starts connection attempts for
+// streams.
+//
+// Keeps incoming jobs (called paused jobs) when the current AttemptManager is
+// "failing", i.e., AttemptManager is notifying the failure to associated jobs
+// and waiting for completions of these jobs. Once the failing AttemptManager
+// completes, this starts a new AttemptManager and pass paused jobs to the new
+// AttemptManager.
+//
+// Owned by an HttpStreamPool, keyed by HttpStreamKey. Destroyed when all
+// streams associated with this group are completed.
 class HttpStreamPool::Group {
  public:
   // The same timeout as ClientSocketPool::used_idle_socket_timeout().

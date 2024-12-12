@@ -347,6 +347,11 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   void OnSwitchesToHttpStreamPool(
       HttpStreamPoolRequestInfo request_info) override {}
 
+  HttpStream* stream() {
+    CHECK(stream_);
+    return stream_.get();
+  }
+
   std::unique_ptr<HttpStream> ReleaseStream() { return std::move(stream_); }
 
   std::optional<int> result() const { return result_; }
@@ -1275,6 +1280,151 @@ TEST_F(HttpStreamPoolAttemptManagerTest, IPEndPointsSlow) {
   FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
   ASSERT_TRUE(request->completed());
   EXPECT_THAT(requester.result(), Optional(IsOk()));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, IPEndPointSlowSuccessSlow) {
+  using IPEndPointState = AttemptManager::IPEndPointState;
+
+  const IPEndPoint ip_endpoint = MakeIPEndPoint("2001:db8::1");
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(ip_endpoint).endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // The first attempt is slow but succeeds.
+  MockConnectCompleter completer1;
+  SequencedSocketData data1;
+  data1.set_connect_data(MockConnect(&completer1));
+  socket_factory()->AddSocketDataProvider(&data1);
+  StreamRequester requester1;
+  requester1.RequestStream(pool());
+  ASSERT_FALSE(requester1.result().has_value());
+
+  AttemptManager* manager =
+      pool()
+          .GetOrCreateGroupForTesting(requester1.GetStreamKey())
+          .GetAttemptManagerForTesting();
+  auto get_ip_endpoint_state = [&]() -> std::optional<IPEndPointState> {
+    auto it = manager->ip_endpoint_states_for_testing().find(ip_endpoint);
+    if (it == manager->ip_endpoint_states_for_testing().end()) {
+      return std::nullopt;
+    }
+    return it->second;
+  };
+
+  EXPECT_THAT(get_ip_endpoint_state(), std::nullopt);
+
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
+  EXPECT_THAT(get_ip_endpoint_state(),
+              Optional(IPEndPointState::kSlowAttempting));
+
+  completer1.Complete(OK);
+  requester1.WaitForResult();
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+  EXPECT_THAT(get_ip_endpoint_state(),
+              Optional(IPEndPointState::kSlowSucceeded));
+
+  // Attempt connection to the endpoint again. Ensure that the state isn't
+  // updated when the second attempt is slow. Also ensure that triggering the
+  // slow timer doesn't start a new attempt for the endpoint.
+  MockConnectCompleter completer2;
+  SequencedSocketData data2;
+  data2.set_connect_data(MockConnect(&completer2));
+  socket_factory()->AddSocketDataProvider(&data2);
+  StreamRequester requester2;
+  requester2.RequestStream(pool());
+  ASSERT_FALSE(requester2.result().has_value());
+  EXPECT_THAT(get_ip_endpoint_state(),
+              Optional(IPEndPointState::kSlowSucceeded));
+
+  completer2.Complete(OK);
+  requester2.WaitForResult();
+  EXPECT_THAT(requester2.result(), Optional(IsOk()));
+  EXPECT_THAT(get_ip_endpoint_state(),
+              Optional(IPEndPointState::kSlowSucceeded));
+
+  // The third attempt fails.
+  SequencedSocketData data3;
+  data3.set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_RESET));
+  socket_factory()->AddSocketDataProvider(&data3);
+  StreamRequester requester3;
+  requester3.RequestStream(pool());
+  requester3.WaitForResult();
+  EXPECT_THAT(requester3.result(), Optional(IsError(ERR_CONNECTION_RESET)));
+  EXPECT_THAT(get_ip_endpoint_state(), Optional(IPEndPointState::kFailed));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, PreferNonSlowIPEndPoint) {
+  const IPEndPoint ip_endpoint_v6 = MakeIPEndPoint("2001:db8::1");
+  const IPEndPoint ip_endpoint_v4 = MakeIPEndPoint("192.0.2.1");
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder()
+                         .add_ip_endpoint(ip_endpoint_v6)
+                         .add_ip_endpoint(ip_endpoint_v4)
+                         .endpoint())
+      .CompleteStartSynchronously(OK);
+
+  auto get_remote_ip_endpoint = [&](StreamRequester& requester) -> IPEndPoint {
+    IPEndPoint ip_endpoint;
+    int result = requester.stream()->GetRemoteEndpoint(&ip_endpoint);
+    EXPECT_THAT(result, IsOk());
+    return ip_endpoint;
+  };
+
+  MockConnectCompleter completer1;
+  SequencedSocketData data1;
+  MockConnect connect1(&completer1);
+  connect1.peer_addr = ip_endpoint_v6;
+  data1.set_connect_data(std::move(connect1));
+  socket_factory()->AddSocketDataProvider(&data1);
+  MockConnectCompleter completer2;
+  SequencedSocketData data2;
+  MockConnect connect2(&completer2);
+  connect2.peer_addr = ip_endpoint_v4;
+  data2.set_connect_data(std::move(connect2));
+  socket_factory()->AddSocketDataProvider(&data2);
+  MockConnectCompleter completer3;
+  SequencedSocketData data3;
+  MockConnect connect3(&completer3);
+  connect3.peer_addr = ip_endpoint_v4;
+  data3.set_connect_data(std::move(connect3));
+  socket_factory()->AddSocketDataProvider(&data3);
+
+  // The first attempt triggered by the first request uses the IPv6 endpoint. It
+  // is slow but succeeds.
+  StreamRequester requester1;
+  requester1.RequestStream(pool());
+  ASSERT_FALSE(requester1.result().has_value());
+  // Trigger the slow timer. This results in starting the second attempt to the
+  // IPv4 endpoint.
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
+  // Complete the IPv6 attempt. The first request gets notified with the IPv6
+  // endpoint.
+  completer1.Complete(OK);
+  requester1.WaitForResult();
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+  EXPECT_EQ(get_remote_ip_endpoint(requester1), ip_endpoint_v6);
+
+  // The second request uses the on-going attempt to the IPv4 endpoint.
+  StreamRequester requester2;
+  requester2.RequestStream(pool());
+  completer2.Complete(OK);
+  requester2.WaitForResult();
+  EXPECT_THAT(requester2.result(), Optional(IsOk()));
+  EXPECT_EQ(get_remote_ip_endpoint(requester2), ip_endpoint_v4);
+
+  // The third attempt triggered by the third request uses the IPv4 endpoint,
+  // wwhich was not slow.
+  StreamRequester requester3;
+  requester3.RequestStream(pool());
+  completer3.Complete(OK);
+  requester3.WaitForResult();
+  EXPECT_THAT(requester3.result(), Optional(IsOk()));
+  EXPECT_EQ(get_remote_ip_endpoint(requester3), ip_endpoint_v4);
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest,

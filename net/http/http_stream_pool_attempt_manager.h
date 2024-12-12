@@ -46,10 +46,33 @@ class HttpNetworkSession;
 class NetLog;
 class HttpStreamKey;
 
-// Maintains in-flight Jobs. Peforms DNS resolution.
+// Drives connection attempts for a single destination.
+//
+// Maintains multiple in-flight Jobs for a single destination keyed by
+// HttpStreamKey. Peforms DNS resolution and manages connection attempts.
+// Delegates QUIC connection attempts to QuicTask. Upon successful HttpStream
+// creations or fatal error occurrence, notify jobs of success or failure.
+//
+// Created by an HttpStreamPool::Group when new connection attempts are needed
+// and destroyed when all jobs, in-flight attempts, and the QuicTask are
+// completed.
 class HttpStreamPool::AttemptManager
     : public HostResolver::ServiceEndpointRequest::Delegate {
  public:
+  // The state of an IPEndPoint. There is no success state. The absence of a
+  // state for an endpoint means that we haven't yet attempted to connect to the
+  // endpoint, or that a connection to the endpoint was successfully completed
+  // and was not slow. Public for testing.
+  enum class IPEndPointState {
+    // The endpoint has failed.
+    kFailed,
+    // The endpoint is considered slow and haven't timed out yet.
+    kSlowAttempting,
+    // The endpoint was slow to connect, but the connection establishment
+    // completed successfully.
+    kSlowSucceeded,
+  };
+
   // Time to delay connection attempts more than one when the destination is
   // known to support HTTP/2, to avoid unnecessary socket connection
   // establishments. See https://crbug.com/718576
@@ -160,12 +183,17 @@ class HttpStreamPool::AttemptManager
   // Retrieves information on the current state of `this` as a base::Value.
   base::Value::Dict GetInfoAsValue();
 
+  MultiplexedSessionCreationInitiator
+  CalculateMultiplexedSessionCreationInitiator();
+
   std::optional<int> GetQuicTaskResultForTesting() { return quic_task_result_; }
 
   void SetIsFailingForTest(bool is_failing) { is_failing_ = is_failing; }
 
-  MultiplexedSessionCreationInitiator
-  CalculateMultiplexedSessionCreationInitiator();
+  const std::map<IPEndPoint, IPEndPointState>& ip_endpoint_states_for_testing()
+      const {
+    return ip_endpoint_states_;
+  }
 
  private:
   // Represents failure of connection attempts. Used to notify job of completion
@@ -201,6 +229,8 @@ class HttpStreamPool::AttemptManager
 
   static std::string_view TcpBasedAttemptStateToString(
       TcpBasedAttemptState state);
+
+  static std::string_view IPEndPointStateToString(IPEndPointState state);
 
   const HttpStreamKey& stream_key() const;
 
@@ -253,9 +283,11 @@ class HttpStreamPool::AttemptManager
   void MaybeAttemptQuic();
 
   // Attempts connections if there are pending jobs and IPEndPoints that
-  // haven't failed. If `max_attempts` is given, attempts connections up to
+  // haven't failed. If `exclude_ip_endpoint` is given, exclude the IPEndPoint
+  // from attempts. If `max_attempts` is given, attempts connections up to
   // `max_attempts`.
   void MaybeAttemptConnection(
+      std::optional<IPEndPoint> exclude_ip_endpoint = std::nullopt,
       std::optional<size_t> max_attempts = std::nullopt);
 
   // Returns true if there are pending jobs and the pool and the group
@@ -285,9 +317,13 @@ class HttpStreamPool::AttemptManager
   // Helper method to calculate pending jobs/preconnects.
   size_t PendingCountInternal(size_t pending_count) const;
 
-  std::optional<IPEndPoint> GetIPEndPointToAttempt();
+  // Returns an IPEndPoint to attempt a connection. If `exclude_ip_endpoint` is
+  // given, exclude the endpoint.
+  std::optional<IPEndPoint> GetIPEndPointToAttempt(
+      std::optional<IPEndPoint> exclude_ip_endpoint = std::nullopt);
   std::optional<IPEndPoint> FindPreferredIPEndpoint(
-      const std::vector<IPEndPoint>& ip_endpoints);
+      const std::vector<IPEndPoint>& ip_endpoints,
+      std::optional<IPEndPoint> exclude_ip_endpoint = std::nullopt);
 
   // Calculate the failure kind to notify jobs of failure. Used to call one of
   // the job's methods.
@@ -456,12 +492,9 @@ class HttpStreamPool::AttemptManager
 
   // When true, try to use IPv6 for the next attempt first.
   bool prefer_ipv6_ = true;
-  // Updated when a stream attempt failed. Used to calculate next IPEndPoint to
-  // attempt.
-  std::set<IPEndPoint> failed_ip_endpoints_;
-  // Updated when a stream attempt is considered slow. Used to calculate next
-  // IPEndPoint to attempt.
-  std::set<IPEndPoint> slow_ip_endpoints_;
+  // Updated when a stream attempt is completed or considered slow. Used to
+  // calculate next IPEndPoint to attempt.
+  std::map<IPEndPoint, IPEndPointState> ip_endpoint_states_;
 
   // The current state of TCP/TLS connection attempts.
   TcpBasedAttemptState tcp_based_attempt_state_ =

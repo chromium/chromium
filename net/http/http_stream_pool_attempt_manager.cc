@@ -189,6 +189,19 @@ std::string_view HttpStreamPool::AttemptManager::TcpBasedAttemptStateToString(
   }
 }
 
+// static
+std::string_view HttpStreamPool::AttemptManager::IPEndPointStateToString(
+    IPEndPointState state) {
+  switch (state) {
+    case IPEndPointState::kFailed:
+      return "Failed";
+    case IPEndPointState::kSlowAttempting:
+      return "SlowAttempting";
+    case IPEndPointState::kSlowSucceeded:
+      return "SlowSucceeded";
+  }
+}
+
 HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
     : group_(group),
       net_log_(NetLogWithSource::Make(
@@ -447,7 +460,8 @@ void HttpStreamPool::AttemptManager::ProcessPendingJob() {
   CHECK(!CanUseExistingQuicSession());
   CHECK(!spdy_session_);
 
-  MaybeAttemptConnection(/*max_attempts=*/1);
+  MaybeAttemptConnection(/*exclude_ip_endpoint=*/std::nullopt,
+                         /*max_attempts=*/1);
 }
 
 void HttpStreamPool::AttemptManager::CancelInFlightAttempts(
@@ -733,19 +747,15 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() {
   dict.Set("ssl_config_num_waiting_callbacks",
            ssl_config_num_waiting_callbacks);
 
-  if (!failed_ip_endpoints_.empty()) {
-    base::Value::List failed_ip_endpoints;
-    for (const auto& ip_endpoint : failed_ip_endpoints_) {
-      failed_ip_endpoints.Append(ip_endpoint.ToString());
+  if (!ip_endpoint_states_.empty()) {
+    base::Value::List ip_endpoint_states;
+    for (const auto& [ip_endpoint, state] : ip_endpoint_states_) {
+      base::Value::Dict state_dict;
+      state_dict.Set("ip_endpoint", ip_endpoint.ToString());
+      state_dict.Set("state", IPEndPointStateToString(state));
+      ip_endpoint_states.Append(std::move(state_dict));
     }
-    dict.Set("ip_endpoints_failed", std::move(failed_ip_endpoints));
-  }
-  if (!slow_ip_endpoints_.empty()) {
-    base::Value::List slow_ip_endpoints;
-    for (const auto& ip_endpoint : slow_ip_endpoints_) {
-      slow_ip_endpoints.Append(ip_endpoint.ToString());
-    }
-    dict.Set("ip_endpoints_slow", std::move(slow_ip_endpoints));
+    dict.Set("ip_endpoint_states", std::move(ip_endpoint_states));
   }
 
   if (quic_task_) {
@@ -988,6 +998,7 @@ void HttpStreamPool::AttemptManager::MaybeAttemptQuic() {
 }
 
 void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
+    std::optional<IPEndPoint> exclude_ip_endpoint,
     std::optional<size_t> max_attempts) {
   if (is_failing_) {
     return;
@@ -1017,7 +1028,8 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
   // creating HttpStream on top of a SPDY session.
   CHECK(!spdy_session_);
 
-  std::optional<IPEndPoint> ip_endpoint = GetIPEndPointToAttempt();
+  std::optional<IPEndPoint> ip_endpoint =
+      GetIPEndPointToAttempt(exclude_ip_endpoint);
   if (!ip_endpoint.has_value()) {
     if (service_endpoint_request_finished_ && in_flight_attempts_.empty()) {
       tcp_based_attempt_state_ = TcpBasedAttemptState::kAllAttemptsFailed;
@@ -1214,8 +1226,12 @@ size_t HttpStreamPool::AttemptManager::PendingCountInternal(
   return pending_count - non_slow_count;
 }
 
+// TODO(crbug.com/346835898): The current logic relies on rather naive and not
+// very well-founded heuristics. Write a design document and implement more
+// appropriate algorithm to pick an IPEndPoint.
 std::optional<IPEndPoint>
-HttpStreamPool::AttemptManager::GetIPEndPointToAttempt() {
+HttpStreamPool::AttemptManager::GetIPEndPointToAttempt(
+    std::optional<IPEndPoint> exclude_ip_endpoint) {
   if (!service_endpoint_request_ ||
       service_endpoint_request_->GetEndpointResults().empty()) {
     return std::nullopt;
@@ -1229,8 +1245,10 @@ HttpStreamPool::AttemptManager::GetIPEndPointToAttempt() {
       continue;
     }
     std::optional<IPEndPoint> ip_endpoint =
-        prefer_ipv6_ ? FindPreferredIPEndpoint(endpoint.ipv6_endpoints)
-                     : FindPreferredIPEndpoint(endpoint.ipv4_endpoints);
+        prefer_ipv6_ ? FindPreferredIPEndpoint(endpoint.ipv6_endpoints,
+                                               exclude_ip_endpoint)
+                     : FindPreferredIPEndpoint(endpoint.ipv4_endpoints,
+                                               exclude_ip_endpoint);
     if (ip_endpoint.has_value()) {
       return ip_endpoint;
     }
@@ -1243,8 +1261,10 @@ HttpStreamPool::AttemptManager::GetIPEndPointToAttempt() {
       continue;
     }
     std::optional<IPEndPoint> ip_endpoint =
-        prefer_ipv6_ ? FindPreferredIPEndpoint(endpoint.ipv4_endpoints)
-                     : FindPreferredIPEndpoint(endpoint.ipv6_endpoints);
+        prefer_ipv6_ ? FindPreferredIPEndpoint(endpoint.ipv4_endpoints,
+                                               exclude_ip_endpoint)
+                     : FindPreferredIPEndpoint(endpoint.ipv6_endpoints,
+                                               exclude_ip_endpoint);
     if (ip_endpoint.has_value()) {
       return ip_endpoint;
     }
@@ -1255,25 +1275,46 @@ HttpStreamPool::AttemptManager::GetIPEndPointToAttempt() {
 
 std::optional<IPEndPoint>
 HttpStreamPool::AttemptManager::FindPreferredIPEndpoint(
-    const std::vector<IPEndPoint>& ip_endpoints) {
+    const std::vector<IPEndPoint>& ip_endpoints,
+    std::optional<IPEndPoint> exclude_ip_endpoint) {
   // Prefer the first unattempted endpoint in `ip_endpoints`. Allow to use
-  // the first slow endpoint when SPDY throttle delay passed.
+  // a slow endpoint when the SPDY throttle delay passed or there is an endpoint
+  // that was slow to establish the connection but succeeded previously.
 
+  bool has_slow_but_succeeded = false;
   std::optional<IPEndPoint> slow_endpoint;
   for (const auto& ip_endpoint : ip_endpoints) {
-    if (base::Contains(failed_ip_endpoints_, ip_endpoint)) {
+    if (exclude_ip_endpoint.has_value() &&
+        ip_endpoint == *exclude_ip_endpoint) {
       continue;
     }
-    if (base::Contains(slow_ip_endpoints_, ip_endpoint)) {
-      if (!slow_endpoint.has_value()) {
-        slow_endpoint = ip_endpoint;
-      }
-      continue;
+
+    auto it = ip_endpoint_states_.find(ip_endpoint);
+    if (it == ip_endpoint_states_.end()) {
+      // If there is no state for the IP endpoint it means that we haven't tried
+      // the endpoint yet or previous attempt to the endpoint was fast. Just use
+      // it.
+      return ip_endpoint;
     }
-    return ip_endpoint;
+
+    switch (it->second) {
+      case IPEndPointState::kFailed:
+        continue;
+      case IPEndPointState::kSlowAttempting:
+        if (!slow_endpoint.has_value()) {
+          slow_endpoint = ip_endpoint;
+        }
+        break;
+      case IPEndPointState::kSlowSucceeded:
+        if (!has_slow_but_succeeded) {
+          has_slow_but_succeeded = true;
+          slow_endpoint = ip_endpoint;
+        }
+        break;
+    }
   }
 
-  if (spdy_throttle_delay_passed_) {
+  if (spdy_throttle_delay_passed_ || has_slow_but_succeeded) {
     return slow_endpoint;
   }
   return std::nullopt;
@@ -1556,6 +1597,12 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptComplete(
   if (raw_attempt->is_slow()) {
     CHECK_GT(slow_attempt_count_, 0u);
     --slow_attempt_count_;
+
+    if (rv == OK) {
+      auto it = ip_endpoint_states_.find(raw_attempt->ip_endpoint());
+      CHECK(it != ip_endpoint_states_.end());
+      it->second = IPEndPointState::kSlowSucceeded;
+    }
   }
 
   auto it = in_flight_attempts_.find(raw_attempt);
@@ -1642,10 +1689,14 @@ void HttpStreamPool::AttemptManager::OnInFlightAttemptSlow(
 
   raw_attempt->set_is_slow(true);
   ++slow_attempt_count_;
-  slow_ip_endpoints_.emplace(raw_attempt->attempt()->ip_endpoint());
+  // This will not overwrite the previous value, if it's already tagged as
+  // kSlowSucceeded (Nor will it overwrite other values).
+  ip_endpoint_states_.emplace(raw_attempt->attempt()->ip_endpoint(),
+                              IPEndPointState::kSlowAttempting);
   prefer_ipv6_ = !raw_attempt->attempt()->ip_endpoint().address().IsIPv6();
 
-  MaybeAttemptConnection();
+  // Don't attempt the same IP endpoint.
+  MaybeAttemptConnection(/*exclude_ip_endpoint=*/raw_attempt->ip_endpoint());
 }
 
 void HttpStreamPool::AttemptManager::HandleAttemptFailure(
@@ -1653,7 +1704,8 @@ void HttpStreamPool::AttemptManager::HandleAttemptFailure(
     int rv) {
   CHECK_NE(rv, ERR_IO_PENDING);
   connection_attempts_.emplace_back(in_flight_attempt->ip_endpoint(), rv);
-  failed_ip_endpoints_.emplace(in_flight_attempt->attempt()->ip_endpoint());
+  ip_endpoint_states_.insert_or_assign(in_flight_attempt->ip_endpoint(),
+                                       IPEndPointState::kFailed);
 
   if (in_flight_attempt->is_aborted()) {
     CHECK_EQ(rv, ERR_ABORTED);
