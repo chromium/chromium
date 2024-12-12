@@ -1203,6 +1203,21 @@ const FeatureEntry::FeatureVariation kSetUpListInFirstRunVariations[] = {
     {" - Variation 3", kSetUpListInFirstRunArm3,
      std::size(kSetUpListInFirstRunArm3), nullptr}};
 
+const FeatureEntry::FeatureParam kSetUpListDuration3Days[] = {
+    {set_up_list::kSetUpListDurationParam, "3"}};
+const FeatureEntry::FeatureParam kSetUpListDuration5Days[] = {
+    {set_up_list::kSetUpListDurationParam, "5"}};
+const FeatureEntry::FeatureParam kSetUpListDuration7Days[] = {
+    {set_up_list::kSetUpListDurationParam, "7"}};
+
+const FeatureEntry::FeatureVariation kSetUpListDurationVariations[] = {
+    {" - 3 Days", kSetUpListDuration3Days, std::size(kSetUpListDuration3Days),
+     nullptr},
+    {" - 5 Days", kSetUpListDuration5Days, std::size(kSetUpListDuration5Days),
+     nullptr},
+    {" - 7 Days", kSetUpListDuration7Days, std::size(kSetUpListDuration7Days),
+     nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2245,6 +2260,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensClearcutLoggerFastQosEnabledName,
      flag_descriptions::kLensClearcutLoggerFastQosEnabledDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensClearcutLoggerFastQosEnabled)},
+    {"set-up-list-shortened-duration",
+     flag_descriptions::kSetUpListShortenedDurationName,
+     flag_descriptions::kSetUpListShortenedDurationDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(set_up_list::kSetUpListShortenedDuration,
+                                    kSetUpListDurationVariations,
+                                    "SetUpListShortenedDuration")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

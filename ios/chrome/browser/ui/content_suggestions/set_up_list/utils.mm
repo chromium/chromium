@@ -28,7 +28,8 @@ bool IsSetUpListActive(PrefService* local_prefs,
       return false;
     }
   }
-  // Check if we are within 14 days of FRE.
+  // Check if we are within the duration of the Set Up List, relevant to the
+  // FRE.
   if (set_up_list::GetSetUpListInFirstRunVariation() ==
           set_up_list::FirstRunVariationType::kDisabled &&
       IsFirstRun()) {
@@ -36,9 +37,9 @@ bool IsSetUpListActive(PrefService* local_prefs,
     // have been completed yet. In this case, we will wait until the next run.
     return false;
   }
-  if (!IsFirstRunRecent(base::Days(14))) {
-    // It has been 14+ days since FRE, but if user has interacted in the last
-    // day the time will be extended.
+  if (!IsFirstRunRecent(set_up_list::SetUpListDuration())) {
+    // It is past the max duration of the Set Up List, but if user has
+    // interacted in the last day the time will be extended.
     base::Time last_interaction =
         set_up_list_prefs::GetLastInteraction(local_prefs);
     if (base::Time::Now() > last_interaction + base::Days(1)) {

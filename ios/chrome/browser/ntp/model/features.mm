@@ -12,7 +12,13 @@ BASE_FEATURE(kSetUpListInFirstRun,
              "SetUpListInFirstRun",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSetUpListShortenedDuration,
+             "SetUpListShortenedDuration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kSetUpListInFirstRunParam[] = "SetUpListInFirstRunParam";
+
+const char kSetUpListDurationParam[] = "SetUpListDurationParam";
 
 FirstRunVariationType GetSetUpListInFirstRunVariation() {
   if (!base::FeatureList::IsEnabled(kSetUpListInFirstRun)) {
@@ -21,6 +27,11 @@ FirstRunVariationType GetSetUpListInFirstRunVariation() {
   return static_cast<FirstRunVariationType>(
       base::GetFieldTrialParamByFeatureAsInt(kSetUpListInFirstRun,
                                              kSetUpListInFirstRunParam, 1));
+}
+
+base::TimeDelta SetUpListDuration() {
+  return base::Days(base::GetFieldTrialParamByFeatureAsInt(
+      kSetUpListShortenedDuration, kSetUpListDurationParam, 14));
 }
 
 }  // namespace set_up_list

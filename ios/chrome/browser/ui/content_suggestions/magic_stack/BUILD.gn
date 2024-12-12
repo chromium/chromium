@@ -45,6 +45,7 @@ source_set("ranking_model") {
     "//components/send_tab_to_self",
     "//ios/chrome/browser/lens/ui_bundled:lens_availability",
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
+    "//ios/chrome/browser/ntp/model:features",
     "//ios/chrome/browser/ntp/ui_bundled",
     "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
     "//ios/chrome/browser/parcel_tracking:features",

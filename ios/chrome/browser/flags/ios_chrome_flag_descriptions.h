@@ -975,6 +975,10 @@ extern const char kSharedHighlightingIOSDescription[];
 extern const char kSetUpListInFirstRunName[];
 extern const char kSetUpListInFirstRunNameDescription[];
 
+// Title and description for the flag to reduce the duration of the Set Up List.
+extern const char kSetUpListShortenedDurationName[];
+extern const char kSetUpListShortenedDurationDescription[];
+
 // Title and description for the flag to enable the Share button
 // in the web context menu in iOS.
 extern const char kShareInWebContextMenuIOSName[];

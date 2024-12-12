@@ -11912,6 +11912,24 @@
             ]
         }
     ],
+    "IOSSetUpListShortenedDuration": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "SetUpListDurationParam": "3"
+                    },
+                    "enable_features": [
+                        "SetUpListShortenedDuration"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSSharedHighlightingColorChange": [
         {
             "platforms": [

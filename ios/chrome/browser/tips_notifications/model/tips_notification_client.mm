@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
+#import "ios/chrome/browser/ntp/model/features.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
@@ -437,11 +438,10 @@ bool TipsNotificationClient::ShouldSendSetUpListContinuation() {
     return false;
   }
 
-  // The Set Up List only shows for 14 days after FirstRun, so this
-  // notification should only be requested 14 days minus the trigger interval
-  // after FirstRun.
+  // This notification should only be requested during the duration of the Set
+  // Up List minus the trigger interval after FirstRun.
   if (!IsFirstRunRecent(
-          base::Days(14) -
+          set_up_list::SetUpListDuration() -
           TipsNotificationTriggerDelta(CanSendReactivation(), user_type_))) {
     return false;
   }
