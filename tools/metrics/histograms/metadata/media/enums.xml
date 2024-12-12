@@ -1113,6 +1113,7 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="MEDIA_CODEC_UNKNOWN_CRYPTO_EXCEPTION"/>
   <int value="26" label="MEDIA_CODEC_UNKNOWN_MEDIADRM_EXCEPTION"/>
   <int value="27" label="MEDIA_CODEC_UNKNOWN_CODEC_EXCEPTION"/>
+  <int value="28" label="MEDIA_CODEC_LINEAR_BLOCK_EXCEPTION"/>
 </enum>
 
 <enum name="MediaContainers">

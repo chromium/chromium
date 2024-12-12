@@ -198,6 +198,7 @@ class MediaCodecBridge {
         private ObtainBlockResult(MediaCodec.LinearBlock block, ByteBuffer buffer) {
             mBlock = block;
             mBuffer = buffer;
+            assert (mBlock == null && mBuffer == null) || (mBlock != null && mBuffer != null);
         }
 
         @CalledByNative("ObtainBlockResult")
@@ -214,7 +215,11 @@ class MediaCodecBridge {
         @SuppressLint("NewApi")
         private void recycle() {
             if (mBlock != null) {
-                mBlock.recycle();
+                try {
+                    mBlock.recycle();
+                } catch (IllegalStateException ise) {
+                    Log.e(TAG, "Failed to recyle LinearBlock: ", ise);
+                }
                 mBlock = null;
                 mBuffer = null;
             }
@@ -611,6 +616,15 @@ class MediaCodecBridge {
             }
         } catch (Exception e) {
             Log.e(TAG, "Failed to obtain LinearBlock", e);
+            if (block != null) {
+                assert buffer == null;
+                try {
+                    block.recycle();
+                } catch (IllegalStateException ise) {
+                    Log.e(TAG, "Failed to recyle LinearBlock after map failure: ", ise);
+                }
+                block = null;
+            }
         }
         return new ObtainBlockResult(block, buffer);
     }

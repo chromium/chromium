@@ -245,6 +245,7 @@ MediaCodecResult::Codes ConvertToMediaCodecEnum(MediaCodecStatus status) {
     case MEDIA_CODEC_UNKNOWN_CRYPTO_EXCEPTION:
     case MEDIA_CODEC_UNKNOWN_MEDIADRM_EXCEPTION:
     case MEDIA_CODEC_UNKNOWN_CODEC_EXCEPTION:
+    case MEDIA_CODEC_LINEAR_BLOCK_EXCEPTION:
       return MediaCodecResult::Codes::kError;
   }
 }
@@ -325,6 +326,8 @@ std::string ApplyDescriptiveMessage(MediaCodecStatus status) {
              "MediaCodec.CryptoException.";
     case MEDIA_CODEC_UNKNOWN_CODEC_EXCEPTION:
       return "Unknown MediaCodec.CodecException.";
+    case MEDIA_CODEC_LINEAR_BLOCK_EXCEPTION:
+      return "Error constructing or queuing a LinearBlock";
   }
 }
 
@@ -740,6 +743,11 @@ MediaCodecResult MediaCodecBridgeImpl::QueueEOS(int input_buffer_index) {
         Java_MediaCodecBridge_obtainBlock(env, j_bridge_, 0);
     ScopedJavaLocalRef<jobject> j_block =
         Java_ObtainBlockResult_block(env, j_result);
+    if (j_block.is_null()) {
+      ReportAnyErrorToUMA(MediaCodecStatus::MEDIA_CODEC_LINEAR_BLOCK_EXCEPTION);
+      return {MediaCodecResult::Codes::kError, "Unable to obtain input block."};
+    }
+
     status =
         static_cast<MediaCodecStatus>(Java_MediaCodecBridge_queueInputBlock(
             env, j_bridge_, input_buffer_index, j_block, 0, 0, 0,
@@ -913,14 +921,13 @@ MediaCodecResult MediaCodecBridgeImpl::QueueInputBlock(
       Java_MediaCodecBridge_obtainBlock(env, j_bridge_, data.size());
   ScopedJavaLocalRef<jobject> j_block =
       Java_ObtainBlockResult_block(env, j_result);
-  ScopedJavaLocalRef<jobject> j_buffer =
-      Java_ObtainBlockResult_buffer(env, j_result);
-  if (j_buffer.is_null()) {
-    Java_ObtainBlockResult_recycle(env, j_result);
+  if (j_block.is_null()) {
+    ReportAnyErrorToUMA(MediaCodecStatus::MEDIA_CODEC_LINEAR_BLOCK_EXCEPTION);
     return {MediaCodecResult::Codes::kError, "Unable to obtain input block."};
   }
 
   if (!data.empty()) {
+    auto j_buffer = Java_ObtainBlockResult_buffer(env, j_result);
     base::android::JavaByteBufferToMutableSpan(env, j_buffer.obj())
         .copy_from_nonoverlapping(data);
   }
