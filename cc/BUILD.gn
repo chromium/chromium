@@ -524,6 +524,7 @@ cc_test_static_library("test_support") {
     "test/fake_frame_info.cc",
     "test/fake_frame_info.h",
     "test/fake_impl_task_runner_provider.h",
+    "test/fake_layer_context.h",
     "test/fake_layer_tree_frame_sink.cc",
     "test/fake_layer_tree_frame_sink.h",
     "test/fake_layer_tree_frame_sink_client.cc",
