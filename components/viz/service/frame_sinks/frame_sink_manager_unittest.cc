@@ -143,8 +143,9 @@ class FrameSinkManagerTest : public testing::Test {
 
   input::mojom::RenderInputRouterConfigPtr CreateRIRConfig(int grouping_id) {
     auto config = input::mojom::RenderInputRouterConfig::New();
-    mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client;
-    config->rir_client = std::move(rir_client);
+    mojo::PendingReceiver<blink::mojom::RenderInputRouterClient>
+        rir_client_receiver;
+    config->rir_client = rir_client_receiver.InitWithNewPipeAndPassRemote();
     config->grouping_id = grouping_id;
     return config;
   }
