@@ -26,6 +26,9 @@ _KNOWN_GOOGLE_PROJECTS = (
     'rbe-chromium-trusted-test',
     'rbe-chromium-untrusted',
     'rbe-chromium-untrusted-test',
+    'rbe-webrtc-developer'
+    'rbe-webrtc-trusted',
+    'rbe-webrtc-untrusted',
 )
 
 def ReadConfig():
