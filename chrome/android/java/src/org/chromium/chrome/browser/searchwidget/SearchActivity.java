@@ -858,8 +858,8 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     private void bringTabToFront(Tab tab) {
-        IntentHandler.bringTabToFront(tab);
         finish(TerminationReason.BRING_TAB_TO_FRONT, /* loadUrlParams= */ null);
+        IntentHandler.bringTabToFront(tab);
     }
 
     /* package */ void setLocationBarCoordinatorForTesting(LocationBarCoordinator coordinator) {
