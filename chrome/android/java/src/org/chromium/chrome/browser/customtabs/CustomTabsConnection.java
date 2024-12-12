@@ -2257,9 +2257,9 @@ public class CustomTabsConnection {
         void createAndStartDetachedResourceRequest(
                 @JniType("Profile*") Profile profile,
                 CustomTabsSessionToken session,
-                String packageName,
-                String url,
-                String origin,
+                @JniType("std::string") String packageName,
+                @JniType("std::string") String url,
+                @JniType("std::string") String origin,
                 int referrerPolicy,
                 @DetachedResourceRequestMotivation int motivation);
 
@@ -2268,10 +2268,12 @@ public class CustomTabsConnection {
         void textFragmentLookup(
                 CustomTabsSessionToken session,
                 WebContents webContents,
-                String stateKey,
+                @JniType("std::string") String stateKey,
                 String[] textFragment);
 
         void textFragmentFindScrollAndHighlight(
-                CustomTabsSessionToken session, WebContents webContents, String textFragment);
+                CustomTabsSessionToken session,
+                WebContents webContents,
+                @JniType("std::string") String textFragment);
     }
 }
