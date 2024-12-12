@@ -1616,23 +1616,13 @@ void DrawVerticesOp::RasterWithFlags(const DrawVerticesOp* op,
                                      SkCanvas* canvas,
                                      const PlaybackParams& params) {
   CHECK_EQ(op->vertices->data().size(), op->uvs->data().size());
-  SkVertices::Builder vertices_builder(
+
+  const sk_sp<SkVertices> skverts = SkVertices::MakeCopy(
       SkVertices::kTriangles_VertexMode,
       base::checked_cast<int>(op->vertices->data().size()),
+      op->vertices->data().data(), op->uvs->data().data(), nullptr,
       base::checked_cast<int>(op->indices->data().size()),
-      SkVertices::kHasTexCoords_BuilderFlag);
-
-  std::copy(op->vertices->data().data(),
-            op->vertices->data().data() + op->vertices->data().size(),
-            vertices_builder.positions());
-  std::copy(op->uvs->data().data(),
-            op->uvs->data().data() + op->uvs->data().size(),
-            vertices_builder.texCoords());
-  std::copy(op->indices->data().data(),
-            op->indices->data().data() + op->indices->data().size(),
-            vertices_builder.indices());
-
-  const sk_sp<SkVertices> skverts = vertices_builder.detach();
+      op->indices->data().data());
 
   flags->DrawToSk(canvas, [&skverts](SkCanvas* c, const SkPaint& p) {
     c->drawVertices(skverts, SkBlendMode::kSrcOver, p);
