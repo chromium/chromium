@@ -214,6 +214,11 @@ constexpr char kHistoryStateScript[] =
     "(function() {history.replaceState({'test':1}, 'test'); "
     "history.pushState({'test':1}, 'test'); history.back();})();";
 
+// `content::ExecJs` can handle promises, so queue a promise that only succeeds
+// after the contents have been rendered.
+constexpr char kPaintWorkaroundFunction[] =
+    "() => new Promise(resolve => requestAnimationFrame(() => resolve(true)))";
+
 constexpr char kTestSuggestSignals[] = "encoded_image_signals";
 
 constexpr char kStartTimeQueryParamKey[] = "qsubts";
@@ -633,13 +638,26 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     const GURL url = embedded_test_server()->GetURL(relative_url);
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), url, disposition, browser_test_flags));
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return browser()
-          ->tab_strip_model()
-          ->GetActiveTab()
-          ->GetContents()
-          ->CompletedFirstVisuallyNonEmptyPaint();
-    }));
+    const bool first_paint_completed =
+        browser()
+            ->tab_strip_model()
+            ->GetActiveTab()
+            ->GetContents()
+            ->CompletedFirstVisuallyNonEmptyPaint();
+
+    // Return early if first paint is already completed.
+    if (first_paint_completed) {
+      return;
+    }
+    // If the first paint was not mark as completed by the WebContents, use a
+    // workaround to request a frame on the WebContents. This function will only
+    // return when the promise is resolved and thus there is content painted on
+    // the WebContents to allow screenshotting. See crbug.com/334747109 for
+    // details on this possible race condition and the workaround used in
+    // interactive tests.
+    ASSERT_TRUE(content::ExecJs(
+        browser()->tab_strip_model()->GetActiveTab()->GetContents(),
+        kPaintWorkaroundFunction));
   }
 
   // Helper to remove the start time and viewport size query params from the
