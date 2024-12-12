@@ -18,7 +18,6 @@ source_set("permissions_common") {
   defines = [ "IS_PERMISSIONS_COMMON_IMPL" ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/content_settings/core/common",
   ]
   public_deps = [ "//printing/buildflags" ]
@@ -118,7 +117,6 @@ source_set("permissions") {
   ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/back_forward_cache",
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",
@@ -322,7 +320,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/content_settings/browser",
     "//components/content_settings/browser:test_support",
     "//components/content_settings/core/browser",

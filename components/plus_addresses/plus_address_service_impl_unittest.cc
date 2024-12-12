@@ -496,7 +496,7 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Fails) {
 }
 
 // Doesn't run on ChromeOS since ClearPrimaryAccount() doesn't exist for it.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PlusAddressServiceRequestsTest,
        PrimaryAccountCleared_TogglesPlusAddressCreationOff) {
   // Toggle creation off by removing the primary account.
@@ -537,7 +537,7 @@ TEST_F(PlusAddressServiceRequestsTest,
       kCreatePlusAddressEndpoint, test::MakeCreationResponse(profile));
   EXPECT_EQ(confirm.Get()->plus_address, profile.plus_address);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Tests that if an account error happens while a server request is ongoing,
 // the request ends in an error and the eventual server response is ignored.
@@ -614,7 +614,7 @@ TEST_F(PlusAddressServiceRequestsTest,
 }
 
 // Tests that ongoing network requests are cancelled on signout.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PlusAddressServiceRequestsTest, OngoingRequestsCancelledOnSignout) {
   base::test::TestFuture<const PlusProfileOrError&> future;
   service().ReservePlusAddress(kNoSubdomainOrigin, future.GetCallback());
@@ -627,7 +627,7 @@ TEST_F(PlusAddressServiceRequestsTest, OngoingRequestsCancelledOnSignout) {
   EXPECT_EQ(future.Get(), base::unexpected(PlusAddressRequestError(
                               PlusAddressRequestErrorType::kUserSignedOut)));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Tests that if an inline suggestion without a proposed address is shown, then
@@ -1329,7 +1329,7 @@ class PlusAddressServiceSignoutTest : public PlusAddressServiceTest {
 };
 
 // Doesn't run on ChromeOS since ClearPrimaryAccount() doesn't exist for it.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PlusAddressServiceSignoutTest, PrimaryAccountCleared_TogglesIsEnabled) {
   ASSERT_TRUE(service().IsEnabled());
 
@@ -1351,7 +1351,7 @@ TEST_F(PlusAddressServiceSignoutTest, PrimaryAccountCleared_TogglesIsEnabled) {
   EXPECT_FALSE(service().ShouldShowManualFallback(origin,
                                                   /*is_off_the_record=*/false));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(PlusAddressServiceSignoutTest,
        PrimaryRefreshTokenError_TogglesIsEnabled) {

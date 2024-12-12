@@ -26,7 +26,6 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/client_update_protocol/ecdsa.h"
 #include "components/network_time/network_time_pref_names.h"
 #include "components/network_time/time_tracker/time_tracker.h"
@@ -59,7 +58,7 @@ namespace network_time {
 
 // Network time queries are enabled on all desktop platforms except ChromeOS,
 // which uses tlsdated to set the system time.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS)
 BASE_FEATURE(kNetworkTimeServiceQuerying,
              "NetworkTimeServiceQuerying",
              base::FEATURE_DISABLED_BY_DEFAULT);

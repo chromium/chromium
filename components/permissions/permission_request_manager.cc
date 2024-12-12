@@ -20,7 +20,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -545,15 +544,7 @@ void PermissionRequestManager::OnVisibilityChanged(
           break;
         case PermissionPrompt::TabSwitchingBehavior::
             kDestroyPromptAndIgnoreRequest:
-// Lacros has an issue with focus switching if a view is destroyed while the
-// webcontents is losing visibility, therefore the Ignore() call gets delayed.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE, base::BindOnce(&PermissionRequestManager::Ignore,
-                                        weak_factory_.GetWeakPtr()));
-#else   // BUILDFLAG(IS_CHROMEOS_LACROS)
           Ignore();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
           break;
         case PermissionPrompt::TabSwitchingBehavior::kKeepPromptAlive:
           break;

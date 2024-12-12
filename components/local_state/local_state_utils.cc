@@ -47,7 +47,7 @@ base::Value::List GetPrefsMetadata(
       NOTREACHED();
 #endif
     case PrefValueStore::PrefStoreType::STANDALONE_BROWSER_STORE:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       metadata.Append("standalone_browser_controlled");
       metadata.Append("standalone_browser_modifiable");
 #endif
@@ -58,7 +58,7 @@ base::Value::List GetPrefsMetadata(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       metadata.Append("extension_modifiable");
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       metadata.Append("standalone_browser_modifiable");
 #endif
       break;
@@ -68,7 +68,7 @@ base::Value::List GetPrefsMetadata(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       metadata.Append("extension_modifiable");
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       metadata.Append("standalone_browser_modifiable");
 #endif
       break;
@@ -78,7 +78,7 @@ base::Value::List GetPrefsMetadata(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       metadata.Append("extension_modifiable");
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       metadata.Append("standalone_browser_modifiable");
 #endif
       break;
@@ -88,7 +88,7 @@ base::Value::List GetPrefsMetadata(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       metadata.Append("extension_modifiable");
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       metadata.Append("standalone_browser_modifiable");
 #endif
       break;
@@ -97,7 +97,7 @@ base::Value::List GetPrefsMetadata(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       metadata.Append("extension_modifiable");
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       metadata.Append("standalone_browser_modifiable");
 #endif
       break;

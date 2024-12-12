@@ -28,7 +28,6 @@ static_library("browser") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/nacl/common",
     "//components/nacl/common:buildflags",
     "//components/url_formatter",

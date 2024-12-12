@@ -366,7 +366,7 @@ bool ShouldBiometricAuthenticationForFillingToggleBeVisible(
     const PrefService* local_state) {
   bool hadBiometricsAvailable =
       local_state->GetBoolean(password_manager::prefs::kHadBiometricsAvailable);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // We only want to check for feature flag if the device supports biometrics,
   // else we dilute experiment population.
   return hadBiometricsAvailable &&
@@ -395,7 +395,7 @@ bool ShouldShowBiometricAuthenticationBeforeFillingPromo(
   if (!device_authenticator->CanAuthenticateWithBiometrics()) {
     return false;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Note: Hitting IsEnabled enrolls users in the experiment. Therefore, we only
   // want to limit this call to users who can authenticate with biometrics and
   // if we are here, then we know that to be the case.

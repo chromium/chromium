@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
@@ -44,7 +43,7 @@ EncryptionResult LoginDatabase::DecryptedString(
     const std::string& cipher_text,
     std::u16string* plain_text) const {
 #if !BUILDFLAG(IS_FUCHSIA)
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   // On Android and ChromeOS, we have a mix of obfuscated and plain-text
   // passwords. Obfuscated passwords always start with "v10", therefore anything
   // else is plain-text.
@@ -66,7 +65,7 @@ EncryptionResult LoginDatabase::DecryptedString(
   bool decryption_success =
       encryptor_ ? encryptor_->DecryptString16(cipher_text, plain_text)
                  : OSCrypt::DecryptString16(cipher_text, plain_text);
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   // If decryption failed, we assume it was because the value was actually a
   // plain-text password which started with "v10".
   // TODO(crbug.com/41457193): Remove this when there isn't a mix of plain-text

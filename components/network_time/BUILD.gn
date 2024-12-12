@@ -13,7 +13,6 @@ static_library("network_time") {
   deps = [
     "//base",
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//components/client_update_protocol",
     "//components/network_time/time_tracker",
     "//components/prefs",

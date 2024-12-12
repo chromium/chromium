@@ -50,7 +50,7 @@ class FakeVideoCaptureService
   void OnGpuInfoUpdate(const CHROME_LUID& luid) override {}
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void InjectGpuDependencies(
       mojo::PendingRemote<video_capture::mojom::AcceleratorFactory>
           accelerator_factory) override {}
@@ -61,7 +61,7 @@ class FakeVideoCaptureService
 
   void ConnectToCameraAppDeviceBridge(
       mojo::PendingReceiver<cros::mojom::CameraAppDeviceBridge>) override {}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   FakeVideoSourceProvider fake_provider_;

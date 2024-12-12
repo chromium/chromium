@@ -6,7 +6,6 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_SWITCHES_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace password_manager {
 

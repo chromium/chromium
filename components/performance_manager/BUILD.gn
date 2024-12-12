@@ -280,7 +280,6 @@ static_library("performance_manager") {
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//components/content_settings/core/common",
     "//components/guest_view/buildflags",
     "//components/metrics",
@@ -346,7 +345,7 @@ static_library("performance_manager") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chromeos/dbus/power",
       "//chromeos/dbus/power:power_manager_proto",
@@ -490,7 +489,7 @@ source_set("unit_tests") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chromeos/dbus/power",
       "//chromeos/dbus/power:power_manager_proto",

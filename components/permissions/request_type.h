@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "printing/buildflags/buildflags.h"
 
