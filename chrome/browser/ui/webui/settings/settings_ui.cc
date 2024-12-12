@@ -578,9 +578,14 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
     const bool show_ai_settings_for_testing =
         optimization_guide::features::kShowAiSettingsForTesting.Get();
 
+    const bool use_is_setting_visible = base::FeatureList::IsEnabled(
+        optimization_guide::features::kAiSettingsPageEnterpriseDisabledUi);
+
     std::pair<const std::string_view, bool> optimization_guide_features[] = {
         {"showTabOrganizationControl",
-         TabOrganizationUtils::GetInstance()->IsEnabled(profile)},
+         use_is_setting_visible
+             ? TabOrganizationUtils::GetInstance()->IsSettingVisible(profile)
+             : TabOrganizationUtils::GetInstance()->IsEnabled(profile)},
         {"showComposeControl", compose_enabled},
         {"showWallpaperSearchControl",
          customize_chrome::IsWallpaperSearchEnabledForProfile(profile)},
