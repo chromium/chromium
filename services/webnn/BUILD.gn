@@ -80,14 +80,21 @@ component("webnn_service") {
       "dml/tensor_impl_dml.h",
       "dml/utils.cc",
       "dml/utils.h",
+      "ort/allocator_ort.cc",
+      "ort/allocator_ort.h",
       "ort/context_impl_ort.cc",
       "ort/context_impl_ort.h",
+      "ort/error_ort.h",
       "ort/graph_builder_ort.cc",
       "ort/graph_builder_ort.h",
       "ort/graph_impl_ort.cc",
       "ort/graph_impl_ort.h",
       "ort/platform_functions_ort.cc",
       "ort/platform_functions_ort.h",
+      "ort/tensor_impl_ort.cc",
+      "ort/tensor_impl_ort.h",
+      "ort/utils_ort.cc",
+      "ort/utils_ort.h",
     ]
     deps += [
       "//third_party/fp16",
@@ -194,6 +201,8 @@ source_set("tests") {
       "dml/tensor_desc_test.cc",
       "dml/test_base.cc",
       "dml/test_base.h",
+      "ort/allocator_ort_test.cc",
+      "ort/context_impl_ort_test.cc",
     ]
   }
 

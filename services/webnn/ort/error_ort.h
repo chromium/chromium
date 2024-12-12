@@ -1,0 +1,27 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef SERVICES_WEBNN_ORT_ERROR_ORT_H_
+#define SERVICES_WEBNN_ORT_ERROR_ORT_H_
+
+#include "base/logging.h"
+#include "services/webnn/ort/utils_ort.h"
+
+namespace webnn::ort {
+
+#define ORT_ABORT_ON_ERROR(expr)                                     \
+  do {                                                               \
+    const OrtApi* ort_api_local = GetOrtApi();                       \
+    OrtStatus* onnx_status = (expr);                                 \
+    if (onnx_status != NULL) {                                       \
+      const char* msg = ort_api_local->GetErrorMessage(onnx_status); \
+      fprintf(stderr, "%s\n", msg);                                  \
+      ort_api_local->ReleaseStatus(onnx_status);                     \
+      abort();                                                       \
+    }                                                                \
+  } while (0);
+
+}  // namespace webnn::ort
+
+#endif  // SERVICES_WEBNN_ORT_ERROR_ORT_H_

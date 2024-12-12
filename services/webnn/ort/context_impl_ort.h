@@ -5,7 +5,10 @@
 #ifndef SERVICES_WEBNN_ORT_CONTEXT_IMPL_ORT_H_
 #define SERVICES_WEBNN_ORT_CONTEXT_IMPL_ORT_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "services/webnn/ort/allocator_ort.h"
+#include "services/webnn/ort/tensor_impl_ort.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
@@ -13,24 +16,14 @@
 
 namespace webnn::ort {
 
-#define ORT_ABORT_ON_ERROR(g_ort, expr)                             \
-  do {                                                       \
-    OrtStatus* onnx_status = (expr);                         \
-    if (onnx_status != NULL) {                               \
-      const char* msg = g_ort->GetErrorMessage(onnx_status); \
-      fprintf(stderr, "%s\n", msg);                          \
-      g_ort->ReleaseStatus(onnx_status);                     \
-      abort();                                               \
-    }                                                        \
-  } while (0);
-
 // `ContextImplOrt` is created by `WebNNContextProviderImpl` and responsible
 // for creating a `GraphImplOrt` which uses ORT for inference.
 class ContextImplOrt final : public WebNNContextImpl {
  public:
   ContextImplOrt(mojo::PendingReceiver<mojom::WebNNContext> receiver,
                  WebNNContextProviderImpl* context_provider,
-                 mojom::CreateContextOptionsPtr options);
+                 mojom::CreateContextOptionsPtr options,
+                 scoped_refptr<AllocatorOrt> allocator_ort);
 
   ContextImplOrt(const WebNNContextImpl&) = delete;
   ContextImplOrt& operator=(const ContextImplOrt&) = delete;
@@ -40,10 +33,15 @@ class ContextImplOrt final : public WebNNContextImpl {
   // WebNNContextImpl:
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
 
+  const OrtEnv* env() const { return allocator_ort_->env(); }
+  OrtAllocator* allocator() const { return allocator_ort_->allocator(); }
+
   static ContextProperties GetContextProperties();
 
-  static const OrtApi* GetGlobalOrt();
-  static OrtEnv* GetEnv(const OrtApi* g_ort);
+  void ReadTensor(TensorImplOrt* src_tensor,
+                  mojom::WebNNTensor::ReadTensorCallback callback);
+
+  void WriteTensor(TensorImplOrt* dst_tensor, mojo_base::BigBuffer src_buffer);
 
  private:
   void CreateGraphImpl(
@@ -58,9 +56,9 @@ class ContextImplOrt final : public WebNNContextImpl {
       mojom::TensorInfoPtr tensor_info,
       CreateTensorImplCallback callback) override;
 
+  scoped_refptr<AllocatorOrt> allocator_ort_;
+
   base::WeakPtrFactory<ContextImplOrt> weak_factory_{this};
-  static OrtEnv* env_;
-  static const OrtApi* g_ort_;
 };
 
 }  // namespace webnn::ort

@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/no_destructor.h"
 #include "base/scoped_native_library.h"
+#include "third_party/microsoft_dxheaders/include/dml_provider_factory.h"
 #include "third_party/microsoft_dxheaders/include/onnxruntime_c_api.h"
 
 namespace webnn::ort {
@@ -25,6 +26,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) PlatformFunctions {
   OrtGetApiBaseProc ort_get_api_base_proc() const {
     return ort_get_api_base_proc_;
   }
+  const OrtApi* ort_api() const { return ort_api_.get(); }
 
  private:
   friend class base::NoDestructor<PlatformFunctions>;
@@ -34,6 +36,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) PlatformFunctions {
   // Onnxruntime.dll
   base::ScopedNativeLibrary ort_library_;
   OrtGetApiBaseProc ort_get_api_base_proc_;
+  raw_ptr<const OrtApi> ort_api_;
 };
 
 }  // namespace webnn::ort

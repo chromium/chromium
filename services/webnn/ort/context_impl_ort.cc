@@ -8,8 +8,12 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/notimplemented.h"
+#include "services/webnn/error.h"
+#include "services/webnn/ort/error_ort.h"
 #include "services/webnn/ort/graph_builder_ort.h"
 #include "services/webnn/ort/graph_impl_ort.h"
+#include "services/webnn/ort/platform_functions_ort.h"
+#include "services/webnn/ort/utils_ort.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
@@ -17,18 +21,30 @@
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
-#include "services/webnn/ort/platform_functions_ort.h"
 
 namespace webnn::ort {
+
+namespace {
+
+void HandleTensorCreationFailure(
+    const std::string& error_message,
+    WebNNContextImpl::CreateTensorImplCallback callback) {
+  std::move(callback).Run(base::unexpected(
+      CreateError(mojom::Error::Code::kUnknownError, error_message)));
+}
+
+}  // namespace
 
 ContextImplOrt::ContextImplOrt(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
-    mojom::CreateContextOptionsPtr options)
+    mojom::CreateContextOptionsPtr options,
+    scoped_refptr<AllocatorOrt> allocator_ort)
     : WebNNContextImpl(std::move(receiver),
                        context_provider,
                        GetContextProperties(),
-                       std::move(options)) {}
+                       std::move(options)),
+      allocator_ort_(std::move(allocator_ort)) {}
 
 ContextImplOrt::~ContextImplOrt() = default;
 
@@ -140,55 +156,6 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*where_value=*/{}});
 }
 
-OrtEnv* ContextImplOrt::env_ = nullptr;
-const OrtApi* ContextImplOrt::g_ort_ = nullptr;
-
-// static
-const OrtApi* ContextImplOrt::GetGlobalOrt() {
-  if (g_ort_) {
-    return g_ort_;
-  }
-
-  PlatformFunctions* platform_functions = PlatformFunctions::GetInstance();
-  auto ort_get_api_base_proc = platform_functions->ort_get_api_base_proc();
-
-  // currently, win11 inside onnxruntime.dll version is 1.10.1 and can support
-  // IR_VERSION_2021_7_30.
-  const char* version = ort_get_api_base_proc()->GetVersionString();
-  LOG(ERROR) << "onnxruntime dll version is " << version;
-
-  const OrtApi* g_ort = ort_get_api_base_proc()->GetApi(10);
-  if (g_ort == nullptr) {
-    LOG(ERROR) << "g_ort == nullprt";
-  }
-
-  int num_providers = 0;
-  char** providers;
-  ORT_ABORT_ON_ERROR(g_ort, g_ort->GetAvailableProviders(&providers, &num_providers));
-  LOG(ERROR) << "num_providers " << num_providers;
-  // num_providers = 2
-  for (int i = 0; i < num_providers; i++) {
-    LOG(ERROR) << "provider: " << providers[i];
-  }
-  // provider[0]: DmlExecutionProvider
-  // provider[1]: CPUExecutionProvider
-  g_ort->ReleaseAvailableProviders(providers, num_providers);
-
-  return g_ort;
-}
-
-// static
-OrtEnv* ContextImplOrt::GetEnv(const OrtApi* g_ort) {
-  if (env_) {
-    return env_;
-  }
-
-  OrtEnv* env;
-  ORT_ABORT_ON_ERROR(g_ort, g_ort->CreateEnv(ORT_LOGGING_LEVEL_WARNING, "test", &env));
-
-  return env;
-}
-
 base::WeakPtr<WebNNContextImpl> ContextImplOrt::AsWeakPtr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_factory_.GetWeakPtr();
@@ -209,8 +176,35 @@ void ContextImplOrt::CreateTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::TensorInfoPtr tensor_info,
     CreateTensorImplCallback callback) {
-  NOTIMPLEMENTED()
-      << "CreateTensorImpl is not implemented in OnnxRuntime backend.";
+  std::move(callback).Run(std::make_unique<TensorImplOrt>(
+      std::move(receiver), this, std::move(tensor_info)));
+}
+
+// TODO: Support reading tensor in parallel.
+void ContextImplOrt::ReadTensor(
+    TensorImplOrt* src_tensor,
+    mojom::WebNNTensor::ReadTensorCallback callback) {
+  const size_t src_tensor_size = src_tensor->PackedByteLength();
+  void* ort_tensor_raw_data = nullptr;
+  ORT_ABORT_ON_ERROR(GetOrtApi()->GetTensorMutableData(src_tensor->tensor(),
+                                                       &ort_tensor_raw_data));
+  CHECK(ort_tensor_raw_data);
+  mojo_base::BigBuffer big_buffer(base::span(
+      static_cast<const uint8_t*>(ort_tensor_raw_data), src_tensor_size));
+  std::move(callback).Run(
+      mojom::ReadTensorResult::NewBuffer(std::move(big_buffer)));
+}
+
+// TODO: Support writing tensor in parallel.
+void ContextImplOrt::WriteTensor(TensorImplOrt* dst_tensor,
+                                 mojo_base::BigBuffer src_buffer) {
+  void* ort_tensor_raw_data = nullptr;
+  ORT_ABORT_ON_ERROR(GetOrtApi()->GetTensorMutableData(dst_tensor->tensor(),
+                                                       &ort_tensor_raw_data));
+  CHECK(ort_tensor_raw_data);
+  UNSAFE_BUFFERS(
+      base::span(static_cast<uint8_t*>(ort_tensor_raw_data), src_buffer.size()))
+      .copy_from(src_buffer);
 }
 
 }  // namespace webnn::ort

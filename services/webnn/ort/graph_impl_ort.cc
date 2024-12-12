@@ -12,7 +12,9 @@
 #include "base/types/expected_macros.h"
 #include "services/webnn/error.h"
 #include "services/webnn/ort/context_impl_ort.h"
-// #include "services/webnn/ort/platform_functions_ort.h"
+#include "services/webnn/ort/error_ort.h"
+#include "services/webnn/ort/platform_functions_ort.h"
+#include "services/webnn/ort/utils_ort.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
@@ -47,17 +49,29 @@ GraphImplOrt::CreateAndBuild(
                        *graph_info, context->properties(),
                        std::move(constant_operands), model_file_dir.GetPath()));
 
-  const OrtApi* g_ort = ContextImplOrt::GetGlobalOrt();
-  OrtEnv* env = ContextImplOrt::GetEnv(g_ort);
+  PlatformFunctions* platform_functions = PlatformFunctions::GetInstance();
+  if (!platform_functions) {
+    return base::unexpected(mojom::Error::New(
+        mojom::Error::Code::kNotSupportedError, "Platform functions error."));
+  }
+  auto ort_get_api_base_proc = platform_functions->ort_get_api_base_proc();
+
+  // currently, win11 inside onnxruntime.dll version is 1.10.1 and can support
+  // IR_VERSION_2021_7_30.
+  const char* version = ort_get_api_base_proc()->GetVersionString();
+  LOG(ERROR) << "onnxruntime dll version is " << version;
 
   OrtSessionOptions* session_options;
-  ORT_ABORT_ON_ERROR(g_ort, g_ort->CreateSessionOptions(&session_options));
+  const OrtApi* ort_api = GetOrtApi();
+  ORT_ABORT_ON_ERROR(ort_api->CreateSessionOptions(&session_options));
 
-  ORT_ABORT_ON_ERROR(g_ort, g_ort->SetSessionGraphOptimizationLevel(session_options, GraphOptimizationLevel::ORT_ENABLE_ALL));
+  ORT_ABORT_ON_ERROR(ort_api->SetSessionGraphOptimizationLevel(
+      session_options, GraphOptimizationLevel::ORT_ENABLE_ALL));
 
   if (context->options().device == mojom::CreateContextOptions::Device::kGpu || context->options().device == mojom::CreateContextOptions::Device::kNpu) {
     const OrtDmlApi* ort_dml_api;
-    ORT_ABORT_ON_ERROR(g_ort, g_ort->GetExecutionProviderApi("DML", 10, reinterpret_cast<const void**>(&ort_dml_api)));
+    ORT_ABORT_ON_ERROR(ort_api->GetExecutionProviderApi(
+        "DML", 10, reinterpret_cast<const void**>(&ort_dml_api)));
 
     OrtDmlDeviceOptions options;
     if (context->options().device == mojom::CreateContextOptions::Device::kGpu) {
@@ -71,11 +85,11 @@ GraphImplOrt::CreateAndBuild(
     ort_dml_api->SessionOptionsAppendExecutionProvider_DML2(session_options, &options);
   }
 
-  ORT_ABORT_ON_ERROR(g_ort, g_ort->SetSessionGraphOptimizationLevel(session_options, GraphOptimizationLevel::ORT_ENABLE_ALL));
-
   // Todo: Consider move the session creation to BackgroundThread since load model may be time-consuming.
   OrtSession* session;
-  ORT_ABORT_ON_ERROR(g_ort, g_ort->CreateSession(
+  const OrtEnv* env = context->env();
+  CHECK(env);
+  ORT_ABORT_ON_ERROR(ort_api->CreateSession(
       env, model_file_dir.GetPath().Append(kOnnxModelFileName).value().c_str(),
       session_options, &session));
 
@@ -83,42 +97,59 @@ GraphImplOrt::CreateAndBuild(
 
   // verify_input_output_count;
   size_t count;
-  ORT_ABORT_ON_ERROR(g_ort, g_ort->SessionGetInputCount(session, &count));
+  ORT_ABORT_ON_ERROR(ort_api->SessionGetInputCount(session, &count));
   LOG(ERROR) << "input count: " << count;
   CHECK_EQ(count, compute_resource_info.input_names_to_descriptors.size());
-  ORT_ABORT_ON_ERROR(g_ort, g_ort->SessionGetOutputCount(session, &count));
+  ORT_ABORT_ON_ERROR(ort_api->SessionGetOutputCount(session, &count));
   LOG(ERROR) << "output count: " << count;
   CHECK_EQ(count, compute_resource_info.output_names_to_descriptors.size());
 
   return base::WrapUnique(new GraphImplOrt(std::move(compute_resource_info),
-                                           g_ort, env, session, session_options,
-                                           context));
+                                           session, session_options, context));
 }
 
 GraphImplOrt::~GraphImplOrt() {
-  g_ort_->ReleaseSessionOptions(session_options_);
-  g_ort_->ReleaseSession(session_);
-  g_ort_->ReleaseEnv(env_);
+  const OrtApi* ort_api = GetOrtApi();
+  ort_api->ReleaseSessionOptions(session_options_);
+  ort_api->ReleaseSession(session_);
 }
 
-GraphImplOrt::GraphImplOrt(
-    ComputeResourceInfo compute_resource_info,
-    // std::map<uint64_t,  GraphBuilderOrt::OperandInfo> operand_infos,
-    const OrtApi* g_ort,
-    OrtEnv* env,
-    OrtSession* session,
-    OrtSessionOptions* session_options,
-    ContextImplOrt* context)
+GraphImplOrt::GraphImplOrt(ComputeResourceInfo compute_resource_info,
+                           OrtSession* session,
+                           OrtSessionOptions* session_options,
+                           ContextImplOrt* context)
     : WebNNGraphImpl(context, std::move(compute_resource_info)),
-      g_ort_(g_ort),
-      env_(env),
       session_(session),
       session_options_(session_options) {}
 
+// TODO: Support dispatching in parallel.
 void GraphImplOrt::DispatchImpl(
     const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
     const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs) {
-  NOTIMPLEMENTED() << "dispatch is not implemented in OnnxRuntime backend.";
+  std::vector<const char*> input_names;
+  std::vector<const OrtValue*> input_tensors;
+  for (const auto& [name, input_tensor] : named_inputs) {
+    TensorImplOrt* input_tensor_impl =
+        static_cast<TensorImplOrt*>(input_tensor);
+    input_names.push_back(name.data());
+    input_tensors.push_back(input_tensor_impl->tensor());
+  }
+
+  std::vector<const char*> output_names;
+  std::vector<OrtValue*> output_tensors;
+  for (const auto& [name, output_tensor] : named_outputs) {
+    TensorImplOrt* output_tensor_impl =
+        static_cast<TensorImplOrt*>(output_tensor);
+    output_names.push_back(name.data());
+    output_tensors.push_back(output_tensor_impl->tensor());
+  }
+
+  const OrtApi* ort_api = GetOrtApi();
+  // TODO: Use RunAsync to support async execution.
+  ORT_ABORT_ON_ERROR(ort_api->Run(session_, nullptr, input_names.data(),
+                                  input_tensors.data(), input_names.size(),
+                                  output_names.data(), output_names.size(),
+                                  output_tensors.data()));
 }
 
 }  // namespace webnn::ort

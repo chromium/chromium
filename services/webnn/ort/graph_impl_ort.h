@@ -45,14 +45,10 @@ class GraphImplOrt final : public WebNNGraphImpl {
   ~GraphImplOrt() override;
 
  private:
-  GraphImplOrt(
-      ComputeResourceInfo compute_resource_info,
-      // std::map<uint64_t, GraphBuilderOrt::OperandInfo> operand_infos,
-      const OrtApi* g_ort,
-      OrtEnv* env,
-      OrtSession* session,
-      OrtSessionOptions* session_options,
-      ContextImplOrt* context);
+  GraphImplOrt(ComputeResourceInfo compute_resource_info,
+               OrtSession* session,
+               OrtSessionOptions* session_options,
+               ContextImplOrt* context);
 
   // Execute the compiled platform graph asynchronously. The inputs were
   // validated in base class so we can use them to compute directly.
@@ -62,8 +58,6 @@ class GraphImplOrt final : public WebNNGraphImpl {
       override;
 
   // std::map<uint64_t, GraphBuilderOrt::OperandInfo> operand_infos_;
-  raw_ptr<const OrtApi> g_ort_;
-  raw_ptr<OrtEnv> env_;
   raw_ptr<OrtSession> session_;
   raw_ptr<OrtSessionOptions> session_options_;
   base::WeakPtrFactory<GraphImplOrt> weak_factory_{this};

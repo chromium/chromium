@@ -239,8 +239,17 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 #if BUILDFLAG(IS_WIN)
   if (options->power_preference ==
           mojom::CreateContextOptions::PowerPreference::kLowPower) {
+    scoped_refptr<ort::AllocatorOrt> allocator_ort =
+        ort::AllocatorOrt::GetInstance();
+    if (!allocator_ort) {
+      std::move(callback).Run(ToError<mojom::CreateContextResult>(
+          mojom::Error::Code::kUnknownError,
+          "Failed to create an Ort allocator."));
+      return;
+    }
     context_impl =
-        new ort::ContextImplOrt(std::move(receiver), this, std::move(options));
+        new ort::ContextImplOrt(std::move(receiver), this, std::move(options),
+                                std::move(allocator_ort));
   } else if (ShouldCreateDmlContext(*options)) {
     DCHECK(gpu_feature_info_.IsInitialized());
     if (gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_WEBNN] !=

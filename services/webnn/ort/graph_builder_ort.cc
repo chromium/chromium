@@ -196,7 +196,8 @@ std::string GraphBuilderOrt::GetOperandName(uint64_t operand_id) {
     case mojom::Operand::Kind::kInput: {
       CHECK(operand.name.has_value());
       // Add a prefix to avoid possible name collision.
-      return base::JoinString({"input", operand.name.value()}, "_");
+      return operand.name.value();
+      // return base::JoinString({"input", operand.name.value()}, "_");
     }
     case mojom::Operand::Kind::kConstant: {
       // It's okay to use operand id as name directly since operand id is
@@ -205,7 +206,8 @@ std::string GraphBuilderOrt::GetOperandName(uint64_t operand_id) {
     }
     case mojom::Operand::Kind::kOutput: {
       if (operand.name.has_value()) {
-        return base::JoinString({"output", operand.name.value()}, "_");
+        return operand.name.value();
+        // return base::JoinString({"output", operand.name.value()}, "_");
       } else {
         return base::NumberToString(operand_id);
       }

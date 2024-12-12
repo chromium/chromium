@@ -8,15 +8,23 @@
 #include "base/logging.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
+#include "third_party/onnx/proto/onnx.pb.h"
 
 namespace webnn::ort {
 
 PlatformFunctions::PlatformFunctions() {
-  // First try to Load DirectML.dll from the module folder. It would enable
-  // running unit tests which require DirectML feature level 4.0+ on Windows 10.
-  base::ScopedNativeLibrary ort_library =
-      base::ScopedNativeLibrary(base::LoadSystemLibrary(L"onnxruntime.dll"));
-
+  // First try to Load onnxruntime.dll from the module folder.
+  base::ScopedNativeLibrary ort_library;
+  base::FilePath module_path;
+  if (base::PathService::Get(base::DIR_MODULE, &module_path)) {
+    ort_library = base::ScopedNativeLibrary(base::LoadNativeLibrary(
+        module_path.Append(L"onnxruntime.dll"), nullptr));
+  }
+  // If it failed to load from module folder, try to load from system folder.
+  if (!ort_library.is_valid()) {
+    ort_library =
+        base::ScopedNativeLibrary(base::LoadSystemLibrary(L"onnxruntime.dll"));
+  }
   if (!ort_library.is_valid()) {
     LOG(ERROR) << "[WebNN] Failed to load onnxruntime.dll.";
     return;
@@ -29,9 +37,17 @@ PlatformFunctions::PlatformFunctions() {
     return;
   }
 
+  const OrtApi* ort_api =
+      ort_get_api_base_proc()->GetApi(onnx::Version::IR_VERSION_2019_9_19);
+  if (!ort_api) {
+    LOG(ERROR) << "[WebNN] Failed to get OrtApi.";
+    return;
+  }
+
   // ort
   ort_library_ = std::move(ort_library);
   ort_get_api_base_proc_ = std::move(ort_get_api_base_proc);
+  ort_api_ = ort_api;
 }
 
 PlatformFunctions::~PlatformFunctions() = default;
