@@ -1463,8 +1463,14 @@
   <message name="IDS_SETTINGS_COMPOSE_SETTING_LINK_A11Y" desc="This string is found in a link that takes the user to the Help Me Write help center article when the user taps it. It is at the end of the Help Me Write setting description that users see when they visit the ‘AI innovations’ section of settings (AI = artificial intelligence). The tone should be informative.">
     Learn more about Help me write
   </message>
-  <message name="IDS_SETTINGS_COMPOSE_WHEN_ON_WRITING_HELP" desc="This string is a bullet point in the ‘When used’ column, which describes the behavior of this feature. This string explains that this feature suggests writing help when users are writing short-form text on the web. The tone should be motivating.">
-    Helps you write short-form text for things on the web, like reviews. Writing suggestions are based on your prompts and the content of the web page
+  <message name="IDS_SETTINGS_COMPOSE_WHEN_ON_WRITING_HELP" desc="This string is a bullet point in the ‘When used’ column, which describes the behavior of this feature. This string explains that this feature suggests writing help when users are writing on the web. The tone should be motivating.">
+    Helps you write anything on the web with a little extra polish or creative inspiration
+  </message>
+  <message name="IDS_SETTINGS_COMPOSE_WHEN_ON_WRITING_EXAMPLES" desc="This string is a bullet point in the ‘When used’ column, which describes the behavior of this feature. This string explains that users can get writing help on a variety of content, from short-form (social media posts) to long-form (essays). The tone should be motivating.">
+    You can get help with reviews, emails, social media posts, essays, and more
+  </message>
+  <message name="IDS_SETTINGS_COMPOSE_WHEN_ON_WRITING_REFERENCES" desc="This string is a bullet point in the ‘When used’ column, which describes the behavior of this feature. This string explains that writing help will be smart and contextual, based on the page content and the user’s input. The tone should be motivating.">
+    Writing suggestions are based on your prompts and the content of the web page
   </message>
   <message name="IDS_SETTINGS_COMPOSE_CONSIDER_DATA" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will send data to Google servers in order to provide the feature’s respective benefit. The tone should be informative.">
     When you get writing help, the page’s URL, content, and your text are sent to Google. Don’t enter personal info (like medical or financial details)
@@ -3937,7 +3943,7 @@
   <message name="IDS_SETTINGS_HISTORY_SEARCH_SETTING_LABEL" desc="Title of the page of the settings that enables history search.">
     History search, powered by AI
   </message>
-  <message name="IDS_SETTINGS_HISTORY_SEARCH_SETTING_SUBLABEL" desc="Sublabel of the setting that enables history search." translateable="false">
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_SETTING_SUBLABEL" desc="Sublabel of the setting that enables history search.">
     Use everyday language to search your browsing history and find sites you visited. Only sites you visit after turning on this feature are shown in AI-powered history search results.
   </message>
   <message name="IDS_SETTINGS_HISTORY_SEARCH_SETTING_SUBLABEL_V2" desc="This string is the subheading of a setting for ‘History search, powered by AI’. This subheading summarizes the user benefit of the History Search feature. This is an AI (artificial intelligence) feature that improves the search functionality so that users can write queries in natural language and search their Chrome browsing history. The tone should be motivating.">
@@ -3949,34 +3955,37 @@
   <message name="IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_BULLET_ONE" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables history search.">
     When you search browsing history, your history search terms, page content of best matches, and generated model outputs are sent to Google and may be seen by human reviewers to improve this feature.
   </message>
-  <message name="IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_BULLET_TWO" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables history search."  translateable="false">
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_BULLET_TWO" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables history search.">
     As you browse sites, their page contents are saved in an encrypted form on your device. This may affect Chrome's performance.
   </message>
   <message name="IDS_SETTINGS_HISTORY_SEARCH_LEARN_MORE_A11Y_LABEL" desc="Label for the 'Learn more' link in the toggle for the setting that enables history search.">
     Learn more about history searches
   </message>
-  <message name="IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_SETTING_SUBLABEL" desc="Sublabel of the setting that enables history search with answers enabled." translateable="false">
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_SETTING_SUBLABEL" desc="Sublabel of the setting that enables history search with answers enabled.">
     Use everyday language to search your browsing history. You can also ask questions and get answers based on your browsing history.
   </message>
-  <message name="IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_WHEN_ON_BULLET_ONE" desc="Bullet point in the 'When on' column of the description of the setting that enables history search with answers enabled." translateable="false">
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_WHEN_ON_BULLET_ONE" desc="Bullet point in the 'When on' column of the description of the setting that enables history search with answers enabled.">
     Answers and search results are based on the content of a page.  This gives you improved results, whether you're searching browsing history in the address bar using “@history” or from the History page.
   </message>
-  <message name="IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_WHEN_ON_BULLET_TWO" desc="Bullet point in the 'When on' column of the description of the setting that enables history search with answers enabled." translateable="false">
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_WHEN_ON_BULLET_TWO" desc="Bullet point in the 'When on' column of the description of the setting that enables history search with answers enabled.">
     Only sites you visit after turning on this feature are shown in AI-powered history search results.
   </message>
-  <message name="IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_CONSIDER_BULLET_ONE" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables history search with answers enabled." translateable="false">
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_CONSIDER_BULLET_ONE" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables history search with answers enabled.">
     When you search browsing history, your history searches, the page content of best matches, and generated model outputs are sent to Google and may be seen by human reviewers to improve this feature.
   </message>
-  <message name="IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_CONSIDER_BULLET_TWO" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables history search with answers enabled."  translateable="false">
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_CONSIDER_BULLET_TWO" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables history search with answers enabled.">
     As you browse sites, their page contents are encrypted and saved to your device.  AI-powered history search results and answers may become outdated if site content has changed since your last visit.  This feature may also affect Chrome’s performance.
   </message>
   <message name="IDS_SETTINGS_HISTORY_SEARCH_WHEN_ON_PAGE_CONTENT" desc="This string is a bullet point in the ‘When on’ column, which describes the behavior of this feature. This string explains how users can write queries in natural language and search their Chrome browsing history. The tone should be motivating.">
     You can search your browsing history based on general page content, not only page title and URL, and see improved results
   </message>
-  <message name="IDS_SETTINGS_HISTORY_SEARCH_WHEN_ON_SEARCH_FROM" desc="This string is a bullet point in the ‘When on’ column, which describes the behavior of this feature. This string explains how users search their Chrome browsing history from the address bar (always shown on the top of Chrome). They can also search from the History page itself. The tone should be motivating." translateable="false">
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_WHEN_ON_SEARCH_FROM" desc="This string is a bullet point in the ‘When on’ column, which describes the behavior of this feature. This string explains how users search their Chrome browsing history from the address bar (always shown on the top of Chrome). They can also search from the History page itself. The tone should be motivating.">
     You can search in the address bar using "@history", as well as from the History page
   </message>
-  <message name="IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_DATA" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will send data to Google servers in order to provide the feature’s respective benefit. The tone should be informative." translateable="false">
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_WHEN_ON_LOG_START" desc="This string is a bullet point in the ‘When on’ column, which describes the behavior of this feature. This string explains that the AI-powered history search results will only use data about sites the user visits after they turn on this feature. Earlier history data, from when the feature setting was turned off, won’t appear in the search results. The tone should be informative.">
+    Only sites you visit after turning on this feature are shown in AI-powered history results
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_DATA" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will send data to Google servers in order to provide the feature’s respective benefit. The tone should be informative.">
     When you search browsing history, your history searches, the page content of best matches, and generated model outputs are sent to Google
   </message>
   <message name="IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_DATA_ENCRYPTED" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will save data to the user’s device in order to provide the feature’s respective benefit. The data will be appropriately encrypted for security. The tone should be informative.">
@@ -3988,25 +3997,25 @@
   <message name="IDS_SETTINGS_HISTORY_SEARCH_SUBLABEL_OFF" desc="This string is the subheading of a setting for ‘History search, powered by AI’. This subheading notes that the setting is currently turned on. Then, it summarizes the user benefit of the History Search feature. This is an AI (artificial intelligence) feature that improves the search functionality so that users can write queries in natural language and search their Chrome browsing history. The tone should be motivating.">
     Off • Use everyday language to search your browsing history and find sites you visited
   </message>
-  <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_SETTING_SUBLABEL_V2" desc="Sublabel of the setting that enables history search, powered by AI, with answers enabled." translateable="false">
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_SETTING_SUBLABEL_V2" desc="Sublabel of the setting that enables history search, powered by AI, with answers enabled.">
     Use everyday language to search your browsing history and find sites you visited. You can also ask questions and get answers based on your browsing history
   </message>
-  <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_WHEN_ON_PAGE_CONTENT" desc="This string is a bullet point in the ‘When on’ column, which describes the behavior of this feature. This string explains how users can write queries in natural language and search their Chrome browsing history to get answers. The tone should be motivating." translateable="false">
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_WHEN_ON_PAGE_CONTENT" desc="This string is a bullet point in the ‘When on’ column, which describes the behavior of this feature. This string explains how users can write queries in natural language and search their Chrome browsing history to get answers. The tone should be motivating.">
     When you search your browsing history, answers and search results are based on the content of a page. This gives you improved results
   </message>
-  <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_WHEN_ON_LOG_START" desc="This string is a bullet point in the ‘When on’ column, which describes the behavior of this feature. This string explains how only sites the user visits after turning on the feature will be available in history search results powered by AI." translateable="false">
-    Only sites you visit after turning on this feature are shown in AI-powered history results
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_WHEN_ON_RECALL_INFO" desc="This string is a bullet point in the ‘When on’ column, which describes the behavior of this feature. This string explains how users can write questions (using question words like ‘what’, ‘who’, ‘where’) and get answer summaries based on their Chrome browsing history. The tone should be motivating.">
+    When you ask questions about your history, you can get answers about specific information from a page you visited
   </message>
-  <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_CONSIDER_DATA_ENCRYPTED" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will save data to the user’s device in order to provide the feature’s respective benefit. The data will be appropriately encrypted for security. The tone should be informative." translateable="false">
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_CONSIDER_DATA_ENCRYPTED" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will save data to the user’s device in order to provide the feature’s respective benefit. The data will be appropriately encrypted for security. The tone should be informative.">
     As you browse sites, their page contents are encrypted and saved to your device. This may affect Chrome's performance
   </message>
-  <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_CONSIDER_OUTDATED" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that history search results and answers powered by AI may become outdated since they are dependent on the user's last visit to the page contents." translateable="false">
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_CONSIDER_OUTDATED" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that history search results and answers powered by AI may become outdated since they are dependent on the user's last visit to the page contents.">
     AI-powered history search results and answers may become outdated if site content has changed since your last visit
   </message>
-  <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_SUBLABEL_ON" desc="This string is the subheading of a setting for ‘History search, powered by AI’ when answers are available. This subheading notes that the setting is currently turned on. Then, it summarizes the user benefit of the History Search feature. This is an AI (artificial intelligence) feature that improves the search functionality so that users can write queries in natural language and search their Chrome browsing history. The tone should be motivating." translateable="false">
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_SUBLABEL_ON" desc="This string is the subheading of a setting for ‘History search, powered by AI’ when answers are available. This subheading notes that the setting is currently turned on. Then, it summarizes the user benefit of the History Search feature. This is an AI (artificial intelligence) feature that improves the search functionality so that users can write queries in natural language and search their Chrome browsing history. The tone should be motivating.">
     On • Use everyday language to search your browsing history and find sites you visited. You can also ask questions and get answers based on your browsing history
   </message>
-  <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_SUBLABEL_OFF" desc="This string is the subheading of a setting for ‘History search, powered by AI’ when answers are available. This subheading notes that the setting is currently turned on. Then, it summarizes the user benefit of the History Search feature. This is an AI (artificial intelligence) feature that improves the search functionality so that users can write queries in natural language and search their Chrome browsing history. The tone should be motivating." translateable="false">
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_SUBLABEL_OFF" desc="This string is the subheading of a setting for ‘History search, powered by AI’ when answers are available. This subheading notes that the setting is currently turned on. Then, it summarizes the user benefit of the History Search feature. This is an AI (artificial intelligence) feature that improves the search functionality so that users can write queries in natural language and search their Chrome browsing history. The tone should be motivating.">
     Off • Use everyday language to search your browsing history and find sites you visited. You can also ask questions and get answers based on your browsing history
   </message>
 
@@ -4587,8 +4596,11 @@
   <message name="IDS_SETTINGS_AUTOTABS_SETTING_LINK_A11Y" desc="This string is found in a link that takes the user to the Tab Organizer help center article when the user taps it. It is at the end of the Tab Organizer setting description that users see when they visit the ‘AI innovations’ section of settings (AI = artificial intelligence). The tone should be informative.">
     Learn more about tab organizer
   </message>
-  <message name="IDS_SETTINGS_TAB_ORGANIZER_WHEN_ON_AUTO_GROUPS" desc="This string is a bullet point in the ‘When used’ column, which describes the behavior of this feature. This string explains that this feature helps users get organized by suggesting and automatically creating tab groups out of the user’s open tabs. The tone should be motivating.">
-    Automatically suggests and creates groups from your open tabs, making it easier to find what you're looking for
+  <message name="IDS_SETTINGS_TAB_ORGANIZER_WHEN_ON_AUTO_GROUPS" desc="This string is a bullet point in the ‘When used’ column, which describes the behavior of this feature. This string explains that this feature suggests and automatically creates tab groups out of the user’s open tabs. The tone should be motivating.">
+    Automatically suggests and creates groups from your open tabs
+  </message>
+  <message name="IDS_SETTINGS_TAB_ORGANIZER_WHEN_ON_IMPROVE_FOCUS" desc="This string is a bullet point in the ‘When used’ column, which describes the behavior of this feature. This string explains that this feature helps users stay focused on their work because their tabs will be organized. The tone should be motivating.">
+    Helps you focus on whatever you’re working on
   </message>
   <message name="IDS_SETTINGS_TAB_ORGANIZER_CONSIDER_DATA" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will send data to Google servers in order to provide the feature’s respective benefit. The tone should be informative.">
     When you use organize tabs, the titles and URLs of your open tabs are sent to Google to generate suggested tab groups
@@ -4611,6 +4623,15 @@
   </message>
   <message name="IDS_SETTINGS_COMPARE_WHEN_ON_PRODUCT_DETAILS" desc="This string is a bullet point in the ‘When used’ column, which describes the behavior of this feature. This string explains that this feature helps users compare products in open tabs by generating an information table and summarizing key differences. The tone should be motivating.">
     Helps you see similar products side-by-side and easily compare the details that matter to you
+  </message>
+  <message name="IDS_SETTINGS_COMPARE_WHEN_ON_PRODUCT_SUGGEST" desc="This string is a bullet point in the ‘When used’ column, which describes the behavior of this feature. This string explains that this feature will suggest which details are most relevant to look at when comparing different products. The tone should be motivating.">
+    Suggests comparison details to look at when choosing between products
+  </message>
+  <message name="IDS_SETTINGS_COMPARE_WHEN_ON_PRODUCT_FILTER" desc="This string is a bullet point in the ‘When used’ column, which describes the behavior of this feature. This string explains that Compare tables are also useful as a notepad, as users can eliminate products that they are no longer considering. The tone should be motivating.">
+    You can use your comparison tables to keep track as you narrow down your options
+  </message>
+  <message name="IDS_SETTINGS_COMPARE_WHEN_ON_PRODUCT_REVIEWS" desc="This string is a bullet point in the ‘When used’ column, which describes the behavior of this feature. This string explains that this feature will pull in details from review websites and product-buying guides; however, only some products have this content available. The tone should be motivating.">
+    For some products, Chrome can gather reviews from around the web
   </message>
   <message name="IDS_SETTINGS_COMPARE_CONSIDER_DATA" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will send data to Google servers in order to provide the feature’s respective benefit. The tone should be informative.">
     When you compare products, the tab titles and URLs of the products are sent to Google
