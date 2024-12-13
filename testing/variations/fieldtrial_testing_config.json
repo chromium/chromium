@@ -11686,16 +11686,16 @@
             ]
         }
     ],
-    "IOSInterruptibleCoordinatorAlwaysDismissedName": [
+    "IOSInterruptibleCoordinatorAlwaysDismissed": [
         {
             "platforms": [
                 "ios"
             ],
             "experiments": [
                 {
-                    "name": "IOSInterruptibleCoordinatorAlwaysDismissedName",
+                    "name": "IOSInterruptibleCoordinatorAlwaysDismissed",
                     "enable_features": [
-                        "IOSInterruptibleCoordinatorAlwaysDismissedName"
+                        "IOSInterruptibleCoordinatorAlwaysDismissed"
                     ]
                 }
             ]
