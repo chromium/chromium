@@ -465,17 +465,14 @@ void ProcessNodeImpl::OnUninitializingEdges() {
   DCHECK(frame_nodes_.empty());
 }
 
-void ProcessNodeImpl::OnUninitializingProperties() {
+void ProcessNodeImpl::CleanUpNodeState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Make as if we're transitioning to the null PID before we die to clear this
   // instance from the PID map.
   if (process_id_ != base::kNullProcessId) {
     graph()->BeforeProcessPidChange(this, base::kNullProcessId);
   }
-}
 
-void ProcessNodeImpl::RemoveNodeAttachedData() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DestroyNodeInlineDataStorage();
 }
 

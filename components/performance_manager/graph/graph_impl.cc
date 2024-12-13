@@ -420,8 +420,7 @@ void GraphImpl::RemoveNode(NodeBase* node) {
   node->OnUninitializingEdges();
   node_in_transition_state_ = NodeState::kLeftGraph;
   DispatchNodeRemovedNotifications(node);
-  node->OnUninitializingProperties();
-  node->RemoveNodeAttachedData();
+  node->CleanUpNodeState();
   node->ClearGraphPointer();
   node_in_transition_ = nullptr;
   node_in_transition_state_ = NodeState::kNotInGraph;

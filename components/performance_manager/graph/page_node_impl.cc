@@ -523,7 +523,7 @@ void PageNodeImpl::OnBeforeLeavingGraph() {
   DCHECK_EQ(0u, frame_node_count_);
 }
 
-void PageNodeImpl::RemoveNodeAttachedData() {
+void PageNodeImpl::CleanUpNodeState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DestroyNodeInlineDataStorage();
 }

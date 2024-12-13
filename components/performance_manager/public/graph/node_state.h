@@ -51,7 +51,6 @@ enum class NodeState {
   // methods.
   //
   // Edges visible.
-  // Property changes allowed.
   kJoiningGraph,
 
   // The node is active in the graph. Nodes will be in this state during most
@@ -68,7 +67,6 @@ enum class NodeState {
   // observer methods.
   //
   // Edges visible.
-  // Property changes allowed.
   kLeavingGraph,
 
   // The node is uninitializing edges. Nodes will not be in this state during
@@ -83,7 +81,8 @@ enum class NodeState {
   // for those that point to other graph nodes, which are all null. Nodes will
   // be in this state during public OnNodeRemoved observer methods.
   //
-  // Property changes allowed.
+  // Unlike kInitializingNotInGraph, property changes are not allowed, because
+  // the node is about to be deleted so they would have no effect.
   kLeftGraph,
 };
 

@@ -186,14 +186,9 @@ class ProcessNodeObserver : public base::CheckedObserver {
   // OnBeforeProcessNodeAdded().
   virtual void OnBeforeProcessNodeAdded(const ProcessNode* process_node) {}
 
-  // Called after a `process_node` is added to the graph. Observers may make
-  // property changes during the scope of this call, as long as they don't cause
-  // notifications to be sent. To change a property that causes notifications,
-  // post a task.
-  //
-  // Note that observers are notified in an arbitrary order, so property changes
-  // made here may or may not be visible to other observers in
-  // OnProcessNodeAdded().
+  // Called after a `process_node` is added to the graph. Observers may *not*
+  // make property changes during the scope of this call. To change a property,
+  // post a task which will run after all observers.
   virtual void OnProcessNodeAdded(const ProcessNode* process_node) {}
 
   // The process associated with `process_node` has been started or has exited.
@@ -202,14 +197,8 @@ class ProcessNodeObserver : public base::CheckedObserver {
   virtual void OnProcessLifetimeChange(const ProcessNode* process_node) {}
 
   // Called before a `process_node` is removed from the graph. Observers may
-  // make property changes during the scope of this call, as long as they don't
-  // cause notifications to be sent. This can be useful to set final properties
-  // on the node that should be visible to other observers in
-  // OnProcessNodeRemoved().
-  //
-  // Note that observers are notified in an arbitrary order, so property changes
-  // made here may or may not be visible to other observers in
-  // OnBeforeProcessNodeRemoved().
+  // *not* make property changes during the scope of this call. The node will be
+  // deleted before any task posted from this scope runs.
   virtual void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) {}
 
   // Called after a `process_node` is removed from the graph.
@@ -217,11 +206,8 @@ class ProcessNodeObserver : public base::CheckedObserver {
   // useful if an observer needs to check the state of the graph without
   // including `process_node`.
   //
-  // Observers may make property changes during the scope of this call (although
-  // `process_node` will be deleted immediately after so there's not much
-  // point), as long as they don't cause notifications to be sent and don't
-  // modify pointers to/from other nodes, since the node is now isolated from
-  // the graph.
+  // Observers may *not* make property changes during the scope of this call.
+  // The node will be deleted before any task posted from this scope runs.
   virtual void OnProcessNodeRemoved(const ProcessNode* process_node) {}
 
   // Notifications of property changes.

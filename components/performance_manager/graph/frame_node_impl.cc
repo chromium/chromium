@@ -794,16 +794,13 @@ void FrameNodeImpl::OnUninitializingEdges() {
   process_node_->RemoveFrame(this);
 }
 
-void FrameNodeImpl::OnUninitializingProperties() {
+void FrameNodeImpl::CleanUpNodeState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Disable querying this node using process and frame routing ids.
   graph()->UnregisterFrameNodeForId(process_node_->GetRenderProcessHostId(),
                                     render_frame_id_, this);
-}
 
-void FrameNodeImpl::RemoveNodeAttachedData() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DestroyNodeInlineDataStorage();
 }
 

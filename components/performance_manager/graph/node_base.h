@@ -121,14 +121,14 @@ class NodeBase {
   virtual void OnInitializingEdges();
 
   // Step 5:
-  // Node enters kJoiningGraph state. Nodes may modify their properties but
-  // *not* cause any notifications to be emitted that refer to the node, to
-  // avoid re-entrant notifications.
+  // Node enters kJoiningGraph state: the node must not be modified, since
+  // observers will now be notified of its initial state in the graph, and each
+  // observer should see the same state.
 
   // OnNodeAdded notifications are dispatched.
 
   // Step 6:
-  // Node enters kActiveInGraph state. The node may make property changes, and
+  // Node enters kActiveInGraph state: the node may make property changes, and
   // these changes may cause notifications to be dispatched.
 
   // Called just after sending OnNodeAdded notifications, for nodes to perform
@@ -154,9 +154,9 @@ class NodeBase {
   virtual void OnBeforeLeavingGraph();
 
   // Step 8:
-  // Node enters kLeavingGraph state. Nodes may modify their properties but
-  // *not* cause any notifications to be emitted that refer to the node, to
-  // avoid re-entrant notifications.
+  // Node enters kLeavingGraph state: the node must not be modified, since it's
+  // about to be deleted. Observers will commonly use OnBeforeNodeRemoved
+  // notifications to clean up, and each observer should see the same state.
 
   // OnBeforeNodeRemoved notifications are dispatched.
 
@@ -171,27 +171,22 @@ class NodeBase {
   virtual void OnUninitializingEdges();
 
   // Step 10:
+  // Node enters kLeftGraph state: the node must not be modified, since it's
+  // about to be deleted. Any property changes would only be visible to other
+  // OnNodeRemoved observers, and their effects shouldn't depend on the order
+  // that observers are triggered.
+
   // OnNodeRemoved notifications are dispatched. The public observer method sees
   // the node's final properties but no incoming or outgoing edges. The graph is
   // in a consistent state that doesn't include this node.
 
   // Step 11:
-  // Node enters kLeftGraph state: nodes may modify their properties that don't
-  // affect the graph topology but *not* cause any notifications to be emitted
-  // that refer to the node, since public observers have already been notified
-  // that the node was removed from the graph via OnBeforeNodeRemoved and
-  // OnNodeRemoved.
-
   // Called after the node's edges have been severed from the graph, a good
-  // opportunity to uninitialize node state.
-  virtual void OnUninitializingProperties();
+  // opportunity to uninitialize node state. This is a pure virtual since almost
+  // all node classes must implement it to destroy private node-attached data.
+  virtual void CleanUpNodeState() = 0;
 
   // Step 12:
-  // Called as this node is leaving `graph_`. Any private node-attached data
-  // should be destroyed at this point.
-  virtual void RemoveNodeAttachedData() = 0;
-
-  // Step 13:
   // Resets the graph pointer. The node is in the kLeftGraph state during this
   // call, and will be in the kNotInGraph state immediately afterwards.
   void ClearGraphPointer();

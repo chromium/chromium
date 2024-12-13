@@ -41,13 +41,13 @@ bool NodeBase::CanSetProperty() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (GetNodeState()) {
     case NodeState::kNotInGraph:
+    case NodeState::kJoiningGraph:
+    case NodeState::kLeavingGraph:
+    case NodeState::kLeftGraph:
       return false;
     case NodeState::kInitializingNotInGraph:
     case NodeState::kInitializingEdges:
-    case NodeState::kJoiningGraph:
-    case NodeState::kLeavingGraph:
     case NodeState::kUninitializingEdges:
-    case NodeState::kLeftGraph:
       return true;
     case NodeState::kActiveInGraph:
       // Can set properties, but must notify. See CanSetAndNotifyProperty().
@@ -108,12 +108,6 @@ void NodeBase::OnBeforeLeavingGraph() {
 void NodeBase::OnUninitializingEdges() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(NodeState::kUninitializingEdges, GetNodeState());
-  // This is overridden by node impls.
-}
-
-void NodeBase::OnUninitializingProperties() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(NodeState::kLeftGraph, GetNodeState());
   // This is overridden by node impls.
 }
 

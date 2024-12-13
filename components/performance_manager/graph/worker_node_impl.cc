@@ -243,7 +243,7 @@ void WorkerNodeImpl::OnUninitializingEdges() {
   process_node_->RemoveWorker(this);
 }
 
-void WorkerNodeImpl::RemoveNodeAttachedData() {
+void WorkerNodeImpl::CleanUpNodeState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DestroyNodeInlineDataStorage();
 }

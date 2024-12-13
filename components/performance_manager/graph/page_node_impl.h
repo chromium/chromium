@@ -231,7 +231,7 @@ class PageNodeImpl
   // NodeBase:
   void OnInitializingProperties() override;
   void OnBeforeLeavingGraph() override;
-  void RemoveNodeAttachedData() override;
+  void CleanUpNodeState() override;
 
   void SetLifecycleState(LifecycleState lifecycle_state);
   void SetIsHoldingWebLock(bool is_holding_weblock);

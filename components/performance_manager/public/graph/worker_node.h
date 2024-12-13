@@ -173,24 +173,14 @@ class WorkerNodeObserver : public base::CheckedObserver {
       const WorkerNode* worker_node,
       const ProcessNode* pending_process_node) {}
 
-  // Called after a `worker_node` is added to the graph. Observers may make
-  // property changes during the scope of this call, as long as they don't cause
-  // notifications to be sent. To change a property that causes notifications,
-  // post a task.
-  //
-  // Note that observers are notified in an arbitrary order, so property changes
-  // made here may or may not be visible to other observers in
-  // OnWorkerNodeAdded().
+  // Called after a `worker_node` is added to the graph. Observers may *not*
+  // make property changes during the scope of this call. To change a property,
+  // post a task which will run after all observers.
   virtual void OnWorkerNodeAdded(const WorkerNode* worker_node) {}
 
-  // Called before a `worker_node` is removed from the graph. Observers may make
-  // property changes during the scope of this call, as long as they don't cause
-  // notifications to be sent. This can be useful to set final properties on the
-  // node that should be visible to other observers in OnWorkerNodeRemoved().
-  //
-  // Note that observers are notified in an arbitrary order, so property changes
-  // made here may or may not be visible to other observers in
-  // OnBeforeWorkerNodeRemoved().
+  // Called before a `worker_node` is removed from the graph. Observers may
+  // *not* make property changes during the scope of this call. The node will be
+  // deleted before any task posted from this scope runs.
   virtual void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) {}
 
   // Called after a `worker_node` is removed from the graph.
@@ -201,11 +191,8 @@ class WorkerNodeObserver : public base::CheckedObserver {
   // `previous_process_node` is the node that was returned from GetProcessNode()
   // before `worker_node` was removed from the graph.
   //
-  // Observers may make property changes during the scope of this call (although
-  // `worker_node` will be deleted immediately after so there's not much point),
-  // as long as they don't cause notifications to be sent and don't modify
-  // pointers to/from other nodes, since the node is now isolated from the
-  // graph.
+  // Observers may *not* make property changes during the scope of this call.
+  // The node will be deleted before any task posted from this scope runs.
   virtual void OnWorkerNodeRemoved(const WorkerNode* worker_node,
                                    const ProcessNode* previous_process_node) {}
 

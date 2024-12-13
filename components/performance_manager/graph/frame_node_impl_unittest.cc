@@ -200,6 +200,49 @@ using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
+using ::testing::WithArg;
+
+// Called repeatedly from a mock FrameNodeObserver. At each call it tries to set
+// a property on the node depending on the last action set with `set_action()`,
+// unless the action is kDoNothing.
+class NodePropertySetter {
+ public:
+  NodePropertySetter() = default;
+  ~NodePropertySetter() = default;
+
+  NodePropertySetter(const NodePropertySetter&) = delete;
+  NodePropertySetter& operator=(const NodePropertySetter&) = delete;
+
+  enum class Action {
+    kUndefined,
+    kSetAndNotify,
+    kSetWithoutNotify,
+    kDoNothing,
+  };
+
+  void set_action(Action action) { action_ = action; }
+
+  void MaybeSetProperty(const FrameNode* frame_node) {
+    auto* impl = FrameNodeImpl::FromNode(frame_node);
+    switch (action_) {
+      case Action::kSetAndNotify:
+        // Property that notifies.
+        impl->SetIsAdFrame(true);
+        break;
+      case Action::kSetWithoutNotify:
+        // Property that doesn't notify.
+        impl->SetInitialVisibility(FrameNode::Visibility::kVisible);
+        break;
+      case Action::kDoNothing:
+        break;
+      case Action::kUndefined:
+        FAIL() << "NodePropertySetter::set_action() wasn't called";
+    }
+  }
+
+ private:
+  Action action_ = Action::kUndefined;
+};
 
 }  // namespace
 
@@ -368,53 +411,44 @@ TEST_F(FrameNodeImplDeathTest, SetPropertyDuringNodeCreation) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
 
-  // Modifying a property that notifies during node addition should explode.
-  bool notify = true;
+  // Modifying a property during node addition should explode, whether or not
+  // it notifies.
+  NodePropertySetter property_setter;
   {
     InSequence seq;
     EXPECT_CALL(obs, OnBeforeFrameNodeAdded(_, _, _, _, _));
     EXPECT_CALL(obs, OnFrameNodeAdded(_))
-        .WillOnce(Invoke([&](const FrameNode* frame_node) {
-          auto* impl = FrameNodeImpl::FromNode(frame_node);
-          if (notify) {
-            // Property that notifies.
-            impl->SetIsAdFrame(true);
-          } else {
-            // Property that doesn't notify.
-            impl->SetInitialVisibility(FrameNode::Visibility::kVisible);
-          }
-        }));
+        .WillOnce(
+            Invoke(&property_setter, &NodePropertySetter::MaybeSetProperty));
   }
+
+  // Every EXPECT_DCHECK_DEATH forks the test, with one branch executing the
+  // expectation and dying, and the other continuing. So the mock expectation
+  // is installed once and invoked multiple times (once in each fork). The last
+  // invocation must satisfy the expectation without crashing.
+  property_setter.set_action(NodePropertySetter::Action::kSetAndNotify);
   EXPECT_DCHECK_DEATH(auto frame =
                           CreateFrameNodeAutoId(process.get(), page.get()));
-
-  // Now create the node but don't notify so that the mock expectation is
-  // satisfied.
-  notify = false;
+  property_setter.set_action(NodePropertySetter::Action::kSetWithoutNotify);
+  EXPECT_DCHECK_DEATH(auto frame =
+                          CreateFrameNodeAutoId(process.get(), page.get()));
+  property_setter.set_action(NodePropertySetter::Action::kDoNothing);
   auto frame = CreateFrameNodeAutoId(process.get(), page.get());
 
-  // Modifying a property that notifies during node removal should explode.
-  notify = true;
+  // Modifying a property during node removal should also explode.
   {
     InSequence seq;
     EXPECT_CALL(obs, OnBeforeFrameNodeRemoved(_))
-        .WillOnce(Invoke([&](const FrameNode* frame_node) {
-          auto* impl = FrameNodeImpl::FromNode(frame_node);
-          if (notify) {
-            // Property that notifies.
-            impl->SetIsAdFrame(true);
-          } else {
-            // Property that doesn't notify.
-            impl->SetInitialVisibility(FrameNode::Visibility::kVisible);
-          }
-        }));
+        .WillOnce(
+            Invoke(&property_setter, &NodePropertySetter::MaybeSetProperty));
     EXPECT_CALL(obs, OnFrameNodeRemoved(_, _, _, _, _));
   }
-  EXPECT_DCHECK_DEATH(frame.reset());
 
-  // Now remove the node but don't notify so that the mock expectation is
-  // satisfied.
-  notify = false;
+  property_setter.set_action(NodePropertySetter::Action::kSetAndNotify);
+  EXPECT_DCHECK_DEATH(frame.reset());
+  property_setter.set_action(NodePropertySetter::Action::kSetWithoutNotify);
+  EXPECT_DCHECK_DEATH(frame.reset());
+  property_setter.set_action(NodePropertySetter::Action::kDoNothing);
   frame.reset();
 
   graph()->RemoveFrameNodeObserver(&obs);
@@ -428,63 +462,39 @@ TEST_F(FrameNodeImplDeathTest, SetPropertyBeforeNodeAdded) {
   auto page = CreateNode<PageNodeImpl>();
 
   // Modifying a property that notifies before node addition should explode.
-  bool notify = true;
+  NodePropertySetter property_setter;
   {
     InSequence seq;
     EXPECT_CALL(obs, OnBeforeFrameNodeAdded(_, _, _, _, _))
-        .WillOnce(Invoke(
-            [&](const FrameNode* frame_node,
-                const FrameNode* pending_parent_frame_node,
-                const PageNode* pending_page_node,
-                const ProcessNode* pending_process_node,
-                const FrameNode* pending_parent_or_outer_document_or_embedder) {
-              auto* impl = FrameNodeImpl::FromNode(frame_node);
-              if (notify) {
-                // Property that notifies.
-                impl->SetIsAdFrame(true);
-              } else {
-                // Property that doesn't notify.
-                impl->SetInitialVisibility(FrameNode::Visibility::kVisible);
-              }
-            }));
+        .WillOnce(WithArg<0>(
+            Invoke(&property_setter, &NodePropertySetter::MaybeSetProperty)));
     EXPECT_CALL(obs, OnFrameNodeAdded(_));
   }
+
+  // Every EXPECT_DCHECK_DEATH forks the test, with one branch executing the
+  // expectation and dying, and the other continuing. So the mock expectation
+  // is installed once and invoked multiple times (once in each fork). The last
+  // invocation must satisfy the expectation without crashing.
+  property_setter.set_action(NodePropertySetter::Action::kSetAndNotify);
   EXPECT_DCHECK_DEATH(auto frame =
                           CreateFrameNodeAutoId(process.get(), page.get()));
-
-  // Now create the node but don't notify so that the mock expectation is
-  // satisfied.
-  notify = false;
+  property_setter.set_action(NodePropertySetter::Action::kSetWithoutNotify);
   auto frame = CreateFrameNodeAutoId(process.get(), page.get());
 
-  // Modifying a property that notifies after node removal should explode.
-  notify = true;
+  // Modifying a property after node removal should explode, whether or not it
+  // notifies.
   {
     InSequence seq;
     EXPECT_CALL(obs, OnBeforeFrameNodeRemoved(_));
     EXPECT_CALL(obs, OnFrameNodeRemoved(_, _, _, _, _))
-        .WillOnce(
-            Invoke([&](const FrameNode* frame_node,
-                       const FrameNode* previous_parent_frame_node,
-                       const PageNode* previous_page_node,
-                       const ProcessNode* previous_process_node,
-                       const FrameNode*
-                           previous_parent_or_outer_document_or_embedder) {
-              auto* impl = FrameNodeImpl::FromNode(frame_node);
-              if (notify) {
-                // Property that notifies.
-                impl->SetIsAdFrame(true);
-              } else {
-                // Property that doesn't notify.
-                impl->SetInitialVisibility(FrameNode::Visibility::kVisible);
-              }
-            }));
+        .WillOnce(WithArg<0>(
+            Invoke(&property_setter, &NodePropertySetter::MaybeSetProperty)));
   }
+  property_setter.set_action(NodePropertySetter::Action::kSetAndNotify);
   EXPECT_DCHECK_DEATH(frame.reset());
-
-  // Now remove the node but don't notify so that the mock expectation is
-  // satisfied.
-  notify = false;
+  property_setter.set_action(NodePropertySetter::Action::kSetWithoutNotify);
+  EXPECT_DCHECK_DEATH(frame.reset());
+  property_setter.set_action(NodePropertySetter::Action::kDoNothing);
   frame.reset();
 
   graph()->RemoveFrameNodeObserver(&obs);

@@ -93,7 +93,7 @@ class WorkerNodeImpl
   void OnInitializingProperties() override;
   void OnInitializingEdges() override;
   void OnUninitializingEdges() override;
-  void RemoveNodeAttachedData() override;
+  void CleanUpNodeState() override;
 
   // Rest of WorkerNode implementation. These are private so that users of the
   // impl use the private getters rather than the public interface.
