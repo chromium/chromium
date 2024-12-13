@@ -2856,7 +2856,7 @@
 <translation id="2989177286941477290">{NUM_OF_FILES,plural, =1{يجب إخلاء بعض المساحة في <ph name="CLOUD_PROVIDER" /> لنقل هذا الملف.}zero{يجب إخلاء بعض المساحة في <ph name="CLOUD_PROVIDER" /> لنقل هذه الملفات.}two{يجب إخلاء بعض المساحة في <ph name="CLOUD_PROVIDER" /> لنقل هذين الملفين.}few{يجب إخلاء بعض المساحة في <ph name="CLOUD_PROVIDER" /> لنقل هذه الملفات.}many{يجب إخلاء بعض المساحة في <ph name="CLOUD_PROVIDER" /> لنقل هذه الملفات.}other{يجب إخلاء بعض المساحة في <ph name="CLOUD_PROVIDER" /> لنقل هذه الملفات.}}</translation>
 <translation id="2989474696604907455">غير متصل</translation>
 <translation id="2989786307324390836">‏حفظ شهادة واحدة بتشفير DER ثنائي</translation>
-<translation id="2989805286512600854">فتح في علامة تبويب جديدة</translation>
+<translation id="2989805286512600854">الفتح في علامة تبويب جديدة</translation>
 <translation id="2990313168615879645">‏إضافة حساب Google</translation>
 <translation id="2990375978470734995">عليك إعادة توصيل الملحقات الخارجية لتطبيق هذا التغيير.</translation>
 <translation id="2990583317361835189">عدم السماح للمواقع الإلكترونية باستخدام أجهزة استشعار الحركة</translation>

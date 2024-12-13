@@ -769,7 +769,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4669618761237477717">Tu organización requiere que navegues de forma privada. Los grupos de pestañas no se sincronizan en el modo Incógnito.
 <ph name="BEGIN_LINK" />Obtén más información<ph name="END_LINK" /></translation>
 <translation id="467189612236587057">Iniciar una llamada telefónica para conectarte con una empresa</translation>
-<translation id="4682496302933121474">¿Deseas traducir la página?</translation>
+<translation id="4682496302933121474">¿Traducir página?</translation>
 <translation id="4682686630151240767">1. Abre Configuración en el iPhone.</translation>
 <translation id="4684427112815847243">Sincronizar todo</translation>
 <translation id="4699172675775169585">Imágenes y archivos almacenados en caché</translation>
@@ -1688,7 +1688,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8741627442233023406">{count,plural, =1{Revisar la pestaña…}other{Revisar todas las pestañas…}}</translation>
 <translation id="8741995161408053644">Es posible que tu cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Crear vínculo</translation>
-<translation id="8746155870861185046">Compartir contenido destacado</translation>
+<translation id="8746155870861185046">Compartir lo destacado</translation>
 <translation id="8750037785291841318">Aquí encontrarás tus pestañas</translation>
 <translation id="8756969031206844760">¿Quieres actualizar la contraseña?</translation>
 <translation id="8764015330924122850">Dejar de seguir a <ph name="DOMAIN_NAME" /></translation>
