@@ -60,10 +60,6 @@ BASE_FEATURE(kMITMSoftwareInterstitial,
              "MITMSoftwareInterstitial",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCaptivePortalInterstitial,
-             "CaptivePortalInterstitial",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 BASE_FEATURE(kSSLCommonNameMismatchHandling,
@@ -150,10 +146,6 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(CommonNameMismatchRedirectObserver);
 void RecordUMA(SSLErrorHandler::UMAEvent event) {
   UMA_HISTOGRAM_ENUMERATION(kHistogram, event,
                             SSLErrorHandler::SSL_ERROR_HANDLER_EVENT_COUNT);
-}
-
-bool IsCaptivePortalInterstitialEnabled() {
-  return base::FeatureList::IsEnabled(kCaptivePortalInterstitial);
 }
 
 bool IsMITMSoftwareInterstitialEnabled() {
@@ -689,8 +681,7 @@ void SSLErrorHandler::StartHandlingError() {
   // opens a new tab if it detects a portal ignoring the types of SSL errors. To
   // be consistent with captive portal detector, use the result of OS detection
   // without checking only_error_is_name_mismatch.
-  if (IsCaptivePortalInterstitialEnabled() &&
-      (g_config.Pointer()->DoesOSReportCaptivePortalForTesting() ||
+  if ((g_config.Pointer()->DoesOSReportCaptivePortalForTesting() ||  // IN-TEST
        delegate_->DoesOSReportCaptivePortal())) {
     delegate_->ReportNetworkConnectivity(
         g_config.Pointer()->report_network_connectivity_callback());
@@ -772,7 +763,7 @@ void SSLErrorHandler::StartHandlingError() {
     captive_portal_tab_helper->OnSSLCertError(ssl_info_);
   }
 
-  if (IsCaptivePortalInterstitialEnabled() && !is_captive_portal_login_tab) {
+  if (!is_captive_portal_login_tab) {
     delegate_->CheckForCaptivePortal();
     timer_.Start(FROM_HERE, g_config.Pointer()->interstitial_delay(), this,
                  &SSLErrorHandler::ShowSSLInterstitial);

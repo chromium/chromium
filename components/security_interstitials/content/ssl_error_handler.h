@@ -44,7 +44,6 @@ class NetworkTimeTracker;
 }
 
 BASE_DECLARE_FEATURE(kMITMSoftwareInterstitial);
-BASE_DECLARE_FEATURE(kCaptivePortalInterstitial);
 
 // This class is responsible for deciding what type of interstitial to display
 // for an SSL validation error and actually displaying it. The display of the
