@@ -15,12 +15,12 @@ source_set("i18n") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+  public_deps = [ "//extensions/browser:browser_sources" ]
+
   deps = [
     "//base",
-    "//components/language/core/browser:browser",
+    "//components/language/core/browser",
     "//components/prefs",
     "//extensions/common/api",
   ]
-
-  public_deps = [ "//extensions/browser:browser_sources" ]
 }
