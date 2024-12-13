@@ -2590,7 +2590,7 @@ TEST_F(PaymentsDataManagerTest, AddAndGetCreditCardArtImage) {
   images.push_back(std::move(credit_card_art_image));
   test_api(payments_data_manager()).OnCardArtImagesFetched(std::move(images));
 
-  gfx::Image* actual_image =
+  const gfx::Image* actual_image =
       payments_data_manager().GetCreditCardArtImageForUrl(
           GURL("https://www.example.com"));
   ASSERT_TRUE(actual_image);
@@ -2600,7 +2600,7 @@ TEST_F(PaymentsDataManagerTest, AddAndGetCreditCardArtImage) {
   // PaymentsDataManagerMock and checking that
   // PaymentsDataManager::FetchImagesForUrls() does not get triggered when
   // PaymentsDataManager::GetCachedCardArtImageForUrl() is called.
-  gfx::Image* cached_image =
+  const gfx::Image* cached_image =
       payments_data_manager().GetCachedCardArtImageForUrl(
           GURL("https://www.example.com"));
   ASSERT_TRUE(cached_image);
@@ -2611,7 +2611,7 @@ TEST_F(PaymentsDataManagerTest,
        TestNoImageFetchingAttemptForCardsWithInvalidCardArtUrls) {
   base::HistogramTester histogram_tester;
 
-  gfx::Image* actual_image =
+  const gfx::Image* actual_image =
       payments_data_manager().GetCreditCardArtImageForUrl(GURL());
   EXPECT_FALSE(actual_image);
   EXPECT_EQ(0, histogram_tester.GetTotalSum("Autofill.ImageFetcher.Result"));

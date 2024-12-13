@@ -238,15 +238,13 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Return the URL for the card art image, if available.
   GURL GetCardArtURL(const CreditCard& credit_card) const;
 
-  // Returns the customized credit card art image for the |card_art_url|. If no
+  // Returns the customized credit card art image for the `card_art_url`. If no
   // image has been cached, an asynchronous request will be sent to fetch the
   // image and this function will return nullptr.
-  virtual gfx::Image* GetCreditCardArtImageForUrl(
-      const GURL& card_art_url) const;
+  const gfx::Image* GetCreditCardArtImageForUrl(const GURL& card_art_url) const;
 
   // Returns all virtual card usage data linked to the credit card.
-  virtual base::span<const VirtualCardUsageData> GetVirtualCardUsageData()
-      const;
+  base::span<const VirtualCardUsageData> GetVirtualCardUsageData() const;
 
   // Returns the credit cards to suggest to the user. Those have been deduped
   // and ordered by frecency with the expired cards put at the end of the
@@ -283,7 +281,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   virtual void DeleteLocalCreditCards(const std::vector<CreditCard>& cards);
 
   // Delete all local credit cards.
-  virtual void DeleteAllLocalCreditCards();
+  void DeleteAllLocalCreditCards();
 
   // Updates |credit_card| which already exists in the web database. This
   // can only be used on local credit cards.
@@ -295,8 +293,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Updates the use stats and billing address id for the server |credit_cards|.
   // Looks up the cards by server_id.
-  virtual void UpdateServerCardsMetadata(
-      const std::vector<CreditCard>& credit_cards);
+  void UpdateServerCardsMetadata(const std::vector<CreditCard>& credit_cards);
 
   // Methods to add, update, remove, or clear server CVC in the web database.
   virtual void AddServerCvc(int64_t instrument_id, const std::u16string& cvc);

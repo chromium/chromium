@@ -888,16 +888,17 @@ GURL PaymentsDataManager::GetCardArtURL(const CreditCard& credit_card) const {
   return GURL();
 }
 
-gfx::Image* PaymentsDataManager::GetCreditCardArtImageForUrl(
+const gfx::Image* PaymentsDataManager::GetCreditCardArtImageForUrl(
     const GURL& card_art_url) const {
   if (!card_art_url.is_valid()) {
     return nullptr;
   }
 
-  gfx::Image* cached_image = GetCachedCardArtImageForUrl(card_art_url);
-  if (cached_image) {
+  if (const gfx::Image* cached_image =
+          GetCachedCardArtImageForUrl(card_art_url)) {
     return cached_image;
   }
+
   // The sizes are used on Android, but ignored on desktop.
   FetchImagesForURLs(base::span_from_ref(card_art_url),
                      {AutofillImageFetcherBase::ImageSize::kSmall,

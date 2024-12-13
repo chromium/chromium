@@ -483,7 +483,7 @@ void VirtualCardEnrollmentManager::EnsureCardArtImageIsSetBeforeShowingUI() {
   // The card art image might not be present in the upstream flow if the
   // chrome sync server has not synced down the card art url yet for the card
   // just uploaded.
-  gfx::Image* cached_card_art_image =
+  const gfx::Image* const cached_card_art_image =
       personal_data_manager_->payments_data_manager()
           .GetCachedCardArtImageForUrl(
               state_.virtual_card_enrollment_fields.credit_card.card_art_url());
@@ -526,7 +526,7 @@ void VirtualCardEnrollmentManager::SetInitialVirtualCardEnrollFields(
   // request to sync the |card_art_image|, and before showing the
   // VirtualCardEnrollmentBubble we will try to fetch the |card_art_image|
   // from the local cache.
-  gfx::Image* card_art_image =
+  const gfx::Image* const card_art_image =
       personal_data_manager_->payments_data_manager()
           .GetCreditCardArtImageForUrl(credit_card.card_art_url());
   if (card_art_image && !card_art_image->IsEmpty()) {
