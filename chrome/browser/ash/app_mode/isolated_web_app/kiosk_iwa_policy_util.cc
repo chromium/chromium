@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_trust_check.h"
+#include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_policy_util.h"
 
+#include <optional>
+#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -18,6 +20,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -51,23 +54,27 @@ policy::DeviceLocalAccount GetCurrentDeviceLocalAccount() {
 
 namespace ash {
 
-bool IsTrustedAsKioskIwa(const web_package::SignedWebBundleId& web_bundle_id) {
-  if (!ash::features::IsIsolatedWebAppKioskEnabled()) {
-    return false;
+std::optional<KioskIwaPolicyData> GetCurrentKioskIwaPolicyData() {
+  if (!ash::features::IsIsolatedWebAppKioskEnabled() || !IsIwaKioskSession()) {
+    return std::nullopt;
   }
 
-  if (!IsIwaKioskSession()) {
-    return false;
-  }
+  auto current_kiosk_policy = GetCurrentDeviceLocalAccount();
 
-  auto current_dla = GetCurrentDeviceLocalAccount();
-
-  // Web bundle id in the current IWA kiosk account should be valid.
+  // Web bundle id and update manifest URL in the current IWA kiosk account
+  // should be valid.
   auto current_web_bundle_id = web_package::SignedWebBundleId::Create(
-      current_dla.kiosk_iwa_info.web_bundle_id());
+      current_kiosk_policy.kiosk_iwa_info.web_bundle_id());
   CHECK(current_web_bundle_id.has_value());
 
-  return current_web_bundle_id.value() == web_bundle_id;
+  GURL current_update_manifest_url(
+      current_kiosk_policy.kiosk_iwa_info.update_manifest_url());
+  CHECK(current_update_manifest_url.is_valid());
+
+  KioskIwaPolicyData result = {
+      .web_bundle_id = current_web_bundle_id.value(),
+      .update_manifest_url = std::move(current_update_manifest_url)};
+  return result;
 }
 
 }  // namespace ash
