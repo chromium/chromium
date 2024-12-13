@@ -43,7 +43,6 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
@@ -719,24 +718,6 @@ void VideoResourceUpdater::AppendQuad(
     case VideoFrameResourceType::NONE:
       NOTIMPLEMENTED();
       break;
-  }
-}
-
-void VideoResourceUpdater::ClearFrameResources() {
-  // Delete recycled resources that are not in use anymore.
-  bool cleared_resources = std::erase_if(
-      all_resources_, [](const std::unique_ptr<PlaneResource>& resource) {
-        // Resources that are still being used can't be deleted.
-        return !resource->has_refs();
-      });
-
-  // May have destroyed resources above, make sure that it gets to the other
-  // side. SharedImage destruction (which may be triggered by the removal of
-  // canvas resources above) is a deferred message, we need to flush pending
-  // work to ensure that it is not merely queued, but is executed on the service
-  // side.
-  if (cleared_resources && context_provider_) {
-    context_provider_->ContextSupport()->FlushPendingWork();
   }
 }
 

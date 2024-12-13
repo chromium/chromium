@@ -52,7 +52,6 @@ class PLATFORM_EXPORT VideoFrameResourceProvider {
                            media::VideoTransformation,
                            bool is_opaque);
   virtual void ReleaseFrameResources();
-  virtual void ClearFrameResources();
 
   // Once the context is lost, we must call Initialize again before we can
   // continue doing work.

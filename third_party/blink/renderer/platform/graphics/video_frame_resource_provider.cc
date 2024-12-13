@@ -128,10 +128,6 @@ void VideoFrameResourceProvider::ReleaseFrameResources() {
   resource_updater_->ReleaseFrameResource();
 }
 
-void VideoFrameResourceProvider::ClearFrameResources() {
-  resource_updater_->ClearFrameResources();
-}
-
 void VideoFrameResourceProvider::PrepareSendToParent(
     const WebVector<viz::ResourceId>& resource_ids,
     WebVector<viz::TransferableResource>* transferable_resources) {
