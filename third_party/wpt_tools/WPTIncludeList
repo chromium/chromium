@@ -405,6 +405,7 @@
 ./tools/wptrunner/wptrunner/executors/executorservodriver.py
 ./tools/wptrunner/wptrunner/executors/executorwebdriver.py
 ./tools/wptrunner/wptrunner/executors/executorwebkit.py
+./tools/wptrunner/wptrunner/executors/message-queue.js
 ./tools/wptrunner/wptrunner/executors/process.py
 ./tools/wptrunner/wptrunner/executors/protocol.py
 ./tools/wptrunner/wptrunner/executors/pytestrunner/__init__.py

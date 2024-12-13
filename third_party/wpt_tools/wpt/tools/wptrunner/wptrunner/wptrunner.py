@@ -258,24 +258,21 @@ def run_test_iteration(test_status, test_loader, test_queue_builder,
                 logger.test_end(test.id, status="SKIP", subsuite=subsuite_name)
                 test_status.skipped += 1
 
-            if test_type == "testharness":
-                for test in test_loader.tests[subsuite_name][test_type]:
-                    skip_reason = None
-                    if test.testdriver and not executor_cls.supports_testdriver:
-                        skip_reason = "Executor does not support testdriver.js"
-                    elif test.jsshell and not executor_cls.supports_jsshell:
-                        skip_reason = "Executor does not support jsshell"
-                    if skip_reason:
-                        logger.test_start(test.id, subsuite=subsuite_name)
-                        logger.test_end(test.id,
-                                        status="SKIP",
-                                        subsuite=subsuite_name,
-                                        message=skip_reason)
-                        test_status.skipped += 1
-                    else:
-                        tests_to_run[(subsuite_name, test_type)].append(test)
-            else:
-                tests_to_run[(subsuite_name, test_type)] = test_loader.tests[subsuite_name][test_type]
+            for test in test_loader.tests[subsuite_name][test_type]:
+                skip_reason = None
+                if getattr(test, "testdriver", False) and not executor_cls.supports_testdriver:
+                    skip_reason = "Executor does not support testdriver.js"
+                elif test_type == "testharness" and test.jsshell and not executor_cls.supports_jsshell:
+                    skip_reason = "Executor does not support jsshell"
+                if skip_reason:
+                    logger.test_start(test.id, subsuite=subsuite_name)
+                    logger.test_end(test.id,
+                                    status="SKIP",
+                                    subsuite=subsuite_name,
+                                    message=skip_reason)
+                    test_status.skipped += 1
+                else:
+                    tests_to_run[(subsuite_name, test_type)].append(test)
 
     unexpected_fail_tests = defaultdict(list)
     unexpected_pass_tests = defaultdict(list)
