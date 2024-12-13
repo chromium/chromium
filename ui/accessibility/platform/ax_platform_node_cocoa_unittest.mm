@@ -400,7 +400,8 @@ TEST_P(AXPlatformNodeCocoaTest, TestRespondsToSelector) {
     @"accessibilityColumnCount", @"accessibilityDisclosedByRow",
     @"accessibilityDisclosedRows", @"accessibilityDisclosureLevel",
     @"accessibilityHeader", @"accessibilityIndex", @"accessibilityRowCount",
-    @"accessibilitySortDirection", @"isAccessibilityDisclosed",
+    @"accessibilitySortDirection", @"accessibilitySplitters",
+    @"accessibilityToolbarButton", @"isAccessibilityDisclosed",
     @"isAccessibilityExpanded", @"isAccessibilityFocused"
   ];
 
@@ -1141,6 +1142,26 @@ TEST_P(AXPlatformNodeCocoaTest,
   Init(root);
   AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
   EXPECT_EQ([node accessibilityInsertionPointLineNumber], 0);
+}
+
+// `accessibilitySplitters` is implemented but always returns nil.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilitySplitters) {
+  AXNodeData root = AXNodeData();
+  root.id = 1;
+  root.role = ax::mojom::Role::kGroup;
+  Init(root);
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
+  EXPECT_EQ([node accessibilitySplitters], nil);
+}
+
+// `accessibilityToolbarButton` is implemented but always returns nil.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityToolbarButton) {
+  AXNodeData root = AXNodeData();
+  root.id = 1;
+  root.role = ax::mojom::Role::kWindow;
+  Init(root);
+  AXPlatformNodeCocoa* node = GetCocoaNode(GetRoot());
+  EXPECT_EQ([node accessibilityToolbarButton], nil);
 }
 
 }  // namespace ui

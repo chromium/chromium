@@ -289,7 +289,9 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
           NSAccessibilityRowHeaderUIElementsAttribute,
       @"accessibilityRowIndexRange" : NSAccessibilityRowIndexRangeAttribute,
       @"accessibilitySortDirection" : NSAccessibilitySortDirectionAttribute,
+      @"accessibilitySplitters" : NSAccessibilitySplittersAttribute,
       @"accessibilityTabs" : NSAccessibilityTabsAttribute,
+      @"accessibilityToolbarButton" : NSAccessibilityToolbarButtonAttribute,
       @"accessibilityVisibleColumns" : NSAccessibilityVisibleColumnsAttribute,
       @"accessibilityVisibleCells" : NSAccessibilityVisibleCellsAttribute,
       @"accessibilityVisibleRows" : NSAccessibilityVisibleRowsAttribute,
@@ -3221,6 +3223,16 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return tabSubtree;
 }
 // LINT.ThenChange(ui/accessibility/platform/browser_accessibility_cocoa.mm:accessibilityTabs)
+
+- (id)accessibilitySplitters {
+  // Chromium windows do not have NSSplitViews or anything similar.
+  return nil;
+}
+
+- (id)accessibilityToolbarButton {
+  // Chromium windows do not have a toolbar button.
+  return nil;
+}
 
 // NSAccessibility: configuring linkage elements.
 - (id)accessibilityTitleUIElement {
