@@ -107,6 +107,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
  private:
   Member<AnimationFrameTimingInfo> current_frame_timing_info_;
   HeapVector<Member<ScriptTimingInfo>> current_scripts_;
+  viz::BeginFrameId current_begin_frame_id_;
   struct PendingScriptInfo {
     ScriptTimingInfo::InvokerType invoker_type;
     base::TimeTicks start_time;

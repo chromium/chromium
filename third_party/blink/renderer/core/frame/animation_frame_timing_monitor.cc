@@ -68,6 +68,7 @@ void AnimationFrameTimingMonitor::WillHandleInput(LocalFrame* frame) {
 void AnimationFrameTimingMonitor::BeginMainFrame(
     LocalDOMWindow& local_root_window,
     viz::BeginFrameId frame_id) {
+  current_begin_frame_id_ = frame_id;
   DOMWindowPerformance::performance(local_root_window)
       ->OnBeginMainFrame(frame_id);
 
@@ -78,6 +79,7 @@ void AnimationFrameTimingMonitor::BeginMainFrame(
   }
 
   current_frame_timing_info_->SetRenderStartTime(now);
+  current_frame_timing_info_->SetBeginFrameId(frame_id);
   state_ = State::kRenderingFrame;
   ApplyTaskDuration(now - current_task_start_);
 
@@ -272,6 +274,7 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
   timing_info->SetScripts(scripts);
   timing_info->SetTotalBlockingDuration(task_duration -
                                         kLongAnimationFrameDuration);
+  timing_info->SetBeginFrameId(current_begin_frame_id_);
   if (did_pause) {
     timing_info->SetDidPause();
   }
@@ -334,10 +337,16 @@ void AnimationFrameTimingMonitor::ReportPresentationTimeToTrace(
     const viz::FrameTimingDetails& presentation_details) {
   auto track_id = perfetto::Track::ThreadScoped(this);
   auto flow_id = perfetto::Flow::ProcessScoped(trace_id);
-  TRACE_EVENT_INSTANT("devtools.timeline", "AnimationFrame::Presentation",
-                      track_id,
-                      presentation_details.presentation_feedback.timestamp,
-                      flow_id, "id", String::Format("%016" PRIx64, trace_id));
+  TRACE_EVENT_INSTANT(
+      "devtools.timeline", "AnimationFrame::Presentation", track_id,
+      presentation_details.presentation_feedback.timestamp, flow_id, "id",
+      String::Format("%016" PRIx64, trace_id), [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* begin_frame_id = event->set_begin_frame_id();
+        begin_frame_id->set_source_id(presentation_details.frame_id.source_id);
+        begin_frame_id->set_sequence_number(
+            presentation_details.frame_id.sequence_number);
+      });
 }
 
 void AnimationFrameTimingMonitor::RecordLongAnimationFrameTrace(
@@ -366,6 +375,11 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameTrace(
             info.TotalBlockingDuration().InMilliseconds());
         data->set_duration_ms(info.Duration().InMilliseconds());
         data->set_num_scripts(info.Scripts().size());
+
+        auto* begin_frame_id = data->set_begin_frame_id();
+        begin_frame_id->set_source_id(info.BeginFrameId().source_id);
+        begin_frame_id->set_sequence_number(
+            info.BeginFrameId().sequence_number);
       });
   for (ScriptTimingInfo* script : info.Scripts()) {
     if (script->StartTime() < script->ExecutionStartTime()) {

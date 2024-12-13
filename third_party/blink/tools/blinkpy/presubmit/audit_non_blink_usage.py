@@ -965,6 +965,7 @@ _CONFIG = [
             'third_party/blink/renderer/core/frame/web_frame_widget_impl',
             'third_party/blink/renderer/core/html/canvas',
             'third_party/blink/renderer/core/offscreencanvas',
+            'third_party/blink/renderer/core/timing/animation_frame_timing_info.h',
             'third_party/blink/renderer/core/timing/window_performance',
         ],
         'allowed': [

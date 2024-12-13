@@ -1959,6 +1959,8 @@ message AnimationFrameTimingInfo {
   optional int64 blocking_duration_ms = 1;
   optional int64 duration_ms = 2;
   optional int64 num_scripts = 3;
+  // Id for the BeginFrame, which triggered this animation frame.
+  optional BeginFrameId begin_frame_id = 4;
 }
 
 message AnimationFrameScriptTimingInfo {
@@ -2320,7 +2322,7 @@ message AndroidChoreographerFrameCallbackData {
 
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1072
+  // Next ID: 1075
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -2477,5 +2479,7 @@ message ChromeTrackEvent {
     optional WebExposedIsolationInfo web_exposed_isolation_info = 1072;
 
     optional UrlInfo url_info = 1073;
+
+    optional BeginFrameId begin_frame_id = 1074;
   }
 }
