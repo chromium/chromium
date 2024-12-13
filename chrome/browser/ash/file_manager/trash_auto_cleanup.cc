@@ -18,6 +18,7 @@ namespace {
 
 // Enumerates Trash info files (supported .Trash/info/ locations) and returns
 // the list of trashinfo files corresponding to the trash entries to delete.
+// A maximum of `kMaxBatchSize` trashinfo files is returned.
 std::vector<base::FilePath> GetTrashInfoFilesToDeleteOnBlockingThread(
     const std::vector<base::FilePath>& trash_info_directories) {
   std::vector<base::FilePath> trash_info_paths_to_delete;
@@ -43,7 +44,13 @@ std::vector<base::FilePath> GetTrashInfoFilesToDeleteOnBlockingThread(
       }
       if (now - info.last_modified >= kMaxTrashAge) {
         trash_info_paths_to_delete.push_back(trash_info_path);
+        if (trash_info_paths_to_delete.size() >= kMaxBatchSize) {
+          break;
+        }
       }
+    }
+    if (trash_info_paths_to_delete.size() >= kMaxBatchSize) {
+      break;
     }
   }
   if (invalid_file_counter) {
@@ -95,7 +102,9 @@ std::unique_ptr<TrashAutoCleanup> TrashAutoCleanup::Create(Profile* profile) {
 }
 
 void TrashAutoCleanup::Init() {
-  // TODO: Start the cleanup process.
+  cleanup_timer_.Start(FROM_HERE, kCleanupCheckInterval,
+                       base::BindRepeating(&TrashAutoCleanup::StartCleanup,
+                                           weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TrashAutoCleanup::StartCleanup() {
@@ -103,6 +112,18 @@ void TrashAutoCleanup::StartCleanup() {
   if (!file_manager::trash::IsTrashEnabledForProfile(profile_)) {
     return;
   }
+
+  if (!last_cleanup_time_.is_null() &&
+      base::Time::Now() - last_cleanup_time_ < kCleanupInterval) {
+    // Skip cleanup iteration if it last happened less than a day earlier.
+    if (cleanup_done_closure_for_test_) {
+      std::move(cleanup_done_closure_for_test_)
+          .Run(AutoCleanupResult::kWaitingForNextCleanupIteration);
+    }
+    return;
+  }
+  last_cleanup_time_ = base::Time::Now();
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
@@ -121,6 +142,12 @@ void TrashAutoCleanup::OnTrashInfoFilesToDeleteEnumerated(
           .Run(AutoCleanupResult::kNoOldFilesToCleanup);
     }
     return;
+  }
+  if (trash_info_paths_to_delete.size() == kMaxBatchSize) {
+    // The maximum batch size has been reached: there is more likely going to be
+    // more files to cleanup. Unset the last cleanup time to force the next
+    // iteration.
+    last_cleanup_time_ = base::Time();
   }
   validator_ =
       std::make_unique<file_manager::trash::TrashInfoValidator>(profile_);

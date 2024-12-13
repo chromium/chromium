@@ -5,17 +5,22 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_TRASH_AUTO_CLEANUP_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_TRASH_AUTO_CLEANUP_H_
 
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/file_manager/trash_info_validator.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace file_manager::trash {
 
+inline constexpr base::TimeDelta kCleanupInterval = base::Days(1);
+inline constexpr base::TimeDelta kCleanupCheckInterval = base::Hours(1);
 inline constexpr base::TimeDelta kMaxTrashAge = base::Days(30);
+inline constexpr int kMaxBatchSize = 500;
 
 enum class AutoCleanupResult {
   kCleanupSuccessful = 0,
   kNoOldFilesToCleanup,
+  kWaitingForNextCleanupIteration,
   kTrashInfoParsingError,
   kDeletionError,
 };
@@ -50,6 +55,8 @@ class TrashAutoCleanup {
   raw_ptr<Profile> profile_;
   std::unique_ptr<file_manager::trash::TrashInfoValidator> validator_ = nullptr;
   std::vector<base::FilePath> trash_info_directories_;
+  base::RepeatingTimer cleanup_timer_;
+  base::Time last_cleanup_time_;
   base::OnceCallback<void(AutoCleanupResult result)>
       cleanup_done_closure_for_test_;
 
