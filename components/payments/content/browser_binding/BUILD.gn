@@ -30,3 +30,17 @@ if (is_android) {
     ]
   }
 }
+
+source_set("fake_browser_bound_key_store") {
+  testonly = true
+  sources = [
+    "fake_browser_bound_key.cc",
+    "fake_browser_bound_key.h",
+    "fake_browser_bound_key_store.cc",
+    "fake_browser_bound_key_store.h",
+  ]
+  deps = [
+    ":interface",
+    "//base",
+  ]
+}

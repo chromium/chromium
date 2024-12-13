@@ -123,7 +123,10 @@ static_library("content") {
       "secure_payment_confirmation_no_creds_view_stub.cc",
       "secure_payment_confirmation_view_stub.cc",
     ]
-    deps += [ "//components/payments/content/android:browser_binding_jni" ]
+    deps += [
+      "//components/payments/content/android:browser_binding_jni",
+      "//components/webauthn/android",
+    ]
   } else {
     sources += [
       "content_payment_request_delegate.cc",
@@ -241,6 +244,10 @@ source_set("unit_tests") {
     "web_app_manifest_section_table_unittest.cc",
   ]
 
+  if (is_android) {
+    sources += [ "payment_credential_unittest.cc" ]
+  }
+
   if (!is_android) {
     sources += [
       "mock_content_payment_request_delegate.cc",
@@ -269,6 +276,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/os_crypt/async/browser:test_support",
+    "//components/payments/content/browser_binding:fake_browser_bound_key_store",
     "//components/payments/content/browser_binding:interface",
     "//components/payments/core",
     "//components/payments/core:error_strings",

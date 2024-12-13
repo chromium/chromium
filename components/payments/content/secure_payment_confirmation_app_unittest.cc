@@ -16,6 +16,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/payments/content/browser_binding/fake_browser_bound_key.h"
+#include "components/payments/content/browser_binding/fake_browser_bound_key_store.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/core/method_strings.h"
 #include "components/webauthn/core/browser/mock_internal_authenticator.h"
@@ -46,71 +48,6 @@ using ::testing::Property;
 
 static constexpr char kChallengeBase64[] = "aaaa";
 static constexpr char kCredentialIdBase64[] = "cccc";
-
-class FakeBrowserBoundKey : public BrowserBoundKey {
- public:
-  FakeBrowserBoundKey() = default;
-  FakeBrowserBoundKey(std::vector<uint8_t> public_key_as_cose_key,
-                      std::vector<uint8_t> signature,
-                      std::vector<uint8_t> expected_client_data)
-      : public_key_as_cose_key_(public_key_as_cose_key),
-        signature_(signature),
-        expected_client_data_(expected_client_data) {}
-  FakeBrowserBoundKey(const FakeBrowserBoundKey& other)
-      : public_key_as_cose_key_(other.public_key_as_cose_key_),
-        signature_(other.signature_),
-        expected_client_data_(other.expected_client_data_) {}
-  FakeBrowserBoundKey& operator=(const FakeBrowserBoundKey& other) {
-    public_key_as_cose_key_ = other.public_key_as_cose_key_;
-    signature_ = other.signature_;
-    expected_client_data_ = other.expected_client_data_;
-    return *this;
-  }
-  ~FakeBrowserBoundKey() override = default;
-
-  std::vector<uint8_t> Sign(const std::vector<uint8_t>& client_data) override {
-    if (client_data == expected_client_data_) {
-      return signature_;
-    }
-    return {};
-  }
-  std::vector<uint8_t> GetPublicKeyAsCoseKey() override {
-    return public_key_as_cose_key_;
-  }
-
- private:
-  std::vector<uint8_t> public_key_as_cose_key_;
-  std::vector<uint8_t> signature_;
-  std::vector<uint8_t> expected_client_data_;
-};
-
-class FakeBrowserBoundKeyStore : public BrowserBoundKeyStore {
- public:
-  FakeBrowserBoundKeyStore() = default;
-  ~FakeBrowserBoundKeyStore() override = default;
-
-  std::unique_ptr<BrowserBoundKey> GetOrCreateBrowserBoundKeyForCredentialId(
-      const std::vector<uint8_t>& credential_id) override {
-    if (key_map_.find(credential_id) == key_map_.end()) {
-      key_map_[credential_id] = FakeBrowserBoundKey();
-    }
-    return std::unique_ptr<BrowserBoundKey>(
-        new FakeBrowserBoundKey(key_map_[credential_id]));
-  }
-
-  void PutFakeKey(const std::vector<uint8_t>& credential_id,
-                  FakeBrowserBoundKey bbk) {
-    key_map_[credential_id] = bbk;
-  }
-
-  base::WeakPtr<FakeBrowserBoundKeyStore> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
- private:
-  std::map<std::vector<uint8_t>, FakeBrowserBoundKey> key_map_;
-  base::WeakPtrFactory<FakeBrowserBoundKeyStore> weak_ptr_factory_{this};
-};
 
 class SecurePaymentConfirmationAppTest : public testing::Test,
                                          public PaymentApp::Delegate {
