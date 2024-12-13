@@ -50,6 +50,7 @@ import urllib.parse
 
 import resource
 from os.path import expanduser
+import pprint
 
 
 # The connected components in the graph. This is useful to split the rewrite
@@ -143,25 +144,22 @@ class Node:
 
         return Node.key_to_node[node.replacement]
 
+    def __repr__(self) -> str:
+        result = [
+            f"Node {hash(self)} {{",
+            f"  is_buffer: {self.is_buffer}",
+            f"  replacement: {self.replacement}",
+            f"  include_directive: {self.include_directive}",
+            f"  size_info_available: {self.size_info_available}",
+            f"  neighbors_directed: {pprint.pformat([hash(n) for n in self.neighbors_directed], indent=4)}",
+            "}",
+        ]
+        return "\n".join(result)
+
     # This is not parsable by from_string but is useful for debugging the graph
     # of nodes.
     def to_debug_string(self) -> str:
-        # include_directory already includes explanatory text so we don't have a
-        # string before its value.
-        result = "is_buffer:{},replacement:{},{},size_info_available:{}".format(
-            self.is_buffer, self.replacement, self.include_directive,
-            self.size_info_available)
-        result += "is_deref_node:{},is_data_change:{},".format(
-            self.is_deref_node, self.is_data_change)
-        # Recursively get neighbors_directed.
-        result += "neighbors:"
-        neighbors_directed = "{"
-        for node in self.neighbors_directed:
-            if len(neighbors_directed) > 1:
-                neighbors_directed += ", "
-            neighbors_directed += node.to_debug_string()
-        neighbors_directed += "}"
-        return result + neighbors_directed
+        return repr(self)
 
     # Static method to get all nodes.
     @classmethod
