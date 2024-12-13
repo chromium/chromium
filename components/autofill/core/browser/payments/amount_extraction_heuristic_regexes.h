@@ -39,6 +39,12 @@ class AmountExtractionHeuristicRegexes final {
   // See comment for `number_of_ancestor_levels_to_search_`.
   uint32_t number_of_ancestor_levels_to_search() const;
 
+  void ResetRegexStringPatternsForTesting() {
+    keyword_pattern_.clear();
+    amount_pattern_.clear();
+    number_of_ancestor_levels_to_search_ = 0;
+  }
+
  private:
   // A keyword pattern string used for amount extraction from DOM search
   // process.

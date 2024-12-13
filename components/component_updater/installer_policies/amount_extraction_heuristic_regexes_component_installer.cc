@@ -4,6 +4,7 @@
 
 #include "components/component_updater/installer_policies/amount_extraction_heuristic_regexes_component_installer.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -29,6 +30,27 @@ constexpr std::array<uint8_t, 32>
 
 base::FilePath GetInstalledPath(const base::FilePath& base) {
   return base.Append(kAmountExtractionHeuristicRegexesBinaryPbFileName);
+}
+
+static std::optional<std::string> LoadAmountExtractionHeuristicRegexesFromDisk(
+    const base::FilePath& pb_path) {
+  std::string binary_pb;
+  if (!base::ReadFileToString(pb_path, &binary_pb)) {
+    return std::nullopt;
+  }
+
+  return binary_pb;
+}
+
+static void PopulateAmountExtractionHeuristicRegexesData(
+    const base::FilePath& pb_path,
+    std::optional<std::string> binary_pb) {
+  if (!binary_pb) {
+    return;
+  }
+
+  autofill::payments::AmountExtractionHeuristicRegexes::GetInstance()
+      .PopulateStringFromComponent(std::move(*binary_pb));
 }
 
 }  // namespace
@@ -61,7 +83,14 @@ void AmountExtractionHeuristicRegexesInstallerPolicy::OnCustomUninstall() {}
 void AmountExtractionHeuristicRegexesInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value::Dict /* manifest */) {}
+    base::Value::Dict /* manifest */) {
+  const base::FilePath pb_path = GetInstalledPath(install_dir);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&LoadAmountExtractionHeuristicRegexesFromDisk, pb_path),
+      base::BindOnce(&PopulateAmountExtractionHeuristicRegexesData, pb_path));
+}
 
 // Called during startup and installation before ComponentReady().
 bool AmountExtractionHeuristicRegexesInstallerPolicy::VerifyInstallation(
