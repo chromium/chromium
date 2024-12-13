@@ -15,16 +15,6 @@ Dumping matched rules:
     transition-property: color, background-color; @[undefined-undefined]
     display: inline-block; @[undefined-undefined]
 }
-@media (min-width: 1px)
-    @starting-style
-         {    regular
-            --foo: yes; @[9:12-9:23]
-            background-color: yellow; @[10:12-10:37]
-            color: hotpink; @[11:12-11:27]
-            --foo: yes; @[undefined-undefined]
-            background-color: yellow; @[undefined-undefined]
-            color: hotpink; @[undefined-undefined]
-        }
 Dumping inherited rules: 
 *body* {    regular
 }

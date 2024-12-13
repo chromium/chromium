@@ -75,6 +75,7 @@
         "DocumentDetached",
         "FontsUpdated",
         "ForcePseudoState",
+        "ForceStartingStyle",
         "MediaQueryResultChanged",
         "WillChangeStyleElement",
         "LocalFontsEnabled",

@@ -778,6 +778,7 @@ void InspectorCSSAgent::Reset() {
 
 void InspectorCSSAgent::ResetNonPersistentData() {
   ResetPseudoStates();
+  ResetStartingStyles();
 }
 
 void InspectorCSSAgent::enable(std::unique_ptr<EnableCallback> prp_callback) {
@@ -1083,6 +1084,23 @@ void InspectorCSSAgent::ForcePseudoState(Element* element,
   }
   if (force)
     *result = true;
+}
+
+void InspectorCSSAgent::ForceStartingStyle(Element* element, bool* result) {
+  if (node_id_to_forced_starting_style_.empty()) {
+    return;
+  }
+
+  int node_id = dom_agent_->BoundNodeId(element);
+  if (!node_id) {
+    return;
+  }
+
+  if (!node_id_to_forced_starting_style_.Contains(node_id)) {
+    return;
+  }
+
+  *result = true;
 }
 
 protocol::Response InspectorCSSAgent::getMediaQueries(
@@ -2705,6 +2723,37 @@ protocol::Response InspectorCSSAgent::forcePseudoState(
   return protocol::Response::Success();
 }
 
+protocol::Response InspectorCSSAgent::forceStartingStyle(int node_id,
+                                                         bool forced) {
+  protocol::Response response = AssertEnabled();
+  if (!response.IsSuccess()) {
+    return response;
+  }
+  Element* element = nullptr;
+  response = dom_agent_->AssertElement(node_id, element);
+  if (!response.IsSuccess()) {
+    return response;
+  }
+
+  bool current_forced_starting_style =
+      node_id_to_forced_starting_style_.Contains(node_id);
+  bool need_style_recalc = forced != current_forced_starting_style;
+
+  if (!need_style_recalc) {
+    return protocol::Response::Success();
+  }
+
+  if (forced) {
+    node_id_to_forced_starting_style_.insert(node_id);
+  } else {
+    node_id_to_forced_starting_style_.erase(node_id);
+  }
+
+  element->GetDocument().GetStyleEngine().MarkAllElementsForStyleRecalc(
+      StyleChangeReasonForTracing::Create(style_change_reason::kInspector));
+  return protocol::Response::Success();
+}
+
 void InspectorCSSAgent::IncrementFocusedCountForAncestors(Element* element) {
   for (Node& ancestor : FlatTreeTraversal::AncestorsOf(*element)) {
     if (!IsA<Element>(ancestor))
@@ -3614,6 +3663,7 @@ void InspectorCSSAgent::WillRemoveDOMNode(Node* node) {
   int node_id = dom_agent_->BoundNodeId(node);
   DCHECK(node_id);
   node_id_to_forced_pseudo_state_.erase(node_id);
+  node_id_to_forced_starting_style_.erase(node_id);
   computed_style_updated_node_ids_.erase(node_id);
 
   NodeToInspectorStyleSheet::iterator it =
@@ -3686,6 +3736,21 @@ void InspectorCSSAgent::ResetPseudoStates() {
 
   node_id_to_forced_pseudo_state_.clear();
   node_id_to_number_focused_children_.clear();
+  for (auto& document : documents_to_change) {
+    document->GetStyleEngine().MarkAllElementsForStyleRecalc(
+        StyleChangeReasonForTracing::Create(style_change_reason::kInspector));
+  }
+}
+
+void InspectorCSSAgent::ResetStartingStyles() {
+  HeapHashSet<Member<Document>> documents_to_change;
+  for (auto& node_id : node_id_to_forced_starting_style_) {
+    if (auto* element = To<Element>(dom_agent_->NodeForId(node_id))) {
+      documents_to_change.insert(&element->GetDocument());
+    }
+  }
+
+  node_id_to_forced_starting_style_.clear();
   for (auto& document : documents_to_change) {
     document->GetStyleEngine().MarkAllElementsForStyleRecalc(
         StyleChangeReasonForTracing::Create(style_change_reason::kInspector));

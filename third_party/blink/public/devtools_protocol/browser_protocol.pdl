@@ -2255,6 +2255,14 @@ experimental domain CSS
       # Element pseudo classes to force when computing the element's style.
       array of string forcedPseudoClasses
 
+  # Ensures that the given node is in its starting-style state.
+  command forceStartingStyle
+    parameters
+      # The element id for which to force the starting-style state.
+      DOM.NodeId nodeId
+      # Boolean indicating if this is on or off.
+      boolean forced
+
   command getBackgroundColors
     parameters
       # Id of the node to get background colors for.

@@ -3757,7 +3757,7 @@ TEST_F(StyleResolverTestCQ, CanAffectAnimationsMPC) {
   EXPECT_FALSE(c->ComputedStyleRef().CanAffectAnimations());
 }
 
-TEST_F(StyleResolverTest, CssRulesForElementIncludeStartingStyle) {
+TEST_F(StyleResolverTest, CssRulesForElementExcludeStartingStyle) {
   SetBodyInnerHTML(R"HTML(
     <style>
       @starting-style {
@@ -3773,18 +3773,18 @@ TEST_F(StyleResolverTest, CssRulesForElementIncludeStartingStyle) {
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
   EXPECT_EQ(target->GetComputedStyle(), nullptr);
-  EXPECT_NE(GetStyleEngine().GetStyleResolver().CssRulesForElement(target),
+  EXPECT_EQ(GetStyleEngine().GetStyleResolver().CssRulesForElement(target),
             nullptr);
 
   GetElementById("wrapper")->removeAttribute(html_names::kHiddenAttr);
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_NE(target->GetComputedStyle(), nullptr);
-  EXPECT_NE(GetStyleEngine().GetStyleResolver().CssRulesForElement(target),
+  EXPECT_EQ(GetStyleEngine().GetStyleResolver().CssRulesForElement(target),
             nullptr);
 }
 
-TEST_F(StyleResolverTest, PseudoCSSRulesForElementIncludeStartingStyle) {
+TEST_F(StyleResolverTest, PseudoCSSRulesForElementExcludeStartingStyle) {
   SetBodyInnerHTML(R"HTML(
     <style>
       @starting-style {
@@ -3810,7 +3810,7 @@ TEST_F(StyleResolverTest, PseudoCSSRulesForElementIncludeStartingStyle) {
       GetStyleEngine().GetStyleResolver().PseudoCSSRulesForElement(
           target, kPseudoIdBefore, g_null_atom);
   ASSERT_NE(pseudo_rules, nullptr);
-  EXPECT_EQ(pseudo_rules->size(), 2u);
+  EXPECT_EQ(pseudo_rules->size(), 1u);
 
   GetElementById("wrapper")->removeAttribute(html_names::kHiddenAttr);
   UpdateAllLifecyclePhasesForTest();
@@ -3821,10 +3821,8 @@ TEST_F(StyleResolverTest, PseudoCSSRulesForElementIncludeStartingStyle) {
   pseudo_rules = GetStyleEngine().GetStyleResolver().PseudoCSSRulesForElement(
       target, kPseudoIdBefore, g_null_atom);
   ASSERT_NE(pseudo_rules, nullptr);
-  EXPECT_EQ(pseudo_rules->size(), 2u);
+  EXPECT_EQ(pseudo_rules->size(), 1u);
   EXPECT_EQ(pseudo_rules->at(0).first->cssText(),
-            "#target::before { color: red; }");
-  EXPECT_EQ(pseudo_rules->at(1).first->cssText(),
             "#target::before { content: \"X\"; color: green; }");
 }
 

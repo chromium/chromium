@@ -135,6 +135,7 @@ class CORE_EXPORT InspectorCSSAgent final
   void Trace(Visitor*) const override;
 
   void ForcePseudoState(Element*, CSSSelector::PseudoType, bool* result);
+  void ForceStartingStyle(Element*, bool* result);
   void DidCommitLoadForLocalFrame(LocalFrame*) override;
   void Restore() override;
   void FlushPendingProtocolNotifications() override;
@@ -263,6 +264,7 @@ class CORE_EXPORT InspectorCSSAgent final
   protocol::Response forcePseudoState(
       int node_id,
       std::unique_ptr<protocol::Array<String>> forced_pseudo_classes) override;
+  protocol::Response forceStartingStyle(int node_id, bool forced) override;
   protocol::Response getMediaQueries(
       std::unique_ptr<protocol::Array<protocol::CSS::CSSMedia>>*) override;
   protocol::Response getLayersForNode(
@@ -349,6 +351,7 @@ class CORE_EXPORT InspectorCSSAgent final
                                   // styles
   typedef HashMap<int, unsigned> NodeIdToForcedPseudoState;
   typedef HashMap<int, unsigned> NodeIdToNumberFocusedChildren;
+  typedef HashSet<int> NodeIdToForcedStartingStyle;
 
   void ResourceContentLoaded(std::unique_ptr<EnableCallback>);
   void CompleteEnabled();
@@ -485,6 +488,7 @@ class CORE_EXPORT InspectorCSSAgent final
   void StyleSheetChanged(InspectorStyleSheetBase*) override;
 
   void ResetPseudoStates();
+  void ResetStartingStyles();
 
   void IncrementFocusedCountForAncestors(Element*);
   void DecrementFocusedCountForAncestors(Element*);
@@ -511,6 +515,7 @@ class CORE_EXPORT InspectorCSSAgent final
   NodeToInspectorStyleSheet node_to_inspector_style_sheet_;
   NodeIdToForcedPseudoState node_id_to_forced_pseudo_state_;
   NodeIdToNumberFocusedChildren node_id_to_number_focused_children_;
+  NodeIdToForcedStartingStyle node_id_to_forced_starting_style_;
 
   Member<StyleRuleUsageTracker> tracker_;
 

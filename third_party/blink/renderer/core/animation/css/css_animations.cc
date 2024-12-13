@@ -86,6 +86,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -2580,8 +2581,12 @@ void CSSAnimations::CalculateTransitionUpdate(
       << "Should always pass nullptr instead of ensured styles";
   const ComputedStyle* scope_old_style =
       PostStyleUpdateScope::GetOldStyle(animating_element);
+
+  bool force_starting_style = false;
+  probe::ForceStartingStyle(&animating_element, &force_starting_style);
   bool is_starting_style = old_style && old_style->IsStartingStyle();
-  DCHECK(old_style == scope_old_style || !scope_old_style && is_starting_style)
+  DCHECK(old_style == scope_old_style ||
+         !scope_old_style && is_starting_style || force_starting_style)
       << "The old_style passed in should be the style for the element at the "
          "beginning of the lifecycle update, or a style based on the "
          "@starting-style style";

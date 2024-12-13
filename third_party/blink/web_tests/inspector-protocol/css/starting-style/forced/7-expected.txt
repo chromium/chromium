@@ -1,0 +1,50 @@
+@starting-style with custom property
+Dumping matched rules: 
+*> div* {    regular
+    padding: 10px; @[3:8-3:22]
+    transition: color 1s ease, background-color 1s ease; @[4:8-4:60]
+    display: inline-block; @[5:8-5:30]
+    padding-top: 10px; @[undefined-undefined]
+    padding-right: 10px; @[undefined-undefined]
+    padding-bottom: 10px; @[undefined-undefined]
+    padding-left: 10px; @[undefined-undefined]
+    transition-behavior: normal, normal; @[undefined-undefined]
+    transition-duration: 1s, 1s; @[undefined-undefined]
+    transition-timing-function: ease, ease; @[undefined-undefined]
+    transition-delay: 0s, 0s; @[undefined-undefined]
+    transition-property: color, background-color; @[undefined-undefined]
+    display: inline-block; @[undefined-undefined]
+}
+@media (min-width: 1px)
+    @starting-style
+         {    regular
+            --foo: yes; @[9:12-9:23]
+            background-color: yellow; @[10:12-10:37]
+            color: hotpink; @[11:12-11:27]
+            --foo: yes; @[undefined-undefined]
+            background-color: yellow; @[undefined-undefined]
+            color: hotpink; @[undefined-undefined]
+        }
+Dumping inherited rules: 
+*body* {    regular
+}
+Dumping matched rules: 
+*> div* {    regular
+    padding: 10px; @[3:8-3:22]
+    transition: color 1s ease, background-color 1s ease; @[4:8-4:60]
+    display: inline-block; @[5:8-5:30]
+    padding-top: 10px; @[undefined-undefined]
+    padding-right: 10px; @[undefined-undefined]
+    padding-bottom: 10px; @[undefined-undefined]
+    padding-left: 10px; @[undefined-undefined]
+    transition-behavior: normal, normal; @[undefined-undefined]
+    transition-duration: 1s, 1s; @[undefined-undefined]
+    transition-timing-function: ease, ease; @[undefined-undefined]
+    transition-delay: 0s, 0s; @[undefined-undefined]
+    transition-property: color, background-color; @[undefined-undefined]
+    display: inline-block; @[undefined-undefined]
+}
+Dumping inherited rules: 
+*body* {    regular
+}
+
