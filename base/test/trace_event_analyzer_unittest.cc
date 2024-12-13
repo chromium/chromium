@@ -55,8 +55,7 @@ void TraceEventAnalyzerTest::BeginTracing() {
   output_.json_output.clear();
   buffer_.Start();
   base::trace_event::TraceLog::GetInstance()->SetEnabled(
-      base::trace_event::TraceConfig("*", ""),
-      base::trace_event::TraceLog::RECORDING_MODE);
+      base::trace_event::TraceConfig("*", ""));
 }
 
 void TraceEventAnalyzerTest::EndTracing() {

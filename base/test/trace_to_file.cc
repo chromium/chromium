@@ -56,8 +56,7 @@ void TraceToFile::BeginTracing(const FilePath& path,
   WriteFileHeader();
 
   trace_event::TraceLog::GetInstance()->SetEnabled(
-      trace_event::TraceConfig(categories, trace_event::RECORD_UNTIL_FULL),
-      trace_event::TraceLog::RECORDING_MODE);
+      trace_event::TraceConfig(categories, trace_event::RECORD_UNTIL_FULL));
 }
 
 void TraceToFile::WriteFileHeader() {

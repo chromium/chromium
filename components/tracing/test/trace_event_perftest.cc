@@ -44,7 +44,7 @@ class TraceEventPerfTest : public ::testing::Test {
   void BeginTrace() {
     TraceConfig config("*", "");
     config.SetTraceRecordMode(TraceRecordMode::RECORD_CONTINUOUSLY);
-    TraceLog::GetInstance()->SetEnabled(config, TraceLog::RECORDING_MODE);
+    TraceLog::GetInstance()->SetEnabled(config);
   }
 
   void EndTraceAndFlush() {

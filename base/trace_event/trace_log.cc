@@ -739,10 +739,7 @@ void TraceLog::UpdateCategoryRegistry() {
   }
 }
 
-void TraceLog::SetEnabled(const TraceConfig& trace_config,
-                          uint8_t modes_to_enable) {
-  // FILTERING_MODE is no longer supported.
-  DCHECK(modes_to_enable == RECORDING_MODE);
+void TraceLog::SetEnabled(const TraceConfig& trace_config) {
   DCHECK(trace_config.process_filter_config().IsEnabled(process_id_));
 
   AutoLock lock(lock_);
@@ -958,16 +955,10 @@ TraceConfig TraceLog::GetCurrentTraceConfig() const {
 
 void TraceLog::SetDisabled() {
   AutoLock lock(lock_);
-  SetDisabledWhileLocked(RECORDING_MODE);
+  SetDisabledWhileLocked();
 }
 
-void TraceLog::SetDisabled(uint8_t modes_to_disable) {
-  AutoLock lock(lock_);
-  SetDisabledWhileLocked(modes_to_disable);
-}
-
-void TraceLog::SetDisabledWhileLocked(uint8_t modes_to_disable) {
-  DCHECK(modes_to_disable == RECORDING_MODE);
+void TraceLog::SetDisabledWhileLocked() {
   if (!tracing_session_)
     return;
 
@@ -1097,7 +1088,7 @@ void TraceLog::CheckIfBufferIsFullWhileLocked() {
     if (buffer_limit_reached_timestamp_.is_null()) {
       buffer_limit_reached_timestamp_ = OffsetNow();
     }
-    SetDisabledWhileLocked(RECORDING_MODE);
+    SetDisabledWhileLocked();
   }
 }
 
@@ -1547,14 +1538,14 @@ TraceEventHandle TraceLog::AddTraceEventWithThreadIdAndTimestamps(
   TimeTicks offset_event_timestamp = OffsetTimestamp(timestamp);
 
   ThreadLocalEventBuffer* event_buffer = nullptr;
-  if (*category_group_enabled & RECORDING_MODE) {
+  if (*category_group_enabled) {
     // |thread_local_event_buffer| can be null if the current thread doesn't
     // have a message loop or the message loop is blocked.
     InitializeThreadLocalEventBufferIfSupported();
     event_buffer = thread_local_event_buffer;
   }
 
-  if (*category_group_enabled & RECORDING_MODE) {
+  if (*category_group_enabled) {
     auto trace_event_override =
         add_trace_event_override_.load(std::memory_order_relaxed);
     if (trace_event_override) {

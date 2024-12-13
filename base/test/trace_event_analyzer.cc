@@ -960,8 +960,7 @@ void TraceAnalyzer::ParseMetadata() {
 void Start(const std::string& category_filter_string) {
   DCHECK(!base::trace_event::TraceLog::GetInstance()->IsEnabled());
   base::trace_event::TraceLog::GetInstance()->SetEnabled(
-      base::trace_event::TraceConfig(category_filter_string, ""),
-      base::trace_event::TraceLog::RECORDING_MODE);
+      base::trace_event::TraceConfig(category_filter_string, ""));
 }
 
 std::unique_ptr<TraceAnalyzer> Stop() {

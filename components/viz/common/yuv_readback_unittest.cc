@@ -59,8 +59,7 @@ class YUVReadbackTest : public testing::Test {
   void StartTracing(const std::string& filter) {
     base::trace_event::TraceLog::GetInstance()->SetEnabled(
         base::trace_event::TraceConfig(filter,
-                                       base::trace_event::RECORD_UNTIL_FULL),
-        base::trace_event::TraceLog::RECORDING_MODE);
+                                       base::trace_event::RECORD_UNTIL_FULL));
   }
 
   static void TraceDataCB(
