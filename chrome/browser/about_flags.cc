@@ -11811,7 +11811,14 @@ const FeatureEntry kFeatureEntries[] = {
     {"privacy-sandbox-ads-api-ux-enhancements",
      flag_descriptions::kPrivacySandboxAdsApiUxEnhancementsName,
      flag_descriptions::kPrivacySandboxAdsApiUxEnhancementsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements)}
+     FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements)},
+
+#if !BUILDFLAG(IS_ANDROID)
+    {"safety-hub-services-on-start-up",
+     flag_descriptions::kSafetyHubServicesOnStartUpName,
+     flag_descriptions::kSafetyHubServicesOnStartUpDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSafetyHubServicesOnStartUp)},
+#endif  // !BUILDFLAG(IS_ANDROID)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

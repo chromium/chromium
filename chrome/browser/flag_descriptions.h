@@ -1940,6 +1940,11 @@ extern const char kSafetyHubHaTSOneOffSurveyDescription[];
 extern const char kSafetyHubAbusiveNotificationRevocationName[];
 extern const char kSafetyHubAbusiveNotificationRevocationDescription[];
 
+#if !BUILDFLAG(IS_ANDROID)
+extern const char kSafetyHubServicesOnStartUpName[];
+extern const char kSafetyHubServicesOnStartUpDescription[];
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 extern const char kSameAppWindowCycleName[];
 extern const char kSameAppWindowCycleDescription[];
 

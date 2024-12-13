@@ -21878,6 +21878,7 @@ from previous Chrome versions.
   <int value="606723570" label="SharingUseDeviceInfo:disabled"/>
   <int value="606834606" label="force-color-profile"/>
   <int value="606969417" label="DiscoverApp:enabled"/>
+  <int value="607822928" label="SafetyHubServicesOnStartUp:enabled"/>
   <int value="608405849" label="WebAuthenticationFilterGooglePasskeys:enabled"/>
   <int value="608761130" label="PrintSaveToDrive:enabled"/>
   <int value="609112512" label="touch-selection-strategy"/>
@@ -22819,6 +22820,7 @@ from previous Chrome versions.
   <int value="983084316" label="SyncUSSNigori:disabled"/>
   <int value="983236654" label="TrackingProtection3pcd:enabled"/>
   <int value="983311394" label="tab-management-experiment-type"/>
+  <int value="983461731" label="SafetyHubServicesOnStartUp:disabled"/>
   <int value="985127848"
       label="SafeBrowsingPasswordProtectionForSignedInUsers:disabled"/>
   <int value="986796748" label="AccountConsistency:enabled"/>

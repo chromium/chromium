@@ -7758,6 +7758,15 @@
     "expiry_milestone": 136
   },
   {
+    "name": "safety-hub-services-on-start-up",
+    "owners": [
+      "fsenra@google.com",
+      "sideyilmaz@chromium.org",
+      "chrome-browser-privacy-team@google.com"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "safety-hub-weak-reused-passwords",
     "owners": [
       "fsenra@google.com",

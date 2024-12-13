@@ -3391,6 +3391,14 @@ const char kSafetyHubAbusiveNotificationRevocationDescription[] =
     "When enabled, includes abusive notification permission revocation in the "
     "site permission module of Safety Hub on desktop.";
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kSafetyHubServicesOnStartUpName[] =
+    "Create Safety Hub services on start up";
+const char kSafetyHubServicesOnStartUpDescription[] =
+    "When enabled, Safety Hub services are created on start up enabling its "
+    "checks to start right away.";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 const char kSameAppWindowCycleName[] = "Cros Labs: Same App Window Cycling";
 const char kSameAppWindowCycleDescription[] =
     "Use Alt+` to cycle through the windows of the active application.";
