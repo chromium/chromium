@@ -126,6 +126,8 @@ export class ModificationsPanelElement extends CrLitElement {
     if (result.status.success) {
       assert(result.constraints);
       this.constraints = result.constraints;
+      // Only clear input on successful add.
+      this.$.addConstraintInput.value = '';
     } else {
       if (result.status.errorMessage !== undefined) {
         this.addConstraintErrorMessage = result.status.errorMessage;

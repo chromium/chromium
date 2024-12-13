@@ -370,6 +370,7 @@ suite('CertificateViewer', function() {
     assertTrue(modificationsPanel.constraints.includes('domainname.com'));
     assertTrue(modificationsPanel.constraints.includes('127.0.0.1/24'));
     assertFalse(modificationsPanel.$.addConstraintInput.invalid);
+    assertEquals(modificationsPanel.$.addConstraintInput.value, '');
   });
 
   test('AddConstraintCIDR', async function() {
@@ -401,6 +402,7 @@ suite('CertificateViewer', function() {
     assertTrue(modificationsPanel.constraints.includes('127.0.0.1/24'));
     assertTrue(modificationsPanel.constraints.includes('10.10.0.0/15'));
     assertFalse(modificationsPanel.$.addConstraintInput.invalid);
+    assertEquals(modificationsPanel.$.addConstraintInput.value, '');
   });
 
   test('AddConstraintError', async function() {
@@ -433,6 +435,7 @@ suite('CertificateViewer', function() {
     assertTrue(modificationsPanel.$.addConstraintInput.invalid);
     assertEquals(
         modificationsPanel.$.addConstraintInput.errorMessage, 'error message');
+    assertEquals(modificationsPanel.$.addConstraintInput.value, 'foo.com');
   });
 
   test('DeleteConstraintDNS', async function() {
