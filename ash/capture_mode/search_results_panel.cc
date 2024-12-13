@@ -51,6 +51,13 @@ inline constexpr gfx::Insets kSearchTextfieldSpacing =
     gfx::Insets::TLBR(14, 0, 14, 16);
 inline constexpr gfx::Insets kHeaderIconSpacing = gfx::Insets::TLBR(0, 2, 0, 8);
 
+// Returns the target container window for the panel widget.
+aura::Window* GetParentContainer(aura::Window* root, bool is_active) {
+  return Shell::GetContainer(
+      root, is_active ? kShellWindowId_CaptureModeSearchResultsPanel
+                      : kShellWindowId_SystemModalContainer);
+}
+
 }  // namespace
 
 // TODO: crbug.com/377764351 - Fix the textfield being too far to the left when
@@ -222,12 +229,12 @@ SearchResultsPanel::SearchResultsPanel() {
 SearchResultsPanel::~SearchResultsPanel() = default;
 
 // static
-views::UniqueWidgetPtr SearchResultsPanel::CreateWidget(aura::Window* root) {
+views::UniqueWidgetPtr SearchResultsPanel::CreateWidget(aura::Window* root,
+                                                        bool is_active) {
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.parent =
-      Shell::GetContainer(root, kShellWindowId_CaptureModeSearchResultsPanel);
+  params.parent = GetParentContainer(root, is_active);
   params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.shadow_elevation = wm::kShadowElevationInactiveWindow;
@@ -251,6 +258,15 @@ void SearchResultsPanel::SetSearchBoxImage(const gfx::ImageSkia& image) {
 
 void SearchResultsPanel::SetSearchBoxText(const std::u16string& text) {
   search_box_view_->textfield_->SetText(text);
+}
+
+void SearchResultsPanel::RefreshStackingOrder(bool is_active) {
+  aura::Window* native_window = GetWidget()->GetNativeWindow();
+  // While the capture mode session is active, we parent the panel to its own
+  // container, else we parent it to the system modal container.
+  aura::Window* new_parent =
+      GetParentContainer(native_window->GetRootWindow(), is_active);
+  views::Widget::ReparentNativeView(native_window, new_parent);
 }
 
 bool SearchResultsPanel::HasFocus() const {

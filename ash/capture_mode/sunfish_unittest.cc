@@ -36,6 +36,7 @@
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/scanner/scanner_delegate.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
@@ -577,7 +578,8 @@ TEST_F(SunfishTest, CaptureBarView) {
 
 // Tests that the search results panel is draggable.
 TEST_F(SunfishTest, DragSearchResultsPanel) {
-  auto widget = SearchResultsPanel::CreateWidget(Shell::GetPrimaryRootWindow());
+  auto widget = SearchResultsPanel::CreateWidget(Shell::GetPrimaryRootWindow(),
+                                                 /*is_active=*/false);
   widget->SetBounds(gfx::Rect(100, 100, capture_mode::kSearchResultsPanelWidth,
                               capture_mode::kSearchResultsPanelHeight));
   widget->Show();
@@ -1877,6 +1879,56 @@ TEST_F(SunfishTest, KeyboardNavigationActionButtons) {
   EXPECT_TRUE(
       CaptureModeSessionFocusCycler::HighlightHelper::Get(smart_action_button)
           ->has_focus());
+}
+
+// Tests the panel stacking order in Sunfish session.
+TEST_F(SunfishTest, PanelStackingOrder) {
+  // Show the panel in Sunfish session. Test it is stacked to the Search Results
+  // Panel container.
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  auto* generator = GetEventGenerator();
+  SelectCaptureModeRegion(generator, gfx::Rect(50, 50, 400, 400),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  auto* panel_widget = controller->search_results_panel_widget();
+  ASSERT_TRUE(panel_widget);
+  aura::Window* panel_window = panel_widget->GetNativeWindow();
+  EXPECT_EQ(Shell::GetContainer(panel_window->GetRootWindow(),
+                                kShellWindowId_CaptureModeSearchResultsPanel),
+            panel_window->parent());
+
+  // Right click on the panel. Test we end the session and the panel is stacked
+  // to the System Modal container.
+  generator->MoveMouseTo(panel_widget->GetWindowBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(controller->IsActive());
+  generator->ClickRightButton();
+  EXPECT_FALSE(controller->IsActive());
+  EXPECT_EQ(Shell::GetContainer(panel_window->GetRootWindow(),
+                                kShellWindowId_SystemModalContainer),
+            panel_window->parent());
+
+  // Start default session. The panel will be closed.
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  EXPECT_FALSE(controller->search_results_panel_widget());
+
+  // Select a new region, then press the Search button. Test we end the session
+  // and the panel is stacked to the System Modal container.
+  CaptureModeTestApi test_api;
+  test_api.SetUserSelectedRegion(gfx::Rect());
+  SelectCaptureModeRegion(generator, gfx::Rect(50, 50, 400, 400),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  LeftClickOn(
+      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton));
+  WaitForImageCapturedForSearch(PerformCaptureType::kSearch);
+  panel_widget = controller->search_results_panel_widget();
+  ASSERT_TRUE(panel_widget);
+  panel_window = panel_widget->GetNativeWindow();
+  EXPECT_EQ(Shell::GetContainer(panel_window->GetRootWindow(),
+                                kShellWindowId_SystemModalContainer),
+            panel_window->parent());
 }
 
 class ScannerTest : public AshTestBase {

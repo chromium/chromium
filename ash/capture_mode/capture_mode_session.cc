@@ -2301,8 +2301,6 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
 
   // Allow all events located on the results panel (if present) to go through.
   // See `CaptureModeController::IsEventOnSearchResultsPanel()`.
-  // TODO(b/377019438): Block all events that aren't targeting the panel from
-  // reaching other UI elements underneath.
   // This must be done after `MaybeUpdateCaptureUisOpacity()` which will hide
   // the panel if a drag is in progress and before running
   // `deferred_cursor_updater` to allow the panel to update the cursor type.
@@ -2311,11 +2309,16 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
     if (cursor_setter_) {
       cursor_setter_->ResetCursor();
     }
+    // If the event is a mouse or touch down, we assume the user wants to
+    // interact with the panel and stop the session now.
+    if (is_press_event) {
+      controller_->Stop();  // Deletes `this`.
+    }
     return;
   }
 
   // Update the value of `should_pass_located_event_to_camera_preview_` here
-  // before calling `UpdateCursor` which uses it.
+  // before calling `UpdateCursor` which uses
   should_pass_located_event_to_camera_preview_ =
       ShouldPassEventToCameraPreview(event);
 

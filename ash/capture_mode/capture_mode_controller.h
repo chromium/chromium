@@ -730,6 +730,11 @@ class ASH_EXPORT CaptureModeController
   // remove it if remote.
   void DeleteFileAsync(const base::FilePath& path);
 
+  // Refreshes the search results panel stacking order if it exists. `is_active`
+  // indicates whether capture mode session is currently active and will be used
+  // to determine the panel stacking order.
+  void RefreshSearchResultsPanel(bool is_active);
+
   // The ID of this object as a client of the video conference manager.
   const base::UnguessableToken vc_client_id_ = base::UnguessableToken::Create();
 

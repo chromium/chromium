@@ -34,7 +34,8 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView {
   SearchResultsPanel& operator=(const SearchResultsPanel&) = delete;
   ~SearchResultsPanel() override;
 
-  static views::UniqueWidgetPtr CreateWidget(aura::Window* const root);
+  static views::UniqueWidgetPtr CreateWidget(aura::Window* root,
+                                             bool is_active);
 
   AshWebView* search_results_view() const { return search_results_view_; }
   views::Button* close_button() const { return close_button_; }
@@ -45,6 +46,11 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView {
   virtual void Navigate(const GURL& url);
   virtual void SetSearchBoxImage(const gfx::ImageSkia& image);
   void SetSearchBoxText(const std::u16string& text);
+
+  // Refreshes the panel z-order. `is_active` indicates whether capture mode
+  // session is currently active and will be used to determine the panel
+  // stacking order.
+  void RefreshStackingOrder(bool is_active);
 
   // SystemPanelView:
   bool HasFocus() const override;

@@ -699,8 +699,8 @@ void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
       return;
     }
 
-    search_results_panel_widget_ =
-        SearchResultsPanel::CreateWidget(capture_mode_session_->current_root());
+    search_results_panel_widget_ = SearchResultsPanel::CreateWidget(
+        capture_mode_session_->current_root(), is_active);
 
     RecordSearchResultsPanelEntryType(capture_mode_session_->active_behavior());
 
@@ -755,6 +755,13 @@ void CaptureModeController::OnLocatedEventDragged() {
     // re-opened with those.
     GetSearchResultsPanel()->SetSearchBoxText(std::u16string());
     search_results_panel_widget_->Hide();
+  }
+}
+
+void CaptureModeController::RefreshSearchResultsPanel(bool is_active) {
+  // Note we re-stack the panel even if it's not currently visible.
+  if (auto* panel = GetSearchResultsPanel()) {
+    panel->RefreshStackingOrder(is_active);
   }
 }
 
@@ -911,6 +918,7 @@ void CaptureModeController::Stop() {
   capture_mode_session_->ReportSessionHistograms();
   capture_mode_session_->Shutdown();
   capture_mode_session_.reset();
+  RefreshSearchResultsPanel(/*is_active=*/false);
 
   delegate_->OnSessionStateChanged(/*started=*/false);
 }
