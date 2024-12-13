@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.os.Bundle;
-import android.text.style.ClickableSpan;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -31,6 +30,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 import java.util.List;
@@ -103,42 +103,24 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
-                                new ClickableSpan() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        onLearnMoreClicked();
-                                    }
-                                })));
+                                new ChromeClickableSpan(getContext(), this::onLearnMoreClicked))));
         mFooterPreference.setSummary(
                 SpanApplier.applySpans(
                         getResources().getString(R.string.settings_fledge_page_footer_new),
                         new SpanApplier.SpanInfo(
                                 "<link1>",
                                 "</link1>",
-                                new ClickableSpan() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        onFledgeSettingsLinkClicked();
-                                    }
-                                }),
+                                new ChromeClickableSpan(
+                                        getContext(), this::onFledgeSettingsLinkClicked)),
                         new SpanApplier.SpanInfo(
                                 "<link2>",
                                 "</link2>",
-                                new ClickableSpan() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        onCookieSettingsLink();
-                                    }
-                                }),
+                                new ChromeClickableSpan(getContext(), this::onCookieSettingsLink)),
                         new SpanApplier.SpanInfo(
                                 "<link3>",
                                 "</link3>",
-                                new ClickableSpan() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        onManagingAdPrivacyClicked();
-                                    }
-                                })));
+                                new ChromeClickableSpan(
+                                        getContext(), this::onManagingAdPrivacyClicked))));
         handleAdsApiUxEnhancements();
     }
 
@@ -164,12 +146,7 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
-                                new ClickableSpan() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        onLearnMoreClicked();
-                                    }
-                                })));
+                                new ChromeClickableSpan(getContext(), this::onLearnMoreClicked))));
         mHeadingPreference.setSummary(
                 getContext()
                         .getString(
@@ -185,12 +162,8 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
-                                new ClickableSpan() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        onPrivacyPolicyLinkClicked();
-                                    }
-                                })));
+                                new ChromeClickableSpan(
+                                        getContext(), this::onPrivacyPolicyLinkClicked))));
         mFooterPreference.setSummary(
                 SpanApplier.applySpans(
                         getResources()
@@ -198,42 +171,34 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
                         new SpanApplier.SpanInfo(
                                 "<link1>",
                                 "</link1>",
-                                new ClickableSpan() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        onFledgeSettingsLinkClicked();
-                                    }
-                                }),
+                                new ChromeClickableSpan(
+                                        getContext(), this::onFledgeSettingsLinkClicked)),
                         new SpanApplier.SpanInfo(
                                 "<link2>",
                                 "</link2>",
-                                new ClickableSpan() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        onCookieSettingsLink();
-                                    }
-                                })));
+                                new ChromeClickableSpan(
+                                        getContext(), this::onCookieSettingsLink))));
     }
 
-    private void onLearnMoreClicked() {
+    private void onLearnMoreClicked(View unused) {
         RecordUserAction.record("Settings.PrivacySandbox.Fledge.LearnMoreClicked");
         startSettings(FledgeLearnMoreFragment.class);
     }
 
-    private void onManagingAdPrivacyClicked() {
+    private void onManagingAdPrivacyClicked(View unused) {
         getCustomTabLauncher()
                 .openUrlInCct(getContext(), PrivacySandboxSettingsFragment.HELP_CENTER_URL);
     }
 
-    private void onFledgeSettingsLinkClicked() {
+    private void onFledgeSettingsLinkClicked(View unused) {
         startSettings(TopicsFragment.class);
     }
 
-    private void onCookieSettingsLink() {
+    private void onCookieSettingsLink(View unused) {
         launchCookieSettings();
     }
 
-    private void onPrivacyPolicyLinkClicked() {
+    private void onPrivacyPolicyLinkClicked(View unused) {
         getCustomTabLauncher().openUrlInCct(getContext(), UrlConstants.GOOGLE_PRIVACY_POLICY);
     }
 
