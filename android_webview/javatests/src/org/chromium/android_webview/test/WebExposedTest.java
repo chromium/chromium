@@ -10,6 +10,8 @@ import android.webkit.JavascriptInterface;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import com.google.common.util.concurrent.SettableFuture;
+
 import difflib.DiffUtils;
 import difflib.Patch;
 
@@ -39,8 +41,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /** WebExposed tests implemented as an instrumentation test instead of a layout test. */
 @RunWith(Parameterized.class)
@@ -60,7 +60,6 @@ public class WebExposedTest extends AwParameterizedTest {
             "webexposed/global-interface-listing-expected.txt";
 
     private static final String TEST_FINISHED_SENTINEL = "TEST FINISHED";
-    private static final long TIMEOUT_SECONDS = 20;
 
     // LINT.IfChange
     private static final String EXTRA_REBASELINE =
@@ -76,8 +75,7 @@ public class WebExposedTest extends AwParameterizedTest {
     private final boolean mRebaseline;
 
     private final StringBuilder mConsoleLog = new StringBuilder();
-    private final Object mLock = new Object();
-    private boolean mFinished;
+    private final SettableFuture<String> mResultFuture = SettableFuture.create();
 
     public WebExposedTest(AwSettingsMutation param) {
         mRule = new AwActivityTestRule(param.getMutation());
@@ -103,12 +101,13 @@ public class WebExposedTest extends AwParameterizedTest {
                     @Override
                     public void onReceivedError(
                             AwWebResourceRequest request, AwWebResourceError error) {
-                        Assert.fail(
-                                "onReceivedError: "
-                                        + error.description
-                                        + ", "
-                                        + request.url
-                                        + "\n");
+                        mResultFuture.setException(
+                                new AssertionError(
+                                        "onReceivedError: "
+                                                + error.description
+                                                + ", "
+                                                + request.url
+                                                + "\n"));
                     }
 
                     @Override
@@ -116,12 +115,13 @@ public class WebExposedTest extends AwParameterizedTest {
                         if (consoleMessage.messageLevel() == AwConsoleMessage.MESSAGE_LEVEL_LOG) {
                             mConsoleLog.append(consoleMessage.message() + "\n");
                             if (consoleMessage.message().equals(TEST_FINISHED_SENTINEL)) {
-                                finishTest();
+                                mResultFuture.set(mConsoleLog.toString());
                             }
                         } else {
-                            Assert.fail(
-                                    "Unexpected non-log level console message: "
-                                            + consoleMessage.message());
+                            mResultFuture.setException(
+                                    new AssertionError(
+                                            "Unexpected non-log level console message: "
+                                                    + consoleMessage.message()));
                         }
                         return true;
                     }
@@ -204,8 +204,7 @@ public class WebExposedTest extends AwParameterizedTest {
         mRule.loadUrlAsync(mAwContents, testUri);
 
         if (isRebaseline()) {
-            waitForFinish(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            String result = getTestResult();
+            String result = AwActivityTestRule.waitForFuture(mResultFuture);
             writeFile(deviceExpectationPath, result);
             Log.i(
                     TAG,
@@ -217,8 +216,7 @@ public class WebExposedTest extends AwParameterizedTest {
         } else {
             // Read expectation in parallel with the running test.
             String expected = readFile(deviceExpectationPath);
-            waitForFinish(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            String result = getTestResult();
+            String result = AwActivityTestRule.waitForFuture(mResultFuture);
             return stringDiff(repoExpectationPath, expected, result);
         }
     }
@@ -265,30 +263,6 @@ public class WebExposedTest extends AwParameterizedTest {
         }
         try (FileOutputStream outputStream = new FileOutputStream(fileOut)) {
             outputStream.write(contents.getBytes(StandardCharsets.UTF_8));
-        }
-    }
-
-    public String getTestResult() {
-        return mConsoleLog.toString();
-    }
-
-    public void waitForFinish(long timeout, TimeUnit unit)
-            throws InterruptedException, TimeoutException {
-        synchronized (mLock) {
-            long deadline = System.currentTimeMillis() + unit.toMillis(timeout);
-            while (!mFinished && System.currentTimeMillis() < deadline) {
-                mLock.wait(deadline - System.currentTimeMillis());
-            }
-            if (!mFinished) {
-                throw new TimeoutException("timeout");
-            }
-        }
-    }
-
-    private void finishTest() {
-        mFinished = true;
-        synchronized (mLock) {
-            mLock.notifyAll();
         }
     }
 }
