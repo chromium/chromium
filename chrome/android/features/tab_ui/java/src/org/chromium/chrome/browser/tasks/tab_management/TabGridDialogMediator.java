@@ -75,6 +75,7 @@ import org.chromium.components.collaboration.messaging.PersistentMessage;
 import org.chromium.components.collaboration.messaging.PersistentNotificationType;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupMember;
+import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -699,26 +700,20 @@ public class TabGridDialogMediator
     }
 
     private void updateDialog() {
-        final int tabsCount = getRelatedTabs(mCurrentTabId).size();
-        if (tabsCount == 0) {
+        final int tabCount = getRelatedTabs(mCurrentTabId).size();
+        if (tabCount == 0) {
             hideDialog(true);
             return;
         }
 
-        Resources res = mActivity.getResources();
-        // Change the ungroup bar text if the tab being ungrouped is the last tab in the group.
-        final @StringRes int ungroupBarTextId =
-                tabsCount == 1
-                        ? R.string.remove_last_tab_action
-                        : R.string.tab_grid_dialog_remove_from_group;
-        mModel.set(
-                TabGridDialogProperties.DIALOG_UNGROUP_BAR_TEXT, res.getString(ungroupBarTextId));
+        updateUngroupBarText(tabCount);
+
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         Tab currentTab = filter.getTabModel().getTabById(mCurrentTabId);
         final @TabGroupColorId int color =
                 filter.getTabGroupColorWithFallback(currentTab.getRootId());
         mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, color);
-        updateTitle(tabsCount);
+        updateTitle(tabCount);
     }
 
     private void updateTitle(int tabsCount) {
@@ -1061,6 +1056,8 @@ public class TabGridDialogMediator
         } else {
             removeCollaborationActivityMessageCard();
         }
+        int tabCount = getRelatedTabs(mCurrentTabId).size();
+        updateUngroupBarText(tabCount);
     }
 
     private boolean shouldShowShareButton() {
@@ -1356,6 +1353,31 @@ public class TabGridDialogMediator
         } else {
             removeCollaborationActivityMessageCard();
         }
+    }
+
+    private void updateUngroupBarText(int tabCount) {
+        @StringRes int ungroupBarTextId = R.string.tab_grid_dialog_remove_from_group;
+        if (tabCount == 1) {
+            boolean isMember = MemberRole.MEMBER == getMemberRole();
+            ungroupBarTextId =
+                    isMember
+                            ? R.string.remove_last_tab_action_member
+                            : R.string.remove_last_tab_action;
+        }
+
+        Resources res = mActivity.getResources();
+        mModel.set(
+                TabGridDialogProperties.DIALOG_UNGROUP_BAR_TEXT, res.getString(ungroupBarTextId));
+    }
+
+    private @MemberRole int getMemberRole() {
+        if (!mCollaborationService.getServiceStatus().isAllowedToJoin()) return MemberRole.UNKNOWN;
+
+        @Nullable
+        String collaborationId = mTransitiveSharedGroupObserver.getCollaborationIdSupplier().get();
+        if (!TabShareUtils.isCollaborationIdValid(collaborationId)) return MemberRole.UNKNOWN;
+
+        return mCollaborationService.getCurrentUserRoleForGroup(collaborationId);
     }
 
     /** AppHeaderObserver implementation */

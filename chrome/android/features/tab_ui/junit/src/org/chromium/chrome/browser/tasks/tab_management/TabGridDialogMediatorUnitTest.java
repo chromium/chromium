@@ -112,6 +112,7 @@ import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
+import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -1545,6 +1546,30 @@ public class TabGridDialogMediatorUnitTest {
         // Check that the text indicates that this is the last tab in the group.
         assertEquals(
                 mActivity.getString(R.string.remove_last_tab_action),
+                mModel.get(TabGridDialogProperties.DIALOG_UNGROUP_BAR_TEXT));
+    }
+
+    @Test
+    public void testTabUngroupBarText_Member() {
+        when(mCollaborationService.getCurrentUserRoleForGroup(any())).thenReturn(MemberRole.MEMBER);
+        // Mock that tab1 and tab2 are in the same group.
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
+        resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
+
+        // Check that the text indicates that this is not the last tab in the group.
+        assertEquals(
+                mActivity.getString(R.string.tab_grid_dialog_remove_from_group),
+                mModel.get(TabGridDialogProperties.DIALOG_UNGROUP_BAR_TEXT));
+
+        // Mock that tab1 is the only tab that remains in the group.
+        List<Tab> tabGroupAfterUngroup = new ArrayList<>(Arrays.asList(mTab1));
+        doReturn(tabGroupAfterUngroup).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
+
+        mMediator.onReset(tabGroupAfterUngroup);
+        // Check that the text indicates that this is the last tab in the group.
+        assertEquals(
+                mActivity.getString(R.string.remove_last_tab_action_member),
                 mModel.get(TabGridDialogProperties.DIALOG_UNGROUP_BAR_TEXT));
     }
 

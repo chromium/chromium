@@ -823,6 +823,9 @@
       <message name="IDS_REMOVE_LAST_TAB_ACTION" desc="The text shown on the bottom bar when the user is dragging the last tab of a group around. Indicates removing this tab will also delete the group.">
         Remove tab and delete group
       </message>
+      <message name="IDS_REMOVE_LAST_TAB_ACTION_MEMBER" desc="The text shown on the bottom bar when the user is dragging the last tab of a group around and they are a member of a shared tab group. Indicates removing this tab will also trigger the leave shared group flow (with a confirmation dialog).">
+        Remove tab and leave group
+      </message>
       <message name="IDS_TAB_GROUP_CREATION_DIALOG_SYNC_DESCRIPTION" desc="Description of tab group sync functionality shown for syncing users in the tab group creation dialog.">
         Your tab groups automatically save and update across all your signed-in devices
       </message>
