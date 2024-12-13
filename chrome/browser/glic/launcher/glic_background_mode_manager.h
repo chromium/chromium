@@ -39,10 +39,7 @@ class GlicBackgroundModeManager
 
   // extensions::GlobalShortcutListener::Observer
   void OnKeyPressed(const ui::Accelerator& accelerator) override;
-
-  // TODO(crbug.com/378487333): Remove this method because this method is
-  // specific to the extensions version of the GlobalShortcutListener
-  void ExecuteCommand(const extensions::ExtensionId& extension_id,
+  void ExecuteCommand(const std::string& accelerator_group_id,
                       const std::string& command_id) override {}
 
   ui::Accelerator RegisteredHotkeyForTesting() {

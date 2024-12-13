@@ -58,14 +58,14 @@ class GlobalShortcutListenerLinux : public GlobalShortcutListener {
   static constexpr char kSessionTokenPrefix[] = "chromium_";
 
   struct SessionKey {
-    ExtensionId extension_id;
+    std::string accelerator_group_id;
     std::string profile_id;
 
     std::string GetTokenKey() const;
 
     bool operator<(const SessionKey& other) const {
-      return std::tie(extension_id, profile_id) <
-             std::tie(other.extension_id, other.profile_id);
+      return std::tie(accelerator_group_id, profile_id) <
+             std::tie(other.accelerator_group_id, other.profile_id);
     }
   };
 
@@ -92,7 +92,7 @@ class GlobalShortcutListenerLinux : public GlobalShortcutListener {
   void UnregisterAcceleratorImpl(const ui::Accelerator& accelerator) override;
   void UnregisterAccelerators(Observer* observer) override;
   bool IsRegistrationHandledExternally() const override;
-  void OnCommandsChanged(const ExtensionId& extension_id,
+  void OnCommandsChanged(const std::string& accelerator_group_id,
                          const std::string& profile_id,
                          const ui::CommandMap& commands,
                          Observer* observer) override;

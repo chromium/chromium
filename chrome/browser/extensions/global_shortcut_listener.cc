@@ -111,10 +111,11 @@ bool GlobalShortcutListener::IsRegistrationHandledExternally() const {
   return false;
 }
 
-void GlobalShortcutListener::OnCommandsChanged(const ExtensionId& extension_id,
-                                               const std::string& profile_id,
-                                               const ui::CommandMap& commands,
-                                               Observer* observer) {}
+void GlobalShortcutListener::OnCommandsChanged(
+    const std::string& accelerator_group_id,
+    const std::string& profile_id,
+    const ui::CommandMap& commands,
+    Observer* observer) {}
 
 void GlobalShortcutListener::NotifyKeyPressed(
     const ui::Accelerator& accelerator) {

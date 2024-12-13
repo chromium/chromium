@@ -48,7 +48,7 @@ class TestObserver final : public GlobalShortcutListener::Observer {
 
   void OnKeyPressed(const ui::Accelerator& accelerator) override {}
 
-  void ExecuteCommand(const ExtensionId& extension_id,
+  void ExecuteCommand(const std::string& accelerator_group_id,
                       const std::string& command_id) override {}
 };
 

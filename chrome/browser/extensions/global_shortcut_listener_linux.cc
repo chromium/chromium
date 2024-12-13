@@ -151,7 +151,7 @@ bool GlobalShortcutListenerLinux::IsRegistrationHandledExternally() const {
 }
 
 void GlobalShortcutListenerLinux::OnCommandsChanged(
-    const ExtensionId& extension_id,
+    const std::string& accelerator_group_id,
     const std::string& profile_id,
     const ui::CommandMap& commands,
     Observer* observer) {
@@ -160,7 +160,7 @@ void GlobalShortcutListenerLinux::OnCommandsChanged(
     return;
   }
 
-  SessionKey session_key = {extension_id, profile_id};
+  SessionKey session_key = {accelerator_group_id, profile_id};
   auto it = session_map_.find(session_key);
   if (it != session_map_.end()) {
     auto& session_context = *it->second;
@@ -339,8 +339,8 @@ void GlobalShortcutListenerLinux::OnActivatedSignal(dbus::Signal* signal) {
   // Find the corresponding accelerator
   for (const auto& [session_key, session_context] : session_map_) {
     if (session_context->session_proxy->object_path() == session_handle) {
-      session_context->observer->ExecuteCommand(session_key.extension_id,
-                                                shortcut_id);
+      session_context->observer->ExecuteCommand(
+          session_key.accelerator_group_id, shortcut_id);
       break;
     }
   }
@@ -358,7 +358,8 @@ void GlobalShortcutListenerLinux::OnSignalConnected(
 
 std::string GlobalShortcutListenerLinux::SessionKey::GetTokenKey() const {
   return kSessionTokenPrefix +
-         base::HexEncode(crypto::SHA256HashString(extension_id + profile_id))
+         base::HexEncode(
+             crypto::SHA256HashString(accelerator_group_id + profile_id))
              .substr(0, 32);
 }
 

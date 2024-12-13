@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_EXTENSIONS_GLOBAL_SHORTCUT_LISTENER_H_
 
 #include <map>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "extensions/common/extension_id.h"
 #include "ui/base/accelerators/command.h"
 
 namespace ui {
@@ -28,7 +28,7 @@ class GlobalShortcutListener {
     virtual void OnKeyPressed(const ui::Accelerator& accelerator) = 0;
 
     // Called when a command should be executed directly.
-    virtual void ExecuteCommand(const ExtensionId& extension_id,
+    virtual void ExecuteCommand(const std::string& accelerator_group_id,
                                 const std::string& command_id) = 0;
   };
 
@@ -73,7 +73,7 @@ class GlobalShortcutListener {
   virtual bool IsRegistrationHandledExternally() const;
 
   // Called when an extension's commands are registered.
-  virtual void OnCommandsChanged(const ExtensionId& extension_id,
+  virtual void OnCommandsChanged(const std::string& accelerator_group_id,
                                  const std::string& profile_id,
                                  const ui::CommandMap& commands,
                                  Observer* observer);
