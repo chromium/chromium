@@ -4,16 +4,34 @@
 
 #include "components/commerce/core/feature_utils.h"
 
+#include "base/feature_list.h"
 #include "components/commerce/core/account_checker.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/user_selectable_type.h"
 
 namespace commerce {
+namespace {
+bool CanFetchProductSpecificationsData(AccountChecker* account_checker,
+                                       bool skip_enterprise_check) {
+  // msbb, enterprise, parental controls, sync type, and model execution
+  // features.
+  return account_checker &&
+         (skip_enterprise_check || IsProductSpecificationsAllowedForEnterprise(
+                                       account_checker->GetPrefs())) &&
+         account_checker->IsSignedIn() &&
+         account_checker->IsAnonymizedUrlDataCollectionEnabled() &&
+         !account_checker->IsSubjectToParentalControls() &&
+         account_checker->CanUseModelExecutionFeatures() &&
+         IsSyncingProductSpecifications(account_checker) &&
+         CanLoadProductSpecificationsFullPageUi(account_checker);
+}
+}  // namespace
 
 bool IsShoppingListEligible(AccountChecker* account_checker) {
   if (!commerce::IsRegionLockedFeatureEnabled(
@@ -121,17 +139,15 @@ bool CanManageProductSpecificationsSets(
 }
 
 bool CanFetchProductSpecificationsData(AccountChecker* account_checker) {
-  // msbb, enterprise, parental controls, sync type, and model execution
-  // features.
-  return account_checker &&
-         IsProductSpecificationsAllowedForEnterprise(
-             account_checker->GetPrefs()) &&
-         account_checker->IsSignedIn() &&
-         account_checker->IsAnonymizedUrlDataCollectionEnabled() &&
-         !account_checker->IsSubjectToParentalControls() &&
-         account_checker->CanUseModelExecutionFeatures() &&
-         IsSyncingProductSpecifications(account_checker) &&
-         CanLoadProductSpecificationsFullPageUi(account_checker);
+  return CanFetchProductSpecificationsData(account_checker,
+                                           /*skip_enterprise_check=*/false);
+}
+
+bool IsProductSpecificationsSettingVisible(AccountChecker* account_checker) {
+  DCHECK(base::FeatureList::IsEnabled(
+      optimization_guide::features::kAiSettingsPageEnterpriseDisabledUi));
+  return CanFetchProductSpecificationsData(account_checker,
+                                           /*skip_enterprise_check=*/true);
 }
 
 }  // namespace commerce

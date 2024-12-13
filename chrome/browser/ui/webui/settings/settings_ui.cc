@@ -594,8 +594,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
              : customize_chrome::IsWallpaperSearchEnabledForProfile(profile)},
         {"showHistorySearchControl",
          history_embeddings::IsHistoryEmbeddingsSettingVisible(profile)},
-        {"showCompareControl", commerce::CanFetchProductSpecificationsData(
-                                   shopping_service->GetAccountChecker())},
+        {"showCompareControl",
+         use_is_setting_visible
+             ? commerce::IsProductSpecificationsSettingVisible(
+                   shopping_service->GetAccountChecker())
+             : commerce::CanFetchProductSpecificationsData(
+                   shopping_service->GetAccountChecker())},
     };
 
     bool show_ai_page = show_ai_settings_for_testing;

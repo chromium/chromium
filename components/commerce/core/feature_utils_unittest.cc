@@ -15,6 +15,7 @@
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/data_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -141,20 +142,28 @@ TEST_F(FeatureUtilsTest, CanFetchProductSpecificationsData_NoMSBB) {
 }
 
 TEST_F(FeatureUtilsTest, CanFetchProductSpecificationsData_NoSync) {
-  test_features_.InitAndEnableFeature(kProductSpecifications);
+  test_features_.InitWithFeatures(
+      {kProductSpecifications,
+       optimization_guide::features::kAiSettingsPageEnterpriseDisabledUi},
+      {});
   SetupProductSpecificationsEnabled();
 
   // We should be able to fetch data before turning off sync.
   ASSERT_TRUE(CanFetchProductSpecificationsData(account_checker_.get()));
+  ASSERT_TRUE(IsProductSpecificationsSettingVisible(account_checker_.get()));
 
   ON_CALL(*account_checker_, IsSyncTypeEnabled)
       .WillByDefault(testing::Return(false));
 
   ASSERT_FALSE(CanFetchProductSpecificationsData(account_checker_.get()));
+  ASSERT_FALSE(IsProductSpecificationsSettingVisible(account_checker_.get()));
 }
 
-TEST_F(FeatureUtilsTest, CanFetchProductSpecificationsData_NoEnterprise) {
-  test_features_.InitAndEnableFeature(kProductSpecifications);
+TEST_F(FeatureUtilsTest,
+       CanFetchProductSpecificationsData_NoEnterpriseNoSettings) {
+  test_features_.InitWithFeatures(
+      {kProductSpecifications},
+      {optimization_guide::features::kAiSettingsPageEnterpriseDisabledUi});
   SetupProductSpecificationsEnabled();
 
   // We should be able to fetch data before turning off enterprise.
@@ -169,6 +178,31 @@ TEST_F(FeatureUtilsTest, CanFetchProductSpecificationsData_NoEnterprise) {
   SetTabCompareEnterprisePolicyPref(prefs_.get(), 2);
 
   ASSERT_FALSE(CanFetchProductSpecificationsData(account_checker_.get()));
+}
+
+TEST_F(FeatureUtilsTest,
+       CanFetchProductSpecificationsData_NoEnterpriseWithSettings) {
+  test_features_.InitWithFeatures(
+      {kProductSpecifications,
+       optimization_guide::features::kAiSettingsPageEnterpriseDisabledUi},
+      {});
+  SetupProductSpecificationsEnabled();
+
+  // We should be able to fetch data before turning off enterprise.
+  ASSERT_TRUE(CanFetchProductSpecificationsData(account_checker_.get()));
+  ASSERT_TRUE(IsProductSpecificationsSettingVisible(account_checker_.get()));
+
+  // 1 is enabled but without logging.
+  SetTabCompareEnterprisePolicyPref(prefs_.get(), 1);
+
+  ASSERT_TRUE(CanFetchProductSpecificationsData(account_checker_.get()));
+  ASSERT_TRUE(IsProductSpecificationsSettingVisible(account_checker_.get()));
+
+  // 2 is the disabled enterprise state for the feature.
+  SetTabCompareEnterprisePolicyPref(prefs_.get(), 2);
+
+  ASSERT_FALSE(CanFetchProductSpecificationsData(account_checker_.get()));
+  ASSERT_TRUE(IsProductSpecificationsSettingVisible(account_checker_.get()));
 }
 
 TEST_F(FeatureUtilsTest,
