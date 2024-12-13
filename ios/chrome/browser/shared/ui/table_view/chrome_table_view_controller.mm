@@ -19,6 +19,10 @@
 
 @implementation ChromeTableViewController
 
+- (instancetype)initWithStyle:(UITableViewStyle)style {
+  return [super initWithStyle:style];
+}
+
 #pragma mark - UIViewController
 
 - (void)viewWillTransitionToSize:(CGSize)size

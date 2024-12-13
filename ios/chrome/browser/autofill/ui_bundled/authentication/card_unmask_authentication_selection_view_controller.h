@@ -23,6 +23,8 @@
 // Creates the card unmask authentication selection view controller.
 - (instancetype)init;
 
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTHENTICATION_CARD_UNMASK_AUTHENTICATION_SELECTION_VIEW_CONTROLLER_H_

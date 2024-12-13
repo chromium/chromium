@@ -23,6 +23,9 @@
 // Mutator to apply all user changes on the view.
 @property(nonatomic, weak) id<QuickDeleteMutator> mutator;
 
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_CLEAR_BROWSING_DATA_QUICK_DELETE_BROWSING_DATA_VIEW_CONTROLLER_H_

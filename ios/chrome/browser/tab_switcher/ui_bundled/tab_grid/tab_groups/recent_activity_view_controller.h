@@ -12,6 +12,9 @@
 @interface RecentActivityViewController
     : ChromeTableViewController <RecentActivityConsumer>
 
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TAB_GROUPS_RECENT_ACTIVITY_VIEW_CONTROLLER_H_
