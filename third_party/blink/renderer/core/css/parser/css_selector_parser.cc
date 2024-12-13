@@ -2542,6 +2542,9 @@ static void RecordUsageAndDeprecationsOneSelector(
     case CSSSelector::kPseudoActiveViewTransition:
       feature = WebFeature::kActiveViewTransitionPseudo;
       break;
+    case CSSSelector::kPseudoOpen:
+      feature = WebFeature::kCSSPseudoOpen;
+      break;
     default:
       break;
   }

@@ -10937,6 +10937,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="CSSEnvironmentVariable_SafeAreaInsetBottom_FastPath"/>
   <int value="5219" label="SrcSetUsedHigherDensityImageFromCache"/>
   <int value="5220" label="HTMLElementWritingSuggestions"/>
+  <int value="5221" label="CSSPseudoOpen"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
