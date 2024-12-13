@@ -63,14 +63,10 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, SimpleInstall) {
             loop.Quit();
           })));
   loop.Run();
-  EXPECT_TRUE(provider->registrar_unsafe().IsInstallState(
-      id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-           proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
-  EXPECT_EQ(AreAppsLocallyInstalledBySync(),
-            provider->registrar_unsafe().IsInstallState(
-                id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                     proto::INSTALLED_WITH_OS_INTEGRATION}));
+  EXPECT_EQ(provider->registrar_unsafe().GetInstallState(id),
+            AreAppsLocallyInstalledBySync()
+                ? proto::INSTALLED_WITH_OS_INTEGRATION
+                : proto::SUGGESTED_FROM_ANOTHER_DEVICE);
 
   SkColor icon_color =
       IconManagerReadAppIconPixel(provider->icon_manager(), id, 96);
