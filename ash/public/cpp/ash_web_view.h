@@ -11,9 +11,9 @@
 #include "base/observer_list_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "url/gurl.h"
 #include "ui/views/view.h"
 
-class GURL;
 enum class WindowOpenDisposition;
 
 namespace ash {
@@ -74,6 +74,10 @@ class ASH_PUBLIC_EXPORT AshWebView : public views::View {
     // Used to override the Media Controls source title. Empty strings will
     // trigger default parent behavior.
     std::string source_title;
+
+    // URL to open when AshWebView contents are activated but the widget is not
+    // activatable. Empty GURLs will trigger default parent behavior.
+    GURL activation_url;
   };
 
   // An observer which receives AshWebView events.
