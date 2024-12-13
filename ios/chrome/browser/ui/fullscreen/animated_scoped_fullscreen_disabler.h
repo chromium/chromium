@@ -11,8 +11,8 @@
 
 class FullscreenController;
 
-// A helper object that increments FullscrenController's disabled counter for
-// its entire lifetime after calling StartAnimation().  Any UI updates resulting
+// A helper object that increments FullscreenController's disabled counter for
+// its entire lifetime after calling StartAnimation(). Any UI updates resulting
 // from the incremented disable counter will be animated.
 class AnimatedScopedFullscreenDisabler : public FullscreenControllerObserver {
  public:
@@ -20,7 +20,7 @@ class AnimatedScopedFullscreenDisabler : public FullscreenControllerObserver {
   ~AnimatedScopedFullscreenDisabler() override;
 
   // Starts the disabling the FullscreenController, animating any resulting UI
-  // changes.  The FullscreenController will then remain disabled until this
+  // changes. The FullscreenController will then remain disabled until this
   // disabler is deallocated.
   void StartAnimation();
 

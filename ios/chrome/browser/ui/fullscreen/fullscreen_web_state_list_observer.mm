@@ -93,7 +93,7 @@ void FullscreenWebStateListObserver::WebStateListDidChange(
       WebStateWasRemoved(replace_change.replaced_web_state());
       web::WebState* inserted_web_state = replace_change.inserted_web_state();
       if (inserted_web_state == web_state_list_->GetActiveWebState()) {
-        // Reset the model if the active WebState is replaced.
+        // Resets the model if the active WebState is replaced.
         model_->ResetForNavigation();
         WebStateWasActivated(inserted_web_state);
       }
@@ -101,7 +101,7 @@ void FullscreenWebStateListObserver::WebStateListDidChange(
     }
     case WebStateListChange::Type::kInsert: {
       if (status.active_web_state_change()) {
-        // Exit the fullscreen. Disable the animation if a session restoration
+        // Exits the fullscreen. Disable the animation if a session restoration
         // is in progress (see https://crbug.com/1485930 for details on the UI
         // glitch that animation can cause).
         if (web_state_list_->IsBatchInProgress()) {

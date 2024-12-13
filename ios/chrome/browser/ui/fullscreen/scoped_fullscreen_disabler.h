@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller_observer.h"
 
-// A helper object that increments FullscrenController's disabled counter for
+// A helper object that increments FullscreenController's disabled counter for
 // its entire lifetime.
 class ScopedFullscreenDisabler : public FullscreenControllerObserver {
  public:
