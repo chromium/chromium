@@ -139,7 +139,6 @@ source_set("main_extra_parts") {
 
 source_set("global_features") {
   sources = [ "global_features.h" ]
-  deps = [ "//chrome/common:buildflags" ]
   public_deps = [ "//base" ]
 }
 
@@ -3385,8 +3384,8 @@ static_library("browser") {
       "//components/password_manager/core/browser/leak_detection",
       "//components/payments/content",
       "//components/payments/content/android",
-      "//components/payments/content/android:jni_headers",
       "//components/payments/content/android/ui",
+      "//components/payments/content/android:jni_headers",
       "//components/permissions/android:native",
       "//components/plus_addresses:features",
       "//components/plus_addresses/resources/strings",
@@ -6207,15 +6206,6 @@ static_library("browser") {
     ]
   }
 
-  if (enable_glic) {
-    deps += [
-      "//chrome/browser/glic/launcher",
-      "//chrome/browser/glic/launcher:impl",
-    ]
-
-    allow_circular_includes_from += [ "//chrome/browser/glic/launcher:impl" ]
-  }
-
   if (is_mac || is_win) {
     sources += [
       "enterprise/platform_auth/platform_auth_navigation_throttle.cc",
@@ -6236,10 +6226,14 @@ static_library("browser") {
     ]
 
     deps += [
+      "//chrome/browser/glic/launcher",
+      "//chrome/browser/glic/launcher:impl",
       "//chrome/browser/updater:browser_updater_client",
       "//chrome/common/notifications",
       "//chrome/updater:browser_sources",
     ]
+
+    allow_circular_includes_from += [ "//chrome/browser/glic/launcher:impl" ]
 
     # Support for the recovery improved component.
     sources += [

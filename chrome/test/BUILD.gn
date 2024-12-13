@@ -2454,7 +2454,7 @@ if (!is_android) {
       "//v8",
     ]
 
-    if (enable_glic) {
+    if (is_win || is_mac) {
       deps += [
         "//chrome/browser/glic:browser_tests",
         "//chrome/browser/glic/launcher:browser_tests",
