@@ -109,14 +109,20 @@ SkColorInfo GPUCanvasContext::CanvasRenderingContextSkColorInfo() const {
   }
   return SkColorInfo(viz::ToClosestSkColorType(
                          /*gpu_compositing=*/true, swap_buffers_->Format()),
-                     GetAlphaType(),
-                     PredefinedColorSpaceToSkColorSpace(color_space_));
+                     GetAlphaType(), GetSkColorSpace());
 }
 
 SkAlphaType GPUCanvasContext::GetAlphaType() const {
   return alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque
              ? kOpaque_SkAlphaType
              : kPremul_SkAlphaType;
+}
+
+sk_sp<SkColorSpace> GPUCanvasContext::GetSkColorSpace() const {
+  if (!swap_buffers_) {
+    return SkColorSpace::MakeSRGB();
+  }
+  return PredefinedColorSpaceToSkColorSpace(color_space_);
 }
 
 void GPUCanvasContext::Stop() {
