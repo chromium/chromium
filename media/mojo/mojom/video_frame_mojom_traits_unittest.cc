@@ -220,11 +220,17 @@ TEST_F(VideoFrameStructTraitsTest, InterleavedPlanes) {
   EXPECT_EQ(frame->format(), format);
   EXPECT_EQ(frame->coded_size(), kCodedSize);
 
+  // Bytes between the visible edge and the full stride are not considered part
+  // of the visible plane.
+  const size_t row_bytes_1 =
+      VideoFrame::RowBytes(1, format, kCodedSize.width());
+  const size_t row_bytes_2 =
+      VideoFrame::RowBytes(2, format, kCodedSize.width());
   for (int i = 0; i < yu_rows; ++i) {
     EXPECT_EQ(0, memcmp(frame->visible_data(1) + i * frame->stride(1),
-                        u_plane.data() + i * strides[1], normal_stride));
+                        u_plane.data() + i * strides[1], row_bytes_1));
     EXPECT_EQ(0, memcmp(frame->visible_data(2) + i * frame->stride(2),
-                        v_plane.data() + i * strides[2], normal_stride));
+                        v_plane.data() + i * strides[2], row_bytes_2));
   }
 }
 
