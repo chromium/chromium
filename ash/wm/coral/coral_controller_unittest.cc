@@ -246,6 +246,16 @@ TEST_F(CoralControllerTest, RemoveInSessionChipAfterClicking) {
       0u);
 }
 
+// Tests that there is no crash when removing a coral chip by user.
+TEST_F(CoralControllerTest, NoCrashOnRemovingChipByUser) {
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+
+  // Remove the first coral chip and there should be no crash.
+  CoralChipButton* coral_chip = GetFirstCoralButton();
+  BirchBarController::Get()->OnItemHiddenByUser(coral_chip->GetItem());
+}
+
 class CoralSavedGroupTest : public CoralControllerTest {
  public:
   desks_storage::DeskModel* desk_model() {

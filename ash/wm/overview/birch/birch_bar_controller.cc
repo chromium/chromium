@@ -185,14 +185,23 @@ void BirchBarController::OnItemHiddenByUser(BirchItem* item) {
     return;
   }
 
+  auto iter = base::ranges::find_if(items_, base::MatchesUniquePtr(item));
+  if (iter == items_.end()) {
+    return;
+  }
+
   RemoveItemChips(item);
+
+  // Move the removing item out of the `items_` such that item-removed observers
+  // could know the item is being removed to avoid duplicated removing.
+  auto removing_item = std::move(*iter);
+  items_.erase(iter);
 
   // Erase the item from model and controller.
   Shell::Get()->birch_model()->RemoveItem(item);
   if (item->GetType() == BirchItemType::kLostMedia) {
     OnLostMediaItemRemoved();
   }
-  std::erase_if(items_, base::MatchesUniquePtr(item));
 }
 
 void BirchBarController::SetShowBirchSuggestions(bool show) {
