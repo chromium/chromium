@@ -1505,11 +1505,8 @@ void AwContents::StartPrerendering(
   // sequentially.
   prerender_handle_.reset();
 
-  // TODO(https://crbug.com/41490450): Set the additional headers in a
-  // prerendering navigation request.
   net::HttpRequestHeaders additional_headers =
       GetAdditionalHeadersFromPrefetchParameters(env, prefetch_params);
-
   std::optional<net::HttpNoVarySearchData> no_vary_search_expected =
       GetExpectedNoVarySearchFromPrefetchParameters(env, prefetch_params);
 
@@ -1522,7 +1519,8 @@ void AwContents::StartPrerendering(
   // - Pass a valid navigation handle callback.
   prerender_handle_ = web_contents_->StartPrerendering(
       GURL(prerendering_url), content::PreloadingTriggerType::kEmbedder,
-      "WebView", std::move(no_vary_search_expected), page_transition,
+      "WebView", std::move(additional_headers),
+      std::move(no_vary_search_expected), page_transition,
       /*should_warm_up_compositor=*/false,
       /*should_prepare_paint_tree=*/false,
       content::PreloadingHoldbackStatus::kUnspecified,

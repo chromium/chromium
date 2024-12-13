@@ -557,6 +557,16 @@ AwBrowserContext::CreateZoomLevelDelegate(
   return nullptr;
 }
 
+std::string AwBrowserContext::GetExtraHeadersForUrl(const GURL& url) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!url.is_valid()) {
+    return std::string();
+  }
+  std::map<std::string, std::string>::iterator iter =
+      extra_headers_.find(url.spec());
+  return iter != extra_headers_.end() ? iter->second : std::string();
+}
+
 void AwBrowserContext::RebuildTable(
     const scoped_refptr<URLEnumerator>& enumerator) {
   // Android WebView rebuilds from WebChromeClient.getVisitedHistory. The client
@@ -720,16 +730,6 @@ void AwBrowserContext::SetExtraHeaders(const GURL& url,
   } else {
     extra_headers_.erase(url.spec());
   }
-}
-
-std::string AwBrowserContext::GetExtraHeaders(const GURL& url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!url.is_valid()) {
-    return std::string();
-  }
-  std::map<std::string, std::string>::iterator iter =
-      extra_headers_.find(url.spec());
-  return iter != extra_headers_.end() ? iter->second : std::string();
 }
 
 void AwBrowserContext::SetServiceWorkerIoThreadClient(

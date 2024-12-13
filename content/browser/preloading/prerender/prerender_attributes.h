@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "net/http/http_no_vary_search_data.h"
+#include "net/http/http_request_headers.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
@@ -81,6 +82,12 @@ struct CONTENT_EXPORT PrerenderAttributes {
   // Records the eagerness of the corresponding speculation rule.
   // This is std::nullopt when prerendering is initiated by the browser.
   std::optional<blink::mojom::SpeculationEagerness> eagerness;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Additional headers to be attached to prerendering navigation. Currently
+  // this is used only for Android WebView.
+  net::HttpRequestHeaders additional_headers;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Records the No-Vary-Search hint of the corresponding speculation rule.
   // This is std::nullopt when No-Vary-Search hint is not specified.

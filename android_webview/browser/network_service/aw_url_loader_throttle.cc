@@ -59,7 +59,7 @@ void AwURLLoaderThrottle::WillRedirectRequest(
 void AwURLLoaderThrottle::AddExtraHeadersIfNeeded(
     const GURL& url,
     net::HttpRequestHeaders* headers) {
-  std::string extra_headers = aw_browser_context_->GetExtraHeaders(url);
+  std::string extra_headers = aw_browser_context_->GetExtraHeadersForUrl(url);
   if (extra_headers.empty())
     return;
 

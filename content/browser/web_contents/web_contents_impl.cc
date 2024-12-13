@@ -11448,6 +11448,7 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
     const GURL& prerendering_url,
     PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix,
+    net::HttpRequestHeaders additional_headers,
     std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
     ui::PageTransition page_transition,
     bool should_warm_up_compositor,
@@ -11468,6 +11469,12 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
       std::move(url_match_predicate),
       std::move(prerender_navigation_handle_callback),
       base::MakeRefCounted<PreloadPipelineInfo>());
+#if BUILDFLAG(IS_ANDROID)
+  attributes.additional_headers = std::move(additional_headers);
+#else
+  CHECK(additional_headers.IsEmpty())
+      << "additional_headers is supported only on Android WebView.";
+#endif  // BUILDFLAG(IS_ANDROID)
   attributes.holdback_status_override = holdback_status_override;
 
   FrameTreeNodeId frame_tree_node_id =

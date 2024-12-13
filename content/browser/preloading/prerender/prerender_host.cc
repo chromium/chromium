@@ -54,6 +54,24 @@ base::OnceCallback<void(FrameTreeNodeId)>& GetHostCreationCallbackForTesting() {
   return *host_creation_callback_for_testing;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// This is similar to `HttpRequestHeaders::ToString()` but the headers are
+// separated by "\n", not "\r\n", as
+// `NavigationController::LoadURLParams::extra_headers` requires the format.
+std::string SerializeHttpRequestHeaders(
+    const net::HttpRequestHeaders& headers) {
+  CHECK(!headers.IsEmpty());
+  std::string output;
+  for (const auto& header : headers.GetHeaderVector()) {
+    base::StringAppendF(&output, "%s: %s\n", header.key.c_str(),
+                        header.value.c_str());
+  }
+  // Add the trailing `\n`.
+  output.append("\n");
+  return output;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 // static
@@ -75,6 +93,9 @@ PrerenderHost& PrerenderHost::GetFromFrameTreeNode(
 // static
 bool PrerenderHost::AreHttpRequestHeadersCompatible(
     const std::string& potential_activation_headers_str,
+#if BUILDFLAG(IS_ANDROID)
+    const std::string& potential_activation_additional_headers_str,
+#endif  // BUILDFLAG(IS_ANDROID)
     const std::string& prerender_headers_str,
     PreloadingTriggerType trigger_type,
     const std::string& histogram_suffix,
@@ -85,6 +106,10 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
   net::HttpRequestHeaders potential_activation_headers;
   potential_activation_headers.AddHeadersFromString(
       potential_activation_headers_str);
+#if BUILDFLAG(IS_ANDROID)
+  potential_activation_headers.AddHeadersFromString(
+      potential_activation_additional_headers_str);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // `prerender_headers` contains the "Purpose: prefetch" and "Sec-Purpose:
   // prefetch;prerender" to notify servers of prerender requests, while
@@ -381,6 +406,12 @@ bool PrerenderHost::StartPrerendering() {
   load_url_params.initiator_origin = attributes_.initiator_origin;
   load_url_params.initiator_process_id = attributes_.initiator_process_id;
   load_url_params.initiator_frame_token = attributes_.initiator_frame_token;
+#if BUILDFLAG(IS_ANDROID)
+  if (!attributes_.additional_headers.IsEmpty()) {
+    load_url_params.extra_headers =
+        SerializeHttpRequestHeaders(attributes_.additional_headers);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   load_url_params.is_renderer_initiated = !attributes_.IsBrowserInitiated();
   load_url_params.transition_type =
       ui::PageTransitionFromInt(attributes_.transition_type);
@@ -760,6 +791,7 @@ bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
   // Compare BeginNavigationParams.
   ActivationNavigationParamsMatch result =
       AreBeginNavigationParamsCompatibleWithNavigation(
+          navigation_request.common_params().url,
           navigation_request.begin_params(),
           allow_initiator_and_transition_mismatch, reason);
   if (result != ActivationNavigationParamsMatch::kOk) {
@@ -785,6 +817,7 @@ bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
 
 PrerenderHost::ActivationNavigationParamsMatch
 PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
+    const GURL& potential_activation_url,
     const blink::mojom::BeginNavigationParams& potential_activation,
     bool allow_initiator_and_transition_mismatch,
     PrerenderCancellationReason& reason) {
@@ -799,9 +832,14 @@ PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
     return ActivationNavigationParamsMatch::kInitiatorFrameToken;
   }
 
-  if (!AreHttpRequestHeadersCompatible(potential_activation.headers,
-                                       begin_params_->headers, trigger_type(),
-                                       GetHistogramSuffix(), reason)) {
+  if (!AreHttpRequestHeadersCompatible(
+          potential_activation.headers,
+#if BUILDFLAG(IS_ANDROID)
+          web_contents_->GetBrowserContext()->GetExtraHeadersForUrl(
+              potential_activation_url),
+#endif  // BUILDFLAG(IS_ANDROID)
+          begin_params_->headers, trigger_type(), GetHistogramSuffix(),
+          reason)) {
     return ActivationNavigationParamsMatch::kHttpRequestHeader;
   }
 

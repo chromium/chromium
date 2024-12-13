@@ -478,6 +478,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     return web_contents_impl()->StartPrerendering(
         prerendering_url, PreloadingTriggerType::kEmbedder,
         "EmbedderSuffixForTest",
+        /*additional_headers=*/net::HttpRequestHeaders(),
         /*no_vary_search_expected=*/std::nullopt,
         ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                   ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -11963,6 +11964,7 @@ PrerenderEmbedderTriggeredCrossOriginRedirectionPage(
       web_contents.StartPrerendering(
           prerendering_url, PreloadingTriggerType::kEmbedder,
           "EmbedderSuffixForTest",
+          /*additional_headers=*/net::HttpRequestHeaders(),
           /*no_vary_search_expected=*/std::nullopt,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),

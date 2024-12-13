@@ -979,6 +979,7 @@ class CONTENT_EXPORT WebContentsImpl
       const GURL& prerendering_url,
       PreloadingTriggerType trigger_type,
       const std::string& embedder_histogram_suffix,
+      net::HttpRequestHeaders additional_headers,
       std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
       ui::PageTransition page_transition,
       bool should_warm_up_compositor,

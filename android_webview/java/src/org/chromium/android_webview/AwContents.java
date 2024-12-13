@@ -1885,6 +1885,9 @@ public class AwContents implements SmartClipProvider {
             @Nullable AwPrefetchParameters prefetchParameters,
             @Nullable Callback<Void> activationCallback) {
         if (isDestroyed(NO_WARN)) return;
+        if (prefetchParameters != null) {
+            validateHeaders(prefetchParameters.getAdditionalHeaders());
+        }
         AwContentsJni.get()
                 .startPrerendering(
                         mNativeAwContents,
@@ -2254,23 +2257,7 @@ public class AwContents implements SmartClipProvider {
 
         LoadUrlParams params = new LoadUrlParams(url, PageTransition.TYPED);
         if (additionalHttpHeaders != null) {
-            for (Map.Entry<String, String> header : additionalHttpHeaders.entrySet()) {
-                String headerName = header.getKey();
-                String headerValue = header.getValue();
-                if (headerName != null && BAD_HEADER_CHAR.matcher(headerName).find()) {
-                    throw new IllegalArgumentException(
-                            BAD_HEADER_MSG + "Invalid header name '" + headerName + "'.");
-                }
-                if (headerValue != null && BAD_HEADER_CHAR.matcher(headerValue).find()) {
-                    throw new IllegalArgumentException(
-                            BAD_HEADER_MSG
-                                    + "Header '"
-                                    + headerName
-                                    + "' has invalid value '"
-                                    + headerValue
-                                    + "'");
-                }
-            }
+            validateHeaders(additionalHttpHeaders);
             params.setExtraHeaders(new HashMap<String, String>(additionalHttpHeaders));
         }
 
@@ -4305,6 +4292,28 @@ public class AwContents implements SmartClipProvider {
 
     public static void resetRecordMemoryForTesting() {
         sLastCollectionTime = -MEMORY_COLLECTION_INTERVAL_MS;
+    }
+
+    // Check if the headers contains invalid characters.
+    private static void validateHeaders(Map<String, String> headers) {
+        if (headers == null) return;
+        for (Map.Entry<String, String> header : headers.entrySet()) {
+            String headerName = header.getKey();
+            String headerValue = header.getValue();
+            if (headerName != null && BAD_HEADER_CHAR.matcher(headerName).find()) {
+                throw new IllegalArgumentException(
+                        BAD_HEADER_MSG + "Invalid header name '" + headerName + "'.");
+            }
+            if (headerValue != null && BAD_HEADER_CHAR.matcher(headerValue).find()) {
+                throw new IllegalArgumentException(
+                        BAD_HEADER_MSG
+                                + "Header '"
+                                + headerName
+                                + "' has invalid value '"
+                                + headerValue
+                                + "'");
+            }
+        }
     }
 
     // --------------------------------------------------------------------------------------------

@@ -169,6 +169,9 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
 
   static bool AreHttpRequestHeadersCompatible(
       const std::string& potential_activation_headers_str,
+#if BUILDFLAG(IS_ANDROID)
+      const std::string& potential_activation_additional_headers_str,
+#endif  // BUILDFLAG(IS_ANDROID)
       const std::string& prerender_headers_str,
       PreloadingTriggerType trigger_type,
       const std::string& histogram_suffix,
@@ -438,6 +441,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
 
   ActivationNavigationParamsMatch
   AreBeginNavigationParamsCompatibleWithNavigation(
+      const GURL& potential_activation_url,
       const blink::mojom::BeginNavigationParams& potential_activation,
       bool allow_initiator_and_transition_mismatch,
       PrerenderCancellationReason& reason);

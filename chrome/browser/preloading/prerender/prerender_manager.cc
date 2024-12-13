@@ -243,6 +243,7 @@ PrerenderManager::StartPrerenderBookmark(const GURL& prerendering_url) {
   bookmark_prerender_handle_ = web_contents()->StartPrerendering(
       prerendering_url, content::PreloadingTriggerType::kEmbedder,
       prerender_utils::kBookmarkBarMetricSuffix,
+      /*additional_headers=*/net::HttpRequestHeaders(),
       /*no_vary_search_expected=*/std::nullopt,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
       // Considering the characteristics of triggers (e.g., the duration from
@@ -312,6 +313,7 @@ PrerenderManager::StartPrerenderNewTabPage(
   new_tab_page_prerender_handle_ = web_contents()->StartPrerendering(
       prerendering_url, content::PreloadingTriggerType::kEmbedder,
       prerender_utils::kNewTabPageMetricSuffix,
+      /*additional_headers=*/net::HttpRequestHeaders(),
       /*no_vary_search_expected=*/std::nullopt,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
       // Considering the characteristics of triggers (e.g., the duration from
@@ -377,6 +379,7 @@ PrerenderManager::StartPrerenderDirectUrlInput(
   direct_url_input_prerender_handle_ = web_contents()->StartPrerendering(
       prerendering_url, content::PreloadingTriggerType::kEmbedder,
       prerender_utils::kDirectUrlInputMetricSuffix,
+      /*additional_headers=*/net::HttpRequestHeaders(),
       /*no_vary_search_expected=*/std::nullopt,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -417,6 +420,7 @@ void PrerenderManager::StartPrerenderSearchResult(
       web_contents()->StartPrerendering(
           prerendering_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDefaultSearchEngineMetricSuffix,
+          /*additional_headers=*/net::HttpRequestHeaders(),
           /*no_vary_search_expected=*/std::nullopt,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),

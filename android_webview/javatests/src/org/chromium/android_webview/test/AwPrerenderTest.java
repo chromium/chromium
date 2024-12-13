@@ -51,6 +51,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(Parameterized.class)
@@ -297,7 +298,10 @@ public class AwPrerenderTest extends AwParameterizedTest {
     // a URL that should actually be activated. Generally, `expectedActivatedUrl` is the same as
     // `activateUrl`, but they are different when prerendering navigation is redirected.
     private void activatePage(
-            String activateUrl, String expectedActivatedUrl, ActivationBy activationBy)
+            String activateUrl,
+            String expectedActivatedUrl,
+            ActivationBy activationBy,
+            Map<String, String> extraHeaders)
             throws Exception {
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
         int currentOnPageStartedCallCount = onPageStartedHelper.getCallCount();
@@ -305,7 +309,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         // Activate the prerendered page.
         switch (activationBy) {
             case LOAD_URL:
-                mActivityTestRule.loadUrlAsync(mAwContents, activateUrl);
+                mActivityTestRule.loadUrlAsync(mAwContents, activateUrl, extraHeaders);
                 break;
             case JAVASCRIPT:
                 ThreadUtils.runOnUiThreadBlocking(
@@ -322,18 +326,50 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 currentOnPageStartedCallCount, 1, SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         Assert.assertEquals(onPageStartedHelper.getUrl(), expectedActivatedUrl);
 
-        // Make sure the page was actually prerendered and then activated.
-        Assert.assertEquals(
-                true, mActivationFuture.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
-        Assert.assertEquals(
-                "true",
-                mActivityTestRule.executeJavaScriptAndWaitForResult(
-                        mAwContents, mContentsClient, "wasPrerendered"));
+        // Make sure the page was actually prerendered and then activated. These checks are
+        // available only for a page served from PRERENDER_URL, as these depend on JavaScript code
+        // injected there.
+        if (expectedActivatedUrl.contains(PRERENDER_URL)) {
+            Assert.assertEquals(
+                    true, mActivationFuture.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+            Assert.assertEquals(
+                    "true",
+                    mActivityTestRule.executeJavaScriptAndWaitForResult(
+                            mAwContents, mContentsClient, "wasPrerendered"));
+        }
     }
 
-    // Shorthand notation of `activatePage(activate_url, activate_url)`.
+    // Shorthand notation of `activatePage` without `extraHeaders`.
+    private void activatePage(
+            String activateUrl, String expectedActivatedUrl, ActivationBy activationBy)
+            throws Exception {
+        activatePage(activateUrl, expectedActivatedUrl, activationBy, /* extraHeaders= */ null);
+    }
+
+    // Shorthand notation of `activatePage(activateUrl, activateUrl)` without `extraHeaders`.
     private void activatePage(String activateUrl, ActivationBy activationBy) throws Exception {
         activatePage(activateUrl, activateUrl, activationBy);
+    }
+
+    private void testPrerenderingWithInvalidAdditionalHeaders(
+            Map<String, String> invalidAdditionalHeaders) {
+        AwPrefetchParameters prefetchParameters =
+                new AwPrefetchParameters(
+                        invalidAdditionalHeaders,
+                        /* expectedNoVarySearch= */ null,
+                        /* isJavascriptEnabled= */ true);
+
+        Assert.assertTrue(
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            try {
+                                mAwContents.startPrerendering(
+                                        mPrerenderingUrl, prefetchParameters, null);
+                                return false;
+                            } catch (IllegalArgumentException e) {
+                                return true;
+                            }
+                        }));
     }
 
     private final String encodeUrl(String url) {
@@ -559,6 +595,91 @@ public class AwPrerenderTest extends AwParameterizedTest {
         // cross-site restriction.
         // TODO(crbug.com/41490450): Add a new test helper to make sure that a request is not sent
         // to a given URL.
+    }
+
+    // Tests additional request headers on WebView prerendering trigger.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testAdditionalHeaders() throws Throwable {
+        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
+        var histogramWatcher = createFinalStatusHistogramWatcher(/*kActivated*/ 0);
+
+        final TestAwContentsClient.ShouldInterceptRequestHelper shouldInterceptRequestHelper =
+                mContentsClient.getShouldInterceptRequestHelper();
+        int currentShouldInterceptRequestCallCount = shouldInterceptRequestHelper.getCallCount();
+
+        HashMap<String, String> additionalHeaders = new HashMap<>();
+        additionalHeaders.put("Test-Header1", "1");
+        additionalHeaders.put("Test-Header2", "2");
+
+        // Prerender with the additional headers.
+        AwPrefetchParameters prefetchParameters =
+                new AwPrefetchParameters(
+                        additionalHeaders,
+                        /* expectedNoVarySearch= */ null,
+                        /* isJavascriptEnabled= */ true);
+        startPrerendering(
+                mPrerenderingUrl,
+                prefetchParameters,
+                mActivationCallbackHelper.getActivationCallback());
+
+        // shouldInterceptRequest should see the additional headers on prerendering navigation.
+        shouldInterceptRequestHelper.waitForCallback(currentShouldInterceptRequestCallCount);
+        AwContentsClient.AwWebResourceRequest mainRequest =
+                shouldInterceptRequestHelper.getRequestsForUrl(mPrerenderingUrl);
+        Assert.assertNotNull(mainRequest);
+        HashMap<String, String> mainHeaders = mainRequest.requestHeaders;
+        Assert.assertNotNull(mainHeaders);
+        Assert.assertEquals("1", mainHeaders.get("Test-Header1"));
+        Assert.assertEquals("2", mainHeaders.get("Test-Header2"));
+        // But shouldInterceptRequest should not see the headers on subresource requests.
+        shouldInterceptRequestHelper.waitForNext();
+        String scriptUrl = mTestServer.getURL(PRERENDER_SETUP_SCRIPT_URL);
+        AwContentsClient.AwWebResourceRequest scriptRequest =
+                shouldInterceptRequestHelper.getRequestsForUrl(scriptUrl);
+        Assert.assertNotNull(scriptRequest);
+        HashMap<String, String> scriptHeaders = scriptRequest.requestHeaders;
+        Assert.assertNotNull(scriptHeaders);
+        Assert.assertNull(scriptHeaders.get("Test-Header1"));
+        Assert.assertNull(scriptHeaders.get("Test-Header2"));
+
+        activatePage(mPrerenderingUrl, mPrerenderingUrl, ActivationBy.LOAD_URL, additionalHeaders);
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+
+        // The server should also see the additional headers on prerendering navigation.
+        mainHeaders = mTestServer.getRequestHeadersForUrl(PRERENDER_URL);
+        Assert.assertFalse(mainHeaders.isEmpty());
+        Assert.assertEquals("1", mainHeaders.get("Test-Header1"));
+        Assert.assertEquals("2", mainHeaders.get("Test-Header2"));
+        Assert.assertEquals("prefetch;prerender", mainHeaders.get("Sec-Purpose"));
+        // But the server should not see the headers on subresource requests.
+        scriptHeaders = mTestServer.getRequestHeadersForUrl(PRERENDER_SETUP_SCRIPT_URL);
+        Assert.assertFalse(scriptHeaders.isEmpty());
+        Assert.assertNull(scriptHeaders.get("Test-Header1"));
+        Assert.assertNull(scriptHeaders.get("Test-Header2"));
+        Assert.assertEquals("prefetch;prerender", scriptHeaders.get("Sec-Purpose"));
+    }
+
+    // Tests additional request headers that contain an invalid key or value on WebView prerendering
+    // trigger.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testInvalidAdditionalHeaders() throws Throwable {
+        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
+        final String[] invalids = {"null\u0000", "cr\r", "nl\n"};
+        for (String invalid : invalids) {
+            // try each invalid string as a key and a value
+            testPrerenderingWithInvalidAdditionalHeaders(Map.of("foo", invalid));
+            testPrerenderingWithInvalidAdditionalHeaders(Map.of(invalid, "foo"));
+        }
     }
 
     // Tests speculation rules prerendering with No-Vary-Search header.
