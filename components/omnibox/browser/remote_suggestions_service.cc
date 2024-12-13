@@ -61,6 +61,7 @@ GURL AddLensOverlaySuggestInputsDataToEndpointUrl(
         lens_overlay_suggest_inputs
             ->send_gsession_vsrid_for_contextual_suggest();
     send_vit = true;
+    modified_url = net::AppendOrReplaceQueryParameter(modified_url, "gs_ps", "1");
   } else if (search_terms_args.page_classification ==
              metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX) {
     if (lens_overlay_suggest_inputs
