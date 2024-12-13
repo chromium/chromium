@@ -1,29 +1,29 @@
-<!DOCTYPE html>
-<meta charset=utf-8>
-<title>Fire success event - Exception thrown</title>
-<link rel="help" href="https://w3c.github.io/IndexedDB/#fire-success-event">
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
-<script src=resources/support.js></script>
-<script>
-setup({allow_uncaught_exception:true});
+// META: global=window,worker
+// META: title=Fire success event - Exception thrown
+// META: script=resources/support.js
+
+// Spec: "https://w3c.github.io/IndexedDB/#fire-success-event"
+
+'use strict';
+
+setup({allow_uncaught_exception: true});
 
 function fire_success_event_test(func, description) {
   indexeddb_test(
-    (t, db) => {
-      db.createObjectStore('s');
-    },
-    (t, db) => {
-      const tx = db.transaction('s', 'readonly', {durability: 'relaxed'});
-      tx.oncomplete = t.unreached_func('transaction should abort');
-      const store = tx.objectStore('s');
-      const request = store.get(0);
-      func(t, db, tx, request);
-      tx.addEventListener('abort', t.step_func_done(() => {
-        assert_equals(tx.error.name, 'AbortError');
-      }));
-    },
-    description);
+      (t, db) => {
+        db.createObjectStore('s');
+      },
+      (t, db) => {
+        const tx = db.transaction('s', 'readonly', {durability: 'relaxed'});
+        tx.oncomplete = t.unreached_func('transaction should abort');
+        const store = tx.objectStore('s');
+        const request = store.get(0);
+        func(t, db, tx, request);
+        tx.addEventListener('abort', t.step_func_done(() => {
+          assert_equals(tx.error.name, 'AbortError');
+        }));
+      },
+      description);
 }
 
 fire_success_event_test((t, db, tx, request) => {
@@ -53,9 +53,11 @@ fire_success_event_test((t, db, tx, request) => {
 }, 'Exception in success event listener (non-callable "handleEvent") on request');
 
 fire_success_event_test((t, db, tx, request) => {
-  request.addEventListener('success', () => {
-    // no-op
-  });
+  request.addEventListener(
+      'success',
+      () => {
+          // no-op
+      });
   request.addEventListener('success', () => {
     throw Error();
   });
@@ -68,12 +70,11 @@ fire_success_event_test((t, db, tx, request) => {
   });
   request.addEventListener('success', t.step_func(() => {
     second_listener_called = true;
-    assert_true(is_transaction_active(tx, 's'),
-                'Transaction should be active until dispatch completes');
+    assert_true(
+        is_transaction_active(tx, 's'),
+        'Transaction should be active until dispatch completes');
   }));
   tx.addEventListener('abort', t.step_func(() => {
     assert_true(second_listener_called);
   }));
 }, 'Exception in first success event listener, tx active in second');
-
-</script>

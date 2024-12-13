@@ -1,16 +1,14 @@
-<!DOCTYPE html>
-<meta charset=utf-8>
-<title>Fire upgradeneeded event - Exception thrown</title>
-<link rel="help" href="https://w3c.github.io/IndexedDB/#fire-a-version-change-event">
-<script src=/resources/testharness.js></script>
-<script src=/resources/testharnessreport.js></script>
-<script src=resources/support.js></script>
-<script>
-setup({allow_uncaught_exception:true});
+// META: global=window,worker
+// META: title=Fire upgradeneeded event - Exception thrown
+// META: script=resources/support.js
+
+// Spec: "https://w3c.github.io/IndexedDB/#fire-a-version-change-event"
+
+setup({allow_uncaught_exception: true});
 
 function fire_upgradeneeded_event_test(func, description) {
   async_test(t => {
-    const dbname = document.location + '-' + t.name;
+    const dbname = self.location + '-' + t.name;
     const del = indexedDB.deleteDatabase(dbname);
     del.onerror = t.unreached_func('deleteDatabase should succeed');
     const open = indexedDB.open(dbname, 1);
@@ -55,9 +53,11 @@ fire_upgradeneeded_event_test((t, open) => {
 }, 'Exception in upgradeneeded due to non-callable "handleEvent"');
 
 fire_upgradeneeded_event_test((t, open) => {
-  open.addEventListener('upgradeneeded', () => {
-    // No-op.
-  });
+  open.addEventListener(
+      'upgradeneeded',
+      () => {
+          // No-op.
+      });
   open.addEventListener('upgradeneeded', () => {
     throw Error();
   });
@@ -71,12 +71,11 @@ fire_upgradeneeded_event_test((t, open) => {
   });
   open.addEventListener('upgradeneeded', t.step_func(() => {
     second_listener_called = true;
-    assert_true(is_transaction_active(open.transaction, 's'),
-                'Transaction should be active until dispatch completes');
+    assert_true(
+        is_transaction_active(open.transaction, 's'),
+        'Transaction should be active until dispatch completes');
   }));
   open.addEventListener('error', t.step_func(() => {
     assert_true(second_listener_called);
   }));
 }, 'Exception in first upgradeneeded listener, tx active in second');
-
-</script>
