@@ -2178,6 +2178,10 @@
       status: "test",
     },
     {
+      name: "GetComputedStyleOutsideFlatTree",
+      status: "stable",
+    },
+    {
       name: "GetDisplayMedia",
       public: true,
       status: {

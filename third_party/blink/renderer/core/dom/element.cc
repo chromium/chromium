@@ -7850,6 +7850,9 @@ const ComputedStyle* Element::EnsureComputedStyle(
       (filter_root &&
        !filter_root->ComputedStyleRef().IsEnsuredOutsideFlatTree());
   if (!is_in_flat_tree) {
+    if (!RuntimeEnabledFeatures::GetComputedStyleOutsideFlatTreeEnabled()) {
+      return nullptr;
+    }
     filter_root = nullptr;
   }
 
