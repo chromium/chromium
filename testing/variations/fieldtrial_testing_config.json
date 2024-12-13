@@ -20966,6 +20966,21 @@
             ]
         }
     ],
+    "ScreencastUseUSMForS3": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ProjectorUseUSMForS3"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScreenlockReauthChromeOS": [
         {
             "platforms": [
