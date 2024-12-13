@@ -290,7 +290,7 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
    public:
     struct WatchStateCopy {
       base::TimeTicks deadline;
-      base::PlatformThreadId thread_id;
+      uint64_t thread_id;
     };
 
     WatchStateSnapShot();
@@ -634,6 +634,7 @@ class BASE_EXPORT HangWatchState {
 #endif
 
   PlatformThreadId GetThreadID() const;
+  uint64_t GetSystemWideThreadID() const;
 
   // Retrieve the current hang watch deadline directly. For testing only.
   HangWatchDeadline* GetHangWatchDeadlineForTesting();
@@ -664,6 +665,14 @@ class BASE_EXPORT HangWatchState {
   // A unique ID of the thread under watch. Used for logging in crash reports
   // only.
   PlatformThreadId thread_id_;
+
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/40187449): Remove this once macOS uses system-wide ids.
+  // On macOS the thread ids used by CrashPad are not the same as the ones
+  // provided by PlatformThread. Make sure to use the same for correct
+  // attribution.
+  uint64_t system_wide_thread_id_;
+#endif
 
   // Number of active HangWatchScopeEnables on this thread.
   int nesting_level_ = 0;

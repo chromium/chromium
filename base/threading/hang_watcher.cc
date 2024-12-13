@@ -797,8 +797,8 @@ void HangWatcher::WatchStateSnapShot::Init(
       // the next capture then they'll already be marked and will be included
       // in the capture at that time.
       if (thread_marked && all_threads_marked) {
-        hung_watch_state_copies_.push_back(
-            WatchStateCopy{deadline, watch_state.get()->GetThreadID()});
+        hung_watch_state_copies_.push_back(WatchStateCopy{
+            deadline, watch_state.get()->GetSystemWideThreadID()});
       } else {
         all_threads_marked = false;
       }
@@ -1201,17 +1201,10 @@ uint64_t HangWatchDeadline::SwitchBitsForTesting() {
 
 HangWatchState::HangWatchState(HangWatcher::ThreadType thread_type)
     : resetter_(&hang_watch_state, this, nullptr), thread_type_(thread_type) {
-// TODO(crbug.com/40187449): Remove this once macOS uses system-wide ids.
-// On macOS the thread ids used by CrashPad are not the same as the ones
-// provided by PlatformThread. Make sure to use the same for correct
-// attribution.
 #if BUILDFLAG(IS_MAC)
-  uint64_t thread_id;
-  pthread_threadid_np(pthread_self(), &thread_id);
-  thread_id_ = checked_cast<PlatformThreadId>(thread_id);
-#else
-  thread_id_ = PlatformThread::CurrentId();
+  pthread_threadid_np(pthread_self(), &system_wide_thread_id_);
 #endif
+  thread_id_ = PlatformThread::CurrentId();
 }
 
 HangWatchState::~HangWatchState() {
@@ -1312,6 +1305,15 @@ HangWatchState* HangWatchState::GetHangWatchStateForCurrentThread() {
 
 PlatformThreadId HangWatchState::GetThreadID() const {
   return thread_id_;
+}
+
+uint64_t HangWatchState::GetSystemWideThreadID() const {
+#if BUILDFLAG(IS_MAC)
+  return system_wide_thread_id_;
+#else
+  CHECK(thread_id_ > 0);
+  return static_cast<uint64_t>(thread_id_);
+#endif
 }
 
 }  // namespace internal
