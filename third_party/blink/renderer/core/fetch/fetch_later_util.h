@@ -9,7 +9,6 @@
 
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -23,11 +22,15 @@ class FrameOwner;
 // The ResourceType of FetchLater requests.
 inline constexpr ResourceType kFetchLaterResourceType = ResourceType::kRaw;
 
-// 64 kibibytes.
-inline constexpr uint32_t kInitialSubframeDeferredFetchBytes = 64 * 1024;
+// The minimal quota is 8 kibibytes, one of the possible values for
+// "reserved deferred-fetch quota".
+// https://whatpr.org/fetch/1647.html#reserved-deferred-fetch-quota-minimal-quota
+inline constexpr uint32_t kMinimalReservedDeferredFetchQuota = 8 * 1024;
 
-// 8 kibibytes.
-inline constexpr uint32_t kInitialSubframeDeferredFetchMinimalBytes = 8 * 1024;
+// The normal quota is 64 kibibytes, one of the possible values for
+// "reserved deferred-fetch quota".
+// https://whatpr.org/fetch/1647.html#reserved-deferred-fetch-quota-normal-quota
+inline constexpr uint32_t kNormalReservedDeferredFetchQuota = 64 * 1024;
 
 // Tells whether the FetchLater API should use subframe deferred fetch
 // policy to decide whether a frame show allow using the API.
@@ -37,17 +40,14 @@ bool CORE_EXPORT IsFetchLaterUseDeferredFetchPolicyEnabled();
 ResourceLoadPriority CORE_EXPORT
 ComputeFetchLaterLoadPriority(const FetchParameters& params);
 
-// Returns all frames that shares the same deferred fetch quota with `frame`,
-// i.e. all same-origin same-process frames of `frame`.
-// Note that the result includes the `frame` itself if not null.
-// https://whatpr.org/fetch/1647.html#deferred-fetch-quota-sharing-navigables
-HeapHashSet<Member<Frame>> CORE_EXPORT
-GetDeferredFetchQuotaSharingFrames(Frame* frame);
-
 // Determines the deferred fetch policy of a navigable container
 // `container_frame`, e.g. iframe, when it navigates its content to a target
 // URL, by the following algorithm:
-// https://whatpr.org/fetch/1647.html#determine-subframe-deferred-fetch-policy
+// https://whatpr.org/fetch/1647.html#reserve-deferred-fetch-quota
+// `container_frame` is a FrameOwner on navigation, i.e. an iframe.
+// Returns an enum that can be mapped to a "reserved deferred-fetch quota" by
+// calling `ToReservedDeferredFetchQuota()`.
+//
 // This must be called after "inherited policy" for `container_frame` is
 // available, i.e. after `PermissionsPolicy::CreateFromParentPolicy()` is
 // already executed.
@@ -55,9 +55,12 @@ FramePolicy::DeferredFetchPolicy CORE_EXPORT
 GetContainerDeferredFetchPolicyOnNavigation(FrameOwner* container_frame);
 
 // For testing only:
-uint32_t CORE_EXPORT CountFramesWithMinimalQuotaPolicyForTesting(
-    FrameOwner* container_frame,
-    const HeapHashSet<Member<Frame>>& top_level_relatives);
+uint32_t CORE_EXPORT
+ToReservedDeferredFetchQuotaForTesting(FramePolicy::DeferredFetchPolicy policy);
+bool CORE_EXPORT AreSameOriginForTesting(const Frame* frame_a,
+                                         const Frame* frame_b);
+uint32_t CORE_EXPORT CountContainersWithReservedMinimalQuotaForTesting(
+    const FrameOwner* container_frame);
 
 }  // namespace blink
 

@@ -23,41 +23,68 @@
 namespace blink {
 namespace {
 
-// Calculates "framesWithMinimalQuotaPolicy" by running Step 7 of
-// https://whatpr.org/fetch/1647.html#determine-subframe-deferred-fetch-policy
+// The max containers with minimal quota is 16.
+// https://whatpr.org/fetch/1647.html#max-containers-with-minimal-quota
+constexpr uint32_t kMaxContainersWithMinimalQuota = 16;
+
+// Converts `policy` to one of possible values of reserved deferred-fetch quota.
+// https://whatpr.org/fetch/1647.html#reserved-deferred-fetch-quota
+uint32_t ToReservedDeferredFetchQuota(FramePolicy::DeferredFetchPolicy policy) {
+  switch (policy) {
+    case FramePolicy::DeferredFetchPolicy::kDisabled:
+      return 0;
+    case FramePolicy::DeferredFetchPolicy::kDeferredFetch:
+      return kNormalReservedDeferredFetchQuota;
+    case FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal:
+      return kMinimalReservedDeferredFetchQuota;
+  }
+}
+
+// Tells if the given two frames shares the same origin.
+// https://html.spec.whatwg.org/multipage/browsers.html#same-origin
+bool AreSameOrigin(const Frame* frame_a, const Frame* frame_b) {
+  CHECK(frame_a);
+  CHECK(frame_b);
+
+  return frame_a->GetSecurityContext()->GetSecurityOrigin()->IsSameOriginWith(
+      frame_b->GetSecurityContext()->GetSecurityOrigin());
+}
+
+// Calculates the total number of frames according to Step 5 of
+// https://whatpr.org/fetch/1647.html#reserve-deferred-fetch-quota
 //
-// `container_frame` is an iframe to decide deferred fetch policy for.
-// `top_level_relatives` is from executing the following for the parent of
-// `container_frame`:
-// https://whatpr.org/fetch/1647.html#available-deferred-fetching-quota
-uint32_t CountFramesWithMinimalQuotaPolicy(
-    FrameOwner* container_frame,
-    const HeapHashSet<Member<Frame>>& top_level_relatives) {
+// `container_frame` is an iframe to count the result for. Note that it must be
+// an iframe with `PermissionsPolicyFeature::kDeferredFetchMinimal` enabled
+// before calling this function.
+//
+// Example (with default Permissions Policy on every origin):
+//    root (a.com) -> frame-1 (a.com)
+//                 -> frame-2 (a.com)
+//                 -> frame-3 (b.com)
+//                 -> frame-4 (b.com)
+// * `container_frame` cannot be frame-1, frame-2.
+// * When `container_frame` = frame-3 or frame-4, the result is 2.
+uint32_t CountContainersWithReservedMinimalQuota(
+    const FrameOwner* container_frame) {
   CHECK(container_frame);
   uint32_t count = 0;
 
-  for (const auto& relative : top_level_relatives) {
-    //  7-2. topLevelRelatives contains navigable’s parent.
-    for (Frame* navigable = relative->FirstChild(); navigable;
-         navigable = navigable->NextSibling()) {
-      //  7-1. navigable is not container’s content navigable.
-      if (navigable == container_frame->ContentFrame()) {
-        continue;
-      }
-      // 7-3. topLevelRelatives does not contain navigable.
-      if (top_level_relatives.find(navigable) != top_level_relatives.end()) {
-        continue;
-      }
-      // 7-4. navigable’s navigable container’s deferred fetch policy is
-      // "deferred-fetch-minimal".
-      auto* navigable_container = navigable->Owner();
-      if (navigable_container &&
-          navigable_container->GetFramePolicy().deferred_fetch_policy ==
-              FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal) {
-        count++;
-      }
+  // 5. Let containersWithReservedMinimalQuota be container’s node navigable’s
+  // top-level traversable’s descendant navigables
+  auto* top_frame = container_frame->ContentFrame()->Top();
+  CHECK(top_frame);
+  for (const auto* navigable = top_frame; navigable;
+       navigable = navigable->Tree().TraverseNext(top_frame)) {
+    // removing any navigable whose reserved deferred-fetch quota is not minimal
+    // quota.
+    if (auto* navigable_container = navigable->Owner();
+        navigable_container &&
+        navigable_container->GetFramePolicy().deferred_fetch_policy ==
+            FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal) {
+      count++;
     }
   }
+
   return count;
 }
 
@@ -81,30 +108,6 @@ ResourceLoadPriority ComputeFetchLaterLoadPriority(
   // IsSubframeDeprioritizationEnabled.
 }
 
-HeapHashSet<Member<Frame>> GetDeferredFetchQuotaSharingFrames(Frame* frame) {
-  HeapHashSet<Member<Frame>> result;
-  if (!frame) {
-    return result;
-  }
-
-  auto* top_frame = frame->Top();
-  for (auto* current_frame = top_frame; current_frame;
-       current_frame = current_frame->Tree().TraverseNext(top_frame)) {
-    if (!current_frame->IsLocalFrame()) {
-      // Skips non-local frames.
-      continue;
-    }
-    if (!frame->GetSecurityContext()->GetSecurityOrigin()->CanAccess(
-            current_frame->GetSecurityContext()->GetSecurityOrigin())) {
-      // Skips cross-origin frames.
-      continue;
-    }
-    result.insert(current_frame);
-  }
-
-  return result;
-}
-
 FramePolicy::DeferredFetchPolicy GetContainerDeferredFetchPolicyOnNavigation(
     FrameOwner* container_frame) {
   CHECK(container_frame);
@@ -118,58 +121,59 @@ FramePolicy::DeferredFetchPolicy GetContainerDeferredFetchPolicyOnNavigation(
   auto* permissions_policy = container_frame->ContentFrame()
                                  ->GetSecurityContext()
                                  ->GetPermissionsPolicy();
-  // 1. Set container’s deferred fetch policy to disabled.
+  // 1. Set container’s reserved deferred-fetch quota to 0.
 
   // 2. If the inherited policy for "deferred-fetch", container and
   // originToNavigateTo is Enabled,
   // TODO(crbug.com/40276121): and the available deferred fetching quota for
-  // container’s container document is equal or greater than 64 kibibytes,
+  // container’s container document is equal or greater than normal quota:
   if (permissions_policy->IsFeatureEnabledForOrigin(
           mojom::blink::PermissionsPolicyFeature::kDeferredFetch,
           to_url_origin)) {
-    // then set container’s deferred fetch policy to "deferred-fetch" and
+    // then set container’s reserved deferred-fetch quota to normal quota and
     // return.
     return FramePolicy::DeferredFetchPolicy::kDeferredFetch;
   }
   // 3. If the inherited policy for "deferred-fetch-minimal", container and
-  // originToNavigateTo is Disabled, then set container’s deferred fetch policy
-  // to disabled and return.
+  // originToNavigateTo is Disabled:
   if (!permissions_policy->IsFeatureEnabledForOrigin(
           mojom::blink::PermissionsPolicyFeature::kDeferredFetchMinimal,
           to_url_origin)) {
+    // then return.
+    return FramePolicy::DeferredFetchPolicy::kDisabled;
+  }
+  // 4. If container’s node document's origin is not same origin with
+  // container’s node navigable’s top-level traversable’s active document’s
+  // origin:
+  if (!AreSameOrigin(container_frame->ContentFrame()->Parent(),
+                     container_frame->ContentFrame()->Top())) {
+    // then return.
     return FramePolicy::DeferredFetchPolicy::kDisabled;
   }
 
-  // 4. Let topLevelRelatives be container’s container document’s deferred
-  // fetch quota-sharing navigables.
-  auto top_level_relatives = GetDeferredFetchQuotaSharingFrames(
-      container_frame->ContentFrame()->Parent());
-  // 5. If topLevelRelatives does not contain container’s node navigable’s
-  // top-level traversable, then set container’s deferred fetch policy to
-  // disabled and return.
-  if (top_level_relatives.find(container_frame->ContentFrame()->Top()) ==
-      top_level_relatives.end()) {
-    return FramePolicy::DeferredFetchPolicy::kDisabled;
-  }
-
-  // 7. For each navigable that matches the following conditions:
-  uint32_t frames_with_minimal_quota_policy =
-      CountFramesWithMinimalQuotaPolicy(container_frame, top_level_relatives);
-
-  // 8. If framesWithMinimalQuotaPolicy is less than 16, then set container’s
-  // deferred fetch policy to "deferred-fetch-minimal".
-  if (frames_with_minimal_quota_policy < 16) {
-    return FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal;
-  }
-
-  return FramePolicy::DeferredFetchPolicy::kDisabled;
+  // 5. Let containersWithReservedMinimalQuota be ...
+  // 6. If containersWithReservedMinimalQuota’s size is less than max containers
+  // with minimal quota, then set container’s reserved deferred-fetch quota to
+  // minimal quota.
+  return CountContainersWithReservedMinimalQuota(container_frame) <
+                 kMaxContainersWithMinimalQuota
+             ? FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal
+             : FramePolicy::DeferredFetchPolicy::kDisabled;
 }
 
-uint32_t CountFramesWithMinimalQuotaPolicyForTesting(
-    FrameOwner* container_frame,
-    const HeapHashSet<Member<Frame>>& top_level_relatives) {
-  return CountFramesWithMinimalQuotaPolicy(container_frame,
-                                           top_level_relatives);
+// For testing only:
+uint32_t ToReservedDeferredFetchQuotaForTesting(
+    FramePolicy::DeferredFetchPolicy policy) {
+  return ToReservedDeferredFetchQuota(policy);
+}
+
+bool AreSameOriginForTesting(const Frame* frame_a, const Frame* frame_b) {
+  return AreSameOrigin(frame_a, frame_b);
+}
+
+uint32_t CountContainersWithReservedMinimalQuotaForTesting(
+    const FrameOwner* container_frame) {
+  return CountContainersWithReservedMinimalQuota(container_frame);
 }
 
 }  // namespace blink

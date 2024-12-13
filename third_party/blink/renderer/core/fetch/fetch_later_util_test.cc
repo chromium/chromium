@@ -148,7 +148,7 @@ class DeferredFetchPolicyTestBase : public SimTest {
   }
 
   // Renders a series of sibling <iframe> elements with the given `iframe_urls`.
-  String RenderWithIframes(const Vector<String>& iframe_urls) {
+  static String RenderWithIframes(const Vector<String>& iframe_urls) {
     StringBuilder html;
     for (const auto& url : iframe_urls) {
       html.Append("<iframe src=\"");
@@ -158,209 +158,42 @@ class DeferredFetchPolicyTestBase : public SimTest {
     return html.ToString();
   }
 
+  static void CheckFrameEnableDeferredFetchMinimal(Frame* frame) {
+    CHECK(frame->GetSecurityContext()
+              ->GetPermissionsPolicy()
+              ->IsFeatureEnabledForOrigin(
+                  mojom::blink::PermissionsPolicyFeature::kDeferredFetchMinimal,
+                  frame->GetSecurityContext()
+                      ->GetSecurityOrigin()
+                      ->ToUrlOrigin()));
+  }
+
   LocalFrame* GetMainFrame() { return GetDocument().GetFrame(); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-using GetDeferredFetchQuotaSharingFramesTest = DeferredFetchPolicyTestBase;
-
-TEST_F(GetDeferredFetchQuotaSharingFramesTest, Null) {
-  EXPECT_THAT(GetDeferredFetchQuotaSharingFrames(nullptr), testing::IsEmpty());
-}
-
-// The main frame shares the deferred fetch quota with itself.
-TEST_F(GetDeferredFetchQuotaSharingFramesTest, SingleDocument) {
-  NavigateTo(kMainUrl, "");
-
-  EXPECT_THAT(GetDeferredFetchQuotaSharingFrames(GetMainFrame()),
-              testing::SizeIs(1));
-}
-
-// The about::blank iframe shares the deferred fetch quota with the main frame.
-TEST_F(GetDeferredFetchQuotaSharingFramesTest, SingleDocumentSingleBlankFrame) {
-  NavigateTo(kMainUrl, "<iframe></iframe>");
-
-  auto* root = GetMainFrame();
-  auto* blank_frame = root->Tree().FirstChild();
-  EXPECT_THAT(GetDeferredFetchQuotaSharingFrames(root), testing::SizeIs(2));
-  EXPECT_THAT(GetDeferredFetchQuotaSharingFrames(blank_frame),
-              testing::SizeIs(2));
-}
-
-// The same-origin iframe shares the deferred fetch quota with the main frame.
-TEST_F(GetDeferredFetchQuotaSharingFramesTest,
-       SingleDocumentSingleSameOriginFrame) {
-  // The structure of the document:
-  // root -> frame_a (same-origin)
-  String root_url = kMainUrl;
-  String frame_a_url = kMainUrl + "frame-a.html";
-
-  NavigateTo(root_url, RenderWithIframes({"frame-a.html"}),
-             {{frame_a_url, ""}});
-
-  // Root and Frame A are same-origin.
-  auto* root = GetMainFrame();
-  auto* frame_a = root->Tree().FirstChild();
-  EXPECT_THAT(GetDeferredFetchQuotaSharingFrames(root), testing::SizeIs(2));
-  EXPECT_THAT(GetDeferredFetchQuotaSharingFrames(frame_a), testing::SizeIs(2));
-}
-
-// The same-origin iframe does not share the deferred fetch quota with the main
-// frame.
-TEST_F(GetDeferredFetchQuotaSharingFramesTest,
-       SingleDocumentSingleCrossOriginFrame) {
-  // The structure of the document:
-  // root -> frame_a (cross-origin)
-  String root_url = kMainUrl;
-  String frame_a_url = kCrossSubdomainUrl + "frame-a.html";
-
-  NavigateTo(root_url, RenderWithIframes({frame_a_url}), {{frame_a_url, ""}});
-
-  // Root and Frame A are cross-origin.
-  auto* root = GetMainFrame();
-  auto* frame_a = root->Tree().FirstChild();
-  EXPECT_THAT(GetDeferredFetchQuotaSharingFrames(root), testing::SizeIs(1));
-  EXPECT_THAT(GetDeferredFetchQuotaSharingFrames(frame_a), testing::SizeIs(1));
-}
-
-// The main frame and 3 cross-origin iframes don't share the same deferred
-// fetch quota.
-TEST_F(GetDeferredFetchQuotaSharingFramesTest,
-       MultipleCrossOriginSiblingFrames) {
-  // The structure of the document:
-  // root -> frame_a (cross-origin)
-  //      -> frame_b (cross-origin)
-  //      -> frame_c (cross-origin)
-  String root_url = kMainUrl;
-  String frame_a_url = kCrossSubdomainUrl + "frame-a.html";
-  String frame_b_url = kCrossSubdomainUrl + "frame-b.html";
-  String frame_c_url = kCrossSubdomainUrl + "frame-c.html";
-
-  NavigateTo(root_url,
-             RenderWithIframes({frame_a_url, frame_b_url, frame_c_url}),
-             {{frame_a_url, ""}, {frame_b_url, ""}, {frame_c_url, ""}});
-
-  auto* root = GetMainFrame();
-  auto* frame_a = root->Tree().FirstChild();
-  auto* frame_b = frame_a->Tree().NextSibling();
-  auto* frame_c = frame_b->Tree().NextSibling();
-
-  // Root is its owned origin.
-  EXPECT_THAT(GetDeferredFetchQuotaSharingFrames(root), testing::SizeIs(1));
-
-  // Frame A, B, and C are same-origin.
-  EXPECT_THAT(GetDeferredFetchQuotaSharingFrames(frame_a), testing::SizeIs(3));
-  EXPECT_THAT(GetDeferredFetchQuotaSharingFrames(frame_b), testing::SizeIs(3));
-  EXPECT_THAT(GetDeferredFetchQuotaSharingFrames(frame_c), testing::SizeIs(3));
-}
-
-// The same-origin main frame, frame-a, frame-b are in the same frame group for
-// deferred fetch quota, while cross-origin frame-c, frame-d are in their own
-// group.
-TEST_F(GetDeferredFetchQuotaSharingFramesTest,
-       MultipleDifferentOriginSiblingFrames) {
-  // The structure of the document:
-  // root -> frame_a (same-origin)
-  //      -> frame_b (same-origin)
-  //      -> frame_c (cross-origin)
-  //      -> frame_d (cross-origin)
-  String root_url = kMainUrl;
-  String frame_a_url = kMainUrl + "frame-a.html";
-  String frame_b_url = kMainUrl + "frame-b.html";
-  String frame_c_url = kCrossSubdomainUrl + "frame-c.html";
-  String frame_d_url = kCrossSubdomainUrl + "frame-d.html";
-
-  NavigateTo(root_url,
-             RenderWithIframes(
-                 {"frame-a.html", frame_b_url, frame_c_url, frame_d_url}),
-             {{frame_a_url, ""},
-              {frame_b_url, ""},
-              {frame_c_url, ""},
-              {frame_d_url, ""}});
-
-  auto* root = GetMainFrame();
-  auto* frame_a = root->Tree().FirstChild();
-  auto* frame_b = frame_a->Tree().NextSibling();
-  auto* frame_c = frame_b->Tree().NextSibling();
-  auto* frame_d = frame_c->Tree().NextSibling();
-
-  // Root, Frame A and Frame B are same-origin.
-  EXPECT_THAT(GetDeferredFetchQuotaSharingFrames(root), testing::SizeIs(3));
-  EXPECT_THAT(GetDeferredFetchQuotaSharingFrames(frame_a), testing::SizeIs(3));
-  EXPECT_THAT(GetDeferredFetchQuotaSharingFrames(frame_b), testing::SizeIs(3));
-
-  // Frame C and D are same-origin.
-  EXPECT_THAT(GetDeferredFetchQuotaSharingFrames(frame_c), testing::SizeIs(2));
-  EXPECT_THAT(GetDeferredFetchQuotaSharingFrames(frame_d), testing::SizeIs(2));
-}
-
-// The same-origin main frame, frame-a, frame-b are in the same frame group for
-// deferred fetch quota, while cross-origin frame-c, frame-d are in their own
-// group.
-TEST_F(GetDeferredFetchQuotaSharingFramesTest, MultipleLevelFrames) {
-  // The structure of the document:
-  // root -> frame_a (same-origin) -> frame_c (cross-origin)
-  //      -> frame_d (cross-origin) -> frame_b (same-origin)
-  String root_url = kMainUrl;
-  String frame_a_url = kMainUrl + "frame-a.html";
-  String frame_b_url = kMainUrl + "frame-b.html";
-  String frame_c_url = kCrossSubdomainUrl + "frame-c.html";
-  String frame_d_url = kCrossSubdomainUrl + "frame-d.html";
-
-  NavigateTo(root_url, RenderWithIframes({"frame-a.html", frame_d_url}),
-             {{frame_a_url, RenderWithIframes({frame_c_url})},
-              {frame_d_url, RenderWithIframes({frame_b_url})},
-              {frame_c_url, ""},
-              {frame_b_url, ""}});
-
-  auto* root = GetMainFrame();
-  auto* frame_a = root->Tree().FirstChild();
-  auto* frame_d = frame_a->Tree().NextSibling();
-  auto* frame_c = frame_a->Tree().FirstChild();
-  auto* frame_b = frame_d->Tree().FirstChild();
-
-  // Root, Frame A and Frame B are same-origin.
-  EXPECT_THAT(GetDeferredFetchQuotaSharingFrames(root), testing::SizeIs(3));
-  EXPECT_THAT(GetDeferredFetchQuotaSharingFrames(frame_a), testing::SizeIs(3));
-  EXPECT_THAT(GetDeferredFetchQuotaSharingFrames(frame_b), testing::SizeIs(3));
-
-  // Frame C and D are same-origin.
-  EXPECT_THAT(GetDeferredFetchQuotaSharingFrames(frame_c), testing::SizeIs(2));
-  EXPECT_THAT(GetDeferredFetchQuotaSharingFrames(frame_d), testing::SizeIs(2));
-}
-
-class CountFramesWithMinimalQuotaPolicyTest
+class CountContainersWithReservedMinimalQuotaTest
     : public DeferredFetchPolicyTestBase {
  protected:
-  [[nodiscard]] size_t CountFramesWithMinimalQuotaPolicyFor(
+  [[nodiscard]] static size_t CountContainersWithReservedMinimalQuotaFor(
       Frame* target_frame) {
     // Should only be called by content of an iframe.
     CHECK(target_frame->Owner());
     // Should not be called by frame without permissions policy
-    // `deferred-fetch`.
-    CHECK(!target_frame->GetSecurityContext()
-               ->GetPermissionsPolicy()
-               ->IsFeatureEnabledForOrigin(
-                   mojom::blink::PermissionsPolicyFeature::kDeferredFetch,
-                   target_frame->GetSecurityContext()
-                       ->GetSecurityOrigin()
-                       ->ToUrlOrigin()));
+    // `deferred-fetch-minimal`.
+    CheckFrameEnableDeferredFetchMinimal(target_frame);
 
-    // `GetDeferredFetchQuotaSharingFrames()` must be run on the
-    // `container’s container document`.
-    auto top_level_relatives =
-        GetDeferredFetchQuotaSharingFrames(target_frame->Parent());
-    return CountFramesWithMinimalQuotaPolicyForTesting(target_frame->Owner(),
-                                                       top_level_relatives);
+    return CountContainersWithReservedMinimalQuotaForTesting(
+        target_frame->Owner());
   }
 };
 
 // The single cross-origin iframe has default `deferred-fetch-minimal` policy
-// enabled `*`. However, there is no other cross-origin iframs share this quota
+// enabled `*`. However, there is no other cross-origin iframe shares this quota
 // with it.
-TEST_F(CountFramesWithMinimalQuotaPolicyTest, SingleCrossOriginFrame) {
+TEST_F(CountContainersWithReservedMinimalQuotaTest, SingleCrossOriginFrame) {
   // The structure of the document:
   // root -> frame_a (cross-origin)
   String root_url = kMainUrl;
@@ -370,11 +203,11 @@ TEST_F(CountFramesWithMinimalQuotaPolicyTest, SingleCrossOriginFrame) {
   auto* root = GetMainFrame();
   auto* frame_a = root->Tree().FirstChild();
 
-  // Expects no other frames share the minimal quota policy with `frame_a`.
-  EXPECT_EQ(CountFramesWithMinimalQuotaPolicyFor(frame_a), 0u);
+  // Expects only `frame_a` share the minimal quota policy.
+  EXPECT_EQ(CountContainersWithReservedMinimalQuotaFor(frame_a), 1u);
 }
 
-TEST_F(CountFramesWithMinimalQuotaPolicyTest,
+TEST_F(CountContainersWithReservedMinimalQuotaTest,
        MultipleDifferentOriginSiblingFrames) {
   // The structure of the document:
   // root -> frame_a (same-origin)
@@ -403,12 +236,43 @@ TEST_F(CountFramesWithMinimalQuotaPolicyTest,
 
   // Frame A and Frame B are same-origin with root and are not counted toward
   // minimal quota policy. Hence, they cannot be used in
-  // `CountFramesWithMinimalQuotaPolicyFor()`.
+  // `CountContainersWithReservedMinimalQuotaFor()`.
 
   // Frame C and D are different origin with root, and shares the minimal quota
   // policy with each other.
-  EXPECT_EQ(CountFramesWithMinimalQuotaPolicyFor(frame_c), 1u);
-  EXPECT_EQ(CountFramesWithMinimalQuotaPolicyFor(frame_d), 1u);
+  EXPECT_EQ(CountContainersWithReservedMinimalQuotaFor(frame_c), 2u);
+  EXPECT_EQ(CountContainersWithReservedMinimalQuotaFor(frame_d), 2u);
+}
+
+TEST_F(CountContainersWithReservedMinimalQuotaTest, MultipleLevelFrames) {
+  // The structure of the document:
+  // root -> frame_a (same-origin) -> frame_c (cross-origin)
+  //      -> frame_d (cross-origin) -> frame_b (same-origin)
+  String root_url = kMainUrl;
+  String frame_a_url = kMainUrl + "frame-a.html";
+  String frame_b_url = kMainUrl + "frame-b.html";
+  String frame_c_url = kCrossSubdomainUrl + "frame-c.html";
+  String frame_d_url = kCrossSubdomainUrl + "frame-d.html";
+
+  NavigateTo(root_url, RenderWithIframes({"frame-a.html", frame_d_url}),
+             {{frame_a_url, RenderWithIframes({frame_c_url})},
+              {frame_d_url, RenderWithIframes({frame_b_url})},
+              {frame_c_url, ""},
+              {frame_b_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+  auto* frame_d = frame_a->Tree().NextSibling();
+  auto* frame_c = frame_a->Tree().FirstChild();
+
+  // Frame A and Frame B are same-origin with root and are not counted toward
+  // minimal quota policy. Hence, they cannot be used in
+  // `CountContainersWithReservedMinimalQuotaFor()`.
+
+  // Frame C and D are different origin with root, and shares the minimal quota
+  // policy with each other.
+  EXPECT_EQ(CountContainersWithReservedMinimalQuotaFor(frame_c), 2u);
+  EXPECT_EQ(CountContainersWithReservedMinimalQuotaFor(frame_d), 2u);
 }
 
 using GetContainerDeferredFetchPolicyOnNavigationTest =
@@ -458,6 +322,84 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest,
             FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal);
 }
 
+TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest,
+       MultipleDifferentOriginSiblingFrames) {
+  // The structure of the document:
+  // root -> frame_a (same-origin)
+  //      -> frame_b (same-origin)
+  //      -> frame_c (cross-origin)
+  //      -> frame_d (cross-origin)
+  String root_url = kMainUrl;
+  String frame_a_url = kMainUrl + "frame-a.html";
+  String frame_b_url = kMainUrl + "frame-b.html";
+  String frame_c_url = kCrossSubdomainUrl + "frame-c.html";
+  String frame_d_url = kCrossSubdomainUrl + "frame-d.html";
+
+  NavigateTo(root_url,
+             RenderWithIframes(
+                 {"frame-a.html", frame_b_url, frame_c_url, frame_d_url}),
+             {{frame_a_url, ""},
+              {frame_b_url, ""},
+              {frame_c_url, ""},
+              {frame_d_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+  auto* frame_b = frame_a->Tree().NextSibling();
+  auto* frame_c = frame_b->Tree().NextSibling();
+  auto* frame_d = frame_c->Tree().NextSibling();
+
+  EXPECT_EQ(GetContainerDeferredFetchPolicyOnNavigation(frame_a->Owner()),
+            FramePolicy::DeferredFetchPolicy::kDeferredFetch);
+  EXPECT_EQ(GetContainerDeferredFetchPolicyOnNavigation(frame_b->Owner()),
+            FramePolicy::DeferredFetchPolicy::kDeferredFetch);
+
+  // Frame C and Frame D should have minimal quota policy set.
+  EXPECT_EQ(GetContainerDeferredFetchPolicyOnNavigation(frame_c->Owner()),
+            FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal);
+  EXPECT_EQ(GetContainerDeferredFetchPolicyOnNavigation(frame_d->Owner()),
+            FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal);
+}
+
+TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest, MultipleLevelFrames) {
+  // The structure of the document:
+  // root -> frame_a (same-origin) -> frame_c (cross-origin)
+  //      -> frame_d (cross-origin) -> frame_b (same-origin)
+  String root_url = kMainUrl;
+  String frame_a_url = kMainUrl + "frame-a.html";
+  String frame_b_url = kMainUrl + "frame-b.html";
+  String frame_c_url = kCrossSubdomainUrl + "frame-c.html";
+  String frame_d_url = kCrossSubdomainUrl + "frame-d.html";
+
+  NavigateTo(root_url, RenderWithIframes({"frame-a.html", frame_d_url}),
+             {{frame_a_url, RenderWithIframes({frame_c_url})},
+              {frame_d_url, RenderWithIframes({frame_b_url})},
+              {frame_c_url, ""},
+              {frame_b_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+  auto* frame_d = frame_a->Tree().NextSibling();
+  auto* frame_c = frame_a->Tree().FirstChild();
+  auto* frame_b = frame_d->Tree().FirstChild();
+
+  EXPECT_EQ(GetContainerDeferredFetchPolicyOnNavigation(frame_a->Owner()),
+            FramePolicy::DeferredFetchPolicy::kDeferredFetch);
+  // Frame B will have NO quota, as
+  // (1) its "inherited policy" from its parent Frame D, which is a cross-origin
+  // iframe, will not have "deferred-fetch" policy enabled by default but only
+  // "deferred-fetch-minimal".
+  // (2) its parent Frame D does not share same quota with root frame.
+  EXPECT_EQ(GetContainerDeferredFetchPolicyOnNavigation(frame_b->Owner()),
+            FramePolicy::DeferredFetchPolicy::kDisabled);
+
+  // Frame C and Frame D should have minimal quota policy set.
+  EXPECT_EQ(GetContainerDeferredFetchPolicyOnNavigation(frame_c->Owner()),
+            FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal);
+  EXPECT_EQ(GetContainerDeferredFetchPolicyOnNavigation(frame_d->Owner()),
+            FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal);
+}
+
 // Tests the default behavior of a document with 17 cross-origin sibling
 // iframes. The first 16 iframes should get kDeferredFetchMinimal as their
 // deferred fetch policy, while the last one should be kDisabled.
@@ -496,6 +438,123 @@ TEST_F(GetContainerDeferredFetchPolicyOnNavigationTest, ManyCrossOriginFrames) {
   EXPECT_EQ(frame->Owner()->GetFramePolicy().deferred_fetch_policy,
             FramePolicy::DeferredFetchPolicy::kDisabled)
       << i + 1 << "-th cross-origin iframe";
+}
+
+using ToReservedDeferredFetchQuotaTest = DeferredFetchPolicyTestBase;
+
+TEST_F(ToReservedDeferredFetchQuotaTest, PolicyDisabled) {
+  EXPECT_EQ(ToReservedDeferredFetchQuotaForTesting(
+                FramePolicy::DeferredFetchPolicy::kDisabled),
+            0u);
+}
+
+TEST_F(ToReservedDeferredFetchQuotaTest, PolicyDeferredFetch) {
+  EXPECT_EQ(ToReservedDeferredFetchQuotaForTesting(
+                FramePolicy::DeferredFetchPolicy::kDeferredFetch),
+            kNormalReservedDeferredFetchQuota);
+}
+
+TEST_F(ToReservedDeferredFetchQuotaTest, PolicyDeferredFetchMinimal) {
+  EXPECT_EQ(ToReservedDeferredFetchQuotaForTesting(
+                FramePolicy::DeferredFetchPolicy::kDeferredFetchMinimal),
+            kMinimalReservedDeferredFetchQuota);
+}
+
+class AreSameOriginTest : public DeferredFetchPolicyTestBase {
+ protected:
+  [[nodiscard]] static bool AreSameOrigin(Frame* frame_a, Frame* frame_b) {
+    return AreSameOriginForTesting(frame_a, frame_b);
+  }
+};
+
+TEST_F(AreSameOriginTest, MultipleDifferentOriginSiblingFrames) {
+  // The structure of the document:
+  // root -> frame_a (same-origin)
+  //      -> frame_b (same-origin)
+  //      -> frame_c (cross-origin)
+  //      -> frame_d (cross-origin)
+  String root_url = kMainUrl;
+  String frame_a_url = kMainUrl + "frame-a.html";
+  String frame_b_url = kMainUrl + "frame-b.html";
+  String frame_c_url = kCrossSubdomainUrl + "frame-c.html";
+  String frame_d_url = kCrossSubdomainUrl + "frame-d.html";
+
+  NavigateTo(root_url,
+             RenderWithIframes(
+                 {"frame-a.html", frame_b_url, frame_c_url, frame_d_url}),
+             {{frame_a_url, ""},
+              {frame_b_url, ""},
+              {frame_c_url, ""},
+              {frame_d_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+  auto* frame_b = frame_a->Tree().NextSibling();
+  auto* frame_c = frame_b->Tree().NextSibling();
+  auto* frame_d = frame_c->Tree().NextSibling();
+
+  // Root, Frame A and Frame B are same-origin.
+  EXPECT_TRUE(AreSameOrigin(root, frame_a));
+  EXPECT_TRUE(AreSameOrigin(frame_a, root));
+  EXPECT_TRUE(AreSameOrigin(root, frame_b));
+  EXPECT_TRUE(AreSameOrigin(frame_b, root));
+  EXPECT_TRUE(AreSameOrigin(frame_a, frame_b));
+  EXPECT_TRUE(AreSameOrigin(frame_b, frame_a));
+
+  // Frame C and D are different origin with root, and shares the minimal quota
+  // policy with each other.
+  EXPECT_TRUE(AreSameOrigin(frame_c, frame_d));
+  EXPECT_TRUE(AreSameOrigin(frame_d, frame_c));
+
+  EXPECT_FALSE(AreSameOrigin(root, frame_c));
+  EXPECT_FALSE(AreSameOrigin(root, frame_d));
+  EXPECT_FALSE(AreSameOrigin(frame_a, frame_c));
+  EXPECT_FALSE(AreSameOrigin(frame_a, frame_d));
+  EXPECT_FALSE(AreSameOrigin(frame_b, frame_c));
+  EXPECT_FALSE(AreSameOrigin(frame_b, frame_d));
+}
+
+TEST_F(AreSameOriginTest, MultipleLevelFrames) {
+  // The structure of the document:
+  // root -> frame_a (same-origin) -> frame_c (cross-origin)
+  //      -> frame_d (cross-origin) -> frame_b (same-origin)
+  String root_url = kMainUrl;
+  String frame_a_url = kMainUrl + "frame-a.html";
+  String frame_b_url = kMainUrl + "frame-b.html";
+  String frame_c_url = kCrossSubdomainUrl + "frame-c.html";
+  String frame_d_url = kCrossSubdomainUrl + "frame-d.html";
+
+  NavigateTo(root_url, RenderWithIframes({"frame-a.html", frame_d_url}),
+             {{frame_a_url, RenderWithIframes({frame_c_url})},
+              {frame_d_url, RenderWithIframes({frame_b_url})},
+              {frame_c_url, ""},
+              {frame_b_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+  auto* frame_d = frame_a->Tree().NextSibling();
+  auto* frame_c = frame_a->Tree().FirstChild();
+  auto* frame_b = frame_d->Tree().FirstChild();
+
+  // Root, Frame A and Frame B are same-origin.
+  EXPECT_TRUE(AreSameOrigin(root, frame_a));
+  EXPECT_TRUE(AreSameOrigin(frame_a, root));
+  EXPECT_TRUE(AreSameOrigin(root, frame_b));
+  EXPECT_TRUE(AreSameOrigin(frame_b, root));
+  EXPECT_TRUE(AreSameOrigin(frame_a, frame_b));
+  EXPECT_TRUE(AreSameOrigin(frame_b, frame_a));
+
+  // Frame C and D are different origin with root, and shares the minimal quota
+  // policy with each other.
+  EXPECT_TRUE(AreSameOrigin(frame_c, frame_d));
+  EXPECT_TRUE(AreSameOrigin(frame_d, frame_c));
+
+  EXPECT_FALSE(AreSameOrigin(root, frame_c));
+  EXPECT_FALSE(AreSameOrigin(root, frame_d));
+  EXPECT_FALSE(AreSameOrigin(frame_a, frame_c));
+  EXPECT_FALSE(AreSameOrigin(frame_a, frame_d));
+  EXPECT_FALSE(AreSameOrigin(frame_b, frame_c));
+  EXPECT_FALSE(AreSameOrigin(frame_b, frame_d));
 }
 
 }  // namespace
