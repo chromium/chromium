@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <sstream>
 
 #include "build/build_config.h"
@@ -193,7 +194,8 @@ TEST(BluetoothUUIDTest, BluetoothUUID_CaseInsensitive) {
   struct TestCase {
     const std::string input_uuid;
     const std::string expected_value;
-  } test_cases[] = {
+  };
+  auto test_cases = std::to_array<TestCase>({
       {"1abc", k16Bit},
       {"1ABC", k16Bit},
       {"1aBc", k16Bit},
@@ -203,7 +205,7 @@ TEST(BluetoothUUIDTest, BluetoothUUID_CaseInsensitive) {
       {"00001abc-0000-1000-8000-00805f9b34fb", k128Bit},
       {"00001ABC-0000-1000-8000-00805F9B34FB", k128Bit},
       {"00001aBc-0000-1000-8000-00805F9b34fB", k128Bit},
-  };
+  });
 
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE("Input UUID: " + test_cases[i].input_uuid);

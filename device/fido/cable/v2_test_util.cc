@@ -9,6 +9,7 @@
 
 #include "device/fido/cable/v2_test_util.h"
 
+#include <array>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -232,7 +233,7 @@ class TestNetworkContext : public network::TestNetworkContext {
       if (type_ == Type::CONTACT_WITH_CONNECTION_SIGNAL) {
         CHECK(peer_->buffer_.empty());
         CHECK(peer_->buffer_i_ == 0);
-        constexpr uint8_t kConnectionSignal[] = {0};
+        constexpr auto kConnectionSignal = std::to_array<uint8_t>({0});
         peer_->buffer_.push_back(kConnectionSignal[0]);
         OnOutPipeReady(MOJO_RESULT_OK, mojo::HandleSignalsState());
         client_receiver_->OnDataFrame(

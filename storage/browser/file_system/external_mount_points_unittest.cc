@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "storage/browser/file_system/external_mount_points.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -48,72 +44,72 @@ TEST(ExternalMountPointsTest, AddMountPoint) {
     const base::FilePath::CharType* const registered_path;
   };
 
-  const TestCase kTestCases[] = {
-    // Valid mount point.
-    {"test", DRIVE FPL("/foo/test"), true, DRIVE FPL("/foo/test")},
-    // Valid mount point with only one path component.
-    {"bbb", DRIVE FPL("/bbb"), true, DRIVE FPL("/bbb")},
-    // Existing mount point path is substring of the mount points path.
-    {"test11", DRIVE FPL("/foo/test11"), true, DRIVE FPL("/foo/test11")},
-    // Path substring of an existing path.
-    {"test1", DRIVE FPL("/foo/test1"), true, DRIVE FPL("/foo/test1")},
-    // Empty mount point name and path.
-    {"", DRIVE FPL(""), false, nullptr},
-    // Empty mount point name.
-    {"", DRIVE FPL("/ddd"), false, nullptr},
-    // Empty mount point path.
-    {"empty_path", FPL(""), true, FPL("")},
-    // Name different from path's base name.
-    {"not_base_name", DRIVE FPL("/x/y/z"), true, DRIVE FPL("/x/y/z")},
-    // References parent.
-    {"invalid", DRIVE FPL("../foo/invalid"), false, nullptr},
-    // Relative path.
-    {"relative", DRIVE FPL("foo/relative"), false, nullptr},
-    // Existing mount point path.
-    {"path_exists", DRIVE FPL("/foo/test"), false, nullptr},
-    // Mount point with the same name exists.
-    {"test", DRIVE FPL("/foo/a/test_name_exists"), false,
-     DRIVE FPL("/foo/test")},
-    // Child of an existing mount point.
-    {"a1", DRIVE FPL("/foo/test/a"), false, nullptr},
-    // Parent of an existing mount point.
-    {"foo1", DRIVE FPL("/foo"), false, nullptr},
-    // Bit bigger depth.
-    {"g", DRIVE FPL("/foo/a/b/c/d/e/f/g"), true,
-     DRIVE FPL("/foo/a/b/c/d/e/f/g")},
-    // Sibling mount point (with similar name) exists.
-    {"ff", DRIVE FPL("/foo/a/b/c/d/e/ff"), true,
-     DRIVE FPL("/foo/a/b/c/d/e/ff")},
-    // Lexicographically last among existing mount points.
-    {"yyy", DRIVE FPL("/zzz/yyy"), true, DRIVE FPL("/zzz/yyy")},
-    // Parent of the lexicographically last mount point.
-    {"zzz1", DRIVE FPL("/zzz"), false, nullptr},
-    // Child of the lexicographically last mount point.
-    {"xxx1", DRIVE FPL("/zzz/yyy/xxx"), false, nullptr},
-    // Lexicographically first among existing mount points.
-    {"b", DRIVE FPL("/a/b"), true, DRIVE FPL("/a/b")},
-    // Parent of lexicographically first mount point.
-    {"a2", DRIVE FPL("/a"), false, nullptr},
-    // Child of lexicographically last mount point.
-    {"c1", DRIVE FPL("/a/b/c"), false, nullptr},
-    // Parent to all of the mount points.
-    {"root", DRIVE FPL("/"), false, nullptr},
-    // Path contains .. component.
-    {"funky", DRIVE FPL("/tt/fun/../funky"), false, nullptr},
+  const auto kTestCases = std::to_array<TestCase>({
+      // Valid mount point.
+      {"test", DRIVE FPL("/foo/test"), true, DRIVE FPL("/foo/test")},
+      // Valid mount point with only one path component.
+      {"bbb", DRIVE FPL("/bbb"), true, DRIVE FPL("/bbb")},
+      // Existing mount point path is substring of the mount points path.
+      {"test11", DRIVE FPL("/foo/test11"), true, DRIVE FPL("/foo/test11")},
+      // Path substring of an existing path.
+      {"test1", DRIVE FPL("/foo/test1"), true, DRIVE FPL("/foo/test1")},
+      // Empty mount point name and path.
+      {"", DRIVE FPL(""), false, nullptr},
+      // Empty mount point name.
+      {"", DRIVE FPL("/ddd"), false, nullptr},
+      // Empty mount point path.
+      {"empty_path", FPL(""), true, FPL("")},
+      // Name different from path's base name.
+      {"not_base_name", DRIVE FPL("/x/y/z"), true, DRIVE FPL("/x/y/z")},
+      // References parent.
+      {"invalid", DRIVE FPL("../foo/invalid"), false, nullptr},
+      // Relative path.
+      {"relative", DRIVE FPL("foo/relative"), false, nullptr},
+      // Existing mount point path.
+      {"path_exists", DRIVE FPL("/foo/test"), false, nullptr},
+      // Mount point with the same name exists.
+      {"test", DRIVE FPL("/foo/a/test_name_exists"), false,
+       DRIVE FPL("/foo/test")},
+      // Child of an existing mount point.
+      {"a1", DRIVE FPL("/foo/test/a"), false, nullptr},
+      // Parent of an existing mount point.
+      {"foo1", DRIVE FPL("/foo"), false, nullptr},
+      // Bit bigger depth.
+      {"g", DRIVE FPL("/foo/a/b/c/d/e/f/g"), true,
+       DRIVE FPL("/foo/a/b/c/d/e/f/g")},
+      // Sibling mount point (with similar name) exists.
+      {"ff", DRIVE FPL("/foo/a/b/c/d/e/ff"), true,
+       DRIVE FPL("/foo/a/b/c/d/e/ff")},
+      // Lexicographically last among existing mount points.
+      {"yyy", DRIVE FPL("/zzz/yyy"), true, DRIVE FPL("/zzz/yyy")},
+      // Parent of the lexicographically last mount point.
+      {"zzz1", DRIVE FPL("/zzz"), false, nullptr},
+      // Child of the lexicographically last mount point.
+      {"xxx1", DRIVE FPL("/zzz/yyy/xxx"), false, nullptr},
+      // Lexicographically first among existing mount points.
+      {"b", DRIVE FPL("/a/b"), true, DRIVE FPL("/a/b")},
+      // Parent of lexicographically first mount point.
+      {"a2", DRIVE FPL("/a"), false, nullptr},
+      // Child of lexicographically last mount point.
+      {"c1", DRIVE FPL("/a/b/c"), false, nullptr},
+      // Parent to all of the mount points.
+      {"root", DRIVE FPL("/"), false, nullptr},
+      // Path contains .. component.
+      {"funky", DRIVE FPL("/tt/fun/../funky"), false, nullptr},
   // Windows separators.
 #if defined(FILE_PATH_USES_WIN_SEPARATORS)
-    {"win", DRIVE FPL("\\try\\separators\\win"), true,
-     DRIVE FPL("\\try\\separators\\win")},
-    {"win1", DRIVE FPL("\\try/separators\\win1"), true,
-     DRIVE FPL("\\try/separators\\win1")},
-    {"win2", DRIVE FPL("\\try/separators\\win"), false, nullptr},
+      {"win", DRIVE FPL("\\try\\separators\\win"), true,
+       DRIVE FPL("\\try\\separators\\win")},
+      {"win1", DRIVE FPL("\\try/separators\\win1"), true,
+       DRIVE FPL("\\try/separators\\win1")},
+      {"win2", DRIVE FPL("\\try/separators\\win"), false, nullptr},
 #else
-    {"win", DRIVE FPL("\\separators\\win"), false, nullptr},
-    {"win1", DRIVE FPL("\\try/separators\\win1"), false, nullptr},
+      {"win", DRIVE FPL("\\separators\\win"), false, nullptr},
+      {"win1", DRIVE FPL("\\try/separators\\win1"), false, nullptr},
 #endif
-    // Win separators, but relative path.
-    {"win2", DRIVE FPL("try\\separators\\win2"), false, nullptr},
-  };
+      // Win separators, but relative path.
+      {"win2", DRIVE FPL("try\\separators\\win2"), false, nullptr},
+  });
 
   // Test adding mount points.
   for (const auto& test : kTestCases) {
@@ -303,33 +299,34 @@ TEST(ExternalMountPointsTest, CreateCrackedFileSystemURL) {
     const char* const expect_fs_id;
   };
 
-  const TestCase kTestCases[] = {
-    {FPL("c/d/e"), true, kFileSystemTypeLocal, DRIVE FPL("/a/b/c/d/e"), "c"},
-    {FPL("c(1)/d/e"), true, kFileSystemTypeDriveFs, DRIVE FPL("/a/b/c(1)/d/e"),
-     "c(1)"},
-    {FPL("c(1)"), true, kFileSystemTypeDriveFs, DRIVE FPL("/a/b/c(1)"), "c(1)"},
-    {FPL("empty_path/a"), true, kFileSystemTypeSyncable, FPL("a"),
-     "empty_path"},
-    {FPL("empty_path"), true, kFileSystemTypeSyncable, FPL(""), "empty_path"},
-    {FPL("mount/a/b"), true, kFileSystemTypeDriveFs, DRIVE FPL("/root/a/b"),
-     "mount"},
-    {FPL("mount"), true, kFileSystemTypeDriveFs, DRIVE FPL("/root"), "mount"},
-    {FPL("cc"), false, kFileSystemTypeUnknown, FPL(""), ""},
-    {FPL(""), false, kFileSystemTypeUnknown, FPL(""), ""},
-    {FPL(".."), false, kFileSystemTypeUnknown, FPL(""), ""},
-    // Absolute paths.
-    {FPL("/c/d/e"), false, kFileSystemTypeUnknown, FPL(""), ""},
-    {FPL("/c(1)/d/e"), false, kFileSystemTypeUnknown, FPL(""), ""},
-    {FPL("/empty_path"), false, kFileSystemTypeUnknown, FPL(""), ""},
-    // PAth references parent.
-    {FPL("c/d/../e"), false, kFileSystemTypeUnknown, FPL(""), ""},
-    {FPL("/empty_path/a/../b"), false, kFileSystemTypeUnknown, FPL(""), ""},
+  const auto kTestCases = std::to_array<TestCase>({
+      {FPL("c/d/e"), true, kFileSystemTypeLocal, DRIVE FPL("/a/b/c/d/e"), "c"},
+      {FPL("c(1)/d/e"), true, kFileSystemTypeDriveFs,
+       DRIVE FPL("/a/b/c(1)/d/e"), "c(1)"},
+      {FPL("c(1)"), true, kFileSystemTypeDriveFs, DRIVE FPL("/a/b/c(1)"),
+       "c(1)"},
+      {FPL("empty_path/a"), true, kFileSystemTypeSyncable, FPL("a"),
+       "empty_path"},
+      {FPL("empty_path"), true, kFileSystemTypeSyncable, FPL(""), "empty_path"},
+      {FPL("mount/a/b"), true, kFileSystemTypeDriveFs, DRIVE FPL("/root/a/b"),
+       "mount"},
+      {FPL("mount"), true, kFileSystemTypeDriveFs, DRIVE FPL("/root"), "mount"},
+      {FPL("cc"), false, kFileSystemTypeUnknown, FPL(""), ""},
+      {FPL(""), false, kFileSystemTypeUnknown, FPL(""), ""},
+      {FPL(".."), false, kFileSystemTypeUnknown, FPL(""), ""},
+      // Absolute paths.
+      {FPL("/c/d/e"), false, kFileSystemTypeUnknown, FPL(""), ""},
+      {FPL("/c(1)/d/e"), false, kFileSystemTypeUnknown, FPL(""), ""},
+      {FPL("/empty_path"), false, kFileSystemTypeUnknown, FPL(""), ""},
+      // PAth references parent.
+      {FPL("c/d/../e"), false, kFileSystemTypeUnknown, FPL(""), ""},
+      {FPL("/empty_path/a/../b"), false, kFileSystemTypeUnknown, FPL(""), ""},
 #if defined(FILE_PATH_USES_WIN_SEPARATORS)
-    {FPL("c/d\\e"), true, kFileSystemTypeLocal, DRIVE FPL("/a/b/c/d/e"), "c"},
-    {FPL("mount\\a\\b"), true, kFileSystemTypeDriveFs, DRIVE FPL("/root/a/b"),
-     "mount"},
+      {FPL("c/d\\e"), true, kFileSystemTypeLocal, DRIVE FPL("/a/b/c/d/e"), "c"},
+      {FPL("mount\\a\\b"), true, kFileSystemTypeDriveFs, DRIVE FPL("/root/a/b"),
+       "mount"},
 #endif
-  };
+  });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     FileSystemURL cracked = mount_points->CreateCrackedFileSystemURL(
@@ -386,33 +383,34 @@ TEST(ExternalMountPointsTest, CrackVirtualPath) {
     const char* const expect_name;
   };
 
-  const TestCase kTestCases[] = {
-    {FPL("c/d/e"), true, kFileSystemTypeLocal, DRIVE FPL("/a/b/c/d/e"), "c"},
-    {FPL("c(1)/d/e"), true, kFileSystemTypeDriveFs, DRIVE FPL("/a/b/c(1)/d/e"),
-     "c(1)"},
-    {FPL("c(1)"), true, kFileSystemTypeDriveFs, DRIVE FPL("/a/b/c(1)"), "c(1)"},
-    {FPL("empty_path/a"), true, kFileSystemTypeSyncable, FPL("a"),
-     "empty_path"},
-    {FPL("empty_path"), true, kFileSystemTypeSyncable, FPL(""), "empty_path"},
-    {FPL("mount/a/b"), true, kFileSystemTypeDriveFs, DRIVE FPL("/root/a/b"),
-     "mount"},
-    {FPL("mount"), true, kFileSystemTypeDriveFs, DRIVE FPL("/root"), "mount"},
-    {FPL("cc"), false, kFileSystemTypeUnknown, FPL(""), ""},
-    {FPL(""), false, kFileSystemTypeUnknown, FPL(""), ""},
-    {FPL(".."), false, kFileSystemTypeUnknown, FPL(""), ""},
-    // Absolute paths.
-    {FPL("/c/d/e"), false, kFileSystemTypeUnknown, FPL(""), ""},
-    {FPL("/c(1)/d/e"), false, kFileSystemTypeUnknown, FPL(""), ""},
-    {FPL("/empty_path"), false, kFileSystemTypeUnknown, FPL(""), ""},
-    // PAth references parent.
-    {FPL("c/d/../e"), false, kFileSystemTypeUnknown, FPL(""), ""},
-    {FPL("/empty_path/a/../b"), false, kFileSystemTypeUnknown, FPL(""), ""},
+  const auto kTestCases = std::to_array<TestCase>({
+      {FPL("c/d/e"), true, kFileSystemTypeLocal, DRIVE FPL("/a/b/c/d/e"), "c"},
+      {FPL("c(1)/d/e"), true, kFileSystemTypeDriveFs,
+       DRIVE FPL("/a/b/c(1)/d/e"), "c(1)"},
+      {FPL("c(1)"), true, kFileSystemTypeDriveFs, DRIVE FPL("/a/b/c(1)"),
+       "c(1)"},
+      {FPL("empty_path/a"), true, kFileSystemTypeSyncable, FPL("a"),
+       "empty_path"},
+      {FPL("empty_path"), true, kFileSystemTypeSyncable, FPL(""), "empty_path"},
+      {FPL("mount/a/b"), true, kFileSystemTypeDriveFs, DRIVE FPL("/root/a/b"),
+       "mount"},
+      {FPL("mount"), true, kFileSystemTypeDriveFs, DRIVE FPL("/root"), "mount"},
+      {FPL("cc"), false, kFileSystemTypeUnknown, FPL(""), ""},
+      {FPL(""), false, kFileSystemTypeUnknown, FPL(""), ""},
+      {FPL(".."), false, kFileSystemTypeUnknown, FPL(""), ""},
+      // Absolute paths.
+      {FPL("/c/d/e"), false, kFileSystemTypeUnknown, FPL(""), ""},
+      {FPL("/c(1)/d/e"), false, kFileSystemTypeUnknown, FPL(""), ""},
+      {FPL("/empty_path"), false, kFileSystemTypeUnknown, FPL(""), ""},
+      // PAth references parent.
+      {FPL("c/d/../e"), false, kFileSystemTypeUnknown, FPL(""), ""},
+      {FPL("/empty_path/a/../b"), false, kFileSystemTypeUnknown, FPL(""), ""},
 #if defined(FILE_PATH_USES_WIN_SEPARATORS)
-    {FPL("c/d\\e"), true, kFileSystemTypeLocal, DRIVE FPL("/a/b/c/d/e"), "c"},
-    {FPL("mount\\a\\b"), true, kFileSystemTypeDriveFs, DRIVE FPL("/root/a/b"),
-     "mount"},
+      {FPL("c/d\\e"), true, kFileSystemTypeLocal, DRIVE FPL("/a/b/c/d/e"), "c"},
+      {FPL("mount\\a\\b"), true, kFileSystemTypeDriveFs, DRIVE FPL("/root/a/b"),
+       "mount"},
 #endif
-  };
+  });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     std::string cracked_name;
