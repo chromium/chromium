@@ -662,15 +662,10 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
   }
 
   if (select) {
-    // This logic to determine if we should select the option is copied from
-    // ListBoxSelectType::DefaultEventHandler. It will likely change when we try
-    // to spec it.
     const auto* mouse_event = DynamicTo<MouseEvent>(event);
-    const auto* gesture_event = DynamicTo<GestureEvent>(event);
-    if ((event.type() == event_type_names::kGesturetap && gesture_event) ||
-        (event.type() == event_type_names::kMousedown && mouse_event &&
-         mouse_event->button() ==
-             static_cast<int16_t>(WebPointerProperties::Button::kLeft))) {
+    if (mouse_event && event.type() == event_type_names::kMouseup &&
+        mouse_event->button() ==
+        static_cast<int16_t>(WebPointerProperties::Button::kLeft)) {
       select->SelectOptionByPopup(this);
       select->HidePopup();
       event.SetDefaultHandled();

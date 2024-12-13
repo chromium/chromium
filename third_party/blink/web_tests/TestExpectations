@@ -6148,7 +6148,7 @@ crbug.com/382679385 wpt_internal/html/semantics/forms/the-select-element/customi
 
 # Several behavior differences between <selectlist> and <select style="appearance:base-select">. (These tests
 # were migrated from the old `the-selectlist-element` test suite.)
-crbug.com/366394195 external/wpt/html/semantics/forms/the-select-element/select-events.tentative.html [ Timeout ]
+crbug.com/366394195 external/wpt/html/semantics/forms/the-select-element/select-events.tentative.html [ Failure ]
 crbug.com/366394195 wpt_internal/html/semantics/forms/the-select-element/customizable-select/select-explicit-size.tentative.html [ Failure ]
 crbug.com/366394195 wpt_internal/html/semantics/forms/the-select-element/customizable-select/select-font-size.tentative.html [ Failure ]
 crbug.com/366394195 external/wpt/html/semantics/forms/the-select-element/select-keyboard.tentative.html [ Failure ]
