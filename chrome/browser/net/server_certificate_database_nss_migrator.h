@@ -5,13 +5,14 @@
 #ifndef CHROME_BROWSER_NET_SERVER_CERTIFICATE_DATABASE_NSS_MIGRATOR_H_
 #define CHROME_BROWSER_NET_SERVER_CERTIFICATE_DATABASE_NSS_MIGRATOR_H_
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "net/cert/internal/platform_trust_store.h"
 
-class Profile;
-
 namespace net {
+
+class NSSCertDatabase;
+class ServerCertificateDatabaseService;
 
 // Migrates server-related certificates from an NSS user database into
 // ServerCertificateDatabase.
@@ -29,7 +30,15 @@ class ServerCertificateDatabaseNSSMigrator {
   };
   using ResultCallback = base::OnceCallback<void(MigrationResult)>;
 
-  explicit ServerCertificateDatabaseNSSMigrator(Profile* profile);
+  // NssCertDatabaseGetter here has the same definition and usage requirements
+  // as in chrome/browser/net/nss_service.h but the alias is redefined here
+  // because we can't include that file directly.
+  using NssCertDatabaseGetter = base::OnceCallback<net::NSSCertDatabase*(
+      base::OnceCallback<void(net::NSSCertDatabase*)> callback)>;
+
+  explicit ServerCertificateDatabaseNSSMigrator(
+      ServerCertificateDatabaseService* cert_db_service,
+      NssCertDatabaseGetter nss_cert_db_getter);
   ~ServerCertificateDatabaseNSSMigrator();
 
   // Begins migration process. `callback` will be run on the calling thread when
@@ -45,7 +54,8 @@ class ServerCertificateDatabaseNSSMigrator {
       std::vector<net::PlatformTrustStore::CertWithTrust> certs_to_migrate);
   void FinishedMigration(ResultCallback callback, MigrationResult result);
 
-  const raw_ptr<Profile> profile_;
+  raw_ptr<ServerCertificateDatabaseService> cert_db_service_;
+  NssCertDatabaseGetter nss_cert_db_getter_;
   base::WeakPtrFactory<ServerCertificateDatabaseNSSMigrator> weak_ptr_factory_{
       this};
 };

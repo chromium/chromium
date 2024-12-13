@@ -525,10 +525,7 @@ void ProfileNetworkContextService::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kCAPlatformIntegrationEnabled, true);
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-  registry->RegisterIntegerPref(
-      prefs::kNSSCertsMigratedToServerCertDb,
-      static_cast<int>(net::ServerCertificateDatabaseService::
-                           NSSMigrationResultPref::kNotMigrated));
+  net::ServerCertificateDatabaseService::RegisterProfilePrefs(registry);
 #endif
 }
 
