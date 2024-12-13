@@ -97,10 +97,11 @@ void StyleMenuButton(views::LabelButton* button, const gfx::VectorIcon& icon) {
   button->SetTextColorId(views::LabelButton::ButtonState::STATE_NORMAL,
                          ui::kColorSysOnSurface);
   button->SetImageLabelSpacing(kButtonImageLabelSpacing);
+  auto color_id = button->GetEnabled() ? ui::kColorSysTonalOutline
+                                       : ui::kColorButtonBorderDisabled;
   button->SetBorder(views::CreatePaddedBorder(
       views::CreateThemedRoundedRectBorder(kButtonBorderThickness,
-                                           kButtonCornerRadius,
-                                           ui::kColorSysTonalOutline),
+                                           kButtonCornerRadius, color_id),
       kButtonPadding));
 }
 
