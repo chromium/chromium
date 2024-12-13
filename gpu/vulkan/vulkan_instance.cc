@@ -85,6 +85,16 @@ bool ContainsExtension(const std::vector<VkExtensionProperties>& extensions,
 
 }  // namespace
 
+// TODO(crbug.com/381535049): Remove after collecting crash reports
+// to see what devices Vulkan initialization is failing on.
+bool VulkanInstance::CheckMinVersion() {
+  uint32_t vulkan_version = 0;
+  if (vkEnumerateInstanceVersion(&vulkan_version) != VK_SUCCESS) {
+    return false;
+  }
+  return vulkan_version >= kVulkanRequiredApiVersion;
+}
+
 VulkanInstance::VulkanInstance()
     : is_from_angle_(base::FeatureList::IsEnabled(features::kVulkanFromANGLE)) {
 }

@@ -11,6 +11,7 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -1242,6 +1243,13 @@ bool GpuInit::InitializeVulkan() {
     LOG(ERROR) << "Failed to create and initialize Vulkan implementation.";
     vulkan_implementation_ = nullptr;
     CHECK(!gpu_preferences_.disable_vulkan_fallback_to_gl_for_testing);
+#if BUILDFLAG(IS_ANDROID)
+    if (VulkanInstance::CheckMinVersion()) {
+      // TODO(crbug.com/381535049): Remove after collecting crash reports
+      // to see what devices Vulkan initialization is failing on.
+      base::debug::DumpWithoutCrashing();
+    }
+#endif
   }
 
   // Vulkan info is no longer collected in gpu/config/gpu_info_collector_win.cc
