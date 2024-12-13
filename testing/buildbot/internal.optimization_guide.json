@@ -1525,7 +1525,6 @@
           "Google Chrome",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -1751,7 +1750,6 @@
           "Google Chrome",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
