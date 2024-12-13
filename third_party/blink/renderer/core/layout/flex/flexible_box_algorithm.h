@@ -136,20 +136,12 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
 
   wtf_size_t NumItems() const { return all_items_.size(); }
 
-  const ComputedStyle* Style() const { return style_.Get(); }
-  const ComputedStyle& StyleRef() const { return *style_; }
-
   // Computes the next flex line, and returns a pointer to it.
   // Returns nullptr if there are no more lines.
-  FlexLine* ComputeNextFlexLine();
+  FlexLine* ComputeNextFlexLine(bool is_mutli_line);
 
-  bool IsHorizontalFlow() const;
-  bool IsColumnFlow() const;
-  bool IsMultiline() const { return style_->FlexWrap() != EFlexWrap::kNowrap; }
   static bool IsHorizontalFlow(const ComputedStyle&);
   static bool IsColumnFlow(const ComputedStyle&);
-
-  bool ShouldApplyMinSizeAutoForChild(const LayoutBox& child) const;
 
   static const StyleContentAlignmentData& ContentAlignmentNormalBehavior();
   static StyleContentAlignmentData ResolvedJustifyContent(const ComputedStyle&);
@@ -182,7 +174,6 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
  private:
   friend class FlexLayoutAlgorithm;
 
-  Member<const ComputedStyle> style_;
   const LayoutUnit line_break_length_;
   FlexItemVector all_items_;
   Vector<FlexLine> flex_lines_;

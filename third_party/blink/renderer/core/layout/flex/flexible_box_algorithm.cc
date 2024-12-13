@@ -165,7 +165,6 @@ FlexibleBoxAlgorithm::FlexibleBoxAlgorithm(const ComputedStyle* style,
                                            Document* document)
     : gap_between_items_(GapBetweenItems(*style, percent_resolution_sizes)),
       gap_between_lines_(GapBetweenLines(*style, percent_resolution_sizes)),
-      style_(style),
       line_break_length_(line_break_length),
       next_item_index_(0) {
   DCHECK_GE(gap_between_items_, 0);
@@ -185,7 +184,7 @@ FlexibleBoxAlgorithm::FlexibleBoxAlgorithm(const ComputedStyle* style,
   }
 }
 
-FlexLine* FlexibleBoxAlgorithm::ComputeNextFlexLine() {
+FlexLine* FlexibleBoxAlgorithm::ComputeNextFlexLine(bool is_multi_line) {
   LayoutUnit sum_flex_base_size;
   LayoutUnit sum_hypothetical_main_size;
 
@@ -195,7 +194,7 @@ FlexLine* FlexibleBoxAlgorithm::ComputeNextFlexLine() {
 
   for (; next_item_index_ < all_items_.size(); ++next_item_index_) {
     FlexItem& flex_item = all_items_[next_item_index_];
-    if (IsMultiline() &&
+    if (is_multi_line &&
         sum_hypothetical_main_size +
                 flex_item.HypotheticalMainAxisMarginBoxSize() >
             line_break_length_ &&
@@ -226,14 +225,6 @@ FlexLine* FlexibleBoxAlgorithm::ComputeNextFlexLine() {
   return nullptr;
 }
 
-bool FlexibleBoxAlgorithm::IsHorizontalFlow() const {
-  return IsHorizontalFlow(*style_);
-}
-
-bool FlexibleBoxAlgorithm::IsColumnFlow() const {
-  return IsColumnFlow(*style_);
-}
-
 // static
 bool FlexibleBoxAlgorithm::IsColumnFlow(const ComputedStyle& style) {
   return style.ResolvedIsColumnFlexDirection();
@@ -256,31 +247,6 @@ FlexibleBoxAlgorithm::ContentAlignmentNormalBehavior() {
   static const StyleContentAlignmentData kNormalBehavior = {
       ContentPosition::kNormal, ContentDistributionType::kStretch};
   return kNormalBehavior;
-}
-
-bool FlexibleBoxAlgorithm::ShouldApplyMinSizeAutoForChild(
-    const LayoutBox& child) const {
-  // See: https://drafts.csswg.org/css-flexbox/#min-size-auto
-
-  // webkit-box treats min-size: auto as 0.
-  if (StyleRef().IsDeprecatedWebkitBox()) {
-    return false;
-  }
-
-  if (child.ShouldApplySizeContainment()) {
-    return false;
-  }
-
-  // Note that the spec uses "scroll container", but it's resolved to just look
-  // at the computed value of overflow not being scrollable, see
-  // https://github.com/w3c/csswg-drafts/issues/7714#issuecomment-1879319762
-  if (child.StyleRef().IsScrollContainer()) {
-    return false;
-  }
-
-  const Length& min = IsHorizontalFlow() ? child.StyleRef().MinWidth()
-                                         : child.StyleRef().MinHeight();
-  return min.HasAuto();
 }
 
 // static
@@ -447,7 +413,6 @@ const FlexItem& FlexibleBoxAlgorithm::FlexItemAtIndex(
 }
 
 void FlexibleBoxAlgorithm::Trace(Visitor* visitor) const {
-  visitor->Trace(style_);
   visitor->Trace(all_items_);
 }
 

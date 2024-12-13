@@ -163,6 +163,7 @@ FlexLayoutAlgorithm::FlexLayoutAlgorithm(
       is_webkit_box_(Style().IsDeprecatedWebkitBox()),
       is_column_(Style().ResolvedIsColumnFlexDirection()),
       is_wrap_reverse_(Style().FlexWrap() == EFlexWrap::kWrapReverse),
+      is_multi_line_(Style().FlexWrap() != EFlexWrap::kNowrap),
       is_horizontal_flow_(FlexibleBoxAlgorithm::IsHorizontalFlow(Style())),
       is_cross_size_definite_(IsContainerCrossSizeDefinite()),
       child_percentage_size_(
@@ -235,6 +236,26 @@ LayoutUnit FlexLayoutAlgorithm::BaselineAscent(
   return item.baseline_group == BaselineGroup::kMajor
              ? margins.CrossStart() + baseline
              : margins.CrossEnd() + baseline;
+}
+
+bool FlexLayoutAlgorithm::ShouldApplyAutoMinSize(const BlockNode& child) const {
+  // webkit-box treats min-size: auto as 0.
+  if (is_webkit_box_) {
+    return false;
+  }
+  if (child.ShouldApplySizeContainment()) {
+    return false;
+  }
+  // Note that the spec uses "scroll container", but it's resolved to just look
+  // at the computed value of overflow not being scrollable, see:
+  // https://github.com/w3c/csswg-drafts/issues/7714#issuecomment-1879319762
+  const auto& child_style = child.Style();
+  if (child_style.IsScrollContainer()) {
+    return false;
+  }
+  const Length& min =
+      is_horizontal_flow_ ? child_style.MinWidth() : child_style.MinHeight();
+  return min.HasAuto();
 }
 
 namespace {
@@ -457,8 +478,7 @@ bool FlexLayoutAlgorithm::DoesItemComputedCrossSizeHaveAuto(
 
 bool FlexLayoutAlgorithm::WillChildCrossSizeBeContainerCrossSize(
     const BlockNode& child) const {
-  return !algorithm_.IsMultiline() && is_cross_size_definite_ &&
-         DoesItemStretch(child);
+  return !is_multi_line_ && is_cross_size_definite_ && DoesItemStretch(child);
 }
 
 ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForIntrinsicInlineSize(
@@ -837,7 +857,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         flex_base_border_box - main_axis_border_padding;
 
     std::optional<Length> auto_min_length;
-    if (algorithm_.ShouldApplyMinSizeAutoForChild(*child.GetLayoutBox())) {
+    if (ShouldApplyAutoMinSize(child)) {
       const LayoutUnit content_size_suggestion = ([&]() -> LayoutUnit {
         const LayoutUnit content_size =
             is_main_axis_inline_axis
@@ -1133,7 +1153,7 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
   flex_line_outputs->reserve(algorithm_.NumItems());
 
   FlexLine* line;
-  while ((line = algorithm_.ComputeNextFlexLine())) {
+  while ((line = algorithm_.ComputeNextFlexLine(is_multi_line_))) {
     const LayoutUnit main_axis_inner_size =
         MainAxisContentExtent(line->sum_hypothetical_main_size_);
 
@@ -1409,7 +1429,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
   }
   cross_axis_free_space -= (num_lines - 1) * algorithm_.gap_between_lines_;
 
-  if (!algorithm_.IsMultiline()) {
+  if (!is_multi_line_) {
     // A single line flexbox will always be the cross-axis content-size.
     flex_line_outputs->back().line_cross_size = cross_axis_content_size;
     cross_axis_free_space = LayoutUnit();
@@ -2306,7 +2326,7 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
     const LayoutUnit hypothetical_main_size_border_box =
         item.hypothetical_content_size + item.main_axis_border_padding;
 
-    if (algorithm_.IsMultiline()) {
+    if (is_multi_line_) {
       const LayoutUnit main_axis_margins =
           is_horizontal_flow_ ? item.initial_margins.HorizontalSum()
                               : item.initial_margins.VerticalSum();
@@ -2350,7 +2370,7 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
   if (algorithm_.NumItems() > 0) {
     const LayoutUnit gap_inline_size =
         (algorithm_.NumItems() - 1) * algorithm_.gap_between_items_;
-    if (algorithm_.IsMultiline()) {
+    if (is_multi_line_) {
       container_sizes.min_size = largest_outer_min_content_contribution;
       container_sizes.max_size += gap_inline_size;
     } else {
@@ -2364,7 +2384,7 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
   // Handle potential weirdness caused by items' negative margins.
 #if DCHECK_IS_ON()
   if (container_sizes.max_size < container_sizes.min_size) {
-    DCHECK(algorithm_.IsMultiline())
+    DCHECK(is_multi_line_)
         << container_sizes
         << " multiline row containers might have max < min due to negative "
            "margins, but singleline containers cannot.";
@@ -2384,7 +2404,7 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizes(
           Node(), BorderScrollbarPadding()))
     return *result;
 
-  if (is_column_ && algorithm_.IsMultiline()) {
+  if (is_column_ && is_multi_line_) {
     return ComputeMinMaxSizeOfMultilineColumnContainer();
   }
 
@@ -2417,7 +2437,7 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizes(
       sizes.max_size = std::max(sizes.max_size, child_result.sizes.max_size);
     } else {
       sizes.max_size += child_result.sizes.max_size;
-      if (algorithm_.IsMultiline()) {
+      if (is_multi_line_) {
         sizes.min_size = std::max(sizes.min_size, child_result.sizes.min_size);
       } else {
         sizes.min_size += child_result.sizes.min_size;
@@ -2428,7 +2448,7 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizes(
     LayoutUnit gap_inline_size =
         (number_of_items - 1) * algorithm_.gap_between_items_;
     sizes.max_size += gap_inline_size;
-    if (!algorithm_.IsMultiline()) {
+    if (!is_multi_line_) {
       sizes.min_size += gap_inline_size;
     }
   }
@@ -2665,8 +2685,7 @@ bool FlexLayoutAlgorithm::MinBlockSizeShouldEncompassIntrinsicSize(
     // Only allow growth if the item's block-size is auto and either the item
     // can't shrink or its min-height is auto.
     if (item_style.LogicalHeight().HasAutoOrContentOrIntrinsic() &&
-        (!can_shrink || algorithm_.ShouldApplyMinSizeAutoForChild(
-                            *item.block_node.GetLayoutBox()))) {
+        (!can_shrink || ShouldApplyAutoMinSize(item.block_node))) {
       return true;
     }
   } else {
