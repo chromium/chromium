@@ -4524,7 +4524,15 @@ const char kDynamicSafeAreaInsetsDescription[] =
 const char kDynamicSafeAreaInsetsOnScrollName[] =
     "DynamicSafeAreaInsetsOnScroll";
 const char kDynamicSafeAreaInsetsOnScrollDescription[] =
-    "Dynamically change the safe area insets as browser controls scrolls. "
+    "Dynamically change the safe area insets on the main thread as browser "
+    "controls scrolls. "
+    "Requires DynamicSafeAreaInsets to also be enabled.";
+
+const char kDynamicSafeAreaInsetsSupportedByCCName[] =
+    "DynamicSafeAreaInsetsSupportedByCC";
+const char kDynamicSafeAreaInsetsSupportedByCCDescription[] =
+    "Dynamically change the safe area insets on the compositor thread as "
+    "browser controls are shown or hidden during scroll. "
     "Requires DynamicSafeAreaInsets to also be enabled.";
 
 const char kEducationalTipModuleName[] = "Educational Tip Module";

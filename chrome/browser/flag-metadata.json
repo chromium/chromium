@@ -2206,6 +2206,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "dynamic-safe-area-insets-supported-by-cc",
+    "owners": [ "magchen@chromium.org", "skobes@chromium.org", "vmiura@chromium.org" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "dynamic-search-update-animation",
     "owners": ["yulunwu@chromium.org"],
     "expiry_milestone": 103

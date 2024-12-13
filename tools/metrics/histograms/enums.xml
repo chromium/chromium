@@ -15374,6 +15374,7 @@ from previous Chrome versions.
       label="OmniboxLocalZeroSuggestFrecencyRanking:disabled"/>
   <int value="-2011908446"
       label="PasswordsAccountStorageRevisedOptInFlow:disabled"/>
+  <int value="-2011833930" label="DynamicSafeAreaInsetsSupportedByCC:enabled"/>
   <int value="-2011532551" label="SignedExchangeSubresourcePrefetch:disabled"/>
   <int value="-2011428140" label="RelatedSearchesAlternateUx:disabled"/>
   <int value="-2011079494" label="Vp9kSVCHWDecoding:enabled"/>
@@ -15979,6 +15980,7 @@ from previous Chrome versions.
       label="ExperimentalAccessibilityDictationListening:enabled"/>
   <int value="-1772172557" label="enable-osk-overscroll"/>
   <int value="-1771552112" label="QueryTilesInOmnibox:disabled"/>
+  <int value="-1769361050" label="DynamicSafeAreaInsetsSupportedByCC:disabled"/>
   <int value="-1768672408" label="ChromeDuplex:disabled"/>
   <int value="-1768308156" label="OmniboxDedupeGoogleDriveURLs:enabled"/>
   <int value="-1767470652" label="out-of-process-pdf"/>
