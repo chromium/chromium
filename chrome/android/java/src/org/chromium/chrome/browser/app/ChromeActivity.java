@@ -1470,6 +1470,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                     && tab.getNativePage() instanceof PdfPage pdfPage) {
                 EnterpriseInfo.OwnedState state =
                         EnterpriseInfo.getInstance().getDeviceEnterpriseInfoSync();
+                RecordHistogram.recordBooleanHistogram(
+                        "Android.Pdf.AssistContent.IsEnterpriseInfoCached", state != null);
                 if (state == null) return;
                 String structuredData = pdfPage.requestAssistContent(state.mProfileOwned);
                 if (structuredData != null) {

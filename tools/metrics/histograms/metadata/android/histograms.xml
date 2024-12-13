@@ -3796,6 +3796,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Pdf.AssistContent.IsEnterpriseInfoCached"
+    enum="Boolean" expires_after="2025-05-04">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records whether the device enterprise info has been cached when getting it
+    synchronously for pdf pages.
+  </summary>
+</histogram>
+
+<histogram name="Android.Pdf.AssistContent.IsWorkProfile" enum="Boolean"
+    expires_after="2025-05-04">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records whether we are running in a work profile. Recorded when
+    AssistContent is generated successfully for pdf pages. Used to determine the
+    frequency of AssistContent preparation on pdf pages; and how often the work
+    profile is on while preparing AssistContent for pdf pages.
+  </summary>
+</histogram>
+
 <histogram name="Android.Pdf.DocumentLoad" enum="Boolean"
     expires_after="2025-05-04">
   <owner>shuyng@google.com</owner>
