@@ -3933,21 +3933,6 @@ const FeatureEntry::FeatureVariation kWebAuthnEnclaveAuthenticatorVariations[] =
       nullptr}};
 #endif
 
-const FeatureEntry::FeatureParam kAutofillUpstreamUpdatedUi_Security[] = {
-    {"autofill_upstream_updated_ui_treatment", "1"}};
-const FeatureEntry::FeatureParam kAutofillUpstreamUpdatedUi_Convenience[] = {
-    {"autofill_upstream_updated_ui_treatment", "2"}};
-const FeatureEntry::FeatureParam kAutofillUpstreamUpdatedUi_Education[] = {
-    {"autofill_upstream_updated_ui_treatment", "3"}};
-
-const FeatureEntry::FeatureVariation kAutofillUpstreamUpdatedUiOptions[] = {
-    {"Security focus", kAutofillUpstreamUpdatedUi_Security,
-     std::size(kAutofillUpstreamUpdatedUi_Security), nullptr},
-    {"Convenience focus", kAutofillUpstreamUpdatedUi_Convenience,
-     std::size(kAutofillUpstreamUpdatedUi_Convenience), nullptr},
-    {"Education focus", kAutofillUpstreamUpdatedUi_Education,
-     std::size(kAutofillUpstreamUpdatedUi_Education), nullptr}};
-
 const FeatureEntry::FeatureParam
     kDeferRendererTasksAfterInputMinimalTypesPolicyParam[] = {
         {blink::features::kDeferRendererTasksAfterInputPolicyParamName,
@@ -11067,14 +11052,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"storage-access-headers", flag_descriptions::kStorageAccessHeadersName,
      flag_descriptions::kStorageAccessHeadersDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kStorageAccessHeaders)},
-
-    {"autofill-upstream-updated-ui",
-     flag_descriptions::kAutofillUpstreamUpdatedUiName,
-     flag_descriptions::kAutofillUpstreamUpdatedUiDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         autofill::features::kAutofillUpstreamUpdatedUi,
-         kAutofillUpstreamUpdatedUiOptions,
-         "AutofillUpstreamUpdatedUi")},
 
     {"canvas-2d-hibernation", flag_descriptions::kCanvasHibernationName,
      flag_descriptions::kCanvasHibernationDescription, kOsAll,

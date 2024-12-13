@@ -780,12 +780,6 @@ const char kAutofillUploadCardRequestTimeoutDescription[] =
     "upload request. Upon timeout, the client will terminate the upload UI, "
     "but the request may still succeed server-side.";
 
-const char kAutofillUpstreamUpdatedUiName[] =
-    "Credit card upload save UI treatment";
-const char kAutofillUpstreamUpdatedUiDescription[] =
-    "When enabled, shows different text and images in the UI of the credit "
-    "card upload save bubble.";
-
 const char kAutofillVcnEnrollRequestTimeoutName[] =
     "Timeout for the credit card VCN enrollment request";
 const char kAutofillVcnEnrollRequestTimeoutDescription[] =

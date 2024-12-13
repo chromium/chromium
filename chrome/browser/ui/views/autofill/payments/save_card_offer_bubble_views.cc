@@ -61,36 +61,6 @@
 
 namespace autofill {
 
-namespace {
-
-int GetLightModeBannerIdForSaveCard() {
-  switch (autofill::GetUpdatedDesktopUiTreatmentArm()) {
-    case autofill::UpdatedDesktopUiTreatmentArm::kSecurityFocus:
-      return IDR_SAVE_CARD_SECURITY;
-    case autofill::UpdatedDesktopUiTreatmentArm::kConvenienceFocus:
-      return IDR_SAVE_CARD_CONVENIENCE;
-    case autofill::UpdatedDesktopUiTreatmentArm::kEducationFocus:
-      return IDR_SAVE_CARD_EDUCATION;
-    case autofill::UpdatedDesktopUiTreatmentArm::kDefault:
-      return IDR_SAVE_CARD;
-  }
-}
-
-int GetDarkModeBannerIdForSaveCard() {
-  switch (autofill::GetUpdatedDesktopUiTreatmentArm()) {
-    case autofill::UpdatedDesktopUiTreatmentArm::kSecurityFocus:
-      return IDR_SAVE_CARD_SECURITY_DARK;
-    case autofill::UpdatedDesktopUiTreatmentArm::kConvenienceFocus:
-      return IDR_SAVE_CARD_CONVENIENCE_DARK;
-    case autofill::UpdatedDesktopUiTreatmentArm::kEducationFocus:
-      return IDR_SAVE_CARD_EDUCATION_DARK;
-    case autofill::UpdatedDesktopUiTreatmentArm::kDefault:
-      return IDR_SAVE_CARD_DARK;
-  }
-}
-
-}  // namespace
-
 SaveCardOfferBubbleViews::SaveCardOfferBubbleViews(
     views::View* anchor_view,
     content::WebContents* web_contents,
@@ -203,8 +173,8 @@ void SaveCardOfferBubbleViews::AddedToWidget() {
     case BubbleType::UPLOAD_IN_PROGRESS:
     case BubbleType::UPLOAD_COMPLETED:
       // Updated banner/text pairs are for upload save only.
-      light_mode_banner_id = GetLightModeBannerIdForSaveCard();
-      dark_mode_banner_id = GetDarkModeBannerIdForSaveCard();
+      light_mode_banner_id = IDR_SAVE_CARD_SECURITY;
+      dark_mode_banner_id = IDR_SAVE_CARD_SECURITY_DARK;
       break;
     case BubbleType::LOCAL_CVC_SAVE:
     case BubbleType::UPLOAD_CVC_SAVE:

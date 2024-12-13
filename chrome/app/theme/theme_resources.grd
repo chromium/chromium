@@ -277,11 +277,7 @@
         <structure type="chrome_scaled_image" name="IDR_SAVE_PASSWORD" file="common/save_password.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_PASSWORD_DARK" file="common/save_password_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_CARD" file="common/save_card.png" />
-        <structure type="chrome_scaled_image" name="IDR_SAVE_CARD_CONVENIENCE" file="common/save_card_convenience.png" />
-        <structure type="chrome_scaled_image" name="IDR_SAVE_CARD_CONVENIENCE_DARK" file="common/save_card_convenience_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_CARD_DARK" file="common/save_card_dark.png" />
-        <structure type="chrome_scaled_image" name="IDR_SAVE_CARD_EDUCATION" file="common/save_card_education.png" />
-        <structure type="chrome_scaled_image" name="IDR_SAVE_CARD_EDUCATION_DARK" file="common/save_card_education_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_CARD_SECURITY" file="common/save_card_security.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_CARD_SECURITY_DARK" file="common/save_card_security_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_SAVE_CVC" file="common/save_cvc.png" />

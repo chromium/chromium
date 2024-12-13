@@ -55,46 +55,6 @@
 
 namespace autofill {
 
-namespace {
-
-std::u16string GetWindowTitleForUploadSave() {
-  switch (GetUpdatedDesktopUiTreatmentArm()) {
-    case UpdatedDesktopUiTreatmentArm::kSecurityFocus:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY);
-    case UpdatedDesktopUiTreatmentArm::kConvenienceFocus:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_CONVENIENCE);
-    case UpdatedDesktopUiTreatmentArm::kEducationFocus:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_EDUCATION);
-    case UpdatedDesktopUiTreatmentArm::kDefault:
-      return features::ShouldShowImprovedUserConsentForCreditCardSave()
-                 ? l10n_util::GetStringUTF16(
-                       IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V4)
-                 : l10n_util::GetStringUTF16(
-                       IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3);
-  }
-}
-
-std::optional<std::u16string> GetUpdatedExplanatoryMessageForUploadSave() {
-  switch (GetUpdatedDesktopUiTreatmentArm()) {
-    case UpdatedDesktopUiTreatmentArm::kSecurityFocus:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY);
-    case UpdatedDesktopUiTreatmentArm::kConvenienceFocus:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_CONVENIENCE);
-    case UpdatedDesktopUiTreatmentArm::kEducationFocus:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_EDUCATION);
-    case UpdatedDesktopUiTreatmentArm::kDefault:
-      return std::nullopt;
-  }
-}
-
-}  // namespace
-
 static bool g_ignore_window_activation_for_testing = false;
 
 SaveCardBubbleControllerImpl::SaveCardBubbleControllerImpl(
@@ -280,7 +240,8 @@ std::u16string SaveCardBubbleControllerImpl::GetWindowTitle() const {
           IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_LOCAL);
     case BubbleType::UPLOAD_SAVE:
     case BubbleType::UPLOAD_IN_PROGRESS:
-      return GetWindowTitleForUploadSave();
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY);
     case BubbleType::UPLOAD_CVC_SAVE:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD);
@@ -324,26 +285,8 @@ std::u16string SaveCardBubbleControllerImpl::GetExplanatoryMessage() const {
     return std::u16string();
   }
 
-  if (std::optional<std::u16string> updated_ui_explanatory_message =
-          GetUpdatedExplanatoryMessageForUploadSave()) {
-    return updated_ui_explanatory_message.value();
-  }
-
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableCvcStorageAndFilling) &&
-      options_.card_save_type ==
-          payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc) {
-    return l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_UPLOAD);
-  }
-
-  if (options_.should_request_name_from_user) {
-    return l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3_WITH_NAME);
-  }
-
   return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3);
+      IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY);
 }
 
 std::u16string SaveCardBubbleControllerImpl::GetAcceptButtonText() const {

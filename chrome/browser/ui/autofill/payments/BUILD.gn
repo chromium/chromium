@@ -160,7 +160,6 @@ source_set("impl") {
       "manage_migration_ui_controller.cc",
       "offer_notification_bubble_controller_impl.cc",
       "save_card_bubble_controller_impl.cc",
-      "save_card_ui.cc",
       "save_payment_icon_controller.cc",
     ]
     deps += [ "//chrome/browser/ui/hats" ]

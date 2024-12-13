@@ -833,11 +833,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "autofill-upstream-updated-ui",
-    "owners": ["jsaul@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 135
-  },
-  {
     "name": "autofill-vcn-enroll-request-timeout",
     "owners": ["smcgruer@google.com", "chrome-payments-team@google.com"],
     "expiry_milestone": 135
