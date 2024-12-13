@@ -125,8 +125,6 @@ void LogApiAvailabilityCheckResultAndLatency(
 
 void LogLoadRiskDataResultAndLatency(bool was_successful,
                                      base::TimeDelta duration) {
-  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
-  // FacilitatedPaymentsType enum.
   base::UmaHistogramLongTimes(
       base::StrCat({"FacilitatedPayments.Pix.LoadRiskData.",
                     was_successful ? "Success" : "Failure", ".Latency"}),
@@ -134,8 +132,6 @@ void LogLoadRiskDataResultAndLatency(bool was_successful,
 }
 
 void LogGetClientTokenResultAndLatency(bool result, base::TimeDelta duration) {
-  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
-  // FacilitatedPaymentsType enum.
   base::UmaHistogramLongTimes(
       base::StrCat({"FacilitatedPayments.Pix.GetClientToken.",
                     result ? "Success" : "Failure", ".Latency"}),
@@ -143,22 +139,16 @@ void LogGetClientTokenResultAndLatency(bool result, base::TimeDelta duration) {
 }
 
 void LogPayflowExitedReason(PayflowExitedReason reason) {
-  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
-  // FacilitatedPaymentsType enum.
   base::UmaHistogramEnumeration("FacilitatedPayments.Pix.PayflowExitedReason",
                                 reason);
 }
 
 void LogInitiatePaymentAttempt() {
-  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
-  // FacilitatedPaymentsType enum.
   base::UmaHistogramBoolean("FacilitatedPayments.Pix.InitiatePayment.Attempt",
                             /*sample=*/true);
 }
 
 void LogInitiatePaymentResultAndLatency(bool result, base::TimeDelta duration) {
-  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
-  // FacilitatedPaymentsType enum.
   base::UmaHistogramLongTimes(
       base::StrCat({"FacilitatedPayments.Pix.InitiatePayment.",
                     result ? "Success" : "Failure", ".Latency"}),
@@ -166,8 +156,6 @@ void LogInitiatePaymentResultAndLatency(bool result, base::TimeDelta duration) {
 }
 
 void LogInitiatePurchaseActionAttempt() {
-  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
-  // FacilitatedPaymentsType enum.
   base::UmaHistogramBoolean(
       "FacilitatedPayments.Pix.InitiatePurchaseAction.Attempt",
       /*sample=*/true);
@@ -175,8 +163,6 @@ void LogInitiatePurchaseActionAttempt() {
 
 void LogInitiatePurchaseActionResultAndLatency(PurchaseActionResult result,
                                                base::TimeDelta duration) {
-  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
-  // FacilitatedPaymentsType enum.
   base::UmaHistogramLongTimes(
       base::StrCat({"FacilitatedPayments.Pix.InitiatePurchaseAction.",
                     GetInitiatePurchaseActionResultString(result), ".Latency"}),
