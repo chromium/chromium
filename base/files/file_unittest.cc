@@ -639,12 +639,12 @@ TEST(FileTest, WriteAtCurrentPositionSpans) {
 
   std::string data("test");
   size_t first_chunk_size = data.size() / 2;
-  std::optional<size_t> result =
-      file.WriteAtCurrentPos(as_byte_span(data).first(first_chunk_size));
+  const auto [first, second] = as_byte_span(data).split_at(first_chunk_size);
+  std::optional<size_t> result = file.WriteAtCurrentPos(first);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(first_chunk_size, result.value());
 
-  result = file.WriteAtCurrentPos(as_byte_span(data).subspan(first_chunk_size));
+  result = file.WriteAtCurrentPos(second);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(first_chunk_size, result.value());
 

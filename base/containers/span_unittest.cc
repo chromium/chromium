@@ -3115,21 +3115,15 @@ TEST(SpanTest, Example_UnsafeBuffersPatterns) {
     uint8_t array1[12];
     uint8_t array2[16];
     uint64_t array3[2];
-    span(array1).first(4u).copy_from(span(array2).subspan(8u, 4u));
-    span(array1).subspan(4u).copy_from(as_byte_span(array3).first(8u));
+    base::span<uint8_t> span1(array1);
+    span1.take_first<4>().copy_from(base::span(array2).subspan<8, 4>());
+    span1.copy_from(base::as_byte_span(array3).first<8>());
 
     {
       // Use `split_at()` to ensure `array1` is fully written.
-      auto [from2, from3] = span(array1).split_at(4u);
-      from2.copy_from(span(array2).subspan(8u, 4u));
-      from3.copy_from(as_byte_span(array3).first(8u));
-    }
-    {
-      // This can even be ensured at compile time (if sizes and offsets are all
-      // constants).
-      auto [from2, from3] = span(array1).split_at<4u>();
-      from2.copy_from(span(array2).subspan<8u, 4u>());
-      from3.copy_from(as_byte_span(array3).first<8u>());
+      auto [from2, from3] = base::span(array1).split_at<4>();
+      from2.copy_from(base::span(array2).subspan<8, 4>());
+      from3.copy_from(base::as_byte_span(array3).first<8>());
     }
   }
 
@@ -3146,9 +3140,9 @@ TEST(SpanTest, Example_UnsafeBuffersPatterns) {
     uint8_t array1[12];
     uint64_t array2[2];
     Object array3[4];
-    std::ranges::fill(array1, 0u);
-    std::ranges::fill(array2, 0u);
-    std::ranges::fill(as_writable_byte_span(array3), 0u);
+    std::ranges::fill(array1, 0);
+    std::ranges::fill(array2, 0);
+    std::ranges::fill(as_writable_byte_span(array3), 0);
   }
 
   UNSAFE_BUFFERS({

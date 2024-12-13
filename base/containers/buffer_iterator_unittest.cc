@@ -216,8 +216,7 @@ TEST(BufferIteratorTest, CopyObject) {
   for (int i = 0; i < kNumCopies; i++) {
     as_writable_bytes(span(buffer))
         .subspan(i * sizeof(TestStruct))
-        .first<sizeof(TestStruct)>()
-        .copy_from(byte_span_from_ref(expected));
+        .copy_prefix_from(byte_span_from_ref(expected));
   }
 
   BufferIterator<char> iterator(buffer);
