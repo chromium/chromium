@@ -99,6 +99,10 @@ class ASH_EXPORT AppListControllerImpl
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // Set the value of global variable `g_sunfish_nudge_disabled_for_test` to
+  // disable showing the nudge.
+  static void SetSunfishNudgeDisabledForTest(bool is_disabled);
+
   AppListPresenterImpl* fullscreen_presenter() {
     return fullscreen_presenter_.get();
   }

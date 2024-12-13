@@ -113,6 +113,8 @@ constexpr base::TimeDelta kOverviewFadeAnimationDuration =
 // The app id for the settings app used for testing quick app access.
 constexpr char kOsSettingsAppId[] = "odknhmnlageboeamepcngndbggdpaobj";
 
+bool g_sunfish_nudge_disabled_for_test = false;
+
 // Update layer animation settings for launcher scale and opacity animation that
 // runs on overview mode change.
 void UpdateOverviewSettings(base::TimeDelta duration,
@@ -2082,8 +2084,17 @@ bool AppListControllerImpl::SetHomeButtonQuickApp(const std::string& app_id) {
   return model_provider_->quick_app_access_model()->SetQuickApp(app_id);
 }
 
+// static
+void AppListControllerImpl::SetSunfishNudgeDisabledForTest(bool is_disabled) {
+  g_sunfish_nudge_disabled_for_test = is_disabled;
+}
+
 void AppListControllerImpl::MaybeShowSunfishLauncherNudge(
     views::View* launcher_button) {
+  if (g_sunfish_nudge_disabled_for_test) {
+    return;
+  }
+
   if (!IsSunfishAllowedAndEnabled()) {
     return;
   }

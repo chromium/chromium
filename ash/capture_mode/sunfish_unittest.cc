@@ -1687,6 +1687,7 @@ TEST_F(SunfishTest, PanelBounds) {
 // Tests that the sunfish launcher nudge appears and closes properly in
 // clamshell mode.
 TEST_F(SunfishTest, ClamshellLauncherNudge) {
+  AppListControllerImpl::SetSunfishNudgeDisabledForTest(false);
   // Advance clock so we aren't at zero time.
   task_environment()->AdvanceClock(base::Hours(25));
 
@@ -1716,6 +1717,7 @@ TEST_F(SunfishTest, ClamshellLauncherNudge) {
 // Tests that the sunfish launcher nudge appears and closes properly in
 // tablet mode.
 TEST_F(SunfishTest, TabletLauncherNudge) {
+  AppListControllerImpl::SetSunfishNudgeDisabledForTest(false);
   // Advance clock so we aren't at zero time.
   task_environment()->AdvanceClock(base::Hours(25));
 
@@ -1746,6 +1748,7 @@ TEST_F(SunfishTest, TabletLauncherNudge) {
 // Tests that the sunfish nudge only appears three times at most, with at least
 // 24 hours between showings.
 TEST_F(SunfishTest, LauncherNudgeLimits) {
+  AppListControllerImpl::SetSunfishNudgeDisabledForTest(false);
   // Advance clock so we aren't at zero time.
   task_environment()->AdvanceClock(base::Hours(25));
 
