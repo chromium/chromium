@@ -1,0 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module gpu.mojom;
+
+import "mojo/public/mojom/base/unguessable_token.mojom";
+
+// A Mojom representation of the SharedImagePoolId for IPC serialization.
+// see gpu/command_buffer/common/shared_image_pool_id.h.
+struct SharedImagePoolId {
+  mojo_base.mojom.UnguessableToken value;
+};

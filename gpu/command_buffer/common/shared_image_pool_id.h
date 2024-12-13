@@ -16,6 +16,7 @@ namespace gpu {
 class GPU_EXPORT SharedImagePoolId {
  public:
   SharedImagePoolId();
+  explicit SharedImagePoolId(const base::UnguessableToken& token);
 
   // Creates a new SharedImagePoolId with a cryptographically random value.
   static SharedImagePoolId Create();
@@ -36,8 +37,6 @@ class GPU_EXPORT SharedImagePoolId {
   const base::UnguessableToken& GetToken() const { return token_; }
 
  private:
-  explicit SharedImagePoolId(const base::UnguessableToken& token);
-
   // The underlying unguessable token.
   base::UnguessableToken token_;
 };
