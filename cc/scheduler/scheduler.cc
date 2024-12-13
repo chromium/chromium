@@ -10,11 +10,13 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/delay_policy.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/devtools_instrumentation.h"
@@ -396,6 +398,27 @@ bool Scheduler::OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) {
   if (args.interval != last_frame_interval_ && args.interval.is_positive()) {
     last_frame_interval_ = args.interval;
     client_->FrameIntervalUpdated(last_frame_interval_);
+
+    // Only query the feature (and thus enter the experiment group) if we see a
+    // short interval. This ignores 90Hz displays, on purpose, and adds some
+    // leeway.
+    //
+    // Apply some slack, so that if for some reason the interval is a bit larger
+    // than 8.33333333333333ms, then we catch it still.
+    constexpr float kSlackFactor = .9;
+    if (args.interval < base::Hertz(120) * (1 / kSlackFactor) &&
+        base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz)) {
+      TRACE_EVENT0("cc", "ThrottleMainFrameTo60Hz");
+      // Note that we don't change args.interval, so the next main frame will
+      // see e.g. 8ms, even though the next one will come in 16ms. This is not
+      // necessarily bad, as it is mostly used for idle period timing.
+      //
+      // Here as well, use a slack factor, to make sure that small timing
+      // variations don't result in uneven pacing.
+      state_machine_.SetThrottleMainFrames(base::Hertz(60.) * kSlackFactor);
+    } else {
+      state_machine_.SetThrottleMainFrames(base::TimeDelta());
+    }
   }
 
   // Drop the BeginFrame if we don't need one.
@@ -629,6 +652,7 @@ void Scheduler::BeginImplFrameSynchronous(const viz::BeginFrameArgs& args) {
 }
 
 void Scheduler::FinishImplFrame() {
+  TRACE_EVENT0("cc", __PRETTY_FUNCTION__);
   DCHECK(!needs_finish_frame_for_synchronous_compositor_);
   state_machine_.OnBeginImplFrameIdle();
 
@@ -641,6 +665,8 @@ void Scheduler::FinishImplFrame() {
                               SchedulerStateMachine::BeginMainFrameState::IDLE;
     bool is_draw_throttled =
         state_machine_.needs_redraw() && state_machine_.IsDrawThrottled();
+    TRACE_EVENT2("cc", "DidNotSubmitInLastFrame", "has_pending_tree",
+                 has_pending_tree, "is_waiting_on_main", is_waiting_on_main);
 
     FrameSkippedReason reason = FrameSkippedReason::kNoDamage;
 
@@ -678,6 +704,7 @@ void Scheduler::FinishImplFrame() {
 
 void Scheduler::SendDidNotProduceFrame(const viz::BeginFrameArgs& args,
                                        FrameSkippedReason reason) {
+  TRACE_EVENT1("cc", __PRETTY_FUNCTION__, "reason", reason);
   if (last_begin_frame_ack_.frame_id == args.frame_id)
     return;
   last_begin_frame_ack_ = viz::BeginFrameAck(args, false /* has_damage */);

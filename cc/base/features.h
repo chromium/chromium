@@ -199,6 +199,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kInitImageDecodeLastUseTime);
 // affected nodes.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDynamicSafeAreaInsetsSupportedByCC);
 
+// On devices with a high refresh rate, whether to throttle main (not impl)
+// frame production to 60Hz.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleMainFrameTo60Hz);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

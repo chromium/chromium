@@ -1,13 +1,18 @@
 // Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 #include "cc/scheduler/scheduler_state_machine.h"
 
 #include <stddef.h>
 
 #include <array>
 
+#include "base/time/time.h"
+#include "cc/metrics/begin_main_frame_metrics.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/trace_event/trace_event.h"
@@ -237,6 +242,8 @@ class StateMachine : public SchedulerStateMachine {
     return needs_impl_side_invalidation_;
   }
 
+  void AdvanceTimeBy(base::TimeDelta delta) { now_ticks_ += delta; }
+
   using SchedulerStateMachine::ProactiveBeginFrameWanted;
   using SchedulerStateMachine::ShouldDraw;
   using SchedulerStateMachine::ShouldPrepareTiles;
@@ -245,9 +252,13 @@ class StateMachine : public SchedulerStateMachine {
   using SchedulerStateMachine::ShouldWaitForScrollEvent;
   using SchedulerStateMachine::WillCommit;
 
+ private:
+  base::TimeTicks Now() const override { return now_ticks_; }
+
  protected:
   DrawResult draw_result_for_test_;
   uint64_t next_begin_frame_number_ = viz::BeginFrameArgs::kStartingFrameNumber;
+  base::TimeTicks now_ticks_;
 };
 
 void PerformAction(StateMachine* sm, SchedulerStateMachine::Action action) {
@@ -1146,6 +1157,61 @@ TEST(SchedulerStateMachineTest, TestFullCycle) {
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
   EXPECT_MAIN_FRAME_STATE(SchedulerStateMachine::BeginMainFrameState::IDLE);
   EXPECT_FALSE(state.needs_redraw());
+}
+
+TEST(SchedulerStateMachineTest, TestMainFrameThrottling) {
+  SchedulerSettings default_scheduler_settings;
+  StateMachine state(default_scheduler_settings);
+  SET_UP_STATE(state);
+
+  state.SetThrottleMainFrames(base::Hertz(60));
+  state.AdvanceTimeBy(base::Seconds(1280));  // Start at an arbitrary point.
+
+  int begin_main_frame_count = 0;
+  for (int i = 0; i < 10; i++) {
+    state.SetNeedsBeginMainFrame();
+    state.IssueNextBeginImplFrame();
+
+    // If we send a BeginMainFrame(), simulate the fast path, where main is fast
+    // enough to catch the next deadline.
+    if (state.ShouldSendBeginMainFrame()) {
+      begin_main_frame_count += 1;
+      EXPECT_ACTION_UPDATE_STATE(
+          SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+      EXPECT_MAIN_FRAME_STATE(SchedulerStateMachine::BeginMainFrameState::SENT);
+      EXPECT_FALSE(state.NeedsCommit());
+      EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
+      state.NotifyReadyToCommit();
+      EXPECT_MAIN_FRAME_STATE(
+          SchedulerStateMachine::BeginMainFrameState::READY_TO_COMMIT);
+      EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::COMMIT);
+      EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::POST_COMMIT);
+      state.NotifyReadyToActivate();
+      EXPECT_ACTION_UPDATE_STATE(
+          SchedulerStateMachine::Action::ACTIVATE_SYNC_TREE);
+      EXPECT_TRUE(state.active_tree_needs_first_draw());
+      EXPECT_TRUE(state.needs_redraw());
+    } else {
+      // Still need to require a draw, otherwise nothing will happen below.
+      state.SetNeedsRedraw(true);
+    }
+
+    // Expect to do nothing until BeginImplFrame deadline
+    EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
+    state.OnBeginImplFrameDeadline();
+    EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::DRAW_IF_POSSIBLE);
+    state.DidSubmitCompositorFrame();
+    state.DidReceiveCompositorFrameAck();
+
+    // Should be synchronized, no draw needed, no action needed.
+    EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
+    EXPECT_MAIN_FRAME_STATE(SchedulerStateMachine::BeginMainFrameState::IDLE);
+    EXPECT_FALSE(state.needs_redraw());
+
+    state.AdvanceTimeBy(base::Hertz(120));
+  }
+
+  EXPECT_EQ(begin_main_frame_count, 5);
 }
 
 TEST(SchedulerStateMachineTest, CommitWithoutDrawWithPendingTree) {
