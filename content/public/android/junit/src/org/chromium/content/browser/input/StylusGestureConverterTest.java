@@ -26,9 +26,9 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -40,7 +40,7 @@ import org.chromium.blink.mojom.StylusWritingGestureData;
  * representation to their Blink representation. These tests construct gesture objects and use the
  * converter to convert them into gesture data. The gesture data is then checked for accuracy.
  */
-@RunWith(RobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({"enable-features=StylusRichGestures"})
 @Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)

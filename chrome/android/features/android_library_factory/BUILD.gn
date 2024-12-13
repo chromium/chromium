@@ -76,6 +76,7 @@ robolectric_library("junit_tests") {
     ":a_impl_factory1_java",
     ":z_factory1_java",
     ":z_impl_factory2_java",
+    "//base:base_junit_test_support",
     "//testing/android/junit:junit_test_support",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",

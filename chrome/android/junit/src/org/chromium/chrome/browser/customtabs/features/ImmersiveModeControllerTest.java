@@ -22,11 +22,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.UnownedUserDataHost;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -36,7 +36,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
  *
  * <p>sdk = P for the cutout mode (setsLayoutParams) test.
  */
-@RunWith(RobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.P, manifest = Config.NONE)
 public class ImmersiveModeControllerTest {
     // Convenience constants to make the tests  more readable.
