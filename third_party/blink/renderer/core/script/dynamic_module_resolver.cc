@@ -21,6 +21,8 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "v8/include/v8.h"
 
+#include "base/json/json_writer.h"
+
 namespace blink {
 
 namespace {
@@ -130,6 +132,18 @@ void DynamicImportTreeClient::NotifyModuleTreeLoadFinished(
 
     // <spec step="2.3">Return.</spec>
     return;
+  }
+
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::DependencyGraphEnabled()) {
+    base::Value::Dict info;
+    info.Set("kind", "dynamicImportTreeLoadFinished");
+    if (module_script)
+      info.Set("url", module_script->SourceUrl().GetString().Utf8());
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    int node_id = recordreplay::NewDependencyGraphNode(json.c_str());
+    execute.emplace(node_id);
   }
 
   // <spec step="9">Otherwise, set promise to the result of running a module
