@@ -12,7 +12,7 @@ This is a testharness.js-based test.
 [FAIL] conv2d default + elu
   assert_true: assert_array_approx_equals_ulp: test conv2d elu float32 actual 1.53125 should be close enough to expected 1.5323282480239868 by the acceptable 36 ULP distance, but they have 9045 ULP distance expected true got false
 [FAIL] conv2d default + prelu
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, output 'output' data type float32 must be one of []."
 [FAIL] conv2d default + hardSwish
   assert_true: assert_array_approx_equals_ulp: test conv2d hardSwish float32 actual 1.1552734375 should be close enough to expected 1.157502485501543 by the acceptable 22 ULP distance, but they have 18699 ULP distance expected true got false
 [FAIL] conv2d default + gelu
@@ -46,7 +46,7 @@ This is a testharness.js-based test.
 [FAIL] convTranspose2d default + linear
   assert_true: assert_array_approx_equals_ulp: test convTranspose2d linear float32 actual 0 should be close enough to expected 0.1933533329919328 by the acceptable 10 ULP distance, but they have 1044774507 ULP distance expected true got false
 [FAIL] convTranspose2d default + prelu
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, output 'output' data type float32 must be one of []."
 [FAIL] convTranspose2d default + softsign
   assert_true: assert_array_approx_equals_ulp: test convTranspose2d softsign float32 actual 0 should be close enough to expected 0.16202521324157715 by the acceptable 11 ULP distance, but they have 1042672112 ULP distance expected true got false
 [FAIL] batchNormalization default + relu
@@ -58,7 +58,7 @@ This is a testharness.js-based test.
 [FAIL] batchNormalization default + clamp
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
 [FAIL] batchNormalization default + prelu
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, output 'output' data type float32 must be one of []."
 [FAIL] batchNormalization default + elu
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
 [FAIL] batchNormalization options.axis=0 + gelu
