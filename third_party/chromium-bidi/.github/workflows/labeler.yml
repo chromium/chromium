@@ -20,7 +20,7 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - run: gh pr edit "$NUMBER" --add-label "puppeteer"
+      - run: gh pr edit "$NUMBER" --add-label "puppeteer" --add-label "puppeteer-required"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}

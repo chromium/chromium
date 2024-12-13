@@ -90,3 +90,13 @@ jobs:
         env:
           PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
         run: xvfb-run --auto-servernum npm run test:chrome:bidi -- --shard '${{ matrix.shard }}'
+
+  puppeteer-test-required:
+    name: '[Required] Puppeteer tests'
+    needs: [puppeteer-test]
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - if: ${{ needs.puppeteer-test.result != 'success' && contains(github.event.pull_request.labels.*.name, 'puppeteer-required') }}
+        run: 'exit 1'
+      - run: 'exit 0'
