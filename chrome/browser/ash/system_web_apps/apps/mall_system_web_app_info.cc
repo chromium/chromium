@@ -75,3 +75,8 @@ std::vector<std::string> MallSystemAppDelegate::GetAppIdsToUninstallAndReplace()
 bool MallSystemAppDelegate::ShouldCaptureNavigations() const {
   return true;
 }
+
+gfx::Size MallSystemAppDelegate::GetMinimumWindowSize() const {
+  // 688px is the minimum width of the Mall website.
+  return gfx::Size(/*width=*/688, /*height=*/300);
+}
