@@ -25,6 +25,8 @@ namespace payments::facilitated {
 namespace {
 
 static constexpr base::TimeDelta kProgressScreenDismissDelay = base::Seconds(1);
+static constexpr FacilitatedPaymentsType kPaymentsType =
+    FacilitatedPaymentsType::kPix;
 
 }  // namespace
 
@@ -172,7 +174,7 @@ FacilitatedPaymentsApiClient* FacilitatedPaymentsManager::GetApiClient() {
 void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
     bool is_api_available) {
   LogApiAvailabilityCheckResultAndLatency(
-      is_api_available,
+      kPaymentsType, is_api_available,
       (base::TimeTicks::Now() - api_availability_check_start_time_));
   if (!is_api_available) {
     LogPayflowExitedReason(PayflowExitedReason::kApiClientNotAvailable);

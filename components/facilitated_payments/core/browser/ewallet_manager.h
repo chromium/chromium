@@ -12,10 +12,12 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
+#include "components/facilitated_payments/core/validation/payment_link_validator.h"
 
 class GURL;
 
@@ -67,8 +69,10 @@ class EwalletManager {
 
   // Called after checking whether the facilitated payment API is available. If
   // the API is not available, the user should not be prompted to make a
-  // payment.
-  void OnApiAvailabilityReceived(bool is_api_available);
+  // payment.  The call to check the availability of API was made at
+  // `start_time`.
+  void OnApiAvailabilityReceived(base::TimeTicks start_time,
+                                 bool is_api_available);
 
   // Called after the user interacts with the eWallet payment prompt.
   // `is_prompt_accepted` indicates whether the user selects an eWallet FOP or
@@ -125,6 +129,9 @@ class EwalletManager {
   // is eligible for eWallet push payments.
   const raw_ref<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_;
+
+  // The scheme of the detected payment link.
+  PaymentLinkValidator::Scheme scheme_;
 
   // Contains the details required for the `InitiatePayment` request to be sent
   // to the Payments server. Its ownership is transferred to

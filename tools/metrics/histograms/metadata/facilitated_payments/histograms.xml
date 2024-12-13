@@ -24,12 +24,40 @@ reviewer.
   <variant name="Success" summary="success"/>
 </variants>
 
+<variants name="EwalletScheme">
+  <variant name="DuitNow"
+      summary="Scheme DuitNow that supports eWallet payflow."/>
+  <variant name="ShopeePay"
+      summary="Scheme ShopeePay that supports eWallet payflow."/>
+  <variant name="Tngd" summary="Scheme Tngd that supports eWallet payflow."/>
+</variants>
+
 <!-- Note: Update the histogram summaries when adding a new variant.-->
 
 <variants name="FacilitatedPaymentsTypes">
+  <variant name="Ewallet"
+      summary="Facilitate an eWallet based payment using Google Pay."/>
   <variant name="Pix"
       summary="Facilitate a Pix based payment using Google Pay."/>
 </variants>
+
+<histogram
+    name="FacilitatedPayments.Ewallet.IsApiAvailable.{Result}.Latency.{Scheme}"
+    units="ms" expires_after="2025-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Latency for the call to check whether the FacilitatedPayments API client is
+    available or not. Logged when an eWallet link is found on the page, at most
+    once per page-load. The result is {Result}. The payment is supported by
+    {Scheme}. The API client's availability is checked to determine whether
+    Chrome can offer to facilitate the payment using Google Pay.
+  </summary>
+  <token key="Result" variants="BooleanResult"/>
+  <token key="Scheme" variants="EwalletScheme"/>
+</histogram>
 
 <histogram name="FacilitatedPayments.Pix.FopSelector.UserAction"
     enum="FacilitatedPayments.FopSelectorAction" expires_after="2025-07-01">
@@ -140,22 +168,6 @@ reviewer.
     <variant name="Failed" summary="Failed InitiatePurchaseAction call"/>
     <variant name="Succeeded" summary="Successful InitiatePurchaseAction call"/>
   </token>
-</histogram>
-
-<histogram name="FacilitatedPayments.Pix.IsApiAvailable.{Result}.Latency"
-    units="ms" expires_after="2025-07-01">
-  <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
-  <owner>rouslan@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Latency for the call to check whether the FacilitatedPayments API client is
-    available or not. The result is {Result}. The API client's availability is
-    checked to determine whether Chrome can offer to facilitate the payment
-    using Google Pay. [Frequency] Logged at most once per Pix payflow. [Trigger]
-    Page is loaded and the main frame contains a valid payment code for Pix.
-  </summary>
-  <token key="Result" variants="BooleanResult"/>
 </histogram>
 
 <histogram name="FacilitatedPayments.Pix.LoadRiskData.{Result}.Latency"
@@ -270,6 +282,25 @@ reviewer.
     payment type preference from the Payment Methods settings page. [Frequency]
     Logged once for every time the page is shown.
   </summary>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.IsApiAvailable.{Result}.Latency"
+    units="ms" expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Latency for the call to check whether the FacilitatedPayments API client is
+    available or not. The result is {Result}. The API client's availability is
+    checked to determine whether Chrome can offer to facilitate the payment
+    using Google Pay. [Frequency] Logged at most once per
+    {FacilitatedPaymentsType} payflow. [Trigger] Page is loaded and the main
+    frame contains a valid payment code for {FacilitatedPaymentsType}.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+  <token key="Result" variants="BooleanResult"/>
 </histogram>
 
 </histograms>

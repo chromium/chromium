@@ -19,12 +19,19 @@
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_response_details.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/features/features.h"
+#include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "components/facilitated_payments/core/validation/payment_link_validator.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "url/gurl.h"
 
 namespace payments::facilitated {
+namespace {
+
+static constexpr FacilitatedPaymentsType kPaymentsType =
+    FacilitatedPaymentsType::kEwallet;
+
+}  // namespace
 
 EwalletManager::EwalletManager(
     FacilitatedPaymentsClient* client,
@@ -49,8 +56,8 @@ void EwalletManager::TriggerEwalletPushPayment(const GURL& payment_link_url,
     return;
   }
 
-  if (PaymentLinkValidator().GetScheme(payment_link_url) ==
-      PaymentLinkValidator::Scheme::kInvalid) {
+  scheme_ = PaymentLinkValidator().GetScheme(payment_link_url);
+  if (scheme_ == PaymentLinkValidator::Scheme::kInvalid) {
     return;
   }
 
@@ -95,7 +102,7 @@ void EwalletManager::TriggerEwalletPushPayment(const GURL& payment_link_url,
 
   GetApiClient()->IsAvailable(
       base::BindOnce(&EwalletManager::OnApiAvailabilityReceived,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
 void EwalletManager::Reset() {
@@ -114,7 +121,11 @@ FacilitatedPaymentsApiClient* EwalletManager::GetApiClient() {
   return api_client_.get();
 }
 
-void EwalletManager::OnApiAvailabilityReceived(bool is_api_available) {
+void EwalletManager::OnApiAvailabilityReceived(base::TimeTicks start_time,
+                                               bool is_api_available) {
+  LogApiAvailabilityCheckResultAndLatency(kPaymentsType, is_api_available,
+                                          (base::TimeTicks::Now() - start_time),
+                                          scheme_);
   if (!is_api_available) {
     return;
   }

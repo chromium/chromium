@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
+#include "components/facilitated_payments/core/validation/payment_link_validator.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace payments::facilitated {
@@ -25,6 +26,34 @@ std::string GetInitiatePurchaseActionResultString(PurchaseActionResult result) {
     case PurchaseActionResult::kResultCanceled:
       return "Abandoned";
   }
+}
+
+std::string PaymentTypeToString(FacilitatedPaymentsType payment_type) {
+  switch (payment_type) {
+    case FacilitatedPaymentsType::kPix:
+      return "Pix";
+    case FacilitatedPaymentsType::kEwallet:
+      return "Ewallet";
+  }
+}
+
+std::string SchemeToString(PaymentLinkValidator::Scheme scheme) {
+  switch (scheme) {
+    case PaymentLinkValidator::Scheme::kDuitNow:
+      return "DuitNow";
+    case PaymentLinkValidator::Scheme::kShopeePay:
+      return "ShopeePay";
+    case PaymentLinkValidator::Scheme::kTngd:
+      return "Tngd";
+    case PaymentLinkValidator::Scheme::kInvalid:
+      // This case can't happen because `kInvalid` causes an early return in
+      // eWallet manager.
+      NOTREACHED();
+  }
+}
+
+std::string ResultToString(bool result) {
+  return result ? "Success" : "Failure";
 }
 
 }  // namespace
@@ -74,14 +103,24 @@ void LogPaymentCodeValidationResultAndLatency(
       duration);
 }
 
-void LogApiAvailabilityCheckResultAndLatency(bool result,
-                                             base::TimeDelta duration) {
-  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
-  // FacilitatedPaymentsType enum.
+void LogApiAvailabilityCheckResultAndLatency(
+    FacilitatedPaymentsType payment_type,
+    bool result,
+    base::TimeDelta duration,
+    std::optional<PaymentLinkValidator::Scheme> scheme) {
   base::UmaHistogramLongTimes(
-      base::StrCat({"FacilitatedPayments.Pix.IsApiAvailable.",
-                    result ? "Success" : "Failure", ".Latency"}),
+      base::StrCat({"FacilitatedPayments.", PaymentTypeToString(payment_type),
+                    ".IsApiAvailable.", ResultToString(result), ".Latency"}),
       duration);
+  if (payment_type == FacilitatedPaymentsType::kEwallet) {
+    CHECK(scheme.has_value());
+    CHECK_NE(PaymentLinkValidator::Scheme::kInvalid, *scheme);
+    base::UmaHistogramLongTimes(
+        base::StrCat({"FacilitatedPayments.Ewallet.IsApiAvailable.",
+                      ResultToString(result), ".Latency.",
+                      SchemeToString(*scheme)}),
+        duration);
+  }
 }
 
 void LogLoadRiskDataResultAndLatency(bool was_successful,

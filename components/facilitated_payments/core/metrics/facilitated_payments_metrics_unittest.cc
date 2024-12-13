@@ -77,26 +77,6 @@ TEST(FacilitatedPaymentsMetricsTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST(FacilitatedPaymentsMetricsTest, LogApiAvailabilityCheckResultAndLatency) {
-  base::HistogramTester histogram_tester;
-
-  LogApiAvailabilityCheckResultAndLatency(/*result=*/true,
-                                          base::Milliseconds(10));
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.IsApiAvailable.Success.Latency",
-      /*sample=*/10,
-      /*expected_bucket_count=*/1);
-
-  LogApiAvailabilityCheckResultAndLatency(/*result=*/false,
-                                          base::Milliseconds(10));
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.IsApiAvailable.Failure.Latency",
-      /*sample=*/10,
-      /*expected_bucket_count=*/1);
-}
-
 TEST(FacilitatedPaymentsMetricsTest, LogLoadRiskDataResult) {
   base::HistogramTester histogram_tester;
 
@@ -287,6 +267,96 @@ TEST_F(FacilitatedPaymentsMetricsUkmTest, LogInitiatePurchaseActionResultUkm) {
     EXPECT_EQ(ukm_entries[index++].metrics.at("Result"),
               static_cast<uint8_t>(result));
   }
+}
+
+class FacilitatedPaymentsMetricsParameterizedTest
+    : public testing::TestWithParam<
+          std::tuple<FacilitatedPaymentsType, PaymentLinkValidator::Scheme>> {
+ public:
+  FacilitatedPaymentsType payment_type() const {
+    return std::get<0>(GetParam());
+  }
+
+  PaymentLinkValidator::Scheme scheme() const {
+    return std::get<1>(GetParam());
+  }
+
+  std::string GetFacilitatedPaymentsTypeString() const {
+    switch (payment_type()) {
+      case FacilitatedPaymentsType::kEwallet:
+        return "Ewallet";
+      case FacilitatedPaymentsType::kPix:
+        return "Pix";
+    }
+  }
+
+  std::string GetSchemeString() const {
+    switch (scheme()) {
+      case PaymentLinkValidator::Scheme::kDuitNow:
+        return "DuitNow";
+      case PaymentLinkValidator::Scheme::kShopeePay:
+        return "ShopeePay";
+      case PaymentLinkValidator::Scheme::kTngd:
+        return "Tngd";
+      case PaymentLinkValidator::Scheme::kInvalid:
+        NOTREACHED();
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    FacilitatedPaymentsMetricsTest,
+    FacilitatedPaymentsMetricsParameterizedTest,
+    testing::Combine(testing::Values(FacilitatedPaymentsType::kEwallet,
+                                     FacilitatedPaymentsType::kPix),
+                     testing::Values(PaymentLinkValidator::Scheme::kDuitNow,
+                                     PaymentLinkValidator::Scheme::kShopeePay,
+                                     PaymentLinkValidator::Scheme::kTngd)));
+
+TEST_P(FacilitatedPaymentsMetricsParameterizedTest,
+       LogApiAvailabilityCheckResultAndLatency_Success) {
+  base::HistogramTester histogram_tester;
+
+  LogApiAvailabilityCheckResultAndLatency(payment_type(), /*result=*/true,
+                                          base::Milliseconds(10), scheme());
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"FacilitatedPayments.", GetFacilitatedPaymentsTypeString(),
+                    ".IsApiAvailable.Success.Latency"}),
+      /*sample=*/10,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {"FacilitatedPayments.Ewallet.IsApiAvailable.Success.Latency.",
+           GetSchemeString()}),
+      /*sample=*/10,
+      /*expected_bucket_count=*/payment_type() ==
+              FacilitatedPaymentsType::kEwallet
+          ? 1
+          : 0);
+}
+
+TEST_P(FacilitatedPaymentsMetricsParameterizedTest,
+       LogApiAvailabilityCheckResultAndLatency_Failure) {
+  base::HistogramTester histogram_tester;
+
+  LogApiAvailabilityCheckResultAndLatency(payment_type(), /*result=*/false,
+                                          base::Milliseconds(10), scheme());
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"FacilitatedPayments.", GetFacilitatedPaymentsTypeString(),
+                    ".IsApiAvailable.Failure.Latency"}),
+      /*sample=*/10,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {"FacilitatedPayments.Ewallet.IsApiAvailable.Failure.Latency.",
+           GetSchemeString()}),
+      /*sample=*/10,
+      /*expected_bucket_count=*/payment_type() ==
+              FacilitatedPaymentsType::kEwallet
+          ? 1
+          : 0);
 }
 
 class FacilitatedPaymentsMetricsTestForUiScreens

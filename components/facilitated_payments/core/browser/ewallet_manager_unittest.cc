@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/ewallet.h"
@@ -67,6 +68,8 @@ class EwalletManagerTest : public testing::Test {
                 testing::A<optimization_guide::OptimizationMetadata*>()))
         .WillByDefault(testing::Return(
             optimization_guide::OptimizationGuideDecision::kTrue));
+    test_api(*ewallet_manager_)
+        .set_scheme(PaymentLinkValidator::Scheme::kShopeePay);
 
     // `initiate_payment_request_details_` is lazy initialized in the
     // implementation. Initialize it here so tests depending on it won't crash.
@@ -226,6 +229,7 @@ TEST_F(EwalletManagerTest, UserOptedOut_ApiClientNotCheckedForAvailability) {
 // If the facilitated payment API is available, then the manager shows the
 // eWallet payment prompt.
 TEST_F(EwalletManagerTest, ShowsEwalletPaymentPromptWhenApiClientAvailable) {
+  base::HistogramTester histogram_tester;
   autofill::Ewallet ewallet(
       /*instrument_id=*/100, u"nickname",
       /*display_icon_url=*/GURL("http://www.example.com"), u"ewallet_name",
@@ -246,16 +250,38 @@ TEST_F(EwalletManagerTest, ShowsEwalletPaymentPromptWhenApiClientAvailable) {
               ShowEwalletPaymentPrompt(
                   testing::UnorderedElementsAreArray({ewallet}), testing::_));
 
-  test_api(*ewallet_manager_).OnApiAvailabilityReceived(true);
+  test_api(*ewallet_manager_)
+      .OnApiAvailabilityReceived(base::TimeTicks::Now() - base::Seconds(2),
+                                 /*is_api_available=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.IsApiAvailable.Success.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.IsApiAvailable.Success.Latency.ShopeePay",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
 }
 
 // If the facilitated payment API is not available, then the manager doesn't
 // show the eWallet payment prompt.
 TEST_F(EwalletManagerTest,
        NotShowEwalletPaymentPromptWhenApiClientNotAvailable) {
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(client_, ShowEwalletPaymentPrompt).Times(0);
 
-  test_api(*ewallet_manager_).OnApiAvailabilityReceived(false);
+  test_api(*ewallet_manager_)
+      .OnApiAvailabilityReceived(base::TimeTicks::Now() - base::Seconds(2),
+                                 false);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.IsApiAvailable.Failure.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.IsApiAvailable.Failure.Latency.ShopeePay",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
 }
 
 // If the user does not select an eWallet account in the payment prompt, request

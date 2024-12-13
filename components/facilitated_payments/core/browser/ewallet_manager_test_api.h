@@ -30,12 +30,17 @@ class EwalletManagerTestApi {
         std::move(initiate_payment_request_details);
   }
 
+  void set_scheme(PaymentLinkValidator::Scheme scheme) {
+    ewallet_manager_->scheme_ = scheme;
+  }
+
   FacilitatedPaymentsApiClient* GetApiClient() {
     return ewallet_manager_->GetApiClient();
   }
 
-  void OnApiAvailabilityReceived(bool is_api_available) {
-    ewallet_manager_->OnApiAvailabilityReceived(is_api_available);
+  void OnApiAvailabilityReceived(base::TimeTicks start_time,
+                                 bool is_api_available) {
+    ewallet_manager_->OnApiAvailabilityReceived(start_time, is_api_available);
   }
 
   void OnEwalletPaymentPromptResult(bool is_prompt_accepted,
