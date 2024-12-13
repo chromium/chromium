@@ -16703,7 +16703,6 @@
                         "LevelDBProtoAsyncWrite",
                         "MojoBindingsInlineSLS",
                         "ReduceCpuUtilization2",
-                        "RunTasksByBatches",
                         "SharedStorageAPIEnableWALForDatabase",
                         "SqlWALModeOnDipsDatabase",
                         "SqlWALModeOnSegmentationDatabase"
