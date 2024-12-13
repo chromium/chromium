@@ -1812,9 +1812,9 @@ chrome.runtime.onMessage.addListener(
         return false;
       } else if (msg.msgType === CHOOSE_ENTRY_PROPERTY) {
         if (msg.entryNames) {
-          window[CHOOSE_ENTRY_PROPERTY] = msg.entryNames as string;
+          globalThis[CHOOSE_ENTRY_PROPERTY] = msg.entryNames as string;
         } else {
-          delete window[CHOOSE_ENTRY_PROPERTY];
+          delete globalThis[CHOOSE_ENTRY_PROPERTY];
         }
         return true;
       }
@@ -1828,12 +1828,12 @@ chrome.runtime.onMessage.addListener(
  */
 export async function pollForChosenEntry(caller: string): Promise<string> {
   await repeatUntil(() => {
-    if (window[CHOOSE_ENTRY_PROPERTY] !== undefined) {
+    if (globalThis[CHOOSE_ENTRY_PROPERTY] !== undefined) {
       return;
     }
     return pending(caller, 'Waiting for chooseEntry() result');
   });
-  return window[CHOOSE_ENTRY_PROPERTY]!;
+  return globalThis[CHOOSE_ENTRY_PROPERTY]!;
 }
 
 /** Waits until the MediaApp/Backlight shows up. */

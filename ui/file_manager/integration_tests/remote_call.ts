@@ -15,13 +15,13 @@ export type MenuObject = ElementObject&{
  * that if step() is defined at the time of this call, invoke it to start the
  * test auto-stepping ball rolling.
  */
-window.autoStep = () => {
-  window.autostep = window.autostep || false;
-  if (!window.autostep) {
-    window.autostep = true;
+globalThis.autoStep = () => {
+  globalThis.autostep = globalThis.autostep || false;
+  if (!globalThis.autostep) {
+    globalThis.autostep = true;
   }
-  if (window.autostep && typeof window.step === 'function') {
-    window.step();
+  if (globalThis.autostep && typeof globalThis.step === 'function') {
+    globalThis.step();
   }
 };
 
