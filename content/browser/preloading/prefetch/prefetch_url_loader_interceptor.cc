@@ -88,7 +88,11 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
           redirect_reader_.GetPrefetchContainer();
       CHECK(prefetch_container);
       if (UseNewWaitLoop()) {
-        prefetch_container->OnDetectedCookiesChange2();
+        // Use `std::nullopt` as we need to record the crash key to identify
+        // which case in `PrefetchMatchResolver2` is the cause.
+        prefetch_container->OnDetectedCookiesChange2(
+            /*is_unblock_for_cookies_changed_triggered_by_this_prefetch_container*/
+            std::nullopt);
       } else {
         // Note: This method can only be called once per PrefetchContainer (we
         // have a CHECK in the method). This is guaranteed to be the first time

@@ -238,7 +238,7 @@ void PrefetchMatchResolver2::FindPrefetchInternal(
       case PrefetchContainer::ServableState::kServable:
         if (candidate.second->prefetch_container->CreateReader()
                 .HaveDefaultContextCookiesChanged()) {
-          UnblockForCookiesChanged();
+          UnblockForCookiesChanged(candidate.second->prefetch_container->key());
           return;
         }
         break;
@@ -397,7 +397,7 @@ void PrefetchMatchResolver2::OnDeterminedHead(
   }
 
   if (prefetch_container.CreateReader().HaveDefaultContextCookiesChanged()) {
-    UnblockForCookiesChanged();
+    UnblockForCookiesChanged(prefetch_container.key());
     return;
   }
 
@@ -486,7 +486,8 @@ void PrefetchMatchResolver2::MaybeUnblockForUnmatch(
   // It still waits for other `PrefetchContainer`s.
 }
 
-void PrefetchMatchResolver2::UnblockForCookiesChanged() {
+void PrefetchMatchResolver2::UnblockForCookiesChanged(
+    const PrefetchContainer::Key& key) {
   // Unregister remaining candidates as not served, with calling
   // `PrefetchContainer::OnDetectedCookiesChange2()`.
   for (auto& prefetch_key : Keys(candidates_)) {
@@ -498,7 +499,9 @@ void PrefetchMatchResolver2::UnblockForCookiesChanged() {
 
     UnregisterCandidate(prefetch_key, /*is_served=*/false);
 
-    prefetch_container.OnDetectedCookiesChange2();
+    prefetch_container.OnDetectedCookiesChange2(
+        /*is_unblock_for_cookies_changed_triggered_by_this_prefetch_container*/
+        prefetch_key == key);
   }
 
   UnblockForNoCandidates();

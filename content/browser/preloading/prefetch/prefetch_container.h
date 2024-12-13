@@ -573,7 +573,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // - When `PrefetchURLLoaderInterceptor::MaybeCreateLoader()` handles
   //   redirects in the serving prefetch.
   void OnDetectedCookiesChange();
-  void OnDetectedCookiesChange2();
+  void OnDetectedCookiesChange2(
+      std::optional<bool>
+          is_unblock_for_cookies_changed_triggered_by_this_prefetch_container);
 
   // Called when the prefetch request is started (i.e. the URL loader is created
   // & started).
