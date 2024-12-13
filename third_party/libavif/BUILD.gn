@@ -7,9 +7,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 # Public configuration exported to users of the libavif target.
 config("avif_public_config") {
-  defines = [ "AVIF_ENABLE_GAIN_MAP" ]
   if (is_component_build) {
-    defines += [ "AVIF_DLL" ]
+    defines = [ "AVIF_DLL" ]
   }
 }
 
