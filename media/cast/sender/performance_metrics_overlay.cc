@@ -271,9 +271,9 @@ scoped_refptr<VideoFrame> RenderPerformanceMetricsOverlay(
     base::span<uint8_t> dst = frame->GetWritableVisiblePlaneData(plane);
     const size_t dst_stride = frame->stride(plane);
     for (size_t row = 0; row < row_count; ++row) {
-      dst.copy_prefix_from(src.first(bytes_per_row));
-      src = src.subspan(src_stride);
-      dst = dst.subspan(dst_stride);
+      auto dst_row = dst.take_first(dst_stride);
+      auto src_row = src.take_first(src_stride);
+      dst_row.copy_prefix_from(src_row.first(bytes_per_row));
     }
   }
   frame->metadata().MergeMetadataFrom(source->metadata());

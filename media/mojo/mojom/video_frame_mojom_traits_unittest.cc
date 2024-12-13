@@ -187,28 +187,27 @@ TEST_F(VideoFrameStructTraitsTest, InterleavedPlanes) {
   ASSERT_TRUE(region.IsValid());
   auto mapping = region.MapAt(0, aggregate_size);
 
-  auto region_span = mapping.GetMemoryAsSpan<uint8_t>();
-  auto y_plane = region_span.first(sizes[0]);
-  std::fill(y_plane.begin(), y_plane.end(), 1);
+  auto [y_plane, uv_plane] =
+      mapping.GetMemoryAsSpan<uint8_t>().split_at(sizes[0]);
+  std::ranges::fill(y_plane, 1);
 
   // Setup memory layout where U and V planes occupy the same space, but have
-  // interleaving Y and V rows. This is achieved by doubling the stride.
-  auto u_plane = region_span.subspan(sizes[0]);
+  // interleaving U and V rows. This is achieved by doubling the stride.
   size_t normal_stride = strides[1];
-  auto v_plane = u_plane.subspan(normal_stride);
-  strides[1] = strides[2] = normal_stride * 2;
+  size_t uv_stride = normal_stride * 2;
 
   int yu_rows = media::VideoFrame::Rows(1, format, kCodedSize.height());
+  auto uv_plane2 = uv_plane;  // Loop below is destructive.
   for (int i = 0; i < yu_rows; ++i) {
-    auto u_row = u_plane.subspan(i * strides[1], normal_stride);
-    std::fill(u_row.begin(), u_row.end(), 2);
-    auto v_row = v_plane.subspan(i * strides[2], normal_stride);
-    std::fill(v_row.begin(), v_row.end(), 3);
+    const auto [u, v] = uv_plane2.take_first(uv_stride).split_at(normal_stride);
+    std::ranges::fill(u, 2);
+    std::ranges::fill(v, 3);
   }
 
   frame = media::VideoFrame::WrapExternalYuvData(
-      format, kCodedSize, kVisibleRect, kNaturalSize, strides[0], strides[1],
-      strides[2], y_plane.data(), u_plane.data(), v_plane.data(), kTimestamp);
+      format, kCodedSize, kVisibleRect, kNaturalSize, strides[0], uv_stride,
+      uv_stride, y_plane.data(), uv_plane.data(),
+      uv_plane.subspan(normal_stride).data(), kTimestamp);
   auto ro_region =
       base::WritableSharedMemoryRegion::ConvertToReadOnly(std::move(region));
   frame->BackWithSharedMemory(&ro_region);
@@ -220,17 +219,20 @@ TEST_F(VideoFrameStructTraitsTest, InterleavedPlanes) {
   EXPECT_EQ(frame->format(), format);
   EXPECT_EQ(frame->coded_size(), kCodedSize);
 
+  auto plane_1 = frame->GetVisiblePlaneData(1);
+  auto plane_2 = frame->GetVisiblePlaneData(2);
   // Bytes between the visible edge and the full stride are not considered part
-  // of the visible plane.
+  // of the visible plane, and may not be accessible through the above spans.
   const size_t row_bytes_1 =
       VideoFrame::RowBytes(1, format, kCodedSize.width());
   const size_t row_bytes_2 =
       VideoFrame::RowBytes(2, format, kCodedSize.width());
   for (int i = 0; i < yu_rows; ++i) {
-    EXPECT_EQ(0, memcmp(frame->visible_data(1) + i * frame->stride(1),
-                        u_plane.data() + i * strides[1], row_bytes_1));
-    EXPECT_EQ(0, memcmp(frame->visible_data(2) + i * frame->stride(2),
-                        v_plane.data() + i * strides[2], row_bytes_2));
+    const auto [u, v] = uv_plane.take_first(uv_stride).split_at(normal_stride);
+    EXPECT_EQ(plane_1.subspan(i * frame->stride(1), row_bytes_1),
+              u.first(row_bytes_1));
+    EXPECT_EQ(plane_2.subspan(i * frame->stride(2), row_bytes_2),
+              v.first(row_bytes_2));
   }
 }
 

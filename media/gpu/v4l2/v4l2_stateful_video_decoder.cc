@@ -1236,20 +1236,16 @@ H264FrameReassembler::Process(scoped_refptr<DecoderBuffer> buffer,
     if (nalu_info->is_whole_frame) {
       VLOGF(3) << "Found a whole frame, size=" << found_nalu_size << " bytes";
       frames.emplace_back(
-          DecoderBuffer::CopyFrom(remaining.first(found_nalu_size)),
+          DecoderBuffer::CopyFrom(remaining.take_first(found_nalu_size)),
           base::DoNothing());
       frames.back().first->set_timestamp(buffer->timestamp());
-
-      remaining = remaining.subspan(found_nalu_size);
       continue;
     }
 
     VLOGF(4) << "This was a frame fragment; storing it for later reassembly.";
     frame_fragments_.emplace_back(
-        DecoderBuffer::CopyFrom(remaining.first(found_nalu_size)));
+        DecoderBuffer::CopyFrom(remaining.take_first(found_nalu_size)));
     frame_fragments_.back()->set_timestamp(buffer->timestamp());
-
-    remaining = remaining.subspan(found_nalu_size);
   } while (!remaining.empty());
 
   // |decode_cb| is used to signal to our client that encoded chunks have been
