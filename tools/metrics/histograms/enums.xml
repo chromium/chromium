@@ -34204,6 +34204,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="264" label="VirtualKeyboard"/>
   <int value="265" label="NonCookieStorageAccess"/>
   <int value="266" label="IntlDurationFormat"/>
+  <int value="267" label="WindowControlsOverlay"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
