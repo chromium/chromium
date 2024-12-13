@@ -27,6 +27,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
   let promoBrowserCommandHandler: TestMock<CommandHandlerRemote>;
   let callbackRouterRemote: PageRemote;
   let metrics: MetricsTracker;
+  let middleSlotPromo: MiddleSlotPromoElement;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -84,12 +85,11 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
   }
 
   async function createMiddleSlotPromo(
-      canShowPromo: boolean,
-      hasPromoId: boolean = true): Promise<MiddleSlotPromoElement> {
+      canShowPromo: boolean, hasPromoId: boolean = true) {
     promoBrowserCommandHandler.setResultFor(
         'canExecuteCommand', Promise.resolve({canExecute: canShowPromo}));
 
-    const middleSlotPromo = document.createElement('ntp-middle-slot-promo');
+    middleSlotPromo = document.createElement('ntp-middle-slot-promo');
     document.body.appendChild(middleSlotPromo);
     const loaded =
         eventToPromise('ntp-middle-slot-promo-loaded', document.body);
@@ -110,69 +110,62 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
       assertEquals(0, newTabPageHandler.getCallCount('onPromoRendered'));
     }
     await loaded;
-    return middleSlotPromo;
   }
 
-  function assertHasContent(
-      hasContent: boolean, middleSlotPromo: MiddleSlotPromoElement) {
+  async function createMiddleSlotPromoWithData() {
+    await createMiddleSlotPromo(/*canShowPromo=*/ true, /*hasPromoId=*/ true);
+  }
+
+  function assertMiddleSlotPromoHasContent(hasContent: boolean) {
     assertEquals(
         hasContent, isVisible(middleSlotPromo.$.promoAndDismissContainer));
     assertEquals(hasContent, !!$$(middleSlotPromo, '#promoContainer'));
   }
 
   test('render canShowPromo=true', async () => {
-    const canShowPromo = true;
-    const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
-    assertHasContent(canShowPromo, middleSlotPromo);
+    // Create the promo and get the container element.
+    await createMiddleSlotPromoWithData();
+    assertMiddleSlotPromoHasContent(true);
     const promoContainer = $$(middleSlotPromo, '#promoContainer');
     assertTrue(!!promoContainer);
+
+    // Verify that the promo container populated correctly.
     const parts = promoContainer.children;
     assertEquals(6, parts.length);
-
     const image = parts[0] as CrAutoImgElement;
-    const imageWithLink = parts[1] as HTMLAnchorElement;
-    const imageWithCommand = parts[2] as HTMLAnchorElement;
-    const text = parts[3] as HTMLElement;
-    const link = parts[4] as HTMLAnchorElement;
-    const command = parts[5] as HTMLAnchorElement;
-
     assertEquals('https://image', image.autoSrc);
-
+    const imageWithLink = parts[1] as HTMLAnchorElement;
     assertEquals('https://link/', imageWithLink.href);
     assertEquals(
         'https://image',
         (imageWithLink.children[0] as CrAutoImgElement).autoSrc);
-
+    const imageWithCommand = parts[2] as HTMLAnchorElement;
     assertEquals('', imageWithCommand.href);
     assertEquals(
         'https://image',
         (imageWithCommand.children[0] as CrAutoImgElement).autoSrc);
-
+    const text = parts[3] as HTMLElement;
     assertEquals('text', text.innerText);
-
+    const link = parts[4] as HTMLAnchorElement;
     assertEquals('https://link/', link.href);
     assertEquals('link', link.innerText);
-
+    const command = parts[5] as HTMLAnchorElement;
     assertEquals('', command.href);
     assertEquals('command', command.text);
   });
 
   test('render canShowPromo=false', async () => {
     const canShowPromo = false;
-    const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
-    assertHasContent(canShowPromo, middleSlotPromo);
+    await createMiddleSlotPromo(canShowPromo);
+    assertMiddleSlotPromoHasContent(canShowPromo);
   });
 
   test('clicking on command', async () => {
-    const canShowPromo = true;
-    const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
-    assertHasContent(canShowPromo, middleSlotPromo);
+    await createMiddleSlotPromoWithData();
     promoBrowserCommandHandler.setResultFor(
         'executeCommand', Promise.resolve());
     const promoContainer = $$(middleSlotPromo, '#promoContainer');
     assertTrue(!!promoContainer);
-    const imageWithCommand = promoContainer.children[2] as HTMLElement;
-    const command = promoContainer.children[5] as HTMLElement;
 
     async function testClick(el: HTMLElement) {
       promoBrowserCommandHandler.reset();
@@ -194,7 +187,9 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
           expectedClickInfo);
     }
 
+    const imageWithCommand = promoContainer.children[2] as HTMLElement;
     await testClick(imageWithCommand);
+    const command = promoContainer.children[5] as HTMLElement;
     await testClick(command);
   });
 
@@ -205,28 +200,31 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
       });
     });
 
+    async function clickDismissPromoButton(
+        middleSlotPromo: MiddleSlotPromoElement) {
+      const parts = middleSlotPromo.$.promoAndDismissContainer.children;
+      assertEquals(2, parts.length);
+      const dismissPromoButton = parts[1] as HTMLElement;
+      dismissPromoButton.click();
+      await microtasksFinished();
+    }
+
     test(`dismiss button doesn't show if there is no promo id`, async () => {
       const canShowPromo = true;
       const hasPromoId = false;
-      const middleSlotPromo =
-          await createMiddleSlotPromo(canShowPromo, hasPromoId);
-      assertHasContent(canShowPromo, middleSlotPromo);
+      await createMiddleSlotPromo(canShowPromo, hasPromoId);
+
       const parts = middleSlotPromo.$.promoAndDismissContainer.children;
       assertEquals(1, parts.length);
-
-      const promoContainer = parts[0] as HTMLElement;
-      assertEquals(6, promoContainer.children.length);
+      assertEquals(parts[0]!.id, 'promoContainer');
     });
 
     test('clicking dismiss button dismisses promo', async () => {
-      const canShowPromo = true;
-      const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
-      assertHasContent(canShowPromo, middleSlotPromo);
-      const parts = middleSlotPromo.$.promoAndDismissContainer.children;
-      assertEquals(2, parts.length);
+      await createMiddleSlotPromoWithData();
 
-      const dismissPromoButton = parts[1] as HTMLElement;
-      dismissPromoButton.click();
+      await clickDismissPromoButton(middleSlotPromo);
+
+      assertEquals(1, newTabPageHandler.getCallCount('blocklistPromo'));
       assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
       assertEquals(
           1,
@@ -235,15 +233,10 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     });
 
     test('clicking undo button restores promo', async () => {
-      // Dismiss middle slot promo.
-      const canShowPromo = true;
-      const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
-      const parts = middleSlotPromo.$.promoAndDismissContainer.children;
-      assertEquals(2, parts.length);
-      const dismissPromoButton = parts[1] as HTMLElement;
-      dismissPromoButton.click();
+      // Dismiss the promo.
+      await createMiddleSlotPromoWithData();
+      await clickDismissPromoButton(middleSlotPromo);
       assertEquals(0, newTabPageHandler.getCallCount('undoBlocklistPromo'));
-      assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
       assertEquals(
           0,
           metrics.count(
@@ -261,14 +254,9 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     });
 
     test('restores promo if undo command is fired via keyboard', async () => {
-      // Dismiss middle slot promo.
-      const canShowPromo = true;
-      const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
-      const parts = middleSlotPromo.$.promoAndDismissContainer.children;
-      assertEquals(2, parts.length);
-      const dismissPromoButton = parts[1] as HTMLElement;
-      dismissPromoButton.click();
-      assertEquals(0, newTabPageHandler.getCallCount('undoBlocklistPromo'));
+      // Dismiss the promo.
+      await createMiddleSlotPromoWithData();
+      await clickDismissPromoButton(middleSlotPromo);
       assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
       assertEquals(
           0,
@@ -286,9 +274,8 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
               'NewTabPage.Promos.DismissAction', PromoDismissAction.RESTORE));
     });
 
-    test('ignores undo command if no promo was blocklisted', async () => {
-      const canShowPromo = true;
-      await createMiddleSlotPromo(canShowPromo);
+    test('ignores undo command if no promo blocklisted', async () => {
+      await createMiddleSlotPromoWithData();
 
       // Simulate 'ctrl+z' key combo (or meta+z for Mac).
       keyDownOn(document.documentElement, 0, isMac ? 'meta' : 'ctrl', 'z');
@@ -301,16 +288,16 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     });
 
     test('setting promo data resurfaces promo after dismissal', async () => {
-      const canShowPromo = true;
-      const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
+      // Dismiss the promo.
+      await createMiddleSlotPromoWithData();
+      await clickDismissPromoButton(middleSlotPromo);
 
-      callbackRouterRemote.setPromo(null);
-      await callbackRouterRemote.$.flushForTesting();
-      assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
-
+      // Set promo data.
       callbackRouterRemote.setPromo(createPromo());
       await callbackRouterRemote.$.flushForTesting();
-      assertTrue(isVisible(middleSlotPromo.$.promoAndDismissContainer));
+
+      // Assert that the promo resurfaces.
+      assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
     });
   });
 
@@ -322,118 +309,118 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     });
 
     test(`mobile promo doesn't exist if default promo renders`, async () => {
-      const canShowPromo = true;
+      // Instantiate the element with data for both promos.
       newTabPageHandler.setResultFor(
           'getMobilePromoQrCode', Promise.resolve({qrCode: 'abc'}));
-      const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
+      await createMiddleSlotPromoWithData();
 
+      // Assert that only the default promo is visible.
       assertTrue(isVisible(middleSlotPromo.$.promoAndDismissContainer));
       assertFalse(!!middleSlotPromo.shadowRoot!.querySelector('#mobilePromo'));
 
-      // Ensure mobile promo's state remains the same even if the default promo
-      // goes away.
+      // Remove data for the default promo to make it disappear.
       callbackRouterRemote.setPromo(null);
       await callbackRouterRemote.$.flushForTesting();
 
+      // Assert that the mobile promo remains hidden even when the
+      // default promo is gone.
       assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
       assertFalse(!!middleSlotPromo.shadowRoot!.querySelector('#mobilePromo'));
       assertEquals(0, newTabPageHandler.getCallCount('onMobilePromoShown'));
     });
 
     test(`mobile promo shows if default promo doesn't render`, async () => {
-      const canShowPromo = false;
+      // Instantiate the element with mobile promo data only.
       newTabPageHandler.setResultFor(
           'getMobilePromoQrCode', Promise.resolve({qrCode: 'abc'}));
-      const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
+      await createMiddleSlotPromo(/*canShowPromo=*/ false);
+
+      // Assert that only the mobile promo is visible.
       assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
       assertTrue(isVisible(middleSlotPromo.$.mobilePromo));
       assertEquals(1, newTabPageHandler.getCallCount('onMobilePromoShown'));
     });
 
     test(`default promo doesn't render if mobile promo rendered`, async () => {
-      const canShowPromo = false;
+      // Instantiate the element with mobile promo data only.
       newTabPageHandler.setResultFor(
           'getMobilePromoQrCode', Promise.resolve({qrCode: 'abc'}));
-      const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
+      await createMiddleSlotPromo(/*canShowPromo=*/ false);
 
-      assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
-      assertTrue(isVisible(middleSlotPromo.$.mobilePromo));
-
+      // Set up default promo data.
       callbackRouterRemote.setPromo(createPromo());
       await callbackRouterRemote.$.flushForTesting();
 
+      // Assert that the mobile promo remains visible.
       assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
       assertTrue(isVisible(middleSlotPromo.$.mobilePromo));
     });
 
     test(
-        'default promo renders later on if mobile promo has no valid qr code',
-        async () => {
-          const canShowPromo = false;
-          newTabPageHandler.setResultFor(
-              'getMobilePromoQrCode', Promise.resolve({qrCode: ''}));
-          const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
-
-          assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
-          assertFalse(isVisible(middleSlotPromo.$.mobilePromo));
-
-          promoBrowserCommandHandler.setResultFor(
-              'canExecuteCommand', Promise.resolve({canExecute: true}));
-          callbackRouterRemote.setPromo(createPromo());
-          await callbackRouterRemote.$.flushForTesting();
-
-          assertTrue(isVisible(middleSlotPromo.$.promoAndDismissContainer));
-          assertFalse(isVisible(middleSlotPromo.$.mobilePromo));
-        });
-
-    test(
         `mobile promo hides if default promo doesn't render and no qr code`,
         async () => {
-          const canShowPromo = false;
+          // Instantiate the element with invalid mobile promo data and no
+          // default promo data.
           newTabPageHandler.setResultFor(
               'getMobilePromoQrCode', Promise.resolve({qrCode: ''}));
-          const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
+          await createMiddleSlotPromo(/*canShowPromo=*/ false);
+
+          // Assert that neither promo shows.
           assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
           assertFalse(isVisible(middleSlotPromo.$.mobilePromo));
           assertEquals(0, newTabPageHandler.getCallCount('onMobilePromoShown'));
         });
 
+    test(
+        'default promo renders later on if mobile promo has no valid qr code',
+        async () => {
+          // Instantiate the element with invalid mobile promo data and no
+          // default promo data.
+          newTabPageHandler.setResultFor(
+              'getMobilePromoQrCode', Promise.resolve({qrCode: ''}));
+          await createMiddleSlotPromo(/*canShowPromo=*/ false);
+
+          // Set up data for the default promo.
+          promoBrowserCommandHandler.setResultFor(
+              'canExecuteCommand', Promise.resolve({canExecute: true}));
+          callbackRouterRemote.setPromo(createPromo());
+          await callbackRouterRemote.$.flushForTesting();
+
+          // Assert that the default promo shows.
+          assertTrue(isVisible(middleSlotPromo.$.promoAndDismissContainer));
+          assertFalse(isVisible(middleSlotPromo.$.mobilePromo));
+        });
+
     test('mobile promo shows if it gets a QR code later', async () => {
-      const canShowPromo = false;
+      // Instantiate the element with invalid mobile promo data and no
+      // default promo data.
       newTabPageHandler.setResultFor(
           'getMobilePromoQrCode', Promise.resolve({qrCode: ''}));
-      const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
+      await createMiddleSlotPromo(/*canShowPromo=*/ false);
       const mobilePromo = middleSlotPromo.$.mobilePromo;
-      assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
-      assertFalse(isVisible(mobilePromo));
-      assertEquals(0, newTabPageHandler.getCallCount('onMobilePromoShown'));
 
-      const loaded =
-          eventToPromise('ntp-middle-slot-promo-loaded', document.body);
-
+      // Give the mobile promo valid data.
       mobilePromo.dispatchEvent(new CustomEvent('qr-code-changed', {
         bubbles: true,
         composed: true,
         detail: {value: 'abc'},
       }));
+      await microtasksFinished();
 
-      const loadedEvent: Event = await loaded;
-      assertTrue(!!loadedEvent);
+      // Assert that the mobile promo shows.
       assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
       assertTrue(isVisible(mobilePromo));
-      assertEquals(1, newTabPageHandler.getCallCount('onMobilePromoShown'));
     });
 
     test('mobile promo hides if QR code gets removed later', async () => {
-      const canShowPromo = false;
+      // Instantiate the element with valid mobile promo data and no
+      // default promo data.
       newTabPageHandler.setResultFor(
           'getMobilePromoQrCode', Promise.resolve({qrCode: 'abc'}));
-      const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
-      const mobilePromo = middleSlotPromo.$.mobilePromo;
-      assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
-      assertTrue(isVisible(mobilePromo));
-      assertEquals(1, newTabPageHandler.getCallCount('onMobilePromoShown'));
+      await createMiddleSlotPromo(/*canShowPromo=*/ false);
 
+      // Remove the mobile promo's data.
+      const mobilePromo = middleSlotPromo.$.mobilePromo;
       mobilePromo.dispatchEvent(new CustomEvent('qr-code-changed', {
         bubbles: true,
         composed: true,
@@ -441,9 +428,9 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
       }));
       await microtasksFinished();
 
+      // Assert that neither promo shows.
       assertFalse(isVisible(middleSlotPromo.$.promoAndDismissContainer));
       assertFalse(isVisible(mobilePromo));
-      assertEquals(1, newTabPageHandler.getCallCount('onMobilePromoShown'));
     });
   });
 });
