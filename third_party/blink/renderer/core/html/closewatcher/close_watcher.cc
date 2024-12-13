@@ -204,10 +204,13 @@ CloseWatcher::CloseWatcher(LocalDOMWindow& window)
     : ExecutionContextClient(&window) {}
 
 void CloseWatcher::requestCloseForBinding() {
-  // TODO(crbug.com/383593252) There's a desire [1] to change this to kAlways,
-  // so that closeWatcher.requestClose() doesn't require user activation.
-  // [1] https://github.com/openui/open-ui/issues/1128#issuecomment-2530745592)
-  RequestClose(AllowCancel::kWithUserActivation);
+  // This behavior is being changes as part of the shipment of the dialog light
+  // dismiss feature, simply because it maintains the parallelism between
+  // dialog.requestClose() and closeWatcher.requestClose(). If there are compat
+  // problems, the flag will be disabled and this part can be rolled back.
+  RequestClose(RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled()
+                   ? AllowCancel::kAlways
+                   : AllowCancel::kWithUserActivation);
 }
 
 bool CloseWatcher::RequestClose(AllowCancel allow_cancel) {
