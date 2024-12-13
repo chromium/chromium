@@ -1672,6 +1672,7 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
                                     const MLOperandDescriptor* desc,
                                     AllowSharedBufferSource* buffer,
                                     ExceptionState& exception_state) {
+  ScopedMLTrace scoped_trace("MLGraphBuilder::constant");
   CHECK(buffer);
 
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
@@ -1710,8 +1711,15 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
   auto* constant =
       MakeGarbageCollected<MLConstantOperand>(this, std::move(descriptor));
 
+  scoped_trace.AddStep(
+      String::Format("copy constant bytes into BigBuffer, size: %zu",
+                     bytes.size())
+          .Utf8()
+          .c_str());
+  mojo_base::BigBuffer constant_data = mojo_base::BigBuffer(bytes);
+  scoped_trace.AddStep("post mojo message: CreatePendingConstant");
   remote_->CreatePendingConstant(constant->handle(), descriptor.data_type(),
-                                 mojo_base::BigBuffer(bytes));
+                                 std::move(constant_data));
   return constant;
 }
 
@@ -3247,6 +3255,7 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
     ScriptState* script_state,
     const MLNamedOperands& named_outputs,
     ExceptionState& exception_state) {
+  ScopedMLTrace scoped_trace("MLGraphBuilder::build");
   base::expected<void, String> validation_result = ValidateGraphBuilderState();
   if (!validation_result.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -3271,19 +3280,20 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
     }
   }
 
-  ScopedMLTrace scoped_trace("MLGraphBuilder::build");
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
     return EmptyPromise();
   }
 
+  scoped_trace.AddStep("DetermineGraphConstraintsFromOutputs");
   auto graph_constraints = DetermineGraphConstraintsFromOutputs(named_outputs);
   if (!graph_constraints.has_value()) {
     exception_state.ThrowTypeError(graph_constraints.error());
     return EmptyPromise();
   }
 
+  scoped_trace.AddStep("BuildWebNNGraphInfo");
   auto graph_info =
       BuildWebNNGraphInfo(named_outputs, ml_context_->GetProperties());
   if (!graph_info.has_value()) {
@@ -3299,13 +3309,16 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
   // Set `has_built_` after all inputs have been validated.
   has_built_ = true;
 
+  scoped_trace.AddStep("FoldReshapableConstants");
   FoldReshapableConstants(**graph_info);
 
+  scoped_trace.AddStep("RecordOperatorsUsed");
   RecordOperatorsUsed(**graph_info);
 
   pending_resolver_ = MakeGarbageCollected<ScriptPromiseResolver<MLGraph>>(
       script_state, exception_state.GetContext());
 
+  scoped_trace.AddStep("post mojo message: CreateGraph");
   remote_->CreateGraph(
       *std::move(graph_info),
       WTF::BindOnce(&MLGraphBuilder::DidCreateWebNNGraph, WrapPersistent(this),
