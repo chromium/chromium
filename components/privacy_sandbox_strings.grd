@@ -569,6 +569,9 @@
       <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_DISCLAIMER" desc="" translateable="false">
         Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. Learn more about how Google protects your data in our <ph name="BEGIN_LINK1">&lt;a href="$1" aria-description="$2" on-click="$3" target="_blank"&gt;</ph>Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>.
       </message>
+      <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_DISCLAIMER_CLANK" desc="" translateable="false" formatter_data="android_java">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. Learn more about how Google protects your data in our <ph name="BEGIN_LINK">&lt;link&gt;</ph>Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
       <!--Privacy Guide - Ad Topics-->
       <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_HEADING" desc="Header text on the Ad Topics card of the Privacy Guide.">
         Review your ad topics setting

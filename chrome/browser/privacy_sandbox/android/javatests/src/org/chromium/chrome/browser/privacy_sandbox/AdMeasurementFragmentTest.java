@@ -10,6 +10,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -23,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import android.view.View;
 
 import androidx.annotation.StringRes;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matcher;
@@ -36,7 +38,10 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -128,15 +133,38 @@ public final class AdMeasurementFragmentTest {
                                 ProfileManager.getLastUsedRegularProfile()));
     }
 
+    private void scrollToSetting(Matcher<View> matcher) {
+        ViewUtils.onViewWaiting(withId(R.id.recycler_view))
+                .perform(RecyclerViewActions.scrollTo(hasDescendant(matcher)));
+    }
+
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     public void testRenderAdMeasurement() throws IOException {
         setAdMeasurementPrefEnabled(true);
         startAdMeasuremenSettings();
         mRenderTestRule.render(
                 getRootView(R.string.settings_ad_measurement_page_toggle_sub_label),
                 "ad_measurement_page_toggle_on");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
+    public void adMeasurementDisclaimerIsDisplayed() throws IOException {
+        setAdMeasurementPrefEnabled(true);
+        startAdMeasuremenSettings();
+        String disclaimerText =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getString(R.string.settings_ad_measurement_page_disclaimer_clank);
+        String matcherText = disclaimerText.replaceAll("<link>|</link>", "");
+        scrollToSetting(withText(matcherText));
+        onView(withText(matcherText)).check(matches(isDisplayed()));
     }
 
     @Test
