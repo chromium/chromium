@@ -422,11 +422,9 @@ export function createRoutes(): OsSettingsRoutes {
   r.APP_NOTIFICATIONS = createSubpage(
       r.APPS, routesMojom.APP_NOTIFICATIONS_SUBPAGE_PATH,
       Subpage.kAppNotifications);
-  if (isRevampWayfindingEnabled()) {
-    r.APP_NOTIFICATIONS_MANAGER = createSubpage(
-        r.APP_NOTIFICATIONS, routesMojom.APP_NOTIFICATIONS_MANAGER_SUBPAGE_PATH,
-        Subpage.kAppNotificationsManager);
-  }
+  r.APP_NOTIFICATIONS_MANAGER = createSubpage(
+      r.APP_NOTIFICATIONS, routesMojom.APP_NOTIFICATIONS_MANAGER_SUBPAGE_PATH,
+      Subpage.kAppNotificationsManager);
   r.APP_MANAGEMENT = createSubpage(
       r.APPS, routesMojom.APP_MANAGEMENT_SUBPAGE_PATH, Subpage.kAppManagement);
   r.APP_MANAGEMENT_DETAIL = createSubpage(
