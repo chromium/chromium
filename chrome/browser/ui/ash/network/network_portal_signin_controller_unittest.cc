@@ -340,8 +340,7 @@ TEST_F(NetworkPortalSigninControllerTest,
   SetNetworkProxy();
   EXPECT_EQ(GetSigninMode(), SigninMode::kIncognitoDisabledByParentalControls);
   ShowSignin();
-  EXPECT_EQ(controller_->tab_url(), expected_url);
-  EXPECT_FALSE(controller_->incognito());
+  EXPECT_TRUE(IsWindowForSigninDefault(expected_url));
 }
 
 TEST_F(NetworkPortalSigninControllerTest, ProxyPref) {

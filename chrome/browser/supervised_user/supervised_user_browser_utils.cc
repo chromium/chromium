@@ -124,18 +124,25 @@ bool ShouldContentSkipParentAllowlistFiltering(content::WebContents* contents) {
 }
 
 ProfileSelections BuildProfileSelectionsForRegularAndGuest() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return ProfileSelections::Builder()
+      .WithRegular(ProfileSelection::kRedirectedToOriginal)
+      .WithGuest(ProfileSelection::kOwnInstance)
+      // TODO(crbug.com/41488885): Check if this is needed for Ash Internals.
+      .WithAshInternals(ProfileSelection::kOriginalOnly)
+      .Build();
+#else
   // Do not create for Incognito profile.
   return ProfileSelections::Builder()
       .WithRegular(ProfileSelection::kOriginalOnly)
       .WithGuest(ProfileSelection::kRedirectedToOriginal)
-      // TODO(crbug.com/41488885): Check if this is needed for Ash Internals.
-      .WithAshInternals(ProfileSelection::kOriginalOnly)
       .Build();
+#endif
 }
 
 std::string GetAccountGivenName(Profile& profile) {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(&profile);
+      IdentityManagerFactory::GetForProfile(profile.GetOriginalProfile());
   CHECK(identity_manager);
 
   const CoreAccountInfo core_info =

@@ -551,10 +551,17 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   StorageAccessAPITabHelper::CreateForWebContents(
       web_contents, StorageAccessAPIServiceFactory::GetForBrowserContext(
                         web_contents->GetBrowserContext()));
+#if BUILDFLAG(IS_CHROMEOS)
   // Do not create for Incognito mode.
+  if (!profile->IsIncognitoProfile()) {
+    SupervisedUserNavigationObserver::CreateForWebContents(web_contents);
+  }
+#else
+  // Do not create for OTR.
   if (!profile->IsOffTheRecord()) {
     SupervisedUserNavigationObserver::CreateForWebContents(web_contents);
   }
+#endif
   HttpErrorTabHelper::CreateForWebContents(web_contents);
   TabUIHelper::CreateForWebContents(web_contents);
   tasks::TaskTabHelper::CreateForWebContents(web_contents);
