@@ -3344,14 +3344,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
 }
 
-// TODO(346840584): Disabled due to flakiness on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_RecordHistogramsShowAndClose DISABLED_RecordHistogramsShowAndClose
-#else
-#define MAYBE_RecordHistogramsShowAndClose RecordHistogramsShowAndClose
-#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       MAYBE_RecordHistogramsShowAndClose) {
+                       RecordHistogramsShowAndClose) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   base::HistogramTester histogram_tester;
   WaitForPaint();
