@@ -53,9 +53,12 @@ std::unique_ptr<KeyedService> NotificationPermissionsReviewServiceFactory::
       engagement_service);
 }
 
-#if BUILDFLAG(IS_ANDROID)
 bool NotificationPermissionsReviewServiceFactory::
     ServiceIsCreatedWithBrowserContext() const {
+#if BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(features::kSafetyHub);
-}
+#else   // BUILDFLAG(IS_ANDROID)
+  return base::FeatureList::IsEnabled(features::kSafetyHub) &&
+         base::FeatureList::IsEnabled(features::kSafetyHubServicesOnStartUp);
 #endif  // BUILDFLAG(IS_ANDROID)
+}
