@@ -298,6 +298,7 @@ const gfx::Point ImageButton::ComputeImagePaintPosition(
 ToggleImageButton::ToggleImageButton(PressedCallback callback)
     : ImageButton(std::move(callback)) {
   UpdateAccessibleCheckedState();
+  UpdateTooltipText();
 }
 
 ToggleImageButton::~ToggleImageButton() = default;
@@ -332,6 +333,7 @@ void ToggleImageButton::SetToggled(bool toggled) {
   OnPropertyChanged(&toggled_, kPropertyEffectsPaint);
   UpdateAccessibleRoleIfNeeded();
   UpdateAccessibleName();
+  UpdateTooltipText();
 }
 
 void ToggleImageButton::SetToggledImage(ButtonState image_state,
@@ -368,6 +370,7 @@ void ToggleImageButton::SetToggledTooltipText(const std::u16string& tooltip) {
     return;
   toggled_tooltip_text_ = tooltip;
   UpdateAccessibleName();
+  UpdateTooltipText();
   OnPropertyChanged(&toggled_tooltip_text_, kPropertyEffectsNone);
 }
 
@@ -418,10 +421,9 @@ void ToggleImageButton::OnPaintBackground(gfx::Canvas* canvas) {
 ////////////////////////////////////////////////////////////////////////////////
 // ToggleImageButton, View overrides:
 
-std::u16string ToggleImageButton::GetTooltipText(const gfx::Point& p) const {
-  return (!toggled_ || toggled_tooltip_text_.empty())
-             ? Button::GetTooltipText(p)
-             : toggled_tooltip_text_;
+void ToggleImageButton::OnSetTooltipText(const std::u16string& tooltip_text) {
+  ImageButton::OnSetTooltipText(tooltip_text);
+  untoggled_tooltip_text_ = GetCachedTooltipText();
 }
 
 void ToggleImageButton::UpdateAccessibleName() {
@@ -433,6 +435,23 @@ void ToggleImageButton::UpdateAccessibleName() {
     }
   } else {
     GetViewAccessibility().SetName(Button::GetTooltipText());
+  }
+}
+
+void ToggleImageButton::UpdateTooltipText() {
+  if (toggled_ && !toggled_tooltip_text_.empty()) {
+    untoggled_tooltip_text_ = GetCachedTooltipText();
+    SetCachedTooltipText(toggled_tooltip_text_);
+  } else {
+    SetCachedTooltipText(untoggled_tooltip_text_);
+  }
+
+  UpdateAccessibleName();
+
+  // This corner case was needed to be handled separately.
+  if (GetViewAccessibility().GetCachedName() == GetCachedTooltipText() &&
+      GetViewAccessibility().GetCachedDescription() == GetCachedTooltipText()) {
+    GetViewAccessibility().RemoveDescription();
   }
 }
 
