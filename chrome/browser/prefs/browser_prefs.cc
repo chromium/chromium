@@ -546,7 +546,7 @@
 #include "components/enterprise/data_controls/core/browser/prefs.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/launcher/glic_configuration.h"
 #endif
 
@@ -1985,7 +1985,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(ENABLE_GLIC)
   glic::GlicConfiguration::RegisterPrefs(registry);
 #endif
 
