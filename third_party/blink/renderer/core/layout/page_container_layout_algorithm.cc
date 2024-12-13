@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/page_container_layout_algorithm.h"
 
 #include "third_party/blink/renderer/core/css/page_margins_style.h"
@@ -352,10 +347,10 @@ void PageContainerLayoutAlgorithm::LayoutEdgeMarginNodes(
     const ComputedStyle* end_box_style,
     const PhysicalRect& edge_rect,
     EdgeAdjacency edge_adjacency) {
-  BlockNode nodes[3] = {CreateBlockNodeIfNeeded(start_box_style),
-                        CreateBlockNodeIfNeeded(center_box_style),
-                        CreateBlockNodeIfNeeded(end_box_style)};
-  LayoutUnit main_axis_sizes[3];
+  std::array<BlockNode, 3> nodes = {CreateBlockNodeIfNeeded(start_box_style),
+                                    CreateBlockNodeIfNeeded(center_box_style),
+                                    CreateBlockNodeIfNeeded(end_box_style)};
+  std::array<LayoutUnit, 3> main_axis_sizes;
 
   ProgressionDirection dir;
   switch (edge_adjacency) {
@@ -518,9 +513,9 @@ PageContainerLayoutAlgorithm::EdgeMarginNodePreferredSize(
 
 void PageContainerLayoutAlgorithm::CalculateEdgeMarginBoxSizes(
     PhysicalSize available_physical_size,
-    const BlockNode nodes[3],
+    const std::array<BlockNode, 3>& nodes,
     ProgressionDirection dir,
-    LayoutUnit final_main_axis_sizes[3]) const {
+    std::array<LayoutUnit, 3>& final_main_axis_sizes) const {
   LayoutUnit available_main_axis_size;
   if (IsHorizontal(dir)) {
     available_main_axis_size = available_physical_size.width;
@@ -530,22 +525,23 @@ void PageContainerLayoutAlgorithm::CalculateEdgeMarginBoxSizes(
 
   LogicalSize available_logical_size =
       available_physical_size.ConvertToLogical(Style().GetWritingMode());
-  PreferredSizeInfo preferred_main_axis_sizes[3];
+  std::array<PreferredSizeInfo, 3> preferred_main_axis_sizes;
   LayoutUnit total_max_size_for_auto;
   bool has_auto_sized_box = false;
   for (int i = 0; i < 3; i++) {
     if (!nodes[i]) {
       continue;
     }
-    preferred_main_axis_sizes[i] =
+    PreferredSizeInfo& preferred_size = preferred_main_axis_sizes[i];
+    preferred_size =
         EdgeMarginNodePreferredSize(nodes[i], available_logical_size, dir);
     // Tentatively set main sizes to the preferred ones. Any auto specified size
     // will be adjusted further below.
-    final_main_axis_sizes[i] = preferred_main_axis_sizes[i].MaxLength();
+    final_main_axis_sizes[i] = preferred_size.MaxLength();
 
-    if (preferred_main_axis_sizes[i].IsAuto()) {
+    if (preferred_size.IsAuto()) {
       has_auto_sized_box = true;
-      total_max_size_for_auto += preferred_main_axis_sizes[i].MaxLength();
+      total_max_size_for_auto += preferred_size.MaxLength();
     }
   }
 
@@ -574,10 +570,10 @@ void PageContainerLayoutAlgorithm::CalculateEdgeMarginBoxSizes(
       // should therefore not be stretched).
       //
       // See https://drafts.csswg.org/css-page-3/#variable-auto-sizing
-      PreferredSizeInfo ac_sizes_for_start[3] = {
+      std::array<PreferredSizeInfo, 3> ac_sizes_for_start = {
           preferred_main_axis_sizes[CenterMarginBox], PreferredSizeInfo(),
           preferred_main_axis_sizes[StartMarginBox].Doubled()};
-      PreferredSizeInfo ac_sizes_for_end[3] = {
+      std::array<PreferredSizeInfo, 3> ac_sizes_for_end = {
           preferred_main_axis_sizes[CenterMarginBox], PreferredSizeInfo(),
           preferred_main_axis_sizes[EndMarginBox].Doubled()};
 
@@ -622,7 +618,7 @@ void PageContainerLayoutAlgorithm::CalculateEdgeMarginBoxSizes(
 }
 
 void PageContainerLayoutAlgorithm::ResolveTwoEdgeMarginBoxLengths(
-    const PreferredSizeInfo preferred_main_axis_sizes[3],
+    const std::array<PreferredSizeInfo, 3>& preferred_main_axis_sizes,
     LayoutUnit available_main_axis_size,
     LayoutUnit* first_main_axis_size,
     LayoutUnit* second_main_axis_size) {
@@ -654,8 +650,8 @@ void PageContainerLayoutAlgorithm::ResolveTwoEdgeMarginBoxLengths(
   }
 
   LayoutUnit flex_space;  // Additional space to distribute to auto-sized boxes.
-  LayoutUnit unflexed_sizes[3];
-  LayoutUnit flex_factors[3];
+  std::array<LayoutUnit, 3> unflexed_sizes;
+  std::array<LayoutUnit, 3> flex_factors;
   if (available_main_axis_size_for_flex > total_auto_max_size) {
     flex_space = available_main_axis_size_for_flex - total_auto_max_size;
     // The sum of the max content lengths is less than available length. Each

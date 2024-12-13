@@ -188,16 +188,17 @@ class CORE_EXPORT PageContainerLayoutAlgorithm
   // Based on available size, size properties and intrinsic sizes, calculate the
   // main-axis size for each of the (up to) three page margin boxes along one of
   // the four edges, and place the result in `final_main_axis_sizes`.
-  void CalculateEdgeMarginBoxSizes(PhysicalSize available_physical_size,
-                                   const BlockNode nodes[3],
-                                   ProgressionDirection,
-                                   LayoutUnit final_main_axis_sizes[3]) const;
+  void CalculateEdgeMarginBoxSizes(
+      PhysicalSize available_physical_size,
+      const std::array<BlockNode, 3>& nodes,
+      ProgressionDirection,
+      std::array<LayoutUnit, 3>& final_main_axis_sizes) const;
 
   // Resolve at most two auto size values. The first and last entry in
   // preferred_main_axis_sizes may be auto. The one in the middle is required to
   // be non-auto.
   static void ResolveTwoEdgeMarginBoxLengths(
-      const PreferredSizeInfo preferred_main_axis_sizes[3],
+      const std::array<PreferredSizeInfo, 3>& preferred_main_axis_sizes,
       LayoutUnit available_main_axis_size,
       LayoutUnit* first_main_axis_size,
       LayoutUnit* second_main_axis_size);
