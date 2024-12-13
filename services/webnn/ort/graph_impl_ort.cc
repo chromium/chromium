@@ -23,13 +23,6 @@
 #include "third_party/microsoft_dxheaders/include/onnxruntime_c_api.h"
 
 namespace webnn::ort {
-
-namespace {
-
-const base::FilePath::CharType kOnnxModelFileName[] =
-    FILE_PATH_LITERAL("model.onnx");
-}  // namespace
-
 base::expected<std::unique_ptr<GraphImplOrt>, mojom::ErrorPtr>
 GraphImplOrt::CreateAndBuild(
     mojom::GraphInfoPtr graph_info,
@@ -37,17 +30,10 @@ GraphImplOrt::CreateAndBuild(
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
     ContextImplOrt* context) {
-  base::ScopedTempDir model_file_dir;
-  if (!model_file_dir.CreateUniqueTempDir()) {
-    return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kNotSupportedError, "Model allocation error."));
-  }
-  // C:\WINDOWS\SystemTemp\scoped_dir5020_2103244731\model.onnx
-
-  ASSIGN_OR_RETURN(std::unique_ptr<GraphBuilderOrt::Result> result,
-                   GraphBuilderOrt::CreateAndBuild(
-                       *graph_info, context->properties(),
-                       std::move(constant_operands), model_file_dir.GetPath()));
+  ASSIGN_OR_RETURN(
+      std::unique_ptr<GraphBuilderOrt::Result> result,
+      GraphBuilderOrt::CreateAndBuild(*graph_info, context->properties(),
+                                      std::move(constant_operands)));
 
   PlatformFunctions* platform_functions = PlatformFunctions::GetInstance();
   if (!platform_functions) {
@@ -89,9 +75,13 @@ GraphImplOrt::CreateAndBuild(
   OrtSession* session;
   const OrtEnv* env = context->env();
   CHECK(env);
-  ORT_ABORT_ON_ERROR(ort_api->CreateSession(
-      env, model_file_dir.GetPath().Append(kOnnxModelFileName).value().c_str(),
-      session_options, &session));
+  // ORT_ABORT_ON_ERROR(ort_api->CreateSession(
+  //     env, model_file_dir.GetPath().Append(kOnnxModelFileName).value().c_str(),
+  //     session_options, &session));
+
+  ORT_ABORT_ON_ERROR(ort_api->CreateSessionFromArray(
+      env, reinterpret_cast<const void*>(result->GetModelData().data()),
+      result->GetModelData().size(), session_options, &session));
 
   LOG(ERROR) << "success to create session.";
 

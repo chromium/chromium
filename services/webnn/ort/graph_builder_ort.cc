@@ -63,9 +63,6 @@ constexpr char kOpTypeSoftmax[] = "Softmax";
 
 constexpr char kBuildGraphError[] = "Failed to build graph.";
 
-const base::FilePath::CharType kOnnxModelFileName[] =
-    FILE_PATH_LITERAL("model.onnx");
-
 onnx::TensorProto::DataType OperandTypeToOnnxDataType(
     OperandDataType data_type) {
   switch (data_type) {
@@ -132,12 +129,11 @@ GraphBuilderOrt::OperandInfo::~OperandInfo() = default;
 GraphBuilderOrt::OperandInfo::OperandInfo(OperandInfo&) = default;
 GraphBuilderOrt::OperandInfo::OperandInfo(OperandInfo&&) = default;
 
-GraphBuilderOrt::Result::Result(base::FilePath working_directory)
-    : working_directory(std::move(working_directory)) {}
+GraphBuilderOrt::Result::Result() = default;
 GraphBuilderOrt::Result::~Result() = default;
 
-const base::FilePath& GraphBuilderOrt::Result::GetModelFilePath() {
-  return working_directory;
+const std::vector<uint8_t>& GraphBuilderOrt::Result::GetModelData() {
+  return model_data;
 }
 
 const GraphBuilderOrt::OperandInfo& GraphBuilderOrt::Result::GetOperandInfo(
@@ -158,11 +154,9 @@ GraphBuilderOrt::CreateAndBuild(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
-        constant_operands,
-    const base::FilePath& working_directory) {
+        constant_operands) {
   GraphBuilderOrt graph_builder(graph_info, std::move(context_properties),
-                                std::move(constant_operands),
-                                std::move(working_directory));
+                                std::move(constant_operands));
 
   RETURN_IF_ERROR(graph_builder.BuildModel());
   RETURN_IF_ERROR(graph_builder.SerializeModel());
@@ -173,12 +167,11 @@ GraphBuilderOrt::GraphBuilderOrt(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
-        constant_operands,
-    base::FilePath working_directory)
+        constant_operands)
     : graph_info_(graph_info),
       constant_operands_(std::move(constant_operands)),
       context_properties_(std::move(context_properties)),
-      result_(std::make_unique<Result>(std::move(working_directory))) {
+      result_(std::make_unique<Result>()) {
   for (const auto& [id, _] : graph_info.id_to_operand_map) {
     next_operand_id_ = std::max(next_operand_id_, id + 1);
   }
@@ -668,33 +661,16 @@ GraphBuilderOrt::BuildModel() {
 }
 
 base::expected<void, mojom::ErrorPtr> GraphBuilderOrt::SerializeModel() {
-  base::FilePath model_file_path =
-      result_->working_directory.Append(kOnnxModelFileName);
-  base::File model_file(model_file_path,
-                        base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  LOG(ERROR) << "model file = " << model_file_path;
+  std::stringstream model_stream;
+  bool result = model_.SerializeToOstream(&model_stream);
 
-  if (!model_file.IsValid()) {
-    LOG(ERROR) << "[WebNN] Unable to open " << model_file_path << ": "
-               << base::File::ErrorToString(model_file.error_details());
-    return NewUnknownError("Model file is invalid.");
-  }
-
-  int fd = _open_osfhandle(
-      reinterpret_cast<intptr_t>(model_file.GetPlatformFile()), _O_WRONLY);
-  if (fd < 0) {
-    LOG(ERROR) << "[WebNN] Failed to open handle from " << model_file_path;
-    return NewUnknownError(kBuildGraphError);
-  }
-
-  bool result = model_.SerializeToFileDescriptor(fd);
   if (!result) {
-    LOG(ERROR) << "[WebNN] Failed to serialize model to file descriptor.";
+    LOG(ERROR) << "[WebNN] Failed to serialize model to stream.";
     return NewUnknownError(kBuildGraphError);
   }
 
-  // result = model_.SerializeToFileDescriptor(
-  //     reinterpret_cast<intptr_t>(model_file.GetPlatformFile()));
+  std::string serialized_data = model_stream.str();
+  result_->model_data.assign(serialized_data.begin(), serialized_data.end());
 
   return base::ok();
 }

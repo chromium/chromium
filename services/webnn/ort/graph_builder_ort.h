@@ -52,19 +52,19 @@ class GraphBuilderOrt {
   };
 
   struct Result {
-    explicit Result(base::FilePath working_directory);
+    explicit Result();
     Result(const Result&) = delete;
     Result& operator=(const Result&) = delete;
     ~Result();
 
-    const base::FilePath& GetModelFilePath();
+    const std::vector<uint8_t>& GetModelData();
 
     [[nodiscard]] const OperandInfo& GetOperandInfo(uint64_t operand_id) const;
 
     [[nodiscard]] const std::map<uint64_t, OperandInfo>&
     id_to_operand_info_map() const;
 
-    const base::FilePath working_directory;
+    std::vector<uint8_t> model_data;
     std::map<uint64_t, OperandInfo> operand_infos;
   };
 
@@ -77,8 +77,7 @@ class GraphBuilderOrt {
   CreateAndBuild(const mojom::GraphInfo& graph_info,
                  ContextProperties context_properties,
                  base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
-                     constant_operands,
-                 const base::FilePath& working_directory);
+                     constant_operands);
 
   GraphBuilderOrt(const GraphBuilderOrt&) = delete;
   GraphBuilderOrt& operator=(const GraphBuilderOrt&) = delete;
@@ -90,8 +89,7 @@ class GraphBuilderOrt {
       const mojom::GraphInfo& graph_info,
       ContextProperties context_properties,
       base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
-          constant_operands,
-      base::FilePath working_directory);
+          constant_operands);
 
   const mojom::Operand& GetOperand(uint64_t operand_id);
   std::string GetOperandName(uint64_t operand_id);
