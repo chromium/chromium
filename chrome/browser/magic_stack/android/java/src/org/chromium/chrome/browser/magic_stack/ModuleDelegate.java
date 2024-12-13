@@ -28,8 +28,12 @@ public interface ModuleDelegate {
         ModuleType.PRICE_CHANGE,
         ModuleType.TAB_RESUMPTION,
         ModuleType.SAFETY_HUB,
-        ModuleType.EDUCATIONAL_TIP,
+        ModuleType.DEPRECATED_EDUCATIONAL_TIP,
         ModuleType.AUXILIARY_SEARCH,
+        ModuleType.DEFAULT_BROWSER_PROMO,
+        ModuleType.TAB_GROUPS,
+        ModuleType.TAB_GROUP_SYNC,
+        ModuleType.QUICK_DELETE,
         ModuleType.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -38,9 +42,13 @@ public interface ModuleDelegate {
         int PRICE_CHANGE = 1;
         int TAB_RESUMPTION = 2;
         int SAFETY_HUB = 3;
-        int EDUCATIONAL_TIP = 4;
+        int DEPRECATED_EDUCATIONAL_TIP = 4;
         int AUXILIARY_SEARCH = 5;
-        int NUM_ENTRIES = 6;
+        int DEFAULT_BROWSER_PROMO = 6;
+        int TAB_GROUPS = 7;
+        int TAB_GROUP_SYNC = 8;
+        int QUICK_DELETE = 9;
+        int NUM_ENTRIES = 10;
     }
 
     /**

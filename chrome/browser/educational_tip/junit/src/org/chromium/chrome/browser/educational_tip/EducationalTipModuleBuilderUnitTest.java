@@ -59,7 +59,9 @@ public class EducationalTipModuleBuilderUnitTest {
         when(mProfileSupplier.get()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         TrackerFactory.setTrackerForTests(mTracker);
-        mModuleBuilder = new EducationalTipModuleBuilder(mActionDelegate);
+        mModuleBuilder =
+                new EducationalTipModuleBuilder(
+                        ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate);
     }
 
     @Test

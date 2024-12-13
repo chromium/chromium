@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.educational_tip;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -37,7 +35,6 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.EducationalTipCardType;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -48,9 +45,6 @@ import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoU
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoTriggerStateListener;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.segmentation_platform.ClassificationResult;
-import org.chromium.components.segmentation_platform.PredictionOptions;
-import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
@@ -67,7 +61,6 @@ public class EducationalTipModuleMediatorUnitTest {
     @Mock private EducationTipModuleActionDelegate mActionDelegate;
     @Mock private ObservableSupplier<Profile> mProfileSupplier;
     @Mock private Profile mProfile;
-    @Mock EducationalTipModuleMediator.Natives mEducationalTipModuleMediatorJniMock;
     @Mock private Tracker mTracker;
     @Mock private DefaultBrowserPromoUtils mMockDefaultBrowserPromoUtils;
 
@@ -92,15 +85,15 @@ public class EducationalTipModuleMediatorUnitTest {
         when(mProfileSupplier.hasValue()).thenReturn(true);
         when(mProfileSupplier.get()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        EducationalTipModuleMediatorJni.setInstanceForTesting(mEducationalTipModuleMediatorJniMock);
-        mExpectedModuleType = ModuleType.EDUCATIONAL_TIP;
+        mExpectedModuleType = ModuleType.DEFAULT_BROWSER_PROMO;
         TrackerFactory.setTrackerForTests(mTracker);
         DefaultBrowserPromoUtils.setInstanceForTesting(mMockDefaultBrowserPromoUtils);
         EducationalTipCardProviderSignalHandler.setInstanceForTesting(
                 mMockEducationalTipCardProviderSignalHandler);
 
         mEducationalTipModuleMediator =
-                new EducationalTipModuleMediator(mModel, mModuleDelegate, mActionDelegate);
+                new EducationalTipModuleMediator(
+                        mExpectedModuleType, mModel, mModuleDelegate, mActionDelegate);
     }
 
     @Test
@@ -145,81 +138,12 @@ public class EducationalTipModuleMediatorUnitTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
-    public void testCreatePredictionOptions() {
-        assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
-
-        // Verifies that createPredictionOptions() returns ondemand prediction options.
-        PredictionOptions actualOptions = mEducationalTipModuleMediator.createPredictionOptions();
-        PredictionOptions expectedOptions = new PredictionOptions(/* onDemandExecution= */ true);
-        actualOptions.equals(expectedOptions);
-    }
-
-    @Test
-    @SmallTest
-    public void testOnGetClassificationResult() {
-        // Test when the segmentation result is invalid.
-        ClassificationResult classificationResult =
-                new ClassificationResult(
-                        PredictionStatus.FAILED,
-                        new String[] {
-                            "default_browser_promo",
-                            "tab_group_promo",
-                            "tab_group_sync_promo",
-                            "quick_delete_promo"
-                        });
-        assertNull(mEducationalTipModuleMediator.onGetClassificationResult(classificationResult));
-
-        // Test when the segmentation result is empty.
-        classificationResult =
-                new ClassificationResult(PredictionStatus.SUCCEEDED, new String[] {});
-        assertNull(mEducationalTipModuleMediator.onGetClassificationResult(classificationResult));
-
-        // Test when the segmentation result is valid and not empty.
-        classificationResult =
-                new ClassificationResult(
-                        PredictionStatus.SUCCEEDED,
-                        new String[] {
-                            "default_browser_promo",
-                            "tab_group_promo",
-                            "tab_group_sync_promo",
-                            "quick_delete_promo"
-                        });
-        Integer expectedResult = EducationalTipCardType.DEFAULT_BROWSER_PROMO;
-        assertEquals(
-                expectedResult,
-                mEducationalTipModuleMediator.onGetClassificationResult(classificationResult));
-
-        classificationResult =
-                new ClassificationResult(
-                        PredictionStatus.SUCCEEDED,
-                        new String[] {
-                            "tab_group_promo",
-                            "default_browser_promo",
-                            "tab_group_sync_promo",
-                            "quick_delete_promo"
-                        });
-        expectedResult = EducationalTipCardType.TAB_GROUP;
-        assertEquals(
-                expectedResult,
-                mEducationalTipModuleMediator.onGetClassificationResult(classificationResult));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
     public void testOnViewCreated_DefaultBrowserPromo() {
         assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
 
-        // TODO(crbug.com/382803396): The sample here is a temporary workaround and will need to be
-        // fully replaced with the module type after the refactor.
-        var watcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords(
-                                "MagicStack.Clank.NewTabPage.Module.EducationalTip.Impression",
-                                EducationalTipCardType.DEFAULT_BROWSER_PROMO
-                                        + ModuleType.NUM_ENTRIES,
-                                EducationalTipCardType.TAB_GROUP + ModuleType.NUM_ENTRIES)
-                        .build();
+        mEducationalTipModuleMediator =
+                new EducationalTipModuleMediator(
+                        ModuleType.DEFAULT_BROWSER_PROMO, mModel, mModuleDelegate, mActionDelegate);
 
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK))
                 .thenReturn(true);
@@ -227,25 +151,17 @@ public class EducationalTipModuleMediatorUnitTest {
         mEducationalTipModuleMediator.showModuleWithCardInfo(
                 EducationalTipCardType.DEFAULT_BROWSER_PROMO);
         mEducationalTipModuleMediator.onViewCreated();
-        verify(mEducationalTipModuleMediatorJniMock)
-                .notifyCardShown(mProfile, EducationalTipCardType.DEFAULT_BROWSER_PROMO);
         verify(mMockDefaultBrowserPromoUtils)
                 .removeListener(
                         mEducationalTipModuleMediator
                                 .getDefaultBrowserPromoTriggerStateListenerForTesting());
         verify(mMockDefaultBrowserPromoUtils).notifyDefaultBrowserPromoVisible();
 
+        mEducationalTipModuleMediator =
+                new EducationalTipModuleMediator(
+                        ModuleType.TAB_GROUPS, mModel, mModuleDelegate, mActionDelegate);
         mEducationalTipModuleMediator.showModuleWithCardInfo(EducationalTipCardType.TAB_GROUP);
         mEducationalTipModuleMediator.onViewCreated();
-        verify(mEducationalTipModuleMediatorJniMock)
-                .notifyCardShown(mProfile, EducationalTipCardType.DEFAULT_BROWSER_PROMO);
-        verify(mMockDefaultBrowserPromoUtils)
-                .removeListener(
-                        mEducationalTipModuleMediator
-                                .getDefaultBrowserPromoTriggerStateListenerForTesting());
-        verify(mMockDefaultBrowserPromoUtils).notifyDefaultBrowserPromoVisible();
-
-        watcher.assertExpected();
     }
 
     @Test
@@ -254,33 +170,21 @@ public class EducationalTipModuleMediatorUnitTest {
     public void testOnViewCreated_TabGroupPromo() {
         assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
 
-        // TODO(crbug.com/382803396): The sample here is a temporary workaround and will need to be
-        // fully replaced with the module type after the refactor.
-        var watcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecordTimes(
-                                "MagicStack.Clank.NewTabPage.Module.EducationalTip.Impression",
-                                EducationalTipCardType.TAB_GROUP + ModuleType.NUM_ENTRIES,
-                                2)
-                        .build();
+        mEducationalTipModuleMediator =
+                new EducationalTipModuleMediator(
+                        ModuleType.TAB_GROUPS, mModel, mModuleDelegate, mActionDelegate);
 
         when(mMockEducationalTipCardProviderSignalHandler.shouldNotifyCardShownPerSession(
                         EducationalTipCardType.TAB_GROUP))
                 .thenReturn(true);
         mEducationalTipModuleMediator.showModuleWithCardInfo(EducationalTipCardType.TAB_GROUP);
         mEducationalTipModuleMediator.onViewCreated();
-        verify(mEducationalTipModuleMediatorJniMock)
-                .notifyCardShown(mProfile, EducationalTipCardType.TAB_GROUP);
 
         when(mMockEducationalTipCardProviderSignalHandler.shouldNotifyCardShownPerSession(
                         EducationalTipCardType.TAB_GROUP))
                 .thenReturn(false);
         mEducationalTipModuleMediator.showModuleWithCardInfo(EducationalTipCardType.TAB_GROUP);
         mEducationalTipModuleMediator.onViewCreated();
-        verify(mEducationalTipModuleMediatorJniMock)
-                .notifyCardShown(mProfile, EducationalTipCardType.TAB_GROUP);
-
-        watcher.assertExpected();
     }
 
     @Test

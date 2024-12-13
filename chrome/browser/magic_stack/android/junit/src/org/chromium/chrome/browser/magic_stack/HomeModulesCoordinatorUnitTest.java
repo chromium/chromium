@@ -134,6 +134,8 @@ public class HomeModulesCoordinatorUnitTest {
 
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFeatureFlagOverride(
+                ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER, true);
+        testValues.addFeatureFlagOverride(
                 ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER, true);
         testValues.addFeatureFlagOverride(
                 ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2, true);
@@ -345,11 +347,23 @@ public class HomeModulesCoordinatorUnitTest {
     public void testOnViewCreated() {
         mCoordinator = createCoordinator(/* skipInitProfile= */ true);
         mCoordinator.setMediatorForTesting(mMediator);
-        when(mMediator.getModuleProvider(ModuleType.EDUCATIONAL_TIP)).thenReturn(mModuleProvider);
+        when(mMediator.getModuleProvider(ModuleType.SINGLE_TAB)).thenReturn(mModuleProvider);
         when(mView.getLayoutParams()).thenReturn(mLayoutParams);
 
-        mCoordinator.onViewCreated(ModuleType.EDUCATIONAL_TIP, mView);
+        mCoordinator.onViewCreated(ModuleType.SINGLE_TAB, mView);
         verify(mModuleProvider).onViewCreated();
+        verify(mMediator).onModuleViewCreated(eq(ModuleType.SINGLE_TAB));
+    }
+
+    @Test
+    @SmallTest
+    public void testOnModuleClicked() {
+        mCoordinator = createCoordinator(/* skipInitProfile= */ true);
+        mCoordinator.setMediatorForTesting(mMediator);
+
+        when(mMediator.getModuleRank(eq(ModuleType.SINGLE_TAB))).thenReturn(0);
+        mCoordinator.onModuleClicked(ModuleType.SINGLE_TAB);
+        verify(mMediator).onModuleClicked(eq(ModuleType.SINGLE_TAB));
     }
 
     private void setupAndVerifyTablets() {

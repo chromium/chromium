@@ -117,6 +117,18 @@ public class HomeModulesMediator {
                 });
     }
 
+    /** Called to notify that a module view is created. */
+    void onModuleViewCreated(@ModuleType int moduleType) {
+        HomeModulesRankingHelper.notifyCardShown(
+                mProfileSupplier.get(), HomeModulesMetricsUtils.getModuleName(moduleType));
+    }
+
+    /** Called to notify that a module was clicked. */
+    void onModuleClicked(@ModuleType int moduleType) {
+        HomeModulesRankingHelper.notifyCardInteracted(
+                mProfileSupplier.get(), HomeModulesMetricsUtils.getModuleName(moduleType));
+    }
+
     private void buildModulesAndShow(
             List<Integer> moduleList,
             ModuleDelegate moduleDelegate,
@@ -569,6 +581,7 @@ public class HomeModulesMediator {
     Set<Integer> getFilteredEnabledModuleSet() {
         ensureEnabledModuleSetCreated();
         Set<Integer> set = new HashSet<>(mEnabledModuleSet);
+        assert !set.contains(ModuleType.DEPRECATED_EDUCATIONAL_TIP);
 
         boolean combinedTabModules =
                 combinedTabModules() && set.contains(ModuleType.TAB_RESUMPTION);
@@ -613,27 +626,12 @@ public class HomeModulesMediator {
             List<String> orderedModuleLabels, Set<Integer> filteredEnabledModuleSet) {
         List<Integer> moduleList = new ArrayList<>();
 
-        boolean shouldAddEducationalTipModule =
-                filteredEnabledModuleSet.contains(ModuleType.EDUCATIONAL_TIP);
         for (String label : orderedModuleLabels) {
             @ModuleType
             int currentModuleType = HomeModulesMetricsUtils.convertLabelToModuleType(label);
             if (filteredEnabledModuleSet.contains(currentModuleType)) {
-                if (currentModuleType == ModuleType.TAB_RESUMPTION
-                        && shouldAddEducationalTipModule) {
-                    // Insert the educational tip module before the tab resumption module if the tab
-                    // resumption module is included in the return list.
-                    moduleList.add(ModuleType.EDUCATIONAL_TIP);
-                    shouldAddEducationalTipModule = false;
-                }
-
                 moduleList.add(currentModuleType);
             }
-        }
-
-        if (shouldAddEducationalTipModule) {
-            // If not already added, place the educational tip module at the end of the return list.
-            moduleList.add(ModuleType.EDUCATIONAL_TIP);
         }
 
         return moduleList;

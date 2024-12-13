@@ -5,10 +5,13 @@
 package org.chromium.chrome.browser.magic_stack;
 
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.AUXILIARY_SEARCH;
-import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.EDUCATIONAL_TIP;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAFETY_HUB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUPS;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_SYNC;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_RESUMPTION;
 
 import android.content.Context;
@@ -87,7 +90,11 @@ public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
                 return resources.getString(R.string.price_change_module_name);
             case SAFETY_HUB:
                 return resources.getString(R.string.safety_hub_magic_stack_module_name);
-            case EDUCATIONAL_TIP:
+            case DEFAULT_BROWSER_PROMO:
+            case TAB_GROUPS:
+            case TAB_GROUP_SYNC:
+            case QUICK_DELETE:
+                // All tips use the same name.
                 return resources.getString(R.string.educational_tip_module_name);
             case AUXILIARY_SEARCH:
                 return resources.getString(R.string.auxiliary_search_module_name);

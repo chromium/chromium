@@ -5,10 +5,14 @@
 package org.chromium.chrome.browser.magic_stack;
 
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.AUXILIARY_SEARCH;
-import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.EDUCATIONAL_TIP;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEPRECATED_EDUCATIONAL_TIP;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAFETY_HUB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUPS;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_SYNC;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_RESUMPTION;
 
 import androidx.annotation.VisibleForTesting;
@@ -18,6 +22,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
+
+import java.util.HashSet;
 
 /** The utility class for logging the magic stack's metrics. */
 public class HomeModulesMetricsUtils {
@@ -114,10 +120,20 @@ public class HomeModulesMetricsUtils {
                 return "TabResumption";
             case SAFETY_HUB:
                 return "SafetyHub";
-            case EDUCATIONAL_TIP:
+                // TODO:check if this is needed before submitting
+            case DEPRECATED_EDUCATIONAL_TIP:
+                assert false;
                 return "EducationalTip";
             case AUXILIARY_SEARCH:
                 return "AuxiliarySearch";
+            case DEFAULT_BROWSER_PROMO:
+                return "DefaultBrowserPromo";
+            case TAB_GROUPS:
+                return "TabGroups";
+            case TAB_GROUP_SYNC:
+                return "TabGroupSync";
+            case QUICK_DELETE:
+                return "QuickDelete";
             default:
                 assert false : "Module type not supported!";
                 return null;
@@ -150,21 +166,39 @@ public class HomeModulesMetricsUtils {
     public static Integer convertLabelToModuleType(String label) {
         switch (label) {
             case "SingleTab":
-                return ModuleType.SINGLE_TAB;
+                return SINGLE_TAB;
             case "PriceChange":
-                return ModuleType.PRICE_CHANGE;
+                return PRICE_CHANGE;
             case "TabResumption":
-                return ModuleType.TAB_RESUMPTION;
+                return TAB_RESUMPTION;
             case "SafetyHub":
-                return ModuleType.SAFETY_HUB;
-            case "EducationalTip":
-                return ModuleType.EDUCATIONAL_TIP;
+                return SAFETY_HUB;
             case "AuxiliarySearch":
                 return AUXILIARY_SEARCH;
+            case "DefaultBrowserPromo":
+                return DEFAULT_BROWSER_PROMO;
+            case "TabGroups":
+                return TAB_GROUPS;
+            case "TabGroupSync":
+                return TAB_GROUP_SYNC;
+            case "QuickDelete":
+                return QUICK_DELETE;
             default:
                 assert false : "Module type not supported!";
                 return ModuleType.NUM_ENTRIES;
         }
+    }
+
+    /** Returns a list of all modules that are not deprecated. */
+    static HashSet<Integer> getAllActiveModulesForTesting() {
+        HashSet<Integer> set = new HashSet<>();
+        for (@ModuleType int moduleType = 0; moduleType < ModuleType.NUM_ENTRIES; moduleType++) {
+            if (moduleType == DEPRECATED_EDUCATIONAL_TIP) {
+                continue;
+            }
+            set.add(moduleType);
+        }
+        return set;
     }
 
     /**

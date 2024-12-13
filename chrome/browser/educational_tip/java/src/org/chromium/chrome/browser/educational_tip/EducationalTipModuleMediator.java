@@ -4,36 +4,23 @@
 
 package org.chromium.chrome.browser.educational_tip;
 
-import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_MAGIC_STACK_MODULE;
-import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION_WITH_POSITION;
-import static org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils.HISTOGRAM_PREFIX;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.jni_zero.JniType;
-import org.jni_zero.NativeMethods;
-
 import org.chromium.base.CallbackController;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.EducationalTipCardType;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoTriggerStateListener;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.segmentation_platform.ClassificationResult;
 import org.chromium.components.segmentation_platform.PredictionOptions;
-import org.chromium.components.segmentation_platform.SegmentationPlatformService;
-import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the educational tip module. */
@@ -55,10 +42,11 @@ public class EducationalTipModuleMediator {
     private Tracker mTracker;
 
     EducationalTipModuleMediator(
+            @ModuleType int moduleType,
             @NonNull PropertyModel model,
             @NonNull ModuleDelegate moduleDelegate,
             EducationTipModuleActionDelegate actionDelegate) {
-        mModuleType = ModuleType.EDUCATIONAL_TIP;
+        mModuleType = moduleType;
         mModel = model;
         mModuleDelegate = moduleDelegate;
         mActionDelegate = actionDelegate;
@@ -76,7 +64,7 @@ public class EducationalTipModuleMediator {
             showModuleWithCardInfo(forcedCardType);
         } else if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER)) {
-            getCardTypeFromSegmentation();
+            showModuleWithCardInfo(EducationalTipModuleUtils.getCardType(mModuleType));
         } else {
             // The educational tip module doesn’t display any card when no card is forced to show
             // and the ephemeral card ranker for the segmentation platform service is disabled.
@@ -86,21 +74,9 @@ public class EducationalTipModuleMediator {
 
     /** Called when the educational tip module is visible to users on the magic stack. */
     void onViewCreated() {
+        // TODO(https://crbug.com/382803396): Get it from the moduleType instead.
         @EducationalTipCardType int cardType = mEducationalTipCardProvider.getCardType();
-
-        // TODO(crbug.com/382803396): The sample here is a temporary workaround and will need to be
-        // fully replaced with the module type after the refactor.
-        RecordHistogram.recordEnumeratedHistogram(
-                HISTOGRAM_PREFIX
-                        + HISTOGRAM_MAGIC_STACK_MODULE
-                        + HomeModulesMetricsUtils.getModuleName(mModuleType)
-                        + HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION_WITH_POSITION,
-                cardType + ModuleType.NUM_ENTRIES,
-                EducationalTipCardType.NUM_ENTRIES + ModuleType.NUM_ENTRIES);
-
         if (cardType == EducationalTipCardType.DEFAULT_BROWSER_PROMO) {
-            EducationalTipModuleMediatorJni.get().notifyCardShown(mProfile, cardType);
-
             boolean shouldDisplay =
                     mTracker.shouldTriggerHelpUi(
                             FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK);
@@ -117,12 +93,6 @@ public class EducationalTipModuleMediator {
             defaultBrowserPromoUtils.removeListener(mDefaultBrowserPromoTriggerStateListener);
             defaultBrowserPromoUtils.notifyDefaultBrowserPromoVisible();
             return;
-        }
-
-        EducationalTipCardProviderSignalHandler educationalTipCardProviderSignalHandler =
-                EducationalTipCardProviderSignalHandler.getInstance();
-        if (educationalTipCardProviderSignalHandler.shouldNotifyCardShownPerSession(cardType)) {
-            EducationalTipModuleMediatorJni.get().notifyCardShown(mProfile, cardType);
         }
     }
 
@@ -178,37 +148,10 @@ public class EducationalTipModuleMediator {
         return null;
     }
 
-    private void getCardTypeFromSegmentation() {
-        SegmentationPlatformService segmentationPlatformService =
-                SegmentationPlatformServiceFactory.getForProfile(mProfile);
-
-        segmentationPlatformService.getClassificationResult(
-                "ephemeral_home_module_backend",
-                /* prediction_options= */ createPredictionOptions(),
-                /* inputContext= */ EducationalTipCardProviderSignalHandler.getInstance()
-                        .createInputContext(mActionDelegate, mTracker),
-                result -> {
-                    showModuleWithCardInfo(onGetClassificationResult(result));
-                });
-    }
-
     /** Creates an instance of PredictionOptions. */
     @VisibleForTesting
     PredictionOptions createPredictionOptions() {
         return new PredictionOptions(/* onDemandExecution= */ true);
-    }
-
-    @VisibleForTesting
-    @Nullable
-    Integer onGetClassificationResult(ClassificationResult result) {
-        // If segmentation service fails, not show any card.
-        if (result.status != PredictionStatus.SUCCEEDED || result.orderedLabels.isEmpty()) {
-            return null;
-        } else {
-            Integer cardType =
-                    EducationalTipCardProvider.convertLabelToCardType(result.orderedLabels.get(0));
-            return cardType;
-        }
     }
 
     @ModuleType
@@ -245,10 +188,7 @@ public class EducationalTipModuleMediator {
 
     /** Called when user clicks the card. */
     private void onCardClicked() {
-        // TODO(crbug.com/355015904): Notifies the segmentation platform and records metrics for
-        // clicking the card.
-        @EducationalTipCardType int cardType = mEducationalTipCardProvider.getCardType();
-        EducationalTipModuleMediatorJni.get().notifyCardInteracted(mProfile, cardType);
+        mModuleDelegate.onModuleClicked(mModuleType);
     }
 
     /** Gets the regular profile if exists. */
@@ -260,12 +200,5 @@ public class EducationalTipModuleMediator {
 
     DefaultBrowserPromoTriggerStateListener getDefaultBrowserPromoTriggerStateListenerForTesting() {
         return mDefaultBrowserPromoTriggerStateListener;
-    }
-
-    @NativeMethods
-    public interface Natives {
-        void notifyCardShown(@JniType("Profile*") Profile profile, int cardType);
-
-        void notifyCardInteracted(@JniType("Profile*") Profile profile, int cardType);
     }
 }

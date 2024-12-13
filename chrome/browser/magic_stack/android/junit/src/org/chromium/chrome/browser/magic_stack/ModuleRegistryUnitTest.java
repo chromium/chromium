@@ -124,7 +124,7 @@ public class ModuleRegistryUnitTest {
     })
     public void testCreateContextInput() {
         @ModuleType int moduleType1 = ModuleType.PRICE_CHANGE;
-        @ModuleType int moduleType2 = ModuleType.EDUCATIONAL_TIP;
+        @ModuleType int moduleType2 = ModuleType.DEFAULT_BROWSER_PROMO;
         Set<Integer> mEnabledModuleSet = new HashSet<>(Set.of(moduleType1, moduleType2));
 
         // Registers a solid module.

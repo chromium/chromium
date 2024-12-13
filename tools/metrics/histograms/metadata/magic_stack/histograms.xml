@@ -28,9 +28,15 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="ModuleType">
+  <variant name="AuxiliarySearch"/>
+  <variant name="DefaultBrowserPromo"/>
+  <variant name="EducationalTip"/>
   <variant name="PriceChange"/>
+  <variant name="QuickDelete"/>
   <variant name="SafetyHub"/>
   <variant name="SingleTab"/>
+  <variant name="TabGroups"/>
+  <variant name="TabGroupSync"/>
   <variant name="TabResumption"/>
 </variants>
 

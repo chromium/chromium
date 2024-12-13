@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -17,10 +18,12 @@ public class EducationalTipModuleCoordinator implements ModuleProvider {
     private final EducationalTipModuleMediator mMediator;
 
     public EducationalTipModuleCoordinator(
+            @ModuleType int moduleType,
             @NonNull ModuleDelegate moduleDelegate,
             @NonNull EducationTipModuleActionDelegate actionDelegate) {
         PropertyModel model = new PropertyModel(EducationalTipModuleProperties.ALL_KEYS);
-        mMediator = new EducationalTipModuleMediator(model, moduleDelegate, actionDelegate);
+        mMediator =
+                new EducationalTipModuleMediator(moduleType, model, moduleDelegate, actionDelegate);
     }
 
     // ModuleProvider implementation.
