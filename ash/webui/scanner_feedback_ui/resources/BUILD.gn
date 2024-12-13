@@ -17,7 +17,10 @@ build_webui("build") {
 
   web_component_files = [ "app.ts" ]
 
-  ts_deps = [ "//third_party/polymer/v3_0:library" ]
+  ts_deps = [
+    "//third_party/cros-components:cros_components_ts",
+    "//third_party/polymer/v3_0:library",
+  ]
 
   ts_composite = true
 
