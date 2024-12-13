@@ -1,6 +1,6 @@
 Name: Robolectric
 URL: http://robolectric.org
-Version: 14-robolectric-10818077
+Version: 15-robolectric-12650502
 License: Apache-2.0
 License File: LICENSE
 Security Critical: no
@@ -11,8 +11,10 @@ Local Modifications:
 - Added custom_asynctask folder to have workable copies of shadows required
   for our own implementation of AsyncTask.
 How To Update:
+- First CL:
 - Add new version and URL to 3pp/fetch.py for the android_all jar.
 - Update the old versions to the latest instrumented versioned files
   for backwards compatibility.
+- Second CL: after 3pp packager has ran
 - Add new version as data to third_party/robolectric BUILD.gn
-- Update DEPS to point to new cipd instance after 3pp packager has ran.
+- Update DEPS to point to new cipd instance
