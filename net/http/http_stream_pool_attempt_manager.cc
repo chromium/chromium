@@ -4,6 +4,7 @@
 
 #include "net/http/http_stream_pool_attempt_manager.h"
 
+#include <map>
 #include <memory>
 #include <utility>
 
@@ -499,6 +500,17 @@ void HttpStreamPool::AttemptManager::CancelInFlightAttempts(
   pool()->DecrementTotalConnectingStreamCount(in_flight_attempts_.size());
   in_flight_attempts_.clear();
   slow_attempt_count_ = 0;
+
+  std::erase_if(ip_endpoint_states_, [](const auto& it) {
+    return it.second == IPEndPointState::kSlowAttempting;
+  });
+
+  // If possible, try to complete asynchronously to avoid accessing deleted
+  // `this` and `group_`. `this` and/or `group_` can be accessed after leaving
+  // this method. Also, HttpStreamPool::OnSSLConfigChanged() calls this method
+  // when walking through all groups. If we destroy `this` here, we will break
+  // the loop.
+  MaybeCompleteLater();
 }
 
 void HttpStreamPool::AttemptManager::OnJobComplete(Job* job) {
@@ -718,9 +730,7 @@ void HttpStreamPool::AttemptManager::OnQuicTaskComplete(
     stream_attempt_delay_timer_.Stop();
     MaybeAttemptConnection();
   } else {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&AttemptManager::MaybeComplete,
-                                  weak_ptr_factory_.GetWeakPtr()));
+    MaybeCompleteLater();
   }
 }
 
@@ -1407,9 +1417,7 @@ void HttpStreamPool::AttemptManager::NotifyPreconnectsComplete(int rv) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(entry->callback), rv));
   }
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&AttemptManager::MaybeComplete,
-                                weak_ptr_factory_.GetWeakPtr()));
+  MaybeCompleteLater();
 }
 
 void HttpStreamPool::AttemptManager::ProcessPreconnectsAfterAttemptComplete(
@@ -1435,9 +1443,7 @@ void HttpStreamPool::AttemptManager::ProcessPreconnectsAfterAttemptComplete(
         FROM_HERE, base::BindOnce(std::move(entry->callback), entry->result));
   }
   if (preconnects_.empty()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&AttemptManager::MaybeComplete,
-                                  weak_ptr_factory_.GetWeakPtr()));
+    MaybeCompleteLater();
   }
 }
 
@@ -1934,6 +1940,14 @@ void HttpStreamPool::AttemptManager::MaybeComplete() {
 
   group_->OnAttemptManagerComplete();
   // `this` is deleted.
+}
+
+void HttpStreamPool::AttemptManager::MaybeCompleteLater() {
+  if (CanComplete()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&AttemptManager::MaybeComplete,
+                                  weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 }  // namespace net

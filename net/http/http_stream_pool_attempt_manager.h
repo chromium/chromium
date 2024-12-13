@@ -133,8 +133,13 @@ class HttpStreamPool::AttemptManager
   // Tries to process a single pending request/preconnect.
   void ProcessPendingJob();
 
-  // Returns the number of total jobs in this manager.
+  // Returns the number of jobs that haven't yet been notified success or
+  // failure.
   size_t JobCount() const { return jobs_.size(); }
+
+  // Returns the number of jobs that have already been notified success or
+  // failure.
+  size_t NotifiedJobCount() const { return notified_jobs_.size(); }
 
   // Returns the number of in-flight attempts.
   size_t InFlightAttemptCount() const { return in_flight_attempts_.size(); }
@@ -417,9 +422,14 @@ class HttpStreamPool::AttemptManager
 
   base::Value::Dict GetStatesAsNetLogParams();
 
+  // Returns true when this can complete.
   bool CanComplete() const;
 
+  // Notifies `group_` that `this` has completed and can be destroyed.
   void MaybeComplete();
+
+  // If `this` is ready to complete, posts a task to call MaybeComplete().
+  void MaybeCompleteLater();
 
   const raw_ptr<Group> group_;
 

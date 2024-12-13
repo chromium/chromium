@@ -1419,7 +1419,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreferNonSlowIPEndPoint) {
   EXPECT_EQ(get_remote_ip_endpoint(requester2), ip_endpoint_v4);
 
   // The third attempt triggered by the third request uses the IPv4 endpoint,
-  // wwhich was not slow.
+  // which was not slow.
   StreamRequester requester3;
   requester3.RequestStream(pool());
   completer3.Complete(OK);
@@ -2249,6 +2249,77 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   // as an idle stream since the generation is different.
   stream.reset();
   ASSERT_FALSE(pool().GetGroupForTesting(requester.GetStreamKey()));
+}
+
+// Tests that a group and corresponding attempt manager are destroyed after
+// cancelling in-flight attempts due to an SSLConfig change when there are no
+// jobs.
+TEST_F(HttpStreamPoolAttemptManagerTest, CancelAttemptOnSSLConfigChangeNoJobs) {
+  constexpr size_t kNumRequest = 2;
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  const HttpStreamKey stream_key = StreamKeyBuilder().Build();
+  std::vector<std::unique_ptr<MockConnectCompleter>> completers;
+  std::vector<std::unique_ptr<SequencedSocketData>> datas;
+  std::vector<std::unique_ptr<StreamRequester>> requesters;
+  for (size_t i = 0; i < kNumRequest; ++i) {
+    auto completer = std::make_unique<MockConnectCompleter>();
+    auto data = std::make_unique<SequencedSocketData>();
+    data->set_connect_data(MockConnect(completer.get()));
+    socket_factory()->AddSocketDataProvider(data.get());
+    completers.emplace_back(std::move(completer));
+    datas.emplace_back(std::move(data));
+
+    auto requester = std::make_unique<StreamRequester>(stream_key);
+    StreamRequester* raw_requester = requester.get();
+    requesters.emplace_back(std::move(requester));
+    raw_requester->RequestStream(pool());
+    ASSERT_FALSE(raw_requester->result().has_value());
+  }
+  AttemptManager* manager =
+      pool().GetGroupForTesting(stream_key)->GetAttemptManagerForTesting();
+  ASSERT_EQ(manager->JobCount(), 2u);
+  ASSERT_EQ(manager->NotifiedJobCount(), 0u);
+  ASSERT_EQ(manager->InFlightAttemptCount(), 2u);
+
+  auto count_slow_attempt_endpoints = [&]() {
+    size_t count = 0;
+    for (const auto& [_, state] : manager->ip_endpoint_states_for_testing()) {
+      if (state == AttemptManager::IPEndPointState::kSlowAttempting) {
+        ++count;
+      }
+    }
+    return count;
+  };
+
+  // Trigger slow timers.
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
+  ASSERT_EQ(count_slow_attempt_endpoints(), 1u);
+
+  // Cancel requests. This should remove all jobs from the corresponding group.
+  // Ensure that the job and attempt manager are still alive since there are
+  // in-flight attempts.
+  requesters.clear();
+  manager =
+      pool().GetGroupForTesting(stream_key)->GetAttemptManagerForTesting();
+  ASSERT_TRUE(manager);
+  ASSERT_EQ(manager->JobCount(), 0u);
+  ASSERT_EQ(manager->NotifiedJobCount(), 0u);
+  ASSERT_EQ(manager->InFlightAttemptCount(), 2u);
+
+  // Trigger an SSLConfig change. This should cancel in-flight attempts.
+  ssl_config_service()->NotifySSLContextConfigChange();
+  // Ensure IP endpoint states has been updated.
+  ASSERT_EQ(count_slow_attempt_endpoints(), 0u);
+
+  // Run the cleanup task. The corresponding group and attempt manager should be
+  // destroyed.
+  FastForwardUntilNoTasksRemain();
+  ASSERT_FALSE(pool().GetGroupForTesting(stream_key));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, SSLConfigForServersChanged) {
