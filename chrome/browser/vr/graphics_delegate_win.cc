@@ -154,7 +154,6 @@ bool GraphicsDelegateWin::EnsureMemoryBuffer() {
     return false;
   }
 
-  gl_->WaitSyncTokenCHROMIUM(sii_->GenUnverifiedSyncToken().GetConstData());
   return true;
 }
 
