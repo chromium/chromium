@@ -252,12 +252,6 @@ void LocalFilesMigrationManager::Initialize() {
     return;
   }
 
-  if (skip_empty_check_for_testing_) {
-    CHECK_IS_TEST();
-    OnMyFilesChecked(/*is_empty=*/false);
-    return;
-  }
-
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce(&IsMyFilesEmpty, profile),
       base::BindOnce(&LocalFilesMigrationManager::OnMyFilesChecked,
@@ -292,11 +286,6 @@ void LocalFilesMigrationManager::SetCoordinatorForTesting(
     std::unique_ptr<MigrationCoordinator> coordinator) {
   CHECK_IS_TEST();
   coordinator_ = std::move(coordinator);
-}
-
-void LocalFilesMigrationManager::SetSkipEmptyCheckForTesting(bool skip) {
-  CHECK_IS_TEST();
-  skip_empty_check_for_testing_ = skip;
 }
 
 void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
@@ -360,11 +349,6 @@ void LocalFilesMigrationManager::OnMigrationStopped(bool log_file_deleted) {
   // Local files are disabled and migration destination is set - initiate
   // migration if there are any files to upload.
   SetState(State::kPending);
-  if (skip_empty_check_for_testing_) {
-    CHECK_IS_TEST();
-    OnMyFilesChecked(/*is_empty=*/false);
-    return;
-  }
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce(&IsMyFilesEmpty, profile),
       base::BindOnce(&LocalFilesMigrationManager::OnMyFilesChecked,

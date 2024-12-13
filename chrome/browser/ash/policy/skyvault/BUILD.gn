@@ -107,6 +107,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:test_support",
+    "//chromeos/ash/components/disks:test_support",
     "//chromeos/ash/components/system",
     "//components/download/public/common:test_support",
     "//content/test:test_support",
