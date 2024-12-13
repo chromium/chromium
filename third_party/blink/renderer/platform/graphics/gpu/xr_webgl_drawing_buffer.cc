@@ -64,38 +64,20 @@ XRWebGLDrawingBuffer::ColorBuffer::ColorBuffer(
       shared_image(std::move(shared_image)),
       texture_(std::move(texture)) {}
 
-XRWebGLDrawingBuffer::ColorBuffer::~ColorBuffer() {
-  if (base::PlatformThread::CurrentRef() != owning_thread_ref ||
-      !drawing_buffer) {
-    // If the context has been destroyed no cleanup is necessary since all
-    // resources below are automatically destroyed. Note that if a ColorBuffer
-    // is being destroyed on a different thread, it implies that the owning
-    // thread was destroyed which means the associated context was also
-    // destroyed.
-    return;
-  }
-
-  gpu::gles2::GLES2Interface* gl = drawing_buffer->ContextGL();
-  if (receive_sync_token.HasData())
-    gl->WaitSyncTokenCHROMIUM(receive_sync_token.GetConstData());
-  texture_.reset();
-  gpu::SyncToken sync_token;
-  gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-  shared_image->UpdateDestructionSyncToken(sync_token);
-}
-
 void XRWebGLDrawingBuffer::ColorBuffer::BeginAccess() {
   scoped_access_ =
       texture_->BeginAccess(receive_sync_token, /*readonly=*/false);
 }
 
 void XRWebGLDrawingBuffer::ColorBuffer::EndAccess() {
-  gpu::SharedImageTexture::ScopedAccess::EndAccess(std::move(scoped_access_));
+  gpu::SyncToken sync_token = gpu::SharedImageTexture::ScopedAccess::EndAccess(
+      std::move(scoped_access_));
+  shared_image->UpdateDestructionSyncToken(sync_token);
 }
 
 void XRWebGLDrawingBuffer::ColorBuffer::CleanUp() {
   if (scoped_access_) {
-    gpu::SharedImageTexture::ScopedAccess::EndAccess(std::move(scoped_access_));
+    EndAccess();
   }
   texture_.reset();
 }
@@ -697,6 +679,7 @@ void XRWebGLDrawingBuffer::NotifyMailboxReleased(
   // Update the SyncToken to ensure that we will wait for it even if we
   // immediately destroy this buffer.
   color_buffer->receive_sync_token = sync_token;
+  color_buffer->shared_image->UpdateDestructionSyncToken(sync_token);
   if (color_buffer->drawing_buffer) {
     color_buffer->drawing_buffer->MailboxReleased(color_buffer, lost_resource);
   }
