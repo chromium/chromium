@@ -539,7 +539,7 @@ public class TabGridDialogMediatorUnitTest {
         mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, mView);
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
-        doReturn(true).when(mTabGroupModelFilter).isTabModelRestored();
+        when(mTabGroupModelFilter.isTabModelRestored()).thenReturn(true);
         mTabModelObserverCaptor
                 .getValue()
                 .didAddTab(
@@ -555,6 +555,25 @@ public class TabGridDialogMediatorUnitTest {
         mModel.get(TabGridDialogProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
 
         verify(mDialogController).resetWithListOfTabs(null);
+    }
+
+    @Test
+    public void tabAddition_NoHide() {
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE);
+        // Mock that the animation source view is not null, and the dialog is showing.
+        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, mView);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
+
+        when(mTabGroupModelFilter.isTabModelRestored()).thenReturn(true);
+        mTabModelObserverCaptor
+                .getValue()
+                .didAddTab(
+                        newTab,
+                        TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP,
+                        TabCreationState.LIVE_IN_FOREGROUND,
+                        false);
+
+        assertTrue(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE));
     }
 
     @Test

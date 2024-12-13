@@ -324,10 +324,11 @@ public class TabGridDialogMediator
                             return;
                         }
 
-                        // For tab group sync a tab can be added without needing to close the tab
-                        // grid dialog. The UI updates are driven from TabListMediator's
-                        // TabGroupModelFilterObserver's didMergeTabToGroup implementation.
-                        if (type == TabLaunchType.FROM_SYNC_BACKGROUND) {
+                        // For tab group sync or data sharing a tab can be added without needing
+                        // to close the tab grid dialog. The UI updates for this event are driven
+                        // from TabListMediator's implementation.
+                        if (type == TabLaunchType.FROM_SYNC_BACKGROUND
+                                || type == TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP) {
                             return;
                         }
                         hideDialog(false);
