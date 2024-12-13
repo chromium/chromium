@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "ios/chrome/browser/net/model/net_types.h"
 #include "ios/web/public/browser_state.h"
 #include "net/url_request/url_request_job_factory.h"
@@ -175,6 +176,9 @@ class ProfileIOS : public web::BrowserState {
   explicit ProfileIOS(const base::FilePath& state_path,
                       std::string_view profile_name,
                       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
+
+  // ProfileIOS is sequence-affine.
+  SEQUENCE_CHECKER(sequence_checker_);
 
  private:
   base::FilePath const state_path_;
