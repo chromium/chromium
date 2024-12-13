@@ -827,6 +827,130 @@ class SnapshotBuildTest(BisectTestCase):
     self.assertEqual(build.bad_revision, 1313185)
 
 
+class ChromeForTestingBuild(BisectTestCase):
+
+  def test_should_lookup_path_context(self):
+    options = bisect_builds.ParseCommandLine(
+        ['-cft', '-a', 'linux64', '-g', '0', '-b', '10'])
+    self.assertEqual(options.archive, 'linux64')
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.ChromeForTestingBuild)
+    self.assertEqual(build.binary_name, 'chrome')
+    self.assertEqual(build.listing_platform_dir, 'linux64/')
+    self.assertEqual(build.archive_name, 'chrome-linux64.zip')
+    self.assertEqual(build.chromedriver_binary_name, 'chromedriver')
+    self.assertEqual(build.chromedriver_archive_name,
+                     'chromedriver-linux64.zip')
+
+  CommonDataXMLContent = '''<?xml version='1.0' encoding='UTF-8'?>
+  <ListBucketResult xmlns="http://doc.s3.amazonaws.com/2006-03-01">
+    <Name>chrome-for-testing-per-commit-public</Name>
+    <Prefix>linux64/</Prefix>
+    <Marker/>
+    <Delimiter>/</Delimiter>
+    <IsTruncated>false</IsTruncated>
+    <Contents>
+      <Key>linux64/LAST_CHANGE</Key>
+      <Generation>1733959087133532</Generation>
+      <MetaGeneration>1</MetaGeneration>
+      <LastModified>2024-12-11T23:18:07.235Z</LastModified>
+      <ETag>"dd60cb93e225ab33d7254beca56b507a"</ETag>
+      <Size>7</Size>
+    </Contents>
+    <CommonPrefixes>
+      <Prefix>linux64/r1390729/</Prefix>
+    </CommonPrefixes>
+    <CommonPrefixes>
+      <Prefix>linux64/r1390746/</Prefix>
+    </CommonPrefixes>
+    <CommonPrefixes>
+      <Prefix>linux64/r1390757/</Prefix>
+    </CommonPrefixes>
+  </ListBucketResult>
+  '''
+
+  @maybe_patch('urllib.request.urlopen',
+               return_value=io.BytesIO(CommonDataXMLContent.encode('utf8')))
+  @patch('bisect-builds.GetChromiumRevision', return_value=1390757)
+  def test_get_rev_list(self, mock_GetChromiumRevision, mock_urlopen):
+    options = bisect_builds.ParseCommandLine([
+        '-cft', '-a', 'linux64', '-g', '1390729', '-b', '1390757',
+        '--no-local-cache'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.ChromeForTestingBuild)
+    rev_list = build.get_rev_list()
+    mock_urlopen.assert_any_call(
+        'https://storage.googleapis.com/chrome-for-testing-per-commit-public/'
+        '?delimiter=/&prefix=linux64/&marker=linux64/r1390729')
+    self.assertEqual(mock_urlopen.call_count, 1)
+    self.assertEqual(rev_list, [1390729, 1390746, 1390757])
+
+  def test_get_marker(self):
+    options = bisect_builds.ParseCommandLine(
+        ['-cft', '-a', 'linux64', '-g', '1', '-b', '3'])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.ChromeForTestingBuild)
+    self.assertEqual('linux64/r1390729',
+                     build._get_marker_for_revision(1390729))
+
+  def test_get_download_url(self):
+    options = bisect_builds.ParseCommandLine(
+        ['-cft', '-a', 'linux64', '-g', '3', '-b', '11'])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.ChromeForTestingBuild)
+    download_urls = build.get_download_url(123)
+    self.assertEqual(
+        download_urls,
+        'https://storage.googleapis.com/chrome-for-testing-per-commit-public'
+        '/linux64/r123/chrome-linux64.zip',
+    )
+
+    options = bisect_builds.ParseCommandLine(
+        ['-cft', '-a', 'linux64', '-g', '3', '-b', '11', '--chromedriver'])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.ChromeForTestingBuild)
+    download_urls = build.get_download_url(123)
+    download_urls = build.get_download_url(123)
+    self.assertEqual(
+        download_urls, {
+            'chrome':
+            'https://storage.googleapis.com/chrome-for-testing-per-commit-public'
+            '/linux64/r123/chrome-linux64.zip',
+            'chromedriver':
+            'https://storage.googleapis.com/chrome-for-testing-per-commit-public'
+            '/linux64/r123/chromedriver-linux64.zip',
+        })
+
+  @patch('bisect-builds.GetChromiumRevision', return_value=1390757)
+  def test_get_bad_revision(self, mock_GetChromiumRevision):
+    options = bisect_builds.ParseCommandLine(
+        ['-cft', '-a', 'linux64', '-g', '3'])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.ChromeForTestingBuild)
+    mock_GetChromiumRevision.assert_called_once_with(
+        'https://storage.googleapis.com/chrome-for-testing-per-commit-public'
+        '/linux64/LAST_CHANGE')
+    self.assertEqual(build.bad_revision, 1390757)
+
+  @unittest.skipUnless('NO_MOCK_SERVER' in os.environ,
+                       'The test only valid when NO_MOCK_SERVER')
+  @patch('bisect-builds.ArchiveBuild._run', return_value=(0, 'stdout', ''))
+  def test_run_revision_with_real_zipfile(self, mock_run):
+    options = bisect_builds.ParseCommandLine([
+        '--cft', '-a', 'linux64', '-g', '1', '--chromedriver', '-c',
+        'driver=%d prog=%p'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.SnapshotBuild)
+    download_job = build.get_download_job(build.bad_revision)
+    zip_file = download_job.start().wait_for()
+    with tempfile.TemporaryDirectory(prefix='bisect_tmp') as tempdir:
+      build.run_revision(zip_file, tempdir, [])
+    self.assertRegex(mock_run.call_args.args[0],
+                     r'driver=.+/chromedriver prog=.+/chrome')
+
+
 class ASANBuildTest(BisectTestCase):
 
   CommonDataXMLContent = '''<?xml version='1.0' encoding='UTF-8'?>

@@ -49,6 +49,8 @@ CHROMIUM_BASE_URL = ('http://commondatastorage.googleapis.com'
                      '/chromium-browser-snapshots')
 ASAN_BASE_URL = ('http://commondatastorage.googleapis.com'
                  '/chromium-browser-asan')
+CHROME_FOR_TESTING_BASE_URL = ('https://storage.googleapis.com/'
+                               'chrome-for-testing-per-commit-public')
 
 GSUTILS_PATH = None
 
@@ -349,6 +351,30 @@ PATH_CONTEXT = {
         'linux': {},
         'mac': {},
         'win': {},
+    },
+    'cft': {
+        'linux64': {
+            'listing_platform_dir': 'linux64/',
+            'binary_name': 'chrome',
+            'archive_name': 'chrome-linux64.zip',
+            'chromedriver_binary_name': 'chromedriver',
+            'chromedriver_archive_name': 'chromedriver-linux64.zip',
+        },
+        'mac-arm': {
+            'listing_platform_dir': 'mac-arm64/',
+            'binary_name': 'Google Chrome for Testing.app/Contents/MacOS'
+            '/Google Chrome for Testing',
+            'archive_name': 'chrome-mac-arm64.zip',
+            'chromedriver_binary_name': 'chromedriver',
+            'chromedriver_archive_name': 'chromedriver-mac-arm64.zip',
+        },
+        'win64': {
+            'listing_platform_dir': 'win64/',
+            'binary_name': 'chrome.exe',
+            'archive_name': 'chrome-win64.zip',
+            'chromedriver_binary_name': 'chromedriver.exe',
+            'chromedriver_archive_name': 'chromedriver-win64.zip',
+        },
     },
 }
 
@@ -972,9 +998,9 @@ class OfficialBuild(ArchiveBuildWithCommitPosition):
 
 class SnapshotBuild(ArchiveBuildWithCommitPosition):
 
-  def __init__(self, options):
-    self.base_url = CHROMIUM_BASE_URL
-    super().__init__(options)
+  @property
+  def base_url(self):
+    return CHROMIUM_BASE_URL
 
   @property
   def build_type(self):
@@ -1096,14 +1122,48 @@ class SnapshotBuild(ArchiveBuildWithCommitPosition):
     return chrome_url
 
 
+class ChromeForTestingBuild(SnapshotBuild):
+  """Chrome for Testing pre-revision build is public through
+  storage.googleapis.com.
+
+  The archive URL format for CfT builds is:
+  https://storage.googleapis.com/chrome-for-testing-per-commit-public/{platform}/r{revision}/chrome-{platform}.zip
+  """
+
+  @property
+  def base_url(self):
+    return CHROME_FOR_TESTING_BASE_URL
+
+  @property
+  def build_type(self):
+    return 'cft'
+
+  def _get_marker_for_revision(self, revision):
+    return '%sr%d' % (self.listing_platform_dir, revision)
+
+  def get_download_url(self, revision):
+    url_prefix = '%s/%sr%d/' % (self.base_url, self.listing_platform_dir,
+                                revision)
+    chrome_url = url_prefix + self.archive_name
+    if self.chromedriver:
+      return {
+          'chrome': chrome_url,
+          'chromedriver': url_prefix + self.chromedriver_archive_name,
+      }
+    return chrome_url
+
+
 class ASANBuild(SnapshotBuild):
   """ASANBuilds works like SnapshotBuild which fetch from commondatastorage, but
   with a different listing url."""
 
   def __init__(self, options):
     super().__init__(options)
-    self.base_url = ASAN_BASE_URL
     self.asan_build_type = 'release'
+
+  @property
+  def base_url(self):
+    return ASAN_BASE_URL
 
   @property
   def build_type(self):
@@ -1502,6 +1562,8 @@ def create_archive_build(options):
   elif options.build_type == 'asan':
     # ASANBuild is only supported on win/linux/mac.
     return ASANBuild(options)
+  elif options.build_type == 'cft':
+    return ChromeForTestingBuild(options)
   else:
     if options.archive.startswith('android'):
       return AndroidSnapshotBuild(options)
@@ -2201,6 +2263,14 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
       const='official',
       help='Bisect across continuous perf official Chrome builds (internal '
       'only) instead of Chromium archives.',
+  )
+  build_type_group.add_argument(
+      '-cft',
+      '--cft',
+      dest='build_type',
+      action='store_const',
+      const='cft',
+      help='Bisect across Chrome for Testing (publicly accessible) archives.',
   )
   build_type_group.add_argument(
       '--asan',
