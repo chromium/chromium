@@ -25,6 +25,7 @@ import org.hamcrest.Matcher;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -103,12 +104,13 @@ public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedAct
         elements.declareView(mTitleInputSpec);
         elements.declareView(NEW_TAB_BUTTON);
         elements.declareView(BACK_BUTTON);
-        // TODO (ckitagawa) : Always declare List Menu button.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID_V2)) {
-            elements.declareView(LIST_MENU_BUTTON);
-        }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID_V2)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
             elements.declareView(SHARE_BUTTON);
+
+            // TODO(ckitagawa): Share button causes menu button to be slightly hidden.
+            elements.declareView(LIST_MENU_BUTTON, ViewElement.displayingAtLeastOption(51));
+        } else {
+            elements.declareView(LIST_MENU_BUTTON);
         }
     }
 
