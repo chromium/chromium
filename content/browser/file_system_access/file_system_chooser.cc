@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/i18n/rtl.h"
@@ -180,15 +181,15 @@ ui::SelectFileDialog::FileTypeInfo ConvertAcceptsToFileTypeInfo(
   return file_types;
 }
 
-ui::SelectFileDialog::Type ValidateType(ui::SelectFileDialog::Type type) {
+bool IsValidFileDialogType(ui::SelectFileDialog::Type type) {
   switch (type) {
     case ui::SelectFileDialog::SELECT_OPEN_FILE:
     case ui::SelectFileDialog::SELECT_OPEN_MULTI_FILE:
     case ui::SelectFileDialog::SELECT_SAVEAS_FILE:
     case ui::SelectFileDialog::SELECT_FOLDER:
-      return type;
+      return true;
     default:
-      NOTREACHED();
+      return false;
   }
 }
 
@@ -216,7 +217,7 @@ FileSystemChooser::Options::Options(
     std::u16string title,
     base::FilePath default_directory,
     base::FilePath suggested_name)
-    : type_(ValidateType(type)),
+    : type_(type),
       file_types_(ConvertAcceptsToFileTypeInfo(accepts_types_info)),
       // Set `default_file_type_index_` to a reasonable default value.
       // This value will be updated if the extension of `suggested_name`
@@ -229,6 +230,7 @@ FileSystemChooser::Options::Options(
       default_path_(default_directory.Append(
           ResolveSuggestedNameExtension(std::move(suggested_name),
                                         file_types_))) {
+  CHECK(IsValidFileDialogType(type_));
   // If suggested_name is empty, then ensure default path ends with a separator
   // so it can be parsed back into default_directory and suggested_name.
   if (!default_path_.empty() && default_path_ == default_directory) {
@@ -352,9 +354,11 @@ bool FileSystemChooser::IsShellIntegratedExtension(
 FileSystemChooser::FileSystemChooser(ui::SelectFileDialog::Type type,
                                      ResultCallback callback,
                                      base::ScopedClosureRunner fullscreen_block)
-    : callback_(std::move(callback)),
-      type_(ValidateType(type)),
-      fullscreen_block_(std::move(fullscreen_block)) {}
+    : type_(type),
+      callback_(std::move(callback)),
+      fullscreen_block_(std::move(fullscreen_block)) {
+  CHECK(IsValidFileDialogType(type_));
+}
 
 FileSystemChooser::~FileSystemChooser() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
