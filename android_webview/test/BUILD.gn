@@ -317,6 +317,12 @@ generate_jni("webview_instrumentation_test_jni") {
   sources = [ "../javatests/src/org/chromium/android_webview/test/component_updater/EmbeddedComponentLoaderTest.java" ]
 }
 
+copy("copy_webview_js_test_script_to_blink") {
+  sources = [ "data/resources/js-test.js" ]
+  outputs =
+      [ "$root_build_dir/third_party/blink/web_tests/resources/js-test.js" ]
+}
+
 base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
   apk_name = "WebViewInstrumentationTest"
   apk_under_test = ":webview_instrumentation_apk"
@@ -332,6 +338,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//android_webview/nonembedded:util_java",
     "//android_webview/proto:aw_variations_seed_proto_java",
     "//android_webview/proto:metrics_bridge_records_proto_java",
+    "//android_webview/test:copy_webview_js_test_script_to_blink",
     "//android_webview/test:crash_test_utils_java",
     "//android_webview/test:webview_instrumentation_test_mock_services_java",
     "//android_webview/test:webview_instrumentation_test_utils_java",
@@ -526,6 +533,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/VariationsSeedLoaderTest.java",
     "../javatests/src/org/chromium/android_webview/test/VariationsTest.java",
     "../javatests/src/org/chromium/android_webview/test/VisualStateTest.java",
+    "../javatests/src/org/chromium/android_webview/test/WebExposedTest.java",
     "../javatests/src/org/chromium/android_webview/test/WebKitHitTestTest.java",
     "../javatests/src/org/chromium/android_webview/test/WebViewAsynchronousFindApisTest.java",
     "../javatests/src/org/chromium/android_webview/test/WebViewFindApisTestRule.java",
@@ -569,7 +577,12 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
 
   data = [
     "data/",
+    "//android_webview/test/data/web_tests/",
+    "//third_party/blink/web_tests/resources/global-interface-listing.js",
+    "//third_party/blink/web_tests/webexposed/global-interface-listing.html",
+    "//third_party/blink/web_tests/webexposed/global-interface-listing-expected.txt",
     "//third_party/chromium-variations/",
+    "$root_build_dir/third_party/blink/web_tests/resources/js-test.js",
   ]
   data_deps =
       [ "//testing/buildbot/filters:webview_instrumentation_test_apk_filters" ]

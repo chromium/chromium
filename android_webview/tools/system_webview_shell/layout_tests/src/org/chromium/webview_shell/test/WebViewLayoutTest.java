@@ -31,8 +31,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -45,11 +43,7 @@ public class WebViewLayoutTest {
     private static final String EXTERNAL_PREFIX = UrlUtils.getIsolatedTestRoot() + "/";
     private static final String BASE_WEBVIEW_TEST_PATH =
             "android_webview/tools/system_webview_shell/test/data/";
-    private static final String BASE_BLINK_TEST_PATH = "third_party/blink/web_tests/";
     private static final String PATH_WEBVIEW_PREFIX = EXTERNAL_PREFIX + BASE_WEBVIEW_TEST_PATH;
-    private static final String PATH_BLINK_PREFIX = EXTERNAL_PREFIX + BASE_BLINK_TEST_PATH;
-    private static final String GLOBAL_LISTING_FILE =
-            "webexposed/global-interface-listing-expected.txt";
 
     private static final long TIMEOUT_SECONDS = 20;
 
@@ -57,7 +51,7 @@ public class WebViewLayoutTest {
     private static final String EXTRA_REBASELINE =
             "org.chromium.android_webview.test.RebaselineMode";
     private static final String MODE_REBASELINE = "rebaseline";
-    // LINT.ThenChange(//build/android/pylib/local/device/local_device_instrumentation_test_run.py)
+    // LINT.ThenChange(//android_webview/javatests/src/org/chromium/android_webview/test/WebExposedTest.java)
 
     private WebViewLayoutTestActivity mTestActivity;
     private boolean mRebaseLine;
@@ -94,64 +88,6 @@ public class WebViewLayoutTest {
     public void testSimple() throws Exception {
         runWebViewLayoutTest(
                 "experimental/basic-logging.html", "experimental/basic-logging-expected.txt");
-    }
-
-    // This is a non-failing test because it tends to require frequent rebaselines.
-    @Test
-    @MediumTest
-    public void testGlobalInterfaceNoFail() throws Exception {
-        runTest(
-                PATH_BLINK_PREFIX + "webexposed/global-interface-listing.html",
-                PATH_WEBVIEW_PREFIX + "webexposed/global-interface-listing-expected.txt",
-                true);
-    }
-
-    // This is a non-failing test to avoid rebaselines by the sheriff
-    // (see crbug.com/564765).
-    @Test
-    @MediumTest
-    public void testNoUnexpectedInterfaces() throws Exception {
-        // Begin by running the web test.
-        loadUrlWebViewAsync(
-                "file://" + PATH_BLINK_PREFIX + "webexposed/global-interface-listing.html",
-                mTestActivity);
-
-        // Process all expectations files.
-        String fileNameExpected =
-                PATH_WEBVIEW_PREFIX + "webexposed/global-interface-listing-expected.txt";
-        String webviewExpected = readFile(fileNameExpected);
-        HashMap<String, HashSet<String>> webviewExpectedInterfacesMap =
-                buildHashMap(webviewExpected);
-
-        // Wait for web test to finish running. Note we should wait for the web test to
-        // finish running after processing the expectations file. The expectations file
-        // has 8600 lines and a size of 212 KB. It is better to process the expectations
-        // file in parallel with the web test run.
-        mTestActivity.waitForFinish(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-
-        // Process web test results.
-        String result = mTestActivity.getTestResult();
-
-        if (isRebaseline()) {
-            writeFile(fileNameExpected, result);
-            Log.i(TAG, "file: " + fileNameExpected + " --> rebaselined, length=" + result.length());
-            return;
-        }
-
-        HashMap<String, HashSet<String>> webviewInterfacesMap = buildHashMap(result);
-
-        StringBuilder newInterfaces = new StringBuilder();
-
-        // Check that each current webview interface is one of webview expected interfaces.
-        for (String interfaceS : webviewInterfacesMap.keySet()) {
-            if (webviewExpectedInterfacesMap.get(interfaceS) == null) {
-                newInterfaces.append(interfaceS).append("\n");
-            }
-        }
-
-        if (newInterfaces.length() > 0) {
-            Log.w(TAG, "Unexpected WebView interfaces found: " + newInterfaces);
-        }
     }
 
     @Test
@@ -298,38 +234,5 @@ public class WebViewLayoutTest {
         try (FileOutputStream outputStream = new FileOutputStream(fileOut)) {
             outputStream.write(contents.getBytes(StandardCharsets.UTF_8));
         }
-    }
-
-    private HashMap<String, HashSet<String>> buildHashMap(String contents) {
-        HashMap<String, HashSet<String>> interfaces = new HashMap<>();
-        String[] lineByLine = contents.split("\\n");
-
-        HashSet<String> subset = null;
-        for (String line : lineByLine) {
-            String s = trimAndRemoveComments(line);
-            if (isInterfaceOrGlobalObject(s)) {
-                subset = interfaces.computeIfAbsent(s, k -> new HashSet<>());
-            } else if (isInterfaceProperty(s) && subset != null) {
-                subset.add(s);
-            }
-        }
-        return interfaces;
-    }
-
-    private String trimAndRemoveComments(String line) {
-        String s = line.trim();
-        int commentIndex = s.indexOf("#"); // remove any potential comments
-        return (commentIndex >= 0) ? s.substring(0, commentIndex).trim() : s;
-    }
-
-    private boolean isInterfaceOrGlobalObject(String s) {
-        return s.startsWith("interface") || s.startsWith("[GLOBAL OBJECT]");
-    }
-
-    private boolean isInterfaceProperty(String s) {
-        return s.startsWith("getter")
-                || s.startsWith("setter")
-                || s.startsWith("method")
-                || s.startsWith("attribute");
     }
 }
