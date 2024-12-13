@@ -45,6 +45,18 @@ bool DIBFormatNativelySupported(HDC dc,
   return !!supported;
 }
 
+const BITMAPINFOHEADER* GetBitmapInfoHeader(
+    const EMRSTRETCHDIBITS* sdib_record) {
+  const BYTE* record_start = reinterpret_cast<const BYTE*>(sdib_record);
+  return reinterpret_cast<const BITMAPINFOHEADER*>(record_start +
+                                                   sdib_record->offBmiSrc);
+}
+
+const BYTE* GetBitmapBits(const EMRSTRETCHDIBITS* sdib_record) {
+  const BYTE* record_start = reinterpret_cast<const BYTE*>(sdib_record);
+  return record_start + sdib_record->offBitsSrc;
+}
+
 }  // namespace
 
 Emf::Emf() : emf_(nullptr), hdc_(nullptr) {}
@@ -275,12 +287,10 @@ bool Emf::Record::SafePlayback(Emf::EnumerationContext* context) const {
   const XFORM* base_matrix = context->base_matrix;
   switch (record()->iType) {
     case EMR_STRETCHDIBITS: {
-      const EMRSTRETCHDIBITS* sdib_record =
+      const auto* sdib_record =
           reinterpret_cast<const EMRSTRETCHDIBITS*>(record());
-      const BYTE* record_start = reinterpret_cast<const BYTE*>(record());
-      const BITMAPINFOHEADER* bmih = reinterpret_cast<const BITMAPINFOHEADER*>(
-          record_start + sdib_record->offBmiSrc);
-      const BYTE* bits = record_start + sdib_record->offBitsSrc;
+      const BITMAPINFOHEADER* bmih = GetBitmapInfoHeader(sdib_record);
+      const BYTE* bits = GetBitmapBits(sdib_record);
       bool play_normally = true;
       res = false;
       HDC hdc = context->hdc;
