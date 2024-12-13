@@ -316,7 +316,10 @@ class AccountSelectionMediator {
                         View continueButton =
                                 contentView.findViewById(R.id.account_selection_continue_btn);
 
-                        boolean isSingleAccountChooser = mAccounts != null && mAccounts.size() == 1;
+                        boolean isSingleAccountChooser =
+                                mAccounts != null
+                                        && mAccounts.size() == 1
+                                        && !mAccounts.get(0).isFilteredOut();
                         View focusView =
                                 mFocusView != null
                                         ? mFocusView
@@ -895,7 +898,11 @@ class AccountSelectionMediator {
     private void showAccountsInternal(@Nullable List<Account> newAccounts) {
         // TODO(crbug.com/356665527): Handle multiple newly signed-in accounts.
         Account newlySignedInAccount =
-                newAccounts != null && newAccounts.size() == 1 ? newAccounts.get(0) : null;
+                newAccounts != null
+                                && newAccounts.size() == 1
+                                && !newAccounts.get(0).isFilteredOut()
+                        ? newAccounts.get(0)
+                        : null;
 
         if (!mIsAutoReauthn && newlySignedInAccount != null && mRpMode == RpMode.ACTIVE) {
             mSelectedAccount = newlySignedInAccount;
@@ -961,7 +968,8 @@ class AccountSelectionMediator {
                 mHeaderType == HeaderType.SIGN_IN
                         && areAccountsClickable
                         && mIdpMetadata.showUseDifferentAccountButton();
-        boolean isSingleAccountChooser = accounts != null && accounts.size() == 1;
+        boolean isSingleAccountChooser =
+                accounts != null && accounts.size() == 1 && !accounts.get(0).isFilteredOut();
 
         // We add the add account button alongside the accounts if supported in passive mode and in
         // the multi-account UI of active mode.
