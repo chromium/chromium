@@ -2464,7 +2464,6 @@ static_library("browser") {
     "//services/video_effects/buildflags",
     "//services/webnn/public/mojom",
     "//skia",
-    "//skia:rusty_png_feature_detection",
     "//sql",
     "//storage/browser",
     "//storage/common",

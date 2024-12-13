@@ -149,6 +149,7 @@ static_library("file_manager") {
     "//google_apis/drive",
     "//mojo/public/cpp/bindings",
     "//net",
+    "//skia",
     "//storage/browser",
     "//storage/common",
     "//third_party/nearby:presence_types",

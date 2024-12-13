@@ -44,6 +44,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "skia/ext/codec_utils.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
@@ -51,8 +52,7 @@
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkStream.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
+#include "third_party/skia/include/core/SkData.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -646,9 +646,8 @@ IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddIconAsPng(
 IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddImageAsPng(
     std::string_view resource_path,
     const SkBitmap& image) {
-  SkDynamicMemoryWStream stream;
-  CHECK(SkPngEncoder::Encode(&stream, image.pixmap(), {}));
-  sk_sp<SkData> icon_skdata = stream.detachAsData();
+  sk_sp<SkData> icon_skdata = skia::EncodePngAsSkData(image.pixmap());
+  CHECK(icon_skdata);
   std::string png(static_cast<const char*>(icon_skdata->data()),
                   icon_skdata->size());
   return AddResource(resource_path, png, "image/png");

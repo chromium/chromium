@@ -36,19 +36,6 @@ buildflag_header("buildflags") {
   ]
 }
 
-component("rusty_png_feature_detection") {
-  defines = [ "IS_SKIA_RUSTY_PNG_FEATURE_DETECTION_IMPL" ]
-  sources = [
-    "rusty_png_feature.cc",
-    "rusty_png_feature.h",
-  ]
-  deps = [ ":skia" ]
-  public_deps = [
-    ":buildflags",
-    "//base",
-  ]
-}
-
 source_set("path_bridge") {
   sources = skia_fontations_path_bridge_sources
 }
@@ -257,6 +244,7 @@ component("skia") {
   public = [
     "ext/benchmarking_canvas.h",
     "ext/cicp.h",
+    "ext/codec_utils.h",
     "ext/convolver.h",
     "ext/draw_gainmap_image.h",
     "ext/event_tracer_impl.h",
@@ -272,6 +260,7 @@ component("skia") {
     "ext/skia_memory_dump_provider.h",
     "ext/skia_trace_memory_dump_impl.h",
     "ext/skia_utils_base.h",
+    "rusty_png_feature.h",
   ]
   sources = [
     # Chrome sources.
@@ -283,6 +272,7 @@ component("skia") {
     "ext/SkMemory_new_handler.cpp",
     "ext/benchmarking_canvas.cc",
     "ext/cicp.cc",
+    "ext/codec_utils.cc",
     "ext/convolver.cc",
     "ext/draw_gainmap_image.cc",
     "ext/event_tracer_impl.cc",
@@ -301,6 +291,7 @@ component("skia") {
     "ext/skia_memory_dump_provider.cc",
     "ext/skia_trace_memory_dump_impl.cc",
     "ext/skia_utils_base.cc",
+    "rusty_png_feature.cc",
   ]
   if (is_ios) {
     public += [ "ext/skia_utils_ios.h" ]
@@ -1031,6 +1022,7 @@ source_set("test_fonts") {
 
 test("skia_unittests") {
   sources = [
+    "ext/codec_utils_unittest.cc",
     "ext/convolver_unittest.cc",
     "ext/geometry_unittest.cc",
     "ext/image_operations_unittest.cc",

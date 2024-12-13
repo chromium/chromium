@@ -8,10 +8,8 @@
 
 #include "base/base64.h"
 #include "base/containers/span.h"
+#include "skia/ext/codec_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkStream.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
-#include "ui/gfx/image/buffer_w_stream.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
@@ -28,11 +26,7 @@ std::string MakeDataURIForImage(base::span<const uint8_t> image_data,
 
 std::string EncodePNGAndMakeDataURI(gfx::ImageSkia image, float scale_factor) {
   const SkBitmap& bitmap = image.GetRepresentation(scale_factor).GetBitmap();
-  gfx::BufferWStream stream;
-  const bool encoding_succeeded =
-      SkPngEncoder::Encode(&stream, bitmap.pixmap(), {});
-  DCHECK(encoding_succeeded);
-  return MakeDataURIForImage(base::as_byte_span(stream.TakeBuffer()), "png");
+  return skia::EncodePngAsDataUri(bitmap.pixmap());
 }
 
 }  // namespace webui

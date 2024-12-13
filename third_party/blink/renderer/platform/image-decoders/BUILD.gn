@@ -66,7 +66,6 @@ component("image_decoders") {
 
   deps = [
     "//skia",
-    "//skia:rusty_png_feature_detection",
     "//skia:skcms",
     "//third_party:jpeg",
     "//third_party/blink/public:blink_headers",
@@ -127,7 +126,7 @@ source_set("unit_tests") {
 
   deps = [
     ":image_decoders",
-    "//skia:rusty_png_feature_detection",
+    "//skia",
     "//third_party/blink/renderer/platform:test_support",
   ]
 

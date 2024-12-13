@@ -1835,6 +1835,7 @@ static_library("ui") {
       "//services/on_device_model/public/cpp",
       "//services/on_device_model/public/mojom",
       "//services/preferences/public/mojom:mojom",
+      "//skia",
       "//third_party/blink/public/common:headers",
       "//third_party/libaddressinput",
       "//third_party/libaddressinput:strings",

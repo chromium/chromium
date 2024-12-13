@@ -16,10 +16,10 @@
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "net/base/mime_util.h"
+#include "skia/ext/codec_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkStream.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
+#include "third_party/skia/include/core/SkData.h"
 
 namespace web_app {
 
@@ -84,9 +84,8 @@ web_package::SignedWebBundleId GetWebBundleIdWithFallback(
 namespace test {
 
 std::string EncodeAsPng(const SkBitmap& bitmap) {
-  SkDynamicMemoryWStream stream;
-  CHECK(SkPngEncoder::Encode(&stream, bitmap.pixmap(), {}));
-  sk_sp<SkData> icon_skdata = stream.detachAsData();
+  sk_sp<SkData> icon_skdata = skia::EncodePngAsSkData(bitmap.pixmap());
+  CHECK(icon_skdata);
   return std::string(static_cast<const char*>(icon_skdata->data()),
                      icon_skdata->size());
 }
