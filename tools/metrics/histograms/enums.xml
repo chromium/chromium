@@ -16230,6 +16230,7 @@ from previous Chrome versions.
   <int value="-1658154886"
       label="CompressionDictionaryTransportRequireKnownRootCert:disabled"/>
   <int value="-1657056532" label="FilesNewDirectoryTree:disabled"/>
+  <int value="-1656748301" label="EnableCertManagementUIV2EditCerts:disabled"/>
   <int value="-1656667928"
       label="UseSyncInvalidationsForWalletAndOffer:disabled"/>
   <int value="-1656179450" label="EnableOmniboxRichEntities:enabled"/>
@@ -18961,6 +18962,7 @@ from previous Chrome versions.
   <int value="-569256428" label="MacAddressRandomization:enabled"/>
   <int value="-569208004" label="VcSegmentationInferenceBackend:disabled"/>
   <int value="-568448085" label="SharedClipboardReceiver:disabled"/>
+  <int value="-568352816" label="EnableCertManagementUIV2EditCerts:enabled"/>
   <int value="-567920515" label="disable-experimental-hotwording"/>
   <int value="-567743697" label="EnableInputNoiseCancellationUi:enabled"/>
   <int value="-567309305" label="FontationsFontBackend:disabled"/>

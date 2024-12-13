@@ -4801,6 +4801,8 @@ extern const char kEnableCertManagementV2UIName[];
 extern const char kEnableCertManagementV2UIDescription[];
 extern const char kEnableCertManagementV2UIWriteName[];
 extern const char kEnableCertManagementV2UIWriteDescription[];
+extern const char kEnableCertManagementV2UIEditCertsName[];
+extern const char kEnableCertManagementV2UIEditCertsDescription[];
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 #if BUILDFLAG(IS_CHROMEOS)

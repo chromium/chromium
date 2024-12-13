@@ -8200,6 +8200,11 @@ const char kEnableCertManagementV2UIWriteDescription[] =
     "For Linux and ChromeOS, this is a change as previously user-added certs "
     "would be written to the platform cert store. The UI is accessible at "
     "chrome://certificate-manager";
+const char kEnableCertManagementV2UIEditCertsName[] =
+    "Cert Management V2 UI Edit Certs";
+const char kEnableCertManagementV2UIEditCertsDescription[] =
+    "Enables the ability to edit trust and constraints on the cert viewer "
+    "for user-added certs that are added via chrome://certificate-manager";
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -10893,6 +10893,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableCertManagementV2UIWriteDescription,
      kOsLinux | kOsMac | kOsWin | kOsCrOS,
      FEATURE_VALUE_TYPE(features::kEnableCertManagementUIV2Write)},
+    {"cert-management-v2-ui-edit-certs",
+     flag_descriptions::kEnableCertManagementV2UIEditCertsName,
+     flag_descriptions::kEnableCertManagementV2UIEditCertsDescription,
+     kOsLinux | kOsMac | kOsWin | kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kEnableCertManagementUIV2EditCerts)},
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 #if BUILDFLAG(IS_ANDROID)
