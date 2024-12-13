@@ -510,6 +510,8 @@ declare global {
       export function dismissMv2DeprecationPanel(): void;
       export function dismissMv2DeprecationNoticeForExtension(
           extensionId: string): Promise<void>;
+      export function uploadExtensionToAccount(extensionId: string):
+          Promise<void>;
 
       export const onItemStateChanged: ChromeEvent<(data: EventData) => void>;
       export const onProfileStateChanged:

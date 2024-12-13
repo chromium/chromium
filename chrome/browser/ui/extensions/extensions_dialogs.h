@@ -138,6 +138,12 @@ void ShowExtensionInstallBlockedByParentDialog(
     content::WebContents* web_contents,
     base::OnceClosure done_callback);
 
+// Shows a dialog when the user tries to upload an extension to their account.
+void ShowUploadExtensionToAccountDialog(Browser* browser,
+                                        const Extension& extension,
+                                        base::OnceClosure accept_callback,
+                                        base::OnceClosure cancel_callback);
+
 #if BUILDFLAG(IS_CHROMEOS)
 
 // Shows a scanner discovery confirmation dialog bubble anchored to the toolbar

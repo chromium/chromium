@@ -23,6 +23,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
@@ -32,12 +33,15 @@
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
+#include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/permissions/permissions_test_util.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_install_ui.h"
@@ -47,7 +51,11 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "components/crx_file/id_util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/sync/base/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -3331,6 +3339,131 @@ TEST_F(DeveloperPrivateApiWithMV2DeprecationDisabledUnitTest,
   // Extension's notice should be marked as acknowledged.
   EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
   EXPECT_TRUE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
+}
+
+class DeveloperPrivateApiTransportModeUnitTest
+    : public DeveloperPrivateApiUnitTest {
+ public:
+  DeveloperPrivateApiTransportModeUnitTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {switches::kExplicitBrowserSigninUIOnDesktop,
+         syncer::kSyncEnableExtensionsInTransportMode},
+        /*disabled_features=*/{});
+  }
+
+  DeveloperPrivateApiTransportModeUnitTest(
+      const DeveloperPrivateApiTransportModeUnitTest&) = delete;
+  DeveloperPrivateApiTransportModeUnitTest& operator=(
+      const DeveloperPrivateApiTransportModeUnitTest&) = delete;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test that extensions cannot be uploaded if the user is signed out.
+TEST_F(DeveloperPrivateApiTransportModeUnitTest,
+       UploadExtensionToAccount_SignedOut) {
+  const scoped_refptr<const Extension> extension =
+      ExtensionBuilder("ext")
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .Build();
+  service()->AddExtension(extension.get());
+
+  std::string args = base::StringPrintf(R"(["%s"])", extension->id().c_str());
+  auto upload_function = base::MakeRefCounted<
+      api::DeveloperPrivateUploadExtensionToAccountFunction>();
+  upload_function->set_source_context_type(mojom::ContextType::kWebUi);
+
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      upload_function, args, profile());
+  EXPECT_EQ(error, "User is not signed in.");
+}
+
+TEST_F(DeveloperPrivateApiTransportModeUnitTest,
+       UploadExtensionToAccount_UnsyncableExtension) {
+  // Add an unsyncable (unpacked) extension.
+  const scoped_refptr<const Extension> unsyncable_extension =
+      ExtensionBuilder("unsync_ext")
+          .SetLocation(mojom::ManifestLocation::kUnpacked)
+          .Build();
+  EXPECT_FALSE(sync_util::ShouldSync(profile(), unsyncable_extension.get()));
+  service()->AddExtension(unsyncable_extension.get());
+
+  // Sign the user in without full sync.
+  auto identity_test_env_profile_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+  identity_test_env_profile_adaptor->identity_test_env()
+      ->MakePrimaryAccountAvailable("testy@mctestface.com",
+                                    signin::ConsentLevel::kSignin);
+  // Pretend that the user has completed an explicit sign in before. This is
+  // necessary for extensions to sync in transport mode.
+  profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
+
+  std::string args_str =
+      base::StringPrintf(R"(["%s"])", unsyncable_extension->id().c_str());
+  auto upload_function = base::MakeRefCounted<
+      api::DeveloperPrivateUploadExtensionToAccountFunction>();
+  upload_function->set_source_context_type(mojom::ContextType::kWebUi);
+
+  // The unsyncable extension cannot be uploaded.
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      upload_function, args_str, profile());
+  EXPECT_EQ(
+      error,
+      ErrorUtils::FormatErrorMessage(
+          "Extension with ID '*' cannot be uploaded to the user's account.",
+          unsyncable_extension->id()));
+}
+
+TEST_F(DeveloperPrivateApiTransportModeUnitTest, UploadExtensionToAccount) {
+  // Add a syncable extension.
+  const scoped_refptr<const Extension> syncable_extension =
+      ExtensionBuilder("sync_ext")
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .Build();
+  EXPECT_TRUE(sync_util::ShouldSync(profile(), syncable_extension.get()));
+  service()->AddExtension(syncable_extension.get());
+
+  // Sign the user in without full sync.
+  auto identity_test_env_profile_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+  identity_test_env_profile_adaptor->identity_test_env()
+      ->MakePrimaryAccountAvailable("testy@mctestface.com",
+                                    signin::ConsentLevel::kSignin);
+  // Pretend that the user has completed an explicit sign in before. This is
+  // necessary for extensions to sync in transport mode.
+  profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
+
+  // The syncable extension can be uploaded, but pretend we don't proceed with
+  // the upload by simulating cancelling the dialog.
+  base::Value::List args;
+  args.Append(syncable_extension->id());
+  auto upload_function = base::MakeRefCounted<
+      api::DeveloperPrivateUploadExtensionToAccountFunction>();
+  upload_function->set_source_context_type(mojom::ContextType::kWebUi);
+  upload_function->accept_bubble_for_testing(false);
+  EXPECT_TRUE(RunFunction(upload_function, args));
+
+  // Now pretend the extension is already associated with the user's account.
+  AccountExtensionTracker::Get(profile())->SetAccountExtensionTypeForTesting(
+      syncable_extension->id(),
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledSignedIn);
+
+  std::string args_str =
+      base::StringPrintf(R"(["%s"])", syncable_extension->id().c_str());
+  upload_function = base::MakeRefCounted<
+      api::DeveloperPrivateUploadExtensionToAccountFunction>();
+  upload_function->set_source_context_type(mojom::ContextType::kWebUi);
+
+  // The extension shouldn't be able to be uploaded since it's now already
+  // associated with the user's account and thus already "uploaded".
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      upload_function, args_str, profile());
+  EXPECT_EQ(
+      error,
+      ErrorUtils::FormatErrorMessage(
+          "Extension with ID '*' cannot be uploaded to the user's account.",
+          syncable_extension->id()));
 }
 
 }  // namespace extensions

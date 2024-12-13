@@ -2783,6 +2783,7 @@ Called by update_extension_histograms.py.-->
   <int value="1913" label="ODFSCONFIGPRIVATE_OPENINOFFICEAPP"/>
   <int value="1914" label="COOKIES_GETPARTITIONKEY"/>
   <int value="1915" label="CONTROLLEDFRAMEINTERNAL_SETCLIENTHINTSENABLED"/>
+  <int value="1916" label="DEVELOPERPRIVATE_UPLOADEXTENSIONTOACCOUNT"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">

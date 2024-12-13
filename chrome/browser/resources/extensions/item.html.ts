@@ -156,7 +156,8 @@ export function getHtml(this: ItemElement) {
     ${this.showAccountUploadButton_() ? html`
       <cr-icon-button id="account-upload-button" class="no-overlap"
           title="$i18n{itemUpload}" aria-label="$i18n{itemUpload}"
-          iron-icon="extensions-icons:extension_cloud_upload">
+          iron-icon="extensions-icons:extension_cloud_upload"
+          aria-describedby="a11yAssociation" @click="${this.onUploadClick_}">
       </cr-icon-button>` : ''}
     ${this.showDevReloadButton_() ? html`
       <cr-icon-button id="dev-reload-button" class="icon-refresh no-overlap"

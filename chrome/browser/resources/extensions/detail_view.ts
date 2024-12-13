@@ -303,6 +303,10 @@ export class ExtensionsDetailViewElement extends
     this.reloadItem().catch((loadError) => this.fire('load-error', loadError));
   }
 
+  protected onUploadClick_() {
+    this.delegate.uploadItemToAccount(this.data.id);
+  }
+
   protected onRemoveClick_() {
     if (this.showSafetyCheck_) {
       chrome.metricsPrivate.recordUserAction('SafetyCheck.DetailRemoveClicked');

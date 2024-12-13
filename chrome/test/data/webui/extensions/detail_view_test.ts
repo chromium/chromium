@@ -1038,5 +1038,9 @@ suite('ExtensionDetailViewTest', function() {
     testVisible(item, '#account-upload-button', false);
     await updateItemData({canUploadAsAccountExtension: true});
     testVisible(item, '#account-upload-button', true);
+
+    await mockDelegate.testClickingCalls(
+        item.shadowRoot!.querySelector<HTMLElement>('#account-upload-button')!,
+        'uploadItemToAccount', [item.data.id]);
   });
 });

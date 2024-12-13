@@ -4032,6 +4032,7 @@ static_library("ui") {
       "views/extensions/dialogs/mv2_deprecation_keep_dialog.cc",
       "views/extensions/dialogs/mv2_deprecation_reenable_dialog.cc",
       "views/extensions/dialogs/reload_page_dialog.cc",
+      "views/extensions/dialogs/upload_extension_to_account_dialog.cc",
       "views/extensions/expandable_container_view.cc",
       "views/extensions/expandable_container_view.h",
       "views/extensions/extension_context_menu_controller.cc",
