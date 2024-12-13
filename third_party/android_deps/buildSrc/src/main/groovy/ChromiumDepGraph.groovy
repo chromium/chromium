@@ -244,6 +244,8 @@ class ChromiumDepGraph {
             resolveVersion: '1.8.1'),
         org_jetbrains_kotlinx_kotlinx_serialization_core_jvm: new PropertyOverride(
             resolveVersion: '1.7.2'),
+        org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm: new PropertyOverride(
+            overrideLatest: true),
         io_grpc_grpc_binder: new PropertyOverride(
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
             licenseName: 'Apache 2.0'),
