@@ -581,11 +581,6 @@ mojom::URLLoaderClient* URLLoader::MaybeSyncURLLoaderClient::Get() {
   return nullptr;
 }
 
-URLLoader::PartialLoadInfo::PartialLoadInfo(net::LoadStateWithParam load_state,
-                                            net::UploadProgress upload_progress)
-    : load_state(std::move(load_state)),
-      upload_progress(std::move(upload_progress)) {}
-
 URLLoader::URLLoader(
     URLLoaderContext& context,
     DeleteCallback delete_callback,
@@ -2413,20 +2408,6 @@ int URLLoader::OnHeadersReceived(
     return net::ERR_IO_PENDING;
   }
   return net::OK;
-}
-
-URLLoader::PartialLoadInfo URLLoader::GetPartialLoadInfo() const {
-  return PartialLoadInfo(url_request_->GetLoadState(),
-                         url_request_->GetUploadProgress());
-}
-
-mojom::LoadInfoPtr URLLoader::CreateLoadInfo(
-    const PartialLoadInfo& partial_load_info) {
-  return mojom::LoadInfo::New(
-      base::TimeTicks::Now(), url_request_->url().host(),
-      partial_load_info.load_state.state, partial_load_info.load_state.param,
-      partial_load_info.upload_progress.position(),
-      partial_load_info.upload_progress.size());
 }
 
 net::LoadState URLLoader::GetLoadState() const {

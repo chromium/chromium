@@ -28,7 +28,6 @@
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "services/network/public/cpp/load_info_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -41,35 +40,6 @@
 #include "url/origin.h"
 
 namespace network {
-
-namespace {
-
-// The interval to send load updates.
-constexpr auto kUpdateLoadStatesInterval = base::Milliseconds(250);
-
-bool LoadInfoIsMoreInteresting(const URLLoader::PartialLoadInfo& a,
-                               const URLLoader::PartialLoadInfo& b) {
-  // Set |*_uploading_size| to be the size of the corresponding upload body if
-  // it's currently being uploaded.
-
-  uint64_t a_uploading_size = 0;
-  if (a.load_state.state == net::LOAD_STATE_SENDING_REQUEST) {
-    a_uploading_size = a.upload_progress.size();
-  }
-
-  uint64_t b_uploading_size = 0;
-  if (b.load_state.state == net::LOAD_STATE_SENDING_REQUEST) {
-    b_uploading_size = b.upload_progress.size();
-  }
-
-  if (a_uploading_size != b_uploading_size) {
-    return a_uploading_size > b_uploading_size;
-  }
-
-  return a.load_state.state > b.load_state.state;
-}
-
-}  // namespace
 
 constexpr int URLLoaderFactory::kMaxKeepaliveConnections;
 constexpr int URLLoaderFactory::kMaxKeepaliveConnectionsPerTopLevelFrame;
@@ -265,8 +235,6 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
     return;
   }
 
-  MaybeStartUpdateLoadInfoTimer();
-
   std::unique_ptr<TrustTokenRequestHelperFactory> trust_token_factory;
   if (resource_request.trust_token_params) {
     trust_token_factory = std::make_unique<TrustTokenRequestHelperFactory>(
@@ -442,51 +410,6 @@ URLLoaderFactory::GetURLLoaderNetworkServiceObserver() const {
   }
   return context_->network_service()
       ->GetDefaultURLLoaderNetworkServiceObserver();
-}
-
-void URLLoaderFactory::AckUpdateLoadInfo() {
-  DCHECK(waiting_on_load_state_ack_);
-  waiting_on_load_state_ack_ = false;
-  MaybeStartUpdateLoadInfoTimer();
-}
-
-void URLLoaderFactory::MaybeStartUpdateLoadInfoTimer() {
-  if (!params_->provide_loading_state_updates ||
-      !GetURLLoaderNetworkServiceObserver() || waiting_on_load_state_ack_ ||
-      update_load_info_timer_.IsRunning()) {
-    return;
-  }
-  update_load_info_timer_.Start(FROM_HERE, kUpdateLoadStatesInterval, this,
-                                &URLLoaderFactory::UpdateLoadInfo);
-}
-
-void URLLoaderFactory::UpdateLoadInfo() {
-  DCHECK(!waiting_on_load_state_ack_);
-
-  URLLoader* most_interesting_url_loader = nullptr;
-  URLLoader::PartialLoadInfo most_interesting_load_info;
-
-  SCOPED_UMA_HISTOGRAM_TIMER("NetworkService.URLLoaderFactory.UpdateLoadInfo");
-
-  for (auto& loader : cors_url_loader_factory_->url_loaders()) {
-    URLLoader::PartialLoadInfo load_info = loader->GetPartialLoadInfo();
-
-    if (!most_interesting_url_loader ||
-        LoadInfoIsMoreInteresting(load_info, most_interesting_load_info)) {
-      most_interesting_url_loader = loader.get();
-      most_interesting_load_info = std::move(load_info);
-    }
-  }
-
-  if (most_interesting_url_loader) {
-    most_interesting_url_loader->GetURLLoaderNetworkServiceObserver()
-        ->OnLoadingStateUpdate(
-            most_interesting_url_loader->CreateLoadInfo(
-                most_interesting_load_info),
-            base::BindOnce(&URLLoaderFactory::AckUpdateLoadInfo,
-                           base::Unretained(this)));
-    waiting_on_load_state_ack_ = true;
-  }
 }
 
 }  // namespace network

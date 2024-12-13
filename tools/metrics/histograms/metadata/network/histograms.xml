@@ -5528,18 +5528,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NetworkService.URLLoaderFactory.UpdateLoadInfo" units="ms"
-    expires_after="2025-05-04">
-  <owner>jam@chromium.org</owner>
-  <owner>cduvall@chromium.org</owner>
-  <summary>
-    The time it takes for each invocation of URLLoaderFactory.UpdateLoadInfo.
-
-    Warning: this histogram was expired from 2023-04-30 to 2024-01-02; data may
-    be missing.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>

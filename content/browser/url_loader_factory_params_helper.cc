@@ -37,21 +37,6 @@ namespace content {
 
 namespace {
 
-// Whether loading state updates to the
-// network::mojom::URLLoaderNetworkServiceObserver are inhibited for URLLoaders
-// created via URLLoaderFactoryParamsHelper.
-//
-// network::mojom::URLLoaderNetworkServiceObserver::OnLoadingStateUpdate is
-// among the most frequent Mojo messages in traces from the field
-// (go/mojos-in-field-traces-2022). Inhibiting the messages has been tested all
-// the way to stable with no ill effect and performance gains.
-//
-// Remove when evaluation of combined performance gains is complete
-// crbug.com/1487544.
-BASE_FEATURE(kInhibitLoadingStateUpdate,
-             "InhibitLoadingStateUpdate",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Helper used by the public URLLoaderFactoryParamsHelper::Create... methods.
 //
 // |origin| is the origin that will use the URLLoaderFactory.
@@ -123,12 +108,6 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
 
   params->trust_token_issuance_policy = trust_token_issuance_policy;
   params->trust_token_redemption_policy = trust_token_redemption_policy;
-
-  // If we have a URLLoaderNetworkObserver, request loading state updates.
-  if (url_loader_network_observer &&
-      !base::FeatureList::IsEnabled(kInhibitLoadingStateUpdate)) {
-    params->provide_loading_state_updates = true;
-  }
 
   GetContentClient()->browser()->OverrideURLLoaderFactoryParams(
       process->GetBrowserContext(), origin, is_for_isolated_world,

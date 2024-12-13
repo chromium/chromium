@@ -838,10 +838,6 @@ struct URLLoaderFactoryParams {
   // take precedence over automatically assigning an IsolationInfo.
   bool automatically_assign_isolation_info = false;
 
-  // Whether URLLoaders created by this factory need to call
-  // URLLoaderNetworkServiceObserver::OnLoadingStateUpdate.
-  bool provide_loading_state_updates = false;
-
   // An identifier for toplevel frame. This is used for resource accounting
   // for keepalive requests. When this factory is for a dedicated worker,
   // the identifier for the toplevel frame of the ancestor's frame is given.

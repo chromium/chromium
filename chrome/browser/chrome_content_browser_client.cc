@@ -2213,11 +2213,6 @@ void ChromeContentBrowserClient::OverrideURLLoaderFactoryParams(
     const url::Origin& origin,
     bool is_for_isolated_world,
     network::mojom::URLLoaderFactoryParams* factory_params) {
-#if BUILDFLAG(IS_ANDROID)
-  // Loading state text isn't used on Android, only in desktop UI.
-  factory_params->provide_loading_state_updates = false;
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
           browser_context)) {

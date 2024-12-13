@@ -115,20 +115,6 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   static constexpr int kMaxTotalKeepaliveRequestSize = 512 * 1024;
 
  private:
-  // Starts the timer to call
-  // URLLoaderNetworkServiceObserver::OnLoadingStateUpdate(), if
-  // needed.
-  void MaybeStartUpdateLoadInfoTimer();
-
-  // Invoked once the browser has acknowledged receiving the previous LoadInfo.
-  // Sets |waiting_on_load_state_ack_| to false, and calls
-  // MaybeStartUpdateLoadeInfoTimer.
-  void AckUpdateLoadInfo();
-
-  // Finds the most relevant URLLoader that is outstanding and asks it to
-  // send an update.
-  void UpdateLoadInfo();
-
   // The NetworkContext that indirectly owns |this|.
   const raw_ptr<NetworkContext> context_;
   mojom::URLLoaderFactoryParamsPtr params_;
@@ -152,9 +138,6 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
   mojo::Remote<mojom::DeviceBoundSessionAccessObserver>
       device_bound_session_observer_;
-
-  base::OneShotTimer update_load_info_timer_;
-  bool waiting_on_load_state_ack_ = false;
 };
 
 }  // namespace network
