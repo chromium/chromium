@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ANDROID_PROFILE_KEY_STARTUP_ACCESSOR_H_
 #define CHROME_BROWSER_ANDROID_PROFILE_KEY_STARTUP_ACCESSOR_H_
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 
 class ProfileKey;
 
@@ -31,9 +31,7 @@ class ProfileKeyStartupAccessor {
   void Reset();
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope
-  RAW_PTR_EXCLUSION ProfileKey* key_;
+  raw_ptr<ProfileKey> key_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_PROFILE_KEY_STARTUP_ACCESSOR_H_
