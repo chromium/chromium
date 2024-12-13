@@ -35,6 +35,9 @@ class COMPONENT_EXPORT(OZONE_BASE) StubInputController
                          const base::TimeDelta& interval) override;
   void GetAutoRepeatRate(base::TimeDelta* delay,
                          base::TimeDelta* interval) override;
+  void SetSlowKeysEnabled(bool enabled) override;
+  bool IsSlowKeysEnabled() const override;
+  void SetSlowKeysDelay(base::TimeDelta delay) override;
   void SetCurrentLayoutByName(const std::string& layout_name,
                               base::OnceCallback<void(bool)> callback) override;
   void SetKeyboardKeyBitsMapping(

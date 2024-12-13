@@ -188,6 +188,18 @@ void InputControllerEvdev::GetAutoRepeatRate(base::TimeDelta* delay,
   keyboard_->GetAutoRepeatRate(delay, interval);
 }
 
+void InputControllerEvdev::SetSlowKeysEnabled(bool enabled) {
+  keyboard_->SetSlowKeysEnabled(enabled);
+}
+
+bool InputControllerEvdev::IsSlowKeysEnabled() const {
+  return keyboard_->IsSlowKeysEnabled();
+}
+
+void InputControllerEvdev::SetSlowKeysDelay(base::TimeDelta delay) {
+  keyboard_->SetSlowKeysDelay(delay);
+}
+
 void InputControllerEvdev::SetKeyboardKeyBitsMapping(
     base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) {
   keyboard_key_bits_mapping_ = std::move(key_bits_mapping);

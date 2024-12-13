@@ -52,6 +52,11 @@ void StubInputController::SetAutoRepeatRate(const base::TimeDelta& delay,
                                             const base::TimeDelta& interval) {}
 void StubInputController::GetAutoRepeatRate(base::TimeDelta* delay,
                                             base::TimeDelta* interval) {}
+void StubInputController::SetSlowKeysEnabled(bool enabled) {}
+bool StubInputController::IsSlowKeysEnabled() const {
+  return false;
+}
+void StubInputController::SetSlowKeysDelay(base::TimeDelta delay) {}
 void StubInputController::SetCurrentLayoutByName(
     const std::string& layout_name,
     base::OnceCallback<void(bool)> callback) {

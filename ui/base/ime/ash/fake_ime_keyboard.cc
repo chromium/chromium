@@ -36,5 +36,17 @@ bool FakeImeKeyboard::GetAutoRepeatEnabled() {
   return auto_repeat_is_enabled_;
 }
 
+void FakeImeKeyboard::SetSlowKeysEnabled(bool enabled) {
+  slow_keys_enabled_ = enabled;
+}
+
+bool FakeImeKeyboard::IsSlowKeysEnabled() const {
+  return slow_keys_enabled_;
+}
+
+void FakeImeKeyboard::SetSlowKeysDelay(base::TimeDelta delay) {
+  slow_keys_delay_ = delay;
+}
+
 }  // namespace input_method
 }  // namespace ash

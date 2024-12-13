@@ -97,6 +97,7 @@
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/aura/window.h"
 #include "ui/base/cursor/cursor_size.h"
+#include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -2883,7 +2884,11 @@ void AccessibilityController::UpdateBounceKeysDelayFromPref() {
 }
 
 void AccessibilityController::UpdateSlowKeysDelayFromPref() {
-  // TODO(b/375218308): Hook up slow keys setter, similar to bounce keys above.
+  DCHECK(active_user_prefs_);
+  base::TimeDelta delay = base::Milliseconds(
+      active_user_prefs_->GetInteger(prefs::kAccessibilitySlowKeysDelayMs));
+  input_method::InputMethodManager::Get()->GetImeKeyboard()->SetSlowKeysDelay(
+      delay);
 }
 
 void AccessibilityController::UpdateMouseKeysAccelerationFromPref() {
@@ -3899,8 +3904,10 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
       }
       break;
     case FeatureType::kSlowKeys:
-      if (filter_keys_event_rewriter_) {
-        // TODO(b/375218308): Hook up slow keys enablement.
+      if (::features::IsAccessibilitySlowKeysEnabled()) {
+        input_method::InputMethodManager::Get()
+            ->GetImeKeyboard()
+            ->SetSlowKeysEnabled(enabled);
       }
       break;
     case FeatureType::kStickyKeys:
