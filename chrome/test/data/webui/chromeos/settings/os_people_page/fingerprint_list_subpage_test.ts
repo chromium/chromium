@@ -259,6 +259,32 @@ suite('<settings-fingerprint-list-subpage>', () => {
     assertEquals(0, fingerprintList.get('fingerprints_').length);
   });
 
+  // This test simulates a page reload (e.g., CTRL+R) to ensure the
+  // `setup_fingerprint_dialog`'s `disconnectedCallback()` handles
+  // DOM removal correctly.
+  test('ReloadFingerprintEnrollDialog', async () => {
+    openDialog();
+    await browserProxy.whenCalled('startEnroll');
+    const dialogButton =
+        dialog.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+    assertTrue(!!dialogButton);
+    assertTrue(dialogButton.open);
+    assertEquals(0, dialog.get('percentComplete_'));
+    assertEquals(FingerprintSetupStep.LOCATE_SCANNER, dialog.get('step_'));
+    // First tap on the sensor to start fingerprint enrollment.
+    browserProxy.scanReceived(
+        FingerprintResultType.SUCCESS, false, 20 /* percent */);
+    assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.get('step_'));
+
+    browserProxy.scanReceived(
+        FingerprintResultType.SUCCESS, false, 30 /* percent */);
+    assertEquals(30, dialog.get('percentComplete_'));
+    assertEquals(FingerprintSetupStep.MOVE_FINGER, dialog.get('step_'));
+    dialog.parentNode!.removeChild(dialog);
+    await browserProxy.whenCalled('cancelCurrentEnroll');
+    assertEquals(0, fingerprintList.get('fingerprints_').length);
+  });
+
   test('RemoveFingerprint', async () => {
     const quickUnlockPrivateApi = new FakeQuickUnlockPrivate();
     fingerprintList.set('authToken', quickUnlockPrivateApi.getFakeToken());
