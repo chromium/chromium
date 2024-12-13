@@ -313,6 +313,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kDurationFormat, WebDXFeature::kIntlDurationFormat},
           {WebFeature::kWebAppWindowControlsOverlay,
            WebDXFeature::kWindowControlsOverlay},
+          {WebFeature::kPriorityHints, WebDXFeature::kFetchPriority},
       }};
 
   return *kMap;
