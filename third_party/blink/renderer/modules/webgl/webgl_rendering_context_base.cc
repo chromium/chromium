@@ -4456,7 +4456,8 @@ ScriptValue WebGLRenderingContextBase::getUniform(
               std::array<bool, 4> bool_value = {};
               for (unsigned j = 0; j < length; j++)
                 bool_value[j] = static_cast<bool>(value[j]);
-              return WebGLAny(script_state, bool_value.data(), length);
+              return WebGLAny(script_state,
+                              base::span(bool_value).first(length));
             }
 
             return WebGLAny(script_state, static_cast<bool>(value[0]));
@@ -7370,7 +7371,7 @@ ScriptValue WebGLRenderingContextBase::GetBooleanArrayParameter(
     GLenum pname) {
   if (pname != GL_COLOR_WRITEMASK) {
     NOTIMPLEMENTED();
-    return WebGLAny(script_state, nullptr, 0);
+    return WebGLAny(script_state, base::span<const bool>());
   }
   std::array<GLboolean, 4> value = {0};
   if (!isContextLost()) {
@@ -7379,7 +7380,7 @@ ScriptValue WebGLRenderingContextBase::GetBooleanArrayParameter(
   std::array<bool, 4> bool_value = {};
   for (int ii = 0; ii < 4; ++ii)
     bool_value[ii] = static_cast<bool>(value[ii]);
-  return WebGLAny(script_state, bool_value.data(), 4);
+  return WebGLAny(script_state, bool_value);
 }
 
 ScriptValue WebGLRenderingContextBase::GetFloatParameter(
