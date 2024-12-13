@@ -17,6 +17,10 @@
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 
+namespace collaboration_pb {
+class Message;
+}  // namespace collaboration_pb
+
 namespace data_sharing {
 class DataSharingService;
 }  // namespace data_sharing
@@ -77,9 +81,29 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
 
   // DataSharingChangeNotifier::Observer.
   void OnDataSharingChangeNotifierInitialized() override;
+  void OnGroupAdded(const data_sharing::GroupId& group_id,
+                    const std::optional<data_sharing::GroupData>& group_data,
+                    const base::Time& event_time) override;
+  void OnGroupRemoved(const data_sharing::GroupId& group_id,
+                      const std::optional<data_sharing::GroupData>& group_data,
+                      const base::Time& event_time) override;
+  void OnGroupMemberAdded(const data_sharing::GroupData& group_data,
+                          const GaiaId& member_gaia_id,
+                          const base::Time& event_time) override;
+  void OnGroupMemberRemoved(const data_sharing::GroupData& group_data,
+                            const GaiaId& member_gaia_id,
+                            const base::Time& event_time) override;
 
  private:
   void OnStoreInitialized(bool success);
+
+  // Uses all available sources to try to retrieve a name that describes the
+  // given user.
+  std::optional<std::string> GetDisplayNameForUserInGroup(
+      const data_sharing::GroupId& group_id,
+      const GaiaId& gaia_id,
+      const std::optional<data_sharing::GroupData>& group_data,
+      const std::optional<collaboration_pb::Message>& db_message);
 
   // Provides functionality to go from observing the TabGroupSyncService to
   // a delta based observer API.

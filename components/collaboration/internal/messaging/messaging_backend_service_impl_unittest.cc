@@ -4,27 +4,47 @@
 
 #include "components/collaboration/internal/messaging/messaging_backend_service_impl.h"
 
+#include <ctime>
 #include <memory>
 
 #include "base/functional/callback_forward.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/collaboration/internal/messaging/data_sharing_change_notifier.h"
 #include "components/collaboration/internal/messaging/storage/messaging_backend_store.h"
+#include "components/collaboration/internal/messaging/storage/protocol/message.pb.h"
 #include "components/collaboration/internal/messaging/tab_group_change_notifier.h"
+#include "components/data_sharing/public/group_data.h"
+#include "components/data_sharing/test_support/mock_data_sharing_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::test::RunOnceClosure;
 
 using testing::_;
+using testing::Eq;
 using testing::Return;
 using testing::SaveArg;
 using testing::Truly;
 
 namespace collaboration::messaging {
+
+namespace {
+data_sharing::GroupMemberPartialData CreatePartialGroupMember(
+    const GaiaId& gaia_id,
+    const std::string& display_name,
+    const std::string& given_name) {
+  data_sharing::GroupMemberPartialData member;
+  member.gaia_id = gaia_id;
+  member.display_name = display_name;
+  member.given_name = given_name;
+  return member;
+}
+}  // namespace
 
 class MockTabGroupChangeNotifier : public TabGroupChangeNotifier {
  public:
@@ -115,6 +135,8 @@ class MessagingBackendServiceImplTest : public testing::Test {
   void SetUp() override {
     mock_tab_group_sync_service_ =
         std::make_unique<tab_groups::MockTabGroupSyncService>();
+    mock_data_sharing_service_ =
+        std::make_unique<data_sharing::MockDataSharingService>();
   }
 
   void TearDown() override {}
@@ -154,14 +176,22 @@ class MessagingBackendServiceImplTest : public testing::Test {
         std::move(tab_group_change_notifier),
         std::move(data_sharing_change_notifier),
         std::move(mock_messaging_backend_store),
-        mock_tab_group_sync_service_.get(),
-        /*data_sharing_service=*/nullptr);
+        mock_tab_group_sync_service_.get(), mock_data_sharing_service_.get());
+  }
+
+  void InitializeService() {
+    std::move(on_store_initialized_callback_).Run(/*success=*/true);
+    ds_notifier_observer_->OnDataSharingChangeNotifierInitialized();
+    tg_notifier_observer_->OnTabGroupChangeNotifierInitialized();
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   base::OnceCallback<void(bool)> on_store_initialized_callback_;
+  std::unique_ptr<data_sharing::MockDataSharingService>
+      mock_data_sharing_service_;
   std::unique_ptr<tab_groups::MockTabGroupSyncService>
       mock_tab_group_sync_service_;
   std::unique_ptr<MessagingBackendServiceImpl> service_;
@@ -181,6 +211,151 @@ TEST_F(MessagingBackendServiceImplTest, TestInitialization) {
   EXPECT_FALSE(service_->IsInitialized());
   tg_notifier_observer_->OnTabGroupChangeNotifierInitialized();
   EXPECT_TRUE(service_->IsInitialized());
+}
+
+void VerifyGenericMessageData(const collaboration_pb::Message& message,
+                              const std::string& collaboration_id,
+                              collaboration_pb::EventType event_type,
+                              DirtyType dirty_type,
+                              time_t event_timestamp) {
+  EXPECT_NE("", message.uuid());
+  EXPECT_EQ(message.event_timestamp(), message.event_timestamp());
+  EXPECT_EQ(message.collaboration_id(), collaboration_id);
+  EXPECT_EQ(message.event_type(), event_type);
+  EXPECT_EQ(message.dirty(), static_cast<int>(dirty_type));
+}
+
+TEST_F(MessagingBackendServiceImplTest, TestStoringCollaborationEvents) {
+  CreateService();
+  InitializeService();
+
+  data_sharing::GroupData group_data;
+  group_data.group_token.group_id = data_sharing::GroupId("my group id");
+  data_sharing::GroupMember member;
+  member.gaia_id = GaiaId("abc");
+  member.display_name = "First Last";
+  member.given_name = "First";
+  group_data.members.emplace_back(member);
+
+  // Always refers to the latest message that has been added to storage.
+  collaboration_pb::Message message;
+  EXPECT_CALL(*unowned_messaging_backend_store_, AddMessage(_))
+      .WillRepeatedly(SaveArg<0>(&message));
+
+  EXPECT_CALL(*mock_data_sharing_service_, GetPossiblyRemovedGroupMember(_, _))
+      .WillRepeatedly(Return(std::nullopt));
+
+  base::Time time = base::Time::Now();
+  ds_notifier_observer_->OnGroupAdded(group_data.group_token.group_id,
+                                      group_data, time);
+  VerifyGenericMessageData(message, "my group id",
+                           collaboration_pb::COLLABORATION_ADDED,
+                           DirtyType::kNone, time.ToTimeT());
+
+  // Move time forward so it is unique.
+  time += base::Seconds(1);
+  ds_notifier_observer_->OnGroupRemoved(group_data.group_token.group_id,
+                                        group_data, time);
+  VerifyGenericMessageData(message, "my group id",
+                           collaboration_pb::COLLABORATION_REMOVED,
+                           DirtyType::kMessageOnly, time.ToTimeT());
+
+  time += base::Seconds(1);
+  GaiaId gaia_id("abc");
+  ds_notifier_observer_->OnGroupMemberAdded(group_data, gaia_id, time);
+  VerifyGenericMessageData(message, "my group id",
+                           collaboration_pb::COLLABORATION_MEMBER_ADDED,
+                           DirtyType::kMessageOnly, time.ToTimeT());
+  EXPECT_EQ("abc", message.affected_user_gaia_id());
+  EXPECT_EQ("First", message.collaboration_data().affected_user_name());
+
+  time += base::Seconds(1);
+  ds_notifier_observer_->OnGroupMemberRemoved(group_data, gaia_id, time);
+  VerifyGenericMessageData(message, "my group id",
+                           collaboration_pb::COLLABORATION_MEMBER_REMOVED,
+                           DirtyType::kNone, time.ToTimeT());
+  EXPECT_EQ("abc", message.affected_user_gaia_id());
+  EXPECT_EQ("First", message.collaboration_data().affected_user_name());
+}
+
+TEST_F(MessagingBackendServiceImplTest,
+       TestLookingUpMemberNameForCollaborationEventsForStorage) {
+  CreateService();
+  InitializeService();
+
+  data_sharing::GroupData group_data;
+  data_sharing::GroupId group_id("my group id");
+  group_data.group_token.group_id = group_id;
+  data_sharing::GroupMember member1;
+  member1.gaia_id = GaiaId("abc");
+  member1.display_name = "Provided Diplay Name 1";
+  member1.given_name = "Provided Given Name 1";
+  group_data.members.emplace_back(member1);
+
+  data_sharing::GroupMember member2;
+  member2.gaia_id = GaiaId("def");
+  member2.display_name = "Provided Display Name 2";
+  member2.given_name = "";  // No given name available.
+  group_data.members.emplace_back(member2);
+
+  // Always refers to the latest message that has been added to storage.
+  collaboration_pb::Message message;
+  EXPECT_CALL(*unowned_messaging_backend_store_, AddMessage(_))
+      .WillRepeatedly(SaveArg<0>(&message));
+
+  // Current given name should be first priority.
+  EXPECT_CALL(*mock_data_sharing_service_,
+              GetPossiblyRemovedGroupMember(Eq(group_id), Eq(member1.gaia_id)))
+      .WillOnce(Return(std::make_optional(CreatePartialGroupMember(
+          member1.gaia_id, "Live Display Name 1", "Live Given Name 1"))));
+  base::Time time = base::Time::Now();
+  ds_notifier_observer_->OnGroupMemberAdded(group_data, member1.gaia_id, time);
+  VerifyGenericMessageData(message, group_id.value(),
+                           collaboration_pb::COLLABORATION_MEMBER_ADDED,
+                           DirtyType::kMessageOnly, time.ToTimeT());
+  EXPECT_EQ(member1.gaia_id, message.affected_user_gaia_id());
+  EXPECT_EQ("Live Given Name 1",
+            message.collaboration_data().affected_user_name());
+
+  // Given name from provided data should be second priority.
+  EXPECT_CALL(*mock_data_sharing_service_,
+              GetPossiblyRemovedGroupMember(Eq(group_id), Eq(member1.gaia_id)))
+      .WillOnce(Return(std::nullopt));
+  time += base::Seconds(1);
+  ds_notifier_observer_->OnGroupMemberAdded(group_data, member1.gaia_id, time);
+  VerifyGenericMessageData(message, group_id.value(),
+                           collaboration_pb::COLLABORATION_MEMBER_ADDED,
+                           DirtyType::kMessageOnly, time.ToTimeT());
+  EXPECT_EQ(member1.gaia_id, message.affected_user_gaia_id());
+  EXPECT_EQ("Provided Given Name 1",
+            message.collaboration_data().affected_user_name());
+
+  // Current display name should be next.
+  EXPECT_CALL(*mock_data_sharing_service_,
+              GetPossiblyRemovedGroupMember(Eq(group_id), Eq(member2.gaia_id)))
+      .WillOnce(Return(std::make_optional(CreatePartialGroupMember(
+          member2.gaia_id, "Live Display Name 2", /*given_name=*/""))));
+  time += base::Seconds(1);
+  ds_notifier_observer_->OnGroupMemberAdded(group_data, member2.gaia_id, time);
+  VerifyGenericMessageData(message, group_id.value(),
+                           collaboration_pb::COLLABORATION_MEMBER_ADDED,
+                           DirtyType::kMessageOnly, time.ToTimeT());
+  EXPECT_EQ(member2.gaia_id, message.affected_user_gaia_id());
+  EXPECT_EQ("Live Display Name 2",
+            message.collaboration_data().affected_user_name());
+
+  // Provided display name should be next.
+  EXPECT_CALL(*mock_data_sharing_service_,
+              GetPossiblyRemovedGroupMember(Eq(group_id), Eq(member2.gaia_id)))
+      .WillOnce(Return(std::nullopt));
+  time += base::Seconds(1);
+  ds_notifier_observer_->OnGroupMemberAdded(group_data, member2.gaia_id, time);
+  VerifyGenericMessageData(message, group_id.value(),
+                           collaboration_pb::COLLABORATION_MEMBER_ADDED,
+                           DirtyType::kMessageOnly, time.ToTimeT());
+  EXPECT_EQ(member2.gaia_id, message.affected_user_gaia_id());
+  EXPECT_EQ("Provided Display Name 2",
+            message.collaboration_data().affected_user_name());
 }
 
 }  // namespace collaboration::messaging

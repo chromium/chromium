@@ -165,6 +165,7 @@ source_set("messaging_unit_tests") {
     ":messaging_internal",
     "//base",
     "//base/test:test_support",
+    "//components/collaboration/internal/messaging/storage/protocol",
     "//components/data_sharing:test_support",
     "//components/data_sharing/public",
     "//components/saved_tab_groups/public",

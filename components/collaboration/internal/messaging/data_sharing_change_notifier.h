@@ -46,11 +46,11 @@ class DataSharingChangeNotifier
         const base::Time& event_time) {}
 
     // Called when a new member has been added to the group.
-    virtual void OnGroupMemberAdded(const data_sharing::GroupData& group_id,
+    virtual void OnGroupMemberAdded(const data_sharing::GroupData& group_data,
                                     const GaiaId& member_gaia_id,
                                     const base::Time& event_time) {}
     // Called when a member has been removed from the group.
-    virtual void OnGroupMemberRemoved(const data_sharing::GroupData& group_id,
+    virtual void OnGroupMemberRemoved(const data_sharing::GroupData& group_data,
                                       const GaiaId& member_gaia_id,
                                       const base::Time& event_time) {}
   };
