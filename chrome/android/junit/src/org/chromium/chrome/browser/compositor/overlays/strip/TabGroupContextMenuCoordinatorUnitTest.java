@@ -257,7 +257,15 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         verifyNormalListItems(modelList, 5);
 
         // Assert: verify collaboration menu items.
-        verifyCollaborationListItems(modelList, MemberRole.OWNER);
+        assertEquals(
+                R.id.manage_sharing,
+                modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(
+                R.id.recent_activity,
+                modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(
+                R.id.delete_shared_group,
+                modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -277,13 +285,26 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         mTabGroupContextMenuCoordinator.buildCollaborationMenuItems(modelList, MemberRole.MEMBER);
 
         // Assert: verify number of items in the model list.
-        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
 
-        // Assert: verify normal menu items.
-        verifyNormalListItems(modelList, 5);
-
-        // Assert: verify collaboration menu items.
-        verifyCollaborationListItems(modelList, MemberRole.MEMBER);
+        // Assert: verify normal and collaboration menu items; members should not have the option to
+        // ungroup.
+        assertEquals(ListMenuItemType.DIVIDER, modelList.get(0).type);
+        assertEquals(
+                R.id.open_new_tab_in_group,
+                modelList.get(1).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(
+                R.id.manage_sharing,
+                modelList.get(2).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(
+                R.id.recent_activity,
+                modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(
+                R.id.close_tab_group,
+                modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(ListMenuItemType.DIVIDER, modelList.get(5).type);
+        assertEquals(
+                R.id.leave_group, modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -404,26 +425,5 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         assertEquals(
                 R.id.close_tab_group,
                 modelList.get(closeGroupPosition).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-    }
-
-    private void verifyCollaborationListItems(ModelList modelList, @MemberRole int memberRole) {
-        assertEquals(
-                R.id.manage_sharing,
-                modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-        assertEquals(
-                R.id.recent_activity,
-                modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-        assertEquals(ListMenuItemType.DIVIDER, modelList.get(6).type);
-
-        // Verify delete group or leave group depending on the member role.
-        if (memberRole == MemberRole.OWNER) {
-            assertEquals(
-                    R.id.delete_shared_group,
-                    modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-        } else if (memberRole == MemberRole.MEMBER) {
-            assertEquals(
-                    R.id.leave_group,
-                    modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-        }
     }
 }

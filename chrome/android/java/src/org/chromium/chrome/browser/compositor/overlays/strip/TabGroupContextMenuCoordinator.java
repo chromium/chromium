@@ -299,15 +299,18 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
                         /* enabled= */ true));
-        itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
-                        R.string.ungroup_tab_group_menu_item,
-                        R.id.ungroup_tab,
-                        R.drawable.ic_ungroup_tabs_24dp,
-                        R.color.default_icon_color_light_tint_list,
-                        R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
-                        isIncognito,
-                        /* enabled= */ true));
+
+        if (!hasCollaborationData) {
+            itemList.add(
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                            R.string.ungroup_tab_group_menu_item,
+                            R.id.ungroup_tab,
+                            R.drawable.ic_ungroup_tabs_24dp,
+                            R.color.default_icon_color_light_tint_list,
+                            R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                            isIncognito,
+                            /* enabled= */ true));
+        }
 
         if (!isIncognito
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
@@ -338,9 +341,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                             R.string.tab_grid_dialog_toolbar_delete_group,
                             R.id.delete_tab_group,
                             R.drawable.material_ic_delete_24dp,
-                            true));
+                            /* enabled= */ true));
         }
-
         setListViewHeightBasedOnChildren();
     }
 
@@ -365,6 +367,14 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         }
 
         if (memberRole == MemberRole.OWNER) {
+            int insertionIndex = getMenuItemIndex(itemList, R.id.manage_sharing);
+            itemList.add(
+                    insertionIndex,
+                    BrowserUiListMenuUtils.buildMenuListItem(
+                            R.string.ungroup_tab_group_menu_item,
+                            R.id.ungroup_tab,
+                            R.drawable.ic_ungroup_tabs_24dp,
+                            /* enabled= */ true));
             itemList.add(getDivider());
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItem(
