@@ -866,6 +866,10 @@
     "META": {"join": 2},
     "includes": [6460],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/scanner_feedback_ui/resources/resources.grd": {
+    "META": {"sizes": {"includes": [20],}},
+    "includes": [6470],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/personalization_app/resources/resources.grd": {
     "META": {"sizes": {"includes": [200],}},
     "includes": [6480],

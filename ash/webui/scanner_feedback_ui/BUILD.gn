@@ -1,0 +1,26 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Scanner is ash-chrome only")
+
+static_library("scanner_feedback_ui") {
+  sources = [
+    "scanner_feedback_untrusted_ui.cc",
+    "scanner_feedback_untrusted_ui.h",
+    "url_constants.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/webui/scanner_feedback_ui/resources",
+    "//content/public/browser",
+  ]
+
+  public_deps = [
+    "//ash/webui/common:chrome_os_webui_config",
+    "//ui/webui",
+  ]
+}

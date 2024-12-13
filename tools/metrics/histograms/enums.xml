@@ -34483,6 +34483,7 @@ Called by update_use_counter_feature_enum.py.-->
 </enum>
 
 <enum name="WebUIUrlHashes">
+  <int value="-2137891043" label="chrome-untrusted://scanner-feedback/"/>
   <int value="-2103246641" label="chrome://signin-internals/"/>
   <int value="-2086395469" label="chrome://dlp-internals/"/>
   <int value="-2069349961" label="chrome://history-clusters-internals/"/>
