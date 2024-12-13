@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/shelf/shelf_button_delegate.h"
 #include "ash/shelf/shelf_control_button.h"
+#include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
@@ -37,7 +38,6 @@ class ASH_EXPORT BackButton : public ShelfControlButton,
 
   // views::Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
 
   // views::View:
   void OnThemeChanged() override;
@@ -49,6 +49,12 @@ class ASH_EXPORT BackButton : public ShelfControlButton,
   void ButtonPressed(views::Button* sender,
                      const ui::Event& event,
                      views::InkDrop* ink_drop) override;
+
+ private:
+  void OnAXNameChanged(ax::mojom::StringAttribute attribute,
+                       const std::optional<std::string>& name);
+
+  base::CallbackListSubscription ax_name_change_subscription_;
 };
 
 }  // namespace ash
