@@ -119,23 +119,6 @@ chromium-metrics-reviews@google.com.
       summary="User chose to fill a form or field with password credentials."/>
   <variant name="PlusAddresses"
       summary="User chose to fill a field with a plus addresses suggestion."/>
-  <variant name="StandaloneCvc"
-      summary="User chose to fill a form or field with a CVC."/>
-</variants>
-
-<!-- LINT.ThenChange(Autofill.FillingProduct.Condensed) -->
-
-<!-- LINT.IfChange(Autofill.FillingProduct.Condensed) -->
-
-<variants name="Autofill.FillingProduct.Condensed">
-  <variant name="Address"
-      summary="User chose to fill a form or field with an address profile."/>
-  <variant name="CreditCard"
-      summary="User chose to fill a form or field with a credit card profile."/>
-  <variant name="Password"
-      summary="User chose to fill a form or field with password credentials."/>
-  <variant name="StandaloneCvc"
-      summary="User chose to fill a form or field with a CVC."/>
 </variants>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/filling_product.cc:FillingProductToString) -->

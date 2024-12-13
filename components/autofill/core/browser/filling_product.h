@@ -23,7 +23,6 @@ enum class FillingProduct {
   kPassword,
   kCompose,
   kPlusAddresses,
-  kStandaloneCvc,
   kAutofillAi,
   kMaxValue = kAutofillAi
 };

@@ -61,7 +61,6 @@ bool FillingProductSupportsRefills(FillingProduct filling_product) {
     case FillingProduct::kAutocomplete:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
-    case FillingProduct::kStandaloneCvc:
       return false;
     case FillingProduct::kPassword:
     case FillingProduct::kNone:
@@ -130,7 +129,6 @@ std::optional<FieldTypeSet> GetFieldTypesToFillFromFillingProduct(
     case FillingProduct::kAutocomplete:
     case FillingProduct::kCompose:
       return std::nullopt;
-    case FillingProduct::kStandaloneCvc:
     case FillingProduct::kNone:
       NOTREACHED();
   }
@@ -232,7 +230,6 @@ bool ShouldRecordFillingHistory(FillingProduct filling_product) {
     case FillingProduct::kAutocomplete:
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
-    case FillingProduct::kStandaloneCvc:
     case FillingProduct::kAutofillAi:
       return false;
   }

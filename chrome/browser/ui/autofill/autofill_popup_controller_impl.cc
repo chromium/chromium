@@ -540,7 +540,6 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
       }
       break;
     case FillingProduct::kCreditCard:
-    case FillingProduct::kStandaloneCvc:
       // TODO(crbug.com/41482065): Add metrics for credit cards.
       break;
     case FillingProduct::kNone:

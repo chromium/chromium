@@ -142,7 +142,6 @@ void FormatLabel(views::Label& label,
       label.SetMaximumWidthSingleLine(maximum_width_single_line);
       break;
     case FillingProduct::kCreditCard:
-    case FillingProduct::kStandaloneCvc:
       if (text.should_truncate.value()) {
         // should_truncate should only be set to true iff the experiments are
         // enabled.

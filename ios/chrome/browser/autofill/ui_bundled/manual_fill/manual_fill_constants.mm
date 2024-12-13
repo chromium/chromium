@@ -115,7 +115,6 @@ NSString* const kAccessoryKeyboardAccessibilityIdentifier =
       return manual_fill::ManualFillDataType::kAddress;
     case autofill::FillingProduct::kCreditCard:
     case autofill::FillingProduct::kIban:
-    case autofill::FillingProduct::kStandaloneCvc:
       return manual_fill::ManualFillDataType::kPaymentMethod;
     case autofill::FillingProduct::kPassword:
       return manual_fill::ManualFillDataType::kPassword;

@@ -494,7 +494,6 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
         break;
       case FillingProduct::kCreditCard:
       case FillingProduct::kIban:
-      case FillingProduct::kStandaloneCvc:
         mainFillingProductString = l10n_util::GetPluralStringFUTF16(
             IDS_IOS_AUTOFILL_PAYMENT_METHOD_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);

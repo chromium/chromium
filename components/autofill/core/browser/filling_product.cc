@@ -32,8 +32,6 @@ std::string FillingProductToString(FillingProduct filling_product) {
       return "Compose";
     case FillingProduct::kPlusAddresses:
       return "PlusAddresses";
-    case FillingProduct::kStandaloneCvc:
-      return "StandaloneCvc";
     case FillingProduct::kAutofillAi:
       return "AutofillAi";
   };
@@ -128,9 +126,8 @@ FillingProduct GetFillingProductFromFieldTypeGroup(
     case kPhone:
       return FillingProduct::kAddress;
     case kCreditCard:
-      return FillingProduct::kCreditCard;
     case kStandaloneCvcField:
-      return FillingProduct::kStandaloneCvc;
+      return FillingProduct::kCreditCard;
     case kPasswordField:
     case kUsernameField:
       return FillingProduct::kPassword;

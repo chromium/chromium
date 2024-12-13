@@ -60,7 +60,6 @@ void LogSuggestionsCount(size_t num_suggestions,
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
     case FillingProduct::kAutofillAi:
-    case FillingProduct::kStandaloneCvc:
       NOTREACHED();
   }
 }
@@ -73,7 +72,6 @@ void LogSuggestionAcceptedIndex(int index,
 
   switch (filling_product) {
     case FillingProduct::kCreditCard:
-    case FillingProduct::kStandaloneCvc:
       base::UmaHistogramSparse("Autofill.SuggestionAcceptedIndex.CreditCard",
                                uma_index);
       break;

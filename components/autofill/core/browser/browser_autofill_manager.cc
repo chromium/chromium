@@ -215,7 +215,6 @@ bool IsSingleFieldFillerFillingProduct(FillingProduct filling_product) {
     case FillingProduct::kAutocomplete:
     case FillingProduct::kIban:
     case FillingProduct::kMerchantPromoCode:
-    case FillingProduct::kStandaloneCvc:
       return true;
     case FillingProduct::kPlusAddresses:
     case FillingProduct::kAutofillAi:
@@ -2880,9 +2879,7 @@ BrowserAutofillManager::GetAvailableAddressAndCreditCardSuggestions(
 
   std::vector<Suggestion> suggestions;
   if (form_structure && autofill_field) {
-    if (FillingProductSet{FillingProduct::kCreditCard,
-                          FillingProduct::kStandaloneCvc}
-            .contains(context.filling_product)) {
+    if (context.filling_product == FillingProduct::kCreditCard) {
       suggestions = GetCreditCardSuggestions(form, CHECK_DEREF(form_structure),
                                              field, CHECK_DEREF(autofill_field),
                                              trigger_source, ranking_context);
