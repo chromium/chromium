@@ -111,6 +111,12 @@ BASE_FEATURE(kWinSboxRestrictCoreSharingOnRenderer,
 BASE_FEATURE(kWinSboxParallelProcessLaunch,
              "WinSboxParallelProcessLaunch",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables Csrss lockdown in supported processes by closing all ALPC
+// ports before sandbox lockdown. See crbug.com/40408399 for details.
+BASE_FEATURE(kEnableCsrssLockdown,
+             "EnableCsrssLockdown",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
