@@ -14,7 +14,6 @@ export function getHtml(this: ModificationsPanelElement) {
     <div class="horizontal-row">
       <label class="modifications-row-label">$i18n{trustState}</label>
       <div class="input-with-error">
-        <!-- TODO(crbug.com/40928765): switch to cr-select -->
         <select id="trustStateSelect" class="md-select"
             .value="${this.trustStateValue}"
             @change="${this.onTrustStateChange_}"
