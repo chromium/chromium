@@ -10,6 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -128,6 +129,9 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
 
   bool CanShowModalUI() const override;
   std::unique_ptr<ScopedTabModalUI> ShowModalUI() override;
+  base::CallbackListSubscription RegisterModalUIChanged(
+      TabInterfaceCallback callback) override;
+
   bool IsInNormalWindow() const override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
   tabs::TabFeatures* GetTabFeatures() override;
@@ -154,8 +158,10 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
     ~ScopedTabModalUIImpl() override;
 
    private:
-    // Owns this.
-    raw_ptr<TabModel> tab_;
+    // Owns this. Some consumers may hold this beyond the lifetime of the tab.
+    // This is because legacy code often clears state in WebContentsDestroyed(),
+    // which occurs during or after TabModel destruction.
+    base::WeakPtr<TabModel> tab_;
   };
 
   // This must always be the first member so that it is destroyed last. This is
@@ -207,11 +213,17 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
       void(TabInterface*, std::optional<tab_groups::TabGroupId> new_group)>;
   GroupChangedCallbackList group_changed_callback_list_;
 
+  using TabInterfaceCallbackList =
+      base::RepeatingCallbackList<void(TabInterface*)>;
+  TabInterfaceCallbackList modal_ui_changed_callback_list_;
+
   // Tracks whether a modal UI is showing.
   bool showing_modal_ui_ = false;
 
   // Features that are per-tab will be owned by this class.
   std::unique_ptr<TabFeatures> tab_features_;
+
+  base::WeakPtrFactory<TabModel> weak_factory_{this};
 };
 
 }  // namespace tabs

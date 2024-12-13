@@ -414,6 +414,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);
 
+  // Called when the tab's modalUI is shown or hidden.
+  void ModalUIChanged(tabs::TabInterface* tab);
+
   // Returns false if `this` got deleted. In that case, the caller must early
   // return.
   bool NotifyDelegateOfAccountSelection(
@@ -471,6 +474,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // always updates the dialog position if the dialog should be visible. If the
   // dialog should be visible, and it is not, this method makes the dialog
   // visible and focuses the dialog.
+  // All control flows that want to show the dialog must go through this method.
+  // This ensures the complex logic to determine visibility is centralized.
   void UpdateDialogVisibilityAndPosition();
 
   // Called when any of the Show*() methods is called.

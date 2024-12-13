@@ -129,6 +129,11 @@ class TabInterface : public SupportsHandles<TabInterface> {
   virtual bool CanShowModalUI() const = 0;
   virtual std::unique_ptr<ScopedTabModalUI> ShowModalUI() = 0;
 
+  // Register for this callback to detect when a modal is shown or hidden.
+  using TabInterfaceCallback = base::RepeatingCallback<void(TabInterface*)>;
+  virtual base::CallbackListSubscription RegisterModalUIChanged(
+      TabInterfaceCallback callback) = 0;
+
   // A normal browser window has a tab strip and an omnibox. The returned value
   // never changes.
   virtual bool IsInNormalWindow() const = 0;
