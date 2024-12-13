@@ -46,10 +46,12 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
     @VisibleForTesting
     static final String FRAGMENT_SHOWN_HISTOGRAM = "FacilitatedPayments.SettingsPage.Shown";
 
-    // TODO(b/337929926): Remove hardcoding for Pix and use  FacilitatedPaymentsType enum.
     @VisibleForTesting
-    static final String FACILITATED_PAYMENTS_TOGGLE_UPDATED_HISTOGRAM =
+    static final String FACILITATED_PAYMENTS_PIX_TOGGLE_UPDATED_HISTOGRAM =
             "FacilitatedPayments.SettingsPage.Pix.ToggleUpdated";
+
+    static final String FACILITATED_PAYMENTS_EWALLET_TOGGLE_UPDATED_HISTOGRAM =
+            "FacilitatedPayments.SettingsPage.Ewallet.ToggleUpdated";
 
     // Preference keys
     @VisibleForTesting static final String PREFERENCE_KEY_PIX = "pix";
@@ -273,12 +275,15 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
         if (preference.getKey().equals(PREFERENCE_KEY_PIX)) {
             boolean isPixEnabled = (boolean) newValue;
             RecordHistogram.recordBooleanHistogram(
-                    FACILITATED_PAYMENTS_TOGGLE_UPDATED_HISTOGRAM, /* sample= */ isPixEnabled);
+                    FACILITATED_PAYMENTS_PIX_TOGGLE_UPDATED_HISTOGRAM, /* sample= */ isPixEnabled);
             mPersonalDataManager.setFacilitatedPaymentsPixPref(isPixEnabled);
             PostTask.postTask(TaskTraits.UI_DEFAULT, this::rebuildPage);
             return true;
         } else if (preference.getKey().equals(PREFERENCE_KEY_EWALLET)) {
             boolean isEwalletEnabled = (boolean) newValue;
+            RecordHistogram.recordBooleanHistogram(
+                    FACILITATED_PAYMENTS_EWALLET_TOGGLE_UPDATED_HISTOGRAM,
+                    /* sample= */ isEwalletEnabled);
             mPersonalDataManager.setFacilitatedPaymentsEwalletPref(isEwalletEnabled);
             PostTask.postTask(TaskTraits.UI_DEFAULT, this::rebuildPage);
             return true;

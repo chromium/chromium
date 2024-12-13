@@ -256,20 +256,6 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="FacilitatedPayments.SettingsPage.Pix.ToggleUpdated"
-    enum="Boolean" expires_after="2025-07-01">
-  <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
-  <owner>rouslan@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Logs true when the toggle for Pix is enabled and false otherwise. Does not
-    log if the toggle is not updated. [Trigger] User updates the toggle for Pix
-    from the facilitated payments settings page. [Frequency] Logged once per
-    toggle update.
-  </summary>
-</histogram>
-
 <histogram name="FacilitatedPayments.SettingsPage.Shown" enum="BooleanShown"
     expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
@@ -282,6 +268,22 @@ reviewer.
     payment type preference from the Payment Methods settings page. [Frequency]
     Logged once for every time the page is shown.
   </summary>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.SettingsPage.{FacilitatedPaymentsType}.ToggleUpdated"
+    enum="Boolean" expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs true when the toggle for {FacilitatedPaymentsType} is enabled and false
+    otherwise. Does not log if the toggle is not updated. [Trigger] User updates
+    the toggle for {FacilitatedPaymentsType} from the facilitated payments
+    settings page. [Frequency] Logged once per toggle update.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
 </histogram>
 
 <histogram
