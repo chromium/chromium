@@ -72,13 +72,20 @@ class AddressFieldParser : public FormFieldParser {
 
   bool ParseState(ParsingContext& context, AutofillScanner* scanner);
 
-  // Parses the current field pointed to by |scanner|, if it exists, and tries
+  // Parses the current field pointed to by `scanner`, if it exists, and tries
   // to determine if the field's type corresponds to one of the following:
   // dependent locality, city, state, country, zip, landmark, between streets,
   // admin level 2 or none of those.
   bool ParseAddressField(ParsingContext& context, AutofillScanner* scanner);
 
-  // Parses the current field pointed to by |scanner|, if it exists, and tries
+  // Starting from the current field pointed to by `scanner`, tries to parse
+  // sequence of house number followed by either a street name, an apartment
+  // number, or both. Rewind the cursor if the sequence could not be parsed. It
+  // is currently only supported in NL.
+  bool ParseHouseNumAptNumStreetNameSequence(ParsingContext& context,
+                                             AutofillScanner* scanner);
+
+  // Parses the current field pointed to by `scanner`, if it exists, and tries
   // to match house_number_and_apt field type.
   bool ParseFieldSpecificsForHouseNumberAndApt(ParsingContext& context,
                                                AutofillScanner* scanner);
@@ -96,8 +103,8 @@ class AddressFieldParser : public FormFieldParser {
       const char* regex_name);
 
   // Run matches on the name and label separately. If the return result is
-  // RESULT_MATCH_NAME_LABEL, then |scanner| advances and the field is set.
-  // Otherwise |scanner| rewinds and the field is cleared.
+  // RESULT_MATCH_NAME_LABEL, then `scanner` advances and the field is set.
+  // Otherwise `scanner` rewinds and the field is cleared.
   ParseNameLabelResult ParseNameAndLabelForZipCode(ParsingContext& context,
                                                    AutofillScanner* scanner);
 

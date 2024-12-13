@@ -335,6 +335,10 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
       continue;
     }
 
+    if (ParseHouseNumAptNumStreetNameSequence(context, scanner)) {
+      continue;
+    }
+
     // TODO(crbug.com/40279279) Factor out these ParseFieldSpecifics into
     // ParseStreetName and similar functions.
     if (!street_name_ && !street_location_ &&
@@ -532,6 +536,62 @@ bool AddressFieldParser::ParseAddressLines(ParsingContext& context,
     // Consumed a surplus line, try for another.
   }
   return true;
+}
+
+bool AddressFieldParser::ParseHouseNumAptNumStreetNameSequence(
+    ParsingContext& context,
+    AutofillScanner* scanner) {
+  // TODO(crbug.com/383972664) Extend to other countries where prioritizing
+  // house number is beneficial.
+  // Currently, we only support this sequence in NL.
+  if (context.client_country != GeoIpCountryCode("NL") ||
+      !base::FeatureList::IsEnabled(features::kAutofillUseNLAddressModel)) {
+    return false;
+  }
+
+  // Assumes that no field expected in the sequence is present.
+  if (street_name_ || house_number_ || apartment_number_) {
+    return false;
+  }
+
+  const size_t saved_cursor_position = scanner->CursorPosition();
+
+  base::span<const MatchPatternRef> street_name_patterns =
+      GetMatchPatterns(ADDRESS_HOME_STREET_NAME, context);
+  base::span<const MatchPatternRef> house_number_patterns =
+      GetMatchPatterns(ADDRESS_HOME_HOUSE_NUMBER, context);
+  base::span<const MatchPatternRef> apartment_number_patterns =
+      GetMatchPatterns(ADDRESS_HOME_APT_NUM, context);
+  std::optional<FieldAndMatchInfo> old_street_name = street_name_;
+  std::optional<FieldAndMatchInfo> old_house_number = house_number_;
+  std::optional<FieldAndMatchInfo> old_apartment_number = apartment_number_;
+
+  ParseField(context, scanner, house_number_patterns, &house_number_,
+             "ADDRESS_HOME_HOUSE_NUMBER");
+  ParseField(context, scanner, apartment_number_patterns, &apartment_number_,
+             "ADDRESS_HOME_APT_NUM");
+  if (house_number_) {
+    ParseField(context, scanner, street_name_patterns, &street_name_,
+               "ADDRESS_HOME_STREET_NAME");
+  }
+
+  // Sequence counts as detected if house number is followed by either a street
+  // name, an apartment number, or both.
+  // Common address sequence patterns parsed with this function:
+  // 1. House number, apartment number, street name.
+  // 2. House number, street name.
+  // 3. House number, apartment number.
+  if (house_number_ && (street_name_ || apartment_number_)) {
+    return true;
+  }
+
+  // Reset all fields if the non-optional requirements could not be met.
+  street_name_ = old_street_name;
+  house_number_ = old_house_number;
+  apartment_number_ = old_apartment_number;
+
+  scanner->RewindTo(saved_cursor_position);
+  return false;
 }
 
 bool AddressFieldParser::ParseZipCode(ParsingContext& context,

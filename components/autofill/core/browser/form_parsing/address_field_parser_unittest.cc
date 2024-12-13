@@ -393,4 +393,43 @@ TEST_F(AddressFieldParserTest, ParseAddressComponentsSequenceAsStreetAddress) {
                     LanguageCode("tr"));
 }
 
+// Tests that house number, apartment number and street name sequence is
+// correctly classified for NL. Misleading labels added to make sure that the
+// sequence is parsed correctly.
+TEST_F(AddressFieldParserTest, ParseHouseNumberAptNumAndStreetName_NL) {
+  AddTextFormFieldData("house number", "Street[0] Huisnummer",
+                       ADDRESS_HOME_HOUSE_NUMBER);
+  AddTextFormFieldData("apartment", "Street[1] Toevoeging",
+                       ADDRESS_HOME_APT_NUM);
+  AddTextFormFieldData("street name", "Street[2] Straatnaam",
+                       ADDRESS_HOME_STREET_NAME);
+  ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("NL"),
+                    LanguageCode("nl"));
+}
+
+// Tests that house number and street name sequence is
+// correctly classified for NL. Misleading labels added to make sure that the
+// sequence is parsed correctly.
+TEST_F(AddressFieldParserTest, ParseHouseNumberAndStreetName_NL) {
+  AddTextFormFieldData("house number", "Street[0] Huisnummer",
+                       ADDRESS_HOME_HOUSE_NUMBER);
+  AddTextFormFieldData("street name", "Street[1]", ADDRESS_HOME_STREET_NAME);
+  AddTextFormFieldData("zip code", "Zipcode", ADDRESS_HOME_ZIP);
+  ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("NL"),
+                    LanguageCode("nl"));
+}
+
+// Tests that house number and apartment number sequence is
+// correctly classified for NL. Misleading labels added to make sure that the
+// sequence is parsed correctly.
+TEST_F(AddressFieldParserTest, ParseHouseNumberAndAptNum_NL) {
+  AddTextFormFieldData("house number", "Street[0] Huisnummer",
+                       ADDRESS_HOME_HOUSE_NUMBER);
+  AddTextFormFieldData("apartment", "Street[1] Toevoeging",
+                       ADDRESS_HOME_APT_NUM);
+  AddTextFormFieldData("zip code", "Zipcode", ADDRESS_HOME_ZIP);
+  ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("NL"),
+                    LanguageCode("nl"));
+}
+
 }  // namespace autofill
