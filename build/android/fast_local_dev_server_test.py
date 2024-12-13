@@ -44,10 +44,10 @@ def pollServer():
     return False
 
 
-def callServer(args, stdout=subprocess.DEVNULL, check=True):
+def callServer(args, check=True):
   return subprocess.run([str(server_utils.SERVER_SCRIPT.absolute())] + args,
                         cwd=pathlib.Path(__file__).parent,
-                        stdout=stdout,
+                        stdout=subprocess.PIPE,
                         stderr=subprocess.STDOUT,
                         check=check,
                         text=True)
@@ -72,7 +72,7 @@ def blockingFifo(fifo_path='/tmp/.fast_local_dev_server_test.fifo'):
     fifo_path.unlink(missing_ok=True)
 
 
-class TasksTest(unittest.TestCase):
+class ServerStartedTest(unittest.TestCase):
 
   def setUp(self):
     self._TTY_FILE = '/tmp/fast_local_dev_server_test_tty'
@@ -127,7 +127,7 @@ class TasksTest(unittest.TestCase):
     return ''
 
   def getBuildInfo(self):
-    build_info = server.query_build_info(self.id())
+    build_info = server.query_build_info(self.id())['builds'][0]
     pending_tasks = build_info['pending_tasks']
     completed_tasks = build_info['completed_tasks']
     return pending_tasks, completed_tasks
@@ -197,28 +197,37 @@ class TasksTest(unittest.TestCase):
     self.assertEqual(self.getTtyContents(), '')
 
   def testBuildStatusServerCall(self):
-    proc_result = callServer(['--print-status', self.id()],
-                             stdout=subprocess.PIPE)
+    proc_result = callServer(['--print-status', self.id()])
     self.assertEqual(proc_result.stdout, '')
+
+    proc_result = callServer(['--print-status-all'])
+    self.assertIn(self.id(), proc_result.stdout)
 
     self.sendTask(['true'])
     self.waitForTasksDone()
-    proc_result = callServer(['--print-status', self.id()],
-                             stdout=subprocess.PIPE)
+
+    proc_result = callServer(['--print-status', self.id()])
+    self.assertIn('[1/1]', proc_result.stdout)
+
+    proc_result = callServer(['--print-status-all'])
+    self.assertIn('has 1 registered build', proc_result.stdout)
     self.assertIn('[1/1]', proc_result.stdout)
 
     with blockingFifo() as fifo_path:
       # cat gets stuck until we open the other end of the fifo.
       self.sendTask(['cat', str(fifo_path)])
-      proc_result = callServer(['--print-status', self.id()],
-                               stdout=subprocess.PIPE)
+      proc_result = callServer(['--print-status', self.id()])
       self.assertIn('[1/2]', proc_result.stdout)
       self.assertIn(f'--wait-for-build {self.id()}', proc_result.stdout)
 
     self.waitForTasksDone()
-    proc_result = callServer(['--print-status', self.id()],
-                             stdout=subprocess.PIPE)
+    callServer(['--cancel-build', self.id()])
+    self.waitForTasksDone()
+    proc_result = callServer(['--print-status', self.id()])
     self.assertIn('[2/2]', proc_result.stdout)
+
+    proc_result = callServer(['--print-status-all'])
+    self.assertIn('Siso finished', proc_result.stdout)
 
   def testServerCancelsRunningTasks(self):
     output_stamp = pathlib.Path('/tmp/.deleteme.stamp')
@@ -233,6 +242,17 @@ class TasksTest(unittest.TestCase):
   def testKeyboardInterrupt(self):
     os.kill(self._process.pid, signal.SIGINT)
     self._process.wait(timeout=1)
+
+
+class ServerNotStartedTest(unittest.TestCase):
+
+  def testWaitForBuildServerCall(self):
+    proc_result = callServer(['--wait-for-build', self.id()])
+    self.assertIn('No server running', proc_result.stdout)
+
+  def testBuildStatusServerCall(self):
+    proc_result = callServer(['--print-status-all'])
+    self.assertIn('No server running', proc_result.stdout)
 
 
 if __name__ == '__main__':
