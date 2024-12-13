@@ -10,8 +10,10 @@ import os
 import subprocess
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
 
+# vpython-provided modules.
 import six
 
+# //testing imports.
 from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
 

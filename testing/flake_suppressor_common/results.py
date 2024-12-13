@@ -9,11 +9,13 @@ import os
 from collections import defaultdict
 from typing import List, Tuple
 
+# //testing imports.
 from flake_suppressor_common import common_typing as ct
 from flake_suppressor_common import data_types
 from flake_suppressor_common import expectations
 from flake_suppressor_common import tag_utils
 
+# //third_party/catapult/third_party/typ imports.
 from typ import expectations_parser
 
 

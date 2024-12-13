@@ -7,12 +7,18 @@ import logging
 import time
 from typing import Collection, Dict, Generator, Iterable, List, Optional, Tuple
 
+# vpython-provided modules.
+# pylint: disable=import-error
 from google.cloud import bigquery
 from google.cloud import bigquery_storage
 import pandas
+# pylint: enable=import-error
 
+# //third_party/catapult/third_party/typ imports.
 from typ import expectations_parser
 from typ import json_results
+
+# //testing imports.
 from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
 from unexpected_passes_common import expectations

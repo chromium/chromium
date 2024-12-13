@@ -30,12 +30,16 @@ def _GetDirAbove(dirname: str):
 
 SOURCE_DIR = _GetDirAbove('testing')
 
-sys.path.insert(1, os.path.join(SOURCE_DIR, 'third_party'))
-sys.path.insert(1, os.path.join(SOURCE_DIR, 'third_party/domato/src'))
+# //build imports.
 sys.path.append(os.path.join(SOURCE_DIR, 'build'))
-
 import action_helpers
+
+# //third_party imports.
+sys.path.insert(1, os.path.join(SOURCE_DIR, 'third_party'))
 import jinja2
+
+# //third_party/domato/src imports.
+sys.path.insert(1, os.path.join(SOURCE_DIR, 'third_party/domato/src'))
 import grammar
 
 # TODO(crbug.com/361369290): Remove this disable once DomatoLPM development is

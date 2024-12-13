@@ -8,7 +8,7 @@ import random
 import string
 import tempfile
 import unittest
-from unitttest import mock
+from unittest import mock
 
 import upload_test_result_artifacts
 

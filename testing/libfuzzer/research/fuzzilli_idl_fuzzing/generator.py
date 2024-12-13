@@ -51,12 +51,13 @@ def _GetDirAbove(dirname: str):
 
 SOURCE_DIR = _GetDirAbove('testing')
 
+# //third_party imports.
 sys.path.insert(1, os.path.join(SOURCE_DIR, 'third_party'))
-sys.path.append(os.path.join(SOURCE_DIR, 'build'))
+import jinja2
+
+# //third_party/blink/renderer/bindings/scripts imports.
 sys.path.append(
     os.path.join(SOURCE_DIR, 'third_party/blink/renderer/bindings/scripts/'))
-
-import jinja2
 import web_idl
 
 

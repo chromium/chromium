@@ -12,9 +12,13 @@ import re
 import subprocess
 from typing import Dict, FrozenSet, Iterable, List, Optional, Set, Tuple, Union
 
+# vpython-provided modules.
 import six
 
+# //third_party/catapult/third_party/typ imports.
 from typ import expectations_parser
+
+# //testing imports.
 from unexpected_passes_common import data_types
 
 FINDER_DISABLE_COMMENT_BASE = 'finder:disable'

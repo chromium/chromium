@@ -10,7 +10,8 @@ import os
 import unittest
 from unittest import mock
 
-from pyfakefs import fake_filesystem_unittest
+# vpython-provided modules.
+from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
 
 import base_test_triggerer
 

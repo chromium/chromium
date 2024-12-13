@@ -9,8 +9,10 @@ import tempfile
 import unittest
 from unittest import mock
 
-from pyfakefs import fake_filesystem_unittest
+# vpython-provided modules.
+from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
 
+# //testing imports.
 from unexpected_passes_common import data_types
 from unexpected_passes_common import expectations
 from unexpected_passes_common import unittest_utils as uu

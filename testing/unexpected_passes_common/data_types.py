@@ -11,8 +11,10 @@ import logging
 from typing import (Any, Dict, FrozenSet, Generator, Iterable, List, Optional,
                     Set, Tuple, Type, Union)
 
+# vpython-provided modules.
 import six
 
+# //third_party/catapult/third_party/typ imports.
 from typ import expectations_parser
 
 FULL_PASS = 1

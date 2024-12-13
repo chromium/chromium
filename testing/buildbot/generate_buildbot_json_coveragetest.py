@@ -7,7 +7,8 @@ import io
 import sys
 import unittest
 
-import coverage
+# vpython-provided modules.
+import coverage  # pylint: disable=import-error
 
 
 class FakeStream(object):  # pylint: disable=useless-object-inheritance
@@ -20,6 +21,7 @@ class FakeStream(object):  # pylint: disable=useless-object-inheritance
 def main():
   cov = coverage.coverage(include='*generate_buildbot_json.py')
   cov.start()
+  # //testing/buildbot imports.
   # pylint: disable=import-outside-toplevel
   import generate_buildbot_json_unittest
   # pylint: enable=import-outside-toplevel

@@ -368,6 +368,7 @@ def CheckUndeclaredFeatures(input_api, output_api, json_data, changed_lines):
   # know how.
   old_sys_path = sys.path[:]
   try:
+    # //testing/variations/presubmit imports.
     sys.path.append(
         input_api.os_path.join(input_api.PresubmitLocalPath(), 'presubmit'))
     # pylint: disable=import-outside-toplevel

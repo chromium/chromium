@@ -12,8 +12,10 @@ import tempfile
 import unittest
 import unittest.mock as mock
 
+# vpython-provided modules.
 from pyfakefs import fake_filesystem_unittest  # pylint:disable=import-error
 
+# //testing imports.
 from flake_suppressor_common import common_typing as ct
 from flake_suppressor_common import expectations
 from flake_suppressor_common import unittest_utils as uu

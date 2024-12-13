@@ -11,8 +11,11 @@ import os
 import re
 import unittest
 
+# vpython-provided modules.
+from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
+
+# //testing/buildbot imports.
 import generate_buildbot_json
-from pyfakefs import fake_filesystem_unittest
 
 # pylint: disable=super-with-arguments
 

@@ -13,8 +13,10 @@ import re
 from typing import Dict, List, Set, Tuple, Union
 import urllib.request
 
+# //testing imports.
 from flake_suppressor_common import common_typing as ct
 
+# //third_party/catapult/third_party/typ imports.
 from typ import expectations_parser
 
 # Disabled instead of fixing to avoid a large amount of churn.

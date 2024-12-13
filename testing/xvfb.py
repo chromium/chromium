@@ -21,8 +21,10 @@ import threading
 import time
 import uuid
 
-import psutil
+# vpython-provided modules.
+import psutil  # pylint: disable=import-error
 
+# //testing imports.
 import test_env
 
 DEFAULT_XVFB_WHD = '1280x800x24'

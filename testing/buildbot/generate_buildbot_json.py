@@ -20,6 +20,7 @@ import os
 import string
 import sys
 
+# //testing/buildbot imports.
 import buildbot_json_magic_substitutions as magic_substitutions
 
 # pylint: disable=super-with-arguments,useless-super-delegation

@@ -31,7 +31,6 @@ docstring-quote = double
 disable=bad-indentation,
         duplicate-code,
         fixme,
-        import-error,
         invalid-name,
         missing-docstring,
         no-member,

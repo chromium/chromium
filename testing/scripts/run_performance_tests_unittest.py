@@ -12,8 +12,11 @@ import tempfile
 import unittest
 from unittest import mock
 
+# //testing/scripts imports.
 import run_performance_tests
 from run_performance_tests import TelemetryCommandGenerator
+
+# //third_party/catapult/telemetry imports.
 from telemetry.internal.util import binary_manager
 
 # Protected access is allowed for unittests.

@@ -50,9 +50,11 @@ import time
 import tempfile
 import traceback
 
+# vpython-provided modules.
+# pylint: disable=import-error
 import six
-
 import requests
+# pylint: enable=import-error
 
 import common
 
@@ -69,11 +71,7 @@ else:
   print('Optional crossbench_result_converter not available.')
 import generate_legacy_perf_dashboard_json
 from core import path_util
-
-PERF_CORE_DIR = PERF_DIR / 'core'
-sys.path.append(str(PERF_CORE_DIR))
-# //tools/perf/core imports.
-import results_merger
+from core import results_merger
 
 sys.path.append(str(CHROMIUM_SRC_DIR / 'testing'))
 # //testing imports.
@@ -405,6 +403,7 @@ def execute_gtest_perf_test(command_generator,
       # the actual executable name.
       executable_name = executable_name[8:]
     if executable_name in GTEST_CONVERSION_WHITELIST:
+      # //third_party/catapult/tracing imports.
       with path_util.SysPath(path_util.GetTracingDir()):
         # pylint: disable=no-name-in-module,import-outside-toplevel
         from tracing.value import gtest_json_converter

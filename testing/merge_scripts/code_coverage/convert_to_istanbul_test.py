@@ -11,6 +11,8 @@ import tempfile
 import unittest
 
 import merge_js_lib as merger
+
+# //third_party imports.
 import node
 
 _HERE_DIR = Path(__file__).parent.resolve()

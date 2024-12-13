@@ -12,10 +12,13 @@ import sys
 import tempfile
 from typing import Any, Dict, IO, List, Optional, Set, Union
 
+# vpython-provided modules.
 import six
 
+# //testing imports.
 from unexpected_passes_common import data_types
 
+# //third_party/blink/tools imports.
 # Used for posting Buganizer comments.
 from blinkpy.w3c import buganizer
 
