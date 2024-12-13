@@ -1190,7 +1190,7 @@ void FrameSinkManagerImpl::EnableFrameSinkManagerTestApi(
 }
 
 void FrameSinkManagerImpl::SetupRenderInputRouterDelegateConnection(
-    uint32_t grouping_id,
+    const base::UnguessableToken& grouping_id,
     mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
         rir_delegate_client_remote,
     mojo::PendingReceiver<input::mojom::RenderInputRouterDelegate>

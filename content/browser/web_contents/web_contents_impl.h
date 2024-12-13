@@ -1098,7 +1098,7 @@ class CONTENT_EXPORT WebContentsImpl
                          bool should_show_handle,
                          bool should_show_context_menu) override;
   void MoveCaret(const gfx::Point& extent) override;
-  uint32_t GetCompositorFrameSinkGroupingId() const override;
+  base::UnguessableToken GetCompositorFrameSinkGroupingId() const override;
   void AdjustSelectionByCharacterOffset(int start_adjust,
                                         int end_adjust,
                                         bool show_selection_menu) override;
@@ -2631,7 +2631,7 @@ class CONTENT_EXPORT WebContentsImpl
   // This id is used by Viz to create RenderWidgetHostInputEventRouter per
   // WebContents(concept in browser) to allow grouping CompositorFrameSinks for
   // input event routing with InputVizard.
-  const uint32_t compositor_frame_sink_grouping_id_;
+  const base::UnguessableToken compositor_frame_sink_grouping_id_;
 
   mojo::Receiver<input::mojom::RenderInputRouterDelegateClient>
       rir_delegate_client_receiver_{this};

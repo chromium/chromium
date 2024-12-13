@@ -34,7 +34,7 @@ namespace viz {
 
 struct FrameSinkMetadata {
   explicit FrameSinkMetadata(
-      uint32_t grouping_id,
+      base::UnguessableToken grouping_id,
       std::unique_ptr<RenderInputRouterSupportBase> support,
       std::unique_ptr<RenderInputRouterDelegateImpl> delegate);
 
@@ -46,7 +46,7 @@ struct FrameSinkMetadata {
 
   ~FrameSinkMetadata();
 
-  uint32_t grouping_id;
+  base::UnguessableToken grouping_id;
   std::unique_ptr<RenderInputRouterSupportBase> rir_support;
   std::unique_ptr<RenderInputRouterDelegateImpl> rir_delegate;
 };
@@ -112,16 +112,17 @@ class VIZ_SERVICE_EXPORT InputManager
   GetEmbeddedRenderInputRouters(const FrameSinkId& id) override;
   void NotifyObserversOfInputEvent(
       const FrameSinkId& frame_sink_id,
-      uint32_t grouping_id,
+      const base::UnguessableToken& grouping_id,
       std::unique_ptr<blink::WebCoalescedInputEvent> event) override;
   void NotifyObserversOfInputEventAcks(
       const FrameSinkId& frame_sink_id,
-      uint32_t grouping_id,
+      const base::UnguessableToken& grouping_id,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result,
       std::unique_ptr<blink::WebCoalescedInputEvent> event) override;
-  void OnInvalidInputEventSource(const FrameSinkId& frame_sink_id,
-                                 uint32_t grouping_id) override;
+  void OnInvalidInputEventSource(
+      const FrameSinkId& frame_sink_id,
+      const base::UnguessableToken& grouping_id) override;
   std::optional<bool> IsDelegatedInkHovering(
       const FrameSinkId& frame_sink_id) override;
   GpuServiceImpl* GetGpuService() override;
@@ -132,7 +133,7 @@ class VIZ_SERVICE_EXPORT InputManager
                                    const FrameSinkId& frame_sink_id) override;
 
   void SetupRenderInputRouterDelegateConnection(
-      uint32_t grouping_id,
+      const base::UnguessableToken& grouping_id,
       mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
           rir_delegate_client_remote,
       mojo::PendingReceiver<input::mojom::RenderInputRouterDelegate>
@@ -146,7 +147,8 @@ class VIZ_SERVICE_EXPORT InputManager
       input::RenderInputRouter* rir,
       const FrameSinkId& frame_sink_id);
 
-  void OnRIRDelegateClientDisconnected(uint32_t grouping_id);
+  void OnRIRDelegateClientDisconnected(
+      const base::UnguessableToken& grouping_id);
 
   void SetupRenderInputRouter(input::RenderInputRouter* render_input_router,
                               const FrameSinkId& frame_sink_id);
@@ -174,7 +176,7 @@ class VIZ_SERVICE_EXPORT InputManager
   // CompositorFrameSink grouping_id sent from the browser, allowing mirroring
   // 1:1 relationship in browser between WebContentsImpl and
   // RenderWidgetHostInputEventRouter to Viz.
-  base::flat_map</*grouping_id=*/uint32_t,
+  base::flat_map</*grouping_id=*/base::UnguessableToken,
                  scoped_refptr<input::RenderWidgetHostInputEventRouter>>
       rwhier_map_;
 
@@ -191,7 +193,7 @@ class VIZ_SERVICE_EXPORT InputManager
   // WebContentsImpl (in the Browser) and InputManager (in Viz) using a
   // CompositorFrameSink grouping_id sent from the browser. This interface is
   // used by Viz to update browser's state of input event handling in Viz.
-  base::flat_map</*grouping_id=*/uint32_t,
+  base::flat_map</*grouping_id=*/base::UnguessableToken,
                  mojo::Remote<input::mojom::RenderInputRouterDelegateClient>>
       rir_delegate_remote_map_;
   mojo::ReceiverSet<input::mojom::RenderInputRouterDelegate>

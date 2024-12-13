@@ -1515,7 +1515,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // Stash a request to create a CompositorFrameSink if it arrives before we
   // have a view.
-  base::OnceCallback<void(uint32_t, const viz::FrameSinkId&)>
+  base::OnceCallback<void(base::UnguessableToken, const viz::FrameSinkId&)>
       create_frame_sink_callback_;
 
   std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue_;

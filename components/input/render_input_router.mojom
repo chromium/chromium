@@ -5,6 +5,7 @@
 module input.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "third_party/blink/public/mojom/input/input_event_result.mojom";
 import "third_party/blink/public/mojom/input/input_handler.mojom";
@@ -22,7 +23,7 @@ struct RenderInputRouterConfig {
   // non-root layer tree frame sinks under the same WebContents in browser to
   // mirror 1:1 relationship between RenderWidgetHostInputEventRouter and
   // WebContentsImpl.
-  uint32 grouping_id;
+  mojo_base.mojom.UnguessableToken grouping_id;
 };
 
 struct TouchTransferState {

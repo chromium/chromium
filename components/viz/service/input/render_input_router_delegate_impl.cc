@@ -27,7 +27,7 @@ RenderInputRouterDelegateImpl::RenderInputRouterDelegateImpl(
     scoped_refptr<input::RenderWidgetHostInputEventRouter> rwhier,
     Delegate& delegate,
     const FrameSinkId& frame_sink_id,
-    uint32_t grouping_id)
+    const base::UnguessableToken& grouping_id)
     : rwhier_(std::move(rwhier)),
       delegate_(delegate),
       frame_sink_id_(frame_sink_id),

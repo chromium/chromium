@@ -57,11 +57,12 @@ class FlingSchedulerTest : public testing::Test,
     frame_sink_manager_.SetInputManagerForTesting(
         std::make_unique<FakeInputManager>(&frame_sink_manager_));
 
+    // Create a grouping id.
+    base::UnguessableToken grouping_id = base::UnguessableToken::Create();
     // Create a CompositorFrameSinkImpl.
     frame_sink_manager_.RegisterFrameSinkId(kFrameSinkIdA,
                                             true /* report_activation */);
-    CreateCompositorFrameSink(kFrameSinkIdA,
-                              CreateRIRConfig(/*grouping_id=*/1));
+    CreateCompositorFrameSink(kFrameSinkIdA, CreateRIRConfig(grouping_id));
   }
 
   void TearDown() override {
@@ -126,7 +127,8 @@ class FlingSchedulerTest : public testing::Test,
   }
 
  private:
-  input::mojom::RenderInputRouterConfigPtr CreateRIRConfig(int grouping_id) {
+  input::mojom::RenderInputRouterConfigPtr CreateRIRConfig(
+      const base::UnguessableToken& grouping_id) {
     auto config = input::mojom::RenderInputRouterConfig::New();
     mojo::PendingReceiver<blink::mojom::RenderInputRouterClient>
         rir_client_receiver;

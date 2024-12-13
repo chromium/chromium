@@ -219,7 +219,7 @@ interface FrameSinkManager {
   // when the VizCompositor thread is handling input using RenderInputRouters
   // with InputVizard.
   SetupRenderInputRouterDelegateConnection(
-    uint32 grouping_id,
+    mojo_base.mojom.UnguessableToken grouping_id,
     pending_remote<input.mojom.RenderInputRouterDelegateClient>
       rir_delegate_client_remote,
     pending_receiver<input.mojom.RenderInputRouterDelegate>

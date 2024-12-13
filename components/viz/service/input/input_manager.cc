@@ -58,7 +58,7 @@ bool IsFrameMetadataAvailable(CompositorFrameSinkSupport* support) {
 }  // namespace
 
 FrameSinkMetadata::FrameSinkMetadata(
-    uint32_t grouping_id,
+    base::UnguessableToken grouping_id,
     std::unique_ptr<RenderInputRouterSupportBase> support,
     std::unique_ptr<RenderInputRouterDelegateImpl> delegate)
     : grouping_id(grouping_id),
@@ -159,7 +159,8 @@ void InputManager::OnCreateCompositorFrameSink(
   DCHECK(render_input_router_config->rir_client.is_valid());
   DCHECK(input::IsTransferInputToVizSupported() && !is_root);
 
-  uint32_t grouping_id = render_input_router_config->grouping_id;
+  const base::UnguessableToken grouping_id =
+      render_input_router_config->grouping_id;
 
   auto [it, inserted] = rwhier_map_.try_emplace(
       grouping_id,
@@ -168,7 +169,7 @@ void InputManager::OnCreateCompositorFrameSink(
 
   if (inserted) {
     TRACE_EVENT_INSTANT("viz", "RenderWidgetHostInputEventRouterCreated",
-                        "grouping_id", grouping_id);
+                        "grouping_id", grouping_id.ToString());
   }
 
   // |rir_delegate| should outlive |render_input_router|.
@@ -213,7 +214,7 @@ void InputManager::OnDestroyedCompositorFrameSink(
 
   rir_map_.erase(rir_iter);
 
-  uint32_t grouping_id =
+  base::UnguessableToken grouping_id =
       frame_sink_metadata_map_.find(frame_sink_id)->second.grouping_id;
   // Deleting FrameSinkMetadata for |frame_sink_id| decreases the refcount for
   // RenderWidgetHostInputEventRouter in |rwhier_map_|(associated with the
@@ -335,7 +336,7 @@ InputManager::GetEmbeddedRenderInputRouters(const FrameSinkId& id) {
 
 void InputManager::NotifyObserversOfInputEvent(
     const FrameSinkId& frame_sink_id,
-    uint32_t grouping_id,
+    const base::UnguessableToken& grouping_id,
     std::unique_ptr<blink::WebCoalescedInputEvent> event) {
   rir_delegate_remote_map_.at(grouping_id)
       ->NotifyObserversOfInputEvent(frame_sink_id, std::move(event));
@@ -343,7 +344,7 @@ void InputManager::NotifyObserversOfInputEvent(
 
 void InputManager::NotifyObserversOfInputEventAcks(
     const FrameSinkId& frame_sink_id,
-    uint32_t grouping_id,
+    const base::UnguessableToken& grouping_id,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result,
     std::unique_ptr<blink::WebCoalescedInputEvent> event) {
@@ -352,8 +353,9 @@ void InputManager::NotifyObserversOfInputEventAcks(
                                         std::move(event));
 }
 
-void InputManager::OnInvalidInputEventSource(const FrameSinkId& frame_sink_id,
-                                             uint32_t grouping_id) {
+void InputManager::OnInvalidInputEventSource(
+    const FrameSinkId& frame_sink_id,
+    const base::UnguessableToken& grouping_id) {
   rir_delegate_remote_map_.at(grouping_id)
       ->OnInvalidInputEventSource(frame_sink_id);
 }
@@ -384,7 +386,7 @@ void InputManager::NotifySiteIsMobileOptimized(
 }
 
 void InputManager::SetupRenderInputRouterDelegateConnection(
-    uint32_t grouping_id,
+    const base::UnguessableToken& grouping_id,
     mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
         rir_delegate_remote,
     mojo::PendingReceiver<input::mojom::RenderInputRouterDelegate>
@@ -425,7 +427,8 @@ InputManager::MakeRenderInputRouterSupport(input::RenderInputRouter* rir,
                                                               frame_sink_id);
 }
 
-void InputManager::OnRIRDelegateClientDisconnected(uint32_t grouping_id) {
+void InputManager::OnRIRDelegateClientDisconnected(
+    const base::UnguessableToken& grouping_id) {
   rir_delegate_remote_map_.erase(grouping_id);
 }
 

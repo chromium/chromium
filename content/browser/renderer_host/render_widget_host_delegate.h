@@ -172,7 +172,7 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Request the renderer to Move the caret to the new position.
   virtual void MoveCaret(const gfx::Point& extent) {}
 
-  virtual uint32_t GetCompositorFrameSinkGroupingId() const;
+  virtual base::UnguessableToken GetCompositorFrameSinkGroupingId() const;
 
   virtual input::RenderWidgetHostInputEventRouter* GetInputEventRouter();
 

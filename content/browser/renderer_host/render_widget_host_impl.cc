@@ -3578,7 +3578,8 @@ void RenderWidgetHostImpl::CreateFrameSink(
          mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client,
          std::optional<mojo::PendingRemote<
              blink::mojom::RenderInputRouterClient>> viz_rir_client_remote,
-         uint32_t grouping_id, const viz::FrameSinkId& frame_sink_id) {
+         base::UnguessableToken grouping_id,
+         const viz::FrameSinkId& frame_sink_id) {
         input::mojom::RenderInputRouterConfigPtr config;
         if (input::IsTransferInputToVizSupported()) {
           DCHECK(viz_rir_client_remote.has_value());

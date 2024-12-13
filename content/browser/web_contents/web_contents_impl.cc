@@ -704,13 +704,6 @@ void RecordRendererUnresponsiveMetrics(
       rph_priority);
 }
 
-// Returns a GroupingID used by VizCompositor to allow grouping
-// CompositorFrameSinks from same WebContents.
-uint32_t NextCompositorFrameSinkGroupingId() {
-  static uint32_t grouping_id = 0;
-  return grouping_id++;
-}
-
 }  // namespace
 
 // This is a small helper class created while a JavaScript dialog is showing
@@ -1281,7 +1274,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       is_overlay_content_(false),
       showing_context_menu_(false),
       prerender_host_registry_(std::make_unique<PrerenderHostRegistry>(*this)),
-      compositor_frame_sink_grouping_id_(NextCompositorFrameSinkGroupingId()) {
+      compositor_frame_sink_grouping_id_(base::UnguessableToken::Create()) {
   TRACE_EVENT0("content", "WebContentsImpl::WebContentsImpl");
   WebContentsOfBrowserContext::Attach(*this);
   node_.SetFocusedFrameTree(&primary_frame_tree_);
@@ -5734,7 +5727,8 @@ void WebContentsImpl::MoveCaret(const gfx::Point& extent) {
   input_handler->MoveCaret(extent);
 }
 
-uint32_t WebContentsImpl::GetCompositorFrameSinkGroupingId() const {
+base::UnguessableToken WebContentsImpl::GetCompositorFrameSinkGroupingId()
+    const {
   return compositor_frame_sink_grouping_id_;
 }
 

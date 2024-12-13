@@ -310,7 +310,7 @@ void HostFrameSinkManager::RequestCopyOfOutput(
 }
 
 void HostFrameSinkManager::SetupRenderInputRouterDelegateConnection(
-    uint32_t grouping_id,
+    base::UnguessableToken grouping_id,
     mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
         rir_delegate_client_remote,
     mojo::PendingReceiver<input::mojom::RenderInputRouterDelegate>

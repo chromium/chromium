@@ -215,7 +215,7 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   // inform Viz about |TouchTransferState| to start processing input events for
   // a sequence.
   void SetupRenderInputRouterDelegateConnection(
-      uint32_t grouping_id,
+      base::UnguessableToken grouping_id,
       mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
           rir_delegate_client_remote,
       mojo::PendingReceiver<input::mojom::RenderInputRouterDelegate>
