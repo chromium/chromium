@@ -70,9 +70,9 @@ void XRWebGLDrawingBuffer::ColorBuffer::BeginAccess() {
 }
 
 void XRWebGLDrawingBuffer::ColorBuffer::EndAccess() {
-  gpu::SyncToken sync_token = gpu::SharedImageTexture::ScopedAccess::EndAccess(
+  produce_sync_token = gpu::SharedImageTexture::ScopedAccess::EndAccess(
       std::move(scoped_access_));
-  shared_image->UpdateDestructionSyncToken(sync_token);
+  shared_image->UpdateDestructionSyncToken(produce_sync_token);
 }
 
 void XRWebGLDrawingBuffer::ColorBuffer::CleanUp() {
@@ -619,7 +619,6 @@ void XRWebGLDrawingBuffer::SwapColorBuffers() {
 
 scoped_refptr<StaticBitmapImage>
 XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
-  gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
   scoped_refptr<ColorBuffer> buffer;
   bool success = false;
 
@@ -629,8 +628,6 @@ XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
     SwapColorBuffers();
 
     buffer = front_color_buffer_;
-
-    gl->GenUnverifiedSyncTokenCHROMIUM(buffer->produce_sync_token.GetData());
 
     // This should only fail if the context is lost during the buffer swap.
     if (buffer->produce_sync_token.HasData()) {
