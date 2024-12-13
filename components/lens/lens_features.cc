@@ -289,7 +289,7 @@ constexpr base::FeatureParam<bool>
 
 constexpr base::FeatureParam<base::TimeDelta> kLensSearchboxAutocompleteTimeout{
     &kLensOverlayContextualSearchbox, "lens-searchbox-autocomplete-timeout",
-    base::Milliseconds(3000)};
+    base::Milliseconds(10000)};
 
 constexpr base::FeatureParam<bool> kShowContextualSearchboxSearchSuggest{
     &kLensOverlayContextualSearchbox,
