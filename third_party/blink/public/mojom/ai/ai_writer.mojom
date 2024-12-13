@@ -9,9 +9,32 @@ import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
 // The struct follows the explainer in
 // https://github.com/explainers-by-googlers/writing-assistance-apis/blob/main/README.md
 
+// The output tone of the writer.
+enum AIWriterTone {
+  kFormal,
+  kNeutral,
+  kCasual,
+};
+
+// The output format of the writer.
+enum AIWriterFormat {
+  kPlainText,
+  kMarkdown,
+};
+
+// The output length of the writer.
+enum AIWriterLength {
+  kShort,
+  kMedium,
+  kLong,
+};
+
 // This is used when creating a new AIWriter.
 struct AIWriterCreateOptions {
   string? shared_context;
+  AIWriterTone tone;
+  AIWriterFormat format;
+  AIWriterLength length;
 };
 
 // Interface for AIWriter that can stream the output string.

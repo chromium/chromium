@@ -43,5 +43,6 @@ interface AIRewriter {
 
   readonly attribute DOMString sharedContext;
   readonly attribute AIRewriterTone tone;
+  readonly attribute AIRewriterFormat format;
   readonly attribute AIRewriterLength length;
 };

@@ -6,20 +6,29 @@ promise_test(async () => {
 }, 'AIRewriterFactory must be available.');
 
 promise_test(async () => {
+  // TODO(crbug.com/382615217): Test availability with various options.
+  assert_equals(await ai.rewriter.availability(), 'readily');
+  assert_equals(await ai.rewriter.availability({outputLanguage: 'en'}), 'readily');
+}, 'AIRewriterFactory.availability');
+
+promise_test(async () => {
   const rewriter = await ai.rewriter.create();
   assert_equals(Object.prototype.toString.call(rewriter), '[object AIRewriter]');
 }, 'AIRewriterFactory.create() must be return a AIRewriter.');
+
+promise_test(async () => {
+  const rewriter = await ai.rewriter.create();
+  assert_equals(rewriter.sharedContext, '');
+  assert_equals(rewriter.tone, 'as-is');
+  assert_equals(rewriter.format, 'as-is');
+  assert_equals(rewriter.length, 'as-is');
+}, 'AIRewriterFactory.create() default values.');
 
 promise_test(async () => {
   const sharedContext = 'This is a shared context string';
   const rewriter = await ai.rewriter.create({sharedContext: sharedContext});
   assert_equals(rewriter.sharedContext, sharedContext);
 }, 'AIRewriter.sharedContext');
-
-promise_test(async () => {
-  const rewriter = await ai.rewriter.create();
-  assert_equals(rewriter.tone, 'as-is');
-}, 'AIRewriter.tone default value');
 
 promise_test(async () => {
   const rewriter = await ai.rewriter.create({tone: 'more-formal'});
@@ -32,9 +41,14 @@ promise_test(async () => {
 }, 'Creating a AIRewriter with "more-casual" tone');
 
 promise_test(async () => {
-  const rewriter = await ai.rewriter.create();
-  assert_equals(rewriter.length, 'as-is');
-}, 'AIRewriter.length default value');
+  const rewriter = await ai.rewriter.create({format: 'plain-text'});
+  assert_equals(rewriter.format, 'plain-text');
+}, 'Creating a AIRewriter with "plain-text" format');
+
+promise_test(async () => {
+  const rewriter = await ai.rewriter.create({format: 'markdown'});
+  assert_equals(rewriter.format, 'markdown');
+}, 'Creating a AIRewriter with "markdown" format');
 
 promise_test(async () => {
   const rewriter = await ai.rewriter.create({length: 'shorter'});

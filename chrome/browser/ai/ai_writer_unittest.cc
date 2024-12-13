@@ -82,6 +82,7 @@ void CheckComposeRequestContext(
   EXPECT_THAT(request->page_metadata().trimmed_page_inner_text(),
               expected_context_string);
 }
+
 void CheckComposeRequestUserInput(
     const google::protobuf::MessageLite& request_metadata,
     const std::string& expected_user_input) {
@@ -110,7 +111,10 @@ TEST_F(AIWriterTest, CreateWriterNoService) {
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateWriter(
       mock_create_writer_client.BindNewPipeAndPassRemote(),
-      blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
+      blink::mojom::AIWriterCreateOptions::New(
+          kSharedContextString, blink::mojom::AIWriterTone::kNeutral,
+          blink::mojom::AIWriterFormat::kPlainText,
+          blink::mojom::AIWriterLength::kMedium));
   run_loop.Run();
 }
 
@@ -144,7 +148,10 @@ TEST_F(AIWriterTest, CreateWriterModelNotEligible) {
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateWriter(
       mock_create_writer_client.BindNewPipeAndPassRemote(),
-      blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
+      blink::mojom::AIWriterCreateOptions::New(
+          kSharedContextString, blink::mojom::AIWriterTone::kNeutral,
+          blink::mojom::AIWriterFormat::kPlainText,
+          blink::mojom::AIWriterLength::kMedium));
   run_loop.Run();
 }
 
@@ -206,7 +213,10 @@ TEST_F(AIWriterTest, CreateWriterRetryAfterConfigNotAvailableForFeature) {
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateWriter(
       mock_create_writer_client.BindNewPipeAndPassRemote(),
-      blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
+      blink::mojom::AIWriterCreateOptions::New(
+          kSharedContextString, blink::mojom::AIWriterTone::kNeutral,
+          blink::mojom::AIWriterFormat::kPlainText,
+          blink::mojom::AIWriterLength::kMedium));
 
   run_loop_for_add_observer.Run();
   CHECK(availability_observer);
@@ -271,7 +281,10 @@ TEST_F(AIWriterTest, CreateWriterAbortAfterConfigNotAvailableForFeature) {
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateWriter(
       mock_create_writer_client->BindNewPipeAndPassRemote(),
-      blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
+      blink::mojom::AIWriterCreateOptions::New(
+          kSharedContextString, blink::mojom::AIWriterTone::kNeutral,
+          blink::mojom::AIWriterFormat::kPlainText,
+          blink::mojom::AIWriterLength::kMedium));
 
   run_loop_for_add_observer.Run();
   CHECK(availability_observer);
@@ -330,7 +343,10 @@ TEST_F(AIWriterTest, SimpleWrite) {
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
         mock_create_writer_client.BindNewPipeAndPassRemote(),
-        blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
+        blink::mojom::AIWriterCreateOptions::New(
+            kSharedContextString, blink::mojom::AIWriterTone::kNeutral,
+            blink::mojom::AIWriterFormat::kPlainText,
+            blink::mojom::AIWriterLength::kMedium));
     run_loop.Run();
   }
   AITestUtils::MockModelStreamingResponder mock_responder;
@@ -401,7 +417,10 @@ TEST_F(AIWriterTest, WriteError) {
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
         mock_create_writer_client.BindNewPipeAndPassRemote(),
-        blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
+        blink::mojom::AIWriterCreateOptions::New(
+            kSharedContextString, blink::mojom::AIWriterTone::kNeutral,
+            blink::mojom::AIWriterFormat::kPlainText,
+            blink::mojom::AIWriterLength::kMedium));
     run_loop.Run();
   }
   AITestUtils::MockModelStreamingResponder mock_responder;
@@ -470,7 +489,10 @@ TEST_F(AIWriterTest, WriteMultipleResponse) {
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
         mock_create_writer_client.BindNewPipeAndPassRemote(),
-        blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
+        blink::mojom::AIWriterCreateOptions::New(
+            kSharedContextString, blink::mojom::AIWriterTone::kNeutral,
+            blink::mojom::AIWriterFormat::kPlainText,
+            blink::mojom::AIWriterLength::kMedium));
     run_loop.Run();
   }
   AITestUtils::MockModelStreamingResponder mock_responder;
@@ -554,7 +576,10 @@ TEST_F(AIWriterTest, MultipleWrite) {
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
         mock_create_writer_client.BindNewPipeAndPassRemote(),
-        blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
+        blink::mojom::AIWriterCreateOptions::New(
+            kSharedContextString, blink::mojom::AIWriterTone::kNeutral,
+            blink::mojom::AIWriterFormat::kPlainText,
+            blink::mojom::AIWriterLength::kMedium));
     run_loop.Run();
   }
   {
@@ -645,7 +670,10 @@ TEST_F(AIWriterTest, ResponderDisconnected) {
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
         mock_create_writer_client.BindNewPipeAndPassRemote(),
-        blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
+        blink::mojom::AIWriterCreateOptions::New(
+            kSharedContextString, blink::mojom::AIWriterTone::kNeutral,
+            blink::mojom::AIWriterFormat::kPlainText,
+            blink::mojom::AIWriterLength::kMedium));
     run_loop.Run();
   }
   std::unique_ptr<AITestUtils::MockModelStreamingResponder> mock_responder =
@@ -714,7 +742,10 @@ TEST_F(AIWriterTest, WriterDisconnected) {
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
         mock_create_writer_client.BindNewPipeAndPassRemote(),
-        blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
+        blink::mojom::AIWriterCreateOptions::New(
+            kSharedContextString, blink::mojom::AIWriterTone::kNeutral,
+            blink::mojom::AIWriterFormat::kPlainText,
+            blink::mojom::AIWriterLength::kMedium));
     run_loop.Run();
   }
 

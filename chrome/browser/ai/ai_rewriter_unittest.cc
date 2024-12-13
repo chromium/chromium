@@ -124,16 +124,19 @@ class AIRewriterTest : public AITestUtils::AITestBase {
  protected:
   void RunSimpleRewriteTest(
       blink::mojom::AIRewriterTone tone,
+      blink::mojom::AIRewriterFormat format,
       blink::mojom::AIRewriterLength length,
       base::OnceCallback<void(const google::protobuf::MessageLite&
                                   request_metadata)> request_check_callback);
   void RunRewriteOptionCombinationFailureTest(
       blink::mojom::AIRewriterTone tone,
+      blink::mojom::AIRewriterFormat format,
       blink::mojom::AIRewriterLength length);
 };
 
 void AIRewriterTest::RunSimpleRewriteTest(
     blink::mojom::AIRewriterTone tone,
+    blink::mojom::AIRewriterFormat format,
     blink::mojom::AIRewriterLength length,
     base::OnceCallback<void(const google::protobuf::MessageLite&
                                 request_metadata)> request_check_callback) {
@@ -185,7 +188,7 @@ void AIRewriterTest::RunSimpleRewriteTest(
     ai_manager->CreateRewriter(
         mock_create_rewriter_client.BindNewPipeAndPassRemote(),
         blink::mojom::AIRewriterCreateOptions::New(kSharedContextString, tone,
-                                                   length));
+                                                   format, length));
     run_loop.Run();
   }
   AITestUtils::MockModelStreamingResponder mock_responder;
@@ -208,6 +211,7 @@ void AIRewriterTest::RunSimpleRewriteTest(
 
 void AIRewriterTest::RunRewriteOptionCombinationFailureTest(
     blink::mojom::AIRewriterTone tone,
+    blink::mojom::AIRewriterFormat format,
     blink::mojom::AIRewriterLength length) {
   MockCreateRewriterClient mock_create_rewriter_client;
   base::RunLoop run_loop;
@@ -222,7 +226,7 @@ void AIRewriterTest::RunRewriteOptionCombinationFailureTest(
   ai_manager->CreateRewriter(
       mock_create_rewriter_client.BindNewPipeAndPassRemote(),
       blink::mojom::AIRewriterCreateOptions::New(kSharedContextString, tone,
-                                                 length));
+                                                 format, length));
   run_loop.Run();
 }
 
@@ -243,6 +247,7 @@ TEST_F(AIRewriterTest, CreateRewriterNoService) {
       mock_create_rewriter_client.BindNewPipeAndPassRemote(),
       blink::mojom::AIRewriterCreateOptions::New(
           kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
+          blink::mojom::AIRewriterFormat::kAsIs,
           blink::mojom::AIRewriterLength::kAsIs));
   run_loop.Run();
 }
@@ -279,6 +284,7 @@ TEST_F(AIRewriterTest, CreateRewriterModelNotEligible) {
       mock_create_rewriter_client.BindNewPipeAndPassRemote(),
       blink::mojom::AIRewriterCreateOptions::New(
           kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
+          blink::mojom::AIRewriterFormat::kAsIs,
           blink::mojom::AIRewriterLength::kAsIs));
   run_loop.Run();
 }
@@ -343,6 +349,7 @@ TEST_F(AIRewriterTest, CreateRewriterRetryAfterConfigNotAvailableForFeature) {
       mock_create_rewriter_client.BindNewPipeAndPassRemote(),
       blink::mojom::AIRewriterCreateOptions::New(
           kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
+          blink::mojom::AIRewriterFormat::kAsIs,
           blink::mojom::AIRewriterLength::kAsIs));
 
   run_loop_for_add_observer.Run();
@@ -411,6 +418,7 @@ TEST_F(AIRewriterTest, CreateRewriterAbortAfterConfigNotAvailableForFeature) {
       mock_create_rewriter_client->BindNewPipeAndPassRemote(),
       blink::mojom::AIRewriterCreateOptions::New(
           kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
+          blink::mojom::AIRewriterFormat::kAsIs,
           blink::mojom::AIRewriterLength::kAsIs));
 
   run_loop_for_add_observer.Run();
@@ -426,6 +434,7 @@ TEST_F(AIRewriterTest, CreateRewriterAbortAfterConfigNotAvailableForFeature) {
 TEST_F(AIRewriterTest, RewriteRegenerate) {
   RunSimpleRewriteTest(
       blink::mojom::AIRewriterTone::kAsIs,
+      blink::mojom::AIRewriterFormat::kAsIs,
       blink::mojom::AIRewriterLength::kAsIs,
       base::BindLambdaForTesting(
           [&](const google::protobuf::MessageLite& request_metadata) {
@@ -436,6 +445,7 @@ TEST_F(AIRewriterTest, RewriteRegenerate) {
 TEST_F(AIRewriterTest, RewriteMoreCasual) {
   RunSimpleRewriteTest(
       blink::mojom::AIRewriterTone::kMoreCasual,
+      blink::mojom::AIRewriterFormat::kAsIs,
       blink::mojom::AIRewriterLength::kAsIs,
       base::BindLambdaForTesting(
           [&](const google::protobuf::MessageLite& request_metadata) {
@@ -448,6 +458,7 @@ TEST_F(AIRewriterTest, RewriteMoreCasual) {
 TEST_F(AIRewriterTest, RewriteMoreFormal) {
   RunSimpleRewriteTest(
       blink::mojom::AIRewriterTone::kMoreFormal,
+      blink::mojom::AIRewriterFormat::kAsIs,
       blink::mojom::AIRewriterLength::kAsIs,
       base::BindLambdaForTesting(
           [&](const google::protobuf::MessageLite& request_metadata) {
@@ -460,6 +471,7 @@ TEST_F(AIRewriterTest, RewriteMoreFormal) {
 TEST_F(AIRewriterTest, RewriteLonger) {
   RunSimpleRewriteTest(
       blink::mojom::AIRewriterTone::kAsIs,
+      blink::mojom::AIRewriterFormat::kAsIs,
       blink::mojom::AIRewriterLength::kLonger,
       base::BindLambdaForTesting(
           [&](const google::protobuf::MessageLite& request_metadata) {
@@ -472,6 +484,7 @@ TEST_F(AIRewriterTest, RewriteLonger) {
 TEST_F(AIRewriterTest, RewriteShorter) {
   RunSimpleRewriteTest(
       blink::mojom::AIRewriterTone::kAsIs,
+      blink::mojom::AIRewriterFormat::kAsIs,
       blink::mojom::AIRewriterLength::kShorter,
       base::BindLambdaForTesting(
           [&](const google::protobuf::MessageLite& request_metadata) {
@@ -483,21 +496,37 @@ TEST_F(AIRewriterTest, RewriteShorter) {
 
 TEST_F(AIRewriterTest, RewriteOptionCombinationFailureTest) {
   SetupMockOptimizationGuideKeyedService();
-  struct {
-    blink::mojom::AIRewriterTone tone;
-    blink::mojom::AIRewriterLength length;
-  } test_cases[]{
-      {blink::mojom::AIRewriterTone::kMoreCasual,
-       blink::mojom::AIRewriterLength::kLonger},
-      {blink::mojom::AIRewriterTone::kMoreCasual,
-       blink::mojom::AIRewriterLength::kShorter},
-      {blink::mojom::AIRewriterTone::kMoreFormal,
-       blink::mojom::AIRewriterLength::kLonger},
-      {blink::mojom::AIRewriterTone::kMoreFormal,
-       blink::mojom::AIRewriterLength::kShorter},
+  blink::mojom::AIRewriterTone tones[]{
+      blink::mojom::AIRewriterTone::kMoreCasual,
+      blink::mojom::AIRewriterTone::kMoreFormal,
   };
-  for (const auto& test_case : test_cases) {
-    RunRewriteOptionCombinationFailureTest(test_case.tone, test_case.length);
+  blink::mojom::AIRewriterFormat formats[]{
+      blink::mojom::AIRewriterFormat::kPlainText,
+      blink::mojom::AIRewriterFormat::kMarkdown,
+  };
+  blink::mojom::AIRewriterLength lengths[]{
+      blink::mojom::AIRewriterLength::kLonger,
+      blink::mojom::AIRewriterLength::kShorter,
+  };
+  // Any combination with more than one non-kAsIs value fails.
+  for (const auto& tone : tones) {
+    for (const auto& format : formats) {
+      for (const auto& length : lengths) {
+        RunRewriteOptionCombinationFailureTest(tone, format, length);
+      }
+      RunRewriteOptionCombinationFailureTest(
+          tone, format, blink::mojom::AIRewriterLength::kAsIs);
+    }
+    for (const auto& length : lengths) {
+      RunRewriteOptionCombinationFailureTest(
+          tone, blink::mojom::AIRewriterFormat::kAsIs, length);
+    }
+  }
+  for (const auto& format : formats) {
+    for (const auto& length : lengths) {
+      RunRewriteOptionCombinationFailureTest(
+          blink::mojom::AIRewriterTone::kAsIs, format, length);
+    }
   }
 }
 
@@ -553,6 +582,7 @@ TEST_F(AIRewriterTest, RewriteError) {
         mock_create_rewriter_client.BindNewPipeAndPassRemote(),
         blink::mojom::AIRewriterCreateOptions::New(
             kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
+            blink::mojom::AIRewriterFormat::kAsIs,
             blink::mojom::AIRewriterLength::kAsIs));
     run_loop.Run();
   }
@@ -625,6 +655,7 @@ TEST_F(AIRewriterTest, RewriteMultipleResponse) {
         mock_create_rewriter_client.BindNewPipeAndPassRemote(),
         blink::mojom::AIRewriterCreateOptions::New(
             kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
+            blink::mojom::AIRewriterFormat::kAsIs,
             blink::mojom::AIRewriterLength::kAsIs));
     run_loop.Run();
   }
@@ -712,6 +743,7 @@ TEST_F(AIRewriterTest, MultipleRewrite) {
         mock_create_rewriter_client.BindNewPipeAndPassRemote(),
         blink::mojom::AIRewriterCreateOptions::New(
             kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
+            blink::mojom::AIRewriterFormat::kAsIs,
             blink::mojom::AIRewriterLength::kAsIs));
     run_loop.Run();
   }
@@ -806,6 +838,7 @@ TEST_F(AIRewriterTest, ResponderDisconnected) {
         mock_create_rewriter_client.BindNewPipeAndPassRemote(),
         blink::mojom::AIRewriterCreateOptions::New(
             kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
+            blink::mojom::AIRewriterFormat::kAsIs,
             blink::mojom::AIRewriterLength::kAsIs));
     run_loop.Run();
   }
@@ -878,6 +911,7 @@ TEST_F(AIRewriterTest, RewriterDisconnected) {
         mock_create_rewriter_client.BindNewPipeAndPassRemote(),
         blink::mojom::AIRewriterCreateOptions::New(
             kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
+            blink::mojom::AIRewriterFormat::kAsIs,
             blink::mojom::AIRewriterLength::kAsIs));
     run_loop.Run();
   }

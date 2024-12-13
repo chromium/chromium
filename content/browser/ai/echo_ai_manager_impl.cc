@@ -77,10 +77,10 @@ void EchoAIManagerImpl::CanCreateSummarizer(
     CanCreateSummarizerCallback callback) {
   if (!summarizer_downloaded_) {
     std::move(callback).Run(
-        /*result=*/blink::mojom::ModelAvailabilityCheckResult::kAfterDownload);
+        blink::mojom::ModelAvailabilityCheckResult::kAfterDownload);
   } else {
     std::move(callback).Run(
-        /*result=*/blink::mojom::ModelAvailabilityCheckResult::kReadily);
+        blink::mojom::ModelAvailabilityCheckResult::kReadily);
   }
 }
 
@@ -115,6 +115,12 @@ void EchoAIManagerImpl::GetModelInfo(GetModelInfoCallback callback) {
       optimization_guide::features::GetOnDeviceModelDefaultTemperature()));
 }
 
+void EchoAIManagerImpl::CanCreateWriter(
+    blink::mojom::AIWriterCreateOptionsPtr options,
+    CanCreateWriterCallback callback) {
+  std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::kReadily);
+}
+
 void EchoAIManagerImpl::CreateWriter(
     mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client,
     blink::mojom::AIWriterCreateOptionsPtr options) {
@@ -124,6 +130,12 @@ void EchoAIManagerImpl::CreateWriter(
   mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAIWriter>(),
                               writer.InitWithNewPipeAndPassReceiver());
   client_remote->OnResult(std::move(writer));
+}
+
+void EchoAIManagerImpl::CanCreateRewriter(
+    blink::mojom::AIRewriterCreateOptionsPtr options,
+    CanCreateRewriterCallback callback) {
+  std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::kReadily);
 }
 
 void EchoAIManagerImpl::CreateRewriter(

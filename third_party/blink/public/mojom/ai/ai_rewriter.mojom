@@ -9,14 +9,21 @@ import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
 // The enumerations and struct follows the explainer in
 // https://github.com/explainers-by-googlers/writing-assistance-apis/blob/main/README.md
 
-// This tone option is used when creating an AIRewriter.
+// The output tone of the rewriter.
 enum AIRewriterTone {
   kAsIs,
   kMoreFormal,
   kMoreCasual,
 };
 
-// This length option is used when creating an AIRewriter.
+// The output format of the rewriter.
+enum AIRewriterFormat {
+  kAsIs,
+  kPlainText,
+  kMarkdown,
+};
+
+// The output length of the rewriter.
 enum AIRewriterLength {
   kAsIs,
   kShorter,
@@ -27,6 +34,7 @@ enum AIRewriterLength {
 struct AIRewriterCreateOptions {
   string? shared_context;
   AIRewriterTone tone;
+  AIRewriterFormat format;
   AIRewriterLength length;
 };
 

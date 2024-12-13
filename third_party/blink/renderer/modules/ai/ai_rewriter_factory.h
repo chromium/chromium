@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_REWRITER_FACTORY_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_capability_availability.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -14,6 +15,7 @@ namespace blink {
 
 class AI;
 class AIRewriter;
+class AIRewriterCreateCoreOptions;
 class AIRewriterCreateOptions;
 
 // This class is responsible for creating AIRewriter instances.
@@ -26,8 +28,12 @@ class AIRewriterFactory final : public ScriptWrappable,
   void Trace(Visitor* visitor) const override;
 
   // ai_rewriter_factory.idl implementation.
+  ScriptPromise<V8AICapabilityAvailability> availability(
+      ScriptState* script_state,
+      AIRewriterCreateCoreOptions* options,
+      ExceptionState& exception_state);
   ScriptPromise<AIRewriter> create(ScriptState* script_state,
-                                   const AIRewriterCreateOptions* options,
+                                   AIRewriterCreateOptions* options,
                                    ExceptionState& exception_state);
 
  private:

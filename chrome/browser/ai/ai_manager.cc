@@ -44,6 +44,8 @@
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_rewriter.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_writer.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
@@ -356,9 +358,18 @@ void AIManager::GetModelInfo(GetModelInfoCallback callback) {
       default_sampling_params.temperature));
 }
 
+void AIManager::CanCreateWriter(blink::mojom::AIWriterCreateOptionsPtr options,
+                                CanCreateWriterCallback callback) {
+  // TODO(crbug.com/382596381): Check Options.
+  // TODO(crbug.com/382325795): Use kWritingAssistanceApi instead of kCompose.
+  CanCreateSession(optimization_guide::ModelBasedCapabilityKey::kCompose,
+                   std::move(callback));
+}
+
 void AIManager::CreateWriter(
     mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client,
     blink::mojom::AIWriterCreateOptionsPtr options) {
+  // TODO(crbug.com/382325795): Use kWritingAssistanceApi instead of kCompose.
   CreateContextBoundObjectTask<AIWriter, blink::mojom::AIWriter,
                                blink::mojom::AIManagerCreateWriterClient,
                                blink::mojom::AIWriterCreateOptionsPtr>::
@@ -366,6 +377,15 @@ void AIManager::CreateWriter(
                      optimization_guide::ModelBasedCapabilityKey::kCompose,
                      context_bound_object_set_, std::move(options),
                      std::move(client));
+}
+
+void AIManager::CanCreateRewriter(
+    blink::mojom::AIRewriterCreateOptionsPtr options,
+    CanCreateRewriterCallback callback) {
+  // TODO(crbug.com/382615217): Check Options.
+  // TODO(crbug.com/382325795): Use kWritingAssistanceApi instead of kCompose.
+  CanCreateSession(optimization_guide::ModelBasedCapabilityKey::kCompose,
+                   std::move(callback));
 }
 
 void AIManager::CreateRewriter(
@@ -382,6 +402,7 @@ void AIManager::CreateRewriter(
     client_remote->OnResult(mojo::PendingRemote<blink::mojom::AIRewriter>());
     return;
   }
+  // TODO(crbug.com/382325795): Use kWritingAssistanceApi instead of kCompose.
   CreateContextBoundObjectTask<AIRewriter, blink::mojom::AIRewriter,
                                blink::mojom::AIManagerCreateRewriterClient,
                                blink::mojom::AIRewriterCreateOptionsPtr>::

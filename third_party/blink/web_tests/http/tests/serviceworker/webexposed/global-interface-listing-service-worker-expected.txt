@@ -42,6 +42,7 @@ interface AILanguageModelFactory
     method create
 interface AIRewriter
     attribute @@toStringTag
+    getter format
     getter length
     getter sharedContext
     getter tone
@@ -51,6 +52,7 @@ interface AIRewriter
     method rewriteStreaming
 interface AIRewriterFactory
     attribute @@toStringTag
+    method availability
     method constructor
     method create
 interface AISummarizer
@@ -91,13 +93,17 @@ interface AITranslatorFactory
     method create
 interface AIWriter
     attribute @@toStringTag
+    getter format
+    getter length
     getter sharedContext
+    getter tone
     method constructor
     method destroy
     method write
     method writeStreaming
 interface AIWriterFactory
     attribute @@toStringTag
+    method availability
     method constructor
     method create
 interface AbortController

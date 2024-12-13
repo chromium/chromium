@@ -47,6 +47,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method create
 [Worker] interface AIRewriter
 [Worker]     attribute @@toStringTag
+[Worker]     getter format
 [Worker]     getter length
 [Worker]     getter sharedContext
 [Worker]     getter tone
@@ -56,6 +57,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method rewriteStreaming
 [Worker] interface AIRewriterFactory
 [Worker]     attribute @@toStringTag
+[Worker]     method availability
 [Worker]     method constructor
 [Worker]     method create
 [Worker] interface AISummarizer
@@ -96,13 +98,17 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method create
 [Worker] interface AIWriter
 [Worker]     attribute @@toStringTag
+[Worker]     getter format
+[Worker]     getter length
 [Worker]     getter sharedContext
+[Worker]     getter tone
 [Worker]     method constructor
 [Worker]     method destroy
 [Worker]     method write
 [Worker]     method writeStreaming
 [Worker] interface AIWriterFactory
 [Worker]     attribute @@toStringTag
+[Worker]     method availability
 [Worker]     method constructor
 [Worker]     method create
 [Worker] interface AbortController

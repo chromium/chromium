@@ -26,11 +26,11 @@ const char kExceptionMessageWriterDestroyed[] =
 AIWriter::AIWriter(ExecutionContext* execution_context,
                    scoped_refptr<base::SequencedTaskRunner> task_runner,
                    mojo::PendingRemote<mojom::blink::AIWriter> pending_remote,
-                   const String& shared_context_string)
+                   AIWriterCreateOptions* options)
     : ExecutionContextClient(execution_context),
       task_runner_(std::move(task_runner)),
       remote_(execution_context),
-      shared_context_string_(shared_context_string) {
+      options_(options) {
   remote_.Bind(std::move(pending_remote), task_runner_);
 }
 
@@ -38,6 +38,7 @@ void AIWriter::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(remote_);
+  visitor->Trace(options_);
 }
 
 ScriptPromise<IDLString> AIWriter::write(ScriptState* script_state,
@@ -65,7 +66,7 @@ ScriptPromise<IDLString> AIWriter::write(ScriptState* script_state,
     resolver->Reject(signal->reason(script_state));
     return promise;
   }
-  const String context_string = options->getContextOr(String());
+  const String context_string = options->getContextOr(g_empty_string);
 
   if (!remote_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -102,7 +103,7 @@ ReadableStream* AIWriter::writeStreaming(ScriptState* script_state,
     ThrowAbortedException(exception_state);
     return nullptr;
   }
-  const String context_string = options->getContextOr(String());
+  const String context_string = options->getContextOr(g_empty_string);
 
   if (!remote_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
