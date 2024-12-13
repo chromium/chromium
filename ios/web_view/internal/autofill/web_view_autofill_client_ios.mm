@@ -53,13 +53,8 @@ std::unique_ptr<WebViewAutofillClientIOS> WebViewAutofillClientIOS::Create(
           browser_state->GetRecordingBrowserState()),
       ios_web_view::WebViewSyncServiceFactory::GetForBrowserState(
           browser_state),
-      // TODO(crbug.com/40612524): Replace the closure with a callback to the
-      // renderer that indicates if log messages should be sent from the
-      // renderer.
-      LogManager::Create(
-          autofill::WebViewAutofillLogRouterFactory::GetForBrowserState(
-              browser_state),
-          base::RepeatingClosure()));
+      autofill::WebViewAutofillLogRouterFactory::GetForBrowserState(
+          browser_state));
 }
 
 WebViewAutofillClientIOS::WebViewAutofillClientIOS(
@@ -70,7 +65,7 @@ WebViewAutofillClientIOS::WebViewAutofillClientIOS(
     signin::IdentityManager* identity_manager,
     StrikeDatabase* strike_database,
     syncer::SyncService* sync_service,
-    std::unique_ptr<autofill::LogManager> log_manager)
+    LogRouter* log_router)
     : pref_service_(pref_service),
       personal_data_manager_(personal_data_manager),
       autocomplete_history_manager_(autocomplete_history_manager),
@@ -78,7 +73,7 @@ WebViewAutofillClientIOS::WebViewAutofillClientIOS(
       identity_manager_(identity_manager),
       strike_database_(strike_database),
       sync_service_(sync_service),
-      log_manager_(std::move(log_manager)) {}
+      log_router_(log_router) {}
 
 WebViewAutofillClientIOS::~WebViewAutofillClientIOS() {
   if (auto* factory = AutofillDriverIOSFactory::FromWebState(web_state_)) {
@@ -299,6 +294,12 @@ bool WebViewAutofillClientIOS::IsLastQueriedField(FieldGlobalId field_id) {
 }
 
 LogManager* WebViewAutofillClientIOS::GetCurrentLogManager() {
+  if (!log_manager_ && log_router_ && log_router_->HasReceivers()) {
+    // TODO(crbug.com/40612524): Replace the closure with a callback to the
+    // renderer that indicates if log messages should be sent from the
+    // renderer.
+    log_manager_ = LogManager::Create(log_router_, base::RepeatingClosure());
+  }
   return log_manager_.get();
 }
 

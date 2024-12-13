@@ -10,6 +10,7 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -355,7 +356,8 @@ ContentPasswordManagerDriver::GetPasswordAutofillManager() {
 
 void ContentPasswordManagerDriver::SendLoggingAvailability() {
   if (const auto& agent = GetPasswordAutofillAgent()) {
-    agent->SetLoggingState(client_->GetCurrentLogManager()->IsLoggingActive());
+    autofill::LogManager* log_manager = client_->GetCurrentLogManager();
+    agent->SetLoggingState(log_manager && log_manager->IsLoggingActive());
   }
 }
 
@@ -416,15 +418,18 @@ void ContentPasswordManagerDriver::PasswordFormsParsed(
   if (!HasValidURL(render_frame_host_))
     return;
 
-  auto logger =
-      std::make_unique<password_manager::BrowserSavePasswordProgressLogger>(
-          client_->GetCurrentLogManager());
+  autofill::LogManager* log_manager = client_->GetCurrentLogManager();
+  std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
+  if (log_manager && log_manager->IsLoggingActive()) {
+    logger = std::make_unique<BrowserSavePasswordProgressLogger>(log_manager);
+  }
   std::vector<autofill::FormData> forms = raw_forms;
   for (auto& form : forms) {
     SetFrameAndFormMetaData(render_frame_host_, form);
-    logger->LogFormData(password_manager::BrowserSavePasswordProgressLogger::
-                            STRING_FORM_IS_PASSWORD,
-                        form);
+    if (logger) {
+      logger->LogFormData(
+          BrowserSavePasswordProgressLogger::STRING_FORM_IS_PASSWORD, form);
+    }
   }
 
   GetPasswordManager()->OnPasswordFormsParsed(this, forms);

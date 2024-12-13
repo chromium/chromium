@@ -72,6 +72,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
+#include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -837,6 +838,12 @@ bool ChromeAutofillClient::IsContextSecure() const {
 }
 
 LogManager* ChromeAutofillClient::GetCurrentLogManager() {
+  if (!log_manager_ && log_router_ && log_router_->HasReceivers()) {
+    // TODO(crbug.com/40612524): Replace the closure with a callback to
+    // the renderer that indicates if log messages should be sent from the
+    // renderer.
+    log_manager_ = LogManager::Create(log_router_, base::NullCallback());
+  }
   return log_manager_.get();
 }
 
@@ -940,13 +947,8 @@ void ChromeAutofillClient::NotifyIphFeatureUsed(
 ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
     : ContentAutofillClient(web_contents),
       content::WebContentsObserver(web_contents),
-      log_manager_(
-          // TODO(crbug.com/40612524): Replace the closure with a callback to
-          // the renderer that indicates if log messages should be sent from the
-          // renderer.
-          LogManager::Create(AutofillLogRouterFactory::GetForBrowserContext(
-                                 web_contents->GetBrowserContext()),
-                             base::NullCallback())),
+      log_router_(AutofillLogRouterFactory::GetForBrowserContext(
+          web_contents->GetBrowserContext())),
       ablation_study_(g_browser_process->local_state()) {
   // Initialize StrikeDatabase so its cache will be loaded and ready to use
   // when requested by other Autofill classes.

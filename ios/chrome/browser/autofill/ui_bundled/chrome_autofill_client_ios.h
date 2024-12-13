@@ -43,6 +43,8 @@ class WebState;
 
 namespace autofill {
 
+class LogRouter;
+
 enum class SuggestionType;
 
 // Chrome iOS implementation of AutofillClient.
@@ -167,6 +169,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   std::unique_ptr<FormDataImporter> form_data_importer_;
   scoped_refptr<AutofillWebDataService> autofill_web_data_service_;
   raw_ptr<infobars::InfoBarManager> infobar_manager_;
+  const raw_ptr<LogRouter> log_router_;
   std::unique_ptr<LogManager> log_manager_;
   autofill_metrics::FormInteractionsUkmLogger form_interactions_ukm_logger_{
       this};

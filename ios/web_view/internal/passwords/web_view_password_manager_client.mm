@@ -4,25 +4,26 @@
 
 #import "ios/web_view/internal/passwords/web_view_password_manager_client.h"
 
-#include <memory>
-#include <utility>
+#import <memory>
+#import <utility>
 
-#include "base/functional/callback.h"
-#include "components/autofill/core/browser/logging/log_manager.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/password_manager/ios/password_manager_ios_util.h"
+#import "base/functional/callback.h"
+#import "components/autofill/core/browser/logging/log_manager.h"
+#import "components/autofill/core/browser/logging/log_router.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/password_manager/ios/password_manager_ios_util.h"
 #import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_log_router_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_requirements_service_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_reuse_manager_factory.h"
 #import "ios/web_view/internal/passwords/web_view_profile_password_store_factory.h"
-#include "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
+#import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #import "ios/web_view/internal/sync/web_view_sync_service_factory.h"
-#include "net/cert/cert_status_flags.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#import "net/cert/cert_status_flags.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordManagerMetricsRecorder;
@@ -40,11 +41,9 @@ WebViewPasswordManagerClient::Create(web::WebState* web_state,
   signin::IdentityManager* identity_manager =
       ios_web_view::WebViewIdentityManagerFactory::GetForBrowserState(
           browser_state);
-  autofill::LogRouter* logRouter =
+  autofill::LogRouter* log_router =
       ios_web_view::WebViewPasswordManagerLogRouterFactory::GetForBrowserState(
           browser_state);
-  auto log_manager =
-      autofill::LogManager::Create(logRouter, base::RepeatingClosure());
   scoped_refptr<password_manager::PasswordStoreInterface> profile_store =
       ios_web_view::WebViewProfilePasswordStoreFactory::GetForBrowserState(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS);
@@ -59,8 +58,8 @@ WebViewPasswordManagerClient::Create(web::WebState* web_state,
           browser_state, ServiceAccessType::EXPLICIT_ACCESS);
   return std::make_unique<ios_web_view::WebViewPasswordManagerClient>(
       web_state, sync_service, browser_state->GetPrefs(), identity_manager,
-      std::move(log_manager), profile_store.get(), account_store.get(),
-      reuse_manager, requirements_service);
+      log_router, profile_store.get(), account_store.get(), reuse_manager,
+      requirements_service);
 }
 
 WebViewPasswordManagerClient::WebViewPasswordManagerClient(
@@ -68,7 +67,7 @@ WebViewPasswordManagerClient::WebViewPasswordManagerClient(
     syncer::SyncService* sync_service,
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
-    std::unique_ptr<autofill::LogManager> log_manager,
+    autofill::LogRouter* log_router,
     PasswordStoreInterface* profile_store,
     PasswordStoreInterface* account_store,
     password_manager::PasswordReuseManager* reuse_manager,
@@ -77,7 +76,7 @@ WebViewPasswordManagerClient::WebViewPasswordManagerClient(
       sync_service_(sync_service),
       pref_service_(pref_service),
       identity_manager_(identity_manager),
-      log_manager_(std::move(log_manager)),
+      log_router_(log_router),
       profile_store_(profile_store),
       account_store_(account_store),
       reuse_manager_(reuse_manager),
@@ -263,6 +262,10 @@ WebViewPasswordManagerClient::GetStoreResultFilter() const {
 }
 
 autofill::LogManager* WebViewPasswordManagerClient::GetCurrentLogManager() {
+  if (!log_manager_ && log_router_ && log_router_->HasReceivers()) {
+    log_manager_ =
+        autofill::LogManager::Create(log_router_, base::RepeatingClosure());
+  }
   return log_manager_.get();
 }
 

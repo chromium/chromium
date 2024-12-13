@@ -10,26 +10,30 @@
 #include <memory>
 
 #import "base/memory/raw_ptr.h"
-#include "components/autofill/core/browser/logging/log_manager.h"
-#include "components/password_manager/core/browser/password_feature_manager.h"
-#include "components/password_manager/core/browser/password_form_manager_for_ui.h"
-#include "components/password_manager/core/browser/password_manager.h"
-#include "components/password_manager/core/browser/password_manager_client.h"
-#include "components/password_manager/core/browser/password_manager_client_helper.h"
-#include "components/password_manager/core/browser/password_manager_driver.h"
-#include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
-#include "components/password_manager/core/browser/password_requirements_service.h"
-#include "components/password_manager/core/browser/password_reuse_manager.h"
-#include "components/password_manager/core/browser/password_store/password_store_interface.h"
-#include "components/password_manager/core/browser/sync_credentials_filter.h"
-#include "components/password_manager/ios/password_manager_client_bridge.h"
-#include "components/prefs/pref_member.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/service/sync_service.h"
+#import "components/autofill/core/browser/logging/log_manager.h"
+#import "components/password_manager/core/browser/password_feature_manager.h"
+#import "components/password_manager/core/browser/password_form_manager_for_ui.h"
+#import "components/password_manager/core/browser/password_manager.h"
+#import "components/password_manager/core/browser/password_manager_client.h"
+#import "components/password_manager/core/browser/password_manager_client_helper.h"
+#import "components/password_manager/core/browser/password_manager_driver.h"
+#import "components/password_manager/core/browser/password_manager_metrics_recorder.h"
+#import "components/password_manager/core/browser/password_requirements_service.h"
+#import "components/password_manager/core/browser/password_reuse_manager.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import "components/password_manager/core/browser/sync_credentials_filter.h"
+#import "components/password_manager/ios/password_manager_client_bridge.h"
+#import "components/prefs/pref_member.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/sync/service/sync_service.h"
 #import "ios/web/public/web_state.h"
-#include "ios/web_view/internal/passwords/web_view_password_feature_manager.h"
-#include "ios/web_view/internal/web_view_browser_state.h"
-#include "url/gurl.h"
+#import "ios/web_view/internal/passwords/web_view_password_feature_manager.h"
+#import "ios/web_view/internal/web_view_browser_state.h"
+#import "url/gurl.h"
+
+namespace autofill {
+class LogRouter;
+}  // namespace autofill
 
 namespace ios_web_view {
 // An //ios/web_view implementation of password_manager::PasswordManagerClient.
@@ -46,7 +50,7 @@ class WebViewPasswordManagerClient
       syncer::SyncService* sync_service,
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
-      std::unique_ptr<autofill::LogManager> log_manager,
+      autofill::LogRouter* log_router,
       password_manager::PasswordStoreInterface* profile_store,
       password_manager::PasswordStoreInterface* account_store,
       password_manager::PasswordReuseManager* reuse_manager,
@@ -140,6 +144,7 @@ class WebViewPasswordManagerClient
   syncer::SyncService* sync_service_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<autofill::LogRouter> log_router_;
   std::unique_ptr<autofill::LogManager> log_manager_;
   password_manager::PasswordStoreInterface* profile_store_;
   password_manager::PasswordStoreInterface* account_store_;

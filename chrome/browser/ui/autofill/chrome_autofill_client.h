@@ -58,6 +58,7 @@ class SaveUpdateAddressProfileFlowManager;
 class AutofillOptimizationGuide;
 class AutofillAiDelegate;
 class FormFieldData;
+class LogRouter;
 enum class SuggestionType;
 
 // Chrome implementation of AutofillClient.
@@ -248,6 +249,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate);
 
+  const raw_ptr<LogRouter> log_router_;
   std::unique_ptr<LogManager> log_manager_;
   autofill_metrics::FormInteractionsUkmLogger form_interactions_ukm_logger_{
       this};

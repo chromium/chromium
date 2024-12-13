@@ -77,6 +77,7 @@ class Profile;
 
 namespace autofill {
 class LogManager;
+class LogRouter;
 class RoutingLogManager;
 
 namespace password_generation {
@@ -521,6 +522,7 @@ class ChromePasswordManagerClient
   AccountStorageAuthHelper account_storage_auth_helper_;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
+  const raw_ptr<autofill::LogRouter> log_router_;
   std::unique_ptr<autofill::RoutingLogManager> log_manager_;
 
   // Recorder of metrics that is associated with the last committed navigation

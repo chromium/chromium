@@ -59,6 +59,7 @@
 #include "components/autofill/content/browser/renderer_forms_from_browser_form.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -307,9 +308,10 @@ bool ChromePasswordManagerClient::IsFillingEnabled(const GURL& url) const {
   }
 
   const bool ssl_errors = net::IsCertStatusError(GetMainFrameCertStatus());
-  if (log_manager_->IsLoggingActive()) {
-    password_manager::BrowserSavePasswordProgressLogger logger(
-        log_manager_.get());
+  autofill::LogManager* log_manager =
+      const_cast<ChromePasswordManagerClient*>(this)->GetCurrentLogManager();
+  if (log_manager && log_manager->IsLoggingActive()) {
+    password_manager::BrowserSavePasswordProgressLogger logger(log_manager);
     logger.LogBoolean(Logger::STRING_SSL_ERRORS_PRESENT, ssl_errors);
   }
   return !ssl_errors && IsPasswordManagementEnabledForCurrentPage(url);
@@ -362,9 +364,9 @@ bool ChromePasswordManagerClient::PromptUserToSaveOrUpdatePassword(
   }
 #if BUILDFLAG(IS_ANDROID)
   if (form_to_save->IsBlocklisted()) {
-    if (log_manager_->IsLoggingActive()) {
-      password_manager::BrowserSavePasswordProgressLogger logger(
-          log_manager_.get());
+    autofill::LogManager* log_manager = GetCurrentLogManager();
+    if (log_manager && log_manager->IsLoggingActive()) {
+      password_manager::BrowserSavePasswordProgressLogger logger(log_manager);
       logger.LogMessage(Logger::STRING_SAVING_BLOCKLISTED_EXPLICITLY);
     }
     return false;
@@ -972,10 +974,12 @@ bool ChromePasswordManagerClient::WasLastNavigationHTTPError() const {
   DCHECK(web_contents());
 
   std::unique_ptr<password_manager::BrowserSavePasswordProgressLogger> logger;
-  if (log_manager_->IsLoggingActive()) {
+  autofill::LogManager* log_manager =
+      const_cast<ChromePasswordManagerClient*>(this)->GetCurrentLogManager();
+  if (log_manager && log_manager->IsLoggingActive()) {
     logger =
         std::make_unique<password_manager::BrowserSavePasswordProgressLogger>(
-            log_manager_.get());
+            log_manager);
     logger->LogMessage(Logger::STRING_WAS_LAST_NAVIGATION_HTTP_ERROR_METHOD);
   }
 
@@ -1074,6 +1078,14 @@ ChromePasswordManagerClient::GetStoreResultFilter() const {
 }
 
 autofill::LogManager* ChromePasswordManagerClient::GetCurrentLogManager() {
+  if (!log_manager_ && log_router_ && log_router_->HasReceivers()) {
+    ContentPasswordManagerDriverFactory* driver_factory = GetDriverFactory();
+    log_manager_ = autofill::LogManager::Create(
+        log_router_, base::BindRepeating(&ContentPasswordManagerDriverFactory::
+                                             RequestSendLoggingAvailability,
+                                         base::Unretained(driver_factory)));
+    driver_factory->RequestSendLoggingAvailability();
+  }
   return log_manager_.get();
 }
 
@@ -1795,17 +1807,10 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
               },
               web_contents)),
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+      log_router_(password_manager::PasswordManagerLogRouterFactory::
+                      GetForBrowserContext(profile_)),
       helper_(this) {
   ContentPasswordManagerDriverFactory::CreateForWebContents(web_contents, this);
-  ContentPasswordManagerDriverFactory* driver_factory = GetDriverFactory();
-  log_manager_ = autofill::LogManager::Create(
-      password_manager::PasswordManagerLogRouterFactory::GetForBrowserContext(
-          profile_),
-      base::BindRepeating(
-          &ContentPasswordManagerDriverFactory::RequestSendLoggingAvailability,
-          base::Unretained(driver_factory)));
-
-  driver_factory->RequestSendLoggingAvailability();
 
   autofill_managers_observation_.Observe(
       web_contents, autofill::ScopedAutofillManagersObservation::
@@ -1845,7 +1850,9 @@ void ChromePasswordManagerClient::PrimaryPageChanged(content::Page& page) {
   }
 #endif  // BUILDFLAG(IS_ANDROID)
   // Logging has no sense on WebUI sites.
-  log_manager_->SetSuspended(web_contents()->GetWebUI() != nullptr);
+  if (GetCurrentLogManager()) {
+    log_manager_->SetSuspended(web_contents()->GetWebUI() != nullptr);
+  }
 
   // Send any collected metrics by destroying the metrics recorder.
   metrics_recorder_.reset();
@@ -1991,9 +1998,10 @@ bool ChromePasswordManagerClient::IsPasswordManagementEnabledForCurrentPage(
     is_enabled = false;
   }
 
-  if (log_manager_->IsLoggingActive()) {
-    password_manager::BrowserSavePasswordProgressLogger logger(
-        log_manager_.get());
+  autofill::LogManager* log_manager =
+      const_cast<ChromePasswordManagerClient*>(this)->GetCurrentLogManager();
+  if (log_manager && log_manager->IsLoggingActive()) {
+    password_manager::BrowserSavePasswordProgressLogger logger(log_manager);
     logger.LogURL(Logger::STRING_SECURITY_ORIGIN, url);
     logger.LogBoolean(
         Logger::STRING_PASSWORD_MANAGEMENT_ENABLED_FOR_CURRENT_PAGE,

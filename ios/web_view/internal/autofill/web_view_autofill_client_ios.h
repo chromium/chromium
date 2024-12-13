@@ -5,30 +5,31 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_AUTOFILL_WEB_VIEW_AUTOFILL_CLIENT_IOS_H_
 #define IOS_WEB_VIEW_INTERNAL_AUTOFILL_WEB_VIEW_AUTOFILL_CLIENT_IOS_H_
 
-#include <memory>
-#include <string>
-#include <vector>
+#import <memory>
+#import <string>
+#import <vector>
 
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/autocomplete_history_manager.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
+#import "base/memory/weak_ptr.h"
+#import "components/autofill/core/browser/autocomplete_history_manager.h"
+#import "components/autofill/core/browser/autofill_client.h"
+#import "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #import "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
-#include "components/autofill/core/browser/logging/log_manager.h"
+#import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/single_field_fill_router.h"
-#include "components/autofill/core/browser/strike_databases/strike_database.h"
-#include "components/prefs/pref_service.h"
-#include "components/sync/service/sync_service.h"
+#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/single_field_fill_router.h"
+#import "components/autofill/core/browser/strike_databases/strike_database.h"
+#import "components/prefs/pref_service.h"
+#import "components/sync/service/sync_service.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_client_ios_bridge.h"
-#include "ios/web_view/internal/autofill/ios_web_view_payments_autofill_client.h"
-#include "ios/web_view/internal/web_view_browser_state.h"
+#import "ios/web_view/internal/autofill/ios_web_view_payments_autofill_client.h"
+#import "ios/web_view/internal/web_view_browser_state.h"
 
 namespace autofill {
 
+class LogRouter;
 enum class SuggestionType;
 
 namespace payments {
@@ -50,7 +51,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
       signin::IdentityManager* identity_manager,
       StrikeDatabase* strike_database,
       syncer::SyncService* sync_service,
-      std::unique_ptr<autofill::LogManager> log_manager);
+      LogRouter* log_router);
 
   WebViewAutofillClientIOS(const WebViewAutofillClientIOS&) = delete;
   WebViewAutofillClientIOS& operator=(const WebViewAutofillClientIOS&) = delete;
@@ -125,6 +126,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
   std::unique_ptr<FormDataImporter> form_data_importer_;
   StrikeDatabase* strike_database_;
   syncer::SyncService* sync_service_ = nullptr;
+  raw_ptr<LogRouter> log_router_;
   std::unique_ptr<LogManager> log_manager_;
   autofill_metrics::FormInteractionsUkmLogger form_interactions_ukm_logger_{
       this};

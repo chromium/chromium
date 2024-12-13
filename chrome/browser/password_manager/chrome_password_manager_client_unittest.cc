@@ -494,6 +494,12 @@ TEST_F(ChromePasswordManagerClientTest, LogEntryNotifyRenderer) {
       password_manager::PasswordManagerLogRouterFactory::GetForBrowserContext(
           profile());
   log_router->RegisterReceiver(&log_receiver);
+
+  // Now that the log router has a receiver, create the log manager, which
+  // should notify upon construction that logging is now available.
+  autofill::LogManager* log_manager = GetClient()->GetCurrentLogManager();
+  EXPECT_TRUE(log_manager && log_manager->IsLoggingActive());
+
   EXPECT_TRUE(WasLoggingActivationMessageSent(&logging_active));
   EXPECT_TRUE(logging_active);
 
@@ -1128,7 +1134,9 @@ TEST_F(ChromePasswordManagerClientTest, WebUINoLogging) {
 
   // But then navigate to a WebUI, there the logging should not be active.
   NavigateAndCommit(GURL("chrome://password-manager-internals/"));
-  EXPECT_FALSE(GetClient()->GetCurrentLogManager()->IsLoggingActive());
+
+  autofill::LogManager* log_manager = GetClient()->GetCurrentLogManager();
+  EXPECT_FALSE(log_manager && log_manager->IsLoggingActive());
 
   log_router->UnregisterReceiver(&log_receiver);
 }

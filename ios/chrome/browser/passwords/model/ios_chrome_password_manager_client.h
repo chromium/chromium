@@ -33,6 +33,7 @@ class ProfileIOS;
 
 namespace autofill {
 class LogManager;
+class LogRouter;
 }
 
 namespace password_manager {
@@ -157,6 +158,7 @@ class IOSChromePasswordManagerClient
 
   const password_manager::SyncCredentialsFilter credentials_filter_;
 
+  const raw_ptr<autofill::LogRouter> log_router_;
   std::unique_ptr<autofill::LogManager> log_manager_;
 
   // Recorder of metrics that is associated with the last committed navigation

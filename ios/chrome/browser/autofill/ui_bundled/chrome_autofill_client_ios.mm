@@ -24,6 +24,7 @@
 #import "components/autofill/core/browser/form_import/addresses/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/autofill/core/browser/form_import/form_data_importer.h"
 #import "components/autofill/core/browser/logging/log_manager.h"
+#import "components/autofill/core/browser/logging/log_router.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/single_field_fill_router.h"
 #import "components/autofill/core/browser/ui/suggestion_type.h"
@@ -96,12 +97,7 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
       identity_manager_(
           IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile())),
       infobar_manager_(infobar_manager),
-      // TODO(crbug.com/40612524): Replace the closure with a callback to the
-      // renderer that indicates if log messages should be sent from the
-      // renderer.
-      log_manager_(
-          LogManager::Create(AutofillLogRouterFactory::GetForProfile(profile),
-                             base::RepeatingClosure())),
+      log_router_(AutofillLogRouterFactory::GetForProfile(profile_)),
       ablation_study_(GetApplicationContext()->GetLocalState()) {}
 
 ChromeAutofillClientIOS::~ChromeAutofillClientIOS() {
@@ -407,6 +403,12 @@ ChromeAutofillClientIOS::GetCurrentFormInteractionsFlowId() {
 }
 
 LogManager* ChromeAutofillClientIOS::GetCurrentLogManager() {
+  if (!log_manager_ && log_router_ && log_router_->HasReceivers()) {
+    // TODO(crbug.com/40612524): Replace the closure with a callback to the
+    // renderer that indicates if log messages should be sent from the
+    // renderer.
+    log_manager_ = LogManager::Create(log_router_, base::RepeatingClosure());
+  }
   return log_manager_.get();
 }
 

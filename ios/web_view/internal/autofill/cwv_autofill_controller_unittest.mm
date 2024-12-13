@@ -10,7 +10,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
-#import "components/autofill/core/browser/logging/stub_log_manager.h"
 #import "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #import "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #import "components/autofill/core/browser/test_personal_data_manager.h"
@@ -95,7 +94,7 @@ class CWVAutofillControllerTest : public web::WebTest {
     auto password_manager_client =
         std::make_unique<WebViewPasswordManagerClient>(
             &web_state_, /*sync_service=*/nullptr, &pref_service_,
-            /*identity_manager=*/nullptr, /*log_manager=*/nullptr,
+            /*identity_manager=*/nullptr, /*log_router=*/nullptr,
             /*profile_store=*/nullptr, /*account_store=*/nullptr,
             /*reuse_manager=*/nullptr,
             /*requirements_service=*/nullptr);
@@ -108,9 +107,8 @@ class CWVAutofillControllerTest : public web::WebTest {
 
     auto autofill_client = std::make_unique<autofill::WebViewAutofillClientIOS>(
         &pref_service_, &personal_data_manager_, &autocomplete_history_manager_,
-        &web_state_,
-        /*identity_manager=*/nullptr, &strike_database_, &sync_service_,
-        std::make_unique<autofill::StubLogManager>());
+        &web_state_, /*identity_manager=*/nullptr, &strike_database_,
+        &sync_service_, /*log_router=*/nullptr);
     autofill_controller_ = [[CWVAutofillController alloc]
              initWithWebState:&web_state_
                autofillClient:std::move(autofill_client)

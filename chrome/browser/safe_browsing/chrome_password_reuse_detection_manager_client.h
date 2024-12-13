@@ -20,6 +20,10 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+namespace autofill {
+class LogRouter;
+}
+
 namespace safe_browsing {
 class PasswordProtectionService;
 }
@@ -115,6 +119,7 @@ class ChromePasswordReuseDetectionManagerClient
       password_reuse_detection_manager_;
   const raw_ptr<Profile> profile_;
 
+  const raw_ptr<autofill::LogRouter> log_router_;
   std::unique_ptr<autofill::RoutingLogManager> log_manager_;
 
   safe_browsing::PhishyInteractionTracker phishy_interaction_tracker_;
