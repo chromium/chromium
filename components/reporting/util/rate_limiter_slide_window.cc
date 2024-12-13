@@ -47,10 +47,9 @@ void RateLimiterSlideWindow::TrimBuckets(base::Time now) {
 
 void RateLimiterSlideWindow::BucketsShift() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!bucket_events_size_.empty());
-  // Drop all obsolete buckets.
+  // Drop all obsolete buckets, if any.
   TrimBuckets(/*now=*/base::Time::Now());
-  // If more buckets are there, repeat once the earliest bucket becomes
+  // If any buckets are still there, repeat once the earliest bucket becomes
   // obsolete.
   if (!bucket_events_size_.empty()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
