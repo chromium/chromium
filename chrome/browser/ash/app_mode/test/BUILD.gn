@@ -12,6 +12,7 @@ source_set("browser_tests") {
   sources = [
     "kiosk_browsertest.cc",
     "kiosk_chrome_app_browsertest.cc",
+    "kiosk_chrome_app_update_browsertest.cc",
     "kiosk_file_system_volumes_browsertest.cc",
     "kiosk_web_app_offline_enabled_browsertest.cc",
     "new_windows_in_kiosk_allowed_browsertest.cc",
@@ -37,6 +38,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fake_cws_chrome_apps.cc",
+    "fake_cws_chrome_apps.h",
     "kiosk_mixin.cc",
     "kiosk_mixin.h",
     "kiosk_session_initialized_waiter.cc",
