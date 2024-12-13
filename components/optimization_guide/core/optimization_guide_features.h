@@ -462,6 +462,10 @@ base::TimeDelta GetOnDeviceEligibleModelFeatureRecentUsePeriod();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 base::TimeDelta GetOnDeviceModelRetentionTime();
 
+// Return the disk space (in MiB) required for on device model install.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+int GetDiskSpaceRequiredInMbForOnDeviceModelInstall();
+
 // Whether there is enough free disk space to allow on-device model
 // installation.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

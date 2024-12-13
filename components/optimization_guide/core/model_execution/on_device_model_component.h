@@ -179,6 +179,10 @@ class OnDeviceModelComponentStateManager
   // registration has been computed yet.
   const RegistrationCriteria* GetRegistrationCriteria();
 
+  // Return the most recently queried free disk space in bytes, which is used to
+  // determine eligibility for model install.
+  int64_t GetDiskBytesAvailableForModel();
+
   // Returns true if this is determined to be a low tier device.
   bool IsLowTierDevice() const;
 
@@ -205,7 +209,8 @@ class OnDeviceModelComponentStateManager
                                      std::unique_ptr<Delegate> delegate);
   ~OnDeviceModelComponentStateManager();
 
-  RegistrationCriteria GetRegistrationCriteria(int64_t disk_space_free_bytes);
+  RegistrationCriteria ComputeRegistrationCriteria(
+      int64_t disk_space_free_bytes);
 
   // Installs the component installer if it needs installed.
   void BeginUpdateRegistration();
@@ -229,6 +234,8 @@ class OnDeviceModelComponentStateManager
   // Null until first registration attempt.
   std::unique_ptr<RegistrationCriteria> registration_criteria_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  // Most recently queried disk space available for model install.
+  int64_t disk_space_available_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
