@@ -767,7 +767,7 @@ TEST_F(AIPageContentAgentTest, LandmarkSectionsWithAriaRoles) {
       *helper_.LocalMainFrame()->GetFrame()->GetDocument());
   ASSERT_TRUE(agent);
 
- auto content = agent->GetAIPageContentSync();
+  auto content = agent->GetAIPageContentSync();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -1017,6 +1017,51 @@ TEST_F(AIPageContentAgentTest, ScrollContainer) {
       "Some long text to make it scrollable. Some long text to make it "
       "scrollable. Some long text to make it scrollable. Some long text "
       "to make it scrollable.");
+}
+
+TEST_F(AIPageContentAgentTest, Links) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <a href='https://www.google.com'>Google</a>"
+      "  <a href='https://www.youtube.com' rel='noopener "
+      "noreferrer'>YouTube</a>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto content = agent->GetAIPageContentSync();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  ASSERT_EQ(root.children_nodes.size(), 2u);
+
+  const auto& link = *root.children_nodes[0]->content_attributes;
+  EXPECT_EQ(link.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kAnchor);
+  ASSERT_EQ(link.text_info.size(), 1u);
+  EXPECT_EQ(link.text_info[0]->text_content, "Google");
+  const auto* link_anchor_data = link.anchor_data.get();
+  EXPECT_EQ(link_anchor_data->url, blink::KURL("https://www.google.com/"));
+  EXPECT_EQ(link_anchor_data->rel.size(), 0u);
+
+  const auto& link_with_rel = *root.children_nodes[1]->content_attributes;
+  EXPECT_EQ(link_with_rel.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kAnchor);
+  ASSERT_EQ(link_with_rel.text_info.size(), 1u);
+  EXPECT_EQ(link_with_rel.text_info[0]->text_content, "YouTube");
+  const auto* link_with_rel_anchor_data = link_with_rel.anchor_data.get();
+  EXPECT_EQ(link_with_rel_anchor_data->url,
+            blink::KURL("https://www.youtube.com/"));
+  ASSERT_EQ(link_with_rel_anchor_data->rel.size(), 2u);
+  EXPECT_EQ(link_with_rel_anchor_data->rel[0],
+            mojom::blink::AIPageContentAnchorRel::kRelationNoOpener);
+  EXPECT_EQ(link_with_rel_anchor_data->rel[1],
+            mojom::blink::AIPageContentAnchorRel::kRelationNoReferrer);
 }
 
 }  // namespace

@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
@@ -36,7 +37,7 @@ constexpr float kHeading3FontSizeMultiplier = 1.17;
 constexpr float kHeading5FontSizeMultiplier = 0.83;
 constexpr float kHeading6FontSizeMultiplier = 0.67;
 
-// TODO(b/383128653): This is duplicating logic from
+// TODO(crbug.com/383128653): This is duplicating logic from
 // UnsupportedTagTypeValueForNode, consider reusing it.
 bool IsHeadingTag(const HTMLElement& element) {
   return element.HasTagName(html_names::kH1Tag) ||
@@ -45,6 +46,22 @@ bool IsHeadingTag(const HTMLElement& element) {
          element.HasTagName(html_names::kH4Tag) ||
          element.HasTagName(html_names::kH5Tag) ||
          element.HasTagName(html_names::kH6Tag);
+}
+
+mojom::blink::AIPageContentAnchorRel GetAnchorRel(
+    const AtomicString& rel) {
+  if (rel == "noopener") {
+    return mojom::blink::AIPageContentAnchorRel::kRelationNoOpener;
+  } else if (rel == "noreferrer") {
+    return mojom::blink::AIPageContentAnchorRel::kRelationNoReferrer;
+  } else if (rel == "opener") {
+    return mojom::blink::AIPageContentAnchorRel::kRelationOpener;
+  } else if (rel == "privacy-policy") {
+    return mojom::blink::AIPageContentAnchorRel::kRelationPrivacyPolicy;
+  } else if (rel == "terms-of-service") {
+    return mojom::blink::AIPageContentAnchorRel::kRelationTermsOfService;
+  }
+  return mojom::blink::AIPageContentAnchorRel::kRelationUnknown;
 }
 
 // Returns the relative text size of the object compared to the document
@@ -113,6 +130,10 @@ std::optional<mojom::blink::AIPageContentAttributeType> GetAttributeType(
 
   if (IsHeadingTag(*element)) {
     return mojom::blink::AIPageContentAttributeType::kHeading;
+  }
+
+  if (element->HasTagName(html_names::kATag)) {
+    return mojom::blink::AIPageContentAttributeType::kAnchor;
   }
 
   if (element->HasTagName(html_names::kOlTag)) {
@@ -317,8 +338,8 @@ void AIPageContentAgent::ProcessNode(
             mojom::blink::AIPageContentAttributeType::kIframe) {
       ProcessIframe(*GetIFrame(*child), *child_content_node);
     } else if (child_content_node &&
-        child_content_node->content_attributes->attribute_type ==
-            mojom::blink::AIPageContentAttributeType::kTable) {
+               child_content_node->content_attributes->attribute_type ==
+                   mojom::blink::AIPageContentAttributeType::kTable) {
       ProcessTable(To<LayoutTable>(*child), *child_content_node,
                    document_style);
     } else {
@@ -426,12 +447,24 @@ void AIPageContentAgent::MaybeAddNodeContent(
     image_info->image_bounding_box =
         image->AbsoluteBoundingBoxRect(kMapCoordinatesFlags);
     if (auto* image_element = DynamicTo<HTMLImageElement>(image->GetNode())) {
-      // TODO(b/383127202): A11y stack generates alt text using image data
-      // which could be reused for this.
+      // TODO(crbug.com/383127202): A11y stack generates alt text using image
+      // data which could be reused for this.
       image_info->image_caption = image_element->AltText();
     }
-    // TODO(b/382558422): Include image source origin.
+    // TODO(crbug.com/382558422): Include image source origin.
     attributes.image_info.emplace_back(std::move(image_info));
+    return;
+  }
+
+  if (auto* anchor_element = DynamicTo<HTMLAnchorElement>(object.GetNode())) {
+    auto anchor_data = mojom::blink::AIPageContentAnchorData::New();
+    anchor_data->url = anchor_element->Url();
+    for (unsigned i = 0; i < anchor_element->relList().length(); ++i) {
+      anchor_data->rel.push_back(
+          GetAnchorRel(anchor_element->relList().item(i)));
+    }
+    attributes.anchor_data = std::move(anchor_data);
+    return;
   }
 }
 
@@ -519,7 +552,7 @@ void AIPageContentAgent::ProcessTableRow(
     const ComputedStyle& document_style) const {
   for (auto* child = object.FirstChild(); child; child = child->NextSibling()) {
     // Add the cell contents as a ContentNode.
-    // TODO(b/383127685): Consider adding additional information as
+    // TODO(crbug.com/383127685): Consider adding additional information as
     // CellContentData, such as the cell's column span.
     auto child_content_node = MaybeGenerateContentNode(*child);
     MaybeAddNodeContent(*child, *child_content_node->content_attributes,

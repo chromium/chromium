@@ -4,9 +4,10 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
-import "third_party/blink/public/mojom/tokens/tokens.mojom";
+import "url/mojom/url.mojom";
 
 // This is a mojom representation of the corresponding AnnotatedPageContent
 // proto.
@@ -25,6 +26,7 @@ enum AIPageContentAttributeType {
   // Text chunks.
   kParagraph,
   kHeading,
+  kAnchor,
 
   // Structured chunks.
   kOrderedList,
@@ -82,6 +84,25 @@ struct AIPageContentTextInfo {
   AIPageContentTextStyle text_style;
 };
 
+enum AIPageContentAnchorRel {
+  kRelationUnknown,
+  kRelationNoReferrer,
+  kRelationNoOpener,
+  kRelationOpener,
+  kRelationPrivacyPolicy,
+  kRelationTermsOfService,
+};
+
+struct AIPageContentAnchorData {
+  url.mojom.Url url;
+
+  // The relationship between the linked URL and the current document.
+  array<AIPageContentAnchorRel> rel;
+
+  // TODO(crbug.com/382119737): Consider adding fields for target, MIME type,
+  // and whether the link is a download.
+};
+
 struct AIPageContentImageInfo {
   gfx.mojom.Rect image_bounding_box;
   string? image_caption;
@@ -130,6 +151,9 @@ struct AIPageContentAttributes {
 
   // Text chunks in this node.
   array<AIPageContentTextInfo> text_info;
+
+  // Only set if attribute_type is ANCHOR.
+  AIPageContentAnchorData? anchor_data;
 
   // Images in this node.
   array<AIPageContentImageInfo> image_info;
