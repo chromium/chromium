@@ -9,17 +9,18 @@
 #include "content/public/browser/navigation_handle.h"
 
 namespace {
-constexpr char kUserDataKey[] = "PolicyBlocklistMetrics";
+const void* const kPolicyBlocklistMetricsDataKey = &kPolicyBlocklistMetricsDataKey;
 }
 
 // static
 PolicyBlocklistMetrics* PolicyBlocklistMetrics::Get(
     content::NavigationHandle& handle) {
-  return static_cast<PolicyBlocklistMetrics*>(handle.GetUserData(kUserDataKey));
+  return static_cast<PolicyBlocklistMetrics*>(
+      handle.GetUserData(kPolicyBlocklistMetricsDataKey));
 }
 
 // static
 void PolicyBlocklistMetrics::Create(content::NavigationHandle& handle) {
-  handle.SetUserData(kUserDataKey,
+  handle.SetUserData(kPolicyBlocklistMetricsDataKey,
                      base::WrapUnique(new PolicyBlocklistMetrics()));
 }
