@@ -526,6 +526,7 @@ component("base") {
     "process/process_info.h",
     "process/set_process_title.cc",
     "process/set_process_title.h",
+    "profiler/core_unwinders.h",
     "profiler/frame.cc",
     "profiler/frame.h",
     "profiler/metadata_recorder.cc",
@@ -1773,6 +1774,7 @@ component("base") {
       "process/process_iterator_win.cc",
       "process/process_metrics_win.cc",
       "process/process_win.cc",
+      "profiler/core_unwinders_win.cc",
       "profiler/module_cache_win.cc",
       "profiler/native_unwinder_win.cc",
       "profiler/native_unwinder_win.h",
@@ -2092,6 +2094,7 @@ component("base") {
       "process/process_iterator_mac.cc",
       "process/process_mac.cc",
       "process/process_metrics_mac.cc",
+      "profiler/core_unwinders_mac.cc",
       "profiler/frame_pointer_unwinder.cc",
       "profiler/frame_pointer_unwinder.h",
       "profiler/stack_sampler_mac.cc",
@@ -2134,6 +2137,7 @@ component("base") {
       "power_monitor/power_monitor_device_source_ios.mm",
       "process/process_metrics_ios.cc",
       "process/process_metrics_posix.cc",
+      "profiler/core_unwinders_ios.cc",
       "profiler/stack_sampler_ios.cc",
       "system/sys_info_ios.mm",
     ]
@@ -2318,7 +2322,10 @@ component("base") {
   }
 
   if ((is_posix && !is_apple && !is_android) || is_fuchsia) {
-    sources += [ "profiler/stack_sampler_posix.cc" ]
+    sources += [
+      "profiler/core_unwinders_posix.cc",
+      "profiler/stack_sampler_posix.cc",
+    ]
   }
 
   if ((is_posix && !is_apple && !is_android && !is_chromeos) || is_fuchsia) {

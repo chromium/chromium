@@ -37,6 +37,10 @@
 #include "base/profiler/native_unwinder_android.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "base/profiler/core_unwinders.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 // Windows doesn't provide an alloca function like Linux does.
 // Fortunately, it provides _alloca, which functions identically.
@@ -463,8 +467,10 @@ StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactoryForTesting(
         return unwinders;
       },
       std::move(unwinders));
-#else
+#elif BUILDFLAG(IS_ANDROID)
   return StackSamplingProfiler::UnwindersFactory();
+#else
+  return CreateCoreUnwindersFactory();
 #endif
 }
 

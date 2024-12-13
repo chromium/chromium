@@ -5,9 +5,9 @@
 #include "chrome/common/profiler/chrome_thread_group_profiler_client.h"
 
 #include "base/command_line.h"
+#include "chrome/common/profiler/core_unwinders.h"
 #include "chrome/common/profiler/process_type.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
-#include "chrome/common/profiler/unwind_util.h"
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
 #include "components/sampling_profiler/call_stack_profile_params.h"
 #include "components/sampling_profiler/process_type.h"

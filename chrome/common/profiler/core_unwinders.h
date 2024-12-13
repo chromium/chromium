@@ -1,16 +1,14 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_PROFILER_UNWIND_UTIL_H_
-#define CHROME_COMMON_PROFILER_UNWIND_UTIL_H_
+#ifndef CHROME_COMMON_PROFILER_CORE_UNWINDERS_H_
+#define CHROME_COMMON_PROFILER_CORE_UNWINDERS_H_
 
 #include "base/feature_list.h"
 #include "base/profiler/stack_sampling_profiler.h"
+#include "build/build_config.h"
 #include "components/version_info/channel.h"
-
-// Used to gate unwind prerequisites' installation for some unit tests.
-BASE_DECLARE_FEATURE(kInstallAndroidUnwindDfm);
 
 // See `RequestUnwindPrerequisitesInstallation` and
 // `AreUnwindPrerequisitesAvailable` below for more context. Intended for unit
@@ -58,7 +56,12 @@ bool AreUnwindPrerequisitesAvailable(
 
 base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory();
 
+#if BUILDFLAG(IS_ANDROID)
+// Used to gate unwind prerequisites' installation for some unit tests.
+BASE_DECLARE_FEATURE(kInstallAndroidUnwindDfm);
+
 base::StackSamplingProfiler::UnwindersFactory
 CreateLibunwindstackUnwinderFactory();
+#endif
 
-#endif  // CHROME_COMMON_PROFILER_UNWIND_UTIL_H_
+#endif  // CHROME_COMMON_PROFILER_CORE_UNWINDERS_H_

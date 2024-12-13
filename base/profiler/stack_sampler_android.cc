@@ -6,11 +6,9 @@
 
 #include <pthread.h>
 
-#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/profiler/stack_copier_signal.h"
 #include "base/profiler/thread_delegate_posix.h"
-#include "base/profiler/unwinder.h"
 #include "base/threading/platform_thread.h"
 
 namespace base {

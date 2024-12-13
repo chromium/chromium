@@ -44,6 +44,10 @@
 #define INITIALIZE_THREAD_DELEGATE_POSIX 0
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_APPLE)
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "base/profiler/core_unwinders.h"
+#endif
+
 #if ANDROID_ARM64_UNWINDING_SUPPORTED || ANDROID_CFI_UNWINDING_SUPPORTED
 #include <dlfcn.h>
 #include "base/debug/elf_reader.h"
@@ -352,7 +356,9 @@ struct FrameDetails {
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) && defined(_WIN64) ||          \
     ANDROID_ARM64_UNWINDING_SUPPORTED || ANDROID_CFI_UNWINDING_SUPPORTED || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+    (BUILDFLAG(IS_CHROMEOS) &&                                              \
+     (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64))) ||              \
+    BUILDFLAG(IS_LINUX)
 // Returns whether stack sampling is supported on the current platform.
 bool IsStackSamplingSupported() {
   return base::StackSamplingProfiler::IsSupportedForCurrentPlatform();
@@ -747,7 +753,9 @@ void TracingSamplerProfiler::RegisterDataSource() {
 bool TracingSamplerProfiler::IsStackUnwindingSupportedForTesting() {
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) && defined(_WIN64) ||          \
     ANDROID_ARM64_UNWINDING_SUPPORTED || ANDROID_CFI_UNWINDING_SUPPORTED || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+    (BUILDFLAG(IS_CHROMEOS) &&                                              \
+     (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64))) ||              \
+    BUILDFLAG(IS_LINUX)
   return IsStackSamplingSupported();
 #else
   return false;
@@ -871,7 +879,8 @@ void TracingSamplerProfiler::StartTracing(
   }
   profile_builder->SetUnwinderType(unwinder_type_);
   profiler_ = std::make_unique<base::StackSamplingProfiler>(
-      sampled_thread_token_, params, std::move(profile_builder));
+      sampled_thread_token_, params, std::move(profile_builder),
+      base::CreateCoreUnwindersFactory());
 #endif  // BUILDFLAG(IS_ANDROID)
   if (profiler_ != nullptr) {
     if (aux_unwinder_factory_) {

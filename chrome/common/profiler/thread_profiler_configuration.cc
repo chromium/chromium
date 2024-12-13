@@ -14,9 +14,9 @@
 #include "build/branding_buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/profiler/core_unwinders.h"
 #include "chrome/common/profiler/process_type.h"
 #include "chrome/common/profiler/thread_profiler_platform_configuration.h"
-#include "chrome/common/profiler/unwind_util.h"
 #include "components/sampling_profiler/process_type.h"
 #include "components/version_info/version_info.h"
 

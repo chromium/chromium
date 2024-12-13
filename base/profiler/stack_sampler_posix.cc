@@ -14,28 +14,11 @@
 
 #if BUILDFLAG(IS_CHROMEOS) && \
     (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64))
-#include "base/check.h"
-#include "base/functional/bind.h"
-#include "base/profiler/frame_pointer_unwinder.h"
 #include "base/profiler/stack_copier_signal.h"
 #include "base/profiler/thread_delegate_posix.h"
-#include "base/profiler/unwinder.h"
 #endif
 
 namespace base {
-
-namespace {
-
-#if BUILDFLAG(IS_CHROMEOS) && \
-    (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64))
-std::vector<std::unique_ptr<Unwinder>> CreateUnwinders() {
-  std::vector<std::unique_ptr<Unwinder>> unwinders;
-  unwinders.push_back(std::make_unique<FramePointerUnwinder>());
-  return unwinders;
-}
-#endif
-
-}  // namespace
 
 std::unique_ptr<StackSampler> StackSampler::Create(
     SamplingProfilerThreadToken thread_token,
@@ -45,12 +28,11 @@ std::unique_ptr<StackSampler> StackSampler::Create(
     StackSamplerTestDelegate* test_delegate) {
 #if BUILDFLAG(IS_CHROMEOS) && \
     (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64))
-  DCHECK(!core_unwinders_factory);
-  return base::WrapUnique(
-      new StackSampler(std::make_unique<StackCopierSignal>(
-                           ThreadDelegatePosix::Create(thread_token)),
-                       std::move(stack_unwind_data), BindOnce(&CreateUnwinders),
-                       std::move(record_sample_callback), test_delegate));
+  return base::WrapUnique(new StackSampler(
+      std::make_unique<StackCopierSignal>(
+          ThreadDelegatePosix::Create(thread_token)),
+      std::move(stack_unwind_data), std::move(core_unwinders_factory),
+      std::move(record_sample_callback), test_delegate));
 #else
   return nullptr;
 #endif
