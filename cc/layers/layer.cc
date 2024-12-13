@@ -89,6 +89,11 @@ Layer::Inputs::~Inputs() = default;
 Layer::LayerTreeInputs::LayerTreeInputs() = default;
 Layer::LayerTreeInputs::~LayerTreeInputs() = default;
 
+int Layer::GetNextLayerId() {
+  // Layer IDs start from 1.
+  return g_next_layer_id.GetNext() + 1;
+}
+
 scoped_refptr<Layer> Layer::Create() {
   return base::WrapRefCounted(new Layer());
 }
@@ -96,8 +101,7 @@ scoped_refptr<Layer> Layer::Create() {
 Layer::Layer()
     : parent_(nullptr),
       layer_tree_host_(nullptr),
-      // Layer IDs start from 1.
-      layer_id_(g_next_layer_id.GetNext() + 1),
+      layer_id_(GetNextLayerId()),
       num_descendants_that_draw_content_(0),
       transform_tree_index_(kInvalidPropertyNodeId),
       effect_tree_index_(kInvalidPropertyNodeId),

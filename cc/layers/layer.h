@@ -95,6 +95,9 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     INVALID_ID = -1,
   };
 
+  // Get a unique layer id.
+  static int GetNextLayerId();
+
   // Factory to create a new Layer, with a unique id.
   static scoped_refptr<Layer> Create();
 

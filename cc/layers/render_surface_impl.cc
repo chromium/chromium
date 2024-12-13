@@ -37,7 +37,8 @@ RenderSurfaceImpl::RenderSurfaceImpl(LayerTreeImpl* layer_tree_impl,
                                      ElementId id)
     : layer_tree_impl_(layer_tree_impl),
       id_(id),
-      effect_tree_index_(kInvalidPropertyNodeId) {
+      effect_tree_index_(kInvalidPropertyNodeId),
+      layer_id_(Layer::GetNextLayerId()) {
   DCHECK(id);
   damage_tracker_ = DamageTracker::Create();
 }
@@ -459,7 +460,7 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
   shared_quad_state->SetAll(
       draw_transform(), content_rect(), content_rect(), mask_filter_info(),
       clip_rect, contents_opaque, draw_properties_.draw_opacity, BlendMode(),
-      sorting_context_id, /*layer_id=*/0u, is_fast_rounded_corner());
+      sorting_context_id, layer_id_, is_fast_rounded_corner());
 
   if (layer_tree_impl_->debug_state().show_debug_borders.test(
           DebugBorderType::RENDERPASS)) {

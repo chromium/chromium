@@ -173,15 +173,13 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuad(
   candidate.overlay_damage_index =
       sqs->overlay_damage_index.value_or(OverlayCandidate::kInvalidDamageIndex);
 
-  if (sqs->layer_id != 0) {
-    static_assert(
-        std::is_same<decltype(SharedQuadState::layer_id), uint32_t>::value);
-    static_assert(std::is_same<decltype(SharedQuadState::layer_namespace_id),
-                               uint32_t>::value);
-    candidate.aggregated_layer_id =
-        static_cast<uint64_t>(sqs->layer_id) |
-        (static_cast<uint64_t>(sqs->layer_namespace_id) << 32);
-  }
+  static_assert(
+      std::is_same<decltype(SharedQuadState::layer_id), uint32_t>::value);
+  static_assert(std::is_same<decltype(SharedQuadState::layer_namespace_id),
+                             uint32_t>::value);
+  candidate.aggregated_layer_id =
+      static_cast<uint64_t>(sqs->layer_id) |
+      (static_cast<uint64_t>(sqs->layer_namespace_id) << 32);
 
   auto status = CandidateStatus::kFailQuadNotSupported;
   switch (quad->material) {
