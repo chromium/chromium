@@ -105,7 +105,7 @@ public class OmniboxFeatures {
     /** See {@link #shouldRetainOmniboxOnFocus()}. */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static final CachedFlag sRetainOmniboxOnFocus =
-            newFlag(OmniboxFeatureList.RETAIN_OMNIBOX_ON_FOCUS, FeatureState.DISABLED);
+            newFlag(OmniboxFeatureList.RETAIN_OMNIBOX_ON_FOCUS, FeatureState.ENABLED_IN_TEST);
 
     public static final CachedFlag sAndroidHubSearch =
             newFlag(OmniboxFeatureList.ANDROID_HUB_SEARCH, FeatureState.DISABLED);

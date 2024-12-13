@@ -72,8 +72,7 @@ public class ChromeCachedFlagsTest {
                     ChromeFeatureList.sTabStripGroupCollapse,
                     ChromeFeatureList.sTraceBinderIpc,
                     OmniboxFeatures.sAndroidHubSearch,
-                    OmniboxFeatures.sOmniboxAnswerActions,
-                    OmniboxFeatures.sRetainOmniboxOnFocus);
+                    OmniboxFeatures.sOmniboxAnswerActions);
 
     /**
      * Tests that the |defaultValueForTests| in the CachedFlag declaration matches
