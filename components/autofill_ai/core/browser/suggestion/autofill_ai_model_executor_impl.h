@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
+#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/forms_predictions.pb.h"
 #include "components/user_annotations/user_annotations_types.h"
@@ -35,6 +36,7 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
  public:
   AutofillAiModelExecutorImpl(
       optimization_guide::OptimizationGuideModelExecutor* model_executor,
+      optimization_guide::ModelQualityLogsUploaderService* logs_uploader,
       user_annotations::UserAnnotationsService* user_annotations_service);
   ~AutofillAiModelExecutorImpl() override;
 
@@ -68,7 +70,8 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
       PredictionsReceivedCallback callback,
       optimization_guide::OptimizationGuideModelExecutionResult
           execution_result,
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+      std::unique_ptr<optimization_guide::proto::FormsPredictionsLoggingData>
+          logging_data);
 
   static PredictionsByGlobalId ExtractPredictions(
       const autofill::FormData& form_data,
@@ -96,6 +99,8 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
 
   raw_ptr<optimization_guide::OptimizationGuideModelExecutor> model_executor_ =
       nullptr;
+  base::WeakPtr<optimization_guide::ModelQualityLogsUploaderService>
+      logs_uploader_;
   raw_ptr<user_annotations::UserAnnotationsService> user_annotations_service_ =
       nullptr;
 

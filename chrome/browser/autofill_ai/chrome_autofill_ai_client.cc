@@ -103,9 +103,13 @@ ChromeAutofillAiClient::GetModelExecutor() {
   if (!filling_engine_) {
     Profile* profile =
         Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+    OptimizationGuideKeyedService* optimization_guide_keyed_service =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
     filling_engine_ =
         std::make_unique<autofill_ai::AutofillAiModelExecutorImpl>(
-            OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+            optimization_guide_keyed_service,
+            optimization_guide_keyed_service
+                ->GetModelQualityLogsUploaderService(),
             UserAnnotationsServiceFactory::GetForProfile(profile));
   }
   return filling_engine_.get();
