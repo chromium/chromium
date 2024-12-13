@@ -7,8 +7,11 @@ package org.chromium.android_webview.test;
 import android.os.Bundle;
 import android.webkit.JavascriptInterface;
 
-import androidx.test.filters.MediumTest;
+import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
+
+import difflib.DiffUtils;
+import difflib.Patch;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,6 +27,7 @@ import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.UrlUtils;
 
@@ -33,8 +37,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -50,7 +54,9 @@ public class WebExposedTest extends AwParameterizedTest {
     private static final String BASE_BLINK_TEST_PATH = "third_party/blink/web_tests/";
     private static final String PATH_WEBVIEW_PREFIX = EXTERNAL_PREFIX + BASE_WEBVIEW_TEST_PATH;
     private static final String PATH_BLINK_PREFIX = EXTERNAL_PREFIX + BASE_BLINK_TEST_PATH;
-    private static final String GLOBAL_LISTING_FILE =
+    private static final String GLOBAL_INTERFACE_LISTING_TEST =
+            "webexposed/global-interface-listing.html";
+    private static final String GLOBAL_INTERFACE_LISTING_EXPECTATION =
             "webexposed/global-interface-listing-expected.txt";
 
     private static final String TEST_FINISHED_SENTINEL = "TEST FINISHED";
@@ -147,88 +153,88 @@ public class WebExposedTest extends AwParameterizedTest {
                 });
     }
 
-    // This is a non-failing test because it tends to require frequent rebaselines.
     @Test
-    @MediumTest
-    public void testGlobalInterfaceNoFail() throws Exception {
-        runTest(
-                PATH_BLINK_PREFIX + "webexposed/global-interface-listing.html",
-                PATH_WEBVIEW_PREFIX + "webexposed/global-interface-listing-expected.txt",
-                true);
-    }
+    @LargeTest
+    @DisabledTest(message = "crbug.com/381090604 - requires new baseline")
+    public void testGlobalInterfaceListing() throws Exception {
+        final String repoExpectationPath =
+                BASE_WEBVIEW_TEST_PATH + GLOBAL_INTERFACE_LISTING_EXPECTATION;
 
-    // This is a non-failing test to avoid rebaselines by the sheriff
-    // (see crbug.com/564765).
-    @Test
-    @MediumTest
-    public void testNoUnexpectedInterfaces() throws Exception {
-        // Begin by running the web test.
-        mRule.loadUrlAsync(
-                mAwContents,
-                "file://" + PATH_BLINK_PREFIX + "webexposed/global-interface-listing.html");
+        final String diff =
+                runTestAndDiff(
+                        "file://" + PATH_BLINK_PREFIX + GLOBAL_INTERFACE_LISTING_TEST,
+                        PATH_WEBVIEW_PREFIX + GLOBAL_INTERFACE_LISTING_EXPECTATION,
+                        repoExpectationPath);
 
-        // Process all expectations files.
-        String fileNameExpected =
-                PATH_WEBVIEW_PREFIX + "webexposed/global-interface-listing-expected.txt";
-        String webviewExpected = readFile(fileNameExpected);
-        HashMap<String, HashSet<String>> webviewExpectedInterfacesMap =
-                buildHashMap(webviewExpected);
-
-        // Wait for web test to finish running. Note we should wait for the web test to
-        // finish running after processing the expectations file. The expectations file
-        // has 8600 lines and a size of 212 KB. It is better to process the expectations
-        // file in parallel with the web test run.
-        waitForFinish(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-
-        // Process web test results.
-        String result = getTestResult();
-
-        if (isRebaseline()) {
-            writeFile(fileNameExpected, result);
-            Log.i(TAG, "file: " + fileNameExpected + " --> rebaselined, length=" + result.length());
+        if (diff.length() == 0) {
             return;
         }
 
-        HashMap<String, HashSet<String>> webviewInterfacesMap = buildHashMap(result);
+        final StringBuilder message = new StringBuilder();
+        message.append("\n")
+                .append("WebView's set of web exposed APIs has changed and no longer matches the\n")
+                .append("expectations defined in\n")
+                .append("//" + repoExpectationPath + "\n")
+                .append("\n")
+                .append("Confirm whether these changes are deliberate. If they are, update the\n")
+                .append("expectations.\n")
+                .append("\n")
+                .append("To update expectations, run:\n")
+                .append("########### START ###########\n")
+                .append(" patch -p1 <<'END_DIFF'\n")
+                .append(diff)
+                .append("END_DIFF\n")
+                .append("############ END ############\n")
+                .append("\n");
+        Assert.fail(message.toString());
+    }
 
-        StringBuilder newInterfaces = new StringBuilder();
+    /**
+     * Run a test and produce a unified diff of its result against its expectation.
+     *
+     * @param testUri URI to load to execute the test.
+     * @param deviceExpectationPath On-device expectation file to compare result to.
+     * @param repoExpectationPath The path to use in any output unified diff headers.
+     * @returns If result matches expectation, empty string. If not, a unified diff that can be used
+     *     to update the expectation file in a Chromium checkout.
+     */
+    private String runTestAndDiff(
+            String testUri, String deviceExpectationPath, String repoExpectationPath)
+            throws Exception {
+        mRule.loadUrlAsync(mAwContents, testUri);
 
-        // Check that each current webview interface is one of webview expected interfaces.
-        for (String interfaceS : webviewInterfacesMap.keySet()) {
-            if (webviewExpectedInterfacesMap.get(interfaceS) == null) {
-                newInterfaces.append(interfaceS).append("\n");
-            }
-        }
-
-        if (newInterfaces.length() > 0) {
-            Log.w(TAG, "Unexpected WebView interfaces found: " + newInterfaces);
+        if (isRebaseline()) {
+            waitForFinish(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            String result = getTestResult();
+            writeFile(deviceExpectationPath, result);
+            Log.i(
+                    TAG,
+                    "file: "
+                            + deviceExpectationPath
+                            + " --> rebaselined, length="
+                            + result.length());
+            return "";
+        } else {
+            // Read expectation in parallel with the running test.
+            String expected = readFile(deviceExpectationPath);
+            waitForFinish(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            String result = getTestResult();
+            return stringDiff(repoExpectationPath, expected, result);
         }
     }
 
-    private void runTest(final String fileName, final String fileNameExpected, boolean noFail)
-            throws Exception {
-        mRule.loadUrlAsync(mAwContents, "file://" + fileName);
-
-        if (isRebaseline()) {
-            // this is the rebaseline process
-            waitForFinish(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            String result = getTestResult();
-            writeFile(fileNameExpected, result);
-            Log.i(TAG, "file: " + fileNameExpected + " --> rebaselined, length=" + result.length());
-        } else {
-            String expected = readFile(fileNameExpected);
-            waitForFinish(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            String result = getTestResult();
-            try {
-                Assert.assertEquals(expected, result);
-            } catch (AssertionError exception) {
-                if (noFail) {
-                    Log.e(TAG, "%s", exception.toString());
-                } else {
-                    throw exception;
-                }
-            }
+    private String stringDiff(String filename, String a, String b) throws Exception {
+        final List<String> aList = Arrays.asList(a.split("\\n"));
+        final List<String> bList = Arrays.asList(b.split("\\n"));
+        final Patch<String> patch = DiffUtils.diff(aList, bList);
+        final List<String> diff =
+                DiffUtils.generateUnifiedDiff(
+                        "a/" + filename, "b/" + filename, aList, patch, /* contextSize= */ 3);
+        final StringBuilder sb = new StringBuilder();
+        for (final String line : diff) {
+            sb.append(line).append("\n");
         }
+        return sb.toString();
     }
 
     /** Reads a file and returns it's contents as string. */
@@ -284,38 +290,5 @@ public class WebExposedTest extends AwParameterizedTest {
         synchronized (mLock) {
             mLock.notifyAll();
         }
-    }
-
-    private HashMap<String, HashSet<String>> buildHashMap(String contents) {
-        HashMap<String, HashSet<String>> interfaces = new HashMap<>();
-        String[] lineByLine = contents.split("\\n");
-
-        HashSet<String> subset = null;
-        for (String line : lineByLine) {
-            String s = trimAndRemoveComments(line);
-            if (isInterfaceOrGlobalObject(s)) {
-                subset = interfaces.computeIfAbsent(s, k -> new HashSet<>());
-            } else if (isInterfaceProperty(s) && subset != null) {
-                subset.add(s);
-            }
-        }
-        return interfaces;
-    }
-
-    private String trimAndRemoveComments(String line) {
-        String s = line.trim();
-        int commentIndex = s.indexOf("#"); // remove any potential comments
-        return (commentIndex >= 0) ? s.substring(0, commentIndex).trim() : s;
-    }
-
-    private boolean isInterfaceOrGlobalObject(String s) {
-        return s.startsWith("interface") || s.startsWith("[GLOBAL OBJECT]");
-    }
-
-    private boolean isInterfaceProperty(String s) {
-        return s.startsWith("getter")
-                || s.startsWith("setter")
-                || s.startsWith("method")
-                || s.startsWith("attribute");
     }
 }
