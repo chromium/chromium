@@ -10,9 +10,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.text.SpannableString;
-import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -33,6 +31,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.ChromeBulletSpan;
@@ -134,20 +133,15 @@ public class IncognitoDescriptionView extends LinearLayout {
         }
 
         String text = context.getString(R.string.new_tab_otr_third_party_blocked_cookie_part_two);
-        ClickableSpan span =
-                new ClickableSpan() {
-                    @Override
-                    public void onClick(View view) {
-                        new ChromeAsyncTabLauncher(/* incognito= */ true)
-                                .launchUrl(TRACKING_PROTECTION_URL, TabLaunchType.FROM_CHROME_UI);
-                    }
-
-                    @Override
-                    public void updateDrawState(TextPaint textPaint) {
-                        super.updateDrawState(textPaint);
-                        textPaint.setColor(context.getColor(R.color.default_text_color_link_light));
-                    }
-                };
+        ChromeClickableSpan span =
+                new ChromeClickableSpan(
+                        getContext(),
+                        R.color.default_text_color_link_light,
+                        (unused) -> {
+                            new ChromeAsyncTabLauncher(/* incognito= */ true)
+                                    .launchUrl(
+                                            TRACKING_PROTECTION_URL, TabLaunchType.FROM_CHROME_UI);
+                        });
         view.setText(
                 SpanApplier.applySpans(text, new SpanApplier.SpanInfo("<link>", "</link>", span)));
         view.setMovementMethod(LinkMovementMethod.getInstance());
@@ -353,20 +347,11 @@ public class IncognitoDescriptionView extends LinearLayout {
         final String subtitleText =
                 getContext().getString(R.string.new_tab_otr_subtitle_with_reading_list);
 
-        final ClickableSpan learnMoreSpan =
-                new ClickableSpan() {
-                    @Override
-                    public void onClick(View view) {
-                        mLearnMore.callOnClick();
-                    }
-
-                    @Override
-                    public void updateDrawState(TextPaint textPaint) {
-                        super.updateDrawState(textPaint);
-                        textPaint.setColor(
-                                getContext().getColor(R.color.default_text_color_link_light));
-                    }
-                };
+        final ChromeClickableSpan learnMoreSpan =
+                new ChromeClickableSpan(
+                        getContext(),
+                        R.color.default_text_color_link_light,
+                        (view) -> mLearnMore.callOnClick());
 
         boolean learnMoreInSubtitle = mWidthDp > WIDE_LAYOUT_THRESHOLD_DP;
         mLearnMore.setVisibility(learnMoreInSubtitle ? View.GONE : View.VISIBLE);
