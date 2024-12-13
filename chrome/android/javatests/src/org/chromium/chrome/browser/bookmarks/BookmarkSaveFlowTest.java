@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncTestRule;
@@ -379,7 +378,7 @@ public class BookmarkSaveFlowTest {
 
     private void loadBookmarkModel() {
         // Do not read partner bookmarks in setUp(), so that the lazy reading is covered.
-        ThreadUtils.runOnUiThreadBlocking(() -> PartnerBookmarksShim.kickOffReading(mActivity));
+        BookmarkTestUtil.readPartnerBookmarks(mSyncTestRule);
         BookmarkTestUtil.waitForBookmarkModelLoaded();
     }
 

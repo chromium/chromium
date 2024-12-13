@@ -253,9 +253,9 @@ source_set("impl") {
 
   if (is_android) {
     deps += [
-      "//chrome/browser/android/bookmarks",
       "//chrome/browser/notifications",
       "//chrome/browser/notifications:notifications_java_enum_srcjar",
+      "//chrome/browser/partnerbookmarks:android",
       "//chrome/browser/password_manager/android:utils",
       "//chrome/browser/readaloud/android:native",
       "//chrome/browser/search_engines",

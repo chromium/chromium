@@ -387,6 +387,7 @@ android_library("chrome_java_integration_test_support") {
     "//chrome/browser/flags:java",
     "//chrome/browser/language/android:java",
     "//chrome/browser/omaha/android:java",
+    "//chrome/browser/partnerbookmarks:java",
     "//chrome/browser/password_manager/android:backend_interface_java",
     "//chrome/browser/password_manager/android:settings_interface_java",
     "//chrome/browser/password_manager/android:test_support_java",

@@ -57,7 +57,8 @@ public class PartnerBookmarksProviderIterator implements PartnerBookmark.Bookmar
 
     /**
      * Creates the bookmarks iterator if possible.
-     * @return                Iterator over bookmarks or null.
+     *
+     * @return Iterator over bookmarks or null.
      */
     public static PartnerBookmarksProviderIterator createIfAvailable() {
         try {

@@ -11,12 +11,10 @@ import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 
 /**
- * The Java counterpart for the C++ partner bookmarks shim.
- * Responsible for:
- * - checking if we need to fetch the partner bookmarks,
- * - kicking off the async fetching of the partner bookmarks,
- * - pushing the partner bookmarks to the C++ side,
- * - reporting that all partner bookmarks were read to the C++ side.
+ * The Java counterpart for the C++ partner bookmarks shim. Responsible for: - checking if we need
+ * to fetch the partner bookmarks, - kicking off the async fetching of the partner bookmarks, -
+ * pushing the partner bookmarks to the C++ side, - reporting that all partner bookmarks were read
+ * to the C++ side.
  */
 public class PartnerBookmarksShim {
     private static boolean sIsReadingAttempted;
@@ -25,7 +23,8 @@ public class PartnerBookmarksShim {
      * Checks if we need to fetch the Partner bookmarks and kicks the reading off. If reading was
      * attempted before, it won't do anything.
      */
-    public static void kickOffReading(Context context) {
+    public static void kickOffReading(
+            Context context, PartnerBookmark.BookmarkIterator bookmarkIterator) {
         if (sIsReadingAttempted) return;
         sIsReadingAttempted = true;
 
@@ -40,6 +39,6 @@ public class PartnerBookmarksShim {
             return;
         }
 
-        reader.readBookmarks();
+        reader.readBookmarks(bookmarkIterator);
     }
 }

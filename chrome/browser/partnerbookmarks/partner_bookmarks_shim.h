@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_BOOKMARKS_PARTNER_BOOKMARKS_SHIM_H_
-#define CHROME_BROWSER_ANDROID_BOOKMARKS_PARTNER_BOOKMARKS_SHIM_H_
+#ifndef CHROME_BROWSER_PARTNERBOOKMARKS_PARTNER_BOOKMARKS_SHIM_H_
+#define CHROME_BROWSER_PARTNERBOOKMARKS_PARTNER_BOOKMARKS_SHIM_H_
 
 #include <stdint.h>
 
@@ -14,11 +14,10 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/string_search.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
-#include "components/bookmarks/browser/bookmark_node.h"
-#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/url_formatter/url_formatter.h"
 #include "ui/base/models/tree_node_iterator.h"
 #include "url/gurl.h"
@@ -32,6 +31,12 @@ class BrowserContext;
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
+
+namespace bookmarks {
+class BookmarkModel;
+class BookmarkNode;
+struct QueryFields;
+}  // namespace bookmarks
 
 // A shim that lives on top of a BookmarkModel that allows the injection of
 // partner bookmarks without submitting changes to the bookmark model.
@@ -90,6 +95,7 @@ class PartnerBookmarksShim : public base::SupportsUserData::Data {
     virtual void PartnerShimLoaded(PartnerBookmarksShim*) {}
     // Called just before everything got destroyed
     virtual void ShimBeingDeleted(PartnerBookmarksShim*) {}
+
    protected:
     virtual ~Observer() = default;
   };
@@ -120,6 +126,7 @@ class PartnerBookmarksShim : public base::SupportsUserData::Data {
     const std::u16string& provider_title() const { return provider_title_; }
     friend bool operator<(const NodeRenamingMapKey& a,
                           const NodeRenamingMapKey& b);
+
    private:
     GURL url_;
     std::u16string provider_title_;
@@ -159,4 +166,4 @@ class PartnerBookmarksShim : public base::SupportsUserData::Data {
   base::ObserverList<Observer>::Unchecked observers_;
 };
 
-#endif  // CHROME_BROWSER_ANDROID_BOOKMARKS_PARTNER_BOOKMARKS_SHIM_H_
+#endif  // CHROME_BROWSER_PARTNERBOOKMARKS_PARTNER_BOOKMARKS_SHIM_H_

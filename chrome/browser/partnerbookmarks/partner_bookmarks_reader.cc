@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/bookmarks/partner_bookmarks_reader.h"
+#include "chrome/browser/partnerbookmarks/partner_bookmarks_reader.h"
 
 #include <utility>
 
@@ -13,12 +13,11 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/uuid.h"
-#include "chrome/browser/android/bookmarks/partner_bookmarks_shim.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
+#include "chrome/browser/partnerbookmarks/partner_bookmarks_shim.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon/core/large_icon_service_impl.h"
 #include "components/image_fetcher/core/image_fetcher.h"
@@ -29,12 +28,12 @@
 #include "ui/gfx/favicon_size.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/PartnerBookmarksReader_jni.h"
+#include "chrome/browser/partnerbookmarks/jni_headers/PartnerBookmarksReader_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::CheckException;
-using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertJavaStringToUTF16;
+using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
@@ -47,7 +46,8 @@ namespace {
 const int kPartnerBookmarksMinimumFaviconSizePx = 16;
 
 void SetFaviconTask(Profile* profile,
-                    const GURL& page_url, const GURL& icon_url,
+                    const GURL& page_url,
+                    const GURL& icon_url,
                     const std::vector<unsigned char>& image_data,
                     favicon_base::IconType icon_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -57,30 +57,35 @@ void SetFaviconTask(Profile* profile,
   favicon::FaviconService* favicon_service =
       FaviconServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS);
-  if (!favicon_service)
+  if (!favicon_service) {
     return;
+  }
 
-  favicon_service->MergeFavicon(
-      page_url, page_url, icon_type, bitmap_data, pixel_size);
+  favicon_service->MergeFavicon(page_url, page_url, icon_type, bitmap_data,
+                                pixel_size);
 }
 
 void SetFaviconCallback(Profile* profile,
-                        const GURL& page_url, const GURL& icon_url,
+                        const GURL& page_url,
+                        const GURL& icon_url,
                         const std::vector<unsigned char>& image_data,
                         favicon_base::IconType icon_type,
                         base::WaitableEvent* bookmark_added_event) {
   SetFaviconTask(profile, page_url, icon_url, image_data, icon_type);
-  if (bookmark_added_event)
+  if (bookmark_added_event) {
     bookmark_added_event->Signal();
+  }
 }
 
 const BookmarkNode* GetNodeByID(const BookmarkNode* parent, int64_t id) {
-  if (parent->id() == id)
+  if (parent->id() == id) {
     return parent;
+  }
   for (const auto& child : parent->children()) {
     const BookmarkNode* result = GetNodeByID(child.get(), id);
-    if (result)
+    if (result) {
       return result;
+    }
   }
   return nullptr;
 }
@@ -141,8 +146,9 @@ jlong PartnerBookmarksReader::AddPartnerBookmark(
     DCHECK(!is_folder);
     url = ConvertJavaStringToUTF16(env, jurl);
   }
-  if (jtitle)
+  if (jtitle) {
     title = ConvertJavaStringToUTF16(env, jtitle);
+  }
 
   jlong node_id = 0;
   if (wip_partner_bookmarks_root_.get()) {
@@ -296,6 +302,15 @@ void PartnerBookmarksReader::OnGetFaviconFromCacheFinished(
             "particular partner bookmark."
           data: "Page URL and desired icon size."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "wylieb@google.com"
+            }
+          }
+          user_data {
+            type: NONE
+          }
+          last_reviewed: "2023-01-01"
         }
         policy {
           cookies_allowed: NO
@@ -390,13 +405,11 @@ static void JNI_PartnerBookmarksReader_DisablePartnerBookmarksEditing(
   PartnerBookmarksShim::DisablePartnerBookmarksEditing();
 }
 
-static jlong JNI_PartnerBookmarksReader_Init(JNIEnv* env,
-                                             const JavaParamRef<jobject>& obj) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+static jlong JNI_PartnerBookmarksReader_Init(JNIEnv* env, Profile* profile) {
   PartnerBookmarksShim* partner_bookmarks_shim =
       PartnerBookmarksShim::BuildForBrowserContext(profile);
-  PartnerBookmarksReader* reader = new PartnerBookmarksReader(
-      partner_bookmarks_shim, profile);
+  PartnerBookmarksReader* reader =
+      new PartnerBookmarksReader(partner_bookmarks_shim, profile);
   return reinterpret_cast<intptr_t>(reader);
 }
 

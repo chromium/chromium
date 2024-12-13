@@ -20,6 +20,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmark;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -42,6 +44,8 @@ class BookmarkBridge {
     private long mNativeBookmarkBridge;
     private boolean mIsDoingExtensiveChanges;
     private boolean mIsNativeBookmarkModelLoaded;
+
+    private Supplier<PartnerBookmark.BookmarkIterator> mPartnerBookmarkIteratorSupplier;
 
     // Lazily set pseudo-constants. These should never change at runtime. Used to avoid crossing
     // JNI to fetch information.
@@ -85,7 +89,16 @@ class BookmarkBridge {
             mNativeBookmarkBridge = 0;
             mIsNativeBookmarkModelLoaded = false;
         }
+        if (mPartnerBookmarkIteratorSupplier != null) {
+            mPartnerBookmarkIteratorSupplier = null;
+        }
         mObservers.clear();
+    }
+
+    /** Sets a pre-configured runnable which loads the parter bookmarks shim. */
+    public void setPartnerBookmarkIteratorSupplier(
+            Supplier<PartnerBookmark.BookmarkIterator> partnerBookmarkIteratorSupplier) {
+        mPartnerBookmarkIteratorSupplier = partnerBookmarkIteratorSupplier;
     }
 
     /** Returns the most recently added BookmarkId */
@@ -164,9 +177,11 @@ class BookmarkBridge {
                     public void bookmarkModelChanged() {}
                 });
 
+        assert mPartnerBookmarkIteratorSupplier != null;
         // Start reading as a fail-safe measure to avoid waiting forever if the caller forgets to
         // call kickOffReading().
-        PartnerBookmarksShim.kickOffReading(ContextUtils.getApplicationContext());
+        PartnerBookmarksShim.kickOffReading(
+                ContextUtils.getApplicationContext(), mPartnerBookmarkIteratorSupplier.get());
         return false;
     }
 

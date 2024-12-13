@@ -60,6 +60,7 @@ import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityUtils;
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.ChromeKeyboardVisibilityDelegate;
@@ -498,8 +499,14 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         // mTabModelProfileSupplier has the same lifecycle as this activity.
         mTabModelProfileSupplier.addObserver(
                 (profile) -> {
-                    mBookmarkModelSupplier.set(
-                            profile == null ? null : BookmarkModel.getForProfile(profile));
+                    BookmarkModel bookmarkModel =
+                            profile == null ? null : BookmarkModel.getForProfile(profile);
+                    mBookmarkModelSupplier.set(bookmarkModel);
+
+                    // Give BookmarkBridge a Supplier<PartnerBookmark.BookmarkIterator> so that
+                    // PartnerBookmarksShim can be loaded lazily when BookmarkModel is needed.
+                    bookmarkModel.setPartnerBookmarkIteratorSupplier(
+                            () -> AppHooks.get().getPartnerBookmarkIterator());
                 });
 
         super.performPreInflationStartup();

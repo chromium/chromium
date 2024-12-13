@@ -42,7 +42,7 @@ public class PartnerBookmarksFaviconThrottle {
     /**
      * Reads the favicon retrieval timestamp information from our own {@link SharedPreferences}.
      *
-     * Suppressing "unchecked" because we're 100% sure we're storing only <String, Long> pairs.
+     * <p>Suppressing "unchecked" because we're 100% sure we're storing only <String, Long> pairs.
      */
     @SuppressWarnings("unchecked")
     @VisibleForTesting
@@ -118,7 +118,7 @@ public class PartnerBookmarksFaviconThrottle {
      *
      * @param url The page URL we're trying to fetch a favicon for.
      * @return The expiry time of the favicon fetching restriction in milliseconds, if we have a
-     *         corresponding entry for this URL.
+     *     corresponding entry for this URL.
      */
     private Long getExpiryOf(String url) {
         assert mCurrentEntries != null;

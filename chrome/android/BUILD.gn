@@ -417,7 +417,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/page_image_service/android:java",
       "//chrome/browser/page_load_metrics:java",
       "//chrome/browser/paint_preview/android:java",
-      "//chrome/browser/partnerbookmarks:delegate_java",
+      "//chrome/browser/partnerbookmarks:java",
       "//chrome/browser/partnercustomizations:delegate_java",
       "//chrome/browser/partnercustomizations:helper_java",
       "//chrome/browser/partnercustomizations:java",
@@ -759,7 +759,6 @@ if (current_toolchain == default_toolchain) {
       ":chrome_strict_mode_switch",
       ":resource_id_javagen",
       "//chrome:offline_pages_enum_javagen",
-      "//chrome:partner_bookmarks_javagen",
       "//chrome/browser:screenshot_mode_enum",
       "//chrome/browser/notifications/scheduler/public:jni_enums",
       "//components/contextual_search/core/browser:quick_action_category_enum_javagen",
@@ -860,6 +859,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/feedback/android:internal_java",
       "//chrome/browser/hub/internal:java",
       "//chrome/browser/mandatory_reauth/android/internal:java",
+      "//chrome/browser/partnerbookmarks:java",
       "//chrome/browser/password_check:internal_java",
       "//chrome/browser/password_edit_dialog/android:java",
       "//chrome/browser/password_entry_edit/android/internal:java",
@@ -1089,6 +1089,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/page_image_service/android:java",
       "//chrome/browser/page_image_service/android:junit",
       "//chrome/browser/page_load_metrics:java",
+      "//chrome/browser/partnerbookmarks:junit",
       "//chrome/browser/partnercustomizations:java",
       "//chrome/browser/partnercustomizations:junit",
       "//chrome/browser/password_edit_dialog/android:junit",
@@ -3859,7 +3860,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/offlinepages/SavePageRequest.java",
     "java/src/org/chromium/chrome/browser/offlinepages/downloads/OfflinePageDownloadBridge.java",
     "java/src/org/chromium/chrome/browser/page_info/PageInfoAboutThisSiteController.java",
-    "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksReader.java",
     "java/src/org/chromium/chrome/browser/password_manager/AccountChooserDialog.java",
     "java/src/org/chromium/chrome/browser/password_manager/AutoSigninFirstRunDialog.java",
     "java/src/org/chromium/chrome/browser/password_manager/AutoSigninSnackbarController.java",
@@ -3929,6 +3929,7 @@ generate_jni("chrome_jni_headers") {
 
   public_deps = [
     ":base_module_jni",
+    "//chrome/browser/partnerbookmarks:jni_headers",
     "//chrome/browser/webid:jni_headers",
   ]
 }

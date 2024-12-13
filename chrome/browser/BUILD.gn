@@ -3227,8 +3227,6 @@ static_library("browser") {
       ":usage_stats_proto",
       "//cc/slim",
       "//chrome/android:jni_headers",
-      "//chrome/browser/android/bookmarks",
-      "//chrome/browser/android/bookmarks:impl",
       "//chrome/browser/android/content:jni_headers",
       "//chrome/browser/android/httpclient:android",
       "//chrome/browser/android/httpclient:jni_headers",
@@ -3266,6 +3264,8 @@ static_library("browser") {
       "//chrome/browser/notifications/scheduler/public",
       "//chrome/browser/optimization_guide/android:jni_headers",
       "//chrome/browser/page_image_service/android:jni_headers",
+      "//chrome/browser/partnerbookmarks:android",
+      "//chrome/browser/partnerbookmarks:android_impl",
       "//chrome/browser/partnercustomizations:jni_headers",
       "//chrome/browser/password_check/android:jni_headers",
       "//chrome/browser/password_check/android:password_check_enums_srcjar",
@@ -3457,7 +3457,7 @@ static_library("browser") {
       # //c/b/android/preferences/autofill/settings_navigation_helper.h" get modularized.
       "//chrome/browser/ui/fast_checkout:impl",
 
-      "//chrome/browser/android/bookmarks:impl",
+      "//chrome/browser/partnerbookmarks:android_impl",
       "//chrome/browser/bookmarks/android:impl",
     ]
 

@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.partnerbookmarks;
 import android.content.Context;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.ui.base.ViewUtils;
 
 import java.util.HashSet;
@@ -33,7 +35,7 @@ public class PartnerBookmarksReader {
     /** ID used to indicate an invalid bookmark node. */
     static final long INVALID_BOOKMARK_ID = -1;
 
-    /** Storage for failed favicon retrieval attempts to throttle future requests. **/
+    /** Storage for failed favicon retrieval attempts to throttle future requests. * */
     private PartnerBookmarksFaviconThrottle mFaviconThrottle;
 
     // JNI c++ pointer
@@ -86,6 +88,7 @@ public class PartnerBookmarksReader {
 
     /**
      * Creates the instance of the reader.
+     *
      * @param context A Context object.
      * @param browserCustomizations Provides status of partner customizations.
      */
@@ -93,7 +96,7 @@ public class PartnerBookmarksReader {
             Context context, PartnerBrowserCustomizations browserCustomizations) {
         mContext = context;
         mNativePartnerBookmarksReader =
-                PartnerBookmarksReaderJni.get().init(PartnerBookmarksReader.this);
+                PartnerBookmarksReaderJni.get().init(ProfileManager.getLastUsedRegularProfile());
         if (!browserCustomizations.isInitialized()) {
             browserCustomizations.initializeAsync(context);
         }
@@ -128,23 +131,24 @@ public class PartnerBookmarksReader {
     }
 
     /** Asynchronously read bookmarks from the partner content provider */
-    public void readBookmarks() {
+    public void readBookmarks(PartnerBookmark.BookmarkIterator bookmarkIterator) {
         if (mNativePartnerBookmarksReader == 0) {
             assert false : "readBookmarks called after PartnerBookmarksReaderJni.get().destroy.";
             return;
         }
-        new ReadBookmarksTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        new ReadBookmarksTask(bookmarkIterator).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     /**
      * Called when the partner bookmark needs to be pushed.
-     * @param url       The URL.
-     * @param title     The title.
-     * @param isFolder  True if it's a folder.
-     * @param parentId  NATIVE parent folder id.
-     * @param favicon   .PNG blob for icon; used if no touchicon is set.
+     *
+     * @param url The URL.
+     * @param title The title.
+     * @param isFolder True if it's a folder.
+     * @param parentId NATIVE parent folder id.
+     * @param favicon .PNG blob for icon; used if no touchicon is set.
      * @param touchicon .PNG blob for icon.
-     * @return          NATIVE id of a bookmark
+     * @return NATIVE id of a bookmark
      */
     private long onBookmarkPush(
             String url,
@@ -251,6 +255,11 @@ public class PartnerBookmarksReader {
     /** Handles fetching partner bookmarks in a background thread. */
     private class ReadBookmarksTask extends AsyncTask<Void> {
         private final Object mRootSync = new Object();
+        private final PartnerBookmark.BookmarkIterator mBookmarkIterator;
+
+        ReadBookmarksTask(PartnerBookmark.BookmarkIterator bookmarkIterator) {
+            mBookmarkIterator = bookmarkIterator;
+        }
 
         @Override
         protected Void doInBackground() {
@@ -259,9 +268,7 @@ public class PartnerBookmarksReader {
                 // background thread as well.
                 mFaviconThrottle = new PartnerBookmarksFaviconThrottle();
             }
-            PartnerBookmark.BookmarkIterator bookmarkIterator =
-                    AppHooks.get().getPartnerBookmarkIterator();
-            if (bookmarkIterator == null) return null;
+            if (mBookmarkIterator == null) return null;
 
             // Get a snapshot of the bookmarks.
             LinkedHashMap<Long, PartnerBookmark> idMap = new LinkedHashMap<Long, PartnerBookmark>();
@@ -270,8 +277,8 @@ public class PartnerBookmarksReader {
             PartnerBookmark rootBookmarksFolder = createRootBookmarksFolderBookmark();
             idMap.put(ROOT_FOLDER_ID, rootBookmarksFolder);
 
-            while (bookmarkIterator.hasNext()) {
-                PartnerBookmark bookmark = bookmarkIterator.next();
+            while (mBookmarkIterator.hasNext()) {
+                PartnerBookmark bookmark = mBookmarkIterator.next();
                 if (bookmark == null) continue;
 
                 // Check for duplicate ids.
@@ -294,7 +301,7 @@ public class PartnerBookmarksReader {
                 idMap.put(bookmark.mId, bookmark);
                 urlSet.add(bookmark.mUrl);
             }
-            bookmarkIterator.close();
+            mBookmarkIterator.close();
 
             // Recreate the folder hierarchy and read it.
             recreateFolderHierarchy(idMap);
@@ -389,7 +396,7 @@ public class PartnerBookmarksReader {
 
     @NativeMethods
     interface Natives {
-        long init(PartnerBookmarksReader caller);
+        long init(@JniType("Profile*") Profile profile);
 
         void reset(long nativePartnerBookmarksReader, PartnerBookmarksReader caller);
 
