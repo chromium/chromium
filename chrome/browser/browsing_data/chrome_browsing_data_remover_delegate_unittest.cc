@@ -199,6 +199,7 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
@@ -237,6 +238,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/get_controlled_frame_partition_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -1768,9 +1770,13 @@ class IsolatedWebAppChromeBrowsingDataRemoverDelegateTest
   content::BrowsingDataRemover::DataType DATA_TYPE_SITE_DATA =
       constants::DATA_TYPE_SITE_DATA;
 
-  web_app::IsolatedWebAppUrlInfo InstallIsolatedWebApp(const GURL& iwa_url) {
-    web_app::AddDummyIsolatedAppToRegistry(GetProfile(), iwa_url, "IWA Name");
-    return web_app::IsolatedWebAppUrlInfo::Create(iwa_url).value();
+  web_app::IsolatedWebAppUrlInfo InstallIsolatedWebApp() {
+    const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
+        web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
+            .BuildBundle();
+    bundle->FakeInstallPageState(GetProfile());
+    bundle->TrustSigningKey();
+    return bundle->InstallChecked(GetProfile());
   }
 
   content::StoragePartitionConfig CreateControlledFrameStoragePartition(
@@ -1819,6 +1825,9 @@ class IsolatedWebAppChromeBrowsingDataRemoverDelegateTest
         base::DoNothing());
     return removal_tasks;
   }
+
+ private:
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 bool operator==(
     const IsolatedWebAppChromeBrowsingDataRemoverDelegateTest::RemovalInfo& a,
@@ -1828,19 +1837,13 @@ bool operator==(
 }
 
 TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest, ClearData) {
-  const GURL iwa_url1(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  web_app::IsolatedWebAppUrlInfo iwa_url_info1 =
-      InstallIsolatedWebApp(iwa_url1);
+  web_app::IsolatedWebAppUrlInfo iwa_url_info1 = InstallIsolatedWebApp();
   content::StoragePartitionConfig controlled_frame_partition1 =
       CreateControlledFrameStoragePartition(iwa_url_info1, "controlled_frame");
 
-  const GURL iwa_url2(
-      "isolated-app://"
-      "abcdefztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  web_app::IsolatedWebAppUrlInfo iwa_url_info2 =
-      InstallIsolatedWebApp(iwa_url2);
+  web_app::IsolatedWebAppUrlInfo iwa_url_info2 = InstallIsolatedWebApp();
+
+  EXPECT_NE(iwa_url_info1.app_id(), iwa_url_info2.app_id());
 
   std::vector<RemovalInfo> removal_tasks =
       ClearDataAndWait(base::Time(), base::Time::Max(), DATA_TYPE_SITE_DATA,
@@ -1861,10 +1864,7 @@ TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest, ClearData) {
 
 TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,
        ForwardClearDataParameterToControlledFrame) {
-  const GURL iwa_url(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  web_app::IsolatedWebAppUrlInfo iwa_url_info = InstallIsolatedWebApp(iwa_url);
+  web_app::IsolatedWebAppUrlInfo iwa_url_info = InstallIsolatedWebApp();
   content::StoragePartitionConfig controlled_frame_partition =
       CreateControlledFrameStoragePartition(iwa_url_info, "controlled_frame");
 
@@ -1884,17 +1884,10 @@ TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,
 
 TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,
        FilterOriginRespected) {
-  const GURL iwa_url1(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  web_app::IsolatedWebAppUrlInfo iwa_url_info1 =
-      InstallIsolatedWebApp(iwa_url1);
+  web_app::IsolatedWebAppUrlInfo iwa_url_info1 = InstallIsolatedWebApp();
+  web_app::IsolatedWebAppUrlInfo iwa_url_info2 = InstallIsolatedWebApp();
 
-  const GURL iwa_url2(
-      "isolated-app://"
-      "abcdefztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  web_app::IsolatedWebAppUrlInfo iwa_url_info2 =
-      InstallIsolatedWebApp(iwa_url2);
+  EXPECT_NE(iwa_url_info1.app_id(), iwa_url_info2.app_id());
 
   auto filter_builder = BrowsingDataFilterBuilder::Create(
       BrowsingDataFilterBuilder::Mode::kDelete);
@@ -1912,10 +1905,7 @@ TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,
 }
 
 TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest, AppCookiesDeleted) {
-  const GURL iwa_url(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  web_app::IsolatedWebAppUrlInfo iwa_url_info = InstallIsolatedWebApp(iwa_url);
+  web_app::IsolatedWebAppUrlInfo iwa_url_info = InstallIsolatedWebApp();
 
   auto filter_builder = BrowsingDataFilterBuilder::Create(
       BrowsingDataFilterBuilder::Mode::kDelete);
@@ -1934,10 +1924,7 @@ TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest, AppCookiesDeleted) {
 
 TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,
        TimeRangeSpecified) {
-  const GURL iwa_url(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  web_app::IsolatedWebAppUrlInfo iwa_url_info = InstallIsolatedWebApp(iwa_url);
+  web_app::IsolatedWebAppUrlInfo iwa_url_info = InstallIsolatedWebApp();
   content::StoragePartitionConfig controlled_frame_partition =
       CreateControlledFrameStoragePartition(iwa_url_info, "controlled_frame");
 

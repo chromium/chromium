@@ -90,10 +90,13 @@ MATCHER_P3(WithMetadata, app_id, app_name, version, "") {
 IsolatedWebAppUrlInfo CreateAndWriteTestBundle(
     const base::FilePath& bundle_path,
     const std::string& version) {
-  return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+  const std::unique_ptr<web_app::BundledIsolatedWebApp> bundle =
       IsolatedWebAppBuilder(ManifestBuilder().SetVersion(version))
-          .BuildBundle(bundle_path, test::GetDefaultEd25519KeyPair())
-          ->web_bundle_id());
+          .BuildBundle(bundle_path, test::GetDefaultEd25519KeyPair());
+  bundle->TrustSigningKey();
+
+  return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+      bundle->web_bundle_id());
 }
 
 SignedWebBundleMetadata CreateMetadata(const std::u16string& app_name,
@@ -228,6 +231,14 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
         base::FilePath::FromASCII(bundle_filename));
   }
 
+  void InstallTestBundle(std::string version) {
+    const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
+        IsolatedWebAppBuilder(ManifestBuilder().SetVersion(version))
+            .BuildBundle(test::GetDefaultEd25519KeyPair());
+    bundle->TrustSigningKey();
+    bundle->InstallChecked(profile());
+  }
+
   void MockIconAndPageState(const IsolatedWebAppUrlInfo& url_info,
                             const std::string& version = "7.7.7") {
     GURL iwa_url = url_info.origin().GetURL();
@@ -266,7 +277,6 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
        ValidBundleTransitionsToShowMetadataScreen) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
-  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info);
 
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
@@ -325,15 +335,9 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
        OutdatedBundleShowsAlreadyInstalledDialog) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
-  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info, "1.0");
 
-  AddDummyIsolatedAppToRegistry(
-      profile(), url_info.origin().GetURL(), "app",
-      IsolationData::Builder(
-          IwaStorageOwnedBundle{/*dir_name_ascii=*/"", /*dev_mode=*/false},
-          base::Version("2.0"))
-          .Build());
+  InstallTestBundle("2.0");
 
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   model.SetStep(Step::kGetMetadata);
@@ -363,15 +367,9 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
        NewerBundleShowsAlreadyInstalledDialog) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "2.0");
-  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info, "2.0");
 
-  AddDummyIsolatedAppToRegistry(
-      profile(), url_info.origin().GetURL(), "app",
-      IsolationData::Builder(
-          IwaStorageOwnedBundle{/*dir_name_ascii=*/"", /*dev_mode=*/false},
-          base::Version("1.0"))
-          .Build());
+  InstallTestBundle("1.0");
 
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   model.SetStep(Step::kGetMetadata);
@@ -452,7 +450,6 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
        SuccessfulInstallationMovesToSuccessScreen) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
-  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info, "1.0");
 
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
@@ -487,7 +484,6 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 TEST_F(IsolatedWebAppInstallerViewControllerTest, CanLaunchAppAfterInstall) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
-  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info, "1.0");
 
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
@@ -529,7 +525,6 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
        InstallationErrorShowsErrorDialog) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
-  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info, "1.0");
 
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
@@ -596,7 +591,6 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
        ChangingPrefToFalseDisablesInstaller) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
-  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info);
 
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
@@ -631,7 +625,6 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
        ChangingPrefToTrueRestartsInstaller) {
   base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
-  SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info);
 
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
