@@ -57,7 +57,6 @@
 -chrome/browser/ash/policy/
 -chrome/browser/component_updater/
 -chrome/browser/extensions/api/messaging/
--chrome/browser/extensions/api/printing/
 -chrome/browser/local_discovery/
 -chrome/browser/media/webrtc/
 -chrome/browser/platform_experience/win/
@@ -108,7 +107,6 @@
 -ios_internal/
 -native_client/
 -net/third_party/
--printing/
 -remoting/host/
 -remoting/client/input/
 -testing/iossim/
