@@ -687,7 +687,10 @@ public class ContextualSearchManager
     @CalledByNative
     @VisibleForTesting
     void onTextSurroundingSelectionAvailable(
-            final String encoding, final String surroundingText, int startOffset, int endOffset) {
+            final @JniType("std::string") String encoding,
+            final @JniType("std::u16string") String surroundingText,
+            int startOffset,
+            int endOffset) {
         if (mInternalStateController.isStillWorkingOn(InternalState.GATHERING_SURROUNDINGS)) {
             assert mContext != null;
             // Sometimes Blink returns empty surroundings and 0 offsets so reset in that case.
@@ -735,22 +738,22 @@ public class ContextualSearchManager
     public void onSearchTermResolutionResponse(
             boolean isNetworkUnavailable,
             int responseCode,
-            final String searchTerm,
-            final String displayText,
-            final String alternateTerm,
-            final String mid,
+            final @JniType("std::string") String searchTerm,
+            final @JniType("std::string") String displayText,
+            final @JniType("std::string") String alternateTerm,
+            final @JniType("std::string") String mid,
             boolean doPreventPreload,
             int selectionStartAdjust,
             int selectionEndAdjust,
-            final String contextLanguage,
-            final String thumbnailUrl,
-            final String caption,
-            final String quickActionUri,
+            final @JniType("std::string") String contextLanguage,
+            final @JniType("std::string") String thumbnailUrl,
+            final @JniType("std::string") String caption,
+            final @JniType("std::string") String quickActionUri,
             @QuickActionCategory final int quickActionCategory,
-            final String searchUrlFull,
-            final String searchUrlPreload,
+            final @JniType("std::string") String searchUrlFull,
+            final @JniType("std::string") String searchUrlPreload,
             @CardTag final int cocaCardTag,
-            final String relatedSearchesJson) {
+            final @JniType("std::string") String relatedSearchesJson) {
         ContextualSearchUma.logResolveReceived(mSelectionController.isTapSelection());
         ResolvedSearchTerm resolvedSearchTerm =
                 new ResolvedSearchTerm.Builder(
@@ -2021,7 +2024,7 @@ public class ContextualSearchManager
         void removeLastHistoryEntry(
                 long nativeContextualSearchManager,
                 ContextualSearchManager caller,
-                String historyUrl,
+                @JniType("std::string") String historyUrl,
                 long urlTimeMs);
     }
 }
