@@ -148,6 +148,11 @@ Ces deux règles ont le même effet sur le comportement du navigateur.</translat
 <translation id="1059069692400941670">Désactiver l'importation du moteur de recherche par défaut à la première exécution</translation>
 <translation id="1062011392452772310">Activer l'attestation à distance pour l'appareil</translation>
 <translation id="1062407476771304334">Remplacer</translation>
+<translation id="1062460877136455375">Cette règle permet de spécifier quelles applications Web isolées (AWI) ne pourront pas se connecter aux lecteurs de cartes à puce (les utilisateurs ne seront même pas invités à donner leur autorisation). Cette règle accepte les caractères génériques. Par exemple, <ph name="ALL_ISOLATED_WEB_APPS" /> bloquera l'accès à toutes les AWI.
+
+       Cette règle est remplacée par SmartCardConnectAllowedForUrls. En particulier, si la valeur de la liste de blocage est <ph name="ALL_ISOLATED_WEB_APPS" />, les AWI ne pourront pas se connecter aux lecteurs de carte à puce (les utilisateurs ne seront même pas invités à donner leur autorisation), à l'exception de celles listées dans SmartCardConnectAllowedForUrls.
+
+       Par défaut, les applications Web isolées qui spécifient des autorisations de carte à puce dans le fichier manifeste peuvent se connecter à des cartes à puce à condition que l'utilisateur accorde l'autorisation de manière interactive par lecteur.</translation>
 <translation id="1063860513136880926">Si cette règle est activée, les utilisateurs ne peuvent pas faire de captures d'écran avec des raccourcis clavier ni avec des API d'extension. Si elle est désactivée ou qu'elle n'est pas configurée, les captures d'écran sont autorisées.
 
 Sachez que, sur <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> et <ph name="LINUX_OS_NAME" />, cela n'empêche pas d'effectuer des captures d'écran avec des applis tierces ou du système d'exploitation.</translation>
@@ -5713,6 +5718,7 @@ Remarque : Cette fonctionnalité n'est pas encore disponible au grand public. S
 Si cette règle n'est pas configurée, la valeur par défaut est de 0 degré, et les utilisateurs sont libres de la modifier. Dans ce cas, la valeur par défaut n'est pas rétablie au redémarrage.</translation>
 <translation id="5257395339965216304">Données des applications hébergées</translation>
 <translation id="5258445772095084618">Autoriser les utilisateurs non affiliés à se servir des machines virtuelles nécessaires pour faire fonctionner les applis Linux</translation>
+<translation id="5258651513421638932">Autoriser la connexion aux cartes à puce pour les applications isolées</translation>
 <translation id="5262320080678421295">Désactiver la confiance dans les certificats émis par l'ancienne infrastructure PKI de Symantec Corporation</translation>
 <translation id="5265613843467285323">Afficher une option UI permettant d'exclure un écran en mode miroir.</translation>
 <translation id="5272332743749468542">Rendre l'option "Exclure l'écran en mode miroir" accessible à l'utilisateur</translation>
@@ -6674,6 +6680,7 @@ Si vous définissez cette valeur sur <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIEN
 <translation id="5945312246863177268">Empêche les utilisateurs de cliquer sur une notification Phone Hub pour lancer l'application Eche.</translation>
 <translation id="5946082169633555022">Version bêta</translation>
 <translation id="5946329690214660966">Planifier de manière personnalisée la recherche de mises à jour</translation>
+<translation id="5946401994049024050">Paramètres de connexion aux cartes à puce</translation>
 <translation id="5950069117106131681">Si vous activez cette règle, les en-têtes et les pieds de pages sont activés dans l'aperçu avant impression. Si vous la désactivez, ces éléments le sont également dans l'aperçu avant impression.
 
       Si vous définissez cette règle, les utilisateurs ne peuvent pas la modifier. Si vous ne la configurez pas, l'emplacement des en-têtes et des pieds de page est déterminé par les utilisateurs.</translation>
@@ -8676,6 +8683,7 @@ Si elle est définie sur "False", l'ancien comportement est activé.</translatio
       Si cette règle est désactivée ou qu'elle n'est pas configurée, les appareils enregistrés n'enregistrent ni ne signalent l'état de sécurité du TPM.
       Exception : Sur les versions M95 et antérieures, les informations concernant le TPM sont contrôlées par la règle <ph name="REPORT_DEVICE_HARDWARE_STATUS" />.</translation>
 <translation id="739556497251174388">Autoriser la réutilisation des identifiants de connexion <ph name="PRODUCT_OS_NAME" /> pour l'authentification réseau</translation>
+<translation id="7395790871181951311">Bloquer la connexion aux cartes à puce pour les applications isolées</translation>
 <translation id="7400208209734208176">Ouvrir les liens dans le navigateur Chrome par défaut</translation>
 <translation id="7402257017733669351">Empêcher le processus du navigateur de créer du code dynamique</translation>
 <translation id="7402772023599097052">Si cette règle est activée ou n'est pas configurée, des avertissements de sécurité s'affichent lorsque des flags de ligne de commande potentiellement dangereux sont utilisés pour lancer Chrome.
@@ -9309,6 +9317,11 @@ Les valeurs valides sont comprises entre 1 seconde et 9 999 secondes. Si cett
 
 Cette règle n'a aucune incidence lorsque la règle <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> est définie sur "False".</translation>
 <translation id="7912255076272890813">Configurer les types d'applications ou d'extensions autorisés</translation>
+<translation id="7912541841840197488">Cette règle permet de spécifier quelles applications Web isolées (AWI) peuvent se connecter à des cartes à puce à l'aide de l'API Web Smart Card sans demander l'autorisation de l'utilisateur. Cette règle n'accepte pas les caractères génériques.
+
+       Cette règle remplace SmartCardConnectBlockedForUrls. En particulier, si la valeur de la liste de blocage est <ph name="ALL_ISOLATED_WEB_APPS" />, les AWI ne pourront pas se connecter aux lecteurs de cartes à puce (les utilisateurs ne seront même pas invités à donner leur autorisation), à l'exception de celles listées dans SmartCardConnectAllowedForUrls.
+
+       Par défaut, les applications Web isolées qui spécifient des autorisations de carte à puce dans le fichier manifeste peuvent se connecter à des cartes à puce à condition que l'utilisateur accorde l'autorisation de manière interactive par lecteur.</translation>
 <translation id="791267408364877739">Afficher les avertissements de sécurité lorsque des indicateurs de ligne de commande potentiellement dangereux sont utilisés</translation>
 <translation id="7919665519909231619">Autoriser l'activation de la fonctionnalité Liste d'achats</translation>
 <translation id="7922358664346625612">Laisser le dernier onglet ouvert dans Chrome.</translation>
