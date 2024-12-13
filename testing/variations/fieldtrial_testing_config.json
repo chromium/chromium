@@ -16693,7 +16693,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AvoidScheduleWorkDuringNativeEventProcessing",
                         "ConditionallySkipGpuChannelFlush",
                         "EarlyEstablishGpuChannel",
                         "EstablishGpuChannelAsync",
@@ -16717,7 +16716,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AvoidScheduleWorkDuringNativeEventProcessing",
                         "ConditionallySkipGpuChannelFlush",
                         "EarlyEstablishGpuChannel",
                         "EstablishGpuChannelAsync",
@@ -16743,7 +16741,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AvoidScheduleWorkDuringNativeEventProcessing",
                         "ConditionallySkipGpuChannelFlush",
                         "EarlyEstablishGpuChannel",
                         "EstablishGpuChannelAsync",
@@ -16766,7 +16763,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AvoidScheduleWorkDuringNativeEventProcessing",
                         "ConditionallySkipGpuChannelFlush",
                         "DirectCompositorThreadIpc",
                         "FledgeEnableWALForInterestGroupStorage",
@@ -16788,7 +16784,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AvoidScheduleWorkDuringNativeEventProcessing",
                         "ConditionallySkipGpuChannelFlush",
                         "DirectCompositorThreadIpc",
                         "FledgeEnableWALForInterestGroupStorage",

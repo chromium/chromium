@@ -48,7 +48,7 @@ TimeTicks CapAtOneDay(TimeTicks next_run_time, LazyNow* lazy_now) {
 
 BASE_FEATURE(kAvoidScheduleWorkDuringNativeEventProcessing,
              "AvoidScheduleWorkDuringNativeEventProcessing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::atomic_bool g_run_tasks_by_batches = false;
 std::atomic_bool g_avoid_schedule_calls_during_native_event_processing = false;
