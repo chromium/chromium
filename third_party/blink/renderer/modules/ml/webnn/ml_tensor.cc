@@ -173,6 +173,9 @@ void MLTensor::OnDidReadTensor(
         read_tensor_error.message);
     return;
   }
+
+  CHECK_EQ(result->get_buffer().size(), descriptor_.PackedByteLength());
+
   resolver->Resolve(DOMArrayBuffer::Create(result->get_buffer()));
 
   RecordReadTensorTime(std::move(read_tensor_timer));
@@ -199,6 +202,8 @@ void MLTensor::OnDidReadTensorByob(
     resolver->RejectWithTypeError("Buffer was detached.");
     return;
   }
+
+  CHECK_EQ(result->get_buffer().size(), descriptor_.PackedByteLength());
 
   // It is safe to write into `dst_data` even though it was not transferred
   // because this method is called in a task which runs on same thread where
