@@ -188,7 +188,7 @@ CookieControlsController::Status CookieControlsController::GetStatus(
             CreateTrackingProtectionFeatureList(
                 CookieControlsEnforcement::kNoEnforcement,
                 /*cookies_allowed=*/true,
-                /*protections_on=*/false)};
+                /*act_exception=*/true)};
   }
 
   const GURL& url = web_contents->GetLastCommittedURL();
@@ -202,7 +202,7 @@ CookieControlsController::Status CookieControlsController::GetStatus(
             CreateTrackingProtectionFeatureList(
                 CookieControlsEnforcement::kNoEnforcement,
                 /*cookies_allowed=*/true,
-                /*protections_on=*/false)};
+                /*act_exception=*/true)};
   }
 
   auto blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
@@ -215,17 +215,14 @@ CookieControlsController::Status CookieControlsController::GetStatus(
 
   SettingInfo info;
   bool is_allowed = cookie_settings_->IsThirdPartyAccessAllowed(url, &info);
-  bool protections_on =
-      tracking_protection_settings_->GetTrackingProtectionSetting(url) ==
-      CONTENT_SETTING_BLOCK;
-
   CookieControlsEnforcement enforcement =
       GetEnforcementForThirdPartyCookieBlocking(blocking_status, url, info,
                                                 is_allowed);
 
   std::vector<TrackingProtectionFeature> features =
-      CreateTrackingProtectionFeatureList(enforcement, is_allowed,
-                                          protections_on);
+      CreateTrackingProtectionFeatureList(
+          enforcement, is_allowed,
+          tracking_protection_settings_->HasTrackingProtectionException(url));
   return {// Hide controls if the exception is from a metadata grant.
           enforcement != CookieControlsEnforcement::kEnforcedByTpcdGrant,
           /*protections_on=*/!is_allowed,
@@ -256,7 +253,7 @@ std::vector<TrackingProtectionFeature>
 CookieControlsController::CreateTrackingProtectionFeatureList(
     CookieControlsEnforcement enforcement,
     bool cookies_allowed,
-    bool protections_on) {
+    bool act_exception) {
   auto status_label = BlockingStatus::kBlocked;
   if (cookies_allowed) {
     status_label = BlockingStatus::kAllowed;
@@ -270,15 +267,15 @@ CookieControlsController::CreateTrackingProtectionFeatureList(
   if (ShowIpProtection()) {
     features.push_back(
         {FeatureType::kIpProtection, CookieControlsEnforcement::kNoEnforcement,
-         protections_on ? TrackingProtectionBlockingStatus::kHidden
-                        : TrackingProtectionBlockingStatus::kVisible});
+         act_exception ? TrackingProtectionBlockingStatus::kVisible
+                       : TrackingProtectionBlockingStatus::kHidden});
   }
   if (ShowFingerprintingProtection()) {
     features.push_back({FeatureType::kFingerprintingProtection,
                         CookieControlsEnforcement::kNoEnforcement,
-                        protections_on
-                            ? TrackingProtectionBlockingStatus::kLimited
-                            : TrackingProtectionBlockingStatus::kAllowed});
+                        act_exception
+                            ? TrackingProtectionBlockingStatus::kAllowed
+                            : TrackingProtectionBlockingStatus::kLimited});
   }
 
   return features;

@@ -103,8 +103,8 @@ FingerprintingProtectionPageActivationThrottle::GetActivation() const {
   // If we have a reference to TrackingProtectionSettings, use it to check for
   // a URL-level exclusion.
   if (tracking_protection_settings_ != nullptr &&
-      tracking_protection_settings_->GetTrackingProtectionSetting(
-          navigation_handle()->GetURL()) == CONTENT_SETTING_ALLOW) {
+      tracking_protection_settings_->HasTrackingProtectionException(
+          navigation_handle()->GetURL())) {
     // FP disabled by a Tracking Protection exception for the current URL.
     return {.level = ActivationLevel::kDisabled,
             .decision = ActivationDecision::URL_ALLOWLISTED};

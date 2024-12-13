@@ -165,12 +165,6 @@ class TrackingProtectionBubbleViewBrowserTest
         {privacy_sandbox::kFingerprintingProtectionUserBypass}, {});
   }
 
-  ContentSetting GetTrackingProtectionSetting() {
-    return host_content_settings_map()->GetContentSetting(
-        GURL(), third_party_cookie_page_url(),
-        ContentSettingsType::TRACKING_PROTECTION);
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
@@ -178,12 +172,17 @@ class TrackingProtectionBubbleViewBrowserTest
 
 IN_PROC_BROWSER_TEST_F(TrackingProtectionBubbleViewBrowserTest,
                        ToggleCreatesTrackingProtectionException) {
+  auto* tracking_protection_settings =
+      TrackingProtectionSettingsFactory::GetForProfile(browser()->profile());
   ShowBubble();
-  EXPECT_EQ(GetTrackingProtectionSetting(), CONTENT_SETTING_BLOCK);
+  EXPECT_FALSE(tracking_protection_settings->HasTrackingProtectionException(
+      third_party_cookie_page_url()));
   SimulateTogglePress(false);
-  EXPECT_EQ(GetTrackingProtectionSetting(), CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(tracking_protection_settings->HasTrackingProtectionException(
+      third_party_cookie_page_url()));
   SimulateTogglePress(true);
-  EXPECT_EQ(GetTrackingProtectionSetting(), CONTENT_SETTING_BLOCK);
+  EXPECT_FALSE(tracking_protection_settings->HasTrackingProtectionException(
+      third_party_cookie_page_url()));
 }
 
 IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest,

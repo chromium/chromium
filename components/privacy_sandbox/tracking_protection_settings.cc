@@ -141,11 +141,12 @@ void TrackingProtectionSettings::RemoveTrackingProtectionException(
       ContentSettingsType::TRACKING_PROTECTION, CONTENT_SETTING_DEFAULT);
 }
 
-ContentSetting TrackingProtectionSettings::GetTrackingProtectionSetting(
+bool TrackingProtectionSettings::HasTrackingProtectionException(
     const GURL& first_party_url,
     content_settings::SettingInfo* info) const {
   return host_content_settings_map_->GetContentSetting(
-      GURL(), first_party_url, ContentSettingsType::TRACKING_PROTECTION, info);
+             GURL(), first_party_url, ContentSettingsType::TRACKING_PROTECTION,
+             info) == CONTENT_SETTING_ALLOW;
 }
 
 void TrackingProtectionSettings::MaybeInitializeIppPref() {

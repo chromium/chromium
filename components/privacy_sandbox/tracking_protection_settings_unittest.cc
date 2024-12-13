@@ -127,27 +127,27 @@ TEST_F(TrackingProtectionSettingsTest, AreAll3pcBlockedFalseOutside3pcd) {
       tracking_protection_settings()->AreAllThirdPartyCookiesBlocked());
 }
 
-TEST_F(TrackingProtectionSettingsTest,
-       GetTrackingProtectionSettingReturnsAllow) {
+// Content settings
+
+using HasTrackingProtectionExceptionTest = TrackingProtectionSettingsTest;
+
+TEST_F(HasTrackingProtectionExceptionTest,
+       ReturnsTrueWhenTrackingProtectionContentSettingForUrlIsAllow) {
   host_content_settings_map()->SetContentSettingCustomScope(
       ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromURL(GetTestUrl()),
       ContentSettingsType::TRACKING_PROTECTION,
       ContentSetting::CONTENT_SETTING_ALLOW);
-  EXPECT_EQ(tracking_protection_settings()->GetTrackingProtectionSetting(
-                GetTestUrl()),
-            CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(tracking_protection_settings()->HasTrackingProtectionException(
+      GetTestUrl()));
 }
 
-TEST_F(TrackingProtectionSettingsTest,
-       GetTrackingProtectionSettingReturnsBlockByDefault) {
-  EXPECT_EQ(tracking_protection_settings()->GetTrackingProtectionSetting(
-                GetTestUrl()),
-            CONTENT_SETTING_BLOCK);
+TEST_F(HasTrackingProtectionExceptionTest, ReturnsFalseByDefault) {
+  EXPECT_FALSE(tracking_protection_settings()->HasTrackingProtectionException(
+      GetTestUrl()));
 }
 
-TEST_F(TrackingProtectionSettingsTest,
-       GetTrackingProtectionSettingFillsSettingInfo) {
+TEST_F(HasTrackingProtectionExceptionTest, FillsSettingInfo) {
   content_settings::TestUtils::OverrideProvider(
       host_content_settings_map(),
       std::make_unique<content_settings::MockProvider>(),
@@ -159,9 +159,8 @@ TEST_F(TrackingProtectionSettingsTest,
       ContentSetting::CONTENT_SETTING_ALLOW);
 
   content_settings::SettingInfo info;
-  EXPECT_EQ(tracking_protection_settings()->GetTrackingProtectionSetting(
-                GetTestUrl(), &info),
-            CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(tracking_protection_settings()->HasTrackingProtectionException(
+      GetTestUrl(), &info));
   EXPECT_EQ(info.primary_pattern, ContentSettingsPattern::Wildcard());
   EXPECT_EQ(info.secondary_pattern,
             ContentSettingsPattern::FromURL(GetTestUrl()));
@@ -248,6 +247,8 @@ TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForBlockAll3pc) {
   prefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, false);
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
+
+// IPP
 
 class TrackingProtectionSettingsTestWithIppDogfood
     : public TrackingProtectionSettingsTest {

@@ -160,7 +160,7 @@ class CookieControlsController final
   std::vector<TrackingProtectionFeature> CreateTrackingProtectionFeatureList(
       CookieControlsEnforcement enforcement,
       bool cookies_allowed,
-      bool protections_on);
+      bool act_exception);
 
   CookieControlsEnforcement GetEnforcementForThirdPartyCookieBlocking(
       CookieBlocking3pcdStatus status,

@@ -206,8 +206,8 @@ bool CookieSettings::IsStoragePartitioningBypassEnabled(
   if (base::FeatureList::IsEnabled(
           privacy_sandbox::kTrackingProtectionContentSettingFor3pcb) &&
       tracking_protection_settings_ &&
-      tracking_protection_settings_->GetTrackingProtectionSetting(
-          first_party_url) == CONTENT_SETTING_ALLOW) {
+      tracking_protection_settings_->HasTrackingProtectionException(
+          first_party_url)) {
     return true;
   }
   return false;
