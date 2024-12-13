@@ -1605,7 +1605,13 @@ size_t TemplateURL::AssociatedExtensionInfo::EstimateMemoryUsage() const {
 }
 
 TemplateURL::TemplateURL(const TemplateURLData& data, Type type)
-    : data_(data),
+    : TemplateURL(data, std::nullopt, type) {}
+
+TemplateURL::TemplateURL(const std::optional<TemplateURLData>& local_data,
+                         const std::optional<TemplateURLData>& account_data,
+                         Type type)
+    : local_data_(local_data),
+      account_data_(account_data),
       suggestions_url_ref_(this, TemplateURLRef::SUGGEST),
       image_url_ref_(this, TemplateURLRef::IMAGE),
       image_translate_url_ref_(this, TemplateURLRef::IMAGE_TRANSLATE),
@@ -1614,7 +1620,7 @@ TemplateURL::TemplateURL(const TemplateURLData& data, Type type)
       type_(type),
       engine_type_(SEARCH_ENGINE_UNKNOWN) {
   ResizeURLRefVector();
-  SetPrepopulateId(data_.prepopulate_id);
+  SetPrepopulateId(active_data().prepopulate_id);
 }
 
 TemplateURL::TemplateURL(const TemplateURLData& data,
@@ -1803,7 +1809,7 @@ bool TemplateURL::HasSameKeywordAs(
 
 std::string TemplateURL::GetExtensionId() const {
   DCHECK(extension_info_);
-  return extension_info_->extension_id;
+  return GetExtensionInfo()->extension_id;
 }
 
 SearchEngineType TemplateURL::GetEngineType(
@@ -2070,20 +2076,22 @@ void TemplateURL::CopyFrom(const TemplateURL& other) {
   if (this == &other)
     return;
 
-  data_ = other.data_;
+  local_data_ = other.local_data_;
+  account_data_ = other.account_data_;
   ResizeURLRefVector();
   InvalidateCachedValues();
   SetPrepopulateId(other.data().prepopulate_id);
 }
 
 void TemplateURL::SetURL(const std::string& url) {
-  const_cast<TemplateURLData&>(data()).SetURL(url);
+  active_data().SetURL(url);
+
   engine_type_ = SEARCH_ENGINE_UNKNOWN;
   url_ref().InvalidateCachedValues();
 }
 
 void TemplateURL::SetPrepopulateId(int id) {
-  const_cast<TemplateURLData&>(data()).prepopulate_id = id;
+  active_data().prepopulate_id = id;
   const bool prepopulated = id > 0;
   for (TemplateURLRef& ref : url_refs_)
     ref.prepopulated_ = prepopulated;
@@ -2101,7 +2109,7 @@ void TemplateURL::ResetKeywordIfNecessary(
     DCHECK_NE(OMNIBOX_API_EXTENSION, type_);
     GURL url(GenerateSearchURL(search_terms_data));
     if (url.is_valid())
-      const_cast<TemplateURLData&>(data()).SetKeyword(GenerateKeyword(url));
+      active_data().SetKeyword(GenerateKeyword(url));
   }
 }
 
@@ -2118,7 +2126,12 @@ void TemplateURL::InvalidateCachedValues() const {
 size_t TemplateURL::EstimateMemoryUsage() const {
   size_t res = 0;
 
-  res += base::trace_event::EstimateMemoryUsage(data_);
+  if (local_data_) {
+    res += base::trace_event::EstimateMemoryUsage(*local_data_);
+  }
+  if (account_data_) {
+    res += base::trace_event::EstimateMemoryUsage(*account_data_);
+  }
   res += base::trace_event::EstimateMemoryUsage(url_refs_);
   res += base::trace_event::EstimateMemoryUsage(suggestions_url_ref_);
   res += base::trace_event::EstimateMemoryUsage(image_url_ref_);
@@ -2131,13 +2144,13 @@ size_t TemplateURL::EstimateMemoryUsage() const {
 }
 
 void TemplateURL::ResizeURLRefVector() {
-  const size_t new_size = data().alternate_urls.size() + 1;
+  const size_t new_size = active_data().alternate_urls.size() + 1;
   if (url_refs_.size() == new_size)
     return;
 
   url_refs_.clear();
   url_refs_.reserve(new_size);
-  for (size_t i = 0; i != data().alternate_urls.size(); ++i) {
+  for (size_t i = 0; i != active_data().alternate_urls.size(); ++i) {
     url_refs_.emplace_back(this, i);
   }
   url_refs_.emplace_back(this, TemplateURLRef::SEARCH);
@@ -2188,5 +2201,46 @@ bool TemplateURL::ContainsSideImageSearchParam(const GURL& url) const {
 }
 
 const TemplateURLData& TemplateURL::data() const {
-  return data_;
+  return const_cast<TemplateURL*>(this)->active_data();
+}
+
+TemplateURLData& TemplateURL::active_data() {
+  CHECK(local_data_);
+  return *local_data_;
+}
+
+void TemplateURL::set_short_name(const std::u16string& short_name) {
+  active_data().SetShortName(short_name);
+}
+
+void TemplateURL::set_keyword(const std::u16string& keyword) {
+  active_data().SetKeyword(keyword);
+}
+
+void TemplateURL::set_safe_for_autoreplace(bool safe_for_autoreplace) {
+  active_data().safe_for_autoreplace = safe_for_autoreplace;
+}
+
+void TemplateURL::set_id(TemplateURLID id) {
+  active_data().id = id;
+}
+
+void TemplateURL::IncrementUsageCount() {
+  active_data().usage_count++;
+}
+
+void TemplateURL::GenerateSyncGUID() {
+  active_data().GenerateSyncGUID();
+}
+
+void TemplateURL::set_is_active(TemplateURLData::ActiveStatus active_status) {
+  active_data().is_active = active_status;
+}
+
+const std::optional<TemplateURLData>& TemplateURL::GetLocalData() const {
+  return local_data_;
+}
+
+const std::optional<TemplateURLData>& TemplateURL::GetAccountData() const {
+  return account_data_;
 }

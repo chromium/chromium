@@ -680,6 +680,9 @@ class TemplateURL {
   };
 
   explicit TemplateURL(const TemplateURLData& data, Type type = NORMAL);
+  TemplateURL(const std::optional<TemplateURLData>& local_data,
+              const std::optional<TemplateURLData>& account_data,
+              Type type = NORMAL);
 
   // Constructor for extension controlled engine. |type| must be
   // NORMAL_CONTROLLED_BY_EXTENSION or OMNIBOX_API_EXTENSION.
@@ -730,11 +733,13 @@ class TemplateURL {
   const TemplateURLData& data() const;
 
   const std::u16string& short_name() const { return data().short_name(); }
+  void set_short_name(const std::u16string& short_name);
   // An accessor for the short_name, but adjusted so it can be appropriately
   // displayed even if it is LTR and the UI is RTL.
   std::u16string AdjustedShortNameForLocaleDirection() const;
 
   const std::u16string& keyword() const { return data().keyword(); }
+  void set_keyword(const std::u16string& keyword);
 
   const std::string& url() const { return data().url(); }
   const std::string& suggestions_url() const { return data().suggestions_url; }
@@ -787,12 +792,14 @@ class TemplateURL {
   const GURL& originating_url() const { return data().originating_url; }
 
   bool safe_for_autoreplace() const { return data().safe_for_autoreplace; }
+  void set_safe_for_autoreplace(bool safe_for_autoreplace);
 
   const std::vector<std::string>& input_encodings() const {
     return data().input_encodings;
   }
 
   TemplateURLID id() const { return data().id; }
+  void set_id(TemplateURLID id);
 
   base::Time date_created() const { return data().date_created; }
   base::Time last_modified() const { return data().last_modified; }
@@ -806,12 +813,15 @@ class TemplateURL {
   bool featured_by_policy() const { return data().featured_by_policy; }
 
   int usage_count() const { return data().usage_count; }
+  void IncrementUsageCount();
 
   int prepopulate_id() const { return data().prepopulate_id; }
 
   const std::string& sync_guid() const { return data().sync_guid; }
+  void GenerateSyncGUID();
 
   TemplateURLData::ActiveStatus is_active() const { return data().is_active; }
+  void set_is_active(TemplateURLData::ActiveStatus active_status);
 
   int starter_pack_id() const { return data().starter_pack_id; }
 
@@ -835,7 +845,7 @@ class TemplateURL {
 
   Type type() const { return type_; }
 
-  const AssociatedExtensionInfo* GetExtensionInfoForTesting() const {
+  const AssociatedExtensionInfo* GetExtensionInfo() const {
     return extension_info_.get();
   }
 
@@ -984,11 +994,6 @@ class TemplateURL {
   const TemplateURLData::RegulatoryExtension* GetRegulatoryExtension(
       RegulatoryExtensionType type) const;
 
- private:
-  friend class TemplateURLService;
-
-  void CopyFrom(const TemplateURL& other);
-
   void SetURL(const std::string& url);
   void SetPrepopulateId(int id);
 
@@ -999,6 +1004,12 @@ class TemplateURL {
   void ResetKeywordIfNecessary(const SearchTermsData& search_terms_data,
                                bool force);
 
+  void CopyFrom(const TemplateURL& other);
+
+  const std::optional<TemplateURLData>& GetLocalData() const;
+  const std::optional<TemplateURLData>& GetAccountData() const;
+
+ private:
   // Resizes the |url_refs_| vector, which always holds the search URL as the
   // last item.
   void ResizeURLRefVector();
@@ -1013,7 +1024,10 @@ class TemplateURL {
                             url::Parsed::ComponentType* search_terms_component,
                             url::Component* search_terms_position) const;
 
-  TemplateURLData data_;
+  TemplateURLData& active_data();
+
+  std::optional<TemplateURLData> local_data_;
+  std::optional<TemplateURLData> account_data_;
 
   // Contains TemplateURLRefs corresponding to the alternate URLs and the search
   // URL, in priority order: the URL at index 0 is treated as the highest

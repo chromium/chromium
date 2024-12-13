@@ -254,8 +254,8 @@ TemplateURL* TemplateURLServiceTestUtil::AddExtensionControlledTURL(
     std::unique_ptr<TemplateURL> extension_turl) {
   TemplateURL* result = model()->Add(std::move(extension_turl));
   DCHECK(result);
-  DCHECK(result->GetExtensionInfoForTesting());
-  if (result->GetExtensionInfoForTesting()->wants_to_be_default_engine) {
+  DCHECK(result->GetExtensionInfo());
+  if (result->GetExtensionInfo()->wants_to_be_default_engine) {
     SetExtensionDefaultSearchInPrefs(profile()->GetTestingPrefService(),
                                      result->data());
   }
@@ -267,8 +267,8 @@ void TemplateURLServiceTestUtil::RemoveExtensionControlledTURL(
   TemplateURL* turl = model()->FindTemplateURLForExtension(
       extension_id, TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION);
   ASSERT_TRUE(turl);
-  ASSERT_TRUE(turl->GetExtensionInfoForTesting());
-  if (turl->GetExtensionInfoForTesting()->wants_to_be_default_engine) {
+  ASSERT_TRUE(turl->GetExtensionInfo());
+  if (turl->GetExtensionInfo()->wants_to_be_default_engine) {
     RemoveExtensionDefaultSearchFromPrefs(profile()->GetTestingPrefService());
   }
   model()->RemoveExtensionControlledTURL(

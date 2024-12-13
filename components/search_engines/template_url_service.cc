@@ -664,11 +664,11 @@ size_t TemplateURLService::GetTemplateURLCountForHostForLogging(
 TemplateURL* TemplateURLService::Add(
     std::unique_ptr<TemplateURL> template_url) {
   DCHECK(template_url);
-  DCHECK(
-      !IsCreatedByExtension(template_url.get()) ||
-      (!FindTemplateURLForExtension(template_url->extension_info_->extension_id,
-                                    template_url->type()) &&
-       template_url->id() == kInvalidTemplateURLID));
+  DCHECK(!IsCreatedByExtension(template_url.get()) ||
+         (!FindTemplateURLForExtension(
+              template_url->GetExtensionInfo()->extension_id,
+              template_url->type()) &&
+          template_url->id() == kInvalidTemplateURLID));
 
   return Add(std::move(template_url), true);
 }
@@ -681,8 +681,8 @@ TemplateURL* TemplateURLService::AddWithOverrides(
   DCHECK(!short_name.empty());
   DCHECK(!keyword.empty());
   DCHECK(!url.empty());
-  template_url->data_.SetShortName(short_name);
-  template_url->data_.SetKeyword(keyword);
+  template_url->set_short_name(short_name);
+  template_url->set_keyword(keyword);
   template_url->SetURL(url);
   return Add(std::move(template_url));
 }
@@ -889,7 +889,7 @@ void TemplateURLService::IncrementUsageCount(TemplateURL* url) {
   if (!Contains(&template_urls_, url)) {
     return;
   }
-  ++url->data_.usage_count;
+  url->IncrementUsageCount();
 
   if (web_data_service_) {
     web_data_service_->UpdateKeyword(url->data());
@@ -1116,7 +1116,7 @@ void TemplateURLService::SetUserSelectedDefaultSearchProvider(
   // aren't persisted.
   DCHECK(!url || !IsCreatedByExtension(url));
   if (url) {
-    url->data_.is_active = TemplateURLData::ActiveStatus::kTrue;
+    url->set_is_active(TemplateURLData::ActiveStatus::kTrue);
   }
 
   bool selection_added = false;
@@ -2064,7 +2064,7 @@ TemplateURLService::CreateTemplateURLFromTemplateURLAndSyncData(
       // pick that up separately at the appropriate time.  Otherwise, changing
       // the keyword here could result in having the wrong keyword for the local
       // environment.
-      turl->data_.SetKeyword(existing_turl->keyword());
+      turl->set_keyword(existing_turl->keyword());
     }
   }
 
@@ -2299,7 +2299,7 @@ bool TemplateURLService::Update(TemplateURL* existing_turl,
   // will be culled during next startup's Add() loop. We did this to keep
   // Update() simple: it never fails, and never deletes |existing_engine|.
   existing_turl->CopyFrom(new_values);
-  existing_turl->data_.id = previous_id;
+  existing_turl->set_id(previous_id);
 
   AddToMaps(existing_turl);
 
@@ -2685,7 +2685,7 @@ TemplateURL* TemplateURLService::Add(std::unique_ptr<TemplateURL> template_url,
   if (newly_adding) {
     DCHECK_EQ(kInvalidTemplateURLID, template_url->id());
     DCHECK(!Contains(&template_urls_, template_url.get()));
-    template_url->data_.id = ++next_id_;
+    template_url->set_id(++next_id_);
   }
 
   template_url->ResetKeywordIfNecessary(search_terms_data(), false);
@@ -2948,7 +2948,7 @@ void TemplateURLService::PatchMissingSyncGUIDs(
     DCHECK(template_url);
     if (template_url->sync_guid().empty() &&
         (template_url->type() == TemplateURL::NORMAL)) {
-      template_url->data_.GenerateSyncGUID();
+      template_url->GenerateSyncGUID();
       if (web_data_service_) {
         web_data_service_->UpdateKeyword(template_url->data());
       }
@@ -2981,8 +2981,8 @@ void TemplateURLService::MaybeSetIsActiveSearchEngines(
     // |safe_for_autoreplace| is false if the entry has been modified.
     if (turl->is_active() == TemplateURLData::ActiveStatus::kUnspecified &&
         (!turl->safe_for_autoreplace() || turl->usage_count() > 0)) {
-      turl->data_.is_active = TemplateURLData::ActiveStatus::kTrue;
-      turl->data_.safe_for_autoreplace = false;
+      turl->set_is_active(TemplateURLData::ActiveStatus::kTrue);
+      turl->set_safe_for_autoreplace(false);
       if (web_data_service_) {
         web_data_service_->UpdateKeyword(turl->data());
       }
@@ -3057,7 +3057,7 @@ TemplateURL* TemplateURLService::FindMatchingDefaultExtensionTemplateURL(
     const TemplateURLData& data) {
   for (const auto& turl : template_urls_) {
     if (turl->type() == TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION &&
-        turl->extension_info_->wants_to_be_default_engine &&
+        turl->GetExtensionInfo()->wants_to_be_default_engine &&
         TemplateURL::MatchesData(turl.get(), &data, search_terms_data())) {
       return turl.get();
     }
