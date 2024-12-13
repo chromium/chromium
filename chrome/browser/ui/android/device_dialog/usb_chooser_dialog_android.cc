@@ -79,9 +79,8 @@ UsbChooserDialogAndroid::CreateInternal(
   const auto origin = url::Origin::Create(
       permissions::PermissionUtil::GetLastCommittedOriginAsURL(
           render_frame_host->GetMainFrame()));
-  base::android::ScopedJavaLocalRef<jstring> origin_string =
-      base::android::ConvertUTF16ToJavaString(
-          env, url_formatter::FormatOriginForSecurityDisplay(origin));
+  std::u16string origin_string =
+      url_formatter::FormatOriginForSecurityDisplay(origin);
   SecurityStateTabHelper* helper =
       SecurityStateTabHelper::FromWebContents(web_contents);
   DCHECK(helper);
@@ -139,10 +138,7 @@ void UsbChooserDialogAndroid::OnOptionAdded(size_t index) {
   item_id_map_.insert(item_id_map_.begin() + index, item_id_str);
 
   std::u16string device_name = controller_->GetOption(index);
-  Java_UsbChooserDialog_addDevice(
-      env, java_dialog_,
-      base::android::ConvertUTF8ToJavaString(env, item_id_str),
-      base::android::ConvertUTF16ToJavaString(env, device_name));
+  Java_UsbChooserDialog_addDevice(env, java_dialog_, item_id_str, device_name);
 }
 
 void UsbChooserDialogAndroid::OnOptionRemoved(size_t index) {
@@ -152,8 +148,7 @@ void UsbChooserDialogAndroid::OnOptionRemoved(size_t index) {
   std::string item_id = item_id_map_[index];
   item_id_map_.erase(item_id_map_.begin() + index);
 
-  Java_UsbChooserDialog_removeDevice(
-      env, java_dialog_, base::android::ConvertUTF8ToJavaString(env, item_id));
+  Java_UsbChooserDialog_removeDevice(env, java_dialog_, item_id);
 }
 
 void UsbChooserDialogAndroid::OnOptionUpdated(size_t index) {
@@ -168,11 +163,8 @@ void UsbChooserDialogAndroid::OnRefreshStateChanged(bool refreshing) {
   NOTREACHED();
 }
 
-void UsbChooserDialogAndroid::OnItemSelected(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& item_id_jstring) {
-  std::string item_id =
-      base::android::ConvertJavaStringToUTF8(env, item_id_jstring);
+void UsbChooserDialogAndroid::OnItemSelected(JNIEnv* env,
+                                             std::string& item_id) {
   auto it = base::ranges::find(item_id_map_, item_id);
   CHECK(it != item_id_map_.end(), base::NotFatalUntil::M130);
   controller_->Select(

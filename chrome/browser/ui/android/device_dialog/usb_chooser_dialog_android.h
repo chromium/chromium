@@ -29,7 +29,7 @@ class UsbChooserDialogAndroid : public permissions::ChooserController::View {
       base::OnceCallback<base::android::ScopedJavaLocalRef<jobject>(
           JNIEnv*,
           const base::android::JavaRef<jobject>&,
-          const base::android::JavaRef<jstring>&,
+          const std::u16string&,
           JniIntWrapper,
           const base::android::JavaRef<jobject>&,
           jlong)>;
@@ -67,8 +67,7 @@ class UsbChooserDialogAndroid : public permissions::ChooserController::View {
   void OnRefreshStateChanged(bool refreshing) override;
 
   // Report the dialog's result.
-  void OnItemSelected(JNIEnv* env,
-                      const base::android::JavaParamRef<jstring>& item_id);
+  void OnItemSelected(JNIEnv* env, std::string& item_id);
   void OnDialogCancelled(JNIEnv* env);
   void LoadUsbHelpPage(JNIEnv* env);
 
