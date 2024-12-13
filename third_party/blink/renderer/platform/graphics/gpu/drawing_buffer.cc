@@ -2030,29 +2030,28 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
         if (low_latency_enabled()) {
           usage = usage | gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
         }
-        back_buffer_shared_image = sii->CreateSharedImage(
-            {color_buffer_format_, size, color_space_, origin,
-             back_buffer_alpha_type, usage, "WebGLDrawingBuffer"},
-            gpu::kNullSurfaceHandle);
-        texture_target = back_buffer_shared_image->GetTextureTarget();
       }
     }
 
-    // If creating a SharedImage that can be used as an overlay was not an
-    // option, create a SharedImage without adding SCANOUT usage.
-    if (!back_buffer_shared_image) {
-      // Set the correct SkAlphaType on the new shared image (note that in the
-      // above case of creating a SharedImage that can be used as an overlay
-      // we instead keep this buffer premultiplied, draw to
-      // |premultiplied_alpha_false_mailbox_|, and convert during copy).
-      if (requested_alpha_type_ == kUnpremul_SkAlphaType) {
-        back_buffer_alpha_type = kUnpremul_SkAlphaType;
-      }
+    // Set the correct SkAlphaType on the new shared image if not using as an
+    // overlay (note that in the case of creating a SharedImage that can be
+    // used as an overlay we instead keep this buffer premultiplied, draw to
+    // |premultiplied_alpha_false_mailbox_|, and convert during copy).
+    if (requested_alpha_type_ == kUnpremul_SkAlphaType &&
+        !usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
+      back_buffer_alpha_type = kUnpremul_SkAlphaType;
+    }
 
-      back_buffer_shared_image = sii->CreateSharedImage(
-          {color_buffer_format_, size, color_space_, origin,
-           back_buffer_alpha_type, usage, "WebGLDrawingBuffer"},
-          gpu::kNullSurfaceHandle);
+    back_buffer_shared_image = sii->CreateSharedImage(
+        {color_buffer_format_, size, color_space_, origin,
+         back_buffer_alpha_type, usage, "WebGLDrawingBuffer"},
+        gpu::kNullSurfaceHandle);
+
+    if (usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
+      // On Mac the texture target for SharedImages with SCANOUT usage (which
+      // get backed by IOSurfaces) is the "native" texture target for
+      // IOSurfaces, which is not necessarily GL_TEXTURE_2D.
+      texture_target = back_buffer_shared_image->GetTextureTarget();
     }
   }
 
