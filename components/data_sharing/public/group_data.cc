@@ -45,6 +45,16 @@ GroupMemberPartialData& GroupMemberPartialData::operator=(
 
 GroupMemberPartialData::~GroupMemberPartialData() = default;
 
+GroupMember GroupMemberPartialData::ToGroupMember() {
+  GroupMember member;
+  member.gaia_id = gaia_id;
+  member.display_name = display_name;
+  member.email = email;
+  member.avatar_url = avatar_url;
+  member.given_name = given_name;
+  return member;
+}
+
 GroupToken::GroupToken() = default;
 
 GroupToken::GroupToken(GroupId group_id, const std::string& access_token)

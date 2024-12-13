@@ -12,10 +12,14 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/collaboration/internal/messaging/data_sharing_change_notifier_impl.h"
+#include "components/collaboration/internal/messaging/storage/collaboration_message_util.h"
 #include "components/collaboration/internal/messaging/storage/messaging_backend_store.h"
 #include "components/collaboration/internal/messaging/tab_group_change_notifier.h"
+#include "components/collaboration/public/messaging/activity_log.h"
 #include "components/collaboration/public/messaging/message.h"
+#include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/types.h"
 
 namespace collaboration::messaging {
@@ -32,6 +36,80 @@ collaboration_pb::Message CreateMessage(
   message.set_dirty(static_cast<int>(dirty_type));
   message.set_event_timestamp(event_time.ToTimeT());
   return message;
+}
+
+CollaborationEvent ToCollaborationEvent(
+    collaboration_pb::EventType event_type) {
+  switch (event_type) {
+    case collaboration_pb::TAB_ADDED:
+      return CollaborationEvent::TAB_ADDED;
+    case collaboration_pb::TAB_REMOVED:
+      return CollaborationEvent::TAB_REMOVED;
+    case collaboration_pb::TAB_UPDATED:
+      return CollaborationEvent::TAB_UPDATED;
+    case collaboration_pb::TAB_GROUP_ADDED:
+      return CollaborationEvent::TAB_GROUP_ADDED;
+    case collaboration_pb::TAB_GROUP_REMOVED:
+      return CollaborationEvent::TAB_GROUP_REMOVED;
+    case collaboration_pb::TAB_GROUP_NAME_UPDATED:
+      return CollaborationEvent::TAB_GROUP_NAME_UPDATED;
+    case collaboration_pb::TAB_GROUP_COLOR_UPDATED:
+      return CollaborationEvent::TAB_GROUP_COLOR_UPDATED;
+    case collaboration_pb::COLLABORATION_ADDED:
+      return CollaborationEvent::COLLABORATION_ADDED;
+    case collaboration_pb::COLLABORATION_REMOVED:
+      return CollaborationEvent::COLLABORATION_REMOVED;
+    case collaboration_pb::COLLABORATION_MEMBER_ADDED:
+      return CollaborationEvent::COLLABORATION_MEMBER_ADDED;
+    case collaboration_pb::COLLABORATION_MEMBER_REMOVED:
+      return CollaborationEvent::COLLABORATION_MEMBER_REMOVED;
+    default:
+      return CollaborationEvent::UNDEFINED;
+  }
+}
+
+RecentActivityAction GetRecentActivityActionFromCollaborationEvent(
+    CollaborationEvent event) {
+  switch (event) {
+    case CollaborationEvent::TAB_ADDED:
+    case CollaborationEvent::TAB_UPDATED:
+      return RecentActivityAction::kFocusTab;
+    case CollaborationEvent::TAB_REMOVED:
+      return RecentActivityAction::kReopenTab;
+    case CollaborationEvent::TAB_GROUP_ADDED:
+    case CollaborationEvent::TAB_GROUP_REMOVED:
+      return RecentActivityAction::kNone;
+    case CollaborationEvent::TAB_GROUP_NAME_UPDATED:
+    case CollaborationEvent::TAB_GROUP_COLOR_UPDATED:
+      return RecentActivityAction::kOpenTabGroupEditDialog;
+    case CollaborationEvent::COLLABORATION_ADDED:
+    case CollaborationEvent::COLLABORATION_REMOVED:
+      return RecentActivityAction::kNone;
+    case CollaborationEvent::COLLABORATION_MEMBER_ADDED:
+    case CollaborationEvent::COLLABORATION_MEMBER_REMOVED:
+      return RecentActivityAction::kManageSharing;
+    case CollaborationEvent::UNDEFINED:
+      return RecentActivityAction::kNone;
+  }
+}
+
+std::optional<GaiaId> GetGaiaIdFromMessage(
+    const collaboration_pb::Message& message) {
+  switch (GetMessageCategory(message)) {
+    case MessageCategory::kTab:
+    case MessageCategory::kTabGroup:
+      if (message.triggering_user_gaia_id().empty()) {
+        return std::nullopt;
+      }
+      return GaiaId(message.triggering_user_gaia_id());
+    case MessageCategory::kCollaboration:
+      if (message.affected_user_gaia_id().empty()) {
+        return std::nullopt;
+      }
+      return GaiaId(message.affected_user_gaia_id());
+    default:
+      return std::nullopt;
+  }
 }
 
 }  // namespace
@@ -100,9 +178,25 @@ std::vector<PersistentMessage> MessagingBackendServiceImpl::GetMessages(
 
 std::vector<ActivityLogItem> MessagingBackendServiceImpl::GetActivityLog(
     const ActivityLogQueryParams& params) {
-  // TODO(345856704): Implement this and DCHECK(IsInitialized()) and update
-  // interface description.
-  return std::vector<ActivityLogItem>();
+  std::vector<ActivityLogItem> result;
+  std::vector<collaboration_pb::Message> messages =
+      store_->GetRecentMessagesForGroup(params.collaboration_id);
+  int message_count = 0;
+  for (const auto& message : messages) {
+    std::optional<ActivityLogItem> activity_log_item =
+        ConvertMessageToActivityLogItem(message);
+    if (!activity_log_item) {
+      continue;
+    }
+    result.emplace_back(*activity_log_item);
+    if (params.result_length == 0) {
+      continue;
+    }
+    if (++message_count >= params.result_length) {
+      break;
+    }
+  }
+  return result;
 }
 
 void MessagingBackendServiceImpl::OnStoreInitialized(bool success) {
@@ -263,6 +357,107 @@ MessagingBackendServiceImpl::GetDisplayNameForUserInGroup(
   }
 
   return std::nullopt;
+}
+
+std::optional<ActivityLogItem>
+MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
+    const collaboration_pb::Message& message) {
+  switch (message.event_type()) {
+    case collaboration_pb::TAB_GROUP_ADDED:
+    case collaboration_pb::TAB_GROUP_REMOVED:
+    case collaboration_pb::COLLABORATION_ADDED:
+    case collaboration_pb::COLLABORATION_REMOVED:
+      return std::nullopt;
+    default:
+      break;
+  }
+  ActivityLogItem item;
+  item.collaboration_event = ToCollaborationEvent(message.event_type());
+  data_sharing::GroupId collaboration_group_id(message.collaboration_id());
+
+  std::optional<GaiaId> gaia_id = GetGaiaIdFromMessage(message);
+  std::optional<data_sharing::GroupMember> group_member;
+  if (gaia_id) {
+    std::optional<std::string> user_name_for_display =
+        GetDisplayNameForUserInGroup(collaboration_group_id, *gaia_id,
+                                     std::nullopt, message);
+    if (user_name_for_display) {
+      item.user_display_name = *user_name_for_display;
+    }
+    std::optional<data_sharing::GroupMemberPartialData> group_member_data =
+        data_sharing_service_->GetPossiblyRemovedGroupMember(
+            collaboration_group_id, *gaia_id);
+    if (group_member_data) {
+      group_member = group_member_data->ToGroupMember();
+    }
+  }
+
+  // TODO(nyquist): Compare GaiaId with current user in this profile.
+  item.user_is_self = false;
+
+  item.description = GetDescriptionTextForActivityLogItem(message);
+  item.time_delta =
+      base::Time::Now() - base::Time::FromTimeT(message.event_timestamp());
+  item.action =
+      GetRecentActivityActionFromCollaborationEvent(item.collaboration_event);
+
+  item.activity_metadata = MessageAttribution();
+  item.activity_metadata.collaboration_id = collaboration_group_id;
+
+  // The code below needs to fill in `activity_metadata`, and optionally
+  // `show_favicon` if it is true.
+  switch (GetMessageCategory(message)) {
+    case MessageCategory::kTab:
+      break;
+    case MessageCategory::kTabGroup:
+      break;
+    case MessageCategory::kCollaboration:
+      item.activity_metadata.affected_user = group_member;
+      break;
+    default:
+      break;
+  }
+  return item;
+}
+
+std::u16string
+MessagingBackendServiceImpl::GetDescriptionTextForActivityLogItem(
+    const collaboration_pb::Message& message) {
+  std::optional<GaiaId> gaia_id = GetGaiaIdFromMessage(message);
+  std::optional<data_sharing::GroupMemberPartialData> group_member_data;
+  if (gaia_id) {
+    group_member_data = data_sharing_service_->GetPossiblyRemovedGroupMember(
+        data_sharing::GroupId(message.collaboration_id()), *gaia_id);
+  }
+
+  switch (ToCollaborationEvent(message.event_type())) {
+    case CollaborationEvent::TAB_ADDED:
+    case CollaborationEvent::TAB_UPDATED:
+    case CollaborationEvent::TAB_REMOVED:
+      // TODO(nyquist): Update this to use real data.
+      return u"";  // Current domain as eTLD+1 (format for security display).
+    case CollaborationEvent::TAB_GROUP_ADDED:
+    case CollaborationEvent::TAB_GROUP_REMOVED:
+      return u"";  // Not defined.
+    case CollaborationEvent::TAB_GROUP_NAME_UPDATED:
+      // TODO(nyquist): Update this to use real data.
+      return u"";  // Current tab group name.
+    case CollaborationEvent::TAB_GROUP_COLOR_UPDATED:
+      return u"";  // Intentionally left blank.
+    case CollaborationEvent::COLLABORATION_ADDED:
+    case CollaborationEvent::COLLABORATION_REMOVED:
+      return u"";  // Not defined.
+    case CollaborationEvent::COLLABORATION_MEMBER_ADDED:
+    case CollaborationEvent::COLLABORATION_MEMBER_REMOVED:
+      // Should use the email of the added / removed user.
+      if (group_member_data) {
+        return base::UTF8ToUTF16(group_member_data->email);
+      } else {
+        return u"";
+      }
+    case CollaborationEvent::UNDEFINED:
+      return u"";  // Not defined.
+  }
 }
 
 }  // namespace collaboration::messaging

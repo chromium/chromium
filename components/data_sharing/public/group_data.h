@@ -54,6 +54,8 @@ struct GroupMemberPartialData {
 
   ~GroupMemberPartialData();
 
+  GroupMember ToGroupMember();
+
   GaiaId gaia_id;
   std::string display_name;
   std::string email;

@@ -105,6 +105,17 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
       const std::optional<data_sharing::GroupData>& group_data,
       const std::optional<collaboration_pb::Message>& db_message);
 
+  // Converts a stored message to an ActivityLogItem for display. Some events
+  // should not be part of the activity log and for those std::nullopt is
+  // return.
+  std::optional<ActivityLogItem> ConvertMessageToActivityLogItem(
+      const collaboration_pb::Message& message);
+
+  // Provides the user visible description for activity log items based on the
+  // type of event.
+  std::u16string GetDescriptionTextForActivityLogItem(
+      const collaboration_pb::Message& message);
+
   // Provides functionality to go from observing the TabGroupSyncService to
   // a delta based observer API.
   std::unique_ptr<TabGroupChangeNotifier> tab_group_change_notifier_;

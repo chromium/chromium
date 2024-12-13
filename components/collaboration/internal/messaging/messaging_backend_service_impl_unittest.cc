@@ -44,6 +44,33 @@ data_sharing::GroupMemberPartialData CreatePartialGroupMember(
   member.given_name = given_name;
   return member;
 }
+
+collaboration_pb::Message CreateStoredMessage(
+    const data_sharing::GroupId& collaboration_group_id,
+    collaboration_pb::EventType event_type,
+    DirtyType dirty_type,
+    const base::Time& event_time) {
+  collaboration_pb::Message message;
+  message.set_uuid(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  message.set_collaboration_id(collaboration_group_id.value());
+  message.set_event_type(event_type);
+  message.set_dirty(static_cast<int>(dirty_type));
+  message.set_event_timestamp(event_time.ToTimeT());
+  return message;
+}
+
+data_sharing::GroupMemberPartialData CreatePartialMember(
+    const GaiaId& gaia_id,
+    std::string email,
+    std::string display_name,
+    std::string given_name) {
+  data_sharing::GroupMemberPartialData member;
+  member.gaia_id = gaia_id;
+  member.email = email;
+  member.display_name = display_name;
+  member.given_name = given_name;
+  return member;
+}
 }  // namespace
 
 class MockTabGroupChangeNotifier : public TabGroupChangeNotifier {
@@ -185,6 +212,11 @@ class MessagingBackendServiceImplTest : public testing::Test {
     tg_notifier_observer_->OnTabGroupChangeNotifierInitialized();
   }
 
+  void CreateAndInitializeService() {
+    CreateService();
+    InitializeService();
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -226,8 +258,7 @@ void VerifyGenericMessageData(const collaboration_pb::Message& message,
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestStoringCollaborationEvents) {
-  CreateService();
-  InitializeService();
+  CreateAndInitializeService();
 
   data_sharing::GroupData group_data;
   group_data.group_token.group_id = data_sharing::GroupId("my group id");
@@ -280,8 +311,7 @@ TEST_F(MessagingBackendServiceImplTest, TestStoringCollaborationEvents) {
 
 TEST_F(MessagingBackendServiceImplTest,
        TestLookingUpMemberNameForCollaborationEventsForStorage) {
-  CreateService();
-  InitializeService();
+  CreateAndInitializeService();
 
   data_sharing::GroupData group_data;
   data_sharing::GroupId group_id("my group id");
@@ -356,6 +386,138 @@ TEST_F(MessagingBackendServiceImplTest,
   EXPECT_EQ(member2.gaia_id, message.affected_user_gaia_id());
   EXPECT_EQ("Provided Display Name 2",
             message.collaboration_data().affected_user_name());
+}
+
+TEST_F(MessagingBackendServiceImplTest, TestActivityLogWithNoEvents) {
+  CreateAndInitializeService();
+
+  std::vector<collaboration_pb::Message> messages;
+
+  EXPECT_CALL(*unowned_messaging_backend_store_, GetRecentMessagesForGroup(_))
+      .WillOnce(Return(messages));
+
+  ActivityLogQueryParams params;
+  params.collaboration_id = data_sharing::GroupId("my group id");
+  std::vector<ActivityLogItem> activity_log = service_->GetActivityLog(params);
+  EXPECT_EQ(0u, activity_log.size());
+}
+
+TEST_F(MessagingBackendServiceImplTest, TestActivityLogAcceptsMaxLength) {
+  CreateAndInitializeService();
+
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+
+  base::Time now = base::Time::Now();
+  std::vector<collaboration_pb::Message> messages;
+  collaboration_pb::Message message1 = CreateStoredMessage(
+      collaboration_group_id,
+      collaboration_pb::EventType::COLLABORATION_MEMBER_ADDED, DirtyType::kNone,
+      now + base::Seconds(4));
+  messages.emplace_back(message1);
+  collaboration_pb::Message message2 = CreateStoredMessage(
+      collaboration_group_id,
+      collaboration_pb::EventType::COLLABORATION_MEMBER_REMOVED,
+      DirtyType::kNone, now + base::Seconds(3));
+  messages.emplace_back(message2);
+  collaboration_pb::Message message3 = CreateStoredMessage(
+      collaboration_group_id, collaboration_pb::EventType::TAB_ADDED,
+      DirtyType::kNone, now + base::Seconds(2));
+  messages.emplace_back(message3);
+  // COLLABORATION_ADDED should never be returned.
+  collaboration_pb::Message message4 = CreateStoredMessage(
+      collaboration_group_id, collaboration_pb::EventType::COLLABORATION_ADDED,
+      DirtyType::kNone, now + base::Seconds(1));
+  messages.emplace_back(message4);
+
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetRecentMessagesForGroup(Eq(collaboration_group_id)))
+      .WillRepeatedly(Return(messages));
+
+  ActivityLogQueryParams params;
+  params.collaboration_id = collaboration_group_id;
+  params.result_length = 2;  // We only want max 2 items.
+  std::vector<ActivityLogItem> activity_log = service_->GetActivityLog(params);
+  ASSERT_EQ(2u, activity_log.size());
+  EXPECT_EQ(CollaborationEvent::COLLABORATION_MEMBER_ADDED,
+            activity_log[0].collaboration_event);
+  EXPECT_EQ(CollaborationEvent::COLLABORATION_MEMBER_REMOVED,
+            activity_log[1].collaboration_event);
+
+  // We want max 5 items, but the log has 3, it should still return what it has.
+  params.result_length = 5;
+  activity_log = service_->GetActivityLog(params);
+  ASSERT_EQ(3u, activity_log.size());
+  EXPECT_EQ(CollaborationEvent::COLLABORATION_MEMBER_ADDED,
+            activity_log[0].collaboration_event);
+  EXPECT_EQ(CollaborationEvent::COLLABORATION_MEMBER_REMOVED,
+            activity_log[1].collaboration_event);
+  EXPECT_EQ(CollaborationEvent::TAB_ADDED, activity_log[2].collaboration_event);
+
+  // Setting result length to 0 should return all items.
+  params.result_length = 0;
+  activity_log = service_->GetActivityLog(params);
+  ASSERT_EQ(3u, activity_log.size());
+}
+
+TEST_F(MessagingBackendServiceImplTest, TestActivityLogCollaborationEvents) {
+  CreateAndInitializeService();
+
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+
+  base::Time now = base::Time::Now();
+  std::vector<collaboration_pb::Message> messages;
+  collaboration_pb::Message message1 = CreateStoredMessage(
+      collaboration_group_id,
+      collaboration_pb::EventType::COLLABORATION_MEMBER_ADDED, DirtyType::kNone,
+      now);
+  message1.set_affected_user_gaia_id("gaia_1");
+  message1.mutable_collaboration_data()->set_affected_user_name("gaia_1 name");
+  messages.emplace_back(message1);
+
+  collaboration_pb::Message message2 = CreateStoredMessage(
+      collaboration_group_id,
+      collaboration_pb::EventType::COLLABORATION_MEMBER_REMOVED,
+      DirtyType::kNone, now);
+  message2.set_affected_user_gaia_id("gaia_2");
+  message2.mutable_collaboration_data()->set_affected_user_name("gaia_2 name");
+  messages.emplace_back(message2);
+
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetRecentMessagesForGroup(Eq(collaboration_group_id)))
+      .WillOnce(Return(messages));
+  EXPECT_CALL(*mock_data_sharing_service_,
+              GetPossiblyRemovedGroupMember(Eq(collaboration_group_id),
+                                            Eq(GaiaId("gaia_1"))))
+      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(*mock_data_sharing_service_,
+              GetPossiblyRemovedGroupMember(Eq(collaboration_group_id),
+                                            Eq(GaiaId("gaia_2"))))
+      .WillRepeatedly(
+          Return(CreatePartialMember(GaiaId("gaia_2"), "gaia2@gmail.com",
+                                     "Display Name", "Given Name 2")));
+
+  ActivityLogQueryParams params;
+  params.collaboration_id = collaboration_group_id;
+  std::vector<ActivityLogItem> activity_log = service_->GetActivityLog(params);
+  ASSERT_EQ(2u, activity_log.size());
+  EXPECT_EQ(CollaborationEvent::COLLABORATION_MEMBER_ADDED,
+            activity_log[0].collaboration_event);
+  EXPECT_EQ(CollaborationEvent::COLLABORATION_MEMBER_REMOVED,
+            activity_log[1].collaboration_event);
+
+  // Use name from DB and no email. This is not intended to happen, because we
+  // should always have the member data, but this tests that we still work
+  // without it.
+  EXPECT_EQ("gaia_1 name", activity_log[0].user_display_name);
+  EXPECT_EQ(u"", activity_log[0].description);
+  // Use name and email from DataSharingService.
+  EXPECT_EQ("Given Name 2", activity_log[1].user_display_name);
+  EXPECT_EQ(u"gaia2@gmail.com", activity_log[1].description);
+  // We should also fill in the MessageAttribution.
+  EXPECT_EQ("gaia2@gmail.com",
+            activity_log[1].activity_metadata.affected_user->email);
 }
 
 }  // namespace collaboration::messaging
