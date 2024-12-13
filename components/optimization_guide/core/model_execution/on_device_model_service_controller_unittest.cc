@@ -213,6 +213,9 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
            {"on_device_model_disable_crash_count", "3"},
            {"on_device_model_crash_backoff_base_time", "1m"},
            {"on_device_model_max_crash_backoff_time", "1h"}}},
+         {features::kOnDeviceModelPerformanceParams,
+          {{"compatible_on_device_performance_classes", "*"},
+           {"compatible_low_tier_on_device_performance_classes", "3"}}},
          {features::kTextSafetyClassifier, {}},
          {features::kOnDeviceModelValidation,
           {{"on_device_model_validation_delay", "0"}}}},
@@ -3849,6 +3852,19 @@ TEST_F(OnDeviceModelServiceControllerTest, LoggingModeAlwaysDisable) {
   EXPECT_TRUE(response_holder.GetFinalStatus());
   response_holder.ClearLogEntry();
   EXPECT_EQ(0u, test_uploader.uploaded_logs().size());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, SendsPerformanceHint) {
+  // Low performance class should use fastest inference.
+  pref_service_.SetInteger(
+      model_execution::prefs::localstate::kOnDevicePerformanceClass,
+      base::to_underlying(OnDeviceModelPerformanceClass::kLow));
+  Initialize(standard_assets_);
+  auto session = CreateSession();
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(*response_.value(), "Fastest inference\nInput: execute:foo\n");
 }
 
 }  // namespace optimization_guide

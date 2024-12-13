@@ -15298,6 +15298,7 @@ from previous Chrome versions.
   <int value="-2036127998" label="LocalWebApprovals:disabled"/>
   <int value="-2035845836" label="ArcExtendServiceAnrTimeout:enabled"/>
   <int value="-2035126988" label="enabled-new-style-notification"/>
+  <int value="-2034315473" label="OnDeviceModelPerformanceParams:disabled"/>
   <int value="-2034064186" label="EnableKeyboardBacklightToggle:disabled"/>
   <int value="-2033950090" label="AutofillNoLocalSaveOnUploadSuccess:disabled"/>
   <int value="-2033908928" label="NightLight:enabled"/>
@@ -22130,6 +22131,7 @@ from previous Chrome versions.
   <int value="705946076"
       label="ContextMenuPerformanceInfoAndRemoteHintFetching:disabled"/>
   <int value="706280254" label="StoragePressureEvent:enabled"/>
+  <int value="707243920" label="OnDeviceModelPerformanceParams:enabled"/>
   <int value="707463326" label="DynamicSafeAreaInsets:enabled"/>
   <int value="708015891"
       label="AutofillUpdateChromeSettingsLinkToGPayWeb:enabled"/>

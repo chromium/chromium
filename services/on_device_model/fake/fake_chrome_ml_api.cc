@@ -65,7 +65,8 @@ bool QueryGPUAdapter(void (*adapter_callback_fn)(WGPUAdapter adapter,
 }
 
 struct FakeModelInstance {
-  ModelBackendType backend_type_;
+  ml::ModelBackendType backend_type_;
+  ml::ModelPerformanceHint performance_hint;
   std::string model_data_;
 };
 
@@ -97,8 +98,10 @@ std::string ReadFile(PlatformFile api_file) {
 ChromeMLModel SessionCreateModel(const ChromeMLModelDescriptor* descriptor,
                                  uintptr_t context,
                                  ChromeMLScheduleFn schedule) {
-  return reinterpret_cast<ChromeMLModel>(
-      new FakeModelInstance{.backend_type_ = descriptor->backend_type});
+  return reinterpret_cast<ChromeMLModel>(new FakeModelInstance{
+      .backend_type_ = descriptor->backend_type,
+      .performance_hint = descriptor->performance_hint,
+  });
 }
 
 void DestroyModel(ChromeMLModel model) {
@@ -121,11 +124,11 @@ ChromeMLSession CreateSession(ChromeMLModel model,
   if (descriptor) {
     instance->enable_image_input = descriptor->enable_image_input;
     if (descriptor->model_data) {
-      if (model_instance->backend_type_ == ModelBackendType::kGpuBackend) {
+      if (model_instance->backend_type_ == ml::ModelBackendType::kGpuBackend) {
         instance->adaptation_data_ =
             ReadFile(descriptor->model_data->weights_file);
       } else if (model_instance->backend_type_ ==
-                 ModelBackendType::kApuBackend) {
+                 ml::ModelBackendType::kApuBackend) {
         base::ReadFileToString(
             base::FilePath::FromUTF8Unsafe(descriptor->model_data->model_path),
             &instance->adaptation_data_);
@@ -206,6 +209,10 @@ bool SessionExecuteModel(ChromeMLSession session,
         output_fn(&output);
       };
 
+  if (reinterpret_cast<FakeModelInstance*>(model)->performance_hint ==
+      ml::ModelPerformanceHint::kFastestInference) {
+    OutputChunk("Fastest inference\n");
+  }
   if (!instance->adaptation_data_.empty()) {
     OutputChunk("Adaptation: " + instance->adaptation_data_ + "\n");
   }

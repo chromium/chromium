@@ -36,6 +36,12 @@ enum ModelBackendType {
   kApu,
 };
 
+// Options for specifying the performance characteristics of the model to load.
+enum ModelPerformanceHint {
+  kHighestQuality,
+  kFastestInference,
+};
+
 // Params to describe the model to load.
 struct LoadModelParams {
   // Backend type of the model.
@@ -50,6 +56,10 @@ struct LoadModelParams {
 
   // List of adaptation ranks the model should support.
   array<uint32> adaptation_ranks;
+
+  // Chooses the performance characteristics of the model loaded. If only a
+  // single model is available, this field will do nothing.
+  ModelPerformanceHint performance_hint = kHighestQuality;
 };
 
 struct TextSafetyModelAssets {

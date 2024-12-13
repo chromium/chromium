@@ -43,12 +43,14 @@ class OnDeviceInternalsPageHandler : public mojom::OnDeviceInternalsPageHandler,
   void OnModelAssetsLoaded(
       mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
       LoadModelCallback callback,
+      ml::ModelPerformanceHint performance_hint,
       on_device_model::ModelAssets assets);
 #endif
 
   // mojom::OnDeviceInternalsPageHandler:
   void LoadModel(
       const base::FilePath& model_path,
+      ml::ModelPerformanceHint performance_hint,
       mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
       LoadModelCallback callback) override;
   void GetEstimatedPerformanceClass(

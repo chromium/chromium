@@ -112,7 +112,8 @@ class FakeOnDeviceModel : public mojom::OnDeviceModel {
     std::string adaptation_model_weight = "";
   };
   explicit FakeOnDeviceModel(FakeOnDeviceServiceSettings* settings,
-                             Data&& data);
+                             Data&& data,
+                             ml::ModelPerformanceHint performance_hint);
   ~FakeOnDeviceModel() override;
 
   // mojom::OnDeviceModel:
@@ -134,9 +135,14 @@ class FakeOnDeviceModel : public mojom::OnDeviceModel {
 
   const Data& data() const { return data_; }
 
+  ml::ModelPerformanceHint performance_hint() const {
+    return performance_hint_;
+  }
+
  private:
   raw_ptr<FakeOnDeviceServiceSettings> settings_;
   Data data_;
+  ml::ModelPerformanceHint performance_hint_;
 
   mojo::UniqueReceiverSet<mojom::Session> receivers_;
   mojo::UniqueReceiverSet<mojom::OnDeviceModel> model_adaptation_receivers_;

@@ -1,4 +1,4 @@
-<style include="cr-shared-style cr-hidden-style">
+<style include="cr-shared-style cr-hidden-style md-select">
   :host {
     display: block;
     margin: auto;
@@ -110,24 +110,40 @@
   cr-expand-button:hover {
     background-color: var(--cr-hover-background-color);
   }
+
+  .model-options {
+    display: flex;
+    flex-direction: row;
+  }
+
+  cr-checkbox {
+    margin-left: 20px;
+    --cr-checkbox-label-padding-start: 10px;
+  }
 </style>
 <div class="performance-class">
   Device performance class: <strong>[[performanceClassText_]]</strong>
 </div>
 <cr-input id="modelInput" label="Model directory" placeholder="/tmp/model"
     disabled="[[isLoading_(loadModelStart_)]]"
-    on-change="onModelSelected_" error-message="[[error_]]"
-    invalid="[[error_.length]]" autofocus>
+    error-message="[[error_]]" invalid="[[error_.length]]" autofocus>
   <cr-button slot="suffix" disabled="[[isLoading_(loadModelStart_)]]"
       on-click="onLoadClick_">
     Load
   </cr-button>
 </cr-input>
-<cr-checkbox slot="suffix" checked="{{enableImageInput_}}">
-  Enable images
-</cr-checkbox>
+<div class="model-options">
+  <select id="performanceHintSelect" class="md-select"
+      value="[[performanceHint_]]" on-change="onPerformanceHintChange_">
+    <option value="kHighestQuality">Highest Quality</option>
+    <option value="kFastestInference">Fastest Inference</option>
+  </select>
+  <cr-checkbox slot="suffix" checked="{{enableImageInput_}}">
+    Enable images
+  </cr-checkbox>
+</div>
 <div class="model-text">
-  [[getModelText_(modelPath_, loadModelDuration_)]]
+  [[getModelText_(modelPath_, loadModelDuration_, loadedPerformanceHint_)]]
   <div class="throbber" hidden$="[[!isLoading_(loadModelStart_)]]"></div>
 </div>
 

@@ -138,6 +138,13 @@ OnDeviceModelComponentStateManager::GetRegistrationCriteria() {
   return registration_criteria_.get();
 }
 
+bool OnDeviceModelComponentStateManager::IsLowTierDevice() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return IsPerformanceClassCompatible(
+      features::kLowTierPerformanceClassListForOnDeviceModel.Get(),
+      PerformanceClassFromPref(*local_state_));
+}
+
 void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
     ModelBasedCapabilityKey feature) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

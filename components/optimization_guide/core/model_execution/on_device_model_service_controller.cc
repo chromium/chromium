@@ -279,6 +279,10 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
   // TODO(crbug.com/302402959): Choose max_tokens based on device.
   params->max_tokens = features::GetOnDeviceModelMaxTokens();
   params->adaptation_ranks = features::GetOnDeviceModelAllowedAdaptationRanks();
+  if (on_device_component_state_manager_ &&
+      on_device_component_state_manager_->IsLowTierDevice()) {
+    params->performance_hint = ml::ModelPerformanceHint::kFastestInference;
+  }
   service_client_.Get()->LoadModel(
       std::move(params), std::move(model),
       base::DoNothingAs<void(on_device_model::mojom::LoadModelResult)>());

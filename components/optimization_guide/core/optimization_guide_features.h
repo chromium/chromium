@@ -90,12 +90,24 @@ BASE_DECLARE_FEATURE(kPrivacyGuideAiSettings);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FeatureParam<bool> kShowAiSettingsForTesting;
 
+// Allows setting feature params for model download configuration, such as
+// minimum performance class for download.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+BASE_DECLARE_FEATURE(kOnDeviceModelPerformanceParams);
+
 // Comma-separated list of performance classes (e.g. "3,4,5") that should
 // download the base model. Use "*" if there is no performance class
 // requirement.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FeatureParam<std::string>
     kPerformanceClassListForOnDeviceModel;
+
+// Comma-separated list of performance classes that should use a smaller model
+// if available. This should be a subset of
+// kPerformanceClassListForOnDeviceModel.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FeatureParam<std::string>
+    kLowTierPerformanceClassListForOnDeviceModel;
 
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuideIconView);

@@ -179,6 +179,9 @@ class OnDeviceModelComponentStateManager
   // registration has been computed yet.
   const RegistrationCriteria* GetRegistrationCriteria();
 
+  // Returns true if this is determined to be a low tier device.
+  bool IsLowTierDevice() const;
+
   base::WeakPtr<OnDeviceModelComponentStateManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

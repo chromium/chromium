@@ -10,6 +10,7 @@ import '//resources/cr_elements/cr_hidden_style.css.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_textarea/cr_textarea.js';
+import '//resources/cr_elements/md_select.css.js';
 
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -17,6 +18,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {BrowserProxy} from './browser_proxy.js';
 import type {InputPiece, ResponseChunk, ResponseSummary} from './on_device_model.mojom-webui.js';
 import {LoadModelResult, OnDeviceModelRemote, PerformanceClass, SessionRemote, StreamingResponderCallbackRouter, Token} from './on_device_model.mojom-webui.js';
+import {ModelPerformanceHint} from './on_device_model_service.mojom-webui.js';
 import {getTemplate} from './tools.html.js';
 
 interface Response {
@@ -34,6 +36,7 @@ interface OnDeviceInternalsToolsElement {
     textInput: CrInputElement,
     imageInput: HTMLInputElement,
     topKInput: CrInputElement,
+    performanceHintSelect: HTMLSelectElement,
   };
 }
 
@@ -131,6 +134,8 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
         type: Object,
         value: null,
       },
+      performanceHint_: String,
+      loadedPerformanceHint_: Number,
     };
   }
 
@@ -159,6 +164,8 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
   private topK_: number = 1;
   private imageFile_: File|null = null;
   private enableImageInput_: boolean = false;
+  private performanceHint_: string = 'kHighestQuality';
+  private loadedPerformanceHint_: ModelPerformanceHint|null;
 
   private proxy_: BrowserProxy = BrowserProxy.getInstance();
   private responseRouter_: StreamingResponderCallbackRouter =
@@ -199,6 +206,10 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     this.$.imageInput.value = '';
   }
 
+  private onPerformanceHintChange_() {
+    this.performanceHint_ = this.$.performanceHintSelect.value;
+  }
+
   private onServiceCrashed_() {
     if (this.currentResponse_) {
       this.currentResponse_.error = true;
@@ -233,6 +244,8 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     this.baseModel_ = null;
     this.model_ = null;
     this.loadModelStart_ = new Date().getTime();
+    const performanceHint = ModelPerformanceHint[(
+        this.performanceHint_ as keyof typeof ModelPerformanceHint)];
     const modelPath = this.$.modelInput.value;
     // <if expr="is_win">
     // Windows file paths are std::wstring, so use Array<Number>.
@@ -244,7 +257,8 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     const baseModel = new OnDeviceModelRemote();
     let newModel = new OnDeviceModelRemote();
     let {result} = await this.proxy_.handler.loadModel(
-        {path: processedPath}, baseModel.$.bindNewPipeAndPassReceiver());
+        {path: processedPath}, performanceHint,
+        baseModel.$.bindNewPipeAndPassReceiver());
     if (result === LoadModelResult.kSuccess && this.enableImageInput_) {
       result = (await baseModel.loadAdaptation(
                     {
@@ -272,6 +286,7 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
       });
       this.startNewSession_();
       this.modelPath_ = modelPath;
+      this.loadedPerformanceHint_ = performanceHint;
     }
   }
 
@@ -419,9 +434,13 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
       return '';
     }
     let text = 'Model loaded from ' + this.modelPath_ + ' in ' +
-        this.loadModelDuration_ + 'ms';
+        this.loadModelDuration_ + 'ms ';
     if (this.imagesEnabled_()) {
-      text += ' [images enabled]';
+      text += '[images enabled]';
+    }
+    if (this.loadedPerformanceHint_ ===
+        ModelPerformanceHint.kFastestInference) {
+      text += '[fastest inference]';
     }
     return text;
   }

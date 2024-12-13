@@ -690,7 +690,8 @@ class OnDeviceModelExecutionEnabledBrowserTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kOptimizationGuideModelExecution, {}},
          {features::kModelQualityLogging, {}},
-         {features::kOptimizationGuideOnDeviceModel,
+         {features::kOptimizationGuideOnDeviceModel, {}},
+         {features::kOnDeviceModelPerformanceParams,
           {{"compatible_on_device_performance_classes", "*"}}}},
         {});
   }

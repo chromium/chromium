@@ -15,6 +15,9 @@
 
 // This header defines the public interface to the ChromeML shared library.
 
+// TODO: crbug.com/379723772 - Remove this when internal code migrates.
+using ::ml::ModelBackendType;
+
 extern "C" {
 
 // A function used to handle fatal errors.
@@ -43,15 +46,6 @@ using ChromeMLTSModel = uintptr_t;
 // Opaque handle to a video-frame-specific ML inference engine.
 using ChromeMLInferenceEngine = uintptr_t;
 
-// Type of the backend to run the model.
-enum ModelBackendType {
-  // The default WebGPU backend.
-  kGpuBackend = 0,
-  // The APU accelerator backend. Only available on devices with APU, and need
-  // special APU model files.
-  kApuBackend = 1,
-};
-
 // A contiguous byte span.
 struct ChromeMLByteSpan {
   uint8_t* data;
@@ -79,7 +73,7 @@ struct ChromeMLModelData {
 // Describes a model to use with ChromeML.
 struct ChromeMLModelDescriptor {
   // The backend to run this model.
-  ModelBackendType backend_type;
+  ml::ModelBackendType backend_type;
 
   // The model data to use.
   const ChromeMLModelData* model_data;
@@ -105,6 +99,8 @@ struct ChromeMLModelDescriptor {
   bool enable_host_mapped_pointer;
   bool use_low_power;
   bool allow_fp16;
+
+  ml::ModelPerformanceHint performance_hint;
 };
 
 // Describes an adaptation for a model.

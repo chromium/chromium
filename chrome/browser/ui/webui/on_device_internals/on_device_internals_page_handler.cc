@@ -61,6 +61,7 @@ OnDeviceInternalsPageHandler::~OnDeviceInternalsPageHandler() {
 
 void OnDeviceInternalsPageHandler::LoadModel(
     const base::FilePath& model_path,
+    ml::ModelPerformanceHint performance_hint,
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     LoadModelCallback callback) {
 #if BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE)
@@ -81,7 +82,7 @@ void OnDeviceInternalsPageHandler::LoadModel(
       base::BindOnce(&LoadModelAssets, model_path),
       base::BindOnce(&OnDeviceInternalsPageHandler::OnModelAssetsLoaded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(model),
-                     std::move(callback)));
+                     std::move(callback), performance_hint));
 #endif
 }
 
@@ -109,10 +110,12 @@ OnDeviceInternalsPageHandler::GetService() {
 void OnDeviceInternalsPageHandler::OnModelAssetsLoaded(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     LoadModelCallback callback,
+    ml::ModelPerformanceHint performance_hint,
     on_device_model::ModelAssets assets) {
   auto params = on_device_model::mojom::LoadModelParams::New();
   params->assets = std::move(assets);
   params->max_tokens = 4096;
+  params->performance_hint = performance_hint;
   GetService().LoadModel(std::move(params), std::move(model),
                          std::move(callback));
 }

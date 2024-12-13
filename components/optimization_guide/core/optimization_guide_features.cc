@@ -202,9 +202,18 @@ BASE_FEATURE(kAiSettingsPageEnterpriseDisabledUi,
              "AiSettingsPageEnterpriseDisabledUi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOnDeviceModelPerformanceParams,
+             "OnDeviceModelPerformanceParams",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const base::FeatureParam<std::string> kPerformanceClassListForOnDeviceModel{
-    &kOptimizationGuideOnDeviceModel,
+    &kOnDeviceModelPerformanceParams,
     "compatible_on_device_performance_classes", "5,6"};
+
+const base::FeatureParam<std::string>
+    kLowTierPerformanceClassListForOnDeviceModel{
+        &kOnDeviceModelPerformanceParams,
+        "compatible_low_tier_on_device_performance_classes", ""};
 
 BASE_FEATURE(kOptimizationGuideIconView,
              "OptimizationGuideIconView",
