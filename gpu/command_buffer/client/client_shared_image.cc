@@ -23,6 +23,36 @@ namespace gpu {
 
 namespace {
 
+class ScopedMappingGpuMemoryBuffer : public ClientSharedImage::ScopedMapping {
+ public:
+  ScopedMappingGpuMemoryBuffer();
+  ~ScopedMappingGpuMemoryBuffer() override;
+
+  // ClientSharedImage::ScopedMapping:
+  base::span<uint8_t> GetMemoryForPlane(const uint32_t plane_index) override;
+  size_t Stride(const uint32_t plane_index) override;
+  gfx::Size Size() override;
+  gfx::BufferFormat Format() override;
+  bool IsSharedMemory() override;
+  void OnMemoryDump(
+      base::trace_event::ProcessMemoryDump* pmd,
+      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
+      uint64_t tracing_process_id,
+      int importance) override;
+
+  bool Init(gfx::GpuMemoryBuffer* gpu_memory_buffer, bool is_already_mapped);
+
+ private:
+  // ScopedMappingGpuMemoryBuffer is essentially a wrapper around
+  // GpuMemoryBuffer for now for simplicity and will be removed later.
+  // TODO(crbug.com/40279377): Refactor/Rename GpuMemoryBuffer and its
+  // implementations  as the end goal after all clients using GMB are
+  // converted to use the ScopedMapping and notion of GpuMemoryBuffer is being
+  // removed.
+  // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
+  RAW_PTR_EXCLUSION gfx::GpuMemoryBuffer* buffer_ = nullptr;
+};
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE)
 bool GMBIsNative(gfx::GpuMemoryBufferType gmb_type) {
   return gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::SHARED_MEMORY_BUFFER;
@@ -90,8 +120,8 @@ uint32_t ComputeTextureTargetForSharedImage(
 
 }  // namespace
 
-ClientSharedImage::ScopedMapping::ScopedMapping() = default;
-ClientSharedImage::ScopedMapping::~ScopedMapping() {
+ScopedMappingGpuMemoryBuffer::ScopedMappingGpuMemoryBuffer() = default;
+ScopedMappingGpuMemoryBuffer::~ScopedMappingGpuMemoryBuffer() {
   if (buffer_) {
     buffer_->Unmap();
   }
@@ -102,7 +132,7 @@ std::unique_ptr<ClientSharedImage::ScopedMapping>
 ClientSharedImage::ScopedMapping::Create(
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     bool is_already_mapped) {
-  auto scoped_mapping = base::WrapUnique(new ScopedMapping());
+  auto scoped_mapping = base::WrapUnique(new ScopedMappingGpuMemoryBuffer());
   if (!scoped_mapping->Init(gpu_memory_buffer, is_already_mapped)) {
     LOG(ERROR) << "ScopedMapping init failed.";
     return nullptr;
@@ -132,9 +162,8 @@ void ClientSharedImage::ScopedMapping::FinishCreateAsync(
   std::move(result_cb).Run(std::move(mapping));
 }
 
-bool ClientSharedImage::ScopedMapping::Init(
-    gfx::GpuMemoryBuffer* gpu_memory_buffer,
-    bool is_already_mapped) {
+bool ScopedMappingGpuMemoryBuffer::Init(gfx::GpuMemoryBuffer* gpu_memory_buffer,
+                                        bool is_already_mapped) {
   if (!gpu_memory_buffer) {
     LOG(ERROR) << "No GpuMemoryBuffer.";
     return false;
@@ -148,7 +177,7 @@ bool ClientSharedImage::ScopedMapping::Init(
   return true;
 }
 
-base::span<uint8_t> ClientSharedImage::ScopedMapping::GetMemoryForPlane(
+base::span<uint8_t> ScopedMappingGpuMemoryBuffer::GetMemoryForPlane(
     const uint32_t plane_index) {
   CHECK(buffer_);
 
@@ -184,27 +213,27 @@ SkPixmap ClientSharedImage::ScopedMapping::GetSkPixmapForPlane(
                   Stride(plane_index));
 }
 
-size_t ClientSharedImage::ScopedMapping::Stride(const uint32_t plane_index) {
+size_t ScopedMappingGpuMemoryBuffer::Stride(const uint32_t plane_index) {
   CHECK(buffer_);
   return buffer_->stride(plane_index);
 }
 
-gfx::Size ClientSharedImage::ScopedMapping::Size() {
+gfx::Size ScopedMappingGpuMemoryBuffer::Size() {
   CHECK(buffer_);
   return buffer_->GetSize();
 }
 
-gfx::BufferFormat ClientSharedImage::ScopedMapping::Format() {
+gfx::BufferFormat ScopedMappingGpuMemoryBuffer::Format() {
   CHECK(buffer_);
   return buffer_->GetFormat();
 }
 
-bool ClientSharedImage::ScopedMapping::IsSharedMemory() {
+bool ScopedMappingGpuMemoryBuffer::IsSharedMemory() {
   CHECK(buffer_);
   return buffer_->GetType() == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
 }
 
-void ClientSharedImage::ScopedMapping::OnMemoryDump(
+void ScopedMappingGpuMemoryBuffer::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd,
     const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
     uint64_t tracing_process_id,

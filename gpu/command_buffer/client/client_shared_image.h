@@ -50,40 +50,40 @@ class GPU_EXPORT ClientSharedImage
   // plane.
   class GPU_EXPORT ScopedMapping {
    public:
-    ~ScopedMapping();
+    virtual ~ScopedMapping() = default;
 
-    base::span<uint8_t> GetMemoryForPlane(const uint32_t plane_index);
+    virtual base::span<uint8_t> GetMemoryForPlane(
+        const uint32_t plane_index) = 0;
 
     SkPixmap GetSkPixmapForPlane(const uint32_t plane_index,
                                  SkImageInfo sk_image_info);
 
     // Returns plane stride.
-    size_t Stride(const uint32_t plane_index);
+    virtual size_t Stride(const uint32_t plane_index) = 0;
 
     // Returns the size of the buffer.
-    gfx::Size Size();
+    virtual gfx::Size Size() = 0;
 
     // Returns BufferFormat.
-    gfx::BufferFormat Format();
+    virtual gfx::BufferFormat Format() = 0;
 
     // Returns whether the underlying resource is shared memory.
-    bool IsSharedMemory();
+    virtual bool IsSharedMemory() = 0;
 
     // Dumps information about the memory backing this instance to |pmd|.
     // The memory usage is attributed to |buffer_dump_guid|.
     // |tracing_process_id| uniquely identifies the process owning the memory.
     // |importance| is relevant only for the cases of co-ownership, the memory
     // gets attributed to the owner with the highest importance.
-    void OnMemoryDump(
+    virtual void OnMemoryDump(
         base::trace_event::ProcessMemoryDump* pmd,
         const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
         uint64_t tracing_process_id,
-        int importance);
+        int importance) = 0;
 
    private:
     friend class ClientSharedImage;
 
-    ScopedMapping();
     static std::unique_ptr<ScopedMapping> Create(
         gfx::GpuMemoryBuffer* gpu_memory_buffer,
         bool is_already_mapped);
@@ -94,17 +94,6 @@ class GPU_EXPORT ClientSharedImage
         gfx::GpuMemoryBuffer* gpu_memory_buffer,
         base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb,
         bool success);
-
-    bool Init(gfx::GpuMemoryBuffer* gpu_memory_buffer, bool is_already_mapped);
-
-    // ScopedMapping is essentially a wrapper around GpuMemoryBuffer for now for
-    // simplicity and will be removed later.
-    // TODO(crbug.com/40279377): Refactor/Rename GpuMemoryBuffer and its
-    // implementations  as the end goal after all clients using GMB are
-    // converted to use the ScopedMapping and notion of GpuMemoryBuffer is being
-    // removed.
-    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
-    RAW_PTR_EXCLUSION gfx::GpuMemoryBuffer* buffer_ = nullptr;
   };
 
   // `sii_holder` must not be null.
