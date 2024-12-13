@@ -498,8 +498,7 @@ void ContentSettingsPref::ReadContentSettingsFromPrefForPartition(
 bool ContentSettingsPref::ShouldRemoveSetting(
     base::Time expiration,
     content_settings::mojom::SessionModel session_model) {
-  if (!base::FeatureList::IsEnabled(
-          content_settings::features::kActiveContentSettingExpiry) &&
+  if (!content_settings::ShouldTypeExpireActively(content_type_) &&
       !expiration.is_null() && expiration < clock_->Now()) {
     // Delete if an expiration date is set and in the past.
     return true;

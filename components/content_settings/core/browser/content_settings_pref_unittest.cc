@@ -149,17 +149,9 @@ class ContentSettingsPrefTest : public testing::Test {
 
 class ContentSettingsPrefParameterizedTest
     : public ContentSettingsPrefTest,
-      public testing::WithParamInterface<std::tuple<PartitionKey, bool>> {
+      public testing::WithParamInterface<PartitionKey> {
  public:
-  PartitionKey partition_key() const { return std::get<0>(GetParam()); }
-  bool active_content_setting_expiry() const { return std::get<1>(GetParam()); }
-
-  void SetUp() override {
-    ContentSettingsPrefTest::SetUp();
-    feature_list_.InitWithFeatureState(
-        content_settings::features::kActiveContentSettingExpiry,
-        active_content_setting_expiry());
-  }
+  PartitionKey partition_key() const { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -168,12 +160,10 @@ class ContentSettingsPrefParameterizedTest
 INSTANTIATE_TEST_SUITE_P(
     ,
     ContentSettingsPrefParameterizedTest,
-    testing::Combine(
-        testing::Values(PartitionKey::GetDefaultForTesting(),
-                        PartitionKey::CreateForTesting(/*domain=*/"foo",
-                                                       /*name=*/"bar",
-                                                       /*in_memory=*/false)),
-        testing::Bool()));
+    testing::Values(PartitionKey::GetDefaultForTesting(),
+                    PartitionKey::CreateForTesting(/*domain=*/"foo",
+                                                   /*name=*/"bar",
+                                                   /*in_memory=*/false)));
 
 TEST_P(ContentSettingsPrefParameterizedTest, BasicReadWrite) {
   const char* pattern_pair = "http://example.com,*";
@@ -451,12 +441,6 @@ TEST_P(ContentSettingsPrefParameterizedTest, ExpirationWhileReadingFromPrefs) {
   std::vector<CanonicalPatternToTag> expected_patterns_to_tags = {
       {kTestPatternCanonicalBeta, kTestPatternCanonicalBeta},
   };
-  if (active_content_setting_expiry()) {
-    // If kActiveContentSettingExpiry is enabled, the expired setting is still
-    // read in from disk.
-    expected_patterns_to_tags.emplace_back(kTestPatternCanonicalAlpha,
-                                           kTestPatternCanonicalAlpha);
-  }
 
   // Create pre-existing entries: one that is expired, one that never
   // expires, one that is non-restorable.

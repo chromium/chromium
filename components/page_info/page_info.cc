@@ -681,8 +681,7 @@ void PageInfo::OnSitePermissionChanged(
   if (is_one_time) {
     constraints.set_session_model(
         content_settings::mojom::SessionModel::ONE_TIME);
-    if (base::FeatureList::IsEnabled(
-            content_settings::features::kActiveContentSettingExpiry)) {
+    if (content_settings::ShouldTypeExpireActively(type)) {
       constraints.set_lifetime(permissions::kOneTimePermissionMaximumLifetime);
     }
   }
