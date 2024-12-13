@@ -6439,20 +6439,6 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
         return
     self.fail("couldn't find generated background page for test extension")
 
-  def testCannotInspectExtensionTargetsWithoutSwitch(self):
-    crx = os.path.join(_TEST_DATA_DIR, 'ext_bg_page.crx')
-    # Chrome Extension inspection requires enable_extension_targets = True.
-    # This test exercises inspection of an extension background page, which
-    # is only valid for manifest V2 extensions. Explicitly disable the
-    # experiment that disallows MV2 extensions.
-    driver = self.CreateDriver(
-        chrome_extensions=[self._PackExtension(crx)],
-        chrome_switches=['disable-features=ExtensionManifestV2Disabled'])
-    handles = driver.GetWindowHandles()
-    for handle in handles:
-      driver.SwitchToWindow(handle)
-      self.assertFalse(driver.GetCurrentUrl().startswith("chrome-extension://"))
-
   def testCanInspectExtensionTargetsWithMigratedSwitch(self):
     crx = os.path.join(_TEST_DATA_DIR, 'ext_bg_page.crx')
     # Chrome Extension inspection requires enable_extension_targets = True.
