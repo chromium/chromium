@@ -203,8 +203,6 @@ class TestSessionControllerClient : public SessionControllerClient {
 
   bool should_show_lock_screen_ = false;
 
-  bool is_enterprise_managed_ = false;
-
   std::tuple<bool, bool> is_eligible_for_background_replace_ = {true, true};
 
   int existing_users_count_ = 0;

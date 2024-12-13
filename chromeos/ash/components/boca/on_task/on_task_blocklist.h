@@ -114,7 +114,6 @@ class OnTaskBlocklist {
           ::boca::LockedNavigationOptions::OPEN_NAVIGATION;
   base::WeakPtr<content::WebContents> previous_tab_;
   GURL previous_url_;
-  bool first_time_popup_ = true;
   std::map<SessionID, ::boca::LockedNavigationOptions::NavigationType>
       parent_tab_to_nav_filters_;
   std::map<SessionID, ::boca::LockedNavigationOptions::NavigationType>

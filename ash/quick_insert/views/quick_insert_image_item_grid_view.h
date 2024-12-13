@@ -86,7 +86,6 @@ class ASH_EXPORT QuickInsertImageItemGridView
   // Returns items in this grid in focus traversal order.
   const views::View::Views& GetFocusableItems() const;
 
-  int grid_width_ = 0;
   views::View::Views focusable_items_;
   std::unique_ptr<FocusSearch> focus_search_;
 };

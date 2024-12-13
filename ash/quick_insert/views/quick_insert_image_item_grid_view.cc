@@ -67,8 +67,7 @@ std::unique_ptr<views::View> CreateListItemView(size_t pos_in_set) {
 }  // namespace
 
 QuickInsertImageItemGridView::QuickInsertImageItemGridView(int grid_width)
-    : grid_width_(grid_width),
-      focus_search_(std::make_unique<FocusSearch>(
+    : focus_search_(std::make_unique<FocusSearch>(
           this,
           base::BindRepeating(&QuickInsertImageItemGridView::GetFocusableItems,
                               base::Unretained(this)))) {

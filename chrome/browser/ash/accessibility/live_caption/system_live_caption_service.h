@@ -156,10 +156,6 @@ class SystemLiveCaptionService
   // The number of characters sent to the translation service.
   int characters_translated_ = 0;
 
-  // The number of characters omitted from the translation by the text
-  // stabilization policy. Used by metrics only.
-  int translation_characters_erased_ = 0;
-
   // If set during a test this number will be used to determine the
   // number of non chrome output streams.
   std::optional<uint32_t> num_output_streams_for_testing_;

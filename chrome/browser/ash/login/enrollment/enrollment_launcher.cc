@@ -139,7 +139,6 @@ class EnrollmentLauncherImpl : public EnrollmentLauncher {
 
   policy::EnrollmentConfig enrollment_config_;
   std::string enrolling_user_domain_;
-  policy::LicenseType license_type_;
 
   enum {
     OAUTH_NOT_STARTED,

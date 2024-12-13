@@ -99,8 +99,6 @@ class AccessibilityProvider
   // source. In the future we can swap this to a map if more windows are added.
   std::unique_ptr<ax::android::AXTreeSourceAndroid> tree_source_;
 
-  bool use_full_focus_mode_ = false;
-
   // device settings
   gfx::Rect device_bounds_;
 

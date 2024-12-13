@@ -22,7 +22,6 @@ MultitaskButton::MultitaskButton(PressedCallback callback,
                                  const std::u16string& name)
     : views::Button(std::move(callback)),
       type_(type),
-      is_portrait_mode_(is_portrait_mode),
       paint_as_active_(paint_as_active) {
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(), kMultitaskBaseButtonBorderRadius);

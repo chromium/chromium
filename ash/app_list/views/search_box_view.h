@@ -321,9 +321,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // The corner radius of the search box background.
   int corner_radius_ = 0;
 
-  // Whether an IPH is allowed to be shown or not.
-  bool is_iph_allowed_ = false;
-
   // The category filter menu adapter and model that handles the menu life cycle
   // and command execution.
   std::unique_ptr<ui::SimpleMenuModel> filter_menu_model_;

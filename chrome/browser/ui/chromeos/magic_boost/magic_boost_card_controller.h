@@ -87,9 +87,6 @@ class MagicBoostCardController
  private:
   TransitionAction transition_action_ = TransitionAction::kDoNothing;
 
-  // If Orca feature is included.
-  bool is_orca_included_ = false;
-
   views::UniqueWidgetPtr opt_in_widget_;
 
   OptInFeatures opt_in_features_;

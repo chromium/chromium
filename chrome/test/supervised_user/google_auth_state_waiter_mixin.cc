@@ -47,6 +47,9 @@ void GoogleAuthStateWaiterMixin::SetUpOnMainThread() {
 
   // Wait for the auth state to change.
   run_loop.Run();
+#else
+  // Silence -Wunused-private-field warning.
+  (void)expected_auth_state_;
 #endif
 }
 

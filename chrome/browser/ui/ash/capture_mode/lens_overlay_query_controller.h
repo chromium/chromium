@@ -501,9 +501,6 @@ class LensOverlayQueryController {
   // always be the first interaction in a query flow.
   bool parent_query_sent_ = false;
 
-  // Whether or not a page contents request has been sent.
-  bool page_contents_request_sent_ = false;
-
   // The invocation source that triggered the query flow.
   lens::LensOverlayInvocationSource invocation_source_;
 
