@@ -104,7 +104,7 @@ TEST_F(WelcomeTourPrefsTest, FirstExperimentalArm) {
 
   // For any call beyond the first, the function should return false and the
   // marked first experimental arm should not change.
-  EXPECT_FALSE(MarkFirstExperimentalArm(pref_service(), ExperimentalArm::kV2));
+  EXPECT_FALSE(MarkFirstExperimentalArm(pref_service(), ExperimentalArm::kV3));
   EXPECT_EQ(GetFirstExperimentalArm(pref_service()),
             ExperimentalArm::kHoldback);
 }

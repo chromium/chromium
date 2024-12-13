@@ -8212,17 +8212,11 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_WELCOME_TOUR_DIALOG_DESCRIPTION_TEXT" desc="Text shown in the body of the dialog as part of the System UI Welcome Tour.">
         Take a quick tour to learn how to get around your <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph>. Get up and running in 5 steps.
       </message>
-      <message name="IDS_ASH_WELCOME_TOUR_DIALOG_DESCRIPTION_TEXT_V2" desc="Text shown in the body of the dialog as part of the System UI Welcome Tour V2.">
-        Take a quick tour to learn how to get around your <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph>
-      </message>
       <message name="IDS_ASH_WELCOME_TOUR_DIALOG_TITLE_TEXT" desc="Text shown as the Welcome Tour dialog title.">
         Hi there. <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph> is a little different.
       </message>
-      <message name="IDS_ASH_WELCOME_TOUR_DIALOG_TITLE_TEXT_V2" desc="Text shown as the Welcome Tour V2 dialog title.">
-        6 tips to get started on <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph>
-      </message>
       <message name="IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT" desc="Text shown in the body of a help bubble anchored to the Explore app as part of the System UI Welcome Tour.">
-        Those were the basics! Continue in Explore, our built-in app for tips and help. You’ll find tips for getting started, recommended apps, special offers, and the newest <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph> features.
+        Those were the basics! Continue in Explore, our built-in app for tips and help. You’ll find tips for getting started, special offers, and the newest <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph> features.
       </message>
       <message name="IDS_ASH_WELCOME_TOUR_FILES_APP_BUBBLE_ACCNAME" desc="The accessible name of a help bubble anchored to the Files app as part of the System UI Welcome Tour.">
         Tour step <ph name="STEP">$1<ex>1</ex></ph> of <ph name="TOTAL_STEPS">$2<ex>5</ex></ph>. You can find the Files app in Launcher. Manage your local files and your Google Drive files, all in the Files app.

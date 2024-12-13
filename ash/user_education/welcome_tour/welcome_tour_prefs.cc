@@ -29,6 +29,8 @@ namespace {
 // static constexpr char kReasonForFirstTourPrevention[] =
 //     "ash.welcome_tour.prevented.first_reason";
 
+// We will reuse the `v2` prefs for `v3` since there is no conflict.
+// TODO: crbug.com/353568276 - Clean up the prefs after full launch.
 static constexpr char kFirstExperimentalArm[] =
     "ash.welcome_tour.v2.experimental_arm.first";
 static constexpr char kTimeOfFirstInteractionPrefPrefix[] =

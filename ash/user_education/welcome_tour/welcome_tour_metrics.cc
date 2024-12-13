@@ -45,22 +45,22 @@ void MaybeActivateExperimentalArm(PrefService* prefs) {
   // NOTE: Checking feature flag state activates experimental arms.
   const bool is_holdback_enabled = features::IsWelcomeTourHoldbackEnabled();
   const bool is_v1_enabled = features::IsWelcomeTourCounterfactuallyEnabled();
-  const bool is_v2_enabled = features::IsWelcomeTourV2Enabled();
+  const bool is_v3_enabled = features::IsWelcomeTourV3Enabled();
 
   bool changed_experimental_arm = false;
   const auto experimental_arm = first_experimental_arm.value();
   switch (experimental_arm) {
     case welcome_tour_metrics::ExperimentalArm::kHoldback:
       changed_experimental_arm =
-          !is_holdback_enabled && (is_v1_enabled || is_v2_enabled);
+          !is_holdback_enabled && (is_v1_enabled || is_v3_enabled);
       break;
     case welcome_tour_metrics::ExperimentalArm::kV1:
       changed_experimental_arm =
-          !is_v1_enabled && (is_holdback_enabled || is_v2_enabled);
+          !is_v1_enabled && (is_holdback_enabled || is_v3_enabled);
       break;
-    case welcome_tour_metrics::ExperimentalArm::kV2:
+    case welcome_tour_metrics::ExperimentalArm::kV3:
       changed_experimental_arm =
-          !is_v2_enabled && (is_holdback_enabled || is_v1_enabled);
+          !is_v3_enabled && (is_holdback_enabled || is_v1_enabled);
       break;
   }
 
@@ -78,16 +78,16 @@ void MaybeRecordExperimentalArm(PrefService* prefs) {
   std::optional<ExperimentalArm> experimental_arm;
   if (features::IsWelcomeTourCounterfactuallyEnabled()) {
     CHECK(!features::IsWelcomeTourHoldbackEnabled());
-    CHECK(!features::IsWelcomeTourV2Enabled());
+    CHECK(!features::IsWelcomeTourV3Enabled());
     experimental_arm = ExperimentalArm::kV1;
   } else if (features::IsWelcomeTourHoldbackEnabled()) {
     CHECK(!features::IsWelcomeTourCounterfactuallyEnabled());
-    CHECK(!features::IsWelcomeTourV2Enabled());
+    CHECK(!features::IsWelcomeTourV3Enabled());
     experimental_arm = ExperimentalArm::kHoldback;
-  } else if (features::IsWelcomeTourV2Enabled()) {
+  } else if (features::IsWelcomeTourV3Enabled()) {
     CHECK(!features::IsWelcomeTourCounterfactuallyEnabled());
     CHECK(!features::IsWelcomeTourHoldbackEnabled());
-    experimental_arm = ExperimentalArm::kV2;
+    experimental_arm = ExperimentalArm::kV3;
   }
 
   if (!experimental_arm) {

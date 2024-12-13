@@ -4868,11 +4868,12 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "WelcomeTourV2"
+                        "WelcomeTourV3"
                     ],
                     "disable_features": [
                         "WelcomeTourCounterfactualArm",
-                        "WelcomeTourHoldbackArm"
+                        "WelcomeTourHoldbackArm",
+                        "WelcomeTourV2"
                     ]
                 }
             ]

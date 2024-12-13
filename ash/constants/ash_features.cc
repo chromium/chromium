@@ -3115,10 +3115,10 @@ BASE_FEATURE(kWelcomeTourHoldbackArm,
              "WelcomeTourHoldbackArm",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the Welcome Tour V2 that has different strings and steps than V1.
+// Enables the Welcome Tour V3 that has different strings and steps than V1.
 // Enabling this flag has no effect unless `kWelcomeTour` is also enabled.
-BASE_FEATURE(kWelcomeTourV2,
-             "WelcomeTourV2",
+BASE_FEATURE(kWelcomeTourV3,
+             "WelcomeTourV3",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to enable MAC Address Randomization on WiFi connection.
@@ -4677,8 +4677,8 @@ bool IsWelcomeTourHoldbackEnabled() {
          base::FeatureList::IsEnabled(kWelcomeTourHoldbackArm);
 }
 
-bool IsWelcomeTourV2Enabled() {
-  return IsWelcomeTourEnabled() && base::FeatureList::IsEnabled(kWelcomeTourV2);
+bool IsWelcomeTourV3Enabled() {
+  return IsWelcomeTourEnabled() && base::FeatureList::IsEnabled(kWelcomeTourV3);
 }
 
 bool IsWifiConcurrencyEnabled() {
