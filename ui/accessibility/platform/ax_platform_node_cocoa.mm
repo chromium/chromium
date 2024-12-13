@@ -383,6 +383,21 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
         newAccessibilityAPISelectors.end()) {
       return NO;
     }
+  } else {
+    // The following deprecated selectors had existing new-API implementations
+    // that are expected to continue to work independent of the flag. For any
+    // such API, ensure the corresponding old API is not available when the flag
+    // is enabled.
+    static std::unordered_set<SEL> deprecatedSelectors = {
+        @selector(AXInsertionPointLineNumber),
+        @selector(AXNumberOfCharacters),
+        @selector(AXPlaceholderValue),
+        @selector(AXSelectedText),
+        @selector(AXSelectedTextRange),
+        @selector(AXVisibleCharacterRange)};
+    if (deprecatedSelectors.find(selector) != deprecatedSelectors.end()) {
+      return NO;
+    }
   }
 
   return [super respondsToSelector:selector];

@@ -396,7 +396,8 @@ TEST_P(AXPlatformNodeCocoaTest, TestCocoaActionListLayout) {
 
 // Tests that the correct methods are enabled based on migration mode.
 TEST_P(AXPlatformNodeCocoaTest, TestRespondsToSelector) {
-  NSArray<NSString*>* array = @[
+  // New API that was implementated since the creation of the flag goes here.
+  NSArray<NSString*>* selectors_enabled_when_migrated = @[
     @"accessibilityColumnCount", @"accessibilityDisclosedByRow",
     @"accessibilityDisclosedRows", @"accessibilityDisclosureLevel",
     @"accessibilityHeader", @"accessibilityIndex", @"accessibilityRowCount",
@@ -405,13 +406,26 @@ TEST_P(AXPlatformNodeCocoaTest, TestRespondsToSelector) {
     @"isAccessibilityExpanded", @"isAccessibilityFocused"
   ];
 
+  // Old API for which the new API was implemented prior to the creation of the
+  // flag goes here.
+  NSArray<NSString*>* selectors_disabled_when_migrated = @[
+    @"AXInsertionPointLineNumber", @"AXNumberOfCharacters",
+    @"AXPlaceholderValue", @"AXSelectedText", @"AXSelectedTextRange",
+    @"AXVisibleCharacterRange"
+  ];
+
   AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc] initWithNode:nil];
 
   bool migration_enabled = features::IsMacAccessibilityAPIMigrationEnabled();
 
-  for (NSString* newAPIMethodName in array) {
-    EXPECT_EQ([node respondsToSelector:NSSelectorFromString(newAPIMethodName)],
+  for (NSString* selectorName in selectors_enabled_when_migrated) {
+    EXPECT_EQ([node respondsToSelector:NSSelectorFromString(selectorName)],
               migration_enabled);
+  }
+
+  for (NSString* selectorName in selectors_disabled_when_migrated) {
+    EXPECT_EQ([node respondsToSelector:NSSelectorFromString(selectorName)],
+              !migration_enabled);
   }
 }
 

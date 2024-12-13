@@ -11,6 +11,7 @@
   textarea.AXSelectedTextMarkerRange = target_selected_marker_range
   wait for AXSelectedTextChanged on AXTextArea
   textarea.AXSelectedText
+  textarea.accessibilitySelectedText
 
 @SCRIPT:
   // Select 2nd word on the 2nd line (AXSelectedTextMarkerRange).
@@ -24,18 +25,21 @@
   textarea.AXSelectedTextMarkerRange = target_selected_marker_range
   wait for AXSelectedTextChanged on AXTextArea
   textarea.AXSelectedText
+  textarea.accessibilitySelectedText
 
 @SCRIPT:
   // Select text on the 1st line (AXSelectedTextRange).
   textarea.AXSelectedTextRange = {loc: 10, len: 5}
   wait for AXSelectedTextChanged on AXTextArea
   textarea.AXSelectedText
+  textarea.accessibilitySelectedText
 
 @SCRIPT:
   // select text on the 2nd line (AXSelectedTextRange).
   textarea.AXSelectedTextRange = {loc: 20, len: 5}
   wait for AXSelectedTextChanged on AXTextArea
   textarea.AXSelectedText
+  textarea.accessibilitySelectedText
 
 @SCRIPT:
   // Put cursor after the 2nd word.
@@ -47,6 +51,7 @@
   textarea.AXSelectedTextRange = {loc: 17, len: 3}
   wait for AXSelectedTextChanged on AXTextArea
   textarea.AXSelectedText
+  textarea.accessibilitySelectedText
 -->
 <!DOCTYPE html>
 <html>

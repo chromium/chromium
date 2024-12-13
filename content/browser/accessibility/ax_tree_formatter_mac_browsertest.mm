@@ -216,9 +216,9 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, SerializeNSRange) {
                       let input = document.getElementById("input");
                       input.select();
                     </script>)~~",
-             {":3;AXSelectedTextRange=*"}, R"~~(AXWebArea
+             {":3;accessibilitySelectedTextRange=*"}, R"~~(AXWebArea
 ++AXGroup
-++++AXTextField AXSelectedTextRange={loc: 0, len: 8}
+++++AXTextField accessibilitySelectedTextRange={loc: 0, len: 8}
 )~~");
 }
 
