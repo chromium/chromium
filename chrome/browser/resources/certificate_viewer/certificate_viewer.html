@@ -120,28 +120,8 @@
       </div>
 
       <!-- Modifications -->
-      <!-- TODO(crbug.com/40928765): make entire modifications panel into
-        its own component and merge this with the constraint-list  -->
       <div slot="panel" id="modifications" role="tabpanel">
-        <div class="vertical-box">
-          <h3 role="heading">$i18n{trust}</h3>
-          <div class="horizontal-row">
-            <label class="modifications-row-label">$i18n{trustState}</label>
-            <div class="input-with-error">
-              <select id="trust-state-select" class="md-select" disabled>
-                <option value="0">$i18n{trustStateDistrusted}</option>
-                <option value="1">$i18n{trustStateHint}</option>
-                <option value="2">$i18n{trustStateTrusted}</option>
-              </select>
-              <div id="trust-state-select-error" class="error hide-error">
-                Error
-              </div>
-            </div>
-          </div>
-          <!-- TODO(crbug.com/40928765): only show constraint list
-            if trust = trusted -->
-          <constraint-list id="constraints"></constraint-list>
-        </div>
+        <modifications-panel id="modifications-panel"></modifications-panel>
       </div>
     </cr-tab-box>
   </body>

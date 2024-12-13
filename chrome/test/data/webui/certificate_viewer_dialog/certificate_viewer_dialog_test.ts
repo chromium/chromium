@@ -5,13 +5,12 @@
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrTreeBaseElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree_base.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 import {CertViewerBrowserProxyImpl} from 'chrome://view-cert/browser_proxy.js';
 import type {CertMetadataChangeResult, CertViewerBrowserProxy, ConstraintChangeResult} from 'chrome://view-cert/browser_proxy.js';
 import type {TreeItemDetail} from 'chrome://view-cert/certificate_viewer.js';
 import {CertificateTrust} from 'chrome://view-cert/certificate_viewer.js';
-import type {ConstraintListElement} from 'chrome://view-cert/constraint_list.js';
+import type {ModificationsPanelElement} from 'chrome://view-cert/modifications_panel.js';
 import {assertEquals, assertFalse, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -47,11 +46,19 @@ export class TestCertViewerBrowserProxy extends TestBrowserProxy implements
     ]);
   }
 
+  private trustStateChangeResult: CertMetadataChangeResult = {
+    success: true,
+  };
+
   private constraintChangeResult: ConstraintChangeResult = {
     status: {
       success: true,
     },
   };
+
+  setTrustStateChangeResult(newChangeResult: CertMetadataChangeResult) {
+    this.trustStateChangeResult = newChangeResult;
+  }
 
   setConstraintChangeResult(newChangeResult: ConstraintChangeResult) {
     this.constraintChangeResult = newChangeResult;
@@ -59,7 +66,7 @@ export class TestCertViewerBrowserProxy extends TestBrowserProxy implements
 
   updateTrustState(newTrust: number): Promise<CertMetadataChangeResult> {
     this.methodCalled('updateTrustState', newTrust);
-    return sendWithPromise('updateTrustState', newTrust);
+    return Promise.resolve(this.trustStateChangeResult);
   }
 
   addConstraint(constraint: string): Promise<ConstraintChangeResult> {
@@ -142,27 +149,28 @@ suite('CertificateViewer', function() {
 
   // Check for the default constraints that are set up in C++ for the
   // certificate.
-  function checkDefaultConstraints(constraintList: ConstraintListElement) {
-    assertEquals(3, constraintList.constraints.length);
-    assertTrue(constraintList.constraints.includes('example.com'));
-    assertTrue(constraintList.constraints.includes('domainname.com'));
-    assertTrue(constraintList.constraints.includes('127.0.0.1/24'));
+  function checkDefaultConstraints(
+      modificationsPanel: ModificationsPanelElement) {
+    assertEquals(3, modificationsPanel.constraints.length);
+    assertTrue(modificationsPanel.constraints.includes('example.com'));
+    assertTrue(modificationsPanel.constraints.includes('domainname.com'));
+    assertTrue(modificationsPanel.constraints.includes('127.0.0.1/24'));
   }
 
   test('CheckMetadata', async function() {
     const modificationsTab = getRequiredElement('modifications-tab');
     assertFalse(modificationsTab.hidden);
 
-    const trustStateSelector =
-        (getRequiredElement('trust-state-select') as HTMLSelectElement);
+    const modificationsPanel =
+        (getRequiredElement('modifications-panel') as
+         ModificationsPanelElement);
     assertEquals(
         CertificateTrust.CERTIFICATE_TRUST_UNSPECIFIED,
-        Number(trustStateSelector.value) as CertificateTrust);
-    assertTrue(trustStateSelector.disabled);
+        Number(modificationsPanel.$.trustStateSelect.value) as
+            CertificateTrust);
+    assertTrue(modificationsPanel.$.trustStateSelect.disabled);
 
-    const constraintList =
-        (getRequiredElement('constraints') as ConstraintListElement);
-    checkDefaultConstraints(constraintList);
+    checkDefaultConstraints(modificationsPanel);
   });
 
   test('EditTrustState', async function() {
@@ -171,67 +179,68 @@ suite('CertificateViewer', function() {
 
     const modificationsTab = getRequiredElement('modifications-tab');
     assertFalse(modificationsTab.hidden);
+    getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
-    const trustStateSelector =
-        (getRequiredElement('trust-state-select') as HTMLSelectElement);
+    const modificationsPanel =
+        (getRequiredElement('modifications-panel') as
+         ModificationsPanelElement);
     assertEquals(
         CertificateTrust.CERTIFICATE_TRUST_UNSPECIFIED,
-        Number(trustStateSelector.value) as CertificateTrust);
-    assertFalse(trustStateSelector.disabled);
-    const trustStateErrorMessage =
-        (getRequiredElement('trust-state-select-error') as HTMLElement);
-    assertTrue(trustStateErrorMessage.classList.contains('hide-error'));
+        Number(modificationsPanel.$.trustStateSelect.value) as
+            CertificateTrust);
+    assertFalse(modificationsPanel.$.trustStateSelect.disabled);
+    assertFalse(isVisible(modificationsPanel.$.trustStateSelectError));
 
-    trustStateSelector.value =
+    modificationsPanel.$.trustStateSelect.value =
         (CertificateTrust.CERTIFICATE_TRUST_TRUSTED as number).toString();
     // Changing the value with javascript doesn't trigger the change event;
     // trigger the event manually.
-    trustStateSelector.dispatchEvent(new Event('change'));
+    modificationsPanel.$.trustStateSelect.dispatchEvent(new Event('change'));
     await testBrowserProxy.whenCalled('updateTrustState');
+    await microtasksFinished();
 
-    const changeFinished = trustStateSelector.disabled ?
-        eventToPromise(
-            'trust-state-change-finished-for-testing', document.body) :
-        Promise.resolve();
-    await changeFinished;
-
-    assertTrue(trustStateErrorMessage.classList.contains('hide-error'));
+    assertFalse(isVisible(modificationsPanel.$.trustStateSelectError));
   });
 
   test('EditTrustStateError', async function() {
     const testBrowserProxy = new TestCertViewerBrowserProxy();
     CertViewerBrowserProxyImpl.setInstance(testBrowserProxy);
+    testBrowserProxy.setTrustStateChangeResult({
+      success: false,
+      errorMessage: 'error message',
+    });
 
     const modificationsTab = getRequiredElement('modifications-tab');
     assertFalse(modificationsTab.hidden);
+    getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
-    const trustStateSelector =
-        (getRequiredElement('trust-state-select') as HTMLSelectElement);
+    const modificationsPanel =
+        (getRequiredElement('modifications-panel') as
+         ModificationsPanelElement);
     assertEquals(
         CertificateTrust.CERTIFICATE_TRUST_UNSPECIFIED,
-        Number(trustStateSelector.value) as CertificateTrust);
-    assertFalse(trustStateSelector.disabled);
-    const trustStateErrorMessage =
-        (getRequiredElement('trust-state-select-error') as HTMLElement);
-    assertTrue(trustStateErrorMessage.classList.contains('hide-error'));
+        Number(modificationsPanel.$.trustStateSelect.value) as
+            CertificateTrust);
+    assertFalse(modificationsPanel.$.trustStateSelect.disabled);
+    assertTrue(isVisible(modificationsPanel), 'modifications tab not visible');
+    assertTrue(
+        isVisible(modificationsPanel.$.trustStateSelect),
+        'trust state selector not visible');
+    assertFalse(isVisible(modificationsPanel.$.trustStateSelectError));
 
-    trustStateSelector.value =
+    modificationsPanel.$.trustStateSelect.value =
         (CertificateTrust.CERTIFICATE_TRUST_TRUSTED as number).toString();
     // Changing the value with javascript doesn't trigger the change event;
     // trigger the event manually.
-    trustStateSelector.dispatchEvent(new Event('change'));
+    modificationsPanel.$.trustStateSelect.dispatchEvent(new Event('change'));
     await testBrowserProxy.whenCalled('updateTrustState');
+    await microtasksFinished();
 
-    const changeFinished = trustStateSelector.disabled ?
-        eventToPromise(
-            'trust-state-change-finished-for-testing', document.body) :
-        Promise.resolve();
-    await changeFinished;
-
-    assertFalse(trustStateErrorMessage.classList.contains('hide-error'));
+    assertTrue(isVisible(modificationsPanel.$.trustStateSelectError));
     assertEquals(
-        trustStateErrorMessage.innerText,
-        'There was an error saving the trust state change');
+        modificationsPanel.$.trustStateSelectError.innerText.trim(),
+        'error message');
+
   });
 
   test('AddConstraintDNS', async function() {
@@ -244,21 +253,24 @@ suite('CertificateViewer', function() {
 
     const modificationsTab = getRequiredElement('modifications-tab');
     assertFalse(modificationsTab.hidden);
+    getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
-    const constraintList =
-        (getRequiredElement('constraints') as ConstraintListElement);
-    checkDefaultConstraints(constraintList);
+    const modificationsPanel =
+        (getRequiredElement('modifications-panel') as
+         ModificationsPanelElement);
+    checkDefaultConstraints(modificationsPanel);
 
-    constraintList.$.addConstraintInput.value = 'foo.com';
-    constraintList.$.addConstraintButton.click();
+    modificationsPanel.$.addConstraintInput.value = 'foo.com';
+    modificationsPanel.$.addConstraintButton.click();
     await testBrowserProxy.whenCalled('addConstraint');
     await microtasksFinished();
 
-    assertEquals(4, constraintList.constraints.length);
-    assertTrue(constraintList.constraints.includes('example.com'));
-    assertTrue(constraintList.constraints.includes('foo.com'));
-    assertTrue(constraintList.constraints.includes('domainname.com'));
-    assertTrue(constraintList.constraints.includes('127.0.0.1/24'));
+    assertEquals(4, modificationsPanel.constraints.length);
+    assertTrue(modificationsPanel.constraints.includes('example.com'));
+    assertTrue(modificationsPanel.constraints.includes('foo.com'));
+    assertTrue(modificationsPanel.constraints.includes('domainname.com'));
+    assertTrue(modificationsPanel.constraints.includes('127.0.0.1/24'));
+    assertFalse(modificationsPanel.$.addConstraintInput.invalid);
   });
 
   test('AddConstraintCIDR', async function() {
@@ -272,21 +284,24 @@ suite('CertificateViewer', function() {
 
     const modificationsTab = getRequiredElement('modifications-tab');
     assertFalse(modificationsTab.hidden);
+    getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
-    const constraintList =
-        (getRequiredElement('constraints') as ConstraintListElement);
-    checkDefaultConstraints(constraintList);
+    const modificationsPanel =
+        (getRequiredElement('modifications-panel') as
+         ModificationsPanelElement);
+    checkDefaultConstraints(modificationsPanel);
 
-    constraintList.$.addConstraintInput.value = '10.10.0.0/15';
-    constraintList.$.addConstraintButton.click();
+    modificationsPanel.$.addConstraintInput.value = '10.10.0.0/15';
+    modificationsPanel.$.addConstraintButton.click();
     await testBrowserProxy.whenCalled('addConstraint');
     await microtasksFinished();
 
-    assertEquals(4, constraintList.constraints.length);
-    assertTrue(constraintList.constraints.includes('example.com'));
-    assertTrue(constraintList.constraints.includes('domainname.com'));
-    assertTrue(constraintList.constraints.includes('127.0.0.1/24'));
-    assertTrue(constraintList.constraints.includes('10.10.0.0/15'));
+    assertEquals(4, modificationsPanel.constraints.length);
+    assertTrue(modificationsPanel.constraints.includes('example.com'));
+    assertTrue(modificationsPanel.constraints.includes('domainname.com'));
+    assertTrue(modificationsPanel.constraints.includes('127.0.0.1/24'));
+    assertTrue(modificationsPanel.constraints.includes('10.10.0.0/15'));
+    assertFalse(modificationsPanel.$.addConstraintInput.invalid);
   });
 
   test('AddConstraintError', async function() {
@@ -301,22 +316,24 @@ suite('CertificateViewer', function() {
 
     const modificationsTab = getRequiredElement('modifications-tab');
     assertFalse(modificationsTab.hidden);
+    getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
-    const constraintList =
-        (getRequiredElement('constraints') as ConstraintListElement);
-    checkDefaultConstraints(constraintList);
+    const modificationsPanel =
+        (getRequiredElement('modifications-panel') as
+         ModificationsPanelElement);
+    checkDefaultConstraints(modificationsPanel);
 
-    constraintList.$.addConstraintInput.value = 'foo.com';
-    constraintList.$.addConstraintButton.click();
+    modificationsPanel.$.addConstraintInput.value = 'foo.com';
+    modificationsPanel.$.addConstraintButton.click();
     await testBrowserProxy.whenCalled('addConstraint');
     await microtasksFinished();
 
     // Constraints should not have changed.
-    checkDefaultConstraints(constraintList);
+    checkDefaultConstraints(modificationsPanel);
     // Error message should be set on the input
-    assertTrue(constraintList.$.addConstraintInput.invalid);
+    assertTrue(modificationsPanel.$.addConstraintInput.invalid);
     assertEquals(
-        constraintList.$.addConstraintInput.errorMessage, 'error message');
+        modificationsPanel.$.addConstraintInput.errorMessage, 'error message');
   });
 
   test('DeleteConstraintDNS', async function() {
@@ -329,13 +346,15 @@ suite('CertificateViewer', function() {
 
     const modificationsTab = getRequiredElement('modifications-tab');
     assertFalse(modificationsTab.hidden);
+    getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
-    const constraintList =
-        (getRequiredElement('constraints') as ConstraintListElement);
-    checkDefaultConstraints(constraintList);
+    const modificationsPanel =
+        (getRequiredElement('modifications-panel') as
+         ModificationsPanelElement);
+    checkDefaultConstraints(modificationsPanel);
 
     const deleteButton =
-        constraintList.shadowRoot!.querySelector<CrIconButtonElement>(
+        modificationsPanel.shadowRoot!.querySelector<CrIconButtonElement>(
             '#constraint-delete-0');
     assert(deleteButton);
     const deleteConstraint =
@@ -348,13 +367,15 @@ suite('CertificateViewer', function() {
     await microtasksFinished();
 
     assertEquals(
-        2, constraintList.constraints.length,
-        'too long: ' + constraintList.constraints.length);
+        2, modificationsPanel.constraints.length,
+        'too long: ' + modificationsPanel.constraints.length);
     assertTrue(
-        constraintList.constraints.includes('domainname.com'),
+        modificationsPanel.constraints.includes('domainname.com'),
         'missing domainname.com');
     assertTrue(
-        constraintList.constraints.includes('127.0.0.1/24'), 'missing cidr');
+        modificationsPanel.constraints.includes('127.0.0.1/24'),
+        'missing cidr');
+    assertFalse(isVisible(modificationsPanel.$.constraintDeleteError));
   });
 
   test('DeleteConstraintCIDR', async function() {
@@ -367,13 +388,15 @@ suite('CertificateViewer', function() {
 
     const modificationsTab = getRequiredElement('modifications-tab');
     assertFalse(modificationsTab.hidden);
+    getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
-    const constraintList =
-        (getRequiredElement('constraints') as ConstraintListElement);
-    checkDefaultConstraints(constraintList);
+    const modificationsPanel =
+        (getRequiredElement('modifications-panel') as
+         ModificationsPanelElement);
+    checkDefaultConstraints(modificationsPanel);
 
     const deleteButton =
-        constraintList.shadowRoot!.querySelector<CrIconButtonElement>(
+        modificationsPanel.shadowRoot!.querySelector<CrIconButtonElement>(
             '#constraint-delete-2');
     assert(deleteButton);
     const deleteConstraint =
@@ -385,9 +408,10 @@ suite('CertificateViewer', function() {
     await testBrowserProxy.whenCalled('deleteConstraint');
     await microtasksFinished();
 
-    assertEquals(2, constraintList.constraints.length);
-    assertTrue(constraintList.constraints.includes('example.com'));
-    assertTrue(constraintList.constraints.includes('domainname.com'));
+    assertEquals(2, modificationsPanel.constraints.length);
+    assertTrue(modificationsPanel.constraints.includes('example.com'));
+    assertTrue(modificationsPanel.constraints.includes('domainname.com'));
+    assertFalse(isVisible(modificationsPanel.$.constraintDeleteError));
   });
 
   test('DeleteConstraintError', async function() {
@@ -402,15 +426,16 @@ suite('CertificateViewer', function() {
 
     const modificationsTab = getRequiredElement('modifications-tab');
     assertFalse(modificationsTab.hidden);
-    // Select the modifications tab
     getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
-    const constraintList =
-        (getRequiredElement('constraints') as ConstraintListElement);
-    checkDefaultConstraints(constraintList);
+    const modificationsPanel =
+        (getRequiredElement('modifications-panel') as
+         ModificationsPanelElement);
+    checkDefaultConstraints(modificationsPanel);
+    assertFalse(isVisible(modificationsPanel.$.constraintDeleteError));
 
     const deleteButton =
-        constraintList.shadowRoot!.querySelector<CrIconButtonElement>(
+        modificationsPanel.shadowRoot!.querySelector<CrIconButtonElement>(
             '#constraint-delete-0');
     assert(deleteButton);
     const deleteConstraint =
@@ -423,10 +448,10 @@ suite('CertificateViewer', function() {
     await microtasksFinished();
 
     // Constraints should not have changed.
-    checkDefaultConstraints(constraintList);
-    assertTrue(isVisible(constraintList.$.constraintDeleteError));
+    checkDefaultConstraints(modificationsPanel);
+    assertTrue(isVisible(modificationsPanel.$.constraintDeleteError));
     assertEquals(
-        constraintList.$.constraintDeleteError.innerText.trim(),
+        modificationsPanel.$.constraintDeleteError.innerText.trim(),
         'error message');
   });
 });

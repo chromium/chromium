@@ -19,7 +19,6 @@
   width: 150px;
 }
 
-
 /* TODO(crbug.com/40928765): Try using shared colors from cr_shared_vars.css */
 .horizontal-row {
   color: #616161;
@@ -34,4 +33,23 @@
 .error {
   margin: 4px 10px;
   color: rgb(179, 38, 30);
+}
+
+.input-with-error {
+  display: flex;
+  flex-direction: column;
+}
+
+h3 {
+  font-size: 100%;
+  margin-bottom: 15px;
+  margin-top: 17px;
+}
+
+.vertical-box {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  width: 100%;
 }

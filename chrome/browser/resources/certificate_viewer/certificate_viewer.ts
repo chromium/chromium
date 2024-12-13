@@ -7,15 +7,12 @@ import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 import 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 import 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
 import './browser_proxy.js';
-import './constraint_list.js';
+import './modifications_panel.js';
 
 import type {CrTreeElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 import type {CrTreeItemElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
-
-import {CertViewerBrowserProxyImpl} from './browser_proxy.js';
-import type {CertMetadataChangeResult} from './browser_proxy.js';
 
 interface TreeInfo {
   payload?: object;
@@ -104,52 +101,6 @@ function initialize() {
   exportButton.onclick = exportCertificate;
 }
 
-export function onTrustStateChange() {
-  // Clear any error message
-  const trustStateErrorMessage =
-      document.querySelector<HTMLElement>('#trust-state-select-error');
-  assert(trustStateErrorMessage);
-  trustStateErrorMessage.classList.add('hide-error');
-
-  // Update the trust state.
-  const trustStateSelect =
-      document.querySelector<HTMLSelectElement>('#trust-state-select');
-  assert(trustStateSelect);
-
-  // Disable editing so we only have one change outstanding at any one time.
-  trustStateSelect.disabled = true;
-  assert(trustStateSelect);
-  CertViewerBrowserProxyImpl.getInstance()
-      .updateTrustState(Number(trustStateSelect.value))
-      .then(onTrustStateChangeFinished);
-}
-
-function onTrustStateChangeFinished(result: CertMetadataChangeResult) {
-  const trustStateSelect =
-      document.querySelector<HTMLSelectElement>('#trust-state-select');
-  assert(trustStateSelect);
-  trustStateSelect.disabled = false;
-
-  if (!result.success) {
-    const trustStateErrorMessage =
-        document.querySelector<HTMLElement>('#trust-state-select-error');
-    assert(trustStateErrorMessage);
-    // Set error message
-    if (result.errorMessage !== undefined) {
-      trustStateErrorMessage.innerText = result.errorMessage;
-    } else {
-      // TODO(crbug.com/40928765): localize
-      trustStateErrorMessage.innerText =
-          'There was an error saving the trust state change';
-    }
-
-    trustStateErrorMessage.classList.remove('hide-error');
-  }
-
-  document.body.dispatchEvent(
-      new CustomEvent('trust-state-change-finished-for-testing'));
-}
-
 function getCertificateMetadata(certInfo: CertificateInfo) {
   if (certInfo.certMetadata === undefined) {
     return;
@@ -160,21 +111,16 @@ function getCertificateMetadata(certInfo: CertificateInfo) {
   assert(modificationsTab);
   modificationsTab.hidden = false;
 
-  const trustStateSelect =
-      document.querySelector<HTMLSelectElement>('#trust-state-select');
-  assert(trustStateSelect);
-  trustStateSelect.value = certInfo.certMetadata.trust.toString();
+  const modificationsPanel = document.querySelector('modifications-panel');
+  assert(modificationsPanel);
+  modificationsPanel.trustStateValue = certInfo.certMetadata.trust.toString();
 
   if (certInfo.certMetadata.isEditable) {
-    trustStateSelect.disabled = false;
-    trustStateSelect.addEventListener('change', onTrustStateChange);
+    modificationsPanel.isEditable = true;
   }
 
   if (certInfo.certMetadata.constraints !== undefined) {
-    const constraintsElement = document.querySelector('constraint-list');
-    assert(constraintsElement);
-
-    constraintsElement.constraints = certInfo.certMetadata.constraints;
+    modificationsPanel.constraints = certInfo.certMetadata.constraints;
   }
 }
 

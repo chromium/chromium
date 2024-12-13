@@ -13,21 +13,23 @@ import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {CertViewerBrowserProxyImpl} from './browser_proxy.js';
-import type {ConstraintChangeResult} from './browser_proxy.js';
-import {getCss} from './constraint_list.css.js';
-import {getHtml} from './constraint_list.html.js';
+import type {CertMetadataChangeResult, ConstraintChangeResult} from './browser_proxy.js';
+import {getCss} from './modifications_panel.css.js';
+import {getHtml} from './modifications_panel.html.js';
 
-export interface ConstraintListElement {
+export interface ModificationsPanelElement {
   $: {
     addConstraintInput: CrInputElement,
     addConstraintButton: CrButtonElement,
     constraintDeleteError: HTMLElement,
+    trustStateSelect: HTMLSelectElement,
+    trustStateSelectError: HTMLElement,
   };
 }
 
-export class ConstraintListElement extends CrLitElement {
+export class ModificationsPanelElement extends CrLitElement {
   static get is() {
-    return 'constraint-list';
+    return 'modifications-panel';
   }
 
   static override get styles() {
@@ -41,23 +43,29 @@ export class ConstraintListElement extends CrLitElement {
   static override get properties() {
     return {
       constraints: {type: Array},
+      trustStateValue: {type: String},
+      isEditable: {type: Boolean},
       editControlsEnabled: {type: Boolean},
       addConstraintErrorMessage: {type: String},
       deleteConstraintErrorMessage: {type: String},
+      trustStateErrorMessage: {type: String},
     };
   }
 
   constraints: string[] = [];
+  trustStateValue: string = '0';
+  isEditable: boolean = false;
+
   protected editControlsEnabled: boolean = true;
   protected addConstraintErrorMessage: string = '';
   protected deleteConstraintErrorMessage: string = '';
+  protected trustStateErrorMessage: string = '';
 
   // Clear all error messages in this element.
   private clearErrorMessages() {
-    // TODO(crbug.com/40928765): clear trust state change error message
-    // after this is merged with the rest of the modifications panel.
     this.deleteConstraintErrorMessage = '';
     this.addConstraintErrorMessage = '';
+    this.trustStateErrorMessage = '';
   }
 
   protected onDeleteConstraintClick_(e: Event) {
@@ -67,8 +75,7 @@ export class ConstraintListElement extends CrLitElement {
     const constraintToDeleteIndex =
         Number((e.target as HTMLElement).dataset['index']);
     if (this.constraints[constraintToDeleteIndex]) {
-      // TODO(crbug.com/40928765): set trust state selector enabled state to
-      // false after this is merged with the rest of the modifications panel.
+      // Disable editing so we only have one change outstanding at any one time.
       this.editControlsEnabled = false;
       CertViewerBrowserProxyImpl.getInstance()
           .deleteConstraint(this.constraints[constraintToDeleteIndex])
@@ -103,8 +110,7 @@ export class ConstraintListElement extends CrLitElement {
       return;
     }
 
-    // TODO(crbug.com/40928765): set trust state selector enabled state to false
-    // after this is merged with the rest of the modifications panel.
+    // Disable editing so we only have one change outstanding at any one time.
     this.editControlsEnabled = false;
     this.clearErrorMessages();
     CertViewerBrowserProxyImpl.getInstance()
@@ -125,12 +131,35 @@ export class ConstraintListElement extends CrLitElement {
     }
     this.editControlsEnabled = true;
   }
+
+  protected onTrustStateChange_() {
+    // Disable editing so we only have one change outstanding at any one time.
+    this.editControlsEnabled = false;
+    this.clearErrorMessages();
+
+    CertViewerBrowserProxyImpl.getInstance()
+        .updateTrustState(Number(this.$.trustStateSelect.value))
+        .then(this.onTrustStateChangeFinished_.bind(this));
+  }
+
+  private onTrustStateChangeFinished_(result: CertMetadataChangeResult) {
+    if (!result.success) {
+      if (result.errorMessage !== undefined) {
+        this.trustStateErrorMessage = result.errorMessage;
+      } else {
+        // TODO(crbug.com/40928765): localize
+        this.trustStateErrorMessage =
+            'There was an error saving the trust state change';
+      }
+    }
+    this.editControlsEnabled = true;
+  }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'constraint-list': ConstraintListElement;
+    'modifications-panel': ModificationsPanelElement;
   }
 }
 
-customElements.define(ConstraintListElement.is, ConstraintListElement);
+customElements.define(ModificationsPanelElement.is, ModificationsPanelElement);

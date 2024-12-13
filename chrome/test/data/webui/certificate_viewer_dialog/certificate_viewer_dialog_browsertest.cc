@@ -176,35 +176,16 @@ class CertificateViewerUIWithMetadataCertEditTest
   net::ServerCertificateDatabase::CertInformation written_cert_info_;
 };
 
-// TODO(crbug.com/40928765): change to not test C++ code.
 // TODO(crbug.com/40928765): add C++ unit test of handler since Mocha tests are
 // meant to be unit tests of the TS/HTML/CSS code.
 IN_PROC_BROWSER_TEST_F(CertificateViewerUIWithMetadataCertEditTest,
                        EditTrustState) {
   RunTestCase("EditTrustState");
+}
 
-  // Set up expected CertInformation
-  bssl::UniquePtr<CRYPTO_BUFFER> cert = GetCerts();
-  ASSERT_TRUE(cert);
-  net::ServerCertificateDatabase::CertInformation cert_info;
-  cert_info.der_cert =
-      base::ToVector(net::x509_util::CryptoBufferAsSpan(cert.get()));
-  cert_info.sha256hash_hex = base::ToLowerASCII(base::HexEncode(
-      net::X509Certificate::CalculateFingerprint256(cert.get()).data));
-
-  cert_info.cert_metadata.mutable_trust()->set_trust_type(
-      chrome_browser_server_certificate_database::CertificateTrust::
-          CERTIFICATE_TRUST_TYPE_TRUSTED);
-  cert_info.cert_metadata.mutable_constraints()->add_dns_names("example.com");
-  cert_info.cert_metadata.mutable_constraints()->add_dns_names(
-      "domainname.com");
-  chrome_browser_server_certificate_database::CIDR* cidr =
-      cert_info.cert_metadata.mutable_constraints()->add_cidrs();
-  cidr->set_ip(std::string(
-      base::as_string_view(net::IPAddress::IPv4Localhost().bytes())));
-  cidr->set_prefix_length(24);
-
-  EXPECT_THAT(written_cert_info_, CertInfoEquals(std::ref(cert_info)));
+IN_PROC_BROWSER_TEST_F(CertificateViewerUIWithMetadataCertEditTest,
+                       EditTrustStateError) {
+  RunTestCase("EditTrustStateError");
 }
 
 IN_PROC_BROWSER_TEST_F(CertificateViewerUIWithMetadataCertEditTest,
@@ -235,25 +216,4 @@ IN_PROC_BROWSER_TEST_F(CertificateViewerUIWithMetadataCertEditTest,
 IN_PROC_BROWSER_TEST_F(CertificateViewerUIWithMetadataCertEditTest,
                        DeleteConstraintError) {
   RunTestCase("DeleteConstraintError");
-}
-
-class CertificateViewerUIWithMetadataCertEditErrorTest
-    : public CertificateViewerUIWithMetadataCertTest {
- public:
-  void ModifyCallback(net::ServerCertificateDatabase::CertInformation cert_info,
-                      base::OnceCallback<void(bool)> callback) {
-    std::move(callback).Run(false);
-  }
-
- protected:
-  CertMetadataModificationsCallback GetModificationsCallback() override {
-    return base::BindRepeating(
-        &CertificateViewerUIWithMetadataCertEditErrorTest::ModifyCallback,
-        base::Unretained(this));
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(CertificateViewerUIWithMetadataCertEditErrorTest,
-                       EditTrustStateError) {
-  RunTestCase("EditTrustStateError");
 }
