@@ -49,10 +49,15 @@ export class ScannerFeedbackAppElement extends PolymerElement {
     return {
       // Private properties:
       stringSource: Object,
+      openUrl: Object,
     };
   }
 
   private readonly stringSource = STRING_SOURCE;
+  private readonly openUrl = (url: string) => {
+    window.open(url, '_blank');
+    // TODO: b/382562555 - Close the dialog after opening the URL.
+  };
 }
 
 declare global {
