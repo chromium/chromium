@@ -291,10 +291,6 @@ inline std::vector<uint8_t> CertGenerator::GetBytes() {
   return data_provider_->ConsumeBytes<uint8_t>(length);
 }
 
-inline GURL CertGenerator::GetGurl() {
-  return GURL(data_provider_->ConsumeRandomLengthString());
-}
-
 inline net::IPAddress CertGenerator::GetIpAddress() {
   bool use_ip4 = GetBool();
   if (use_ip4) {
@@ -417,13 +413,13 @@ void CertGenerator::GenerateCert() {
                                               excluded_dns_names);
   }
   if (GetBool()) {
-    std::vector<GURL> ca_issuers_urls;
+    std::vector<std::string> ca_issuers_urls;
     while (GetBool()) {
-      ca_issuers_urls.push_back(GetGurl());
+      ca_issuers_urls.push_back(GetString());
     }
-    std::vector<GURL> ocsp_urls;
+    std::vector<std::string> ocsp_urls;
     while (GetBool()) {
-      ocsp_urls.push_back(GetGurl());
+      ocsp_urls.push_back(GetString());
     }
     cert_builder_->SetCaIssuersAndOCSPUrls(ca_issuers_urls, ocsp_urls);
   }

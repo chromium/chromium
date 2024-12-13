@@ -513,12 +513,33 @@ void CertBuilder::SetCaIssuersUrl(const GURL& url) {
 void CertBuilder::SetCaIssuersAndOCSPUrls(
     const std::vector<GURL>& ca_issuers_urls,
     const std::vector<GURL>& ocsp_urls) {
-  std::vector<std::pair<bssl::der::Input, GURL>> entries;
-  for (const auto& url : ca_issuers_urls)
-    entries.emplace_back(bssl::der::Input(bssl::kAdCaIssuersOid), url);
-  for (const auto& url : ocsp_urls)
-    entries.emplace_back(bssl::der::Input(bssl::kAdOcspOid), url);
+  std::vector<std::pair<bssl::der::Input, std::string_view>> entries;
+  for (const auto& url : ca_issuers_urls) {
+    entries.emplace_back(bssl::der::Input(bssl::kAdCaIssuersOid),
+                         url.possibly_invalid_spec());
+  }
+  for (const auto& url : ocsp_urls) {
+    entries.emplace_back(bssl::der::Input(bssl::kAdOcspOid),
+                         url.possibly_invalid_spec());
+  }
+  SetCaIssuersAndOCSPUrls(entries);
+}
 
+void CertBuilder::SetCaIssuersAndOCSPUrls(
+    const std::vector<std::string>& ca_issuers_urls,
+    const std::vector<std::string>& ocsp_urls) {
+  std::vector<std::pair<bssl::der::Input, std::string_view>> entries;
+  for (const auto& url : ca_issuers_urls) {
+    entries.emplace_back(bssl::der::Input(bssl::kAdCaIssuersOid), url);
+  }
+  for (const auto& url : ocsp_urls) {
+    entries.emplace_back(bssl::der::Input(bssl::kAdOcspOid), url);
+  }
+  SetCaIssuersAndOCSPUrls(entries);
+}
+
+void CertBuilder::SetCaIssuersAndOCSPUrls(
+    const std::vector<std::pair<bssl::der::Input, std::string_view>>& entries) {
   if (entries.empty()) {
     EraseExtension(bssl::der::Input(bssl::kAuthorityInfoAccessOid));
     return;
@@ -545,7 +566,7 @@ void CertBuilder::SetCaIssuersAndOCSPUrls(
     ASSERT_TRUE(CBBAddBytes(&access_method, entry.first.AsStringView()));
     ASSERT_TRUE(CBB_add_asn1(&access_description, &access_location,
                              CBS_ASN1_CONTEXT_SPECIFIC | 6));
-    ASSERT_TRUE(CBBAddBytes(&access_location, entry.second.spec()));
+    ASSERT_TRUE(CBBAddBytes(&access_location, entry.second));
     ASSERT_TRUE(CBB_flush(&aia));
   }
 

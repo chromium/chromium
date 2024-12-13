@@ -180,6 +180,10 @@ class CertBuilder {
   // removed.
   void SetCaIssuersAndOCSPUrls(const std::vector<GURL>& ca_issuers_urls,
                                const std::vector<GURL>& ocsp_urls);
+  // Same as |SetCaIssuersAndOCSPUrls| above, but the inputs can be arbitrary
+  // strings.
+  void SetCaIssuersAndOCSPUrls(const std::vector<std::string>& ca_issuers_urls,
+                               const std::vector<std::string>& ocsp_urls);
 
   // Sets a cRLDistributionPoints extension with a single DistributionPoint
   // with |url| in distributionPoint.fullName.
@@ -410,6 +414,10 @@ class CertBuilder {
                              std::string* out);
 
   void GenerateCertificate();
+
+  void SetCaIssuersAndOCSPUrls(
+      const std::vector<std::pair<bssl::der::Input, std::string_view>>&
+          entries);
 
   struct ExtensionValue {
     bool critical = false;
