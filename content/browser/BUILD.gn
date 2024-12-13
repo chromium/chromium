@@ -427,8 +427,6 @@ source_set("browser") {
     "aggregation_service/aggregatable_report_sender.h",
     "aggregation_service/aggregation_service.cc",
     "aggregation_service/aggregation_service.h",
-    "aggregation_service/aggregation_service_features.cc",
-    "aggregation_service/aggregation_service_features.h",
     "aggregation_service/aggregation_service_impl.cc",
     "aggregation_service/aggregation_service_impl.h",
     "aggregation_service/aggregation_service_key_fetcher.cc",

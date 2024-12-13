@@ -51,7 +51,6 @@
 #include "components/services/storage/storage_service_impl.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
-#include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
@@ -1543,10 +1542,8 @@ void StoragePartitionImpl::Initialize(
 
   font_access_manager_ = FontAccessManager::Create();
 
-  if (base::FeatureList::IsEnabled(kPrivacySandboxAggregationService)) {
-    aggregation_service_ =
-        std::make_unique<AggregationServiceImpl>(is_in_memory(), path, this);
-  }
+  aggregation_service_ =
+      std::make_unique<AggregationServiceImpl>(is_in_memory(), path, this);
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   if (is_in_memory()) {

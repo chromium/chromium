@@ -2135,9 +2135,7 @@ BASE_FEATURE_PARAM(bool,
                    false);
 #endif
 
-// Enables the Private Aggregation API. Note that this API also requires the
-// `kPrivacySandboxAggregationService` to be enabled to successfully send
-// reports.
+// Enables the Private Aggregation API.
 BASE_FEATURE(kPrivateAggregationApi,
              "PrivateAggregationApi",
              base::FEATURE_ENABLED_BY_DEFAULT);
