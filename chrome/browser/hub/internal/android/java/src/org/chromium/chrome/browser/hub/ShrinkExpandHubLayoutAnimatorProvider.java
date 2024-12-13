@@ -10,6 +10,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.RectEvaluator;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.animation.Interpolator;
@@ -249,22 +250,21 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
                                 mHubContainerView, R.id.hub_toolbar, R.id.toolbar_action_container)
                         : 0;
         ShrinkExpandAnimationData animationData = mAnimationDataSupplier.get();
+        Rect initialRect = animationData.getInitialRect();
+        Rect finalRect = animationData.getFinalRect();
         mShrinkExpandAnimator =
                 new ShrinkExpandAnimator(
-                        mShrinkExpandImageView,
-                        animationData.getInitialRect(),
-                        animationData.getFinalRect(),
-                        searchBoxHeight);
+                        mShrinkExpandImageView, initialRect, finalRect, searchBoxHeight);
         mShrinkExpandAnimator.setThumbnailSizeForOffset(animationData.getThumbnailSize());
-        mShrinkExpandAnimator.setRect(animationData.getInitialRect());
+        mShrinkExpandAnimator.setRect(initialRect);
 
         ObjectAnimator shrinkExpandAnimator =
                 ObjectAnimator.ofObject(
                         mShrinkExpandAnimator,
                         ShrinkExpandAnimator.RECT,
                         new RectEvaluator(),
-                        animationData.getInitialRect(),
-                        animationData.getFinalRect());
+                        initialRect,
+                        finalRect);
         shrinkExpandAnimator.setInterpolator(getInterpolator(mAnimationType));
         if (mAnimationTracker != null) {
             shrinkExpandAnimator.addUpdateListener(ignored -> mAnimationTracker.onUpdate());
