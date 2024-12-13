@@ -2127,7 +2127,6 @@ TEST_F(PixelInspectTileManagerTest, LowResHasNoImage) {
     layer->SetBounds(size);
     Region invalidation;
     layer->UpdateRasterSource(raster, &invalidation);
-    layer->RegenerateDiscardableImageMapIfNeeded();
     PictureLayerTilingSet* tiling_set = layer->picture_layer_tiling_set();
     layer->set_contributes_to_drawn_render_surface(true);
 

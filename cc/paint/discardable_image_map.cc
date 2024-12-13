@@ -38,11 +38,8 @@ class DiscardableImageMap::Generator {
  public:
   Generator(DiscardableImageMap& map,
             SkNoDrawCanvas& canvas,
-            const PaintOpBuffer& buffer,
-            const ScrollOffsetMap& raster_inducing_scroll_offsets)
-      : map_(map),
-        canvas_(canvas),
-        raster_inducing_scroll_offsets_(raster_inducing_scroll_offsets) {
+            const PaintOpBuffer& buffer)
+      : map_(map), canvas_(canvas) {
     GatherDiscardableImages(buffer, nullptr);
   }
 
@@ -184,14 +181,12 @@ class DiscardableImageMap::Generator {
       } else if (op_type == PaintOpType::kDrawScrollingContents) {
         const auto& draw_scrolling_contents_op =
             static_cast<const DrawScrollingContentsOp&>(op);
-        canvas_.save();
-        gfx::PointF scroll_offset = raster_inducing_scroll_offsets_.at(
-            draw_scrolling_contents_op.scroll_element_id);
-        canvas_.translate(-scroll_offset.x(), -scroll_offset.y());
+        // Collect all images under a DrawScrollingContentsOp (like what we do
+        // for a composited scroller), and use op_rect as the image rects to
+        // avoid the dependency to the scroll offset.
         GatherDiscardableImages(
             draw_scrolling_contents_op.display_item_list->paint_op_buffer(),
-            top_level_op_rect);
-        canvas_.restore();
+            &op_rect);
       }
     }
   }
@@ -342,7 +337,6 @@ class DiscardableImageMap::Generator {
 
   DiscardableImageMap& map_;
   SkNoDrawCanvas& canvas_;
-  const ScrollOffsetMap& raster_inducing_scroll_offsets_;
   bool only_gather_animated_images_ = false;
 };  // DiscardableImageMap::Generator
 
@@ -354,8 +348,7 @@ DiscardableImageMap::~DiscardableImageMap() = default;
 
 scoped_refptr<DiscardableImageMap> DiscardableImageMap::Generate(
     const PaintOpBuffer& paint_op_buffer,
-    const gfx::Rect& bounds,
-    const ScrollOffsetMap& raster_inducing_scroll_offsets) {
+    const gfx::Rect& bounds) {
   TRACE_EVENT0("cc", "DiscardableImageMap::Generate");
   scoped_refptr<DiscardableImageMap> image_map(new DiscardableImageMap());
   if (!paint_op_buffer.has_discardable_images()) {
@@ -363,8 +356,7 @@ scoped_refptr<DiscardableImageMap> DiscardableImageMap::Generate(
   }
 
   SkNoDrawCanvas canvas(bounds.right(), bounds.bottom());
-  Generator generator(*image_map, canvas, paint_op_buffer,
-                      raster_inducing_scroll_offsets);
+  Generator generator(*image_map, canvas, paint_op_buffer);
   CHECK(!image_map->images_rtree_);
   return image_map;
 }

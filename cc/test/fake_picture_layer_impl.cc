@@ -90,7 +90,6 @@ void FakePictureLayerImpl::SetRasterSource(
   set_gpu_raster_max_texture_size(
       layer_tree_impl()->GetDeviceViewport().size());
   UpdateRasterSource(raster_source, &invalidation_temp);
-  RegenerateDiscardableImageMapIfNeeded();
 }
 
 size_t FakePictureLayerImpl::GetNumberOfTilesWithResources() const {

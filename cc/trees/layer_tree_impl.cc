@@ -685,11 +685,6 @@ void LayerTreeImpl::PullPropertiesFrom(
   property_trees()->scroll_tree_mutable().PushScrollUpdatesFromMainThread(
       unsafe_state.property_trees, this,
       settings().commit_fractional_scroll_deltas);
-  // This must be after scroll updates because the discardable image map may
-  // depend on raster-inducing scroll offsets.
-  for (auto& layer : picture_layers()) {
-    layer->RegenerateDiscardableImageMapIfNeeded();
-  }
 
   PullLayerTreePropertiesFrom(commit_state);
 

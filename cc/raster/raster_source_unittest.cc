@@ -228,8 +228,7 @@ TEST(RasterSourceTest, PixelRefIteratorDiscardableRefsOneTile) {
 
   scoped_refptr<RasterSource> raster = recording_source.CreateRasterSource();
   scoped_refptr<DiscardableImageMap> image_map =
-      raster->GetDisplayItemList()->GenerateDiscardableImageMap(
-          ScrollOffsetMap());
+      raster->GetDisplayItemList()->GenerateDiscardableImageMap();
 
   // Tile sized iterators. These should find only one pixel ref.
   {

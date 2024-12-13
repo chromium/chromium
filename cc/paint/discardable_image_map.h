@@ -19,7 +19,6 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_worklet_input.h"
-#include "cc/paint/scroll_offset_map.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -57,8 +56,7 @@ class CC_PAINT_EXPORT DiscardableImageMap
 
   static scoped_refptr<DiscardableImageMap> Generate(
       const PaintOpBuffer& paint_op_buffer,
-      const gfx::Rect& bounds,
-      const ScrollOffsetMap& raster_inducing_scroll_offsets);
+      const gfx::Rect& bounds);
 
   bool empty() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

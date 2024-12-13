@@ -6691,14 +6691,14 @@ TEST_F(LegacySWPictureLayerImplTest, InvalidateRasterInducingScrolls) {
   EXPECT_TRUE(pending_image_map);
   EXPECT_EQ(pending_image_map, active_image_map);
 
-  // Invalidating scroll_element_id1 will invalidate both scroll visual rect
-  // and the discardable image map.
+  // Invalidating scroll_element_id1 will invalidate scroll visual rect.
   pending_layer()->InvalidateRasterInducingScrolls({scroll_element_id1});
   EXPECT_EQ(info1.visual_rect, pending_layer()->invalidation().bounds());
   EXPECT_TRUE(active_layer()->invalidation().IsEmpty());
+  // The discardable image map should not be affected.
   pending_image_map = pending_layer()->discardable_image_map();
   EXPECT_EQ(active_image_map, active_layer()->discardable_image_map());
-  EXPECT_NE(pending_image_map, active_image_map);
+  EXPECT_EQ(pending_image_map, active_image_map);
 
   ActivateTree();
   SetupPendingTreeWithInvalidation(raster, Region());
@@ -6708,8 +6708,7 @@ TEST_F(LegacySWPictureLayerImplTest, InvalidateRasterInducingScrolls) {
   active_image_map = active_layer()->discardable_image_map();
   EXPECT_EQ(pending_image_map, active_image_map);
 
-  // scroll_list2 doesn't contain discardable images. Invalidating
-  // scroll_element_id2 will invalidate scroll visual rect only.
+  // Same for scroll_list2.
   pending_layer()->InvalidateRasterInducingScrolls({scroll_element_id2});
   EXPECT_EQ(info2.visual_rect, pending_layer()->invalidation().bounds());
   EXPECT_EQ(pending_image_map, pending_layer()->discardable_image_map());
