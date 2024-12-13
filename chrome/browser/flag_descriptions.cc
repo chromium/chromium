@@ -4320,6 +4320,12 @@ const char kAndroidTabDeclutterArchiveAllButActiveTabDescription[] =
     "Causes all tabs in model (except the current active one) to be archived. "
     "Used for manual testing.";
 
+const char kAndroidTabDeclutterArchiveDuplicateTabsName[] =
+    "Archive all duplicate tabs.";
+const char kAndroidTabDeclutterArchiveDuplicateTabsDescription[] =
+    "Enables auto-archival of all duplicate tabs except the most recently used "
+    "copy.";
+
 const char kAnimatedImageDragShadowName[] =
     "Enable animated image drag shadow on Android.";
 const char kAnimatedImageDragShadowDescription[] =

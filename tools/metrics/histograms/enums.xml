@@ -23623,6 +23623,8 @@ from previous Chrome versions.
   <int value="1296878388" label="PermissionPredictions:disabled"/>
   <int value="1296958520" label="hide-active-apps-from-shelf"/>
   <int value="1297007123" label="ServiceWorkerBypassFetchHandler:enabled"/>
+  <int value="1297133130"
+      label="AndroidTabDeclutterArchiveDuplicateTabs:enabled"/>
   <int value="1297446192" label="UseScreen2xV2:disabled"/>
   <int value="1298187304"
       label="OmniboxDocumentProviderNoSyncRequirement:disabled"/>
@@ -24164,6 +24166,8 @@ from previous Chrome versions.
   <int value="1510659184" label="MacMDDownloadShelf:enabled"/>
   <int value="1511140997" label="OfflinePagesAsyncDownload:disabled"/>
   <int value="1511161758" label="BackgroundLoader:enabled"/>
+  <int value="1511839115"
+      label="AndroidTabDeclutterArchiveDuplicateTabs:disabled"/>
   <int value="1511961044" label="ArcFilePickerExperiment:disabled"/>
   <int value="1512608246" label="AccessibilityChromeVoxPageMigration:enabled"/>
   <int value="1512979030"
