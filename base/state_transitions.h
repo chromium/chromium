@@ -95,6 +95,12 @@ struct StateTransitions {
   DCHECK((transitions)->IsTransitionValid((old_state), (new_state))) \
       << "Invalid transition: " << old_state << " -> " << new_state
 
+// CHECK if transitioning from |old_state| to |new_state| is not valid
+// according to |transitions|.
+#define CHECK_STATE_TRANSITION(transitions, old_state, new_state)   \
+  CHECK((transitions)->IsTransitionValid((old_state), (new_state))) \
+      << "Invalid transition: " << old_state << " -> " << new_state
+
 }  // namespace base
 
 #endif  // BASE_STATE_TRANSITIONS_H_
