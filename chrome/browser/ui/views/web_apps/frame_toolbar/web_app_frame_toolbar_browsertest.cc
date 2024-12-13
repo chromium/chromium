@@ -2117,6 +2117,7 @@ IN_PROC_BROWSER_TEST_F(
   }));
 }
 
+// windows.setResizable API should block only user-initiated requests
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
     WindowSetResizableDoNotBlockResizingWebApis) {
@@ -2129,12 +2130,16 @@ IN_PROC_BROWSER_TEST_F(
 
   browser_view->SetCanResize(true);
 
-  // Set the initial window size to something != 1000x1000.
+  // Set the initial window size and position.
   // Accept some error margin - systems can manage border size differently
+  EXPECT_TRUE(ExecJs(web_contents, "window.moveTo(0,0);"));
   EXPECT_TRUE(ExecJs(web_contents, "window.resizeTo(800,800);"));
   EXPECT_TRUE(RunUntil([&]() {
     return std::abs(EvalJs(web_contents, "window.outerWidth").ExtractInt() -
                     800) < 20;
+  }));
+  EXPECT_TRUE(RunUntil([&]() {
+    return EvalJs(web_contents, "window.screenX").ExtractInt() < 50;
   }));
 
   SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
@@ -2145,13 +2150,44 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ExecJs(web_contents, "window.resizeTo(1000,1000);"));
   EXPECT_TRUE(
       RunUntil([&]() { return client_view_size != client_view->size(); }));
-  EXPECT_NE(client_view_size, client_view->size());
 
   client_view_size = client_view->size();
   EXPECT_TRUE(ExecJs(web_contents, "window.resizeBy(10,10);"));
   EXPECT_TRUE(
       RunUntil([&]() { return client_view_size != client_view->size(); }));
-  EXPECT_NE(client_view_size, client_view->size());
+
+  // Moving should also be not blocked
+  gfx::Point client_view_pos = browser_view->GetBounds().origin();
+  EXPECT_TRUE(ExecJs(web_contents, "window.moveTo(100,100);"));
+  EXPECT_TRUE(RunUntil(
+      [&]() { return client_view_pos != browser_view->GetBounds().origin(); }));
+
+  client_view_pos = browser_view->GetBounds().origin();
+  EXPECT_TRUE(ExecJs(web_contents, "window.moveBy(-50,-50);"));
+  EXPECT_TRUE(RunUntil(
+      [&]() { return client_view_pos != browser_view->GetBounds().origin(); }));
+
+// TODO(crbug.com/38332688): Allow API resizing for MacOS
+#if !BUILDFLAG(IS_MAC)
+  // Maximize window
+  EXPECT_TRUE(ExecJs(web_contents, "window.maximize()"));
+  EXPECT_TRUE(
+      RunUntil([&]() { return helper()->browser_view()->IsMaximized(); }));
+  EXPECT_TRUE(RunUntil([&]() {
+    return MatchMediaMatches(
+        web_contents,
+        "window.matchMedia('(display-state: maximized)').matches");
+  }));
+
+  // Restore window
+  EXPECT_TRUE(ExecJs(web_contents, "window.restore()"));
+  EXPECT_TRUE(
+      RunUntil([&]() { return !helper()->browser_view()->IsMaximized(); }));
+  EXPECT_TRUE(RunUntil([&]() {
+    return MatchMediaMatches(
+        web_contents, "window.matchMedia('(display-state: normal)').matches");
+  }));
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2219,69 +2255,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
 #endif
 }
-
-#if !BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(
-    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    WindowSetResizableBlocksMaximizingNormalWindow) {
-  InstallAndLaunchWebApp();
-  helper()->GrantWindowManagementPermission();
-
-  auto* browser_view = helper()->browser_view();
-  browser_view->SetCanResize(true);
-  browser_view->SetCanMaximize(true);
-  auto* web_contents = browser_view->GetActiveWebContents();
-
-  // Restore window to make sure we start from the normal state.
-  EXPECT_TRUE(ExecJs(web_contents, "window.restore()"));
-  EXPECT_TRUE(
-      RunUntil([&]() { return !helper()->browser_view()->IsMaximized(); }));
-  EXPECT_TRUE(RunUntil([&]() {
-    return MatchMediaMatches(
-        web_contents, "window.matchMedia('(display-state: normal)').matches");
-  }));
-
-  // Block resizing
-  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
-  CheckCanResize(false, false);
-
-  // window.maximize() API no longer takes action
-  EXPECT_TRUE(ExecJs(web_contents, "window.maximize()"));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(browser_view->IsMaximized());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    WindowSetResizableBlocksRestoringMaximizedWindow) {
-  InstallAndLaunchWebApp();
-  helper()->GrantWindowManagementPermission();
-
-  auto* browser_view = helper()->browser_view();
-  browser_view->SetCanResize(true);
-  browser_view->SetCanMaximize(true);
-  auto* web_contents = browser_view->GetActiveWebContents();
-
-  // Maximize window
-  EXPECT_TRUE(ExecJs(web_contents, "window.maximize()"));
-  EXPECT_TRUE(
-      RunUntil([&]() { return helper()->browser_view()->IsMaximized(); }));
-  EXPECT_TRUE(RunUntil([&]() {
-    return MatchMediaMatches(
-        web_contents,
-        "window.matchMedia('(display-state: maximized)').matches");
-  }));
-
-  // Block resizing
-  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
-  CheckCanResize(false, false);
-
-  // window.restore() API no longer takes action
-  EXPECT_TRUE(ExecJs(web_contents, "window.restore()"));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(browser_view->IsMaximized());
-}
-#endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,

@@ -1970,36 +1970,14 @@ bool BrowserView::IsMinimized() const {
 }
 
 void BrowserView::Maximize() {
-  if (!CanMaximize()) {
-    if (content::WebContents* web_contents = GetActiveWebContents();
-        !GetCanResizeFromWebAPI().value_or(true)) {
-      web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kWarning,
-          base::StringPrintf("Maximizing window has been blocked by "
-                             "window.setResizable API."));
-    }
-    return;
-  }
   frame_->Maximize();
 }
 
 void BrowserView::Minimize() {
-  if (!CanMinimize()) {
-    return;
-  }
   frame_->Minimize();
 }
 
 void BrowserView::Restore() {
-  if (content::WebContents* web_contents = GetActiveWebContents();
-      IsMaximized() && !GetCanResizeFromWebAPI().value_or(true)) {
-    web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kWarning,
-        base::StringPrintf("Restoring maximized window has been blocked by "
-                           "window.setResizable API."));
-    return;
-  }
-
   frame_->Restore();
 }
 
