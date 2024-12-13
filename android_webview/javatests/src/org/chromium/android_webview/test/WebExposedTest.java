@@ -29,8 +29,9 @@ import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.UrlUtils;
 
 import java.io.File;
@@ -45,7 +46,7 @@ import java.util.List;
 /** WebExposed tests implemented as an instrumentation test instead of a layout test. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-@DoNotBatch(reason = "crbug.com/381090604 - undergoing refactor")
+@Batch(Batch.PER_CLASS)
 public class WebExposedTest extends AwParameterizedTest {
     private static final String TAG = "WebExposedTest";
 
@@ -155,15 +156,32 @@ public class WebExposedTest extends AwParameterizedTest {
 
     @Test
     @LargeTest
+    @CommandLineFlags.Add({
+        "enable-field-trial-config",
+        "enable-experimental-web-platform-features",
+        "enable-blink-test-features",
+    })
     @DisabledTest(message = "crbug.com/381090604 - requires new baseline")
-    public void testGlobalInterfaceListing() throws Exception {
+    public void testGlobalInterfaceListingUnstable() throws Exception {
+        doTestGlobalInterfaceListing("");
+    }
+
+    @Test
+    @LargeTest
+    @CommandLineFlags.Add({"disable-field-trial-config"})
+    @DisabledTest(message = "crbug.com/381090604 - requires new baseline")
+    public void testGlobalInterfaceListingStable() throws Exception {
+        doTestGlobalInterfaceListing("virtual/stable/");
+    }
+
+    public void doTestGlobalInterfaceListing(String maybeVirtual) throws Exception {
         final String repoExpectationPath =
-                BASE_WEBVIEW_TEST_PATH + GLOBAL_INTERFACE_LISTING_EXPECTATION;
+                BASE_WEBVIEW_TEST_PATH + maybeVirtual + GLOBAL_INTERFACE_LISTING_EXPECTATION;
 
         final String diff =
                 runTestAndDiff(
                         "file://" + PATH_BLINK_PREFIX + GLOBAL_INTERFACE_LISTING_TEST,
-                        PATH_WEBVIEW_PREFIX + GLOBAL_INTERFACE_LISTING_EXPECTATION,
+                        PATH_WEBVIEW_PREFIX + maybeVirtual + GLOBAL_INTERFACE_LISTING_EXPECTATION,
                         repoExpectationPath);
 
         if (diff.length() == 0) {
