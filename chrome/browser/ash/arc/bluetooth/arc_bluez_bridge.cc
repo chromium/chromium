@@ -469,10 +469,11 @@ void ArcBluezBridge::CreateBluetoothListenSocket(
   if (sock_wrapper) {
     std::move(callback).Run(mojom::BluetoothStatus::SUCCESS, listen_port,
                             sock_wrapper->remote.BindNewPipeAndPassReceiver());
+    BluetoothListeningSocket* socket = sock_wrapper.get();
     listening_sockets_.insert(std::move(sock_wrapper));
-    sock_wrapper->remote.set_disconnect_handler(
+    socket->remote.set_disconnect_handler(
         base::BindOnce(&ArcBluezBridge::CloseBluetoothListeningSocket,
-                       weak_factory_.GetWeakPtr(), sock_wrapper.get()));
+                       weak_factory_.GetWeakPtr(), socket));
   } else {
     std::move(callback).Run(
         mojom::BluetoothStatus::FAIL, /*port=*/0,
@@ -567,10 +568,11 @@ void ArcBluezBridge::CreateBluetoothConnectSocket(
 
   std::move(callback).Run(mojom::BluetoothStatus::SUCCESS,
                           sock_wrapper->remote.BindNewPipeAndPassReceiver());
+  BluetoothConnectingSocket* socket = sock_wrapper.get();
   connecting_sockets_.insert(std::move(sock_wrapper));
-  sock_wrapper->remote.set_disconnect_handler(
+  socket->remote.set_disconnect_handler(
       base::BindOnce(&ArcBluezBridge::CloseBluetoothConnectingSocket,
-                     weak_factory_.GetWeakPtr(), sock_wrapper.get()));
+                     weak_factory_.GetWeakPtr(), socket));
 }
 
 }  // namespace arc
