@@ -65,12 +65,6 @@ BASE_FEATURE(kHidePastePopupOnGSB,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// The fix to crbug.com/1248529 will be behind this default-enabled flag, in
-// case it breaks any applications in the wild.
-BASE_FEATURE(kHistoryInterventionSameDocumentFix,
-             "HistoryInterventionSameDocumentFix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, keyboard user activation will be verified by the browser side.
 BASE_FEATURE(kBrowserVerifiedUserActivationKeyboard,
              "BrowserVerifiedUserActivationKeyboard",
