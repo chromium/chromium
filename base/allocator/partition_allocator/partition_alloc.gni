@@ -31,8 +31,9 @@ if (is_nacl) {
 # foreground mode compared to background mode
 # (see `PartitionRoot::AdjustFor(Background|Foreground)`).
 #
-# Foreground/background modes are used by default on macOS so this must be
-# true on that platform. It's also true on other platforms to allow experiments.
+# Foreground/background modes are used by default on macOS and Windows so this
+# must be true on these platforms. It's also true on other platforms to allow
+# experiments.
 #
 # TODO(crbug.com/329199197): Clean this up when experiments are complete.
 use_large_empty_slot_span_ring = true

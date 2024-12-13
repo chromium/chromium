@@ -16214,8 +16214,7 @@
                 "android_webview",
                 "chromeos",
                 "fuchsia",
-                "linux",
-                "windows"
+                "linux"
             ],
             "experiments": [
                 {
