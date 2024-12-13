@@ -23,11 +23,13 @@
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/crash/core/browser/crashes_ui_util.h"
 #include "components/grit/components_scaled_resources.h"
-#include "components/grit/dev_ui_components_resources.h"
+#include "components/grit/crashes_resources.h"
+#include "components/grit/crashes_resources_map.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -62,14 +64,9 @@ void CreateAndAddCrashesUIHTMLSource(Profile* profile) {
 
   source->AddLocalizedString(crash_reporter::kCrashesUIShortProductName,
                              IDS_SHORT_PRODUCT_NAME);
-  source->UseStringsJs();
-  source->AddResourcePath(crash_reporter::kCrashesUICrashesJS,
-                          IDR_CRASH_CRASHES_JS);
-  source->AddResourcePath(crash_reporter::kCrashesUICrashesCSS,
-                          IDR_CRASH_CRASHES_CSS);
-  source->AddResourcePath(crash_reporter::kCrashesUISadTabSVG,
-                          IDR_CRASH_SADTAB_SVG);
-  source->SetDefaultResource(IDR_CRASH_CRASHES_HTML);
+
+  webui::SetupWebUIDataSource(source, kCrashesResources,
+                              IDR_CRASHES_CRASHES_HTML);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

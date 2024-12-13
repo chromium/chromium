@@ -55,9 +55,6 @@ inline constexpr CrashesUILocalizedString kCrashesUILocalizedStrings[] = {
 
 // Strings used by the WebUI resources.
 // Must match the constants used in the resource files.
-inline constexpr char kCrashesUICrashesJS[] = "crashes.js";
-inline constexpr char kCrashesUICrashesCSS[] = "crashes.css";
-inline constexpr char kCrashesUISadTabSVG[] = "sadtab.svg";
 inline constexpr char kCrashesUIRequestCrashList[] = "requestCrashList";
 inline constexpr char kCrashesUIRequestCrashUpload[] = "requestCrashUpload";
 inline constexpr char kCrashesUIShortProductName[] = "shortProductName";

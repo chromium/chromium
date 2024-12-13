@@ -61,6 +61,7 @@ repack("repack_unscaled_resources") {
   sources = [
     "$root_gen_dir/components/commerce_internals_resources.pak",
     "$root_gen_dir/components/components_resources.pak",
+    "$root_gen_dir/components/crashes_resources.pak",
     "$root_gen_dir/components/dev_ui_components_resources.pak",
     "$root_gen_dir/components/download_internals_resources.pak",
     "$root_gen_dir/components/flags_ui_resources.pak",

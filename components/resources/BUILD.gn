@@ -32,6 +32,7 @@ group("resources") {
     ":components_scaled_resources",
     ":dev_ui_components_resources",
     "../chrome_urls_ui/resources:resources",
+    "../crash/core/browser/resources:resources",
     "../flags_ui/resources:resources",
     "../signin/core/browser/resources",
     "../version_ui/resources:resources",
@@ -96,10 +97,7 @@ grit("dev_ui_components_resources") {
     "dev_ui_components_resources.pak",
   ]
 
-  deps = [
-    "//components/crash/core/browser/resources:build_ts",
-    "//components/local_state:build",
-  ]
+  deps = [ "//components/local_state:build" ]
   output_dir = "$root_gen_dir/components"
 }
 

@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<grit-part>
-  <include name="IDR_CRASH_CRASHES_HTML" file="../crash/core/browser/resources/crashes.html" preprocess="true" type="BINDATA" />
-  <include name="IDR_CRASH_CRASHES_JS" file="${root_gen_dir}/components/crash/core/browser/resources/tsc/crashes.js" use_base_dir="false" type="BINDATA" />
-  <include name="IDR_CRASH_CRASHES_CSS" file="../crash/core/browser/resources/crashes.css" type="BINDATA" />
-  <include name="IDR_CRASH_SADTAB_SVG" file="sadtab.svg" type="BINDATA" />
-</grit-part>

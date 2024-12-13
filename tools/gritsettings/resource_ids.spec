@@ -1003,6 +1003,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [7320],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/components/crash/core/browser/resources/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [7330],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/components/flags_ui/resources/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [7340],
