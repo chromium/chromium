@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CRASHES_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_CRASHES_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_CRASHES_CRASHES_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_CRASHES_CRASHES_UI_H_
 
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -35,4 +35,4 @@ class CrashesUI : public content::WebUIController {
       ui::ResourceScaleFactor scale_factor);
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CRASHES_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_CRASHES_CRASHES_UI_H_
