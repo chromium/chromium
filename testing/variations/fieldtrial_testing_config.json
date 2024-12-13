@@ -16716,9 +16716,6 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "MacEfficientFileFlushUseBarrier": "true"
-                    },
                     "enable_features": [
                         "AvoidScheduleWorkDuringNativeEventProcessing",
                         "ConditionallySkipGpuChannelFlush",
@@ -16726,7 +16723,6 @@
                         "EstablishGpuChannelAsync",
                         "FledgeEnableWALForInterestGroupStorage",
                         "LevelDBProtoAsyncWrite",
-                        "MacEfficientFileFlush",
                         "MojoBindingsInlineSLS",
                         "NumberOfCoresWithCpuSecurityMitigation",
                         "ReduceCpuUtilization2",

@@ -54,13 +54,11 @@ namespace {
 #if BUILDFLAG(IS_APPLE)
 // When enabled, `F_FULLFSYNC` is not used in `File::Flush`. Instead,
 // `F_BARRIERFSYNC` or `flush()` is used (depending on the
-// "MacEfficientFileFlushUseBarrier" param). The feature exists to measure the
-// cost of `F_FULLFSYNC` compared to other solutions (not ready to enable by
-// default as-is). See
+// "MacEfficientFileFlushUseBarrier" param). See
 // https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/fsync.2.html
 BASE_FEATURE(kMacEfficientFileFlush,
              "MacEfficientFileFlush",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const FeatureParam<bool> kMacEfficientFileFlushUseBarrier{
     &kMacEfficientFileFlush, "MacEfficientFileFlushUseBarrier", true};
