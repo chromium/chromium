@@ -3247,6 +3247,10 @@ BASE_FEATURE(kDeferConciergeStartup,
              "DeferConciergeStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableDozeModePowerScheduler,
+             "EnableDozeModePowerScheduler",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 ////////////////////////////////////////////////////////////////////////////////
 
 bool AreDesksTemplatesEnabled() {
@@ -3474,6 +3478,10 @@ bool IsDeskButtonEnabled() {
 
 bool IsDeskTemplateSyncEnabled() {
   return base::FeatureList::IsEnabled(kDeskTemplateSync);
+}
+
+bool IsDozeModePowerSchedulerEnabled() {
+  return base::FeatureList::IsEnabled(kEnableDozeModePowerScheduler);
 }
 
 bool IsDisplayPerformanceModeEnabled() {

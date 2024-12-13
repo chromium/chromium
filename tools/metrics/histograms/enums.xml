@@ -18409,6 +18409,7 @@ from previous Chrome versions.
   <int value="-787885873" label="BorealisForceBetaClient:disabled"/>
   <int value="-787876637" label="HomeLauncherGestures:enabled"/>
   <int value="-787426248" label="ChromeHomeSurvey:disabled"/>
+  <int value="-787418584" label="EnableDozeModePowerScheduler:disabled"/>
   <int value="-787238455" label="OmniboxZeroSuggestionsOnSERP:disabled"/>
   <int value="-787176861" label="CaptureModeEducationBypassLimits:enabled"/>
   <int value="-785528415" label="FedCm:disabled"/>
@@ -22376,6 +22377,7 @@ from previous Chrome versions.
       label="GetDisplayMediaSetAutoSelectAllScreens:disabled"/>
   <int value="792307132"
       label="KeyboardBasedDisplayArrangementInSettings:enabled"/>
+  <int value="792700375" label="EnableDozeModePowerScheduler:enabled"/>
   <int value="792840942" label="BorealisDGPU:enabled"/>
   <int value="792884862" label="EnableSharedImageForWebview:enabled"/>
   <int value="793145445" label="ConchLargeModel:disabled"/>

@@ -106,7 +106,7 @@ class DozeModePowerStatusScheduler
   // Calculate power status based on current conditions.
   PowerStatus CalculatePowerStatus();
 
-  // Send power status to crosvm.
+  // Send a request to crosvm to modify the fake power config.
   void SendPowerStatus(PowerStatus status);
 
   base::ScopedObservation<arc::ArcPowerBridge, arc::ArcPowerBridge::Observer>
@@ -140,6 +140,8 @@ class DozeModePowerStatusScheduler
   const raw_ptr<PrefService> local_state_;
   std::optional<metrics::DailyEvent> daily_event_;
   base::RepeatingTimer daily_event_timer_;
+
+  std::string user_id_hash_;
 };
 
 }  // namespace ash

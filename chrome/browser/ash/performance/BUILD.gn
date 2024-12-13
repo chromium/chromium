@@ -18,9 +18,12 @@ static_library("performance") {
   deps = [
     "//ash",
     "//ash/components/arc",
+    "//ash/constants",
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/profiles",
+    "//chromeos/ash/components/dbus/concierge:concierge",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//components/arc",

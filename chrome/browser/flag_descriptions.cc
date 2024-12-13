@@ -6416,6 +6416,11 @@ const char kTiledDisplaySupportDescription[] =
     "When enabled, tiled displays will be represented by a single display in "
     "ChromeOS, rather than each tile being a separate display.";
 
+const char kEnableDozeModePowerSchedulerName[] =
+    "Enable doze mode power scheduler";
+const char kEnableDozeModePowerSchedulerDescription[] =
+    "Enable doze mode power scheduler.";
+
 const char kEnableExternalKeyboardsInDiagnosticsAppName[] =
     "Enable external keyboards in the Diagnostics App";
 const char kEnableExternalKeyboardsInDiagnosticsAppDescription[] =

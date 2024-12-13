@@ -7873,6 +7873,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBlockTelephonyDevicePhoneMuteDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ui::kBlockTelephonyDevicePhoneMute)},
 
+    {"enable-doze-mode-power-scheduler",
+     flag_descriptions::kEnableDozeModePowerSchedulerName,
+     flag_descriptions::kEnableDozeModePowerSchedulerDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kEnableDozeModePowerScheduler)},
+
     {"enable-fast-ink-for-software-cursor",
      flag_descriptions::kEnableFastInkForSoftwareCursorName,
      flag_descriptions::kEnableFastInkForSoftwareCursorDescription, kOsCrOS,

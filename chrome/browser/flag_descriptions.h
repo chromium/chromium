@@ -3709,6 +3709,9 @@ extern const char kEnableEdidBasedDisplayIdsDescription[];
 extern const char kTiledDisplaySupportName[];
 extern const char kTiledDisplaySupportDescription[];
 
+extern const char kEnableDozeModePowerSchedulerName[];
+extern const char kEnableDozeModePowerSchedulerDescription[];
+
 extern const char kEnableExternalKeyboardsInDiagnosticsAppName[];
 extern const char kEnableExternalKeyboardsInDiagnosticsAppDescription[];
 
