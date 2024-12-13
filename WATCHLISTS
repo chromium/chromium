@@ -134,6 +134,9 @@
     'android_webview_network_service': {
       'filepath': 'android_webview/browser/network_service/',
     },
+    'android_webview_webexposed': {
+      'filepath': 'android_webview/test/data/web_tests/(virtual/stable/)?webexposed/global-interface-listing-expected.txt',
+    },
     'app_service': {
       'filepath': 'chrome/browser/apps/app_service/'\
                   '|chrome/browser/ash/app_list/app_service/'\
@@ -2479,6 +2482,8 @@
                        'webapks-watchlist@chromium.org'],
     'android_webview': ['android-webview-reviews@chromium.org'],
     'android_webview_network_service': [],
+    'android_webview_webexposed': ['ashleynewson+watch-webexposed@chromium.org',
+                                   'peter+watch-webexposed@chromium.org'],
     'app_service': ['dominickn+watch-app_service@chromium.org',
                     'nancylingwang@chromium.org',
                     'tsergeant+watch@chromium.org',
