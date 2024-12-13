@@ -7,6 +7,7 @@ package org.chromium.android_webview.test;
 import static org.chromium.android_webview.test.AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS;
 
 import android.net.Uri;
+import android.view.View;
 import android.webkit.JavascriptInterface;
 
 import androidx.test.InstrumentationRegistry;
@@ -34,6 +35,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
@@ -42,6 +44,7 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
+import org.chromium.content_public.common.ContentSwitches;
 
 import java.io.FileInputStream;
 import java.io.UnsupportedEncodingException;
@@ -105,6 +108,13 @@ public class AwPrerenderTest extends AwParameterizedTest {
         mActivityTestRule.startBrowserProcess();
         mTestContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = mTestContainerView.getAwContents();
+
+        // Ensure that the view is visible, as prerendering cannot start in background.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAwContents.onWindowVisibilityChanged(View.VISIBLE);
+                });
+
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
 
         // Enable localStorage that is used as communication channel between the primary page and
@@ -164,6 +174,21 @@ public class AwPrerenderTest extends AwParameterizedTest {
         mActivationCallbackHelper = new ActivationCallbackHelper();
     }
 
+    // Returns a URL. This requires ContentSwitches.HOST_RESOLVER_RULES.
+    public String getUrl(final String relativeUrl) {
+        return mTestServer.getURLWithHostName("a.com", relativeUrl);
+    }
+
+    // This is similar to getUrl() but returns a same-site cross-origin URL against getUrl().
+    public String getSameSiteCrossOriginUrl(final String relativeUrl) {
+        return mTestServer.getURLWithHostName("b.a.com", relativeUrl);
+    }
+
+    // This is similar to getUrl() but returns a cross-site URL against getUrl().
+    public String getCrossSiteUrl(final String relativeUrl) {
+        return mTestServer.getURLWithHostName("c.com", relativeUrl);
+    }
+
     public void setSpeculativeLoadingAllowed(@SpeculativeLoadingAllowedFlags int allowed) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mAwContents.getSettings().setSpeculativeLoadingAllowed(allowed));
@@ -182,7 +207,8 @@ public class AwPrerenderTest extends AwParameterizedTest {
         // Set up the communication channel between the primary page (initial page) and prerendered
         // pages. This script waits until a prerendered page notifies the primary page of lifecycle
         // events via `window.localStorage`. Then, the primary page forwards the notification to
-        // Java via `mPrerenderLifecycleWebMessageListener`.
+        // Java via `mPrerenderLifecycleWebMessageListener`. Note that this works only when the
+        // pages are in the same origin for the restriction of the localStorage.
         final String channelScript =
                 """
                     {
@@ -250,9 +276,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         startPrerendering(url, prefetchParameters, activationCallback);
 
         // Wait until the prerendered page starts running JavaScript.
-        TestWebMessageListener.Data data =
-                mPrerenderLifecycleWebMessageListener.waitForOnPostMessage();
-        Assert.assertEquals(url, data.getAsString());
+        mPrerenderLifecycleWebMessageListener.waitForOnPostMessage();
     }
 
     // Navigates the primary page to `url` by client side redirection.
@@ -411,6 +435,130 @@ public class AwPrerenderTest extends AwParameterizedTest {
         // Wait until the navigation activates the prerendered page.
         mActivationCallbackHelper.waitForCallback(currentCallCount);
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    // Tests prerendering navigation that is redirected to same-origin.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testSameOriginRedirection() throws Throwable {
+        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
+        // Construct an initial prerendering URL that is redirected to `mPrerenderingUrl`.
+        final String initialPrerenderingPath =
+                "/server-redirect-echoheader?url=" + encodeUrl(PRERENDER_URL);
+        final String initialPrerenderingUrl = mTestServer.getURL(initialPrerenderingPath);
+
+        var histogramWatcher = createFinalStatusHistogramWatcher(/*kActivated*/ 0);
+
+        int currentCallCount = mActivationCallbackHelper.getCallCount();
+
+        startPrerenderingAndWait(
+                initialPrerenderingUrl,
+                /* prefetchParameters= */ null,
+                mActivationCallbackHelper.getActivationCallback());
+
+        activatePage(initialPrerenderingUrl, mPrerenderingUrl, ActivationBy.LOAD_URL);
+
+        // Wait until the navigation activates the prerendered page.
+        mActivationCallbackHelper.waitForCallback(currentCallCount);
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+
+        // Make sure that prerendering navigation has the Sec-Purpose header.
+        HashMap<String, String> initialHeaders =
+                mTestServer.getRequestHeadersForUrl(initialPrerenderingPath);
+        Assert.assertEquals("prefetch;prerender", initialHeaders.get("Sec-Purpose"));
+        HashMap<String, String> redirectedHeaders =
+                mTestServer.getRequestHeadersForUrl(PRERENDER_URL);
+        Assert.assertEquals("prefetch;prerender", redirectedHeaders.get("Sec-Purpose"));
+    }
+
+    // Tests prerendering navigation that is redirected to same-site cross-origin. As WebView API is
+    // treated as an embedder trigger that doesn't have the initiator, same-site cross-origin
+    // redirection should be allowed even without the "Supports-Loading-Mode" opt-in header.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testSameSiteCrossOriginRedirection() throws Throwable {
+        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
+        // Construct an initial prerendering URL that is redirected to `mPrerenderingUrl`.
+        final String initialPrerenderingPath =
+                "/server-redirect-echoheader?url="
+                        + encodeUrl(getSameSiteCrossOriginUrl(PRERENDER_URL));
+        final String initialPrerenderingUrl = getUrl(initialPrerenderingPath);
+
+        var histogramWatcher = createFinalStatusHistogramWatcher(/*kActivated*/ 0);
+
+        int currentCallCount = mActivationCallbackHelper.getCallCount();
+
+        // Don't use startPrerenderingAndWait(), as the waiting logic requires that both the
+        // initiator page and the prerendered page are in the same origin.
+        startPrerendering(
+                initialPrerenderingUrl,
+                /* prefetchParameters= */ null,
+                mActivationCallbackHelper.getActivationCallback());
+
+        activatePage(
+                initialPrerenderingUrl,
+                getSameSiteCrossOriginUrl(PRERENDER_URL),
+                ActivationBy.LOAD_URL);
+
+        // Wait until the navigation activates the prerendered page.
+        mActivationCallbackHelper.waitForCallback(currentCallCount);
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+
+        // Make sure that prerendering navigation has the Sec-Purpose header.
+        HashMap<String, String> initialHeaders =
+                mTestServer.getRequestHeadersForUrl(initialPrerenderingPath);
+        Assert.assertEquals("prefetch;prerender", initialHeaders.get("Sec-Purpose"));
+        HashMap<String, String> redirectedHeaders =
+                mTestServer.getRequestHeadersForUrl(PRERENDER_URL);
+        Assert.assertEquals("prefetch;prerender", redirectedHeaders.get("Sec-Purpose"));
+    }
+
+    // Tests prerendering navigation that is redirected to cross-site. Cross-site redirection should
+    // cancel prerendering.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testCrossSiteRedirection() throws Throwable {
+        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
+        // Construct an initial prerendering URL that is redirected to `mPrerenderingUrl`.
+        final String initialPrerenderingPath =
+                "/server-redirect-echoheader?url=" + encodeUrl(getCrossSiteUrl(PRERENDER_URL));
+        final String initialPrerenderingUrl = getUrl(initialPrerenderingPath);
+
+        var histogramWatcher =
+                createFinalStatusHistogramWatcher(/*kCrossSiteRedirectInInitialNavigation */ 44);
+
+        // Don't use startPrerenderingAndWait(), as the waiting logic requires that both the
+        // initiator page and the prerendered page are in the same origin.
+        startPrerendering(
+                initialPrerenderingUrl,
+                /* prefetchParameters= */ null,
+                /* activationCallback= */ null);
+
+        // Wait until prerendering is canceled, as cross-site prerendering is disallowed.
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+
+        // Make sure that prerendering navigation has the Sec-Purpose header.
+        HashMap<String, String> initialHeaders =
+                mTestServer.getRequestHeadersForUrl(initialPrerenderingPath);
+        Assert.assertEquals("prefetch;prerender", initialHeaders.get("Sec-Purpose"));
+        // On the other hand, the redirected request should not be sent to the server for the
+        // cross-site restriction.
+        // TODO(crbug.com/41490450): Add a new test helper to make sure that a request is not sent
+        // to a given URL.
     }
 
     // Tests speculation rules prerendering with No-Vary-Search header.
