@@ -23,12 +23,6 @@
 namespace content {
 namespace {
 
-// (crbug/1375174): Make kServiceWorkerStorageControlResponse queue use high
-// priority.
-BASE_FEATURE(kServiceWorkerStorageControlResponseUseHighPriority,
-             "ServiceWorkerStorageControlResponseUseHighPriority",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 using BrowserTaskPriority = ::content::internal::BrowserTaskPriority;
 using QueueName = ::perfetto::protos::pbzero::SequenceManagerTask::QueueName;
 using InsertFencePosition =
@@ -248,11 +242,7 @@ void BrowserTaskQueues::OnStartupComplete() {
               ->GetQueuePriority()),
       BrowserTaskPriority::kHighestPriority);
   GetBrowserTaskQueue(QueueType::kServiceWorkerStorageControlResponse)
-      ->SetQueuePriority(
-          base::FeatureList::IsEnabled(
-              kServiceWorkerStorageControlResponseUseHighPriority)
-              ? BrowserTaskPriority::kHighPriority
-              : BrowserTaskPriority::kNormalPriority);
+      ->SetQueuePriority(BrowserTaskPriority::kHighPriority);
 }
 
 void BrowserTaskQueues::EnableAllExceptBestEffortQueues() {

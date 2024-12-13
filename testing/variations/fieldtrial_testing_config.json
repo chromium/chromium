@@ -9816,11 +9816,9 @@
                 {
                     "name": "EnableAll_20231004",
                     "enable_features": [
-                        "ServiceWorkerFetchResponseCallbackUseHighPriority",
                         "ServiceWorkerMergeFindRegistrationForClientUrl",
                         "ServiceWorkerRegistrationCache",
-                        "ServiceWorkerScopeCache",
-                        "ServiceWorkerStorageControlResponseUseHighPriority"
+                        "ServiceWorkerScopeCache"
                     ]
                 }
             ]
