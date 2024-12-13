@@ -11,6 +11,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/collaboration/internal/messaging/data_sharing_change_notifier.h"
 #include "components/collaboration/internal/messaging/storage/messaging_backend_store.h"
 #include "components/collaboration/internal/messaging/storage/protocol/message.pb.h"
@@ -19,6 +20,7 @@
 #include "components/data_sharing/test_support/mock_data_sharing_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -70,6 +72,25 @@ data_sharing::GroupMemberPartialData CreatePartialMember(
   member.display_name = display_name;
   member.given_name = given_name;
   return member;
+}
+
+tab_groups::SavedTabGroup CreateSharedTabGroup(
+    data_sharing::GroupId collaboration_group_id) {
+  base::Uuid tab_group_sync_id = base::Uuid::GenerateRandomV4();
+
+  std::vector<tab_groups::SavedTabGroupTab> tabs;
+  tab_groups::SavedTabGroupTab tab1(GURL("https://example.com/"), u"Tab 1",
+                                    tab_group_sync_id, std::nullopt);
+  tab_groups::SavedTabGroupTab tab2(GURL("https://example2.com/"), u"Tab 2",
+                                    tab_group_sync_id, std::nullopt);
+  tabs.emplace_back(tab1);
+  tabs.emplace_back(tab2);
+
+  tab_groups::SavedTabGroup tab_group(
+      u"Tab Group Title", tab_groups::TabGroupColorId::kOrange, tabs);
+  tab_group.SetCollaborationId(
+      tab_groups::CollaborationId(collaboration_group_id.value()));
+  return tab_group;
 }
 }  // namespace
 
@@ -518,6 +539,111 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogCollaborationEvents) {
   // We should also fill in the MessageAttribution.
   EXPECT_EQ("gaia2@gmail.com",
             activity_log[1].activity_metadata.affected_user->email);
+}
+
+TEST_F(MessagingBackendServiceImplTest, TestStoringTabGroupEvents) {
+  CreateAndInitializeService();
+
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+  base::Time now = base::Time::Now();
+  GaiaId gaia1("abc");
+  GaiaId gaia2("def");
+
+  // Always refers to the latest message that has been added to storage.
+  collaboration_pb::Message message;
+  EXPECT_CALL(*unowned_messaging_backend_store_, AddMessage(_))
+      .WillRepeatedly(SaveArg<0>(&message));
+
+  tab_groups::SavedTabGroup tab_group =
+      CreateSharedTabGroup(collaboration_group_id);
+  tab_group.SetCreatedByAttribution(gaia1);
+  tab_group.SetUpdatedByAttribution(gaia2);
+
+  tg_notifier_observer_->OnTabGroupAdded(tab_group);
+  VerifyGenericMessageData(message, collaboration_group_id.value(),
+                           collaboration_pb::TAB_GROUP_ADDED, DirtyType::kNone,
+                           now.ToTimeT());
+  EXPECT_EQ(gaia1, message.triggering_user_gaia_id());
+
+  tg_notifier_observer_->OnTabGroupRemoved(tab_group);
+  VerifyGenericMessageData(message, collaboration_group_id.value(),
+                           collaboration_pb::TAB_GROUP_REMOVED,
+                           DirtyType::kNone, now.ToTimeT());
+  EXPECT_EQ(gaia2, message.triggering_user_gaia_id());
+
+  tg_notifier_observer_->OnTabGroupNameUpdated(tab_group);
+  VerifyGenericMessageData(message, collaboration_group_id.value(),
+                           collaboration_pb::TAB_GROUP_NAME_UPDATED,
+                           DirtyType::kNone, now.ToTimeT());
+  EXPECT_EQ(gaia2, message.triggering_user_gaia_id());
+
+  tg_notifier_observer_->OnTabGroupColorUpdated(tab_group);
+  VerifyGenericMessageData(message, collaboration_group_id.value(),
+                           collaboration_pb::TAB_GROUP_COLOR_UPDATED,
+                           DirtyType::kNone, now.ToTimeT());
+  EXPECT_EQ(gaia2, message.triggering_user_gaia_id());
+}
+
+TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabGroupEvents) {
+  CreateAndInitializeService();
+
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+
+  base::Time now = base::Time::Now();
+  std::vector<collaboration_pb::Message> messages;
+  // Adding and removing tab groups should not be part of activity log.
+  collaboration_pb::Message message1 = CreateStoredMessage(
+      collaboration_group_id, collaboration_pb::EventType::TAB_GROUP_ADDED,
+      DirtyType::kNone, now);
+  message1.set_triggering_user_gaia_id("gaia_1");
+  messages.emplace_back(message1);
+
+  collaboration_pb::Message message2 = CreateStoredMessage(
+      collaboration_group_id, collaboration_pb::EventType::TAB_GROUP_REMOVED,
+      DirtyType::kNone, now);
+  message2.set_triggering_user_gaia_id("gaia_2");
+  messages.emplace_back(message2);
+
+  collaboration_pb::Message message3 =
+      CreateStoredMessage(collaboration_group_id,
+                          collaboration_pb::EventType::TAB_GROUP_NAME_UPDATED,
+                          DirtyType::kNone, now);
+  message3.set_triggering_user_gaia_id("gaia_2");
+  messages.emplace_back(message3);
+
+  collaboration_pb::Message message4 =
+      CreateStoredMessage(collaboration_group_id,
+                          collaboration_pb::EventType::TAB_GROUP_COLOR_UPDATED,
+                          DirtyType::kNone, now);
+  message4.set_triggering_user_gaia_id("gaia_2");
+  messages.emplace_back(message4);
+
+  // Add support for looking up GAIA IDs.
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetRecentMessagesForGroup(Eq(collaboration_group_id)))
+      .WillOnce(Return(messages));
+  EXPECT_CALL(*mock_data_sharing_service_,
+              GetPossiblyRemovedGroupMember(Eq(collaboration_group_id),
+                                            Eq(GaiaId("gaia_1"))))
+      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(*mock_data_sharing_service_,
+              GetPossiblyRemovedGroupMember(Eq(collaboration_group_id),
+                                            Eq(GaiaId("gaia_2"))))
+      .WillRepeatedly(
+          Return(CreatePartialMember(GaiaId("gaia_2"), "gaia2@gmail.com",
+                                     "Display Name", "Given Name 2")));
+
+  // Query for all itemms, which should only be name and color updates.
+  ActivityLogQueryParams params;
+  params.collaboration_id = collaboration_group_id;
+  std::vector<ActivityLogItem> activity_log = service_->GetActivityLog(params);
+  ASSERT_EQ(2u, activity_log.size());
+  EXPECT_EQ(CollaborationEvent::TAB_GROUP_NAME_UPDATED,
+            activity_log[0].collaboration_event);
+  EXPECT_EQ(CollaborationEvent::TAB_GROUP_COLOR_UPDATED,
+            activity_log[1].collaboration_event);
 }
 
 }  // namespace collaboration::messaging

@@ -16,6 +16,7 @@
 #include "components/collaboration/internal/messaging/data_sharing_change_notifier_impl.h"
 #include "components/collaboration/internal/messaging/storage/collaboration_message_util.h"
 #include "components/collaboration/internal/messaging/storage/messaging_backend_store.h"
+#include "components/collaboration/internal/messaging/storage/protocol/message.pb.h"
 #include "components/collaboration/internal/messaging/tab_group_change_notifier.h"
 #include "components/collaboration/public/messaging/activity_log.h"
 #include "components/collaboration/public/messaging/message.h"
@@ -35,6 +36,33 @@ collaboration_pb::Message CreateMessage(
   message.set_event_type(event_type);
   message.set_dirty(static_cast<int>(dirty_type));
   message.set_event_timestamp(event_time.ToTimeT());
+  return message;
+}
+
+collaboration_pb::Message CreateTabGroupMessage(
+    data_sharing::GroupId collaboration_group_id,
+    const tab_groups::SavedTabGroup& tab_group,
+    collaboration_pb::EventType event_type,
+    DirtyType dirty_type) {
+  collaboration_pb::Message message =
+      CreateMessage(collaboration_group_id, event_type, dirty_type,
+                    tab_group.update_time_windows_epoch_micros());
+  message.mutable_tab_group_data()->set_sync_tab_group_id(
+      tab_group.saved_guid().AsLowercaseString());
+  switch (event_type) {
+    case collaboration_pb::TAB_GROUP_ADDED:
+      message.set_triggering_user_gaia_id(
+          tab_group.shared_attribution().created_by.ToString());
+      break;
+    case collaboration_pb::TAB_GROUP_REMOVED:
+    case collaboration_pb::TAB_GROUP_NAME_UPDATED:
+    case collaboration_pb::TAB_GROUP_COLOR_UPDATED:
+      message.set_triggering_user_gaia_id(
+          tab_group.shared_attribution().updated_by.ToString());
+      break;
+    default:
+      break;
+  }
   return message;
 }
 
@@ -110,6 +138,29 @@ std::optional<GaiaId> GetGaiaIdFromMessage(
     default:
       return std::nullopt;
   }
+}
+
+std::optional<data_sharing::GroupId> GroupIdForTabGroup(
+    const tab_groups::SavedTabGroup& tab_group) {
+  if (!tab_group.collaboration_id()) {
+    return std::nullopt;
+  }
+  return data_sharing::GroupId(tab_group.collaboration_id().value().value());
+}
+
+tab_groups::CollaborationId ToCollaborationId(
+    const data_sharing::GroupId& group_id) {
+  return tab_groups::CollaborationId(group_id.value());
+}
+
+TabGroupMessageMetadata CreateTabGroupMessageMetadata(
+    const tab_groups::SavedTabGroup& tab_group) {
+  TabGroupMessageMetadata metadata;
+  metadata.local_tab_group_id = tab_group.local_group_id();
+  metadata.sync_tab_group_id = tab_group.saved_guid();
+  metadata.last_known_title = base::UTF16ToUTF8(tab_group.title());
+  metadata.last_known_color = tab_group.color();
+  return metadata;
 }
 
 }  // namespace
@@ -224,16 +275,64 @@ void MessagingBackendServiceImpl::OnTabGroupChangeNotifierInitialized() {
 }
 
 void MessagingBackendServiceImpl::OnTabGroupAdded(
-    const tab_groups::SavedTabGroup& added_group) {}
+    const tab_groups::SavedTabGroup& added_group) {
+  std::optional<data_sharing::GroupId> collaboration_group_id =
+      GroupIdForTabGroup(added_group);
+  if (!collaboration_group_id) {
+    // Unable to find collaboration ID from tab group.
+    return;
+  }
+
+  collaboration_pb::Message message = CreateTabGroupMessage(
+      *collaboration_group_id, added_group, collaboration_pb::TAB_GROUP_ADDED,
+      DirtyType::kNone);
+  store_->AddMessage(message);
+}
 
 void MessagingBackendServiceImpl::OnTabGroupRemoved(
-    tab_groups::SavedTabGroup removed_group) {}
+    tab_groups::SavedTabGroup removed_group) {
+  std::optional<data_sharing::GroupId> collaboration_group_id =
+      GroupIdForTabGroup(removed_group);
+  if (!collaboration_group_id) {
+    // Unable to find collaboration ID from tab group.
+    return;
+  }
+
+  collaboration_pb::Message message = CreateTabGroupMessage(
+      *collaboration_group_id, removed_group,
+      collaboration_pb::TAB_GROUP_REMOVED, DirtyType::kNone);
+  store_->AddMessage(message);
+}
 
 void MessagingBackendServiceImpl::OnTabGroupNameUpdated(
-    const tab_groups::SavedTabGroup& updated_group) {}
+    const tab_groups::SavedTabGroup& updated_group) {
+  std::optional<data_sharing::GroupId> collaboration_group_id =
+      GroupIdForTabGroup(updated_group);
+  if (!collaboration_group_id) {
+    // Unable to find collaboration ID from tab group.
+    return;
+  }
+
+  collaboration_pb::Message message = CreateTabGroupMessage(
+      *collaboration_group_id, updated_group,
+      collaboration_pb::TAB_GROUP_NAME_UPDATED, DirtyType::kNone);
+  store_->AddMessage(message);
+}
 
 void MessagingBackendServiceImpl::OnTabGroupColorUpdated(
-    const tab_groups::SavedTabGroup& updated_group) {}
+    const tab_groups::SavedTabGroup& updated_group) {
+  std::optional<data_sharing::GroupId> collaboration_group_id =
+      GroupIdForTabGroup(updated_group);
+  if (!collaboration_group_id) {
+    // Unable to find collaboration ID from tab group.
+    return;
+  }
+
+  collaboration_pb::Message message = CreateTabGroupMessage(
+      *collaboration_group_id, updated_group,
+      collaboration_pb::TAB_GROUP_COLOR_UPDATED, DirtyType::kNone);
+  store_->AddMessage(message);
+}
 
 void MessagingBackendServiceImpl::OnTabAdded(
     const tab_groups::SavedTabGroupTab& added_tab) {}
@@ -409,8 +508,27 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
   switch (GetMessageCategory(message)) {
     case MessageCategory::kTab:
       break;
-    case MessageCategory::kTabGroup:
+    case MessageCategory::kTabGroup: {
+      item.activity_metadata.triggering_user = group_member;
+      std::optional<tab_groups::SavedTabGroup> tab_group =
+          tab_group_sync_service_->GetGroup(base::Uuid::ParseLowercase(
+              message.tab_group_data().sync_tab_group_id()));
+      if (tab_group) {
+        item.activity_metadata.tab_group_metadata =
+            CreateTabGroupMessageMetadata(*tab_group);
+      } else {
+        item.activity_metadata.tab_group_metadata = TabGroupMessageMetadata();
+        std::optional<std::u16string> previous_title =
+            tab_group_sync_service_
+                ->GetTitleForPreviouslyExistingSharedTabGroup(
+                    ToCollaborationId(collaboration_group_id));
+        if (previous_title) {
+          item.activity_metadata.tab_group_metadata->last_known_title =
+              base::UTF16ToUTF8(*previous_title);
+        }
+      }
       break;
+    }
     case MessageCategory::kCollaboration:
       item.activity_metadata.affected_user = group_member;
       break;
