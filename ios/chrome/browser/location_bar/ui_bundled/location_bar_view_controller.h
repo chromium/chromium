@@ -17,6 +17,7 @@
 @protocol ApplicationCommands;
 @protocol BadgeViewVisibilityDelegate;
 @protocol ContextualPanelEntrypointVisibilityDelegate;
+@protocol FakeboxButtonsSnapshotProvider;
 @protocol HelpCommands;
 @protocol LensOverlayCommands;
 @protocol LocationBarOffsetProvider;
@@ -100,6 +101,11 @@ class Tracker;
 
 // The help command handler.
 @property(nonatomic, weak) id<HelpCommands> helpCommandsHandler;
+
+// An object to provide a snapshot of the fakebox buttons to be used during
+// focus and defocus transitions.
+@property(nonatomic, weak) id<FakeboxButtonsSnapshotProvider>
+    fakeboxButtonsSnapshotProvider;
 
 // Sets the edit view to use in the editing state. This must be set before the
 // view of this view controller is initialized. This must only be called once.

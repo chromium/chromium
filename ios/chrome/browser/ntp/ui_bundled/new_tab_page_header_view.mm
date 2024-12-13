@@ -617,14 +617,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
                    completion:nil];
 }
 
-- (void)hideFakeboxButtons {
-  _buttonStack.alpha = 0;
-}
-
-- (void)showFakeboxButtons {
-  _buttonStack.alpha = 1;
-}
-
 - (void)setIdentityDiscErrorBadge {
   if (!_identityDiscView) {
     return;
@@ -733,6 +725,10 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     _toolbarNoTabGroupIndicartorConstraint.active = NO;
     _toolbarTabGroupIndicartorConstraint.active = YES;
   }
+}
+
+- (UIView*)fakeboxButtonsSnapshot {
+  return [_buttonStack snapshotViewAfterScreenUpdates:NO];
 }
 
 #pragma mark - UITraitEnvironment

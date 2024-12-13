@@ -26,6 +26,7 @@ source_set("ui_bundled") {
   ]
   deps = [
     ":constants",
+    ":fakebox_buttons_snapshot",
     ":location_bar_model_delegate",
     "//base",
     "//components/feature_engagement/public",
@@ -150,6 +151,10 @@ source_set("constants") {
     "Foundation.framework",
     "CoreGraphics.framework",
   ]
+}
+
+source_set("fakebox_buttons_snapshot") {
+  sources = [ "fakebox_buttons_snapshot_provider.h" ]
 }
 
 source_set("unit_tests") {

@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_entrypoint_view.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/fakebox_buttons_snapshot_provider.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view.h"
@@ -119,6 +120,10 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
 @implementation LocationBarViewController {
   BOOL _isNTP;
+  // Stores a snapshot of the fakebox buttons that is overlaid on the Location
+  // Bar and anchored to the trailing edge during focus transitions (when it is
+  // faded out) and defocus transitions (when it is faded in).
+  UIView* _fakeboxButtonsSnapshot;
 
   LensOverlayEntrypointButton* _lensOverlayPlaceholderView;
 }
@@ -464,7 +469,38 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
                             self.locationBarSteadyView.transform.b,
                             self.locationBarSteadyView.transform.c,
                             self.locationBarSteadyView.transform.d, 0, 0);
-  ;
+}
+
+- (void)addFakeboxButtonsSnapshot {
+  _fakeboxButtonsSnapshot =
+      [self.fakeboxButtonsSnapshotProvider fakeboxButtonsSnapshot];
+  if (!_fakeboxButtonsSnapshot) {
+    return;
+  }
+
+  _fakeboxButtonsSnapshot.translatesAutoresizingMaskIntoConstraints = NO;
+  _fakeboxButtonsSnapshot.alpha = 0;
+  [self.view addSubview:_fakeboxButtonsSnapshot];
+  CGSize size = _fakeboxButtonsSnapshot.frame.size;
+  [NSLayoutConstraint activateConstraints:@[
+    [_fakeboxButtonsSnapshot.widthAnchor constraintEqualToConstant:size.width],
+    [_fakeboxButtonsSnapshot.heightAnchor
+        constraintEqualToConstant:size.height],
+    [_fakeboxButtonsSnapshot.centerYAnchor
+        constraintEqualToAnchor:self.view.centerYAnchor],
+    [_fakeboxButtonsSnapshot.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+  ]];
+  [self.view layoutIfNeeded];
+}
+
+- (void)setFakeboxButtonsSnapshotFaded:(BOOL)faded {
+  _fakeboxButtonsSnapshot.alpha = faded ? 0 : 1;
+}
+
+- (void)clearFakeboxButtonsSnapshot {
+  [_fakeboxButtonsSnapshot removeFromSuperview];
+  _fakeboxButtonsSnapshot = nil;
 }
 
 #pragma mark animation helpers

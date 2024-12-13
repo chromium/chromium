@@ -7,9 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/fakebox_buttons_snapshot_provider.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller_delegate.h"
+#import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
 
 @protocol ApplicationCommands;
 @protocol BrowserCoordinatorCommands;
@@ -28,7 +29,8 @@
 // the interactions between the header and the collection, and the rest of the
 // application.
 @interface NewTabPageHeaderViewController
-    : UIViewController <NewTabPageHeaderConsumer,
+    : UIViewController <FakeboxButtonsSnapshotProvider,
+                        NewTabPageHeaderConsumer,
                         UserAccountImageUpdateDelegate>
 
 - (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton

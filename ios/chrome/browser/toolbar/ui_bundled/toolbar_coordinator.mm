@@ -391,9 +391,13 @@
   }
 }
 
-- (void)focusOmniboxFromFakebox:(BOOL)fromFakebox pinned:(BOOL)pinned {
+- (void)focusOmniboxFromFakebox:(BOOL)fromFakebox
+                            pinned:(BOOL)pinned
+    fakeboxButtonsSnapshotProvider:
+        (id<FakeboxButtonsSnapshotProvider>)provider {
   _focusedFromFakebox = fromFakebox;
   _fakeboxPinned = pinned;
+  [self.locationBarCoordinator setFakeboxButtonsSnapshotProvider:provider];
   [self.locationBarCoordinator focusOmniboxFromFakebox];
 }
 

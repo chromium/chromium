@@ -356,6 +356,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   return self.omniboxCoordinator.toolbarOmniboxConsumer;
 }
 
+- (void)setFakeboxButtonsSnapshotProvider:
+    (id<FakeboxButtonsSnapshotProvider>)provider {
+  self.viewController.fakeboxButtonsSnapshotProvider = provider;
+}
+
 #pragma mark - LoadQueryCommands
 
 - (void)loadQuery:(NSString*)query immediately:(BOOL)immediately {
@@ -413,7 +418,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (void)focusOmnibox {
-
   // When the NTP and fakebox are visible, make the fakebox animates into place
   // before focusing the omnibox.
   if (IsVisibleURLNewTabPage([self webState]) &&
@@ -423,6 +427,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                            BrowserCoordinatorCommands);
     [browserCoordinatorCommandsHandler focusFakebox];
   } else {
+    [self setFakeboxButtonsSnapshotProvider:nil];
     [self.omniboxCoordinator focusOmnibox];
   }
 }

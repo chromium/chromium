@@ -58,6 +58,7 @@ include_rules = [
   "+ios/chrome/browser/toolbar/ui_bundled/tab_groups/coordinator/tab_group_indicator_coordinator.h",
   "+ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui/tab_group_indicator_constants.h",
   "+ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui/tab_group_indicator_view.h",
+  "+ios/chrome/browser/location_bar/ui_bundled",
 ]
 
 specific_include_rules = {

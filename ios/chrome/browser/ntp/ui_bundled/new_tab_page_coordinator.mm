@@ -1260,7 +1260,8 @@
   id<FakeboxFocuser> fakeboxFocuserHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), FakeboxFocuser);
   [fakeboxFocuserHandler focusOmniboxFromFakebox:_fakeboxTapped
-                                          pinned:[self isFakeboxPinned]];
+                                          pinned:[self isFakeboxPinned]
+                  fakeboxButtonsSnapshotProvider:self.headerViewController];
 }
 
 - (void)refreshNTPContent {

@@ -213,6 +213,7 @@ source_set("ntp_internal") {
     "//ios/chrome/browser/home_customization/coordinator",
     "//ios/chrome/browser/lens/ui_bundled:lens_availability",
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
+    "//ios/chrome/browser/location_bar/ui_bundled:fakebox_buttons_snapshot",
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/model:util",
