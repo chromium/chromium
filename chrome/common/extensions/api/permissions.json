@@ -64,7 +64,7 @@
              {
               "name": "permissions",
               "$ref": "Permissions",
-              "description": "The extension's active permissions. Note that the <code>origins</code> property will contain granted origins from those specified in the <code>permissions</code> and <code>optional_permissions</code> keys in the manifest and those associated with <a href='content_scripts'>Content Scripts</a>."
+              "description": "The extension's active permissions. Note that the <code>origins</code> property will contain granted origins from those specified in the <code>permissions</code> and <code>optional_permissions</code> keys in the manifest and those associated with <a href='/docs/extensions/develop/concepts/content-scripts'>Content Scripts</a>."
             }
           ]
         }
