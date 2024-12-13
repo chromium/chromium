@@ -1096,7 +1096,8 @@ by a child template that "extends" this file.
         <activity
             android:name="org.chromium.chrome.browser.task_manager.ui.TaskManagerActivity"
             android:exported="false"
-            android:theme="@style/Theme.Chromium.Activity">
+            android:theme="@style/Theme.Chromium.Activity"
+            android:launchMode="singleInstance">
         </activity>
 
         <receiver android:name="org.chromium.chrome.browser.notifications.scheduler.DisplayAgent$Receiver"
