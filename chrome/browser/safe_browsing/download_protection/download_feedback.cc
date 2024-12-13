@@ -19,20 +19,6 @@ namespace safe_browsing {
 
 namespace {
 
-// This enum is used by histograms.  Do not change the ordering or remove items.
-enum UploadResultType {
-  UPLOAD_SUCCESS = 0,
-  UPLOAD_CANCELLED = 1,
-  UPLOAD_METADATA_NET_ERROR = 2,
-  UPLOAD_METADATA_RESPONSE_ERROR = 3,
-  UPLOAD_FILE_NET_ERROR = 4,
-  UPLOAD_FILE_RESPONSE_ERROR = 5,
-  UPLOAD_COMPLETE_RESPONSE_ERROR = 6,
-  // Memory space for histograms is determined by the max.
-  // ALWAYS ADD NEW VALUES BEFORE THIS ONE.
-  UPLOAD_RESULT_MAX = 7
-};
-
 // Handles the uploading of a single downloaded binary to the safebrowsing
 // download feedback service.
 class DownloadFeedbackImpl : public DownloadFeedback {
