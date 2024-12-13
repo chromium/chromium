@@ -262,6 +262,11 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         return false;
     }
 
+    // Overridden in B-specific subclass.
+    public boolean shouldEnableChips() {
+        return false;
+    }
+
     private void deleteContentsOnPackageDowngrade(PackageInfo packageInfo) {
         try (ScopedSysTraceEvent e2 =
                 ScopedSysTraceEvent.scoped(
@@ -511,10 +516,11 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 deleteContentsOnPackageDowngrade(packageInfo);
             }
 
-            // TODO(crbug.com/380890146): Change the default for partitioned cookies to enabled by
-            // default for apps targeting Android B or above. This will need to use the proper
-            // Android B version code once it is released.
-            if (!androidXConfig.getPartitionedCookiesEnabled()) {
+            boolean partitionedCookies =
+                    androidXConfig.getPartitionedCookiesEnabled() == null
+                            ? shouldEnableChips()
+                            : androidXConfig.getPartitionedCookiesEnabled();
+            if (!partitionedCookies) {
                 cl.appendSwitch("disable-partitioned-cookies");
             }
 
