@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -69,6 +70,7 @@ class BulkFaviconUtil {
             List<GURL> webPageUrlList,
             int size,
             Callback<List<Bitmap>> faviconCallback) {
+        boolean isNightMode = ColorUtils.inNightMode(context);
         Callback<Map<Integer, Bitmap>> addFallback =
                 (faviconMap) -> {
                     List<Bitmap> results = new ArrayList<>();
@@ -80,8 +82,7 @@ class BulkFaviconUtil {
                                             .getDefaultFaviconBitmap(
                                                     context,
                                                     webPageUrlList.get(i),
-                                                    // TODO(ssid): set the right mode.
-                                                    /* useDarkIcon= */ true);
+                                                    /* useDarkIcon= */ isNightMode);
                         }
                         results.add(favicon);
                     }
