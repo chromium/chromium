@@ -107,10 +107,11 @@ BASE_FEATURE(kWinSboxRestrictCoreSharingOnRenderer,
              "WinSboxRestrictCoreSharingOnRenderer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables parallel process launching using the thread pool.
+// Enables parallel process launching using the thread pool. Flag retained
+// as a kill-switch.
 BASE_FEATURE(kWinSboxParallelProcessLaunch,
              "WinSboxParallelProcessLaunch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Csrss lockdown in supported processes by closing all ALPC
 // ports before sandbox lockdown. See crbug.com/40408399 for details.
