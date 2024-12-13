@@ -1192,14 +1192,6 @@ BASE_FEATURE(kUseContextSnapshot,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Allows user activation propagation to all frames having the same origin as
-// the activation notifier frame.  This is an intermediate measure before we
-// have an iframe attribute to declaratively allow user activation propagation
-// to subframes.
-BASE_FEATURE(kUserActivationSameOriginVisibility,
-             "UserActivationSameOriginVisibility",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables comparing browser and renderer's DidCommitProvisionalLoadParams in
 // RenderFrameHostImpl::VerifyThatBrowserAndRendererCalculatedDidCommitParamsMatch.
 BASE_FEATURE(kVerifyDidCommitParams,

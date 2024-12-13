@@ -37,7 +37,7 @@ external/wpt/webvtt/* [ Skip ]
 # These tests rely on site isolation to measure different OOPIF scenarios
 external/wpt/long-animation-frame/* [ Skip ]
 
-# The following tests fail with UserActivationSameOriginVisibility plus UAv2.
+# The following tests fail with UAv2.
 crbug.com/922725 http/tests/media/autoplay/document-user-activation-cross-origin-feature-policy-disabled.html [ Failure ]
 crbug.com/922725 http/tests/media/autoplay/document-user-activation-cross-origin-feature-policy-header.html [ Failure ]
 

@@ -4406,11 +4406,6 @@
       },
     },
     {
-      name: "UserActivationSameOriginVisibility",
-      base_feature: "none",
-      public: true,
-    },
-    {
       name: "UserDefinedEntryPointTiming",
       status: "experimental",
     },

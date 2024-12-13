@@ -328,8 +328,7 @@ void Frame::NotifyUserActivationInFrameTree(
   // See the "Same-origin Visibility" section in |UserActivationState| class
   // doc.
   auto* local_frame = DynamicTo<LocalFrame>(this);
-  if (local_frame &&
-      RuntimeEnabledFeatures::UserActivationSameOriginVisibilityEnabled()) {
+  if (local_frame) {
     const SecurityOrigin* security_origin =
         local_frame->GetSecurityContext()->GetSecurityOrigin();
 
