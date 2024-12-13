@@ -114,12 +114,18 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     // Recorded the yOffset for all current layers. This only record the yOffset for visible layers.
     private final SparseIntArray mLayerYOffsets = new SparseIntArray();
     private final SparseBooleanArray mLayerVisibilities = new SparseBooleanArray();
+
+    // The heights of each layer at their fully shown positions.
+    private final SparseIntArray mLayerRestingOffsets = new SparseIntArray();
+
     private final BrowserControlsSizer mBrowserControlsSizer;
 
     private int mTotalHeight = INVALID_HEIGHT;
     private int mTotalMinHeight = INVALID_HEIGHT;
     private int mTotalHeightFromSetter = INVALID_HEIGHT;
     private int mTotalMinHeightFromSetter = INVALID_HEIGHT;
+
+    private BrowserControlsOffsetTagsInfo mOffsetTagsInfo;
 
     // The default state is used before any visibility constraint changes occur (ex. reopening
     // chrome after it has been closed.) It must be set to SHOWN to allow the browser to initialize
@@ -200,7 +206,8 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             repositionLayers(
                     mBrowserControlsSizer.getBottomControlOffset(),
                     mBrowserControlsSizer.getBottomControlsMinHeightOffset(),
-                    animate);
+                    animate,
+                    false);
         }
     }
 
@@ -297,6 +304,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                 repositionLayers(
                         mBrowserControlsSizer.getBottomControlOffset(),
                         mBrowserControlsSizer.getBottomControlsMinHeightOffset(),
+                        false,
                         false);
             }
         }
@@ -309,6 +317,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             @BrowserControlsState int constraints) {
         mBrowserControlsState = constraints;
         if (ChromeFeatureList.sBcivBottomControls.isEnabled()) {
+            mOffsetTagsInfo = offsetTagsInfo;
             for (int layerType : STACK_ORDER) {
                 BottomControlsLayer layer = mLayers.get(layerType);
                 if (layer == null) continue;
@@ -330,12 +339,19 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             boolean requestNewFrame,
             boolean isVisibilityForced) {
         if (mLayers.size() == 0 || !isDispatchingYOffset()) return;
-        repositionLayers(bottomOffset, bottomControlsMinHeightOffset, requestNewFrame);
+        repositionLayers(
+                bottomOffset,
+                bottomControlsMinHeightOffset,
+                requestNewFrame,
+                bottomControlsMinHeightChanged);
     }
 
     /** Reposition the layers given that the height and minHeight is known. */
     private void repositionLayers(
-            int bottomOffset, int bottomControlsMinHeightOffset, boolean animated) {
+            int bottomOffset,
+            int bottomControlsMinHeightOffset,
+            boolean animated,
+            boolean didMinHeightChange) {
 
         // 0. Initialize the offset for each layer.
         SparseIntArray yOffsetOfLayers = new SparseIntArray(STACK_ORDER.length);
@@ -396,6 +412,19 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                 minHeightBottomOffset = Math.min(minHeightBottomOffset, mTotalHeight);
             }
 
+            // The position of a layer is determined by its height and the renderer's offset. When
+            // BCIV is enabled, we need the browser frame to have the browser controls in their
+            // fully visible position so that the scroll offset is correct applied by viz.
+            //
+            // When min height is increasing, this forces the controls to be at their final
+            // position. When min height is decreasing, this clamps the offset so the layer doesn't
+            // get positioned lower than their fully visible position. If the controls had an offset
+            // in the renderer (from being in an animation or having been already scrolled offscreen
+            // or both), it will be applied correctly.
+            if (ChromeFeatureList.sBcivBottomControls.isEnabled() && didMinHeightChange) {
+                layerYOffset = Math.min(layerYOffset, mLayerRestingOffsets.get(type));
+            }
+
             yOffsetOfLayers.put(type, layerYOffset);
         }
 
@@ -411,9 +440,18 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         // is caused by an animated browser controls height adjustment. This needs to run in a
         // different loop to cooperate browser controls height reduction, as we need to still push
         // updates to layer that's changed from visible -> hidden.
+        //
+        // TODO(clhager) This block was implemented with the assumption that `animated` would be
+        // true if heights/offsets were changing due to an animation. This assumption is incorrect,
+        // and `animated` is false when animations happen while browser controls are scrolled off
+        // the screen. `animated` is only true when the android views for the browser controls are
+        // visible, or when there is a browser driven animation in progress (meaning there are no
+        // composited views present.)
         if (animated) {
             // When bottomOffset is negative, the browser controls is going through a height
             // reduction.
+            //
+            // TODO(clhager) Controls could be shrinking even if bottomOffset is negative.
             boolean isControlsShrinking = bottomOffset < 0;
 
             // Create a initial value for layer's yOffset, in case the top layer is hiding,
@@ -467,7 +505,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                 mLayerYOffsets.put(layerType, yOffset);
             }
 
-            layer.onBrowserControlsOffsetUpdate(yOffset);
+            layer.onBrowserControlsOffsetUpdate(yOffset, didMinHeightChange);
             if (sDumpLayerUpdateForTesting) {
                 dumpStatsForLayerForTesting(layer, yOffset);
             }
@@ -487,12 +525,38 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                     : "A scroll-off layer under a NEVER_SCROLL_OFF layer is not supported. Layer: "
                             + layer.getType();
 
+            if (ChromeFeatureList.sBcivBottomControls.isEnabled()) {
+                if (shouldScrollOff) {
+                    if (mOffsetTagsInfo != null) {
+                        layer.updateOffsetTag(mOffsetTagsInfo);
+                    }
+                } else {
+                    layer.clearOffsetTag();
+                }
+            }
+
             height += layer.getHeight();
             minHeight += shouldScrollOff ? 0 : layer.getHeight();
         }
 
         mTotalHeight = height;
         mTotalMinHeight = minHeight;
+
+        recalculateLayerRestingOffsets();
+    }
+
+    private void recalculateLayerRestingOffsets() {
+        int cumulativeHeight = 0;
+        for (int i = STACK_ORDER.length - 1; i >= 0; i--) {
+            int type = STACK_ORDER[i];
+            BottomControlsLayer layer = mLayers.get(type);
+            if (layer == null || !mLayerVisibilities.get(type)) continue;
+
+            // Offset is with respect to the bottom of the screen, so the offset for the current
+            // layer is the negative sum of the heights of all layers below it.
+            mLayerRestingOffsets.put(type, -cumulativeHeight);
+            cumulativeHeight += layer.getHeight();
+        }
     }
 
     /**

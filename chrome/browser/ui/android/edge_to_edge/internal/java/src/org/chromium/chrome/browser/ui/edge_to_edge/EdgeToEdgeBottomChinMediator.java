@@ -252,7 +252,7 @@ class EdgeToEdgeBottomChinMediator
     }
 
     @Override
-    public void onBrowserControlsOffsetUpdate(int layerYOffset) {
+    public void onBrowserControlsOffsetUpdate(int layerYOffset, boolean didMinHeightChange) {
         assert BottomControlsStacker.isDispatchingYOffset();
 
         mRendererOffset = layerYOffset;
@@ -262,10 +262,14 @@ class EdgeToEdgeBottomChinMediator
         }
     }
 
-    // TODO(peilinwang) implement bciv for chin.
     @Override
     public int updateOffsetTag(BrowserControlsOffsetTagsInfo offsetTagsInfo) {
         mModel.set(OFFSET_TAG, offsetTagsInfo.getBottomControlsOffsetTag());
         return 0;
+    }
+
+    @Override
+    public void clearOffsetTag() {
+        mModel.set(OFFSET_TAG, null);
     }
 }

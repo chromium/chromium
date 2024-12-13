@@ -131,7 +131,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                     }
 
                     @Override
-                    public void onBrowserControlsOffsetUpdate(int layerYOffset) {
+                    public void onBrowserControlsOffsetUpdate(
+                            int layerYOffset, boolean didMinHeightChange) {
                         if (mLayerVisibility == LayerVisibility.VISIBLE) {
                             mBrowserControlsOffsetSupplier.set(layerYOffset);
                             mControlContainer.getView().setTranslationY(layerYOffset);
@@ -167,7 +168,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                     }
 
                     @Override
-                    public void onBrowserControlsOffsetUpdate(int layerYOffset) {
+                    public void onBrowserControlsOffsetUpdate(
+                            int layerYOffset, boolean didMinHeightChange) {
                         mToolbarProgressBarContainer.setTranslationY(layerYOffset);
                     }
 

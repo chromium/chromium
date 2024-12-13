@@ -121,7 +121,7 @@ public class EdgeToEdgeBottomChinMediatorTest {
 
         // make view visible
         mModel.set(HEIGHT, mDefaultHeight);
-        mMediator.onBrowserControlsOffsetUpdate(0);
+        mMediator.onBrowserControlsOffsetUpdate(0, false);
 
         mMediator.onNavigationBarColorChanged(Color.BLUE);
         assertEquals("The color should have been updated to blue.", Color.BLUE, mModel.get(COLOR));
@@ -130,7 +130,7 @@ public class EdgeToEdgeBottomChinMediatorTest {
         assertEquals("The color should have been updated to red.", Color.RED, mModel.get(COLOR));
 
         // scroll view offscreen
-        mMediator.onBrowserControlsOffsetUpdate(mModel.get(HEIGHT));
+        mMediator.onBrowserControlsOffsetUpdate(mModel.get(HEIGHT), false);
 
         mMediator.onNavigationBarColorChanged(Color.WHITE);
         assertEquals("The color should have not been updated.", Color.RED, mModel.get(COLOR));
@@ -142,7 +142,7 @@ public class EdgeToEdgeBottomChinMediatorTest {
 
         // make view visible
         mModel.set(HEIGHT, mDefaultHeight);
-        mMediator.onBrowserControlsOffsetUpdate(0);
+        mMediator.onBrowserControlsOffsetUpdate(0, false);
 
         mMediator.onNavigationBarDividerChanged(Color.WHITE);
         assertEquals(
@@ -157,7 +157,7 @@ public class EdgeToEdgeBottomChinMediatorTest {
                 mModel.get(DIVIDER_COLOR));
 
         // scroll view offscreen
-        mMediator.onBrowserControlsOffsetUpdate(mModel.get(HEIGHT));
+        mMediator.onBrowserControlsOffsetUpdate(mModel.get(HEIGHT), false);
 
         mMediator.onNavigationBarDividerChanged(Color.WHITE);
         assertEquals(
@@ -298,13 +298,13 @@ public class EdgeToEdgeBottomChinMediatorTest {
     public void testOnBrowserControlsOffsetUpdate() {
         enableDispatchYOffset();
 
-        mMediator.onBrowserControlsOffsetUpdate(0);
+        mMediator.onBrowserControlsOffsetUpdate(0, false);
         assertEquals("The y-offset should be 0.", 0, mModel.get(Y_OFFSET));
 
-        mMediator.onBrowserControlsOffsetUpdate(10);
+        mMediator.onBrowserControlsOffsetUpdate(10, false);
         assertEquals("The y-offset should be 10.", 10, mModel.get(Y_OFFSET));
 
-        mMediator.onBrowserControlsOffsetUpdate(60);
+        mMediator.onBrowserControlsOffsetUpdate(60, false);
         assertEquals("The y-offset should be 60.", 60, mModel.get(Y_OFFSET));
     }
 

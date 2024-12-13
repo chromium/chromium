@@ -205,7 +205,9 @@ class BottomControlsMediator
         // Method call routed to onBrowserControlsOffsetUpdate.
         if (BottomControlsStacker.isDispatchingYOffset()) return;
 
-        setYOffset(bottomOffset - getBrowserControls().getBottomControlsMinHeight());
+        setYOffset(
+                bottomOffset - getBrowserControls().getBottomControlsMinHeight(),
+                bottomControlsMinHeightChanged);
     }
 
     @Override
@@ -263,10 +265,11 @@ class BottomControlsMediator
         return mFullscreenManager != null && mFullscreenManager.getPersistentFullscreenMode();
     }
 
-    private void setYOffset(int yOffset) {
+    private void setYOffset(int yOffset, boolean didMinHeightChange) {
         // TODO(peilinwang) refactor and move this check to the BottomControlsStacker, since all
-        // BottomControlLayers will be checking this.
-        if (!mBottomControlsStacker.isMoveableByViz()) {
+        // BottomControlLayers will be checking this. The android view visibility also needs to be
+        // set appropriately after the refactoring.
+        if (!mBottomControlsStacker.isMoveableByViz() || didMinHeightChange) {
             mModel.set(BottomControlsProperties.Y_OFFSET, yOffset);
         }
 
@@ -372,9 +375,9 @@ class BottomControlsMediator
     }
 
     @Override
-    public void onBrowserControlsOffsetUpdate(int layerYOffset) {
+    public void onBrowserControlsOffsetUpdate(int layerYOffset, boolean didMinHeightChange) {
         assert BottomControlsStacker.isDispatchingYOffset();
-        setYOffset(layerYOffset);
+        setYOffset(layerYOffset, didMinHeightChange);
     }
 
     @Override

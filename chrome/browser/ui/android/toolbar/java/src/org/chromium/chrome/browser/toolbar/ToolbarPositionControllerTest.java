@@ -48,8 +48,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
-import java.util.Observer;
-
 /** Unit tests for {@link ToolbarPositionController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -444,7 +442,7 @@ public class ToolbarPositionControllerTest {
         assertEquals(toolbarLayer.getLayerVisibility(), LayerVisibility.VISIBLE);
         assertEquals(toolbarLayer.getScrollBehavior(), LayerScrollBehavior.DEFAULT_SCROLL_OFF);
 
-        toolbarLayer.onBrowserControlsOffsetUpdate(12);
+        toolbarLayer.onBrowserControlsOffsetUpdate(12, false);
         verify(mControlContainerView).setTranslationY(12);
         assertEquals(mBottomToolbarOffsetSupplier.get().intValue(), 12);
 
@@ -454,7 +452,7 @@ public class ToolbarPositionControllerTest {
         assertEquals(progressBarLayer.getLayerVisibility(), LayerVisibility.VISIBLE);
         assertEquals(progressBarLayer.getScrollBehavior(), LayerScrollBehavior.DEFAULT_SCROLL_OFF);
 
-        progressBarLayer.onBrowserControlsOffsetUpdate(-12);
+        progressBarLayer.onBrowserControlsOffsetUpdate(-12, false);
         verify(mProgressBarContainer).setTranslationY(-12);
 
         mIsOmniboxFocused.set(true);

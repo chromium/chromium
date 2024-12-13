@@ -1029,7 +1029,8 @@ public class CompositorViewHolder extends FrameLayout
         boolean scrollingWithBciv =
                 ChromeFeatureList.sBrowserControlsInViz.isEnabled()
                         && (mInGesture || mContentViewScrolling);
-        if (requestNewFrame && !scrollingWithBciv) {
+        if ((requestNewFrame || topControlsMinHeightChanged || bottomControlsMinHeightChanged)
+                && !scrollingWithBciv) {
             requestRender();
         }
 
