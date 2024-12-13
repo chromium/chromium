@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/crash/core/common/crash_key.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -570,6 +571,17 @@ void WebUIContentsPreloadManager::OnWebContentsPrimaryPageChanged(
   if (web_contents == preloaded_web_contents_.get()) {
     content::RenderWidgetHostView* render_widget_host_view =
         web_contents->GetRenderWidgetHostView();
+
+    // TODO(crbug.com/383937390): TopChromeWebUIConfig::From() returns nullptr.
+    // This crash key is to investigate if the visible URL is empty.
+    static crash_reporter::CrashKeyString<1024> visible_url(
+        "webui-preload-visible-url");
+    visible_url.Set(web_contents->GetVisibleURL().possibly_invalid_spec());
+    static crash_reporter::CrashKeyString<1024> site_instance_url(
+        "webui-preload-site-instance-url");
+    site_instance_url.Set(
+        web_contents->GetSiteInstance()->GetSiteURL().possibly_invalid_spec());
+
     const bool should_auto_reisze_host =
         TopChromeWebUIConfig::From(web_contents->GetBrowserContext(),
                                    web_contents->GetVisibleURL())
