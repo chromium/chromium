@@ -172,57 +172,49 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       ui::ColorId spinner_color = ui::kColorButtonForeground,
       ui::ColorId button_color = ui::kColorButtonBackground);
 
+  // The following are raw_ptrs for views in the header. These do not need to be
+  // reset by RemoveNonHeaderChildViewsAndUpdateHeaderIfNeeded().
   // View containing the header.
   raw_ptr<views::View> header_view_ = nullptr;
-
   // View containing the header icons.
   raw_ptr<views::View> header_icon_view_ = nullptr;
-
-  // View containing the use other account button.
-  raw_ptr<views::MdTextButton> use_other_account_button_ = nullptr;
-
-  // View containing the back button.
-  raw_ptr<views::View> back_button_ = nullptr;
-
-  // View containing the continue button.
-  raw_ptr<views::MdTextButton> continue_button_ = nullptr;
-
-  // View containing the cancel button.
-  raw_ptr<views::View> cancel_button_ = nullptr;
-
-  // View containing the account chooser.
-  raw_ptr<views::View> account_chooser_ = nullptr;
-
-  // View containing the view to focus on in the verifying sheet.
-  raw_ptr<views::View> verifying_focus_view_ = nullptr;
-
   // View containing the title.
   raw_ptr<views::Label> title_label_ = nullptr;
-
   // View containing the body.
   raw_ptr<views::Label> body_label_ = nullptr;
-
   // View containing the IDP brand icon image. This view is constructed in the
   // loading dialog but is only visible after the loading dialog.
   raw_ptr<BrandIconImageView> idp_brand_icon_ = nullptr;
-
   // View containing the spinner in the header. This spinner is shown until the
   // IDP brand icon is fetched.
   raw_ptr<views::Throbber> header_icon_spinner_ = nullptr;
-
   // View containing the IDP brand icon image meant to be shown in the request
   // permission dialog together with the RP icon. This icon is a smaller version
   // of `idp_brand_icon_` because it has to share the space in the header with
   // the RP icon.
   raw_ptr<BrandIconImageView> combined_icons_idp_brand_icon_ = nullptr;
-
   // View containing the RP brand icon image in the request permission dialog.
   raw_ptr<BrandIconImageView> combined_icons_rp_brand_icon_ = nullptr;
-
   // BoxLayoutView containing the IDP icon, arrow icon and RP icon in that
   // order, horizontally. This view is constructed in the loading dialog but
   // will be made visible only in the request permission dialog.
   raw_ptr<views::BoxLayoutView> combined_icons_ = nullptr;
+
+  // The following are raw_ptrs for view outside of the header. These MUST be
+  // reset in RemoveNonHeaderChildViewsAndUpdateHeaderIfNeeded(), as not
+  // resetting could result in a UAF.
+  // View containing the use other account button.
+  raw_ptr<views::MdTextButton> use_other_account_button_ = nullptr;
+  // View containing the back button.
+  raw_ptr<views::View> back_button_ = nullptr;
+  // View containing the continue button.
+  raw_ptr<views::MdTextButton> continue_button_ = nullptr;
+  // View containing the cancel button.
+  raw_ptr<views::View> cancel_button_ = nullptr;
+  // View containing the account chooser.
+  raw_ptr<views::View> account_chooser_ = nullptr;
+  // View containing the view to focus on in the verifying sheet.
+  raw_ptr<views::View> verifying_focus_view_ = nullptr;
 
   // Whether a spinner is present.
   bool has_spinner_{false};

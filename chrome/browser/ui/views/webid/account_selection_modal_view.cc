@@ -1015,14 +1015,14 @@ void AccountSelectionModalView::
     body_label_->SetFocusBehavior(FocusBehavior::ALWAYS);
   }
 
-  // Make sure not to keep dangling pointers around first. We do not reset
-  // `header_view_`, `title_label_`, `body_label_` and `brand_icon_` because
-  // this method does not remove the header.
+  // Make sure not to keep dangling pointers around first. We do not need to
+  // reset pointers to views in the header.
   use_other_account_button_ = nullptr;
   back_button_ = nullptr;
   continue_button_ = nullptr;
   cancel_button_ = nullptr;
   account_chooser_ = nullptr;
+  verifying_focus_view_ = nullptr;
 
   const std::vector<raw_ptr<views::View, VectorExperimental>> child_views =
       children();
