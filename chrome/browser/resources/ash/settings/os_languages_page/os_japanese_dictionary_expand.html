@@ -24,6 +24,11 @@
         iron-icon="cr:delete"
         on-click="deleteDictionary_"
         title="DeleteDictionary"></cr-icon-button>
+      <cr-button on-click="importDictionary_">
+        <span>
+          Import
+        </span>
+      </cr-button>
       <cr-button on-click="exportDictionary_">
         <!-- TODO(crbug.com/382344109): Translate UI strings -->
         <span>
@@ -31,6 +36,9 @@
         </span>
       </cr-button>
     </div>
+    <!-- hidden element used by importDictionary_ to trigger file upload. -->
+    <input id="selectFileDialog"
+      type="file" on-change="handleFileSelectChange_" hidden>
   </div>
   <template is="dom-repeat" items="[[dict.entries]]" as="entry">
     <os-japanese-dictionary-entry-row

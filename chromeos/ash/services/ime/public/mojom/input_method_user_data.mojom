@@ -60,4 +60,10 @@ interface InputMethodUserDataService {
   // Get tab separated values that represent the dictionary.
   ExportJapaneseDictionary(uint64 dict_id)
       => (mojo_base.mojom.BigString result);
+
+  // Import tab separated entries into the dictionary.
+  // The tsv_data is a user provided dictionary that would be loaded from a file
+  // and then sent directly to the sandboxed IMEService.
+  ImportJapaneseDictionary(
+      uint64 dict_id, mojo_base.mojom.BigString tsv_data) => (Status status);
 };
