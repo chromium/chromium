@@ -166,6 +166,26 @@ bool Session::ShouldDeferRequest(URLRequest* request) const {
     return false;
   }
 
+  request->net_log().AddEvent(
+      net::NetLogEventType::DBSC_REQUEST, [&](NetLogCaptureMode capture_mode) {
+        base::Value::Dict dict;
+        dict.Set("refresh_url", refresh_url_.spec());
+        dict.Set("scope", inclusion_rules_.DebugString());
+
+        base::Value::List credentials;
+        for (const CookieCraving& craving : cookie_cravings_) {
+          credentials.Append(craving.DebugString());
+        }
+
+        dict.Set("credentials", std::move(credentials));
+
+        if (NetLogCaptureIncludesSensitive(capture_mode)) {
+          dict.Set("session_id", id_.value());
+        }
+
+        return dict;
+      });
+
   // TODO(crbug.com/353766029): Refactor this.
   // The below is all copied from AddCookieHeaderAndStart. We should refactor
   // it.
@@ -230,10 +250,31 @@ bool Session::ShouldDeferRequest(URLRequest* request) const {
     }
 
     if (!satisfied) {
+      request->net_log().AddEvent(
+          net::NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED,
+          [&](NetLogCaptureMode capture_mode) {
+            base::Value::Dict dict;
+            dict.Set("refresh_required_reason", "missing_cookie");
+
+            if (NetLogCaptureIncludesSensitive(capture_mode)) {
+              dict.Set("refresh_missing_cookie", cookie_craving.Name());
+            }
+
+            return dict;
+          });
+
       // There's an unsatisfied craving. Defer the request.
       return true;
     }
   }
+
+  request->net_log().AddEvent(net::NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED,
+                              [&](NetLogCaptureMode capture_mode) {
+                                base::Value::Dict dict;
+                                dict.Set("refresh_required_reason",
+                                         "refresh_not_required");
+                                return dict;
+                              });
 
   // All cookiecravings satisfied.
   return false;

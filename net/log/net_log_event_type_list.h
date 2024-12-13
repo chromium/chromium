@@ -4745,3 +4745,25 @@ EVENT_TYPE(OBLIVIOUS_HTTP_RESPONSE_HEADERS)
 //     "top_frame_entry": <string>,
 //   }
 EVENT_TYPE(FIRST_PARTY_SETS_METADATA)
+
+// ------------------------------------------------------------------------
+// Device Bound Sessions
+// ------------------------------------------------------------------------
+
+// This event is logged when an HTTP request is detected to be part of a
+// device-bound session. It includes details of the session parameters:
+//   {
+//     "refresh_url": <string>,
+//     "scope": <string>,
+//     "credentials": <string>,
+//     "session_id": <string>,
+//   }
+EVENT_TYPE(DBSC_REQUEST)
+
+// This event is logged when we determine if an HTTP request needs to be
+// deferred to wait for a device-bound session refresh request.
+//   {
+//     "refresh_required_reason": <string>,
+//     "refresh_missing_cookie": <string>,
+//   }
+EVENT_TYPE(CHECK_DBSC_REFRESH_REQUIRED)

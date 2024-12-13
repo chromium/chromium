@@ -9,6 +9,7 @@
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_util.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
+#include "net/log/test_net_log.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
@@ -343,6 +344,67 @@ TEST_F(SessionTest, CreationDate) {
   ASSERT_TRUE(session);
   // Make sure it's set to a plausible value.
   EXPECT_LT(base::Time::Now() - base::Days(1), session->creation_date());
+}
+
+TEST_F(SessionTest, NetLogSessionInfo) {
+  auto params = CreateValidParams();
+  auto session = Session::CreateIfValid(params, kTestUrl);
+  ASSERT_TRUE(session);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  RecordingNetLogObserver net_log_observer;
+  session->ShouldDeferRequest(request.get());
+  EXPECT_EQ(
+      net_log_observer.GetEntriesWithType(NetLogEventType::DBSC_REQUEST).size(),
+      1u);
+}
+
+TEST_F(SessionTest, NetLogMissingCookie) {
+  auto params = CreateValidParams();
+  auto session = Session::CreateIfValid(params, kTestUrl);
+  ASSERT_TRUE(session);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  RecordingNetLogObserver net_log_observer;
+  session->ShouldDeferRequest(request.get());
+  EXPECT_EQ(
+      net_log_observer
+          .GetEntriesWithType(NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED)
+          .size(),
+      1u);
+}
+
+TEST_F(SessionTest, NetLogNoRefresh) {
+  auto params = CreateValidParams();
+  auto session = Session::CreateIfValid(params, kTestUrl);
+  ASSERT_TRUE(session);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  CookieInclusionStatus status;
+  auto source = CookieSourceType::kHTTP;
+  auto cookie = CanonicalCookie::Create(
+      kTestUrl, "test_cookie=v;Secure; Domain=example.test", base::Time::Now(),
+      std::nullopt, std::nullopt, source, &status);
+  ASSERT_TRUE(cookie);
+  CookieAccessResult access_result;
+  request->set_maybe_sent_cookies({{*cookie.get(), access_result}});
+
+  RecordingNetLogObserver net_log_observer;
+  session->ShouldDeferRequest(request.get());
+  EXPECT_EQ(
+      net_log_observer
+          .GetEntriesWithType(NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED)
+          .size(),
+      1u);
 }
 
 }  // namespace
