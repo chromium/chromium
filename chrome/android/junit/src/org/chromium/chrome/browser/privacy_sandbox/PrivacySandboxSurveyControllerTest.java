@@ -30,6 +30,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.version_info.Channel;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -49,8 +50,6 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.url.GURL;
-
-import java.util.Collections;
 
 /** Unit tests for {@link PrivacySandboxSurveyController} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -165,7 +164,7 @@ public class PrivacySandboxSurveyControllerTest {
                         mActivity,
                         mActivityLifecycleDispatcher,
                         controller.getSentimentSurveyPsb(),
-                        Collections.emptyMap());
+                        controller.getSentimentSurveyPsd());
         controller.destroy();
     }
 
@@ -288,6 +287,37 @@ public class PrivacySandboxSurveyControllerTest {
         Assert.assertTrue(controller.getSentimentSurveyPsb().get("Signed in"));
         when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
         Assert.assertFalse(controller.getSentimentSurveyPsb().get("Signed in"));
+        controller.destroy();
+    }
+
+    @Test
+    public void surveyControllerGetsChannelNames() {
+        PrivacySandboxSurveyController controller =
+                PrivacySandboxSurveyController.initialize(
+                        mTabModelSelector,
+                        mActivityLifecycleDispatcher,
+                        mActivity,
+                        mMessageDispatcher,
+                        mActivityTabProvider,
+                        mProfile);
+
+        // Assert that the default channel is `unknown`
+        Assert.assertEquals(controller.getChannelName(), "unknown");
+
+        controller.overrideChannelForTesting();
+
+        controller.setChannelForTesting(Channel.STABLE);
+        Assert.assertEquals(controller.getChannelName(), "stable");
+
+        controller.setChannelForTesting(Channel.BETA);
+        Assert.assertEquals(controller.getChannelName(), "beta");
+
+        controller.setChannelForTesting(Channel.DEV);
+        Assert.assertEquals(controller.getChannelName(), "dev");
+
+        controller.setChannelForTesting(Channel.CANARY);
+        Assert.assertEquals(controller.getChannelName(), "canary");
+
         controller.destroy();
     }
 }

@@ -206,7 +206,8 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       /*product_specific_bits_data_fields=*/
       std::vector<std::string>{"Topics enabled", "Protected audience enabled",
                                "Measurement enabled", "Signed in"},
-      /*product_specific_string_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/
+      std::vector<std::string>{"Channel"},
       /*log_responses_to_uma=*/true,
       /*log_responses_to_ukm=*/true);
 

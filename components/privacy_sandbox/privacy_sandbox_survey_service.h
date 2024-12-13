@@ -6,6 +6,7 @@
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SURVEY_SERVICE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/version_info/channel.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -45,6 +46,10 @@ class PrivacySandboxSurveyService : public KeyedService {
 
   // Fetch the required product specific bits for the sentiment survey.
   std::map<std::string, bool> GetSentimentSurveyPsb();
+
+  // Fetch the required product specific string data for the sentiment survey.
+  std::map<std::string, std::string> GetSentimentSurveyPsd(
+      version_info::Channel channel);
 
   // Emits the given sentiment survey status.
   void RecordSentimentSurveyStatus(PrivacySandboxSentimentSurveyStatus status);

@@ -8,8 +8,12 @@ import android.app.Activity;
 
 import androidx.annotation.Nullable;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.version_info.Channel;
+import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
@@ -33,7 +37,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +51,8 @@ public class PrivacySandboxSurveyController {
     private MessageDispatcher mMessageDispatcher;
     private Profile mProfile;
     private boolean mHasSeenNtp;
+    private boolean mOverrideChannelForTesting;
+    private int mChannelForTesting;
     private static boolean sEnableForTesting;
 
     PrivacySandboxSurveyController(
@@ -140,7 +145,7 @@ public class PrivacySandboxSurveyController {
                 mActivity,
                 mActivityLifecycleDispatcher,
                 getSentimentSurveyPsb(),
-                Collections.emptyMap());
+                getSentimentSurveyPsd());
     }
 
     private void createTabObserver(ActivityTabProvider activityTabProvider) {
@@ -161,6 +166,7 @@ public class PrivacySandboxSurveyController {
                 };
     }
 
+    @VisibleForTesting
     public Map<String, Boolean> getSentimentSurveyPsb() {
         Map<String, Boolean> psb = new HashMap<>();
         PrefService prefs = UserPrefs.get(mProfile);
@@ -179,6 +185,33 @@ public class PrivacySandboxSurveyController {
         return psb;
     }
 
+    @VisibleForTesting
+    public Map<String, String> getSentimentSurveyPsd() {
+        Map<String, String> psd = new HashMap<>();
+        psd.put("Channel", getChannelName());
+        return psd;
+    }
+
+    @VisibleForTesting
+    public String getChannelName() {
+        int channel = VersionConstants.CHANNEL;
+        if (mOverrideChannelForTesting) {
+            channel = mChannelForTesting;
+        }
+        switch (channel) {
+            case Channel.STABLE:
+                return "stable";
+            case Channel.BETA:
+                return "beta";
+            case Channel.DEV:
+                return "dev";
+            case Channel.CANARY:
+                return "canary";
+            default:
+                return "unknown";
+        }
+    }
+
     private static void recordSentimentSurveyStatus(
             @PrivacySandboxSentimentSurveyStatus int status) {
         RecordHistogram.recordEnumeratedHistogram(
@@ -187,9 +220,21 @@ public class PrivacySandboxSurveyController {
                 PrivacySandboxSentimentSurveyStatus.MAX_VALUE + 1);
     }
 
-    /** Set whether to trigger the start up survey in tests. */
+    // Set whether to trigger the start up survey in tests.
     public static void setEnableForTesting() {
         sEnableForTesting = true;
         ResettersForTesting.register(() -> sEnableForTesting = false);
+    }
+
+    // Set whether we should override the channel for tests.
+    public void overrideChannelForTesting() {
+        mOverrideChannelForTesting = true;
+        ResettersForTesting.register(() -> mOverrideChannelForTesting = false);
+    }
+
+    // Set the channel for testing.
+    public void setChannelForTesting(int channel) {
+        mChannelForTesting = channel;
+        ResettersForTesting.register(() -> mChannelForTesting = Channel.DEFAULT);
     }
 }
