@@ -24262,49 +24262,6 @@
             ]
         }
     ],
-    "V8ScavengerHigherCapacityAndroid": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "V8ScavengerMaxCapacity16MB",
-                    "params": {
-                        "V8ScavengerMaxCapacity": "16"
-                    },
-                    "enable_features": [
-                        "V8ScavengerHigherCapacity"
-                    ]
-                },
-                {
-                    "name": "V8ScavengerMaxCapacity32MB",
-                    "params": {
-                        "V8ScavengerMaxCapacity": "32"
-                    },
-                    "enable_features": [
-                        "V8ScavengerHigherCapacity"
-                    ]
-                },
-                {
-                    "name": "V8ScavengerMaxCapacity64MB",
-                    "params": {
-                        "V8ScavengerMaxCapacity": "64"
-                    },
-                    "enable_features": [
-                        "V8ScavengerHigherCapacity"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "V8ScavengerHigherCapacity"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8SeparateGCPhases": [
         {
             "platforms": [
