@@ -56,6 +56,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Compose" summary="Weights for On-Device Compose"/>
   <variant name="ContextualPageActionPriceTracking"
       summary="Contextual Page Action: Show price tracking"/>
+  <variant name="ExperimentalEmbedder"
+      summary="Embedder for performance experiments"/>
   <variant name="GeolocationPermissions" summary="Geolocation permissions"/>
   <variant name="LanguageDetection" summary="Language detection"/>
   <variant name="ModelExecutionFeatureHistoryQueryIntent"
