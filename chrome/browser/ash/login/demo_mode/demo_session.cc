@@ -697,10 +697,9 @@ void DemoSession::OnSessionStateChanged() {
       RegisterDemoModeAAExperiment();
 
       // Create the window closer.
-      // TODO(crbug.com/302583338): Remove this feature flag.
+      // TODO(b/302583338) Remove this when the issue with GMSCore gets fixed.
       if (ash::features::IsDemoModeGMSCoreWindowCloserEnabled()) {
-        window_closer_ = std::make_unique<DemoModeWindowCloser>(
-            base::BindRepeating(&TriggerLaunchDemoModeApp));
+        window_closer_ = std::make_unique<DemoModeWindowCloser>();
       }
 
       // TODO(b/292454543): Remove this after issue is resolved.
@@ -747,9 +746,9 @@ void DemoSession::OnDemoAppComponentLoaded() {
   }
 
   TriggerLaunchDemoModeApp();
-
-  if (features::IsDemoModeSignInEnabled() && window_closer_) {
-    idle_handler_ = std::make_unique<DemoModeIdleHandler>(window_closer_.get());
+  if (features::IsDemoModeSignInEnabled()) {
+    idle_handler_ = std::make_unique<DemoModeIdleHandler>(
+        base::BindRepeating(&TriggerLaunchDemoModeApp));
   }
 }
 
