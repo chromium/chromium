@@ -18,7 +18,7 @@
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_test.h"
-#import "ios/web/test/mojo_test.mojom.h"
+#import "ios/web/test/mojo_test.test-mojom.h"
 #import "ios/web/web_state/web_state_impl.h"
 #import "testing/gtest_mac.h"
 
