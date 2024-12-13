@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "third_party/skia/include/core/SkRRect.h"
@@ -748,11 +749,15 @@ float TabStyleViewsImpl::GetSeparatorOpacity(bool for_layout,
   }
 
   // If there isn't an adjacent tab, the tab is at the beginning or end of the
-  // tab strip. for the first tab, we shouldn't not show the leading separator,
-  // for the last tab, we should show the separator between the new tab button
-  // and the tab strip IF the tab isn't selected, hovered, or active.
+  // tab strip. For the first tab, we shouldn't show the leading separator, for
+  // the last tab, we should show the separator between the new tab button and
+  // the tab strip IF the tab isn't selected, hovered, or active. If there is a
+  // combo button with a non-transparent background in place of the new tab
+  // button, we should not show the trailing separator.
   if (!adjacent_tab) {
-    return leading ? 0.0f : shown_separator_opacity;
+    return (leading || features::HasTabstripComboButtonWithBackground())
+               ? 0.0f
+               : shown_separator_opacity;
   }
 
   // Do not show when the adjacent tab is displaying a visible shape.
