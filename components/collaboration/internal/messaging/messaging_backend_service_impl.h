@@ -111,11 +111,6 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
   std::optional<ActivityLogItem> ConvertMessageToActivityLogItem(
       const collaboration_pb::Message& message);
 
-  // Provides the user visible description for activity log items based on the
-  // type of event.
-  std::u16string GetDescriptionTextForActivityLogItem(
-      const collaboration_pb::Message& message);
-
   // Looks for the related collaboration GroupId for the given tab, using the
   // information available in the tab group sync service.
   std::optional<data_sharing::GroupId> GetCollaborationGroupIdForTab(

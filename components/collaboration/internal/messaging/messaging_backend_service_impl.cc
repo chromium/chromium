@@ -22,6 +22,7 @@
 #include "components/collaboration/public/messaging/message.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/url_formatter/elide_url.h"
 
 namespace collaboration::messaging {
 namespace {
@@ -192,6 +193,16 @@ TabGroupMessageMetadata CreateTabGroupMessageMetadata(
   metadata.last_known_title = base::UTF16ToUTF8(tab_group.title());
   metadata.last_known_color = tab_group.color();
   return metadata;
+}
+
+TabMessageMetadata CreateTabMessageMetadata(
+    const tab_groups::SavedTabGroupTab& tab) {
+  auto tab_metadata = TabMessageMetadata();
+  tab_metadata.local_tab_id = tab.local_tab_id();
+  tab_metadata.sync_tab_id = tab.saved_tab_guid();
+  tab_metadata.last_known_url = tab.url().spec();
+  tab_metadata.last_known_title = base::UTF16ToUTF8(tab.title());
+  return tab_metadata;
 }
 
 }  // namespace
@@ -561,7 +572,8 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
   // TODO(nyquist): Compare GaiaId with current user in this profile.
   item.user_is_self = false;
 
-  item.description = GetDescriptionTextForActivityLogItem(message);
+  // By default, we use an empty description. This is special cased below.
+  item.description = u"";
   item.time_delta =
       base::Time::Now() - base::Time::FromTimeT(message.event_timestamp());
   item.action =
@@ -573,13 +585,48 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
   // The code below needs to fill in `activity_metadata`, and optionally
   // `show_favicon` if it is true.
   switch (GetMessageCategory(message)) {
-    case MessageCategory::kTab:
+    case MessageCategory::kTab: {
+      item.show_favicon = true;
+
+      std::optional<tab_groups::SavedTabGroup> tab_group =
+          tab_group_sync_service_->GetGroup(base::Uuid::ParseCaseInsensitive(
+              message.tab_data().sync_tab_group_id()));
+      if (!tab_group) {
+        break;
+      }
+      item.activity_metadata.tab_group_metadata =
+          CreateTabGroupMessageMetadata(*tab_group);
+      tab_groups::SavedTabGroupTab* tab = tab_group->GetTab(
+          base::Uuid::ParseCaseInsensitive(message.tab_data().sync_tab_id()));
+      GURL url;
+      if (tab) {
+        item.activity_metadata.tab_metadata = CreateTabMessageMetadata(*tab);
+        url = tab->url();
+      } else {
+        // Tab no longer available, so fill in what we can.
+        item.activity_metadata.tab_metadata = TabMessageMetadata();
+        item.activity_metadata.tab_metadata->last_known_url =
+            message.tab_data().last_url();
+        item.activity_metadata.tab_metadata->sync_tab_id =
+            base::Uuid::ParseLowercase(message.tab_data().sync_tab_id());
+        url = GURL(message.tab_data().last_url());
+      }
+      item.activity_metadata.triggering_user = group_member;
+
+      item.description =
+          url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+              url);
+
       break;
+    }
     case MessageCategory::kTabGroup: {
       item.activity_metadata.triggering_user = group_member;
-      std::optional<tab_groups::SavedTabGroup> tab_group =
-          tab_group_sync_service_->GetGroup(base::Uuid::ParseLowercase(
-              message.tab_group_data().sync_tab_group_id()));
+      std::optional<tab_groups::SavedTabGroup> tab_group;
+      if (!message.tab_group_data().sync_tab_group_id().empty()) {
+        tab_group =
+            tab_group_sync_service_->GetGroup(base::Uuid::ParseLowercase(
+                message.tab_group_data().sync_tab_group_id()));
+      }
       if (tab_group) {
         item.activity_metadata.tab_group_metadata =
             CreateTabGroupMessageMetadata(*tab_group);
@@ -594,55 +641,27 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
               base::UTF16ToUTF8(*previous_title);
         }
       }
+
+      // Only tab group name changes have specialized description.
+      if (message.event_type() == collaboration_pb::TAB_GROUP_NAME_UPDATED) {
+        if (item.activity_metadata.tab_group_metadata->last_known_title) {
+          item.description = base::UTF8ToUTF16(
+              *item.activity_metadata.tab_group_metadata->last_known_title);
+        }
+      }
+
       break;
     }
     case MessageCategory::kCollaboration:
       item.activity_metadata.affected_user = group_member;
+      if (group_member) {
+        item.description = base::UTF8ToUTF16(group_member->email);
+      }
       break;
     default:
       break;
   }
   return item;
-}
-
-std::u16string
-MessagingBackendServiceImpl::GetDescriptionTextForActivityLogItem(
-    const collaboration_pb::Message& message) {
-  std::optional<GaiaId> gaia_id = GetGaiaIdFromMessage(message);
-  std::optional<data_sharing::GroupMemberPartialData> group_member_data;
-  if (gaia_id) {
-    group_member_data = data_sharing_service_->GetPossiblyRemovedGroupMember(
-        data_sharing::GroupId(message.collaboration_id()), *gaia_id);
-  }
-
-  switch (ToCollaborationEvent(message.event_type())) {
-    case CollaborationEvent::TAB_ADDED:
-    case CollaborationEvent::TAB_UPDATED:
-    case CollaborationEvent::TAB_REMOVED:
-      // TODO(nyquist): Update this to use real data.
-      return u"";  // Current domain as eTLD+1 (format for security display).
-    case CollaborationEvent::TAB_GROUP_ADDED:
-    case CollaborationEvent::TAB_GROUP_REMOVED:
-      return u"";  // Not defined.
-    case CollaborationEvent::TAB_GROUP_NAME_UPDATED:
-      // TODO(nyquist): Update this to use real data.
-      return u"";  // Current tab group name.
-    case CollaborationEvent::TAB_GROUP_COLOR_UPDATED:
-      return u"";  // Intentionally left blank.
-    case CollaborationEvent::COLLABORATION_ADDED:
-    case CollaborationEvent::COLLABORATION_REMOVED:
-      return u"";  // Not defined.
-    case CollaborationEvent::COLLABORATION_MEMBER_ADDED:
-    case CollaborationEvent::COLLABORATION_MEMBER_REMOVED:
-      // Should use the email of the added / removed user.
-      if (group_member_data) {
-        return base::UTF8ToUTF16(group_member_data->email);
-      } else {
-        return u"";
-      }
-    case CollaborationEvent::UNDEFINED:
-      return u"";  // Not defined.
-  }
 }
 
 std::optional<data_sharing::GroupId>

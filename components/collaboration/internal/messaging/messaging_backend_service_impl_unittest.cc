@@ -82,7 +82,7 @@ tab_groups::SavedTabGroup CreateSharedTabGroup(
   std::vector<tab_groups::SavedTabGroupTab> tabs;
   tab_groups::SavedTabGroupTab tab1(GURL("https://example.com/"), u"Tab 1",
                                     tab_group_sync_id, std::nullopt);
-  tab_groups::SavedTabGroupTab tab2(GURL("https://example2.com/"), u"Tab 2",
+  tab_groups::SavedTabGroupTab tab2(GURL("https://www.example2.com/"), u"Tab 2",
                                     tab_group_sync_id, std::nullopt);
   tabs.emplace_back(tab1);
   tabs.emplace_back(tab2);
@@ -592,6 +592,8 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabGroupEvents) {
 
   data_sharing::GroupId collaboration_group_id =
       data_sharing::GroupId("my group id");
+  GaiaId gaia1("gaia_1");
+  GaiaId gaia2("gaia_2");
 
   base::Time now = base::Time::Now();
   std::vector<collaboration_pb::Message> messages;
@@ -608,10 +610,16 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabGroupEvents) {
   message2.set_triggering_user_gaia_id("gaia_2");
   messages.emplace_back(message2);
 
+  tab_groups::SavedTabGroup tab_group =
+      CreateSharedTabGroup(collaboration_group_id);
+  tab_group.SetCreatedByAttribution(gaia1);
+  tab_group.SetUpdatedByAttribution(gaia2);
   collaboration_pb::Message message3 =
       CreateStoredMessage(collaboration_group_id,
                           collaboration_pb::EventType::TAB_GROUP_NAME_UPDATED,
                           DirtyType::kNone, now);
+  message3.mutable_tab_group_data()->set_sync_tab_group_id(
+      tab_group.saved_guid().AsLowercaseString());
   message3.set_triggering_user_gaia_id("gaia_2");
   messages.emplace_back(message3);
 
@@ -637,6 +645,9 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabGroupEvents) {
           Return(CreatePartialMember(GaiaId("gaia_2"), "gaia2@gmail.com",
                                      "Display Name", "Given Name 2")));
 
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
+      .WillOnce(Return(tab_group));
+
   // Query for all itemms, which should only be name and color updates.
   ActivityLogQueryParams params;
   params.collaboration_id = collaboration_group_id;
@@ -644,6 +655,7 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabGroupEvents) {
   ASSERT_EQ(2u, activity_log.size());
   EXPECT_EQ(CollaborationEvent::TAB_GROUP_NAME_UPDATED,
             activity_log[0].collaboration_event);
+  EXPECT_EQ(tab_group.title(), activity_log[0].description);
   EXPECT_EQ(CollaborationEvent::TAB_GROUP_COLOR_UPDATED,
             activity_log[1].collaboration_event);
 }
@@ -680,6 +692,12 @@ TEST_F(MessagingBackendServiceImplTest, TestStoringTabEvents) {
   // Make creation and update time unique.
   tab2->SetUpdateTimeWindowsEpochMicros(now + base::Seconds(1));
 
+  // Create a third tab to check for removal.
+  tab_groups::SavedTabGroupTab tab3(GURL("https://www.example3.com/"), u"Tab 3",
+                                    tab_group.saved_guid(), std::nullopt);
+  tab3.SetCreatedByAttribution(gaia1);
+  tab3.SetUpdatedByAttribution(gaia2);
+
   EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
       .WillRepeatedly(Return(tab_group));
 
@@ -711,19 +729,136 @@ TEST_F(MessagingBackendServiceImplTest, TestStoringTabEvents) {
   EXPECT_EQ(tab2->update_time_windows_epoch_micros().ToTimeT(),
             message.event_timestamp());
 
-  tg_notifier_observer_->OnTabRemoved(*tab2);
+  tg_notifier_observer_->OnTabRemoved(tab3);
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_REMOVED, DirtyType::kNone,
                            now.ToTimeT());
   EXPECT_EQ(gaia2, message.triggering_user_gaia_id());
-  EXPECT_EQ(tab2->saved_tab_guid().AsLowercaseString(),
+  EXPECT_EQ(tab3.saved_tab_guid().AsLowercaseString(),
             message.tab_data().sync_tab_id());
-  EXPECT_EQ(tab2->saved_group_guid().AsLowercaseString(),
+  EXPECT_EQ(tab3.saved_group_guid().AsLowercaseString(),
             message.tab_data().sync_tab_group_id());
-  EXPECT_EQ(tab_group.saved_guid().AsLowercaseString(),
+  EXPECT_EQ(tab3.saved_group_guid().AsLowercaseString(),
             message.tab_data().sync_tab_group_id());
-  EXPECT_EQ(tab2->update_time_windows_epoch_micros().ToTimeT(),
+  EXPECT_EQ(tab3.update_time_windows_epoch_micros().ToTimeT(),
             message.event_timestamp());
+  EXPECT_EQ(tab3.url().spec(), message.tab_data().last_url());
+}
+
+TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabEvents) {
+  CreateAndInitializeService();
+
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+  base::Time now = base::Time::Now();
+  GaiaId gaia1("abc");
+  GaiaId gaia2("def");
+
+  tab_groups::SavedTabGroup tab_group =
+      CreateSharedTabGroup(collaboration_group_id);
+  tab_group.SetCreatedByAttribution(gaia1);
+  tab_group.SetUpdatedByAttribution(gaia2);
+
+  base::Uuid tab1_sync_id = tab_group.saved_tabs().at(0).saved_tab_guid();
+  tab_groups::SavedTabGroupTab* tab1 = tab_group.GetTab(tab1_sync_id);
+  tab1->SetCreatedByAttribution(gaia1);
+  tab1->SetUpdatedByAttribution(gaia2);
+
+  base::Uuid tab2_sync_id = tab_group.saved_tabs().at(1).saved_tab_guid();
+  tab_groups::SavedTabGroupTab* tab2 = tab_group.GetTab(tab2_sync_id);
+  tab2->SetCreatedByAttribution(gaia1);
+  tab2->SetUpdatedByAttribution(gaia2);
+
+  // Create a third tab to check for removal.
+  tab_groups::SavedTabGroupTab tab3(GURL("https://www.example3.com/"), u"Tab 3",
+                                    tab_group.saved_guid(), std::nullopt);
+
+  std::vector<collaboration_pb::Message> messages;
+
+  collaboration_pb::Message message1 = CreateStoredMessage(
+      collaboration_group_id, collaboration_pb::EventType::TAB_ADDED,
+      DirtyType::kDotAndChip, now);
+  message1.set_triggering_user_gaia_id("gaia_1");
+  message1.mutable_tab_data()->set_sync_tab_id(
+      tab1->saved_tab_guid().AsLowercaseString());
+  message1.mutable_tab_data()->set_sync_tab_group_id(
+      tab1->saved_group_guid().AsLowercaseString());
+  messages.emplace_back(message1);
+
+  collaboration_pb::Message message2 = CreateStoredMessage(
+      collaboration_group_id, collaboration_pb::EventType::TAB_UPDATED,
+      DirtyType::kDotAndChip, now);
+  message2.set_triggering_user_gaia_id("gaia_2");
+  message2.mutable_tab_data()->set_sync_tab_id(
+      tab2->saved_tab_guid().AsLowercaseString());
+  message2.mutable_tab_data()->set_sync_tab_group_id(
+      tab2->saved_group_guid().AsLowercaseString());
+  messages.emplace_back(message2);
+
+  collaboration_pb::Message message3 = CreateStoredMessage(
+      collaboration_group_id, collaboration_pb::EventType::TAB_REMOVED,
+      DirtyType::kNone, now);
+  message3.set_triggering_user_gaia_id("gaia_2");
+  message3.mutable_tab_data()->set_sync_tab_id(
+      tab3.saved_tab_guid().AsLowercaseString());
+  message3.mutable_tab_data()->set_sync_tab_group_id(
+      tab3.saved_group_guid().AsLowercaseString());
+  message3.mutable_tab_data()->set_last_url(tab3.url().spec());
+  messages.emplace_back(message3);
+
+  // Add support for looking up GAIA IDs.
+  EXPECT_CALL(*unowned_messaging_backend_store_,
+              GetRecentMessagesForGroup(Eq(collaboration_group_id)))
+      .WillOnce(Return(messages));
+  EXPECT_CALL(*mock_data_sharing_service_,
+              GetPossiblyRemovedGroupMember(Eq(collaboration_group_id),
+                                            Eq(GaiaId("gaia_1"))))
+      .WillRepeatedly(
+          Return(CreatePartialMember(GaiaId("gaia_1"), "gaia1@gmail.com",
+                                     "Display Name 1", "Given Name 1")));
+  EXPECT_CALL(*mock_data_sharing_service_,
+              GetPossiblyRemovedGroupMember(Eq(collaboration_group_id),
+                                            Eq(GaiaId("gaia_2"))))
+      .WillRepeatedly(
+          Return(CreatePartialMember(GaiaId("gaia_2"), "gaia2@gmail.com",
+                                     "Display Name 1", "Given Name 2")));
+
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
+      .WillRepeatedly(Return(tab_group));
+
+  ActivityLogQueryParams params;
+  params.collaboration_id = collaboration_group_id;
+  std::vector<ActivityLogItem> activity_log = service_->GetActivityLog(params);
+  ASSERT_EQ(3u, activity_log.size());
+
+  // Verify tab 1.
+  EXPECT_EQ(CollaborationEvent::TAB_ADDED, activity_log[0].collaboration_event);
+  EXPECT_EQ(tab1->url().spec(),
+            *activity_log[0].activity_metadata.tab_metadata->last_known_url);
+  EXPECT_EQ(u"example.com", activity_log[0].description);
+  EXPECT_EQ("Given Name 1", activity_log[0].user_display_name);
+  EXPECT_EQ("gaia1@gmail.com",
+            activity_log[0].activity_metadata.triggering_user->email);
+
+  // Verify tab 2.
+  EXPECT_EQ(CollaborationEvent::TAB_UPDATED,
+            activity_log[1].collaboration_event);
+  EXPECT_EQ(tab2->url().spec(),
+            *activity_log[1].activity_metadata.tab_metadata->last_known_url);
+  EXPECT_EQ(u"example2.com", activity_log[1].description);
+  EXPECT_EQ("Given Name 2", activity_log[1].user_display_name);
+  EXPECT_EQ("gaia2@gmail.com",
+            activity_log[1].activity_metadata.triggering_user->email);
+
+  // Verify tab 3.
+  EXPECT_EQ(CollaborationEvent::TAB_REMOVED,
+            activity_log[2].collaboration_event);
+  EXPECT_EQ(tab3.url().spec(),
+            *activity_log[2].activity_metadata.tab_metadata->last_known_url);
+  EXPECT_EQ(u"example3.com", activity_log[2].description);
+  EXPECT_EQ("Given Name 2", activity_log[2].user_display_name);
+  EXPECT_EQ("gaia2@gmail.com",
+            activity_log[2].activity_metadata.triggering_user->email);
 }
 
 }  // namespace collaboration::messaging

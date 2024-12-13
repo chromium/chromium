@@ -98,6 +98,7 @@ static_library("messaging_internal") {
     "//components/collaboration/public:messaging_public",
     "//components/data_sharing/public",
     "//components/saved_tab_groups/public",
+    "//components/url_formatter",
     "//google_apis",
   ]
 
