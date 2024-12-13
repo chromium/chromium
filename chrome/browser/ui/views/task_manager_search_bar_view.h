@@ -33,6 +33,9 @@ class TaskManagerSearchBarView : public views::View,
   TaskManagerSearchBarView& operator=(const TaskManagerSearchBarView&) = delete;
   ~TaskManagerSearchBarView() override;
 
+  // views::View
+  void OnThemeChanged() override;
+
   // views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
@@ -43,8 +46,14 @@ class TaskManagerSearchBarView : public views::View,
   void SetInputTextForTesting(const std::u16string& text);
   gfx::Point GetClearButtonScreenCenterPointForTesting() const;
 
+  // Updates related fields on the Textfield.
+  void UpdateTextfield();
+
  private:
   void OnClearPressed();
+
+  // Textfield placeholder color.
+  std::optional<ui::ColorId> textfield_placeholder_color_id_;
 
   raw_ptr<views::Textfield> input_ = nullptr;
   raw_ptr<views::Button> clear_ = nullptr;

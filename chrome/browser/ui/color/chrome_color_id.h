@@ -789,6 +789,7 @@
   E_CPONLY(kColorTaskManagerBackground) \
   E_CPONLY(kColorTaskManagerSearchBarBackground) \
   E_CPONLY(kColorTaskManagerSearchBarTransparent) \
+  E_CPONLY(kColorTaskManagerSearchBarPlaceholderText) \
   /* Thumbnail tab colors. */ \
   E_CPONLY(kColorThumbnailTabBackground) \
   E_CPONLY(kColorThumbnailTabForeground) \

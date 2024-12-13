@@ -14,6 +14,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -24,7 +25,11 @@
 namespace task_manager {
 TaskManagerSearchBarView::TaskManagerSearchBarView(
     const std::u16string& placeholder,
-    const gfx::Insets& margins) {
+    const gfx::Insets& margins)
+#if BUILDFLAG(IS_LINUX)
+    : textfield_placeholder_color_id_(kColorTaskManagerSearchBarPlaceholderText)
+#endif
+{
   auto* layout_provider = ChromeLayoutProvider::Get();
 
   auto search_bar_layout = std::make_unique<views::BoxLayout>();
@@ -95,6 +100,11 @@ TaskManagerSearchBarView::TaskManagerSearchBarView(
 
 TaskManagerSearchBarView::~TaskManagerSearchBarView() = default;
 
+void TaskManagerSearchBarView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  UpdateTextfield();
+}
+
 bool TaskManagerSearchBarView::HandleKeyEvent(views::Textfield* sender,
                                               const ui::KeyEvent& key_event) {
   if (key_event.type() == ui::EventType::kKeyPressed &&
@@ -123,6 +133,14 @@ void TaskManagerSearchBarView::SetInputTextForTesting(
 gfx::Point TaskManagerSearchBarView::GetClearButtonScreenCenterPointForTesting()
     const {
   return clear_->GetBoundsInScreen().CenterPoint();
+}
+
+void TaskManagerSearchBarView::UpdateTextfield() {
+  if (const auto* const color_provider = GetColorProvider(); color_provider) {
+    input_->set_placeholder_text_color(
+        color_provider->GetColor(textfield_placeholder_color_id_.value_or(
+            ui::kColorTextfieldForegroundPlaceholder)));
+  }
 }
 
 BEGIN_METADATA(TaskManagerSearchBarView)
