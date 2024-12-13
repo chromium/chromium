@@ -15,6 +15,7 @@ static_library("scanner_feedback_ui") {
 
   deps = [
     "//ash/constants",
+    "//ash/webui/common:trusted_types_util",
     "//ash/webui/scanner_feedback_ui/resources",
     "//content/public/browser",
   ]

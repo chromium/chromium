@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/common/chrome_os_webui_config.h"
+#include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_scanner_feedback_ui_resources.h"
 #include "ash/webui/grit/ash_scanner_feedback_ui_resources_map.h"
 #include "ash/webui/scanner_feedback_ui/url_constants.h"
@@ -60,6 +61,8 @@ ScannerFeedbackUntrustedUI::ScannerFeedbackUntrustedUI(content::WebUI* web_ui)
   // We intentionally do not use `SetDefaultResource` here as we do not want to
   // serve index.html for non-HTML paths.
   untrusted_source->AddResourcePath("", IDR_ASH_SCANNER_FEEDBACK_UI_INDEX_HTML);
+
+  ash::EnableTrustedTypesCSP(untrusted_source);
 }
 
 ScannerFeedbackUntrustedUI::~ScannerFeedbackUntrustedUI() = default;

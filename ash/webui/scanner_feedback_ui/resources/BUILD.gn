@@ -15,9 +15,13 @@ build_webui("build") {
     "index.css",
   ]
 
-  non_web_component_files = [ "app.ts" ]
+  web_component_files = [ "app.ts" ]
+
+  ts_deps = [ "//third_party/polymer/v3_0:library" ]
 
   ts_composite = true
+
+  webui_context_type = "untrusted"
 
   grit_output_dir = "$root_gen_dir/ash/webui"
 }
