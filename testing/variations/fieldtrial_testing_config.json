@@ -16689,8 +16689,7 @@
                         "RunTasksByBatches",
                         "SharedStorageAPIEnableWALForDatabase",
                         "SqlWALModeOnDipsDatabase",
-                        "SqlWALModeOnSegmentationDatabase",
-                        "UIPumpImprovementsWin"
+                        "SqlWALModeOnSegmentationDatabase"
                     ]
                 }
             ]
