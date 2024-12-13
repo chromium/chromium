@@ -210,6 +210,8 @@
 //   `StrictNumeric<size_type>`.
 // - For convenience, provides `span::split_at()` to split a single span into
 //   two at a given offset.
+// - For convenience, provides `span::take_first[_elem]()` to remove the first
+//   portion of a dynamic-extent span and return it.
 //
 // Differences from [span.obs]:
 // - For convenience, provides `span::operator==()` to check whether two spans
@@ -1113,6 +1115,33 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   constexpr auto split_at(StrictNumeric<size_type> offset) const {
     return std::pair(first(offset), subspan(offset));
   }
+
+  // Returns a span of the first N elements, removing them.
+  // When `Offset` is outside the span, the underlying call will `CHECK()`. For
+  // a non-fatal alternative, consider `SpanReader`.
+  //
+  // (Not in `std::span`; convenient for processing a stream of disparate
+  // objects or looping over elements.)
+  template <size_t Offset>
+  constexpr auto take_first() {
+    const auto [first, rest] = split_at<Offset>();
+    *this = rest;
+    return first;
+  }
+  // When `offset` is outside the span, the underlying call will `CHECK()`.
+  constexpr auto take_first(StrictNumeric<size_type> offset) {
+    const auto [first, rest] = split_at(offset);
+    *this = rest;
+    return first;
+  }
+
+  // Returns the first element, removing it.
+  // When `empty()`, the underlying call will `CHECK()`. For a non-fatal
+  // alternative, consider `SpanReader`.
+  //
+  // (Not in `std::span`; convenient for processing a stream of disparate
+  // objects or looping over elements.)
+  constexpr auto take_first_elem() { return take_first<1>().front(); }
 
   // [span.obs]: Observers
   // Size.

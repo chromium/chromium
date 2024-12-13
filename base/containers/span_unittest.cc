@@ -2523,6 +2523,92 @@ TEST(SpanTest, SplitAt) {
   EXPECT_CHECK_DEATH({ dynamic_span.split_at<4u>(); });
 }
 
+TEST(SpanTest, TakeFirst) {
+  {
+    span<int> empty;
+    auto first = empty.take_first(0u);
+    EXPECT_TRUE(first.empty());
+    EXPECT_TRUE(empty.empty());
+  }
+
+  {
+    std::vector<int> vec = {4, 5, 6};
+    span<int> dynamic_span = span(vec);
+    auto first = dynamic_span.take_first(0u);
+    EXPECT_TRUE(first.empty());
+    EXPECT_THAT(dynamic_span, ElementsAre(4, 5, 6));
+  }
+  {
+    std::vector<int> vec = {4, 5, 6};
+    span<int> dynamic_span = span(vec);
+    auto first = dynamic_span.take_first(1u);
+    EXPECT_THAT(first, ElementsAre(4));
+    EXPECT_THAT(dynamic_span, ElementsAre(5, 6));
+  }
+  {
+    std::vector<int> vec = {4, 5, 6};
+    span<int> dynamic_span = span(vec);
+    auto first = dynamic_span.take_first(3u);
+    EXPECT_THAT(first, ElementsAre(4, 5, 6));
+    EXPECT_TRUE(dynamic_span.empty());
+  }
+  {
+    std::vector<int> vec = {4, 5, 6};
+    span<int> dynamic_span = span(vec);
+    // Invalid take will fail at runtime.
+    EXPECT_CHECK_DEATH({ dynamic_span.take_first(4u); });
+  }
+
+  // Fixed-size takes.
+  {
+    std::vector<int> vec = {4, 5, 6};
+    span<int> dynamic_span = span(vec);
+    auto first = dynamic_span.take_first<0>();
+    static_assert(std::same_as<decltype(first), span<int, 0>>);
+    EXPECT_THAT(dynamic_span, ElementsAre(4, 5, 6));
+  }
+  {
+    std::vector<int> vec = {4, 5, 6};
+    span<int> dynamic_span = span(vec);
+    auto first = dynamic_span.take_first<1>();
+    static_assert(std::same_as<decltype(first), span<int, 1>>);
+    EXPECT_THAT(first, ElementsAre(4));
+    EXPECT_THAT(dynamic_span, ElementsAre(5, 6));
+  }
+  {
+    std::vector<int> vec = {4, 5, 6};
+    span<int> dynamic_span = span(vec);
+    auto first = dynamic_span.take_first<3>();
+    static_assert(std::same_as<decltype(first), span<int, 3>>);
+    EXPECT_THAT(first, ElementsAre(4, 5, 6));
+    EXPECT_TRUE(dynamic_span.empty());
+  }
+  {
+    std::vector<int> vec = {4, 5, 6};
+    span<int> dynamic_span = span(vec);
+    // Invalid fixed-size take will fail at runtime.
+    EXPECT_CHECK_DEATH({ dynamic_span.take_first<4>(); });
+  }
+}
+
+TEST(SpanTest, TakeFirstElem) {
+  {
+    span<int> empty;
+    // Invalid take will fail at runtime.
+    EXPECT_CHECK_DEATH({ empty.take_first_elem(); });
+  }
+
+  {
+    std::vector<int> vec = {4, 5, 6};
+    span<int> dynamic_span = span(vec);
+    auto first = dynamic_span.take_first_elem();
+    static_assert(std::same_as<decltype(first), int>);
+    EXPECT_EQ(first, 4);
+    EXPECT_EQ(dynamic_span.size(), 2u);
+    EXPECT_EQ(dynamic_span.front(), 5);
+  }
+}
+
 TEST(SpanTest, CompareEquality) {
   static_assert(std::equality_comparable<int>);
   int32_t arr2[] = {1, 2};
