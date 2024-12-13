@@ -10,7 +10,7 @@
 
 namespace performance_manager {
 
-class LenientMockFrameNodeObserver : public FrameNode::ObserverDefaultImpl {
+class LenientMockFrameNodeObserver : public FrameNodeObserver {
  public:
   LenientMockFrameNodeObserver();
   ~LenientMockFrameNodeObserver() override;

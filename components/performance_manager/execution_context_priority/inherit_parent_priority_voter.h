@@ -22,8 +22,7 @@ namespace performance_manager::execution_context_priority {
 //
 // Note: This FrameNodeObserver can affect the initial priority of a frame and
 // thus uses `OnBeforeFrameNodeAdded`.
-class InheritParentPriorityVoter : public VoterBase,
-                                   public FrameNode::ObserverDefaultImpl {
+class InheritParentPriorityVoter : public VoterBase, public FrameNodeObserver {
  public:
   static const char kPriorityInheritedReason[];
 

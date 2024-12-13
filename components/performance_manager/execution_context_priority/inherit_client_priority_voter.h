@@ -17,8 +17,8 @@ namespace execution_context_priority {
 // This voter ensures the priority of a client is inherited by its children
 // workers.
 class InheritClientPriorityVoter : public VoterBase,
-                                   public FrameNode::ObserverDefaultImpl,
-                                   public WorkerNode::ObserverDefaultImpl {
+                                   public FrameNodeObserver,
+                                   public WorkerNodeObserver {
  public:
   static const char kPriorityInheritedReason[];
 

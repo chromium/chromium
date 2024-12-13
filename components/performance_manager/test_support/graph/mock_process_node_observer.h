@@ -10,7 +10,7 @@
 
 namespace performance_manager {
 
-class LenientMockProcessNodeObserver : public ProcessNode::ObserverDefaultImpl {
+class LenientMockProcessNodeObserver : public ProcessNodeObserver {
  public:
   LenientMockProcessNodeObserver();
   ~LenientMockProcessNodeObserver() override;

@@ -37,10 +37,10 @@ namespace resource_attribution {
 // graph. So this is not a decorator as defined in
 // components/performance_manager/README.md
 class CPUMeasurementMonitor
-    : public FrameNode::ObserverDefaultImpl,
-      public PageNode::ObserverDefaultImpl,
-      public ProcessNode::ObserverDefaultImpl,
-      public WorkerNode::ObserverDefaultImpl,
+    : public FrameNodeObserver,
+      public PageNodeObserver,
+      public ProcessNodeObserver,
+      public WorkerNodeObserver,
       public performance_manager::NodeDataDescriberDefaultImpl {
  public:
   CPUMeasurementMonitor();

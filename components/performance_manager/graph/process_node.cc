@@ -14,7 +14,4 @@ ProcessNode::~ProcessNode() = default;
 ProcessNodeObserver::ProcessNodeObserver() = default;
 ProcessNodeObserver::~ProcessNodeObserver() = default;
 
-ProcessNode::ObserverDefaultImpl::ObserverDefaultImpl() = default;
-ProcessNode::ObserverDefaultImpl::~ObserverDefaultImpl() = default;
-
 }  // namespace performance_manager

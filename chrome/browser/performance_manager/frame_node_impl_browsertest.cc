@@ -55,9 +55,8 @@ DerivedType* PassToPMGraph(std::unique_ptr<DerivedType> graph_owned) {
 
 // A FrameNodeObserver that allows waiting until a frame's viewport intersection
 // state is initialized to a set value.
-class ViewportIntersectionStateChangedObserver
-    : public GraphOwned,
-      public FrameNode::ObserverDefaultImpl {
+class ViewportIntersectionStateChangedObserver : public GraphOwned,
+                                                 public FrameNodeObserver {
  public:
   // Needed to filter OnIntersectsViewportChanged() notifications for frames
   // that aren't under test. Since the frame node does not exist before the

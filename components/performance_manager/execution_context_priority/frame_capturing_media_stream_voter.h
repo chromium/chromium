@@ -17,7 +17,7 @@ namespace performance_manager::execution_context_priority {
 // Note: This FrameNodeObserver can affect the initial priority of a frame and
 // thus uses `OnBeforeFrameNodeAdded`.
 class FrameCapturingMediaStreamVoter : public VoterBase,
-                                       public FrameNode::ObserverDefaultImpl {
+                                       public FrameNodeObserver {
  public:
   static const char kFrameCapturingMediaStreamReason[];
 

@@ -139,9 +139,8 @@ void SetBrowserStartupIsComplete() {
 // Observes the first visible page load and sets the startup complete
 // flag accordingly. Ownership is passed to the Performance Manager
 // after creation.
-class StartupObserver
-    : public performance_manager::GraphOwned,
-      public performance_manager::PageNode::ObserverDefaultImpl {
+class StartupObserver : public performance_manager::GraphOwned,
+                        public performance_manager::PageNodeObserver {
  public:
   StartupObserver(const StartupObserver&) = delete;
   StartupObserver& operator=(const StartupObserver&) = delete;

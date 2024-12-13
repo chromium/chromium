@@ -20,7 +20,7 @@ namespace performance_manager {
 class ProcessPriorityAggregator
     : public GraphOwnedDefaultImpl,
       public NodeDataDescriberDefaultImpl,
-      public ProcessNode::ObserverDefaultImpl,
+      public ProcessNodeObserver,
       public execution_context::ExecutionContextObserverDefaultImpl {
  public:
   using Data = ProcessPriorityAggregatorData;

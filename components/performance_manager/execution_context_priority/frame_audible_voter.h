@@ -16,8 +16,7 @@ namespace execution_context_priority {
 // and a TaskPriority::LOWEST vote to non-audible frames.
 // Note: This FrameNodeObserver can affect the initial priority of a frame and
 // thus uses `OnBeforeFrameNodeAdded`.
-class FrameAudibleVoter : public VoterBase,
-                          public FrameNode::ObserverDefaultImpl {
+class FrameAudibleVoter : public VoterBase, public FrameNodeObserver {
  public:
   static const char kFrameAudibleReason[];
 

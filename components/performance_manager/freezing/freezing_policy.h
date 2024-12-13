@@ -58,8 +58,8 @@ namespace performance_manager {
 //   - Mirrored;
 //   - Capturing window;
 //   - Capturing display;
-class FreezingPolicy : public PageNode::ObserverDefaultImpl,
-                       public FrameNode::ObserverDefaultImpl,
+class FreezingPolicy : public PageNodeObserver,
+                       public FrameNodeObserver,
                        public PageLiveStateObserverDefaultImpl,
                        public resource_attribution::QueryResultObserver,
                        public GraphOwnedAndRegistered<FreezingPolicy>,

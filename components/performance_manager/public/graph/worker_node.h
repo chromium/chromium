@@ -65,9 +65,6 @@ class WorkerNode : public TypedNode<WorkerNode> {
     kService,
   };
 
-  using Observer = WorkerNodeObserver;
-  class ObserverDefaultImpl;
-
   static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kWorker; }
 
   WorkerNode();
@@ -142,8 +139,7 @@ class WorkerNode : public TypedNode<WorkerNode> {
   virtual uint64_t GetPrivateFootprintKbEstimate() const = 0;
 };
 
-// Pure virtual observer interface. Derive from this if you want to be forced to
-// implement the entire interface.
+// Observer interface for worker nodes.
 class WorkerNodeObserver : public base::CheckedObserver {
  public:
   WorkerNodeObserver();
@@ -175,7 +171,7 @@ class WorkerNodeObserver : public base::CheckedObserver {
   // OnBeforeWorkerNodeAdded().
   virtual void OnBeforeWorkerNodeAdded(
       const WorkerNode* worker_node,
-      const ProcessNode* pending_process_node) = 0;
+      const ProcessNode* pending_process_node) {}
 
   // Called after a `worker_node` is added to the graph. Observers may make
   // property changes during the scope of this call, as long as they don't cause
@@ -185,7 +181,7 @@ class WorkerNodeObserver : public base::CheckedObserver {
   // Note that observers are notified in an arbitrary order, so property changes
   // made here may or may not be visible to other observers in
   // OnWorkerNodeAdded().
-  virtual void OnWorkerNodeAdded(const WorkerNode* worker_node) = 0;
+  virtual void OnWorkerNodeAdded(const WorkerNode* worker_node) {}
 
   // Called before a `worker_node` is removed from the graph. Observers may make
   // property changes during the scope of this call, as long as they don't cause
@@ -195,7 +191,7 @@ class WorkerNodeObserver : public base::CheckedObserver {
   // Note that observers are notified in an arbitrary order, so property changes
   // made here may or may not be visible to other observers in
   // OnBeforeWorkerNodeRemoved().
-  virtual void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) = 0;
+  virtual void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) {}
 
   // Called after a `worker_node` is removed from the graph.
   // OnBeforeWorkerNodeRemoved() is better for most purposes, but this can be
@@ -210,9 +206,8 @@ class WorkerNodeObserver : public base::CheckedObserver {
   // as long as they don't cause notifications to be sent and don't modify
   // pointers to/from other nodes, since the node is now isolated from the
   // graph.
-  virtual void OnWorkerNodeRemoved(
-      const WorkerNode* worker_node,
-      const ProcessNode* previous_process_node) = 0;
+  virtual void OnWorkerNodeRemoved(const WorkerNode* worker_node,
+                                   const ProcessNode* previous_process_node) {}
 
   // Notifications of property changes.
 
@@ -220,84 +215,42 @@ class WorkerNodeObserver : public base::CheckedObserver {
   // happens when the script has finished loading. Note that for dedicated
   // workers, this won't be called unless the PlzDedicatedWorker feature is
   // enabled.
-  virtual void OnFinalResponseURLDetermined(const WorkerNode* worker_node) = 0;
+  virtual void OnFinalResponseURLDetermined(const WorkerNode* worker_node) {}
 
   // Invoked before |client_frame_node| becomes a client of |worker_node|. This
   // is the last chance to traverse the graph and capture state that doesn't
   // include the worker/frame client relationship.
   virtual void OnBeforeClientFrameAdded(const WorkerNode* worker_node,
-                                        const FrameNode* client_frame_node) = 0;
+                                        const FrameNode* client_frame_node) {}
 
   // Invoked after |client_frame_node| becomes a client of |worker_node|.
   virtual void OnClientFrameAdded(const WorkerNode* worker_node,
-                                  const FrameNode* client_frame_node) = 0;
+                                  const FrameNode* client_frame_node) {}
 
   // Invoked when |client_frame_node| is no longer a client of |worker_node|.
-  virtual void OnBeforeClientFrameRemoved(
-      const WorkerNode* worker_node,
-      const FrameNode* client_frame_node) = 0;
+  virtual void OnBeforeClientFrameRemoved(const WorkerNode* worker_node,
+                                          const FrameNode* client_frame_node) {}
 
   // Invoked before |client_worker_node| becomes a client of |worker_node|. This
   // is the last chance to traverse the graph and capture state that doesn't
   // include the worker/worker client relationship.
-  virtual void OnBeforeClientWorkerAdded(
-      const WorkerNode* worker_node,
-      const WorkerNode* client_worker_node) = 0;
+  virtual void OnBeforeClientWorkerAdded(const WorkerNode* worker_node,
+                                         const WorkerNode* client_worker_node) {
+  }
 
   // Invoked after |client_worker_node| becomes a client of |worker_node|.
   virtual void OnClientWorkerAdded(const WorkerNode* worker_node,
-                                   const WorkerNode* client_worker_node) = 0;
+                                   const WorkerNode* client_worker_node) {}
 
   // Invoked when |client_worker_node| is no longer a client of |worker_node|.
   virtual void OnBeforeClientWorkerRemoved(
       const WorkerNode* worker_node,
-      const WorkerNode* client_worker_node) = 0;
+      const WorkerNode* client_worker_node) {}
 
   // Invoked when the worker priority and reason changes.
   virtual void OnPriorityAndReasonChanged(
       const WorkerNode* worker_node,
-      const PriorityAndReason& previous_value) = 0;
-};
-
-// Default implementation of observer that provides dummy versions of each
-// function. Derive from this if you only need to implement a few of the
-// functions.
-class WorkerNode::ObserverDefaultImpl : public WorkerNodeObserver {
- public:
-  ObserverDefaultImpl();
-
-  ObserverDefaultImpl(const ObserverDefaultImpl&) = delete;
-  ObserverDefaultImpl& operator=(const ObserverDefaultImpl&) = delete;
-
-  ~ObserverDefaultImpl() override;
-
-  // WorkerNodeObserver implementation:
-  void OnBeforeWorkerNodeAdded(
-      const WorkerNode* worker_node,
-      const ProcessNode* pending_process_node) override {}
-  void OnWorkerNodeAdded(const WorkerNode* worker_node) override {}
-  void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) override {}
-  void OnWorkerNodeRemoved(const WorkerNode* worker_node,
-                           const ProcessNode* previous_process_node) override {}
-  void OnFinalResponseURLDetermined(const WorkerNode* worker_node) override {}
-  void OnBeforeClientFrameAdded(const WorkerNode* worker_node,
-                                const FrameNode* client_frame_node) override {}
-  void OnClientFrameAdded(const WorkerNode* worker_node,
-                          const FrameNode* client_frame_node) override {}
-  void OnBeforeClientFrameRemoved(const WorkerNode* worker_node,
-                                  const FrameNode* client_frame_node) override {
-  }
-  void OnBeforeClientWorkerAdded(
-      const WorkerNode* worker_node,
-      const WorkerNode* client_worker_node) override {}
-  void OnClientWorkerAdded(const WorkerNode* worker_node,
-                           const WorkerNode* client_worker_node) override {}
-  void OnBeforeClientWorkerRemoved(
-      const WorkerNode* worker_node,
-      const WorkerNode* client_worker_node) override {}
-  void OnPriorityAndReasonChanged(
-      const WorkerNode* worker_node,
-      const PriorityAndReason& previous_value) override {}
+      const PriorityAndReason& previous_value) {}
 };
 
 }  // namespace performance_manager

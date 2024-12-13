@@ -70,9 +70,6 @@ class FrameNode : public TypedNode<FrameNode> {
   using NodeSetView = NodeSetView<NodeSet, ReturnType>;
 
   using LifecycleState = mojom::LifecycleState;
-  using Observer = FrameNodeObserver;
-
-  class ObserverDefaultImpl;
 
   static const char* kDefaultPriorityReason;
 
@@ -258,8 +255,7 @@ class FrameNode : public TypedNode<FrameNode> {
   virtual uint64_t GetPrivateFootprintKbEstimate() const = 0;
 };
 
-// Pure virtual observer interface. Derive from this if you want to be forced to
-// implement the entire interface.
+// Observer interface for frame nodes.
 class FrameNodeObserver : public base::CheckedObserver {
  public:
   FrameNodeObserver();
@@ -297,7 +293,7 @@ class FrameNodeObserver : public base::CheckedObserver {
       const FrameNode* pending_parent_frame_node,
       const PageNode* pending_page_node,
       const ProcessNode* pending_process_node,
-      const FrameNode* pending_parent_or_outer_document_or_embedder) = 0;
+      const FrameNode* pending_parent_or_outer_document_or_embedder) {}
 
   // Called after a `frame_node` is added to the graph. Observers may make
   // property changes during the scope of this call, as long as they don't cause
@@ -307,7 +303,7 @@ class FrameNodeObserver : public base::CheckedObserver {
   // Note that observers are notified in an arbitrary order, so property changes
   // made here may or may not be visible to other observers in
   // OnFrameNodeAdded().
-  virtual void OnFrameNodeAdded(const FrameNode* frame_node) = 0;
+  virtual void OnFrameNodeAdded(const FrameNode* frame_node) {}
 
   // Called before a `frame_node` is removed from the graph. Observers may make
   // property changes during the scope of this call, as long as they don't cause
@@ -317,7 +313,7 @@ class FrameNodeObserver : public base::CheckedObserver {
   // Note that observers are notified in an arbitrary order, so property changes
   // made here may or may not be visible to other observers in
   // OnBeforeFrameNodeRemoved().
-  virtual void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) = 0;
+  virtual void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {}
 
   // Called after a `frame_node` is removed from the graph.
   // OnBeforeFrameNodeRemoved() is better for most purposes, but this can be
@@ -341,83 +337,82 @@ class FrameNodeObserver : public base::CheckedObserver {
       const FrameNode* previous_parent_frame_node,
       const PageNode* previous_page_node,
       const ProcessNode* previous_process_node,
-      const FrameNode* previous_parent_or_outer_document_or_embedder) = 0;
+      const FrameNode* previous_parent_or_outer_document_or_embedder) {}
 
   // Notifications of property changes.
 
   // Invoked when the current frame changes. Both arguments can be nullptr.
   virtual void OnCurrentFrameChanged(const FrameNode* previous_frame_node,
-                                     const FrameNode* current_frame_node) = 0;
+                                     const FrameNode* current_frame_node) {}
 
   // Invoked when the NetworkAlmostIdle property changes.
-  virtual void OnNetworkAlmostIdleChanged(const FrameNode* frame_node) = 0;
+  virtual void OnNetworkAlmostIdleChanged(const FrameNode* frame_node) {}
 
   // Invoked when the LifecycleState property changes.
-  virtual void OnFrameLifecycleStateChanged(const FrameNode* frame_node) = 0;
+  virtual void OnFrameLifecycleStateChanged(const FrameNode* frame_node) {}
 
   // Invoked when the URL property changes.
   virtual void OnURLChanged(const FrameNode* frame_node,
-                            const GURL& previous_value) = 0;
+                            const GURL& previous_value) {}
 
   // Invoked when the origin property changes.
   virtual void OnOriginChanged(
       const FrameNode* frame_node,
-      const std::optional<url::Origin>& previous_value) = 0;
+      const std::optional<url::Origin>& previous_value) {}
 
   // Invoked when the IsAdFrame property changes.
-  virtual void OnIsAdFrameChanged(const FrameNode* frame_node) = 0;
+  virtual void OnIsAdFrameChanged(const FrameNode* frame_node) {}
 
   // Invoked when the IsHoldingWebLock() property changes.
-  virtual void OnFrameIsHoldingWebLockChanged(const FrameNode* frame_node) = 0;
+  virtual void OnFrameIsHoldingWebLockChanged(const FrameNode* frame_node) {}
 
   // Invoked when the IsHoldingIndexedDBLock() property changes.
   virtual void OnFrameIsHoldingIndexedDBLockChanged(
-      const FrameNode* frame_node) = 0;
+      const FrameNode* frame_node) {}
 
   // Invoked when the frame priority and reason changes.
   virtual void OnPriorityAndReasonChanged(
       const FrameNode* frame_node,
-      const PriorityAndReason& previous_value) = 0;
+      const PriorityAndReason& previous_value) {}
 
   // Called when the frame is interacted with by the user.
-  virtual void OnHadUserActivationChanged(const FrameNode* frame_node) = 0;
+  virtual void OnHadUserActivationChanged(const FrameNode* frame_node) {}
 
   // Called when the frame receives a form interaction.
-  virtual void OnHadFormInteractionChanged(const FrameNode* frame_node) = 0;
+  virtual void OnHadFormInteractionChanged(const FrameNode* frame_node) {}
 
   // Called the first time the user has edited the content of an element. This
   // is a superset of `OnHadFormInteractionChanged()`: form interactions trigger
   // both events but changes to e.g. a `<div>` with the `contenteditable`
   // property will only trigger `OnHadUserEditsChanged()`.
-  virtual void OnHadUserEditsChanged(const FrameNode* frame_node) = 0;
+  virtual void OnHadUserEditsChanged(const FrameNode* frame_node) {}
 
   // Called when the frame starts or stops using WebRTC.
-  virtual void OnFrameUsesWebRTCChanged(const FrameNode* frame_node) = 0;
+  virtual void OnFrameUsesWebRTCChanged(const FrameNode* frame_node) {}
 
   // Invoked when the IsAudible property changes.
-  virtual void OnIsAudibleChanged(const FrameNode* frame_node) = 0;
+  virtual void OnIsAudibleChanged(const FrameNode* frame_node) {}
 
   // Invoked when the IsCapturingMediaStream property changes.
-  virtual void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) = 0;
+  virtual void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) {}
 
   // Invoked when a frame's intersection with the viewport changes. Will only be
   // invoked for a child frame, as the outermost main frame is always considered
   // to be fully intersecting with the viewport.
-  virtual void OnViewportIntersectionChanged(const FrameNode* frame_node) = 0;
+  virtual void OnViewportIntersectionChanged(const FrameNode* frame_node) {}
 
   // Invoked when the visibility property changes.
-  virtual void OnFrameVisibilityChanged(
-      const FrameNode* frame_node,
-      FrameNode::Visibility previous_value) = 0;
+  virtual void OnFrameVisibilityChanged(const FrameNode* frame_node,
+                                        FrameNode::Visibility previous_value) {}
 
   // Invoked when the `IsImportant` property changes.
-  virtual void OnIsImportantChanged(const FrameNode* frame_node) = 0;
+  virtual void OnIsImportantChanged(const FrameNode* frame_node) {}
 
   // Events with no property changes.
 
   // Invoked when a non-persistent notification has been issued by the frame.
-  virtual void OnNonPersistentNotificationCreated(
-      const FrameNode* frame_node) = 0;
+  virtual void OnNonPersistentNotificationCreated(const FrameNode* frame_node) {
+  }
 
   // Invoked when the frame has had a first contentful paint, as defined here:
   // https://developers.google.com/web/tools/lighthouse/audits/first-contentful-paint
@@ -426,69 +421,7 @@ class FrameNodeObserver : public base::CheckedObserver {
   // frame. It will only fire for main-frame nodes.
   virtual void OnFirstContentfulPaint(
       const FrameNode* frame_node,
-      base::TimeDelta time_since_navigation_start) = 0;
-};
-
-// Default implementation of observer that provides dummy versions of each
-// function. Derive from this if you only need to implement a few of the
-// functions.
-class FrameNode::ObserverDefaultImpl : public FrameNodeObserver {
- public:
-  ObserverDefaultImpl();
-
-  ObserverDefaultImpl(const ObserverDefaultImpl&) = delete;
-  ObserverDefaultImpl& operator=(const ObserverDefaultImpl&) = delete;
-
-  ~ObserverDefaultImpl() override;
-
-  // FrameNodeObserver implementation:
-  void OnBeforeFrameNodeAdded(
-      const FrameNode* frame_node,
-      const FrameNode* pending_parent_frame_node,
-      const PageNode* pending_page_node,
-      const ProcessNode* pending_process_node,
-      const FrameNode* pending_parent_or_outer_document_or_embedder) override {}
-  void OnFrameNodeAdded(const FrameNode* frame_node) override {}
-  void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override {}
-  void OnFrameNodeRemoved(
-      const FrameNode* frame_node,
-      const FrameNode* previous_parent_frame_node,
-      const PageNode* previous_page_node,
-      const ProcessNode* previous_process_node,
-      const FrameNode* previous_parent_or_outer_document_or_embedder) override {
-  }
-  void OnCurrentFrameChanged(const FrameNode* previous_frame_node,
-                             const FrameNode* current_frame_node) override {}
-  void OnNetworkAlmostIdleChanged(const FrameNode* frame_node) override {}
-  void OnFrameLifecycleStateChanged(const FrameNode* frame_node) override {}
-  void OnURLChanged(const FrameNode* frame_node,
-                    const GURL& previous_value) override {}
-  void OnOriginChanged(
-      const FrameNode* frame_node,
-      const std::optional<url::Origin>& previous_value) override {}
-  void OnIsAdFrameChanged(const FrameNode* frame_node) override {}
-  void OnFrameIsHoldingWebLockChanged(const FrameNode* frame_node) override {}
-  void OnFrameIsHoldingIndexedDBLockChanged(
-      const FrameNode* frame_node) override {}
-  void OnPriorityAndReasonChanged(
-      const FrameNode* frame_node,
-      const PriorityAndReason& previous_value) override {}
-  void OnHadUserActivationChanged(const FrameNode* frame_node) override {}
-  void OnHadFormInteractionChanged(const FrameNode* frame_node) override {}
-  void OnHadUserEditsChanged(const FrameNode* frame_node) override {}
-  void OnFrameUsesWebRTCChanged(const FrameNode* frame_node) override {}
-  void OnIsAudibleChanged(const FrameNode* frame_node) override {}
-  void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) override {}
-  void OnViewportIntersectionChanged(const FrameNode* frame_node) override {}
-  void OnFrameVisibilityChanged(const FrameNode* frame_node,
-                                FrameNode::Visibility previous_value) override {
-  }
-  void OnIsImportantChanged(const FrameNode* frame_node) override {}
-  void OnNonPersistentNotificationCreated(
-      const FrameNode* frame_node) override {}
-  void OnFirstContentfulPaint(
-      const FrameNode* frame_node,
-      base::TimeDelta time_since_navigation_start) override {}
+      base::TimeDelta time_since_navigation_start) {}
 };
 
 }  // namespace performance_manager

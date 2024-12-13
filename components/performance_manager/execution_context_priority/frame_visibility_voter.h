@@ -21,8 +21,7 @@ namespace execution_context_priority {
 // unimportant.
 // Note: This FrameNodeObserver can affect the initial priority of a frame and
 // thus uses `OnBeforeFrameNodeAdded`.
-class FrameVisibilityVoter : public VoterBase,
-                             public FrameNode::ObserverDefaultImpl {
+class FrameVisibilityVoter : public VoterBase, public FrameNodeObserver {
  public:
   static const char kFrameVisibilityReason[];
 

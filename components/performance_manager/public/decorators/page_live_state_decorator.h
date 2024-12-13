@@ -31,7 +31,7 @@ class PageLiveStateObserver;
 // PageNode on the Performance Manager's sequence.
 class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
                                public NodeDataDescriberDefaultImpl,
-                               public PageNode::ObserverDefaultImpl {
+                               public PageNodeObserver {
  public:
   class Data;
 
@@ -88,7 +88,7 @@ class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
   // NodeDataDescriber implementation:
   base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
 
-  // PageNode::ObserverDefaultImpl implementation:
+  // PageNodeObserver implementation:
   void OnTitleUpdated(const PageNode* page_node) override;
   void OnFaviconUpdated(const PageNode* page_node) override;
 

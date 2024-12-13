@@ -29,8 +29,8 @@ namespace policies {
 // UserspaceSwapPolicy is a policy which will trigger a renderer to swap itself
 // via userspace.
 class UserspaceSwapPolicy : public GraphOwned,
-                            public ProcessNode::ObserverDefaultImpl,
-                            public SystemNode::ObserverDefaultImpl {
+                            public ProcessNodeObserver,
+                            public SystemNodeObserver {
  public:
   UserspaceSwapPolicy();
 

@@ -36,7 +36,9 @@ namespace {
 using ObservePolicy = page_load_metrics::PageLoadMetricsObserver::ObservePolicy;
 using Visibility = PerformanceManagerMetricsObserver::Visibility;
 using performance_manager::Graph;
+using performance_manager::GraphOwnedAndRegistered;
 using performance_manager::PageNode;
+using performance_manager::PageNodeObserver;
 using performance_manager::PerformanceManager;
 
 constexpr char kLCPToLoadedIdleHistogram[] =
@@ -47,8 +49,8 @@ constexpr char kLoadedIdleWithoutLCPHistogram[] =
     "PageLoad.Clients.PerformanceManager.LoadedIdleWithoutLCP";
 
 class LoadedIdleObserver final
-    : public PageNode::ObserverDefaultImpl,
-      public performance_manager::GraphOwnedAndRegistered<LoadedIdleObserver> {
+    : public PageNodeObserver,
+      public GraphOwnedAndRegistered<LoadedIdleObserver> {
  public:
   // Gets a singleton LoadedIdleObserver registered with `graph`. It will be
   // deleted when `graph` is torn down, so in unit tests a new
@@ -66,7 +68,7 @@ class LoadedIdleObserver final
       base::WeakPtr<PageNode> page_node,
       base::OnceCallback<void(base::TimeTicks)> on_loaded_idle_callback);
 
-  // PageNode::ObserverDefaultImpl:
+  // PageNodeObserver:
   void OnLoadingStateChanged(const PageNode* page_node,
                              PageNode::LoadingState) final;
   void OnBeforePageNodeRemoved(const PageNode* page_node) final;

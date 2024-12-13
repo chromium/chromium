@@ -26,8 +26,8 @@ class ExecutionContext;
 class ExecutionContextRegistryImpl
     : public ExecutionContextRegistry,
       public GraphRegisteredImpl<ExecutionContextRegistryImpl>,
-      public FrameNode::ObserverDefaultImpl,
-      public WorkerNode::ObserverDefaultImpl {
+      public FrameNodeObserver,
+      public WorkerNodeObserver {
  public:
   ExecutionContextRegistryImpl();
   ExecutionContextRegistryImpl(const ExecutionContextRegistryImpl&) = delete;
@@ -60,14 +60,14 @@ class ExecutionContextRegistryImpl
   }
 
  private:
-  // FrameNode::ObserverDefaultImpl implementation:
+  // FrameNodeObserver:
   void OnFrameNodeAdded(const FrameNode* frame_node) override;
   void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
   void OnPriorityAndReasonChanged(
       const FrameNode* frame_node,
       const PriorityAndReason& previous_value) override;
 
-  // WorkerNode::ObserverDefaultImpl implementation:
+  // WorkerNodeObserver:
   void OnWorkerNodeAdded(const WorkerNode* worker_node) override;
   void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) override;
   void OnPriorityAndReasonChanged(

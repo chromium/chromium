@@ -17,8 +17,8 @@ namespace performance_manager::execution_context_priority {
 // Note: This FrameNodeObserver can affect the initial priority of a frame and
 // thus uses `OnBeforeFrameNodeAdded`.
 class LoadingPageVoter : public VoterBase,
-                         public PageNode::ObserverDefaultImpl,
-                         public FrameNode::ObserverDefaultImpl {
+                         public PageNodeObserver,
+                         public FrameNodeObserver {
  public:
   static const char kPageIsLoadingReason[];
 

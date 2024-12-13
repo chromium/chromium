@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest, OpenerTrackingWorks) {
 
 namespace {
 
-class WebRTCUsageChangeWaiter : public PageNode::ObserverDefaultImpl {
+class WebRTCUsageChangeWaiter : public PageNodeObserver {
  public:
   WebRTCUsageChangeWaiter() = default;
 

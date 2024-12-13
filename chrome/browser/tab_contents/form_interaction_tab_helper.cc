@@ -21,7 +21,7 @@ bool g_observer_exists = false;
 
 // Graph observer used to receive the page form interaction events.
 class FormInteractionTabHelper::GraphObserver
-    : public performance_manager::PageNode::ObserverDefaultImpl,
+    : public performance_manager::PageNodeObserver,
       public performance_manager::GraphOwned {
  public:
   GraphObserver() = default;
@@ -36,7 +36,7 @@ class FormInteractionTabHelper::GraphObserver
       base::WeakPtr<content::WebContents> contents,
       bool had_form_interaction);
 
-  // performance_manager::PageNode::ObserverDefaultImpl:
+  // performance_manager::PageNodeObserver:
   void OnHadFormInteractionChanged(
       const performance_manager::PageNode* page_node) override;
 

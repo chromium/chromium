@@ -85,8 +85,7 @@ class SiteDataRecorderHeuristics {
 // The SiteDataRecorder decorator is responsible for adorning PageNodes with a
 // SiteDataReader and a SiteDataWriter and for forwarding the event of interest
 // to this writer.
-class SiteDataRecorder : public GraphOwned,
-                         public PageNode::ObserverDefaultImpl {
+class SiteDataRecorder : public GraphOwned, public PageNodeObserver {
  public:
   class Data;
 
@@ -108,11 +107,11 @@ class SiteDataRecorder : public GraphOwned,
   static void SetHeuristicsImplementationForTesting(
       std::unique_ptr<SiteDataRecorderHeuristics> heuristics);
 
-  // GraphOwned implementation:
+  // GraphOwned:
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
-  // PageNode::ObserverDefaultImpl:
+  // PageNodeObserver:
   void OnPageNodeAdded(const PageNode* page_node) override;
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
   void OnMainFrameUrlChanged(const PageNode* page_node) override;

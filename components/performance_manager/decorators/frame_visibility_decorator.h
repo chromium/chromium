@@ -22,9 +22,9 @@ namespace performance_manager {
 // of FrameNode::Visibility::kUnknown. This can happen early in the lifetime of
 // a frame, where it hasn't been assigned its viewport intersection yet.
 class FrameVisibilityDecorator : public GraphOwnedDefaultImpl,
-                                 public PageNode::ObserverDefaultImpl,
+                                 public PageNodeObserver,
                                  public PageLiveStateObserver,
-                                 public FrameNode::ObserverDefaultImpl {
+                                 public FrameNodeObserver {
  public:
   FrameVisibilityDecorator();
   ~FrameVisibilityDecorator() override;

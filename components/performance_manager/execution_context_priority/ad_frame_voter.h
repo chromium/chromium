@@ -16,7 +16,7 @@ namespace execution_context_priority {
 // ad frame. No votes will be cast for non-ad frames.
 // Note: This FrameNodeObserver can affect the initial priority of a frame and
 // thus uses `OnBeforeFrameNodeAdded`.
-class AdFrameVoter : public VoterBase, public FrameNode::ObserverDefaultImpl {
+class AdFrameVoter : public VoterBase, public FrameNodeObserver {
  public:
   static const char kAdFrameReason[];
 

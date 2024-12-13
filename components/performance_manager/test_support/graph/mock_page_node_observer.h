@@ -10,7 +10,7 @@
 
 namespace performance_manager {
 
-class LenientMockPageNodeObserver : public PageNode::ObserverDefaultImpl {
+class LenientMockPageNodeObserver : public PageNodeObserver {
  public:
   LenientMockPageNodeObserver();
   ~LenientMockPageNodeObserver() override;

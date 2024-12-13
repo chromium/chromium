@@ -17,15 +17,19 @@ namespace performance_manager {
 
 class FrameNode;
 class FrameNodeImpl;
+class FrameNodeObserver;
 class Graph;
 class GraphImpl;
 class PageNode;
 class PageNodeImpl;
+class PageNodeObserver;
 class PerformanceManager;
 class ProcessNode;
 class ProcessNodeImpl;
+class ProcessNodeObserver;
 class WorkerNode;
 class WorkerNodeImpl;
+class WorkerNodeObserver;
 
 }  // namespace performance_manager
 
@@ -35,16 +39,20 @@ using BrowserChildProcessHostId =
     performance_manager::BrowserChildProcessHostId;
 using FrameNode = performance_manager::FrameNode;
 using FrameNodeImpl = performance_manager::FrameNodeImpl;
+using FrameNodeObserver = performance_manager::FrameNodeObserver;
 using Graph = performance_manager::Graph;
 using GraphImpl = performance_manager::GraphImpl;
 using PageNode = performance_manager::PageNode;
 using PageNodeImpl = performance_manager::PageNodeImpl;
+using PageNodeObserver = performance_manager::PageNodeObserver;
 using PerformanceManager = performance_manager::PerformanceManager;
 using ProcessNode = performance_manager::ProcessNode;
 using ProcessNodeImpl = performance_manager::ProcessNodeImpl;
+using ProcessNodeObserver = performance_manager::ProcessNodeObserver;
 using RenderProcessHostId = performance_manager::RenderProcessHostId;
 using WorkerNode = performance_manager::WorkerNode;
 using WorkerNodeImpl = performance_manager::WorkerNodeImpl;
+using WorkerNodeObserver = performance_manager::WorkerNodeObserver;
 
 }  // namespace resource_attribution
 

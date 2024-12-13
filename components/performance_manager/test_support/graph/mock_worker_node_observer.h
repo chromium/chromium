@@ -10,7 +10,7 @@
 
 namespace performance_manager {
 
-class LenientMockWorkerNodeObserver : public WorkerNode::ObserverDefaultImpl {
+class LenientMockWorkerNodeObserver : public WorkerNodeObserver {
  public:
   LenientMockWorkerNodeObserver();
   ~LenientMockWorkerNodeObserver() override;

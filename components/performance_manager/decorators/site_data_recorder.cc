@@ -84,7 +84,7 @@ class DefaultHeuristics final : public SiteDataRecorderHeuristics {
 
 // Helper class that watches a PageNode, and invokes a callback when that node
 // has a SiteDataReader whose data is ready.
-class SiteDataReaderWaiter final : public PageNode::ObserverDefaultImpl {
+class SiteDataReaderWaiter final : public PageNodeObserver {
  public:
   using DataReadyCallback = base::OnceCallback<void(const SiteDataReader&)>;
 

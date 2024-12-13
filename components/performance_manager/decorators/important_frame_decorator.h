@@ -14,7 +14,7 @@ namespace performance_manager {
 
 // Responsible for maintaining the IsImportant() property of frame nodes.
 class ImportantFrameDecorator : public GraphOwnedDefaultImpl,
-                                public FrameNode::ObserverDefaultImpl {
+                                public FrameNodeObserver {
  public:
   ImportantFrameDecorator();
   ~ImportantFrameDecorator() override;

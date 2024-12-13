@@ -35,8 +35,8 @@ namespace policies {
 // background tab loading at all times.
 class BackgroundTabLoadingPolicy : public GraphOwned,
                                    public NodeDataDescriberDefaultImpl,
-                                   public PageNode::ObserverDefaultImpl,
-                                   public SystemNode::ObserverDefaultImpl {
+                                   public PageNodeObserver,
+                                   public SystemNodeObserver {
  public:
   // `all_restored_tabs_loaded_callback` is invoked when all tabs passed to
   // ScheduleLoadForRestoredTabs() are loaded.
