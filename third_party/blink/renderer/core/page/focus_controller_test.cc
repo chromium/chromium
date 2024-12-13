@@ -394,14 +394,14 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
       .before { scroll-marker-group: before; }
       .after { scroll-marker-group: after; }
       .scroller::scroll-marker-group { height: 100px; }
-      .scroller::scroll-button(up) { content: "u"; }
-      .scroller::scroll-button(down) { content: "d"; }
-      .scroller::scroll-button(left) { content: "l"; }
-      .scroller::scroll-button(right) { content: "r"; }
-      .scroller::scroll-button(up):focus { outline: 1px solid blue; }
-      .scroller::scroll-button(down):focus { outline: 1px solid blue; }
-      .scroller::scroll-button(left):focus { outline: 1px solid blue; }
-      .scroller::scroll-button(right):focus { outline: 1px solid blue; }
+      .scroller::scroll-button(block-start) { content: "u"; }
+      .scroller::scroll-button(inline-start) { content: "l"; }
+      .scroller::scroll-button(inline-end) { content: "r"; }
+      .scroller::scroll-button(block-end) { content: "d"; }
+      .scroller::scroll-button(block-start):focus { outline: 1px solid blue; }
+      .scroller::scroll-button(inline-start):focus { outline: 1px solid blue; }
+      .scroller::scroll-button(inline-end):focus { outline: 1px solid blue; }
+      .scroller::scroll-button(block-end):focus { outline: 1px solid blue; }
       .item { width: 100px; height: 100px; }
       .item::scroll-marker:focus { outline: 1px solid blue; opacity: 0.5; }
       .item::scroll-marker { content: "*" }
@@ -428,14 +428,14 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
   Element* after_scroller = GetElementById("after-scroller");
   Element* post_input = GetElementById("post-input");
 
-  Element* before_up_button =
-      before_scroller->GetPseudoElement(kPseudoIdScrollUpButton);
-  Element* before_down_button =
-      before_scroller->GetPseudoElement(kPseudoIdScrollDownButton);
-  Element* before_left_button =
-      before_scroller->GetPseudoElement(kPseudoIdScrollLeftButton);
-  Element* before_right_button =
-      before_scroller->GetPseudoElement(kPseudoIdScrollRightButton);
+  Element* before_block_start_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockStart);
+  Element* before_inline_start_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineStart);
+  Element* before_block_end_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockEnd);
+  Element* before_inline_end_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineEnd);
 
   Element* before_first_child = before_scroller->firstElementChild();
   Element* before_second_child = before_first_child->nextElementSibling();
@@ -447,14 +447,14 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
   Element* before_second_scroll_marker =
       before_second_child->GetPseudoElement(kPseudoIdScrollMarker);
 
-  Element* after_up_button =
-      after_scroller->GetPseudoElement(kPseudoIdScrollUpButton);
-  Element* after_down_button =
-      after_scroller->GetPseudoElement(kPseudoIdScrollDownButton);
-  Element* after_left_button =
-      after_scroller->GetPseudoElement(kPseudoIdScrollLeftButton);
-  Element* after_right_button =
-      after_scroller->GetPseudoElement(kPseudoIdScrollRightButton);
+  Element* after_block_start_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockStart);
+  Element* after_inline_start_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineStart);
+  Element* after_block_end_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockEnd);
+  Element* after_inline_end_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineEnd);
 
   Element* after_first_child = after_scroller->firstElementChild();
   Element* after_last_child = after_scroller->lastElementChild();
@@ -467,17 +467,17 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
   std::array<Element*, 20> order = {pre_input,
                                     before_scroll_marker_group,
                                     before_first_scroll_marker,
-                                    before_up_button,
-                                    before_down_button,
-                                    before_left_button,
-                                    before_right_button,
+                                    before_block_start_button,
+                                    before_inline_start_button,
+                                    before_block_end_button,
+                                    before_inline_end_button,
                                     before_scroller,
                                     before_first_child,
                                     before_second_child,
-                                    after_up_button,
-                                    after_down_button,
-                                    after_left_button,
-                                    after_right_button,
+                                    after_block_start_button,
+                                    after_inline_start_button,
+                                    after_block_end_button,
+                                    after_inline_end_button,
                                     after_scroller,
                                     after_first_child,
                                     after_last_child,
@@ -506,23 +506,24 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrder) {
       before_second_scroll_marker,
       GetFocusController().FindFocusableElementAfter(
           *before_scroll_marker_group, mojom::blink::FocusType::kForward));
-  EXPECT_EQ(before_up_button, GetFocusController().FindFocusableElementAfter(
-                                  *before_second_scroll_marker,
-                                  mojom::blink::FocusType::kForward));
+  EXPECT_EQ(
+      before_block_start_button,
+      GetFocusController().FindFocusableElementAfter(
+          *before_second_scroll_marker, mojom::blink::FocusType::kForward));
 }
 
 TEST_F(FocusControllerTest, CarouselWithOnlyButtonsFocusOrder) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       .scroller { overflow: hidden; width: 100px; height: 100px; }
-      .scroller::scroll-button(up) { content: "u"; }
-      .scroller::scroll-button(down) { content: "d"; }
-      .scroller::scroll-button(left) { content: "l"; }
-      .scroller::scroll-button(right) { content: "r"; }
-      .scroller::scroll-button(up):focus { outline: 1px solid blue; opacity: 0.5; }
-      .scroller::scroll-button(down):focus { outline: 1px solid blue; }
-      .scroller::scroll-button(left):focus { outline: 1px solid blue; }
-      .scroller::scroll-button(right):focus { outline: 1px solid blue; }
+      .scroller::scroll-button(block-start) { content: "u"; }
+      .scroller::scroll-button(inline-start) { content: "l"; }
+      .scroller::scroll-button(inline-end) { content: "r"; }
+      .scroller::scroll-button(block-end) { content: "d"; }
+      .scroller::scroll-button(block-start):focus { outline: 1px solid blue; opacity: 0.5; }
+      .scroller::scroll-button(inline-start):focus { outline: 1px solid blue; }
+      .scroller::scroll-button(inline-end):focus { outline: 1px solid blue; }
+      .scroller::scroll-button(block-end):focus { outline: 1px solid blue; }
       .item { width: 100px; height: 100px; }
     </style>
     <input id="pre-input">
@@ -546,38 +547,47 @@ TEST_F(FocusControllerTest, CarouselWithOnlyButtonsFocusOrder) {
   Element* after_scroller = GetElementById("after-scroller");
   Element* post_input = GetElementById("post-input");
 
-  Element* before_up_button =
-      before_scroller->GetPseudoElement(kPseudoIdScrollUpButton);
-  Element* before_down_button =
-      before_scroller->GetPseudoElement(kPseudoIdScrollDownButton);
-  Element* before_left_button =
-      before_scroller->GetPseudoElement(kPseudoIdScrollLeftButton);
-  Element* before_right_button =
-      before_scroller->GetPseudoElement(kPseudoIdScrollRightButton);
+  Element* before_block_start_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockStart);
+  Element* before_inline_start_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineStart);
+  Element* before_block_end_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockEnd);
+  Element* before_inline_end_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineEnd);
 
   Element* before_first_child = before_scroller->firstElementChild();
   Element* before_second_child =
       before_scroller->firstElementChild()->nextElementSibling();
 
-  Element* after_up_button =
-      after_scroller->GetPseudoElement(kPseudoIdScrollUpButton);
-  Element* after_down_button =
-      after_scroller->GetPseudoElement(kPseudoIdScrollDownButton);
-  Element* after_left_button =
-      after_scroller->GetPseudoElement(kPseudoIdScrollLeftButton);
-  Element* after_right_button =
-      after_scroller->GetPseudoElement(kPseudoIdScrollRightButton);
+  Element* after_block_start_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockStart);
+  Element* after_inline_start_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineStart);
+  Element* after_block_end_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockEnd);
+  Element* after_inline_end_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineEnd);
 
   Element* after_first_child = after_scroller->firstElementChild();
   Element* after_last_child = after_scroller->lastElementChild();
 
-  std::array<Element*, 16> order = {
-      pre_input,          before_up_button,    before_down_button,
-      before_left_button, before_right_button, before_scroller,
-      before_first_child, before_second_child, after_up_button,
-      after_down_button,  after_left_button,   after_right_button,
-      after_scroller,     after_first_child,   after_last_child,
-      post_input};
+  std::array<Element*, 16> order = {pre_input,
+                                    before_block_start_button,
+                                    before_inline_start_button,
+                                    before_block_end_button,
+                                    before_inline_end_button,
+                                    before_scroller,
+                                    before_first_child,
+                                    before_second_child,
+                                    after_block_start_button,
+                                    after_inline_start_button,
+                                    after_block_end_button,
+                                    after_inline_end_button,
+                                    after_scroller,
+                                    after_first_child,
+                                    after_last_child,
+                                    post_input};
 
   for (std::size_t i = 0u; i < order.size() - 1; ++i) {
     EXPECT_EQ(order[i + 1], GetFocusController().FindFocusableElementAfter(
@@ -588,11 +598,11 @@ TEST_F(FocusControllerTest, CarouselWithOnlyButtonsFocusOrder) {
                             *order[i + 1], mojom::blink::FocusType::kBackward));
   }
 
-  before_up_button->Focus();
+  before_block_start_button->Focus();
   GetFocusController().SetActive(true);
   GetFocusController().SetFocused(true);
-  const auto* style = before_up_button->GetComputedStyle();
-  EXPECT_TRUE(before_up_button->IsFocused());
+  const auto* style = before_block_start_button->GetComputedStyle();
+  EXPECT_TRUE(before_block_start_button->IsFocused());
   EXPECT_EQ(0.5, style->Opacity());
 }
 
@@ -779,14 +789,14 @@ TEST_F(FocusControllerTest, FullCarouselWithExtraPseudoElementsFocusOrder) {
       .scroller::after { content: "after"; }
       .scroller::before { content: "before"; }
       .scroller::scroll-marker-group { height: 100px; }
-      .scroller::scroll-button(up) { content: "u"; }
-      .scroller::scroll-button(down) { content: "d"; }
-      .scroller::scroll-button(left) { content: "l"; }
-      .scroller::scroll-button(right) { content: "r"; }
-      .scroller::scroll-button(up):focus { outline: 1px solid blue; }
-      .scroller::scroll-button(down):focus { outline: 1px solid blue; }
-      .scroller::scroll-button(left):focus { outline: 1px solid blue; }
-      .scroller::scroll-button(right):focus { outline: 1px solid blue; }
+      .scroller::scroll-button(block-start) { content: "u"; }
+      .scroller::scroll-button(inline-start) { content: "l"; }
+      .scroller::scroll-button(inline-end) { content: "r"; }
+      .scroller::scroll-button(block-end) { content: "d"; }
+      .scroller::scroll-button(block-start):focus { outline: 1px solid blue; }
+      .scroller::scroll-button(inline-start):focus { outline: 1px solid blue; }
+      .scroller::scroll-button(inline-end):focus { outline: 1px solid blue; }
+      .scroller::scroll-button(block-end):focus { outline: 1px solid blue; }
       .item { width: 100px; height: 100px; }
       .item::scroll-marker:focus { outline: 1px solid blue; opacity: 0.5; }
       .item::scroll-marker { content: "*" }
@@ -813,14 +823,14 @@ TEST_F(FocusControllerTest, FullCarouselWithExtraPseudoElementsFocusOrder) {
   Element* after_scroller = GetElementById("after-scroller");
   Element* post_input = GetElementById("post-input");
 
-  Element* before_up_button =
-      before_scroller->GetPseudoElement(kPseudoIdScrollUpButton);
-  Element* before_down_button =
-      before_scroller->GetPseudoElement(kPseudoIdScrollDownButton);
-  Element* before_left_button =
-      before_scroller->GetPseudoElement(kPseudoIdScrollLeftButton);
-  Element* before_right_button =
-      before_scroller->GetPseudoElement(kPseudoIdScrollRightButton);
+  Element* before_block_start_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockStart);
+  Element* before_inline_start_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineStart);
+  Element* before_block_end_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockEnd);
+  Element* before_inline_end_button =
+      before_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineEnd);
 
   Element* before_first_child = before_scroller->firstElementChild();
   Element* before_second_child =
@@ -831,14 +841,14 @@ TEST_F(FocusControllerTest, FullCarouselWithExtraPseudoElementsFocusOrder) {
   Element* before_first_scroll_marker =
       before_first_child->GetPseudoElement(kPseudoIdScrollMarker);
 
-  Element* after_up_button =
-      after_scroller->GetPseudoElement(kPseudoIdScrollUpButton);
-  Element* after_down_button =
-      after_scroller->GetPseudoElement(kPseudoIdScrollDownButton);
-  Element* after_left_button =
-      after_scroller->GetPseudoElement(kPseudoIdScrollLeftButton);
-  Element* after_right_button =
-      after_scroller->GetPseudoElement(kPseudoIdScrollRightButton);
+  Element* after_block_start_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockStart);
+  Element* after_inline_start_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineStart);
+  Element* after_block_end_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockEnd);
+  Element* after_inline_end_button =
+      after_scroller->GetPseudoElement(kPseudoIdScrollButtonInlineEnd);
 
   Element* after_first_child = after_scroller->firstElementChild();
   Element* after_last_child = after_scroller->lastElementChild();
@@ -851,17 +861,17 @@ TEST_F(FocusControllerTest, FullCarouselWithExtraPseudoElementsFocusOrder) {
   std::array<Element*, 20> order = {pre_input,
                                     before_scroll_marker_group,
                                     before_first_scroll_marker,
-                                    before_up_button,
-                                    before_down_button,
-                                    before_left_button,
-                                    before_right_button,
+                                    before_block_start_button,
+                                    before_inline_start_button,
+                                    before_block_end_button,
+                                    before_inline_end_button,
                                     before_scroller,
                                     before_first_child,
                                     before_second_child,
-                                    after_up_button,
-                                    after_down_button,
-                                    after_left_button,
-                                    after_right_button,
+                                    after_block_start_button,
+                                    after_inline_start_button,
+                                    after_block_end_button,
+                                    after_inline_end_button,
                                     after_scroller,
                                     after_first_child,
                                     after_last_child,

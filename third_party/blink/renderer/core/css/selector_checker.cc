@@ -322,34 +322,33 @@ namespace {
 
 PseudoId PseudoIdFromScrollButtonArgument(const AtomicString& argument,
                                           const ComputedStyle& style) {
-  if (argument == AtomicString("up")) {
-    return kPseudoIdScrollUpButton;
+  if (argument == AtomicString("block-start")) {
+    return kPseudoIdScrollButtonBlockStart;
   }
-  if (argument == AtomicString("down")) {
-    return kPseudoIdScrollDownButton;
+  if (argument == AtomicString("block-end")) {
+    return kPseudoIdScrollButtonBlockEnd;
   }
-  if (argument == AtomicString("left")) {
-    return kPseudoIdScrollLeftButton;
+  if (argument == AtomicString("inline-start")) {
+    return kPseudoIdScrollButtonInlineStart;
   }
-  if (argument == AtomicString("right")) {
-    return kPseudoIdScrollRightButton;
+  if (argument == AtomicString("inline-end")) {
+    return kPseudoIdScrollButtonInlineEnd;
   }
-  LogicalToPhysical<bool> logical(style.GetWritingDirection(),
-                                  argument == AtomicString("inline-start"),
-                                  argument == AtomicString("inline-end"),
-                                  argument == AtomicString("block-start"),
-                                  argument == AtomicString("block-end"));
-  if (logical.Top()) {
-    return kPseudoIdScrollUpButton;
+  PhysicalToLogical<bool> mapping(
+      style.GetWritingDirection(), argument == AtomicString("up"),
+      argument == AtomicString("right"), argument == AtomicString("down"),
+      argument == AtomicString("left"));
+  if (mapping.BlockStart()) {
+    return kPseudoIdScrollButtonBlockStart;
   }
-  if (logical.Bottom()) {
-    return kPseudoIdScrollDownButton;
+  if (mapping.BlockEnd()) {
+    return kPseudoIdScrollButtonBlockEnd;
   }
-  if (logical.Left()) {
-    return kPseudoIdScrollLeftButton;
+  if (mapping.InlineStart()) {
+    return kPseudoIdScrollButtonInlineStart;
   }
-  CHECK(logical.Right());
-  return kPseudoIdScrollRightButton;
+  CHECK(mapping.InlineEnd());
+  return kPseudoIdScrollButtonInlineEnd;
 }
 
 bool MatchScrollButton(const Element& element,

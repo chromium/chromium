@@ -2215,10 +2215,10 @@ static void AssertLayoutTreeUpdatedForPseudoElements(const Element& element) {
                                       kPseudoIdBackdrop,
                                       kPseudoIdScrollMarkerGroupBefore,
                                       kPseudoIdScrollMarkerGroupAfter,
-                                      kPseudoIdScrollUpButton,
-                                      kPseudoIdScrollDownButton,
-                                      kPseudoIdScrollLeftButton,
-                                      kPseudoIdScrollRightButton,
+                                      kPseudoIdScrollButtonBlockStart,
+                                      kPseudoIdScrollButtonInlineStart,
+                                      kPseudoIdScrollButtonInlineEnd,
+                                      kPseudoIdScrollButtonBlockEnd,
                                       kPseudoIdScrollMarker};
   for (auto pseudo_id : pseudo_ids) {
     if (const PseudoElement* pseudo_element =

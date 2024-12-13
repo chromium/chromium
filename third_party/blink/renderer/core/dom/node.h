@@ -365,17 +365,17 @@ class CORE_EXPORT Node : public EventTarget {
   DISABLE_CFI_PERF bool IsScrollMarkerGroupAfterPseudoElement() const {
     return GetPseudoId() == kPseudoIdScrollMarkerGroupAfter;
   }
-  DISABLE_CFI_PERF bool IsScrollUpButtonPseudoElement() const {
-    return GetPseudoId() == kPseudoIdScrollUpButton;
+  DISABLE_CFI_PERF bool IsScrollButtonBlockStartPseudoElement() const {
+    return GetPseudoId() == kPseudoIdScrollButtonBlockStart;
   }
-  DISABLE_CFI_PERF bool IsScrollDownButtonPseudoElement() const {
-    return GetPseudoId() == kPseudoIdScrollDownButton;
+  DISABLE_CFI_PERF bool IsScrollButtonInlineStartPseudoElement() const {
+    return GetPseudoId() == kPseudoIdScrollButtonInlineStart;
   }
-  DISABLE_CFI_PERF bool IsScrollLeftButtonPseudoElement() const {
-    return GetPseudoId() == kPseudoIdScrollLeftButton;
+  DISABLE_CFI_PERF bool IsScrollButtonBlockEndPseudoElement() const {
+    return GetPseudoId() == kPseudoIdScrollButtonBlockEnd;
   }
-  DISABLE_CFI_PERF bool IsScrollRightButtonPseudoElement() const {
-    return GetPseudoId() == kPseudoIdScrollRightButton;
+  DISABLE_CFI_PERF bool IsScrollButtonInlineEndPseudoElement() const {
+    return GetPseudoId() == kPseudoIdScrollButtonInlineEnd;
   }
   DISABLE_CFI_PERF bool IsMarkerPseudoElement() const {
     return GetPseudoId() == kPseudoIdMarker;

@@ -2686,10 +2686,10 @@ void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
          pseudo_style->StyleType() == kPseudoIdScrollMarkerGroup ||
          pseudo_style->IsPageMarginBox() ||
          pseudo_style->StyleType() == kPseudoIdScrollMarker ||
-         pseudo_style->StyleType() == kPseudoIdScrollUpButton ||
-         pseudo_style->StyleType() == kPseudoIdScrollDownButton ||
-         pseudo_style->StyleType() == kPseudoIdScrollLeftButton ||
-         pseudo_style->StyleType() == kPseudoIdScrollRightButton);
+         pseudo_style->StyleType() == kPseudoIdScrollButtonBlockStart ||
+         pseudo_style->StyleType() == kPseudoIdScrollButtonInlineStart ||
+         pseudo_style->StyleType() == kPseudoIdScrollButtonBlockEnd ||
+         pseudo_style->StyleType() == kPseudoIdScrollButtonInlineEnd);
 
   InheritIsInDetachedNonDomTree(owner);
 

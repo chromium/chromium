@@ -139,10 +139,10 @@ namespace {
 bool IsPseudoElementWithUAStyle(PseudoId pseudo_id) {
   switch (pseudo_id) {
     case kPseudoIdMarker:
-    case kPseudoIdScrollUpButton:
-    case kPseudoIdScrollDownButton:
-    case kPseudoIdScrollLeftButton:
-    case kPseudoIdScrollRightButton:
+    case kPseudoIdScrollButtonBlockStart:
+    case kPseudoIdScrollButtonBlockEnd:
+    case kPseudoIdScrollButtonInlineStart:
+    case kPseudoIdScrollButtonInlineEnd:
       return true;
     default:
       return false;
