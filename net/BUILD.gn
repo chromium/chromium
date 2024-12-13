@@ -3403,6 +3403,7 @@ target(_test_target_type, "net_unittests") {
     ]
     deps += [
       ":device_bound_sessions_storage_proto",
+      "//components/unexportable_keys:test_support",
       "//components/unexportable_keys:unexportable_keys",
     ]
   }

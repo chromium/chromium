@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/debug/stack_trace.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/io_buffer.h"
@@ -223,12 +224,11 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
 
   void Start(std::optional<std::string> challenge,
              std::optional<std::string> authorization) {
-    if (challenge.has_value()) {
-      SignChallengeWithKey(
-          *key_service_, key_id_, fetcher_endpoint_, *challenge,
-          std::move(authorization),
-          base::BindOnce(&RegistrationFetcherImpl::OnRegistrationTokenCreated,
-                         base::Unretained(this)));
+    current_challenge_ = std::move(challenge);
+    current_authorization_ = std::move(authorization);
+
+    if (current_challenge_.has_value()) {
+      AttemptChallengeSigning();
       return;
     }
 
@@ -242,11 +242,33 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   }
 
  private:
+  static constexpr size_t kMaxSigningFailures = 2;
+
+  void AttemptChallengeSigning() {
+    SignChallengeWithKey(
+        *key_service_, key_id_, fetcher_endpoint_, *current_challenge_,
+        current_authorization_,
+        base::BindOnce(&RegistrationFetcherImpl::OnRegistrationTokenCreated,
+                       base::Unretained(this)));
+  }
+
   void OnRegistrationTokenCreated(
       std::optional<RegistrationFetcher::RegistrationTokenResult> result) {
     if (!result) {
-      RunCallbackAndDeleteSelf(std::nullopt);
-      return;
+      number_of_signing_failures_++;
+      if (number_of_signing_failures_ < kMaxSigningFailures) {
+        AttemptChallengeSigning();
+        return;
+      } else if (session_identifier_.has_value()) {
+        SessionTerminationParams params{*session_identifier_};
+        RunCallbackAndDeleteSelf(
+            std::make_optional<RegistrationFetcher::RegistrationCompleteParams>(
+                std::move(params), key_id_, fetcher_endpoint_));
+        return;
+      } else {
+        RunCallbackAndDeleteSelf(std::nullopt);
+        return;
+      }
     }
 
     request_ = CreateBaseRequest();
@@ -324,6 +346,10 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   std::unique_ptr<URLRequest> request_;
   scoped_refptr<IOBuffer> buf_;
   std::string data_received_;
+
+  std::optional<std::string> current_challenge_;
+  std::optional<std::string> current_authorization_;
+  size_t number_of_signing_failures_ = 0;
 };
 
 RegistrationFetcher::FetcherType g_mock_fetcher = nullptr;
