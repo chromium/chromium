@@ -5,6 +5,7 @@
 #include "components/collaboration/internal/messaging/storage/messaging_backend_store_impl.h"
 
 #include "components/collaboration/internal/messaging/storage/collaboration_message_util.h"
+#include "components/collaboration/internal/messaging/storage/protocol/message.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace collaboration::messaging {
@@ -237,6 +238,42 @@ TEST_F(MessagingBackendStoreTest, KeepMostRecentTabGroupMessages) {
   auto messages = store_->GetRecentMessagesForGroup(group_id);
   EXPECT_EQ(1u, messages.size());
   EXPECT_EQ(message2.uuid(), messages[0].uuid());
+}
+
+TEST_F(MessagingBackendStoreTest, EnsureRecentActivityIsSorted) {
+  data_sharing::GroupId group_id("Group ID");
+  base::Time now = base::Time::Now();
+  // Create three messages stored in an arbitrary order, but timestamp wise,
+  // their order is: 3, 1, 4, 2, message 3 being the oldest.
+  // This test verifies that they are received in the opposite order of this,
+  // so 2, 4, 1, 3.
+  auto message1 = CreateMessage(collaboration_pb::TAB_ADDED, group_id.value());
+  message1.set_event_timestamp((now + base::Seconds(2)).ToTimeT());
+
+  auto message2 =
+      CreateMessage(collaboration_pb::TAB_REMOVED, group_id.value());
+  message2.set_event_timestamp((now + base::Seconds(4)).ToTimeT());
+
+  auto message3 = CreateMessage(collaboration_pb::COLLABORATION_MEMBER_ADDED,
+                                group_id.value());
+  message3.set_event_timestamp((now + base::Seconds(1)).ToTimeT());
+
+  auto message4 = CreateMessage(collaboration_pb::COLLABORATION_MEMBER_REMOVED,
+                                group_id.value());
+  message4.set_event_timestamp((now + base::Seconds(3)).ToTimeT());
+
+  store_->AddMessage(message1);
+  store_->AddMessage(message2);
+  store_->AddMessage(message3);
+  store_->AddMessage(message4);
+  auto messages = store_->GetRecentMessagesForGroup(group_id);
+  ASSERT_EQ(4u, messages.size());
+
+  // Verify newest message is first, etc.
+  EXPECT_EQ(message2.uuid(), messages[0].uuid());
+  EXPECT_EQ(message4.uuid(), messages[1].uuid());
+  EXPECT_EQ(message1.uuid(), messages[2].uuid());
+  EXPECT_EQ(message3.uuid(), messages[3].uuid());
 }
 
 }  // namespace collaboration::messaging

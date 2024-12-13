@@ -66,7 +66,8 @@ class MessagingBackendStore {
   // Set cutoff duration for recent message.
   virtual void SetRecentMessageCutoffDuration(base::TimeDelta time_delta) = 0;
 
-  // Get the recent messages for a group.
+  // Get the recent messages for a group. The newest message is first in the
+  // result.
   virtual std::vector<collaboration_pb::Message> GetRecentMessagesForGroup(
       const data_sharing::GroupId& collaboration_id) = 0;
 

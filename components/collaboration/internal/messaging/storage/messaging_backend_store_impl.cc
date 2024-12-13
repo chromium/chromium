@@ -4,6 +4,8 @@
 
 #include "components/collaboration/internal/messaging/storage/messaging_backend_store_impl.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/collaboration/internal/messaging/storage/collaboration_message_util.h"
@@ -192,6 +194,12 @@ MessagingBackendStoreImpl::GetRecentMessagesForGroup(
             return true;
           },
           &result, cutoff_time));
+
+  std::sort(result.begin(), result.end(),
+            [](const collaboration_pb::Message& a,
+               const collaboration_pb::Message& b) {
+              return a.event_timestamp() > b.event_timestamp();
+            });
 
   return result;
 }
