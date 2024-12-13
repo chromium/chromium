@@ -60,7 +60,6 @@ class MojoPageTimingSender : public PageTimingSender {
       const absl::optional<blink::MobileFriendliness>& mobile_friendliness,
       uint32_t soft_navigation_count) override {
     DCHECK(page_load_metrics_);
-    mojo::internal::AutoRecordReplayAssertBufferAllocations assertsEnabled("TT-366-1124");
     page_load_metrics_->UpdateTiming(
         limited_sending_mode_ ? CreatePageLoadTiming() : timing->Clone(),
         metadata->Clone(), new_features, std::move(resources),

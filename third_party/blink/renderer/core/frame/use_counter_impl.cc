@@ -179,12 +179,6 @@ void UseCounterImpl::Count(const UseCounterFeature& feature,
   if (recordreplay::AreEventsDisallowed("UseCounterImpl::Count"))
     return;
 
-  REPLAY_ASSERT("[TT-366-1467] UseCounterImpl::Count %d %u %d %d",
-                !!source_frame,
-                mute_count_,
-                feature.type(),
-                feature.value());
-
   if (!source_frame)
     return;
 

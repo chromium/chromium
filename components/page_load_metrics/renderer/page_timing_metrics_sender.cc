@@ -329,12 +329,6 @@ void PageTimingMetricsSender::SendNow() {
     }
   }
 
-  REPLAY_ASSERT(
-      "[TT-366-1366] PageTimingMetricsSender::SendNow %zu %zu %zu %zu",
-      new_features_.size(), resources.size(),
-      (size_t)modified_resources_.size(),
-      (size_t)page_resource_data_use_.size());
-
   sender_->SendTiming(last_timing_, metadata_, std::move(new_features_),
                       std::move(resources), render_data_, last_cpu_timing_,
                       std::move(input_timing_delta_), mobile_friendliness_,

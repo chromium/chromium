@@ -35,10 +35,6 @@ bool UseCounterFeatureTracker::Test(const UseCounterFeature& feature) const {
 
 bool UseCounterFeatureTracker::TestAndSet(const UseCounterFeature& feature) {
   bool has_record = Test(feature);
-  REPLAY_ASSERT("[TT-366-1456] UseCounterFeatureTracker::TestAndSet %d %d %u",
-                has_record,
-                feature.type(),
-                feature.value());
   Set(feature, true);
   return has_record;
 }

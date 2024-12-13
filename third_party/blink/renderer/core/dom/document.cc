@@ -8749,9 +8749,6 @@ void Document::CountUse(mojom::WebFeature feature) const {
 }
 
 void Document::CountUse(mojom::WebFeature feature) {
-  REPLAY_ASSERT("[TT-366-1467] Document::CountUse %d %d",
-                !!execution_context_,
-                feature);
   if (execution_context_)
     execution_context_->CountUse(feature);
 }
@@ -8762,9 +8759,6 @@ void Document::CountDeprecation(mojom::WebFeature feature) {
 }
 
 void Document::CountProperty(CSSPropertyID property) const {
-  REPLAY_ASSERT("[TT-366-1467] Document::CountProperty %d %d",
-                !!Loader(),
-                property);
   if (DocumentLoader* loader = Loader()) {
     loader->GetUseCounter().Count(
         property, UseCounterImpl::CSSPropertyType::kDefault, GetFrame());

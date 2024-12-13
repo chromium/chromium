@@ -725,9 +725,6 @@ void LocalDOMWindow::AddInspectorIssue(AuditsIssue issue) {
 }
 
 void LocalDOMWindow::CountUse(mojom::WebFeature feature) {
-  REPLAY_ASSERT("[TT-366-1467] LocalDOMWindow::CountUse %d %d",
-                !!GetFrame(),
-                GetFrame() ? !!GetFrame()->Loader().GetDocumentLoader() : -1);
   if (!GetFrame())
     return;
   if (auto* loader = GetFrame()->Loader().GetDocumentLoader())
