@@ -57,7 +57,7 @@ found in the LICENSE file.
       <org.chromium.ui.widget.TextViewWithLeading
           android:id="@+id/auxiliary_search_module_content"
           android:layout_width="match_parent"
-          android:maxLines="3"
+          android:maxLines="4"
           android:text="@string/auxiliary_search_module_content"
           android:layout_height="wrap_content"
           android:layout_gravity="top"
