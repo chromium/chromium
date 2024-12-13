@@ -97,11 +97,11 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
             if (mSelectedColor != null) {
                 elements.declareView(
                         colorPickerIconSpec(color, color.equals(mSelectedColor)),
-                        ViewElement.unscopedOption());
+                        ViewElement.newOptions().unscoped().displayingAtLeast(10).build());
             } else {
                 elements.declareView(
                         colorPickerIconSpec(color, /* selected= */ null),
-                        ViewElement.unscopedOption());
+                        ViewElement.newOptions().unscoped().displayingAtLeast(10).build());
             }
         }
 
