@@ -212,10 +212,6 @@
 [submodule "third_party/devtools-frontend/src"]
 	path = third_party/devtools-frontend/src
 	url = https://chromium.googlesource.com/devtools/devtools-frontend
-[submodule "third_party/devtools-frontend-internal"]
-	path = third_party/devtools-frontend-internal
-	url = https://chrome-internal.googlesource.com/devtools/devtools-internal
-	gclient-condition = checkout_src_internal
 [submodule "third_party/dom_distiller_js/dist"]
 	path = third_party/dom_distiller_js/dist
 	url = https://chromium.googlesource.com/chromium/dom-distiller/dist
