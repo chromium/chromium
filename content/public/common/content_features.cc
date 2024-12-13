@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "content/common/buildflags.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/dips_utils.h"
 
 namespace features {
@@ -1378,10 +1379,17 @@ BASE_FEATURE(kSelectionMenuItemModification,
              "SelectionMenuItemModification",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Screen Capture API support for Android
+// Screen Capture API support for Android.
+// This should not be enabled unless ENABLE_SCREEN_CAPTURE is on, otherwise
+// it won't work.
 BASE_FEATURE(kUserMediaScreenCapturing,
              "UserMediaScreenCapturing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // Kill switch for the WebNFC feature. This feature can be enabled for all sites
 // using the kEnableExperimentalWebPlatformFeatures flag.
