@@ -11,11 +11,29 @@
 #import "components/data_sharing/public/protocol/data_sharing_sdk.pb.h"
 #import "third_party/abseil-cpp/absl/status/status.h"
 
+// The configuration to read a single group.
+@interface ShareKitReadGroupParamConfiguration : NSObject
+
+// The ID of the group to be read.
+@property(nonatomic, copy) NSString* groupID;
+
+// As an optimization, sending a consistency token will allow for reading groups
+// with bounded staleness. Without a consistency token, we'll always read the
+// most current group.
+@property(nonatomic, copy) NSString* consistencyToken;
+
+@end
+
 // Configuration object for reading a shared group.
 @interface ShareKitReadConfiguration : NSObject
 
 // The list of collabs ID to be read.
+// TODO(crbug.com/383530755): Remove this.
 @property(nonatomic, copy) NSArray<NSString*>* collabIDs;
+
+// The parameters for the groups to be read.
+@property(nonatomic, copy)
+    NSArray<ShareKitReadGroupParamConfiguration*>* groupsParam;
 
 // The callback once the groups have been read.
 @property(nonatomic, copy) void (^callback)

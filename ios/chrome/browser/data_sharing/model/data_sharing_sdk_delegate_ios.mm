@@ -40,12 +40,21 @@ void DataSharingSDKDelegateIOS::ReadGroups(
         const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&)>
         callback) {
   NSMutableArray<NSString*>* ids = [NSMutableArray array];
-  for (auto group_id : params.group_ids()) {
-    NSString* collab_id = base::SysUTF8ToNSString(group_id);
-    [ids addObject:collab_id];
+  NSMutableArray<ShareKitReadGroupParamConfiguration*>* groupsParam =
+      [NSMutableArray array];
+  for (auto group_param : params.group_params()) {
+    NSString* group_id = base::SysUTF8ToNSString(group_param.group_id());
+    [ids addObject:group_id];
+    ShareKitReadGroupParamConfiguration* param =
+        [[ShareKitReadGroupParamConfiguration alloc] init];
+    param.groupID = group_id;
+    param.consistencyToken =
+        base::SysUTF8ToNSString(group_param.consistency_token());
+    [groupsParam addObject:param];
   }
   ShareKitReadConfiguration* config = [[ShareKitReadConfiguration alloc] init];
   config.collabIDs = ids;
+  config.groupsParam = groupsParam;
   config.callback = base::CallbackToBlock(std::move(callback));
   share_kit_service_->ReadGroups(config);
 }
