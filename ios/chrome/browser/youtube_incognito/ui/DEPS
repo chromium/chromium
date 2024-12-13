@@ -1,3 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view.h",
-]
