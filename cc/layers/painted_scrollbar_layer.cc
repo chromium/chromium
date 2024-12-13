@@ -206,7 +206,9 @@ bool PaintedScrollbarLayer::Update() {
   const bool internal_content_scaled = UpdateInternalContentScale();
   updated |= internal_content_scaled;
   updated |= UpdateGeometry();
-  updated |= SetHasFindInPageTickmarks(scrollbar_.Read(*this)->HasTickmarks());
+  const bool tickmarks_status_changed =
+      SetHasFindInPageTickmarks(scrollbar_.Read(*this)->HasTickmarks());
+  updated |= tickmarks_status_changed;
 
   if (internal_content_bounds_.Read(*this).IsEmpty()) {
     if (track_and_buttons_resource_.Read(*this)) {
@@ -224,20 +226,25 @@ bool PaintedScrollbarLayer::Update() {
     updated = true;
   }
 
-  updated |= UpdateTrackAndButtonsIfNeeded(internal_content_scaled);
+  // Scaling content requires scrollbars to be repainted to give the arrows
+  // appropriate proportions and tickmarks changing status needs a repaint to
+  // avoid incorrectly stretching the smaller 9patch bitmap.
+  updated |= UpdateTrackAndButtonsIfNeeded(
+      uses_nine_patch_track_and_buttons_ &&
+      (internal_content_scaled || tickmarks_status_changed));
   updated |= UpdateThumbIfNeeded();
 
   return updated;
 }
 
 bool PaintedScrollbarLayer::UpdateTrackAndButtonsIfNeeded(
-    bool internal_content_scaled) {
+    bool force_repaint_for_nine_patch) {
   bool updated = false;
   gfx::Size size = bounds();
   gfx::Size scaled_size = internal_content_bounds_.Read(*this);
   if (!track_and_buttons_resource_.Read(*this) ||
       scrollbar_.Read(*this)->TrackAndButtonsNeedRepaint() ||
-      (uses_nine_patch_track_and_buttons_ && internal_content_scaled)) {
+      force_repaint_for_nine_patch) {
     if (uses_nine_patch_track_and_buttons_ &&
         // Can't use nine-patch track and buttons if tickmarks are present.
         !scrollbar_.Read(*this)->HasTickmarks()) {
