@@ -147,11 +147,14 @@ skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions(
     options.fInternalMultisampleCount = 1;
   }
 
-  // Disable use of cached text uploads in Recordings to improve performance.
-  // NOTE: Currently Recordings are played back in the order they were
-  // created so use of this option is safe. Once Recordings are replayed or
-  // are played out of sequence this option should no longer be used.
-  options.fDisableCachedGlyphUploads = true;
+  // State that Recordings will be played in-order. If Graphite can assume
+  // this, then optimizations can be taken that will improve performance.
+  // NOTE: Currently as Recordings *are* played back in the order they were
+  // created, use of this option is safe. Once Recordings are replayed or
+  // are played out of sequence this option should no longer be used as it
+  // will lead to playback of out-of-order Recordings being skipped and an
+  // error flagged.
+  options.fRequireOrderedRecordings = true;
 
   // Always emit labels in Skia. For Dawn, we have a toggle that controls
   // whether labels are emitted to the underlying backend, which is currently
