@@ -15,8 +15,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/payments/offer_notification_handler.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
 

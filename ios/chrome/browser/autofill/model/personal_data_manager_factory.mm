@@ -8,7 +8,7 @@
 
 #import "base/feature_list.h"
 #import "base/no_destructor.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/strike_databases/strike_database.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #import "components/autofill/core/common/autofill_payments_features.h"

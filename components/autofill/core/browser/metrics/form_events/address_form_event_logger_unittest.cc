@@ -4,8 +4,8 @@
 #include "components/autofill/core/browser/metrics/form_events/address_form_event_logger.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"

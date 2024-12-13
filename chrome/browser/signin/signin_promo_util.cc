@@ -27,8 +27,8 @@
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 
 namespace {
 

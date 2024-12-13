@@ -19,7 +19,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/threading/thread_restrictions.h"
 #import "base/values.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"

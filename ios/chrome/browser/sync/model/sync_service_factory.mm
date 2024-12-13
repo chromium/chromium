@@ -10,7 +10,7 @@
 #import "base/functional/bind.h"
 #import "base/no_destructor.h"
 #import "base/time/time.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/browser_sync/common_controller_builder.h"
 #import "components/history/core/browser/features.h"
 #import "components/keyed_service/core/service_access_type.h"

@@ -7,7 +7,7 @@
 #import "base/i18n/message_formatter.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
-#import "components/autofill/core/browser/test_personal_data_manager.h"
+#import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_card_cell+Testing.h"
 #import "ios/chrome/grit/ios_strings.h"

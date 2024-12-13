@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_request_state.h"
 #include "components/payments/content/service_worker_payment_app_finder.h"

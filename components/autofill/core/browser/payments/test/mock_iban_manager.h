@@ -6,8 +6,8 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_MOCK_IBAN_MANAGER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/payments/iban_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

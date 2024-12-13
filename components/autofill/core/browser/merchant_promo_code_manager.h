@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/single_field_fill_router.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/unique_ids.h"

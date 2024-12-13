@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_DATA_MANAGER_TEST_API_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_DATA_MANAGER_TEST_API_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_PAYMENTS_PAYMENTS_DATA_MANAGER_TEST_API_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_PAYMENTS_PAYMENTS_DATA_MANAGER_TEST_API_H_
 
 #include "base/memory/raw_ref.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 
 namespace autofill {
 
@@ -55,4 +55,4 @@ inline PaymentsDataManagerTestApi test_api(
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_DATA_MANAGER_TEST_API_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_PAYMENTS_PAYMENTS_DATA_MANAGER_TEST_API_H_

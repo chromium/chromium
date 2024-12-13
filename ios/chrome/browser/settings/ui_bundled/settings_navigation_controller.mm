@@ -11,7 +11,7 @@
 #import "base/ios/ios_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/strings/grit/components_strings.h"

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_DATA_MANAGER_TEST_API_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_DATA_MANAGER_TEST_API_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_ADDRESSES_ADDRESS_DATA_MANAGER_TEST_API_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_ADDRESSES_ADDRESS_DATA_MANAGER_TEST_API_H_
 
 #include "base/memory/raw_ref.h"
-#include "components/autofill/core/browser/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 
 namespace autofill {
 
@@ -20,7 +20,7 @@ class AddressDataManagerTestApi {
   }
 
  private:
-   raw_ref<AddressDataManager> adm_;
+  raw_ref<AddressDataManager> adm_;
 };
 
 inline AddressDataManagerTestApi test_api(AddressDataManager& adm) {
@@ -29,4 +29,4 @@ inline AddressDataManagerTestApi test_api(AddressDataManager& adm) {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_DATA_MANAGER_TEST_API_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_ADDRESSES_ADDRESS_DATA_MANAGER_TEST_API_H_

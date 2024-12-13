@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
 #include "chrome/browser/ui/autofill/test_autofill_keyboard_accessory_controller_autofill_client.h"
-#include "components/autofill/core/browser/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"

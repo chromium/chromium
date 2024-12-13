@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 
 #include <memory>
 
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager_observer.h"
-#include "components/autofill/core/browser/test_address_data_manager.h"
-#include "components/autofill/core/browser/test_payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/test_address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
 
 namespace autofill {
 

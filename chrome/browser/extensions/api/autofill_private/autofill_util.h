@@ -11,7 +11,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "chrome/common/extensions/api/autofill_private.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/device_reauth/device_authenticator.h"
 
 namespace extensions {

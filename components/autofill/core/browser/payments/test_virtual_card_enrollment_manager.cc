@@ -4,9 +4,9 @@
 
 #include "components/autofill/core/browser/payments/test_virtual_card_enrollment_manager.h"
 
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
 
 namespace autofill {
 

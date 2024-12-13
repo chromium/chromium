@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_PERSONAL_DATA_MANAGER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_PERSONAL_DATA_MANAGER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_TEST_PERSONAL_DATA_MANAGER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_TEST_PERSONAL_DATA_MANAGER_H_
 
+#include "components/autofill/core/browser/data_manager/addresses/test_address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/test_address_data_manager.h"
-#include "components/autofill/core/browser/test_payments_data_manager.h"
 
 namespace autofill {
 
@@ -59,4 +59,4 @@ class TestPersonalDataManager : public PersonalDataManager {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_PERSONAL_DATA_MANAGER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_TEST_PERSONAL_DATA_MANAGER_H_

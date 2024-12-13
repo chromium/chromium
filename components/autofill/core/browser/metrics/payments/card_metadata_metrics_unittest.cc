@@ -6,10 +6,10 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/payments/constants.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

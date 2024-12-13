@@ -9,8 +9,8 @@
 #include "base/check_op.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/common/credit_card_number_validation.h"
 
 namespace autofill {

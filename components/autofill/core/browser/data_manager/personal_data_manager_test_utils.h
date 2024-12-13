@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PERSONAL_DATA_MANAGER_TEST_UTILS_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_PERSONAL_DATA_MANAGER_TEST_UTILS_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_PERSONAL_DATA_MANAGER_TEST_UTILS_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_PERSONAL_DATA_MANAGER_TEST_UTILS_H_
 
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "components/autofill/core/browser/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
@@ -77,4 +77,4 @@ void MakePrimaryAccountAvailable(
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PERSONAL_DATA_MANAGER_TEST_UTILS_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_PERSONAL_DATA_MANAGER_TEST_UTILS_H_

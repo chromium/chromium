@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/test_payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -321,8 +321,9 @@ void TestPaymentsDataManager::SetNicknameForCardWithGUID(
 
 void TestPaymentsDataManager::RemoveCardWithoutNotification(
     const CreditCard& card) {
-  if (auto it = base::ranges::find(local_credit_cards_,
-        card.guid(), &CreditCard::guid); it != local_credit_cards_.end()) {
+  if (auto it = base::ranges::find(local_credit_cards_, card.guid(),
+                                   &CreditCard::guid);
+      it != local_credit_cards_.end()) {
     local_credit_cards_.erase(it);
   }
 }

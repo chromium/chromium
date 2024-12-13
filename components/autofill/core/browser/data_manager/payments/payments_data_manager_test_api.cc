@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/payments_data_manager_test_api.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 

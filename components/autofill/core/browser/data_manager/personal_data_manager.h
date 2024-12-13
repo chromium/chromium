@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PERSONAL_DATA_MANAGER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_PERSONAL_DATA_MANAGER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_PERSONAL_DATA_MANAGER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_PERSONAL_DATA_MANAGER_H_
 
 #include <memory>
 #include <string>
@@ -11,10 +11,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_shared_storage_handler.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -191,4 +191,4 @@ class PersonalDataManager : public KeyedService,
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PERSONAL_DATA_MANAGER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_PERSONAL_DATA_MANAGER_H_

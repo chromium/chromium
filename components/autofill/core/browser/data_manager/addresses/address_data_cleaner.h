@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_DATA_CLEANER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_DATA_CLEANER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_ADDRESSES_ADDRESS_DATA_CLEANER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_ADDRESSES_ADDRESS_DATA_CLEANER_H_
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
-#include "components/autofill/core/browser/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 #include "components/autofill/core/browser/metrics/profile_deduplication_metrics.h"
-#include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service_observer.h"
 
@@ -38,8 +38,7 @@ class AddressDataCleaner : public AddressDataManager::Observer,
       AlternativeStateNameMapUpdater* alternative_state_name_map_updater);
   ~AddressDataCleaner() override;
   AddressDataCleaner(const AddressDataCleaner&) = delete;
-  AddressDataCleaner& operator=(const AddressDataCleaner&) =
-      delete;
+  AddressDataCleaner& operator=(const AddressDataCleaner&) = delete;
 
   // Determines whether the cleanups should run depending on the sync state and
   // runs them if applicable. Ensures that the cleanups are run at most once
@@ -147,4 +146,4 @@ class AddressDataCleaner : public AddressDataManager::Observer,
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_DATA_CLEANER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_ADDRESSES_ADDRESS_DATA_CLEANER_H_

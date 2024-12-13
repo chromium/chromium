@@ -19,7 +19,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/autofill/core/browser/address_data_cleaner.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_cleaner.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 
 #include <stddef.h>
 
@@ -31,6 +31,9 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_base.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
@@ -40,9 +43,6 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
-#include "components/autofill/core/browser/payments_data_manager_test_api.h"
-#include "components/autofill/core/browser/payments_data_manager_test_base.h"
-#include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_clock.h"

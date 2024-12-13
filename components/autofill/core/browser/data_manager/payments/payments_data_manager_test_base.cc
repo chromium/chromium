@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/payments_data_manager_test_base.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_base.h"
 
 #include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"

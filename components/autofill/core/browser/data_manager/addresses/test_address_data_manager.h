@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_ADDRESS_DATA_MANAGER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_ADDRESS_DATA_MANAGER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_ADDRESSES_TEST_ADDRESS_DATA_MANAGER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_ADDRESSES_TEST_ADDRESS_DATA_MANAGER_H_
 
 #include <memory>
 
-#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/test_inmemory_strike_database.h"
 
 namespace autofill {
@@ -62,4 +62,4 @@ class TestAddressDataManager : public AddressDataManager {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_ADDRESS_DATA_MANAGER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_ADDRESSES_TEST_ADDRESS_DATA_MANAGER_H_

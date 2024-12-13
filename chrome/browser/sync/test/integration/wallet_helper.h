@@ -15,7 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {

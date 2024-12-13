@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/determine_possible_field_types.h"
 #include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -20,7 +21,6 @@
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 
 namespace autofill {
 

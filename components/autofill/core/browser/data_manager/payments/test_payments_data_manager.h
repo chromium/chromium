@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_PAYMENTS_DATA_MANAGER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_PAYMENTS_DATA_MANAGER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_PAYMENTS_TEST_PAYMENTS_DATA_MANAGER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_PAYMENTS_TEST_PAYMENTS_DATA_MANAGER_H_
 
 #include <memory>
 #include <optional>
@@ -12,11 +12,11 @@
 #include <utility>
 #include <vector>
 
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
 
 namespace autofill {
 
@@ -135,4 +135,4 @@ class TestPaymentsDataManager : public PaymentsDataManager {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_PAYMENTS_DATA_MANAGER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_PAYMENTS_TEST_PAYMENTS_DATA_MANAGER_H_

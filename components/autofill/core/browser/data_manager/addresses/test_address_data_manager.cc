@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/test_address_data_manager.h"
-#include "components/autofill/core/browser/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/test_address_data_manager.h"
 
 #include <memory>
 #include <vector>
 
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+
 namespace autofill {
 
-TestAddressDataManager::TestAddressDataManager(
-    const std::string& app_locale)
+TestAddressDataManager::TestAddressDataManager(const std::string& app_locale)
     : AddressDataManager(/*webdata_service=*/nullptr,
                          /*pref_service=*/nullptr,
                          /*local_state=*/nullptr,

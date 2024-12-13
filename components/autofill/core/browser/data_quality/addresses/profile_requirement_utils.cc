@@ -9,7 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"

@@ -13,8 +13,8 @@
 #include <utility>
 
 #include "base/time/time.h"
-#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"

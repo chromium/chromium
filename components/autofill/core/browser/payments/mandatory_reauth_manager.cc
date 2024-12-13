@@ -5,10 +5,10 @@
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"

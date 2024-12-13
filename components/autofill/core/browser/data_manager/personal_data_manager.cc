@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 
-#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/manual_testing_import.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -69,8 +69,9 @@ PersonalDataManager::PersonalDataManager(
 PersonalDataManager::~PersonalDataManager() = default;
 
 void PersonalDataManager::Shutdown() {
-  if (history_service_)
+  if (history_service_) {
     history_service_observation_.Reset();
+  }
   history_service_ = nullptr;
   address_data_manager_->Shutdown();
   payments_data_manager_->Shutdown();

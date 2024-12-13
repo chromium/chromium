@@ -10,7 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/test/test_file_util.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/bookmarks/browser/bookmark_model.h"

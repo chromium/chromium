@@ -8,9 +8,9 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
