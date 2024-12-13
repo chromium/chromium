@@ -10,8 +10,6 @@
 //
 // Chrome engineers will review, verify, and apply the proposed changes
 // to ensure obligations and compliance with regulatory requirements.
-//
-// Do not modify this file directly without following the above process.
 
 // This file is used during build to generate prepopulated_engines.h/cc.
 // For more details see tools/json_to_struct/json_to_struct.py.
