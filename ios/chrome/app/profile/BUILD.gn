@@ -39,10 +39,11 @@ source_set("profile_controller") {
     ":docking_promo_profile_agent",
     ":features",
     ":first_run_profile_agent",
-    ":identity_confirmation_app_agent",
+    ":identity_confirmation_profile_agent",
     ":post_restore_profile_agent",
     ":profile",
     ":search_engine_choice_profile_agent",
+    ":session_metrics_profile_agent",
     "//base",
     "//components/content_settings/core/browser",
     "//components/feature_engagement/public",
@@ -230,7 +231,20 @@ source_set("search_engine_choice_profile_agent") {
   ]
 }
 
-source_set("identity_confirmation_app_agent") {
+source_set("session_metrics_profile_agent") {
+  sources = [
+    "session_metrics_profile_agent.h",
+    "session_metrics_profile_agent.mm",
+  ]
+  deps = [
+    ":profile",
+    "//base",
+    "//ios/chrome/browser/metrics/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+  ]
+}
+
+source_set("identity_confirmation_profile_agent") {
   sources = [
     "identity_confirmation_profile_agent.h",
     "identity_confirmation_profile_agent.mm",
@@ -285,12 +299,14 @@ source_set("unit_tests") {
     "profile_controller_unittest.mm",
     "profile_state_unittest.mm",
     "scene_observing_profile_agent_unittest.mm",
+    "session_metrics_profile_agent_unittest.mm",
   ]
   deps = [
     ":certificate_policy_profile_agent",
     ":post_restore_profile_agent",
     ":profile",
     ":profile_controller",
+    ":session_metrics_profile_agent",
     ":test_utils",
     "//base/test:test_support",
     "//components/prefs",
@@ -298,6 +314,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:test_support",
     "//ios/chrome/app/profile/test:test_support",
+    "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:constants",
     "//ios/chrome/browser/promos_manager/model:factory",

@@ -248,17 +248,14 @@ source_set("app_metrics_app_state_agent") {
     "app_metrics_app_state_agent.mm",
   ]
   deps = [
+    ":app",
+    ":tests_hook",
     "//base",
-    "//ios/chrome/app",
-    "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:metrics_mediator",
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
     "//ios/chrome/app/application_delegate:startup_information",
-    "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-    "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/profile",
     "//ios/public/provider/chrome/browser/primes:primes_api",
   ]
 }
