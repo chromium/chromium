@@ -335,11 +335,7 @@ int GpuMain(MainFunctionParams parameters) {
   // It also needs to be registered before the process has multiple threads,
   // which may race with application of the sandbox. InitializeAndStartSandbox()
   // sandboxes the process and starts threads so this has to happen first.
-  if (base::FeatureList::IsEnabled(
-          features::kHandleChildThreadTypeChangesInBrowser) ||
-      base::FeatureList::IsEnabled(features::kSchedQoSOnResourcedForChrome)) {
-    SandboxedProcessThreadTypeHandler::Create();
-  }
+  SandboxedProcessThreadTypeHandler::Create();
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   base::PlatformThread::SetCurrentThreadType(

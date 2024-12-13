@@ -262,19 +262,15 @@ int RendererMain(MainFunctionParams parameters) {
     // first thread type change in ChildProcess constructor.
     // It also needs to be registered before the process has multiple threads,
     // which may race with application of the sandbox.
-    if (base::FeatureList::IsEnabled(
-            features::kHandleChildThreadTypeChangesInBrowser) ||
-        base::FeatureList::IsEnabled(features::kSchedQoSOnResourcedForChrome)) {
-      SandboxedProcessThreadTypeHandler::Create();
+    SandboxedProcessThreadTypeHandler::Create();
 
-      // Change the main thread type. On Linux and ChromeOS this needs to be
-      // done only if kHandleRendererThreadTypeChangesInBrowser is enabled to
-      // avoid child threads inheriting the main thread settings.
-      if (base::FeatureList::IsEnabled(
-              features::kMainThreadCompositingPriority)) {
-        base::PlatformThread::SetCurrentThreadType(
-            base::ThreadType::kDisplayCritical);
-      }
+    // Change the main thread type. On Linux and ChromeOS this needs to be
+    // done only if kHandleRendererThreadTypeChangesInBrowser is enabled to
+    // avoid child threads inheriting the main thread settings.
+    if (base::FeatureList::IsEnabled(
+            features::kMainThreadCompositingPriority)) {
+      base::PlatformThread::SetCurrentThreadType(
+          base::ThreadType::kDisplayCritical);
     }
 #else
     if (base::FeatureList::IsEnabled(

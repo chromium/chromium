@@ -256,16 +256,6 @@ BASE_FEATURE(kGroupNIKByJoiningOrigin,
              "GroupNIKByJoiningOrigin",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Supports proxying thread type changes of renderer processes to browser
-// process and having browser process handle adjusting thread properties (nice
-// value, c-group, latency sensitivity...) for children which have sandbox
-// restrictions.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kHandleChildThreadTypeChangesInBrowser,
-             "HandleChildThreadTypeChangesInBrowser",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // A feature to experiment with removing the soft process limit. See
 // https://crbug.com/369342694.
 BASE_FEATURE(kRemoveRendererProcessLimit,
