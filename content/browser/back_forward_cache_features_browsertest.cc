@@ -1767,35 +1767,77 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectRestored(FROM_HERE);
 }
 
+class BackForwardCacheNonStickyDoubleFixBrowserTest
+    : public BackForwardCacheBrowserTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (IsBackForwardCacheNonStickyDoubleFixEnabled()) {
+      EnableFeatureAndSetParams(kBackForwardCacheNonStickyDoubleFix, "", "");
+    } else {
+      DisableFeature(kBackForwardCacheNonStickyDoubleFix);
+    }
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+
+  bool IsBackForwardCacheNonStickyDoubleFixEnabled() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BackForwardCacheNonStickyDoubleFixBrowserTest,
+                         testing::Bool());
+
 // If pages released keyboard lock during pagehide, they can enter
-// BackForwardCache.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+// BackForwardCache. This also covers the case of entering BFCache for a
+// second time. KeyboardLock is a good feature to use as it will always
+// block BFCache. See https://crbug.com/360183659
+IN_PROC_BROWSER_TEST_P(BackForwardCacheNonStickyDoubleFixBrowserTest,
                        CacheIfKeyboardLockReleasedInPagehide) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  // 1) Navigate to a page and start using the Keyboard lock.
+  // Navigate to a page and start using the Keyboard lock.
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
 
   AcquireKeyboardLock(rfh_a.get());
   // Register a pagehide handler to release keyboard lock.
-  EXPECT_TRUE(ExecJs(rfh_a.get(), R"(
+  ASSERT_TRUE(ExecJs(rfh_a.get(), R"(
     window.onpagehide = function(e) {
       new Promise(resolve => {
-      navigator.keyboard.unlock();
-      resolve();
+        navigator.keyboard.unlock();
+        resolve();
       });
     };
   )"));
 
-  // 2) Navigate away.
-  EXPECT_TRUE(NavigateToURL(
+  // Navigate away.
+  ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
 
-  // 3) Go back and page should be restored from BackForwardCache.
+  // Go back and page should be restored from BackForwardCache.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
+
+  // Acquire the lock again.
+  AcquireKeyboardLock(rfh_a.get());
+
+  // Navigate away again.
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  // Go back again.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  if (IsBackForwardCacheNonStickyDoubleFixEnabled()) {
+    // The page should be restored from BackForwardCache.
+    ExpectRestored(FROM_HERE);
+  } else {
+    // The page should not be restored from BackForwardCache.
+    ExpectNotRestored(
+        {NotRestoredReason::kBlocklistedFeatures},
+        {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock}, {}, {},
+        {}, FROM_HERE);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
