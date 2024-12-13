@@ -101,6 +101,10 @@ AX_BASE_EXPORT bool IsAccessibilityRestrictiveIA2AXModesEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAccessibilityTreeForViews);
 AX_BASE_EXPORT bool IsAccessibilityTreeForViewsEnabled();
 
+// Extension manifest v3 migration for network speech synthesis.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kExtensionManifestV3NetworkSpeechSynthesis);
+AX_BASE_EXPORT bool IsExtensionManifestV3NetworkSpeechSynthesisEnabled();
+
 // Support aria element reflection. For example:
 //     element.ariaActiveDescendantElement = child;
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAriaElementReflection);

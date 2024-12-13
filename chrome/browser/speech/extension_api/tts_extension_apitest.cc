@@ -32,6 +32,7 @@
 #include "net/base/network_change_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
@@ -304,10 +305,22 @@ class EventRouterAddListenerWaiter : public EventRouter::Observer {
 
 using ContextType = extensions::browser_test_util::ContextType;
 
+struct FeaturesTestParam {
+  ContextType context_type;
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+};
+
 class TtsApiTest : public ExtensionApiTest,
-                   public testing::WithParamInterface<ContextType> {
+                   public testing::WithParamInterface<FeaturesTestParam> {
  public:
-  TtsApiTest() : ExtensionApiTest(GetParam()) {}
+  TtsApiTest() : ExtensionApiTest(GetParam().context_type) {
+    const FeaturesTestParam& features_test_param = GetParam();
+    scoped_feature_list_.InitWithFeatures(
+        features_test_param.enabled_features,
+        features_test_param.disabled_features);
+  }
+
   ~TtsApiTest() override = default;
   TtsApiTest(const TtsApiTest&) = delete;
   TtsApiTest& operator=(const TtsApiTest&) = delete;
@@ -324,7 +337,10 @@ class TtsApiTest : public ExtensionApiTest,
 
   void AddNetworkSpeechSynthesisExtension() {
     ExtensionHostTestHelper host_helper(profile());
-    host_helper.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
+    host_helper.RestrictToType(
+        ::features::IsExtensionManifestV3NetworkSpeechSynthesisEnabled()
+            ? mojom::ViewType::kOffscreenDocument
+            : mojom::ViewType::kExtensionBackgroundPage);
     ExtensionService* service =
         extensions::ExtensionSystem::Get(profile())->extension_service();
     service->component_loader()->AddNetworkSpeechSynthesisExtension();
@@ -348,14 +364,26 @@ class TtsApiTest : public ExtensionApiTest,
   }
 
   StrictMock<MockTtsPlatformImpl> mock_platform_impl_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         TtsApiTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         TtsApiTest,
-                         ::testing::Values(ContextType::kServiceWorker));
+INSTANTIATE_TEST_SUITE_P(
+    PersistentBackground,
+    TtsApiTest,
+    ::testing::Values(FeaturesTestParam{
+        .context_type = ContextType::kPersistentBackground}));
+INSTANTIATE_TEST_SUITE_P(
+    ServiceWorker,
+    TtsApiTest,
+    ::testing::Values(
+        FeaturesTestParam{
+            .context_type = ContextType::kServiceWorker,
+            .enabled_features =
+                {features::kExtensionManifestV3NetworkSpeechSynthesis}},
+        FeaturesTestParam{
+            .context_type = ContextType::kServiceWorker,
+            .disabled_features = {
+                features::kExtensionManifestV3NetworkSpeechSynthesis}}));
 
 IN_PROC_BROWSER_TEST_P(TtsApiTest, PlatformSpeakOptionalArgs) {
   EXPECT_CALL(mock_platform_impl_, IsSpeaking());
@@ -379,7 +407,7 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, PlatformSpeakOptionalArgs) {
   // Called when the extension's background host shuts down on unload. Service
   // worker-based extensions don't have hosts, so this won't happen.
   // See crbug.com/339682312.
-  if (GetParam() == ContextType::kPersistentBackground) {
+  if (GetParam().context_type == ContextType::kPersistentBackground) {
     EXPECT_CALL(mock_platform_impl_, StopSpeaking()).WillOnce(Return(false));
   }
 
@@ -514,7 +542,7 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, PlatformPauseSpeakNoEnqueue) {
   // worker-based extensions don't have hosts, so this only happens with a
   // persistent background page.
   // See crbug.com/339682312.
-  if (GetParam() == ContextType::kPersistentBackground) {
+  if (GetParam().context_type == ContextType::kPersistentBackground) {
     EXPECT_CALL(mock_platform_impl_, StopSpeaking()).WillOnce(Return(false));
   }
   ASSERT_TRUE(RunExtensionTest("tts/pause_speak_no_enqueue")) << message_;
