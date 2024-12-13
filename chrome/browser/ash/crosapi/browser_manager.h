@@ -18,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -74,39 +73,6 @@ class BrowserManager : public session_manager::SessionManagerObserver {
   void Shutdown();
 
  protected:
-  // The actual Lacros launch mode.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class LacrosLaunchMode {
-    // Indicates that Lacros is disabled.
-    kLacrosDisabled = 0,
-    // Lacros is the only browser and Ash is disabled.
-    kLacrosOnly = 3,
-
-    kMaxValue = kLacrosOnly
-  };
-
-  // The actual Lacros launch mode.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class LacrosLaunchModeAndSource {
-    // Either set by user or system/flags, indicates that Lacros is disabled.
-    kPossiblySetByUserLacrosDisabled = 0,
-    // Either set by user or system/flags, Lacros is the only browser and Ash is
-    // disabled.
-    kPossiblySetByUserLacrosOnly = 3,
-    // Enforced by the user, indicates that Lacros is disabled.
-    kForcedByUserLacrosDisabled = 4 + kPossiblySetByUserLacrosDisabled,
-    // Enforced by the user, Lacros is the only browser and Ash is disabled.
-    kForcedByUserLacrosOnly = 4 + kPossiblySetByUserLacrosOnly,
-    // Enforced by policy, indicates that Lacros is disabled.
-    kForcedByPolicyLacrosDisabled = 8 + kPossiblySetByUserLacrosDisabled,
-    // Enforced by policy, Lacros is the only browser and Ash is disabled.
-    kForcedByPolicyLacrosOnly = 8 + kPossiblySetByUserLacrosOnly,
-
-    kMaxValue = kForcedByPolicyLacrosOnly
-  };
-
   // NOTE: You may have to update tests if you make changes to State, as state_
   // is exposed via autotest_private.
   enum class State {
@@ -132,18 +98,8 @@ class BrowserManager : public session_manager::SessionManagerObserver {
                            NewWindowReloadsWhenUpdateAvailable);
   FRIEND_TEST_ALL_PREFIXES(BrowserManagerTest, OnLacrosUserDataDirRemoved);
 
-  // Remembers lacros launch mode by calling `SetLacrosLaunchMode()`, then kicks
-  // off the daily reporting for the metrics.
-  void RecordLacrosLaunchMode();
-  // Sets `lacros_mode_` and `lacros_mode_and_source_`.
-  void SetLacrosLaunchMode();
-
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
-
-  // Sending the LaunchMode state at least once a day.
-  // multiple events will get de-duped on the server side.
-  void OnDailyLaunchModeTimer();
 
   // Start a sequence to clear Lacros related data. It posts a task to remove
   // Lacros user data directory and if that is successful, calls
@@ -163,15 +119,6 @@ class BrowserManager : public session_manager::SessionManagerObserver {
   // Tracks whether Shutdown() has been signalled by ash. This flag ensures any
   // new or existing lacros startup tasks are not executed during shutdown.
   bool shutdown_requested_ = false;
-
-  // The timer used to periodically check if the daily event should be
-  // triggered.
-  base::RepeatingTimer daily_event_timer_;
-
-  // The launch mode and the launch mode with source which were used after
-  // deciding if Lacros should be used or not.
-  std::optional<LacrosLaunchMode> lacros_mode_;
-  std::optional<LacrosLaunchModeAndSource> lacros_mode_and_source_;
 
   base::WeakPtrFactory<BrowserManager> weak_factory_{this};
 };

@@ -320,7 +320,6 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/apps/almanac_api_client",
       "//chrome/browser/apps/app_preload_service",
       "//chrome/browser/ash/app_list",
-      "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/file_manager",
       "//chrome/browser/ash/floating_sso",
       "//chrome/browser/ash/input_method",

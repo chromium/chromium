@@ -201,7 +201,6 @@
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/locale/locale_change_guard.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
@@ -663,7 +662,6 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
       ash::ProfileHelper::IsPrimaryProfile(this)) {
     auto& map = profile_policy_connector_->policy_service()->GetPolicies(
         policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
-    crosapi::browser_util::CacheLacrosAvailability(map);
     ash::standalone_browser::CacheLacrosSelection(map);
   }
 #endif
@@ -1207,7 +1205,6 @@ void ProfileImpl::OnPrefsLoaded(CreateMode create_mode, bool success) {
         auto& map = profile_policy_connector_->policy_service()->GetPolicies(
             policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
                                     std::string()));
-        crosapi::browser_util::CacheLacrosAvailability(map);
         ash::standalone_browser::CacheLacrosSelection(map);
       }
 
