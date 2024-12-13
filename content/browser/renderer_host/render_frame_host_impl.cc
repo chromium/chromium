@@ -1461,6 +1461,10 @@ class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
                             base::Unretained(this)));
   }
 
+  void SimulateKeepAliveTimeoutForTesting() {
+    keep_alive_timeout_for_testing_ = true;
+  }
+
  private:
   // A task that attempts to shutdown the render process for the case where only
   // discarded frames remain.
@@ -1494,15 +1498,32 @@ class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
           }
         });
 
-    // Attempt shutdown without running unload handlers, the discard operation
-    // has been acknowledged by the render process at this point.
-    if (discarded_widgets.size() > 0 && only_discarded_frames &&
-        (retries_ * kProcessShutdownRetryDelay <=
-         RenderProcessHostImpl::kKeepAliveHandleFactoryTimeout) &&
-        !host_->FastShutdownIfPossible(
+    // Attempt a shutdown if the the renderer is hosting only discarded frames.
+    if (discarded_widgets.empty() || !only_discarded_frames) {
+      return;
+    }
+
+    // If shutdown re-attempts have exceeded the kKeepAliveHandleFactoryTimeout
+    // then attempt a final shutdown ignoring any active keep-alive refs.
+    if (keep_alive_timeout_for_testing_ ||
+        retries_ * kProcessShutdownRetryDelay >=
+            RenderProcessHostImpl::kKeepAliveHandleFactoryTimeout) {
+      host_->FastShutdownIfPossible(
+          /*page_count=*/discarded_widgets.size(),
+          /*skip_unload_handlers=*/true,
+          /*ignore_workers=*/true,
+          /*ignore_keep_alive=*/true);
+      return;
+    }
+
+    // If re-attempts have not yet reached kKeepAliveHandleFactoryTimeout
+    // attempt a shutdown honoring any existing keep-alive refs. Schedule a
+    // retry if fast shutdown is blocked.
+    if (!host_->FastShutdownIfPossible(
             /*page_count=*/discarded_widgets.size(),
             /*skip_unload_handlers=*/true,
-            /*ignore_workers=*/true)) {
+            /*ignore_workers=*/true,
+            /*ignore_keep_alive=*/false)) {
       retries_++;
       shutdown_attempt_timer_.Start(
           FROM_HERE, kProcessShutdownRetryDelay,
@@ -1519,6 +1540,8 @@ class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
 
   // Owns this.
   const raw_ptr<RenderProcessHost> host_;
+
+  bool keep_alive_timeout_for_testing_ = false;
 };
 
 }  // namespace
@@ -6271,6 +6294,11 @@ void RenderFrameHostImpl::DisableUnloadTimerForTesting() {
 
 bool RenderFrameHostImpl::ShouldPartitionAsPopin() const {
   return !IsNestedWithinFencedFrame() && delegate_->IsPartitionedPopin();
+}
+
+void RenderFrameHostImpl::SimulateDiscardShutdownKeepAliveTimeoutForTesting() {
+  DiscardedRFHProcessHelper::GetForRenderProcessHost(GetProcess())
+      ->SimulateKeepAliveTimeoutForTesting();
 }
 
 bool RenderFrameHostImpl::IsBackForwardCacheEvictionTimeRunningForTesting()

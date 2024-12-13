@@ -3163,6 +3163,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // See https://explainers-by-googlers.github.io/partitioned-popins/
   bool ShouldPartitionAsPopin() const;
 
+  void SimulateDiscardShutdownKeepAliveTimeoutForTesting();
+
  protected:
   friend class RenderFrameHostFactory;
 

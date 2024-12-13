@@ -267,9 +267,14 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // If |ignore_workers| is false and this renderer has any workers, then this
   // function does nothing. Otherwise, the function will ignore checking for
   // worker references.
+  // If |ignore_keep_alive| is false and this renderer has any keep-alive ref
+  // counts, then this function does nothing. Otherwise, the function will
+  // ignore checking for keep-alive references. This can be removed once
+  // keep-alive migration has landed (see crbug.com/40236167).
   virtual bool FastShutdownIfPossible(size_t page_count = 0,
                                       bool skip_unload_handlers = false,
-                                      bool ignore_workers = false) = 0;
+                                      bool ignore_workers = false,
+                                      bool ignore_keep_alive = false) = 0;
 
   // Returns true if fast shutdown was started for the renderer.
   virtual bool FastShutdownStarted() = 0;
