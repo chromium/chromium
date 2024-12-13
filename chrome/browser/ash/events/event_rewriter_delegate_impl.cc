@@ -118,29 +118,31 @@ EventRewriterDelegateImpl::GetKeyboardRemappedModifierValue(
 }
 
 bool EventRewriterDelegateImpl::TopRowKeysAreFunctionKeys(int device_id) const {
-  // When the flag is disabled, `device_id` is unused.
-  if (!ash::features::IsInputDeviceSettingsSplitEnabled()) {
-    const PrefService* pref_service = GetPrefService();
-    if (!pref_service) {
-      return false;
+  if (ash::features::IsInputDeviceSettingsSplitEnabled()) {
+    const mojom::KeyboardSettings* settings =
+        input_device_settings_controller_->GetKeyboardSettings(device_id);
+    if (settings) {
+      return settings->top_row_are_fkeys;
     }
-    return pref_service->GetBoolean(prefs::kSendFunctionKeys);
-  }
-
-  const mojom::KeyboardSettings* settings =
-      input_device_settings_controller_->GetKeyboardSettings(device_id);
-  if (settings) {
-    return settings->top_row_are_fkeys;
   }
 
   if (ash::features::IsPeripheralCustomizationEnabled()) {
-    // If it is a mouse or graphics tablet, do not rewrite function keys.
-    return input_device_settings_controller_->GetMouseSettings(device_id) ||
-           input_device_settings_controller_->GetGraphicsTabletSettings(
-               device_id);
+    bool is_mouse_or_tablet =
+        input_device_settings_controller_->GetMouseSettings(device_id) ||
+        input_device_settings_controller_->GetGraphicsTabletSettings(device_id);
+    if (is_mouse_or_tablet) {
+      // If it is a mouse or graphics tablet, do not rewrite function keys.
+      return true;
+    }
   }
 
-  return false;
+  // If we really don't know what device this is, fall back to respecting the
+  // global preference.
+  const PrefService* pref_service = GetPrefService();
+  if (!pref_service) {
+    return false;
+  }
+  return pref_service->GetBoolean(prefs::kSendFunctionKeys);
 }
 
 bool EventRewriterDelegateImpl::IsExtensionCommandRegistered(
