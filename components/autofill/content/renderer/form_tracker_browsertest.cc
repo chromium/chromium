@@ -4,10 +4,13 @@
 
 #include "components/autofill/content/renderer/form_tracker.h"
 
+#include <optional>
+
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/content/renderer/autofill_agent_test_api.h"
 #include "components/autofill/content/renderer/autofill_renderer_test.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -17,12 +20,14 @@
 namespace autofill {
 namespace {
 
+using ::testing::_;
+
 class MockFormTracker : public FormTracker {
  public:
   using FormTracker::FormTracker;
   MOCK_METHOD((void),
-              FireInferredFormSubmission,
-              (mojom::SubmissionSource),
+              FireFormSubmission,
+              (mojom::SubmissionSource, std::optional<blink::WebFormElement>),
               (override));
 };
 
@@ -95,7 +100,9 @@ TEST_P(FormTrackerTest, FormlessXHRThenHide) {
   // still visible.
 
   // FormTracker should detect a submission after the <input>s are hidden.
-  EXPECT_CALL(form_tracker(), FireInferredFormSubmission).Times(1);
+  EXPECT_CALL(form_tracker(),
+              FireFormSubmission(mojom::SubmissionSource::XHR_SUCCEEDED, _))
+      .Times(1);
   ExecuteJavaScriptForTests(
       R"(document.getElementById('input1').style.display = 'none';
          document.getElementById('input2').style.display = 'none';)");
@@ -126,7 +133,9 @@ TEST_P(FormTrackerTest, FormlessHideThenXhr) {
   // done any XHRs.
 
   // FormTracker should detect a submission when the XHR succeeds.
-  EXPECT_CALL(form_tracker(), FireInferredFormSubmission).Times(1);
+  EXPECT_CALL(form_tracker(),
+              FireFormSubmission(mojom::SubmissionSource::XHR_SUCCEEDED, _))
+      .Times(1);
   form_tracker().AjaxSucceeded();
   task_environment_.RunUntilIdle();
 }

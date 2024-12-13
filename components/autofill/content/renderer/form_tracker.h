@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_TRACKER_H_
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_TRACKER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -153,10 +155,10 @@ class FormTracker : public content::RenderFrameObserver,
   // process element while it is changing.
   void FormControlDidChangeImpl(FieldRendererId element_id,
                                 SaveFormReason change_source);
-  void FireProbablyFormSubmitted();
-  void FireFormSubmitted(const blink::WebFormElement& form);
   // Virtual for testing.
-  virtual void FireInferredFormSubmission(mojom::SubmissionSource source);
+  virtual void FireFormSubmission(
+      mojom::SubmissionSource source,
+      std::optional<blink::WebFormElement> submitted_form_element);
   void FireSubmissionIfFormDisappear(mojom::SubmissionSource source);
   bool CanInferFormSubmitted();
 

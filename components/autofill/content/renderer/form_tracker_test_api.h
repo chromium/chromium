@@ -5,8 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_TRACKER_TEST_API_H_
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_TRACKER_TEST_API_H_
 
+#include <optional>
+
 #include "base/memory/raw_ref.h"
 #include "components/autofill/content/renderer/form_tracker.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 
 namespace autofill {
 
@@ -19,7 +22,8 @@ class FormTrackerTestApi {
   }
 
   void FireProbablyFormSubmitted() {
-    form_tracker_->FireProbablyFormSubmitted();
+    form_tracker_->FireFormSubmission(
+        mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED, std::nullopt);
   }
 
  private:

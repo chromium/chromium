@@ -238,9 +238,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   void OnProvisionallySaveForm(const blink::WebFormElement& form,
                                const blink::WebFormControlElement& element,
                                FormTracker::SaveFormReason reason);
-  void OnProbablyFormSubmitted();
-  void OnFormSubmitted(const blink::WebFormElement& form_element);
-  void OnInferredFormSubmission(mojom::SubmissionSource source);
+  void OnFormSubmission(
+      mojom::SubmissionSource source,
+      std::optional<blink::WebFormElement> submitted_form_element);
 
   // Instructs `form_tracker_` to track the autofilled `element`.
   void TrackAutofilledElement(const blink::WebFormControlElement& element);
@@ -426,15 +426,15 @@ class AutofillAgent : public content::RenderFrameObserver,
   //   been removed afterwards).
   // - `last_interacted_form_`'s current `FormData`, because this corresponds to
   //   the last form element the user interacted with.
-  // - `known_submitted_form_element`'s current `FormData`, because the caller
+  // - `submitted_form_element`'s current `FormData`, because the caller
   //    specified that this is the form element that was submitted, regardless
   //    of autofill's tracking.
-  // When `known_submitted_form_element` is provided the function makes sure
+  // When `submitted_form_element` is provided the function makes sure
   // that the returned form corresponds to that DOM element.
   // `source` is the type of submission requesting the submitted form.
   std::optional<FormData> GetSubmittedForm(
       mojom::SubmissionSource source,
-      std::optional<blink::WebFormElement> known_submitted_form_element) const;
+      std::optional<blink::WebFormElement> submitted_form_element) const;
 
   void ResetLastInteractedElements();
   // A form_id means that the user last interacted with a FormElement.
