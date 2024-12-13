@@ -2418,8 +2418,8 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
-<histogram name="Autofill.ExtractForm{OwnershipType}.FieldCount" units="fields"
-    expires_after="2025-06-08">
+<histogram name="Autofill.ExtractForm{OwnershipType}.FieldCount2"
+    units="fields" expires_after="2025-12-12">
   <owner>jkeitel@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
