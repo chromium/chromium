@@ -31,7 +31,7 @@ bool FillUnixAddress(const std::string& socket_path,
     return false;
 
   struct sockaddr_un* socket_addr =
-      reinterpret_cast<struct sockaddr_un*>(address->addr);
+      reinterpret_cast<struct sockaddr_un*>(address->addr());
   memset(socket_addr, 0, address->addr_len);
   socket_addr->sun_family = AF_UNIX;
   address->addr_len = path_size + offsetof(struct sockaddr_un, sun_path);

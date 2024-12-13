@@ -58,7 +58,7 @@ TEST(AddressListTest, CreateFromAddrinfo) {
   std::array<addrinfo, kNumElements> ai;
   for (unsigned i = 0; i < kNumElements; ++i) {
     struct sockaddr_in* addr =
-        reinterpret_cast<struct sockaddr_in*>(storage[i].addr);
+        reinterpret_cast<struct sockaddr_in*>(storage[i].addr());
     storage[i].addr_len = sizeof(struct sockaddr_in);
     // Populating the address with { i, i, i, i }.
     memset(&addr->sin_addr, i, IPAddress::kIPv4AddressSize);
@@ -69,7 +69,7 @@ TEST(AddressListTest, CreateFromAddrinfo) {
     ai[i].ai_family = addr->sin_family;
     ai[i].ai_socktype = SOCK_STREAM;
     ai[i].ai_addrlen = storage[i].addr_len;
-    ai[i].ai_addr = storage[i].addr;
+    ai[i].ai_addr = storage[i].addr();
     if (i + 1 < kNumElements)
       ai[i].ai_next = &ai[i + 1];
   }

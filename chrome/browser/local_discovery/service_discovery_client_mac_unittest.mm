@@ -156,9 +156,9 @@ TEST_F(ServiceDiscoveryClientMacTest, ParseServiceRecord) {
   ASSERT_TRUE(ip_address.AssignFromIPLiteral(kIp));
   net::IPEndPoint endpoint(ip_address, kPort);
   net::SockaddrStorage storage;
-  ASSERT_TRUE(endpoint.ToSockAddr(storage.addr, &storage.addr_len));
-  NSData* discoveryHost =
-      [NSData dataWithBytes:storage.addr length:storage.addr_len];
+  ASSERT_TRUE(endpoint.ToSockAddr(storage.addr(), &storage.addr_len));
+  NSData* discoveryHost = [NSData dataWithBytes:storage.addr()
+                                         length:storage.addr_len];
   NSArray* addresses = @[ discoveryHost ];
   [test_service setAddresses:addresses];
 
@@ -194,9 +194,9 @@ TEST_F(ServiceDiscoveryClientMacTest, ParseInvalidUnicodeRecord) {
   ASSERT_TRUE(ip_address.AssignFromIPLiteral(kIp));
   net::IPEndPoint endpoint(ip_address, kPort);
   net::SockaddrStorage storage;
-  ASSERT_TRUE(endpoint.ToSockAddr(storage.addr, &storage.addr_len));
-  NSData* discovery_host =
-      [NSData dataWithBytes:storage.addr length:storage.addr_len];
+  ASSERT_TRUE(endpoint.ToSockAddr(storage.addr(), &storage.addr_len));
+  NSData* discovery_host = [NSData dataWithBytes:storage.addr()
+                                          length:storage.addr_len];
   NSArray* addresses = @[ discovery_host ];
   [test_service setAddresses:addresses];
 

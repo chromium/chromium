@@ -107,7 +107,7 @@ PlatformChannelServerEndpoint NamedPlatformChannel::CreateServerEndpoint(
     return PlatformChannelServerEndpoint();
 
   // Bind the socket.
-  if (bind(handle.GetFD().get(), storage.addr, storage.addr_len) < 0) {
+  if (bind(handle.GetFD().get(), storage.addr(), storage.addr_len) < 0) {
     PLOG(ERROR) << "bind " << name;
     return PlatformChannelServerEndpoint();
   }
@@ -137,8 +137,8 @@ PlatformChannelEndpoint NamedPlatformChannel::CreateClientEndpoint(
   if (!handle.is_valid())
     return PlatformChannelEndpoint();
 
-  if (HANDLE_EINTR(
-          connect(handle.GetFD().get(), storage.addr, storage.addr_len)) < 0) {
+  if (HANDLE_EINTR(connect(handle.GetFD().get(), storage.addr(),
+                           storage.addr_len)) < 0) {
     VPLOG(1) << "connect " << options.server_name;
     return PlatformChannelEndpoint();
   }

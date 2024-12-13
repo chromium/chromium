@@ -28,9 +28,12 @@ struct NET_EXPORT SockaddrStorage {
 
   struct sockaddr_storage addr_storage;
   socklen_t addr_len;
-  // This field is not a raw_ptr<> because of a rewriter issue not adding .get()
-  // in reinterpret_cast.
-  RAW_PTR_EXCLUSION struct sockaddr* const addr;
+
+  const sockaddr* addr() const {
+    return reinterpret_cast<const sockaddr*>(&addr_storage);
+  }
+
+  sockaddr* addr() { return reinterpret_cast<sockaddr*>(&addr_storage); }
 };
 
 }  // namespace net

@@ -448,10 +448,11 @@ int TCPSocketWin::Bind(const IPEndPoint& address) {
   DCHECK_NE(socket_, INVALID_SOCKET);
 
   SockaddrStorage storage;
-  if (!address.ToSockAddr(storage.addr, &storage.addr_len))
+  if (!address.ToSockAddr(storage.addr(), &storage.addr_len)) {
     return ERR_ADDRESS_INVALID;
+  }
 
-  int result = bind(socket_, storage.addr, storage.addr_len);
+  int result = bind(socket_, storage.addr(), storage.addr_len);
   int os_error = WSAGetLastError();
   if (result < 0) {
     PLOG(ERROR) << "bind() returned an error";
@@ -715,12 +716,13 @@ int TCPSocketWin::GetLocalAddress(IPEndPoint* address) const {
   DCHECK(address);
 
   SockaddrStorage storage;
-  if (getsockname(socket_, storage.addr, &storage.addr_len)) {
+  if (getsockname(socket_, storage.addr(), &storage.addr_len)) {
     int os_error = WSAGetLastError();
     return MapSystemError(os_error);
   }
-  if (!address->FromSockAddr(storage.addr, storage.addr_len))
+  if (!address->FromSockAddr(storage.addr(), storage.addr_len)) {
     return ERR_ADDRESS_INVALID;
+  }
 
   return OK;
 }
@@ -893,7 +895,7 @@ void TCPSocketWin::CloseSocketDescriptorForTesting() {
 int TCPSocketWin::AcceptInternal(std::unique_ptr<TCPSocketWin>* socket,
                                  IPEndPoint* address) {
   SockaddrStorage storage;
-  int new_socket = accept(socket_, storage.addr, &storage.addr_len);
+  int new_socket = accept(socket_, storage.addr(), &storage.addr_len);
   int os_error = WSAGetLastError();
   if (new_socket < 0) {
     int net_error = MapSystemError(os_error);
@@ -903,7 +905,7 @@ int TCPSocketWin::AcceptInternal(std::unique_ptr<TCPSocketWin>* socket,
   }
 
   IPEndPoint ip_end_point;
-  if (!ip_end_point.FromSockAddr(storage.addr, storage.addr_len)) {
+  if (!ip_end_point.FromSockAddr(storage.addr(), storage.addr_len)) {
     NOTREACHED();
   }
   auto tcp_socket =
@@ -962,8 +964,9 @@ int TCPSocketWin::DoConnect() {
   WSAEventSelect(socket_, core_->GetConnectEvent(), FD_CONNECT);
 
   SockaddrStorage storage;
-  if (!peer_address_->ToSockAddr(storage.addr, &storage.addr_len))
+  if (!peer_address_->ToSockAddr(storage.addr(), &storage.addr_len)) {
     return ERR_ADDRESS_INVALID;
+  }
 
   // Set option to choose a random port, if the socket is not already bound.
   // Ignore failures, which may happen if the socket was already bound.
@@ -975,7 +978,7 @@ int TCPSocketWin::DoConnect() {
                sizeof(randomize_port));
   }
 
-  if (!connect(socket_, storage.addr, storage.addr_len)) {
+  if (!connect(socket_, storage.addr(), storage.addr_len)) {
     // Connected without waiting!
     //
     // The MSDN page for connect says:
