@@ -341,7 +341,7 @@ try_.builder(
     coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
     # The size of the testing pool is limited.
-    max_concurrent_builds = 3,
+    max_concurrent_builds = 2,
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     #use_orchestrator_pool = True,
@@ -401,6 +401,8 @@ try_.builder(
     os = os.WINDOWS_10,
     ssd = True,
     contact_team_email = "chrome-desktop-engprod@google.com",
+    # The size of the testing pool is limited.
+    max_concurrent_builds = 2,
     # Enable when stable.
     # main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,

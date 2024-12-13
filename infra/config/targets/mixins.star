@@ -2240,6 +2240,10 @@ targets.mixin(
             "cpu": "arm64",
             "os": "Windows-11",
         },
+        # win-arm64 is a limited pool with ~100 bots that can be easily
+        # overloaded by few builds. Increase the expiration_sec to 2h to prevent
+        # shards from timing out.
+        expiration_sec = 7200,
     ),
 )
 
