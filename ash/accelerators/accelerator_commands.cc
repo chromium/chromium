@@ -1385,7 +1385,9 @@ void ToggleAssistant() {
       // No need to show toast.
       return;
     case AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT:
-      // No need to show toast.
+      // Showing new entry point instead.
+      AssistantUiController::Get()->ShowUi(
+          assistant::AssistantEntryPoint::kHotkey);
       return;
     case AssistantAllowedState::ALLOWED:
       // Nothing need to do if allowed.

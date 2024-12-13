@@ -38,10 +38,9 @@ class AssistantBrowserDelegateImpl
       delete;
   ~AssistantBrowserDelegateImpl() override;
 
-  void MaybeInit(Profile* profile);
   void MaybeStartAssistantOptInFlow();
 
-  // chromeos::assistant::AssisantClient overrides:
+  // chromeos::assistant::AssistantBrowserDelegate overrides:
   void OnAssistantStatusChanged(
       ash::assistant::AssistantStatus new_status) override;
   void RequestAssistantVolumeControl(
@@ -67,13 +66,17 @@ class AssistantBrowserDelegateImpl
       mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
           receiver) override;
   void OpenUrl(GURL url) override;
+  void OpenNewEntryPoint() override;
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   void RequestLibassistantService(
       mojo::PendingReceiver<ash::libassistant::mojom::LibassistantService>
           receiver) override;
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
+  void OverrideEntryPointIdForTesting(const std::string& test_entry_point_id);
+
  private:
+  void MaybeInit(Profile* profile);
   // signin::IdentityManager::Observer:
   // Retry to initiate Assistant service when account info has been updated.
   // This is necessary if previous calls of MaybeInit() failed due to Assistant
@@ -104,6 +107,8 @@ class AssistantBrowserDelegateImpl
   // Non-owning pointers.
   raw_ptr<Profile> profile_ = nullptr;
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+
+  std::string entry_point_id_for_testing_;
 
   base::ScopedObservation<ash::AssistantStateBase, ash::AssistantStateObserver>
       assistant_state_observation_{this};

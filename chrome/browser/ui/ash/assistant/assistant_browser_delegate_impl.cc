@@ -12,19 +12,32 @@
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/assistant/assistant_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/assistant/assistant_setup.h"
 #include "chrome/browser/ui/ash/assistant/device_actions_delegate_impl.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
+#include "chromeos/services/assistant/public/shared/constants.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/device_service.h"
@@ -165,6 +178,51 @@ void AssistantBrowserDelegateImpl::OpenUrl(GURL url) {
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
+void AssistantBrowserDelegateImpl::OpenNewEntryPoint() {
+  if (!user_manager::UserManager::Get()->IsUserLoggedIn()) {
+    return;
+  }
+
+  auto entry_point_id = entry_point_id_for_testing_.empty()
+                            ? chromeos::assistant::kEntryPointId
+                            : entry_point_id_for_testing_;
+
+  // Get the current active user profile.  This is different from `profile_`
+  // which is only initialized when Assistant is allowed.
+  user_manager::User* active_user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  CHECK(active_user);
+
+  auto* profile = ash::ProfileHelper::Get()->GetProfileByUser(active_user);
+
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+  if (!provider) {
+    return;
+  }
+  auto* app = provider->registrar_unsafe().GetAppById(entry_point_id);
+  if (!app) {
+    return;
+  }
+
+  // Check if the app is already running. If it is, bring the window to front.
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
+    if ((browser->is_type_app() || browser->is_type_app_popup()) &&
+        entry_point_id ==
+            web_app::GetAppIdFromApplicationName(browser->app_name()) &&
+        profile == browser->profile()) {
+      browser->window()->Show();
+      return;
+    }
+  }
+
+  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
+      apps::AppLaunchParams(entry_point_id,
+                            apps::LaunchContainer::kLaunchContainerWindow,
+                            WindowOpenDisposition::NEW_WINDOW,
+                            // TODO(xiaohuic): maybe add new source
+                            apps::LaunchSource::kUnknown));
+}
+
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 void AssistantBrowserDelegateImpl::RequestLibassistantService(
     mojo::PendingReceiver<ash::libassistant::mojom::LibassistantService>
@@ -176,6 +234,12 @@ void AssistantBrowserDelegateImpl::RequestLibassistantService(
                                .Pass());
 }
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+
+void AssistantBrowserDelegateImpl::OverrideEntryPointIdForTesting(
+    const std::string& test_entry_point_id) {
+  CHECK_IS_TEST();
+  entry_point_id_for_testing_ = test_entry_point_id;
+}
 
 void AssistantBrowserDelegateImpl::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {

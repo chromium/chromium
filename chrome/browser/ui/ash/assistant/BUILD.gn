@@ -33,6 +33,7 @@ static_library("assistant") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc:arc_util",
@@ -42,7 +43,9 @@ static_library("assistant") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/webui/ash/assistant_optin",
+    "//chrome/browser/web_applications",
     "//chrome/common",
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/components/network",
@@ -66,6 +69,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "assistant_browser_delegate_impl_unittest.cc",
     "assistant_state_client_unittest.cc",
     "device_actions_unittest.cc",
     "search_and_assistant_enabled_checker_unittest.cc",
@@ -81,6 +85,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/test:arc_test_support",
     "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_unit",
     "//chromeos/ash/components/dbus/concierge",
