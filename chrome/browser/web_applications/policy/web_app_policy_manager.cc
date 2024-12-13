@@ -138,19 +138,11 @@ void WebAppPolicyManager::Start(
 
   policy_settings_and_force_installs_applied_ =
       std::move(policy_settings_and_force_installs_applied);
-  // When Lacros is enabled, don't run PWA-specific logic in Ash.
-  // TODO(crbug.com/40792561): Consider factoring out logic that should only run
-  // in Ash into a separate class. This way, when running in Ash, we won't need
-  // to construct a WebAppPolicyManager.
-  bool enable_pwa_support = true;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  enable_pwa_support = !IsWebAppsCrosapiEnabled();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostTask(FROM_HERE,
                  base::BindOnce(
                      &WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy,
-                     weak_ptr_factory_.GetWeakPtr(), enable_pwa_support));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WebAppPolicyManager::Shutdown() {
@@ -210,34 +202,26 @@ void WebAppPolicyManager::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kWebAppSettings);
 }
 
-void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy(
-    bool enable_pwa_support) {
+void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy() {
   pref_change_registrar_.Init(pref_service_);
-  if (enable_pwa_support) {
-    pref_change_registrar_.Add(
-        prefs::kWebAppInstallForceList,
-        base::BindRepeating(&WebAppPolicyManager::RefreshPolicyInstalledApps,
-                            weak_ptr_factory_.GetWeakPtr(),
-                            /*allow_close_and_relaunch=*/false));
-      pref_change_registrar_.Add(
-          prefs::kWebAppSettings,
-          base::BindRepeating(&WebAppPolicyManager::RefreshPolicySettings,
-                              weak_ptr_factory_.GetWeakPtr()));
+  pref_change_registrar_.Add(
+      prefs::kWebAppInstallForceList,
+      base::BindRepeating(&WebAppPolicyManager::RefreshPolicyInstalledApps,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          /*allow_close_and_relaunch=*/false));
+  pref_change_registrar_.Add(
+      prefs::kWebAppSettings,
+      base::BindRepeating(&WebAppPolicyManager::RefreshPolicySettings,
+                          weak_ptr_factory_.GetWeakPtr()));
 
-      RefreshPolicySettings();
+  RefreshPolicySettings();
 #if BUILDFLAG(IS_CHROMEOS)
-    RefreshPolicyInstalledApps(
-        /*allow_close_and_relaunch=*/base::FeatureList::IsEnabled(
-            features::kForcedAppRelaunchOnPlaceholderUpdate));
+  RefreshPolicyInstalledApps(
+      /*allow_close_and_relaunch=*/base::FeatureList::IsEnabled(
+          features::kForcedAppRelaunchOnPlaceholderUpdate));
 #else
-    RefreshPolicyInstalledApps(/*allow_close_and_relaunch=*/false);
+  RefreshPolicyInstalledApps(/*allow_close_and_relaunch=*/false);
 #endif
-
-  } else {
-    if (policy_settings_and_force_installs_applied_) {
-      std::move(policy_settings_and_force_installs_applied_).Run();
-    }
-  }
   ObserveDisabledSystemFeaturesPolicy();
 }
 

@@ -166,15 +166,6 @@ void IsolatedWebAppInstallationManager::Start() {
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (IsWebAppsCrosapiEnabled()) {
-    // If Lacros manages Web Apps, then Ash only manages System Web Apps. Thus,
-    // do not attempt to install IWAs in Ash, because Lacros will take care of
-    // that.
-    return;
-  }
-#endif
-
   if (KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
     ReportInstallationResult(base::unexpected(
         "Unable to install IWA due to browser shutting down."));

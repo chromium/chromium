@@ -17,6 +17,7 @@
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -65,19 +66,6 @@ namespace {
 using InstallStateSet = base::EnumSet<proto::InstallState,
                                       proto::InstallState_MIN,
                                       proto::InstallState_MAX>;
-
-// With Lacros, only system web apps are exposed using the Ash browser.
-bool WebAppSourceSupported(const WebApp& web_app) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (IsWebAppsCrosapiEnabled() && !web_app.IsSystemApp()) {
-    return false;
-  }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (web_app.IsSystemApp())
-    return false;
-#endif
-  return true;
-}
 
 BASE_FEATURE(kDiyAppsDefaultCaptureForcedOff,
              "capture_forced_off_diy_apps",
@@ -605,29 +593,23 @@ void WebAppRegistrar::NotifyAlwaysShowToolbarInFullscreenChanged(
 #endif
 
 const WebApp* WebAppRegistrar::GetAppById(const webapps::AppId& app_id) const {
-  auto it = registry_.find(app_id);
-  if (it != registry_.end() && WebAppSourceSupported(*it->second))
-    return it->second.get();
-
-  return nullptr;
+  return base::FindPtrOrNull(registry_, app_id);
 }
 
 const WebApp* WebAppRegistrar::GetAppByStartUrl(const GURL& start_url) const {
   for (auto const& it : registry_) {
-    if (WebAppSourceSupported(*it.second) &&
-        it.second->start_url() == start_url)
+    if (it.second->start_url() == start_url) {
       return it.second.get();
+    }
   }
   return nullptr;
 }
 
 std::vector<webapps::AppId>
 WebAppRegistrar::GetAppsFromSyncAndPendingInstallation() const {
-  AppSet apps_in_sync_install =
-      AppSet(this, [](const WebApp& web_app) {
-        return WebAppSourceSupported(web_app) &&
-               web_app.is_from_sync_and_pending_installation();
-      });
+  AppSet apps_in_sync_install = AppSet(this, [](const WebApp& web_app) {
+    return web_app.is_from_sync_and_pending_installation();
+  });
 
   std::vector<webapps::AppId> app_ids;
   for (const WebApp& app : apps_in_sync_install)
@@ -637,16 +619,15 @@ WebAppRegistrar::GetAppsFromSyncAndPendingInstallation() const {
 }
 
 std::vector<webapps::AppId> WebAppRegistrar::GetAppsPendingUninstall() const {
-  AppSet apps_in_sync_uninstall =
-      AppSet(this, [](const WebApp& web_app) {
-        return WebAppSourceSupported(web_app) &&
-               !web_app.is_from_sync_and_pending_installation() &&
-               web_app.is_uninstalling();
-      });
+  AppSet apps_in_sync_uninstall = AppSet(this, [](const WebApp& web_app) {
+    return !web_app.is_from_sync_and_pending_installation() &&
+           web_app.is_uninstalling();
+  });
 
   std::vector<webapps::AppId> app_ids;
-  for (const WebApp& app : apps_in_sync_uninstall)
+  for (const WebApp& app : apps_in_sync_uninstall) {
     app_ids.push_back(app.app_id());
+  }
 
   return app_ids;
 }
@@ -1696,18 +1677,14 @@ WebAppRegistrar::AppSet::const_iterator WebAppRegistrar::AppSet::end() const {
 }
 
 WebAppRegistrar::AppSet WebAppRegistrar::GetAppsIncludingStubs() const {
-  return AppSet(this, [](const WebApp& web_app) {
-    return WebAppSourceSupported(web_app);
-  });
+  return AppSet(this, [](const WebApp& web_app) { return true; });
 }
 
 WebAppRegistrar::AppSet WebAppRegistrar::GetApps() const {
-  return AppSet(
-      this, [](const WebApp& web_app) {
-        return WebAppSourceSupported(web_app) &&
-               !web_app.is_from_sync_and_pending_installation() &&
-               !web_app.is_uninstalling();
-      });
+  return AppSet(this, [](const WebApp& web_app) {
+    return !web_app.is_from_sync_and_pending_installation() &&
+           !web_app.is_uninstalling();
+  });
 }
 
 base::Value WebAppRegistrar::AsDebugValue() const {
@@ -1805,12 +1782,10 @@ WebApp* WebAppRegistrarMutable::GetAppByIdMutable(
 }
 
 WebAppRegistrar::AppSet WebAppRegistrarMutable::GetAppsMutable() {
-  return AppSet(
-      this, [](const WebApp& web_app) {
-        return WebAppSourceSupported(web_app) &&
-               !web_app.is_from_sync_and_pending_installation() &&
-               !web_app.is_uninstalling();
-      });
+  return AppSet(this, [](const WebApp& web_app) {
+    return !web_app.is_from_sync_and_pending_installation() &&
+           !web_app.is_uninstalling();
+  });
 }
 
 bool IsRegistryEqual(const Registry& registry,

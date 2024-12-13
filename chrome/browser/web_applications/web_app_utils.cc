@@ -310,12 +310,6 @@ bool AreWebAppsEnabled(Profile* profile, bool exclude_original_profile) {
 }
 
 bool AreWebAppsUserInstallable(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // With Lacros, web apps are not installed using the Ash browser.
-  if (IsWebAppsCrosapiEnabled()) {
-    return false;
-  }
-#endif
   return AreWebAppsEnabled(profile) && !profile->IsGuestSession() &&
          !profile->IsOffTheRecord();
 }
@@ -412,9 +406,8 @@ bool IsChromeOsDataMandatory() {
 
 bool AreAppsLocallyInstalledBySync() {
 #if BUILDFLAG(IS_CHROMEOS)
-  // With Crosapi, Ash no longer participates in sync.
-  // On Chrome OS before Crosapi, sync always locally installs an app.
-  return !IsWebAppsCrosapiEnabled();
+  // On Chrome OS, sync always locally installs an app.
+  return true;
 #else
   return false;
 #endif

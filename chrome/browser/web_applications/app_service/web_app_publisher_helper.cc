@@ -535,16 +535,6 @@ WebAppPublisherHelper::~WebAppPublisherHelper() = default;
 
 // static
 apps::AppType WebAppPublisherHelper::GetWebAppType() {
-// After moving the ordinary Web Apps to Lacros chrome, the remaining web
-// apps in ash Chrome will be only System Web Apps. Change the app type
-// to kSystemWeb for this case and the kWeb app type will be published from
-// the publisher for Lacros web apps.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (crosapi::browser_util::IsLacrosEnabled() && IsWebAppsCrosapiEnabled()) {
-    return apps::AppType::kSystemWeb;
-  }
-#endif
-
   return apps::AppType::kWeb;
 }
 
@@ -905,19 +895,7 @@ void WebAppPublisherHelper::PauseApp(const std::string& app_id) {
     SetIconEffect(app_id);
   }
 
-  if (!IsWebAppsCrosapiEnabled()) {
-    provider_->ui_manager().CloseAppWindows(app_id);
-  } else {
-    CHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
-        profile_));
-
-    apps::BrowserAppInstanceTracker* instance_tracker =
-        apps::AppServiceProxyFactory::GetForProfile(profile_)
-            ->BrowserAppInstanceTracker();
-    CHECK(instance_tracker);
-
-    instance_tracker->StopInstancesOfApp(app_id);
-  }
+  provider_->ui_manager().CloseAppWindows(app_id);
 
   delegate_->PublishWebApp(paused_apps_.CreateAppWithPauseStatus(
       app_type(), app_id, /*paused=*/true));
@@ -945,20 +923,7 @@ void WebAppPublisherHelper::StopApp(const std::string& app_id) {
     return;
   }
 
-  if (!IsWebAppsCrosapiEnabled()) {
-    provider_->ui_manager().CloseAppWindows(app_id);
-    return;
-  }
-
-  CHECK(
-      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_));
-
-  apps::BrowserAppInstanceTracker* instance_tracker =
-      apps::AppServiceProxyFactory::GetForProfile(profile_)
-          ->BrowserAppInstanceTracker();
-  CHECK(instance_tracker);
-
-  instance_tracker->StopInstancesOfApp(app_id);
+  provider_->ui_manager().CloseAppWindows(app_id);
 }
 
 void WebAppPublisherHelper::GetCompressedIconData(
