@@ -33,12 +33,18 @@ void ToggleMaximizeCaption(WindowState* window_state) {
   if (window_state->IsFullscreen()) {
     const WMEvent wm_event(WM_EVENT_TOGGLE_FULLSCREEN);
     window_state->OnWMEvent(&wm_event);
-  } else if (window_state->IsMaximized()) {
+    return;
+  }
+  // False CanMaximize blocks both maximizing and restoring
+  if (!window_state->CanMaximize()) {
+    wm::AnimateWindow(window_state->window(), wm::WINDOW_ANIMATION_TYPE_BOUNCE);
+    return;
+  }
+
+  if (window_state->IsMaximized()) {
     window_state->Restore();
   } else if (window_state->IsNormalOrSnapped() || window_state->IsFloated()) {
-    if (window_state->CanMaximize()) {
-      window_state->Maximize();
-    }
+    window_state->Maximize();
   }
 }
 
@@ -49,13 +55,18 @@ void ToggleMaximize(WindowState* window_state) {
   if (window_state->IsFullscreen()) {
     const WMEvent wm_event(WM_EVENT_TOGGLE_FULLSCREEN);
     window_state->OnWMEvent(&wm_event);
-  } else if (window_state->IsMaximized()) {
-    window_state->Restore();
-  } else if (window_state->CanMaximize()) {
-    window_state->Maximize();
-  } else {
-    // If `window` cannot be maximized, then do a window bounce animation.
+    return;
+  }
+  // False CanMaximize blocks both maximizing and restoring
+  if (!window_state->CanMaximize()) {
     wm::AnimateWindow(window_state->window(), wm::WINDOW_ANIMATION_TYPE_BOUNCE);
+    return;
+  }
+
+  if (window_state->IsMaximized()) {
+    window_state->Restore();
+  } else {
+    window_state->Maximize();
   }
 }
 
