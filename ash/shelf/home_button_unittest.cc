@@ -1002,7 +1002,9 @@ TEST_F(HomeButtonAnimationTest, NonAnimatedLayoutDuringAnimation) {
 
 TEST_P(HomeButtonTest, LongPressGesture) {
   // Simulate two users with primary user as active.
-  CreateUserSessions(2);
+  auto primary = SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kDefaultUserEmail);
+  SwitchActiveUser(primary);
 
   // Enable the Assistant in system settings.
   prefs()->SetBoolean(assistant::prefs::kAssistantEnabled, true);
@@ -1033,7 +1035,9 @@ TEST_P(HomeButtonTest, LongPressGesture) {
 
 TEST_P(HomeButtonTest, LongPressGestureInTabletMode) {
   // Simulate two users with primary user as active.
-  CreateUserSessions(2);
+  auto primary = SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kDefaultUserEmail);
+  SwitchActiveUser(primary);
 
   // Enable the Assistant in system settings.
   prefs()->SetBoolean(assistant::prefs::kAssistantEnabled, true);
@@ -1109,7 +1113,9 @@ TEST_P(HomeButtonTest, LongPressGestureWithSecondaryUser) {
 
 TEST_P(HomeButtonTest, LongPressGestureWithSettingsDisabled) {
   // Simulate two user with primary user as active.
-  CreateUserSessions(2);
+  auto primary = SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kDefaultUserEmail);
+  SwitchActiveUser(primary);
 
   // Simulate a user who has already completed setup flow, but disabled the
   // Assistant in settings.

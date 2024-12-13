@@ -81,7 +81,9 @@ class QuickSettingsFooterTest : public NoSessionAshTestBase {
 // Tests that all buttons are with the correct view id, catalog name and UMA
 // tracking.
 TEST_F(QuickSettingsFooterTest, ButtonNamesAndUMA) {
-  CreateUserSessions(2);
+  auto primary = SimulateUserLogin(kDefaultUserEmail);
+  SimulateUserLogin(kDefaultUserEmail);
+  SwitchActiveUser(primary);
   SetUpView();
 
   // The number of view id should be the number of catalog name -1, since
@@ -141,7 +143,7 @@ TEST_F(QuickSettingsFooterTest, ButtonStatesNotLoggedIn) {
 
 // All buttons are shown after login.
 TEST_F(QuickSettingsFooterTest, ButtonStatesLoggedIn) {
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
   SetUpView();
 
   EXPECT_FALSE(GetSignOutButton());
@@ -180,7 +182,7 @@ TEST_F(QuickSettingsFooterTest, ButtonStatesLockScreen) {
 // Settings button and lock button are hidden when adding a second
 // multiprofile user.
 TEST_F(QuickSettingsFooterTest, ButtonStatesAddingUser) {
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
   SetUserAddingScreenRunning(true);
   SetUpView();
 
@@ -233,7 +235,7 @@ TEST_F(QuickSettingsFooterTest, ButtonStatesPublicAccount) {
 
 TEST_F(QuickSettingsFooterTest, SignOutShowsWithMultipleAccounts) {
   GetSessionControllerClient()->set_existing_users_count(2);
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
   SetUpView();
 
   ASSERT_TRUE(GetSignOutButton());
@@ -252,7 +254,7 @@ TEST_F(QuickSettingsFooterTest, SignOutButtonRecordsUmaAndSignsOut) {
   }
 
   GetSessionControllerClient()->set_existing_users_count(2);
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
   SetUpView();
 
   base::HistogramTester histogram_tester;
@@ -285,7 +287,7 @@ TEST_F(QuickSettingsFooterTest, DisableSettingsIconPolicy) {
 
 // Tests different battery states.
 TEST_F(QuickSettingsFooterTest, BatteryButtonState) {
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
   SetUpView();
 
   const bool use_smart_charging_ui =
@@ -313,7 +315,7 @@ TEST_F(QuickSettingsFooterTest, ButtonLayoutNotLoggedIn) {
 
 // Try to layout buttons after login.
 TEST_F(QuickSettingsFooterTest, ButtonLayoutLoggedIn) {
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
   SetUpView();
   LayoutFooter();
 }
@@ -327,7 +329,7 @@ TEST_F(QuickSettingsFooterTest, ButtonLayoutLockScreen) {
 
 // Try to layout buttons when adding a second multiprofile user.
 TEST_F(QuickSettingsFooterTest, ButtonLayoutAddingUser) {
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
   SetUserAddingScreenRunning(true);
   SetUpView();
   LayoutFooter();

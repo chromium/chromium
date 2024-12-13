@@ -994,6 +994,13 @@ Shell::~Shell() {
   // notification.
   focus_mode_controller_.reset();
 
+  // DetachableBaseNotificationController depends on DetachableBaseHandler, and
+  // has to be destructed before it.
+  detachable_base_notification_controller_.reset();
+  // DetachableBaseHandler depends on the PrefService and must be destructed
+  // before it.
+  detachable_base_handler_.reset();
+
   system_notification_controller_.reset();
   // Should be destroyed after Shelf and |system_notification_controller_|.
   system_tray_model_.reset();
@@ -1164,12 +1171,6 @@ Shell::~Shell() {
   // TouchDevicesController depends on the PrefService and must be destructed
   // before it.
   touch_devices_controller_ = nullptr;
-  // DetachableBaseNotificationController depends on DetachableBaseHandler, and
-  // has to be destructed before it.
-  detachable_base_notification_controller_.reset();
-  // DetachableBaseHandler depends on the PrefService and must be destructed
-  // before it.
-  detachable_base_handler_.reset();
 
   diagnostics_log_controller_.reset();
 
@@ -1276,11 +1277,6 @@ void Shell::Init(
   // These controllers call Shell::Get() in their constructors, so they cannot
   // be in the member initialization list.
   touch_devices_controller_ = std::make_unique<TouchDevicesController>();
-  detachable_base_handler_ =
-      std::make_unique<DetachableBaseHandler>(local_state_);
-  detachable_base_notification_controller_ =
-      std::make_unique<DetachableBaseNotificationController>(
-          detachable_base_handler_.get());
   display_speaker_controller_ = std::make_unique<DisplaySpeakerController>();
   policy_recommendation_restorer_ =
       std::make_unique<PolicyRecommendationRestorer>();
@@ -1724,6 +1720,13 @@ void Shell::Init(
   // One of the subcontrollers accesses the SystemNotificationController.
   system_notification_controller_ =
       std::make_unique<SystemNotificationController>();
+
+  // They listen to session controller after notification controller.
+  detachable_base_handler_ =
+      std::make_unique<DetachableBaseHandler>(local_state_);
+  detachable_base_notification_controller_ =
+      std::make_unique<DetachableBaseNotificationController>(
+          detachable_base_handler_.get());
 
   // WmModeController should be created before initializing the window tree
   // hosts, since the latter will initialize the shelf on each display, which

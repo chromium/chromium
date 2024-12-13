@@ -80,12 +80,6 @@ class TestSessionControllerClient : public SessionControllerClient {
   void SetIsRunningInAppMode(bool app_mode);
   void SetIsDemoSession();
 
-  // Creates the |count| pre-defined user sessions. The users are named by
-  // numbers using "user%d@tray" template. The first user is set as active user
-  // to be consistent with crash-and-restore scenario.  Note that existing user
-  // sessions prior this call will be removed without sending out notifications.
-  void CreatePredefinedUserSessions(int count);
-
   // Adds a user session from a given display email. If |provide_pref_service|
   // is true, eagerly inject a PrefService for this user. |is_new_profile|
   // indicates whether the user has a newly created profile on the device.
@@ -173,6 +167,8 @@ class TestSessionControllerClient : public SessionControllerClient {
   void set_default_provide_pref_service(bool default_provide_pref_service) {
     default_provide_pref_service_ = default_provide_pref_service;
   }
+
+  int NumberOfLoggedInUsers() const;
 
  private:
   void DoSwitchUser(const AccountId& account_id, bool switch_user);

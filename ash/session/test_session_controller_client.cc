@@ -117,25 +117,6 @@ void TestSessionControllerClient::SetIsDemoSession() {
   controller_->SetSessionInfo(session_info_);
 }
 
-void TestSessionControllerClient::CreatePredefinedUserSessions(int count) {
-  DCHECK_GT(count, 0);
-
-  // Resets the controller's state.
-  Reset();
-
-  // Adds user sessions with numbered emails if more are needed.
-  for (int numbered_user_index = 0; numbered_user_index < count;
-       ++numbered_user_index) {
-    AddUserSession(base::StringPrintf("user%d@tray", numbered_user_index));
-  }
-
-  // Sets the first user as active.
-  SwitchActiveUser(controller_->GetUserSession(0)->user_info.account_id);
-
-  // Updates session state after adding user sessions.
-  SetSessionState(session_manager::SessionState::ACTIVE);
-}
-
 void TestSessionControllerClient::AddUserSession(
     const std::string& display_email,
     user_manager::UserType user_type,
@@ -347,6 +328,12 @@ std::tuple<bool, bool> TestSessionControllerClient::IsEligibleForSeaPen(
 
 std::optional<int> TestSessionControllerClient::GetExistingUsersCount() const {
   return existing_users_count_;
+}
+
+int TestSessionControllerClient::NumberOfLoggedInUsers() const {
+  // This should be migrated to GetExistingUserCount when
+  // TestSessionControllerImpl is removed.
+  return controller_->NumberOfLoggedInUsers();
 }
 
 void TestSessionControllerClient::DoSwitchUser(const AccountId& account_id,

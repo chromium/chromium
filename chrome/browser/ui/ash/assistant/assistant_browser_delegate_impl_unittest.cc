@@ -34,7 +34,9 @@
 class AssistantBrowserDelegateImplTest : public ChromeAshTestBase {
  public:
   AssistantBrowserDelegateImplTest()
-      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
+      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
+    set_start_session(false);
+  }
   ~AssistantBrowserDelegateImplTest() override = default;
 
   void SetUp() override {
@@ -46,7 +48,6 @@ class AssistantBrowserDelegateImplTest : public ChromeAshTestBase {
     auto* user = fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
 
-    CreateUserSessions(/*session_count=*/1);
     SimulateUserLogin(account_id);
 
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(

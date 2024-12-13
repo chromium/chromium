@@ -148,7 +148,7 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
     mahi_manager_impl_ = std::make_unique<MahiManagerImpl>();
     mahi_manager_impl_->mahi_provider_ = CreateMahiProvider();
 
-    CreateUserSessions(1);
+    SimulateUserLogin(kDefaultUserEmail);
   }
 
   void TearDown() override {
