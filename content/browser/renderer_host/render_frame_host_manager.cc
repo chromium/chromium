@@ -1764,6 +1764,10 @@ RenderFrameHostManager::GetFrameHostForNavigation(
   // is safe.
   if (ShouldQueueNavigationsWhenPendingCommitRFHExists() &&
       request->ShouldQueueDueToExistingPendingCommitRFH()) {
+    AppendReason(reason, "GetFrameHostForNavigation / navigation-queuing");
+    TRACE_EVENT_INSTANT("navigation",
+                        "RenderFrameHostManager::GetFrameHostForNavigation",
+                        "reason", reason);
     return base::unexpected(
         GetFrameHostForNavigationFailed::kBlockedByPendingCommit);
   }
@@ -1792,6 +1796,9 @@ RenderFrameHostManager::GetFrameHostForNavigation(
     }
     if (defer_action != DeferSpeculativeRFHAction::kNotDeferred) {
       AppendReason(reason, "GetFrameHostForNavigation / intentional-defer");
+      TRACE_EVENT_INSTANT("navigation",
+                          "RenderFrameHostManager::GetFrameHostForNavigation",
+                          "reason", reason);
       return base::unexpected(
           GetFrameHostForNavigationFailed::kIntentionalDefer);
     }
@@ -1961,6 +1968,11 @@ RenderFrameHostManager::GetFrameHostForNavigation(
                                   navigation_rfh->lifecycle_state()));
 
     if (!ReinitializeMainRenderFrame(navigation_rfh)) {
+      AppendReason(reason,
+                   "GetFrameHostForNavigation / main-frame-not-reinitialized");
+      TRACE_EVENT_INSTANT("navigation",
+                          "RenderFrameHostManager::GetFrameHostForNavigation",
+                          "reason", reason);
       return base::unexpected(
           GetFrameHostForNavigationFailed::kCouldNotReinitializeMainFrame);
     }
@@ -2063,6 +2075,9 @@ RenderFrameHostManager::GetFrameHostForNavigation(
     }
   }
 
+  TRACE_EVENT_INSTANT("navigation",
+                      "RenderFrameHostManager::GetFrameHostForNavigation",
+                      "reason", reason);
   return navigation_rfh;
 }
 
@@ -2936,6 +2951,9 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
       dest_url_info, source_instance, current_instance, dest_instance,
       transition, error_page_process, is_same_site, *should_swap_result,
       was_server_redirect, reason);
+  TRACE_EVENT_INSTANT("navigation",
+                      "RenderFrameHostManager::GetSiteInstanceForNavigation",
+                      "DetermineSiteInstanceForURL_reason", reason);
 
   scoped_refptr<SiteInstanceImpl> new_instance = ConvertToSiteInstance(
       new_instance_descriptor, candidate_instance, source_instance);
