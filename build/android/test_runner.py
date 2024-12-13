@@ -665,6 +665,11 @@ def AddInstrumentationTestOptions(parser):
       '-w', '--wait-for-java-debugger', action='store_true',
       help='Wait for java debugger to attach before running any application '
            'code. Also disables test timeouts and sets retries=0.')
+  parser.add_argument(
+      '--webview-rebaseline-mode',
+      action='store_true',
+      help=('Run WebView tests in rebaselining mode, updating on-device '
+            'expectation files.'))
 
   # WPR record mode.
   parser.add_argument('--wpr-enable-record',

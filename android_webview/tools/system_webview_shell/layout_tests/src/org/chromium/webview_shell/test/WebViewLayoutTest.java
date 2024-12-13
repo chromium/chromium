@@ -53,7 +53,11 @@ public class WebViewLayoutTest {
 
     private static final long TIMEOUT_SECONDS = 20;
 
+    // LINT.IfChange
+    private static final String EXTRA_REBASELINE =
+            "org.chromium.android_webview.test.RebaselineMode";
     private static final String MODE_REBASELINE = "rebaseline";
+    // LINT.ThenChange(//build/android/pylib/local/device/local_device_instrumentation_test_run.py)
 
     private WebViewLayoutTestActivity mTestActivity;
     private boolean mRebaseLine;
@@ -68,7 +72,7 @@ public class WebViewLayoutTest {
         mTestActivity = mActivityTestRule.getActivity();
         try {
             Bundle arguments = InstrumentationRegistry.getArguments();
-            String modeArgument = arguments.getString("mode");
+            String modeArgument = arguments.getString(EXTRA_REBASELINE);
             mRebaseLine = MODE_REBASELINE.equals(modeArgument);
         } catch (IllegalStateException exception) {
             Log.w(TAG, "Got no instrumentation arguments", exception);

@@ -114,6 +114,14 @@ _EXTRA_PACKAGE_UNDER_TEST = ('org.chromium.chrome.test.pagecontroller.rules.'
 
 _EXTRA_WEBVIEW_PROCESS_MODE = 'AwJUnit4ClassRunner.ProcessMode'
 
+# LINT.IfChange
+_EXTRA_WEBVIEW_REBASELINE_MODE = (
+    'org.chromium.android_webview.test.RebaselineMode')
+_VALUE_WEBVIEW_REBASELINE_MODE = 'rebaseline'
+# pylint: disable=line-too-long
+# LINT.ThenChange(//android_webview/tools/system_webview_shell/layout_tests/src/org/chromium/webview_shell/test/WebViewLayoutTest.java)
+# pylint: enable=line-too-long
+
 FEATURE_ANNOTATION = 'Feature'
 RENDER_TEST_FEATURE_ANNOTATION = 'RenderTest'
 WPR_ARCHIVE_FILE_PATH_ANNOTATION = 'WPRArchiveDirectory'
@@ -1093,6 +1101,9 @@ class LocalDeviceInstrumentationTestRun(
               device_utils=device))
       flags_to_add.append('--render-test-output-dir=%s' %
                           self._render_tests_device_output_dir.name)
+
+    if self._test_instance.webview_rebaseline_mode:
+      extras[_EXTRA_WEBVIEW_REBASELINE_MODE] = _VALUE_WEBVIEW_REBASELINE_MODE
 
     if _IsWPRRecordReplayTest(test):
       wpr_archive_relative_path = _GetWPRArchivePath(test)
