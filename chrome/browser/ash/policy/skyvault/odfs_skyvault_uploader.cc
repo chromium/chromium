@@ -203,7 +203,6 @@ void OdfsSkyvaultUploader::Run(UploadDoneCallback upload_callback) {
 void OdfsSkyvaultUploader::OnEndUpload(
     storage::FileSystemURL url,
     std::optional<MigrationUploadError> error) {
-  // TODO(b/343879839): Error UMA.
   if (upload_callback_) {
     std::move(upload_callback_).Run(std::move(url), error, upload_root_path_);
   }

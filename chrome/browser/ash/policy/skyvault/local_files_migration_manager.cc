@@ -70,7 +70,6 @@ std::vector<base::FilePath> GetMyFilesContents(Profile* profile) {
       continue;
     }
     // Ignore hidden files.
-    // TODO(aidazolic): Also Play and Linux?
     if (base::StartsWith(path.BaseName().value(), ".")) {
       continue;
     }
@@ -382,12 +381,10 @@ void LocalFilesMigrationManager::OnMyFilesChecked(bool is_empty) {
       CleanupLocalFiles();
       break;
     case State::kCompleted:
-      // TODO(aidazolic): Consider if we should do any special handling.
       NotifySuccess();
       SetLocalUserFilesWriteEnabled(/*enabled=*/false);
       break;
     case State::kFailure:
-      // TODO(351971781): Process errors from the error log.
       break;
   }
 }
@@ -458,8 +455,6 @@ void LocalFilesMigrationManager::OnTimeoutExpired() {
                                          StateErrorContext::kTimeout, state_);
     return;
   }
-  // TODO(aidazolic): This could cause issues if the dialog doesn't close fast
-  // enough, and the user clicks "Upload now" exactly then.
   SetState(State::kInProgress);
   notification_manager_->CloseDialog();
   GetPathsToUpload();

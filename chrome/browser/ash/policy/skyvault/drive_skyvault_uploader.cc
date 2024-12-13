@@ -77,7 +77,6 @@ void DriveSkyvaultUploader::Run() {
     return;
   }
 
-  // TODO(aidazolic): Handle different errors.
   if (!profile_) {
     LOG(ERROR) << "No profile";
     OnEndCopy(MigrationUploadError::kUnexpectedError);
@@ -247,7 +246,6 @@ void DriveSkyvaultUploader::OnEndCopy(
 
 void DriveSkyvaultUploader::OnEndUpload() {
   observed_relative_drive_path_.clear();
-  // TODO(b/343879839): Error UMA.
   SkyVaultDeleteErrorHistogram(UploadTrigger::kMigration,
                                CloudProvider::kGoogleDrive,
                                error_ == MigrationUploadError::kDeleteFailed);
