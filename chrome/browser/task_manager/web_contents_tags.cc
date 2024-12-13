@@ -39,7 +39,7 @@ namespace {
 // Note: This will fail if |contents| is already tagged by |tag|.
 void TagWebContents(content::WebContents* contents,
                     std::unique_ptr<WebContentsTag> tag,
-                    void* tag_key) {
+                    const void* tag_key) {
   DCHECK(contents);
   DCHECK(tag);
   DCHECK(WebContentsTag::FromWebContents(contents) == nullptr);
