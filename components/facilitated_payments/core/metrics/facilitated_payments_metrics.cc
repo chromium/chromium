@@ -9,9 +9,25 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace payments::facilitated {
+namespace {
+
+// Helper to convert `PurchaseActionResult` to a string for logging.
+std::string GetInitiatePurchaseActionResultString(PurchaseActionResult result) {
+  switch (result) {
+    case PurchaseActionResult::kResultOk:
+      return "Succeeded";
+    case PurchaseActionResult::kCouldNotInvoke:
+      return "Failed";
+    case PurchaseActionResult::kResultCanceled:
+      return "Abandoned";
+  }
+}
+
+}  // namespace
 
 void LogPixCodeCopied(ukm::SourceId ukm_source_id) {
   base::UmaHistogramBoolean("FacilitatedPayments.Pix.PixCodeCopied",
@@ -118,35 +134,22 @@ void LogInitiatePurchaseActionAttempt() {
       /*sample=*/true);
 }
 
-void LogInitiatePurchaseActionResultAndLatency(const std::string& result,
+void LogInitiatePurchaseActionResultAndLatency(PurchaseActionResult result,
                                                base::TimeDelta duration) {
   // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
   // FacilitatedPaymentsType enum.
   base::UmaHistogramLongTimes(
-      base::StrCat({"FacilitatedPayments.Pix.InitiatePurchaseAction.", result,
-                    ".Latency"}),
+      base::StrCat({"FacilitatedPayments.Pix.InitiatePurchaseAction.",
+                    GetInitiatePurchaseActionResultString(result), ".Latency"}),
       duration);
 }
 
-void LogInitiatePurchaseActionResultUkm(const std::string& result,
+void LogInitiatePurchaseActionResultUkm(PurchaseActionResult result,
                                         ukm::SourceId ukm_source_id) {
   ukm::builders::FacilitatedPayments_Pix_InitiatePurchaseActionResult(
       ukm_source_id)
-      .SetResult(ConvertPurchaseActionResultToEnumValue(result))
+      .SetResult(static_cast<uint8_t>(result))
       .Record(ukm::UkmRecorder::Get());
-}
-
-uint8_t ConvertPurchaseActionResultToEnumValue(const std::string& result) {
-  if (result == "Failed") {
-    return 0;  // See the definition of the enum
-               // FacilitatedPayments.InitiatePurchaseActionResult.
-  } else if (result == "Succeeded") {
-    return 1;
-  } else if (result == "Abandoned") {
-    return 2;
-  } else {
-    NOTREACHED();
-  }
 }
 
 void LogUiScreenShown(UiState ui_screen) {

@@ -900,10 +900,21 @@ TEST_F(FacilitatedPaymentsManagerTest,
     FastForwardBy(base::Seconds(2));
     manager_->OnPurchaseActionResult(result);
 
+    std::string result_string;
+    switch (result) {
+      case PurchaseActionResult::kResultOk:
+        result_string = "Succeeded";
+        break;
+      case PurchaseActionResult::kCouldNotInvoke:
+        result_string = "Failed";
+        break;
+      case PurchaseActionResult::kResultCanceled:
+        result_string = "Abandoned";
+        break;
+    }
     histogram_tester.ExpectBucketCount(
         base::StrCat({"FacilitatedPayments.Pix.InitiatePurchaseAction.",
-                      manager_->GetInitiatePurchaseActionResultString(result),
-                      ".Latency"}),
+                      result_string, ".Latency"}),
         /*sample=*/2000,
         /*expected_count=*/1);
     auto ukm_entries = ukm_recorder_.GetEntries(

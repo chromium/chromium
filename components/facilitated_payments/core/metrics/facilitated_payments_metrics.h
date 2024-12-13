@@ -7,6 +7,7 @@
 
 #include "base/types/expected.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace base {
@@ -110,18 +111,12 @@ void LogInitiatePurchaseActionAttempt();
 
 // Log the result and latency for the InitiatePurchaseAction call made to the
 // payments platform (client).
-// TODO(crbug.com/379723883): Move the `PurchaseActionResult` and have this
-// function take in an enum instead of a string.
-void LogInitiatePurchaseActionResultAndLatency(const std::string& result,
+void LogInitiatePurchaseActionResultAndLatency(PurchaseActionResult result,
                                                base::TimeDelta duration);
 
 // Log the UKM for the InitiatePurchaseAction result.
-void LogInitiatePurchaseActionResultUkm(const std::string& result,
+void LogInitiatePurchaseActionResultUkm(PurchaseActionResult result,
                                         ukm::SourceId ukm_source_id);
-
-// TODO(crbug.com/379723883): If the above function takes in an enum instead of
-// a string, remove this temporary conversion function.
-uint8_t ConvertPurchaseActionResultToEnumValue(const std::string& result);
 
 // Logs showing a new UI screen.
 void LogUiScreenShown(UiState ui_screen);

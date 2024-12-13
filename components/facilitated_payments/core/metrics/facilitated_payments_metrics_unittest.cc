@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -157,14 +158,28 @@ TEST(FacilitatedPaymentsMetricsTest, LogInitiatePurchaseActionAttempt) {
 
 TEST(FacilitatedPaymentsMetricsTest,
      LogInitiatePurchaseActionResultAndLatency) {
-  for (const std::string& result : {"Succeeded", "Failed", "Abandoned"}) {
+  for (PurchaseActionResult result :
+       {PurchaseActionResult::kResultOk, PurchaseActionResult::kCouldNotInvoke,
+        PurchaseActionResult::kResultCanceled}) {
     base::HistogramTester histogram_tester;
 
     LogInitiatePurchaseActionResultAndLatency(result, base::Milliseconds(10));
 
+    std::string result_string;
+    switch (result) {
+      case PurchaseActionResult::kResultOk:
+        result_string = "Succeeded";
+        break;
+      case PurchaseActionResult::kCouldNotInvoke:
+        result_string = "Failed";
+        break;
+      case PurchaseActionResult::kResultCanceled:
+        result_string = "Abandoned";
+        break;
+    }
     histogram_tester.ExpectBucketCount(
-        base::StrCat({"FacilitatedPayments.Pix.InitiatePurchaseAction.", result,
-                      ".Latency"}),
+        base::StrCat({"FacilitatedPayments.Pix.InitiatePurchaseAction.",
+                      result_string, ".Latency"}),
         /*sample=*/10,
         /*expected_count=*/1);
   }
@@ -255,9 +270,11 @@ TEST_F(FacilitatedPaymentsMetricsUkmTest, LogFopSelectorResult) {
   }
 }
 
-TEST_F(FacilitatedPaymentsMetricsUkmTest, LogInitiatePurchaseActionResult) {
+TEST_F(FacilitatedPaymentsMetricsUkmTest, LogInitiatePurchaseActionResultUkm) {
   size_t index = 0;
-  for (const std::string result : {"Succeeded", "Failed", "Abandoned"}) {
+  for (PurchaseActionResult result :
+       {PurchaseActionResult::kResultOk, PurchaseActionResult::kCouldNotInvoke,
+        PurchaseActionResult::kResultCanceled}) {
     LogInitiatePurchaseActionResultUkm(result,
                                        ukm::UkmRecorder::GetNewSourceID());
 
@@ -268,7 +285,7 @@ TEST_F(FacilitatedPaymentsMetricsUkmTest, LogInitiatePurchaseActionResult) {
              kResultName});
     ASSERT_EQ(ukm_entries.size(), index + 1);
     EXPECT_EQ(ukm_entries[index++].metrics.at("Result"),
-              ConvertPurchaseActionResultToEnumValue(result));
+              static_cast<uint8_t>(result));
   }
 }
 

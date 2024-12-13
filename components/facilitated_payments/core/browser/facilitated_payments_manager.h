@@ -311,10 +311,6 @@ class FacilitatedPaymentsManager {
   // Sets the internal state and triggers showing the error screen.
   void ShowErrorScreen();
 
-  // Converts the PurchaseActionResult to the string version.
-  std::string GetInitiatePurchaseActionResultString(
-      PurchaseActionResult result);
-
   // Dismisses the FacilitatedPayments bottom sheet if the progress screen is
   // being shown.
   void DismissProgressScreen();

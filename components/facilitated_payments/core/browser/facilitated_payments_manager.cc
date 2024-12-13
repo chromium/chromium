@@ -313,10 +313,9 @@ void FacilitatedPaymentsManager::OnPurchaseActionResult(
       break;
   }
   // Logs the general histograms.
-  std::string result_string = GetInitiatePurchaseActionResultString(result);
   LogInitiatePurchaseActionResultAndLatency(
-      result_string, base::TimeTicks::Now() - purchase_action_start_time_);
-  LogInitiatePurchaseActionResultUkm(result_string, ukm_source_id_);
+      result, base::TimeTicks::Now() - purchase_action_start_time_);
+  LogInitiatePurchaseActionResultUkm(result, ukm_source_id_);
 }
 
 void FacilitatedPaymentsManager::OnUiEvent(UiEvent ui_event_type) {
@@ -371,18 +370,6 @@ void FacilitatedPaymentsManager::ShowProgressScreen() {
 void FacilitatedPaymentsManager::ShowErrorScreen() {
   ui_state_ = UiState::kErrorScreen;
   client_->ShowErrorScreen();
-}
-
-std::string FacilitatedPaymentsManager::GetInitiatePurchaseActionResultString(
-    PurchaseActionResult result) {
-  switch (result) {
-    case PurchaseActionResult::kResultOk:
-      return std::string("Succeeded");
-    case PurchaseActionResult::kCouldNotInvoke:
-      return std::string("Failed");
-    case PurchaseActionResult::kResultCanceled:
-      return std::string("Abandoned");
-  }
 }
 
 void FacilitatedPaymentsManager::DismissProgressScreen() {
