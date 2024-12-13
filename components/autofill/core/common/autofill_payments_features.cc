@@ -125,7 +125,11 @@ BASE_FEATURE(kAutofillEnableNewCardArtAndNetworkImages,
 // instead of jumping straight to CVC or biometric auth.
 BASE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication,
              "AutofillEnableFpanRiskBasedAuthentication",
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 // When enabled, the Virtual Card enrollment bottom sheet uses the Java
 // payments data manager and associated image fetcher to retrieve the cached
