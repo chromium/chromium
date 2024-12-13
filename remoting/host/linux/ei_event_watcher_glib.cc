@@ -8,7 +8,7 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/libei/cipd/include/libei.h"
+#include "third_party/libei/cipd/include/libei-1.0/libei.h"
 
 namespace remoting {
 

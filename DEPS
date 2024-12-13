@@ -2712,7 +2712,7 @@ deps = {
     'packages': [
       {
         'package': 'chromium/third_party/libei/linux-amd64',
-        'version': 'PQz4zG5Q3SXoAaCYq3RK99W3wg_v0NoOu1OzTSvA_oIC',
+        'version': '7V4n9OUxAo8k8zayCwZ47Bc5Mqr7Br1NXrxeMKXYBNQC',
       },
     ],
 
