@@ -20,11 +20,6 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_BOX_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_BOX_H_
 
@@ -688,7 +683,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       const PhysicalBoxFragment& operator*() const;
 
       Iterator& operator++() {
-        ++iterator_;
+        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+        UNSAFE_TODO(++iterator_);
         return *this;
       }
       Iterator operator++(int) {

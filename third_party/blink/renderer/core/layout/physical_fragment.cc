@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 
 #include "base/ranges/algorithm.h"
@@ -501,8 +496,7 @@ base::span<PhysicalOofPositionedNode>
 PhysicalFragment::OutOfFlowPositionedDescendants() const {
   if (!HasOutOfFlowPositionedDescendants())
     return base::span<PhysicalOofPositionedNode>();
-  return {oof_data_->OofPositionedDescendants().data(),
-          oof_data_->OofPositionedDescendants().size()};
+  return oof_data_->OofPositionedDescendants();
 }
 
 const FragmentedOofData* PhysicalFragment::GetFragmentedOofData() const {

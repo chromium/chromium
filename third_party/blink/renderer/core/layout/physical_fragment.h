@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_PHYSICAL_FRAGMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_PHYSICAL_FRAGMENT_H_
 
@@ -567,7 +562,8 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
       ConstIterator() = default;
 
       ConstIterator(const PhysicalFragmentLink* current, wtf_size_t size)
-          : current_(current), end_(current + size) {
+          // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+          : current_(current), end_(UNSAFE_TODO(current + size)) {
         SkipInvalidAndSetPostLayout();
       }
 
@@ -575,7 +571,8 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
       const PhysicalFragmentLink* operator->() const { return &post_layout_; }
 
       ConstIterator& operator++() {
-        ++current_;
+        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+        UNSAFE_TODO(++current_);
         SkipInvalidAndSetPostLayout();
         return *this;
       }
@@ -593,7 +590,8 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
 
      private:
       void SkipInvalidAndSetPostLayout() {
-        for (; current_ != end_; ++current_) {
+        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+        for (; current_ != end_; UNSAFE_TODO(++current_)) {
           const PhysicalFragment* fragment = current_->fragment.Get();
           if (fragment->IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
             continue;
@@ -613,7 +611,10 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     using const_iterator = ConstIterator;
 
     const_iterator begin() const { return const_iterator(buffer_, count_); }
-    const_iterator end() const { return const_iterator(buffer_ + count_, 0); }
+    const_iterator end() const {
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+      return const_iterator(UNSAFE_TODO(buffer_ + count_), 0);
+    }
 
     wtf_size_t size() const { return count_; }
     bool empty() const { return count_ == 0; }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_OOF_POSITIONED_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_OOF_POSITIONED_NODE_H_
 
@@ -383,7 +378,7 @@ struct FragmentedOofData final : PhysicalFragment::OofData {
     HeapVector<PhysicalOofNodeForFragmentation>& descendants =
         const_cast<HeapVector<PhysicalOofNodeForFragmentation>&>(
             oof_data->oof_positioned_fragmentainer_descendants);
-    return {descendants.data(), descendants.size()};
+    return descendants;
   }
 
   void Trace(Visitor* visitor) const override {

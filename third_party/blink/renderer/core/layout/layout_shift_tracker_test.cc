@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -868,7 +863,9 @@ TEST_F(LayoutShiftTrackerTest, StableCompositingChanges) {
     // - add/remove a cc::Layer and a PaintLayer together
 
     static const char* states[] = {"", "pl", "pl tr", "pl", "", "tr", ""};
-    element->setAttribute(html_names::kClassAttr, AtomicString(states[state]));
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+    element->setAttribute(html_names::kClassAttr,
+                          AtomicString(UNSAFE_TODO(states[state])));
     UpdateAllLifecyclePhasesForTest();
     return ++state < sizeof states / sizeof *states;
   };

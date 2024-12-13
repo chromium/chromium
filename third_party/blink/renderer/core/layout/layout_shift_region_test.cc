@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/layout_shift_region.h"
 
 #include <gtest/gtest.h>
@@ -95,8 +90,9 @@ TEST_F(LayoutShiftRegionTest, LargeRandom) {
   };
   uint64_t expected_area = 9201862875ul;
   for (unsigned i = 0; i < 100; i++) {
-    const int* d = data + (i * 4);
-    gfx::Rect r(d[0], d[1], d[2], d[3]);
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+    const int* d = UNSAFE_TODO(data + (i * 4));
+    gfx::Rect UNSAFE_TODO(r(d[0], d[1], d[2], d[3]));
     region.AddRect(r);
     naive_region.Union(r);
   }

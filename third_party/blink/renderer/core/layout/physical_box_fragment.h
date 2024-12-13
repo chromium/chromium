@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_PHYSICAL_BOX_FRAGMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_PHYSICAL_BOX_FRAGMENT_H_
 
@@ -123,7 +118,8 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
    protected:
     friend class OutOfFlowLayoutPart;
     base::span<PhysicalFragmentLink> Children() const {
-      return base::span(buffer_, num_children_);
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+      return UNSAFE_TODO(base::span(buffer_, num_children_));
     }
 
    private:
@@ -677,8 +673,10 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
 
   const FragmentItems* ComputeItemsAddress() const {
     DCHECK(HasItems());
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
     return reinterpret_cast<const FragmentItems*>(base::bits::AlignUp(
-        reinterpret_cast<const uint8_t*>(this + 1), alignof(FragmentItems)));
+        reinterpret_cast<const uint8_t*>(UNSAFE_TODO(this + 1)),
+        alignof(FragmentItems)));
   }
 
   void SetInkOverflow(const PhysicalRect& self, const PhysicalRect& contents);

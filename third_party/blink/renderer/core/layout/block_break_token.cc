@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
@@ -75,8 +70,10 @@ BlockBreakToken::BlockBreakToken(PassKey key, BoxFragmentBuilder* builder)
   DCHECK(builder->HasBreakTokenData());
   data_ = builder->break_token_data_;
   builder->break_token_data_ = nullptr;
-  for (wtf_size_t i = 0; i < builder->child_break_tokens_.size(); ++i)
-    child_break_tokens_[i] = builder->child_break_tokens_[i];
+  for (wtf_size_t i = 0; i < builder->child_break_tokens_.size(); ++i) {
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+    UNSAFE_TODO(child_break_tokens_[i]) = builder->child_break_tokens_[i];
+  }
 }
 
 BlockBreakToken::BlockBreakToken(PassKey key, LayoutInputNode node)
@@ -170,7 +167,8 @@ void BlockBreakToken::TraceAfterDispatch(Visitor* visitor) const {
   // Looking up |ChildBreakTokensInternal()| in Trace() here is safe because
   // |const_num_children_| is const.
   for (wtf_size_t i = 0; i < const_num_children_; ++i) {
-    visitor->Trace(child_break_tokens_[i]);
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+    visitor->Trace(UNSAFE_TODO(child_break_tokens_[i]));
   }
   BreakToken::TraceAfterDispatch(visitor);
 }
