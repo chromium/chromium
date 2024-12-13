@@ -42,10 +42,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_test_helper.h"
-#endif
-
 namespace content {
 
 // RenderViewHostTestHarness works poorly on Android.
@@ -184,10 +180,6 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
   const std::string kDeviceName = "test name";
   const bool kAGC = false;
   const uint32_t kSharedMemoryCount = 123;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Instantiate LacrosService for WakeLock support.
-  chromeos::ScopedLacrosServiceTestHelper scoped_lacros_service_test_helper_;
-#endif
   MockStreamFactory audio_service_stream_factory_;
   media::FakeAudioLogFactory log_factory_;
   media::FakeAudioManager audio_manager_;

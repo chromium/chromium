@@ -252,13 +252,7 @@ IN_PROC_BROWSER_TEST_F(InputEventBrowserTest, KeyDownEventTimeStamp) {
   EXPECT_NEAR(event_time_ms, monotonic_time, 1);
 }
 
-// TODO(crbug.com/41489011): Flaky on LaCros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_TouchStartEventTimeStamp DISABLED_TouchStartEventTimeStamp
-#else
-#define MAYBE_TouchStartEventTimeStamp TouchStartEventTimeStamp
-#endif
-IN_PROC_BROWSER_TEST_F(InputEventBrowserTest, MAYBE_TouchStartEventTimeStamp) {
+IN_PROC_BROWSER_TEST_F(InputEventBrowserTest, TouchStartEventTimeStamp) {
   LoadURL(kEventListenerDataURL);
 
   MainThreadFrameObserver frame_observer(GetWidgetHost());

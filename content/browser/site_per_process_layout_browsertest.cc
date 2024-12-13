@@ -1698,8 +1698,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // This test verifies that changing the CSS visibility of a cross-origin
 // <iframe> is forwarded to its corresponding RenderWidgetHost and all other
 // RenderWidgetHosts corresponding to the nested cross-origin frame.
-// TODO(crbug.com/40865141): Flaky on mac, linux-lacros, android.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/40865141): Flaky on mac and android.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_CSSVisibilityChanged DISABLED_CSSVisibilityChanged
 #else
 #define MAYBE_CSSVisibilityChanged CSSVisibilityChanged

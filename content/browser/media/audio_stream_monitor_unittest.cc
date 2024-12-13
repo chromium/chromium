@@ -22,10 +22,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_test_helper.h"
-#endif
-
 using ::testing::InvokeWithoutArgs;
 
 namespace content {
@@ -169,11 +165,6 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
   void ExpectNotRecentlyAudible() const {
     EXPECT_FALSE(monitor_->WasRecentlyAudible());
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Instantiate LacrosService for WakeLock support.
-  chromeos::ScopedLacrosServiceTestHelper scoped_lacros_service_test_helper_;
-#endif
 
   MockWebContentsDelegate mock_web_contents_delegate_;
 };

@@ -21,10 +21,6 @@
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif
-
 namespace content {
 
 #if BUILDFLAG(ALLOW_HOSTING_OOP_VIDEO_DECODER)
@@ -177,15 +173,6 @@ void LaunchStableVideoDecoderFactory(
 #if BUILDFLAG(ALLOW_HOSTING_OOP_VIDEO_DECODER)
   StableVideoDecoderFactoryProcessLauncher::Instance()
       .LaunchWhenGpuFeatureInfoIsKnown(std::move(receiver));
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // For LaCrOS, we need to use crosapi to establish a
-  // StableVideoDecoderFactory connection to ash-chrome.
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service &&
-      lacros_service
-          ->IsSupported<media::stable::mojom::StableVideoDecoderFactory>()) {
-    lacros_service->BindStableVideoDecoderFactory(std::move(receiver));
-  }
 #endif
 }
 

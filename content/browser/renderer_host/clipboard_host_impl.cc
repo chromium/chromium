@@ -225,8 +225,7 @@ void ClipboardHostImpl::ReadAvailableTypes(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeOS FilesApp must include the custom 'fs/sources', etc data for
-  // paste that it put on the clipboard during copy (b/271078230). This can be
-  // removed when ash is fully replaced by lacros.
+  // paste that it put on the clipboard during copy (b/271078230).
   if (render_frame_host().GetMainFrame()->GetLastCommittedURL().SchemeIs(
           kChromeUIScheme)) {
     file_type_only = false;

@@ -402,12 +402,7 @@ CdmRegistryImpl::GetCapability(const std::string& key_system,
   using Status = CdmInfo::Status;
 
   if (robustness == CdmInfo::Robustness::kHardwareSecure) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kLacrosUseChromeosProtectedMedia)) {
-      return {std::nullopt, Status::kHardwareSecureDecryptionDisabled};
-    }
-#elif !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+#if !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
     if (!media::IsHardwareSecureDecryptionEnabled()) {
       DVLOG(1) << "Hardware secure decryption disabled";
       return {std::nullopt, Status::kHardwareSecureDecryptionDisabled};

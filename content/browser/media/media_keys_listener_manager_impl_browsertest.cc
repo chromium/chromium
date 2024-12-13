@@ -19,9 +19,6 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 
-// Disable on CrOS because MediaKeysListenerManager is disabled.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace content {
 
 using media_session::mojom::MediaPlaybackState;
@@ -352,5 +349,3 @@ IN_PROC_BROWSER_TEST_F(MediaKeysListenerManagerImplTest,
 }
 
 }  // namespace content
-
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)

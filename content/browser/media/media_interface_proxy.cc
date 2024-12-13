@@ -442,13 +442,7 @@ void MediaInterfaceProxy::CreateCdm(const media::CdmConfig& cdm_config,
 
   // Handle `use_hw_secure_codecs` cases first.
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  bool enable_cdm_factory_daemon =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kLacrosUseChromeosProtectedMedia);
-#else   // BUILDFLAG(IS_CHROMEOS_LACROS)
   bool enable_cdm_factory_daemon = true;
-#endif  // else BUILDFLAG(IS_CHROMEOS_LACROS)
 #if defined(ARCH_CPU_ARM_FAMILY)
   if (!base::FeatureList::IsEnabled(media::kEnableArmHwdrm)) {
     enable_cdm_factory_daemon = false;

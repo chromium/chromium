@@ -1152,19 +1152,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheUnloadBrowserTest,
   // trigger unload handlers and be destroyed directly.
 }
 
-// TODO(crbug.com/330798156): Flaky on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_DoesNotFireDidFirstVisuallyNonEmptyPaintForSameDocumentNavigation \
-  DISABLED_DoesNotFireDidFirstVisuallyNonEmptyPaintForSameDocumentNavigation
-#else
-#define MAYBE_DoesNotFireDidFirstVisuallyNonEmptyPaintForSameDocumentNavigation \
-  DoesNotFireDidFirstVisuallyNonEmptyPaintForSameDocumentNavigation
-#endif
 // Do a same document navigation and make sure we do not fire the
 // DidFirstVisuallyNonEmptyPaint again
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTest,
-    MAYBE_DoesNotFireDidFirstVisuallyNonEmptyPaintForSameDocumentNavigation) {
+    DoesNotFireDidFirstVisuallyNonEmptyPaintForSameDocumentNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a_1(embedded_test_server()->GetURL(
       "a.com", "/accessibility/html/a-name.html"));
@@ -1184,7 +1176,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Make sure we fire DidFirstVisuallyNonEmptyPaint when restoring from bf-cache.
 // TODO(crbug.com/327195951): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_FiresDidFirstVisuallyNonEmptyPaintWhenRestoredFromCache \
   DISABLED_FiresDidFirstVisuallyNonEmptyPaintWhenRestoredFromCache
 #else
@@ -1218,8 +1210,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(web_contents()->CompletedFirstVisuallyNonEmptyPaint());
   EXPECT_TRUE(observer.did_fire());
 }
-// TODO(crbug.com/330798156): Flaky on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SetsThemeColorWhenRestoredFromCache \
   DISABLED_SetsThemeColorWhenRestoredFromCache
 #else
@@ -1748,8 +1739,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 // Tests that pagehide handlers of the old RFH are run for bfcached pages even
 // if the page is already hidden (and visibilitychange won't run).
 // Disabled on Linux and Win because of flakiness, see crbug.com/40165901.
-// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
-// complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_PagehideRunsWhenPageIsHidden DISABLED_PagehideRunsWhenPageIsHidden
 #else

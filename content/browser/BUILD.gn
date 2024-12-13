@@ -2868,20 +2868,6 @@ source_set("browser") {
     }
   }
 
-  if (is_chromeos_lacros) {
-    sources += [
-      "accessibility/browser_accessibility_state_impl_lacros.cc",
-      "accessibility/browser_accessibility_state_impl_lacros.h",
-      "screenlock_monitor/screenlock_monitor_device_source_lacros.cc",
-    ]
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-      "//chromeos/startup",
-      "//chromeos/startup:constants",
-    ]
-  }
-
   if (is_win) {
     sources += [
       "accessibility/browser_accessibility_state_impl_win.cc",
@@ -3480,7 +3466,7 @@ source_set("browser") {
       "renderer_host/render_widget_host_view_event_handler.h",
     ]
 
-    if (is_linux || is_chromeos_lacros) {
+    if (is_linux) {
       deps += [ "//ui/base/ime/linux" ]
     }
   } else {  # Not aura.

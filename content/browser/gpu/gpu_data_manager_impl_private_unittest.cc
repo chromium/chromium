@@ -586,8 +586,6 @@ TEST_F(GpuDataManagerImplPrivateTest, ChromecastStartsWithGpuDisabled) {
 #endif  // defined(CAST_AUDIO_ONLY)
 
 #if BUILDFLAG(ENABLE_VULKAN)
-// TODO(crbug.com/40735511): enable tests when Vulkan is supported on LaCrOS.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithVulkanFeatureFlag) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kVulkan);
@@ -656,7 +654,6 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanWithGLDisabled) {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) &&
         // !BUILDFLAG(IS_IOS)
 #endif  // !BUILDFLAG(IS_FUCHSIA)
-#endif  // !IS_CHROMEOS_LACROS
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
 }  // namespace content

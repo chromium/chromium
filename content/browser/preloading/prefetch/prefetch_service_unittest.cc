@@ -2294,7 +2294,7 @@ TEST_P(PrefetchServiceTest, EligibleSameOriginPrefetchCanHaveExistingCookies) {
   ExpectServingMetricsSuccess(/*required_private_prefetch_proxy=*/false);
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceTest,
        DISABLED_CHROMEOS(FailedCookiesChangedAfterPrefetchStarted)) {
   base::HistogramTester histogram_tester;
@@ -2356,7 +2356,7 @@ TEST_P(PrefetchServiceTest,
       PrefetchStatus::kPrefetchNotUsedCookiesChanged, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceTest,
        DISABLED_CHROMEOS(SameOriginPrefetchIgnoresProxyRequirement)) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
@@ -2390,7 +2390,7 @@ TEST_P(PrefetchServiceTest,
   ExpectServingMetricsSuccess();
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceTest,
        DISABLED_CHROMEOS(NotEligibleSameSiteCrossOriginPrefetchRequiresProxy)) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
@@ -2847,7 +2847,7 @@ TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest,
   ExpectServingMetrics(PrefetchStatus::kPrefetchIneligibleUserHasCookies);
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest,
        DISABLED_CHROMEOS(RedirectDecoyRequest)) {
   base::HistogramTester histogram_tester;
@@ -2987,7 +2987,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          PrefetchServiceStreamingURLLoaderTest,
                          testing::Bool());
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceStreamingURLLoaderTest,
        DISABLED_CHROMEOS(StreamingURLLoaderSuccessCase)) {
   base::HistogramTester histogram_tester;
@@ -3064,7 +3064,7 @@ TEST_P(PrefetchServiceStreamingURLLoaderTest,
   ExpectServingMetricsSuccess();
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(NoVarySearchSuccessCase)) {
   base::HistogramTester histogram_tester;
 
@@ -3144,7 +3144,7 @@ TEST_P(PrefetchServiceTest, NoVarySearchSuccessCase_Embedder) {
             GURL("https://example.com/?a=1"));
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(PrefetchEligibleRedirect)) {
   base::HistogramTester histogram_tester;
 
@@ -3195,7 +3195,7 @@ TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(PrefetchEligibleRedirect)) {
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(IneligibleRedirectCookies)) {
   base::HistogramTester histogram_tester;
 
@@ -3257,7 +3257,7 @@ TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(IneligibleRedirectCookies)) {
       "PrefetchProxy.AfterClick.RedirectChainSize", 0);
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceTest,
        DISABLED_CHROMEOS(IneligibleRedirectServiceWorker)) {
   base::HistogramTester histogram_tester;
@@ -3316,7 +3316,7 @@ TEST_P(PrefetchServiceTest,
       "PrefetchProxy.AfterClick.RedirectChainSize", 0);
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(InvalidRedirect)) {
   base::HistogramTester histogram_tester;
 
@@ -3363,7 +3363,7 @@ TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(InvalidRedirect)) {
       "PrefetchProxy.AfterClick.RedirectChainSize", 0);
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceTest,
        DISABLED_CHROMEOS(PrefetchSameOriginEligibleRedirect)) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
@@ -3417,7 +3417,7 @@ TEST_P(PrefetchServiceTest,
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 // TODO(crbug.com/40265797): This test is testing the current
 // functionality, and should be removed while fixing this bug.
 TEST_P(PrefetchServiceTest,
@@ -3475,7 +3475,7 @@ TEST_P(PrefetchServiceTest,
       "PrefetchProxy.AfterClick.RedirectChainSize", 0);
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceTest,
        DISABLED_CHROMEOS(RedirectDefaultToIsolatedNetworkContextTransition)) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
@@ -3535,7 +3535,7 @@ TEST_P(PrefetchServiceTest,
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceTest,
        DISABLED_CHROMEOS(
            RedirectDefaultToIsolatedNetworkContextTransitionWithProxy)) {
@@ -3599,7 +3599,7 @@ TEST_P(PrefetchServiceTest,
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceTest,
        DISABLED_CHROMEOS(RedirectIsolatedToDefaultNetworkContextTransition)) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
@@ -3676,7 +3676,7 @@ class PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest
   }
 };
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_F(PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest,
        DISABLED_CHROMEOS(RedirectNetworkContextTransitionBlockUntilHead)) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
@@ -3748,7 +3748,7 @@ TEST_F(PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest,
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceTest,
        DISABLED_CHROMEOS(RedirectInsufficientReferrerPolicy)) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
@@ -3817,7 +3817,7 @@ class PrefetchServiceNeverBlockUntilHeadTest : public PrefetchServiceTestBase {
   }
 };
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_F(PrefetchServiceNeverBlockUntilHeadTest,
        DISABLED_CHROMEOS(HeadNotReceived)) {
   base::HistogramTester histogram_tester;
@@ -3890,7 +3890,7 @@ class PrefetchServiceAlwaysBlockUntilHeadTest
   }
 };
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
        DISABLED_CHROMEOS(BlockUntilHeadReceived)) {
   base::HistogramTester histogram_tester;
@@ -3953,7 +3953,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       true, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
        DISABLED_CHROMEOS(NVSBlockUntilHeadReceived)) {
   base::HistogramTester histogram_tester;
@@ -4024,7 +4024,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       true, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
        DISABLED_CHROMEOS(NVSBlockUntilHeadReceivedNoMatchNoNVSHeader)) {
   base::HistogramTester histogram_tester;
@@ -4094,7 +4094,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       true, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
        DISABLED_CHROMEOS(NVSBlockUntilHeadReceivedNoMatchByNVSHeader)) {
   base::HistogramTester histogram_tester;
@@ -4165,7 +4165,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       true, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
        DISABLED_CHROMEOS(FailedCookiesChangedWhileBlockUntilHead)) {
   base::HistogramTester histogram_tester;
@@ -4248,7 +4248,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       true, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
        DISABLED_CHROMEOS(FailedTimeoutWhileBlockUntilHead)) {
   base::HistogramTester histogram_tester;
@@ -4301,7 +4301,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       true, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
        DISABLED_CHROMEOS(FailedTimeoutWhileBlockUntilHeadForOlderNavigation)) {
   base::HistogramTester histogram_tester;
@@ -4392,7 +4392,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       true, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
        DISABLED_CHROMEOS(FailedNetErrorWhileBlockUntilHead)) {
   base::HistogramTester histogram_tester;
@@ -4453,7 +4453,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
 // FailedCookiesChangedAfterPrefetchStartedNVSHintPrefetch and
 // NVSBlockUntilHeadReceivedMultipleMatchesByNVSHint, consider only keeping one
 // of them and removing the remaining, as they almost test the same logic.
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(
     PrefetchServiceAlwaysBlockUntilHeadTest,
     DISABLED_CHROMEOS_AND_CASTOS(NVSBlockUntilHeadReceivedOneMatchOneTimeout)) {
@@ -4597,7 +4597,7 @@ TEST_P(
   }
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
        DISABLED_CHROMEOS_AND_CASTOS(
            FailedCookiesChangedAfterPrefetchStartedTimedoutNVSHintPrefetch)) {
@@ -4725,7 +4725,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   }
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
        DISABLED_CHROMEOS_AND_CASTOS(
            FailedCookiesChangedAfterPrefetchStartedNVSHintPrefetch)) {
@@ -4829,7 +4829,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
                        /*required_private_prefetch_proxy=*/false);
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
        DISABLED_CHROMEOS_AND_CASTOS(
            NVSBlockUntilHeadReceivedMultipleMatchesByNVSHint)) {
@@ -5091,7 +5091,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
       true, 1);
 }
 
-// TODO(crbug.com/40249481): Test flaky on lacros trybots.
+// TODO(crbug.com/40249481): Test flaky on trybots.
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
        DISABLED_CHROMEOS(MultipleGetPrefetchToServe)) {
   base::HistogramTester histogram_tester;

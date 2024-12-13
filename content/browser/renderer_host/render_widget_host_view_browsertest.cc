@@ -1615,14 +1615,8 @@ class RenderWidgetHostViewPresentationFeedbackBrowserTest
   base::HistogramTester histogram_tester_;
 };
 
-// TODO(crbug.com/353234554): Flaky on linux-lacros-tester-rel.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Show DISABLED_Show
-#else
-#define MAYBE_Show Show
-#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
-                       MAYBE_Show) {
+                       Show) {
   CreateVisibleTimeRequest();
   GetRenderWidgetHostView()->ShowWithVisibility(PageVisibilityState::kVisible);
   ExpectPresentationFeedback(TabSwitchResult::kSuccess);
@@ -1648,14 +1642,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
   ExpectNoPresentationFeedback();
 }
 
-// TODO(crbug.com/353234554): Flaky on linux-lacros-tester-rel.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_ShowWhileCapturing DISABLED_ShowWhileCapturing
-#else
-#define MAYBE_ShowWhileCapturing ShowWhileCapturing
-#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
-                       MAYBE_ShowWhileCapturing) {
+                       ShowWhileCapturing) {
   // Frame is captured and then becomes visible.
   CreateVisibleTimeRequest();
   GetRenderWidgetHostView()->ShowWithVisibility(

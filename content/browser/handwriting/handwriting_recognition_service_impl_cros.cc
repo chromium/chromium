@@ -19,10 +19,6 @@
 #include "chromeos/services/machine_learning/public/cpp/ml_switches.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
-#endif
-
 namespace content {
 
 namespace {
@@ -38,9 +34,6 @@ bool IsCrOSLibHandwritingRootfsEnabled() {
   return command_line->HasSwitch(::switches::kOndeviceHandwritingSwitch) &&
          command_line->GetSwitchValueASCII(
              ::switches::kOndeviceHandwritingSwitch) == "use_rootfs";
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->OndeviceHandwritingSupport() ==
-         crosapi::mojom::OndeviceHandwritingSupport::kUseRootfs;
 #else
   return false;
 #endif

@@ -159,9 +159,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileModificationHostImplBrowserTest,
 }
 
 // TODO(crbug.com/40826793): Failing on various builders.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||                     \
-    (BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER) && \
-     defined(LEAK_SANITIZER))
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_QuotaUsageOverallocation DISABLED_QuotaUsageOverallocation
 #else
 #define MAYBE_QuotaUsageOverallocation QuotaUsageOverallocation

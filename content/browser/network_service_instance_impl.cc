@@ -871,10 +871,9 @@ GetCertVerifierServiceFactory() {
       !factory_remote_storage.is_connected()) {
     factory_remote_storage.reset();
 #if BUILDFLAG(IS_CHROMEOS)
-    // In-process CertVerifierService in Ash and Lacros should run on the IO
-    // thread because it interacts with IO-bound NSS and ChromeOS user slots.
-    // See for example InitializeNSSForChromeOSUser() or
-    // CertDbInitializerIOImpl.
+    // In-process CertVerifierService should run on the IO thread because it
+    // interacts with IO-bound NSS and ChromeOS user slots. See for example
+    // InitializeNSSForChromeOSUser() or CertDbInitializerIOImpl.
     GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&RunInProcessCertVerifierServiceFactory,
