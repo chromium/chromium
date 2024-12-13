@@ -269,6 +269,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kScrollDrivenAnimations},
           {WebFeature::kViewFunctionTimeline,
            WebDXFeature::kScrollDrivenAnimations},
+          {WebFeature::kHighlightAPIRegisterHighlight,
+           WebDXFeature::kHighlight},
           {WebFeature::kV8Element_Animate_Method, WebDXFeature::kWebAnimations},
           {WebFeature::kV8Document_GetAnimations_Method,
            WebDXFeature::kWebAnimations},
