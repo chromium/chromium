@@ -27,6 +27,11 @@ NSString* const kConsistencyAccountChooserAddAccountIdentifier =
 NSString* const kManagedProfileCreationScreenAccessibilityIdentifier =
     @"ManagedProfileCreationScreenAccessibilityIdentifier";
 
+NSString* const kKeepBrowsingDataSeparateCellId =
+    @"KeepBrowsingDataSeparateCellId";
+
+NSString* const kMergeBrowsingDataCellId = @"MergeBrowsingDataCellId";
+
 const char* kWebSigninConsistencyConsecutiveActiveDismissalLimitParam =
     "consecutive_active_dismissal_limit";
 

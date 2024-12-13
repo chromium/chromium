@@ -31,6 +31,9 @@
         !skipBrowsingDataMigration &&
         AreSeparateProfilesForManagedAccountsEnabled() &&
         !identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+    // The default behavior should be to create a new profile for the user and
+    // keep any existing browsing data separate from the new managed profile.
+    _keepBrowsingDataSeparate = true;
   }
   return self;
 }
@@ -47,6 +50,13 @@
   _consumer = consumer;
   _consumer.canShowBrowsingDataMigration = _canShowBrowsingDataMigration;
   [_consumer setKeepBrowsingDataSeparate:self.keepBrowsingDataSeparate];
+}
+
+#pragma mark - BrowsingDataMigrationViewControllerDelegate
+
+- (void)updateShouldKeepBrowsingDataSeparate:(BOOL)keepBrowsingDataSeparate {
+  self.keepBrowsingDataSeparate = keepBrowsingDataSeparate;
+  [self.consumer setKeepBrowsingDataSeparate:self.keepBrowsingDataSeparate];
 }
 
 @end

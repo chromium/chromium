@@ -1849,6 +1849,21 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_YES" desc="Message displayed on the managed profile creation screen in a table view item telling the user that they will be keeping their existing browsing data separate from the managed profile they will create.">
        Yes
       </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_SEPARATE_TITLE" desc="Message displayed on the managed profile creation screen in a table view item telling the user that they will bring their existing browsing data separate in the managed profile they will create.">
+       Yes, keep it separate
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_SEPARATE_SUBTITLE" desc="Message displayed on the managed profile creation screen in a table view item telling the user that they will bring their existing browsing data separate in the managed profile they will create.">
+       Your existing browsing data will be available upon signing out of <ph name="USER_EMAIL">$1</ph>. It won’t be saved in this account.
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_MERGE_BROWSING_DATA_TITLE" desc="Message displayed on the managed profile creation screen in a table view item telling the user that they will be keeping their existing browsing data separate from the managed profile they will create.">
+       No, move it into your work space
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_MERGE_BROWSING_DATA_SUBTITLE" desc="Message displayed on the managed profile creation screen in a table view item telling the user that they will be keeping their existing browsing data separate from the managed profile they will create.">
+       Existing browsing data will be linked to <ph name="USER_EMAIL">$1</ph>. This data may be viewable by your organization.
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_SEPARATE_PAGE_SUBTITLE" desc="Message displayed on a screen where the user is asked what they want to do with their existing browsing data.">
+      Choose what to do with the existing browsing data on this device, like passwords, history, and more.
+      </message>
       <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_MANAGEMENT_DISCLAIMER" desc="Message displayed in the secondary button on a screen where the user is asked to create a work profile.">
        The account <ph name="USER_EMAIL">$1</ph> is managed by <ph name="HOSTED_DOMAIN">$2</ph>, which can view some information.
       </message>

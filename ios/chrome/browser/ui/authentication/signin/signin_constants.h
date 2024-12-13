@@ -88,6 +88,13 @@ extern NSString* const kConsistencyAccountChooserAddAccountIdentifier;
 // Name of the accessibility identifier for the managed profile creation screen.
 extern NSString* const kManagedProfileCreationScreenAccessibilityIdentifier;
 
+// Name of the accessibility identifier for the keep browsing data separate
+// cell.
+extern NSString* const kKeepBrowsingDataSeparateCellId;
+
+// Name of the accessibility identifier for the merge browsing data cell.
+extern NSString* const kMergeBrowsingDataCellId;
+
 // Intent for TrustedVaultReauthenticationCoordinator to display either
 // the reauthentication or degraded recoverability dialog.
 typedef NS_ENUM(NSUInteger, SigninTrustedVaultDialogIntent) {

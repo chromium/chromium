@@ -12,11 +12,13 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/ui/authentication/enterprise/managed_profile_creation/browsing_data_migration_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/managed_profile_creation/managed_profile_creation_mediator.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/managed_profile_creation/managed_profile_creation_view_controller.h"
 
 @interface ManagedProfileCreationCoordinator () <
-    ManagedProfileCreationViewControllerDelegate>
+    ManagedProfileCreationViewControllerDelegate,
+    UINavigationControllerDelegate>
 @end
 
 @implementation ManagedProfileCreationCoordinator {
@@ -24,7 +26,12 @@
   NSString* _hostedDomain;
   BOOL _skipBrowsingDataMigration;
   ManagedProfileCreationViewController* _viewController;
+  // Used to display `_viewController` initially and
+  // `_browsingDataMigrationViewController` if the user tries to modify how
+  // existing browsing data should be handled.
+  UINavigationController* _navigationController;
   ManagedProfileCreationMediator* _mediator;
+  BrowsingDataMigrationViewController* _browsingDataMigrationViewController;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -62,7 +69,11 @@
       skipBrowsingDataMigration:_skipBrowsingDataMigration];
   _mediator.consumer = _viewController;
 
-  [self.baseViewController presentViewController:_viewController
+  _navigationController = [[UINavigationController alloc]
+      initWithRootViewController:_viewController];
+  _navigationController.delegate = self;
+  [_navigationController setNavigationBarHidden:YES animated:NO];
+  [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
 }
@@ -92,9 +103,29 @@
 #pragma mark - ManagedProfileCreationViewControllerDelegate
 
 - (void)showMergeBrowsingDataScreen {
-  // TODO(crbug.com/382240108): Actually show a screen where the user can make
-  // an educated choice.
-  [_mediator setKeepBrowsingDataSeparate:!_mediator.keepBrowsingDataSeparate];
+  CHECK(!_browsingDataMigrationViewController);
+  _browsingDataMigrationViewController =
+      [[BrowsingDataMigrationViewController alloc]
+                 initWithUserEmail:_userEmail
+          keepBrowsingDataSeparate:_mediator.keepBrowsingDataSeparate];
+  _browsingDataMigrationViewController.mutator = _mediator;
+  [_navigationController pushViewController:_browsingDataMigrationViewController
+                                   animated:YES];
+}
+
+#pragma mark - UINavigationControllerDelegate
+
+- (void)navigationController:(UINavigationController*)navigationController
+      willShowViewController:(UIViewController*)viewController
+                    animated:(BOOL)animated {
+  BOOL showingMainViewController = [viewController
+      isMemberOfClass:[ManagedProfileCreationViewController class]];
+  [_navigationController setNavigationBarHidden:showingMainViewController
+                                       animated:!showingMainViewController];
+  if (showingMainViewController) {
+    _browsingDataMigrationViewController.mutator = nil;
+    _browsingDataMigrationViewController = nil;
+  }
 }
 
 #pragma mark - Private
@@ -107,6 +138,8 @@
       nil;
   [_viewController dismissViewControllerAnimated:animated completion:nil];
   _viewController = nil;
+  [_navigationController dismissViewControllerAnimated:animated completion:nil];
+  _navigationController = nil;
 }
 
 @end
