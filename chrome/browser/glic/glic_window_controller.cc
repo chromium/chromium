@@ -181,6 +181,9 @@ void GlicWindowController::HandleBrowserPinning(gfx::Vector2d mouse_location) {
 }
 
 void GlicWindowController::MoveToBrowserPinTarget(Browser* browser) {
+  if (!widget_) {
+    return;
+  }
   gfx::Rect glic_rect = widget_->GetWindowBoundsInScreen();
   // TODO fix exact snap location
   gfx::Rect glic_button_rect = browser->window()
