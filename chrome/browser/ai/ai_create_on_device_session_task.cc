@@ -65,7 +65,8 @@ void CreateOnDeviceSessionTask::Start() {
     Finish(std::move(session));
     return;
   }
-  optimization_guide::OnDeviceModelEligibilityReason reason;
+  optimization_guide::OnDeviceModelEligibilityReason reason =
+      optimization_guide::OnDeviceModelEligibilityReason::kUnknown;
   bool can_create = service->CanCreateOnDeviceSession(feature_, &reason);
   CHECK(!can_create);
   if (!kWaitableReasons.contains(reason)) {
