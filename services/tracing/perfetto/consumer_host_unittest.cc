@@ -557,7 +557,13 @@ TEST_F(TracingConsumerTest, DeleteConsumerWhenReceiving) {
   no_more_data.Run();
 }
 
-TEST_F(TracingConsumerTest, FlushProducers) {
+#if BUILDFLAG(IS_APPLE)
+// TODO(crbug.com/383878432): Re-enable this test
+#define MAYBE_FlushProducers DISABLED_FlushProducers
+#else
+#define MAYBE_FlushProducers FlushProducers
+#endif
+TEST_F(TracingConsumerTest, MAYBE_FlushProducers) {
   EnableTracingWithDataSourceName(kDataSourceName);
 
   threaded_perfetto_service()->CreateProducer();
