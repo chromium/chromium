@@ -373,6 +373,16 @@ void InputManager::StateOnTouchTransfer(
   // TODO(crbug.com/370506271): Handle state to start processing input events.
 }
 
+void InputManager::NotifySiteIsMobileOptimized(
+    bool is_mobile_optimized,
+    const FrameSinkId& frame_sink_id) {
+  auto itr = rir_map_.find(frame_sink_id);
+  if (itr == rir_map_.end()) {
+    return;
+  }
+  itr->second->input_router()->NotifySiteIsMobileOptimized(is_mobile_optimized);
+}
+
 void InputManager::SetupRenderInputRouterDelegateConnection(
     uint32_t grouping_id,
     mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>

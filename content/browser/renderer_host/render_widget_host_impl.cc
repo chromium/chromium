@@ -3780,10 +3780,22 @@ void RenderWidgetHostImpl::OnRenderFrameMetadataChangedAfterActivation(
   const auto& metadata =
       render_frame_metadata_provider_.LastRenderFrameMetadata();
 
-  bool is_mobile_optimized = metadata.is_mobile_optimized;
-  input_router()->NotifySiteIsMobileOptimized(is_mobile_optimized);
+  const bool mobile_optimized_state_changed =
+      (is_mobile_optimized_ != metadata.is_mobile_optimized);
+  is_mobile_optimized_ = metadata.is_mobile_optimized;
+  input_router()->NotifySiteIsMobileOptimized(is_mobile_optimized_);
+  // Notifies Viz only if the page's mobile optimized state has changed, since
+  // this is only used to set touch ack timeout delay for mobile sites in
+  // PassthroughTouchEventQueue.
+  if (mobile_optimized_state_changed &&
+      delegate()->GetRenderInputRouterDelegateRemote()) {
+    delegate()
+        ->GetRenderInputRouterDelegateRemote()
+        ->NotifySiteIsMobileOptimized(is_mobile_optimized_, frame_sink_id_);
+  }
+
   if (auto* touch_emulator = GetTouchEmulator(/*create_if_necessary=*/false)) {
-    touch_emulator->SetDoubleTapSupportForPageEnabled(!is_mobile_optimized);
+    touch_emulator->SetDoubleTapSupportForPageEnabled(!is_mobile_optimized_);
   }
 
   // TODO(danakj): Can this method be called during WebContents destruction?

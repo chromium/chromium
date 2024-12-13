@@ -1318,6 +1318,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // RenderFrame/View, assume false.
   bool intersects_viewport_ = false;
 
+  // Determines whether the page is mobile optimized or not.
+  bool is_mobile_optimized_ = false;
+
   // One side of a pipe that is held open while the pointer is locked.
   // The other side is held be the renderer.
   mojo::Receiver<blink::mojom::PointerLockContext> pointer_lock_context_{this};

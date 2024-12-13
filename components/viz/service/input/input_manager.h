@@ -128,6 +128,8 @@ class VIZ_SERVICE_EXPORT InputManager
 
   // input::mojom::RenderInputRouterDelegate implementation.
   void StateOnTouchTransfer(input::mojom::TouchTransferStatePtr state) override;
+  void NotifySiteIsMobileOptimized(bool is_mobile_optimized,
+                                   const FrameSinkId& frame_sink_id) override;
 
   void SetupRenderInputRouterDelegateConnection(
       uint32_t grouping_id,

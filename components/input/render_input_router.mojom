@@ -46,6 +46,11 @@ interface RenderInputRouterDelegate {
   // Send |TouchTransferState| from Browser upon a successful touch transfer.
   // Viz needs this to do input handling on it's side.
   StateOnTouchTransfer(TouchTransferState state);
+
+  // Notifies RenderInputRouter on the VizCompositor thread (corresponding to
+  // |frame_sink_id|), of changes to a page being mobile site optimized.
+  NotifySiteIsMobileOptimized(bool is_mobile_optimized,
+                              viz.mojom.FrameSinkId frame_sink_id);
 };
 
 // Implemented by the browser, this interface defines methods that will be
