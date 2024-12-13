@@ -2687,6 +2687,9 @@ crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attribut
 crbug.com/343720396 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?1-2 [ Crash Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-abspos-001.html [ Failure ]
+[ Mac ] external/wpt/editing/run/forwarddelete-chars-following-collapsible-white-space.html [ Failure ]
+[ Win11-arm64 ] external/wpt/css/css-paint-api/geometry-background-image-tiled-003.https.html [ Failure ]
 [ Mac13 ] external/wpt/webrtc/protocol/video-codecs.https.html [ Timeout ]
 [ Mac14 ] external/wpt/webrtc/protocol/video-codecs.https.html [ Timeout ]
 crbug.com/383609766 [ Mac15 ] external/wpt/webrtc/receiver-track-live.https.html [ Timeout ]
