@@ -5,9 +5,19 @@
 #ifndef SKIA_RUSTY_PNG_FEATURE_H_
 #define SKIA_RUSTY_PNG_FEATURE_H_
 
+#include <memory>
+
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "skia/buildflags.h"
+#include "third_party/skia/include/encode/SkEncoder.h"
+
+class SkPixmap;
+class SkWStream;
+
+namespace SkPngEncoder {
+struct Options;
+}  // namespace SkPngEncoder
 
 namespace skia {
 
@@ -30,6 +40,21 @@ inline bool IsRustyPngEnabled() {
   return false;
 #endif
 }
+
+// A helper that will encode a PNG image using either the `libpng`-based
+// `SkPngEncoder::Encode` API, or (if `kRustyPngFeature` is built and enabled)
+// the Rust-based `SkPngRustEncoder::Encode` API.
+COMPONENT_EXPORT(SKIA_RUSTY_PNG_FEATURE_DETECTION)
+bool EncodePng(SkWStream* dst,
+               const SkPixmap& src,
+               const SkPngEncoder::Options& options);
+
+// A helper that will create either a `libpng`-based, or a Rust-based PNG
+// encoder (depending on whether the `kRustyPngFeature` is built and enabled).
+COMPONENT_EXPORT(SKIA_RUSTY_PNG_FEATURE_DETECTION)
+std::unique_ptr<SkEncoder> MakePngEncoder(SkWStream* dst,
+                                          const SkPixmap& src,
+                                          const SkPngEncoder::Options& options);
 
 }  // namespace skia
 

@@ -1790,6 +1790,7 @@ component("platform") {
     "//services/service_manager/public/cpp",
     "//services/viz/public/cpp/gpu",
     "//skia",
+    "//skia:rusty_png_feature_detection",
     "//skia:skcms",
     "//third_party:freetype_buildflags",
     "//third_party:freetype_harfbuzz",

@@ -42,6 +42,7 @@ component("rusty_png_feature_detection") {
     "rusty_png_feature.cc",
     "rusty_png_feature.h",
   ]
+  deps = [ ":skia" ]
   public_deps = [
     ":buildflags",
     "//base",

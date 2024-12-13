@@ -25,7 +25,6 @@
 
 #if BUILDFLAG(SKIA_BUILD_RUST_PNG)
 #include "third_party/skia/experimental/rust_png/decoder/SkPngRustDecoder.h"
-#include "third_party/skia/experimental/rust_png/encoder/SkPngRustEncoder.h"
 #endif
 
 namespace gfx {
@@ -196,37 +195,6 @@ void AddComments(SkPngEncoder::Options& options,
       static_cast<int>(comment_pointers.size()));
 }
 
-// A helper that will encode a PNG image using either the `libpng`-based
-// `SkPngEncoder::Encode` API, or (if `kRustyPngFeature` is built and enabled)
-// the Rust-based `SkPngRustEncoder::Encode` API.
-bool EncodePng(SkWStream* dst,
-               const SkPixmap& src,
-               const SkPngEncoder::Options& options) {
-  if (skia::IsRustyPngEnabled()) {
-#if BUILDFLAG(SKIA_BUILD_RUST_PNG)
-    SkPngRustEncoder::Options rust_options;
-    if (options.fZLibLevel < 4) {
-      rust_options.fCompressionLevel = SkPngRustEncoder::CompressionLevel::kLow;
-    } else if (options.fZLibLevel < 7) {
-      rust_options.fCompressionLevel =
-          SkPngRustEncoder::CompressionLevel::kMedium;
-    } else {
-      rust_options.fCompressionLevel =
-          SkPngRustEncoder::CompressionLevel::kHigh;
-    }
-    rust_options.fComments = options.fComments;
-    // TODO(https://crbug.com/381139785): Translate the ICC profile as well.
-
-    return SkPngRustEncoder::Encode(dst, src, rust_options);
-#else
-    // The `if` condition guarantees `SKIA_BUILD_RUST_PNG`.
-    NOTREACHED();
-#endif
-  }
-
-  return SkPngEncoder::Encode(dst, src, options);
-}
-
 std::optional<std::vector<uint8_t>> EncodeSkPixmap(
     const SkPixmap& src,
     const std::vector<PNGCodec::Comment>& comments,
@@ -242,7 +210,7 @@ std::optional<std::vector<uint8_t>> EncodeSkPixmap(
     options.fFilterFlags = SkPngEncoder::FilterFlag::kNone;
   }
 
-  if (!EncodePng(&dst, src, options)) {
+  if (!skia::EncodePng(&dst, src, options)) {
     return std::nullopt;
   }
 
