@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -165,6 +166,22 @@ void AXBlockFlowData::ProcessBoxFragment(const PhysicalBoxFragment* fragment,
 
   wtf_size_t fragment_index = starting_fragment_index;
   std::optional<wtf_size_t> previous_on_line;
+
+  // Keep track of the current outermost line index, as ruby content may have
+  // multiple nested lines within the flattened list. When checking if a
+  // fragment is within line boundaries, this makes sure we are comparing
+  // against the outermost line.
+  // For example:
+  // ++1. Line (5) <-- line within paragraph
+  // ++2. Box (2) <-- <ruby> tag
+  // ++3. Text "ruby base" <-- base text
+  // ++4. Line (2)  <-- <rt> tag
+  // ++5. Text "ruby text" <-- ruby annotation
+  //
+  // Then item 5 is on a separate nested line containing the annotation. For the
+  // purpose of next-previous on-line, we want to be using the line within the
+  // paragraph (item 1).
+  std::optional<size_t> current_outermost_line_index;
   for (auto it = items->Items().begin(); it != items->Items().end();
        it++, fragment_index++) {
     const LayoutObject* layout_object = it->GetLayoutObject();
@@ -173,7 +190,11 @@ void AXBlockFlowData::ProcessBoxFragment(const PhysicalBoxFragment* fragment,
       layout_fragment_map_.insert(layout_object, fragment_index);
     }
 
-    bool on_current_line = OnCurrentLine(fragment_index);
+    bool on_current_line =
+        current_outermost_line_index
+            ? OnLine(lines_[current_outermost_line_index.value()],
+                     fragment_index)
+            : false;
     if (it->Type() == FragmentItem::kLine) {
       wtf_size_t length = it->DescendantsCount();
       const InlineBreakToken* break_token = it->GetInlineBreakToken();
@@ -187,9 +208,12 @@ void AXBlockFlowData::ProcessBoxFragment(const PhysicalBoxFragment* fragment,
                               .forced_break = forced_break,
                               .break_index = break_index});
       if (!on_current_line) {
+        // We are moving to a new line that is not nested in the previous line.
+        current_outermost_line_index = lines_.size() - 1;
+        // There are no previous items on this new line, since it just started.
         previous_on_line = std::nullopt;
+        on_current_line = true;
       }
-      on_current_line = true;
     }
 
     FragmentProperties& properties = fragment_properties_[fragment_index];
@@ -213,15 +237,9 @@ void AXBlockFlowData::ProcessBoxFragment(const PhysicalBoxFragment* fragment,
   }
 }
 
-bool AXBlockFlowData::OnCurrentLine(wtf_size_t index) const {
-  if (lines_.empty()) {
-    return false;
-  }
-
+bool AXBlockFlowData::OnLine(const Line& line, wtf_size_t index) const {
   // The fragment is on the current line if within the line's boundaries.
-  const Line& candidate = lines_.back();
-  return candidate.start_index < index &&
-         candidate.start_index + candidate.length > index;
+  return line.start_index < index && line.start_index + line.length > index;
 }
 
 const std::optional<wtf_size_t> AXBlockFlowData::FindFirstFragment(
