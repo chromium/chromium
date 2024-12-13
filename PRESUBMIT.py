@@ -7363,19 +7363,20 @@ def CheckPythonShebang(input_api, output_api):
     return result
 
 
-def CheckBatchAnnotation(input_api, output_api):
+def CheckAndroidTestAnnotations(input_api, output_api):
     """Checks that tests have either @Batch or @DoNotBatch annotation. If this
     is not an instrumentation test, disregard."""
 
     batch_annotation = input_api.re.compile(r'^\s*@Batch')
     do_not_batch_annotation = input_api.re.compile(r'^\s*@DoNotBatch')
-    robolectric_test = input_api.re.compile(r'[rR]obolectric')
+    robolectric_test = input_api.re.compile(r'@RunWith\((.*?)RobolectricTestRunner')
     test_class_declaration = input_api.re.compile(r'^\s*public\sclass.*Test')
     uiautomator_test = input_api.re.compile(r'[uU]i[aA]utomator')
     test_annotation_declaration = input_api.re.compile(r'^\s*public\s@interface\s.*{')
 
     missing_annotation_errors = []
     extra_annotation_errors = []
+    wrong_robolectric_test_runner_errors = []
 
     def _FilterFile(affected_file):
         return input_api.FilterSourceFile(
@@ -7388,9 +7389,20 @@ def CheckBatchAnnotation(input_api, output_api):
         do_not_batch_matched = None
         is_instrumentation_test = True
         test_annotation_declaration_matched = None
+        has_base_robolectric_rule = False
         for line in f.NewContents():
-            if robolectric_test.search(line) or uiautomator_test.search(line):
-                # Skip Robolectric and UiAutomator tests.
+            if 'BaseRobolectricTestRule' in line:
+                has_base_robolectric_rule = True
+                continue
+            if m := robolectric_test.search(line):
+                is_instrumentation_test = False
+                if m.group(1) == '' and not has_base_robolectric_rule:
+                  path = str(f.LocalPath())
+                  # These two spots cannot use it.
+                  if 'webapk' not in path and 'build' not in path:
+                    wrong_robolectric_test_runner_errors.append(path)
+                break
+            if uiautomator_test.search(line):
                 is_instrumentation_test = False
                 break
             if not batch_matched:
@@ -7432,6 +7444,13 @@ See https://source.chromium.org/chromium/chromium/src/+/main:docs/testing/batchi
                 """
 Robolectric tests do not need a @Batch or @DoNotBatch annotations.
 """, extra_annotation_errors))
+    if wrong_robolectric_test_runner_errors:
+        results.append(
+            output_api.PresubmitPromptWarning(
+                """
+Robolectric tests should use either @RunWith(BaseRobolectricTestRule.class) (or
+a subclass of it), or use "@Rule BaseRobolectricTestRule".
+""", wrong_robolectric_test_runner_errors))
 
     return results
 

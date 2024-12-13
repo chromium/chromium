@@ -4998,10 +4998,10 @@ class VerifyDcheckParentheses(unittest.TestCase):
             self.assertRegex(error.message, r'DCHECK_IS_ON().+parentheses')
 
 
-class CheckBatchAnnotation(unittest.TestCase):
-    """Test the CheckBatchAnnotation presubmit check."""
+class CheckAndroidTestAnnotations(unittest.TestCase):
+    """Test the CheckAndroidTestAnnotations presubmit check."""
 
-    def testTruePositives(self):
+    def testBatchTruePositives(self):
         """Examples of when there is no @Batch or @DoNotBatch is correctly flagged.
 """
         mock_input = MockInputApi()
@@ -5010,16 +5010,16 @@ class CheckBatchAnnotation(unittest.TestCase):
             MockFile('path/TwoTest.java', ['public class TwoTest']),
             MockFile('path/ThreeTest.java', [
                 '@Batch(Batch.PER_CLASS)',
-                'import org.chromium.base.test.BaseRobolectricTestRunner;',
+                '@RunWith(BaseRobolectricTestRunner.class)',
                 'public class Three {'
             ]),
             MockFile('path/FourTest.java', [
                 '@DoNotBatch(reason = "placeholder reason 1")',
-                'import org.chromium.base.test.BaseRobolectricTestRunner;',
+                '@RunWith(BaseRobolectricTestRunner.class)',
                 'public class Four {'
             ]),
         ]
-        errors = PRESUBMIT.CheckBatchAnnotation(mock_input, MockOutputApi())
+        errors = PRESUBMIT.CheckAndroidTestAnnotations(mock_input, MockOutputApi())
         self.assertEqual(2, len(errors))
         self.assertEqual(2, len(errors[0].items))
         self.assertIn('OneTest.java', errors[0].items[0])
@@ -5028,7 +5028,7 @@ class CheckBatchAnnotation(unittest.TestCase):
         self.assertIn('ThreeTest.java', errors[1].items[0])
         self.assertIn('FourTest.java', errors[1].items[1])
 
-    def testAnnotationsPresent(self):
+    def testBatchAnnotationsPresent(self):
         """Examples of when there is @Batch or @DoNotBatch is correctly flagged."""
         mock_input = MockInputApi()
         mock_input.files = [
@@ -5060,17 +5060,17 @@ class CheckBatchAnnotation(unittest.TestCase):
                 'public class Five extends BaseTestB {'
             ]),
             MockFile('path/SixTest.java', [
-                'import org.chromium.base.test.BaseRobolectricTestRunner;',
+                '@RunWith(BaseRobolectricTestRunner.class)',
                 'public class Six extends BaseTestA {'
             ], [
-                'import org.chromium.base.test.BaseRobolectricTestRunner;',
+                '@RunWith(BaseRobolectricTestRunner.class)',
                 'public class Six extends BaseTestB {'
             ]),
             MockFile('path/SevenTest.java', [
-                'import org.robolectric.annotation.Config;',
+                '@RunWith(BaseRobolectricTestRunner.class)',
                 'public class Seven extends BaseTestA {'
             ], [
-                'import org.robolectric.annotation.Config;',
+                '@RunWith(BaseRobolectricTestRunner.class)',
                 'public class Seven extends BaseTestB {'
             ]),
             MockFile(
@@ -5086,8 +5086,34 @@ class CheckBatchAnnotation(unittest.TestCase):
                 ['public @interface SomeAnnotation {'],
             ),
         ]
-        errors = PRESUBMIT.CheckBatchAnnotation(mock_input, MockOutputApi())
+        errors = PRESUBMIT.CheckAndroidTestAnnotations(mock_input, MockOutputApi())
         self.assertEqual(0, len(errors))
+
+    def testWrongRobolectricTestRunner(self):
+        mock_input = MockInputApi()
+        mock_input.files = [
+            MockFile('path/OneTest.java', [
+                '@RunWith(RobolectricTestRunner.class)',
+                'public class ThreeTest {'
+            ]),
+            MockFile('path/TwoTest.java', [
+                'import org.chromium.base.test.BaseRobolectricTestRule;',
+                '@RunWith(RobolectricTestRunner.class)',
+                'public class TwoTest {'
+            ]),
+            MockFile('path/ThreeTest.java', [
+                '@RunWith(FooRobolectricTestRunner.class)',
+                'public class ThreeTest {'
+            ]),
+            MockFile('webapks/FourTest.java', [
+                '@RunWith(RobolectricTestRunner.class)',
+                'public class ThreeTest {'
+            ]),
+        ]
+        errors = PRESUBMIT.CheckAndroidTestAnnotations(mock_input, MockOutputApi())
+        self.assertEqual(1, len(errors))
+        self.assertEqual(1, len(errors[0].items))
+        self.assertIn('OneTest.java', errors[0].items[0])
 
 
 class CheckMockAnnotation(unittest.TestCase):
