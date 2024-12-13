@@ -5062,12 +5062,25 @@ void InterestGroupAuction::ScoreQueuedBidsIfReady() {
   // request for all the trusted seller signals (if some still are pending,
   // OnScoringDependencyDone() will take care of it).
   if (num_scoring_dependencies_ == 0) {
-    seller_worklet_handle_->GetSellerWorklet()->SendPendingSignalsRequests();
+    StartPendingScoringSignalsRequests();
   }
 
-  // No more unscored bids should be added, once the seller worklet has been
-  // received.
+  // No more unscored bids should be added to this list, once the seller worklet
+  // has been received, since any new bids will be sent directly to the seller
+  // worklet instead.
   DCHECK(unscored_bids_.empty());
+}
+
+void InterestGroupAuction::StartPendingScoringSignalsRequests() {
+  DCHECK(ReadyToScoreBids());
+  DCHECK_EQ(num_scoring_dependencies_, 0);
+  auto contexts = score_ad_receivers_.GetAllContexts();
+  for (const auto& context : contexts) {
+    if (context.second->cache_handle) {
+      context.second->cache_handle->StartFetch();
+    }
+  }
+  seller_worklet_handle_->GetSellerWorklet()->SendPendingSignalsRequests();
 }
 
 void InterestGroupAuction::HandleUpdateIfOlderThan(
@@ -5373,7 +5386,7 @@ void InterestGroupAuction::OnScoringDependencyDone() {
   // If we issued the final set of bids to a seller worklet, tell it to send
   // any pending scoring signals request to complete the auction more quickly.
   if (num_scoring_dependencies_ == 0 && ReadyToScoreBids()) {
-    seller_worklet_handle_->GetSellerWorklet()->SendPendingSignalsRequests();
+    StartPendingScoringSignalsRequests();
   }
 
   // If all scoring dependencies are done, this means additional bid decoding
@@ -5488,7 +5501,6 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
                 bid->interest_group->owner,
                 bid->bid_state->bidder->joining_origin, bid->ad_descriptor.url,
                 ad_component_urls, std::move(additional_params), partition_id);
-    cache_handle->StartFetch();
     cache_key = auction_worklet::mojom::TrustedSignalsCacheKey::New(
         cache_handle->compression_group_token(), partition_id);
   }

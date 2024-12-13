@@ -8068,8 +8068,9 @@ function reportResult(auctionConfig, browserSignals) {
           }]
         }])";
 
-    // Response in the case of a single merged trusted scoring signals request.
-    // Have to allow both orderings of requests.
+    // Requests should always be merged, since no time passes in this test, so
+    // the end-of-bidding seller fetch flush should be what triggers the signals
+    // fetch, rather than the timer that can send individual requests.
     AddScoringSignalsCacheResult(
         Bidder1Bidder2TwoCompressionGroupsSellerRequestInfo(),
         MakeCompressionGroupMapForTwoGroups(
@@ -8080,14 +8081,6 @@ function reportResult(auctionConfig, browserSignals) {
         MakeCompressionGroupMapForTwoGroups(
             kSellerSignalsKVv2JsonWithDataVersion,
             kSellerSignalsKVv2JsonWithDataVersion));
-
-    // Responses in the case of two separate trusted scoring signals requests.
-    AddScoringSignalsCacheResult(IsolatedBidder1SellerRequestInfo(),
-                                 MakeCompressionGroupMapForOneGroup(
-                                     kSellerSignalsKVv2JsonWithDataVersion));
-    AddScoringSignalsCacheResult(IsolatedBidder2SellerRequestInfo(),
-                                 MakeCompressionGroupMapForOneGroup(
-                                     kSellerSignalsKVv2JsonWithDataVersion));
   } else {
     // There may be one merged trusted scoring signals request, or two separate
     // requests.
@@ -8248,8 +8241,9 @@ TEST_P(AuctionRunnerTrustedSignalsTest,
                     /*has_signals=*/false));
 
   if (UsingKVv2Signals()) {
-    // This test is designed to ensure KVv2 scoring signals requests will always
-    // be merged together, though the order of the bidders is not guaranteed.
+    // Requests should always be merged, since no time passes in this test, so
+    // the end-of-bidding seller fetch flush should be what triggers the signals
+    // fetch, rather than the timer that can send individual requests.
     AddScoringSignalsCacheResult(
         Bidder1Bidder2TwoCompressionGroupsSellerRequestInfo(),
         MakeBidder1Bidder2ScoringSignalsTwoCompressionGroupsMap());
@@ -8346,13 +8340,8 @@ function reportResult(auctionConfig, browserSignals) {
 // the same compression group, but use different partitions.
 TEST_P(AuctionRunnerTrustedSignalsTest,
        TrustedScoringSignalsSameJoiningOrigin) {
-  // Use cross-origin signals so we can order events so that the two requests
-  // are sent at the same time, and thus batched together. This can be done
-  // because with cross-origin signals, the browser process waits for the
-  // decision script URL's response headers to be receiver before requesting
-  // seller signals, since the response header can block cross-origin signals.
   trusted_scoring_signals_url_ =
-      GURL("https://cross-origin.test/seller_signals");
+      GURL("https://adstuff.publisher1.com/seller_signals");
 
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
@@ -8368,8 +8357,9 @@ TEST_P(AuctionRunnerTrustedSignalsTest,
                     kBidder1, "2", /*has_signals=*/false));
 
   if (UsingKVv2Signals()) {
-    // This test is designed to ensure KVv2 scoring signals requests will always
-    // be merged together, though the order of the bidders is not guaranteed.
+    // Requests should always be merged, since no time passes in this test, so
+    // the end-of-bidding seller fetch flush should be what triggers the signals
+    // fetch, rather than the timer that can send individual requests.
 
     auto bidder1_first_request_info = IsolatedBidder1SellerRequestInfo();
     bidder1_first_request_info.compression_groups[0].emplace_back(
@@ -8434,23 +8424,13 @@ TEST_P(AuctionRunnerTrustedSignalsTest,
       /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
       {{GURL("https://ad2.com-component1.com")}}));
 
-  StartAuction(kSellerUrl, std::move(bidders));
-
-  // Run until the seller worklet is needed. In the KVv2 path, this will ensure
-  // that the seller signals KVv2 requests are batched together, which both
-  // means fewer mock responses need to be configured, and it's possible to test
-  // the requests are group as expected.
-  task_environment()->RunUntilIdle();
-
   // scoreAd() that only accepts bids where the scoring signals of the
   // `renderURL` is "accept".
-  auction_worklet::AddJavascriptResponse(
-      &url_loader_factory_, kSellerUrl, std::string(R"(
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         std::string(R"(
 function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
-                 browserSignals, directFromSellerSignals,
-                 crossOriginTrustedSignals) {
-  let signal = crossOriginTrustedSignals["https://cross-origin.test"].
-      renderURL[browserSignals.renderURL];
+                 browserSignals, directFromSellerSignals) {
+  let signal = trustedScoringSignals.renderURL[browserSignals.renderURL];
   // 2 * bid is expected by the BidderWorklet ReportWin() script.
   if (signal == "accept")
     return 2 * bid;
@@ -8462,12 +8442,9 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
 function reportResult(auctionConfig, browserSignals) {
   return browserSignals;
 }
-                                        )"),
-      /*extra_headers=*/
-      std::string("Ad-Auction-Allow-Trusted-Scoring-Signals-From:"
-                  " \"https://cross-origin.test/\""));
+                                        )"));
 
-  auction_run_loop_->Run();
+  RunAuctionAndWait(kSellerUrl, std::move(bidders));
 
   EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
   EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
@@ -8479,13 +8456,8 @@ function reportResult(auctionConfig, browserSignals) {
 // different compression groups in the same request.
 TEST_P(AuctionRunnerTrustedSignalsTest,
        TrustedScoringSignalsDifferentJoiningOrigin) {
-  // Use cross-origin signals so we can order events so that the two requests
-  // are sent at the same time, and thus batched together. This can be done
-  // because with cross-origin signals, the browser process waits for the
-  // decision script URL's response headers to be receiver before requesting
-  // seller signals, since the response header can block cross-origin signals.
   trusted_scoring_signals_url_ =
-      GURL("https://cross-origin.test/seller_signals");
+      GURL("https://adstuff.publisher1.com/seller_signals");
 
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
@@ -8501,8 +8473,9 @@ TEST_P(AuctionRunnerTrustedSignalsTest,
                     kBidder1, "2", /*has_signals=*/false));
 
   if (UsingKVv2Signals()) {
-    // This test is designed to ensure KVv2 scoring signals requests will always
-    // be merged together, though the order of the bidders is not guaranteed.
+    // Requests should always be merged, since no time passes in this test, so
+    // the end-of-bidding seller fetch flush should be what triggers the signals
+    // fetch, rather than the timer that can send individual requests.
     AddScoringSignalsCacheResult(
         Bidder1Bidder2TwoCompressionGroupsSellerRequestInfo(),
         MakeBidder1Bidder2ScoringSignalsTwoCompressionGroupsMap());
@@ -8553,23 +8526,13 @@ TEST_P(AuctionRunnerTrustedSignalsTest,
   bidders[1].joining_origin =
       url::Origin::Create(GURL("https://other-origin.test"));
 
-  StartAuction(kSellerUrl, std::move(bidders));
-
-  // Run until the seller worklet is needed. In the KVv2 path, this will ensure
-  // that the seller signals KVv2 requests are batched together, which both
-  // means fewer mock responses need to be configured, and it's possible to test
-  // the requests are group as expected.
-  task_environment()->RunUntilIdle();
-
   // scoreAd() that only accepts bids where the scoring signals of the
   // `renderURL` is "accept".
-  auction_worklet::AddJavascriptResponse(
-      &url_loader_factory_, kSellerUrl, std::string(R"(
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         std::string(R"(
 function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
-                 browserSignals, directFromSellerSignals,
-                 crossOriginTrustedSignals) {
-  let signal = crossOriginTrustedSignals["https://cross-origin.test"].
-      renderURL[browserSignals.renderURL];
+                 browserSignals, directFromSellerSignals) {
+  let signal = trustedScoringSignals.renderURL[browserSignals.renderURL];
   // 2 * bid is expected by the BidderWorklet ReportWin() script.
   if (signal == "accept")
     return 2 * bid;
@@ -8581,11 +8544,76 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
 function reportResult(auctionConfig, browserSignals) {
   return browserSignals;
 }
-                                        )"),
-      /*extra_headers=*/
-      std::string("Ad-Auction-Allow-Trusted-Scoring-Signals-From:"
-                  " \"https://cross-origin.test/\""));
+                                        )"));
 
+  RunAuctionAndWait(kSellerUrl, std::move(bidders));
+
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+  EXPECT_EQ(result_.interest_groups_that_bid.size(), 2u);
+}
+
+// Check that when the bidder scripts finish bidding at different times, the
+// trusted scoring signals for each bid are fetched separately if the bid
+// generation times are further apart than
+// TrustedSignalsCacheImpl::kAutoStartDelay.
+TEST_P(AuctionRunnerTrustedSignalsTest, TrustedScoringSignalsSeparateRequests) {
+  // This test serves to test interactions with the
+  // TrustedScoringSignalsCacheImpl, so it's not very interesting when not using
+  // KVv2 signals.
+  if (!UsingKVv2Signals()) {
+    return;
+  }
+
+  // TrustedScoringSignalsSeparateRequests
+  trusted_scoring_signals_url_ =
+      GURL("https://adstuff.publisher1.com/seller_signals");
+  // Responses for two different trusted scoring signals requests.
+  AddScoringSignalsCacheResult(
+      IsolatedBidder1SellerRequestInfo(),
+      MakeCompressionGroupMapForOneGroup(kBidder1ScoringSignalsKVv2Json));
+  AddScoringSignalsCacheResult(
+      IsolatedBidder2SellerRequestInfo(),
+      MakeCompressionGroupMapForOneGroup(kBidder2ScoringSignalsKVv2Json));
+
+  // scoreAd() that only accepts bids where the scoring signals of the
+  // `renderURL` is "accept".
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         std::string(R"(
+function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+                 browserSignals, directFromSellerSignals) {
+  let signal = trustedScoringSignals.renderURL[browserSignals.renderURL];
+  // 2 * bid is expected by the BidderWorklet ReportWin() script.
+  if (signal == "accept")
+    return 2 * bid;
+  if (signal == "reject")
+    return 0;
+  throw "incorrect trustedScoringSignals";
+}
+
+function reportResult(auctionConfig, browserSignals) {
+  return browserSignals;
+}
+                                        )"));
+
+  StartStandardAuction(/*request_trusted_bidding_signals=*/false);
+
+  // Bidder 1 replies with script.
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name, /*has_signals=*/false));
+  // Run long enough for the scoring signals request for bidder 1's bid to
+  // automatically be sent.
+  task_environment()->FastForwardBy(TrustedSignalsCacheImpl::kAutoStartDelay);
+
+  // Bidder 2 replies with script. The scoring signals request should be sent
+  // immediately, since that's the last bid.
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name, /*has_signals=*/false));
+  // Wait for auction to complete.
   auction_run_loop_->Run();
 
   EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());

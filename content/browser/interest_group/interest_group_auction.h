@@ -980,6 +980,13 @@ class CONTENT_EXPORT InterestGroupAuction
   // are ready.
   void ScoreQueuedBidsIfReady();
 
+  // Starts any pending trusted scoring signals requests. Expected only to be
+  // called once all bids have been generated. This is used to skip the delay
+  // between queuing scoring signals requests and sending them once all bids
+  // have been generated. Works for both browser-side KVv2 signals fetches, and
+  // signals fetches managed by the seller worklet process.
+  void StartPendingScoringSignalsRequests();
+
   void HandleUpdateIfOlderThan(
       const url::Origin& owner,
       std::string_view name,
