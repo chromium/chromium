@@ -89,7 +89,6 @@ copy("from_files_app") {
 # All non JS/TS files.
 copy("copy_app") {
   sources = [
-    "file_manager/background.html",
     "file_manager/choose_entry.html",
     "file_manager_test_manifest.json",
   ]
