@@ -30278,6 +30278,7 @@ Called by update_net_error_codes.py.-->
       label="IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS"/>
   <int value="152"
       label="IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE"/>
+  <int value="153" label="IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE"/>
 </enum>
 
 <enum name="ReportProcessingResult">

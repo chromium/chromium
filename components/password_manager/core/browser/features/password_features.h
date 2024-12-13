@@ -30,7 +30,8 @@ BASE_DECLARE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender);
 // across quarters.
 BASE_DECLARE_FEATURE(kAutofillPasswordUserPerceptionSurvey);
 // Moves the "Use a passkey / Use a different passkey" to the context menu from
-// the autofill dropdown.
+// the autofill dropdown. This is now decoupled from
+// "PasswordManualFallbackAvailable" flag.
 BASE_DECLARE_FEATURE(kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

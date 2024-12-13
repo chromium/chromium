@@ -948,12 +948,8 @@ bool PasswordFormManager::WebAuthnCredentialsAvailable() const {
     WebAuthnCredentialsDelegate* delegate =
         client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get());
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-    const bool passkey_from_another_device_in_context_menu =
-        (base::FeatureList::IsEnabled(
-             features::kPasswordManualFallbackAvailable) &&
-         base::FeatureList::IsEnabled(
-             features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu));
-    if (passkey_from_another_device_in_context_menu) {
+    if (base::FeatureList::IsEnabled(
+            features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu)) {
       return delegate && delegate->GetPasskeys().has_value() &&
              !delegate->GetPasskeys()->empty();
     }

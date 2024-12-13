@@ -5335,6 +5335,12 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
 
 class PasswordFormManagerWebAuthnCredentialsTest : public testing::Test {
  protected:
+  PasswordFormManagerWebAuthnCredentialsTest() {
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+    features_.InitAndDisableFeature(
+        features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
+#endif  //! BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  }
   void SetUp() override {
     PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
 #if BUILDFLAG(IS_ANDROID)
@@ -5364,6 +5370,7 @@ class PasswordFormManagerWebAuthnCredentialsTest : public testing::Test {
   PasswordFormManager& form_manager() { return *form_manager_.get(); }
 
  private:
+  base::test::ScopedFeatureList features_;
   MockPasswordManagerClient client_;
   MockPasswordManagerDriver driver_;
   MockWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
@@ -5400,11 +5407,8 @@ TEST_F(PasswordFormManagerWebAuthnCredentialsTest,
 TEST_F(
     PasswordFormManagerWebAuthnCredentialsTest,
     NoPasskeysFromConditionalRequest_WhenUseAnotherDeviceInContextMenu_ThenNoWebauthnCredentials) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu,
-       features::kPasswordManualFallbackAvailable},
-      {});
+  base::test::ScopedFeatureList features(
+      features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
   ON_CALL(webauthn_credentials_delegate(), GetPasskeys)
       .WillByDefault(ReturnRef(kNoPasskeys));
 
@@ -5414,10 +5418,6 @@ TEST_F(
 TEST_F(
     PasswordFormManagerWebAuthnCredentialsTest,
     NoPasskeysFromConditionalRequest_WhenUseAnotherDeviceInAutofillPopup_ThenWebauthnCredentials) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {features::kPasswordManualFallbackAvailable},
-      {features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu});
   ON_CALL(webauthn_credentials_delegate(), GetPasskeys)
       .WillByDefault(ReturnRef(kNoPasskeys));
 
