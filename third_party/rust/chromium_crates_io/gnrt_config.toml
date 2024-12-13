@@ -218,9 +218,6 @@ extra_src_roots = ['../generated']
 [crate.small_ctor]
 group = 'test'
 
-[crate.unicode-ident]
-license_files = ['LICENSE-APACHE', 'LICENSE-UNICODE']
-
 [crate.unicode-linebreak]
 allow_first_party_usage = false
 build_script_outputs = [ "tables.rs" ]
