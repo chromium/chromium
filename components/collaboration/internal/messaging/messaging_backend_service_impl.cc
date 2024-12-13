@@ -66,6 +66,37 @@ collaboration_pb::Message CreateTabGroupMessage(
   return message;
 }
 
+collaboration_pb::Message CreateTabMessage(
+    data_sharing::GroupId collaboration_group_id,
+    const tab_groups::SavedTabGroupTab& tab,
+    collaboration_pb::EventType event_type,
+    DirtyType dirty_type) {
+  collaboration_pb::Message message =
+      CreateMessage(collaboration_group_id, event_type, dirty_type,
+                    event_type == collaboration_pb::TAB_ADDED
+                        ? tab.creation_time_windows_epoch_micros()
+                        : tab.update_time_windows_epoch_micros());
+  message.mutable_tab_data()->set_sync_tab_id(
+      tab.saved_tab_guid().AsLowercaseString());
+  message.mutable_tab_data()->set_sync_tab_group_id(
+      tab.saved_group_guid().AsLowercaseString());
+  message.mutable_tab_data()->set_last_url(tab.url().spec());
+  switch (event_type) {
+    case collaboration_pb::TAB_ADDED:
+      message.set_triggering_user_gaia_id(
+          tab.shared_attribution().created_by.ToString());
+      break;
+    case collaboration_pb::TAB_UPDATED:
+    case collaboration_pb::TAB_REMOVED:
+      message.set_triggering_user_gaia_id(
+          tab.shared_attribution().updated_by.ToString());
+      break;
+    default:
+      break;
+  }
+  return message;
+}
+
 CollaborationEvent ToCollaborationEvent(
     collaboration_pb::EventType event_type) {
   switch (event_type) {
@@ -335,13 +366,49 @@ void MessagingBackendServiceImpl::OnTabGroupColorUpdated(
 }
 
 void MessagingBackendServiceImpl::OnTabAdded(
-    const tab_groups::SavedTabGroupTab& added_tab) {}
+    const tab_groups::SavedTabGroupTab& added_tab) {
+  std::optional<data_sharing::GroupId> collaboration_group_id =
+      GetCollaborationGroupIdForTab(added_tab);
+  if (!collaboration_group_id) {
+    // Unable to find collaboration ID from tab.
+    return;
+  }
+
+  collaboration_pb::Message message =
+      CreateTabMessage(*collaboration_group_id, added_tab,
+                       collaboration_pb::TAB_ADDED, DirtyType::kDotAndChip);
+  store_->AddMessage(message);
+}
 
 void MessagingBackendServiceImpl::OnTabRemoved(
-    tab_groups::SavedTabGroupTab removed_tab) {}
+    tab_groups::SavedTabGroupTab removed_tab) {
+  std::optional<data_sharing::GroupId> collaboration_group_id =
+      GetCollaborationGroupIdForTab(removed_tab);
+  if (!collaboration_group_id) {
+    // Unable to find collaboration ID from tab.
+    return;
+  }
+
+  collaboration_pb::Message message =
+      CreateTabMessage(*collaboration_group_id, removed_tab,
+                       collaboration_pb::TAB_REMOVED, DirtyType::kNone);
+  store_->AddMessage(message);
+}
 
 void MessagingBackendServiceImpl::OnTabUpdated(
-    const tab_groups::SavedTabGroupTab& updated_tab) {}
+    const tab_groups::SavedTabGroupTab& updated_tab) {
+  std::optional<data_sharing::GroupId> collaboration_group_id =
+      GetCollaborationGroupIdForTab(updated_tab);
+  if (!collaboration_group_id) {
+    // Unable to find collaboration ID from tab.
+    return;
+  }
+
+  collaboration_pb::Message message =
+      CreateTabMessage(*collaboration_group_id, updated_tab,
+                       collaboration_pb::TAB_UPDATED, DirtyType::kDotAndChip);
+  store_->AddMessage(message);
+}
 
 void MessagingBackendServiceImpl::OnTabSelected(
     std::optional<tab_groups::SavedTabGroupTab> selected_tab) {}
@@ -576,6 +643,18 @@ MessagingBackendServiceImpl::GetDescriptionTextForActivityLogItem(
     case CollaborationEvent::UNDEFINED:
       return u"";  // Not defined.
   }
+}
+
+std::optional<data_sharing::GroupId>
+MessagingBackendServiceImpl::GetCollaborationGroupIdForTab(
+    const tab_groups::SavedTabGroupTab& tab) {
+  // Find tab group using the tab group ID and look up collaboration group ID.
+  std::optional<tab_groups::SavedTabGroup> tab_group =
+      tab_group_sync_service_->GetGroup(tab.saved_group_guid());
+  if (!tab_group) {
+    return std::nullopt;
+  }
+  return GroupIdForTabGroup(*tab_group);
 }
 
 }  // namespace collaboration::messaging

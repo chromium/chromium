@@ -18,6 +18,7 @@
 #include "components/collaboration/internal/messaging/tab_group_change_notifier.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/test_support/mock_data_sharing_service.h"
+#include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_color.h"
@@ -86,8 +87,9 @@ tab_groups::SavedTabGroup CreateSharedTabGroup(
   tabs.emplace_back(tab1);
   tabs.emplace_back(tab2);
 
-  tab_groups::SavedTabGroup tab_group(
-      u"Tab Group Title", tab_groups::TabGroupColorId::kOrange, tabs);
+  tab_groups::SavedTabGroup tab_group(u"Tab Group Title",
+                                      tab_groups::TabGroupColorId::kOrange,
+                                      tabs, std::nullopt, tab_group_sync_id);
   tab_group.SetCollaborationId(
       tab_groups::CollaborationId(collaboration_group_id.value()));
   return tab_group;
@@ -644,6 +646,84 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabGroupEvents) {
             activity_log[0].collaboration_event);
   EXPECT_EQ(CollaborationEvent::TAB_GROUP_COLOR_UPDATED,
             activity_log[1].collaboration_event);
+}
+
+TEST_F(MessagingBackendServiceImplTest, TestStoringTabEvents) {
+  CreateAndInitializeService();
+
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+  base::Time now = base::Time::Now();
+  GaiaId gaia1("abc");
+  GaiaId gaia2("def");
+
+  // Always refers to the latest message that has been added to storage.
+  collaboration_pb::Message message;
+  EXPECT_CALL(*unowned_messaging_backend_store_, AddMessage(_))
+      .WillRepeatedly(SaveArg<0>(&message));
+
+  tab_groups::SavedTabGroup tab_group =
+      CreateSharedTabGroup(collaboration_group_id);
+  base::Uuid tab1_sync_id = tab_group.saved_tabs().at(0).saved_tab_guid();
+  tab_groups::SavedTabGroupTab* tab1 = tab_group.GetTab(tab1_sync_id);
+  // Make creation and update GaiaId unique.
+  tab1->SetCreatedByAttribution(gaia1);
+  tab1->SetUpdatedByAttribution(gaia2);
+  // Make creation and update time unique.
+  tab1->SetUpdateTimeWindowsEpochMicros(now + base::Seconds(1));
+
+  base::Uuid tab2_sync_id = tab_group.saved_tabs().at(1).saved_tab_guid();
+  tab_groups::SavedTabGroupTab* tab2 = tab_group.GetTab(tab2_sync_id);
+  // Make creation and update GaiaId unique.
+  tab2->SetCreatedByAttribution(gaia1);
+  tab2->SetUpdatedByAttribution(gaia2);
+  // Make creation and update time unique.
+  tab2->SetUpdateTimeWindowsEpochMicros(now + base::Seconds(1));
+
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
+      .WillRepeatedly(Return(tab_group));
+
+  tg_notifier_observer_->OnTabAdded(*tab1);
+  VerifyGenericMessageData(message, collaboration_group_id.value(),
+                           collaboration_pb::TAB_ADDED, DirtyType::kDotAndChip,
+                           now.ToTimeT());
+  EXPECT_EQ(gaia1, message.triggering_user_gaia_id());
+  EXPECT_EQ(tab1->saved_tab_guid().AsLowercaseString(),
+            message.tab_data().sync_tab_id());
+  EXPECT_EQ(tab1->saved_group_guid().AsLowercaseString(),
+            message.tab_data().sync_tab_group_id());
+  EXPECT_EQ(tab_group.saved_guid().AsLowercaseString(),
+            message.tab_data().sync_tab_group_id());
+  EXPECT_EQ(tab1->creation_time_windows_epoch_micros().ToTimeT(),
+            message.event_timestamp());
+
+  tg_notifier_observer_->OnTabUpdated(*tab2);
+  VerifyGenericMessageData(message, collaboration_group_id.value(),
+                           collaboration_pb::TAB_UPDATED,
+                           DirtyType::kDotAndChip, now.ToTimeT());
+  EXPECT_EQ(gaia2, message.triggering_user_gaia_id());
+  EXPECT_EQ(tab2->saved_tab_guid().AsLowercaseString(),
+            message.tab_data().sync_tab_id());
+  EXPECT_EQ(tab2->saved_group_guid().AsLowercaseString(),
+            message.tab_data().sync_tab_group_id());
+  EXPECT_EQ(tab_group.saved_guid().AsLowercaseString(),
+            message.tab_data().sync_tab_group_id());
+  EXPECT_EQ(tab2->update_time_windows_epoch_micros().ToTimeT(),
+            message.event_timestamp());
+
+  tg_notifier_observer_->OnTabRemoved(*tab2);
+  VerifyGenericMessageData(message, collaboration_group_id.value(),
+                           collaboration_pb::TAB_REMOVED, DirtyType::kNone,
+                           now.ToTimeT());
+  EXPECT_EQ(gaia2, message.triggering_user_gaia_id());
+  EXPECT_EQ(tab2->saved_tab_guid().AsLowercaseString(),
+            message.tab_data().sync_tab_id());
+  EXPECT_EQ(tab2->saved_group_guid().AsLowercaseString(),
+            message.tab_data().sync_tab_group_id());
+  EXPECT_EQ(tab_group.saved_guid().AsLowercaseString(),
+            message.tab_data().sync_tab_group_id());
+  EXPECT_EQ(tab2->update_time_windows_epoch_micros().ToTimeT(),
+            message.event_timestamp());
 }
 
 }  // namespace collaboration::messaging

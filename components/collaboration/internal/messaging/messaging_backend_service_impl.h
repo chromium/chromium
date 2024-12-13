@@ -116,6 +116,11 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
   std::u16string GetDescriptionTextForActivityLogItem(
       const collaboration_pb::Message& message);
 
+  // Looks for the related collaboration GroupId for the given tab, using the
+  // information available in the tab group sync service.
+  std::optional<data_sharing::GroupId> GetCollaborationGroupIdForTab(
+      const tab_groups::SavedTabGroupTab& tab);
+
   // Provides functionality to go from observing the TabGroupSyncService to
   // a delta based observer API.
   std::unique_ptr<TabGroupChangeNotifier> tab_group_change_notifier_;
