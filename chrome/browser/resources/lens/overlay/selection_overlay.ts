@@ -722,13 +722,13 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.dispatchEvent(
         new CustomEvent('selection-started', {bubbles: true, composed: true}));
 
-    if (this.$.textSelectionLayer.handleGestureStart(this.currentGesture)) {
+    if (this.$.postSelectionRenderer.handleGestureStart(this.currentGesture)) {
+      this.draggingRespondent = DragFeature.POST_SELECTION;
+    } else if (this.$.textSelectionLayer.handleGestureStart(
+                   this.currentGesture)) {
       // Text is responding to this sequence of gestures.
       this.draggingRespondent = DragFeature.TEXT;
       this.$.postSelectionRenderer.clearSelection();
-    } else if (this.$.postSelectionRenderer.handleGestureStart(
-                   this.currentGesture)) {
-      this.draggingRespondent = DragFeature.POST_SELECTION;
     }
   }
 
