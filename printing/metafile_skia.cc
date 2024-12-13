@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "printing/metafile_skia.h"
 
 #include <algorithm>
@@ -15,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
@@ -379,9 +375,11 @@ bool MetafileSkia::SaveTo(base::File* file) const {
       break;
     }
     DCHECK_GE(buffer.size(), read_size);
-    if (!file->WriteAtCurrentPosAndCheck(base::span(&buffer[0], read_size))) {
-      return false;
-    }
+    UNSAFE_TODO({
+      if (!file->WriteAtCurrentPosAndCheck(base::span(&buffer[0], read_size))) {
+        return false;
+      }
+    });
     if (is_at_end) {
       break;
     }

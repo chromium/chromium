@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "printing/printing_context_win.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -130,16 +126,21 @@ class MockPrintingContextWin : public PrintingContextSystemDialogWin {
     DEVNAMES* dev_names = reinterpret_cast<DEVNAMES*>(dev_names_ptr);
     dev_names->wDefault = 1;
     dev_names->wDriverOffset = sizeof(DEVNAMES) / sizeof(wchar_t);
-    memcpy(reinterpret_cast<uint8_t*>(dev_names_ptr) + dev_names->wDriverOffset,
-           info_2.get()->pDriverName, driver_size);
-    dev_names->wDeviceOffset = base::checked_cast<WORD>(
-        dev_names->wDriverOffset + driver_size / sizeof(wchar_t));
-    memcpy(reinterpret_cast<uint8_t*>(dev_names_ptr) + dev_names->wDeviceOffset,
-           info_2.get()->pPrinterName, printer_size);
-    dev_names->wOutputOffset = base::checked_cast<WORD>(
-        dev_names->wDeviceOffset + printer_size / sizeof(wchar_t));
-    memcpy(reinterpret_cast<uint8_t*>(dev_names_ptr) + dev_names->wOutputOffset,
-           info_2.get()->pPortName, port_size);
+    UNSAFE_TODO({
+      memcpy(
+          reinterpret_cast<uint8_t*>(dev_names_ptr) + dev_names->wDriverOffset,
+          info_2.get()->pDriverName, driver_size);
+      dev_names->wDeviceOffset = base::checked_cast<WORD>(
+          dev_names->wDriverOffset + driver_size / sizeof(wchar_t));
+      memcpy(
+          reinterpret_cast<uint8_t*>(dev_names_ptr) + dev_names->wDeviceOffset,
+          info_2.get()->pPrinterName, printer_size);
+      dev_names->wOutputOffset = base::checked_cast<WORD>(
+          dev_names->wDeviceOffset + printer_size / sizeof(wchar_t));
+      memcpy(
+          reinterpret_cast<uint8_t*>(dev_names_ptr) + dev_names->wOutputOffset,
+          info_2.get()->pPortName, port_size);
+    });
     GlobalUnlock(dev_names_mem.Get());
     dev_names_ptr = nullptr;
 

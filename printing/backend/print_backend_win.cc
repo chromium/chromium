@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "printing/backend/print_backend_win.h"
 
 #include <objidl.h>
@@ -18,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
@@ -358,20 +354,22 @@ mojom::ResultCode PrintBackendWin::EnumeratePrinters(
 
   const auto* printer_info =
       reinterpret_cast<PRINTER_INFO_4*>(printer_info_buffer.data());
-  for (DWORD index = 0; index < count_returned; index++) {
-    ScopedPrinterHandle printer;
-    if (!printer.OpenPrinterWithName(printer_info[index].pPrinterName)) {
-      continue;
-    }
+  UNSAFE_TODO({
+    for (DWORD index = 0; index < count_returned; index++) {
+      ScopedPrinterHandle printer;
+      if (!printer.OpenPrinterWithName(printer_info[index].pPrinterName)) {
+        continue;
+      }
 
-    std::optional<PrinterBasicInfo> info = GetBasicPrinterInfo(printer.Get());
-    if (!info.has_value()) {
-      continue;
-    }
+      std::optional<PrinterBasicInfo> info = GetBasicPrinterInfo(printer.Get());
+      if (!info.has_value()) {
+        continue;
+      }
 
-    info.value().is_default = (info.value().printer_name == default_printer);
-    printer_list.push_back(info.value());
-  }
+      info.value().is_default = (info.value().printer_name == default_printer);
+      printer_list.push_back(info.value());
+    }
+  });
 
   VLOG(1) << "Found " << printer_list.size() << " printers";
   return mojom::ResultCode::kSuccess;

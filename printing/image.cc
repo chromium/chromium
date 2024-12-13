@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "printing/image.h"
 
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 
 namespace printing {
 
@@ -33,8 +29,10 @@ uint32_t Image::pixel_at(int x, int y) const {
   CHECK_GE(y, 0);
   CHECK_LT(y, size_.height());
   const uint32_t* data = reinterpret_cast<const uint32_t*>(&*data_.begin());
-  const uint32_t* data_row = data + y * row_length_ / sizeof(uint32_t);
-  return Color(data_row[x]);
+  UNSAFE_TODO({
+    const uint32_t* data_row = data + y * row_length_ / sizeof(uint32_t);
+    return Color(data_row[x]);
+  });
 }
 
 }  // namespace printing
