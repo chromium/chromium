@@ -578,6 +578,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
     const bool show_ai_settings_for_testing =
         optimization_guide::features::kShowAiSettingsForTesting.Get();
 
+    html_source->AddBoolean("showAiSettingsForTesting",
+                            show_ai_settings_for_testing);
+
     const bool use_is_setting_visible = base::FeatureList::IsEnabled(
         optimization_guide::features::kAiSettingsPageEnterpriseDisabledUi);
 

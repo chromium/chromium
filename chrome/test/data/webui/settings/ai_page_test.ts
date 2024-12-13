@@ -279,23 +279,71 @@ suite('ExperimentalAdvancedPage', function() {
         routes.AI_TAB_ORGANIZATION, Router.getInstance().getCurrentRoute());
   });
 
-  test('AutofillAiRow', async () => {
+  test('autofillAiRowVisible', async () => {
+    // The AutofillAI row should be visible if autofillAiEnabled is true.
     loadTimeData.overrideValues({
       autofillAiEnabled: true,
+      showAiSettingsForTesting: false,
     });
     resetRouterForTesting();
+
     await createPage();
 
     const autofillAiRow =
         page.shadowRoot!.querySelector<HTMLElement>('#autofillAiRowV2');
     assertTrue(!!autofillAiRow);
     assertTrue(isVisible(autofillAiRow));
+  });
 
+  test('autofillAiRowVisibleForTesting', async () => {
+    // The AutofillAI row should be visible if showAiSettingsForTesting is true.
+    loadTimeData.overrideValues({
+      autofillAiEnabled: false,
+      showAiSettingsForTesting: true,
+    });
+    resetRouterForTesting();
+
+    await createPage();
+
+    const autofillAiRow =
+        page.shadowRoot!.querySelector<HTMLElement>('#autofillAiRowV2');
+    assertTrue(!!autofillAiRow);
+    assertTrue(isVisible(autofillAiRow));
+  });
+
+  test('autofillAiRowNotVisible', async () => {
+    // The AutofillAI row should not be visible if autofillAiEnabled and
+    // showAiSettingsForTesting are false.
+    loadTimeData.overrideValues({
+      autofillAiEnabled: false,
+      showAiSettingsForTesting: false,
+    });
+    resetRouterForTesting();
+
+    await createPage();
+
+    const autofillAiRow =
+        page.shadowRoot!.querySelector<HTMLElement>('#autofillAiRowV2');
+    assertTrue(!!autofillAiRow);
+    assertFalse(isVisible(autofillAiRow));
+  });
+
+  test('autofillAiRowClick', async () => {
+    loadTimeData.overrideValues({
+      autofillAiEnabled: true,
+    });
+    resetRouterForTesting();
+
+    await createPage();
+
+    const autofillAiRow =
+        page.shadowRoot!.querySelector<HTMLElement>('#autofillAiRowV2');
+    assertTrue(!!autofillAiRow);
     autofillAiRow.click();
+
     await verifyFeatureInteractionMetrics(
         AiPageInteractions.AUTOFILL_AI_CLICK,
         'Settings.AiPage.AutofillAIEntryPointClick');
-
     assertEquals(routes.AUTOFILL_AI, Router.getInstance().getCurrentRoute());
   });
 

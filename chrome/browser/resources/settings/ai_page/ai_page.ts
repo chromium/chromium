@@ -161,10 +161,19 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   }
 
   private async setShowAutofillAiControl_() {
+    if (loadTimeData.getBoolean('showAiSettingsForTesting')) {
+      this.showAutofillAIControl_ = true;
+      return;
+    }
+
+    if (!loadTimeData.getBoolean('autofillAiEnabled')) {
+      this.showAutofillAIControl_ = false;
+      return;
+    }
+
     this.showAutofillAIControl_ =
-        loadTimeData.getBoolean('autofillAiEnabled') &&
-        (await UserAnnotationsManagerProxyImpl.getInstance().isUserEligible() ||
-         await UserAnnotationsManagerProxyImpl.getInstance().hasEntries());
+        await UserAnnotationsManagerProxyImpl.getInstance().isUserEligible() ||
+        await UserAnnotationsManagerProxyImpl.getInstance().hasEntries();
   }
 
   private onHistorySearchRowClick_() {
