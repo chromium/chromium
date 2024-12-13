@@ -58,7 +58,10 @@ const char16_t kOfflineIconId[] = u"offlineIcon";
 // Returns false if |profile| is nullptr.
 //
 // Is main WebApp System allowed (WebAppProvider exists):
-bool AreWebAppsEnabled(Profile* profile);
+// TODO(crbug.com/382108359): Remove exclude_original_profile argument when
+// incognito profiles return 'false'.
+bool AreWebAppsEnabled(Profile* profile, bool exclude_original_profile = false);
+
 // Is user allowed to install web apps from UI:
 bool AreWebAppsUserInstallable(Profile* profile);
 

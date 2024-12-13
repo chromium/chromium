@@ -274,15 +274,21 @@ constexpr base::FilePath::CharType kManifestResourcesDirectoryName[] =
 constexpr base::FilePath::CharType kTempDirectoryName[] =
     FILE_PATH_LITERAL("Temp");
 
-bool AreWebAppsEnabled(Profile* profile) {
+bool AreWebAppsEnabled(Profile* profile, bool exclude_original_profile) {
   if (!profile || profile->IsSystemProfile()) {
     return false;
   }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (exclude_original_profile) {
+    return !profile->IsOffTheRecord();
+  }
+  DCHECK(!profile->GetOriginalProfile()->IsOffTheRecord());
+  return true;
+#else
   const Profile* original_profile = profile->GetOriginalProfile();
   DCHECK(!original_profile->IsOffTheRecord());
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Web Apps should not be installed to the ChromeOS system profiles except the
   // lock screen app profile.
   if (!ash::ProfileHelper::IsUserProfile(original_profile) &&
@@ -298,9 +304,9 @@ bool AreWebAppsEnabled(Profile* profile) {
       return false;
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return true;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool AreWebAppsUserInstallable(Profile* profile) {
