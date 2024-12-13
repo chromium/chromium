@@ -512,6 +512,12 @@
       name: "AutoPictureInPictureVideoHeuristics",
       status: "experimental",
     },
+    // When enabled, clicking on canvas element will not update the selection.
+    // See crbug.com/40130450.
+    {
+      name: "AvoidSelectionChangeOnCanvasClick",
+      status: "stable"
+    },
     // When enabled, enforces new interoperable semantics for 3D transforms.
     // See crbug.com/1008483.
     {

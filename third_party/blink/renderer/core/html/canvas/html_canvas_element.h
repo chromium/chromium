@@ -325,6 +325,8 @@ class CORE_EXPORT HTMLCanvasElement final
 
   bool IsPlaceholder() const override { return IsOffscreenCanvasRegistered(); }
 
+  bool CanStartSelection() const override;
+
   bool ShouldDisableAccelerationBecauseOfReadback() const;
 
  protected:

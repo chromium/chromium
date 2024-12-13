@@ -1437,6 +1437,13 @@ bool HTMLCanvasElement::ShouldAccelerate() const {
   return context_provider_wrapper->Utils()->Accelerated2DCanvasFeatureEnabled();
 }
 
+bool HTMLCanvasElement::CanStartSelection() const {
+  if (RuntimeEnabledFeatures::AvoidSelectionChangeOnCanvasClickEnabled()) {
+    return false;
+  }
+  return HTMLElement::CanStartSelection();
+}
+
 bool HTMLCanvasElement::ShouldDisableAccelerationBecauseOfReadback() const {
   return DisabledAccelerationCounterSupplement::From(GetDocument())
       .ShouldDisableAcceleration();
