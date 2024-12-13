@@ -46,6 +46,10 @@ def __clang_link(ctx, cmd):
     if args[0] == "/bin/sh":
         args = args[2].split(" ")
     for i, arg in enumerate(args):
+        if i == 0 and not "python3" in arg:
+            clang_base = ctx.fs.canonpath(path.dir(path.dir(arg)))
+            inputs.append(clang_base + ":link")
+            continue
         if i == 1:
             driver = ctx.fs.canonpath(arg)  # driver script
             if ctx.fs.exists(driver):
@@ -249,6 +253,23 @@ def __rules(ctx):
         {
             "name": "clang/solink",
             "action": "(.*_)?solink",
+            "handler": "clang_link",
+            "exclude_input_patterns": [
+                "*.cc",
+                "*.h",
+                "*.js",
+                "*.pak",
+                "*.py",
+                "*.stamp",
+            ],
+            "remote": config.get(ctx, "remote-link"),
+            "canonicalize_dir": True,
+            "platform_ref": "large",
+            "timeout": "2m",
+        },
+        {
+            "name": "clang/solink_module",
+            "action": "(.*)?solink_module",
             "handler": "clang_link",
             "exclude_input_patterns": [
                 "*.cc",
