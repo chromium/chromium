@@ -49,7 +49,7 @@ export declare interface HostRequestTypes {
     },
     response: {
       // Undefined on failure.
-      tabData?: TabData,
+      tabData?: TabDataPrivate,
     },
   };
   glicBrowserClosePanel: {
@@ -66,7 +66,7 @@ export declare interface HostRequestTypes {
     },
     response: {
       // Present on success.
-      tabContextResult?: TabContextResult,
+      tabContextResult?: TabContextResultPrivate,
       // The error reason. Should be present when `tabContextResult` is not, but
       // might still be undefined for some older chrome versions.
       error?: GetTabContextErrorReason,
@@ -96,4 +96,40 @@ export declare interface WebClientRequestTypes {
     request: {},
     response: void,
   };
+}
+
+//
+// Types used in messages that are not exposed directly to the API.
+//
+
+// TabData format for postMessage transport.
+export declare interface TabDataPrivate extends Omit<TabData, 'favicon'> {
+  rawFavicon?: RgbaImage;
+}
+
+// A bitmap, used to store data from a BitmapN32 without conversion.
+export declare interface RgbaImage {
+  dataRGBA: ArrayBuffer;
+  width: number;
+  height: number;
+  alphaType: ImageAlphaType;
+  colorType: ImageColorType;
+}
+
+export enum ImageAlphaType {
+  // RGB values are unmodified.
+  UNPREMUL = 0,
+  // RGB values have been premultiplied by alpha.
+  PREMUL = 1,
+}
+
+// Chromium currently only uses a single color type for BitmapN32.
+export enum ImageColorType {
+  BGRA = 0,
+}
+
+// TabContextResult data for postMessage transport.
+export declare interface TabContextResultPrivate extends
+    Omit<TabContextResult, 'tabData'> {
+  tabData: TabDataPrivate;
 }

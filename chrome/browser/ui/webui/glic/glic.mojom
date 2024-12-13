@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/version.mojom";
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "skia/public/mojom/bitmap.mojom";
 
 // Factory for PageHandler used in chrome://glic.
 interface PageHandlerFactory {
@@ -112,6 +113,8 @@ struct TabData {
   // The title of the loaded page. Returned if the page is loaded enough for it
   // to be available. It may be empty if the page did not define a title.
   string? title;
+  // The favicon for the tab. Null when not available.
+  skia.mojom.BitmapN32? favicon;
 };
 
 // Annotates an image, providing security relevant information about the origins

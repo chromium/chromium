@@ -6,7 +6,9 @@ import type {ErrorWithReason, GlicBrowserHost, GlicHostRegistry, GlicWebClient, 
 import {GetTabContextErrorReason} from '../glic_api/glic_api.js';
 
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
-import type {WebClientRequestTypes} from './request_types.js';
+import type {RgbaImage, TabContextResultPrivate, TabDataPrivate, WebClientRequestTypes} from './request_types.js';
+import {ImageAlphaType, ImageColorType} from './request_types.js';
+
 
 // Web client side of the Glic API.
 // Communicates with the Chrome-WebUI-side in glic_api_host.ts
@@ -114,7 +116,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     if (!result.tabData) {
       throw new Error('createTab: failed');
     }
-    return result.tabData;
+    return convertTabDataFromPrivate(result.tabData);
   }
 
   closePanel(): Promise<void> {
@@ -132,7 +134,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
           'getContext failed',
           context.error || GetTabContextErrorReason.UNKNOWN);
     }
-    return context.tabContextResult;
+    return convertTabContextResultFromPrivate(context.tabContextResult);
   }
 
   async resizeWindow(width: number, height: number) {
@@ -169,4 +171,67 @@ class ErrorWithReasonImpl<T> extends Error implements ErrorWithReason<T> {
   constructor(message: string, public reason: T) {
     super(message);
   }
+}
+
+// Converts an RgbaImage into a Blob through the canvas API. Output is a PNG.
+async function rgbaImageToBlob(image: RgbaImage): Promise<Blob> {
+  const canvas = document.createElement('canvas');
+  canvas.width = image.width;
+  canvas.height = image.height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    throw Error('getContext error');
+  }
+  if (image.colorType !== ImageColorType.BGRA) {
+    throw Error('unsupported colorType');
+  }
+  // Note that for either alphaType, we swap bytes from BGRA to RGBA order.
+  const pixelData = new Uint8ClampedArray(image.dataRGBA);
+  if (image.alphaType === ImageAlphaType.PREMUL) {
+    for (let i = 0; i + 3 < pixelData.length; i += 4) {
+      const alphaInt = pixelData[i + 3]!;
+      if (alphaInt === 0) {
+        // Don't divide by zero. In this case, RGB should already be zero, so
+        // there's no purpose in swapping bytes.
+        continue;
+      }
+      const alpha = alphaInt / 255.0;
+      pixelData[i] = pixelData[i + 2]! / alpha;
+      pixelData[i + 1] = pixelData[i + 1]! / alpha;
+      pixelData[i + 2] = pixelData[i]! / alpha;
+    }
+  } else {
+    for (let i = 0; i + 3 < pixelData.length; i += 4) {
+      pixelData[i] = pixelData[i + 2]!;
+      pixelData[i + 2] = pixelData[i]!;
+    }
+  }
+  ctx.putImageData(new ImageData(pixelData, image.width, image.height), 0, 0);
+  return new Promise((resolve) => {
+    canvas.toBlob((result) => {
+      if (!result) {
+        throw Error('toBlob failed');
+      }
+      resolve(result);
+    });
+  });
+}
+
+function convertTabDataFromPrivate(data: TabDataPrivate): TabData {
+  const result = Object.assign({}, data) as TabData;
+  if (data.rawFavicon) {
+    const rawFavicon = data.rawFavicon;
+    delete (result as any).rawFavicon;
+    result.favicon = () => rgbaImageToBlob(rawFavicon);
+  }
+  return result;
+}
+
+function convertTabContextResultFromPrivate(data: TabContextResultPrivate):
+    TabContextResult {
+  const result = Object.assign({}, data) as TabContextResult;
+  if (data.tabData) {
+    result.tabData = convertTabDataFromPrivate(data.tabData);
+  }
+  return result;
 }

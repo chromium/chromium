@@ -45,6 +45,7 @@ source_set("impl") {
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/common",
+    "//components/favicon/content:content",
     "//components/guest_view/browser",
     "//components/sessions",
     "//url",

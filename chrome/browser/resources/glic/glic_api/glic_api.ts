@@ -147,6 +147,8 @@ export declare interface TabData {
   // The title of the loaded page. Returned if the page is loaded enough for it
   // to be available. It may be empty if the page did not define a title.
   title?: string;
+  // The favicon for the tab. Provided when available.
+  favicon?(): Promise<Blob|undefined>;
 }
 
 /**

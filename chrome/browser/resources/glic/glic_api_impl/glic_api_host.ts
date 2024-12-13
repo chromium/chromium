@@ -9,6 +9,9 @@
 // TODO(crbug.com/379677413): Add tests for the API host.
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
+import type {BitmapN32} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
+import {AlphaType} from '//resources/mojo/skia/public/mojom/image_info.mojom-webui.js';
 import type {Origin} from '//resources/mojo/url/mojom/origin.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
@@ -19,8 +22,8 @@ import type {Screenshot, WebPageData} from '../glic_api/glic_api.js';
 import {GetTabContextErrorReason} from '../glic_api/glic_api.js';
 import type {PostMessageRequestHandler} from '../glic_api/post_message_transport.js';
 import {PostMessageRequestReceiver, PostMessageRequestSender} from '../glic_api/post_message_transport.js';
-import type {HostRequestTypes} from '../glic_api/request_types.js';
-
+import type {HostRequestTypes, RgbaImage} from '../glic_api/request_types.js';
+import {ImageAlphaType, ImageColorType} from '../glic_api/request_types.js';
 
 // Turn everything except void into a promise.
 type Promisify<T> = T extends void ? void : Promise<T>;
@@ -131,11 +134,20 @@ class HostMessageHandler implements HostMessageHandlerInterface {
       return {error};
     }
     const tabData = tabContext.tabData;
+    let rawFavicon: RgbaImage|undefined = undefined;
+    if (tabData.favicon) {
+      rawFavicon = bitmapN32ToRGBAImage(tabData.favicon);
+      if (rawFavicon) {
+        transfer.push(rawFavicon.dataRGBA);
+      }
+    }
+
     const tabDataResult = {
       tabId: tabIdToClient(tabData.tabId),
       windowId: windowIdToClient(tabData.windowId),
       url: urlToClient(tabData.url),
       title: optionalToClient(tabData.title),
+      rawFavicon,
     };
     const webPageData = tabContext.webPageData;
     let webPageDataResult: WebPageData|undefined = undefined;
@@ -328,4 +340,35 @@ function originToClient(origin: Origin): string {
     return `${originBase}:${origin.port}`;
   }
   return originBase;
+}
+
+function getArrayBufferFromBigBuffer(bigBuffer: BigBuffer): ArrayBuffer|
+    undefined {
+  if (bigBuffer.bytes !== undefined) {
+    return new Uint8Array(bigBuffer.bytes).buffer;
+  }
+  return bigBuffer.sharedMemory?.bufferHandle
+      .mapBuffer(0, bigBuffer.sharedMemory.size)
+      .buffer;
+}
+
+function bitmapN32ToRGBAImage(bitmap: BitmapN32): RgbaImage|undefined {
+  const bytes = getArrayBufferFromBigBuffer(bitmap.pixelData);
+  if (!bytes) {
+    return undefined;
+  }
+  // We don't transmit ColorType over mojo, because it's determined by the
+  // endianness of the platform. Chromium only supports little endian, which
+  // maps to BGRA. See third_party/skia/include/core/SkColorType.h.
+  const colorType = ImageColorType.BGRA;
+
+  return {
+    width: bitmap.imageInfo.width,
+    height: bitmap.imageInfo.height,
+    dataRGBA: bytes,
+    alphaType: bitmap.imageInfo.alphaType === AlphaType.PREMUL ?
+        ImageAlphaType.PREMUL :
+        ImageAlphaType.UNPREMUL,
+    colorType,
+  };
 }

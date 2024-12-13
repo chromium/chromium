@@ -9,6 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/ui/webui/glic/glic.mojom.h"
+#include "components/favicon/content/content_favicon_driver.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -18,13 +19,23 @@
 namespace glic {
 
 namespace {
-glic::mojom::TabDataPtr GetTabData(content::WebContents* web_contents) {
+
+glic::mojom::TabDataPtr GetTabData(content::WebContents& web_contents) {
+  SkBitmap favicon;
+  auto* favicon_driver =
+      favicon::ContentFaviconDriver::FromWebContents(&web_contents);
+  if (favicon_driver) {
+    if (favicon_driver->FaviconIsValid()) {
+      favicon = favicon_driver->GetFavicon().AsBitmap();
+    }
+  }
   return glic::mojom::TabData::New(
-      sessions::SessionTabHelper::IdForTab(web_contents).id(),
-      sessions::SessionTabHelper::IdForWindowContainingTab(web_contents).id(),
-      web_contents->GetLastCommittedURL(),
-      base::UTF16ToUTF8(web_contents->GetTitle()));
+      sessions::SessionTabHelper::IdForTab(&web_contents).id(),
+      sessions::SessionTabHelper::IdForWindowContainingTab(&web_contents).id(),
+      web_contents.GetLastCommittedURL(),
+      base::UTF16ToUTF8(web_contents.GetTitle()), favicon);
 }
+
 }  // namespace
 
 GlicPageContextFetcher::GlicPageContextFetcher() = default;
@@ -132,7 +143,7 @@ void GlicPageContextFetcher::RunCallbackIfComplete() {
   if (web_contents() && web_contents()->GetPrimaryMainFrame() &&
       !primary_page_changed_) {
     auto tab_context = mojom::TabContext::New();
-    tab_context->tab_data = GetTabData(web_contents());
+    tab_context->tab_data = GetTabData(*web_contents());
     // TODO(crbug.com/379773651): Clean up logspam when it's no longer useful.
     LOG(WARNING) << "GlicPageContextFetcher: Returning context for "
                  << tab_context->tab_data->url;
