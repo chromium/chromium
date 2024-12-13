@@ -1192,11 +1192,6 @@ enum class BlockedURLReason {
 bool IsUnusedAndTiedToBrowsingInstance(
     RenderProcessHost* host,
     const IsolationContext& isolation_context) {
-  if (!base::FeatureList::IsEnabled(
-          features::kReuseInitialRenderFrameHostForWebUI)) {
-    return false;
-  }
-
   if (!host->IsUnused()) {
     return false;
   }

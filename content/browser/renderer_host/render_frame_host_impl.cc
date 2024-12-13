@@ -12171,15 +12171,12 @@ void RenderFrameHostImpl::SetWebUI(NavigationRequest& request) {
   // navigation. In that case, the initial RFH needs to lock its process now and
   // also mark the process as used. The AllowBindings() call below requires that
   // the process is properly locked to WebUI.
-  if (base::FeatureList::IsEnabled(
-          features::kReuseInitialRenderFrameHostForWebUI)) {
-    if (!GetSiteInstance()->HasSite()) {
-      // WebUI URLs should also require assigning a site.
-      CHECK(SiteInstanceImpl::ShouldAssignSiteForUrlInfo(request.GetUrlInfo()));
-      GetSiteInstance()->ConvertToDefaultOrSetSite(request.GetUrlInfo());
-    }
-    GetProcess()->SetIsUsed();
+  if (!GetSiteInstance()->HasSite()) {
+    // WebUI URLs should also require assigning a site.
+    CHECK(SiteInstanceImpl::ShouldAssignSiteForUrlInfo(request.GetUrlInfo()));
+    GetSiteInstance()->ConvertToDefaultOrSetSite(request.GetUrlInfo());
   }
+  GetProcess()->SetIsUsed();
 
   WebUI::TypeID new_web_ui_type =
       WebUIControllerFactoryRegistry::GetInstance()->GetWebUIType(

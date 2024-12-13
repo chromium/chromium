@@ -420,14 +420,6 @@ BASE_FEATURE(kReloadHiddenTabsWithCrashedSubframes,
 #endif
 );
 
-// When enabled, allow reusing an initial RenderFrameHost with an unused process
-// for a subsequent WebUI navigation.  WebUI navigations typically trigger a
-// BrowsingInstance swap, but the swap is not necessary in that case: see
-// https://crbug.com/1485586.  This is intended to be used as a kill switch.
-BASE_FEATURE(kReuseInitialRenderFrameHostForWebUI,
-             "ReuseInitialRenderFrameHostForWebUI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Run StableVideoDecoderFactoryProcessService and StableVideoDecoderService on
 // the IO thread in the video decoder process. If it is disabled, they run on
 // the main thread in the process.
