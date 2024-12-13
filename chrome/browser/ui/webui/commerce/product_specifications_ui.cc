@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/commerce/product_specifications_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/commerce/shopping_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
+#include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -111,6 +112,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"seeAll", IDS_COMPARE_SEE_ALL},
       {"suggestedTabs", IDS_COMPARE_SUGGESTIONS_SECTION},
       {"tableFullMessage", IDS_COMPARE_TABLE_FULL_MESSAGE},
+      {"tableListItemTitle", IDS_COMPARE_TABLE_LIST_ITEM_TITLE},
       {"tableMenuA11yLabel", IDS_COMPARE_TABLE_MENU_A11Y_LABEL},
       {"tableNameInputA11yLabel", IDS_COMPARE_TITLE_INPUT_A11Y_LABEL},
       {"thumbsDown", IDS_THUMBS_DOWN},
@@ -133,6 +135,10 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
     email = account_info.email;
   }
   source->AddString("userEmail", email);
+
+  auto plural_string_handler = std::make_unique<PluralStringHandler>();
+  plural_string_handler->AddLocalizedString("numItems", IDS_COMPARE_NUM_ITEMS);
+  web_ui->AddMessageHandler(std::move(plural_string_handler));
 }
 
 void ProductSpecificationsUI::BindInterface(

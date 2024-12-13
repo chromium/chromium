@@ -27,6 +27,7 @@ build_webui("build") {
 
   css_files = [
     "buying_options_section.css",
+    "comparison_table_list_item.css",
     "description_citation.css",
     "description_section.css",
     "disclosure/app.css",
@@ -46,6 +47,8 @@ build_webui("build") {
   non_web_component_files = [
     "buying_options_section.html.ts",
     "buying_options_section.ts",
+    "comparison_table_list_item.html.ts",
+    "comparison_table_list_item.ts",
     "description_citation.html.ts",
     "description_citation.ts",
     "description_section.html.ts",

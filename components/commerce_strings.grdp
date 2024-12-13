@@ -674,6 +674,14 @@
   <message name="IDS_COMPARE_ERROR_DESCRIPTION" desc="The description in the compare UI when data cannot be loaded.">
     Something went wrong. Try again later.
   </message>
+  <message name="IDS_COMPARE_TABLE_LIST_ITEM_TITLE" desc="The title shown for an individual comparison table item in the list of available comparison tables in the compare UI.">
+    Compare <ph name="TABLE_NAME">$1<ex>e-bikes</ex></ph>
+  </message>
+  <message name="IDS_COMPARE_NUM_ITEMS" desc="The number of items in a comparison table, shown beneath the table's name in a list of all comparison tables.">
+    {ITEMS, plural,
+      =1 {{ITEMS} item}
+      other {{ITEMS} items}}
+  </message>
   <!-- For Compare Disclosure -->
   <message name="IDS_COMPARE_DISCLOSURE_TITLE" desc="The text for the title of the Compare first-run experience disclosure bubble.">
     Compare similar products side-by-side
