@@ -3,8 +3,8 @@
 
 <head>
   <meta charset="utf-8">
-  <title> CSS Scroll Snap 2 Test: scroll-start-target*</title>
-  <link rel="help" href="https://drafts.csswg.org/css-scroll-snap-2/#scroll-start-target">
+  <title> CSS Scroll Snap 2 Test: scroll-initial-target*</title>
+  <link rel="help" href="https://drafts.csswg.org/css-scroll-snap-2/#scroll-initial-target">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -34,7 +34,7 @@
     .center {
       top: 60%;
       background-color: purple;
-      scroll-start-target: auto;
+      scroll-initial-target: nearest;
     }
 
     .bottom_left {
@@ -53,10 +53,10 @@
 
     test((t) => {
       assert_equals(scroller.scrollTop, initial_expected_scroll_top,
-          "scroller is vertically scrolled to scroll-start-target");
+          "scroller is vertically scrolled to scroll-initial-target");
       assert_equals(scroller.scrollLeft, initial_expected_scroll_left,
-          "scroller is horizontally scrolled to scroll-start-target");
-    }, "scroll-start-target reflects vertical rtl writing mode.");
+          "scroller is horizontally scrolled to scroll-initial-target");
+    }, "scroll-initial-target reflects vertical rtl writing mode.");
   </script>
 </body>
 

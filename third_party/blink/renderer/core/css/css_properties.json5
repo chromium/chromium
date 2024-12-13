@@ -4808,6 +4808,17 @@
       typedom_types: ["Keyword"],
     },
     {
+      name: "scroll-initial-target",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "keyword",
+      type_name: "EScrollInitialTarget",
+      default_value: "none",
+      keywords: ["none", "nearest"],
+      invalidate: ["layout"],
+      runtime_flag: "CSSScrollInitialTarget",
+    },
+    {
       name: "scroll-margin-block-end",
       property_methods: ["ParseSingleValue"],
       logical_property_group: {
@@ -5097,17 +5108,6 @@
         resolver: "vertical"
       },
       runtime_flag: "CSSScrollStart",
-    },
-    {
-      name: "scroll-start-target",
-      property_methods: ["CSSValueFromComputedStyleInternal"],
-      field_group: "*",
-      field_template: "keyword",
-      type_name: "EScrollStartTarget",
-      default_value: "none",
-      keywords: ["none", "auto"],
-      invalidate: ["layout"],
-      runtime_flag: "CSSScrollStartTarget",
     },
     {
       name: "scroll-timeline-axis",

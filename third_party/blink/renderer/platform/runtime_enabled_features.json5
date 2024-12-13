@@ -1222,6 +1222,11 @@
       status: "stable",
     },
     {
+      // https://drafts.csswg.org/css-scroll-snap-2#scroll-initial-target
+      name: "CSSScrollInitialTarget",
+      status: "experimental",
+    },
+    {
       // https://drafts.csswg.org/css-scroll-snap-2/#scrollsnapchange
       name: "CSSScrollSnapChangeEvent",
       status: "stable",
@@ -1241,11 +1246,6 @@
       // https://drafts.csswg.org/css-scroll-snap-2#scroll-start
       name: "CSSScrollStart",
       status: "test",
-    },
-    {
-      // https://drafts.csswg.org/css-scroll-snap-2#scroll-start-target
-      name: "CSSScrollStartTarget",
-      status: "experimental",
     },
     {
       // Flag for supporting scroll-state() and container-type: scroll-state

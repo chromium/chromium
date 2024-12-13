@@ -3,8 +3,8 @@
 
 <head>
   <meta charset="utf-8">
-  <title> CSS Scroll Snap 2 Test: scroll-start-target*</title>
-  <link rel="help" href="https://drafts.csswg.org/css-scroll-snap-2/#scroll-start-target">
+  <title> CSS Scroll Snap 2 Test: scroll-initial-target*</title>
+  <link rel="help" href="https://drafts.csswg.org/css-scroll-snap-2/#scroll-initial-target">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -38,7 +38,7 @@
     }
 
     .target {
-      scroll-start-target: auto;
+      scroll-initial-target: nearest;
     }
 
     .center {
@@ -68,9 +68,9 @@
       const expected_scroll_left = top_left_box.getBoundingClientRect().width;
 
       assert_approx_equals(scroller.scrollTop, expected_scroll_top, 1,
-        "scroll-start-target sets initial vertical scroll position");
+        "scroll-initial-target sets initial vertical scroll position");
       assert_approx_equals(scroller.scrollLeft, expected_scroll_left, 1,
-        "scroll-start-target sets initial horizontal scroll position");
+        "scroll-initial-target sets initial horizontal scroll position");
     });
   </script>
 </body>

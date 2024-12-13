@@ -113,18 +113,18 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     PropagatedData(
         const HeapVector<Member<LayoutBoxModelObject>>* sticky_descendants,
         const HeapVector<Member<Element>>* snap_areas,
-        const Member<const LayoutObject> scroll_start_target)
+        const Member<const LayoutObject> scroll_initial_target)
         : sticky_descendants(sticky_descendants),
           snap_areas(snap_areas),
-          scroll_start_target(scroll_start_target) {}
+          scroll_initial_target(scroll_initial_target) {}
     void Trace(Visitor* visitor) const {
       visitor->Trace(sticky_descendants);
       visitor->Trace(snap_areas);
-      visitor->Trace(scroll_start_target);
+      visitor->Trace(scroll_initial_target);
     }
     Member<const HeapVector<Member<LayoutBoxModelObject>>> sticky_descendants;
     Member<const HeapVector<Member<Element>>> snap_areas;
-    Member<const LayoutObject> scroll_start_target;
+    Member<const LayoutObject> scroll_initial_target;
   };
 
   PhysicalFragment(FragmentBuilder* builder,
@@ -660,11 +660,11 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     return IsScrollContainer() ? nullptr : StickyDescendants();
   }
 
-  const Member<const LayoutObject> ScrollStartTarget() const {
-    return propagated_data_ ? propagated_data_->scroll_start_target : nullptr;
+  const Member<const LayoutObject> ScrollInitialTarget() const {
+    return propagated_data_ ? propagated_data_->scroll_initial_target : nullptr;
   }
-  const Member<const LayoutObject> PropagatedScrollStartTarget() const {
-    return IsScrollContainer() ? nullptr : ScrollStartTarget();
+  const Member<const LayoutObject> PropagatedScrollInitialTarget() const {
+    return IsScrollContainer() ? nullptr : ScrollInitialTarget();
   }
 
   const HeapVector<Member<Element>>* SnapAreas() const {
@@ -675,7 +675,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   }
 
   bool HasPropagatedLayoutObjects() const {
-    return PropagatedStickyDescendants() || PropagatedScrollStartTarget() ||
+    return PropagatedStickyDescendants() || PropagatedScrollInitialTarget() ||
            PropagatedSnapAreas();
   }
 

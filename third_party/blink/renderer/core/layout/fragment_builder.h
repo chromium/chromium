@@ -526,7 +526,7 @@ class CORE_EXPORT FragmentBuilder {
       const OofInlineContainer<LogicalOffset>* = nullptr);
 
   void PropagateFromLayoutResult(const LayoutResult&);
-  void PropagateScrollStartTarget(const PhysicalFragment& child);
+  void PropagateScrollInitialTarget(const PhysicalFragment& child);
 
   void PropagateFromFragment(
       const PhysicalFragment& child,
@@ -546,7 +546,7 @@ class CORE_EXPORT FragmentBuilder {
       const OofInlineContainer<LogicalOffset>* current_inline_container =
           nullptr) const;
 
-  void UpdateScrollStartTarget(const LayoutObject* new_target);
+  void UpdateScrollInitialTarget(const LayoutObject* new_target);
 
   LayoutInputNode node_;
   const ConstraintSpace& space_;
@@ -565,7 +565,7 @@ class CORE_EXPORT FragmentBuilder {
 
   HeapVector<Member<LayoutBoxModelObject>>* sticky_descendants_ = nullptr;
   HeapVector<Member<Element>>* snap_areas_ = nullptr;
-  // [1] https://drafts.csswg.org/css-scroll-snap-2/#scroll-start-target
+  // [1] https://drafts.csswg.org/css-scroll-snap-2/#scroll-initial-target
   const LayoutObject* scroll_start_target_ = nullptr;
   LogicalAnchorQuery* anchor_query_ = nullptr;
   LayoutUnit bfc_line_offset_;

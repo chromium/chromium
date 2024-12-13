@@ -388,6 +388,7 @@ rx
 ry
 scale
 scrollBehavior
+scrollInitialTarget
 scrollMargin
 scrollMarginBlock
 scrollMarginBlockEnd
@@ -417,7 +418,6 @@ scrollSnapType
 scrollStart
 scrollStartBlock
 scrollStartInline
-scrollStartTarget
 scrollStartX
 scrollStartY
 scrollTimeline

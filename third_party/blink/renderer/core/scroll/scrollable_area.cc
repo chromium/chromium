@@ -332,7 +332,7 @@ bool ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
                                        gfx::ToRoundedVector2d(previous_offset);
 
   // After a scroller has been explicitly scrolled, we should no longer apply
-  // scroll-start or scroll-start-target.
+  // scroll-start or scroll-initial-target.
   if (IsExplicitScrollType(scroll_type)) {
     StopApplyingScrollStart();
   }
@@ -461,28 +461,28 @@ bool ScrollableArea::ScrollStartIsDefault() const {
          GetLayoutBox()->Style()->ScrollStartY() == ScrollStartData();
 }
 
-const LayoutObject* ScrollableArea::GetScrollStartTarget() const {
+const LayoutObject* ScrollableArea::GetScrollInitialTarget() const {
   for (const auto& fragment : GetLayoutBox()->PhysicalFragments()) {
-    if (auto scroll_start_target = fragment.ScrollStartTarget()) {
+    if (auto scroll_start_target = fragment.ScrollInitialTarget()) {
       return scroll_start_target;
     }
   }
   return nullptr;
 }
 
-void ScrollableArea::ScrollToScrollStartTarget(
-    const LayoutObject* scroll_start_target) {
+void ScrollableArea::ScrollToScrollInitialTarget(
+    const LayoutObject* scroll_initial_target) {
   using Behavior = mojom::ScrollAlignment_Behavior;
   mojom::blink::ScrollAlignment align_x(
       Behavior::kNoScroll, Behavior::kNoScroll, Behavior::kNoScroll);
   mojom::blink::ScrollAlignment align_y(
       Behavior::kNoScroll, Behavior::kNoScroll, Behavior::kNoScroll);
-  const LayoutBox* target_box = scroll_start_target->EnclosingBox();
+  const LayoutBox* target_box = scroll_initial_target->EnclosingBox();
   if (!target_box) {
     return;
   }
   cc::ScrollSnapAlign snap_alignment =
-      scroll_start_target->Style()->GetScrollSnapAlign();
+      scroll_initial_target->Style()->GetScrollSnapAlign();
   switch (snap_alignment.alignment_block) {
     case cc::SnapAlignment::kStart:
       align_y = ScrollAlignment::TopAlways();
@@ -522,14 +522,14 @@ void ScrollableArea::ScrollToScrollStartTarget(
 }
 
 void ScrollableArea::ApplyScrollStart() {
-  if (RuntimeEnabledFeatures::CSSScrollStartTargetEnabled()) {
-    if (const LayoutObject* scroll_start_target = GetScrollStartTarget()) {
+  if (RuntimeEnabledFeatures::CSSScrollInitialTargetEnabled()) {
+    if (const LayoutObject* scroll_initial_target = GetScrollInitialTarget()) {
       if (auto* box = GetLayoutBox()) {
         UseCounter::Count(box->GetDocument(),
-                          WebFeature::kCSSScrollStartTarget);
+                          WebFeature::kCSSScrollInitialTarget);
       }
-      ScrollToScrollStartTarget(scroll_start_target);
-      // scroll-start-target takes precedence over scroll-start, so we should
+      ScrollToScrollInitialTarget(scroll_initial_target);
+      // scroll-initial-target takes precedence over scroll-start, so we should
       // return here.
       return;
     }

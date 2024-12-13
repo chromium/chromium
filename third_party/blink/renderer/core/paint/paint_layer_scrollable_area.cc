@@ -1142,8 +1142,8 @@ bool PaintLayerScrollableArea::IsApplyingScrollStart() const {
     if (element->HasBeenExplicitlyScrolled()) {
       return false;
     }
-    if (RuntimeEnabledFeatures::CSSScrollStartTargetEnabled() &&
-        GetScrollStartTarget()) {
+    if (RuntimeEnabledFeatures::CSSScrollInitialTargetEnabled() &&
+        GetScrollInitialTarget()) {
       return true;
     }
     return RuntimeEnabledFeatures::CSSScrollStartEnabled() &&

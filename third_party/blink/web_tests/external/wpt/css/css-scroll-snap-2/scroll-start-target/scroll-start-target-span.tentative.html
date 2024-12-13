@@ -2,8 +2,8 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title> CSS Scroll Snap 2 Test: scroll-start-target with a &lt;span> element</title>
-    <link rel="help" href="https://drafts.csswg.org/css-scroll-snap-2/#scroll-start-target">
+    <title> CSS Scroll Snap 2 Test: scroll-initial-target with a &lt;span> element</title>
+    <link rel="help" href="https://drafts.csswg.org/css-scroll-snap-2/#scroll-initial-target">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="/css/css-animations/support/testcommon.js"></script>
@@ -24,7 +24,7 @@
         background-color: turquoise;
       }
       .target {
-        scroll-start-target: auto;
+        scroll-initial-target: nearest;
       }
       .scroller {
         overflow: scroll;
@@ -46,8 +46,8 @@
         const target = document.getElementById("target");
 
         assert_equals(scroller.scrollTop, target.offsetTop,
-          "scroller is initially scrolled to it <span> scroll-start-target");
-      }, "<span> scroll-start-target is honored");
+          "scroller is initially scrolled to it <span> scroll-initial-target");
+      }, "<span> scroll-initial-target is honored");
     </script>
   </body>
 </html>

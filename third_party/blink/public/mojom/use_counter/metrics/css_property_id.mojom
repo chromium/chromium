@@ -817,7 +817,7 @@ enum CSSSampleId {
     // kScrollStartTargetInline = 758,
     // kScrollStartTargetX = 759,
     // kScrollStartTargetY = 760,
-    kScrollStartTarget = 761,
+    kScrollInitialTarget = 761,
     kTimelineScope = 762,
     kScrollbarColor = 763,
     // kWordBoundaryDetection = 764,

@@ -2,8 +2,8 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title> CSS Scroll Snap 2 Test: scroll-start-target*</title>
-    <link rel="help" href="https://drafts.csswg.org/css-scroll-snap-2/#scroll-start-target">
+    <title> CSS Scroll Snap 2 Test: scroll-initial-target*</title>
+    <link rel="help" href="https://drafts.csswg.org/css-scroll-snap-2/#scroll-initial-target">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
   </head>
@@ -33,7 +33,7 @@
         width: 100px;
         height: 100px;
         background-color: pink;
-        scroll-start-target: auto;
+        scroll-initial-target: nearest;
       }
     </style>
     <div id="outer-container">
@@ -89,7 +89,7 @@
         let initial_expected_scroll_top =
             total_content_height - inner_scroller.clientHeight;
         assert_equals(inner_scroller.scrollTop, initial_expected_scroll_top,
-          "inner-scroller is scrolled to scroll-start-target");
+          "inner-scroller is scrolled to scroll-initial-target");
 
         let display_promise = waitForDisplay(target, "none");
         target.style.display = "none";
@@ -98,14 +98,14 @@
         let final_expected_scroll_top = initial_expected_scroll_top - target_height;
         assert_equals(inner_scroller.scrollTop, final_expected_scroll_top,
           "inner scroller is clamped to updated scroll range");
-      }, "display:block scroll-start-target becomes display: none");
+      }, "display:block scroll-initial-target becomes display: none");
 
       promise_test(async (t) => {
         await resetDisplay();
         let initial_expected_scroll_top =
             total_content_height - inner_scroller.clientHeight;
         assert_equals(inner_scroller.scrollTop, initial_expected_scroll_top,
-          "inner-scroller is scrolled to scroll-start-target");
+          "inner-scroller is scrolled to scroll-initial-target");
 
         let display_promise = waitForDisplay(target, "none");
         target.style.display = "none";
@@ -118,8 +118,8 @@
         target.style.display = "block";
         await display_promise;
         assert_equals(inner_scroller.scrollTop, initial_expected_scroll_top,
-            "inner scroller is updated as scroll-start-target reappears");
-      }, "display:none scroll-start-target becomes display: block");
+            "inner scroller is updated as scroll-initial-target reappears");
+      }, "display:none scroll-initial-target becomes display: block");
     </script>
   </body>
 </html>

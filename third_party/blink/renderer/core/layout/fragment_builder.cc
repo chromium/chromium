@@ -255,7 +255,8 @@ void FragmentBuilder::PropagateFromLayoutResult(
       child_result.HasOrthogonalFallbackSizeDescendant();
 }
 
-void FragmentBuilder::UpdateScrollStartTarget(const LayoutObject* new_target) {
+void FragmentBuilder::UpdateScrollInitialTarget(
+    const LayoutObject* new_target) {
   if (new_target != scroll_start_target_ &&
       (!scroll_start_target_ ||
        new_target->IsBeforeInPreOrder(*scroll_start_target_))) {
@@ -263,17 +264,17 @@ void FragmentBuilder::UpdateScrollStartTarget(const LayoutObject* new_target) {
   }
 }
 
-void FragmentBuilder::PropagateScrollStartTarget(
+void FragmentBuilder::PropagateScrollInitialTarget(
     const PhysicalFragment& child) {
-  if (child.Style().ScrollStartTarget() != EScrollStartTarget::kNone) {
+  if (child.Style().ScrollInitialTarget() != EScrollInitialTarget::kNone) {
     if (auto* child_object = child.GetMutableLayoutObject()) {
-      UpdateScrollStartTarget(child_object);
+      UpdateScrollInitialTarget(child_object);
     }
   }
 
   if (const Member<const LayoutObject> target =
-          child.PropagatedScrollStartTarget()) {
-    UpdateScrollStartTarget(target);
+          child.PropagatedScrollInitialTarget()) {
+    UpdateScrollInitialTarget(target);
   }
 }
 
@@ -297,7 +298,7 @@ void FragmentBuilder::PropagateFromFragment(
 
   PropagateStickyDescendants(child);
   PropagateSnapAreas(child);
-  PropagateScrollStartTarget(child);
+  PropagateScrollInitialTarget(child);
 
   // Propagate info about OOF descendants if necessary. This part must be
   // skipped when adding OOF children to fragmentainers, as propagation is

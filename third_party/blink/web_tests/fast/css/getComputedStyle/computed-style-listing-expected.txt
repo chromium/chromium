@@ -319,6 +319,7 @@ rx: auto
 ry: auto
 scale: none
 scroll-behavior: auto
+scroll-initial-target: none
 scroll-margin-block-end: 0px
 scroll-margin-block-start: 0px
 scroll-margin-inline-end: 0px
@@ -330,7 +331,6 @@ scroll-padding-inline-end: auto
 scroll-padding-inline-start: auto
 scroll-start-block: auto
 scroll-start-inline: auto
-scroll-start-target: none
 scroll-start-x: auto
 scroll-start-y: auto
 scroll-timeline-axis: block

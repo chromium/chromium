@@ -4323,7 +4323,7 @@ enum WebFeature {
   kCanvas2DLayersFilters = 4951,
   kCanvas2DLayersCSSFilters = 4952,
   kCanvas2DLayersFilterObjects = 4953,
-  kCSSScrollStartTarget = 4954,
+  kCSSScrollInitialTarget = 4954,
   kFedCmContinueOnResponse = 4955,
   kFedCmMultipleIdentityProviders = 4956,
   kFedCmWithStorageAccessAPI = 4957,

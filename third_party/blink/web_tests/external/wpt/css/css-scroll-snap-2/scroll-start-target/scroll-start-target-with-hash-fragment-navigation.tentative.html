@@ -3,8 +3,8 @@
 
 <head>
   <meta charset="utf-8">
-  <title> CSS Scroll Snap 2 Test: scroll-start-target interaction with fragment-navigation</title>
-  <link rel="help" href="https://drafts.csswg.org/css-scroll-snap-2/#scroll-start-target">
+  <title> CSS Scroll Snap 2 Test: scroll-initial-target interaction with fragment-navigation</title>
+  <link rel="help" href="https://drafts.csswg.org/css-scroll-snap-2/#scroll-initial-target">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
 </head>
@@ -18,9 +18,9 @@
         let scroller = frame.contentDocument.scrollingElement;
         // fragment_target is at the bottom of the frame so the frame should be
         // fully scrolled down to bring it into view (despite middle_box being
-        // the scroll-start-target).
+        // the scroll-initial-target).
         let expected_scroll_top = scroller.scrollHeight - scroller.clientHeight;
-        // The scroll-start-target is just below top_box which has a height of
+        // The scroll-initial-target is just below top_box which has a height of
         // 60vh.
         const scroll_start_target_top = 0.6 * frame.contentWindow.innerHeight;
 
@@ -28,7 +28,7 @@
         assert_not_equals(scroll_start_target_top, expected_scroll_top);
         assert_equals(frame.contentDocument.scrollingElement.scrollTop,
           expected_scroll_top);
-      }, "scroll-start-target does not override hash fragment navigation");
+      }, "scroll-initial-target does not override hash fragment navigation");
     }
   </script>
 </body>

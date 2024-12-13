@@ -650,7 +650,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
                                   const ScrollOffset& delta);
 
   virtual void StopApplyingScrollStart() {}
-  const LayoutObject* GetScrollStartTarget() const;
+  const LayoutObject* GetScrollInitialTarget() const;
 
   virtual Node* GetSnapEventTargetAlongAxis(const AtomicString& type,
                                             cc::SnapAxis) const {
@@ -694,7 +694,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
           mojom::blink::ScrollBehavior::kSmooth,
       base::ScopedClosureRunner on_finish = base::ScopedClosureRunner());
 
-  void ScrollToScrollStartTarget(const LayoutObject*);
+  void ScrollToScrollInitialTarget(const LayoutObject*);
 
   bool ShouldFilterIncomingScroll(mojom::blink::ScrollType incoming_type) {
     auto old_type = active_smooth_scroll_type_;

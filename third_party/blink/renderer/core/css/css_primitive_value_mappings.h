@@ -2050,25 +2050,25 @@ inline ScrollStartValueType CSSIdentifierValue::ConvertTo() const {
 }
 
 template <>
-inline CSSIdentifierValue::CSSIdentifierValue(EScrollStartTarget target)
+inline CSSIdentifierValue::CSSIdentifierValue(EScrollInitialTarget target)
     : CSSValue(kIdentifierClass) {
   switch (target) {
-    case EScrollStartTarget::kNone:
+    case EScrollInitialTarget::kNone:
       value_id_ = CSSValueID::kNone;
       break;
-    case EScrollStartTarget::kAuto:
-      value_id_ = CSSValueID::kAuto;
+    case EScrollInitialTarget::kNearest:
+      value_id_ = CSSValueID::kNearest;
       break;
   };
 }
 
 template <>
-inline EScrollStartTarget CSSIdentifierValue::ConvertTo() const {
+inline EScrollInitialTarget CSSIdentifierValue::ConvertTo() const {
   switch (GetValueID()) {
     case CSSValueID::kNone:
-      return EScrollStartTarget::kNone;
-    case CSSValueID::kAuto:
-      return EScrollStartTarget::kAuto;
+      return EScrollInitialTarget::kNone;
+    case CSSValueID::kNearest:
+      return EScrollInitialTarget::kNearest;
     default:
       NOTREACHED();
   };

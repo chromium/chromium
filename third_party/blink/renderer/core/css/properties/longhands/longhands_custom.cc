@@ -8253,12 +8253,12 @@ const CSSValue* ScrollStartY::CSSValueFromComputedStyleInternal(
   return ComputedStyleUtils::ValueForScrollStart(style, style.ScrollStartY());
 }
 
-const CSSValue* ScrollStartTarget::CSSValueFromComputedStyleInternal(
+const CSSValue* ScrollInitialTarget::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return CSSIdentifierValue::Create(style.ScrollStartTarget());
+  return CSSIdentifierValue::Create(style.ScrollInitialTarget());
 }
 
 const CSSValue* ScrollTimelineAxis::ParseSingleValue(

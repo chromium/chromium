@@ -3,8 +3,8 @@
 
 <head>
   <meta charset="utf-8">
-  <title> CSS Scroll Snap 2 Test: scroll-start-target interaction with anchor navigation</title>
-  <link rel="help" href="https://drafts.csswg.org/css-scroll-snap-2/#scroll-start-target">
+  <title> CSS Scroll Snap 2 Test: scroll-initial-target interaction with anchor navigation</title>
+  <link rel="help" href="https://drafts.csswg.org/css-scroll-snap-2/#scroll-initial-target">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/resources/testdriver.js"></script>
@@ -29,12 +29,12 @@
         // Expect scroll offset of 100px per scroll-start.
         const scroll_start_target_top = 0.6 * frame.contentWindow.innerHeight;
         assert_equals(scroller.scrollTop, scroll_start_target_top,
-          "scroll-start-target sets initial scroll offset");
+          "scroll-initial-target sets initial scroll offset");
 
         // Scroll away from start position.
         scroller.scrollTop = 200;
         assert_equals(scroller.scrollTop, 200,
-          "scrolled away from scroll-start-target");
+          "scrolled away from scroll-initial-target");
 
         anchor_target_link.click();
         await waitForHashchange(frame.contentWindow);
@@ -52,8 +52,8 @@
 
         assert_equals(scroller.scrollTop, 200,
           "scroller returns to previous scroll position, not " +
-          "scroll-start-target");
-      }, "scroll-start-target does not override anchor navigation.");
+          "scroll-initial-target");
+      }, "scroll-initial-target does not override anchor navigation.");
     }
   </script>
 </body>
