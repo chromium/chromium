@@ -24,11 +24,7 @@ base::Time GetCreationTimeFromObject(NSHTTPCookie* cookie) {
   // The "Created" key is not documented.
   // Return a null time if the key is missing.
   id created = [[cookie properties] objectForKey:kHTTPCookieCreated];
-#if !BUILDFLAG(CRONET_BUILD)
-  // In Cronet the cookie store is recreated on startup, so |created| could be
-  // nil.
   DCHECK(created && [created isKindOfClass:[NSNumber class]]);
-#endif
   if (!created || ![created isKindOfClass:[NSNumber class]])
     return base::Time();
   // created is the time from January 1st, 2001 in seconds.
