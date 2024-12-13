@@ -35,6 +35,21 @@ bool IsEnabledForCountryAndLocale(const base::Feature& launch_feature) {
 }
 }  // namespace
 
+constexpr auto kEnabledByDefaultForDesktopOnly =
+#if BUILDFLAG(IS_ANDROID)
+    base::FEATURE_DISABLED_BY_DEFAULT;
+#else
+    base::FEATURE_ENABLED_BY_DEFAULT;
+#endif
+
+// These are the kill switches for the launched history embeddings features.
+BASE_FEATURE(kLaunchedHistoryEmbeddings,
+             "LaunchedHistoryEmbeddings",
+             kEnabledByDefaultForDesktopOnly);
+BASE_FEATURE(kLaunchedHistoryEmbeddingsAnswers,
+             "LaunchedHistoryEmbeddingsAnswers",
+             kEnabledByDefaultForDesktopOnly);
+
 bool IsHistoryEmbeddingsEnabledForProfile(Profile* profile) {
   if (!IsHistoryEmbeddingsFeatureEnabled()) {
     return false;
@@ -114,7 +129,10 @@ bool IsHistoryEmbeddingsFeatureEnabled() {
   }
 #endif
 
-  if (IsEnabledForCountryAndLocale(kLaunchedHistoryEmbeddings)) {
+  // Launch but keep bypass if feature is explicitly overridden.
+  if (IsEnabledForCountryAndLocale(kLaunchedHistoryEmbeddings) &&
+      !base::FeatureList::GetStateIfOverridden(kHistoryEmbeddings)
+           .has_value()) {
     return true;
   }
 
@@ -127,7 +145,10 @@ bool IsHistoryEmbeddingsAnswersFeatureEnabled() {
     return false;
   }
 
-  if (IsEnabledForCountryAndLocale(kLaunchedHistoryEmbeddingsAnswers)) {
+  // Launch but keep bypass if feature is explicitly overridden.
+  if (IsEnabledForCountryAndLocale(kLaunchedHistoryEmbeddingsAnswers) &&
+      !base::FeatureList::GetStateIfOverridden(kHistoryEmbeddingsAnswers)
+           .has_value()) {
     return true;
   }
 

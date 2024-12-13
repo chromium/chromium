@@ -14,8 +14,6 @@ namespace history_embeddings {
 // Please use `IsHistoryEmbeddingsFeatureEnabled()` instead of using any of
 // these features directly.
 // See chrome/browser/history_embeddings/history_embeddings_utils.h
-BASE_DECLARE_FEATURE(kLaunchedHistoryEmbeddings);
-BASE_DECLARE_FEATURE(kLaunchedHistoryEmbeddingsAnswers);
 BASE_DECLARE_FEATURE(kHistoryEmbeddings);
 BASE_DECLARE_FEATURE(kHistoryEmbeddingsAnswers);
 

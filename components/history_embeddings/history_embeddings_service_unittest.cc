@@ -93,11 +93,6 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
     feature_parameters.word_match_required_term_ratio = 0;
     feature_parameters.scroll_tags_enabled = true;
     SetFeatureParametersForTesting(feature_parameters);
-    feature_list_.InitWithFeaturesAndParameters(
-        {{kHistoryEmbeddings, {}},
-         {kHistoryEmbeddingsAnswers, {}},
-        },
-        /*disabled_features=*/{});
 
     CHECK(history_dir_.CreateUniqueTempDir());
 
@@ -206,8 +201,6 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
                               ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED,
                               false);
   }
-
-  base::test::ScopedFeatureList feature_list_;
 
   base::test::TaskEnvironment task_environment_;
 

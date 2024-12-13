@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_tab_helper.h"
+#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -625,6 +626,49 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsRestrictedSigninBrowserTest,
   }));
   histogram_tester.ExpectUniqueSample("History.Embeddings.QueryAnswerable",
                                       false, 1);
+}
+
+class HistoryEmbeddingsKillSwitchBrowserTest
+    : public HistoryEmbeddingsBrowserTest {
+  void InitializeFeatureList() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kHistoryEmbeddings,
+          {{"SendQualityLog", "true"},
+           {"ContentVisibilityThreshold", "0.01"},
+           {"UseUrlFilter", "false"}}},
+         {page_content_annotations::features::kPageContentAnnotations, {{}}},
+#if BUILDFLAG(IS_CHROMEOS)
+         {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        },
+        /*disabled_features=*/{kLaunchedHistoryEmbeddings});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsKillSwitchBrowserTest,
+                       NoCrashAfterKillSwitch) {
+  OverrideVisibilityScoresForTesting({
+      {"A a B C b a 2 D", 0.99},
+  });
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::test::TestFuture<UrlData> store_future;
+  service()->SetPassagesStoredCallbackForTesting(
+      store_future.GetRepeatingCallback());
+
+  const GURL url = embedded_test_server()->GetURL("/inner_text/test1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(store_future.Wait());
+
+  {
+    base::test::TestFuture<SearchResult> search_future;
+    service()->Search(nullptr, "A B C D e f g", {}, 1, /*skip_answering=*/false,
+                      search_future.GetRepeatingCallback());
+    SearchResult result = search_future.Take();
+    EXPECT_EQ(result.scored_url_rows.size(), 1u);
+    EXPECT_EQ(result.scored_url_rows[0].GetBestPassage(), "A a B C b a 2 D");
+    EXPECT_EQ(result.scored_url_rows[0].row.url(), url);
+  }
 }
 
 }  // namespace history_embeddings

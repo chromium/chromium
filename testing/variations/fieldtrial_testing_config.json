@@ -11047,8 +11047,6 @@
                     },
                     "enable_features": [
                         "FeatureManagementHistoryEmbedding",
-                        "HistoryEmbeddings",
-                        "HistoryEmbeddingsAnswers",
                         "HistorySearchSettingsVisibility"
                     ]
                 }

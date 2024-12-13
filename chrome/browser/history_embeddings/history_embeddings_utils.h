@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_UTILS_H_
 #define CHROME_BROWSER_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_UTILS_H_
 
+#include "base/feature_list.h"
+
 class Profile;
 
 namespace content {
@@ -12,6 +14,9 @@ class WebUIDataSource;
 }
 
 namespace history_embeddings {
+
+// Do not use. For test only.
+BASE_DECLARE_FEATURE(kLaunchedHistoryEmbeddings);
 
 // Checks whether the feature behavior is enabled for given profile.
 bool IsHistoryEmbeddingsEnabledForProfile(Profile* profile);

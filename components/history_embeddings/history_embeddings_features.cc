@@ -19,14 +19,6 @@ FeatureParameters& GetFeatureParametersMutable() {
 
 }  // namespace
 
-// These are the kill switches for the launched history embeddings features.
-BASE_FEATURE(kLaunchedHistoryEmbeddings,
-             "LaunchedHistoryEmbeddings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kLaunchedHistoryEmbeddingsAnswers,
-             "LaunchedHistoryEmbeddingsAnswers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // This is the main feature switch for history embeddings search, and when it is
 // disabled, answering functionality will not be available either. This feature
 // is client-side launched on desktop platforms in US only, so it remains
