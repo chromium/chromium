@@ -94,8 +94,8 @@ dependencies {
     compile 'androidx.pdf:pdf-viewer-fragment:1.0.0-alpha05'
     compile 'androidx.preference:preference:{{androidx_dependency_version}}'
     // Privacy Sandbox is less stable than others. Use only release versions.
-    compile 'androidx.privacysandbox.ads:ads-adservices:1.1.0-beta07'
-    compile 'androidx.privacysandbox.ads:ads-adservices-java:1.1.0-beta07'
+    compile 'androidx.privacysandbox.ads:ads-adservices:1.1.0-beta11'
+    compile 'androidx.privacysandbox.ads:ads-adservices-java:1.1.0-beta11'
     compile 'androidx.recyclerview:recyclerview:{{androidx_dependency_version}}'
     compile 'androidx.room:room-guava:{{androidx_dependency_version}}'
     // TODO(https://crbug.com/359896493): Remove the following dep once rolls
