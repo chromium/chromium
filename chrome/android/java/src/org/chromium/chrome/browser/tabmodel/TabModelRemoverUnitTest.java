@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -39,6 +40,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils.GroupsP
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -112,6 +114,7 @@ public class TabModelRemoverUnitTest {
         when(mProfile.isOffTheRecord()).thenReturn(false);
         mTabModel = spy(new MockTabModel(mProfile, null));
         mTabModel.setTabCreatorForTesting(mTabCreator);
+        mTabModel.setActive(true);
 
         when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(false);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
@@ -119,6 +122,7 @@ public class TabModelRemoverUnitTest {
         doAnswer(
                         invocation -> {
                             Tab tab = mTabModel.addTab(mNextTabId++);
+                            tab.setTabGroupId(TAB_GROUP_1.tabGroupId);
                             return tab;
                         })
                 .when(mTabCreator)
@@ -158,8 +162,12 @@ public class TabModelRemoverUnitTest {
         when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID))
                 .thenReturn(MemberRole.OWNER);
 
+        Tab standaloneTab = mTabModel.addTab(mNextTabId++);
         Tab tab = mTabModel.addTab(mNextTabId++);
         tab.setTabGroupId(TAB_GROUP_1.tabGroupId);
+        mTabModel.setIndex(mTabModel.indexOf(tab), TabSelectionType.FROM_USER);
+        assertEquals(1, mTabModel.index());
+        assertEquals(tab, mTabModel.getTabAt(mTabModel.index()));
 
         mTabModelRemover.doTabRemovalFlow(mHandler, /* allowDialog= */ true);
 
@@ -173,11 +181,20 @@ public class TabModelRemoverUnitTest {
         assertEquals(
                 groupsPendingDestroy.collaborationGroupsDestroyed.size(),
                 mNewTabCreationCaptor.getValue().size());
+
+        // New placeholder tab should be selected.
+        assertNotEquals(standaloneTab, mTabModel.getTabAt(mTabModel.index()));
+        assertNotEquals(tab, mTabModel.getTabAt(mTabModel.index()));
+
         mHandlerInOrder.verify(mHandler).performAction();
 
         mOnResultCaptor.getValue().onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
 
         verifyNoMoreInteractions(mHandler);
+
+        // New placeholder tab should still be selected.
+        assertNotEquals(standaloneTab, mTabModel.getTabAt(mTabModel.index()));
+        assertNotEquals(tab, mTabModel.getTabAt(mTabModel.index()));
     }
 
     @Test
