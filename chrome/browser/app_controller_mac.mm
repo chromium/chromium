@@ -926,7 +926,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
     // Reset the "trying to quit" state, so that closing all browser windows
     // will no longer lead to termination.
     browser_shutdown::SetTryingToQuit(false);
-
+    [[ConfirmQuitPanelController sharedController] cancel];
     // TODO(viettrungluu): Were we to remove Apple Event handlers above, we
     // would have to reinstall them here. http://crbug.com/40861
   }
@@ -1296,6 +1296,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
           browser = Browser::Create(Browser::CreateParams(profile, true));
           browser->window()->Show();
         }
+        [[ConfirmQuitPanelController sharedController] cancel];
         DCHECK(browser);
         chrome::ShowDownloads(browser);
         return NO;

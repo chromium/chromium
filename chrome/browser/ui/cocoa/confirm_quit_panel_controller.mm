@@ -160,6 +160,8 @@ ConfirmQuitPanelController* __strong g_confirmQuitPanelController = nil;
  @private
   // The content view of the window that this controller manages.
   ConfirmQuitFrameView* __weak _contentView;
+  // Whether we've hidden all windows and initiated the quitting process.
+  BOOL _didHideWindows;
 }
 
 + (ConfirmQuitPanelController*)sharedController {
@@ -271,7 +273,7 @@ ConfirmQuitPanelController* __strong g_confirmQuitPanelController = nil;
         // At this point, the quit has been confirmed and windows should all
         // fade out to convince the user to release the key combo to finalize
         // the quit.
-        [self hideAllWindowsWithDuration:confirm_quit::kWindowFadeOutDuration
+        [self hideAllWindowsWithDuration:confirm_quit::kWindowFadeDuration
                                              .InSecondsF()];
       }
     }
@@ -318,6 +320,25 @@ ConfirmQuitPanelController* __strong g_confirmQuitPanelController = nil;
              afterDelay:1.0];
 }
 
+- (void)cancel {
+  if (!_didHideWindows) {
+    return;
+  }
+  [self dismissPanel];
+  FadeAllWindowsAnimation* animation = [[FadeAllWindowsAnimation alloc]
+      initWithOperation:kShow
+      animationDuration:confirm_quit::kWindowFadeDuration.InSecondsF()];
+  [animation startAnimation];
+  _didHideWindows = NO;
+}
+
+- (void)simulateQuitForTesting {
+  _didHideWindows = YES;
+  for (NSWindow* window in NSApp.windows) {
+    window.alphaValue = 0.0;
+  }
+}
+
 - (void)animateFadeOut {
   NSWindow* window = self.window;
   CAAnimation* animation = [[window animationForKey:@"alphaValue"] copy];
@@ -351,6 +372,7 @@ ConfirmQuitPanelController* __strong g_confirmQuitPanelController = nil;
 
 // Iterates through the list of open windows and hides them all.
 - (void)hideAllWindowsWithDuration:(NSTimeInterval)duration {
+  _didHideWindows = YES;
   FadeAllWindowsAnimation* animation =
       [[FadeAllWindowsAnimation alloc] initWithOperation:kHide
                                        animationDuration:duration];

@@ -31,6 +31,15 @@
 // instructions on how to quit.
 - (void)dismissPanel;
 
+// Completely back out of the process, making all windows visible again.
+// Called when the quit was aborted *after* confirmations (for example, due to
+// pending downloads or `beforeunload`).
+- (void)cancel;
+
+// Hides windows and set state as if we had run `runModalLoop` and received
+// a key up from the user.
+- (void)simulateQuitForTesting;
+
 @end
 
 #endif  // CHROME_BROWSER_UI_COCOA_CONFIRM_QUIT_PANEL_CONTROLLER_H_
