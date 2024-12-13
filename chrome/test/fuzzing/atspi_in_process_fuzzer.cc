@@ -7,13 +7,18 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <atspi/atspi-types.h>
+
 #include <algorithm>
 #include <cstdint>
 #include <cstdlib>
 #include <functional>
+#include <memory>
 #include <optional>
 #include <random>
 #include <string_view>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "base/base_paths.h"
 #include "base/containers/fixed_flat_set.h"
@@ -23,6 +28,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
@@ -41,7 +47,7 @@
 
 // Controls (by name) which we shouldn't choose.
 constexpr auto kBlockedControls =
-    base::MakeFixedFlatSet<std::string_view>({"Close"});
+    base::MakeFixedFlatSet<std::string_view>({"Close", "Relaunch"});
 
 // When developing this fuzzer, it's really useful to have this logging,
 // but it's too verbose for normal running (it can mask crash information).
@@ -52,7 +58,6 @@ constexpr auto kBlockedControls =
 #endif
 
 using ScopedAtspiAccessible = ScopedGObject<AtspiAccessible>;
-using UiState = std::vector<std::vector<ScopedAtspiAccessible>>;
 
 using test::fuzzing::atspi_fuzzing::Action;
 using test::fuzzing::atspi_fuzzing::ActionVerb;
@@ -68,12 +73,44 @@ __attribute__((used,
     extra_features[kNumControlsToDeclareToCentipede];
 constexpr uint64_t kControlsReachedDomain = 0;
 
+enum NodeDepth { Root, FirstLevel, Other };
+
+// A node we've found in the UI, and all its children and grand children.
+class UiNode {
+ public:
+  explicit UiNode(ScopedAtspiAccessible accessible, NodeDepth depth);
+  std::string& GetName() const;  // returns "" if no name
+  std::string& GetRole() const;  // returns "" if no role
+  bool IsBlocklisted() const;
+  std::optional<size_t> FindMatchingChild(const PathElement& selector) const;
+  UiNode* GetNthChild(size_t index) { return children_[index].get(); }
+  void RescanAndFindNewChildren(std::vector<std::vector<UiNode*>>& new_controls,
+                                const std::vector<UiNode*> my_path);
+  void GetAllChildren(std::vector<std::vector<UiNode*>>& new_controls,
+                      const std::vector<UiNode*> my_path);
+  void AppendControlPath(ControlPath& output_path,
+                         const base::span<UiNode*>& path_to_control);
+  ScopedAtspiAccessible& Get() { return node_; }
+  bool ContainsPasswordNode() const;
+  // A clue about whether this is likely to yield useful activity if
+  // we poke at it.
+  bool ProbablyActionable() const;
+
+ private:
+  void ScanAttributes() const;
+  mutable ScopedAtspiAccessible
+      node_;  // needs to be mutable to allow retrieving name and role
+  NodeDepth depth_;
+  mutable std::optional<std::string> name_;        // populated on demand
+  mutable std::optional<std::string> role_;        // populated on demand
+  std::vector<std::unique_ptr<UiNode>> children_;  // populated on construction
+};
+
 // This fuzzer attempts to explore the space of Chromium UI controls using
 // the ATSPI Linux accessibility API. The hope is that virtually all Chromium
 // controls are accessible via this API and thus all possible UI interactions
 // can be explored (at least in future when this fuzzer gets a bit more
-// sophisticated about including more complex HTML pages and/or taking actions
-// such as typing text.)
+// sophisticated about including more complex HTML pages.)
 //
 // To see the space of controls which the fuzzer explores, either use the
 // 'accerciser' GUI tool or build the Chromium `ax_dump_tree` utility.
@@ -108,35 +145,15 @@ class AtspiInProcessFuzzer
   void LoadAPage();
   int HandleAction(const Action& action, size_t& control_path_id);
   static ScopedAtspiAccessible GetRootNode();
-  static std::vector<ScopedAtspiAccessible> GetChildren(
-      ScopedAtspiAccessible& node);
-  static std::string GetNodeName(const ScopedAtspiAccessible& node,
-                                 bool is_first_level_node);
-  static std::string GetNodeRole(const ScopedAtspiAccessible& node);
   static bool InvokeAction(ScopedAtspiAccessible& node, size_t action_id);
   static bool ReplaceText(ScopedAtspiAccessible& node,
                           const std::string& newtext);
   static bool SetSelection(ScopedAtspiAccessible& node,
                            const std::vector<uint32_t>& new_selection);
-  // Checks an ATSPI return value and indicates whether to return early
-  static bool CheckOk(gboolean ok, GError** error);
-  // Checks an ATSPI return value from a function that returns a string;
-  // returns either the string or a blank string
-  static std::string CheckString(char* result, GError** error);
-  static std::optional<size_t> FindMatchingControl(
-      const std::vector<ScopedAtspiAccessible>& controls,
-      const PathElement& selector,
-      bool is_first_level_node);
-  UiState ExploreUi();
-  static void ExploreNode(
-      UiState& results,
-      ScopedAtspiAccessible& parent_node,
-      const std::vector<ScopedAtspiAccessible>& path_to_control);
-  ControlPath DetermineUniqueNodePath(
-      const std::vector<ScopedAtspiAccessible>& path_to_control);
   std::string StringifyNodePath(const ControlPath& path);
   static std::string DebugPath(const ControlPath& path);
 
+  // Mutation related code
   static size_t MutateUsingLPM(uint8_t* data,
                                size_t size,
                                size_t max_size,
@@ -156,8 +173,8 @@ class AtspiInProcessFuzzer
   static bool AttemptMutateMessage(AtspiInProcessFuzzer::FuzzCase& message,
                                    std::minstd_rand& random);
 
-  ScopedAtspiAccessible root_node_;
-  UiState ui_state_;
+  // Initialized in SetupOnMainThread, then valid thereafter
+  std::optional<UiNode> ui_state_;
 };
 
 // Stringified version of Action in the protobuf.
@@ -195,11 +212,15 @@ class Database {
                                             std::minstd_rand& random);
   void InsertControlPathAndPrerequisites(
       const std::string& newly_visible_control,
-      const std::optional<ActionPath>& prerequisite_action);
+      const std::optional<ActionPath>& prerequisite_action,
+      bool probably_actionable);
 
  private:
   Database();
-  std::optional<int64_t> InsertControlPath(const std::string& control_path);
+  void DropTableIfExists(const std::string& table);
+  std::optional<int64_t> InsertControlPath(const std::string& control_path,
+                                           bool probably_actionable,
+                                           bool has_prereq);
   friend struct base::DefaultSingletonTraits<Database>;
 
   std::unique_ptr<sql::Database> db_;
@@ -230,26 +251,32 @@ void AtspiInProcessFuzzer::SetUpOnMainThread() {
     timer.Start(FROM_HERE, base::Milliseconds(100),
                 nested_run_loop.QuitClosure());
     nested_run_loop.Run();
-    root_node_ = GetRootNode();
-    ui_state_ = ExploreUi();
-    for (auto& node_path : ui_state_) {
-      std::string node_name = GetNodeName(node_path.back(), false);
-      if (node_name == "Password: ") {
-        found_ui = true;
-        break;
-      }
+    ScopedAtspiAccessible root_node = GetRootNode();
+    ui_state_ = UiNode(root_node, NodeDepth::Root);  // explores UI
+    if (ui_state_->ContainsPasswordNode()) {
+      found_ui = true;
+      break;
     }
     CHECK(counter++ < 300)
         << "It took more than 30 seconds for the AX tree to be populated";
   }
   // Ensure the database is populated with the controls visible at the
   // outset
-  ATSPI_FUZZER_LOG << "AX tree populated.";
-  for (auto& control : ui_state_) {
-    auto path = DetermineUniqueNodePath(control);
+  std::vector<std::vector<UiNode*>> all_controls;
+  std::vector<UiNode*> root_path;
+  ui_state_->GetAllChildren(all_controls, root_path);
+
+  ATSPI_FUZZER_LOG << "AX tree populated; found " << all_controls.size()
+                   << " controls.";
+  for (auto& control : all_controls) {
+    ControlPath path;
+    ui_state_->AppendControlPath(path, control);
+    ATSPI_FUZZER_LOG << "  " << DebugPath(path);
     Database::GetInstance()->InsertControlPathAndPrerequisites(
-        StringifyNodePath(path), std::nullopt);
+        StringifyNodePath(path), std::nullopt,
+        control.back()->ProbablyActionable());
   }
+  ATSPI_FUZZER_LOG << "Initial controls inserted into database.";
 }
 
 std::string AtspiInProcessFuzzer::DebugPath(const ControlPath& path) {
@@ -334,16 +361,14 @@ int AtspiInProcessFuzzer::Fuzz(
 int AtspiInProcessFuzzer::HandleAction(
     const test::fuzzing::atspi_fuzzing::Action& action,
     size_t& control_path_id) {
-  ScopedAtspiAccessible current_control = root_node_;
-  std::vector<ScopedAtspiAccessible> children = GetChildren(current_control);
-  bool is_first_level_node = true;
+  UiNode* current_control = &*ui_state_;
 
   // Keep a record of the control path so we can inform centipede
   std::vector<size_t> current_control_path;
   for (const test::fuzzing::atspi_fuzzing::PathElement& path_element :
        action.path_to_control().path_to_control()) {
     std::optional<size_t> selected_control =
-        FindMatchingControl(children, path_element, is_first_level_node);
+        current_control->FindMatchingChild(path_element);
     if (!selected_control.has_value()) {
       ATSPI_FUZZER_LOG << "Failed to find "
                        << DebugPath(action.path_to_control());
@@ -360,9 +385,8 @@ int AtspiInProcessFuzzer::HandleAction(
       // centipede) we get restarted soon anyway.
       return -1;
     }
-    is_first_level_node = false;
-    current_control = children[*selected_control];
     current_control_path.push_back(*selected_control);
+    current_control = current_control->GetNthChild(*selected_control);
 
     // Inform centipede of the control path we've reached.
     // We give it a hash of the ordinal path to the control - this doesn't
@@ -377,27 +401,24 @@ int AtspiInProcessFuzzer::HandleAction(
           base::FastHash(path_data) & std::numeric_limits<uint32_t>::max();
       extra_features[control_path_id++] = (kControlsReachedDomain << 32) | hash;
     }
-
-    children = GetChildren(current_control);
   }
 
   // We have now chosen a control with which we'll interact during
   // this action
-  std::string control_name = GetNodeName(
-      current_control, action.path_to_control().path_to_control_size() == 1);
-  if (kBlockedControls.contains(control_name)) {
+  if (current_control->IsBlocklisted()) {
     return -1;  // don't explore this case further
   }
 
+  ATSPI_FUZZER_LOG << "Acting on " << DebugPath(action.path_to_control());
   switch (action.verb().action_choice_case()) {
     case test::fuzzing::atspi_fuzzing::ActionVerb::kTakeAction:
-      if (!InvokeAction(current_control,
+      if (!InvokeAction(current_control->Get(),
                         action.verb().take_action().action_id())) {
         return -1;
       }
       break;
     case test::fuzzing::atspi_fuzzing::ActionVerb::kReplaceText:
-      if (!ReplaceText(current_control,
+      if (!ReplaceText(current_control->Get(),
                        action.verb().replace_text().new_text())) {
         return -1;
       }
@@ -406,27 +427,21 @@ int AtspiInProcessFuzzer::HandleAction(
       std::vector<uint32_t> new_selection(
           action.verb().set_selection().selected_child().begin(),
           action.verb().set_selection().selected_child().end());
-      if (!SetSelection(current_control, new_selection)) {
+      if (!SetSelection(current_control->Get(), new_selection)) {
         return -1;
       }
     } break;
     case test::fuzzing::atspi_fuzzing::ActionVerb::ACTION_CHOICE_NOT_SET:
       break;
   }
-  ATSPI_FUZZER_LOG << "Acted on " << DebugPath(action.path_to_control());
 
   base::RunLoop().RunUntilIdle();
 
   // If new components are visible, record how to reach them for
   // the sake of the mutator in future.
-  UiState new_ui_state = ExploreUi();
-  UiState new_controls;
-  for (auto& currently_visible_control : new_ui_state) {
-    if (std::find(ui_state_.begin(), ui_state_.end(),
-                  currently_visible_control) == ui_state_.end()) {
-      new_controls.push_back(currently_visible_control);
-    }
-  }
+  std::vector<std::vector<UiNode*>> new_controls;
+  const std::vector<UiNode*> empty_path;
+  ui_state_->RescanAndFindNewChildren(new_controls, empty_path);
 
   if (new_controls.empty()) {
     return 0;
@@ -444,54 +459,16 @@ int AtspiInProcessFuzzer::HandleAction(
 
   ATSPI_FUZZER_LOG << "Interacting with " << DebugPath(action.path_to_control())
                    << " made visible:";
-  for (auto& currently_visible_control : new_controls) {
-    ControlPath node_path = DetermineUniqueNodePath(currently_visible_control);
+  for (auto& node : new_controls) {
+    ControlPath node_path;
+    ui_state_->AppendControlPath(node_path, node);
     ATSPI_FUZZER_LOG << "  " << DebugPath(node_path);
     Database::GetInstance()->InsertControlPathAndPrerequisites(
-        StringifyNodePath(node_path), action_path);
+        StringifyNodePath(node_path), action_path,
+        node.back()->ProbablyActionable());
   }
-  ui_state_ = std::move(new_ui_state);
 
   return 0;
-}
-
-test::fuzzing::atspi_fuzzing::ControlPath
-AtspiInProcessFuzzer::DetermineUniqueNodePath(
-    const std::vector<ScopedAtspiAccessible>& path_to_control) {
-  test::fuzzing::atspi_fuzzing::ControlPath output_path;
-  ScopedAtspiAccessible parent;
-  bool is_root = true;
-  for (auto& element : path_to_control) {
-    if (is_root) {
-      parent = element;
-      is_root = false;
-      continue;
-    }
-    std::string name =
-        GetNodeName(element, output_path.path_to_control_size() == 0);
-    test::fuzzing::atspi_fuzzing::PathElement* output_element =
-        output_path.add_path_to_control();
-    if (!name.empty()) {
-      *output_element->mutable_named()->mutable_name() = name;
-    } else {
-      uint32_t anonymous_elements = 0;
-      std::string role = GetNodeRole(element);
-      for (auto& child : GetChildren(parent)) {
-        if (child == element) {
-          *output_element->mutable_anonymous()->mutable_role() = role;
-          output_element->mutable_anonymous()->set_ordinal(
-              anonymous_elements++);
-        } else {
-          std::string child_role = GetNodeRole(child);
-          if (child_role == role) {
-            anonymous_elements++;
-          }
-        }
-      }
-    }
-    parent = element;
-  }
-  return output_path;
 }
 
 std::string AtspiInProcessFuzzer::StringifyNodePath(
@@ -513,76 +490,10 @@ ScopedAtspiAccessible AtspiInProcessFuzzer::GetRootNode() {
   return WrapGObject(accessible);
 }
 
-// Return all the nodes visible in the UI
-UiState AtspiInProcessFuzzer::ExploreUi() {
-  std::vector<ScopedAtspiAccessible> root_path;
-  root_path.push_back(root_node_);
-  UiState results;
-  ExploreNode(results, root_node_, root_path);
-  return results;
-}
+namespace {
 
-void AtspiInProcessFuzzer::ExploreNode(
-    UiState& results,
-    ScopedAtspiAccessible& parent_node,
-    const std::vector<ScopedAtspiAccessible>& path_to_control) {
-  std::vector<ScopedAtspiAccessible> children = GetChildren(parent_node);
-  for (auto& child : children) {
-    std::vector<ScopedAtspiAccessible> child_control_path = path_to_control;
-    child_control_path.push_back(child);
-    results.push_back(child_control_path);
-    ExploreNode(results, child, child_control_path);
-  }
-}
-
-std::vector<ScopedAtspiAccessible> AtspiInProcessFuzzer::GetChildren(
-    ScopedAtspiAccessible& node) {
-  std::vector<ScopedAtspiAccessible> children;
-
-  GError* error = nullptr;
-  // Enumerating the attributes seems to be necessary in order for
-  // atspi_accessible_get_child_count and atspi_accessible_get_child_at_index
-  // to work. Discovered empirically.
-  GHashTable* attributes = atspi_accessible_get_attributes(node, &error);
-  if (!error && attributes) {
-    GHashTableIter i;
-    void* key = nullptr;
-    void* value = nullptr;
-
-    g_hash_table_iter_init(&i, attributes);
-    while (g_hash_table_iter_next(&i, &key, &value)) {
-    }
-  }
-  g_clear_error(&error);
-  g_hash_table_unref(attributes);
-
-  // The following code is similar to ui::ChildrenOf, except that we
-  // return a vector containing smart pointers which does appropriate reference
-  // counting.
-  int child_count = atspi_accessible_get_child_count(node, &error);
-  if (error) {
-    g_clear_error(&error);
-    return children;
-  }
-  if (child_count <= 0) {
-    return children;
-  }
-
-  for (int i = 0; i < child_count; i++) {
-    AtspiAccessible* child =
-        atspi_accessible_get_child_at_index(node, i, &error);
-    if (error) {
-      g_clear_error(&error);
-      continue;
-    }
-    if (child) {
-      children.push_back(WrapGObject(child));
-    }
-  }
-  return children;
-}
-
-bool AtspiInProcessFuzzer::CheckOk(gboolean ok, GError** error) {
+// Checks an ATSPI return value and indicates whether to return early
+bool CheckOk(gboolean ok, GError** error) {
   if (*error) {
     g_clear_error(error);
     return false;
@@ -590,7 +501,9 @@ bool AtspiInProcessFuzzer::CheckOk(gboolean ok, GError** error) {
   return ok;
 }
 
-std::string AtspiInProcessFuzzer::CheckString(char* result, GError** error) {
+// Checks an ATSPI return value from a function that returns a string;
+// returns either the string or a blank string
+std::string CheckString(char* result, GError** error) {
   std::string retval;
   if (!*error) {
     retval = result;
@@ -600,26 +513,7 @@ std::string AtspiInProcessFuzzer::CheckString(char* result, GError** error) {
   return retval;
 }
 
-std::string AtspiInProcessFuzzer::GetNodeName(const ScopedAtspiAccessible& node,
-                                              bool is_first_level_node) {
-  if (is_first_level_node) {
-    // The root node name varies according to RAM usage. Pretend it has no name
-    // so we identify it by role instead.
-    return "";
-  }
-  GError* error = nullptr;
-  return CheckString(atspi_accessible_get_name(
-                         const_cast<ScopedAtspiAccessible&>(node), &error),
-                     &error);
-}
-
-std::string AtspiInProcessFuzzer::GetNodeRole(
-    const ScopedAtspiAccessible& node) {
-  GError* error = nullptr;
-  return CheckString(atspi_accessible_get_role_name(
-                         const_cast<ScopedAtspiAccessible&>(node), &error),
-                     &error);
-}
+}  // namespace
 
 bool AtspiInProcessFuzzer::InvokeAction(ScopedAtspiAccessible& node,
                                         size_t action_id) {
@@ -684,18 +578,65 @@ bool AtspiInProcessFuzzer::SetSelection(
   return true;
 }
 
-std::optional<size_t> AtspiInProcessFuzzer::FindMatchingControl(
-    const std::vector<ScopedAtspiAccessible>& controls,
-    const test::fuzzing::atspi_fuzzing::PathElement& selector,
-    bool is_first_level_node) {
+bool UiNode::IsBlocklisted() const {
+  return kBlockedControls.contains(GetName());
+}
+
+bool UiNode::ContainsPasswordNode() const {
+  if (GetName() == "Password: ") {
+    return true;
+  }
+  for (auto& child : children_) {
+    if (child->ContainsPasswordNode()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool UiNode::ProbablyActionable() const {
+  if (!GetName().empty()) {
+    return true;
+  }
+  std::string& role = GetRole();
+  return role != "frame" && role != "panel";
+}
+
+std::string& UiNode::GetName() const {
+  if (name_.has_value()) {  // cached
+    return *name_;
+  }
+  if (depth_ != NodeDepth::Other) {
+    // The root node name varies according to RAM usage. Pretend it has no name
+    // so we identify it by role instead.
+    name_ = "";
+  } else {
+    GError* error = nullptr;
+    name_ = CheckString(atspi_accessible_get_name(node_, &error), &error);
+  }
+  return *name_;
+}
+
+std::string& UiNode::GetRole() const {
+  if (role_.has_value()) {  // cached
+    return *role_;
+  }
+
+  GError* error = nullptr;
+  role_ = CheckString(atspi_accessible_get_role_name(node_, &error), &error);
+  return *role_;
+}
+
+std::optional<size_t> UiNode::FindMatchingChild(
+    const test::fuzzing::atspi_fuzzing::PathElement& selector) const {
   // Select the child which matches the selector.
   // Avoid using hash maps or anything fancy, because we want fuzzing engines
   // to be able to instrument the string comparisons here.
   switch (selector.element_type_case()) {
     case test::fuzzing::atspi_fuzzing::PathElement::kNamed: {
-      for (size_t i = 0; i < controls.size(); i++) {
-        auto& control = controls[i];
-        std::string name = GetNodeName(control, is_first_level_node);
+      for (size_t i = 0; i < children_.size(); i++) {
+        auto& control = children_[i];
+        std::string& name = control->GetName();
         // Use of .data() below is a workaround for
         // https://issues.chromium.org/issues/343801371
         if (name == selector.named().name().data()) {
@@ -706,9 +647,9 @@ std::optional<size_t> AtspiInProcessFuzzer::FindMatchingControl(
     }
     case test::fuzzing::atspi_fuzzing::PathElement::kAnonymous: {
       size_t to_skip = selector.anonymous().ordinal();
-      for (size_t i = 0; i < controls.size(); i++) {
-        auto& control = controls[i];
-        std::string name = GetNodeName(control, is_first_level_node);
+      for (size_t i = 0; i < children_.size(); i++) {
+        auto& control = children_[i];
+        std::string name = control->GetName();
         // Controls with a name MUST be selected by that name,
         // so the fuzzer creates test cases which are maximally stable
         // across Chromium versions. So disregard named controls here.
@@ -718,7 +659,7 @@ std::optional<size_t> AtspiInProcessFuzzer::FindMatchingControl(
           // Such test cases will be less stable, but a lot of controls are
           // nested within anonymous panels and frames - quite often, there's
           // exactly one child control, so test cases should be fairly stable.
-          std::string role = GetNodeRole(control);
+          std::string& role = control->GetRole();
           // Use of .data() below is a workaround for
           // https://issues.chromium.org/issues/343801371
           if (role == selector.anonymous().role().data()) {
@@ -734,6 +675,157 @@ std::optional<size_t> AtspiInProcessFuzzer::FindMatchingControl(
       break;
   }
   return std::nullopt;
+}
+
+UiNode::UiNode(ScopedAtspiAccessible accessible, NodeDepth depth)
+    : node_(accessible), depth_(depth) {
+  // Enumerate children immediately on construction of the node.
+  // We'll always need to know them.
+  ScanAttributes();
+  // The following code is similar to ui::ChildrenOf, except that we
+  // create a vector of UiNodes instead of raw AtspiAccessible pointers
+  GError* error = nullptr;
+  int child_count = atspi_accessible_get_child_count(node_, &error);
+  if (error) {
+    g_clear_error(&error);
+    return;
+  }
+  if (child_count <= 0) {
+    return;
+  }
+  children_.reserve(child_count);
+
+  NodeDepth next_depth =
+      (depth == NodeDepth::Root) ? NodeDepth::FirstLevel : NodeDepth::Other;
+  for (int i = 0; i < child_count; i++) {
+    AtspiAccessible* child =
+        atspi_accessible_get_child_at_index(node_, i, &error);
+    if (error) {
+      g_clear_error(&error);
+      continue;
+    }
+    if (child) {
+      children_.push_back(
+          std::make_unique<UiNode>(WrapGObject(child), next_depth));
+    }
+  }
+}
+
+void UiNode::ScanAttributes() const {
+  // Enumerating the attributes seems to be necessary in order for
+  // atspi_accessible_get_child_count and atspi_accessible_get_child_at_index
+  // to work. Discovered empirically.
+  GError* error = nullptr;
+
+  GHashTable* attributes = atspi_accessible_get_attributes(node_, &error);
+  if (!error && attributes) {
+    GHashTableIter i;
+    void* key = nullptr;
+    void* value = nullptr;
+
+    g_hash_table_iter_init(&i, attributes);
+    while (g_hash_table_iter_next(&i, &key, &value)) {
+    }
+  }
+  g_clear_error(&error);
+  g_hash_table_unref(attributes);
+}
+
+void UiNode::RescanAndFindNewChildren(
+    std::vector<std::vector<UiNode*>>& new_controls,
+    const std::vector<UiNode*> my_path) {
+  // We want to reuse existing UiNode objects where possible so we
+  // retain cached information.
+  // First make a map of such objects to avoid O(n^2)
+  std::unordered_map<AtspiAccessible*, std::unique_ptr<UiNode>*> old_nodes;
+  old_nodes.reserve(children_.size());
+  for (auto& child : children_) {
+    old_nodes.insert(std::make_pair(child->Get(), &child));
+  }
+
+  ScanAttributes();
+
+  GError* error = nullptr;
+  int child_count = atspi_accessible_get_child_count(node_, &error);
+  if (error) {
+    g_clear_error(&error);
+    return;
+  }
+  if (child_count < 0) {
+    return;
+  }
+
+  std::vector<std::unique_ptr<UiNode>> revised_children;
+  revised_children.reserve(child_count);
+  NodeDepth next_depth =
+      (depth_ == NodeDepth::Root) ? NodeDepth::FirstLevel : NodeDepth::Other;
+
+  for (int i = 0; i < child_count; i++) {
+    AtspiAccessible* child =
+        atspi_accessible_get_child_at_index(node_, i, &error);
+    if (error) {
+      g_clear_error(&error);
+      continue;
+    }
+    if (child) {
+      auto it = old_nodes.find(child);
+      std::vector<UiNode*> new_node_path = my_path;
+      if (it == old_nodes.end()) {
+        // New node!
+        revised_children.push_back(
+            std::make_unique<UiNode>(WrapGObject(child), next_depth));
+        new_node_path.push_back(revised_children.back().get());
+        new_controls.push_back(new_node_path);
+        revised_children.back()->GetAllChildren(new_controls, new_node_path);
+      } else {
+        // Pre-existing node
+        revised_children.push_back(std::move(*it->second));
+        new_node_path.push_back(revised_children.back().get());
+        revised_children.back()->RescanAndFindNewChildren(new_controls,
+                                                          new_node_path);
+      }
+    }
+  }
+  children_ = std::move(revised_children);
+}
+
+void UiNode::GetAllChildren(std::vector<std::vector<UiNode*>>& new_controls,
+                            const std::vector<UiNode*> my_path) {
+  for (auto& child : children_) {
+    std::vector<UiNode*> child_path = my_path;
+    child_path.push_back(child.get());
+    new_controls.push_back(child_path);
+    child->GetAllChildren(new_controls, child_path);
+  }
+}
+
+void UiNode::AppendControlPath(ControlPath& output_path,
+                               const base::span<UiNode*>& path_to_control) {
+  UiNode* desired_child = path_to_control.front();
+  PathElement* output_element = output_path.add_path_to_control();
+  if (!desired_child->GetName().empty()) {
+    *output_element->mutable_named()->mutable_name() = desired_child->GetName();
+  } else {
+    std::string& desired_role = desired_child->GetRole();
+    *output_element->mutable_anonymous()->mutable_role() = desired_role;
+    size_t prior_controls_with_this_role = 0;
+    for (auto& child : children_) {
+      std::string& name = child->GetName();
+      if (name.empty()) {
+        if (child.get() == desired_child) {
+          output_element->mutable_anonymous()->set_ordinal(
+              prior_controls_with_this_role);
+          break;
+        }
+        if (child->GetRole() == desired_role) {
+          prior_controls_with_this_role++;
+        }
+      }
+    }
+  }
+  if (path_to_control.size() > 1) {
+    desired_child->AppendControlPath(output_path, path_to_control.subspan(1u));
+  }
 }
 
 namespace {
@@ -973,47 +1065,60 @@ Database::Database() {
   CHECK(db_->Open(db_path));
   CHECK(db_->Execute("PRAGMA foreign_keys = ON"));
   // Delete some tables from older versions of this fuzzer
-  if (db_->DoesTableExist("roles")) {
-    CHECK(db_->Execute("drop table roles"));
-  }
-  if (db_->DoesTableExist("names")) {
-    CHECK(db_->Execute("drop table names"));
-  }
-  if (db_->DoesTableExist("controls")) {
-    CHECK(db_->Execute("drop table controls"));
-  }
+  DropTableIfExists("roles");
+  DropTableIfExists("names");
+  DropTableIfExists("prereqs");
+  DropTableIfExists("actions");
+  DropTableIfExists("controls");
+  DropTableIfExists("controlsv2");
+  DropTableIfExists("controlsv3");
   // Create the ones we care about nowadays
-  if (!db_->DoesTableExist("controlsv2")) {
-    CHECK(
-        db_->Execute("create table controlsv2 (id INTEGER PRIMARY KEY, path "
-                     "TEXT NOT NULL UNIQUE)"));
-  }
-  if (!db_->DoesTableExist("actions")) {
+  if (!db_->DoesTableExist("controlsv4")) {
     CHECK(db_->Execute(
-        "create table actions (id INTEGER PRIMARY KEY, control_id "
+        "create table controlsv4 (id INTEGER PRIMARY KEY, path "
+        "TEXT NOT NULL UNIQUE, probably_actionable BOOL, has_prereq BOOL)"));
+  }
+  if (!db_->DoesTableExist("actionsv2")) {
+    CHECK(db_->Execute(
+        "create table actionsv2 (id INTEGER PRIMARY KEY, control_id "
         "INTEGER NOT NULL, verb TEXT NOT NULL, FOREIGN KEY(control_id) "
-        "REFERENCES controlsv2(id) ON DELETE CASCADE, unique(control_id, "
+        "REFERENCES controlsv4(id) ON DELETE CASCADE, unique(control_id, "
         "verb))"));
   }
-  if (!db_->DoesTableExist("prereqs")) {
+  if (!db_->DoesTableExist("prereqsv2")) {
     CHECK(db_->Execute(
-        "create table prereqs (control_id INTEGER NOT NULL, "
+        "create table prereqsv2 (control_id INTEGER NOT NULL, "
         "action_id INTEGER NOT NULL, FOREIGN KEY(control_id) REFERENCES "
-        "controlsv2(id) ON DELETE CASCADE,  FOREIGN KEY(action_id) REFERENCES "
-        "actions(id) ON DELETE CASCADE, unique(control_id, action_id))"));
+        "controlsv4(id) ON DELETE CASCADE,  FOREIGN KEY(action_id) REFERENCES "
+        "actionsv2(id) ON DELETE CASCADE, unique(control_id, action_id))"));
   }
 }
 
-std::optional<int64_t> Database::InsertControlPath(const std::string& path) {
+void Database::DropTableIfExists(const std::string& table_name) {
+  if (db_->DoesTableExist(table_name)) {
+    CHECK(db_->Execute(base::StrCat({"drop table ", table_name})));
+  }
+}
+
+std::optional<int64_t> Database::InsertControlPath(const std::string& path,
+                                                   bool probably_actionable,
+                                                   bool has_prereq) {
   sql::Statement stmt(db_->GetCachedStatement(
-      SQL_FROM_HERE, "INSERT OR IGNORE INTO controlsv2 (path) VALUES (?)"));
+      SQL_FROM_HERE,
+      "INSERT OR IGNORE INTO controlsv4 (path, "
+      "probably_actionable, has_prereq) VALUES (?, ?, ?)"));
   stmt.BindString(0, path);
+  stmt.BindBool(1, probably_actionable);
+  // Storing the following bool in the database seems wasteful as it could be calculated
+  // during the SELECT statement by joining to the prereqs table. Unfortunately that
+  // turns out to be too slow, so we'll store a bool instead.
+  stmt.BindBool(2, has_prereq);
   if (!stmt.Run()) {
     return std::nullopt;
   }  // ignore result in case other instances of the fuzzer have the database
      // locked
   sql::Statement get_statement(db_->GetCachedStatement(
-      SQL_FROM_HERE, "select id from controlsv2 where path = ?"));
+      SQL_FROM_HERE, "select id from controlsv4 where path = ?"));
   get_statement.BindString(0, path);
   if (!get_statement.Step()) {
     return std::nullopt;
@@ -1024,23 +1129,27 @@ std::optional<int64_t> Database::InsertControlPath(const std::string& path) {
 
 void Database::InsertControlPathAndPrerequisites(
     const std::string& newly_visible_control,
-    const std::optional<ActionPath>& prerequisite_action) {
+    const std::optional<ActionPath>& prerequisite_action,
+    bool probably_actionable) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  std::optional<int64_t> control_id = InsertControlPath(newly_visible_control);
+  std::optional<int64_t> control_id =
+      InsertControlPath(newly_visible_control, probably_actionable,
+                        prerequisite_action.has_value());
   if (!control_id) {
     return;
   }
 
   if (prerequisite_action) {
+    // Almost certainly retrieving an exiting ID
     std::optional<int64_t> prereq_control_id =
-        InsertControlPath(prerequisite_action->control_path);
+        InsertControlPath(prerequisite_action->control_path, true, false);
     if (!prereq_control_id) {
       return;
     }
     sql::Statement stmt(db_->GetCachedStatement(
         SQL_FROM_HERE,
-        "INSERT OR IGNORE INTO actions (control_id, verb) VALUES (?, ?)"));
+        "INSERT OR IGNORE INTO actionsv2 (control_id, verb) VALUES (?, ?)"));
     stmt.BindInt64(0, *prereq_control_id);
     stmt.BindString(1, prerequisite_action->verb_string);
     if (!stmt.Run()) {
@@ -1049,7 +1158,7 @@ void Database::InsertControlPathAndPrerequisites(
 
     sql::Statement get_statement(db_->GetCachedStatement(
         SQL_FROM_HERE,
-        "select id from actions where control_id = ? and verb = ?"));
+        "select id from actionsv2 where control_id = ? and verb = ?"));
     get_statement.BindInt64(0, *prereq_control_id);
     get_statement.BindString(1, prerequisite_action->verb_string);
     if (!get_statement.Step()) {
@@ -1057,9 +1166,10 @@ void Database::InsertControlPathAndPrerequisites(
     }
     int64_t action_id = get_statement.ColumnInt64(0);
 
-    sql::Statement stmt2(db_->GetCachedStatement(
-        SQL_FROM_HERE,
-        "INSERT OR IGNORE INTO prereqs (control_id, action_id) VALUES (?, ?)"));
+    sql::Statement stmt2(
+        db_->GetCachedStatement(SQL_FROM_HERE,
+                                "INSERT OR IGNORE INTO prereqsv2 (control_id, "
+                                "action_id) VALUES (?, ?)"));
     stmt2.BindInt64(0, *control_id);
     stmt2.BindInt64(1, action_id);
     if (!stmt2.Run()) {
@@ -1071,9 +1181,9 @@ void Database::InsertControlPathAndPrerequisites(
   // Delete random rows to keep to that maximum size
   sql::Statement delete_stmt(db_->GetCachedStatement(
       SQL_FROM_HERE,
-      "DELETE from controlsv2 where id in (select id from controlsv2 "
+      "DELETE from controlsv4 where id in (select id from controlsv4 "
       "order by "
-      "random() limit max(0, ((select count(*) from controlsv2) - ?)))"));
+      "random() limit max(0, ((select count(*) from controlsv4) - ?)))"));
   delete_stmt.BindInt64(0, kMaxRowsAllowed);
   base::IgnoreResult(delete_stmt.Run());
 }
@@ -1082,11 +1192,42 @@ std::optional<std::string> Database::GetRandomControlPath(
     std::minstd_rand& random) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   size_t random_selector =
-      std::uniform_int_distribution<int64_t>(INT64_MIN, INT64_MAX)(random);
-  sql::Statement get_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE,
-                              "select path from controlsv2 limit 1 offset (? % "
-                              "(SELECT COUNT(*) FROM controlsv2))"));
+      std::uniform_int_distribution<int64_t>(0, INT64_MAX)(random);
+  // Complex SQL here - explanation follows.
+  // The idea is essentially just to select any 'path' from the 'controlsv4'
+  // table which has been filled in with the paths to controls that were
+  // previously discovered to actually exist.
+  // However, we apply a bias towards some controls, based on these factors:
+  // * Whether the control is deemed to be actionable (see
+  //   UiNode::ProbablyActionable)
+  // * Whether there's a pre-requisite action to make the control appear
+  // * The length of the path. We want to poke at deeper more obscure controls.
+  // Stepping through the SQL to explain how we do that.
+  const std::string query =
+      // First let's create a CTE which adds scores for these individual
+      // factors.
+      "WITH controlsv4_scored AS (select controlsv4.*, "
+      "CASE WHEN probably_actionable = true THEN 10 ELSE 1 END AS "
+      "actionability_bias, "
+      "CASE WHEN has_prereq = true THEN 20 ELSE 1 END AS "
+      "prereq_bias, "
+      "MIN(LENGTH(path) / 20, 1) AS path_bias "
+      "FROM controlsv4), "
+      // Now let's create a further CTE which multiplies those biases into one
+      // score.
+      "controlsv4_with_bias AS ("
+      "SELECT id, path, CAST(path_bias * actionability_bias * prereq_bias AS "
+      "INTEGER) AS bias FROM controlsv4_scored), "
+      // Now create a recursive CTE which is essentially controlsv4 but with
+      // rows *REPEATED* based on the bias. This is the clever bit!
+      "controlsv4_repeated AS (SELECT id, path, bias, 1 AS counter FROM "
+      "controlsv4_with_bias "
+      "UNION ALL select id, path, bias, counter + 1 FROM controlsv4_repeated "
+      "WHERE counter < bias) "
+      // Finally, select a random row from that.
+      "SELECT path FROM controlsv4_repeated LIMIT 1 offset (? % (SELECT "
+      "count(*) FROM controlsv4_repeated))";
+  sql::Statement get_statement(db_->GetCachedStatement(SQL_FROM_HERE, query));
   get_statement.BindInt64(0, random_selector);
   if (!get_statement.Step()) {
     return std::nullopt;
@@ -1104,10 +1245,10 @@ std::optional<ActionPath> Database::GetPrerequisite(const std::string& control,
       SQL_FROM_HERE,
       "with prereq_options as (select prereq_control.path as prereq_path, "
       "this_control.path as this_path, verb from "
-      "controlsv2 as this_control, controlsv2 as prereq_control, actions, "
-      "prereqs where this_control.id = prereqs.control_id and "
-      "prereqs.action_id "
-      "= actions.id and actions.control_id = prereq_control.id)"
+      "controlsv4 as this_control, controlsv4 as prereq_control, actionsv2, "
+      "prereqsv2 where this_control.id = prereqsv2.control_id and "
+      "prereqsv2.action_id "
+      "= actionsv2.id and actionsv2.control_id = prereq_control.id)"
       "select prereq_path, verb from prereq_options where this_path = ? limit "
       "1 offset (? % (select count(*) from "
       "prereq_options))"));
