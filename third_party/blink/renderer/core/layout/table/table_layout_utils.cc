@@ -478,8 +478,8 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
   // https://www.w3.org/TR/css-tables-3/#width-distribution-algorithm
   enum { kMinGuess, kPercentageGuess, kSpecifiedGuess, kMaxGuess, kAboveMax };
   // sizes are collected for all guesses except kAboveMax
-  LayoutUnit guess_sizes[kAboveMax];
-  LayoutUnit guess_size_total_increases[kAboveMax];
+  std::array<LayoutUnit, kAboveMax> guess_sizes;
+  std::array<LayoutUnit, kAboveMax> guess_size_total_increases;
   float total_percent = 0.0f;
   LayoutUnit total_auto_max_inline_size;
   LayoutUnit total_fixed_max_inline_size;
@@ -501,30 +501,29 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
       total_percent += *column->percent;
       LayoutUnit percent_inline_size =
           column->ResolvePercentInlineSize(target_inline_size);
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-      UNSAFE_TODO(guess_sizes[kMinGuess]) += *column->min_inline_size;
-      UNSAFE_TODO(guess_sizes[kPercentageGuess]) += percent_inline_size;
-      UNSAFE_TODO(guess_sizes[kSpecifiedGuess]) += percent_inline_size;
-      UNSAFE_TODO(guess_sizes[kMaxGuess]) += percent_inline_size;
-      UNSAFE_TODO(guess_size_total_increases[kPercentageGuess]) +=
+      guess_sizes[kMinGuess] += *column->min_inline_size;
+      guess_sizes[kPercentageGuess] += percent_inline_size;
+      guess_sizes[kSpecifiedGuess] += percent_inline_size;
+      guess_sizes[kMaxGuess] += percent_inline_size;
+      guess_size_total_increases[kPercentageGuess] +=
           percent_inline_size - *column->min_inline_size;
     } else if (column->is_constrained) {  // Fixed column
       fixed_columns_count++;
       total_fixed_max_inline_size += *column->max_inline_size;
-      UNSAFE_TODO(guess_sizes[kMinGuess]) += *column->min_inline_size;
-      UNSAFE_TODO(guess_sizes[kPercentageGuess]) += *column->min_inline_size;
-      UNSAFE_TODO(guess_sizes[kSpecifiedGuess]) += *column->max_inline_size;
-      UNSAFE_TODO(guess_sizes[kMaxGuess]) += *column->max_inline_size;
-      UNSAFE_TODO(guess_size_total_increases[kSpecifiedGuess]) +=
+      guess_sizes[kMinGuess] += *column->min_inline_size;
+      guess_sizes[kPercentageGuess] += *column->min_inline_size;
+      guess_sizes[kSpecifiedGuess] += *column->max_inline_size;
+      guess_sizes[kMaxGuess] += *column->max_inline_size;
+      guess_size_total_increases[kSpecifiedGuess] +=
           *column->max_inline_size - *column->min_inline_size;
     } else {  // Auto column
       auto_columns_count++;
       total_auto_max_inline_size += *column->max_inline_size;
-      UNSAFE_TODO(guess_sizes[kMinGuess]) += *column->min_inline_size;
-      UNSAFE_TODO(guess_sizes[kPercentageGuess]) += *column->min_inline_size;
-      UNSAFE_TODO(guess_sizes[kSpecifiedGuess]) += *column->min_inline_size;
-      UNSAFE_TODO(guess_sizes[kMaxGuess]) += *column->max_inline_size;
-      UNSAFE_TODO(guess_size_total_increases[kMaxGuess]) +=
+      guess_sizes[kMinGuess] += *column->min_inline_size;
+      guess_sizes[kPercentageGuess] += *column->min_inline_size;
+      guess_sizes[kSpecifiedGuess] += *column->min_inline_size;
+      guess_sizes[kMaxGuess] += *column->max_inline_size;
+      guess_size_total_increases[kMaxGuess] +=
           *column->max_inline_size - *column->min_inline_size;
     }
   }
@@ -536,14 +535,11 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
   // Target inline size must be wider than sum of min inline sizes.
   // This is always true for assignable_table_inline_size, but not for
   // colspan_cells.
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  target_inline_size =
-      std::max(target_inline_size, UNSAFE_TODO(guess_sizes[kMinGuess]));
+  target_inline_size = std::max(target_inline_size, guess_sizes[kMinGuess]);
 
   unsigned starting_guess = kAboveMax;
   for (unsigned i = kMinGuess; i != kAboveMax; ++i) {
-    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-    if (UNSAFE_TODO(guess_sizes[i]) >= target_inline_size) {
+    if (guess_sizes[i] >= target_inline_size) {
       starting_guess = i;
       break;
     }
@@ -565,11 +561,10 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
     case kPercentageGuess: {
       // Percent columns grow in proportion to difference between their
       // percentage size and their minimum size.
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
       LayoutUnit percent_inline_size_increase =
-          UNSAFE_TODO(guess_size_total_increases[kPercentageGuess]);
+          guess_size_total_increases[kPercentageGuess];
       LayoutUnit distributable_inline_size =
-          target_inline_size - UNSAFE_TODO(guess_sizes[kMinGuess]);
+          target_inline_size - guess_sizes[kMinGuess];
       LayoutUnit remaining_deficit = distributable_inline_size;
       LayoutUnit* computed_size = computed_sizes.data();
       LayoutUnit* last_computed_size = nullptr;
@@ -606,11 +601,10 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
     } break;
     case kSpecifiedGuess: {
       // Fixed columns grow, auto gets min, percent gets %max.
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
       LayoutUnit fixed_inline_size_increase =
-          UNSAFE_TODO(guess_size_total_increases[kSpecifiedGuess]);
+          guess_size_total_increases[kSpecifiedGuess];
       LayoutUnit distributable_inline_size =
-          target_inline_size - UNSAFE_TODO(guess_sizes[kPercentageGuess]);
+          target_inline_size - guess_sizes[kPercentageGuess];
       LayoutUnit remaining_deficit = distributable_inline_size;
       LayoutUnit* last_computed_size = nullptr;
       LayoutUnit* computed_size = computed_sizes.data();
@@ -645,20 +639,17 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
     } break;
     case kMaxGuess: {
       // Auto columns grow, fixed gets max, percent gets %max.
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
       LayoutUnit auto_inline_size_increase =
-          UNSAFE_TODO(guess_size_total_increases[kMaxGuess]);
+          guess_size_total_increases[kMaxGuess];
       LayoutUnit distributable_inline_size =
-          UNSAFE_TODO(target_inline_size - guess_sizes[kSpecifiedGuess]);
+          target_inline_size - guess_sizes[kSpecifiedGuess];
       // When the inline-sizes match exactly, this usually means that table
       // inline-size is auto, and that columns should be wide enough to
       // accommodate content without wrapping.
       // Instead of using the distributing math to compute final column
       // inline-size, we use the max inline-size. Using distributing math can
       // cause rounding errors, and unintended line wrap.
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-      bool is_exact_match =
-          target_inline_size == UNSAFE_TODO(guess_sizes[kMaxGuess]);
+      bool is_exact_match = target_inline_size == guess_sizes[kMaxGuess];
       LayoutUnit remaining_deficit =
           is_exact_match ? LayoutUnit() : distributable_inline_size;
       LayoutUnit* last_computed_size = nullptr;
@@ -694,9 +685,8 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
       }
     } break;
     case kAboveMax: {
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
       LayoutUnit distributable_inline_size =
-          target_inline_size - UNSAFE_TODO(guess_sizes[kMaxGuess]);
+          target_inline_size - guess_sizes[kMaxGuess];
       if (auto_columns_count > 0) {
         // Grow auto columns if available.
         LayoutUnit remaining_deficit = distributable_inline_size;
