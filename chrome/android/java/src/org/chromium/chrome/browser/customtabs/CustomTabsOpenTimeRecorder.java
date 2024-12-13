@@ -12,6 +12,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -157,7 +158,7 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
     interface Natives {
         void recordCustomTabSession(
                 long time,
-                String packageName,
+                @JniType("std::string") String packageName,
                 long sessionDuration,
                 boolean wasUserClosed,
                 boolean isPartialCct);
