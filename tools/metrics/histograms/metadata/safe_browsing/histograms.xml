@@ -3365,6 +3365,18 @@ and applied correctly. -->
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.V4Store.DbThread.CheckHighConfidenceAllowlistStoreDuration"
+    units="ms" expires_after="2025-09-01">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records how long it takes to check for matching prefixes in the high
+    confidence allowlist v4 store. This metric counts only the time spent on the
+    database thread and excludes any thread hopping time.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.V4Store.IsStoreValid" enum="BooleanValid"
     expires_after="2025-06-08">
   <owner>xinghuilu@chromium.org</owner>
