@@ -292,6 +292,7 @@ class NET_EXPORT TransportSecurityState {
   // static or dynamic state, for metrics.
   SSLUpgradeDecision GetSSLUpgradeDecision(
       const std::string& host,
+      bool is_top_level_nav,
       const NetLogWithSource& net_log = NetLogWithSource());
 
   // These functions search for static and dynamic STS and PKP states, and

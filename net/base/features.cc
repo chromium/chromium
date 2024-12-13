@@ -658,4 +658,8 @@ BASE_FEATURE(kNewClientCertPathBuilding,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(USE_NSS_CERTS)
 
+BASE_FEATURE(kHstsTopLevelNavigationsOnly,
+             "HstsTopLevelNavigationsOnly",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features

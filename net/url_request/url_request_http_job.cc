@@ -343,8 +343,10 @@ std::unique_ptr<URLRequestJob> URLRequestHttpJob::Create(URLRequest* request) {
   SSLUpgradeDecision upgrade_decision = SSLUpgradeDecision::kNoUpgrade;
   if (TransportSecurityState* hsts =
           request->context()->transport_security_state()) {
-    upgrade_decision =
-        hsts->GetSSLUpgradeDecision(url.host(), request->net_log());
+    upgrade_decision = hsts->GetSSLUpgradeDecision(
+        url.host(),
+        /*is_top_level_nav=*/request->isolation_info().IsMainFrameRequest(),
+        request->net_log());
   }
 
   // Check for reasons not to return a URLRequestHttpJob. These don't apply to

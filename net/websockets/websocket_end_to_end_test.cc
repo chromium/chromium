@@ -694,6 +694,11 @@ TEST_F(WebSocketEndToEndTest, TruncatedResponse) {
 
 // Regression test for crbug.com/455215 "HSTS not applied to WebSocket"
 TEST_F(WebSocketEndToEndTest, HstsHttpsToWebSocket) {
+  base::test::ScopedFeatureList features;
+  // Websocket upgrades can't happen when only top-level navigations are
+  // upgraded, so disable the feature for this test.
+  features.InitAndDisableFeature(features::kHstsTopLevelNavigationsOnly);
+
   EmbeddedTestServer https_server(net::EmbeddedTestServer::Type::TYPE_HTTPS);
   std::string test_server_hostname = "a.test";
   https_server.SetCertHostnames({test_server_hostname});
@@ -725,6 +730,39 @@ TEST_F(WebSocketEndToEndTest, HstsHttpsToWebSocket) {
   EXPECT_TRUE(ConnectAndWait(ws_url));
 }
 
+// Tests that when kHstsTopLevelNavigationsOnly is enabled websocket isn't
+// upgraded.
+TEST_F(WebSocketEndToEndTest, HstsHttpsToWebSocketNotApplied) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kHstsTopLevelNavigationsOnly);
+
+  EmbeddedTestServer https_server(net::EmbeddedTestServer::Type::TYPE_HTTPS);
+  https_server.SetSSLConfig(
+      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
+  https_server.ServeFilesFromSourceDirectory("net/data/url_request_unittest");
+
+  SpawnedTestServer::SSLOptions ssl_options(
+      SpawnedTestServer::SSLOptions::CERT_COMMON_NAME_IS_DOMAIN);
+  SpawnedTestServer ws_server(SpawnedTestServer::TYPE_WS,
+                              GetWebSocketTestDataDirectory());
+
+  ASSERT_TRUE(https_server.Start());
+  ASSERT_TRUE(ws_server.Start());
+  InitialiseContext();
+  // Set HSTS via https:
+  TestDelegate delegate;
+  GURL https_page = https_server.GetURL("/hsts-headers.html");
+  std::unique_ptr<URLRequest> request(context_->CreateRequest(
+      https_page, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  request->Start();
+  delegate.RunUntilComplete();
+  EXPECT_EQ(OK, delegate.request_status());
+
+  // Check that the ws connection was not upgraded.
+  GURL ws_url = ws_server.GetURL(kEchoServer);
+  EXPECT_TRUE(ConnectAndWait(ws_url));
+}
+
 TEST_F(WebSocketEndToEndTest, HstsWebSocketToHttps) {
   EmbeddedTestServer https_server(net::EmbeddedTestServer::Type::TYPE_HTTPS);
   std::string test_server_hostname = "a.test";
@@ -746,8 +784,12 @@ TEST_F(WebSocketEndToEndTest, HstsWebSocketToHttps) {
   TestDelegate delegate;
   GURL http_page = ReplaceUrlScheme(
       https_server.GetURL(test_server_hostname, "/simple.html"), "http");
+  url::Origin http_origin = url::Origin::Create(http_page);
   std::unique_ptr<URLRequest> request(context_->CreateRequest(
       http_page, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  request->set_isolation_info(IsolationInfo::Create(
+      IsolationInfo::RequestType::kMainFrame, http_origin, http_origin,
+      SiteForCookies::FromOrigin(http_origin)));
   request->Start();
   delegate.RunUntilComplete();
   EXPECT_EQ(OK, delegate.request_status());
@@ -755,6 +797,11 @@ TEST_F(WebSocketEndToEndTest, HstsWebSocketToHttps) {
 }
 
 TEST_F(WebSocketEndToEndTest, HstsWebSocketToWebSocket) {
+  base::test::ScopedFeatureList features;
+  // Websocket upgrades can't happen when only top-level navigations are
+  // upgraded, so disable the feature for this test.
+  features.InitAndDisableFeature(features::kHstsTopLevelNavigationsOnly);
+
   std::string test_server_hostname = "a.test";
   SpawnedTestServer::SSLOptions ssl_options(
       SpawnedTestServer::SSLOptions::CERT_TEST_NAMES);

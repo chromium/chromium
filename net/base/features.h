@@ -679,6 +679,9 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 NET_EXPORT BASE_DECLARE_FEATURE(kNewClientCertPathBuilding);
 #endif  // BUILDFLAG(USE_NSS_CERTS)
 
+// When enabled HSTS upgrades will only apply to top-level navigations.
+NET_EXPORT BASE_DECLARE_FEATURE(kHstsTopLevelNavigationsOnly);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

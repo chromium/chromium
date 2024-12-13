@@ -8,6 +8,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <sstream>
 #include <utility>
 #include <vector>
 
@@ -1174,53 +1175,92 @@ TEST_F(URLRequestHttpJobTest, HSTSInternalRedirectTest) {
   struct TestCase {
     const char* url;
     bool upgrade_expected;
-    const char* url_expected;
+    const char* upgraded_url;
   } cases[] = {
-    {"http://upgrade.test/", true, "https://upgrade.test/"},
-    {"http://upgrade.test:123/", true, "https://upgrade.test:123/"},
-    {"http://no-upgrade.test/", false, "http://no-upgrade.test/"},
-    {"http://no-upgrade.test:123/", false, "http://no-upgrade.test:123/"},
+      {"http://upgrade.test/", true, "https://upgrade.test/"},
+      {"http://upgrade.test:123/", true, "https://upgrade.test:123/"},
+      {"http://no-upgrade.test/", false, "http://no-upgrade.test/"},
+      {"http://no-upgrade.test:123/", false, "http://no-upgrade.test:123/"},
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
-    {"ws://upgrade.test/", true, "wss://upgrade.test/"},
-    {"ws://upgrade.test:123/", true, "wss://upgrade.test:123/"},
-    {"ws://no-upgrade.test/", false, "ws://no-upgrade.test/"},
-    {"ws://no-upgrade.test:123/", false, "ws://no-upgrade.test:123/"},
+      {"ws://upgrade.test/", true, "wss://upgrade.test/"},
+      {"ws://upgrade.test:123/", true, "wss://upgrade.test:123/"},
+      {"ws://no-upgrade.test/", false, "ws://no-upgrade.test/"},
+      {"ws://no-upgrade.test:123/", false, "ws://no-upgrade.test:123/"},
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
   };
 
-  for (const auto& test : cases) {
-    SCOPED_TRACE(test.url);
+  // This test has a few different test configurations, a combination of:
+  // * kHstsTopLevelNavigationsOnly enabled/disabled.
+  // * Request is considered a main frame navigation or not.
+  for (bool top_level_only_enabled : {false, true}) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureState(
+        features::kHstsTopLevelNavigationsOnly, top_level_only_enabled);
 
-    GURL url = GURL(test.url);
-    // This is needed to bypass logic that rejects using URLRequests directly
-    // for WebSocket requests.
-    bool is_for_websockets = url.SchemeIsWSOrWSS();
+    for (bool is_main_frame_navigation : {false, true}) {
+      for (const auto& test : cases) {
+        std::stringstream scoped_trace_message;
+        scoped_trace_message
+            << "url: " << test.url << ", feature state: "
+            << (top_level_only_enabled ? "enabled" : "disabled")
+            << ", main frame navigation: "
+            << (is_main_frame_navigation ? "yes" : "no");
+        SCOPED_TRACE(scoped_trace_message.str());
 
-    TestDelegate d;
-    TestNetworkDelegate network_delegate;
-    std::unique_ptr<URLRequest> r(context_->CreateRequest(
-        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
-        is_for_websockets));
+        GURL url = GURL(test.url);
+        url::Origin origin = url::Origin::Create(url);
 
-    net_log_observer_.Clear();
-    r->Start();
-    d.RunUntilComplete();
+        bool is_for_websockets = url.SchemeIsWSOrWSS();
 
-    if (test.upgrade_expected) {
-      auto entries = net_log_observer_.GetEntriesWithType(
-          net::NetLogEventType::URL_REQUEST_REDIRECT_JOB);
-      int redirects = entries.size();
-      for (const auto& entry : entries) {
-        EXPECT_EQ("HSTS", GetStringValueFromParams(entry, "reason"));
+        if (is_for_websockets && is_main_frame_navigation) {
+          // Websockets are never main frame navigations, so skip this case.
+          continue;
+        }
+
+        TestDelegate d;
+        TestNetworkDelegate network_delegate;
+        std::unique_ptr<URLRequest> r(context_->CreateRequest(
+            url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
+            is_for_websockets));
+
+        // Only apply for main frame navigation based runs.
+        if (is_main_frame_navigation) {
+          r->set_isolation_info(IsolationInfo::Create(
+              IsolationInfo::RequestType::kMainFrame, origin, origin,
+              SiteForCookies::FromOrigin(origin)));
+        }
+        net_log_observer_.Clear();
+        r->Start();
+        d.RunUntilComplete();
+
+        // An upgrade should be expected when
+        // * The test case expects an upgrade AND
+        // * The run isn't a non-main frame navigation with
+        // `top_level_only_enabled`.
+        const bool upgrade_expected =
+            test.upgrade_expected &&
+            !(!is_main_frame_navigation && top_level_only_enabled);
+
+        if (upgrade_expected) {
+          auto entries = net_log_observer_.GetEntriesWithType(
+              net::NetLogEventType::URL_REQUEST_REDIRECT_JOB);
+          int redirects = entries.size();
+          for (const auto& entry : entries) {
+            EXPECT_EQ("HSTS", GetStringValueFromParams(entry, "reason"));
+          }
+          EXPECT_EQ(1, redirects);
+          EXPECT_EQ(1, d.received_redirect_count());
+          EXPECT_EQ(2u, r->url_chain().size());
+
+          EXPECT_EQ(GURL(test.upgraded_url), r->url());
+        } else {
+          EXPECT_EQ(0, d.received_redirect_count());
+          EXPECT_EQ(1u, r->url_chain().size());
+
+          EXPECT_EQ(GURL(test.url), r->url());
+        }
       }
-      EXPECT_EQ(1, redirects);
-      EXPECT_EQ(1, d.received_redirect_count());
-      EXPECT_EQ(2u, r->url_chain().size());
-    } else {
-      EXPECT_EQ(0, d.received_redirect_count());
-      EXPECT_EQ(1u, r->url_chain().size());
     }
-    EXPECT_EQ(GURL(test.url_expected), r->url());
   }
 }
 
@@ -1236,59 +1276,81 @@ TEST_F(URLRequestHttpJobTest, ShouldBypassHSTS) {
     bool bypass_hsts;
     const char* url_expected;
   } cases[] = {
-    {"http://upgrade.test/example.crl", true,
-     "http://upgrade.test/example.crl"},
-    // This test ensures that the HSTS check and upgrade happens prior to cache
-    // and socket pool checks
-    {"http://upgrade.test/example.crl", false,
-     "https://upgrade.test/example.crl"},
-    {"http://upgrade.test", false, "https://upgrade.test"},
-    {"http://upgrade.test:1080", false, "https://upgrade.test:1080"},
+      {"http://upgrade.test/example.crl", true,
+       "http://upgrade.test/example.crl"},
+      // This test ensures that the HSTS check and upgrade happens prior to
+      // cache and socket pool checks
+      {"http://upgrade.test/example.crl", false,
+       "https://upgrade.test/example.crl"},
+      {"http://upgrade.test", false, "https://upgrade.test"},
+      {"http://upgrade.test:1080", false, "https://upgrade.test:1080"},
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
-    {"ws://upgrade.test/example.crl", true, "ws://upgrade.test/example.crl"},
-    {"ws://upgrade.test/example.crl", false, "wss://upgrade.test/example.crl"},
-    {"ws://upgrade.test", false, "wss://upgrade.test"},
-    {"ws://upgrade.test:1080", false, "wss://upgrade.test:1080"},
+      {"ws://upgrade.test/example.crl", true, "ws://upgrade.test/example.crl"},
+      {"ws://upgrade.test/example.crl", false,
+       "wss://upgrade.test/example.crl"},
+      {"ws://upgrade.test", false, "wss://upgrade.test"},
+      {"ws://upgrade.test:1080", false, "wss://upgrade.test:1080"},
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
   };
 
-  for (const auto& test : cases) {
-    SCOPED_TRACE(test.url);
+  for (bool top_level_only_enabled : {false, true}) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureState(
+        features::kHstsTopLevelNavigationsOnly, top_level_only_enabled);
 
-    GURL url = GURL(test.url);
-    // This is needed to bypass logic that rejects using URLRequests directly
-    // for WebSocket requests.
-    bool is_for_websockets = url.SchemeIsWSOrWSS();
+    for (const auto& test : cases) {
+      std::stringstream scoped_trace_message;
+      scoped_trace_message << "url: " << test.url << ", feature state: "
+                           << (top_level_only_enabled ? "enabled" : "disabled");
+      SCOPED_TRACE(scoped_trace_message.str());
 
-    TestDelegate d;
-    TestNetworkDelegate network_delegate;
-    std::unique_ptr<URLRequest> r(context_->CreateRequest(
-        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
-        is_for_websockets));
-    if (test.bypass_hsts) {
-      r->SetLoadFlags(net::LOAD_SHOULD_BYPASS_HSTS);
-      r->set_allow_credentials(false);
-    }
+      GURL url = GURL(test.url);
+      url::Origin origin = url::Origin::Create(url);
+      // This is needed to bypass logic that rejects using URLRequests directly
+      // for WebSocket requests.
+      bool is_for_websockets = url.SchemeIsWSOrWSS();
 
-    net_log_observer_.Clear();
-    r->Start();
-    d.RunUntilComplete();
-
-    if (test.bypass_hsts) {
-      EXPECT_EQ(0, d.received_redirect_count());
-      EXPECT_EQ(1u, r->url_chain().size());
-    } else {
-      auto entries = net_log_observer_.GetEntriesWithType(
-          net::NetLogEventType::URL_REQUEST_REDIRECT_JOB);
-      int redirects = entries.size();
-      for (const auto& entry : entries) {
-        EXPECT_EQ("HSTS", GetStringValueFromParams(entry, "reason"));
+      if (is_for_websockets && top_level_only_enabled) {
+        // Websocket upgrades can't happen when only top-level navigations are
+        // upgraded, so skip these test cases
+        continue;
       }
-      EXPECT_EQ(1, redirects);
-      EXPECT_EQ(1, d.received_redirect_count());
-      EXPECT_EQ(2u, r->url_chain().size());
+
+      TestDelegate d;
+      TestNetworkDelegate network_delegate;
+      std::unique_ptr<URLRequest> r(context_->CreateRequest(
+          url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
+          is_for_websockets));
+      if (!is_for_websockets) {
+        r->set_isolation_info(IsolationInfo::Create(
+            IsolationInfo::RequestType::kMainFrame, origin, origin,
+            SiteForCookies::FromOrigin(origin)));
+      }
+      if (test.bypass_hsts) {
+        r->SetLoadFlags(net::LOAD_SHOULD_BYPASS_HSTS);
+        r->set_allow_credentials(false);
+      }
+
+      net_log_observer_.Clear();
+      r->Start();
+      d.RunUntilComplete();
+
+      if (test.bypass_hsts) {
+        EXPECT_EQ(0, d.received_redirect_count());
+        EXPECT_EQ(1u, r->url_chain().size());
+      } else {
+        auto entries = net_log_observer_.GetEntriesWithType(
+            net::NetLogEventType::URL_REQUEST_REDIRECT_JOB);
+        int redirects = entries.size();
+        for (const auto& entry : entries) {
+          EXPECT_EQ("HSTS", GetStringValueFromParams(entry, "reason"));
+        }
+        EXPECT_EQ(1, redirects);
+        EXPECT_EQ(1, d.received_redirect_count());
+        EXPECT_EQ(2u, r->url_chain().size());
+      }
+      EXPECT_EQ(GURL(test.url_expected), r->url());
     }
-    EXPECT_EQ(GURL(test.url_expected), r->url());
   }
 }
 
@@ -1554,6 +1616,10 @@ TEST_F(URLRequestHttpJobTest, ShouldBypassHSTSResponseAndConnectionNotReused) {
         context->CreateRequest(insecure_url, DEFAULT_PRIORITY, &delegate,
                                TRAFFIC_ANNOTATION_FOR_TESTS));
     req->set_allow_credentials(false);
+    url::Origin insecure_origin = url::Origin::Create(insecure_url);
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kMainFrame, insecure_origin,
+        insecure_origin, SiteForCookies::FromOrigin(insecure_origin)));
     req->Start();
     delegate.RunUntilRedirect();
     // Ensure that the new URL has an upgraded protocol. This ensures that when
@@ -1592,6 +1658,7 @@ TEST_F(URLRequestHttpJobTest, HSTSInternalRedirectCallback) {
   {
     GURL url(
         https_test.GetURL("/echoheader").ReplaceComponents(replace_scheme));
+    url::Origin origin = url::Origin::Create(url);
     TestDelegate delegate;
     HttpRequestHeaders extra_headers;
     extra_headers.SetHeader("X-HSTS-Test", "1");
@@ -1603,7 +1670,9 @@ TEST_F(URLRequestHttpJobTest, HSTSInternalRedirectCallback) {
     r->SetExtraRequestHeaders(extra_headers);
     r->SetRequestHeadersCallback(base::BindRepeating(
         &HttpRawRequestHeaders::Assign, base::Unretained(&raw_req_headers)));
-
+    r->set_isolation_info(
+        IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame, origin,
+                              origin, SiteForCookies::FromOrigin(origin)));
     r->Start();
     delegate.RunUntilRedirect();
 
@@ -1625,6 +1694,7 @@ TEST_F(URLRequestHttpJobTest, HSTSInternalRedirectCallback) {
   {
     GURL url(https_test.GetURL("/echoheader?foo=bar")
                  .ReplaceComponents(replace_scheme));
+    url::Origin origin = url::Origin::Create(url);
     TestDelegate delegate;
 
     HttpRawRequestHeaders raw_req_headers;
@@ -1633,7 +1703,9 @@ TEST_F(URLRequestHttpJobTest, HSTSInternalRedirectCallback) {
         url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     r->SetRequestHeadersCallback(base::BindRepeating(
         &HttpRawRequestHeaders::Assign, base::Unretained(&raw_req_headers)));
-
+    r->set_isolation_info(
+        IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame, origin,
+                              origin, SiteForCookies::FromOrigin(origin)));
     r->Start();
     delegate.RunUntilRedirect();
 
@@ -1644,6 +1716,7 @@ TEST_F(URLRequestHttpJobTest, HSTSInternalRedirectCallback) {
   {
     GURL url(
         https_test.GetURL("/echoheader#foo").ReplaceComponents(replace_scheme));
+    url::Origin origin = url::Origin::Create(url);
     TestDelegate delegate;
 
     HttpRawRequestHeaders raw_req_headers;
@@ -1652,7 +1725,9 @@ TEST_F(URLRequestHttpJobTest, HSTSInternalRedirectCallback) {
         url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     r->SetRequestHeadersCallback(base::BindRepeating(
         &HttpRawRequestHeaders::Assign, base::Unretained(&raw_req_headers)));
-
+    r->set_isolation_info(
+        IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame, origin,
+                              origin, SiteForCookies::FromOrigin(origin)));
     r->Start();
     delegate.RunUntilRedirect();
 

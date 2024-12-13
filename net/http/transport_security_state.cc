@@ -280,10 +280,19 @@ base::Value::Dict TransportSecurityState::NetLogUpgradeToSSLParam(
 
 SSLUpgradeDecision TransportSecurityState::GetSSLUpgradeDecision(
     const std::string& host,
+    bool is_top_level_nav,
     const NetLogWithSource& net_log) {
   net_log.AddEvent(
       NetLogEventType::TRANSPORT_SECURITY_STATE_SHOULD_UPGRADE_TO_SSL,
       [&] { return NetLogUpgradeToSSLParam(host); });
+
+  // Only top level navigations should be upgraded when
+  // kHstsTopLevelNavigationsOnly is enabled.
+  if (!is_top_level_nav &&
+      base::FeatureList::IsEnabled(features::kHstsTopLevelNavigationsOnly)) {
+    return SSLUpgradeDecision::kNoUpgrade;
+  }
+
   STSState sts_state;
   // Check the dynamic list first (removing the entry if expired).
   if (GetDynamicSTSState(host, &sts_state)) {
@@ -313,7 +322,9 @@ SSLUpgradeDecision TransportSecurityState::GetSSLUpgradeDecision(
 bool TransportSecurityState::ShouldUpgradeToSSL(
     const std::string& host,
     const NetLogWithSource& net_log) {
-  return GetSSLUpgradeDecision(host, net_log) != SSLUpgradeDecision::kNoUpgrade;
+  // TODO(crbug.com/361746120): Propagate `is_top_level_nav` to callers.
+  return GetSSLUpgradeDecision(host, true, net_log) !=
+         SSLUpgradeDecision::kNoUpgrade;
 }
 
 TransportSecurityState::PKPStatus TransportSecurityState::CheckPublicKeyPins(
