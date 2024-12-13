@@ -24932,6 +24932,24 @@
             ]
         }
     ],
+    "WebAuthnUsePasskeyFromAnotherDeviceInContextMenu": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebAuthnUsePasskeyFromAnotherDeviceInContextMenu"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebContentsCaptureHiDPI": [
         {
             "platforms": [
