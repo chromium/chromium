@@ -33,14 +33,19 @@ AdFrameVoter::AdFrameVoter(VotingChannel voting_channel)
 AdFrameVoter::~AdFrameVoter() = default;
 
 void AdFrameVoter::InitializeOnGraph(Graph* graph) {
-  graph->AddInitializingFrameNodeObserver(this);
+  graph->AddFrameNodeObserver(this);
 }
 
 void AdFrameVoter::TearDownOnGraph(Graph* graph) {
-  graph->RemoveInitializingFrameNodeObserver(this);
+  graph->RemoveFrameNodeObserver(this);
 }
 
-void AdFrameVoter::OnFrameNodeInitializing(const FrameNode* frame_node) {
+void AdFrameVoter::OnBeforeFrameNodeAdded(
+    const FrameNode* frame_node,
+    const FrameNode* pending_parent_frame_node,
+    const PageNode* pending_page_node,
+    const ProcessNode* pending_process_node,
+    const FrameNode* pending_parent_or_outer_document_or_embedder) {
   if (!frame_node->IsAdFrame())
     return;
 
@@ -48,7 +53,7 @@ void AdFrameVoter::OnFrameNodeInitializing(const FrameNode* frame_node) {
   voting_channel_.SubmitVote(GetExecutionContext(frame_node), vote);
 }
 
-void AdFrameVoter::OnFrameNodeTearingDown(const FrameNode* frame_node) {
+void AdFrameVoter::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
   if (!frame_node->IsAdFrame())
     return;
 

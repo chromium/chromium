@@ -38,12 +38,12 @@ LoadingPageVoter::~LoadingPageVoter() = default;
 
 void LoadingPageVoter::InitializeOnGraph(Graph* graph) {
   graph->AddPageNodeObserver(this);
-  graph->AddInitializingFrameNodeObserver(this);
+  graph->AddFrameNodeObserver(this);
 }
 
 void LoadingPageVoter::TearDownOnGraph(Graph* graph) {
   graph->RemovePageNodeObserver(this);
-  graph->RemoveInitializingFrameNodeObserver(this);
+  graph->RemoveFrameNodeObserver(this);
 }
 
 void LoadingPageVoter::OnPageNodeAdded(const PageNode* page_node) {
@@ -76,8 +76,13 @@ void LoadingPageVoter::OnLoadingStateChanged(
   }
 }
 
-void LoadingPageVoter::OnFrameNodeInitializing(const FrameNode* frame_node) {
-  if (!IsLoading(frame_node->GetPageNode()->GetLoadingState())) {
+void LoadingPageVoter::OnBeforeFrameNodeAdded(
+    const FrameNode* frame_node,
+    const FrameNode* pending_parent_frame_node,
+    const PageNode* pending_page_node,
+    const ProcessNode* pending_process_node,
+    const FrameNode* pending_parent_or_outer_document_or_embedder) {
+  if (!IsLoading(pending_page_node->GetLoadingState())) {
     return;
   }
 
@@ -86,7 +91,7 @@ void LoadingPageVoter::OnFrameNodeInitializing(const FrameNode* frame_node) {
       Vote(base::TaskPriority::USER_VISIBLE, kPageIsLoadingReason));
 }
 
-void LoadingPageVoter::OnFrameNodeTearingDown(const FrameNode* frame_node) {
+void LoadingPageVoter::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
   if (!IsLoading(frame_node->GetPageNode()->GetLoadingState())) {
     return;
   }

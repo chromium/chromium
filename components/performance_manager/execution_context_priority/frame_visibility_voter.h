@@ -6,8 +6,8 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_FRAME_VISIBILITY_VOTER_H_
 
 #include "components/performance_manager/execution_context_priority/voter_base.h"
-#include "components/performance_manager/graph/initializing_frame_node_observer.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
+#include "components/performance_manager/public/graph/frame_node.h"
 
 namespace performance_manager {
 namespace execution_context_priority {
@@ -19,10 +19,10 @@ namespace execution_context_priority {
 // If the kUnimportantFrame feature is enabled, a lesser
 // TaskPriority::USER_VISIBLE vote is cast for frames that are deemed
 // unimportant.
-// Note: Uses `InitializingFrameNodeObserver` because it can affect the initial
-// priority of a frame.
+// Note: This FrameNodeObserver can affect the initial priority of a frame and
+// thus uses `OnBeforeFrameNodeAdded`.
 class FrameVisibilityVoter : public VoterBase,
-                             public InitializingFrameNodeObserver {
+                             public FrameNode::ObserverDefaultImpl {
  public:
   static const char kFrameVisibilityReason[];
 
@@ -36,9 +36,14 @@ class FrameVisibilityVoter : public VoterBase,
   void InitializeOnGraph(Graph* graph) override;
   void TearDownOnGraph(Graph* graph) override;
 
-  // InitializingFrameNodeObserver:
-  void OnFrameNodeInitializing(const FrameNode* frame_node) override;
-  void OnFrameNodeTearingDown(const FrameNode* frame_node) override;
+  // FrameNodeObserver:
+  void OnBeforeFrameNodeAdded(
+      const FrameNode* frame_node,
+      const FrameNode* pending_parent_frame_node,
+      const PageNode* pending_page_node,
+      const ProcessNode* pending_process_node,
+      const FrameNode* pending_parent_or_outer_document_or_embedder) override;
+  void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
   void OnFrameVisibilityChanged(const FrameNode* frame_node,
                                 FrameNode::Visibility previous_value) override;
   void OnIsImportantChanged(const FrameNode* frame_node) override;

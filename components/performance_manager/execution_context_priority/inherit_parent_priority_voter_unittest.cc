@@ -38,10 +38,10 @@ class GraphOwnedWrapper : public GraphOwned {
 
   // GraphOwned:
   void OnPassedToGraph(Graph* graph) override {
-    graph->AddInitializingFrameNodeObserver(&inherit_parent_priority_voter_);
+    inherit_parent_priority_voter_.InitializeOnGraph(graph);
   }
   void OnTakenFromGraph(Graph* graph) override {
-    graph->RemoveInitializingFrameNodeObserver(&inherit_parent_priority_voter_);
+    inherit_parent_priority_voter_.TearDownOnGraph(graph);
   }
 
   // Exposes the DummyVoteObserver to validate expectations.

@@ -40,6 +40,8 @@ class DummyExecutionContextForLookup : public ExecutionContext {
 
   Graph* GetGraph() const override { NOTREACHED(); }
 
+  NodeState GetNodeState() const override { NOTREACHED(); }
+
   const GURL& GetUrl() const override { NOTREACHED(); }
 
   const ProcessNode* GetProcessNode() const override { NOTREACHED(); }

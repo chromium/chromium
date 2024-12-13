@@ -6,17 +6,17 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_AD_FRAME_VOTER_H_
 
 #include "components/performance_manager/execution_context_priority/voter_base.h"
-#include "components/performance_manager/graph/initializing_frame_node_observer.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
+#include "components/performance_manager/public/graph/frame_node.h"
 
 namespace performance_manager {
 namespace execution_context_priority {
 
 // This voter tracks frame nodes and casts a TaskPriority::LOWEST vote for each
 // ad frame. No votes will be cast for non-ad frames.
-// Uses `InitializingFrameNodeObserver` because it can affect the initial
-// priority of a frame.
-class AdFrameVoter : public VoterBase, public InitializingFrameNodeObserver {
+// Note: This FrameNodeObserver can affect the initial priority of a frame and
+// thus uses `OnBeforeFrameNodeAdded`.
+class AdFrameVoter : public VoterBase, public FrameNode::ObserverDefaultImpl {
  public:
   static const char kAdFrameReason[];
 
@@ -30,9 +30,14 @@ class AdFrameVoter : public VoterBase, public InitializingFrameNodeObserver {
   void InitializeOnGraph(Graph* graph) override;
   void TearDownOnGraph(Graph* graph) override;
 
-  // InitializingFrameNodeObserver:
-  void OnFrameNodeInitializing(const FrameNode* frame_node) override;
-  void OnFrameNodeTearingDown(const FrameNode* frame_node) override;
+  // FrameNodeObserver:
+  void OnBeforeFrameNodeAdded(
+      const FrameNode* frame_node,
+      const FrameNode* pending_parent_frame_node,
+      const PageNode* pending_page_node,
+      const ProcessNode* pending_process_node,
+      const FrameNode* pending_parent_or_outer_document_or_embedder) override;
+  void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
   void OnIsAdFrameChanged(const FrameNode* frame_node) override;
 
   VoterId voter_id() const { return voting_channel_.voter_id(); }

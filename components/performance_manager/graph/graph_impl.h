@@ -17,7 +17,6 @@
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
-#include "components/performance_manager/graph/initializing_frame_node_observer.h"
 #include "components/performance_manager/owned_objects.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
@@ -95,10 +94,6 @@ class GraphImpl : public Graph {
 #if DCHECK_IS_ON()
   bool IsOnGraphSequence() const override;
 #endif
-  void AddInitializingFrameNodeObserver(
-      InitializingFrameNodeObserver* frame_node_observer) override;
-  void RemoveInitializingFrameNodeObserver(
-      InitializingFrameNodeObserver* frame_node_observer) override;
   GraphRegistered* GetRegisteredObject(uintptr_t type_id) override;
 
   // Helper function for safely downcasting to the implementation. This also
@@ -140,12 +135,6 @@ class GraphImpl : public Graph {
   // removed from the graph before it's deleted.
   void AddNewNode(NodeBase* new_node);
   void RemoveNode(NodeBase* node);
-
-  // Sends the `OnFrameNodeInitializing()` and `OnFrameNodeTearingDown()`
-  // notifications to initializing frame node observers (See
-  // InitializingFrameNodeObserver for details).
-  void NotifyFrameNodeInitializing(const FrameNode* frame_node);
-  void NotifyFrameNodeTearingDown(const FrameNode* frame_node);
 
   // Allows explicitly invoking SystemNode destruction for testing.
   void ReleaseSystemNodeForTesting() {
@@ -271,9 +260,6 @@ class GraphImpl : public Graph {
   // Storage for GraphRegistered objects.
   RegisteredObjects<GraphRegistered> registered_objects_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-  InitializingFrameNodeObserverManager
-      initializing_frame_node_observer_manager_;
 
   execution_context::ExecutionContextRegistryImpl
       execution_context_registry_impl_;

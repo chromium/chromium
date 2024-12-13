@@ -6,18 +6,18 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_FRAME_CAPTURING_MEDIA_STREAM_VOTER_H_
 
 #include "components/performance_manager/execution_context_priority/voter_base.h"
-#include "components/performance_manager/graph/initializing_frame_node_observer.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
+#include "components/performance_manager/public/graph/frame_node.h"
 
 namespace performance_manager::execution_context_priority {
 
 // This voter casts a TaskPriority::USER_BLOCKING vote to all frames that are
 // capturing a media stream (audio or video), and a TaskPriority::LOWEST vote
 // otherwise.
-// Note: Uses `InitializingFrameNodeObserver` because it can affect the initial
-// priority of a frame.
+// Note: This FrameNodeObserver can affect the initial priority of a frame and
+// thus uses `OnBeforeFrameNodeAdded`.
 class FrameCapturingMediaStreamVoter : public VoterBase,
-                                       public InitializingFrameNodeObserver {
+                                       public FrameNode::ObserverDefaultImpl {
  public:
   static const char kFrameCapturingMediaStreamReason[];
 
@@ -33,9 +33,14 @@ class FrameCapturingMediaStreamVoter : public VoterBase,
   void InitializeOnGraph(Graph* graph) override;
   void TearDownOnGraph(Graph* graph) override;
 
-  // InitializingFrameNodeObserver:
-  void OnFrameNodeInitializing(const FrameNode* frame_node) override;
-  void OnFrameNodeTearingDown(const FrameNode* frame_node) override;
+  // FrameNodeObserver:
+  void OnBeforeFrameNodeAdded(
+      const FrameNode* frame_node,
+      const FrameNode* pending_parent_frame_node,
+      const PageNode* pending_page_node,
+      const ProcessNode* pending_process_node,
+      const FrameNode* pending_parent_or_outer_document_or_embedder) override;
+  void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
   void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) override;
 
   VoterId voter_id() const { return voting_channel_.voter_id(); }

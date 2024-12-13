@@ -13,7 +13,6 @@
 #include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "components/performance_manager/graph/graph_impl.h"
-#include "components/performance_manager/graph/initializing_frame_node_observer.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
@@ -765,9 +764,6 @@ void FrameNodeImpl::OnInitializingEdges() {
     parent_frame_node_->AddChildFrame(this);
   page_node_->AddFrame(base::PassKey<FrameNodeImpl>(), this);
   process_node_->AddFrame(this);
-
-  // Notify the initializing observers.
-  graph()->NotifyFrameNodeInitializing(this);
 }
 
 void FrameNodeImpl::OnBeforeLeavingGraph() {
@@ -782,9 +778,6 @@ void FrameNodeImpl::OnUninitializingEdges() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(child_frame_nodes_.empty());
-
-  // Notify the initializing observers for cleanup.
-  graph()->NotifyFrameNodeTearingDown(this);
 
   // Leave the page.
   DCHECK(graph()->NodeInGraph(page_node_));

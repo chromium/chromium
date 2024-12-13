@@ -211,10 +211,6 @@ class PublicNodeImpl : public PublicNodeClass {
   Graph* GetGraph() const override {
     return static_cast<const NodeImplClass*>(this)->graph();
   }
-  NodeState GetNodeState() const override {
-    return static_cast<const NodeBase*>(static_cast<const NodeImplClass*>(this))
-        ->GetNodeState();
-  }
   uintptr_t GetImplType() const override { return NodeBase::kNodeBaseType; }
   const void* GetImpl() const override {
     // This exposes NodeBase, so that we can complete the triangle of casting

@@ -70,15 +70,19 @@ ImportantFrameDecorator::~ImportantFrameDecorator() = default;
 
 void ImportantFrameDecorator::OnPassedToGraph(Graph* graph) {
   DCHECK(graph->HasOnlySystemNode());
-  graph->AddInitializingFrameNodeObserver(this);
+  graph->AddFrameNodeObserver(this);
 }
 
 void ImportantFrameDecorator::OnTakenFromGraph(Graph* graph) {
-  graph->RemoveInitializingFrameNodeObserver(this);
+  graph->RemoveFrameNodeObserver(this);
 }
 
-void ImportantFrameDecorator::OnFrameNodeInitializing(
-    const FrameNode* frame_node) {
+void ImportantFrameDecorator::OnBeforeFrameNodeAdded(
+    const FrameNode* frame_node,
+    const FrameNode* pending_parent_frame_node,
+    const PageNode* pending_page_node,
+    const ProcessNode* pending_process_node,
+    const FrameNode* pending_parent_or_outer_document_or_embedder) {
   CHECK(!frame_node->HadUserActivation());
   CHECK(!frame_node->GetViewportIntersection() ||
         frame_node->GetViewportIntersection()->is_intersecting_large_area());

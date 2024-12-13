@@ -6,19 +6,19 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_LOADING_PAGE_VOTER_H_
 
 #include "components/performance_manager/execution_context_priority/voter_base.h"
-#include "components/performance_manager/graph/initializing_frame_node_observer.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
+#include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/page_node.h"
 
 namespace performance_manager::execution_context_priority {
 
 // This voter casts a TaskPriority::USER_BLOCKING vote to all frames that are
 // part of a loading page. This makes switching to a loading tab faster.
-// Note: Uses `InitializingFrameNodeObserver` because it can affect the initial
-// priority of a frame.
+// Note: This FrameNodeObserver can affect the initial priority of a frame and
+// thus uses `OnBeforeFrameNodeAdded`.
 class LoadingPageVoter : public VoterBase,
                          public PageNode::ObserverDefaultImpl,
-                         public InitializingFrameNodeObserver {
+                         public FrameNode::ObserverDefaultImpl {
  public:
   static const char kPageIsLoadingReason[];
 
@@ -38,9 +38,14 @@ class LoadingPageVoter : public VoterBase,
   void OnLoadingStateChanged(const PageNode* page_node,
                              PageNode::LoadingState previous_state) override;
 
-  // InitializingFrameNodeObserver:
-  void OnFrameNodeInitializing(const FrameNode* frame_node) override;
-  void OnFrameNodeTearingDown(const FrameNode* frame_node) override;
+  // FrameNodeObserver:
+  void OnBeforeFrameNodeAdded(
+      const FrameNode* frame_node,
+      const FrameNode* pending_parent_frame_node,
+      const PageNode* pending_page_node,
+      const ProcessNode* pending_process_node,
+      const FrameNode* pending_parent_or_outer_document_or_embedder) override;
+  void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
 
   VoterId voter_id() const { return voting_channel_.voter_id(); }
 
