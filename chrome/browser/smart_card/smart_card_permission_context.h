@@ -79,6 +79,7 @@ class SmartCardPermissionContext
  private:
   friend class SmartCardPermissionContextTest;
   friend class settings::SmartCardReaderPermissionsSiteSettingsHandlerTest;
+  friend class PageInfoBubbleViewInteractiveUiTest;
 
   class OneTimeObserver;
   class PowerSuspendObserver;

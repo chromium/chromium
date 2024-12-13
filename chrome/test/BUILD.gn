@@ -10866,6 +10866,8 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/startup/default_browser_prompt/default_browser_prompt_interactive_uitest.cc",
         "../browser/ui/views/infobars/default_browser_infobar_interactive_uitest.cc",
       ]
+    } else {
+      deps += [ "//chrome/browser/smart_card:smart_card" ]
     }
 
     if (use_ozone) {
