@@ -266,14 +266,12 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
                       const LogicalAnchorQuery& anchor_query,
                       const LayoutObject* implicit_anchor,
                       const WritingModeConverter& container_converter,
-                      WritingDirectionMode self_writing_direction,
                       const PhysicalOffset& offset_to_padding_box,
                       const PhysicalSize& available_size)
       : query_box_(&query_box),
         anchor_query_(&anchor_query),
         implicit_anchor_(implicit_anchor),
         container_converter_(container_converter),
-        self_writing_direction_(self_writing_direction),
         containing_block_rect_(offset_to_padding_box, available_size),
         display_locks_affected_by_anchors_(
             MakeGarbageCollected<HeapHashSet<Member<Element>>>()) {
@@ -287,7 +285,6 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
                       const LayoutObject* implicit_anchor,
                       const LayoutObject& containing_block,
                       const WritingModeConverter& container_converter,
-                      WritingDirectionMode self_writing_direction,
                       const PhysicalOffset& offset_to_padding_box,
                       const PhysicalSize& available_size)
       : query_box_(&query_box),
@@ -295,7 +292,6 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
         implicit_anchor_(implicit_anchor),
         containing_block_(&containing_block),
         container_converter_(container_converter),
-        self_writing_direction_(self_writing_direction),
         containing_block_rect_(offset_to_padding_box, available_size),
         display_locks_affected_by_anchors_(
             MakeGarbageCollected<HeapHashSet<Member<Element>>>()) {
@@ -385,8 +381,6 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   const LayoutObject* containing_block_ = nullptr;
   const WritingModeConverter container_converter_{
       {WritingMode::kHorizontalTb, TextDirection::kLtr}};
-  WritingDirectionMode self_writing_direction_{WritingMode::kHorizontalTb,
-                                               TextDirection::kLtr};
 
   // Either width or height will be used, depending on IsYAxis().
   PhysicalRect containing_block_rect_;

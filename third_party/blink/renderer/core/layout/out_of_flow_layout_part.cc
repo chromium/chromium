@@ -1735,8 +1735,6 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
   LogicalSize container_content_size = container_info.rect.size;
   PhysicalSize container_physical_content_size = ToPhysicalSize(
       container_content_size, GetConstraintSpace().GetWritingMode());
-  WritingDirectionMode self_writing_direction =
-      candidate.Style().GetWritingDirection();
   const WritingModeConverter container_converter(
       container_info.writing_direction, container_physical_content_size);
   if (anchor_queries) {
@@ -1747,7 +1745,7 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
     CHECK(css_containing_block);
     return AnchorEvaluatorImpl(
         candidate_layout_box, *anchor_queries, implicit_anchor,
-        *css_containing_block, container_converter, self_writing_direction,
+        *css_containing_block, container_converter,
         container_converter.ToPhysical(container_info.rect).offset,
         container_physical_content_size);
   }
@@ -1756,7 +1754,7 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
     // Otherwise the |container_builder_| is the containing block.
     return AnchorEvaluatorImpl(
         candidate_layout_box, *anchor_query, implicit_anchor,
-        container_converter, self_writing_direction,
+        container_converter,
         container_converter.ToPhysical(container_info.rect).offset,
         container_physical_content_size);
   }

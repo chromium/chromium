@@ -588,7 +588,7 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
   if (std::optional<LayoutUnit> result = AnchorQuery()->EvaluateAnchor(
           *anchor_reference, anchor_value, percentage,
           AvailableSizeAlongAxis(position_area_modified_containing_block_rect),
-          container_converter_, self_writing_direction_,
+          container_converter_, query_box_->StyleRef().GetWritingDirection(),
           position_area_modified_containing_block_rect.offset, is_y_axis,
           IsRightOrBottom())) {
     bool& needs_scroll_adjustment = is_y_axis ? needs_scroll_adjustment_in_y_
@@ -635,7 +635,7 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
   DCHECK(AnchorQuery());
   return AnchorQuery()->EvaluateSize(*anchor_reference, anchor_size_value,
                                      container_converter_.GetWritingMode(),
-                                     self_writing_direction_.GetWritingMode());
+                                     query_box_->StyleRef().GetWritingMode());
 }
 
 void AnchorEvaluatorImpl::UpdateAccessibilityAnchor(
@@ -706,8 +706,9 @@ AnchorEvaluatorImpl::ComputePositionAreaOffsetsForLayout(
   if (!DefaultAnchor(position_anchor)) {
     return std::nullopt;
   }
-  PositionArea physical_position_area = position_area.ToPhysical(
-      container_converter_.GetWritingDirection(), self_writing_direction_);
+  PositionArea physical_position_area =
+      position_area.ToPhysical(container_converter_.GetWritingDirection(),
+                               query_box_->StyleRef().GetWritingDirection());
 
   std::optional<LayoutUnit> top;
   std::optional<LayoutUnit> bottom;
