@@ -299,10 +299,11 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
    * @param evt The automation event from the hit test.
    */
   private onAutomationHitTest_(evt: AutomationEvent): void {
-    // Walk up to the nearest window, web area, graphics document, toolbar, or
-    // dialog that the hit node is contained inside. Only speak objects within
-    // that container. In the future we might include other root-like roles
-    // here. (Consider harmonizing with the `ui::IsRootLike` method.)
+    // Walk up to the nearest window, web area, document, graphics document,
+    // toolbar, or dialog that the hit node is contained inside. Only speak
+    // objects within that container. In the future we might include other
+    // root-like roles here. (Consider harmonizing with the `ui::IsRootLike`
+    // method.)
     var root = evt.target;
 
     // In Chrome PDF Viewer, PDF content for a large PDF might still be loading
@@ -326,7 +327,7 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
            root.role !== RoleType.ROOT_WEB_AREA &&
            root.role !== RoleType.DESKTOP && root.role !== RoleType.DIALOG &&
            root.role !== RoleType.ALERT_DIALOG &&
-           root.role !== RoleType.TOOLBAR &&
+           root.role !== RoleType.TOOLBAR && root.role !== RoleType.DOCUMENT &&
            root.role !== RoleType.GRAPHICS_DOCUMENT) {
       root = root.parent;
     }
