@@ -4123,6 +4123,7 @@ void WebFrameWidgetImpl::GetCompositionCharacterBoundsInWindow(
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
 namespace {
 
 void GetLineBounds(Vector<gfx::QuadF>& line_quads,
@@ -4167,12 +4168,14 @@ Vector<gfx::Rect> WebFrameWidgetImpl::CalculateVisibleLineBoundsOnScreen() {
   }
   return bounds_in_dips;
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 Vector<gfx::Rect>& WebFrameWidgetImpl::GetVisibleLineBoundsOnScreen() {
   return input_visible_line_bounds_;
 }
 
 void WebFrameWidgetImpl::UpdateLineBounds() {
+#if BUILDFLAG(IS_ANDROID)
   Vector<gfx::Rect> line_bounds = CalculateVisibleLineBoundsOnScreen();
   if (line_bounds == input_visible_line_bounds_) {
     return;
@@ -4188,6 +4191,7 @@ void WebFrameWidgetImpl::UpdateLineBounds() {
     host->ImeCompositionRangeChanged(gfx::Range::InvalidRange(), std::nullopt,
                                      input_visible_line_bounds_);
   }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void WebFrameWidgetImpl::UpdateCursorAnchorInfo() {

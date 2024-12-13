@@ -557,11 +557,6 @@ public final class ProductionSupportedFlagList {
                         + " updater downloading service in nonembedded WebView."
                         + " See https://crbug.com/1170468."),
         Flag.baseFeature(
-                BlinkFeatures.REPORT_VISIBLE_LINE_BOUNDS,
-                "When enabled, WebView reports rectangles which surround each line of"
-                        + " text in the currently focused element to Android. These rectangles "
-                        + "are sent for <input> and <textarea> elements."),
-        Flag.baseFeature(
                 BlinkFeatures.STYLUS_RICH_GESTURES,
                 "When enabled, stylus input can be used to draw rich gestures which "
                         + "affect text in editable web content."),

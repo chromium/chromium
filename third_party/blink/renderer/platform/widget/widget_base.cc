@@ -1326,17 +1326,14 @@ void WidgetBase::UpdateCompositionInfo(bool immediate_request) {
   composition_character_bounds_ = character_bounds;
   composition_range_ = range;
 
-  std::optional<Vector<gfx::Rect>> line_bounds;
-
   // If using the new pipeline for CursorAnchorInfo data, send data from the
   // frame widget.
   if (RuntimeEnabledFeatures::CursorAnchorInfoMojoPipeEnabled()) {
     frame_widget->UpdateCursorAnchorInfo();
     return;
   }
-  if (RuntimeEnabledFeatures::ReportVisibleLineBoundsEnabled()) {
-    line_bounds = frame_widget->GetVisibleLineBoundsOnScreen();
-  }
+  std::optional<Vector<gfx::Rect>> line_bounds =
+      frame_widget->GetVisibleLineBoundsOnScreen();
   if (mojom::blink::WidgetInputHandlerHost* host =
           widget_input_handler_manager_->GetWidgetInputHandlerHost()) {
     host->ImeCompositionRangeChanged(

@@ -3542,15 +3542,6 @@
       status: "stable",
     },
     {
-      // TODO(crbug.com/1500633): Remove this flag when the new CursorAnchorInfo
-      // mojo pipe is launched.
-      name: "ReportVisibleLineBounds",
-      status: {
-        "Android": "stable",
-        "default": "",
-      }
-    },
-    {
       name: "ResetInputTypeToNoneBeforeCharacterInput",
       status: "stable",
     },

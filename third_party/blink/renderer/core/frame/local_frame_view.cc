@@ -2200,8 +2200,7 @@ bool LocalFrameView::UpdateLifecyclePhases(
       for (auto& observer : lifecycle_observers)
         observer->DidFinishLifecycleUpdate(frame_view);
     });
-    if (frame_->GetWidgetForLocalRoot() &&
-        RuntimeEnabledFeatures::ReportVisibleLineBoundsEnabled()) {
+    if (frame_->GetWidgetForLocalRoot()) {
       frame_->GetWidgetForLocalRoot()->UpdateLineBounds();
     }
   }
