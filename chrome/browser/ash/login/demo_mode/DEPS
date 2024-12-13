@@ -35,6 +35,7 @@ include_rules = [
   "+chrome/browser/metrics",
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
+  "+chrome/browser/lifetime",
   "+chrome/browser/ui/apps",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/browser.h",

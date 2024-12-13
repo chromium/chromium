@@ -4,8 +4,16 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_mode_idle_handler.h"
 
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/test_browser_window.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
@@ -18,14 +26,30 @@ const base::TimeDelta kReLuanchDemoAppIdleDuration = base::Seconds(90);
 
 class DemoModeIdleHandlerTest : public testing::Test {
  protected:
-  DemoModeIdleHandlerTest() {
-    // OK to unretained `this` since the life cycle of `demo_mode_idle_handler_`
-    // is the same as the tests.
-    demo_mode_idle_handler_ = std::make_unique<DemoModeIdleHandler>(
+  DemoModeIdleHandlerTest()
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    window_closer_ = std::make_unique<DemoModeWindowCloser>(
         base::BindRepeating(&DemoModeIdleHandlerTest::MockLaunchDemoModeApp,
                             base::Unretained(this)));
+
+    // OK to unretained `this` since the life cycle of `demo_mode_idle_handler_`
+    // is the same as the tests.
+    demo_mode_idle_handler_ =
+        std::make_unique<DemoModeIdleHandler>(window_closer_.get());
   }
   ~DemoModeIdleHandlerTest() override = default;
+
+  void SetUp() override {
+    ASSERT_TRUE(profile_manager_.SetUp());
+    profile_ = profile_manager_.CreateTestingProfile("Profile 1");
+  }
+
+  void TearDown() override {
+    profile_ = nullptr;
+    profile_manager_.DeleteAllTestingProfiles();
+    demo_mode_idle_handler_.reset();
+    window_closer_.reset();
+  }
 
   void SimulateUserActivity() {
     ui::UserActivityDetector::Get()->HandleExternalUserActivity();
@@ -38,15 +62,48 @@ class DemoModeIdleHandlerTest : public testing::Test {
   void MockLaunchDemoModeApp() { launch_demo_app_count_++; }
 
   int get_launch_demo_app_count() { return launch_demo_app_count_; }
+  Profile* profile() { return profile_; }
 
  private:
-  base::test::TaskEnvironment task_environment_{
+  content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   int launch_demo_app_count_ = 0;
+  TestingProfileManager profile_manager_;
+  std::unique_ptr<DemoModeWindowCloser> window_closer_;
   std::unique_ptr<DemoModeIdleHandler> demo_mode_idle_handler_;
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
-TEST_F(DemoModeIdleHandlerTest, IdleTimeOut) {
+TEST_F(DemoModeIdleHandlerTest, CloseAllBrowsers) {
+  // Initialize 2 browsers.
+  std::unique_ptr<Browser> browser_1 = CreateBrowserWithTestWindowForParams(
+      Browser::CreateParams(profile(), /*user_gesture=*/true));
+  static_cast<TestBrowserWindow*>(browser_1->window())
+      ->SetCloseCallback(
+          base::BindLambdaForTesting([&browser_1]() { browser_1.reset(); }));
+  std::unique_ptr<Browser> browser_2 = CreateBrowserWithTestWindowForParams(
+      Browser::CreateParams(profile(), /*user_gesture=*/true));
+  static_cast<TestBrowserWindow*>(browser_1->window())
+      ->SetCloseCallback(
+          base::BindLambdaForTesting([&browser_1]() { browser_1.reset(); }));
+  static_cast<TestBrowserWindow*>(browser_2->window())
+      ->SetCloseCallback(
+          base::BindLambdaForTesting([&browser_2]() { browser_2.reset(); }));
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2U);
+
+  // Trigger close all browsers by being idle for
+  // `kReLuanchDemoAppIdleDuration`.
+  SimulateUserActivity();
+  FastForwardBy(kReLuanchDemoAppIdleDuration);
+
+  EXPECT_EQ(get_launch_demo_app_count(), 1);
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+}
+
+TEST_F(DemoModeIdleHandlerTest, ReLaunchDemoApp) {
+  // Clear all immediate task on main thread.
+  FastForwardBy(base::Seconds(1));
+
   // Mock first user interact with device and idle for
   // `kReLuanchDemoAppIdleDuration`:
   SimulateUserActivity();
