@@ -12,6 +12,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/search/ntp_features.h"
+#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -27,8 +28,8 @@ void ExpectIsWebUiNtp(content::WebContents* tab) {
                    content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1));
 }
 
-std::set<int> LiveRenderProcessHostIds() {
-  std::set<int> result;
+std::set<content::ChildProcessId> LiveRenderProcessHostIds() {
+  std::set<content::ChildProcessId> result;
   for (auto iter = content::RenderProcessHost::AllHostsIterator();
        !iter.IsAtEnd(); iter.Advance()) {
     result.insert(iter.GetCurrentKey());
@@ -110,7 +111,8 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, SpareRenderer) {
 
   // Note the current render processes before the navigation. These should all
   // remain alive after the navigation.
-  const std::set<int> starting_rph_ids = LiveRenderProcessHostIds();
+  const std::set<content::ChildProcessId> starting_rph_ids =
+      LiveRenderProcessHostIds();
 
   // Open an NTP.
   chrome::NewTab(browser());
@@ -124,8 +126,10 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, SpareRenderer) {
                      ntp->GetPrimaryMainFrame()->GetProcess()->GetID()));
 
   // No processes should be unnecessarily terminated.
-  const std::set<int> ending_rph_ids = LiveRenderProcessHostIds();
-  const std::set<int> terminated_rph_ids =
-      base::STLSetDifference<std::set<int>>(starting_rph_ids, ending_rph_ids);
+  const std::set<content::ChildProcessId> ending_rph_ids =
+      LiveRenderProcessHostIds();
+  const std::set<content::ChildProcessId> terminated_rph_ids =
+      base::STLSetDifference<std::set<content::ChildProcessId>>(
+          starting_rph_ids, ending_rph_ids);
   EXPECT_TRUE(terminated_rph_ids.empty());
 }

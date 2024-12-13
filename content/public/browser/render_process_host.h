@@ -133,7 +133,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   ADVANCED_MEMORY_SAFETY_CHECKS();
 
  public:
-  using iterator = base::IDMap<RenderProcessHost*>::iterator;
+  using iterator = base::IDMap<RenderProcessHost*, ChildProcessId>::iterator;
 
   // Crash reporting mode for ShutdownForBadMessage.
   enum class CrashReportMode {
