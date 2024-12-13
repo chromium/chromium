@@ -1406,6 +1406,65 @@ TEST_P(AndroidFrameSinkManagerTest, VizRIRDelegateLifecycle) {
   }
 }
 
+TEST_P(AndroidFrameSinkManagerTest, VizRenderInputRouterSupportBaseLifecycle) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("viz, input");
+
+  manager_.RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
+
+  // Create a grouping id.
+  base::UnguessableToken grouping_id = base::UnguessableToken::Create();
+
+  // Create a CompositorFrameSinkImpl.
+  CreateCompositorFrameSink(kFrameSinkIdA, CreateRIRConfig(grouping_id));
+
+  EXPECT_EQ(InputManagerExists(), ExpectedInputManagerCreation());
+
+  // Invalidating should destroy the CompositorFrameSinkImpl.
+  manager_.InvalidateFrameSinkId(kFrameSinkIdA);
+
+  EXPECT_FALSE(CompositorFrameSinkExists(kFrameSinkIdA));
+
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  std::string query = R"(
+    SELECT name
+    FROM slice
+    WHERE
+    (
+      name = 'RenderInputRouter::RenderInputRouter'
+      OR
+      name = 'RenderInputRouter::~RenderInputRouter'
+      OR
+      name = 'RenderInputRouterSupportBase::RenderInputRouterSupportBase'
+      OR
+      name = 'RenderInputRouterSupportBase::~RenderInputRouterSupportBase'
+    )
+    ORDER BY ts ASC
+  )";
+
+  auto result = ttp.RunQuery(query);
+  ASSERT_TRUE(result.has_value());
+
+  // `result.value()` would look something like this: {{"name"},
+  // {"<name1>"}, {"<name2>"}, {"<name3>"}, {"<name4>"}}.
+  if (input::IsTransferInputToVizSupported()) {
+    EXPECT_THAT(
+        result.value(),
+        testing::ElementsAre(
+            testing::ElementsAre("name"),
+            testing::ElementsAre("RenderInputRouter::RenderInputRouter"),
+            testing::ElementsAre(
+                "RenderInputRouterSupportBase::RenderInputRouterSupportBase"),
+            testing::ElementsAre(
+                "RenderInputRouterSupportBase::~RenderInputRouterSupportBase"),
+            testing::ElementsAre("RenderInputRouter::~RenderInputRouter")));
+  } else {
+    EXPECT_EQ(result.value()[0][0], "name");
+  }
+}
+
 TEST_P(AndroidFrameSinkManagerTest, RenderInputRouterSupportTraversals) {
   const bool expected_creation = input::IsTransferInputToVizSupported();
 

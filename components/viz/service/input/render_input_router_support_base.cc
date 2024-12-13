@@ -12,6 +12,9 @@
 namespace viz {
 
 RenderInputRouterSupportBase::~RenderInputRouterSupportBase() {
+  TRACE_EVENT_INSTANT(
+      "input", "RenderInputRouterSupportBase::~RenderInputRouterSupportBase");
+  rir_->SetView(nullptr);
   NotifyObserversAboutShutdown();
 }
 
@@ -24,6 +27,7 @@ RenderInputRouterSupportBase::RenderInputRouterSupportBase(
       "input", "RenderInputRouterSupportBase::RenderInputRouterSupportBase",
       "frame_sink_id", frame_sink_id);
   CHECK(delegate_);
+  rir_->SetView(this);
 }
 
 bool RenderInputRouterSupportBase::ShouldInitiateStylusWriting() {

@@ -205,21 +205,30 @@ void InputManager::OnDestroyedCompositorFrameSink(
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  auto rir_iter = rir_map_.find(frame_sink_id);
+  auto frame_sink_metadata_map_iter =
+      frame_sink_metadata_map_.find(frame_sink_id);
+
   // Return early if |frame_sink_id| is associated with a non layer tree frame
   // sink.
-  if (rir_iter == rir_map_.end()) {
+  if (frame_sink_metadata_map_iter == frame_sink_metadata_map_.end()) {
     return;
   }
 
+  // RenderInputRouterSupportBase must be destroyed first since it holds a
+  // reference to RenderInputRouter, otherwise, it could lead to dangling
+  // references.
+  frame_sink_metadata_map_iter->second.rir_support.reset();
+
+  auto rir_iter = rir_map_.find(frame_sink_id);
+  CHECK(rir_iter != rir_map_.end());
   rir_map_.erase(rir_iter);
 
   base::UnguessableToken grouping_id =
-      frame_sink_metadata_map_.find(frame_sink_id)->second.grouping_id;
+      frame_sink_metadata_map_iter->second.grouping_id;
   // Deleting FrameSinkMetadata for |frame_sink_id| decreases the refcount for
   // RenderWidgetHostInputEventRouter in |rwhier_map_|(associated with the
   // RenderInputRouterDelegateImpl), for this |frame_sink_id|.
-  frame_sink_metadata_map_.erase(frame_sink_id);
+  frame_sink_metadata_map_.erase(frame_sink_metadata_map_iter);
 
   auto it = rwhier_map_.find(grouping_id);
   if (it != rwhier_map_.end()) {
