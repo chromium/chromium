@@ -183,21 +183,20 @@ bool CanvasResource::PrepareTransferableResource(
   if (!out_resource)
     return true;
 
+  auto client_shared_image = GetClientSharedImage();
+  if (!client_shared_image) {
+    return false;
+  }
+
   if (!CreatesAcceleratedTransferableResources()) {
     // Create a TransferableResource to be used with the software compositor.
     TRACE_EVENT0("blink",
                  "CanvasResource::PrepareUnacceleratedTransferableResource");
 
-    auto client_shared_image = GetClientSharedImage();
-    if (!client_shared_image) {
-      return false;
-    }
-
     *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
         client_shared_image, GetSyncToken(), client_shared_image->size(),
         client_shared_image->format(),
         viz::TransferableResource::ResourceSource::kCanvas);
-
     out_resource->color_space = client_shared_image->color_space();
     return true;
   }
@@ -209,10 +208,6 @@ bool CanvasResource::PrepareTransferableResource(
   DCHECK(SharedGpuContext::IsGpuCompositingEnabled());
   if (!ContextProviderWrapper())
     return false;
-  auto client_shared_image = GetClientSharedImage();
-
-  // The SharedImage should exist as long as the ContextProviderWrapper exists.
-  CHECK(client_shared_image);
 
   *out_resource = viz::TransferableResource::MakeGpu(
       client_shared_image->mailbox(), client_shared_image->GetTextureTarget(),
