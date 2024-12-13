@@ -244,7 +244,7 @@ class ComposeSession
       compose::ComposeRequestReason request_reason,
       bool was_input_edited,
       optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
-      std::unique_ptr<optimization_guide::proto::ComposeLoggingData>
+      std::unique_ptr<optimization_guide::proto::features::ComposeLoggingData>
           logging_data);
   void ModelExecutionProgress(optimization_guide::StreamingResponse result);
   void ModelExecutionComplete(
@@ -257,14 +257,14 @@ class ComposeSession
   void EraseForwardStatesInHistory();
 
   // Makes compose or rewrite request.
-  void MakeRequest(optimization_guide::proto::ComposeRequest request,
+  void MakeRequest(optimization_guide::proto::features::ComposeRequest request,
                    compose::ComposeRequestReason request_reason,
                    bool is_input_edited);
 
   // RequestWithSession can either be called synchronously or on a later event
   // loop.
   void RequestWithSession(
-      const optimization_guide::proto::ComposeRequest& request,
+      const optimization_guide::proto::features::ComposeRequest& request,
       compose::ComposeRequestReason request_reason,
       bool is_input_edited);
 
@@ -361,11 +361,11 @@ class ComposeSession
   compose::ComposeSessionCloseReason close_reason_{
       compose::ComposeSessionCloseReason::kAbandoned};
   // Reason that a compose session was exited, used for quality logging.
-  optimization_guide::proto::FinalStatus final_status_{
-      optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED};
+  optimization_guide::proto::features::FinalStatus final_status_{
+      optimization_guide::proto::features::FinalStatus::STATUS_UNSPECIFIED};
   // Success status of a completed compose session, used for quality logging.
-  optimization_guide::proto::FinalModelStatus final_model_status_{
-      optimization_guide::proto::FinalModelStatus::
+  optimization_guide::proto::features::FinalModelStatus final_model_status_{
+      optimization_guide::proto::features::FinalModelStatus::
           FINAL_MODEL_STATUS_UNSPECIFIED};
 
   // Tracks how long a session has been open.
@@ -426,7 +426,8 @@ class ComposeSession
 
   bool skip_feedback_ui_for_testing_ = false;
 
-  std::optional<optimization_guide::proto::ComposePageMetadata> page_metadata_;
+  std::optional<optimization_guide::proto::features::ComposePageMetadata>
+      page_metadata_;
 
   base::WeakPtrFactory<ComposeSession> weak_ptr_factory_;
 };

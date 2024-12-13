@@ -415,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
                        HasUserAnnotationsEntries_WithEntries) {
-  optimization_guide::proto::UserAnnotationsEntry entry;
+  optimization_guide::proto::features::UserAnnotationsEntry entry;
   entry.set_entry_id(1);
   user_annotations_service()->ReplaceAllEntries({entry});
   EXPECT_TRUE(RunAutofillSubtest("hasUserAnnotationsEntries_WithEntries"))

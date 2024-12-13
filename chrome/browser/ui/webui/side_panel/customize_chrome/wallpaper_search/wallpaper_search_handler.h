@@ -136,14 +136,15 @@ class WallpaperSearchHandler
       GetWallpaperSearchResultsCallback callback,
       base::ElapsedTimer request_timer,
       optimization_guide::OptimizationGuideModelExecutionResult result,
-      std::unique_ptr<optimization_guide::proto::WallpaperSearchLoggingData>
+      std::unique_ptr<
+          optimization_guide::proto::features::WallpaperSearchLoggingData>
           logging_data);
   void OnWallpaperSearchResultsDecoded(
       GetWallpaperSearchResultsCallback callback,
       base::ElapsedTimer processing_timer,
-      std::vector<
-          std::pair<optimization_guide::proto::WallpaperSearchImageQuality*,
-                    SkBitmap>> bitmaps);
+      std::vector<std::pair<
+          optimization_guide::proto::features::WallpaperSearchImageQuality*,
+          SkBitmap>> bitmaps);
   void SelectHistoryImage(
       const base::Token& id,
       base::ElapsedTimer timer,
@@ -179,9 +180,10 @@ class WallpaperSearchHandler
   // destructed before the pointed to objects in `log_entries_`.
   base::flat_map<
       base::Token,
-      std::tuple<optimization_guide::proto::WallpaperSearchImageQuality*,
-                 std::optional<base::Time>,
-                 SkBitmap>>
+      std::tuple<
+          optimization_guide::proto::features::WallpaperSearchImageQuality*,
+          std::optional<base::Time>,
+          SkBitmap>>
       wallpaper_search_results_;
   const int64_t session_id_;
   const raw_ref<const WallpaperSearchStringMap> string_map_;

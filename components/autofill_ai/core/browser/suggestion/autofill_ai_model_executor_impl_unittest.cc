@@ -36,16 +36,16 @@ using ::testing::Field;
 using ::testing::Pair;
 
 void AddFieldToResponse(
-    optimization_guide::proto::FormsPredictionsResponse& response,
+    optimization_guide::proto::features::FormsPredictionsResponse& response,
     const std::string& label,
     const std::string& normalized_label,
     const std::string& value,
     int request_field_index = 0) {
-  optimization_guide::proto::FilledFormFieldData* filled_field =
+  optimization_guide::proto::features::FilledFormFieldData* filled_field =
       response.mutable_form_data()->add_filled_form_field_data();
   filled_field->mutable_field_data()->set_field_label(label);
   filled_field->set_normalized_label(normalized_label);
-  optimization_guide::proto::PredictedValue* predicted_value =
+  optimization_guide::proto::features::PredictedValue* predicted_value =
       filled_field->add_predicted_values();
   predicted_value->set_value(value);
   filled_field->set_request_field_index(request_field_index);
@@ -102,13 +102,13 @@ class AutofillAiModelExecutorImplTest : public testing::Test {
 
 TEST_F(AutofillAiModelExecutorImplTest, EndToEnd) {
   // Seed user annotations service with entries.
-  optimization_guide::proto::UserAnnotationsEntry entry;
+  optimization_guide::proto::features::UserAnnotationsEntry entry;
   entry.set_key("label");
   entry.set_value("value");
   user_annotations_service()->ReplaceAllEntries({entry});
 
   // Set up mock.
-  optimization_guide::proto::FormsPredictionsResponse response;
+  optimization_guide::proto::features::FormsPredictionsResponse response;
   AddFieldToResponse(response, "label", "normalized label", "value", 0);
   AddFieldToResponse(response, "empty", "", "", 2);
   AddFieldToResponse(response, "notinform", "", "doesntmatter");
@@ -158,7 +158,7 @@ TEST_F(AutofillAiModelExecutorImplTest, EndToEnd) {
           {.label = u"Field has value, not filled", .value = u"value"}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
 
-  optimization_guide::proto::AXTreeUpdate ax_tree;
+  optimization_guide::proto::features::AXTreeUpdate ax_tree;
   base::test::TestFuture<PredictionsOrError, std::optional<std::string>>
       test_future;
   engine()->GetPredictions(form, {}, {}, ax_tree, test_future.GetCallback());
@@ -192,7 +192,7 @@ TEST_F(AutofillAiModelExecutorImplTest, NoUserAnnotationEntries) {
   form_field_data.set_label(u"label");
   autofill::FormData form_data;
   form_data.set_fields({form_field_data});
-  optimization_guide::proto::AXTreeUpdate ax_tree;
+  optimization_guide::proto::features::AXTreeUpdate ax_tree;
   base::test::TestFuture<PredictionsOrError, std::optional<std::string>>
       test_future;
   engine()->GetPredictions(form_data, {}, {}, ax_tree,
@@ -205,7 +205,7 @@ TEST_F(AutofillAiModelExecutorImplTest, NoUserAnnotationEntries) {
 
 TEST_F(AutofillAiModelExecutorImplTest, ModelExecutionError) {
   // Seed user annotations service with entries.
-  optimization_guide::proto::UserAnnotationsEntry entry;
+  optimization_guide::proto::features::UserAnnotationsEntry entry;
   entry.set_key("label");
   entry.set_value("value");
   user_annotations_service()->ReplaceAllEntries({entry});
@@ -232,7 +232,7 @@ TEST_F(AutofillAiModelExecutorImplTest, ModelExecutionError) {
   form_field_data.set_label(u"label");
   autofill::FormData form_data;
   form_data.set_fields({form_field_data});
-  optimization_guide::proto::AXTreeUpdate ax_tree;
+  optimization_guide::proto::features::AXTreeUpdate ax_tree;
   base::test::TestFuture<PredictionsOrError, std::optional<std::string>>
       test_future;
   engine()->GetPredictions(form_data, {}, {}, ax_tree,
@@ -245,7 +245,7 @@ TEST_F(AutofillAiModelExecutorImplTest, ModelExecutionError) {
 
 TEST_F(AutofillAiModelExecutorImplTest, ModelExecutionWrongTypeReturned) {
   // Seed user annotations service with entries.
-  optimization_guide::proto::UserAnnotationsEntry entry;
+  optimization_guide::proto::features::UserAnnotationsEntry entry;
   entry.set_key("label");
   entry.set_value("value");
   user_annotations_service()->ReplaceAllEntries({entry});
@@ -267,7 +267,7 @@ TEST_F(AutofillAiModelExecutorImplTest, ModelExecutionWrongTypeReturned) {
   form_field_data.set_label(u"label");
   autofill::FormData form_data;
   form_data.set_fields({form_field_data});
-  optimization_guide::proto::AXTreeUpdate ax_tree;
+  optimization_guide::proto::features::AXTreeUpdate ax_tree;
   base::test::TestFuture<PredictionsOrError, std::optional<std::string>>
       test_future;
   engine()->GetPredictions(form_data, {}, {}, ax_tree,

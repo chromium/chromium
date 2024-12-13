@@ -59,7 +59,7 @@ SaveAutofillAiDataController* SaveAutofillAiDataController::GetOrCreate(
 }
 
 void SaveAutofillAiDataControllerImpl::OfferSave(
-    std::vector<optimization_guide::proto::UserAnnotationsEntry>
+    std::vector<optimization_guide::proto::features::UserAnnotationsEntry>
         autofill_ai_data,
     user_annotations::PromptAcceptanceCallback prompt_acceptance_callback,
     LearnMoreClickedCallback learn_more_clicked_callback,
@@ -133,7 +133,7 @@ SaveAutofillAiDataControllerImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
+const std::vector<optimization_guide::proto::features::UserAnnotationsEntry>&
 SaveAutofillAiDataControllerImpl::GetAutofillAiData() const {
   return autofill_ai_data_;
 }

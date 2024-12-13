@@ -188,7 +188,7 @@ class ExpectedRemoteFallback final {
   }
 
   proto::Any ComposeResponse(const std::string& output) {
-    proto::ComposeResponse response;
+    proto::features::ComposeResponse response;
     response.set_output(output);
     return AnyWrapProto(response);
   }

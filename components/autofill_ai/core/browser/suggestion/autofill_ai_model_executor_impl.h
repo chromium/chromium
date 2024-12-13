@@ -21,10 +21,10 @@ namespace autofill {
 class FormData;
 }  // namespace autofill
 
-namespace optimization_guide::proto {
+namespace optimization_guide::proto::features {
 class AXTreeUpdate;
 class FilledFormData;
-}  // namespace optimization_guide::proto
+}  // namespace optimization_guide::proto::features
 
 namespace user_annotations {
 class UserAnnotationsService;
@@ -45,11 +45,13 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
       autofill::FormData form_data,
       base::flat_map<autofill::FieldGlobalId, bool> field_eligibility_map,
       base::flat_map<autofill::FieldGlobalId, bool> field_sensitivity_map,
-      optimization_guide::proto::AXTreeUpdate ax_tree_update,
+      optimization_guide::proto::features::AXTreeUpdate ax_tree_update,
       PredictionsReceivedCallback callback) override;
-  const std::optional<optimization_guide::proto::FormsPredictionsRequest>&
+  const std::optional<
+      optimization_guide::proto::features::FormsPredictionsRequest>&
   GetLatestRequest() const override;
-  const std::optional<optimization_guide::proto::FormsPredictionsResponse>&
+  const std::optional<
+      optimization_guide::proto::features::FormsPredictionsResponse>&
   GetLatestResponse() const override;
 
  private:
@@ -60,7 +62,7 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
           field_eligibility_map,
       const base::flat_map<autofill::FieldGlobalId, bool>&
           field_sensitivity_map,
-      optimization_guide::proto::AXTreeUpdate ax_tree_update,
+      optimization_guide::proto::features::AXTreeUpdate ax_tree_update,
       PredictionsReceivedCallback callback,
       user_annotations::UserAnnotationsEntries user_annotations);
 
@@ -70,31 +72,34 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
       PredictionsReceivedCallback callback,
       optimization_guide::OptimizationGuideModelExecutionResult
           execution_result,
-      std::unique_ptr<optimization_guide::proto::FormsPredictionsLoggingData>
+      std::unique_ptr<
+          optimization_guide::proto::features::FormsPredictionsLoggingData>
           logging_data);
 
   static PredictionsByGlobalId ExtractPredictions(
       const autofill::FormData& form_data,
-      const optimization_guide::proto::FilledFormData& form_data_proto);
+      const optimization_guide::proto::features::FilledFormData&
+          form_data_proto);
 
   // Setter for `latest_request_`. Also resets `latest_response_`.
   void SetLatestRequestForDebugging(
-      optimization_guide::proto::FormsPredictionsRequest request);
+      optimization_guide::proto::features::FormsPredictionsRequest request);
 
   // Setter for `latest_response_`.
   // Note that within a tab and thus per model executor instance, there cannot
   // be multiple requests as per the
   // `AutofillAiManager::prediction_retrieval_state_`.
   void SetLatestResponseForDebugging(
-      std::optional<optimization_guide::proto::FormsPredictionsResponse>
+      std::optional<
+          optimization_guide::proto::features::FormsPredictionsResponse>
           response);
 
   // Latest request made to the optimization guide.
-  std::optional<optimization_guide::proto::FormsPredictionsRequest>
+  std::optional<optimization_guide::proto::features::FormsPredictionsRequest>
       latest_request_ = std::nullopt;
 
   // Response received for `latest_request_`, if any.
-  std::optional<optimization_guide::proto::FormsPredictionsResponse>
+  std::optional<optimization_guide::proto::features::FormsPredictionsResponse>
       latest_response_ = std::nullopt;
 
   raw_ptr<optimization_guide::OptimizationGuideModelExecutor> model_executor_ =

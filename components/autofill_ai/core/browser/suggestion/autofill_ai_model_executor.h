@@ -14,11 +14,11 @@ namespace autofill {
 class FormData;
 }
 
-namespace optimization_guide::proto {
+namespace optimization_guide::proto::features {
 class AXTreeUpdate;
 class FormsPredictionsRequest;
 class FormsPredictionsResponse;
-}
+}  // namespace optimization_guide::proto::features
 
 namespace autofill_ai {
 
@@ -60,20 +60,20 @@ class AutofillAiModelExecutor {
       autofill::FormData form_data,
       base::flat_map<autofill::FieldGlobalId, bool> field_eligibility_map,
       base::flat_map<autofill::FieldGlobalId, bool> field_sensitivity_map,
-      optimization_guide::proto::AXTreeUpdate ax_tree_update,
+      optimization_guide::proto::features::AXTreeUpdate ax_tree_update,
       PredictionsReceivedCallback callback) = 0;
 
   // Returns the latest forms predictions request made to the optimization
   // guide, if any.
   virtual const std::optional<
-      optimization_guide::proto::FormsPredictionsRequest>&
+      optimization_guide::proto::features::FormsPredictionsRequest>&
   GetLatestRequest() const = 0;
 
   // Returns the response to `GetLatestRequest()`. Note that the response can be
   // non-existent for two reasons: 1) it wasn't received yet or 2) there was an
   // error parsing the response proto.
   virtual const std::optional<
-      optimization_guide::proto::FormsPredictionsResponse>&
+      optimization_guide::proto::features::FormsPredictionsResponse>&
   GetLatestResponse() const = 0;
 };
 

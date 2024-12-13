@@ -17,7 +17,7 @@
 namespace user_annotations {
 
 using ::base::test::EqualsProto;
-using ::optimization_guide::proto::UserAnnotationsEntry;
+using ::optimization_guide::proto::features::UserAnnotationsEntry;
 using ::testing::UnorderedElementsAre;
 
 UserAnnotationsEntry CreateUserAnnotationsEntry(const std::string& key,

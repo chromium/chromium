@@ -19,7 +19,7 @@ FormSubmissionHandler::FormSubmissionHandler(
     UserAnnotationsService* user_annotations_service,
     const GURL& url,
     const std::string& title,
-    optimization_guide::proto::AXTreeUpdate ax_tree_update,
+    optimization_guide::proto::features::AXTreeUpdate ax_tree_update,
     std::unique_ptr<autofill::FormStructure> form,
     ImportFormCallback callback)
     : url_(url),
@@ -48,8 +48,8 @@ void FormSubmissionHandler::OnCompletionTimeout() {
 void FormSubmissionHandler::ExecuteModelWithEntries(
     UserAnnotationsEntries entries) {
   // Construct request.
-  optimization_guide::proto::FormsAnnotationsRequest request;
-  optimization_guide::proto::PageContext* page_context =
+  optimization_guide::proto::features::FormsAnnotationsRequest request;
+  optimization_guide::proto::features::PageContext* page_context =
       request.mutable_page_context();
   page_context->set_url(url_.spec());
   page_context->set_title(title_);
@@ -74,9 +74,9 @@ void FormSubmissionHandler::OnModelExecuted(
     return;
   }
 
-  std::optional<optimization_guide::proto::FormsAnnotationsResponse>
+  std::optional<optimization_guide::proto::features::FormsAnnotationsResponse>
       maybe_response = optimization_guide::ParsedAnyMetadata<
-          optimization_guide::proto::FormsAnnotationsResponse>(
+          optimization_guide::proto::features::FormsAnnotationsResponse>(
           result.response.value());
   if (!maybe_response) {
     SendFormSubmissionResult(
@@ -152,17 +152,21 @@ void FormSubmissionHandler::OnImportFormConfirmation(
         optimization_guide::FormsAnnotationsFeatureTypeMap>();
     if (prompt_acceptance_result.did_thumbs_down_triggered) {
       quality_entry->set_user_feedback(
-          optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN);
+          optimization_guide::proto::features::UserFeedback::
+              USER_FEEDBACK_THUMBS_DOWN);
     } else if (prompt_acceptance_result.did_thumbs_up_triggered) {
       quality_entry->set_user_feedback(
-          optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP);
+          optimization_guide::proto::features::UserFeedback::
+              USER_FEEDBACK_THUMBS_UP);
     }
     quality_entry->set_save_prompt_action(
         prompt_acceptance_result.prompt_was_accepted
-            ? optimization_guide::proto::FormsAnnotationsSavePromptAction::
-                  FORMS_ANNOTATIONS_SAVE_PROMPT_ACTION_ACCEPTED
-            : optimization_guide::proto::FormsAnnotationsSavePromptAction::
-                  FORMS_ANNOTATIONS_SAVE_PROMPT_ACTION_REJECTED);
+            ? optimization_guide::proto::features::
+                  FormsAnnotationsSavePromptAction::
+                      FORMS_ANNOTATIONS_SAVE_PROMPT_ACTION_ACCEPTED
+            : optimization_guide::proto::features::
+                  FormsAnnotationsSavePromptAction::
+                      FORMS_ANNOTATIONS_SAVE_PROMPT_ACTION_REJECTED);
     optimization_guide::ModelQualityLogEntry::Upload(std::move(log_entry));
   }
 

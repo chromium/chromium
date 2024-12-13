@@ -31,7 +31,7 @@ TEST_F(MqlsFeatureRegistryTest, RegisterFeature) {
   EnterprisePolicyPref enterprise_policy("policy_name");
   UserFeedbackCallback logging_callback =
       base::BindRepeating([](proto::LogAiDataRequest& request_proto) {
-        return proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
+        return proto::features::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
       });
   auto metadata = std::make_unique<MqlsFeatureMetadata>(
       "Test", proto::LogAiDataRequest::FeatureCase::kCompose, enterprise_policy,
@@ -58,7 +58,7 @@ TEST(MqlsFeatureMetadataTest, LoggingEnabledViaFieldTrial) {
 
   UserFeedbackCallback logging_callback =
       base::BindRepeating([](proto::LogAiDataRequest& request_proto) {
-        return proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
+        return proto::features::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
       });
   MqlsFeatureMetadata metadata(
       "Test", proto::LogAiDataRequest::FeatureCase::kCompose,
@@ -73,7 +73,7 @@ TEST(MqlsFeatureMetadataTest, LoggingDisabledViaFieldTrial) {
 
   UserFeedbackCallback logging_callback =
       base::BindRepeating([](proto::LogAiDataRequest& request_proto) {
-        return proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
+        return proto::features::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
       });
   MqlsFeatureMetadata metadata(
       "Test", proto::LogAiDataRequest::FeatureCase::kCompose,

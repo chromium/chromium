@@ -21,7 +21,7 @@ int64_t MockAnswerer::GetModelVersion() {
 void MockAnswerer::ComputeAnswer(std::string query,
                                  Context context,
                                  ComputeAnswerCallback callback) {
-  optimization_guide::proto::Answer answer;
+  optimization_guide::proto::features::Answer answer;
   answer.set_text(std::string("This is the answer to query '") + query +
                   std::string("'."));
   AnswererResult result(static_cast<ComputeAnswerStatus>(
@@ -31,7 +31,7 @@ void MockAnswerer::ComputeAnswer(std::string query,
   // Set URL and passage citation if available.
   auto it = context.url_passages_map.begin();
   if (it != context.url_passages_map.end()) {
-    optimization_guide::proto::Citation* citation =
+    optimization_guide::proto::features::Citation* citation =
         result.answer.add_citations();
     citation->set_passage_id("0001");
     result.url = it->first;

@@ -31,7 +31,8 @@ class JsonResponseParserTest : public testing::Test {
 TEST_F(JsonResponseParserTest, Parse) {
   base::test::TestFuture<ResponseParser::Result> response_future;
   proto::OnDeviceModelExecutionOutputConfig config;
-  config.set_proto_type("optimization_guide.proto.TabOrganizationResponse");
+  config.set_proto_type(
+      "optimization_guide.proto.features.TabOrganizationResponse");
   JsonResponseParserFactory().CreateParser(config)->ParseAsync(
       R"({
         "tabGroups": [
@@ -53,10 +54,10 @@ TEST_F(JsonResponseParserTest, Parse) {
       response_future.GetCallback());
   auto response = response_future.Get();
   EXPECT_TRUE(response.has_value());
-  EXPECT_EQ(
-      response->type_url(),
-      "type.googleapis.com/optimization_guide.proto.TabOrganizationResponse");
-  proto::TabOrganizationResponse resp;
+  EXPECT_EQ(response->type_url(),
+            "type.googleapis.com/"
+            "optimization_guide.proto.features.TabOrganizationResponse");
+  proto::features::TabOrganizationResponse resp;
   ASSERT_TRUE(resp.ParseFromString(response->value()));
   EXPECT_EQ(resp.tab_groups(0).tabs(1).title(), "mytitle");
   EXPECT_EQ(resp.tab_groups(0).tabs(0).tab_id(), 3);

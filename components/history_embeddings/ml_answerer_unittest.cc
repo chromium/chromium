@@ -22,7 +22,7 @@ using ::optimization_guide::AnyWrapProto;
 using ::optimization_guide::MockSession;
 using ::optimization_guide::OptimizationGuideModelExecutionError;
 using ::optimization_guide::OptimizationGuideModelStreamingExecutionResult;
-using ::optimization_guide::proto::HistoryAnswerResponse;
+using ::optimization_guide::proto::features::HistoryAnswerResponse;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::StrictMock;

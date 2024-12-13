@@ -46,7 +46,7 @@ void AutofillAiModelExecutorImpl::GetPredictions(
     autofill::FormData form_data,
     base::flat_map<autofill::FieldGlobalId, bool> field_eligibility_map,
     base::flat_map<autofill::FieldGlobalId, bool> field_sensitivity_map,
-    optimization_guide::proto::AXTreeUpdate ax_tree_update,
+    optimization_guide::proto::features::AXTreeUpdate ax_tree_update,
     PredictionsReceivedCallback callback) {
   user_annotations_service_->RetrieveAllEntries(base::BindOnce(
       &AutofillAiModelExecutorImpl::OnUserAnnotationsRetrieved,
@@ -59,7 +59,7 @@ void AutofillAiModelExecutorImpl::OnUserAnnotationsRetrieved(
     autofill::FormData form_data,
     const base::flat_map<autofill::FieldGlobalId, bool>& field_eligibility_map,
     const base::flat_map<autofill::FieldGlobalId, bool>& field_sensitivity_map,
-    optimization_guide::proto::AXTreeUpdate ax_tree_update,
+    optimization_guide::proto::features::AXTreeUpdate ax_tree_update,
     PredictionsReceivedCallback callback,
     user_annotations::UserAnnotationsEntries user_annotations) {
   // At this point there should be user annotations. Return an error if there
@@ -72,8 +72,8 @@ void AutofillAiModelExecutorImpl::OnUserAnnotationsRetrieved(
   }
 
   // Construct request.
-  optimization_guide::proto::FormsPredictionsRequest request;
-  optimization_guide::proto::PageContext* page_context =
+  optimization_guide::proto::features::FormsPredictionsRequest request;
+  optimization_guide::proto::features::PageContext* page_context =
       request.mutable_page_context();
   if (kSendTitleURL.Get()) {
     page_context->set_url(form_data.url().spec());
@@ -91,7 +91,7 @@ void AutofillAiModelExecutorImpl::OnUserAnnotationsRetrieved(
 
   SetLatestRequestForDebugging(request);
   optimization_guide::ModelExecutionCallbackWithLogging<
-      optimization_guide::proto::FormsPredictionsLoggingData>
+      optimization_guide::proto::features::FormsPredictionsLoggingData>
       wrapper_callback =
           base::BindOnce(&AutofillAiModelExecutorImpl::OnModelExecuted,
                          weak_ptr_factory_.GetWeakPtr(), std::move(form_data),
@@ -106,7 +106,8 @@ void AutofillAiModelExecutorImpl::OnModelExecuted(
     autofill::FormData form_data,
     PredictionsReceivedCallback callback,
     optimization_guide::OptimizationGuideModelExecutionResult execution_result,
-    std::unique_ptr<optimization_guide::proto::FormsPredictionsLoggingData>
+    std::unique_ptr<
+        optimization_guide::proto::features::FormsPredictionsLoggingData>
         logging_data) {
   CHECK(logging_data);
   auto log_entry = std::make_unique<optimization_guide::ModelQualityLogEntry>(
@@ -120,7 +121,7 @@ void AutofillAiModelExecutorImpl::OnModelExecuted(
 
   SetLatestResponseForDebugging(
       optimization_guide::ParsedAnyMetadata<
-          optimization_guide::proto::FormsPredictionsResponse>(
+          optimization_guide::proto::features::FormsPredictionsResponse>(
           execution_result.response.value()));
 
   if (!GetLatestResponse()) {
@@ -137,10 +138,11 @@ void AutofillAiModelExecutorImpl::OnModelExecuted(
 AutofillAiModelExecutor::PredictionsByGlobalId
 AutofillAiModelExecutorImpl::ExtractPredictions(
     const autofill::FormData& form_data,
-    const optimization_guide::proto::FilledFormData& form_data_proto) {
+    const optimization_guide::proto::features::FilledFormData&
+        form_data_proto) {
   std::vector<std::pair<autofill::FieldGlobalId, Prediction>> predictions;
   const std::vector<autofill::FormFieldData>& fields = form_data.fields();
-  for (const optimization_guide::proto::FilledFormFieldData&
+  for (const optimization_guide::proto::features::FilledFormFieldData&
            filled_form_field_proto : form_data_proto.filled_form_field_data()) {
     // Only the first predicted value is used at the moment.
     if (filled_form_field_proto.predicted_values_size() == 0 ||
@@ -204,7 +206,7 @@ AutofillAiModelExecutorImpl::ExtractPredictions(
 }
 
 void AutofillAiModelExecutorImpl::SetLatestRequestForDebugging(
-    optimization_guide::proto::FormsPredictionsRequest request) {
+    optimization_guide::proto::features::FormsPredictionsRequest request) {
   // Reset `latest_response_` to ensure it always matches `latest_request_`, if
   // it exists.
   latest_response_.reset();
@@ -212,17 +214,19 @@ void AutofillAiModelExecutorImpl::SetLatestRequestForDebugging(
 }
 
 void AutofillAiModelExecutorImpl::SetLatestResponseForDebugging(
-    std::optional<optimization_guide::proto::FormsPredictionsResponse>
+    std::optional<optimization_guide::proto::features::FormsPredictionsResponse>
         response) {
   latest_response_ = std::move(response);
 }
 
-const std::optional<optimization_guide::proto::FormsPredictionsRequest>&
+const std::optional<
+    optimization_guide::proto::features::FormsPredictionsRequest>&
 AutofillAiModelExecutorImpl::GetLatestRequest() const {
   return latest_request_;
 }
 
-const std::optional<optimization_guide::proto::FormsPredictionsResponse>&
+const std::optional<
+    optimization_guide::proto::features::FormsPredictionsResponse>&
 AutofillAiModelExecutorImpl::GetLatestResponse() const {
   return latest_response_;
 }

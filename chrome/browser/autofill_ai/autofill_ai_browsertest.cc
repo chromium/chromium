@@ -65,8 +65,8 @@ struct TestField {
   std::string expected_value_for_import_and_automatic_filling;
 };
 
-// Matches optimization_guide::proto::UserAnnotationsEntry `arg` against
-// `TestField` `expected_test_field`.
+// Matches optimization_guide::proto::features::UserAnnotationsEntry `arg`
+// against `TestField` `expected_test_field`.
 MATCHER_P(MatchesTestField, expected_test_field, "") {
   return arg.key() == expected_test_field.label &&
          arg.value() == expected_test_field
@@ -177,14 +177,14 @@ class OptimizationGuideTestServer {
     }
     switch (expected_response_type_) {
       case ResponseType::kFormsAnnotations: {
-        optimization_guide::proto::FormsAnnotationsRequest
+        optimization_guide::proto::features::FormsAnnotationsRequest
             forms_annotations_request;
         if (!forms_annotations_request.ParseFromString(
                 execute_request.request_metadata().value())) {
           response->set_content(
               "Couldn't parse optimization_guide::proto::ExecuteRequest's "
               "request_metadata().value() field as "
-              "optimization_guide::proto::FormsAnnotationsRequest.");
+              "optimization_guide::proto::features::FormsAnnotationsRequest.");
           response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
           return response;
         }
@@ -197,14 +197,14 @@ class OptimizationGuideTestServer {
         break;
       }
       case ResponseType::kFormsPredictions: {
-        optimization_guide::proto::FormsPredictionsRequest
+        optimization_guide::proto::features::FormsPredictionsRequest
             forms_predictions_request;
         if (!forms_predictions_request.ParseFromString(
                 execute_request.request_metadata().value())) {
           response->set_content(
               "Couldn't parse optimization_guide::proto::ExecuteRequest's "
               "request_metadata().value() field as "
-              "optimization_guide::proto::FormsPredictionsRequest.");
+              "optimization_guide::proto::features::FormsPredictionsRequest.");
           response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
           return response;
         }
@@ -224,14 +224,15 @@ class OptimizationGuideTestServer {
 
   static optimization_guide::proto::ExecuteResponse
   BuildFormsAnnotationsResponse(
-      const optimization_guide::proto::FormsAnnotationsRequest& request) {
-    optimization_guide::proto::FormsAnnotationsResponse response;
-    for (const optimization_guide::proto::FormFieldData& field :
+      const optimization_guide::proto::features::FormsAnnotationsRequest&
+          request) {
+    optimization_guide::proto::features::FormsAnnotationsResponse response;
+    for (const optimization_guide::proto::features::FormFieldData& field :
          request.form_data().fields()) {
       if (field.field_value().empty()) {
         continue;
       }
-      optimization_guide::proto::UserAnnotationsEntry* entry =
+      optimization_guide::proto::features::UserAnnotationsEntry* entry =
           response.add_upserted_entries();
       entry->set_key(field.field_label());
       entry->set_value(field.field_value());
@@ -242,34 +243,36 @@ class OptimizationGuideTestServer {
     any_metadata->set_type_url("type.googleapis.com/" + response.GetTypeName());
     response.SerializeToString(any_metadata->mutable_value());
     auto response_data = optimization_guide::ParsedAnyMetadata<
-        optimization_guide::proto::FormsAnnotationsResponse>(*any_metadata);
+        optimization_guide::proto::features::FormsAnnotationsResponse>(
+        *any_metadata);
     EXPECT_TRUE(response_data);
     return execute_response;
   }
 
   static optimization_guide::proto::ExecuteResponse
   BuildFormsPredictionsResponse(
-      const optimization_guide::proto::FormsPredictionsRequest& request) {
-    optimization_guide::proto::FormsPredictionsResponse response;
+      const optimization_guide::proto::features::FormsPredictionsRequest&
+          request) {
+    optimization_guide::proto::features::FormsPredictionsResponse response;
     for (int i = 0; i < request.form_data().fields().size(); ++i) {
-      const optimization_guide::proto::FormFieldData& field =
+      const optimization_guide::proto::features::FormFieldData& field =
           request.form_data().fields(i);
       auto it = base::ranges::find(
           request.entries(), field.field_label(),
-          &optimization_guide::proto::UserAnnotationsEntry::key);
+          &optimization_guide::proto::features::UserAnnotationsEntry::key);
       if (it == request.entries().end()) {
         continue;
       }
       const std::string& field_label = it->key();
       const std::string& field_value = it->value();
-      optimization_guide::proto::FilledFormFieldData* filled_field =
+      optimization_guide::proto::features::FilledFormFieldData* filled_field =
           response.mutable_form_data()->add_filled_form_field_data();
-      optimization_guide::proto::PredictedValue* predicted_value =
+      optimization_guide::proto::features::PredictedValue* predicted_value =
           filled_field->add_predicted_values();
       predicted_value->set_value(field_value);
       filled_field->set_normalized_label(field_label);
       filled_field->set_request_field_index(i);
-      optimization_guide::proto::FormFieldData* filled_field_data =
+      optimization_guide::proto::features::FormFieldData* filled_field_data =
           filled_field->mutable_field_data();
       filled_field_data->set_field_label(field_label);
       filled_field_data->set_field_value(field_value);
@@ -280,7 +283,8 @@ class OptimizationGuideTestServer {
     any_metadata->set_type_url("type.googleapis.com/" + response.GetTypeName());
     response.SerializeToString(any_metadata->mutable_value());
     auto response_data = optimization_guide::ParsedAnyMetadata<
-        optimization_guide::proto::FormsPredictionsResponse>(*any_metadata);
+        optimization_guide::proto::features::FormsPredictionsResponse>(
+        *any_metadata);
     EXPECT_TRUE(response_data);
     return execute_response;
   }

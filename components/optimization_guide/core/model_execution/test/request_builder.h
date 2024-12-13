@@ -10,13 +10,14 @@
 namespace optimization_guide {
 
 // A ComposeRequest with page_metadata.page_url filled.
-proto::ComposeRequest PageUrlRequest(const std::string& input);
+proto::features::ComposeRequest PageUrlRequest(const std::string& input);
 
 // A ComposeRequest with generate_params.user_input filled.
-proto::ComposeRequest UserInputRequest(const std::string& input);
+proto::features::ComposeRequest UserInputRequest(const std::string& input);
 
 // A ComposeRequest with rewrite_params.previous_response filled.
-proto::ComposeRequest RewriteRequest(const std::string& previous_response);
+proto::features::ComposeRequest RewriteRequest(
+    const std::string& previous_response);
 
 }  // namespace optimization_guide
 

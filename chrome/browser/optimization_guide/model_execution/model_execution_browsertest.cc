@@ -67,14 +67,15 @@ enum class ModelExecutionRemoteResponseType {
 };
 
 proto::ExecuteResponse BuildComposeResponse(const std::string& output) {
-  proto::ComposeResponse compose_response;
+  proto::features::ComposeResponse compose_response;
   compose_response.set_output(output);
   proto::ExecuteResponse execute_response;
   proto::Any* any_metadata = execute_response.mutable_response_metadata();
   any_metadata->set_type_url("type.googleapis.com/" +
                              compose_response.GetTypeName());
   compose_response.SerializeToString(any_metadata->mutable_value());
-  auto response_data = ParsedAnyMetadata<proto::ComposeResponse>(*any_metadata);
+  auto response_data =
+      ParsedAnyMetadata<proto::features::ComposeResponse>(*any_metadata);
   EXPECT_TRUE(response_data);
   return execute_response;
 }
@@ -405,7 +406,7 @@ class ModelExecutionDisabledBrowserTest : public ModelExecutionBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionDisabledBrowserTest,
                        ModelExecutionDisabled) {
-  proto::ComposeRequest request;
+  proto::features::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
@@ -498,7 +499,7 @@ class ModelExecutionEnabledBrowserTest : public ModelExecutionBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
                        ModelExecutionDisabledInIncognito) {
   Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
-  proto::ComposeRequest request;
+  proto::features::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request,
                otr_browser->profile());
@@ -517,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
                        ModelExecutionFailsNoUserSignIn) {
-  proto::ComposeRequest request;
+  proto::features::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
@@ -539,12 +540,12 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   SetMetricsConsent(false);
   SetExpectedBearerAccessToken("Bearer access_token");
 
-  proto::ComposeRequest request;
+  proto::features::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
   EXPECT_TRUE(model_execution_result_->response.has_value());
-  auto response = ParsedAnyMetadata<proto::ComposeResponse>(
+  auto response = ParsedAnyMetadata<proto::features::ComposeResponse>(
       model_execution_result_->response.value());
   EXPECT_EQ("foo response", response->output());
 
@@ -560,12 +561,12 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   SetMetricsConsent(true);
   SetExpectedBearerAccessToken("Bearer access_token");
 
-  proto::ComposeRequest request;
+  proto::features::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
   EXPECT_TRUE(model_execution_result_->response.has_value());
-  auto response = ParsedAnyMetadata<proto::ComposeResponse>(
+  auto response = ParsedAnyMetadata<proto::features::ComposeResponse>(
       model_execution_result_->response.value());
   EXPECT_EQ("foo response", response->output());
 
@@ -586,7 +587,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   ASSERT_TRUE(
       g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
 
-  proto::ComposeRequest request;
+  proto::features::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
@@ -608,7 +609,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   SetExpectedBearerAccessToken("Bearer access_token");
   SetResponseType(ModelExecutionRemoteResponseType::kMalformed);
 
-  proto::ComposeRequest request;
+  proto::features::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
@@ -625,7 +626,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   SetExpectedBearerAccessToken("Bearer access_token");
   SetResponseType(ModelExecutionRemoteResponseType::kErrorFiltered);
 
-  proto::ComposeRequest request;
+  proto::features::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
@@ -650,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   ASSERT_TRUE(
       g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
 
-  proto::ComposeRequest request;
+  proto::features::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
@@ -781,7 +782,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionInternalsPageBrowserTest,
   EnableSignin();
   SetExpectedBearerAccessToken("Bearer access_token");
 
-  proto::ComposeRequest request;
+  proto::features::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("foo");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
@@ -921,12 +922,12 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionComposeLoggingDisabledTest,
   ASSERT_TRUE(
       g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
 
-  proto::ComposeRequest request;
+  proto::features::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
   EXPECT_TRUE(model_execution_result_->response.has_value());
-  auto response = ParsedAnyMetadata<proto::ComposeResponse>(
+  auto response = ParsedAnyMetadata<proto::features::ComposeResponse>(
       model_execution_result_->response.value());
   EXPECT_EQ("foo response", response->output());
 
@@ -1111,7 +1112,7 @@ IN_PROC_BROWSER_TEST_P(ModelExecutionEnterprisePolicyBrowserTest,
   EXPECT_FALSE(
       ShouldFeatureBeCurrentlyEnabledForUser(UserVisibleFeatureKey::kCompose));
 
-  proto::ComposeRequest request_1;
+  proto::features::ComposeRequest request_1;
   request_1.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request_1);
 
@@ -1139,7 +1140,7 @@ IN_PROC_BROWSER_TEST_P(ModelExecutionEnterprisePolicyBrowserTest,
   EXPECT_TRUE(
       ShouldFeatureBeCurrentlyEnabledForUser(UserVisibleFeatureKey::kCompose));
 
-  proto::ComposeRequest request_2;
+  proto::features::ComposeRequest request_2;
   request_2.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request_2);
 
@@ -1184,7 +1185,7 @@ IN_PROC_BROWSER_TEST_P(ModelExecutionEnterprisePolicyBrowserTest,
   EXPECT_TRUE(
       ShouldFeatureBeCurrentlyEnabledForUser(UserVisibleFeatureKey::kCompose));
 
-  proto::ComposeRequest request_1;
+  proto::features::ComposeRequest request_1;
   request_1.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request_1);
 
@@ -1209,7 +1210,7 @@ IN_PROC_BROWSER_TEST_P(ModelExecutionEnterprisePolicyBrowserTest,
   EXPECT_TRUE(
       ShouldFeatureBeCurrentlyEnabledForUser(UserVisibleFeatureKey::kCompose));
 
-  proto::ComposeRequest request_2;
+  proto::features::ComposeRequest request_2;
   request_2.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request_2);
 

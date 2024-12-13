@@ -31,25 +31,27 @@ base::FilePath GetTestDataDir() {
       FILE_PATH_LITERAL("components/test/data/optimization_guide"));
 }
 
-void AssertHasText(const optimization_guide::proto::ContentNode& node,
+void AssertHasText(const optimization_guide::proto::features::ContentNode& node,
                    std::string text) {
   const auto& content_attributes = node.content_attributes();
   EXPECT_EQ(content_attributes.attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+            optimization_guide::proto::features::CONTENT_ATTRIBUTE_ROOT);
   EXPECT_EQ(content_attributes.text_info().size(), 1);
   EXPECT_EQ(content_attributes.text_info().at(0).text_content(), text);
 }
 
-void AssertRectsEqual(const optimization_guide::proto::BoundingRect& proto_rect,
-                      gfx::Rect rect) {
+void AssertRectsEqual(
+    const optimization_guide::proto::features::BoundingRect& proto_rect,
+    gfx::Rect rect) {
   EXPECT_EQ(proto_rect.width(), rect.width());
   EXPECT_EQ(proto_rect.height(), rect.height());
   EXPECT_EQ(proto_rect.x(), rect.x());
   EXPECT_EQ(proto_rect.y(), rect.y());
 }
 
-void AssertRectsEqual(const optimization_guide::proto::BoundingRect& a,
-                      const optimization_guide::proto::BoundingRect& b) {
+void AssertRectsEqual(
+    const optimization_guide::proto::features::BoundingRect& a,
+    const optimization_guide::proto::features::BoundingRect& b) {
   EXPECT_EQ(a.width(), b.width());
   EXPECT_EQ(a.height(), b.height());
   EXPECT_EQ(a.x(), b.x());
@@ -97,13 +99,16 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
     command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "1.0");
   }
 
-  void SetPageContent(base::OnceClosure quit_closure,
-                      std::optional<proto::AnnotatedPageContent> page_content) {
+  void SetPageContent(
+      base::OnceClosure quit_closure,
+      std::optional<proto::features::AnnotatedPageContent> page_content) {
     page_content_ = std::move(page_content);
     std::move(quit_closure).Run();
   }
 
-  const proto::AnnotatedPageContent& page_content() { return *page_content_; }
+  const proto::features::AnnotatedPageContent& page_content() {
+    return *page_content_;
+  }
 
   void LoadData() {
     base::RunLoop run_loop;
@@ -136,7 +141,7 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  std::optional<proto::AnnotatedPageContent> page_content_;
+  std::optional<proto::features::AnnotatedPageContent> page_content_;
 };
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, AIPageContent) {
@@ -221,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
 
   const auto& iframe = page_content().root_node().children_nodes()[0];
   EXPECT_EQ(iframe.content_attributes().attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+            optimization_guide::proto::features::CONTENT_ATTRIBUTE_IFRAME);
   const auto& iframe_data = iframe.content_attributes().iframe_data();
   AssertValidURL(iframe_data.url(), "a.com");
   EXPECT_FALSE(iframe_data.likely_ad_frame());
@@ -237,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
 
   const auto& iframe = page_content().root_node().children_nodes()[0];
   EXPECT_EQ(iframe.content_attributes().attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+            optimization_guide::proto::features::CONTENT_ATTRIBUTE_IFRAME);
   const auto& iframe_data = iframe.content_attributes().iframe_data();
   AssertValidURL(iframe_data.url(), "a.com");
   EXPECT_FALSE(iframe_data.likely_ad_frame());
@@ -268,17 +273,17 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
 
   const auto& iframe = page_content().root_node().children_nodes()[0];
   ASSERT_EQ(iframe.content_attributes().attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+            optimization_guide::proto::features::CONTENT_ATTRIBUTE_IFRAME);
 
   ASSERT_EQ(iframe.children_nodes().size(), 1);
   const auto& iframe_root = iframe.children_nodes()[0];
   ASSERT_EQ(iframe_root.content_attributes().attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+            optimization_guide::proto::features::CONTENT_ATTRIBUTE_ROOT);
 
   ASSERT_EQ(iframe_root.children_nodes().size(), 1);
   const auto& p = iframe_root.children_nodes()[0];
   EXPECT_EQ(p.content_attributes().attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+            optimization_guide::proto::features::CONTENT_ATTRIBUTE_PARAGRAPH);
   const auto& geometry = p.content_attributes().geometry();
   AssertRectsEqual(geometry.outer_bounding_box(),
                    gfx::Rect(-20, -10, 100, 200));
@@ -299,16 +304,16 @@ IN_PROC_BROWSER_TEST_P(
 
   const auto& iframe = page_content().root_node().children_nodes()[0];
   ASSERT_EQ(iframe.content_attributes().attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+            optimization_guide::proto::features::CONTENT_ATTRIBUTE_IFRAME);
 
   ASSERT_EQ(iframe.children_nodes().size(), 1);
   const auto& iframe_root = iframe.children_nodes()[0];
   ASSERT_EQ(iframe_root.content_attributes().attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+            optimization_guide::proto::features::CONTENT_ATTRIBUTE_ROOT);
 
   const auto& p = iframe_root.children_nodes()[0];
   EXPECT_EQ(p.content_attributes().attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+            optimization_guide::proto::features::CONTENT_ATTRIBUTE_PARAGRAPH);
 
 // TODO(khushalsagar): This is an existing bug where the scroll offset of the
 // root scroller in the ancestor remote frame is not applied.
@@ -358,7 +363,7 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
 
   const auto& b_frame = page_content().root_node().children_nodes()[0];
   EXPECT_EQ(b_frame.content_attributes().attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+            optimization_guide::proto::features::CONTENT_ATTRIBUTE_IFRAME);
   const auto& b_frame_data = b_frame.content_attributes().iframe_data();
   AssertValidURL(b_frame_data.url(), "b.com");
   EXPECT_FALSE(b_frame_data.likely_ad_frame());
@@ -371,7 +376,7 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
 
   const auto& c_frame = page_content().root_node().children_nodes()[1];
   EXPECT_EQ(c_frame.content_attributes().attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+            optimization_guide::proto::features::CONTENT_ATTRIBUTE_IFRAME);
   const auto& c_frame_data = c_frame.content_attributes().iframe_data();
   AssertValidURL(c_frame_data.url(), "c.com");
   EXPECT_FALSE(c_frame_data.likely_ad_frame());
@@ -417,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestFencedFrame,
 
   const auto& b_frame = page_content().root_node().children_nodes()[0];
   EXPECT_EQ(b_frame.content_attributes().attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+            optimization_guide::proto::features::CONTENT_ATTRIBUTE_IFRAME);
   const auto& b_frame_data = b_frame.content_attributes().iframe_data();
   AssertValidURL(b_frame_data.url(), "b.com");
   EXPECT_FALSE(b_frame_data.likely_ad_frame());

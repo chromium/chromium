@@ -12,7 +12,7 @@
 
 class GURL;
 
-namespace optimization_guide::proto {
+namespace optimization_guide::proto::features {
 class AXTreeUpdate;
 }
 
@@ -39,8 +39,8 @@ class AutofillAiManager;
 class AutofillAiClient {
  public:
   // The callback to extract the accessibility tree snapshot.
-  using AXTreeCallback =
-      base::OnceCallback<void(optimization_guide::proto::AXTreeUpdate)>;
+  using AXTreeCallback = base::OnceCallback<void(
+      optimization_guide::proto::features::AXTreeUpdate)>;
 
   virtual ~AutofillAiClient() = default;
 

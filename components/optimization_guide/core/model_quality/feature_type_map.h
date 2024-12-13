@@ -39,10 +39,10 @@ class DefaultFeatureTypeMap {
 
 class ComposeFeatureTypeMap {
  public:
-  using LoggingData = proto::ComposeLoggingData;
-  using Request = proto::ComposeRequest;
-  using Response = proto::ComposeResponse;
-  using Quality = proto::ComposeQuality;
+  using LoggingData = proto::features::ComposeLoggingData;
+  using Request = proto::features::ComposeRequest;
+  using Response = proto::features::ComposeResponse;
+  using Quality = proto::features::ComposeQuality;
 
   static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
     return ai_data_request.mutable_compose();
@@ -53,10 +53,10 @@ class ComposeFeatureTypeMap {
 
 class TabOrganizationFeatureTypeMap {
  public:
-  using LoggingData = proto::TabOrganizationLoggingData;
-  using Request = proto::TabOrganizationRequest;
-  using Response = proto::TabOrganizationResponse;
-  using Quality = proto::TabOrganizationQuality;
+  using LoggingData = proto::features::TabOrganizationLoggingData;
+  using Request = proto::features::TabOrganizationRequest;
+  using Response = proto::features::TabOrganizationResponse;
+  using Quality = proto::features::TabOrganizationQuality;
 
   static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
     return ai_data_request.mutable_tab_organization();
@@ -67,10 +67,10 @@ class TabOrganizationFeatureTypeMap {
 
 class WallpaperSearchFeatureTypeMap {
  public:
-  using LoggingData = proto::WallpaperSearchLoggingData;
-  using Request = proto::WallpaperSearchRequest;
-  using Response = proto::WallpaperSearchResponse;
-  using Quality = proto::WallpaperSearchQuality;
+  using LoggingData = proto::features::WallpaperSearchLoggingData;
+  using Request = proto::features::WallpaperSearchRequest;
+  using Response = proto::features::WallpaperSearchResponse;
+  using Quality = proto::features::WallpaperSearchQuality;
 
   static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
     return ai_data_request.mutable_wallpaper_search();
@@ -81,10 +81,10 @@ class WallpaperSearchFeatureTypeMap {
 
 class HistoryQueryFeatureTypeMap {
  public:
-  using LoggingData = proto::HistoryQueryLoggingData;
-  using Request = proto::HistoryQueryRequest;
-  using Response = proto::HistoryQueryResponse;
-  using Quality = proto::HistoryQueryQuality;
+  using LoggingData = proto::features::HistoryQueryLoggingData;
+  using Request = proto::features::HistoryQueryRequest;
+  using Response = proto::features::HistoryQueryResponse;
+  using Quality = proto::features::HistoryQueryQuality;
 
   static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
     return ai_data_request.mutable_history_query();
@@ -95,9 +95,9 @@ class HistoryQueryFeatureTypeMap {
 
 class HistoryQueryIntentFeatureTypeMap {
  public:
-  using LoggingData = proto::HistoryQueryIntentLoggingData;
-  using Request = proto::HistoryQueryIntentRequest;
-  using Response = proto::HistoryQueryIntentResponse;
+  using LoggingData = proto::features::HistoryQueryIntentLoggingData;
+  using Request = proto::features::HistoryQueryIntentRequest;
+  using Response = proto::features::HistoryQueryIntentResponse;
 
   static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
     return ai_data_request.mutable_history_query_intent();
@@ -108,10 +108,10 @@ class HistoryQueryIntentFeatureTypeMap {
 
 class HistoryAnswerFeatureTypeMap {
  public:
-  using LoggingData = proto::HistoryAnswerLoggingData;
-  using Request = proto::HistoryAnswerRequest;
-  using Response = proto::HistoryAnswerResponse;
-  using Quality = proto::HistoryAnswerQuality;
+  using LoggingData = proto::features::HistoryAnswerLoggingData;
+  using Request = proto::features::HistoryAnswerRequest;
+  using Response = proto::features::HistoryAnswerResponse;
+  using Quality = proto::features::HistoryAnswerQuality;
 
   static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
     return ai_data_request.mutable_history_answer();
@@ -122,8 +122,8 @@ class HistoryAnswerFeatureTypeMap {
 
 class ProductSpecificationsFeatureTypeMap {
  public:
-  using LoggingData = proto::ProductSpecificationsLoggingData;
-  using Quality = proto::ProductSpecificationsQuality;
+  using LoggingData = proto::features::ProductSpecificationsLoggingData;
+  using Quality = proto::features::ProductSpecificationsQuality;
 
   static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
     return ai_data_request.mutable_product_specifications();
@@ -134,10 +134,10 @@ class ProductSpecificationsFeatureTypeMap {
 
 class FormsAnnotationsFeatureTypeMap {
  public:
-  using LoggingData = proto::FormsAnnotationsLoggingData;
-  using Request = proto::FormsAnnotationsRequest;
-  using Response = proto::FormsAnnotationsResponse;
-  using Quality = proto::FormsAnnotationsQuality;
+  using LoggingData = proto::features::FormsAnnotationsLoggingData;
+  using Request = proto::features::FormsAnnotationsRequest;
+  using Response = proto::features::FormsAnnotationsResponse;
+  using Quality = proto::features::FormsAnnotationsQuality;
 
   static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
     return ai_data_request.mutable_forms_annotations();
@@ -148,10 +148,10 @@ class FormsAnnotationsFeatureTypeMap {
 
 class FormsPredictionsFeatureTypeMap {
  public:
-  using LoggingData = proto::FormsPredictionsLoggingData;
-  using Request = proto::FormsPredictionsRequest;
-  using Response = proto::FormsPredictionsResponse;
-  using Quality = proto::FormsPredictionsQuality;
+  using LoggingData = proto::features::FormsPredictionsLoggingData;
+  using Request = proto::features::FormsPredictionsRequest;
+  using Response = proto::features::FormsPredictionsResponse;
+  using Quality = proto::features::FormsPredictionsQuality;
 
   static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
     return ai_data_request.mutable_forms_predictions();
@@ -162,9 +162,9 @@ class FormsPredictionsFeatureTypeMap {
 
 class BlingPrototypingFeatureTypeMap {
  public:
-  using LoggingData = proto::BlingPrototypingLoggingData;
-  using Request = proto::BlingPrototypingRequest;
-  using Response = proto::BlingPrototypingResponse;
+  using LoggingData = proto::features::BlingPrototypingLoggingData;
+  using Request = proto::features::BlingPrototypingRequest;
+  using Response = proto::features::BlingPrototypingResponse;
 
   static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
     return ai_data_request.mutable_bling_prototyping();
@@ -175,7 +175,7 @@ class BlingPrototypingFeatureTypeMap {
 
 class ModelPrototypingFeatureTypeMap {
  public:
-  using LoggingData = proto::ModelPrototypingLoggingData;
+  using LoggingData = proto::features::ModelPrototypingLoggingData;
 
   static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
     return ai_data_request.mutable_model_prototyping();
@@ -186,9 +186,9 @@ class ModelPrototypingFeatureTypeMap {
 
 class PasswordChangeSubmissionFeatureTypeMap {
  public:
-  using LoggingData = proto::PasswordChangeSubmissionLoggingData;
-  using Request = proto::PasswordChangeRequest;
-  using Response = proto::PasswordChangeResponse;
+  using LoggingData = proto::features::PasswordChangeSubmissionLoggingData;
+  using Request = proto::features::PasswordChangeRequest;
+  using Response = proto::features::PasswordChangeResponse;
 
   static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
     return ai_data_request.mutable_password_change_submission();

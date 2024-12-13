@@ -323,7 +323,8 @@ class ClientSideDetectionHost
   void OnInquireOnDeviceModelDone(
       std::unique_ptr<ClientPhishingRequest> verdict,
       std::optional<bool> did_match_high_confidence_allowlist,
-      std::optional<optimization_guide::proto::ScamDetectionResponse> response);
+      std::optional<optimization_guide::proto::features::ScamDetectionResponse>
+          response);
 
   // This pointer may be nullptr if client-side phishing detection is
   // disabled.

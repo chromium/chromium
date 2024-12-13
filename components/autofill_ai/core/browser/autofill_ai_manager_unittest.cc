@@ -101,16 +101,18 @@ class MockAutofillAiModelExecutor : public AutofillAiModelExecutor {
       (autofill::FormData form_data,
        (base::flat_map<autofill::FieldGlobalId, bool> field_eligibility_map),
        (base::flat_map<autofill::FieldGlobalId, bool> sensitivity_map),
-       optimization_guide::proto::AXTreeUpdate ax_tree_update,
+       optimization_guide::proto::features::AXTreeUpdate ax_tree_update,
        PredictionsReceivedCallback callback),
       (override));
   MOCK_METHOD(
-      const std::optional<optimization_guide::proto::FormsPredictionsRequest>&,
+      const std::optional<
+          optimization_guide::proto::features::FormsPredictionsRequest>&,
       GetLatestRequest,
       (),
       (const override));
   MOCK_METHOD(
-      const std::optional<optimization_guide::proto::FormsPredictionsResponse>&,
+      const std::optional<
+          optimization_guide::proto::features::FormsPredictionsResponse>&,
       GetLatestResponse,
       (),
       (const override));
@@ -232,8 +234,8 @@ TEST_F(AutofillAiManagerTest, RetrievalFailed_ShowError) {
     EXPECT_CALL(update_suggestions_callback,
                 Run(ElementsAre(HasType(kAutofillAiLoadingState)), _));
     EXPECT_CALL(client(), GetAXTree)
-        .WillOnce(
-            RunOnceCallback<0>(optimization_guide::proto::AXTreeUpdate()));
+        .WillOnce(RunOnceCallback<0>(
+            optimization_guide::proto::features::AXTreeUpdate()));
     EXPECT_CALL(model_executor(), GetPredictions)
         .WillOnce(RunOnceCallback<4>(PredictionsByGlobalId{}, ""));
     EXPECT_CALL(update_suggestions_callback,
@@ -270,8 +272,8 @@ TEST_F(AutofillAiManagerTest, RetrievalFailed_FallbackToAutofill) {
     EXPECT_CALL(update_suggestions_callback,
                 Run(ElementsAre(HasType(kAutofillAiLoadingState)), _));
     EXPECT_CALL(client(), GetAXTree)
-        .WillOnce(
-            RunOnceCallback<0>(optimization_guide::proto::AXTreeUpdate()));
+        .WillOnce(RunOnceCallback<0>(
+            optimization_guide::proto::features::AXTreeUpdate()));
     EXPECT_CALL(model_executor(), GetPredictions)
         .WillOnce(RunOnceCallback<4>(PredictionsByGlobalId{}, ""));
     EXPECT_CALL(update_suggestions_callback,
@@ -314,8 +316,8 @@ TEST_F(AutofillAiManagerTest, EndToEnd) {
     EXPECT_CALL(update_suggestions_callback,
                 Run(ElementsAre(HasType(kAutofillAiLoadingState)), _));
     EXPECT_CALL(client(), GetAXTree)
-        .WillOnce(
-            RunOnceCallback<0>(optimization_guide::proto::AXTreeUpdate()));
+        .WillOnce(RunOnceCallback<0>(
+            optimization_guide::proto::features::AXTreeUpdate()));
     EXPECT_CALL(model_executor(), GetPredictions)
         .WillOnce(MoveArg<4>(&predictions_received_callback));
     EXPECT_CALL(
@@ -375,8 +377,8 @@ TEST_F(AutofillAiManagerTest, AutofillSuggestionsAreCachedOnMultipleFocus) {
     EXPECT_CALL(update_suggestions_callback,
                 Run(ElementsAre(HasType(kAutofillAiLoadingState)), _));
     EXPECT_CALL(client(), GetAXTree)
-        .WillOnce(
-            RunOnceCallback<0>(optimization_guide::proto::AXTreeUpdate()));
+        .WillOnce(RunOnceCallback<0>(
+            optimization_guide::proto::features::AXTreeUpdate()));
     EXPECT_CALL(model_executor(), GetPredictions)
         .WillOnce(MoveArg<4>(&predictions_received_callback));
     EXPECT_CALL(update_suggestions_callback,
@@ -899,8 +901,8 @@ TEST_P(AutofillAiManagerImportFormTest,
 #endif
   if (should_extract_ax_tree()) {
     EXPECT_CALL(client(), GetAXTree)
-        .WillOnce(
-            RunOnceCallback<0>(optimization_guide::proto::AXTreeUpdate{}));
+        .WillOnce(RunOnceCallback<0>(
+            optimization_guide::proto::features::AXTreeUpdate{}));
   } else {
     EXPECT_CALL(client(), GetAXTree).Times(0);
   }
@@ -998,7 +1000,7 @@ TEST_F(AutofillAiManagerTest,
 TEST_F(AutofillAiManagerTest, HasDataStoredReturnsTrueIfDataIsStored) {
   base::MockCallback<AutofillAiManager::HasDataCallback> has_data_callback;
   user_annotations_service_.ReplaceAllEntries(
-      {optimization_guide::proto::UserAnnotationsEntry()});
+      {optimization_guide::proto::features::UserAnnotationsEntry()});
   manager().HasDataStored(has_data_callback.Get());
   EXPECT_CALL(has_data_callback, Run(AutofillAiManager::HasData(true)));
   manager().HasDataStored(has_data_callback.Get());

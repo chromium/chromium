@@ -12,18 +12,18 @@
 #include "components/optimization_guide/proto/features/tab_organization.pb.h"
 
 void AddOrganizationDetailsToQualityOrganization(
-    optimization_guide::proto::TabOrganizationQuality* quality,
+    optimization_guide::proto::features::TabOrganizationQuality* quality,
     const TabOrganization* organization,
     const TabOrganizationResponse::Organization* response_organization) {
   CHECK(quality && response_organization);
 
-  optimization_guide::proto::TabOrganizationQuality_Organization*
+  optimization_guide::proto::features::TabOrganizationQuality_Organization*
       quality_organization = quality->add_organizations();
   CHECK(quality_organization != nullptr);
 
   if (!organization) {
     quality_organization->set_choice(
-        optimization_guide::proto::
+        optimization_guide::proto::features::
             TabOrganizationQuality_Organization_Choice_NOT_USED);
     return;
   }
@@ -35,17 +35,18 @@ void AddOrganizationDetailsToQualityOrganization(
   switch (organization->choice()) {
     case TabOrganization::UserChoice::kRejected: {
       quality_organization->set_choice(
-          optimization_guide::proto::
+          optimization_guide::proto::features::
               TabOrganizationQuality_Organization_Choice_REJECTED);
       break;
     }
     case TabOrganization::UserChoice::kAccepted: {
       quality_organization->set_choice(
-          optimization_guide::proto::
+          optimization_guide::proto::features::
               TabOrganizationQuality_Organization_Choice_ACCEPTED);
 
-      optimization_guide::proto::TabOrganizationQuality_Organization_Label*
-          label = quality_organization->mutable_label();
+      optimization_guide::proto::features::
+          TabOrganizationQuality_Organization_Label* label =
+              quality_organization->mutable_label();
       label->set_edited(organization->names().size() == 0 ||
                         organization->names()[0] !=
                             organization->GetDisplayName());
@@ -63,7 +64,7 @@ void AddOrganizationDetailsToQualityOrganization(
 }
 
 void AddSessionDetailsToQuality(
-    optimization_guide::proto::TabOrganizationQuality* quality,
+    optimization_guide::proto::features::TabOrganizationQuality* quality,
     const TabOrganizationSession* session) {
   CHECK(session && session->request() && session->request()->response());
 

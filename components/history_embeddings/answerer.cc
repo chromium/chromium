@@ -15,7 +15,7 @@ AnswererResult::AnswererResult() = default;
 AnswererResult::AnswererResult(
     ComputeAnswerStatus status,
     std::string query,
-    optimization_guide::proto::Answer answer,
+    optimization_guide::proto::features::Answer answer,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry,
     std::string url,
     std::vector<std::string> text_directives)
@@ -25,9 +25,10 @@ AnswererResult::AnswererResult(
       log_entry(std::move(log_entry)),
       url(std::move(url)),
       text_directives(std::move(text_directives)) {}
-AnswererResult::AnswererResult(ComputeAnswerStatus status,
-                               std::string query,
-                               optimization_guide::proto::Answer answer)
+AnswererResult::AnswererResult(
+    ComputeAnswerStatus status,
+    std::string query,
+    optimization_guide::proto::features::Answer answer)
     : status(status), query(std::move(query)), answer(std::move(answer)) {}
 AnswererResult::AnswererResult(AnswererResult&&) = default;
 AnswererResult::~AnswererResult() {

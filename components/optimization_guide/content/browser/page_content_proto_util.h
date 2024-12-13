@@ -33,7 +33,7 @@ bool ConvertAIPageContentToProto(
     content::GlobalRenderFrameHostToken main_frame_token,
     const AIPageContentMap& page_content_map,
     GetRenderFrameInfo get_render_frame_info,
-    optimization_guide::proto::AnnotatedPageContent* proto);
+    optimization_guide::proto::features::AnnotatedPageContent* proto);
 
 }  // namespace optimization_guide
 

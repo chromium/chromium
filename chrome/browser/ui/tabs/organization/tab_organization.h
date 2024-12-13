@@ -57,7 +57,9 @@ class TabOrganization : public TabData::Observer {
   const CurrentName& current_name() const { return current_name_; }
   UserChoice choice() const { return choice_; }
   // TODO(b/331852814): Remove along with the multi tab organization flag
-  optimization_guide::proto::UserFeedback feedback() const { return feedback_; }
+  optimization_guide::proto::features::UserFeedback feedback() const {
+    return feedback_;
+  }
   std::optional<tab_groups::TabGroupId> group_id() const { return group_id_; }
   ID organization_id() const { return organization_id_; }
   const std::u16string GetDisplayName() const;
@@ -74,7 +76,7 @@ class TabOrganization : public TabData::Observer {
   void RemoveTabData(TabData::TabID id);
   void SetCurrentName(CurrentName new_current_name);
   // TODO(b/331852814): Remove along with the multi tab organization flag
-  void SetFeedback(optimization_guide::proto::UserFeedback feedback) {
+  void SetFeedback(optimization_guide::proto::features::UserFeedback feedback) {
     feedback_ = feedback;
   }
   void SetTabGroupId(std::optional<tab_groups::TabGroupId> id) {
@@ -122,8 +124,9 @@ class TabOrganization : public TabData::Observer {
   // A separate feedback mechanism, represents whether the user has provided
   // feedback via the thumbs UI.
   // TODO(b/331852814): Remove along with the multi tab organization flag
-  optimization_guide::proto::UserFeedback feedback_ =
-      optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
+  optimization_guide::proto::features::UserFeedback feedback_ =
+      optimization_guide::proto::features::UserFeedback::
+          USER_FEEDBACK_UNSPECIFIED;
 
   // The id for the existing tab group this organization refers to, if any.
   std::optional<tab_groups::TabGroupId> group_id_ = std::nullopt;

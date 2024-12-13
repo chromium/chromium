@@ -25,7 +25,7 @@ class MqlsFeatureMetadata;
 namespace {
 
 void AddComposeLoggingData(proto::LogAiDataRequest* log) {
-  *(log->mutable_compose()) = proto::ComposeLoggingData();
+  *(log->mutable_compose()) = proto::features::ComposeLoggingData();
 }
 
 class TestModelQualityLogsUploaderService

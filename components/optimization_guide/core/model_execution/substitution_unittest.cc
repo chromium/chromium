@@ -237,7 +237,7 @@ TEST_F(SubstitutionTest, ProtoField) {
   *substitution->add_substitutions()->add_candidates()->mutable_proto_field() =
       UserInputField();
 
-  proto::ComposeRequest request;
+  proto::features::ComposeRequest request;
   request.mutable_page_metadata()->set_page_title("nested");
   request.mutable_generate_params()->set_user_input("inner type");
   auto result = CreateSubstitutions(request, subs);
@@ -254,7 +254,7 @@ TEST_F(SubstitutionTest, BadProtoField) {
   *substitution->add_substitutions()->add_candidates()->mutable_proto_field() =
       ProtoField({10000});
 
-  proto::ComposeRequest request;
+  proto::features::ComposeRequest request;
   request.mutable_page_metadata()->set_page_title("nested");
 
   auto result = CreateSubstitutions(request, subs);
@@ -263,9 +263,9 @@ TEST_F(SubstitutionTest, BadProtoField) {
 }
 
 TEST_F(SubstitutionTest, Conditions) {
-  proto::ComposeRequest request;
+  proto::features::ComposeRequest request;
   // COMPOSE_LONGER == 2
-  request.mutable_rewrite_params()->set_length(proto::COMPOSE_LONGER);
+  request.mutable_rewrite_params()->set_length(proto::features::COMPOSE_LONGER);
   // rewrite_params.tone is implicitly 0 / UNSPECIFIED_TONE
 
   // True conditions
@@ -318,8 +318,8 @@ TEST_F(SubstitutionTest, Conditions) {
 }
 
 // Make a simple request with two tabs.
-proto::TabOrganizationRequest TwoTabRequest() {
-  proto::TabOrganizationRequest request;
+proto::features::TabOrganizationRequest TwoTabRequest() {
+  proto::features::TabOrganizationRequest request;
   auto* tabs = request.mutable_tabs();
   {
     auto* t1 = tabs->Add();
@@ -358,7 +358,7 @@ TEST_F(SubstitutionTest, RepeatedRawField) {
     expr.add_candidates()->set_raw_string("E");
     subs.Add()->MergeFrom(TabsExpr(expr));
   }
-  proto::TabOrganizationRequest request = TwoTabRequest();
+  proto::features::TabOrganizationRequest request = TwoTabRequest();
   auto result = CreateSubstitutions(request, subs);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "Tabs: E,E,");
@@ -372,7 +372,7 @@ TEST_F(SubstitutionTest, RepeatedProtoField) {
     *expr.add_candidates()->mutable_proto_field() = TabTitle();
     subs.Add()->MergeFrom(TabsExpr(expr));
   }
-  proto::TabOrganizationRequest request = TwoTabRequest();
+  proto::features::TabOrganizationRequest request = TwoTabRequest();
   auto result = CreateSubstitutions(request, subs);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "Tabs: tabA,tabB,");
@@ -386,7 +386,7 @@ TEST_F(SubstitutionTest, RepeatedZeroBasedIndexField) {
     expr.add_candidates()->mutable_index_expr();
     subs.Add()->MergeFrom(TabsExpr(expr));
   }
-  proto::TabOrganizationRequest request = TwoTabRequest();
+  proto::features::TabOrganizationRequest request = TwoTabRequest();
   auto result = CreateSubstitutions(request, subs);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "Tabs: 0,1,");
@@ -400,7 +400,7 @@ TEST_F(SubstitutionTest, RepeatedOneBasedIndexField) {
     expr.add_candidates()->mutable_index_expr()->set_one_based(true);
     subs.Add()->MergeFrom(TabsExpr(expr));
   }
-  proto::TabOrganizationRequest request = TwoTabRequest();
+  proto::features::TabOrganizationRequest request = TwoTabRequest();
   auto result = CreateSubstitutions(request, subs);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "Tabs: 1,2,");
@@ -422,7 +422,7 @@ TEST_F(SubstitutionTest, RepeatedCondition) {
     c2->set_raw_string("NotTen");
     subs.Add()->MergeFrom(TabsExpr(expr));
   }
-  proto::TabOrganizationRequest request = TwoTabRequest();
+  proto::features::TabOrganizationRequest request = TwoTabRequest();
   auto result = CreateSubstitutions(request, subs);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "Tabs: Ten,NotTen,");

@@ -38,7 +38,7 @@ void AIWriter::Write(const std::string& input,
                      const std::optional<std::string>& context,
                      mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                          pending_responder) {
-  optimization_guide::proto::ComposePageMetadata page_metadata;
+  optimization_guide::proto::features::ComposePageMetadata page_metadata;
   std::string context_string = base::JoinString(
       {options_->shared_context.value_or(""), context.value_or("")}, "\n");
   base::TrimString(context_string, "\n", &context_string);
@@ -46,12 +46,12 @@ void AIWriter::Write(const std::string& input,
       context_string.substr(0, AIUtils::kTrimmedInnerTextMaxChars));
   page_metadata.set_page_inner_text(context_string);
 
-  optimization_guide::proto::ComposeRequest context_request;
+  optimization_guide::proto::features::ComposeRequest context_request;
   *context_request.mutable_page_metadata() = std::move(page_metadata);
 
   session_->AddContext(context_request);
 
-  optimization_guide::proto::ComposeRequest execute_request;
+  optimization_guide::proto::features::ComposeRequest execute_request;
   execute_request.mutable_generate_params()->set_user_input(input);
 
   session_->ExecuteModel(
@@ -76,7 +76,8 @@ void AIWriter::ModelExecutionCallback(
   }
 
   auto compose_response = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::ComposeResponse>(result.response->response);
+      optimization_guide::proto::features::ComposeResponse>(
+      result.response->response);
   if (compose_response) {
     responder->OnStreaming(compose_response->output());
   }

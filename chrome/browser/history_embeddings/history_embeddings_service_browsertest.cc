@@ -349,8 +349,9 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest, LogDataIsPrepared) {
   };
   service()->SendQualityLog(
       result, {1}, 3,
-      optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED,
-      optimization_guide::proto::UiSurface::UI_SURFACE_HISTORY_PAGE);
+      optimization_guide::proto::features::UserFeedback::
+          USER_FEEDBACK_UNSPECIFIED,
+      optimization_guide::proto::features::UiSurface::UI_SURFACE_HISTORY_PAGE);
   histogram_tester.ExpectUniqueSample(
       "History.Embeddings.Quality.LogEntryPrepared", true, 1);
 }

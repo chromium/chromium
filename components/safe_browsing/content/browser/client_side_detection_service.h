@@ -65,8 +65,10 @@ enum class SBClientDetectionClassifyThresholdsResult {
   kMaxValue = kModelLabelNotFound,
 };
 
-using ScamDetectionRequest = optimization_guide::proto::ScamDetectionRequest;
-using ScamDetectionResponse = optimization_guide::proto::ScamDetectionResponse;
+using ScamDetectionRequest =
+    optimization_guide::proto::features::ScamDetectionRequest;
+using ScamDetectionResponse =
+    optimization_guide::proto::features::ScamDetectionResponse;
 
 // Main service which pushes models to the renderers, responds to classification
 // requests. This owns two ModelLoader objects.
@@ -239,7 +241,8 @@ class ClientSideDetectionService
       ClientPhishingRequest* verdict,
       std::string rendered_texts,
       base::OnceCallback<
-          void(std::optional<optimization_guide::proto::ScamDetectionResponse>)>
+          void(std::optional<
+               optimization_guide::proto::features::ScamDetectionResponse>)>
           callback);
 
   // For testing the on-device model flow in unit test.
@@ -403,7 +406,8 @@ class ClientSideDetectionService
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
       session_;
   base::OnceCallback<void(
-      std::optional<optimization_guide::proto::ScamDetectionResponse>)>
+      std::optional<
+          optimization_guide::proto::features::ScamDetectionResponse>)>
       inquire_on_device_model_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);

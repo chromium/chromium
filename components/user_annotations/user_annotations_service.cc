@@ -109,7 +109,7 @@ UserAnnotationsEntries ConvertAutofillProfileToEntries(
     if (entry_value.empty()) {
       continue;
     }
-    optimization_guide::proto::UserAnnotationsEntry entry_proto;
+    optimization_guide::proto::features::UserAnnotationsEntry entry_proto;
     entry_proto.set_key(entry_key);
     entry_proto.set_value(std::move(entry_value));
     entries.emplace_back(std::move(entry_proto));
@@ -173,7 +173,7 @@ bool UserAnnotationsService::ShouldAddFormSubmissionForURL(const GURL& url) {
 void UserAnnotationsService::AddFormSubmission(
     const GURL& url,
     const std::string& title,
-    optimization_guide::proto::AXTreeUpdate ax_tree_update,
+    optimization_guide::proto::features::AXTreeUpdate ax_tree_update,
     std::unique_ptr<autofill::FormStructure> form,
     ImportFormCallback callback) {
   // `form` is assumed to never be `nullptr`.
@@ -220,7 +220,8 @@ void UserAnnotationsService::OnOsCryptAsyncReady(
 }
 
 void UserAnnotationsService::InitializeFormsAnnotationsFromCommandLine(
-    const optimization_guide::proto::FormsAnnotationsResponse& manual_entries) {
+    const optimization_guide::proto::features::FormsAnnotationsResponse&
+        manual_entries) {
   SaveEntries(manual_entries);
 }
 
@@ -231,7 +232,8 @@ bool UserAnnotationsService::IsDatabaseReady() {
 }
 
 void UserAnnotationsService::SaveEntries(
-    const optimization_guide::proto::FormsAnnotationsResponse& entries) {
+    const optimization_guide::proto::features::FormsAnnotationsResponse&
+        entries) {
   DCHECK(user_annotations_database_);
 
   UserAnnotationsEntries upserted_entries = UserAnnotationsEntries(

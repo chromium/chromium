@@ -4,7 +4,7 @@
 
 syntax = "proto3";
 
-package optimization_guide.proto;
+package optimization_guide.proto.features;
 
 import "components/optimization_guide/proto/features/forms_predictions.proto";
 

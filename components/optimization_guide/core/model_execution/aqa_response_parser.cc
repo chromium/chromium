@@ -47,7 +47,8 @@ constexpr std::string_view kAnswerPrefix = "The answer is ";
 // fails, return the corresponding failure enum.
 optimization_guide::AqaResponseParser::Result ParseAqaResponse(
     const std::string& redacted_output) {
-  optimization_guide::proto::HistoryAnswerResponse history_answer_response;
+  optimization_guide::proto::features::HistoryAnswerResponse
+      history_answer_response;
 
   std::string unanswerable_capture;
   std::string remaining_capture;

@@ -248,7 +248,7 @@ void ModelExecutionManager::ExecuteModel(
       case ModelBasedCapabilityKey::kTabOrganization: {
         proto::Any any = AnyWrapProto(request_metadata);
         auto tab_request = optimization_guide::ParsedAnyMetadata<
-            optimization_guide::proto::TabOrganizationRequest>(any);
+            optimization_guide::proto::features::TabOrganizationRequest>(any);
         std::string tabs = "";
         for (const auto& tab : tab_request->tabs()) {
           tabs += base::StringPrintf("%s\"%s\"", tabs.empty() ? "" : ",",
@@ -260,7 +260,7 @@ void ModelExecutionManager::ExecuteModel(
             << "TabOrganization Request: "
             << base::StringPrintf(
                    "{\"model_strategy\": \"%s\", \"tabs\" : [%s]}",
-                   optimization_guide::proto::
+                   optimization_guide::proto::features::
                        TabOrganizationRequest_TabOrganizationModelStrategy_Name(
                            tab_request->model_strategy()),
                    tabs.c_str());
@@ -445,7 +445,7 @@ void ModelExecutionManager::OnModelExecuteResponse(
       case ModelBasedCapabilityKey::kTabOrganization: {
         std::string message = "";
         auto tab_response = optimization_guide::ParsedAnyMetadata<
-            optimization_guide::proto::TabOrganizationResponse>(
+            optimization_guide::proto::features::TabOrganizationResponse>(
             execute_response->response_metadata());
         message += "Response: [";
         int group_cnt = 0;

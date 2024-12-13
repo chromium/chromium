@@ -289,7 +289,7 @@ void AutofillAiManager::RetrievePredictions(
                                       weak_ptr_factory_.GetWeakPtr(), form,
                                       trigger_field));
   } else {
-    optimization_guide::proto::AXTreeUpdate ax_tree_update;
+    optimization_guide::proto::features::AXTreeUpdate ax_tree_update;
     OnReceivedAXTree(form, trigger_field, std::move(ax_tree_update));
   }
 }
@@ -297,7 +297,7 @@ void AutofillAiManager::RetrievePredictions(
 void AutofillAiManager::OnReceivedAXTree(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
-    optimization_guide::proto::AXTreeUpdate ax_tree_update) {
+    optimization_guide::proto::features::AXTreeUpdate ax_tree_update) {
   client_->GetModelExecutor()->GetPredictions(
       form, GetFieldFillingEligibilityMap(form),
       GetFieldValueSensitivityMap(form), std::move(ax_tree_update),
@@ -613,7 +613,7 @@ void AutofillAiManager::MaybeImportForm(
     OnReceivedAXTreeForFormImport(
         url, kSendTitleURL.Get() ? client_->GetTitle() : std::string(),
         std::move(form), std::move(callback),
-        optimization_guide::proto::AXTreeUpdate());
+        optimization_guide::proto::features::AXTreeUpdate());
   }
 }
 
@@ -622,7 +622,7 @@ void AutofillAiManager::OnReceivedAXTreeForFormImport(
     const std::string& title,
     std::unique_ptr<autofill::FormStructure> form,
     user_annotations::ImportFormCallback callback,
-    optimization_guide::proto::AXTreeUpdate ax_tree_update) {
+    optimization_guide::proto::features::AXTreeUpdate ax_tree_update) {
   if (user_annotations::UserAnnotationsService* user_annotations_service =
           client_->GetUserAnnotationsService()) {
     user_annotations_service->AddFormSubmission(
@@ -646,8 +646,8 @@ void AutofillAiManager::HasDataStored(HasDataCallback callback) {
               << "Received user annotation entries:" << [&] {
                    LogBuffer buffer;
                    buffer << autofill::Tag{"table"};
-                   for (const optimization_guide::proto::UserAnnotationsEntry&
-                            entry : entries) {
+                   for (const optimization_guide::proto::features::
+                            UserAnnotationsEntry& entry : entries) {
                      buffer << autofill::Tr{} << entry.entry_id() << entry.key()
                             << entry.value()
                             << autofill::SetParentTagContainsPII{};

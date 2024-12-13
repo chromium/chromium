@@ -64,7 +64,7 @@ using ::optimization_guide::AnyWrapProto;
 using ::optimization_guide::MockSession;
 using ::optimization_guide::OptimizationGuideModelExecutionError;
 using ::optimization_guide::OptimizationGuideModelStreamingExecutionResult;
-using ::optimization_guide::proto::ScamDetectionResponse;
+using ::optimization_guide::proto::features::ScamDetectionResponse;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Mock;

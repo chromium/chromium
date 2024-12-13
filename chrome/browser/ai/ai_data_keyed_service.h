@@ -23,7 +23,8 @@ class BrowserContext;
 class AiDataKeyedService : public KeyedService {
  public:
   // Data related to AiData collection.
-  using BrowserData = optimization_guide::proto::BrowserCollectedInformation;
+  using BrowserData =
+      optimization_guide::proto::features::BrowserCollectedInformation;
   using AiData = std::optional<BrowserData>;
   using AiDataCallback = base::OnceCallback<void(AiData)>;
 

@@ -31,9 +31,9 @@ TEST(UserAnnotationsSwitchesTest, OverrideFormsAnnotations) {
       {0, "label", "whatever"},
       {0, "nolabel", "value"},
   };
-  optimization_guide::proto::FormsAnnotationsResponse response;
+  optimization_guide::proto::features::FormsAnnotationsResponse response;
   for (const auto& entry : response_upserted_entries) {
-    optimization_guide::proto::UserAnnotationsEntry* new_entry =
+    optimization_guide::proto::features::UserAnnotationsEntry* new_entry =
         response.add_upserted_entries();
     new_entry->set_entry_id(entry.entry_id);
     new_entry->set_key(entry.key);

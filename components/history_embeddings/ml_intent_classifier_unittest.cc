@@ -30,8 +30,8 @@ using testing::NiceMock;
 
 using optimization_guide::proto::Any;
 using optimization_guide::proto::HistoryQueryIntentModelMetadata;
-using optimization_guide::proto::HistoryQueryIntentRequest;
-using optimization_guide::proto::HistoryQueryIntentResponse;
+using optimization_guide::proto::features::HistoryQueryIntentRequest;
+using optimization_guide::proto::features::HistoryQueryIntentResponse;
 
 auto FakeExecute(const google::protobuf::MessageLite& request_metadata) {
   const HistoryQueryIntentRequest* request =

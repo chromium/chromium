@@ -301,9 +301,9 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, RetrieveAllUserAnnotations) {
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, RemoveUserAnnotationEntry) {
   // Seed user annotations service with entries.
   ASSERT_TRUE(RunAutofillSubtest("deleteUserAnnotationsEntry"));
-  optimization_guide::proto::UserAnnotationsEntry entry_1;
+  optimization_guide::proto::features::UserAnnotationsEntry entry_1;
   entry_1.set_entry_id(123);
-  optimization_guide::proto::UserAnnotationsEntry entry_2;
+  optimization_guide::proto::features::UserAnnotationsEntry entry_2;
   entry_2.set_entry_id(321);
   user_annotations_service()->ReplaceAllEntries({entry_1, entry_2});
   EXPECT_EQ(GetAllUserAnnotationsEntries().size(), 2u);
@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, RemoveUserAnnotationEntry) {
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, RemoveAllUserAnnotations) {
   // Seed user annotations service with entries.
-  optimization_guide::proto::UserAnnotationsEntry entry;
+  optimization_guide::proto::features::UserAnnotationsEntry entry;
   entry.set_entry_id(0);
   user_annotations_service()->ReplaceAllEntries({entry});
   EXPECT_EQ(GetAllUserAnnotationsEntries().size(), 1u);

@@ -29,18 +29,18 @@ message TestLoggingData {
 // TODO(holte): Move this to summarize.proto
 message SummarizeLoggingData {
   optimization_guide.proto.SummarizeRequest request = 1;
-  optimization_guide.proto.ComposeResponse response = 2;
+  optimization_guide.proto.features.ComposeResponse response = 2;
 }
 
 // This message is never instantiated, it just enumerates the message types that
 // will be supported as requests/responses by on-device code.
 message OnDeviceFeatureProtoRegistry {
-  optimization_guide.proto.ComposeLoggingData a = 1;
-  optimization_guide.proto.HistoryAnswerLoggingData b = 2;
-  optimization_guide.proto.HistoryQueryIntentLoggingData c = 3;
+  optimization_guide.proto.features.ComposeLoggingData a = 1;
+  optimization_guide.proto.features.HistoryAnswerLoggingData b = 2;
+  optimization_guide.proto.features.HistoryQueryIntentLoggingData c = 3;
   optimization_guide.proto.PromptApiLoggingData d = 4;
   TestLoggingData e = 5;
   SummarizeLoggingData f = 6;
-  optimization_guide.proto.TabOrganizationLoggingData g = 7;
-  optimization_guide.proto.ScamDetectionLoggingData h = 8;
+  optimization_guide.proto.features.TabOrganizationLoggingData g = 7;
+  optimization_guide.proto.features.ScamDetectionLoggingData h = 8;
 }

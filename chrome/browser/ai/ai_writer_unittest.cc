@@ -53,7 +53,7 @@ class MockCreateWriterClient
 
 optimization_guide::OptimizationGuideModelStreamingExecutionResult
 CreateExecutionResult(std::string_view output, bool is_complete) {
-  optimization_guide::proto::ComposeResponse response;
+  optimization_guide::proto::features::ComposeResponse response;
   *response.mutable_output() = output;
   return optimization_guide::OptimizationGuideModelStreamingExecutionResult(
       optimization_guide::StreamingResponse{
@@ -74,8 +74,8 @@ CreateExecutionErrorResult(
 void CheckComposeRequestContext(
     const google::protobuf::MessageLite& request_metadata,
     const std::string& expected_context_string) {
-  const optimization_guide::proto::ComposeRequest* request =
-      static_cast<const optimization_guide::proto::ComposeRequest*>(
+  const optimization_guide::proto::features::ComposeRequest* request =
+      static_cast<const optimization_guide::proto::features::ComposeRequest*>(
           &request_metadata);
   EXPECT_THAT(request->page_metadata().page_inner_text(),
               expected_context_string);
@@ -86,8 +86,8 @@ void CheckComposeRequestContext(
 void CheckComposeRequestUserInput(
     const google::protobuf::MessageLite& request_metadata,
     const std::string& expected_user_input) {
-  const optimization_guide::proto::ComposeRequest* request =
-      static_cast<const optimization_guide::proto::ComposeRequest*>(
+  const optimization_guide::proto::features::ComposeRequest* request =
+      static_cast<const optimization_guide::proto::features::ComposeRequest*>(
           &request_metadata);
   EXPECT_THAT(request->generate_params().user_input(), expected_user_input);
 }

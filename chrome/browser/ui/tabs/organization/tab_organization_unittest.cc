@@ -1249,7 +1249,7 @@ TEST_F(TabOrganizationTest, LoggingUtilAddOrganizationsToModelQuality) {
 
   std::unique_ptr<optimization_guide::ModelQualityLogEntry>
       model_quality_log_entry = std::make_unique<FakeModelQualityLogEntry>();
-  optimization_guide::proto::TabOrganizationQuality* quality =
+  optimization_guide::proto::features::TabOrganizationQuality* quality =
       model_quality_log_entry
           ->quality_data<optimization_guide::TabOrganizationFeatureTypeMap>();
 
@@ -1345,7 +1345,7 @@ TEST_F(TabOrganizationTest, LoggingUtilAddOrganizationsToModelQualityAccepted) {
 
   std::unique_ptr<optimization_guide::ModelQualityLogEntry>
       model_quality_log_entry = std::make_unique<FakeModelQualityLogEntry>();
-  optimization_guide::proto::TabOrganizationQuality* quality =
+  optimization_guide::proto::features::TabOrganizationQuality* quality =
       model_quality_log_entry
           ->quality_data<optimization_guide::TabOrganizationFeatureTypeMap>();
 
@@ -1356,12 +1356,14 @@ TEST_F(TabOrganizationTest, LoggingUtilAddOrganizationsToModelQualityAccepted) {
   // get the list of organizations and expect one to be present
   EXPECT_EQ(quality->organizations_size(), 3);
   {
-    const optimization_guide::proto::TabOrganizationQuality_Organization&
-        quality_org = quality->organizations(0);
+    const optimization_guide::proto::features::
+        TabOrganizationQuality_Organization& quality_org =
+            quality->organizations(0);
     EXPECT_TRUE(quality_org.has_label());
 
-    const optimization_guide::proto::TabOrganizationQuality_Organization_Label&
-        quality_org_label = quality_org.label();
+    const optimization_guide::proto::features::
+        TabOrganizationQuality_Organization_Label& quality_org_label =
+            quality_org.label();
     EXPECT_FALSE(quality_org_label.edited());
   }
 }

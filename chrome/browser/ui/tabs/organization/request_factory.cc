@@ -52,7 +52,7 @@ void OnLogResults(
   if (log_entry && session->request() && session->request()->response() &&
       session->request()->response()->organizations.size() > 0 &&
       session->tab_organizations().size() > 0) {
-    optimization_guide::proto::TabOrganizationQuality* quality =
+    optimization_guide::proto::features::TabOrganizationQuality* quality =
         log_entry
             ->quality_data<optimization_guide::TabOrganizationFeatureTypeMap>();
 
@@ -67,7 +67,8 @@ void OnTabOrganizationModelExecutionResult(
     TabOrganizationRequest::BackendCompletionCallback on_completion,
     TabOrganizationRequest::BackendFailureCallback on_failure,
     optimization_guide::OptimizationGuideModelExecutionResult result,
-    std::unique_ptr<optimization_guide::proto::TabOrganizationLoggingData>
+    std::unique_ptr<
+        optimization_guide::proto::features::TabOrganizationLoggingData>
         logging_data) {
   OptimizationGuideKeyedService* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
@@ -82,7 +83,7 @@ void OnTabOrganizationModelExecutionResult(
   }
 
   auto response = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::TabOrganizationResponse>(
+      optimization_guide::proto::features::TabOrganizationResponse>(
       result.response.value());
 
   if (!response) {
@@ -130,7 +131,8 @@ void PerformTabOrganizationExecution(
     return;
   }
 
-  optimization_guide::proto::TabOrganizationRequest tab_organization_request;
+  optimization_guide::proto::features::TabOrganizationRequest
+      tab_organization_request;
   int valid_tabs = 0;
   for (const std::unique_ptr<TabData>& tab_data : request->tab_datas()) {
     if (!tab_data->IsValidForOrganizing()) {
@@ -190,22 +192,22 @@ void PerformTabOrganizationExecution(
     switch (strategy) {
       case tab_search::mojom::TabOrganizationModelStrategy::kTopic:
         tab_organization_request.set_model_strategy(
-            optimization_guide::proto::
+            optimization_guide::proto::features::
                 TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_UNSPECIFIED);
         break;
       case tab_search::mojom::TabOrganizationModelStrategy::kTask:
         tab_organization_request.set_model_strategy(
-            optimization_guide::proto::
+            optimization_guide::proto::features::
                 TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TASK_BASED);
         break;
       case tab_search::mojom::TabOrganizationModelStrategy::kDomain:
         tab_organization_request.set_model_strategy(
-            optimization_guide::proto::
+            optimization_guide::proto::features::
                 TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_DOMAIN_BASED);
         break;
       default:
         tab_organization_request.set_model_strategy(
-            optimization_guide::proto::
+            optimization_guide::proto::features::
                 TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_UNSPECIFIED);
         break;
     }
