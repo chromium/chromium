@@ -228,7 +228,8 @@ class BASE_EXPORT ScopedSafearray {
   bool operator!=(const ScopedSafearray& safearray2) const = delete;
 
  private:
-  // RAW_PTR_EXCLUSION: #addr-of
+  // RAW_PTR_EXCLUSION: Like LockScope::safearray_, this comes from the
+  // operating system.
   RAW_PTR_EXCLUSION SAFEARRAY* safearray_;
 };
 
