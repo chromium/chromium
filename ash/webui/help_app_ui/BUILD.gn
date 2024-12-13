@@ -40,10 +40,8 @@ static_library("help_app_ui") {
   deps = [
     ":help_app_ui_pref",
     ":mojo_bindings",
-    ":mojo_bindings_js",
     "//ash/constants",
     "//ash/webui/help_app_ui/search:mojo_bindings",
-    "//ash/webui/help_app_ui/search:mojo_bindings_js",
     "//ash/webui/help_app_ui/search:proto",
     "//ash/webui/resources:help_app_bundle_resources",
     "//ash/webui/resources:help_app_kids_magazine_bundle_resources",
@@ -81,9 +79,6 @@ mojom("mojo_bindings") {
   sources = [ "help_app_ui.mojom" ]
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
   webui_module_path = "/"
-
-  # Help app is still using JS + Closure Compiler.
-  generate_webui_js_bindings = true
 }
 
 source_set("unit_tests") {
