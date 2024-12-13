@@ -4,6 +4,7 @@
 
 #include "content/browser/webrtc/webrtc_internals.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -819,7 +820,7 @@ TEST_F(WebRtcInternalsTest, WakeLockReconnect) {
 }
 
 TEST_F(WebRtcInternalsTest, WakeLockMultplePeerConnections) {
-  const int kLids[] = {71, 72, 73};
+  const auto kLids = std::to_array<int>({71, 72, 73});
 
   WebRTCInternalsForTest webrtc_internals;
   EXPECT_EQ(webrtc_internals.num_connected_connections(), 0);

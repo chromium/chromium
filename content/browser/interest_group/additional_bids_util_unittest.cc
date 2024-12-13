@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "content/browser/interest_group/additional_bids_util.h"
 
@@ -1341,10 +1337,11 @@ TEST_F(AdditionalBidsUtilTest, DecodeSignedInvalidSignatureSigLength) {
 TEST_F(AdditionalBidsUtilTest, VerifySignature) {
   const int kKeys = 4;
 
-  struct {
+  struct KeyPairs {
     uint8_t public_key[32];
     uint8_t private_key[64];
-  } key_pairs[kKeys];
+  };
+  std::array<KeyPairs, kKeys> key_pairs;
 
   SignedAdditionalBid data;
   data.additional_bid_json = "Greetings. I am JSON!";

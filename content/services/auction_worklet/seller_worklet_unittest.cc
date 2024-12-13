@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "content/services/auction_worklet/seller_worklet.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -94,17 +91,17 @@ const char kTrustedScoringSignalsResponse[] = R"(
   }
 )";
 
-const uint8_t kTestPrivateKey[] = {
+const auto kTestPrivateKey = std::to_array<uint8_t>({
     0xff, 0x1f, 0x47, 0xb1, 0x68, 0xb6, 0xb9, 0xea, 0x65, 0xf7, 0x97,
     0x4f, 0xf2, 0x2e, 0xf2, 0x36, 0x94, 0xe2, 0xf6, 0xb6, 0x8d, 0x66,
     0xf3, 0xa7, 0x64, 0x14, 0x28, 0xd4, 0x45, 0x35, 0x01, 0x8f,
-};
+});
 
-const uint8_t kTestPublicKey[] = {
+const auto kTestPublicKey = std::to_array<uint8_t>({
     0xa1, 0x5f, 0x40, 0x65, 0x86, 0xfa, 0xc4, 0x7b, 0x99, 0x59, 0x70,
     0xf1, 0x85, 0xd9, 0xd8, 0x91, 0xc7, 0x4d, 0xcf, 0x1e, 0xb9, 0x1a,
     0x7d, 0x50, 0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
-};
+});
 
 const uint8_t kKeyId = 0xFF;
 
@@ -2774,17 +2771,17 @@ TEST_F(SellerWorkletTest, ScoreAdLoadCompletionOrder) {
     std::string content;
   };
 
-  const Response kResponses[] = {
-      {decision_logic_url_, kJavascriptMimeType, kAllowFledgeHeader,
-       CreateScoreAdScript("1")},
-      {*direct_from_seller_seller_signals_, kJsonMimeType,
-       kDirectFromSellerSignalsHeaders, kJsonResponse},
-      {*direct_from_seller_auction_signals_, kJsonMimeType,
-       kDirectFromSellerSignalsHeaders, kJsonResponse},
-      {GURL(trusted_scoring_signals_url_->spec() +
-            "?hostname=window.test"
-            "&renderUrls=https%3A%2F%2Frender.url.test%2F"),
-       kJsonMimeType, kAllowFledgeHeader, kTrustedScoringSignalsResponse}};
+  const auto kResponses = std::to_array<Response>(
+      {{decision_logic_url_, kJavascriptMimeType, kAllowFledgeHeader,
+        CreateScoreAdScript("1")},
+       {*direct_from_seller_seller_signals_, kJsonMimeType,
+        kDirectFromSellerSignalsHeaders, kJsonResponse},
+       {*direct_from_seller_auction_signals_, kJsonMimeType,
+        kDirectFromSellerSignalsHeaders, kJsonResponse},
+       {GURL(trusted_scoring_signals_url_->spec() +
+             "?hostname=window.test"
+             "&renderUrls=https%3A%2F%2Frender.url.test%2F"),
+        kJsonMimeType, kAllowFledgeHeader, kTrustedScoringSignalsResponse}});
 
   // Cycle such that each response in `kResponses` gets to be the last response,
   // like so:
@@ -4095,15 +4092,15 @@ TEST_F(SellerWorkletTest, ReportResultLoadCompletionOrder) {
     std::string content;
   };
 
-  const Response kResponses[] = {
-      {decision_logic_url_, kJavascriptMimeType, kAllowFledgeHeader,
-       CreateReportToScript(
-           "1",
-           /*extra_code=*/R"(sendReportTo("https://foo.test"))")},
-      {*direct_from_seller_seller_signals_, kJsonMimeType,
-       kDirectFromSellerSignalsHeaders, kJsonResponse},
-      {*direct_from_seller_auction_signals_, kJsonMimeType,
-       kDirectFromSellerSignalsHeaders, kJsonResponse}};
+  const auto kResponses = std::to_array<Response>(
+      {{decision_logic_url_, kJavascriptMimeType, kAllowFledgeHeader,
+        CreateReportToScript(
+            "1",
+            /*extra_code=*/R"(sendReportTo("https://foo.test"))")},
+       {*direct_from_seller_seller_signals_, kJsonMimeType,
+        kDirectFromSellerSignalsHeaders, kJsonResponse},
+       {*direct_from_seller_auction_signals_, kJsonMimeType,
+        kDirectFromSellerSignalsHeaders, kJsonResponse}});
 
   // Cycle such that each response in `kResponses` gets to be the last response,
   // like so:
@@ -6574,7 +6571,7 @@ TEST_F(SellerWorkletKVv2Test,
 
   auto seller_worklet = CreateWorklet();
 
-  base::RunLoop run_loops[2];
+  std::array<base::RunLoop, 2> run_loops;
   for (size_t i = 0; i < 2; ++i) {
     trusted_signals_cache_key_ = trusted_signals_cache_keys[i].Clone();
     RunScoreAdOnWorkletAsync(seller_worklet.get(), /*expected_score=*/1,

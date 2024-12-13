@@ -755,10 +755,10 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest, MAYBE_Credentials) {
 // Tests that the credentials flag is correctly taken into account when it
 // interpretation changes after redirect.
 IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest, CredentialsOnRedirect) {
-  GURL urls[2] = {
+  auto urls = std::to_array<GURL, 2>({
       https_server()->GetURL("origin1.com", "/image.png"),
       https_server()->GetURL("origin2.com", "/image.png"),
-  };
+  });
 
   AddQuery(&urls[0], "header", kClearCookiesHeader);
   AddQuery(&urls[1], "header", kClearCookiesHeader);

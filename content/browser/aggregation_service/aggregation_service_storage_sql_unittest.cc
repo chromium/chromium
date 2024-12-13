@@ -939,10 +939,10 @@ TEST_F(AggregationServiceStorageSqlTest,
 }
 
 TEST_F(AggregationServiceStorageSqlTest, GetReportRequestReportingOrigins) {
-  const url::Origin origins[] = {
-      url::Origin::Create(GURL("https://a.example")),
-      url::Origin::Create(GURL("https://b.example")),
-      url::Origin::Create(GURL("https://c.example"))};
+  const auto origins = std::to_array<url::Origin>(
+      {url::Origin::Create(GURL("https://a.example")),
+       url::Origin::Create(GURL("https://b.example")),
+       url::Origin::Create(GURL("https://c.example"))});
 
   OpenDatabase();
 

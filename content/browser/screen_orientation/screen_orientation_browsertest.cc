@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include <stdlib.h>
+
+#include <array>
 
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
@@ -144,10 +142,9 @@ class ScreenOrientationOOPIFBrowserTest : public ScreenOrientationBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(ScreenOrientationBrowserTest,
                        MAYBE_ScreenOrientationChange) {
-  std::string types[] = { "portrait-primary",
-                          "portrait-secondary",
-                          "landscape-primary",
-                          "landscape-secondary" };
+  auto types =
+      std::to_array<std::string>({"portrait-primary", "portrait-secondary",
+                                  "landscape-primary", "landscape-secondary"});
   GURL test_url = GetTestUrl("screen_orientation",
                              "screen_orientation_screenorientationchange.html");
 
@@ -292,8 +289,9 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest, ScreenOrientation) {
   WaitForResizeComplete(shell()->web_contents());
 #endif  // USE_AURA || BUILDFLAG(IS_ANDROID)
 
-  std::string types[] = {"portrait-primary", "portrait-secondary",
-                         "landscape-primary", "landscape-secondary"};
+  auto types =
+      std::to_array<std::string>({"portrait-primary", "portrait-secondary",
+                                  "landscape-primary", "landscape-secondary"});
 
   int angle = GetOrientationAngle();
 

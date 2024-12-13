@@ -4,6 +4,8 @@
 
 #include "content/browser/preloading/prerenderer_impl.h"
 
+#include <array>
+
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/preloading/preloading_confidence.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
@@ -201,8 +203,8 @@ TEST_F(PrerendererTest, RemoveRendererHostAfterCandidateRemoved) {
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
   PrerendererImpl prerenderer(*GetRenderFrameHost());
 
-  const GURL urls[]{GetSameOriginUrl("/title1.html"),
-                    GetSameOriginUrl("/title2.html")};
+  const auto urls = std::to_array<GURL>(
+      {GetSameOriginUrl("/title1.html"), GetSameOriginUrl("/title2.html")});
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   for (const auto& url : urls) {
     candidates.push_back(CreatePrerenderCandidate(url));

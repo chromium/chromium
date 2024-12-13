@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <tuple>
 #include <utility>
 
@@ -146,7 +147,7 @@ class MainThreadEventQueueBrowserTest : public ContentBrowserTest {
   }
 
   void DoTouchMove() {
-    blink::SyntheticWebTouchEvent events[4];
+    std::array<blink::SyntheticWebTouchEvent, 4> events;
     events[0].PressPoint(10, 10);
     events[1].PressPoint(10, 10);
     events[1].MovePoint(0, 20, 20);

@@ -9039,10 +9039,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
   }
 
   // Check ResourceRequest structs of report requests.
-  const GURL kExpectedReportUrls[] = {
+  const auto kExpectedReportUrls = std::to_array<GURL>({
       embedded_https_test_server().GetURL("a.test", "/echoall?report_seller"),
       embedded_https_test_server().GetURL("a.test", "/echoall?report_bidder"),
-  };
+  });
   for (const auto& expected_report_url : kExpectedReportUrls) {
     SCOPED_TRACE(expected_report_url);
 
@@ -11447,10 +11447,10 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
   }
 
   // Check ResourceRequest structs of report requests.
-  const GURL kExpectedReportUrls[] = {
+  const auto kExpectedReportUrls = std::to_array<GURL>({
       embedded_https_test_server().GetURL("a.test", "/echoall?report_seller"),
       embedded_https_test_server().GetURL("a.test", "/echoall?report_bidder"),
-  };
+  });
   for (const auto& expected_report_url : kExpectedReportUrls) {
     SCOPED_TRACE(expected_report_url);
 
@@ -18322,7 +18322,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedURNToURLInvalidURN) {
 // doesn't send reports, then run a case that does, and finally make sure that
 // reports were only sent for the first case.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedURNToURLValidURN) {
-  const struct {
+  struct TestCases {
     bool send_reports;
     // Host for buyer, seller, and publisher. Use a different hostname for each
     // loop iteration so they can use different interest groups.
@@ -18330,7 +18330,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedURNToURLValidURN) {
     // Path for reports. Have to be different so can make reports are only send
     // when `send_reports` is true.
     GURL report_url;
-  } kTestCases[] = {
+  };
+  const auto kTestCases = std::to_array<TestCases>({
       {
           /*send_reports=*/false,
           /*host=*/"a.test",
@@ -18342,7 +18343,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedURNToURLValidURN) {
           /*host=*/"b.test",
           /*report_path=*/
           embedded_https_test_server().GetURL("c.test", "/report_for_b"),
-      }};
+      },
+  });
 
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histogram_tester;
@@ -26927,11 +26929,11 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
           }
         ])";
 
-    const uint8_t kTestPrivateKey[] = {
+    const auto kTestPrivateKey = std::to_array<uint8_t>({
         0xff, 0x1f, 0x47, 0xb1, 0x68, 0xb6, 0xb9, 0xea, 0x65, 0xf7, 0x97,
         0x4f, 0xf2, 0x2e, 0xf2, 0x36, 0x94, 0xe2, 0xf6, 0xb6, 0x8d, 0x66,
         0xf3, 0xa7, 0x64, 0x14, 0x28, 0xd4, 0x45, 0x35, 0x01, 0x8f,
-    };
+    });
 
     base::AutoLock auto_lock(lock_);
 

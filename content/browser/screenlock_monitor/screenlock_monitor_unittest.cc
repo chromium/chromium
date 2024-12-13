@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "content/browser/screenlock_monitor/screenlock_monitor.h"
+
+#include <array>
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -77,7 +75,7 @@ class ScreenlockMonitorTest : public testing::Test {
 TEST_F(ScreenlockMonitorTest, ScreenlockNotifications) {
   const int kObservers = 5;
 
-  ScreenlockMonitorTestObserver observers[kObservers];
+  std::array<ScreenlockMonitorTestObserver, kObservers> observers;
   for (int index = 0; index < kObservers; ++index)
     screenlock_monitor_->AddObserver(&observers[index]);
 
