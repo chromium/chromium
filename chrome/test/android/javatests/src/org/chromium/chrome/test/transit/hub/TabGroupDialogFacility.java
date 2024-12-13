@@ -27,6 +27,7 @@ import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
@@ -60,6 +61,8 @@ public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedAct
     public static final ViewSpec BACK_BUTTON =
             viewSpec(withId(R.id.toolbar_back_button), TOOLBAR_MATCHER);
     public static final ViewSpec LIST_MENU_BUTTON = viewSpec(withId(R.id.toolbar_menu_button));
+    public static final ViewSpec SHARE_BUTTON =
+            viewSpec(withId(R.id.share_button), TOOLBAR_MATCHER);
 
     private final List<Integer> mTabIdsInGroup;
     private final String mTitle;
@@ -100,7 +103,13 @@ public class TabGroupDialogFacility<HostStationT extends Station<ChromeTabbedAct
         elements.declareView(mTitleInputSpec);
         elements.declareView(NEW_TAB_BUTTON);
         elements.declareView(BACK_BUTTON);
-        elements.declareView(LIST_MENU_BUTTON);
+        // TODO (ckitagawa) : Always declare List Menu button.
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID_V2)) {
+            elements.declareView(LIST_MENU_BUTTON);
+        }
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID_V2)) {
+            elements.declareView(SHARE_BUTTON);
+        }
     }
 
     /** Input a new group name. */
