@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -544,7 +545,7 @@ TEST_F(Me2MeNativeMessagingHostTest, All) {
   message.Set("authorizationCode", "fake_auth_code");
   WriteMessageToInputPipe(message);
 
-  void (*verify_routines[])(const base::Value::Dict&) = {
+  auto verify_routines = std::to_array<void (*)(const base::Value::Dict&)>({
       &VerifyHelloResponse,
       &VerifyGetHostNameResponse,
       &VerifyGetPinHashResponse,
@@ -556,7 +557,7 @@ TEST_F(Me2MeNativeMessagingHostTest, All) {
       &VerifyUpdateDaemonConfigResponse,
       &VerifyStartDaemonResponse,
       &VerifyGetCredentialsFromAuthCodeResponse,
-  };
+  });
   ASSERT_EQ(std::size(verify_routines), static_cast<size_t>(next_id));
 
   // Read all responses from output pipe, and verify them.

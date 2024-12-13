@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 
 #include <algorithm>
+#include <array>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -394,19 +390,21 @@ TEST_F(ValidationTest, InputParser) {
 
   // Test some failure cases.
   {
-    const char* error_inputs[] = {"/ hello world",
-                                  "[u1]x",
-                                  "[u2]-1000",
-                                  "[u1]0x100",
-                                  "[s2]-0x8001",
-                                  "[b]1",
-                                  "[b]1111111k",
-                                  "[dist4]unmatched",
-                                  "[anchr]hello [dist8]hello",
-                                  "[dist4]a [dist4]a [anchr]a",
-                                  "[dist4]a [anchr]a [dist4]a [anchr]a",
-                                  "0 [handles]50",
-                                  nullptr};
+    auto error_inputs = std::to_array<const char*>({
+        "/ hello world",
+        "[u1]x",
+        "[u2]-1000",
+        "[u1]0x100",
+        "[s2]-0x8001",
+        "[b]1",
+        "[b]1111111k",
+        "[dist4]unmatched",
+        "[anchr]hello [dist8]hello",
+        "[dist4]a [dist4]a [anchr]a",
+        "[dist4]a [anchr]a [dist4]a [anchr]a",
+        "0 [handles]50",
+        nullptr,
+    });
 
     for (size_t i = 0; error_inputs[i]; ++i) {
       std::vector<uint8_t> expected;

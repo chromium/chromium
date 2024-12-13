@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include <array>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -220,7 +217,7 @@ TEST_F(WTFTypesTest, SendStringArray) {
   TestWTFImpl impl(
       ConvertPendingReceiver<TestWTF>(remote.BindNewPipeAndPassReceiver()));
 
-  std::optional<WTF::Vector<WTF::String>> arrs[3];
+  std::array<std::optional<WTF::Vector<WTF::String>>, 3> arrs;
   // arrs[0] is empty.
   arrs[0].emplace();
   // arrs[1] is null.
@@ -247,7 +244,7 @@ TEST_F(WTFTypesTest, SendStringMap) {
   TestWTFImpl impl(
       ConvertPendingReceiver<TestWTF>(remote.BindNewPipeAndPassReceiver()));
 
-  std::optional<WTF::HashMap<WTF::String, WTF::String>> maps[3];
+  std::array<std::optional<WTF::HashMap<WTF::String, WTF::String>>, 3> maps;
   // maps[0] is empty.
   maps[0].emplace();
   // maps[1] is null.

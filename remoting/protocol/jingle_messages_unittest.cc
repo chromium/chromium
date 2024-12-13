@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/protocol/jingle_messages.h"
 
 #include <stddef.h>
+
+#include <array>
 
 #include "base/strings/string_util.h"
 #include "remoting/protocol/content_description.h"
@@ -426,7 +423,8 @@ TEST(JingleMessageReplyTest, ToXml) {
     std::string error_text;
     std::string expected_text;
     std::string incoming_message;
-  } tests[] = {
+  };
+  auto tests = std::to_array<TestCase>({
       {JingleMessageReply::BAD_REQUEST, "",
        "<iq xmlns='jabber:client' "
        "to='user@gmail.com/chromoting016DBB07' id='4' type='error'><jingle "
@@ -481,7 +479,7 @@ TEST(JingleMessageReplyTest, ToXml) {
        "<iq xmlns='jabber:client' to='remoting@bot.talk.google.com' id='4' "
        "type='result'><jingle xmlns='urn:xmpp:jingle:1'/></iq>",
        kTestIncomingMessage2},
-  };
+  });
 
   for (size_t i = 0; i < std::size(tests); ++i) {
     std::unique_ptr<XmlElement> incoming_message(

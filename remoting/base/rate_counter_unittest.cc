@@ -2,22 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/base/rate_counter.h"
 
 #include <stddef.h>
 #include <stdint.h>
+
+#include <array>
 
 #include "base/test/simple_test_tick_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
 
-static const int64_t kTestValues[] = {10, 20, 30, 10, 25, 16, 15};
+const auto kTestValues = std::to_array<int64_t>({10, 20, 30, 10, 25, 16, 15});
 
 // One second window and one sample per second, so rate equals each sample.
 TEST(RateCounterTest, OneSecondWindow) {

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -365,14 +361,14 @@ TEST_F(AssociatedInterfaceTest, MultiThreadAccess) {
   scoped_refptr<MultiplexRouter> router1;
   CreateRouterPair(&router0, &router1);
 
-  PendingAssociatedReceiver<IntegerSender> pending_receivers[4];
-  PendingAssociatedRemote<IntegerSender> pending_remotes[4];
+  std::array<PendingAssociatedReceiver<IntegerSender>, 4> pending_receivers;
+  std::array<PendingAssociatedRemote<IntegerSender>, 4> pending_remotes;
   for (size_t i = 0; i < 4; ++i) {
     CreateIntegerSenderWithExistingRouters(router1, &pending_remotes[i],
                                            router0, &pending_receivers[i]);
   }
 
-  TestSender senders[4];
+  std::array<TestSender, 4> senders;
   for (size_t i = 0; i < 4; ++i) {
     senders[i].task_runner()->PostTask(
         FROM_HERE,
@@ -382,7 +378,7 @@ TEST_F(AssociatedInterfaceTest, MultiThreadAccess) {
   }
 
   base::RunLoop run_loop;
-  TestReceiver receivers[2];
+  std::array<TestReceiver, 2> receivers;
   NotificationCounter counter(2, run_loop.QuitClosure());
   for (size_t i = 0; i < 2; ++i) {
     receivers[i].task_runner()->PostTask(
@@ -449,14 +445,14 @@ TEST_F(AssociatedInterfaceTest, FIFO) {
   scoped_refptr<MultiplexRouter> router1;
   CreateRouterPair(&router0, &router1);
 
-  PendingAssociatedReceiver<IntegerSender> pending_receivers[4];
-  PendingAssociatedRemote<IntegerSender> pending_remotes[4];
+  std::array<PendingAssociatedReceiver<IntegerSender>, 4> pending_receivers;
+  std::array<PendingAssociatedRemote<IntegerSender>, 4> pending_remotes;
   for (size_t i = 0; i < 4; ++i) {
     CreateIntegerSenderWithExistingRouters(router1, &pending_remotes[i],
                                            router0, &pending_receivers[i]);
   }
 
-  TestSender senders[4];
+  std::array<TestSender, 4> senders;
   for (size_t i = 0; i < 4; ++i) {
     senders[i].task_runner()->PostTask(
         FROM_HERE,
@@ -466,7 +462,7 @@ TEST_F(AssociatedInterfaceTest, FIFO) {
   }
 
   base::RunLoop run_loop;
-  TestReceiver receivers[2];
+  std::array<TestReceiver, 2> receivers;
   NotificationCounter counter(2, run_loop.QuitClosure());
   for (size_t i = 0; i < 2; ++i) {
     receivers[i].task_runner()->PostTask(
