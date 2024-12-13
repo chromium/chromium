@@ -1761,7 +1761,7 @@ bool TemplateURL::MatchesData(const TemplateURL* t_url,
 }
 
 std::u16string TemplateURL::AdjustedShortNameForLocaleDirection() const {
-  std::u16string bidi_safe_short_name = data_.short_name();
+  std::u16string bidi_safe_short_name = data().short_name();
   base::i18n::AdjustStringForLocaleDirection(&bidi_safe_short_name);
   return bidi_safe_short_name;
 }
@@ -1788,17 +1788,17 @@ bool TemplateURL::HasGoogleBaseURLs(
 bool TemplateURL::IsGoogleSearchURLWithReplaceableKeyword(
     const SearchTermsData& search_terms_data) const {
   return (type_ == NORMAL) && url_ref().HasGoogleBaseURLs(search_terms_data) &&
-         google_util::IsGoogleHostname(base::UTF16ToUTF8(data_.keyword()),
+         google_util::IsGoogleHostname(base::UTF16ToUTF8(data().keyword()),
                                        google_util::DISALLOW_SUBDOMAIN);
 }
 
 bool TemplateURL::HasSameKeywordAs(
     const TemplateURLData& other,
     const SearchTermsData& search_terms_data) const {
-  return (data_.keyword() == other.keyword()) ||
-      (IsGoogleSearchURLWithReplaceableKeyword(search_terms_data) &&
-       TemplateURL(other).IsGoogleSearchURLWithReplaceableKeyword(
-           search_terms_data));
+  return (data().keyword() == other.keyword()) ||
+         (IsGoogleSearchURLWithReplaceableKeyword(search_terms_data) &&
+          TemplateURL(other).IsGoogleSearchURLWithReplaceableKeyword(
+              search_terms_data));
 }
 
 std::string TemplateURL::GetExtensionId() const {
@@ -1818,10 +1818,10 @@ SearchEngineType TemplateURL::GetEngineType(
 }
 
 BuiltinEngineType TemplateURL::GetBuiltinEngineType() const {
-  if (data_.prepopulate_id != 0) {
+  if (data().prepopulate_id != 0) {
     return KEYWORD_MODE_PREPOPULATED_ENGINE;
-  } else if (data_.starter_pack_id != 0) {
-    switch (data_.starter_pack_id) {
+  } else if (data().starter_pack_id != 0) {
+    switch (data().starter_pack_id) {
       case TemplateURLStarterPackData::kBookmarks:
         return KEYWORD_MODE_STARTER_PACK_BOOKMARKS;
       case TemplateURLStarterPackData::kHistory:
@@ -1882,9 +1882,9 @@ bool TemplateURL::KeepSearchTermsInURL(const GURL& url,
   }
 
   std::vector<std::string> query_params;
-  if (keep_search_intent_params && !data_.search_intent_params.empty()) {
+  if (keep_search_intent_params && !data().search_intent_params.empty()) {
     for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
-      if (!base::Contains(data_.search_intent_params, it.GetKey())) {
+      if (!base::Contains(data().search_intent_params, it.GetKey())) {
         continue;
       }
       query_params.push_back(base::StrCat({it.GetKey(), "=", it.GetValue()}));
@@ -2002,7 +2002,7 @@ GURL TemplateURL::GenerateSuggestionURL(
 }
 
 RegulatoryExtensionType TemplateURL::GetRegulatoryExtensionType() const {
-  if (data_.created_from_play_api) {
+  if (data().created_from_play_api) {
     return RegulatoryExtensionType::kAndroidEEA;
   }
   return RegulatoryExtensionType::kDefault;
@@ -2010,8 +2010,8 @@ RegulatoryExtensionType TemplateURL::GetRegulatoryExtensionType() const {
 
 const TemplateURLData::RegulatoryExtension* TemplateURL::GetRegulatoryExtension(
     RegulatoryExtensionType type) const {
-  auto extension_iter = data_.regulatory_extensions.find(type);
-  auto* extension = extension_iter == data_.regulatory_extensions.end()
+  auto extension_iter = data().regulatory_extensions.find(type);
+  auto* extension = extension_iter == data().regulatory_extensions.end()
                         ? nullptr
                         : extension_iter->second.get();
 
@@ -2073,17 +2073,17 @@ void TemplateURL::CopyFrom(const TemplateURL& other) {
   data_ = other.data_;
   ResizeURLRefVector();
   InvalidateCachedValues();
-  SetPrepopulateId(other.data_.prepopulate_id);
+  SetPrepopulateId(other.data().prepopulate_id);
 }
 
 void TemplateURL::SetURL(const std::string& url) {
-  data_.SetURL(url);
+  const_cast<TemplateURLData&>(data()).SetURL(url);
   engine_type_ = SEARCH_ENGINE_UNKNOWN;
   url_ref().InvalidateCachedValues();
 }
 
 void TemplateURL::SetPrepopulateId(int id) {
-  data_.prepopulate_id = id;
+  const_cast<TemplateURLData&>(data()).prepopulate_id = id;
   const bool prepopulated = id > 0;
   for (TemplateURLRef& ref : url_refs_)
     ref.prepopulated_ = prepopulated;
@@ -2101,7 +2101,7 @@ void TemplateURL::ResetKeywordIfNecessary(
     DCHECK_NE(OMNIBOX_API_EXTENSION, type_);
     GURL url(GenerateSearchURL(search_terms_data));
     if (url.is_valid())
-      data_.SetKeyword(GenerateKeyword(url));
+      const_cast<TemplateURLData&>(data()).SetKeyword(GenerateKeyword(url));
   }
 }
 
@@ -2131,14 +2131,15 @@ size_t TemplateURL::EstimateMemoryUsage() const {
 }
 
 void TemplateURL::ResizeURLRefVector() {
-  const size_t new_size = data_.alternate_urls.size() + 1;
+  const size_t new_size = data().alternate_urls.size() + 1;
   if (url_refs_.size() == new_size)
     return;
 
   url_refs_.clear();
   url_refs_.reserve(new_size);
-  for (size_t i = 0; i != data_.alternate_urls.size(); ++i)
+  for (size_t i = 0; i != data().alternate_urls.size(); ++i) {
     url_refs_.emplace_back(this, i);
+  }
   url_refs_.emplace_back(this, TemplateURLRef::SEARCH);
 }
 
@@ -2184,4 +2185,8 @@ bool TemplateURL::ContainsSideImageSearchParam(const GURL& url) const {
   net::GetValueForKeyInQuery(url, side_image_search_param(),
                              &side_image_search_value);
   return !side_image_search_value.empty();
+}
+
+const TemplateURLData& TemplateURL::data() const {
+  return data_;
 }

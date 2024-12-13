@@ -727,93 +727,93 @@ class TemplateURL {
                           const TemplateURLData* data,
                           const SearchTermsData& search_terms_data);
 
-  const TemplateURLData& data() const { return data_; }
+  const TemplateURLData& data() const;
 
-  const std::u16string& short_name() const { return data_.short_name(); }
+  const std::u16string& short_name() const { return data().short_name(); }
   // An accessor for the short_name, but adjusted so it can be appropriately
   // displayed even if it is LTR and the UI is RTL.
   std::u16string AdjustedShortNameForLocaleDirection() const;
 
-  const std::u16string& keyword() const { return data_.keyword(); }
+  const std::u16string& keyword() const { return data().keyword(); }
 
-  const std::string& url() const { return data_.url(); }
-  const std::string& suggestions_url() const { return data_.suggestions_url; }
-  const std::string& image_url() const { return data_.image_url; }
+  const std::string& url() const { return data().url(); }
+  const std::string& suggestions_url() const { return data().suggestions_url; }
+  const std::string& image_url() const { return data().image_url; }
   const std::string& image_translate_url() const {
-    return data_.image_translate_url;
+    return data().image_translate_url;
   }
-  const std::string& new_tab_url() const { return data_.new_tab_url; }
+  const std::string& new_tab_url() const { return data().new_tab_url; }
   const std::string& contextual_search_url() const {
-    return data_.contextual_search_url;
+    return data().contextual_search_url;
   }
   const std::string& search_url_post_params() const {
-    return data_.search_url_post_params;
+    return data().search_url_post_params;
   }
   const std::string& suggestions_url_post_params() const {
-    return data_.suggestions_url_post_params;
+    return data().suggestions_url_post_params;
   }
   const std::string& image_url_post_params() const {
-    return data_.image_url_post_params;
+    return data().image_url_post_params;
   }
   const std::string& side_search_param() const {
-    return data_.side_search_param;
+    return data().side_search_param;
   }
   const std::string& side_image_search_param() const {
-    return data_.side_image_search_param;
+    return data().side_image_search_param;
   }
   const std::string& image_translate_source_language_param_key() const {
-    return data_.image_translate_source_language_param_key;
+    return data().image_translate_source_language_param_key;
   }
   const std::string& image_translate_target_language_param_key() const {
-    return data_.image_translate_target_language_param_key;
+    return data().image_translate_target_language_param_key;
   }
   const std::u16string& image_search_branding_label() const {
-    return !data_.image_search_branding_label.empty()
-               ? data_.image_search_branding_label
+    return !data().image_search_branding_label.empty()
+               ? data().image_search_branding_label
                : short_name();
   }
   const std::vector<std::string>& search_intent_params() const {
-    return data_.search_intent_params;
+    return data().search_intent_params;
   }
   const std::vector<std::string>& alternate_urls() const {
-    return data_.alternate_urls;
+    return data().alternate_urls;
   }
-  const GURL& favicon_url() const { return data_.favicon_url; }
+  const GURL& favicon_url() const { return data().favicon_url; }
 
-  const GURL& logo_url() const { return data_.logo_url; }
+  const GURL& logo_url() const { return data().logo_url; }
 
-  const GURL& doodle_url() const { return data_.doodle_url; }
+  const GURL& doodle_url() const { return data().doodle_url; }
 
-  const GURL& originating_url() const { return data_.originating_url; }
+  const GURL& originating_url() const { return data().originating_url; }
 
-  bool safe_for_autoreplace() const { return data_.safe_for_autoreplace; }
+  bool safe_for_autoreplace() const { return data().safe_for_autoreplace; }
 
   const std::vector<std::string>& input_encodings() const {
-    return data_.input_encodings;
+    return data().input_encodings;
   }
 
-  TemplateURLID id() const { return data_.id; }
+  TemplateURLID id() const { return data().id; }
 
-  base::Time date_created() const { return data_.date_created; }
-  base::Time last_modified() const { return data_.last_modified; }
-  base::Time last_visited() const { return data_.last_visited; }
+  base::Time date_created() const { return data().date_created; }
+  base::Time last_modified() const { return data().last_modified; }
+  base::Time last_visited() const { return data().last_visited; }
 
   TemplateURLData::CreatedByPolicy created_by_policy() const {
-    return data_.created_by_policy;
+    return data().created_by_policy;
   }
-  bool enforced_by_policy() const { return data_.enforced_by_policy; }
-  bool created_from_play_api() const { return data_.created_from_play_api; }
-  bool featured_by_policy() const { return data_.featured_by_policy; }
+  bool enforced_by_policy() const { return data().enforced_by_policy; }
+  bool created_from_play_api() const { return data().created_from_play_api; }
+  bool featured_by_policy() const { return data().featured_by_policy; }
 
-  int usage_count() const { return data_.usage_count; }
+  int usage_count() const { return data().usage_count; }
 
-  int prepopulate_id() const { return data_.prepopulate_id; }
+  int prepopulate_id() const { return data().prepopulate_id; }
 
-  const std::string& sync_guid() const { return data_.sync_guid; }
+  const std::string& sync_guid() const { return data().sync_guid; }
 
-  TemplateURLData::ActiveStatus is_active() const { return data_.is_active; }
+  TemplateURLData::ActiveStatus is_active() const { return data().is_active; }
 
-  int starter_pack_id() const { return data_.starter_pack_id; }
+  int starter_pack_id() const { return data().starter_pack_id; }
 
   const std::vector<TemplateURLRef>& url_refs() const { return url_refs_; }
   const TemplateURLRef& url_ref() const {
