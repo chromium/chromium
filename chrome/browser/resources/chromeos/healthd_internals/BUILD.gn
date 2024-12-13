@@ -28,7 +28,9 @@ build_webui("build") {
     "view/pages/process.ts",
     "view/pages/system_trend.ts",
     "view/pages/telemetry.ts",
+    "view/settings/chart_category_dialog.ts",
     "view/settings/config_slider.ts",
+    "view/settings/data_series_checkbox.ts",
     "view/settings/settings_dialog.ts",
   ]
 

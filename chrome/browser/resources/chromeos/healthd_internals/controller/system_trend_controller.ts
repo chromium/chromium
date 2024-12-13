@@ -129,6 +129,32 @@ export class SystemTrendController {
     this.element.refreshData(CategoryTypeEnum.ZRAM);
   }
 
+  setSelectedIndices(type: CategoryTypeEnum, selectedIndices: number[]) {
+    switch (type) {
+      case CategoryTypeEnum.BATTERY:
+        this.dataCollection.battery.selectedIndices = selectedIndices;
+        break;
+      case CategoryTypeEnum.CPU_FREQUENCY:
+        this.dataCollection.cpuFrequency.selectedIndices = selectedIndices;
+        break;
+      case CategoryTypeEnum.CPU_USAGE:
+        this.dataCollection.cpuUsage.selectedIndices = selectedIndices;
+        break;
+      case CategoryTypeEnum.MEMORY:
+        this.dataCollection.memory.selectedIndices = selectedIndices;
+        break;
+      case CategoryTypeEnum.THERMAL:
+        this.dataCollection.thermal.selectedIndices = selectedIndices;
+        break;
+      case CategoryTypeEnum.ZRAM:
+        this.dataCollection.zram.selectedIndices = selectedIndices;
+        break;
+      case CategoryTypeEnum.CUSTOM:
+        console.error('SystemTrendController: Got unexpected type.');
+        break;
+    }
+  }
+
   /**
    * Get the required data for line chart.
    *

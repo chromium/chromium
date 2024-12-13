@@ -5,13 +5,16 @@
 import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import '//resources/ash/common/cr_elements/md_select.css.js';
 import '../line_chart/line_chart.js';
+import '../settings/chart_category_dialog.js';
 
+import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CategoryTypeEnum, SystemTrendController} from '../../controller/system_trend_controller.js';
 import {HealthdInternalsPage} from '../../utils/page_interface.js';
 import {UiUpdateHelper} from '../../utils/ui_update_helper.js';
 import type {HealthdInternalsLineChartElement} from '../line_chart/line_chart.js';
+import {HealthdInternalsChartCategoryDialogElement} from '../settings/chart_category_dialog.js';
 
 import {getTemplate} from './system_trend.html.js';
 
@@ -35,6 +38,7 @@ export interface HealthdInternalsSystemTrendElement {
   $: {
     categorySelector: HTMLSelectElement,
     lineChart: HealthdInternalsLineChartElement,
+    categoryDialog: HealthdInternalsChartCategoryDialogElement,
   };
 }
 
@@ -73,6 +77,11 @@ export class HealthdInternalsSystemTrendElement extends PolymerElement
     this.$.lineChart.addEventListener('time-range-changed', () => {
       this.updateDisplayedTimeInfo();
     });
+
+    this.$.categoryDialog.addEventListener('custom-data-updated', () => {
+      assert(this.isCustomCategory(this.selectedCategory));
+      this.refreshData(this.selectedCategory);
+    });
   }
 
   // Controller for this UI element.
@@ -95,6 +104,7 @@ export class HealthdInternalsSystemTrendElement extends PolymerElement
     CategoryTypeEnum.CUSTOM,
   ];
 
+  // The current selected category.
   private selectedCategory: CategoryTypeEnum = this.displayedCategories[0];
 
   // The start and end time in the visible part of line chart.
@@ -152,6 +162,21 @@ export class HealthdInternalsSystemTrendElement extends PolymerElement
   private onCategoryChanged() {
     this.selectedCategory = this.$.categorySelector.value as CategoryTypeEnum;
     this.refreshData(this.selectedCategory);
+  }
+
+  /**
+   * Open the dialog to change displayed line for custom category.
+   */
+  private openChartCategoryDialog() {
+    assert(this.isCustomCategory(this.selectedCategory));
+    this.$.categoryDialog.openDialog(this.getController());
+  }
+
+  /**
+   * Returns whether the selected category is custom.
+   */
+  private isCustomCategory(category: CategoryTypeEnum): boolean {
+    return category === CategoryTypeEnum.CUSTOM;
   }
 }
 
