@@ -67,7 +67,6 @@
 #include "chrome/browser/ash/crosapi/login_state_ash.h"
 #include "chrome/browser/ash/crosapi/media_app_ash.h"
 #include "chrome/browser/ash/crosapi/media_ui_ash.h"
-#include "chrome/browser/ash/crosapi/metrics_ash.h"
 #include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
 #include "chrome/browser/ash/crosapi/native_theme_service_ash.h"
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
@@ -245,7 +244,6 @@ CrosapiAsh::CrosapiAsh()
           std::make_unique<ash::MagicBoostControllerAsh>()),
       media_app_ash_(std::make_unique<MediaAppAsh>()),
       media_ui_ash_(std::make_unique<MediaUIAsh>()),
-      metrics_ash_(std::make_unique<MetricsAsh>()),
       multi_capture_service_ash_(std::make_unique<MultiCaptureServiceAsh>()),
       native_theme_service_ash_(std::make_unique<NativeThemeServiceAsh>()),
       networking_attributes_ash_(std::make_unique<NetworkingAttributesAsh>()),
@@ -674,10 +672,6 @@ void CrosapiAsh::BindMediaSessionController(
         receiver) {
   content::GetMediaSessionService().BindMediaControllerManager(
       std::move(receiver));
-}
-
-void CrosapiAsh::BindMetrics(mojo::PendingReceiver<mojom::Metrics> receiver) {
-  metrics_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindMultiCaptureService(

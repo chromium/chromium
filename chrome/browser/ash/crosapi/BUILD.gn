@@ -152,8 +152,6 @@ static_library("crosapi") {
     "media_app_ash.h",
     "media_ui_ash.cc",
     "media_ui_ash.h",
-    "metrics_ash.cc",
-    "metrics_ash.h",
     "multi_capture_service_ash.cc",
     "multi_capture_service_ash.h",
     "native_theme_service_ash.cc",

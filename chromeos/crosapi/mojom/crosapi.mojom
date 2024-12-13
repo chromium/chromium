@@ -67,7 +67,6 @@ import "chromeos/crosapi/mojom/policy_service.mojom";
 import "chromeos/crosapi/mojom/magic_boost.mojom";
 import "chromeos/crosapi/mojom/mahi.mojom";
 import "chromeos/crosapi/mojom/media_app.mojom";
-import "chromeos/crosapi/mojom/metrics.mojom";
 import "chromeos/crosapi/mojom/multi_capture_service.mojom";
 import "chromeos/crosapi/mojom/native_theme.mojom";
 import "chromeos/crosapi/mojom/network_change.mojom";
@@ -457,11 +456,7 @@ interface Crosapi {
   [MinVersion=33]
   BindNativeThemeService@38(pending_receiver<NativeThemeService> receiver);
 
-  // Binds the Metrics interface for fetching metadata needed by the
-  // metrics subsystem.
-  // Added in M110.
-  [MinVersion=102]
-  BindMetrics@106(pending_receiver<Metrics> receiver);
+  // BindMetrics@106 was removed.
 
   // Binds the MultiCaptureService interface that handles multi capture related
   // usage indicators and notifications.
