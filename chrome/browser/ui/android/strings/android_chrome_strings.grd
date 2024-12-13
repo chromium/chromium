@@ -6322,6 +6322,25 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_TITLE" desc="Text for the HTTPS-First Mode toggle in settings.">
         Always use secure connections
       </message>
+      <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_DESCRIPTION" desc="Secondary, continued explanation of HTTPS-Only Mode in Security settings">
+        For sites that don’t support secure connections, get warned before visiting the site
+      </message>
+      <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_WITH_ADVANCED_PROTECTION_DESCRIPTION" desc="Secondary, continued explanation of HTTPS-Only Mode in Security settings when the user can't change the setting">
+        For sites that don’t support secure connections, get warned before visiting the site. You can’t change this setting because you have Advanced Protection enabled.
+      </message>
+      <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_DISABLED_LABEL" desc="Label shown under main HTTPS-First Mode title ('Always use secure connections') when the feature is turned off.">
+        Off
+      </message>
+      <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_STRICT_LABEL" desc="Label for radio button to enable the stricter form of HTTPS-First Mode">
+        Warns you for insecure public &amp; private sites
+      </message>
+      <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_STRICT_SUBLABEL" desc="Secondary, continued explanation for the stricter form of HTTPS-First Mode">
+        Private sites might include things like your company’s intranet
+      </message>
+      <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_BALANCED_LABEL" desc="Label for radio button to enable the less-strict form of HTTPS-First Mode">
+        Warns you for insecure public sites
+      </message>
+      <!-- Old HTTPS-First Mode settings strings. TODO(crbug.com/349860796): Remove after new settings are fully rolled out. -->
       <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_SUMMARY" desc="Secondary, continued explanation of HTTPS-First Mode in settings.">
         Use HTTPS whenever possible and get warned before loading sites that don’t support it
       </message>

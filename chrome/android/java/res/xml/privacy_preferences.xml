@@ -73,10 +73,17 @@ found in the LICENSE file.
         android:title="@string/prefs_safe_browsing_title"
         android:summary="@string/prefs_safe_browsing_summary"
         android:fragment="org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment" />
+    <!-- Old HTTPS-First Mode toggle. Hidden if HttpsFirstBalancedMode flag is enabled.
+         TODO(crbug.com/349860796): Remove once new settings are fully rolled out. -->
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
-        android:key="https_first_mode"
+        android:key="https_first_mode_legacy"
         android:title="@string/settings_https_first_mode_title"
         android:summary="@string/settings_https_first_mode_summary" />
+    <!-- New HTTPS-First Mode settings sub-page. Hidden if HttpsFirstBalancedMode flag is disabled. -->
+    <Preference
+        android:key="https_first_mode"
+        android:title="@string/settings_https_first_mode_title"
+        android:fragment="org.chromium.chrome.browser.ssl.HttpsFirstModeSettingsFragment" />
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="secure_dns"
         android:title="@string/settings_secure_dns_title"

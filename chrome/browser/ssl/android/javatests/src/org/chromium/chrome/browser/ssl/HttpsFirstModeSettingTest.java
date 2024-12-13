@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.privacy.settings;
+package org.chromium.chrome.browser.ssl;
 
 import static org.chromium.base.test.util.Batch.PER_CLASS;
 
@@ -21,22 +21,31 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.R;
 
 import java.util.concurrent.ExecutionException;
 
-/** Tests for the HTTPS-First Mode setting in Privacy and security. */
+/**
+ * Tests for the HTTPS-First Mode setting in Privacy and security. Enables the
+ * HTTPS_FIRST_BALANCED_MODE feature flag to test the new settings UI.
+ */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@EnableFeatures(ChromeFeatureList.HTTPS_FIRST_BALANCED_MODE)
 @Batch(PER_CLASS)
 public class HttpsFirstModeSettingTest {
     private final SettingsActivityTestRule<PrivacySettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(PrivacySettings.class);
 
     private static final String PREF_HTTPS_FIRST_MODE = "https_first_mode";
+    private static final String PREF_HTTPS_FIRST_MODE_SWITCH = "https_first_mode_switch";
+    private static final String PREF_HTTPS_FIRST_MODE_VARIANT = "https_first_mode_variant";
 
     private static Preference waitForPreference(
             final PreferenceFragmentCompat prefFragment, final String preferenceKey)
@@ -57,16 +66,21 @@ public class HttpsFirstModeSettingTest {
     public void testSetting_AdvancedProtectionDisabled() throws Exception {
         mSettingsActivityTestRule.startSettingsActivity();
         final PrivacySettings privacySettings = mSettingsActivityTestRule.getFragment();
-        final String unlockedSummaryText =
-                ApplicationProvider.getApplicationContext()
-                        .getString(R.string.settings_https_first_mode_summary);
 
         Preference pref = waitForPreference(privacySettings, PREF_HTTPS_FIRST_MODE);
         Assert.assertNotNull(pref);
 
+        // Check that the expected title is shown and the setting defaults to disabled.
+        final String prefTitle =
+                ApplicationProvider.getApplicationContext()
+                        .getString(R.string.settings_https_first_mode_title);
+        final String prefSummary =
+                ApplicationProvider.getApplicationContext()
+                        .getString(R.string.settings_https_first_mode_disabled_label);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertTrue(pref.getSummary().equals(unlockedSummaryText));
+                    Assert.assertTrue(pref.getTitle().equals(prefTitle));
+                    Assert.assertTrue(pref.getSummary().equals(prefSummary));
                 });
     }
 
@@ -76,12 +90,12 @@ public class HttpsFirstModeSettingTest {
     public void testSetting_AdvancedProtectionEnabled() throws Exception {
         mSettingsActivityTestRule.startSettingsActivity();
 
+        // Checks that when the user is enrolled in APP, the summary shows that
+        // the user is in strict mode.
         final PrivacySettings privacySettings = mSettingsActivityTestRule.getFragment();
         final String lockedSummaryText =
                 ApplicationProvider.getApplicationContext()
-                        .getString(
-                                R.string
-                                        .settings_https_first_mode_with_advanced_protection_summary);
+                        .getString(R.string.settings_https_first_mode_enabled_strict_label);
 
         Preference pref = waitForPreference(privacySettings, PREF_HTTPS_FIRST_MODE);
         Assert.assertNotNull(pref);
@@ -89,6 +103,40 @@ public class HttpsFirstModeSettingTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(pref.getSummary().equals(lockedSummaryText));
+                });
+    }
+
+    @Test
+    @LargeTest
+    @DisableFeatures(ChromeFeatureList.HTTPS_FIRST_BALANCED_MODE)
+    public void testSetting_NewSettingNotShownWhenFeatureDisabled() throws Exception {
+        // Check that the new setting preference isn't visible.
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        final PrivacySettings privacySettings = mSettingsActivityTestRule.getFragment();
+
+        Preference pref = waitForPreference(privacySettings, PREF_HTTPS_FIRST_MODE);
+        Assert.assertNotNull(pref);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertFalse(pref.isVisible());
+                });
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.HTTPS_FIRST_BALANCED_MODE)
+    public void testSetting_OldSettingNotShownWhenFeatureEnabled() throws Exception {
+        // Check that the old setting preference isn't visible.
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        final PrivacySettings privacySettings = mSettingsActivityTestRule.getFragment();
+
+        Preference pref = waitForPreference(privacySettings, "https_first_mode_legacy");
+        Assert.assertNotNull(pref);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertFalse(pref.isVisible());
                 });
     }
 }
