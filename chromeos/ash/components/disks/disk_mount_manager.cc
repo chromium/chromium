@@ -632,21 +632,24 @@ class DiskMountManagerImpl : public DiskMountManager,
       }
     }
 
-    if (const MountPoints::const_iterator mount_point =
-            mount_points_.find(mount_path);
-        mount_point != mount_points_.end()) {
-      NotifyMountStatusUpdate(UNMOUNTING, error, *mount_point);
-
+    if (const MountPoints::const_iterator it = mount_points_.find(mount_path);
+        it != mount_points_.end()) {
       if (error == MountError::kSuccess) {
+        const MountPoints::node_type n = mount_points_.extract(it);
+        DCHECK(n);
+        const MountPoint& mount_point = n.value();
+
         if (const Disks::const_iterator disk =
-                disks_.find(mount_point->source_path);
+                disks_.find(mount_point.source_path);
             disk != disks_.end()) {
           DCHECK(*disk);
           (*disk)->clear_mount_path();
           (*disk)->set_mounted(false);
         }
 
-        mount_points_.erase(mount_point);
+        NotifyMountStatusUpdate(UNMOUNTING, error, mount_point);
+      } else {
+        NotifyMountStatusUpdate(UNMOUNTING, error, *it);
       }
     }
 
