@@ -163,6 +163,8 @@ class MediatorTest : public AshTestBase {
         kTestMetadataId2, kTestAddress, Protocol::kFastPairInitial);
     subsequent_device_ = base::MakeRefCounted<Device>(
         kTestMetadataId, kTestAddress, Protocol::kFastPairSubsequent);
+    std::vector<uint8_t> data = {0};
+    subsequent_device_->set_account_key(data);
     retroactive_device_ = base::MakeRefCounted<Device>(
         kTestMetadataId, kTestAddress, Protocol::kFastPairRetroactive);
     base::RunLoop().RunUntilIdle();
@@ -877,35 +879,16 @@ TEST_F(MediatorTest, DiscoveryBan_SubsequentParing) {
   EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
   mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
 
-  // After the 2 second timeout, when the device is found again, expect
-  // the notification to be shown.
-  task_environment()->FastForwardBy(kDismissedDiscoveryNotificationBanTime);
-  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
-  mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
-
-  // When the device is found again, we expect the notification to not be shown
-  // since it's within the 5 minute short ban timeout period after it has been
-  // dismissed by user again.
-  mock_ui_broker_->NotifyDiscoveryAction(subsequent_device_,
-                                         DiscoveryAction::kDismissedByUser);
-  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
-  mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
-
   // After the 5 minute timeout, when the device is found again, expect
   // the notification to be shown.
   task_environment()->FastForwardBy(kShortBanDiscoveryNotificationBanTime);
   EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
   mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
-
-  // When the device is found again, we expect the notification to not be shown
-  // again since it's in the long ban state.
   mock_ui_broker_->NotifyDiscoveryAction(subsequent_device_,
                                          DiscoveryAction::kDismissedByUser);
-  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
-  mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
 
   // Even after a long timeout period, we do not expect the notification to be
-  // shown again under the long ban period.
+  // shown again after the second dismissal.
   task_environment()->FastForwardBy(kLongBanDiscoveryNotificationBanTime);
   EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
   mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
@@ -918,13 +901,15 @@ TEST_F(MediatorTest, DiscoveryBan_SubsequentParing) {
   EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
   mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
 
-  // We also expect the notification to be shown again after a successful
-  // pairing. Trigger the ban logic.
+  // We also expect the notification to be banned if the notification is
+  // ignored and dismissed by timeout.
   mock_ui_broker_->NotifyDiscoveryAction(subsequent_device_,
-                                         DiscoveryAction::kDismissedByUser);
+                                         DiscoveryAction::kDismissedByTimeout);
   EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
   mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
-  // Trigger a successful pairing
+
+  // We also expect the notification to be shown again after a successful
+  // pairing. Trigger a successful pairing.
   mock_pairer_broker_->NotifyDevicePaired(subsequent_device_);
   EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
   mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
