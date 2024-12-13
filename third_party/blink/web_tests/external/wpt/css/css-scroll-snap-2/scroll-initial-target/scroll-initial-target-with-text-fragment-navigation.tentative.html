@@ -16,7 +16,7 @@
 <body onload="runTest()">
   <script>
     function fetchResult(key, resolve, reject) {
-      fetch(`/css/css-scroll-snap-2/scroll-start-target/stash.py?key=${key}`).then(response => {
+      fetch(`/css/css-scroll-snap-2/scroll-initial-target/stash.py?key=${key}`).then(response => {
         return response.text();
       }).then(text => {
         if (text) {
@@ -37,7 +37,7 @@
         let key = token();
 
         test_driver.bless("Open a URL with a text fragment directive", () => {
-          window.open(`scroll-start-target-with-text-fragment-navigation-target.html?key=${key}#:~:text=Target`, "_blank", "noopener");
+          window.open(`scroll-initial-target-with-text-fragment-navigation-target.html?key=${key}#:~:text=Target`, "_blank", "noopener");
         });
 
         fetchResult(key, resolve, reject);

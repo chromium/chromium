@@ -3,11 +3,11 @@
 # found in the LICENSE file.
 """
 This file allows the different windows created by
-css/css-scroll-snap-2/scroll-start-target-with-text-fragment-navigation.html
+css/css-scroll-snap-2/scroll-initial-target-with-text-fragment-navigation.html
 to store and retrieve data.
 
-scroll-start-target-with-text-fragment-navigation.html (test file) opens a window to
-scroll-start-target-with-text-fragment-navigation-target.html which writes some data
+scroll-initial-target-with-text-fragment-navigation.html (test file) opens a window to
+scroll-initial-target-with-text-fragment-navigation-target.html which writes some data
 which the test file will eventually read. This file handles the requests from
 both windows.
 """
@@ -19,9 +19,9 @@ def main(request, response):
 
     if request.method == u"POST":
         # Received result data from target page
-        request.server.stash.put(key, request.body, u'/css/css-scroll-snap-2/scroll-start-target/')
+        request.server.stash.put(key, request.body, u'/css/css-scroll-snap-2/scroll-initial-target/')
         return u"ok"
     else:
         # Request for result data from test page
-        value = request.server.stash.take(key, u'/css/css-scroll-snap-2/scroll-start-target/')
+        value = request.server.stash.take(key, u'/css/css-scroll-snap-2/scroll-initial-target/')
         return value

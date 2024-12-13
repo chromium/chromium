@@ -42,7 +42,7 @@
   <div id="fragment_target">Target</div>
   <script>
     function stashResult(key, results) {
-      fetch(`/css/css-scroll-snap-2/scroll-start-target/stash.py?key=${key}`, {
+      fetch(`/css/css-scroll-snap-2/scroll-initial-target/stash.py?key=${key}`, {
         method: "POST",
         body: JSON.stringify(results)
       }).then(() => {

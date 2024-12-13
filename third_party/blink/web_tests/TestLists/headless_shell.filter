@@ -409,7 +409,7 @@
 -external/wpt/css/css-scrollbars/*
 -external/wpt/css/css-scroll-snap-2/scrollsnapchanging/scrollsnapchanging-on-*
 -external/wpt/css/css-scroll-snap-2/scroll-start/scroll-start-fieldset.tentative.html
--external/wpt/css/css-scroll-snap-2/scroll-start-target/scroll-start-target-rtl.tentative.html
+-external/wpt/css/css-scroll-snap-2/scroll-initial-target/scroll-initial-target-rtl.tentative.html
 -external/wpt/css/css-scroll-snap/input/snap-area-overflow-boundary-viewport-covering.tentative.html
 -external/wpt/css/css-scroll-snap/selection-target.html
 -external/wpt/css/css-scroll-snap/snap-after-relayout/changing-scroll-snap-align-nested.tentative.html
