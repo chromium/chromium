@@ -5,10 +5,11 @@
 #ifndef CONTENT_BROWSER_WEBID_JWT_SIGNER_H_
 #define CONTENT_BROWSER_WEBID_JWT_SIGNER_H_
 
-#include <optional>
-#include <vector>
-#include <string_view>
+#include <cstdint>
 #include <memory>
+#include <optional>
+#include <string_view>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
