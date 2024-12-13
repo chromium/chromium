@@ -9,14 +9,22 @@
 #include "base/functional/callback_forward.h"
 #include "base/test/mock_callback.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 
 using testing::Return;
+using ::testing::UnorderedElementsAre;
 
 namespace extensions::autofill_util {
+
+MATCHER_P(MatchesIbanType, iban, "") {
+  bool is_local = iban.record_type() == autofill::Iban::RecordType::kLocalIban;
+  return arg.metadata->is_local == is_local;
+}
 
 using MockCallbackAfterSuccessfulUserAuth =
     base::MockCallback<CallbackAfterSuccessfulUserAuth>;
@@ -38,6 +46,22 @@ class AutofillUtilTest : public InProcessBrowserTest {
   std::unique_ptr<device_reauth::MockDeviceAuthenticator>
       mock_device_authenticator_;
 };
+
+IN_PROC_BROWSER_TEST_F(AutofillUtilTest, GenerateIbanList) {
+  autofill::TestPersonalDataManager personal_data;
+  personal_data.test_payments_data_manager().SetAutofillWalletImportEnabled(
+      true);
+
+  autofill::Iban local_iban = autofill::test::GetLocalIban();
+  personal_data.test_payments_data_manager().AddIbanForTest(
+      std::make_unique<autofill::Iban>(local_iban));
+  autofill::Iban server_iban = autofill::test::GetServerIban();
+  personal_data.test_payments_data_manager().AddServerIban(server_iban);
+
+  IbanEntryList iban_list = GenerateIbanList(personal_data);
+  EXPECT_THAT(iban_list, UnorderedElementsAre(MatchesIbanType(local_iban),
+                                              MatchesIbanType(server_iban)));
+}
 
 IN_PROC_BROWSER_TEST_F(AutofillUtilTest, AuthenticateUser_SuccessfulAuth) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
