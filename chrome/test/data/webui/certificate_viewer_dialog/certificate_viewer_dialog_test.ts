@@ -157,20 +157,98 @@ suite('CertificateViewer', function() {
     assertTrue(modificationsPanel.constraints.includes('127.0.0.1/24'));
   }
 
-  test('CheckMetadata', async function() {
+  test('CheckMetadataNotEditable', async function() {
     const modificationsTab = getRequiredElement('modifications-tab');
     assertFalse(modificationsTab.hidden);
+    // Select the modifications tab to allow for visibility checks
+    getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
     const modificationsPanel =
         (getRequiredElement('modifications-panel') as
          ModificationsPanelElement);
     assertEquals(
-        CertificateTrust.CERTIFICATE_TRUST_UNSPECIFIED,
+        CertificateTrust.CERTIFICATE_TRUST_TRUSTED,
         Number(modificationsPanel.$.trustStateSelect.value) as
             CertificateTrust);
     assertTrue(modificationsPanel.$.trustStateSelect.disabled);
 
     checkDefaultConstraints(modificationsPanel);
+    assertFalse(isVisible(modificationsPanel.$.addConstraintSection));
+    assertTrue(isVisible(modificationsPanel.$.constraintListSection));
+    const deleteButton =
+        modificationsPanel.shadowRoot!.querySelector<CrIconButtonElement>(
+            '#constraint-delete-0');
+    assert(deleteButton);
+    assertFalse(isVisible(deleteButton));
+  });
+
+  test('CheckMetadataNotEditableNoConstraints', async function() {
+    const modificationsTab = getRequiredElement('modifications-tab');
+    assertFalse(modificationsTab.hidden);
+    // Select the modifications tab to allow for visibility checks
+    getRequiredElement('tabbox').setAttribute('selected-index', '2');
+
+    const modificationsPanel =
+        (getRequiredElement('modifications-panel') as
+         ModificationsPanelElement);
+    assertEquals(
+        CertificateTrust.CERTIFICATE_TRUST_TRUSTED,
+        Number(modificationsPanel.$.trustStateSelect.value) as
+            CertificateTrust);
+    assertTrue(modificationsPanel.$.trustStateSelect.disabled);
+
+    assertFalse(isVisible(modificationsPanel.$.constraintListSection));
+    assertFalse(isVisible(modificationsPanel.$.addConstraintSection));
+  });
+
+  test('CheckMetadataEditable', async function() {
+    const modificationsTab = getRequiredElement('modifications-tab');
+    assertFalse(modificationsTab.hidden);
+    // Select the modifications tab to allow for visibility checks
+    getRequiredElement('tabbox').setAttribute('selected-index', '2');
+
+    const modificationsPanel =
+        (getRequiredElement('modifications-panel') as
+         ModificationsPanelElement);
+    assertEquals(
+        CertificateTrust.CERTIFICATE_TRUST_TRUSTED,
+        Number(modificationsPanel.$.trustStateSelect.value) as
+            CertificateTrust);
+    assertFalse(modificationsPanel.$.trustStateSelect.disabled);
+
+    checkDefaultConstraints(modificationsPanel);
+    assertTrue(isVisible(modificationsPanel.$.addConstraintSection));
+    assertFalse(modificationsPanel.$.addConstraintButton.disabled);
+    assertTrue(isVisible(modificationsPanel.$.constraintListSection));
+    const deleteButton =
+        modificationsPanel.shadowRoot!.querySelector<CrIconButtonElement>(
+            '#constraint-delete-0');
+    assert(deleteButton);
+    assertTrue(isVisible(deleteButton));
+    assertFalse(deleteButton.disabled);
+  });
+
+  test('CheckMetadataEditableNoConstraints', async function() {
+    const modificationsTab = getRequiredElement('modifications-tab');
+    assertFalse(modificationsTab.hidden);
+    // Select the modifications tab to allow for visibility checks
+    getRequiredElement('tabbox').setAttribute('selected-index', '2');
+
+    const modificationsPanel =
+        (getRequiredElement('modifications-panel') as
+         ModificationsPanelElement);
+    assertEquals(
+        CertificateTrust.CERTIFICATE_TRUST_TRUSTED,
+        Number(modificationsPanel.$.trustStateSelect.value) as
+            CertificateTrust);
+    assertFalse(modificationsPanel.$.trustStateSelect.disabled);
+
+    // Can add constraints
+    assertTrue(isVisible(modificationsPanel.$.addConstraintSection));
+    assertFalse(modificationsPanel.$.addConstraintButton.disabled);
+    // No constraints to see, hide the list.
+    assertEquals(0, modificationsPanel.constraints.length);
+    assertFalse(isVisible(modificationsPanel.$.constraintListSection));
   });
 
   test('EditTrustState', async function() {
@@ -179,20 +257,21 @@ suite('CertificateViewer', function() {
 
     const modificationsTab = getRequiredElement('modifications-tab');
     assertFalse(modificationsTab.hidden);
+    // Select the modifications tab to allow for visibility checks
     getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
     const modificationsPanel =
         (getRequiredElement('modifications-panel') as
          ModificationsPanelElement);
     assertEquals(
-        CertificateTrust.CERTIFICATE_TRUST_UNSPECIFIED,
+        CertificateTrust.CERTIFICATE_TRUST_TRUSTED,
         Number(modificationsPanel.$.trustStateSelect.value) as
             CertificateTrust);
     assertFalse(modificationsPanel.$.trustStateSelect.disabled);
     assertFalse(isVisible(modificationsPanel.$.trustStateSelectError));
 
     modificationsPanel.$.trustStateSelect.value =
-        (CertificateTrust.CERTIFICATE_TRUST_TRUSTED as number).toString();
+        (CertificateTrust.CERTIFICATE_TRUST_UNSPECIFIED as number).toString();
     // Changing the value with javascript doesn't trigger the change event;
     // trigger the event manually.
     modificationsPanel.$.trustStateSelect.dispatchEvent(new Event('change'));
@@ -200,6 +279,15 @@ suite('CertificateViewer', function() {
     await microtasksFinished();
 
     assertFalse(isVisible(modificationsPanel.$.trustStateSelectError));
+    assertEquals(
+        modificationsPanel.trustStateValue,
+        (CertificateTrust.CERTIFICATE_TRUST_UNSPECIFIED as number).toString());
+    // Changing trust to unspecified should remove visibility of constraints
+    // sections.
+    assertFalse(
+        isVisible(modificationsPanel.$.constraintListSection), 'visible 1');
+    assertFalse(
+        isVisible(modificationsPanel.$.addConstraintSection), 'visible 2');
   });
 
   test('EditTrustStateError', async function() {
@@ -212,13 +300,14 @@ suite('CertificateViewer', function() {
 
     const modificationsTab = getRequiredElement('modifications-tab');
     assertFalse(modificationsTab.hidden);
+    // Select the modifications tab to allow for visibility checks
     getRequiredElement('tabbox').setAttribute('selected-index', '2');
 
     const modificationsPanel =
         (getRequiredElement('modifications-panel') as
          ModificationsPanelElement);
     assertEquals(
-        CertificateTrust.CERTIFICATE_TRUST_UNSPECIFIED,
+        CertificateTrust.CERTIFICATE_TRUST_TRUSTED,
         Number(modificationsPanel.$.trustStateSelect.value) as
             CertificateTrust);
     assertFalse(modificationsPanel.$.trustStateSelect.disabled);
@@ -229,7 +318,7 @@ suite('CertificateViewer', function() {
     assertFalse(isVisible(modificationsPanel.$.trustStateSelectError));
 
     modificationsPanel.$.trustStateSelect.value =
-        (CertificateTrust.CERTIFICATE_TRUST_TRUSTED as number).toString();
+        (CertificateTrust.CERTIFICATE_TRUST_UNSPECIFIED as number).toString();
     // Changing the value with javascript doesn't trigger the change event;
     // trigger the event manually.
     modificationsPanel.$.trustStateSelect.dispatchEvent(new Event('change'));
@@ -240,7 +329,17 @@ suite('CertificateViewer', function() {
     assertEquals(
         modificationsPanel.$.trustStateSelectError.innerText.trim(),
         'error message');
-
+    assertEquals(
+        modificationsPanel.trustStateValue,
+        (CertificateTrust.CERTIFICATE_TRUST_TRUSTED as number).toString());
+    assertEquals(
+        modificationsPanel.$.trustStateSelect.value,
+        (CertificateTrust.CERTIFICATE_TRUST_TRUSTED as number).toString());
+    // Trust didn't change, so constraints sections should still be visible.
+    assertTrue(
+        isVisible(modificationsPanel.$.constraintListSection), 'visible 1');
+    assertTrue(
+        isVisible(modificationsPanel.$.addConstraintSection), 'visible 2');
   });
 
   test('AddConstraintDNS', async function() {
@@ -449,9 +548,10 @@ suite('CertificateViewer', function() {
 
     // Constraints should not have changed.
     checkDefaultConstraints(modificationsPanel);
-    assertTrue(isVisible(modificationsPanel.$.constraintDeleteError));
+    assertTrue(
+        isVisible(modificationsPanel.$.constraintDeleteError), 'not visible');
     assertEquals(
         modificationsPanel.$.constraintDeleteError.innerText.trim(),
-        'error message');
+        'error message', 'error message not equal');
   });
 });

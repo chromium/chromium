@@ -19,9 +19,13 @@ import {getHtml} from './modifications_panel.html.js';
 
 export interface ModificationsPanelElement {
   $: {
+    addConstraintSection: HTMLElement,
     addConstraintInput: CrInputElement,
     addConstraintButton: CrButtonElement,
+
+    constraintListSection: HTMLElement,
     constraintDeleteError: HTMLElement,
+
     trustStateSelect: HTMLSelectElement,
     trustStateSelectError: HTMLElement,
   };
@@ -143,7 +147,12 @@ export class ModificationsPanelElement extends CrLitElement {
   }
 
   private onTrustStateChangeFinished_(result: CertMetadataChangeResult) {
-    if (!result.success) {
+    if (result.success) {
+      // Update state to the new trust value.
+      this.trustStateValue = this.$.trustStateSelect.value;
+    } else {
+      // Restore UI to the old trust value.
+      this.$.trustStateSelect.value = this.trustStateValue;
       if (result.errorMessage !== undefined) {
         this.trustStateErrorMessage = result.errorMessage;
       } else {

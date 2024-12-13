@@ -30,18 +30,17 @@ export function getHtml(this: ModificationsPanelElement) {
         </div>
       </div>
     </div>
-    <!-- TODO(crbug.com/40928765): only show constraint list
-      if trust = trusted -->
-    <!-- TODO(crbug.com/40928765): only show add/delete controls if
-      isEditable = true -->
-    <div class="horizontal-row">
+    <div class="horizontal-row" id="constraintListSection"
+        ?hidden="${
+      this.trustStateValue !== '2' || this.constraints.length === 0}">
       <div class="modifications-row-label">$i18n{constraints}</div>
-      <div id="constraintList">
+      <div>
         ${this.constraints.map((constraint: string, index: number) => html`
             <div class="constraint">${constraint}
               <cr-icon-button id="constraint-delete-${index}"
                   data-index="${index}"
                   @click="${this.onDeleteConstraintClick_}"
+                  ?hidden="${!this.isEditable}"
                   ?disabled="${!this.editControlsEnabled}"
                   class="icon-picture-delete">
               </cr-icon-button>
@@ -53,7 +52,8 @@ export function getHtml(this: ModificationsPanelElement) {
         </div>
       </div>
     </div>
-    <div class="horizontal-row">
+    <div class="horizontal-row" id="addConstraintSection"
+        ?hidden="${!(this.isEditable && this.trustStateValue === '2')}">
       <div class="modifications-row-label">Add Constraint</div>
       <cr-input
           id="addConstraintInput"
