@@ -19,6 +19,7 @@ namespace views {
 class Button;
 }
 class NewTabButton;
+class TabGlicContainer;
 class TabSearchButton;
 class TabStrip;
 class TabStripComboButton;
@@ -147,6 +148,7 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   raw_ptr<TabStripScrollContainer> tab_strip_scroll_container_ = nullptr;
   raw_ptr<views::Button> new_tab_button_ = nullptr;
   raw_ptr<TabSearchContainer> tab_search_container_ = nullptr;
+  raw_ptr<TabGlicContainer> tab_glic_container_ = nullptr;
   raw_ptr<TabStripComboButton> tab_strip_combo_button_ = nullptr;
   raw_ptr<ProductSpecificationsButton> product_specifications_button_ = nullptr;
   raw_ptr<glic::GlicButton> glic_button_ = nullptr;

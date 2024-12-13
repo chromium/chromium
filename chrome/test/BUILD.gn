@@ -9820,6 +9820,7 @@ test("unit_tests") {
       "../browser/ui/views/tabs/fake_tab_slot_controller.h",
       "../browser/ui/views/tabs/overflow_view_unittest.cc",
       "../browser/ui/views/tabs/tab_container_unittest.cc",
+      "../browser/ui/views/tabs/tab_glic_container_unittest.cc",
       "../browser/ui/views/tabs/tab_group_views_unittest.cc",
       "../browser/ui/views/tabs/tab_hover_card_bubble_view_unittest.cc",
       "../browser/ui/views/tabs/tab_hover_card_controller_unittest.cc",

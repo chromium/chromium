@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_glic_container.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -125,6 +126,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
   // Add and configure the TabSearchContainer, TabStripComboButton, and
   // ProductSpecificationsButton.
   std::unique_ptr<TabSearchContainer> tab_search_container;
+  std::unique_ptr<TabGlicContainer> tab_glic_container;
   std::unique_ptr<TabStripComboButton> tab_strip_combo_button;
   std::unique_ptr<ProductSpecificationsButton> product_specifications_button;
 #if BUILDFLAG(ENABLE_GLIC)
@@ -155,18 +157,30 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
       product_specifications_button->SetProperty(
           views::kCrossAxisAlignmentKey, views::LayoutAlignment::kCenter);
     }
-
-#if BUILDFLAG(ENABLE_GLIC)
-    if (GlicEnabling::IsEnabledByFlags()) {
-      glic_button =
-          std::make_unique<glic::GlicButton>(tab_strip_->controller());
-      glic_button->SetProperty(views::kCrossAxisAlignmentKey,
-                               views::LayoutAlignment::kCenter);
-      glic_button->SetProperty(
+    if (features::IsTabstripComboButtonEnabled()) {
+      tab_glic_container =
+          std::make_unique<TabGlicContainer>(tab_strip_->controller());
+      tab_glic_container->SetProperty(views::kCrossAxisAlignmentKey,
+                                      views::LayoutAlignment::kCenter);
+      tab_glic_container->SetProperty(
           views::kMarginsKey,
           gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
-    }
+
+      tab_glic_container_ = AddChildView(std::move(tab_glic_container));
+
+    } else {
+#if BUILDFLAG(ENABLE_GLIC)
+      if (GlicEnabling::IsEnabledByFlags()) {
+        glic_button =
+            std::make_unique<glic::GlicButton>(tab_strip_->controller());
+        glic_button->SetProperty(views::kCrossAxisAlignmentKey,
+                                 views::LayoutAlignment::kCenter);
+        glic_button->SetProperty(
+            views::kMarginsKey,
+            gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
+      }
 #endif  // BUILDFLAG(ENABLE_GLIC)
+    }
   }
 
   if (tab_search_container && render_tab_search_before_tab_strip_) {
@@ -400,6 +414,9 @@ views::View::Views TabStripRegionView::GetChildrenInZOrder() {
     children.emplace_back(product_specifications_button_.get());
   }
 
+  if (tab_glic_container_) {
+    children.emplace_back(tab_glic_container_.get());
+  }
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic_button_) {
     children.emplace_back(glic_button_.get());
