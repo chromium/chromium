@@ -90,6 +90,10 @@ _GN_ARGS = [
     'use_siso=true',
 ]
 
+_SERVER = [
+    'android_static_analysis="build_server"',
+]
+
 _INCREMENTAL_INSTALL = [
     'incremental_install=true',
 ]
@@ -233,45 +237,6 @@ def _backup_file(file_path: pathlib.Path):
         pathlib.Path(file_path).touch()
 
 
-@contextlib.contextmanager
-def _server(outdir: pathlib.Path):
-    cmd = [str(_SRC_ROOT / 'build/android/fast_local_dev_server.py')]
-    # Avoid the build server's output polluting benchmark results, but allow
-    # stderr to get through in case the build server fails with an error.
-    server_proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, text=True)
-    logging.debug('Started fast local dev server.')
-    # Give the server 1 second to fail fast.
-    try:
-        server_proc.wait(1)
-    except subprocess.TimeoutExpired:
-        pass
-    returncode = server_proc.poll()
-    if returncode is not None:
-        # The server failed to start.
-        stdout, _ = server_proc.communicate()
-        print(stdout)
-        logging.error(f'Failed to start fast local dev server: {returncode}, '
-                      'perhaps the server is already running?')
-        raise Exception(f"Failed to start fast local dev server: {returncode}")
-    try:
-        yield
-    finally:
-        returncode = server_proc.poll()
-        if returncode is not None:
-            # The server failed to remain running.
-            stdout, _ = server_proc.communicate()
-            print(stdout)
-            raise Exception(f"The fast local dev server died: {returncode}")
-        logging.debug('Terminating fast local dev server.')
-        # Since Popen's default context manager just waits on exit, we need to
-        # use our custom context manager to actually terminate the build server
-        # when the current build is done to avoid skewing the next benchmark.
-        server_proc.terminate()
-        logging.debug('Waiting for fast local dev server termination...')
-        server_proc.wait()
-        logging.debug('Terminated fast local dev server.')
-
-
 def _detect_emulators() -> List[device_utils.DeviceUtils]:
     return [
         device_utils.DeviceUtils(d) for d in adb_wrapper.AdbWrapper.Devices()
@@ -352,10 +317,8 @@ def _run_gn_gen(out_dir: pathlib.Path) -> float:
     return _run_and_time_cmd([str(_GN_PATH), 'gen', '-C', str(out_dir)])
 
 
-def _compile(out_dir: pathlib.Path, target: str, j: Optional[str]) -> float:
+def _compile(out_dir: pathlib.Path, target: str) -> float:
     cmd = gn_helpers.CreateBuildCommand(str(out_dir))
-    if j is not None:
-        cmd += ['-j', j]
     return _run_and_time_cmd(cmd + [target])
 
 
@@ -374,23 +337,22 @@ def _run_install(out_dir: pathlib.Path, target: str,
     return _run_and_time_cmd(cmd)
 
 
-def _run_and_maybe_install(out_dir: pathlib.Path, target: str,
-                           emulator: Optional[device_utils.DeviceUtils],
-                           j: Optional[str]) -> float:
-    total_time = _compile(out_dir, target, j)
+def _run_and_maybe_install(
+        out_dir: pathlib.Path, target: str,
+        emulator: Optional[device_utils.DeviceUtils]) -> float:
+    total_time = _compile(out_dir, target)
     if emulator:
         total_time += _run_install(out_dir, target, emulator.serial)
     return total_time
 
 
 def _run_benchmark(benchmark: Benchmark, out_dir: pathlib.Path, target: str,
-                   emulator: Optional[device_utils.DeviceUtils],
-                   j: Optional[str]) -> float:
+                   emulator: Optional[device_utils.DeviceUtils]) -> float:
     # This ensures that the only change is the one that this script makes.
     logging.info(f'Prepping benchmark...')
     if not benchmark.can_install:
         emulator = None
-    prep_time = _run_and_maybe_install(out_dir, target, emulator, j)
+    prep_time = _run_and_maybe_install(out_dir, target, emulator)
     logging.info(f'Took {prep_time:.1f}s to prep.')
     logging.info(f'Starting actual test...')
     change_file_path = _SRC_ROOT / benchmark.change_file
@@ -404,7 +366,7 @@ def _run_benchmark(benchmark: Benchmark, out_dir: pathlib.Path, target: str,
                 f'Need to update {benchmark.from_string} in '
                 f'{benchmark.change_file}')
             f.write(new_content)
-        return _run_and_maybe_install(out_dir, target, emulator, j)
+        return _run_and_maybe_install(out_dir, target, emulator)
 
 
 def _format_result(time_taken: List[float]) -> str:
@@ -428,14 +390,12 @@ def _parse_benchmarks(benchmarks: List[str]) -> Iterator[Benchmark]:
 
 def run_benchmarks(benchmarks: List[str], gn_args: List[str],
                    output_directory: pathlib.Path, target: str, repeat: int,
-                   no_server: bool, emulator_avd_name: Optional[str],
-                   j: Optional[str]) -> Dict[str, List[float]]:
+                   emulator_avd_name: Optional[str]) -> Dict[str, List[float]]:
     args_gn_path = output_directory / 'args.gn'
     if emulator_avd_name is None:
         emulator_ctx = contextlib.nullcontext
     else:
         emulator_ctx = functools.partial(_emulator, emulator_avd_name)
-    server_ctx = _server if not no_server else contextlib.nullcontext
     timings = collections.defaultdict(list)
     with _backup_file(args_gn_path):
         with open(args_gn_path, 'w') as f:
@@ -447,16 +407,13 @@ def run_benchmarks(benchmarks: List[str], gn_args: List[str],
             timings['gn gen'].append(_run_gn_gen(output_directory))
             for benchmark in _parse_benchmarks(benchmarks):
                 logging.info(f'Starting {benchmark.name}...')
-                # Run the fast local dev server fresh for each benchmark run
-                # to avoid later benchmarks being slower due to the server
-                # accumulating queued tasks. Start a fresh emulator for each
-                # benchmark to produce more consistent results.
-                with emulator_ctx() as emulator, server_ctx(output_directory):
+                # Start a fresh emulator for each benchmark to produce more
+                # consistent results.
+                with emulator_ctx() as emulator:
                     elapsed = _run_benchmark(benchmark=benchmark,
                                              out_dir=output_directory,
                                              target=target,
-                                             emulator=emulator,
-                                             j=j)
+                                             emulator=emulator)
                 logging.info(f'Completed {benchmark.name}: {elapsed:.1f}s')
                 timings[benchmark.name].append(elapsed)
     return timings
@@ -515,8 +472,6 @@ def main():
                         help='Specify this to override the default emulator.')
     parser.add_argument('--target',
                         help='Specify this to override the default target.')
-    parser.add_argument('-j',
-                        help='Pass -j to use ninja instead of autoninja.')
     parser.add_argument('-v',
                         '--verbose',
                         action='count',
@@ -540,6 +495,8 @@ def main():
         level=level, format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
     gn_args = _GN_ARGS
+    if not args.no_server:
+        gn_args += _SERVER
     if not args.no_incremental_install:
         gn_args += _INCREMENTAL_INSTALL
     if args.no_component_build:
@@ -561,11 +518,9 @@ def main():
         target = _TARGETS['bundle' if args.bundle else 'apk']
 
     results = run_benchmarks(args.benchmark, gn_args, out_dir, target,
-                             args.repeat, args.no_server, args.emulator,
-                             args.j)
+                             args.repeat, args.emulator)
 
-    server_str = f'{"not " if args.no_server else ""}using build server'
-    print(f'Summary ({server_str})')
+    print(f'Summary')
     print(f'emulator: {args.emulator}')
     print(f'gn args: {" ".join(gn_args)}')
     print(f'target: {target}')
