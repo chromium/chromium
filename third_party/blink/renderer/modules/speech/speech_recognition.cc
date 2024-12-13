@@ -53,10 +53,10 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/speech_recognition_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/modules/speech/speech_recognition_controller.h"
 #include "third_party/blink/renderer/modules/speech/speech_recognition_error_event.h"
 #include "third_party/blink/renderer/modules/speech/speech_recognition_event.h"
-#include "third_party/blink/renderer/modules/speech/speech_recognition_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -299,20 +299,28 @@ void SpeechRecognition::StartInternal(ExceptionState* exception_state) {
   if (base::FeatureList::IsEnabled(
           blink::features::kMediaStreamTrackWebSpeech) &&
       stream_track_) {
-    sink_ = MakeGarbageCollected<SpeechRecognitionMediaStreamAudioSink>(
-        GetExecutionContext(),
-        WTF::BindOnce(&SpeechRecognition::StartController,
-                      WrapPersistent(this)));
+    SpeechRecognitionMediaStreamAudioSink* sink =
+        MakeGarbageCollected<SpeechRecognitionMediaStreamAudioSink>(
+            GetExecutionContext(),
+            WTF::BindOnce(&SpeechRecognition::StartController,
+                          WrapPersistent(this),
+                          session_.BindNewPipeAndPassReceiver(
+                              GetExecutionContext()->GetTaskRunner(
+                                  TaskType::kMiscPlatformAPI))));
     WebMediaStreamAudioSink::AddToAudioTrack(
-        sink_, WebMediaStreamTrack(stream_track_->Component()));
+        sink, WebMediaStreamTrack(stream_track_->Component()));
+    stream_track_->RegisterSink(sink);
   } else {
-    StartController();
+    StartController(session_.BindNewPipeAndPassReceiver(
+        GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
 
   started_ = true;
 }
 
 void SpeechRecognition::StartController(
+    mojo::PendingReceiver<media::mojom::blink::SpeechRecognitionSession>
+        session_receiver,
     std::optional<media::AudioParameters> audio_parameters,
     mojo::PendingReceiver<media::mojom::blink::SpeechRecognitionAudioForwarder>
         audio_forwarder_receiver) {
@@ -324,13 +332,11 @@ void SpeechRecognition::StartController(
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
   receiver_.set_disconnect_handler(WTF::BindOnce(
       &SpeechRecognition::OnConnectionError, WrapWeakPersistent(this)));
-  controller_->Start(
-      session_.BindNewPipeAndPassReceiver(
-          GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI)),
-      std::move(session_client), *grammars_, lang_, continuous_,
-      interim_results_, max_alternatives_, local_service_,
-      allow_cloud_fallback_, std::move(audio_forwarder_receiver),
-      std::move(audio_parameters));
+  controller_->Start(std::move(session_receiver), std::move(session_client),
+                     *grammars_, lang_, continuous_, interim_results_,
+                     max_alternatives_, local_service_, allow_cloud_fallback_,
+                     std::move(audio_forwarder_receiver),
+                     std::move(audio_parameters));
 }
 
 SpeechRecognition::SpeechRecognition(LocalDOMWindow* window)
@@ -350,7 +356,6 @@ SpeechRecognition::~SpeechRecognition() = default;
 void SpeechRecognition::Trace(Visitor* visitor) const {
   visitor->Trace(stream_track_);
   visitor->Trace(grammars_);
-  visitor->Trace(sink_);
   visitor->Trace(controller_);
   visitor->Trace(final_results_);
   visitor->Trace(receiver_);

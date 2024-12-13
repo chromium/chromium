@@ -55,7 +55,6 @@ class ExecutionContext;
 class LocalDOMWindow;
 class MediaStreamTrack;
 class SpeechRecognitionController;
-class SpeechRecognitionMediaStreamAudioSink;
 
 class MODULES_EXPORT SpeechRecognition final
     : public EventTarget,
@@ -151,6 +150,8 @@ class MODULES_EXPORT SpeechRecognition final
   void OnConnectionError();
   void StartInternal(ExceptionState* exception_state);
   void StartController(
+      mojo::PendingReceiver<media::mojom::blink::SpeechRecognitionSession>
+          session_receiver,
       std::optional<media::AudioParameters> audio_parameters = std::nullopt,
       mojo::PendingReceiver<
           media::mojom::blink::SpeechRecognitionAudioForwarder>
@@ -165,7 +166,6 @@ class MODULES_EXPORT SpeechRecognition final
   bool local_service_ = true;
   bool allow_cloud_fallback_ = true;
 
-  Member<SpeechRecognitionMediaStreamAudioSink> sink_;
   Member<SpeechRecognitionController> controller_;
   bool started_ = false;
   bool stopping_ = false;

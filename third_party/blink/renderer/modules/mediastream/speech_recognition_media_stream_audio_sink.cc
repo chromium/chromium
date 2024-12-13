@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/speech/speech_recognition_media_stream_audio_sink.h"
+#include "third_party/blink/renderer/modules/mediastream/speech_recognition_media_stream_audio_sink.h"
 
 #include <memory>
 
