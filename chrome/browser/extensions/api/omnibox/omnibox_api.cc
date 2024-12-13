@@ -33,7 +33,10 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/install_prefs_helper.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/mojom/api_permission_id.mojom.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "ui/gfx/image/image.h"
 
 namespace extensions {
@@ -93,6 +96,15 @@ std::string GetTemplateURLStringForExtension(const ExtensionId& extension_id) {
   // This URL is not actually used for navigation. It holds the extension's ID.
   return std::string(extensions::kExtensionScheme) + "://" +
       extension_id + "/?q={searchTerms}";
+}
+
+bool IsUnscopedModeAllowed(const Extension* extension) {
+  // The extension can use unscoepd mode if the feature is enabled and the
+  // permission has been granted.
+  return base::FeatureList::IsEnabled(
+             extensions_features::kExperimentalOmniboxLabs) &&
+         extension->permissions_data()->HasAPIPermission(
+             mojom::APIPermissionID::kOmniboxDirectInput);
 }
 
 }  // namespace
@@ -235,10 +247,11 @@ void OmniboxAPI::OnExtensionLoaded(content::BrowserContext* browser_context,
     if (url_service_) {
       url_service_->Load();
       if (url_service_->loaded()) {
-        url_service_->RegisterOmniboxKeyword(
+        url_service_->RegisterExtensionControlledTURL(
             extension->id(), extension->short_name(), keyword,
             GetTemplateURLStringForExtension(extension->id()),
-            GetLastUpdateTime(ExtensionPrefs::Get(profile_), extension->id()));
+            GetLastUpdateTime(ExtensionPrefs::Get(profile_), extension->id()),
+            IsUnscopedModeAllowed(extension));
       } else {
         pending_extensions_.insert(extension);
       }
@@ -267,10 +280,11 @@ void OmniboxAPI::OnTemplateURLsLoaded() {
   // Register keywords for pending extensions.
   template_url_subscription_ = {};
   for (const Extension* i : pending_extensions_) {
-    url_service_->RegisterOmniboxKeyword(
+    url_service_->RegisterExtensionControlledTURL(
         i->id(), i->short_name(), OmniboxInfo::GetKeyword(i),
         GetTemplateURLStringForExtension(i->id()),
-        GetLastUpdateTime(ExtensionPrefs::Get(profile_), i->id()));
+        GetLastUpdateTime(ExtensionPrefs::Get(profile_), i->id()),
+        IsUnscopedModeAllowed(i));
   }
   pending_extensions_.clear();
 }

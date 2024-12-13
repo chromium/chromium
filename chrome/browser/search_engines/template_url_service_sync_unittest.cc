@@ -445,8 +445,8 @@ TEST_F(TemplateURLServiceSyncTest, GetAllSyncDataWithOmniboxExtension) {
   model()->Add(CreateTestTemplateURL(u"key2", "http://key2.com"));
   std::string fake_id("blahblahblah");
   std::string fake_url = std::string(kOmniboxScheme) + "://" + fake_id;
-  model()->RegisterOmniboxKeyword(fake_id, "unittest", "key3", fake_url,
-                                  Time());
+  model()->RegisterExtensionControlledTURL(fake_id, "unittest", "key3",
+                                           fake_url, Time(), false);
   syncer::SyncDataList all_sync_data =
       model()->GetAllSyncData(syncer::SEARCH_ENGINES);
 
@@ -951,14 +951,14 @@ TEST_F(TemplateURLServiceSyncTest, ProcessChangesWithLocalExtensions) {
   MergeAndExpectNotify(CreateInitialSyncData(), 1);
 
   // Add some extension keywords locally.
-  model()->RegisterOmniboxKeyword("extension1", "unittest", "keyword1",
-                                  "http://extension1", Time());
+  model()->RegisterExtensionControlledTURL("extension1", "unittest", "keyword1",
+                                           "http://extension1", Time(), false);
   TemplateURL* extension1 = model()->GetTemplateURLForKeyword(u"keyword1");
   ASSERT_TRUE(extension1);
   EXPECT_EQ(0U, processor()->change_list_size());
 
-  model()->RegisterOmniboxKeyword("extension2", "unittest", "keyword2",
-                                  "http://extension2", Time());
+  model()->RegisterExtensionControlledTURL("extension2", "unittest", "keyword2",
+                                           "http://extension2", Time(), false);
   TemplateURL* extension2 = model()->GetTemplateURLForKeyword(u"keyword2");
   ASSERT_TRUE(extension2);
   EXPECT_EQ(0U, processor()->change_list_size());
@@ -2579,8 +2579,8 @@ TEST_F(TemplateURLServiceSyncTest, MergeNonEditedPrepopulatedEngine) {
 TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngineIgnoresId0) {
   // The newly registered keyword will have prepulate_id 0 since that is the
   // default value.
-  model()->RegisterOmniboxKeyword("extension1", "unittest", "keyword1",
-                                  "http://extension1", Time());
+  model()->RegisterExtensionControlledTURL("extension1", "unittest", "keyword1",
+                                           "http://extension1", Time(), false);
 
   // Try to merge in a turl with preopulate_id also set to 0. This should work.
   syncer::SyncDataList initial_data;

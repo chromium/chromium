@@ -281,11 +281,27 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // Adds a TemplateURL for an extension with an omnibox keyword.
   // Only 1 keyword is allowed for a given extension. If a keyword
   // already exists for this extension, does nothing.
-  void RegisterOmniboxKeyword(const std::string& extension_id,
-                              const std::string& extension_name,
-                              const std::string& keyword,
-                              const std::string& template_url_string,
-                              const base::Time& extension_install_time);
+  void RegisterExtensionControlledTURL(const std::string& extension_id,
+                                       const std::string& extension_name,
+                                       const std::string& keyword,
+                                       const std::string& template_url_string,
+                                       const base::Time& extension_install_time,
+                                       const bool unscoped_mode_allowed);
+
+  // Adds extension_id to the list of extensions that are allowed to add
+  // unscoped keywords.
+  void AddToUnscopedModeExtensionIds(const std::string& extension_id);
+
+  // Removes extension_id from the list of extensions if it was present.
+  void RemoveFromUnscopedModeExtensionIdsIfPresent(
+      const std::string& extension_id);
+
+  // Returns extensions that can run in unscoped mode (without keyword mode).
+  // It's OK to return a copy since we expect this set to be very small.
+  std::set<std::string> GetUnscopedModeExtensionIds() const;
+
+  // Returns whether `unscoped_mode_extension_ids_` contains `extension_id`.
+  bool IsUnscopedModeExtensionId(const std::string& extension_id);
 
   // Returns the set of URLs describing the keywords. The elements are owned
   // by TemplateURLService and should not be deleted.
@@ -931,6 +947,10 @@ class TemplateURLService final : public WebDataServiceConsumer,
   OwnedTemplateURLVector template_urls_;
 
   base::ObserverList<TemplateURLServiceObserver> model_observers_;
+
+  // The IDs of the extensions that can receive Omnibox events without requiring
+  // scoped mode.
+  std::set<std::string> unscoped_mode_extension_ids_;
 
   // Maps from host to set of TemplateURLs whose search url host is host.
   std::unique_ptr<SearchHostToURLsMap> provider_map_ =

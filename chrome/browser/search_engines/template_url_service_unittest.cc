@@ -569,31 +569,32 @@ TEST_P(TemplateURLServiceTest, AddOmniboxExtensionKeyword) {
                      std::string(), std::string(), true);
   AddKeywordWithDate("nonreplaceable", "keyword2", "http://test2",
                      std::string(), std::string(), std::string(), false);
-  model()->RegisterOmniboxKeyword("test3", "extension", "keyword3",
-                                  "http://test3",
-                                  Time::FromSecondsSinceUnixEpoch(1));
+  model()->RegisterExtensionControlledTURL(
+      "test3", "extension", "keyword3", "http://test3",
+      Time::FromSecondsSinceUnixEpoch(1), false);
   TemplateURL* original3 = model()->GetTemplateURLForKeyword(u"keyword3");
   ASSERT_TRUE(original3);
 
   // Extension keywords should override replaceable keywords.
-  model()->RegisterOmniboxKeyword("id1", "test", "keyword1", "http://test4",
-                                  Time());
+  model()->RegisterExtensionControlledTURL("id1", "test", "keyword1",
+                                           "http://test4", Time(), false);
   TemplateURL* extension1 = model()->FindTemplateURLForExtension(
       "id1", TemplateURL::OMNIBOX_API_EXTENSION);
   EXPECT_TRUE(extension1);
   EXPECT_EQ(extension1, model()->GetTemplateURLForKeyword(u"keyword1"));
 
   // They should also override non-replaceable keywords.
-  model()->RegisterOmniboxKeyword("id2", "test", "keyword2", "http://test5",
-                                  Time());
+  model()->RegisterExtensionControlledTURL("id2", "test", "keyword2",
+                                           "http://test5", Time(), false);
   TemplateURL* extension2 = model()->FindTemplateURLForExtension(
       "id2", TemplateURL::OMNIBOX_API_EXTENSION);
   ASSERT_TRUE(extension2);
   EXPECT_EQ(extension2, model()->GetTemplateURLForKeyword(u"keyword2"));
 
   // They should override extension keywords added earlier.
-  model()->RegisterOmniboxKeyword("id3", "test", "keyword3", "http://test6",
-                                  Time::FromSecondsSinceUnixEpoch(4));
+  model()->RegisterExtensionControlledTURL(
+      "id3", "test", "keyword3", "http://test6",
+      Time::FromSecondsSinceUnixEpoch(4), false);
   TemplateURL* extension3 = model()->FindTemplateURLForExtension(
       "id3", TemplateURL::OMNIBOX_API_EXTENSION);
   ASSERT_TRUE(extension3);
@@ -606,8 +607,8 @@ TEST_P(TemplateURLServiceTest, AddSameKeywordWithOmniboxExtensionPresent) {
   // Similar to the AddSameKeyword test, but with an extension keyword masking a
   // replaceable TemplateURL.  We should still do correct conflict resolution
   // between the non-template URLs.
-  model()->RegisterOmniboxKeyword("test2", "extension", "keyword",
-                                  "http://test2", Time());
+  model()->RegisterExtensionControlledTURL("test2", "extension", "keyword",
+                                           "http://test2", Time(), false);
   TemplateURL* extension = model()->GetTemplateURLForKeyword(u"keyword");
   ASSERT_TRUE(extension);
   // Adding a keyword that matches the extension.
@@ -645,8 +646,8 @@ TEST_P(TemplateURLServiceTest, NotPersistOmniboxExtensionKeyword) {
   test_util()->VerifyLoad();
 
   // Register an omnibox keyword.
-  model()->RegisterOmniboxKeyword("test", "extension", "keyword",
-                                  "chrome-extension://test", Time());
+  model()->RegisterExtensionControlledTURL(
+      "test", "extension", "keyword", "chrome-extension://test", Time(), false);
   ASSERT_TRUE(model()->GetTemplateURLForKeyword(u"keyword"));
 
   // Reload the data.
@@ -849,6 +850,55 @@ TEST_P(TemplateURLServiceTest, Reset) {
   ASSERT_TRUE(read_url);
   AssertEquals(*cloned_url, *read_url);
   AssertTimesEqual(now, read_url->last_modified());
+}
+
+TEST_P(TemplateURLServiceTest, AddAndRemoveExtensionIdWithUnscopedMode) {
+  test_util()->VerifyLoad();
+
+  // Register an extension with unscoped mode allowed.
+  model()->AddToUnscopedModeExtensionIds("id");
+  EXPECT_TRUE(model()->IsUnscopedModeExtensionId("id"));
+  EXPECT_TRUE(model()->GetUnscopedModeExtensionIds().contains("id"));
+
+  // Remove the registered extension.
+  model()->RemoveFromUnscopedModeExtensionIdsIfPresent("id");
+  EXPECT_FALSE(model()->IsUnscopedModeExtensionId("id"));
+  EXPECT_FALSE(model()->GetUnscopedModeExtensionIds().contains("id"));
+}
+
+TEST_P(TemplateURLServiceTest, ExtensionWithUnscopedModeRegisteredCorrectly) {
+  test_util()->VerifyLoad();
+
+  // Register an extension with unscoped mode allowed.
+  model()->RegisterExtensionControlledTURL("id", "extension", "keyword",
+                                           "http://test", Time(), true);
+  const TemplateURL* extension_with_permission =
+      model()->GetTemplateURLForKeyword(u"keyword");
+  EXPECT_TRUE(extension_with_permission);
+  EXPECT_EQ(extension_with_permission,
+            model()->GetTemplateURLForKeyword(u"keyword"));
+  EXPECT_TRUE(model()->IsUnscopedModeExtensionId("id"));
+  EXPECT_TRUE(model()->GetUnscopedModeExtensionIds().contains("id"));
+
+  // Remove the registered extension.
+  model()->RemoveExtensionControlledTURL("id",
+                                         TemplateURL::OMNIBOX_API_EXTENSION);
+  const TemplateURL* removed_extension =
+      model()->GetTemplateURLForKeyword(u"keyword");
+  EXPECT_FALSE(removed_extension);
+  EXPECT_FALSE(model()->IsUnscopedModeExtensionId("id"));
+  EXPECT_FALSE(model()->GetUnscopedModeExtensionIds().contains("id"));
+
+  // Register an extension again without allowing unscoped mode.
+  model()->RegisterExtensionControlledTURL("id", "extension", "keyword",
+                                           "http://test", Time(), false);
+  const TemplateURL* extension_without_permission =
+      model()->GetTemplateURLForKeyword(u"keyword");
+  EXPECT_TRUE(extension_without_permission);
+  EXPECT_EQ(extension_without_permission,
+            model()->GetTemplateURLForKeyword(u"keyword"));
+  EXPECT_FALSE(model()->IsUnscopedModeExtensionId("id"));
+  EXPECT_FALSE(model()->GetUnscopedModeExtensionIds().contains("id"));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1148,8 +1198,8 @@ TEST_P(TemplateURLServiceTest, RepairPrepopulatedSearchEngines) {
   EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"bing.com"));
 
   // Register an extension with bing keyword.
-  model()->RegisterOmniboxKeyword("abcdefg", "extension_name", "bing.com",
-                                  "http://abcdefg", Time());
+  model()->RegisterExtensionControlledTURL(
+      "abcdefg", "extension_name", "bing.com", "http://abcdefg", Time(), false);
   EXPECT_TRUE(model()->GetTemplateURLForKeyword(u"bing.com"));
 
   // Remove yahoo. It will be restored later, but for now verify we removed it.
@@ -1354,8 +1404,8 @@ TEST_P(TemplateURLServiceTest, RepairStarterPackEngines) {
   EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"@history"));
 
   // Register an extension with @history keyword.
-  model()->RegisterOmniboxKeyword("abcdefg", "extension_name", "@history",
-                                  "http://abcdefg", Time());
+  model()->RegisterExtensionControlledTURL(
+      "abcdefg", "extension_name", "@history", "http://abcdefg", Time(), false);
   EXPECT_TRUE(model()->GetTemplateURLForKeyword(u"@history"));
 
   // Now perform the actual repair that should restore @history.
@@ -2063,9 +2113,9 @@ TEST_P(TemplateURLServiceTest, KeywordConflictNonReplaceableEngines) {
   // Use |install_time| value less than in AddExtensionSearchEngine call above
   // to check that omnibox api keyword is ranked higher even if installed
   // earlier.
-  model()->RegisterOmniboxKeyword("omnibox_api_extension_id", "extension_name",
-                                  "common_keyword", "http://test3",
-                                  Time::FromSecondsSinceUnixEpoch(1));
+  model()->RegisterExtensionControlledTURL(
+      "omnibox_api_extension_id", "extension_name", "common_keyword",
+      "http://test3", Time::FromSecondsSinceUnixEpoch(1), false);
   TemplateURL* omnibox_api = model()->FindTemplateURLForExtension(
       "omnibox_api_extension_id", TemplateURL::OMNIBOX_API_EXTENSION);
 
