@@ -7851,6 +7851,15 @@
        null,
        {}
       ]
+     ],
+     "testdriver.html": [
+      "24bb1ca19e11c516299d8b7cc6ceae21ec981566",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
      ]
     }
    },
@@ -25053,6 +25062,21 @@
         ]
        ],
        {}
+      ]
+     ],
+     "testdriver-print.html": [
+      "b4dc6c9760965f812630ea961f52ad16c0ea570e",
+      [
+       null,
+       [
+        [
+         "/infrastructure/reftest/reftest_match-print-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "testdriver": true
+       }
       ]
      ]
     }
@@ -73325,6 +73349,32 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "anchor-position-multicol-007.html": [
+      "b8aca1164479d58f0c7c28720362a96d017f5463",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "anchor-position-multicol-008.html": [
+      "f652b6ac2b05d28850f1d732d017cdff9c02e848",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -292855,6 +292905,49 @@
        ],
        {}
       ]
+     ],
+     "testdriver-iframe.sub.html": [
+      "fb62009b9a11697d68c2a7bf87df3c7a5f20c6e1",
+      [
+       null,
+       [
+        [
+         "/infrastructure/reftest/green.html",
+         "=="
+        ]
+       ],
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "testdriver-in-ref.html": [
+      "8a1af46db354624c3fd03ce6f3b6a0165ebf26c5",
+      [
+       null,
+       [
+        [
+         "/infrastructure/reftest/testdriver.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "testdriver.html": [
+      "d890d8926273af84acf01372bd2e4fbd74d47003",
+      [
+       null,
+       [
+        [
+         "/infrastructure/reftest/green.html",
+         "=="
+        ]
+       ],
+       {
+        "testdriver": true
+       }
+      ]
      ]
     },
     "reftest-wait.html": [
@@ -325777,14 +325870,6 @@
      "parsing": {
       "content-computed-expected.txt": [
        "2541212ea95fcdba664f7d96fbee2b174811ebb4",
-       []
-      ],
-      "content-invalid-expected.txt": [
-       "c66650fa9ace440db3fdda2a84891ba1658b334a",
-       []
-      ],
-      "content-valid-expected.txt": [
-       "268048fc867014edeac9267c9c42af9b563029c1",
        []
       ]
      },
@@ -363327,7 +363412,7 @@
       []
      ],
      "serialize-values-expected.txt": [
-      "fedafa597a88bd7f69309bf244cca7602813bf23",
+      "fff48b958136105d5dc59959d239b7fe3461318c",
       []
      ],
      "shorthand-values-expected.txt": [
@@ -366879,7 +366964,7 @@
       []
      ],
      "testdriver.md": [
-      "462c7b85503cb9a8e7effa11378fe6ec4e9f2be8",
+      "cdf081ef318d332217f5ee59f9f9b0c5d9bd2bc1",
       []
      ],
      "testharness-api.md": [
@@ -395681,6 +395766,10 @@
        "reftest_timeout.html.ini": [
         "0d1b9bade95d7b101c8dbf51547ffbaec2260c27",
         []
+       ],
+       "testdriver-in-ref.html.ini": [
+        "05850761b1649974c759e90293c576b36521b953",
+        []
        ]
       },
       "server": {
@@ -395890,6 +395979,10 @@
      ],
      "size-ref.html": [
       "bb792a3feb21cc0c03d0734e97f119dcce3dd10a",
+      []
+     ],
+     "testdriver-child.html": [
+      "38ea532fee11b4c7a324b11acf6757c0954c8fb2",
       []
      ]
     },
@@ -397803,7 +397896,7 @@
     ]
    },
    "lint.ignore": [
-    "32c22fecfec65a1d87920a90bd00129fe0de257e",
+    "00fb7fd020192843abd6ba46baabd86ca0ce129f",
     []
    ],
    "loading": {
@@ -402945,6 +403038,10 @@
     },
     "pointerevent_after_target_removed_from_slot_mouse-expected.txt": [
      "629baaba8c5990e4d847014619a9d1d6f5e98d1c",
+     []
+    ],
+    "pointerevent_click_on_chorded_mouse_button.tentative-expected.txt": [
+     "3bb3a28474d7045d37d88aeda9c822b684367408",
      []
     ],
     "pointerevent_fractional_coordinates_untrusted-expected.txt": [
@@ -413136,10 +413233,6 @@
      }
     },
     "types": {
-     "SVGElement.ownerSVGElement-01-expected.txt": [
-      "9c0da6329fa46d99e67313609caa6f483b5666e9",
-      []
-     ],
      "helper-SVGElement.ownerSVGElement-02.svg": [
       "2335bb42c5142ca96a63a4ec457d67ea439638ab",
       []
@@ -418116,6 +418209,38 @@
       "DOMException-custom-bindings.any.worker-expected.txt": [
        "018987dc5956289530510ff5ab899cc2d365f22c",
        []
+      ],
+      "DOMException-is-error.any-expected.txt": [
+       "e58701d4834b5088d77b23d2b26fc1005c726a83",
+       []
+      ],
+      "DOMException-is-error.any.shadowrealm-in-dedicatedworker-expected.txt": [
+       "65af075c4dae748bb1a5f1aceb64da5b0609af5c",
+       []
+      ],
+      "DOMException-is-error.any.shadowrealm-in-shadowrealm-expected.txt": [
+       "65af075c4dae748bb1a5f1aceb64da5b0609af5c",
+       []
+      ],
+      "DOMException-is-error.any.shadowrealm-in-sharedworker-expected.txt": [
+       "65af075c4dae748bb1a5f1aceb64da5b0609af5c",
+       []
+      ],
+      "DOMException-is-error.any.shadowrealm-in-window-expected.txt": [
+       "65af075c4dae748bb1a5f1aceb64da5b0609af5c",
+       []
+      ],
+      "DOMException-is-error.any.worker-expected.txt": [
+       "e58701d4834b5088d77b23d2b26fc1005c726a83",
+       []
+      ],
+      "DOMException-is-error.https.any.shadowrealm-in-audioworklet-expected.txt": [
+       "65af075c4dae748bb1a5f1aceb64da5b0609af5c",
+       []
+      ],
+      "DOMException-is-error.https.any.shadowrealm-in-serviceworker-expected.txt": [
+       "65af075c4dae748bb1a5f1aceb64da5b0609af5c",
+       []
       ]
      },
      "global-object-implicit-this-value.any.serviceworker-expected.txt": [
@@ -418511,7 +418636,7 @@
     },
     "resources": {
      "utils.js": [
-      "b1916d0a4f1d755899eeab1f90161781164d0e0f",
+      "a976fc555c5f494f1ba0b6a1aa7590f32ba92536",
       []
      ],
      "utils_validation.js": [
@@ -426215,25 +426340,241 @@
       }
      ]
     ],
-    "fire-error-event-exception.html": [
-     "f380e4081f103dbb9f510b8f73f0f299bd6c27bc",
+    "fire-error-event-exception.any.js": [
+     "ade2a7251e3c0170a9022b962a655cede1df567b",
      [
-      null,
-      {}
+      "IndexedDB/fire-error-event-exception.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "Fire error event - Exception thrown"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/fire-error-event-exception.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "Fire error event - Exception thrown"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/fire-error-event-exception.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "Fire error event - Exception thrown"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/fire-error-event-exception.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "Fire error event - Exception thrown"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "fire-success-event-exception.html": [
-     "eaff1b962a00ab4f2ff35831148c7eb95ed5d8da",
+    "fire-success-event-exception.any.js": [
+     "bd757ea6b1f9d7108367fbcd148b04bc9c16327d",
      [
-      null,
-      {}
+      "IndexedDB/fire-success-event-exception.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "Fire success event - Exception thrown"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/fire-success-event-exception.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "Fire success event - Exception thrown"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/fire-success-event-exception.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "Fire success event - Exception thrown"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/fire-success-event-exception.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "Fire success event - Exception thrown"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "fire-upgradeneeded-event-exception.html": [
-     "7160dbdfc7d6b52239fc8c4b07a0543fdea83d6f",
+    "fire-upgradeneeded-event-exception.any.js": [
+     "3b17d90f7ca76894ab4614f56314a6e827647460",
      [
-      null,
-      {}
+      "IndexedDB/fire-upgradeneeded-event-exception.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "Fire upgradeneeded event - Exception thrown"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/fire-upgradeneeded-event-exception.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "Fire upgradeneeded event - Exception thrown"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/fire-upgradeneeded-event-exception.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "Fire upgradeneeded event - Exception thrown"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/fire-upgradeneeded-event-exception.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "Fire upgradeneeded event - Exception thrown"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "get-databases.any.js": [
@@ -473670,14 +474011,14 @@
        ]
       ],
       "content-invalid.html": [
-       "c8454e557e233dbee28a0990ad3f87f265efacaa",
+       "efd4ea5136c489ccd38a25732864f4165a9a2b81",
        [
         null,
         {}
        ]
       ],
       "content-valid.html": [
-       "60d03a4d4c3412f15607721dae5d04dbdbf2c682",
+       "097bf66f62b2151eedf33bc94616110ad77bb71d",
        [
         null,
         {}
@@ -501531,7 +501872,7 @@
        ]
       ],
       "at-rule-opt-in-change-with-script.html": [
-       "12452f67634e42746871a74701c87dfeef165048",
+       "c06f28ce1de03ddf92b70addb323dd7f17bcfef9",
        [
         null,
         {}
@@ -503729,7 +504070,7 @@
       ]
      ],
      "serialize-values.html": [
-      "2d20f263f4fd6db4134f6280af50c0037c06d41f",
+      "539052afafffe9a9738aae1591e611126816f6ae",
       [
        null,
        {}
@@ -513454,7 +513795,7 @@
      "moveBefore": {
       "tentative": {
        "Node-moveBefore.html": [
-        "732314d085baa898db8393276e632d24c7787296",
+        "bfee97b4459d590159f3c5d45b900867386b3df6",
         [
          null,
          {}
@@ -605793,266 +606134,266 @@
        ]
       ],
       "element-render-blocking-001.html": [
-       "36567f9d54adea41a703b23adac438e160f397cf",
+       "b166cbd23c8acd7d788dbaaf2d4f2a16a94c8441",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-002.html": [
-       "3c907597f7ac35b84e29ccd37627499c347f511a",
+       "bfb75a5afd224c1f7b84685982f1c9aa16adff0f",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-003.html": [
-       "2858798a35f58e1152b7047c35359878d1820ecc",
+       "12fbb56b8b5e78e2d5275ae42bf0906aae188619",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-004.html": [
-       "f45f5587204674691349f298f9367204233aa235",
+       "3c908bfa2f3fa5c24d30fe7358b5a09c7feed70f",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-005.html": [
-       "098a3c57676cc88788a23efa0818e00b9a8e6344",
+       "4fdfd8877db707dfe32c25794bec8e8e267a9dff",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-006.html": [
-       "223e42109e5c65985e0aec2b0c24ef8f1d810d15",
+       "925a013d90d4082187fa07c41a76811cb1408214",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-007.html": [
-       "9aa0aeea79834833ff0151227723c1a6c17e06e2",
+       "4762d1259a92ef08b5eed713c1e42ad045435aab",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-008.html": [
-       "e671dda19c43b44d3f065b8de0e68f7326e88aba",
+       "4756cd4844dc149d086db42610e337785d2760db",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-009.html": [
-       "8498816ea5c435cce0ea3d597b7f0b381d73d7f6",
+       "d2a0470ee0382d218a1c54af24de11102faf4d39",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-010.html": [
-       "ef6f709012e4bd4bb222b8cc74317abdbc40768f",
+       "2eb60dbef8119fd189ce5042856b0c5f245d66f4",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-011.html": [
-       "dee82d8c5950c16360d2ff799393a50bed1f7a95",
+       "2ea636572476b5b4d1876c397e7ce5ab43d93d89",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-012.html": [
-       "4110e54c5f20420d8da783d21e43d2f9961aed5a",
+       "65209cb667c9a03a3c21e3c248efdc822be6e438",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-013.html": [
-       "ecd97be86a6633daf0d03f86f231de295abee459",
+       "27d724dc614dd8c3578a9a321c127fd37bbbdd92",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-014.html": [
-       "ea8948de42dec015384aa2bd7a13edb283b6d522",
+       "735f9ad86c701526c28a27974c0e836d55d36609",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-015.html": [
-       "a775ee417403ab3fef3635194ff1d62b4c335266",
+       "da6e76608973fa8d15dd0f09153e761eb5ba0ca9",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-016.html": [
-       "8968c5dacd329537b9d7c1d0d0ce38786077f583",
+       "9d836dfafdd3711897294c86fe079c736bff62d8",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-017.html": [
-       "2d3b5747216f50902714bff725cddf50ec7556c0",
+       "fff6c48b5813c07763e9037fb614746e35133914",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-018.html": [
-       "76e6394b5b16586de768ad553c671b8594d0635e",
+       "896e6efbbf6fa8976d26b13688d4177ea6931ae1",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-019.html": [
-       "80a7019edc4beb272ef65d7cd1d28f88fb18a813",
+       "709f8d05b06dc8279514f9cd0e91c3bd32f0dd02",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-020.html": [
-       "10019c943f402c91c0ca07efefe462d5bc6ece48",
+       "054430b960cb2be6820773c124c44c4255bad6b2",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-021.html": [
-       "1ca2114689a6cdbc961c9eecd1fa4e328117d431",
+       "11126b869add05a425e05332f8e19d914ad37658",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-022.html": [
-       "5dfbcac30a4c065a888f5ea804ba306758d83e6c",
+       "cecf88505fd38a6b8b91af1172ee96bc22b2a82f",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-023.html": [
-       "8fe8b6a8c8e30f05250c2ca569f5b4d938bed71c",
+       "3b52dce47032d702e65f0b0245d86a811c0a58cb",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-024.html": [
-       "19e4020fb769bb59053a6a64cc1c499583044c73",
+       "fae9e81a28d4a3a669fd161dc1b74a50bc2c10af",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-025.html": [
-       "689ae69f452d421b66554c8e547ca95f5f269af9",
+       "aebe11d949684d0b506832af566064458be30f5c",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-026.html": [
-       "6abfc43b8b237b3f8f0f6474d36fcce1c3aaac52",
+       "5755ef302d1f664506017d4c714269e52ccf6228",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-027.html": [
-       "56f88e0fc2b773f74afb86e306f42a1aa39d9c1b",
+       "f7b2d65e7eaf16557ef0dfd6a2c2d48e38816a6b",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-028.html": [
-       "a64d542c4ac7ef97a2e3427dabe485519da97518",
+       "9ec14bf9d9a87e88ab054226f02c6ee923ba340a",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-029.html": [
-       "44dff3cb8429d901b65f5991d3696abb31ff6831",
+       "5e6ee8c88c05b6a3e86ab5b99b17d7f11ff79a50",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-030.html": [
-       "307c2d303d045d090c180ae22476b1419b91d9bc",
+       "95c3cd20677aa0dba92c4f1732ba606a9311ab91",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-031.html": [
-       "2098483a0600c642f32403fff97be2bb4fed4572",
+       "0c061ad17a5e5223c5b0b4ceb21b4bd3e2fda6f2",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-032.html": [
-       "307c2d303d045d090c180ae22476b1419b91d9bc",
+       "95c3cd20677aa0dba92c4f1732ba606a9311ab91",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-033.html": [
-       "59d41c08c0a677e0e462c53e47e76635cb3bf9b1",
+       "c189dfd2b90864601bb849e31d25564864673ed0",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-034.html": [
-       "a505de48756a9fbf1b947e6e01be8020f9d2be23",
+       "0824550fd306fe839538856bc191618264e430d3",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-035.html": [
-       "050244c7a690cdc840505bf73173464e0aef69c9",
+       "3d05f729d4495d4d8fa72c52a677c5d8ca98d6cd",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-036.html": [
-       "83637b3a08b859b0fa46b3bfdab6edc8df86c7bb",
+       "c0a18b62dc6f6eb09a64fa3eb20f58a288920e42",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-037.html": [
-       "5fe469a2fdd3b6231a84cd842c1bea877f42bb14",
+       "f72daac4731dc9cd71e1904400bd41884fb1a5a4",
        [
         null,
         {}
        ]
       ],
       "element-render-blocking-038.html": [
-       "c7fabe7f320c4af2cbdb4089916796a9eb333874",
+       "8dad0a414ffa1755e41c4e3f17394dccf0b84422",
        [
         null,
         {}
@@ -650963,6 +651304,15 @@
      ],
      [
       "pointerevents/pointerevent_click_is_a_pointerevent_multiple_clicks.html?touch",
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "pointerevent_click_on_chorded_mouse_button.tentative.html": [
+     "4c6431751070d166882db8cd6af7dd312585f6f6",
+     [
+      null,
       {
        "testdriver": true
       }
@@ -697455,7 +697805,7 @@
     },
     "types": {
      "SVGElement.ownerSVGElement-01.html": [
-      "3750c8ff775dca6b4d602f4761860c325f081521",
+      "8e064adeeb2d9c0f940fcdc8a9f74ed060e26436",
       [
        null,
        {}
@@ -725984,6 +726334,97 @@
        ],
        [
         "webidl/ecmascript-binding/es-exceptions/DOMException-custom-bindings.https.any.shadowrealm-in-serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
+       ]
+      ],
+      "DOMException-is-error.any.js": [
+       "6f3097b222ed1feb56e1b53606b403944421029d",
+       [
+        "webidl/ecmascript-binding/es-exceptions/DOMException-is-error.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "webidl/ecmascript-binding/es-exceptions/DOMException-is-error.any.shadowrealm-in-dedicatedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "webidl/ecmascript-binding/es-exceptions/DOMException-is-error.any.shadowrealm-in-shadowrealm.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "webidl/ecmascript-binding/es-exceptions/DOMException-is-error.any.shadowrealm-in-sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "webidl/ecmascript-binding/es-exceptions/DOMException-is-error.any.shadowrealm-in-window.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "webidl/ecmascript-binding/es-exceptions/DOMException-is-error.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "webidl/ecmascript-binding/es-exceptions/DOMException-is-error.https.any.shadowrealm-in-audioworklet.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "webidl/ecmascript-binding/es-exceptions/DOMException-is-error.https.any.shadowrealm-in-serviceworker.html",
         {
          "script_metadata": [
           [

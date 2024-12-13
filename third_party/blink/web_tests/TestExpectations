@@ -2693,6 +2693,8 @@ crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attribut
 crbug.com/343720396 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?1-2 [ Crash Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac13 ] external/wpt/webrtc/protocol/video-codecs.https.html [ Timeout ]
+[ Mac14 ] external/wpt/webrtc/protocol/video-codecs.https.html [ Timeout ]
 crbug.com/383609766 [ Mac15 ] external/wpt/webrtc/receiver-track-live.https.html [ Timeout ]
 crbug.com/383595852 [ Mac15 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/service-workers.https.html [ Skip Timeout ]
 crbug.com/383369477 [ Mac13 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/activation-start.html [ Skip Timeout ]

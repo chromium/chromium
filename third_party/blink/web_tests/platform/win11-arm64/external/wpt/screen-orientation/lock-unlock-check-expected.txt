@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Unlocking the screen orientation after a change event must not abort
+  promise_test: Unhandled rejection with value: object "AbortError: A call to screen.orientation.lock() or screen.orientation.unlock() canceled this call."
+Harness: the test ran to completion.
