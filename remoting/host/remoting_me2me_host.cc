@@ -158,7 +158,7 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/linux_util.h"
-#include "remoting/host/audio_capturer_linux.h"
+#include "remoting/host/linux/audio_capturer_linux.h"
 #include "remoting/host/linux/certificate_watcher.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_INPUT_INJECTOR_X11_H_
-#define REMOTING_HOST_INPUT_INJECTOR_X11_H_
+#ifndef REMOTING_HOST_LINUX_INPUT_INJECTOR_X11_H_
+#define REMOTING_HOST_LINUX_INPUT_INJECTOR_X11_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -23,7 +23,7 @@
 #include "build/chromeos_buildflags.h"
 #include "remoting/host/clipboard.h"
 #include "remoting/host/input_injector.h"
-#include "remoting/host/input_injector_constants_linux.h"
+#include "remoting/host/linux/input_injector_constants_linux.h"
 #include "remoting/host/linux/x11_character_injector.h"
 #include "remoting/host/linux/x11_keyboard_impl.h"
 #include "remoting/host/linux/x11_util.h"
@@ -145,4 +145,4 @@ class InputInjectorX11 : public InputInjector {
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_INPUT_INJECTOR_X11_H_
+#endif  // REMOTING_HOST_LINUX_INPUT_INJECTOR_X11_H_

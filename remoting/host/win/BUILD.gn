@@ -177,6 +177,7 @@ source_set("win") {
     "//ipc",
     "//remoting/base",
     "//remoting/host:ipc_constants",
+    "//remoting/host:platform_interfaces",
     "//remoting/host/base",
     "//remoting/host/mojom",
     "//remoting/host/security_key",

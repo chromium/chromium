@@ -4,9 +4,8 @@
 
 #include "remoting/host/input_injector.h"
 
-#include "base/notreached.h"
-#include "remoting/host/input_injector_x11.h"
 #include "remoting/host/linux/input_injector_wayland.h"
+#include "remoting/host/linux/input_injector_x11.h"
 #include "remoting/host/linux/wayland_utils.h"
 
 namespace remoting {

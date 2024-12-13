@@ -6,7 +6,7 @@
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
-#include "remoting/host/input_injector_x11.h"
+#include "remoting/host/linux/input_injector_x11.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -27,7 +27,7 @@
 #include "build/chromeos_buildflags.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/clipboard.h"
-#include "remoting/host/input_injector_constants_linux.h"
+#include "remoting/host/linux/input_injector_constants_linux.h"
 #include "remoting/host/linux/unicode_to_keysym.h"
 #include "remoting/host/linux/x11_character_injector.h"
 #include "remoting/host/linux/x11_keyboard_impl.h"

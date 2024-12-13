@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_DESKTOP_DISPLAY_INFO_LOADER_X11_H_
-#define REMOTING_HOST_DESKTOP_DISPLAY_INFO_LOADER_X11_H_
+#ifndef REMOTING_HOST_LINUX_DESKTOP_DISPLAY_INFO_LOADER_X11_H_
+#define REMOTING_HOST_LINUX_DESKTOP_DISPLAY_INFO_LOADER_X11_H_
 
 #include "base/memory/raw_ptr.h"
 #include "remoting/host/desktop_display_info_loader.h"
@@ -41,4 +41,4 @@ class DesktopDisplayInfoLoaderX11 : public DesktopDisplayInfoLoader,
 };
 
 }  // namespace remoting
-#endif  // REMOTING_HOST_DESKTOP_DISPLAY_INFO_LOADER_X11_H_
+#endif  // REMOTING_HOST_LINUX_DESKTOP_DISPLAY_INFO_LOADER_X11_H_

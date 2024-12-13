@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_X11_DISPLAY_UTIL_H_
-#define REMOTING_HOST_X11_DISPLAY_UTIL_H_
+#ifndef REMOTING_HOST_LINUX_X11_DISPLAY_UTIL_H_
+#define REMOTING_HOST_LINUX_X11_DISPLAY_UTIL_H_
 
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/x/randr.h"
@@ -20,4 +20,4 @@ x11::RandRMonitorConfig ToVideoTrackLayout(
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_X11_DISPLAY_UTIL_H_
+#endif  // REMOTING_HOST_LINUX_X11_DISPLAY_UTIL_H_

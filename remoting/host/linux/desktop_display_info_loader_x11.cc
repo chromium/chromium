@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/desktop_display_info_loader_x11.h"
+#include "remoting/host/linux/desktop_display_info_loader_x11.h"
 
 #include <algorithm>
 #include <memory>
@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/logging.h"
-#include "remoting/host/x11_display_util.h"
+#include "remoting/host/linux/x11_display_util.h"
 #include "ui/base/x/x11_display_util.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/connection.h"

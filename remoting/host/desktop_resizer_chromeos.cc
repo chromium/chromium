@@ -4,28 +4,25 @@
 
 #include "remoting/host/desktop_resizer.h"
 
+#include <list>
 #include <memory>
 
-#include "base/notreached.h"
-
-#if defined(REMOTING_USE_X11)
-#include "remoting/host/desktop_resizer_x11.h"
-#include "remoting/host/linux/desktop_resizer_wayland.h"
-#include "remoting/host/linux/wayland_utils.h"
-#endif
+#include "base/notimplemented.h"
+#include "remoting/host/base/screen_resolution.h"
+#include "remoting/proto/control.pb.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {
 
 namespace {
 
-// DesktopResizer implementation for Linux platforms where
-// X11 is not enabled.
-class DesktopResizerLinux : public DesktopResizer {
+// No-op DesktopResizer implementation for Chrome OS
+class DesktopResizerChromeOS : public DesktopResizer {
  public:
-  DesktopResizerLinux() = default;
-  DesktopResizerLinux(const DesktopResizerLinux&) = delete;
-  DesktopResizerLinux& operator=(const DesktopResizerLinux&) = delete;
-  ~DesktopResizerLinux() override = default;
+  DesktopResizerChromeOS() = default;
+  DesktopResizerChromeOS(const DesktopResizerChromeOS&) = delete;
+  DesktopResizerChromeOS& operator=(const DesktopResizerChromeOS&) = delete;
+  ~DesktopResizerChromeOS() override = default;
 
   ScreenResolution GetCurrentResolution(webrtc::ScreenId screen_id) override {
     NOTIMPLEMENTED();
@@ -56,18 +53,8 @@ class DesktopResizerLinux : public DesktopResizer {
 
 }  // namespace
 
-// static
 std::unique_ptr<DesktopResizer> DesktopResizer::Create() {
-#if defined(REMOTING_USE_X11)
-  if (IsRunningWayland()) {
-    return std::make_unique<DesktopResizerWayland>();
-  }
-  return std::make_unique<DesktopResizerX11>();
-#elif BUILDFLAG(IS_CHROMEOS)
-  return std::make_unique<DesktopResizerLinux>();
-#else
-#error "Invalid config detected."
-#endif
+  return std::make_unique<DesktopResizerChromeOS>();
 }
 
 }  // namespace remoting

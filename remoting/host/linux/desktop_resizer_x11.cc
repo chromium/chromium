@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/desktop_resizer_x11.h"
+#include "remoting/host/linux/desktop_resizer_x11.h"
 
 #include <gio/gio.h>
 
@@ -20,8 +20,8 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/desktop_geometry.h"
+#include "remoting/host/linux/x11_display_util.h"
 #include "remoting/host/linux/x11_util.h"
-#include "remoting/host/x11_display_util.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/randr.h"

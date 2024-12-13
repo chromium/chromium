@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/audio_capturer_linux.h"
+#include "remoting/host/linux/audio_capturer_linux.h"
 
 #include <stdint.h>
 

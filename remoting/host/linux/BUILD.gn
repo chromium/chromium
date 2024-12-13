@@ -128,14 +128,124 @@ source_set("utils") {
   ]
 }
 
-if (is_linux) {
-  source_set("wayland") {
-    sources = [
-      "wayland_utils.cc",
-      "wayland_utils.h",
-    ]
-    deps = [ "//base" ]
-  }
+source_set("platform_impls") {
+  defines = [ "REMOTING_USE_X11" ]
+  sources = [
+    "active_display_monitor_linux.cc",
+    "active_display_monitor_x11.cc",
+    "active_display_monitor_x11.h",
+    "audio_capturer_linux.cc",
+    "audio_capturer_linux.h",
+    "audio_pipe_reader.cc",
+    "audio_pipe_reader.h",
+    "clipboard_portal.cc",
+    "clipboard_portal.h",
+    "clipboard_portal_injector.cc",
+    "clipboard_portal_injector.h",
+    "clipboard_wayland.cc",
+    "clipboard_wayland.h",
+    "curtain_mode_linux.cc",
+    "desktop_display_info_loader_linux.cc",
+    "desktop_display_info_loader_wayland.cc",
+    "desktop_display_info_loader_wayland.h",
+    "desktop_display_info_loader_x11.cc",
+    "desktop_display_info_loader_x11.h",
+    "desktop_resizer_linux.cc",
+    "desktop_resizer_wayland.cc",
+    "desktop_resizer_wayland.h",
+    "desktop_resizer_x11.cc",
+    "desktop_resizer_x11.h",
+    "ei_event_watcher_glib.cc",
+    "ei_event_watcher_glib.h",
+    "input_injector_constants_linux.h",
+    "input_injector_linux.cc",
+    "input_injector_wayland.cc",
+    "input_injector_wayland.h",
+    "input_injector_x11.cc",
+    "input_injector_x11.h",
+    "keyboard_layout_monitor_linux.cc",
+    "keyboard_layout_monitor_utils.cc",
+    "keyboard_layout_monitor_utils.h",
+    "keyboard_layout_monitor_wayland.cc",
+    "keyboard_layout_monitor_wayland.h",
+    "remote_desktop_portal.cc",
+    "remote_desktop_portal.h",
+    "remote_desktop_portal_injector.cc",
+    "remote_desktop_portal_injector.h",
+    "wayland_connection.cc",
+    "wayland_connection.h",
+    "wayland_desktop_capturer.cc",
+    "wayland_desktop_capturer.h",
+    "wayland_display.cc",
+    "wayland_display.h",
+    "wayland_display_info.cc",
+    "wayland_display_info.h",
+    "wayland_keyboard.cc",
+    "wayland_keyboard.h",
+    "wayland_manager.cc",
+    "wayland_manager.h",
+    "wayland_seat.cc",
+    "wayland_seat.h",
+  ]
+  deps = [
+    ":wayland",
+    ":x11",
+    ":x11_display_utils",
+    "//base",
+    "//build/config/linux/gtk",
+    "//remoting/base",
+    "//remoting/base:logging",
+    "//remoting/host:client_session_control",
+    "//remoting/host:clipboard",
+    "//remoting/host:common_headers",
+    "//remoting/host:display_layout",
+    "//remoting/host:platform_interfaces",
+    "//remoting/host/base",
+    "//remoting/host/input_monitor",
+    "//remoting/proto",
+    "//remoting/protocol",
+    "//third_party/wayland:wayland_client",
+    "//third_party/wayland-protocols:xdg_output_protocol",
+    "//third_party/webrtc_overrides:webrtc_component",
+    "//ui/base",
+    "//ui/base/x",
+    "//ui/events:dom_keycode_converter",
+    "//ui/events/platform/wayland:wayland_event_watcher",
+    "//ui/gfx/x",
+  ]
+}
+
+source_set("x11_display_utils") {
+  sources = [
+    "gnome_display_config.cc",
+    "gnome_display_config.h",
+    "gnome_display_config_dbus_client.cc",
+    "gnome_display_config_dbus_client.h",
+    "scoped_glib.cc",
+    "scoped_glib.h",
+    "x11_display_util.cc",
+    "x11_display_util.h",
+  ]
+  deps = [
+    ":x11",
+    "//build/config/linux/gtk",
+    "//remoting/base:logging",
+    "//remoting/host:display_layout",
+    "//remoting/host/linux/dbus_interfaces:interface_headers",
+    "//third_party/webrtc_overrides:webrtc_component",
+    "//ui/base",
+    "//ui/base/x",
+    "//ui/gfx/geometry",
+    "//ui/gfx/x",
+  ]
+}
+
+source_set("wayland") {
+  sources = [
+    "wayland_utils.cc",
+    "wayland_utils.h",
+  ]
+  deps = [ "//base" ]
 }
 
 if (remoting_use_x11) {
@@ -188,6 +298,7 @@ source_set("unit_tests") {
     "gvariant_type_unittest.cc",
     "unicode_to_keysym_unittest.cc",
     "x11_character_injector_unittest.cc",
+    "x11_display_util_unittest.cc",
     "x_server_clipboard_unittest.cc",
   ]
 
@@ -195,6 +306,7 @@ source_set("unit_tests") {
     sources -= [
       "unicode_to_keysym_unittest.cc",
       "x11_character_injector_unittest.cc",
+      "x11_display_util_unittest.cc",
       "x_server_clipboard_unittest.cc",
     ]
   }
@@ -205,12 +317,13 @@ source_set("unit_tests") {
   configs += [ "//build/config/linux/dbus" ]
 
   deps = [
+    ":platform_impls",
     ":utils",
+    ":x11_display_utils",
     "dbus_interfaces:interface_headers",
     "//dbus:dbus_test_service",
     "//remoting/host:common",
     "//remoting/host:test_support",
-    "//remoting/host:x11_display_utils",
     "//remoting/host/it2me:common",
     "//remoting/host/native_messaging",
     "//remoting/host/security_key:unit_tests",
@@ -220,6 +333,7 @@ source_set("unit_tests") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx/geometry",
   ]
 
   if (remoting_use_x11) {

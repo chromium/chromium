@@ -109,16 +109,13 @@ source_set("capturer_interfaces") {
 source_set("common_headers") {
   visibility = [ "//remoting/host/*" ]
   sources = [
-    "action_executor.h",
-    "audio_capturer.h",
     "audio_silence_detector.h",
     "audio_volume_filter.h",
     "basic_desktop_environment.h",
     "desktop_and_cursor_conditional_composer.h",
+    "desktop_display_info_monitor.h",
     "desktop_environment.h",
     "evaluate_capability.h",
-    "input_injector.h",
-    "input_injector_metadata.h",
     "sas_injector.h",
     "usage_stats_consent.h",
     "worker_process_ipc_delegate.h",
@@ -128,6 +125,7 @@ source_set("common_headers") {
   }
   deps = [
     ":capturer_interfaces",
+    ":platform_interfaces",
     "//ipc",
     "//remoting/base",
     "//remoting/host/base",
@@ -203,6 +201,33 @@ source_set("clipboard") {
   if (is_win) {
     sources += [ "clipboard_win.cc" ]
   }
+}
+
+source_set("platform_interfaces") {
+  sources = [
+    "action_executor.h",
+    "active_display_monitor.h",
+    "audio_capturer.h",
+    "curtain_mode.h",
+    "desktop_display_info.cc",
+    "desktop_display_info.h",
+    "desktop_display_info_loader.h",
+    "desktop_resizer.h",
+    "input_injector.h",
+    "input_injector_metadata.h",
+    "keyboard_layout_monitor.cc",
+    "keyboard_layout_monitor.h",
+  ]
+  deps = [
+    "//base",
+    "//remoting/base",
+    "//remoting/base:logging",
+    "//remoting/host/base",
+    "//remoting/proto",
+    "//remoting/protocol",
+    "//third_party/webrtc_overrides:webrtc_component",
+    "//ui/events:dom_keycode_converter",
+  ]
 }
 
 source_set("settings") {
@@ -283,7 +308,6 @@ static_library("common") {
     "action_message_handler.cc",
     "action_message_handler.h",
     "active_display_monitor.cc",
-    "active_display_monitor.h",
     "audio_capturer.cc",
     "audio_silence_detector.cc",
     "audio_volume_filter.cc",
@@ -312,7 +336,6 @@ static_library("common") {
     "corp_host_status_logger.h",
     "crash_process.cc",
     "crash_process.h",
-    "curtain_mode.h",
     "daemon_process.cc",
     "daemon_process.h",
     "desktop_and_cursor_composer.h",
@@ -325,14 +348,9 @@ static_library("common") {
     "desktop_capturer_proxy.h",
     "desktop_capturer_wrapper.cc",
     "desktop_capturer_wrapper.h",
-    "desktop_display_info.cc",
-    "desktop_display_info.h",
-    "desktop_display_info_loader.h",
     "desktop_display_info_monitor.cc",
-    "desktop_display_info_monitor.h",
     "desktop_process.cc",
     "desktop_process.h",
-    "desktop_resizer.h",
     "desktop_session.cc",
     "desktop_session.h",
     "desktop_session_agent.cc",
@@ -398,8 +416,6 @@ static_library("common") {
     "ipc_video_frame_capturer.h",
     "it2me_desktop_environment.cc",
     "it2me_desktop_environment.h",
-    "keyboard_layout_monitor.cc",
-    "keyboard_layout_monitor.h",
     "me2me_heartbeat_service_client.cc",
     "me2me_heartbeat_service_client.h",
     "mojo_video_capturer.cc",
@@ -467,6 +483,7 @@ static_library("common") {
     ":display_layout",
     ":host_main_headers",
     ":ipc_constants",
+    ":platform_interfaces",
     ":remoting_version",
     ":resources",
     ":settings",
@@ -555,9 +572,6 @@ static_library("common") {
 
   if (is_linux) {
     sources += [
-      "desktop_resizer_linux.cc",
-      "linux/audio_pipe_reader.cc",
-      "linux/audio_pipe_reader.h",
       "linux/certificate_watcher.cc",
       "linux/certificate_watcher.h",
     ]
@@ -575,61 +589,14 @@ static_library("common") {
     assert(use_glib)
     defines += [ "REMOTING_USE_X11" ]
     sources -= [ "active_display_monitor.cc" ]
-    sources += [
-      "active_display_monitor_linux.cc",
-      "curtain_mode_linux.cc",
-      "desktop_display_info_loader_linux.cc",
-      "desktop_display_info_loader_x11.cc",
-      "desktop_display_info_loader_x11.h",
-      "desktop_resizer_x11.cc",
-      "desktop_resizer_x11.h",
-      "input_injector_constants_linux.h",
-      "input_injector_linux.cc",
-      "input_injector_x11.cc",
-      "input_injector_x11.h",
-      "keyboard_layout_monitor_linux.cc",
-      "linux/active_display_monitor_x11.cc",
-      "linux/active_display_monitor_x11.h",
-      "linux/clipboard_portal.cc",
-      "linux/clipboard_portal.h",
-      "linux/clipboard_portal_injector.cc",
-      "linux/clipboard_portal_injector.h",
-      "linux/clipboard_wayland.cc",
-      "linux/clipboard_wayland.h",
-      "linux/desktop_display_info_loader_wayland.cc",
-      "linux/desktop_display_info_loader_wayland.h",
-      "linux/desktop_resizer_wayland.cc",
-      "linux/desktop_resizer_wayland.h",
-      "linux/ei_event_watcher_glib.cc",
-      "linux/ei_event_watcher_glib.h",
-      "linux/input_injector_wayland.cc",
-      "linux/input_injector_wayland.h",
-      "linux/remote_desktop_portal.cc",
-      "linux/remote_desktop_portal.h",
-      "linux/remote_desktop_portal_injector.cc",
-      "linux/remote_desktop_portal_injector.h",
-      "linux/wayland_connection.cc",
-      "linux/wayland_connection.h",
-      "linux/wayland_desktop_capturer.cc",
-      "linux/wayland_desktop_capturer.h",
-      "linux/wayland_display.cc",
-      "linux/wayland_display.h",
-      "linux/wayland_display_info.cc",
-      "linux/wayland_display_info.h",
-      "linux/wayland_keyboard.cc",
-      "linux/wayland_keyboard.h",
-      "linux/wayland_manager.cc",
-      "linux/wayland_manager.h",
-      "linux/wayland_seat.cc",
-      "linux/wayland_seat.h",
-    ]
     libs += [ "//third_party/libei/cipd/lib64/libei.a" ]
     public_deps += [
       "//third_party/wayland:wayland_client",
       "//third_party/wayland-protocols:xdg_output_protocol",
     ]
     deps += [
-      ":x11_display_utils",
+      "//remoting/host/linux:platform_impls",
+      "//remoting/host/linux:utils",
       "//remoting/host/linux:wayland",
       "//ui/base/x",
       "//ui/events/platform/x11",
@@ -641,8 +608,6 @@ static_library("common") {
 
   if (is_linux) {
     sources += [
-      "audio_capturer_linux.cc",
-      "audio_capturer_linux.h",
       "continue_window_linux.cc",
       "disconnect_window_linux.cc",
       "pairing_registry_delegate_linux.cc",
@@ -650,14 +615,6 @@ static_library("common") {
       "usage_stats_consent_linux.cc",
       "xsession_chooser_linux.cc",
     ]
-    if (remoting_use_x11) {
-      sources += [
-        "linux/keyboard_layout_monitor_utils.cc",
-        "linux/keyboard_layout_monitor_utils.h",
-        "linux/keyboard_layout_monitor_wayland.cc",
-        "linux/keyboard_layout_monitor_wayland.h",
-      ]
-    }
 
     # WebRTC only enables portal support if PipeWire support is enabled
     if (rtc_use_pipewire) {
@@ -672,6 +629,7 @@ static_library("common") {
       "curtain_mode_chromeos.cc",
       "curtain_mode_chromeos.h",
       "desktop_display_info_loader_chromeos.cc",
+      "desktop_resizer_chromeos.cc",
       "disconnect_window_chromeos.cc",
       "input_injector_chromeos.cc",
       "input_injector_chromeos.h",
@@ -769,33 +727,6 @@ source_set("display_layout") {
   deps = [ "//ui/gfx" ]
 }
 
-if (is_linux && (ozone_platform_x11 || remoting_use_x11)) {
-  source_set("x11_display_utils") {
-    sources = [
-      "linux/gnome_display_config.cc",
-      "linux/gnome_display_config.h",
-      "linux/gnome_display_config_dbus_client.cc",
-      "linux/gnome_display_config_dbus_client.h",
-      "linux/scoped_glib.cc",
-      "linux/scoped_glib.h",
-      "x11_display_util.cc",
-      "x11_display_util.h",
-    ]
-    deps = [
-      ":display_layout",
-      "//build/config/linux/gtk",
-      "//remoting/base:logging",
-      "//remoting/host/linux:x11",
-      "//remoting/host/linux/dbus_interfaces:interface_headers",
-      "//third_party/webrtc_overrides:webrtc_component",
-      "//ui/base",
-      "//ui/base/x",
-      "//ui/gfx/geometry",
-      "//ui/gfx/x",
-    ]
-  }
-}
-
 static_library("test_support") {
   testonly = true
 
@@ -819,6 +750,7 @@ static_library("test_support") {
   deps = [
     ":chromoting_host_services_client",
     ":client_session_control",
+    ":platform_interfaces",
     "//remoting/codec:encoder",
     "//remoting/host/base",
     "//remoting/host/file_transfer:common",
@@ -907,6 +839,7 @@ source_set("unit_tests") {
     ":client_session_control",
     ":common",
     ":display_layout",
+    ":platform_interfaces",
     ":resources",
     ":test_support",
     "//build:branding_buildflags",
@@ -980,11 +913,7 @@ source_set("unit_tests") {
   }
 
   if (remoting_use_x11) {
-    sources += [ "x11_display_util_unittest.cc" ]
-    deps += [
-      ":x11_display_utils",
-      "//ui/gfx/x",
-    ]
+    deps += [ "//remoting/host/linux:platform_impls" ]
   }
 
   if (is_chromeos_ash) {
@@ -1166,6 +1095,7 @@ if (enable_me2me_host) {
     ]
 
     deps = [
+      ":platform_interfaces",
       ":settings",
       "//base",
       "//base:i18n",
@@ -1193,6 +1123,7 @@ if (enable_me2me_host) {
     if (remoting_use_x11) {
       defines += [ "REMOTING_USE_X11" ]
       deps += [
+        "//remoting/host/linux:platform_impls",
         "//remoting/host/linux:wayland",
         "//ui/events/platform/x11:x11",
       ]
