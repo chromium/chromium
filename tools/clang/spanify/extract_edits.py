@@ -106,42 +106,17 @@ class Node:
         return hash((self.replacement, self.include_directive))
 
     # Static method to get a node from a replacement key.
-    def from_key(replacement: str):
-        return Node.key_to_node.get(replacement)
-
-    # This is not parsable by from_string but is for debugging.
-    def to_debug_string(self) -> str:
-        # include_directory already includes explanatory text.
-        result = "{"
-        result += ("is_buffer:{},replacement:{},{},size_info_available:{}"
-                   "is_deref_node:{},is_data_change:{},neighbors:").format(
-                       self.is_buffer, self.replacement,
-                       self.include_directive, self.size_info_available,
-                       self.is_deref_node, self.is_data_change)
-        neighbors = "{"
-        for node in self.neighbors:
-            if len(neighbors) > 1:
-                neighbors += ", "
-            neighbors += node.to_debug_string()
-        neighbors += "}"
-        # We started result with a '{' thus we end it to wrap everything up
-        # nicely.
-        return result + neighbors + "}"
-
+    @classmethod
+    def from_key(cls: type, replacement: str):
+        return cls.key_to_node.get(replacement)
 
     # Static method to create a node from its string representation. This
     # deduplicate nodes by storing them in a dictionary.
-    def from_string(txt: str):
+    @classmethod
+    def from_string(cls: type, txt: str):
         # Skipping the first and last character that correspond to the curly
         # braces denoting the start and end of a serialized node.
         x = txt[1:-1].split('\\,')
-
-        # Value are escaped to avoid conflicts with the separator. Unescape
-        # them.
-        x = [urllib.parse.unquote(y) for y in x]
-
-        # `./apply-edits.py` expects `\n` to be escaped.
-        x = [y.replace('\n', '\0') for y in x]
 
         # Expect exactly 6 elements that correspond to the following node
         # attributes:
@@ -152,6 +127,13 @@ class Node:
         # - is_deref_node
         # - is_data_change
         assert len(x) == 6, txt
+
+        # Value are escaped to avoid conflicts with the separator. Unescape
+        # them.
+        x = [urllib.parse.unquote(y) for y in x]
+
+        # `./apply-edits.py` expects `\n` to be escaped.
+        x = [y.replace('\n', '\0') for y in x]
 
         node = Node(*x)
 
@@ -182,8 +164,9 @@ class Node:
         return result + neighbors_directed
 
     # Static method to get all nodes.
-    def all():
-        return Node.key_to_node.values()
+    @classmethod
+    def all(cls: type):
+        return cls.key_to_node.values()
 
 
 def DFS(node: Node):
