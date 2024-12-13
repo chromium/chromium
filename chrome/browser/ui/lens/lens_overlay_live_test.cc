@@ -56,13 +56,16 @@ constexpr char kResultsSearchBaseUrl[] = "https://www.google.com/search";
 
 constexpr char kDivWordClass[] = "word";
 constexpr char kDivObjectClass[] = "object";
+constexpr char kDivTranslatedLineClass[] = "translated-line";
+
+constexpr char kTranslateEnableButtonID[] = "translateEnableButton";
 
 // Helper script to verify that the overlay WebUI has rendered divs with the CSS
 // class provided.
 constexpr char kFindAndClickDivWithClassScript[] = R"(
       function findAndClickDivWithClass(parentElement) {
         const div = parentElement.querySelector('div.' + $1);
-        if (parentElement.querySelector('div.' + $1)) {
+        if (div) {
             const rect = div.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
@@ -99,10 +102,61 @@ constexpr char kFindAndClickDivWithClassScript[] = R"(
       findAndClickDivWithClass(document.body);
 )";
 
+constexpr char kFindDivWithClassScript[] = R"(
+      function kFindDivWithClassScript(parentElement) {
+        const div = parentElement.querySelector('div.' + $1);
+        if (div) {
+            return true;
+        }
+        for (const child of parentElement.children) {
+            if (kFindDivWithClassScript(child) ||
+                (child.shadowRoot &&
+                    kFindDivWithClassScript(child.shadowRoot))) {
+                return true;
+            }
+        }
+        return false;
+      }
+      kFindDivWithClassScript(document.body);
+)";
+
+// Helper script to fetch an element with a certain ID and click on it.
+constexpr char kFindAndClickElementWithIDScript[] = R"(
+  function findAndClickElementWithID(root, id) {
+    const nodesToVisit = [root];
+    while (nodesToVisit.length > 0) {
+      const currentNode = nodesToVisit.shift();
+      if (currentNode instanceof ShadowRoot) {
+        const element = currentNode.getElementById(id);
+        if (element) {
+          element.click();
+          return true;
+        }
+      }
+      // Add all children (including those in shadowRoots) to the queue.
+      for (const child of currentNode.children) {
+        nodesToVisit.push(child);
+        if (child.shadowRoot) {
+          nodesToVisit.push(child.shadowRoot);
+        }
+      }
+    }
+    return false;
+  }
+  findAndClickElementWithID(document, $1);
+)";
+
+// Wait for an animation frame as it takes one to wait for the translated lines
+// to render properly.
+constexpr char kWaitForAnimationFrame[] =
+    "() => new Promise(resolve => requestAnimationFrame(() => resolve(true)))";
+
 const char kNpsUrl[] = "https://www.nps.gov/articles/route-66-overview.htm";
 const char kNpsObjectUrl[] =
     "https://www.nps.gov/common/commonspot/templates/images/graphics/404/"
     "04.jpg";
+const char kNpsTranslateUrl[] =
+    "https://www.nps.gov/subjects/historicpreservationfund/en-espanol.htm";
 }  // namespace
 
 // Live tests for Companion.
@@ -254,6 +308,37 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
                 testing::MatchesRegex(
                     std::string(kResultsSearchBaseUrl) +
                     ".*source=chrome.cr.menu.*&gsc=2&hl=.*&biw=\\d+&bih=\\d+"));
+  }
+
+  void ClickTranslateButtonAndThenText() {
+    // Find and click the translate enable button when it appears on the
+    // overlay.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return EvalJs(content::JsReplace(kFindAndClickElementWithIDScript,
+                                       kTranslateEnableButtonID))
+          .ExtractBool();
+    }));
+
+    // After, wait for the translated lines to appear.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return EvalJs(content::JsReplace(kFindDivWithClassScript,
+                                       kDivTranslatedLineClass))
+          .ExtractBool();
+    }));
+
+    // The translated lines render and then need one animation frame in order
+    // for the overlay to compute their bounding boxes for highlighted lines. If
+    // the overlay does not wait for this computation, then an assertion error
+    // will be thrown.
+    ASSERT_TRUE(content::ExecJs(GetOverlayWebContents()->GetPrimaryMainFrame(),
+                                kWaitForAnimationFrame));
+
+    // Click on the translated line.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return EvalJs(content::JsReplace(kFindAndClickDivWithClassScript,
+                                       kDivTranslatedLineClass))
+          .ExtractBool();
+    }));
   }
 
   virtual void SetUpFeatureList() {
@@ -512,6 +597,128 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedOut) {
                                      kDivObjectClass))
         .ExtractBool();
   }));
+
+  // After finding and clicking the div, make sure the side panel opens and
+  // loaded a result.
+  VerifySidePanelLoaded();
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, TranslateScreen_SignedInAndSynced) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(lens::features::kLensOverlayTranslateButton);
+
+  std::optional<signin::TestAccountSigninCredentials> test_account =
+      GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
+  // Sign in and sync to opted in test account.
+  CHECK(test_account.has_value());
+  sign_in_functions.TurnOnSync(*test_account, 0);
+  EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
+
+  // Navigate to a website and wait for paint before starting controller.
+  WaitForPaint(kNpsTranslateUrl);
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->GetTabFeatures()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Confirm that the WebUI has reported that it is ready. This means the local
+  // DOM should be initialized on our WebUI.
+  WaitForHistogram("Lens.Overlay.TimeToWebUIReady");
+
+  // Check if the translate button exits and then click on a translated line.
+  ClickTranslateButtonAndThenText();
+
+  // After finding and clicking the div, make sure the side panel opens and
+  // loaded a result.
+  VerifySidePanelLoaded();
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, TranslateScreen_SignedInNotSynced) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(lens::features::kLensOverlayTranslateButton);
+
+  std::optional<signin::TestAccountSigninCredentials> test_account =
+      GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
+  // Sign in but do not sync to opted in test account.
+  CHECK(test_account.has_value());
+  sign_in_functions.SignInFromWeb(*test_account, 0);
+  EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
+
+  // Navigate to a website and wait for paint before starting controller.
+  WaitForPaint(kNpsTranslateUrl);
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->GetTabFeatures()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Confirm that the WebUI has reported that it is ready. This means the local
+  // DOM should be initialized on our WebUI.
+  WaitForHistogram("Lens.Overlay.TimeToWebUIReady");
+
+  // Check if the translate button exits and then click on a translated line.
+  ClickTranslateButtonAndThenText();
+
+  // After finding and clicking the div, make sure the side panel opens and
+  // loaded a result.
+  VerifySidePanelLoaded();
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, TranslateScreen_SignedOut) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(lens::features::kLensOverlayTranslateButton);
+
+  // Navigate to a website and wait for paint before starting controller.
+  WaitForPaint(kNpsTranslateUrl);
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->GetTabFeatures()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Confirm that the WebUI has reported that it is ready. This means the local
+  // DOM should be initialized on our WebUI.
+  WaitForHistogram("Lens.Overlay.TimeToWebUIReady");
+
+  // Check if the translate button exits and then click on a translated line.
+  ClickTranslateButtonAndThenText();
 
   // After finding and clicking the div, make sure the side panel opens and
   // loaded a result.
