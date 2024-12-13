@@ -157,7 +157,7 @@ select::-internal-select-autofill-preview-text {
   white-space: nowrap;
 }
 
-select:not(-internal-list-box)::picker-icon {
+select:not(:-internal-list-box)::picker-icon {
   content: -internal-appearance-auto-base-select(none, counter(fake-counter-name, disclosure-open));
   /* We don't have to use -internal-appearance-auto-base-select() here because
    * the pseudo-element won't get generated unless the content property is set. */
