@@ -49,7 +49,6 @@ enum class KeepAliveOrigin {
 
   // c/b/glic
   GLIC_LAUNCHER,
-  GLIC_VIEW,
 
   // c/b/notifications
   NOTIFICATION,

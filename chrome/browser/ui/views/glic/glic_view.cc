@@ -25,8 +25,6 @@ namespace glic {
 GlicView::GlicView(Profile* profile, const gfx::Size& initial_size) {
   profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
       profile, ProfileKeepAliveOrigin::kGlicView);
-  keep_alive_ = std::make_unique<ScopedKeepAlive>(
-      KeepAliveOrigin::GLIC_VIEW, KeepAliveRestartOption::ENABLED);
   auto web_view = std::make_unique<GlicWebView>(profile);
   web_view_ = web_view.get();
   web_view->SetSize(initial_size);
