@@ -83,6 +83,7 @@
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/tab_contents/navigation_metrics_recorder.h"
+#include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_tab_helper.h"
 #include "chrome/browser/tpcd/heuristics/redirect_heuristic_tab_helper.h"
 #include "chrome/browser/tpcd/http_error_observer/http_error_tab_helper.h"
@@ -608,6 +609,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   }
   PolicyAuditorBridge::CreateForWebContents(web_contents);
   PluginObserverAndroid::CreateForWebContents(web_contents);
+  task_manager::WebContentsTags::CreateForTabContents(web_contents);
 
   if (base::FeatureList::IsEnabled(payments::facilitated::kEnablePixPayments) ||
       base::FeatureList::IsEnabled(blink::features::kPaymentLinkDetection)) {
