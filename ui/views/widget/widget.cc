@@ -480,6 +480,10 @@ void Widget::Init(InitParams params) {
   // views.
   root_view_->GetViewAccessibility().CompleteCacheInitialization();
 
+  // The root view must always be initialized as it is being added to widget,
+  // like setting kClassName correctly.
+  root_view_->GetViewAccessibility().OnViewAddedToWidget();
+
   // Once the root view is added to the widget, it should be marked as ready to
   // send accessible event notifications. From that point on, any view that is
   // connected to the RootView will be able to send accessible events.
