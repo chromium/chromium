@@ -150,6 +150,10 @@ public class SafeBrowsingReferringAppBridge {
                 return "youtube";
             case ExternalAppId.CAMERA:
                 return "camera";
+            case ExternalAppId.PIXEL_LAUNCHER:
+                return "pixel.launcher";
+            case ExternalAppId.THIRD_PARTY_LAUNCHER:
+                return "third-party.launcher";
             default:
                 assert false : "not reached";
                 return "";
