@@ -155,7 +155,7 @@ const base::FeatureParam<std::string> kScrollEventDispatchMode(
     "mode",
     kScrollEventDispatchModeDispatchScrollEventsImmediately);
 
-BASE_FEATURE(kVizLayers, "VizLayers", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTreesInViz, "TreesInViz", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSendExplicitDecodeRequestsImmediately,
              "SendExplicitDecodeRequestsImmediately",

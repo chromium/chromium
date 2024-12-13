@@ -165,8 +165,8 @@ CC_BASE_EXPORT extern const char
 CC_BASE_EXPORT extern const char
     kScrollEventDispatchModeDispatchScrollEventsUntilDeadline[];
 
-// Enables GPU-side layer trees for content rendering.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kVizLayers);
+// Enables Viz service-side layer trees for content rendering.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kTreesInViz);
 
 // When enabled HTMLImageElement::decode() will initiate the decode task right
 // away rather than piggy-backing on the next BeginMainFrame.

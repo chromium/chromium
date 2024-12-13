@@ -582,7 +582,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // Region capture bounds associated with the last surface that was aggregated.
   RegionCaptureBounds current_capture_bounds_;
 
-  // When VizLayers is enabled, this owns the display tree and forwards its
+  // When TreesInViz is enabled, this owns the display tree and forwards its
   // submitted compositor frames directly to `this`.
   std::unique_ptr<LayerContextImpl> layer_context_;
   bool layer_context_wants_begin_frames_ = false;
