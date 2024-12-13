@@ -43,6 +43,7 @@
 // - src/f16-pavgpool/f16-pavgpool-9p8x-minmax-avx2-c8.c
 // - src/f16-pavgpool/f16-pavgpool-9x-minmax-avx2-c8.c
 // - src/f16-qs8-vcvt/gen/f16-qs8-vcvt-scalar-imagic-u4.c
+// - src/f16-qu8-vcvt/gen/f16-qu8-vcvt-scalar-imagic-u4.c
 // - src/f16-raddstoreexpminusmax/gen/f16-raddstoreexpminusmax-avx2-rr1-p2-u32.c
 // - src/f16-rminmax/f16-rmax-f16c-u32.c
 // - src/f16-rminmax/gen/f16-rmax-avx512fp16-u128-acc4.c
@@ -101,7 +102,7 @@
 // - src/f16-vrsqrt/gen/f16-vrsqrt-f16c-rsqrt-u32.c
 // - src/f16-vsigmoid/gen/f16-vsigmoid-avx2-rr1-p2-rcp-u32.c
 // - src/f16-vsqrt/gen/f16-vsqrt-f16c-rsqrt-u32.c
-// - src/f16-vtanh/gen/f16-vtanh-f16c-expm1minus-rr1-p3h2ts-rcp-u72.c
+// - src/f16-vtanh/gen/f16-vtanh-f16c-expm1minus-rr1-p3h2ts-rcp-u24.c
 // - src/f16-vtanh/gen/f16-vtanh-fma3-polynomial-p19h9t2-u32.c
 // - src/f16-vunary/gen/f16-vabs-sse2-u16.c
 // - src/f16-vunary/gen/f16-vneg-sse2-u16.c
@@ -382,8 +383,8 @@
 // - src/f32-vcopysign/gen/f32-vrcopysignc-scalar.c
 // - src/f32-vcopysign/gen/f32-vrcopysignc-sse2.c
 // - src/f32-velu/gen/f32-velu-avx-rr2-lut4-p4-perm-u32.c
-// - src/f32-velu/gen/f32-velu-avx2-rr1-lut4-p4-perm-u56.c
-// - src/f32-velu/gen/f32-velu-avx512f-rr1-p6-u128.c
+// - src/f32-velu/gen/f32-velu-avx2-rr1-lut4-p4-perm-u32.c
+// - src/f32-velu/gen/f32-velu-avx512f-rr1-p6-u64.c
 // - src/f32-velu/gen/f32-velu-scalar-rr2-lut16-p3-u2.c
 // - src/f32-velu/gen/f32-velu-scalar-rr2-lut16-p3-u4.c
 // - src/f32-velu/gen/f32-velu-sse2-rr2-lut16-p3-u12.c
@@ -441,8 +442,8 @@
 // - src/f32-vrsqrt/gen/f32-vrsqrt-scalar-rsqrt-u1.c
 // - src/f32-vrsqrt/gen/f32-vrsqrt-scalar-rsqrt-u4.c
 // - src/f32-vrsqrt/gen/f32-vrsqrt-sse-rsqrt-u8.c
-// - src/f32-vsigmoid/gen/f32-vsigmoid-avx-rr2-p5-nr2-u40.c
-// - src/f32-vsigmoid/gen/f32-vsigmoid-avx2-rr1-p5-div-u40.c
+// - src/f32-vsigmoid/gen/f32-vsigmoid-avx-rr2-p5-nr2-u16.c
+// - src/f32-vsigmoid/gen/f32-vsigmoid-avx2-rr1-p5-div-u16.c
 // - src/f32-vsigmoid/gen/f32-vsigmoid-avx512f-rr2-lut32-p2-perm2-scalef-div-u64.c
 // - src/f32-vsigmoid/gen/f32-vsigmoid-scalar-rr2-lut64-p2-div-u2.c
 // - src/f32-vsigmoid/gen/f32-vsigmoid-sse2-rr2-lut64-p2-div-u8.c
@@ -607,7 +608,10 @@
 // - src/qs8-packw/gen/qs8-packw-x8c8-gemm-goi-avx256vnni-prfm.c
 // - src/qs8-packw/gen/qs8-packw-x8c8-gemm-goi-avxvnni-prfm.c
 // - src/qs8-packw/gen/qs8-packw-x8c8-gemm-goi-avxvnni.c
+// - src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x16c8-gemm-goi-avx256vnni-prfm.c
 // - src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x16c8-gemm-goi-scalar.c
+// - src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x8c8-gemm-goi-avx256vnni-prfm.c
+// - src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x8c8-gemm-goi-avxvnni-prfm.c
 // - src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x8c8-gemm-goi-scalar.c
 // - src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p16c-minmax-fp32-avx-mul16-add16.c
 // - src/qs8-qc8w-dwconv/gen/qs8-qc8w-dwconv-25p16c-minmax-fp32-avx2-mul32.c
@@ -929,10 +933,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-   10, 243, 165, 162, 236, 132,  57, 241,
-  181, 146,  33, 192, 235, 201, 173, 180,
-  120,  25, 221,  70, 171,  12, 216, 183,
-  247, 169, 250,  57, 205,  41, 120,  22
+  134,  14, 156, 130,  30, 132,  68,  25,
+   79, 183, 144, 102,   1, 152, 248, 226,
+  248,  39,  21,   0,  87,  30,  69, 153,
+   81,  20,  12, 245,  44,  98, 182, 103
 };
 
 size_t xnn_experimental_get_build_identifier_size() {

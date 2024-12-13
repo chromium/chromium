@@ -1783,7 +1783,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/cpu_features.git' + '@' + '936b9ab5515dead115606559502e3864958f7f6e',
 
   'src/third_party/cpuinfo/src':
-    Var('chromium_git') + '/external/github.com/pytorch/cpuinfo.git' + '@' + 'cebb0933058d7f181c979afd50601dc311e1bf8c',
+    Var('chromium_git') + '/external/github.com/pytorch/cpuinfo.git' + '@' + 'ca156f7bc9109c552973414a63d310f76ef0cbf8',
 
   'src/third_party/crc32c/src':
     Var('chromium_git') + '/external/github.com/google/crc32c.git' + '@' + 'd3d60ac6e0f16780bcfcc825385e1d338801a558',
@@ -1813,7 +1813,7 @@ deps = {
     Var('chromium_git') + '/chromium/dom-distiller/dist.git' + '@' + '199de96b345ada7c6e7e6ba3d2fa7a6911b8767d',
 
   'src/third_party/eigen3/src':
-    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '5610a13b7767a94e063342277e0b9de4de13be57',
+    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '77a073aaa821300fc129ef24b3b052be2e670a3e',
 
   'src/third_party/emoji-metadata/src': {
     'url': Var('chromium_git') + '/external/github.com/googlefonts/emoji-metadata' + '@' + '045f146fca682a836e01cd265171312bfb300e06',
@@ -2243,7 +2243,7 @@ deps = {
   },
 
   'src/third_party/neon_2_sse/src':
-    Var('chromium_git') + '/external/github.com/intel/ARM_NEON_2_x86_SSE.git' + '@' + 'a15b489e1222b2087007546b4912e21293ea86ff',
+    Var('chromium_git') + '/external/github.com/intel/ARM_NEON_2_x86_SSE.git' + '@' + 'eb8b80b28f956275e291ea04a7beb5ed8289e872',
 
   'src/third_party/netty-tcnative/src': {
       'url': Var('chromium_git') + '/external/netty-tcnative.git' + '@' + '035726f76293d142ec3c4464be0703605feb4d02',
@@ -2609,7 +2609,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'c036420683f672d685e27415de0a5f5e85bdc23f',
 
   'src/third_party/tflite/src':
-    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '54d2d15dabe13df91cd97d5290f31b776660ca79',
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '73e1e9f4d021a1819a3e2a28889b75de1174bdbe',
 
   'src/third_party/turbine/cipd': {
       'packages': [
@@ -2705,7 +2705,7 @@ deps = {
   },
 
   'src/third_party/xnnpack/src':
-    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + '98f1c8e5c5411bd435d994881440c3c6fc58d109',
+    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + '7440eee88f66c4b81d4e7d31f6ae07af66e059ea',
 
   'src/third_party/libei/cipd': {
 
