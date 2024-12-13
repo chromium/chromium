@@ -9491,6 +9491,23 @@
             ]
         }
     ],
+    "ExtensionManifestV3NetworkSpeechSynthesis": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ExtensionManifestV3NetworkSpeechSynthesis"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExtensionsServiceWorkerOptimizedEventDispatch": [
         {
             "platforms": [
