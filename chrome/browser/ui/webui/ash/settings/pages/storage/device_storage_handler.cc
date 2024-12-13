@@ -81,8 +81,7 @@ StorageHandler::StorageHandler(Profile* profile,
       crostini_size_calculator_(profile),
       other_users_size_calculator_(),
       profile_(profile),
-      source_name_(html_source->GetSource()),
-      special_volume_path_pattern_("[a-z]+://.*") {}
+      source_name_(html_source->GetSource()) {}
 
 StorageHandler::~StorageHandler() {
   StopObservingEvents();
@@ -226,7 +225,7 @@ void StorageHandler::UpdateExternalStorages() {
   base::Value::List devices;
   for (const auto& mount_point :
        DiskMountManager::GetInstance()->mount_points()) {
-    if (!IsEligibleForAndroidStorage(mount_point.source_path)) {
+    if (!IsEligibleForAndroidStorage(mount_point)) {
       continue;
     }
 
@@ -261,12 +260,12 @@ void StorageHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
 void StorageHandler::OnMountEvent(
     DiskMountManager::MountEvent event,
     MountError error_code,
-    const DiskMountManager::MountPoint& mount_info) {
+    const DiskMountManager::MountPoint& mount_point) {
   if (error_code != MountError::kSuccess) {
     return;
   }
 
-  if (!IsEligibleForAndroidStorage(mount_info.source_path)) {
+  if (!IsEligibleForAndroidStorage(mount_point)) {
     return;
   }
 
@@ -442,11 +441,13 @@ void StorageHandler::UpdateSystemSizeItem() {
       base::Value(message));
 }
 
-bool StorageHandler::IsEligibleForAndroidStorage(std::string source_path) {
-  // Android's StorageManager volume concept relies on assumption that it is
-  // local filesystem. Hence, special volumes like DriveFS should not be
-  // listed on the Settings.
-  return !RE2::FullMatch(source_path, special_volume_path_pattern_);
+bool StorageHandler::IsEligibleForAndroidStorage(
+    const MountPoint& mount_point) {
+  // Android's StorageManager volume concept relies on the assumption that it is
+  // a local filesystem. Hence, special volumes like DriveFS and mounted
+  // archives should not be listed on the "External storage preferences"
+  // settings page.
+  return mount_point.mount_type == MountType::kDevice;
 }
 
 }  // namespace ash::settings
