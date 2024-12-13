@@ -197,12 +197,6 @@ class PLATFORM_EXPORT CanvasResource
   virtual base::WeakPtr<WebGraphicsContext3DProviderWrapper>
   ContextProviderWrapper() const = 0;
 
-  // Prepares GPU TransferableResource from the resource's ClientSharedImage.
-  // Invoked if the resource is accelerated.
-  bool PrepareAcceleratedTransferableResourceFromClientSI(
-      viz::TransferableResource* out_resource,
-      bool needs_verified_synctoken);
-
   CanvasResourceProvider* Provider() { return provider_.get(); }
   base::WeakPtr<CanvasResourceProvider> WeakProvider() { return provider_; }
 

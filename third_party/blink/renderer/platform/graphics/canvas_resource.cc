@@ -202,16 +202,8 @@ bool CanvasResource::PrepareTransferableResource(
     return true;
   }
 
-  return PrepareAcceleratedTransferableResourceFromClientSI(
-      out_resource, needs_verified_synctoken);
-}
-
-bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
-    viz::TransferableResource* out_resource,
-    bool needs_verified_synctoken) {
   TRACE_EVENT0("blink",
                "CanvasResource::PrepareAcceleratedTransferableResource");
-  CHECK(CreatesAcceleratedTransferableResources());
 
   // Gpu compositing is a prerequisite for compositing an accelerated resource
   DCHECK(SharedGpuContext::IsGpuCompositingEnabled());
