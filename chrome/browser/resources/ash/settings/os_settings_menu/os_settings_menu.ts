@@ -419,7 +419,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
       {
         section: Section.kPersonalization,
         path: `/${routesMojom.PERSONALIZATION_SECTION_PATH}`,
-        icon: 'os-settings:personalization',
+        icon: 'os-settings:personalization-menu',
         label: this.i18n('personalizationPageTitle'),
         sublabel: this.i18n('personalizationMenuItemDescription'),
       },
