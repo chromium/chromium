@@ -8,6 +8,17 @@ found in the LICENSE file.
 
 <histograms>
 
+<histogram name="Toast.FailedToShow" enum="ToastId" expires_after="2025-04-13">
+  <owner>agale@chromium.org</owner>
+  <owner>stluong@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs the ToastId of the toast that fails to show to users. This is logged
+    each time a feature attempts to trigger the toast and a toast does not
+    appear.
+  </summary>
+</histogram>
+
 <histogram name="Toast.TriggeredToShow" enum="ToastId"
     expires_after="2025-04-13">
   <owner>agale@chromium.org</owner>
@@ -15,8 +26,8 @@ found in the LICENSE file.
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
     Logs the ToastId of the toast that is triggered to shown to users. This is
-    logged each time a feature attempts to trigger the toast and is used to
-    learn how often users see a particular toast.
+    logged each time a feature triggers the toast and is used to learn how often
+    users see a particular toast.
   </summary>
 </histogram>
 
@@ -36,6 +47,22 @@ found in the LICENSE file.
     <variant name="LinkCopied" summary="link copied"/>
     <variant name="LinkToHighlightCopied" summary="link to highlight"/>
     <variant name="NonMilestoneUpdate" summary="non-milestone update"/>
+  </token>
+</histogram>
+
+<histogram name="Toast.{ToastName}.DismissMenuClicked"
+    enum="ToastDismissMenuEntries" expires_after="2025-04-13">
+  <owner>agale@chromium.org</owner>
+  <owner>stluong@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs the dismiss menu item a user clicked to dismiss the {ToastName} toast.
+    This is used to gain insight on which toasts a user dismisses.
+  </summary>
+  <token key="ToastName">
+    <variant name="ImageCopied" summary="image copied"/>
+    <variant name="LinkCopied" summary="link copied"/>
+    <variant name="LinkToHighlightCopied" summary="link to highlight"/>
   </token>
 </histogram>
 

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -13,7 +14,12 @@
 #include "chrome/browser/ui/toasts/api/toast_registry.h"
 #include "chrome/browser/ui/toasts/api/toast_specification.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
+#include "chrome/browser/ui/toasts/toast_metrics.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -169,4 +175,47 @@ TEST_F(ToastControllerUnitTest, CloseTimerResetsWhenToastShown) {
   // toast should have timed out by now.
   task_environment().FastForwardBy(toast_features::kToastTimeout.Get() / 2);
   EXPECT_TRUE(controller->IsShowingToast());
+}
+
+class ToastControllerWithRefinementsUnitTest : public testing::Test {
+ public:
+  void SetUp() override {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        toast_features::kToastRefinements, {});
+    toast_registry_ = std::make_unique<ToastRegistry>();
+  }
+
+  ToastRegistry* toast_registry() { return toast_registry_.get(); }
+  TestingPrefServiceSimple* local_state() { return local_state_.Get(); }
+  base::HistogramTester* histogram() { return &histogram_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<ToastRegistry> toast_registry_;
+  base::HistogramTester histogram_;
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
+};
+
+TEST_F(ToastControllerWithRefinementsUnitTest, DoesNotShowToastWhenDisabled) {
+  ToastRegistry* const registry = toast_registry();
+  registry->RegisterToast(
+      ToastId::kLinkCopied,
+      ToastSpecification::Builder(vector_icons::kEmailIcon, 0).Build());
+
+  auto controller = std::make_unique<TestToastController>(registry);
+
+  local_state()->SetInteger(
+      prefs::kToastAlertLevel,
+      static_cast<int>(toasts::ToastAlertLevel::kActionable));
+  EXPECT_FALSE(controller->CanShowToast(ToastId::kLinkCopied));
+  EXPECT_FALSE(controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
+
+  histogram()->ExpectBucketCount("Toast.FailedToShow", ToastId::kLinkCopied, 1);
+
+  local_state()->SetInteger(prefs::kToastAlertLevel,
+                            static_cast<int>(toasts::ToastAlertLevel::kAll));
+  EXPECT_TRUE(controller->CanShowToast(ToastId::kLinkCopied));
+  EXPECT_TRUE(controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
 }

@@ -18517,6 +18517,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_TOAST_CLOSE_TOOLTIP" desc="Tooltip for the X button on a toast notification that closes the toast.">
         Close
       </message>
+      <message name="IDS_TOAST_MENU_ITEM_DISMISS" desc="Menu item that allows a user to dismiss a toast.">
+        Dismiss
+      </message>
+      <message name="IDS_TOAST_MENU_ITEM_DONT_SHOW_AGAIN" desc="Menu item that allows a user to turn off similar toast messages in the future.">
+        Don't show this message again
+      </message>
     </if>
 
     <message name="IDS_ACCNAME_SIDEBAR_WEBVIEW_LOCATION_BAR" desc="The accessible name of the sidebar webview's location bar.">

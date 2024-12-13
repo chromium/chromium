@@ -3257,6 +3257,9 @@ inline constexpr char kGlicLauncherGlobalHotkey[] =
     "glic.launcher_global_hotkey";
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
+// An enum that controls what level of toasts we show to the user.
+inline constexpr char kToastAlertLevel[] = "settings.toast.alert_level";
+
 // *************** SERVICE PREFS ***************
 // These are attached to the service process.
 

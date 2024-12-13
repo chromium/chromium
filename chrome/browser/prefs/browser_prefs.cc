@@ -1989,6 +1989,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   glic::GlicConfiguration::RegisterPrefs(registry);
 #endif
 
+  registry->RegisterIntegerPref(prefs::kToastAlertLevel, 0);
+
   // This is intentionally last.
   RegisterLocalStatePrefsForMigration(registry);
 }
