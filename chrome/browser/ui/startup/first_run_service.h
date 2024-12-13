@@ -14,7 +14,6 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/signin/public/base/signin_buildflags.h"
 
 class PrefRegistrySimple;
 class Profile;
@@ -38,26 +37,8 @@ class FirstRunService : public KeyedService {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum class EntryPoint {
-    // Indicates misc, undifferentiated entry points to the FRE that we don't
-    // particularly worry about. If we have a concern about a specific entry
-    // point, we should register a dedicated value for it to track how often it
-    // gets triggered.
-    kOther = 0,
-
-    kProcessStartup = 1,
-    kWebAppLaunch = 2,
-    kWebAppContextMenu = 3,
-
-    kMaxValue = kWebAppContextMenu
-  };
-
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
   enum class FinishedReason {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
     kExperimentCounterfactual = 0,
-#endif
     kFinishedFlow = 1,
     kProfileAlreadySetUp = 2,
     kSkippedByPolicies = 3,
@@ -92,8 +73,7 @@ class FirstRunService : public KeyedService {
   //    again at the next startup.
   // When this method is called again while FRE is in progress, the previous
   // callback is aborted (called with false), and is replaced by `callback`.
-  virtual void OpenFirstRunIfNeeded(EntryPoint entry_point,
-                                    ResumeTaskCallback callback);
+  virtual void OpenFirstRunIfNeeded(ResumeTaskCallback callback);
 
   // Terminates the first run without re-opening a browser window.
   virtual void FinishFirstRunWithoutResumeTask();
@@ -111,7 +91,7 @@ class FirstRunService : public KeyedService {
   // The finished state can be checked by calling `ShouldOpenFirstRun()`.
   void TryMarkFirstRunAlreadyFinished(base::OnceClosure callback);
 
-  void OpenFirstRunInternal(EntryPoint entry_point);
+  void OpenFirstRunInternal();
 
   // Processes the outcome from the FRE and resumes the user's interrupted task.
   void OnFirstRunHasExited(ProfilePicker::FirstRunExitStatus status);

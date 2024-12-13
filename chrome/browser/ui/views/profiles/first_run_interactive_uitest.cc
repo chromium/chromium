@@ -231,8 +231,7 @@ class FirstRunInteractiveUiTestBase
                         base::OnceCallback<void(bool)>()) {
     ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
 
-    fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
-                                        std::move(first_run_exited_callback));
+    fre_service()->OpenFirstRunIfNeeded(std::move(first_run_exited_callback));
 
     WaitForPickerWidgetCreated();
     view()->SetProperty(views::kElementIdentifierKey, kProfilePickerViewId);

@@ -708,20 +708,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ProfilePicker.FirstRun.EntryPoint" enum="FirstRunEntryPoint"
-    expires_after="2025-04-13">
-  <owner>dgn@chromium.org</owner>
-  <owner>for-you-fre@google.com</owner>
-  <summary>
-    Records the entry point that triggered the first run experience. This is
-    recorded right before the first run is shown. If the FRE is skipped, this is
-    never recorded. If the FRE is exited early and needs to be shown again
-    (relevant only on Lacros where we support showing the FRE more than once),
-    or if the user re-triggers the FRE while it is already shown, there would be
-    more than one record for that install.
-  </summary>
-</histogram>
-
 <histogram name="ProfilePicker.FirstRun.ExitStatus" enum="FirstRunExitStatus"
     expires_after="2025-06-08">
   <owner>dgn@chromium.org</owner>
