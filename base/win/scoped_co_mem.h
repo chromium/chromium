@@ -64,7 +64,9 @@ class ScopedCoMem {
   T* get() const { return mem_ptr_; }
 
  private:
-  // RAW_PTR_EXCLUSION: #addr-of, #union
+  // RAW_PTR_EXCLUSION: This memory is handled by the OS instead
+  // of PartitionAlloc, so there's no point rewriting it to a
+  // raw_ptr
   RAW_PTR_EXCLUSION T* mem_ptr_;
 };
 
