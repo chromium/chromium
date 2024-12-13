@@ -330,11 +330,9 @@ AccountSelectionModalView::CreateMultipleAccountChooser(
   auto scroll_view = std::make_unique<views::ScrollView>();
   scroll_view->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
-  constexpr int kMultipleAccountsVerticalPadding = 2;
   views::View* const content = scroll_view->SetContents(CreateAccountRows(
       accounts, /*should_hover=*/true, /*show_separator=*/true,
-      /*is_single_account_chooser=*/true,
-      /*additional_row_vertical_padding=*/kMultipleAccountsVerticalPadding));
+      /*is_request_permission_dialog=*/false));
 
   constexpr float kMaxAccountsToShow = 3.5f;
   const int per_account_size =
@@ -348,13 +346,12 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateAccountRows(
     const std::vector<IdentityRequestAccountPtr>& accounts,
     bool should_hover,
     bool show_separator,
-    bool is_single_account_chooser,
-    int additional_row_vertical_padding) {
+    bool is_request_permission_dialog) {
   auto content = std::make_unique<views::View>();
   content->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::VH(
-          /*vertical=*/is_single_account_chooser ? 0 : kVerticalPadding,
+          /*vertical=*/is_request_permission_dialog ? 0 : kVerticalPadding,
           /*horizontal=*/kDialogMargin)));
 
   if (show_separator) {
@@ -363,6 +360,7 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateAccountRows(
   }
 
   int num_rows = 0;
+  constexpr int kAccountRowVerticalPadding = 2;
   for (const auto& account : accounts) {
     content->AddChildView(CreateAccountRow(
         account,
@@ -370,7 +368,8 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateAccountRows(
         should_hover ? std::make_optional<int>(num_rows++) : std::nullopt,
         /*should_include_idp=*/false,
         /*is_modal_dialog=*/true,
-        /*additional_vertical_padding=*/additional_row_vertical_padding));
+        /*additional_vertical_padding=*/
+        is_request_permission_dialog ? 0 : kAccountRowVerticalPadding));
     if (show_separator) {
       // Add separator after each account row.
       content->AddChildView(std::make_unique<views::Separator>());
@@ -416,12 +415,11 @@ void AccountSelectionModalView::ShowAccounts(
 
   if (is_single_account_chooser) {
     CHECK_EQ(accounts.size(), 1u);
-    account_chooser_ = AddChildView(CreateAccountRows(
-        accounts,
-        /*should_hover=*/true,
-        /*show_separator=*/true,
-        /*is_single_account_chooser=*/true,
-        /*additional_row_vertical_padding=*/kVerticalPadding));
+    account_chooser_ =
+        AddChildView(CreateAccountRows(accounts,
+                                       /*should_hover=*/true,
+                                       /*show_separator=*/true,
+                                       /*is_request_permission_dialog=*/false));
   } else {
     account_chooser_ = AddChildView(CreateMultipleAccountChooser(accounts));
   }
@@ -630,8 +628,7 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
       AddChildView(CreateAccountRows(accounts,
                                      /*should_hover=*/false,
                                      /*show_separator=*/false,
-                                     /*is_single_account_chooser=*/true,
-                                     /*additional_row_vertical_padding=*/0));
+                                     /*is_request_permission_dialog=*/true));
   if (account->login_state == Account::LoginState::kSignUp) {
     // Add disclosure label.
     std::unique_ptr<views::StyledLabel> disclosure_label =

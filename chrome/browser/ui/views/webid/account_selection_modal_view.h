@@ -103,8 +103,7 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       const std::vector<IdentityRequestAccountPtr>& accounts,
       bool should_hover,
       bool show_separator,
-      bool is_single_account_chooser,
-      int additional_row_vertical_padding);
+      bool is_request_permission_dialog);
 
   // Returns a View for an account row that acts as a placeholder.
   std::unique_ptr<views::View> CreatePlaceholderAccountRow();
