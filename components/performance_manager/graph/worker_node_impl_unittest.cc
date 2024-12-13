@@ -9,6 +9,7 @@
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
+#include "components/performance_manager/test_support/graph/mock_worker_node_observer.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,58 +24,6 @@ class WorkerNodeImplTest : public GraphTestHarness {
  public:
  protected:
 };
-
-// Mock observer for the basic ObserverWorks test.
-class LenientMockObserver : public WorkerNodeImpl::Observer {
- public:
-  LenientMockObserver() = default;
-  ~LenientMockObserver() override = default;
-
-  MOCK_METHOD(void,
-              OnBeforeWorkerNodeAdded,
-              (const WorkerNode*, const ProcessNode*),
-              (override));
-  MOCK_METHOD(void, OnWorkerNodeAdded, (const WorkerNode*), (override));
-  MOCK_METHOD(void, OnBeforeWorkerNodeRemoved, (const WorkerNode*), (override));
-  MOCK_METHOD(void,
-              OnWorkerNodeRemoved,
-              (const WorkerNode*, const ProcessNode*),
-              (override));
-  MOCK_METHOD(void,
-              OnFinalResponseURLDetermined,
-              (const WorkerNode*),
-              (override));
-  MOCK_METHOD(void,
-              OnBeforeClientFrameAdded,
-              (const WorkerNode*, const FrameNode*),
-              (override));
-  MOCK_METHOD(void,
-              OnClientFrameAdded,
-              (const WorkerNode*, const FrameNode*),
-              (override));
-  MOCK_METHOD(void,
-              OnBeforeClientFrameRemoved,
-              (const WorkerNode*, const FrameNode*),
-              (override));
-  MOCK_METHOD(void,
-              OnBeforeClientWorkerAdded,
-              (const WorkerNode*, const WorkerNode*),
-              (override));
-  MOCK_METHOD(void,
-              OnClientWorkerAdded,
-              (const WorkerNode*, const WorkerNode*),
-              (override));
-  MOCK_METHOD(void,
-              OnBeforeClientWorkerRemoved,
-              (const WorkerNode*, const WorkerNode*),
-              (override));
-  MOCK_METHOD(void,
-              OnPriorityAndReasonChanged,
-              (const WorkerNode*, const PriorityAndReason&),
-              (override));
-};
-
-using MockObserver = ::testing::StrictMock<LenientMockObserver>;
 
 using ::testing::_;
 using ::testing::ElementsAre;
@@ -274,9 +223,9 @@ TEST_F(WorkerNodeImplTest, PriorityAndReason) {
 TEST_F(WorkerNodeImplTest, ObserverWorks) {
   auto process = CreateNode<ProcessNodeImpl>();
 
-  MockObserver head_obs;
-  MockObserver obs;
-  MockObserver tail_obs;
+  MockWorkerNodeObserver head_obs;
+  MockWorkerNodeObserver obs;
+  MockWorkerNodeObserver tail_obs;
   graph()->AddWorkerNodeObserver(&head_obs);
   graph()->AddWorkerNodeObserver(&obs);
   graph()->AddWorkerNodeObserver(&tail_obs);
@@ -333,7 +282,7 @@ TEST_F(WorkerNodeImplTest, ObserverWorks) {
 TEST_F(WorkerNodeImplTest, Observer_AddWorkerNodes) {
   InSequence s;
 
-  MockObserver obs;
+  MockWorkerNodeObserver obs;
   graph()->AddWorkerNodeObserver(&obs);
 
   auto process = CreateNode<ProcessNodeImpl>();
@@ -433,7 +382,7 @@ TEST_F(WorkerNodeImplTest, Observer_AddWorkerNodes) {
 TEST_F(WorkerNodeImplTest, Observer_ClientsOfServiceWorkers) {
   InSequence s;
 
-  MockObserver obs;
+  MockWorkerNodeObserver obs;
   graph()->AddWorkerNodeObserver(&obs);
 
   auto process = CreateNode<ProcessNodeImpl>();
@@ -501,7 +450,7 @@ TEST_F(WorkerNodeImplTest, Observer_ClientsOfServiceWorkers) {
 TEST_F(WorkerNodeImplTest, Observer_OnFinalResponseURLDetermined) {
   InSequence s;
 
-  MockObserver obs;
+  MockWorkerNodeObserver obs;
   graph()->AddWorkerNodeObserver(&obs);
 
   auto process = CreateNode<ProcessNodeImpl>();
@@ -522,7 +471,7 @@ TEST_F(WorkerNodeImplTest, Observer_OnFinalResponseURLDetermined) {
 TEST_F(WorkerNodeImplTest, Observer_OnPriorityAndReasonChanged) {
   InSequence s;
 
-  MockObserver obs;
+  MockWorkerNodeObserver obs;
   graph()->AddWorkerNodeObserver(&obs);
 
   auto process = CreateNode<ProcessNodeImpl>();

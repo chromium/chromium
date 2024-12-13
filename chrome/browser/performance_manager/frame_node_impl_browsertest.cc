@@ -16,6 +16,7 @@
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/test_support/graph/mock_frame_node_observer.h"
 #include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
@@ -262,20 +263,6 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest, ViewportIntersection_Rotated) {
   run_loop.Run();
 }
 
-// For the following tests, listen to OnHadFormInteractionChanged() to ensure
-// that the DocumentCoordinationUnit interface is correctly bound.
-class MockFrameNodeObserver : public FrameNode::ObserverDefaultImpl {
- public:
-  MockFrameNodeObserver() = default;
-  ~MockFrameNodeObserver() override = default;
-
-  // FrameNodeObserver:
-  MOCK_METHOD(void,
-              OnHadFormInteractionChanged,
-              (const FrameNode* frame_node),
-              (override));
-};
-
 // TODO(https://crbug.com/376315752): Deflake and re-enable.
 IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
                        DISABLED_Bind_SimpleNavigation) {
@@ -351,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBackForwardCacheBrowserTest,
 
   // Check that a form interaction notification is received through the bound
   // receiver.
-  MockFrameNodeObserver obs;
+  LenientMockFrameNodeObserver obs;
   RunInGraph([&](Graph* graph) { graph->AddFrameNodeObserver(&obs); });
 
   base::RunLoop run_loop;

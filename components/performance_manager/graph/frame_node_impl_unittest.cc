@@ -16,6 +16,8 @@
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
+#include "components/performance_manager/test_support/graph/mock_frame_node_observer.h"
+#include "components/performance_manager/test_support/graph/mock_page_node_observer.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -141,86 +143,8 @@ TEST_F(FrameNodeImplTest, RemoveChildFrame) {
 
 namespace {
 
-class LenientMockObserver : public FrameNodeImpl::Observer {
+class MockObserver : public MockFrameNodeObserver {
  public:
-  LenientMockObserver() = default;
-  ~LenientMockObserver() override = default;
-
-  MOCK_METHOD(void,
-              OnBeforeFrameNodeAdded,
-              (const FrameNode*,
-               const FrameNode*,
-               const PageNode*,
-               const ProcessNode*,
-               const FrameNode*),
-              (override));
-  MOCK_METHOD(void, OnFrameNodeAdded, (const FrameNode*), (override));
-  MOCK_METHOD(void, OnBeforeFrameNodeRemoved, (const FrameNode*), (override));
-  MOCK_METHOD(void,
-              OnFrameNodeRemoved,
-              (const FrameNode*,
-               const FrameNode*,
-               const PageNode*,
-               const ProcessNode*,
-               const FrameNode*),
-              (override));
-  MOCK_METHOD(void,
-              OnCurrentFrameChanged,
-              (const FrameNode*, const FrameNode*),
-              (override));
-  MOCK_METHOD(void, OnNetworkAlmostIdleChanged, (const FrameNode*), (override));
-  MOCK_METHOD(void,
-              OnFrameLifecycleStateChanged,
-              (const FrameNode*),
-              (override));
-  MOCK_METHOD(void, OnURLChanged, (const FrameNode*, const GURL&), (override));
-  MOCK_METHOD(void,
-              OnOriginChanged,
-              (const FrameNode*, const std::optional<url::Origin>&),
-              (override));
-  MOCK_METHOD(void, OnIsAdFrameChanged, (const FrameNode*), (override));
-  MOCK_METHOD(void,
-              OnFrameIsHoldingWebLockChanged,
-              (const FrameNode*),
-              (override));
-  MOCK_METHOD(void,
-              OnFrameIsHoldingIndexedDBLockChanged,
-              (const FrameNode*),
-              (override));
-  MOCK_METHOD(void,
-              OnPriorityAndReasonChanged,
-              (const FrameNode*, const PriorityAndReason& previous_value),
-              (override));
-  MOCK_METHOD(void, OnFrameUsesWebRTCChanged, (const FrameNode*), (override));
-  MOCK_METHOD(void, OnHadUserActivationChanged, (const FrameNode*), (override));
-  MOCK_METHOD(void,
-              OnHadFormInteractionChanged,
-              (const FrameNode*),
-              (override));
-  MOCK_METHOD(void, OnHadUserEditsChanged, (const FrameNode*), (override));
-  MOCK_METHOD(void, OnIsAudibleChanged, (const FrameNode*), (override));
-  MOCK_METHOD(void,
-              OnIsCapturingMediaStreamChanged,
-              (const FrameNode*),
-              (override));
-  MOCK_METHOD(void,
-              OnViewportIntersectionChanged,
-              (const FrameNode*),
-              (override));
-  MOCK_METHOD(void,
-              OnFrameVisibilityChanged,
-              (const FrameNode*, FrameNode::Visibility),
-              (override));
-  MOCK_METHOD(void, OnIsImportantChanged, (const FrameNode*), (override));
-  MOCK_METHOD(void,
-              OnNonPersistentNotificationCreated,
-              (const FrameNode*),
-              (override));
-  MOCK_METHOD(void,
-              OnFirstContentfulPaint,
-              (const FrameNode*, base::TimeDelta),
-              (override));
-
   void SetCreatedFrameNode(
       const FrameNode* frame_node,
       const FrameNode* pending_parent_frame_node,
@@ -270,8 +194,6 @@ class LenientMockObserver : public FrameNodeImpl::Observer {
   raw_ptr<const FrameNode> pending_parent_or_outer_document_or_embedder_ =
       nullptr;
 };
-
-using MockObserver = ::testing::StrictMock<LenientMockObserver>;
 
 using ::testing::_;
 using ::testing::Eq;
@@ -930,34 +852,6 @@ TEST_F(FrameNodeImplTest, PublicInterface) {
   EXPECT_EQ(child_frame_nodes.size(), frame_node->child_frame_nodes().size());
 }
 
-namespace {
-
-class LenientMockPageObserver : public PageNode::ObserverDefaultImpl {
- public:
-  LenientMockPageObserver() = default;
-  ~LenientMockPageObserver() override = default;
-
-  MOCK_METHOD(void,
-              OnBeforePageNodeRemoved,
-              (const PageNode* page_node),
-              (override));
-
-  // Note that embedder functionality is actually tested in the
-  // performance_manager_browsertest.
-  MOCK_METHOD(void,
-              OnOpenerFrameNodeChanged,
-              (const PageNode*, const FrameNode*),
-              (override));
-  MOCK_METHOD(void,
-              OnEmbedderFrameNodeChanged,
-              (const PageNode*, const FrameNode*, EmbeddingType),
-              (override));
-};
-
-using MockPageObserver = ::testing::StrictMock<LenientMockPageObserver>;
-
-}  // namespace
-
 TEST_F(FrameNodeImplTest, PageRelationships) {
   using EmbeddingType = PageNode::EmbeddingType;
 
@@ -975,7 +869,7 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
   const FrameNode* pframeA1 = static_cast<const FrameNode*>(frameA1.get());
   const PageNode* ppageB = static_cast<const PageNode*>(pageB.get());
 
-  MockPageObserver obs;
+  MockPageNodeObserver obs;
   graph()->AddPageNodeObserver(&obs);
 
   // You can always call the pre-delete embedder clearing helper, even if you
@@ -1088,6 +982,7 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
     // These must occur in sequence.
     EXPECT_CALL(obs, OnOpenerFrameNodeChanged(pageB.get(), frameA2.get()));
     EXPECT_CALL(obs, OnBeforePageNodeRemoved(pageB.get()));
+    EXPECT_CALL(obs, OnPageNodeRemoved(pageB.get()));
   }
   frameB1.reset();
   pageB.reset();

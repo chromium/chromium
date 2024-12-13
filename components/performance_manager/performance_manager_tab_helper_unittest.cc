@@ -20,6 +20,7 @@
 #include "components/performance_manager/public/graph/graph_operations.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/render_process_user_data.h"
+#include "components/performance_manager/test_support/graph/mock_page_node_observer.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/browser_context.h"
@@ -353,23 +354,6 @@ TEST_P(PerformanceManagerTabHelperTest, GetFrameNode) {
   auto* new_frame_node = tab_helper->GetFrameNode(new_frame);
   EXPECT_TRUE(new_frame_node);
 }
-
-namespace {
-
-class LenientMockPageNodeObserver : public PageNode::ObserverDefaultImpl {
- public:
-  LenientMockPageNodeObserver() = default;
-  ~LenientMockPageNodeObserver() override = default;
-  LenientMockPageNodeObserver(const LenientMockPageNodeObserver& other) =
-      delete;
-  LenientMockPageNodeObserver& operator=(const LenientMockPageNodeObserver&) =
-      delete;
-
-  MOCK_METHOD(void, OnFaviconUpdated, (const PageNode*), (override));
-};
-using MockPageNodeObserver = ::testing::StrictMock<LenientMockPageNodeObserver>;
-
-}  // namespace
 
 TEST_P(PerformanceManagerTabHelperTest,
        NotificationsFromInactiveFrameTreeAreIgnored) {

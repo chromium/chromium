@@ -20,6 +20,7 @@
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
 #include "components/performance_manager/public/scenarios/performance_scenarios.h"
+#include "components/performance_manager/test_support/graph/mock_process_node_observer.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "content/public/common/content_switches.h"
@@ -102,32 +103,8 @@ TEST_F(ProcessNodeImplTest, ProcessLifeCycle) {
 
 namespace {
 
-class LenientMockObserver : public ProcessNodeImpl::Observer {
+class MockObserver : public MockProcessNodeObserver {
  public:
-  LenientMockObserver() = default;
-  ~LenientMockObserver() override = default;
-
-  MOCK_METHOD(void, OnBeforeProcessNodeAdded, (const ProcessNode*), (override));
-  MOCK_METHOD(void, OnProcessNodeAdded, (const ProcessNode*), (override));
-  MOCK_METHOD(void, OnProcessLifetimeChange, (const ProcessNode*), (override));
-  MOCK_METHOD(void,
-              OnBeforeProcessNodeRemoved,
-              (const ProcessNode*),
-              (override));
-  MOCK_METHOD(void, OnProcessNodeRemoved, (const ProcessNode*), (override));
-  MOCK_METHOD(void,
-              OnMainThreadTaskLoadIsLow,
-              (const ProcessNode*),
-              (override));
-  MOCK_METHOD(void,
-              OnPriorityChanged,
-              (const ProcessNode*, base::TaskPriority),
-              (override));
-  MOCK_METHOD(void,
-              OnAllFramesInProcessFrozen,
-              (const ProcessNode*),
-              (override));
-
   void SetNotifiedProcessNode(const ProcessNode* process_node) {
     notified_process_node_ = process_node;
   }
@@ -152,8 +129,6 @@ class LenientMockObserver : public ProcessNodeImpl::Observer {
   raw_ptr<const ProcessNode, DanglingUntriaged> notified_process_node_ =
       nullptr;
 };
-
-using MockObserver = ::testing::StrictMock<LenientMockObserver>;
 
 using ::testing::_;
 using ::testing::DoAll;

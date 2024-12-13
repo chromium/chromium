@@ -14,6 +14,7 @@
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/test_support/graph/mock_page_node_observer.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -241,59 +242,8 @@ TEST_F(PageNodeImplTest, HadUserEdits) {
 
 namespace {
 
-class LenientMockObserver : public PageNodeImpl::Observer {
+class MockObserver : public MockPageNodeObserver {
  public:
-  LenientMockObserver() = default;
-  ~LenientMockObserver() override = default;
-
-  MOCK_METHOD(void, OnBeforePageNodeAdded, (const PageNode*), (override));
-  MOCK_METHOD(void, OnPageNodeAdded, (const PageNode*), (override));
-  MOCK_METHOD(void, OnBeforePageNodeRemoved, (const PageNode*), (override));
-  MOCK_METHOD(void, OnPageNodeRemoved, (const PageNode*), (override));
-  // Note that opener/embedder functionality is actually tested in the
-  // FrameNodeImpl and GraphImpl unittests.
-  MOCK_METHOD(void,
-              OnOpenerFrameNodeChanged,
-              (const PageNode*, const FrameNode*),
-              (override));
-  MOCK_METHOD(void,
-              OnEmbedderFrameNodeChanged,
-              (const PageNode*, const FrameNode*, EmbeddingType),
-              (override));
-  MOCK_METHOD(void, OnTypeChanged, (const PageNode*, PageType), (override));
-  MOCK_METHOD(void, OnIsFocusedChanged, (const PageNode*), (override));
-  MOCK_METHOD(void, OnIsVisibleChanged, (const PageNode*), (override));
-  MOCK_METHOD(void, OnIsAudibleChanged, (const PageNode*), (override));
-  MOCK_METHOD(void,
-              OnHasPictureInPictureChanged,
-              (const PageNode*),
-              (override));
-  MOCK_METHOD(void,
-              OnLoadingStateChanged,
-              (const PageNode*, PageNode::LoadingState),
-              (override));
-  MOCK_METHOD(void, OnUkmSourceIdChanged, (const PageNode*), (override));
-  MOCK_METHOD(void, OnPageLifecycleStateChanged, (const PageNode*), (override));
-  MOCK_METHOD(void,
-              OnPageIsHoldingWebLockChanged,
-              (const PageNode*),
-              (override));
-  MOCK_METHOD(void,
-              OnPageIsHoldingIndexedDBLockChanged,
-              (const PageNode*),
-              (override));
-  MOCK_METHOD(void, OnPageUsesWebRTCChanged, (const PageNode*), (override));
-  MOCK_METHOD(void, OnMainFrameUrlChanged, (const PageNode*), (override));
-  MOCK_METHOD(void, OnMainFrameDocumentChanged, (const PageNode*), (override));
-  MOCK_METHOD(void, OnTitleUpdated, (const PageNode*), (override));
-  MOCK_METHOD(void, OnFaviconUpdated, (const PageNode*), (override));
-  MOCK_METHOD(void, OnHadFormInteractionChanged, (const PageNode*), (override));
-  MOCK_METHOD(void, OnHadUserEditsChanged, (const PageNode*), (override));
-  MOCK_METHOD(void,
-              OnAboutToBeDiscarded,
-              (const PageNode*, const PageNode*),
-              (override));
-
   void SetNotifiedPageNode(const PageNode* page_node) {
     notified_page_node_ = page_node;
   }
@@ -319,8 +269,6 @@ class LenientMockObserver : public PageNodeImpl::Observer {
  private:
   raw_ptr<const PageNode, DanglingUntriaged> notified_page_node_ = nullptr;
 };
-
-using MockObserver = ::testing::StrictMock<LenientMockObserver>;
 
 using ::testing::_;
 using ::testing::DoAll;
