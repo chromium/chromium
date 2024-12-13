@@ -20,6 +20,8 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -521,8 +523,29 @@ class AttributionDataHostManagerImpl::RegistrationContext {
   bool IsEquivalent(const RegistrationContext& other) const {
     // Ignores `devtools_request_id_`, `registration_eligibility_` and
     // `method_`.
-    return suitable_context_ == other.suitable_context_ &&
-           navigation_id_ == other.navigation_id_;
+    const bool is_equivalent = suitable_context_ == other.suitable_context_ &&
+                               navigation_id_ == other.navigation_id_;
+    if (!is_equivalent) {
+      std::string_view unmatched_field;
+      if (navigation_id_ != other.navigation_id_) {
+        unmatched_field = "navigation_id";
+      } else if (context_origin() != other.context_origin()) {
+        unmatched_field = "context_origin";
+      } else if (last_input_event() != other.last_input_event()) {
+        unmatched_field = "last_input_event";
+      } else if (is_within_fenced_frame() != other.is_within_fenced_frame()) {
+        unmatched_field = "is_within_fenced_frame";
+      } else if (render_frame_id() != other.render_frame_id()) {
+        unmatched_field = "render_frame_id";
+      } else if (suitable_context_.last_navigation_id() !=
+                 other.suitable_context_.last_navigation_id()) {
+        unmatched_field = "last_navigation_id";
+      }
+      SCOPED_CRASH_KEY_STRING32("AttributionReporting", "unmatched_context",
+                                unmatched_field);
+      base::debug::DumpWithoutCrashing();
+    }
+    return is_equivalent;
   }
 
   [[nodiscard]] bool CheckRegistrarSupport(Registrar, RegistrationType) const;
