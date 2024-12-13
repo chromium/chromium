@@ -55,9 +55,9 @@ void SpareRenderProcessHostTaskProvider::StopUpdating() {
 
 void SpareRenderProcessHostTaskProvider::OnSpareRenderProcessHostReady(
     RenderProcessHost* host) {
-  ChildProcessData data(content::PROCESS_TYPE_RENDERER);
+  ChildProcessData data(content::PROCESS_TYPE_RENDERER, host->GetID());
   data.SetProcess(host->GetProcess().Duplicate());
-  data.id = host->GetDeprecatedID();
+
   auto task = std::make_unique<ChildProcessTask>(
       data, ChildProcessTask::ProcessSubtype::kSpareRenderProcess);
 

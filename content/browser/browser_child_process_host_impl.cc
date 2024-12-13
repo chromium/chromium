@@ -184,11 +184,9 @@ BrowserChildProcessHostImpl::BrowserChildProcessHostImpl(
     content::ProcessType process_type,
     BrowserChildProcessHostDelegate* delegate,
     ChildProcessHost::IpcMode ipc_mode)
-    : data_(process_type), delegate_(delegate) {
+    : data_(process_type, ChildProcessHostImpl::GenerateChildProcessUniqueId()),
+      delegate_(delegate) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  data_.id =
-      ChildProcessHostImpl::GenerateChildProcessUniqueId().GetUnsafeValue();
 
   // Create a persistent memory segment for subprocess histograms.
   CreateMetricsAllocator();
