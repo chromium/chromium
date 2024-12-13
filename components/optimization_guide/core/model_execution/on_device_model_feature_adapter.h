@@ -19,6 +19,7 @@
 #include "components/optimization_guide/core/model_execution/redactor.h"
 #include "components/optimization_guide/core/model_execution/response_parser.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/text_safety.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
@@ -41,7 +42,7 @@ class OnDeviceModelFeatureAdapter final
       const google::protobuf::MessageLite& request,
       bool want_input_context) const;
 
-  bool ShouldParseResponse(bool is_complete) const;
+  bool ShouldParseResponse(ResponseCompleteness completeness) const;
 
   // Converts model response into this feature's expected response type.
   // Replies with std::nullopt on error.

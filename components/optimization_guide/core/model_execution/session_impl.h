@@ -172,19 +172,6 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
  private:
   class ContextProcessor;
 
-  // Type of response.
-  enum class ResponseType {
-    // This is a partial response. That is, one of `kComplete` or
-    // `kCompleteUnsafeOutput` will follow.
-    kPartial,
-
-    // The response completed successfully.
-    kComplete,
-
-    // The response completed, but the output is considered unsafe.
-    kCompleteUnsafeOutput,
-  };
-
   // Used to log the result of ExecuteModel.
   class ExecuteModelHistogramLogger {
    public:
@@ -207,7 +194,8 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     // Returns true if ExecuteModel() was called and the complete response
     // has not been received.
     bool did_execute_and_waiting_for_on_complete() const {
-      return start != base::TimeTicks() && !model_response_complete;
+      return start != base::TimeTicks() &&
+             response_completeness == ResponseCompleteness::kPartial;
     }
 
     // Returns the mutable on-device model service response for logging.
@@ -253,10 +241,6 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
       ~SafeRawOutput();
       // How much of 'current_response' was checked.
       size_t length = 0;
-      // The execution logs for the check (if any).
-      google::protobuf::RepeatedPtrField<
-          proto::InternalOnDeviceModelExecutionInfo>
-          logs;
     };
     // The longest response that has passed the raw output text safety check.
     SafeRawOutput latest_safe_raw_output;
@@ -265,7 +249,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     size_t latest_response_pos = 0;
 
     // Whether the model response is complete.
-    bool model_response_complete = false;
+    ResponseCompleteness response_completeness = ResponseCompleteness::kPartial;
 
     // Factory for weak pointers related to this session that are invalidated
     // with the request state.
@@ -293,7 +277,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   void MaybeSendCompleteResponse();
 
   // Sends `current_response_` to the client.
-  void SendResponse(ResponseType response_type);
+  void SendResponse(ResponseCompleteness completeness);
 
   void DestroyOnDeviceStateAndFallbackToRemote(ExecuteModelResult result);
 
@@ -313,10 +297,11 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
   // Evaluates raw output safety.
   // Will invoke SendResponse if evaluations are successful.
-  void RunRawOutputSafetyCheck(bool is_complete);
+  void RunRawOutputSafetyCheck(ResponseCompleteness completeness);
 
   // Called when output safety check completes.
   void OnRawOutputSafetyResult(size_t raw_output_size,
+                               ResponseCompleteness completeness,
                                SafetyChecker::Result safety_result);
 
   // Callback invoked when the text safety remote fallback response comes back.
@@ -329,11 +314,11 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
   // Called when a response has finished parsing.
   void OnParsedResponse(
-      bool is_complete,
+      ResponseCompleteness completeness,
       base::expected<proto::Any, ResponseParsingError> output);
 
   // Called when response safety check completes.
-  void OnResponseSafetyResult(bool is_complete,
+  void OnResponseSafetyResult(ResponseCompleteness completeness,
                               proto::Any output,
                               SafetyChecker::Result safety_result);
 

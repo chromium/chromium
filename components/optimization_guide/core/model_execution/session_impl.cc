@@ -537,7 +537,8 @@ void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
     return;
   }
 
-  RunRawOutputSafetyCheck(/*is_complete=*/false);
+  on_device_state_->num_unchecked_response_tokens = 0;
+  RunRawOutputSafetyCheck(ResponseCompleteness::kPartial);
 }
 
 void SessionImpl::OnComplete(
@@ -554,26 +555,20 @@ void SessionImpl::OnComplete(
 
   on_device_state_->opts.model_client->OnResponseCompleted();
 
-  on_device_state_->model_response_complete = true;
-
-  if (on_device_state_->num_unchecked_response_tokens == 0) {
-    // We've already requested the evaluation. Check if it finished.
-    MaybeSendCompleteResponse();
-    return;
-  }
-  RunRawOutputSafetyCheck(/*is_complete=*/true);
+  on_device_state_->response_completeness = ResponseCompleteness::kComplete;
+  RunRawOutputSafetyCheck(ResponseCompleteness::kComplete);
 }
 
-void SessionImpl::RunRawOutputSafetyCheck(bool is_complete) {
-  on_device_state_->num_unchecked_response_tokens = 0;
+void SessionImpl::RunRawOutputSafetyCheck(ResponseCompleteness completeness) {
   on_device_state_->opts.safety_checker->RunRawOutputCheck(
-      on_device_state_->current_response, is_complete,
+      on_device_state_->current_response, completeness,
       base::BindOnce(&SessionImpl::OnRawOutputSafetyResult,
                      on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
-                     on_device_state_->current_response.size()));
+                     on_device_state_->current_response.size(), completeness));
 }
 
 void SessionImpl::OnRawOutputSafetyResult(size_t raw_output_size,
+                                          ResponseCompleteness completeness,
                                           SafetyChecker::Result safety_result) {
   if (safety_result.failed_to_run) {
     DestroyOnDeviceStateAndFallbackToRemote(
@@ -595,21 +590,11 @@ void SessionImpl::OnRawOutputSafetyResult(size_t raw_output_size,
       return;
     }
   }
-  on_device_state_->latest_safe_raw_output.length = raw_output_size;
-  on_device_state_->latest_safe_raw_output.logs = std::move(safety_result.logs);
-  SendResponse(ResponseType::kPartial);
-  MaybeSendCompleteResponse();
-}
-
-void SessionImpl::MaybeSendCompleteResponse() {
-  if (on_device_state_ && on_device_state_->model_response_complete &&
-      on_device_state_->latest_safe_raw_output.length ==
-          on_device_state_->current_response.size()) {
-    on_device_state_->AddModelExecutionLogs(
-        std::move(on_device_state_->latest_safe_raw_output.logs));
-    on_device_state_->latest_safe_raw_output.logs.Clear();
-    SendResponse(ResponseType::kComplete);
+  if (completeness == ResponseCompleteness::kComplete) {
+    on_device_state_->AddModelExecutionLogs(std::move(safety_result.logs));
   }
+  on_device_state_->latest_safe_raw_output.length = raw_output_size;
+  SendResponse(completeness);
 }
 
 on_device_model::mojom::Session& SessionImpl::GetOrCreateSession() {
@@ -638,7 +623,8 @@ void SessionImpl::OnDisconnect() {
   }
   on_device_state_->session.reset();
 
-  if (!on_device_state_->model_response_complete) {
+  if (on_device_state_->response_completeness ==
+      ResponseCompleteness::kPartial) {
     // Only cancel the request if the model response is not complete yet. We can
     // get in this state if there is an outstanding remote text safety request.
     CancelPendingResponse(ExecuteModelResult::kDisconnectAndCancel);
@@ -679,16 +665,14 @@ void SessionImpl::CancelPendingResponse(ExecuteModelResult result,
   }
 }
 
-void SessionImpl::SendResponse(ResponseType response_type) {
-  const bool is_complete = response_type != ResponseType::kPartial;
-
-  if (!is_complete &&
+void SessionImpl::SendResponse(ResponseCompleteness completeness) {
+  if (completeness == ResponseCompleteness::kPartial &&
       features::ShouldUseTextSafetyRemoteFallbackForEligibleFeatures()) {
     // We don't send streaming responses in this mode.
     return;
   }
 
-  if (!on_device_state_->opts.adapter->ShouldParseResponse(is_complete)) {
+  if (!on_device_state_->opts.adapter->ShouldParseResponse(completeness)) {
     return;
   }
 
@@ -702,11 +686,11 @@ void SessionImpl::SendResponse(ResponseType response_type) {
       *last_message_, safe_response, previous_response_pos,
       base::BindOnce(&SessionImpl::OnParsedResponse,
                      on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
-                     is_complete));
+                     completeness));
 }
 
 void SessionImpl::OnParsedResponse(
-    bool is_complete,
+    ResponseCompleteness completeness,
     base::expected<proto::Any, ResponseParsingError> output) {
   if (!output.has_value()) {
     switch (output.error()) {
@@ -724,13 +708,13 @@ void SessionImpl::OnParsedResponse(
     }
   }
   on_device_state_->opts.safety_checker->RunResponseChecks(
-      *last_message_, *output, is_complete,
+      *last_message_, *output, completeness,
       base::BindOnce(&SessionImpl::OnResponseSafetyResult,
                      on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
-                     is_complete, *output));
+                     completeness, *output));
 }
 
-void SessionImpl::OnResponseSafetyResult(bool is_complete,
+void SessionImpl::OnResponseSafetyResult(ResponseCompleteness completeness,
                                          proto::Any output,
                                          SafetyChecker::Result safety_result) {
   if (safety_result.failed_to_run) {
@@ -738,8 +722,8 @@ void SessionImpl::OnResponseSafetyResult(bool is_complete,
         ExecuteModelResult::kFailedConstructingMessage);
     return;
   }
-  if (is_complete || safety_result.is_unsafe ||
-      safety_result.is_unsupported_language) {
+  if (completeness == ResponseCompleteness::kComplete ||
+      safety_result.is_unsafe || safety_result.is_unsupported_language) {
     on_device_state_->AddModelExecutionLogs(std::move(safety_result.logs));
   }
   if (safety_result.is_unsafe || safety_result.is_unsupported_language) {
@@ -756,7 +740,7 @@ void SessionImpl::OnResponseSafetyResult(bool is_complete,
       return;
     }
   }
-  if (!is_complete) {
+  if (completeness == ResponseCompleteness::kPartial) {
     SendPartialResponseCallback(output);
     return;
   }
@@ -961,8 +945,7 @@ void SessionImpl::OnDeviceState::ResetRequestState() {
   log_ai_data_request.reset();
   num_unchecked_response_tokens = 0;
   latest_safe_raw_output.length = 0;
-  latest_safe_raw_output.logs.Clear();
-  model_response_complete = false;
+  response_completeness = ResponseCompleteness::kPartial;
   session_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 

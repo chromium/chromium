@@ -104,8 +104,10 @@ RedactResult OnDeviceModelFeatureAdapter::Redact(
   return redact_result;
 }
 
-bool OnDeviceModelFeatureAdapter::ShouldParseResponse(bool is_complete) const {
-  return is_complete || !parser_->SuppressParsingIncompleteResponse();
+bool OnDeviceModelFeatureAdapter::ShouldParseResponse(
+    ResponseCompleteness completeness) const {
+  return completeness == ResponseCompleteness::kComplete ||
+         !parser_->SuppressParsingIncompleteResponse();
 }
 
 void OnDeviceModelFeatureAdapter::ParseResponse(

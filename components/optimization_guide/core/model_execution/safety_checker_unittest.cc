@@ -134,7 +134,8 @@ TEST_F(SafetyCheckerTest, RawOutputCheckPassesWithTrivialConfig) {
   // When no thresholds are defined, all outputs will pass.
   SafetyClientFixture fixture([]() { return ComposeSafetyConfig(); }());
   auto checker = fixture.MakeSafetyChecker();
-  checker->RunRawOutputCheck("unsafe raw output", /*is_complete=*/true,
+  checker->RunRawOutputCheck("unsafe raw output",
+                             ResponseCompleteness::kComplete,
                              future_.GetCallback());
   auto result = future_.Take();
 
@@ -158,7 +159,8 @@ TEST_F(SafetyCheckerTest, DefaultOutputSafetyPassesOnSafeOutput) {
     return safety_config;
   }());
   auto checker = fixture.MakeSafetyChecker();
-  checker->RunRawOutputCheck("reasonable raw output", /*is_complete=*/true,
+  checker->RunRawOutputCheck("reasonable raw output",
+                             ResponseCompleteness::kComplete,
                              future_.GetCallback());
   auto result = future_.Take();
 
@@ -183,7 +185,8 @@ TEST_F(SafetyCheckerTest, DefaultOutputSafetyFailsOnUnsafeOutput) {
     return safety_config;
   }());
   auto checker = fixture.MakeSafetyChecker();
-  checker->RunRawOutputCheck("unsafe raw output", /*is_complete=*/true,
+  checker->RunRawOutputCheck("unsafe raw output",
+                             ResponseCompleteness::kComplete,
                              future_.GetCallback());
   auto result = future_.Take();
 
@@ -211,7 +214,8 @@ TEST_F(SafetyCheckerTest, OutputSafetyPassesWithMetRequiredLanguage) {
   }());
   auto checker = fixture.MakeSafetyChecker();
   checker->RunRawOutputCheck("reasonable raw output in esperanto",
-                             /*is_complete=*/true, future_.GetCallback());
+                             ResponseCompleteness::kComplete,
+                             future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -239,7 +243,8 @@ TEST_F(SafetyCheckerTest, OutputSafetyFailsWithUnmetRequiredLanguage) {
     return safety_config;
   }());
   auto checker = fixture.MakeSafetyChecker();
-  checker->RunRawOutputCheck("reasonable raw output", /*is_complete=*/true,
+  checker->RunRawOutputCheck("reasonable raw output",
+                             ResponseCompleteness::kComplete,
                              future_.GetCallback());
   auto result = future_.Take();
 
@@ -267,7 +272,8 @@ TEST_F(SafetyCheckerTest,
     return safety_config;
   }());
   auto checker = fixture.MakeSafetyChecker();
-  checker->RunRawOutputCheck("reasonable raw output", /*is_complete=*/true,
+  checker->RunRawOutputCheck("reasonable raw output",
+                             ResponseCompleteness::kComplete,
                              future_.GetCallback());
   auto result = future_.Take();
 
@@ -299,7 +305,8 @@ TEST_F(SafetyCheckerTest, OutputSafetyLanguageThreshold) {
   auto checker = fixture.MakeSafetyChecker();
   {
     checker->RunRawOutputCheck("reasonable raw output lang:en=0.3",
-                               /*is_complete=*/false, future_.GetCallback());
+                               ResponseCompleteness::kPartial,
+                               future_.GetCallback());
     auto result = future_.Take();
     EXPECT_FALSE(result.failed_to_run);
     EXPECT_TRUE(result.is_unsupported_language);
@@ -307,7 +314,8 @@ TEST_F(SafetyCheckerTest, OutputSafetyLanguageThreshold) {
 
   {
     checker->RunRawOutputCheck("reasonable raw output lang:en=0.6",
-                               /*is_complete=*/false, future_.GetCallback());
+                               ResponseCompleteness::kPartial,
+                               future_.GetCallback());
     auto result = future_.Take();
     EXPECT_FALSE(result.failed_to_run);
     EXPECT_FALSE(result.is_unsupported_language);
@@ -315,7 +323,8 @@ TEST_F(SafetyCheckerTest, OutputSafetyLanguageThreshold) {
 
   {
     checker->RunRawOutputCheck("reasonable raw output lang:en=0.6",
-                               /*is_complete=*/true, future_.GetCallback());
+                               ResponseCompleteness::kComplete,
+                               future_.GetCallback());
     auto result = future_.Take();
     EXPECT_FALSE(result.failed_to_run);
     EXPECT_TRUE(result.is_unsupported_language);
@@ -323,7 +332,8 @@ TEST_F(SafetyCheckerTest, OutputSafetyLanguageThreshold) {
 
   {
     checker->RunRawOutputCheck("reasonable raw output lang:en=0.9",
-                               /*is_complete=*/true, future_.GetCallback());
+                               ResponseCompleteness::kComplete,
+                               future_.GetCallback());
     auto result = future_.Take();
     EXPECT_FALSE(result.failed_to_run);
     EXPECT_FALSE(result.is_unsupported_language);
@@ -342,7 +352,8 @@ TEST_F(SafetyCheckerTest, OutputSafetyFailsWithUnsafeOutput) {
     return safety_config;
   }());
   auto checker = fixture.MakeSafetyChecker();
-  checker->RunRawOutputCheck("unsafe raw output", /*is_complete=*/true,
+  checker->RunRawOutputCheck("unsafe raw output",
+                             ResponseCompleteness::kComplete,
                              future_.GetCallback());
   auto result = future_.Take();
 
@@ -628,7 +639,7 @@ TEST_F(SafetyCheckerTest, ResponseCheckPassesWithSafeResponse) {
   auto checker = fixture.MakeSafetyChecker();
   checker->RunResponseChecks(
       UrlAndInputRequest("very_", "reasonable_esperanto_"),
-      SimpleResponse("safe_output"), /*is_complete=*/true,
+      SimpleResponse("safe_output"), ResponseCompleteness::kComplete,
       future_.GetCallback());
   auto result = future_.Take();
 
@@ -681,7 +692,8 @@ TEST_F(SafetyCheckerTest, RequestCheckFailsWithUnsafeResponse) {
   auto checker = fixture.MakeSafetyChecker();
   checker->RunResponseChecks(UrlAndInputRequest("un", "reasonable_esperanto_"),
                              SimpleResponse("safe_output"),
-                             /*is_complete=*/true, future_.GetCallback());
+                             ResponseCompleteness::kComplete,
+                             future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -731,9 +743,9 @@ TEST_F(SafetyCheckerTest, ResponseCheckFailsWithUnmetRequiredLanguge) {
     return safety_config;
   }());
   auto checker = fixture.MakeSafetyChecker();
-  checker->RunResponseChecks(UrlAndInputRequest("very_", "reasonable_"),
-                             SimpleResponse("safe_output"),
-                             /*is_complete=*/true, future_.GetCallback());
+  checker->RunResponseChecks(
+      UrlAndInputRequest("very_", "reasonable_"), SimpleResponse("safe_output"),
+      ResponseCompleteness::kComplete, future_.GetCallback());
   auto result = future_.Take();
 
   EXPECT_FALSE(result.failed_to_run);
@@ -799,8 +811,8 @@ TEST_F(SafetyCheckerTest, ResponseLanguageThresholds) {
   {
     checker->RunResponseChecks(
         UrlAndInputRequest("unknown language", "lang:en=0.3"),
-        SimpleResponse("safe_output"),
-        /*is_complete=*/false, future_.GetCallback());
+        SimpleResponse("safe_output"), ResponseCompleteness::kPartial,
+        future_.GetCallback());
     auto result = future_.Take();
     EXPECT_FALSE(result.failed_to_run);
     EXPECT_TRUE(result.is_unsupported_language);
@@ -809,8 +821,8 @@ TEST_F(SafetyCheckerTest, ResponseLanguageThresholds) {
   {
     checker->RunResponseChecks(
         UrlAndInputRequest("unknown language", "lang:en=0.6"),
-        SimpleResponse("safe_output"),
-        /*is_complete=*/false, future_.GetCallback());
+        SimpleResponse("safe_output"), ResponseCompleteness::kPartial,
+        future_.GetCallback());
     auto result = future_.Take();
     EXPECT_FALSE(result.failed_to_run);
     EXPECT_FALSE(result.is_unsupported_language);
@@ -819,8 +831,8 @@ TEST_F(SafetyCheckerTest, ResponseLanguageThresholds) {
   {
     checker->RunResponseChecks(
         UrlAndInputRequest("unknown language", "lang:en=0.6"),
-        SimpleResponse("safe_output"),
-        /*is_complete=*/true, future_.GetCallback());
+        SimpleResponse("safe_output"), ResponseCompleteness::kComplete,
+        future_.GetCallback());
     auto result = future_.Take();
     EXPECT_FALSE(result.failed_to_run);
     EXPECT_TRUE(result.is_unsupported_language);
@@ -829,8 +841,8 @@ TEST_F(SafetyCheckerTest, ResponseLanguageThresholds) {
   {
     checker->RunResponseChecks(
         UrlAndInputRequest("unknown language", "lang:en=0.9"),
-        SimpleResponse("safe_output"),
-        /*is_complete=*/true, future_.GetCallback());
+        SimpleResponse("safe_output"), ResponseCompleteness::kComplete,
+        future_.GetCallback());
     auto result = future_.Take();
     EXPECT_FALSE(result.failed_to_run);
     EXPECT_FALSE(result.is_unsupported_language);

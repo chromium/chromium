@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/core/model_execution/safety_config.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
@@ -62,13 +63,13 @@ class SafetyChecker final {
 
   // Runs the configured check (if any) for evaluating raw output.
   void RunRawOutputCheck(const std::string& raw_output,
-                         bool is_complete,
+                         ResponseCompleteness completeness,
                          ResultCallback callback);
 
   // Runs all of the configured checks for evaluating parsed responses.
   void RunResponseChecks(const google::protobuf::MessageLite& request,
                          const proto::Any& response,
-                         bool is_complete,
+                         ResponseCompleteness completeness,
                          ResultCallback callback);
 
   const SafetyConfig& safety_cfg() const { return safety_cfg_; }
