@@ -2294,7 +2294,7 @@ GapDataList<T> ConvertGapDecorationDataList(StyleResolverState& state,
   // The CSS Gap Decorations API accepts a space separated list of values.
   // These values can be an auto repeater, an integer repeater, or a single
   // value.
-  // See: https://kbabbitt.github.io/css-gap-decorations/#column-row-rule-color
+  // See: https://drafts.csswg.org/css-gaps-1/#lists-repeat
   const auto& values = To<CSSValueList>(value);
   typename GapDataList<T>::GapDataVector gap_data_list;
   gap_data_list.ReserveInitialCapacity(values.length());
