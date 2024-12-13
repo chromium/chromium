@@ -59,22 +59,6 @@ void AnalyzeCrossOriginRedirection(const url::Origin& current_origin,
   }
 }
 
-// Returns true if a host of the given url is on the predefined blocked list as
-// they cannot support prerendering.
-bool ShouldSkipHostInBlockList(const GURL& url) {
-  // Keep the blocked list as static because the blocked hosts are served via
-  // feature parameters and are never changed until browser restarts.
-  //
-  // Blocked hosts are expected to be passed as a comma separated string.
-  // e.g. example1.test,example2.test
-  const static base::NoDestructor<std::vector<std::string>>
-      embedder_blocked_hosts(base::SplitString(
-          features::kPrerender2EmbedderBlockedHostsParam.Get(), ",",
-          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
-
-  return base::Contains(*embedder_blocked_hosts, url.host());
-}
-
 }  // namespace
 
 PrerenderNavigationThrottle::~PrerenderNavigationThrottle() = default;
@@ -135,12 +119,6 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   // Reset the flags that should be calculated every time redirction happens.
   is_same_site_cross_origin_prerender_ = false;
   same_site_cross_origin_prerender_did_redirect_ = false;
-
-  if (prerender_host_->IsBrowserInitiated() &&
-      ShouldSkipHostInBlockList(navigation_url)) {
-    CancelPrerendering(PrerenderFinalStatus::kEmbedderHostDisallowed);
-    return CANCEL;
-  }
 
   // Allow only HTTP(S) schemes.
   // https://wicg.github.io/nav-speculation/prerendering.html#no-bad-navs

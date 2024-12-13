@@ -17391,27 +17391,6 @@
             ]
         }
     ],
-    "Prerender2EmbedderBlockedHosts": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows",
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "embedder_blocked_hosts": ""
-                    },
-                    "enable_features": [
-                        "Prerender2EmbedderBlockedHosts"
-                    ]
-                }
-            ]
-        }
-    ],
     "Prerender2FallbackPrefetchSpecRules": [
         {
             "platforms": [

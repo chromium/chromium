@@ -110,8 +110,6 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
           ActivationNavigationParameterMismatch;
     case PrerenderFinalStatus::kActivatedInBackground:
       return Preload::PrerenderFinalStatusEnum::ActivatedInBackground;
-    case PrerenderFinalStatus::kEmbedderHostDisallowed:
-      return Preload::PrerenderFinalStatusEnum::EmbedderHostDisallowed;
     case PrerenderFinalStatus::kActivationNavigationDestroyedBeforeSuccess:
       return Preload::PrerenderFinalStatusEnum::
           ActivationNavigationDestroyedBeforeSuccess;

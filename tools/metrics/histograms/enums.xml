@@ -29523,7 +29523,7 @@ Called by update_net_error_codes.py.-->
       label="kSameSiteCrossOriginNavigationNotOptInInInitialNavigation"/>
   <int value="50" label="kActivationNavigationParameterMismatch"/>
   <int value="51" label="kActivatedInBackground"/>
-  <int value="52" label="kEmbedderHostDisallowed"/>
+  <int value="52" label="kEmbedderHostDisallowed (obsoleted)"/>
   <int value="53" label="kActivationNavigationDestroyedBeforeSuccess"/>
   <int value="54" label="kTabClosedByUserGesture"/>
   <int value="55" label="kTabClosedWithoutUserGesture"/>

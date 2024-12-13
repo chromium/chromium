@@ -103,7 +103,7 @@ enum class PrerenderFinalStatus {
   // from the initial prerendering navigation so Prerender fails to activate it.
   kActivationNavigationParameterMismatch = 50,
   kActivatedInBackground = 51,
-  kEmbedderHostDisallowed = 52,
+  // kEmbedderHostDisallowed = 52, // No longer used.
   // Called when encounter failures during synchronous activation.
   // TODO(crbug.com/40238737): Remove this reason if no sample is
   // recorded in stable, or look into the reason if there are.
