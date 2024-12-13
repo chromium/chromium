@@ -157,6 +157,11 @@ Ambas tienen el mismo efecto en el comportamiento del navegador.</translation>
 <translation id="1059069692400941670">Inhabilitar la importación del motor de búsqueda predeterminado en la primera ejecución</translation>
 <translation id="1062011392452772310">Habilita la atestación remota para el dispositivo.</translation>
 <translation id="1062407476771304334">Reemplazar</translation>
+<translation id="1062460877136455375">Si estableces la política, se especificarán las apps web aisladas (IWA) que no podrán conectarse a lectores de tarjetas inteligentes (ni siquiera se solicitará permiso a los usuarios). Esta política acepta comodines. Por ejemplo, <ph name="ALL_ISOLATED_WEB_APPS" /> bloqueará el acceso para todas las IWA.
+
+       La política se anula con SmartCardConnectAllowedForUrls; en particular, un valor de la lista de entidades bloqueadas de <ph name="ALL_ISOLATED_WEB_APPS" /> significa que ninguna IWA podrá conectarse a lectores de tarjetas inteligentes (ni siquiera se les solicitará permiso a los usuarios), excepto las que se indiquen en SmartCardConnectAllowedForUrls.
+
+       De forma predeterminada, las apps web aisladas que especifican permisos de tarjeta inteligente en el manifiesto pueden conectarse a tarjetas inteligentes siempre que el usuario otorgue el permiso de forma interactiva por lector.</translation>
 <translation id="1063860513136880926">Si habilitas la política, no se permitirá realizar capturas de pantalla con combinaciones de teclas
 ni APIs de extensiones. Si inhabilitas la política o no la estableces, se permitirán las capturas de pantalla.
 
@@ -5950,6 +5955,7 @@ Nota: Esta función aún no está disponible de forma general, por lo que habili
 Si no la estableces, el valor predeterminado será 0 grados y los usuarios podrán cambiarlo. Si deciden hacerlo, no se volverá a aplicar el valor predeterminado en el reinicio.</translation>
 <translation id="5257395339965216304">Datos de apps alojadas</translation>
 <translation id="5258445772095084618">Permitir que los usuarios no afiliados usen las máquinas virtuales necesarias para admitir apps de Linux</translation>
+<translation id="5258651513421638932">Permitir la conexión de Smart Card con apps aisladas</translation>
 <translation id="5262320080678421295">Inhabilitar la confianza en los certificados emitidos mediante la PKI heredada de Symantec Corporation</translation>
 <translation id="5265613843467285323">Mostrar un botón de IU para excluir una pantalla en modo de espejo.</translation>
 <translation id="5272332743749468542">Hacer que la opción Exclude Display in Mirror Mode esté disponible para el usuario</translation>
@@ -6928,6 +6934,7 @@ Si se establece como <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" /> (val
 <translation id="5945312246863177268">No permitir a los usuarios hacer clic en la notificación de Phone Hub para iniciar la aplicación Eche</translation>
 <translation id="5946082169633555022">Canal beta</translation>
 <translation id="5946329690214660966">Establecer un cronograma personalizado para buscar actualizaciones</translation>
+<translation id="5946401994049024050">Configuración de Smart Card Connect</translation>
 <translation id="5950069117106131681">Si habilitas la política, se activarán los encabezados y pies de página en la vista previa de impresión. Si inhabilitas la política, se desactivarán en la vista previa de impresión.
 
       Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, los usuarios podrán elegir si se muestran los encabezados y pies de página.</translation>
@@ -9047,6 +9054,7 @@ Si la estableces como falsa, se habilitará el comportamiento anterior.</transla
       Si la inhabilitas o no la estableces, los dispositivos inscritos no registrarán ni informarán el estado de seguridad del TPM.
       Excepción: la información del TPM es controlada por <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> para M95 y versiones anteriores.</translation>
 <translation id="739556497251174388">Permite reutilizar las credenciales de acceso de <ph name="PRODUCT_OS_NAME" /> para la autenticación de la red</translation>
+<translation id="7395790871181951311">Bloquear la conexión de Smart Card con apps aisladas</translation>
 <translation id="7400208209734208176">Abrir vínculos en el navegador Chrome de forma predeterminada</translation>
 <translation id="7402257017733669351">Impedir que el proceso del navegador cree código dinámico</translation>
 <translation id="7402772023599097052">Si inhabilitas la política o no la estableces, aparecerán las advertencias de seguridad cuando se usen funciones experimentales de línea de comandos potencialmente peligrosas para iniciar Chrome.
@@ -9688,6 +9696,11 @@ Los valores válidos varían entre 1 segundo y 9,999 segundos. Si no estableces 
 
 Esta política no tendrá ningún efecto si estableces la política <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> como falsa.</translation>
 <translation id="7912255076272890813">Configurar tipos de extensiones o aplicaciones permitidos</translation>
+<translation id="7912541841840197488">Si estableces la política, se especificará qué apps web aisladas (IWA) pueden conectarse a tarjetas inteligentes mediante la API de Web Smart Card sin que se solicite permiso al usuario. Esta política no acepta comodines.
+
+       Esta política anula SmartCardConnectBlockedForUrls. En particular, un valor de lista de entidades bloqueadas de <ph name="ALL_ISOLATED_WEB_APPS" /> significa que ninguna IWA podrá conectarse a los lectores de tarjetas inteligentes (ni siquiera se les solicitará permiso a los usuarios), excepto las que se indiquen en SmartCardConnectAllowedForUrls.
+
+       De forma predeterminada, las apps web aisladas que especifican permisos de tarjeta inteligente en el manifiesto pueden conectarse a tarjetas inteligentes siempre que el usuario otorgue el permiso de forma interactiva por lector.</translation>
 <translation id="791267408364877739">Muestra las advertencias de seguridad cuando se utilizan marcas de la línea de comandos potencialmente peligrosas</translation>
 <translation id="7919665519909231619">Permitir que se habilite la función de lista de compras</translation>
 <translation id="7922358664346625612">Mantener la última pestaña abierta en Chrome</translation>

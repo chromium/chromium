@@ -1401,6 +1401,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="351522771072578657">Anda sedang dipaparkan menu</translation>
 <translation id="3517264445792388751">Sistem fail tersebut telah dilumpuhkan oleh pentadbir anda</translation>
 <translation id="3518941727116570328">Pengendalian berbilang objek</translation>
+<translation id="3519670528214225835">Tanya <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3525130752944427905">10 x 14 in</translation>
 <translation id="3525435918300186947">Kawal &amp; atur cara semula peranti MIDI?</translation>
 <translation id="3527181387426738155">Muzik &amp; Audio</translation>
@@ -1957,6 +1958,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4451684391620232683">Teks yang disajikan kepada pengguna:</translation>
 <translation id="4452328064229197696">Kata laluan yang baru sahaja anda gunakan telah ditemukan dalam pelanggaran data. Untuk melindungi akaun anda, Pengurus Kata Laluan Google mengesyorkan agar anda menyemak kata laluan yang disimpan.</translation>
 <translation id="4456937135469235202">Perjalanan Pengembaraan</translation>
+<translation id="4458013283022578512">Masukkan pertanyaan</translation>
 <translation id="4464826014807964867">Laman web yang mempunyai maklumat daripada organisasi anda</translation>
 <translation id="4466576951214254884">Pinjaman Pelajar &amp; Pembiayaan Kolej</translation>
 <translation id="4467821340016922962">Untuk keluar daripada skrin penuh dan melihat muat turun, tekan |<ph name="ACCELERATOR" />|</translation>
@@ -3544,6 +3546,7 @@ Butiran tambahan:
 <translation id="7388594495505979117">{0,plural, =1{Peranti anda akan dimulakan semula dalam masa 1 minit}other{Peranti anda akan dimulakan semula dalam masa # minit}}</translation>
 <translation id="7393161616326137353">Permainan Kembara</translation>
 <translation id="7393475648162498734">Paparkan ganjaran dan manfaat yang tersedia untuk kad anda semasa semak keluar</translation>
+<translation id="7393971683644170444">Menyambung kepada penyedia kad anda...</translation>
 <translation id="739728382607845710">Ikon pengendali pembayaran</translation>
 <translation id="7399616692258236448">Permintaan lokasi disekat secara automatik untuk semua laman kecuali pada laman yang anda benarkan</translation>
 <translation id="7400418766976504921">URL</translation>

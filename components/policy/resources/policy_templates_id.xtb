@@ -157,6 +157,11 @@ Kedua kebijakan tersebut memiliki efek yang sama pada perilaku browser.</transla
 <translation id="1059069692400941670">Nonaktifkan impor mesin telusur default saat browser pertama kali dijalankan</translation>
 <translation id="1062011392452772310">Mengaktifkan pengesahan jarak jauh untuk perangkat tersebut</translation>
 <translation id="1062407476771304334">Ganti</translation>
+<translation id="1062460877136455375">Menyetel kebijakan ini akan menentukan Aplikasi Web Terisolasi (IWA) yang tidak dapat terhubung ke pembaca kartu smart (pengguna bahkan tidak akan dimintai izin). Kebijakan ini menerima karakter pengganti - misalnya, <ph name="ALL_ISOLATED_WEB_APPS" /> akan memblokir akses untuk semua IWA.
+
+       Kebijakan ini diganti oleh SmartCardConnectAllowedForUrls; khususnya, nilai daftar yang tidak diizinkan <ph name="ALL_ISOLATED_WEB_APPS" /> berarti bahwa semua IWA tidak akan dapat terhubung ke pembaca kartu smart (pengguna bahkan tidak akan dimintai izin) kecuali IWA yang tercantum di SmartCardConnectAllowedForUrls.
+
+       Secara default, Aplikasi Web Terisolasi yang menentukan izin Kartu Smart dalam manifes dapat terhubung ke kartu smart asalkan pengguna memberikan izin secara interaktif per pembaca.</translation>
 <translation id="1063860513136880926">Jika kebijakan disetel ke Aktif, screenshot yang diambil dengan pintasan keyboard
 atau API ekstensi tidak akan diizinkan. Jika kebijakan disetel ke Nonaktif atau tidak disetel, screenshot akan diizinkan.
 
@@ -5962,6 +5967,7 @@ Catatan: Fitur ini belum tersedia secara umum, sehingga mengaktifkannya tidak be
 Jika tidak disetel, nilai default adalah 0 derajat dan pengguna dapat mengubahnya. Dalam hal ini, nilai default tidak diterapkan kembali saat mulai ulang.</translation>
 <translation id="5257395339965216304">Data aplikasi yang dihosting</translation>
 <translation id="5258445772095084618">Izinkan pengguna yang tidak terafiliasi menggunakan mesin virtual yang diperlukan untuk mendukung aplikasi Linux</translation>
+<translation id="5258651513421638932">Mengizinkan koneksi Kartu Smart oleh Aplikasi Terisolasi</translation>
 <translation id="5262320080678421295">Nonaktifkan kepercayaan pada sertifikat yang dikeluarkan oleh IKP Lama Symantec Corporation</translation>
 <translation id="5265613843467285323">Tampilkan tombol UI untuk mengecualikan layar dalam mode cermin.</translation>
 <translation id="5272332743749468542">Jadikan Kecualikan Layar dalam Mode Cermin tersedia untuk pengguna</translation>
@@ -6939,6 +6945,7 @@ Jika kebijakan ini disetel ke <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE
 <translation id="5945312246863177268">Melarang pengguna mengklik notifikasi Phone Hub untuk meluncurkan aplikasi Eche.</translation>
 <translation id="5946082169633555022">Saluran beta</translation>
 <translation id="5946329690214660966">Menetapkan jadwal kustom untuk memeriksa update</translation>
+<translation id="5946401994049024050">Setelan Koneksi Kartu Smart</translation>
 <translation id="5950069117106131681">Jika kebijakan disetel ke Aktif, header dan footer akan diaktifkan dalam pratinjau cetak. Jika kebijakan disetel ke Nonaktif, header dan footer akan dinonaktifkan dalam pratinjau cetak.
 
       Jika kebijakan disetel, pengguna tidak dapat mengubahnya. Jika tidak disetel, pengguna akan menentukan apakah header dan footer akan muncul.</translation>
@@ -9059,6 +9066,7 @@ Jika kebijakan ini disetel ke Salah (False), perilaku lama akan diaktifkan.</tra
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, perangkat terdaftar tidak akan merekam atau melaporkan status keamanan TPM.
       Pengecualian: Informasi TPM dikontrol oleh <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> untuk M95 dan yang lebih lama.</translation>
 <translation id="739556497251174388">Mengizinkan penggunaan ulang kredensial login <ph name="PRODUCT_OS_NAME" /> untuk autentikasi jaringan</translation>
+<translation id="7395790871181951311">Memblokir koneksi Kartu Smart oleh Aplikasi Terisolasi</translation>
 <translation id="7400208209734208176">Buka link di browser Chrome secara default</translation>
 <translation id="7402257017733669351">Mencegah proses browser membuat kode dinamis</translation>
 <translation id="7402772023599097052">Jika kebijakan disetel ke Aktif atau tidak disetel, peringatan keamanan akan muncul saat tanda command line yang berpotensi bahaya digunakan untuk meluncurkan Chrome.
@@ -9699,6 +9707,11 @@ Nilai yang valid berkisar dari 1 detik hingga 9999 detik. Jika kebijakan tidak d
 
 Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> disetel ke salah (false).</translation>
 <translation id="7912255076272890813">Konfigurasikan jenis aplikasi/ekstensi yang diizinkan</translation>
+<translation id="7912541841840197488">Menyetel kebijakan ini akan menentukan Aplikasi Web Terisolasi (IWA) mana yang dapat terhubung ke kartu smart menggunakan Web Smart Card API tanpa meminta izin kepada pengguna. Kebijakan ini tidak menerima karakter pengganti.
+
+       Kebijakan ini mengganti SmartCardConnectBlockedForUrls; khususnya, nilai daftar yang tidak diizinkan <ph name="ALL_ISOLATED_WEB_APPS" /> berarti bahwa semua IWA tidak akan dapat terhubung ke pembaca kartu smart (pengguna bahkan tidak akan dimintai izin) kecuali IWA yang tercantum di SmartCardConnectAllowedForUrls.
+
+       Secara default, Aplikasi Web Terisolasi yang menentukan izin Kartu Smart dalam manifes dapat terhubung ke kartu smart asalkan pengguna memberikan izin secara interaktif per pembaca.</translation>
 <translation id="791267408364877739">Perlihatkan peringatan keamanan saat tanda command line yang berpotensi berbahaya digunakan</translation>
 <translation id="7919665519909231619">Mengizinkan fitur daftar belanja diaktifkan</translation>
 <translation id="7922358664346625612">Biarkan tab terakhir terbuka di Chrome.</translation>

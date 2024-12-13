@@ -148,6 +148,11 @@ Beide haben den gleichen Effekt auf das Browserverhalten.</translation>
 <translation id="1059069692400941670">Import der Standardsuchmaschine bei der ersten Ausführung deaktivieren</translation>
 <translation id="1062011392452772310">Remote-Bescheinigung (Remote Attestation) für das Gerät aktivieren</translation>
 <translation id="1062407476771304334">Ersetzen</translation>
+<translation id="1062460877136455375">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche isolierten Web-Apps (IWAs) keine Verbindung zu Smartcard-Lesegeräten herstellen können. Nutzer werden dann auch nicht aufgefordert, die entsprechende Berechtigung zu erteilen. Für diese Richtlinie können Platzhalter verwendet werden. Beispielsweise wird durch „<ph name="ALL_ISOLATED_WEB_APPS" />“ der Zugriff für alle IWAs blockiert.
+
+       Diese Richtlinie wird von „SmartCardConnectAllowedForUrls“ überschrieben. In erster Linie bedeutet das, dass der Wert „<ph name="ALL_ISOLATED_WEB_APPS" />“ in der Sperrliste dafür sorgt, dass IWAs – mit Ausnahme derer, die in „SmartCardConnectAllowedForUrls“ aufgeführt sind – keine Verbindung zu Smartcard-Lesegeräten herstellen können. Nutzer werden dann auch nicht aufgefordert, die Berechtigung zu erteilen.
+
+       Standardmäßig können isolierte Web-Apps, bei denen Smartcard-Berechtigungen im Manifest angeben sind, eine Verbindung zu Smartcards herstellen, sofern der Nutzer für jedes Lesegerät aktiv die Berechtigung gewährt hat.</translation>
 <translation id="1063860513136880926">Wenn die Richtlinie aktiviert ist, können keine Screenshots über Tastenkombinationen oder Erweiterungs-APIs aufgenommen werden. Ist die Richtlinie deaktiviert oder nicht konfiguriert, sind Screenshots zulässig.
 
 Beachte, dass unter <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> und <ph name="LINUX_OS_NAME" /> Screenshots, die mit Betriebssystem- oder Drittanbieter-Apps aufgenommen wurden, weiterhin zulässig sind.</translation>
@@ -5713,6 +5718,7 @@ Hinweis: Diese Funktion ist noch nicht allgemein verfügbar. Wenn du sie aktivie
 Ist die Richtlinie nicht konfiguriert, wird der Standardwert von 0 Grad verwendet und Nutzer können die Bildschirmausrichtung ändern. Die Bildschirmausrichtung wird dann nach dem Neustart nicht zurückgesetzt.</translation>
 <translation id="5257395339965216304">Daten für gehostete Apps</translation>
 <translation id="5258445772095084618">Zulassen, dass nicht verknüpfte Nutzer virtuelle Maschinen verwenden, die für Linux-Apps benötigt werden</translation>
+<translation id="5258651513421638932">Isolierten Apps erlauben, eine Verbindung zu Smartcards herzustellen</translation>
 <translation id="5262320080678421295">Zertifikaten nicht vertrauen, die von der Legacy-PKI der Symantec Corporation ausgestellt wurden</translation>
 <translation id="5265613843467285323">Ein/Aus-Schaltfläche für „Display im Spiegelmodus ausschließen“ anzeigen.</translation>
 <translation id="5272332743749468542">Nutzern Zugriff auf „Display im Spiegelmodus ausschließen“ gewähren</translation>
@@ -6661,6 +6667,7 @@ Ist die Richtlinie auf „<ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" />
 <translation id="5945312246863177268">Verhindert, dass Nutzer auf eine Phone Hub-Benachrichtigung klicken, um die App „Eche“ zu starten.</translation>
 <translation id="5946082169633555022">Beta-Kanal</translation>
 <translation id="5946329690214660966">Benutzerdefinierten Zeitplan zum Prüfen auf Updates festlegen</translation>
+<translation id="5946401994049024050">Einstellungen für Smart Card Connect</translation>
 <translation id="5950069117106131681">Wenn die Richtlinie aktiviert ist, werden Kopf- und Fußzeilen in der Druckvorschau angezeigt. Ist die Richtlinie deaktiviert, werden sie in der Druckvorschau ausgeblendet.
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Ist sie nicht konfiguriert, können die Nutzer festlegen, ob Kopf- und Fußzeilen angezeigt werden sollen.</translation>
@@ -8662,6 +8669,7 @@ Wenn diese Richtlinie auf „false“ gesetzt ist, ist das alte Verhalten aktivi
       Ist die Richtlinie deaktiviert oder nicht konfiguriert, zeichnen angemeldete Geräte den TPM-Sicherheitsstatus nicht auf und melden ihn auch nicht.
       Ausnahme: TPM-Informationen werden für M95 und niedriger von <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> gesteuert.</translation>
 <translation id="739556497251174388">Verwenden der <ph name="PRODUCT_OS_NAME" />-Anmeldedaten für die Netzwerkauthentifizierung zulassen</translation>
+<translation id="7395790871181951311">Isolierten Apps verweigern, eine Verbindung zu Smartcards herzustellen</translation>
 <translation id="7400208209734208176">Links standardmäßig im Chrome-Browser öffnen</translation>
 <translation id="7402257017733669351">Erstellen von dynamischem Code im Browserprozess verhindern</translation>
 <translation id="7402772023599097052">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden Sicherheitswarnungen angezeigt, wenn Chrome mit potenziell schädlichen Befehlszeilen-Flags gestartet wird.
@@ -9293,6 +9301,11 @@ Gültige Werte reichen von 1 Sekunde bis 9.999 Sekunden. Ist diese Richtlinie 
 
 Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> auf „false“ gesetzt ist.</translation>
 <translation id="7912255076272890813">Zulässige App- bzw. Erweiterungstypen konfigurieren</translation>
+<translation id="7912541841840197488">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche isolierten Web-Apps (IWAs) über die Web Smart Card API eine Verbindung zu Smartcards herstellen können, ohne dass der Nutzer aufgefordert wird, eine Berechtigung zu erteilen. Für diese Richtlinie können keine Platzhalter verwendet werden.
+
+       Diese Richtlinie überschreibt „SmartCardConnectBlockedForUrls“. In erster Linie bedeutet das, dass der Wert „<ph name="ALL_ISOLATED_WEB_APPS" />“ in der Sperrliste dafür sorgt, dass IWAs – mit Ausnahme derer, die in „SmartCardConnectAllowedForUrls“ aufgeführt sind – keine Verbindung zu Smartcard-Lesegeräten herstellen können. Nutzer werden dann auch nicht aufgefordert, die Berechtigung zu erteilen.
+
+       Standardmäßig können isolierte Web-Apps, bei denen Smartcard-Berechtigungen im Manifest angeben sind, eine Verbindung zu Smartcards herstellen, sofern der Nutzer für jedes Lesegerät aktiv die Berechtigung gewährt hat.</translation>
 <translation id="791267408364877739">Sicherheitswarnungen anzeigen, wenn potenziell schädliche Befehlszeilen-Flags verwendet werden</translation>
 <translation id="7919665519909231619">Aktivieren der Funktion „Einkaufsliste“ erlauben</translation>
 <translation id="7922358664346625612">Letzten in Chrome geöffneten Tab beibehalten.</translation>

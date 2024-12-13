@@ -1177,11 +1177,6 @@
 <translation id="1806335016774576568">Превключване към друго отворено приложение</translation>
 <translation id="1807246157184219062">Светло</translation>
 <translation id="1809201888580326312">Избрахте да не запазвате паролите за тези сайтове и приложения</translation>
-<translation id="1809483812148634490">Приложенията, които сте изтеглили от Google Play, ще бъдат изтрити от този Chromebook.
-    <ph name="LINE_BREAKS1" />
-    Купеното от вас съдържание, като например филми, телевизионни предавания, музика, книги или други покупки в приложения, може също да бъде изтрито.
-    <ph name="LINE_BREAKS2" />
-    Това действие няма ефект върху приложения или съдържание на други устройства.</translation>
 <translation id="1809734401532861917">Добавяне на моите отметки, история, пароли и други настройки към <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1810070166657251157">За да използвате запазените си пароли на телефона си, сканирайте QR кода, изтеглете Chrome за iOS и влезте в профила си в Google.</translation>
 <translation id="1810366086647840386">Сървър за образа</translation>
@@ -2616,7 +2611,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2790750268015892264">Изолираните уеб приложения не могат да контролират четците на смарткарти. Приложенията няма да получат достъп до смарткартите.</translation>
 <translation id="2791529110887957050">Премахване на Linux</translation>
 <translation id="2791952154587244007">Възникна грешка. Павилионното приложение няма да може да стартира автоматично на това устройство.</translation>
-<translation id="2792290659606763004">Да се премахнат ли приложенията за Android?</translation>
 <translation id="2792465461386711506">Включете функцията за синхронизиране в Chrome, за да прегледате скорошните раздели на браузъра от телефона си</translation>
 <translation id="2792697226874849938">Изображение за ограничение</translation>
 <translation id="2794522004398861033">Свържете се с Wi-Fi или Ethernet, за да настроите електронна SIM карта</translation>
@@ -2853,7 +2847,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2964387589834028666">Вълнение</translation>
 <translation id="2965227184985674128">Да се включи ли достъпът до микрофона?</translation>
 <translation id="2966705348606485669">Още опции за папката с отметки „<ph name="FOLDER_TITLE" />“</translation>
-<translation id="2966937470348689686">Управление на предпочитанията за Android</translation>
 <translation id="2967926928600500959">URL адресите, съответстващи на тези правила, задължително ще се отварят в конкретен браузър.</translation>
 <translation id="2969411787010981955">Данните са експортирани в избраното местоположение</translation>
 <translation id="2970766364519518369">Избраните контакти могат да споделят с вас, когато са в близост. Ще трябва да одобрявате съответните заявки. Няма да се налага да одобрявате заявките за споделяне между устройствата, на които сте влезли в профила <ph name="USER_EMAIL" />.</translation>
@@ -3319,7 +3312,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3317459757438853210">Двустранно</translation>
 <translation id="3317521105713541270">Създаване на групи</translation>
 <translation id="3317678681329786349">Достъпът до камерата и микрофона е блокиран</translation>
-<translation id="3319306431415395200">Превод на текст в изображение чрез <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3319863571062685443">Адресът ви е запазен</translation>
 <translation id="3320271870899888245">Не може да се установи връзка с OneDrive. Опитайте отново.</translation>
 <translation id="3320630259304269485">Безопасно сърфиране (защита от опасни сайтове) и други настройки за сигурността</translation>
@@ -5592,7 +5584,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4918844574251943176">Изображението е копирано</translation>
 <translation id="4921348630401250116">Синтезиран говор</translation>
 <translation id="4922104989726031751">За да използвате Мениджър на пароли с операционната си система, стартирайте повторно Chromium и разрешете достъпа до мениджъра на паролите на компютъра си. След повторното стартиране разделите ви ще се отворят отново.</translation>
-<translation id="492299503953721473">Премахване на приложенията за Android</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> се деинсталира...</translation>
 <translation id="4923977675318667854">Показване на групите раздели</translation>
 <translation id="4924002401726507608">Изпращане на отзиви</translation>
@@ -8188,7 +8179,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6827422464708099620">Изберете, за да видите още опции</translation>
 <translation id="6827517233063803343">Приложенията и настройките ви ще се синхронизират с всички устройства с Chrome OS, на които сте влезли в профила си в Google. За да намерите опциите за синхронизиране на браузъра, отворете <ph name="LINK_BEGIN" />настройките на Chrome<ph name="LINK_END" />.</translation>
 <translation id="6827767090350758381">Старите версии на приложенията за Chrome няма да се отварят на устройства с Windows след декември 2022 г. Обърнете се към администратора си, за да актуализира до нова версия или да премахне това приложение.</translation>
-<translation id="6828153365543658583">Влизането да се ограничи до следните потребители:</translation>
 <translation id="6828182567531805778">Въведете своя пропуск, за да синхронизирате данните си</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Настройването на автоматични актуализации за всички потребители не бе успешно (грешка при изпълнението на предстартовия процес: <ph name="ERROR_NUMBER" />)</translation>
@@ -8236,7 +8226,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6855892664589459354">Резервни копия и възстановяване на Crostini</translation>
 <translation id="6856348640027512653">Сайтове без разрешение за използване на устройствата и данните за виртуална реалност</translation>
 <translation id="6856623341093082836">Настройване и коригиране на точността на сензорния екран</translation>
-<translation id="6856850379840757744">Когато функцията е включена, всички известия ще бъдат заглушени</translation>
 <translation id="6857145580237920905">Премахване на потребителските профили за електронната SIM карта преди Powerwash</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="6860097299815761905">Настройки за прокси сървър...</translation>
@@ -8819,7 +8808,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7296503797589217366">Избиране на папката „<ph name="FOLDER_TITLE" />“</translation>
 <translation id="7297726121602187087">Тъмнозелено</translation>
 <translation id="7298195798382681320">Препоръчително</translation>
-<translation id="7299337219131431707">Активиране на сърфирането като гост</translation>
 <translation id="7299515639584427954">Да се промени ли стандартното приложение за поддържаните връзки?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Анимация</translation>
@@ -9816,7 +9804,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7990958035181555539">Автоматично прехвърляне на Wi-Fi от телефона ви с Android</translation>
 <translation id="7991296728590311172">Настройки на „Достъп с превключване“</translation>
 <translation id="7992203134935383159">Синтезиран говор</translation>
-<translation id="7994515119120860317">Превод на текст в изображение чрез <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">Изглед в мрежата</translation>
 <translation id="7997826902155442747">Приоритет на процесите</translation>
 <translation id="7998701048266085837">URL адреси</translation>

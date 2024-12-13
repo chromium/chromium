@@ -157,6 +157,11 @@ Ambas têm o mesmo efeito no comportamento do navegador.</translation>
 <translation id="1059069692400941670">Desativar a importação do mecanismo de pesquisa padrão na primeira execução</translation>
 <translation id="1062011392452772310">Ativar declaração remota para o dispositivo</translation>
 <translation id="1062407476771304334">Substituir</translation>
+<translation id="1062460877136455375">A definição da política especifica quais Apps Isolados da Web (AIWs) não poderão se conectar a leitores de cartão inteligentes. Os usuários também não vão receber uma solicitação de permissão. Essa política aceita caracteres curinga. Por exemplo, <ph name="ALL_ISOLATED_WEB_APPS" /> vai bloquear o acesso de todos os AIWs.
+
+       Essa política é substituída por SmartCardConnectAllowedForUrls. Especificamente, um valor de lista de bloqueio de <ph name="ALL_ISOLATED_WEB_APPS" /> significa que todos os AIWs não poderão se conectar a leitores de cartão inteligente, exceto os listados em SmartCardConnectAllowedForUrls. Os usuários também não vão receber uma solicitação de permissão.
+
+       Por padrão, os Apps Isolados da Web que especificam permissões de cartão inteligente no manifesto podem se conectar a cartões inteligentes, desde que o usuário dê a permissão de forma interativa para cada leitor.</translation>
 <translation id="1063860513136880926">Se a política for ativada, não vai ser permitido fazer capturas de tela com os atalhos do teclado
 ou as APIs de extensão. Se ela for desativada ou deixada sem definição, será possível fazer capturas de tela.
 
@@ -5949,6 +5954,7 @@ Observação: esse recurso ainda não está disponível para o público geral. P
 Se ela não for definida, o valor padrão será 0 graus e o usuário poderá mudá-lo. Neste caso, o valor padrão não será reaplicado após a reinicialização.</translation>
 <translation id="5257395339965216304">Dados dos apps hospedados</translation>
 <translation id="5258445772095084618">Permitir que usuários não afiliados usem máquinas virtuais necessárias para apps do Linux</translation>
+<translation id="5258651513421638932">Permitir a conexão de cartões inteligentes por Apps Isolados</translation>
 <translation id="5262320080678421295">Desativar confiança em certificados emitidos pela ICP legada da Symantec Corporation</translation>
 <translation id="5265613843467285323">Mostrar um botão da interface para excluir uma tela do modo espelho.</translation>
 <translation id="5272332743749468542">Disponibilizar a opção "Excluir esta tela do modo espelho" para o usuário</translation>
@@ -6924,6 +6930,7 @@ Se a política for definida como <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VA
 <translation id="5945312246863177268">Não permite que os usuários cliquem na notificação do recurso Seu smartphone para abrir o app Eche.</translation>
 <translation id="5946082169633555022">Canal Beta</translation>
 <translation id="5946329690214660966">Definir programação personalizada para verificar se há atualizações</translation>
+<translation id="5946401994049024050">Configurações da conexão com cartões inteligentes</translation>
 <translation id="5950069117106131681">Se a política for definida como "Ativada", os cabeçalhos e rodapés serão ativados na visualização de impressão. Se a política for definida como "Desativada", eles serão desativados na visualização de impressão.
 
       Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, os usuários decidirão se os cabeçalhos e rodapés aparecem ou não.</translation>
@@ -9035,6 +9042,7 @@ Se ela for definida como falsa, o comportamento antigo será ativado.</translati
       Se ela for desativada ou for deixada sem definição, os dispositivos registrados não vão gravar ou informar o status de segurança TPM.
       Exceção: no M95 e em versões anteriores, as informações do TPM são controladas por <ph name="REPORT_DEVICE_HARDWARE_STATUS" />.</translation>
 <translation id="739556497251174388">Permitir reutilização das credenciais de login do <ph name="PRODUCT_OS_NAME" /> para a autenticação de rede</translation>
+<translation id="7395790871181951311">Bloquear a conexão de cartões inteligentes por Apps Isolados</translation>
 <translation id="7400208209734208176">Abrir links no navegador Chrome por padrão</translation>
 <translation id="7402257017733669351">Impedir que o processo do navegador crie código dinâmico</translation>
 <translation id="7402772023599097052">Se a política for definida como "Ativada" ou não for definida, os avisos de segurança vão aparecer apenas quando flags de linha de comando potencialmente perigosas forem usadas para iniciar o Chrome.
@@ -9675,6 +9683,11 @@ Os valores vão de 1 a 9.999 segundos. Se a política for deixada sem definiçã
 
 Esta política não terá efeito quando a <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> estiver definida como "false".</translation>
 <translation id="7912255076272890813">Configurar tipos permitidos de aplicativo/extensão</translation>
+<translation id="7912541841840197488">A definição da política especifica quais Apps Isolados da Web (AIWs) podem se conectar a cartões inteligentes usando a API Web Smart Card sem que o usuário precise dar permissão. Essa política não aceita caracteres curinga.
+
+       Ela substitui SmartCardConnectBlockedForUrls. Especificamente, um valor de lista de bloqueio de <ph name="ALL_ISOLATED_WEB_APPS" /> significa que todos os AIWs não poderão se conectar a leitores de cartão inteligente, exceto os listados em SmartCardConnectAllowedForUrls. Os usuários também não vão receber uma solicitação de permissão.
+
+       Por padrão, os Apps Isolados da Web que especificam permissões de cartão inteligente no manifesto podem se conectar a cartões inteligentes, desde que o usuário dê a permissão de forma interativa para cada leitor.</translation>
 <translation id="791267408364877739">Exibir avisos de segurança quando sinalizações de linha de comando potencialmente perigosas forem usadas</translation>
 <translation id="7919665519909231619">Permitir que o recurso da lista de compras seja ativado</translation>
 <translation id="7922358664346625612">Mantém a última guia aberta no Chrome.</translation>

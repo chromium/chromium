@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Összes megnyitása</translation>
 <translation id="1408847409015257906">Koppintson az „Adatvédelem és biztonság” lehetőségre.</translation>
 <translation id="1411386976162024013">Lens vizuális keresés</translation>
+<translation id="1417474386970818917">Kijelentkezés és törlés</translation>
 <translation id="1426410128494586442">Igen</translation>
 <translation id="1430915738399379752">Nyomtatás</translation>
 <translation id="1436671784520050284">Beállítás folytatása</translation>
@@ -1009,6 +1010,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5628388627414062173">{count,plural, =1{{count} oldal az olvasólistán}other{{count} oldal az olvasólistán}}</translation>
 <translation id="5632485077360054581">Bemutató</translation>
 <translation id="5633237939819267663">{count,plural, =1{Könyvjelző mentve ide: „{title}”}other{{count} könyvjelző mentve ide: „{title}”}}</translation>
+<translation id="564170563478022912">Kijelentkezik? A nem mentett fiókadatok törlődnek.</translation>
 <translation id="5642707040609478753">Megjelölés olvasatlanként</translation>
 <translation id="5646284034397250191">Címke létrehozva. A dátum függőben.</translation>
 <translation id="5647096944343801045">Nagy belépési pont</translation>
@@ -1021,6 +1023,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5669335982068190158">Az iPhone visszaállítása során a rendszer kijelentkeztette Önt. A bejelentkezéshez koppintson a Folytatás gombra alább.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Verzió: <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Fiókot vált? A nem mentett fiókadatok törlődnek.</translation>
 <translation id="5683499062697987550">A jelszavak Google-fiókban való használatához és mentéséhez igazolja személyazonosságát.</translation>
 <translation id="5684761169742812828">A jelszó nyilvánosságra került egy adatvédelmi incidens során az interneten. Ha jelenleg nincs ideje a módosításra, a Google azt javasolja, hogy tartsa meg ezt a figyelmeztetést, hogy később is emlékezzen rá.</translation>
 <translation id="5694848685995373177">Mentve a Drive-ra a(z) <ph name="USER_EMAIL" /> fiókban.</translation>
@@ -1222,6 +1225,7 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="6506996418997555004">A(z) „<ph name="GROUP_NAME" />” lapcsoport megosztása</translation>
 <translation id="6507973708545996744">Ha bejelentkezik, az összes eszközén hozzáférhet az olvasólistájához.</translation>
 <translation id="6518133107902771759">Ellenőrzés</translation>
+<translation id="6518861084553706202">A lapok bezáródnak, a törölt adatok közé pedig jelszavak, böngészési előzmények, cookie-k és egyebek tartozhatnak.</translation>
 <translation id="6523575793810663688">Bemutató</translation>
 <translation id="6524082013156754186">Mentés a fiókba</translation>
 <translation id="6527303717912515753">Megosztás</translation>
@@ -1678,6 +1682,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8545276357312221485">Az alapértelmezett böngészőbeállítások ellenőrzése</translation>
 <translation id="854938212724803178">1 jelszavához illetéktelenül hozzáfértek. A biztonság megőrzése érdekében javítsa ki most.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Elvetett {count} figyelmeztetést}other{Elvetett {count} figyelmeztetést}}</translation>
+<translation id="8558046478684552694">Csoport bezárása.</translation>
 <translation id="8560253818350321773">Először a gyakran használt elemek jelenjenek meg.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} lehetséges jelszó áll rendelkezésre a billentyűzet felett.}other{{count} lehetséges jelszó áll rendelkezésre a billentyűzet felett.}}</translation>
 <translation id="8564894539416715395">Új lap oldal</translation>
@@ -1846,6 +1851,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="9205189991633470489">Inkognitó mód zárolása</translation>
 <translation id="9206887540681440657">Sebesség</translation>
 <translation id="9223358826628549784">Hibajelentés elküldve.</translation>
+<translation id="926455622548529175">Váltás és törlés</translation>
 <translation id="929748059769569925">Kiemelt szöveg</translation>
 <translation id="932305336591073205">{count,plural, =1{Lap bezárása}other{Lapok bezárása}}</translation>
 <translation id="939472100615258482">Jelenlegi webhely</translation>

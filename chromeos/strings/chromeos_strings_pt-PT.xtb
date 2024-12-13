@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% de bateria no auricular direito.</translation>
 <translation id="3340978935015468852">definições</translation>
 <translation id="3347558044552027859">moderno</translation>
+<translation id="3353477144743332882">Transferir modelo de criação de resumos e nomes</translation>
 <translation id="3359218928534347896">ativar/desativar o som do microfone</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Atalho não disponível. Prima um novo atalho sem <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Desativado</translation>
 <translation id="5860491529813859533">Ativar</translation>
+<translation id="5875913454160982848">Transferir modelo de transcrição</translation>
 <translation id="5876385649737594562">Ative para selecionar opções</translation>
 <translation id="5877503382465267833">Pausar <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Ecrã inteiro</translation>
@@ -1588,6 +1590,7 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="8503836310948963452">Só mais alguns minutos…</translation>
 <translation id="8505011850330200833">O modelo Gemini requer 2 GB de armazenamento para processar transcrições e criar resumos</translation>
 <translation id="8508640263392900755">Detalhes do APN (Nome do Ponto de Acesso)</translation>
+<translation id="8509574872955173831">Saber mais sobre a criação de resumos e nomes</translation>
 <translation id="8522687886059337719">Agora, tem acesso a novas <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />imagens de fundo<ph name="END_LINK_WALLPAPER_SUBPAGE" /> e <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />proteção de ecrã<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">casa de chá</translation>

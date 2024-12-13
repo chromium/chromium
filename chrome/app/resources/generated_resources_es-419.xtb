@@ -1169,11 +1169,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1806335016774576568">Pasar a otra app abierta</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1809201888580326312">Elegiste no guardar contraseñas para estos sitios y apps</translation>
-<translation id="1809483812148634490">Las apps que descargaste de Google Play se borrarán de esta Chromebook.
-    <ph name="LINE_BREAKS1" />
-    Es posible que también se borre el contenido que compraste, como películas, programas de TV, música, libros y otras compras directas desde la aplicación.
-    <ph name="LINE_BREAKS2" />
-    Esta acción no afecta las apps ni el contenido que se encuentra en otros dispositivos.</translation>
 <translation id="1809734401532861917">Agregar mis favoritos, historial, contraseñas y otras opciones de configuración a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1810070166657251157">Para usar tus contraseñas guardadas en el teléfono, sigue el código QR, descarga Chrome para iOS y accede a tu Cuenta de Google.</translation>
 <translation id="1810366086647840386">Servidor de la imagen</translation>
@@ -2604,7 +2599,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2790750268015892264">Las apps web aisladas no pueden controlar lectores de tarjetas inteligentes. Las apps no tendrán acceso a ninguna tarjeta inteligente.</translation>
 <translation id="2791529110887957050">Quitar Linux</translation>
 <translation id="2791952154587244007">Se produjo un error. La aplicación del kiosco no podrá iniciarse automáticamente en este dispositivo.</translation>
-<translation id="2792290659606763004">¿Quitar las apps de Android?</translation>
 <translation id="2792465461386711506">Activa la Sincronización de Chrome para ver las pestañas recientes de Chrome desde tu teléfono</translation>
 <translation id="2792697226874849938">Imágen de restricción</translation>
 <translation id="2794522004398861033">Conectar a Wi-Fi o Ethernet para configurar una eSIM</translation>
@@ -2841,7 +2835,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2964387589834028666">Emocionado</translation>
 <translation id="2965227184985674128">¿Quieres activar el acceso al micrófono?</translation>
 <translation id="2966705348606485669">Más opciones para la carpeta de favoritos <ph name="FOLDER_TITLE" /></translation>
-<translation id="2966937470348689686">Administrar las preferencias de Android</translation>
 <translation id="2967926928600500959">Se forzará la apertura de las URLs que coincidan con estas reglas en un navegador específico.</translation>
 <translation id="2969411787010981955">Los datos se exportaron a la ubicación seleccionada</translation>
 <translation id="2970766364519518369">Los contactos seleccionados pueden compartir contenido contigo cuando están cerca. Se te pedirá que apruebes dichas solicitudes. No es necesario que apruebes el uso compartido entre los dispositivos que accedieron a <ph name="USER_EMAIL" />.</translation>
@@ -3307,7 +3300,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3317459757438853210">Doble cara</translation>
 <translation id="3317521105713541270">Crear grupos</translation>
 <translation id="3317678681329786349">Cámara y micrófono bloqueados</translation>
-<translation id="3319306431415395200">Traducir el texto en la imagen con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3319863571062685443">Se guardó tu dirección</translation>
 <translation id="3320271870899888245">No se puede conectar con OneDrive. Vuelve a intentarlo.</translation>
 <translation id="3320630259304269485">Navegación segura (protección contra sitios peligrosos) y otras opciones de configuración de seguridad</translation>
@@ -5579,7 +5571,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4918844574251943176">Se copió la imagen</translation>
 <translation id="4921348630401250116">Texto a voz</translation>
 <translation id="4922104989726031751">Para utilizar el Administrador de contraseñas con tu sistema operativo, reinicia Chromium y permite el acceso al administrador de contraseñas de la computadora. Las pestañas se volverán a abrir después de que lo reinicies.</translation>
-<translation id="492299503953721473">Quitar las apps de Android</translation>
 <translation id="492363500327720082">Desinstalando <ph name="APP_NAME" />…</translation>
 <translation id="4923977675318667854">Mostrar grupos de pestañas</translation>
 <translation id="4924002401726507608">Envía comentarios</translation>
@@ -8174,7 +8165,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6827422464708099620">Seleccionar para ver más opciones</translation>
 <translation id="6827517233063803343">Se sincronizarán tus apps y tu configuración en todos los dispositivos con ChromeOS a los que hayas accedido con tu Cuenta de Google. Para ver las opciones de sincronización del navegador, ve a la <ph name="LINK_BEGIN" />configuración de Chrome<ph name="LINK_END" />.</translation>
 <translation id="6827767090350758381">Las versiones anteriores de las Apps de Chrome dejarán de funcionar en dispositivos con Windows después de diciembre de 2022. Comunícate con el administrador para que quite esta app o la actualice a una versión nueva.</translation>
-<translation id="6828153365543658583">Limitar el acceso a los siguientes usuarios</translation>
 <translation id="6828182567531805778">Ingresa la frase de contraseña para sincronizar tus datos</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">No se pudieron configurar actualizaciones automáticas para todos los usuarios (error de ejecución preliminar: <ph name="ERROR_NUMBER" />)</translation>
@@ -8222,7 +8212,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6855892664589459354">Copia de seguridad y restablecimiento de Crostini</translation>
 <translation id="6856348640027512653">No pueden usar datos ni dispositivos de realidad virtual</translation>
 <translation id="6856623341093082836">Configurar y ajustar la precisión de tu pantalla táctil</translation>
-<translation id="6856850379840757744">Cuando está activado, se silencian todas las notificaciones.</translation>
 <translation id="6857145580237920905">Quitar los perfiles de eSIM antes de aplicar la función Powerwash</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6860097299815761905">Configuración de proxy...</translation>
@@ -8805,7 +8794,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7296503797589217366">Seleccionar la carpeta <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Verde oscuro</translation>
 <translation id="7298195798382681320">Recomendado</translation>
-<translation id="7299337219131431707">Habilitar navegación como invitado</translation>
 <translation id="7299515639584427954">¿Quieres cambiar la app predeterminada para los vínculos compatibles?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Animado</translation>
@@ -9802,7 +9790,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7990958035181555539">Transferir automáticamente la red Wi-Fi desde tu teléfono Android</translation>
 <translation id="7991296728590311172">Configuración de Accesibilidad con interruptores</translation>
 <translation id="7992203134935383159">Síntesis de voz</translation>
-<translation id="7994515119120860317">Traducir el texto en la imagen con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">Prioridad de proceso</translation>
 <translation id="7998701048266085837">URLs</translation>

@@ -1399,6 +1399,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="351522771072578657">Jelenleg egy menüben van</translation>
 <translation id="3517264445792388751">A rendszergazda letiltotta a fájlrendszert</translation>
 <translation id="3518941727116570328">Több elem kezelése</translation>
+<translation id="3519670528214225835">Kérdezés a következőtől: <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3525130752944427905">10 × 14 hüvelyk</translation>
 <translation id="3525435918300186947">Szeretné vezérelni és átprogramozni a MIDI-eszközöket?</translation>
 <translation id="3527181387426738155">Zene és audió</translation>
@@ -1953,6 +1954,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4451684391620232683">A felhasználónak megjelenített szöveg:</translation>
 <translation id="4452328064229197696">Kiderült, hogy a most használt jelszava adatvédelmi incidensben volt érintett. Fiókjai biztonságának megőrzése érdekében a Google Jelszókezelő a mentett jelszavak ellenőrzését javasolja.</translation>
 <translation id="4456937135469235202">Kalandturizmus</translation>
+<translation id="4458013283022578512">Adjon meg egy kérdést</translation>
 <translation id="4464826014807964867">Webhelyek, amelyek a szervezetétől származó adatokkal rendelkeznek</translation>
 <translation id="4466576951214254884">Diákhitelek és felsőoktatási tanulmányok finanszírozása</translation>
 <translation id="4467821340016922962">A teljes képernyős nézetből való kilépéshez és a letöltés megtekintéséhez nyomja le a következőt: |<ph name="ACCELERATOR" />|</translation>
@@ -3540,6 +3542,7 @@ További részletek:
 <translation id="7388594495505979117">{0,plural, =1{Eszköze 1 perc múlva újraindul}other{Eszköze # perc múlva újraindul}}</translation>
 <translation id="7393161616326137353">Kalandjátékok</translation>
 <translation id="7393475648162498734">Fizetéskor mutassa meg, hogy milyen jutalmak és előnyök állnak rendelkezésre a kártyáihoz</translation>
+<translation id="7393971683644170444">Kapcsolódás a kártyaszolgáltatóhoz…</translation>
 <translation id="739728382607845710">Fizetéskezelő ikonja</translation>
 <translation id="7399616692258236448">Az Ön által engedélyezett webhelyek kivételével a rendszer automatikusan letiltja a helykérelmeket.</translation>
 <translation id="7400418766976504921">URL</translation>

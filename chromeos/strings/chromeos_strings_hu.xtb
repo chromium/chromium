@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Jobb fülhallgató akkumulátorszintje: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">beállítások</translation>
 <translation id="3347558044552027859">modern</translation>
+<translation id="3353477144743332882">Összefoglaló és névlétrehozó modell letöltése</translation>
 <translation id="3359218928534347896">mikrofon némítása</translation>
 <translation id="3360306038446926262">Ablakok</translation>
 <translation id="3361618936611118375">szusi</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">A billentyűparancs nem áll rendelkezésre. Nyomjon le új billentyűparancsot a(z) <ph name="KEY" /> billentyű nélkül.</translation>
 <translation id="5860033963881614850">Kikapcsolva</translation>
 <translation id="5860491529813859533">Bekapcsolás</translation>
+<translation id="5875913454160982848">Átirási modell letöltése</translation>
 <translation id="5876385649737594562">Kapcsolja be a beállítások kiválasztásához</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> szüneteltetése</translation>
 <translation id="588258955323874662">Teljes képernyő</translation>
@@ -1588,6 +1590,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8503836310948963452">Már csak néhány perc…</translation>
 <translation id="8505011850330200833">A Gemini modellnek 2 GB tárhelyre van szüksége az átiratok feldolgozásához és az összegzések létrehozásához</translation>
 <translation id="8508640263392900755">APN részletei</translation>
+<translation id="8509574872955173831">További információ az összefoglalásról és a névlétrehozásról</translation>
 <translation id="8522687886059337719">Mostantól új <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />háttérképekhez<ph name="END_LINK_WALLPAPER_SUBPAGE" /> és <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />képernyővédőhöz<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> férhet hozzá.</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">teaház</translation>

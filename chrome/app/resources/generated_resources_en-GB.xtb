@@ -1181,11 +1181,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1806335016774576568">Switch to another open app</translation>
 <translation id="1807246157184219062">Light</translation>
 <translation id="1809201888580326312">You’ve chosen not to save passwords for these sites and apps</translation>
-<translation id="1809483812148634490">Apps that you’ve downloaded from Google Play will be deleted from this Chromebook.
-    <ph name="LINE_BREAKS1" />
-    Content that you’ve purchased such as movies, TV shows, music, books or other in-app purchases may also be deleted.
-    <ph name="LINE_BREAKS2" />
-    This doesn’t affect apps or content on other devices.</translation>
 <translation id="1809734401532861917">Add my bookmarks, history, passwords and other settings to <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1810070166657251157">To use your saved passwords on your phone, follow the QR code, download Chrome for iOS and sign in to your Google Account.</translation>
 <translation id="1810366086647840386">Image server</translation>
@@ -2620,7 +2615,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2790750268015892264">Isolated web apps cannot control smart card readers. Apps won't gain access to any smart card.</translation>
 <translation id="2791529110887957050">Remove Linux</translation>
 <translation id="2791952154587244007">An error occurred. Kiosk application will not be able to auto-launch on this device.</translation>
-<translation id="2792290659606763004">Remove Android apps?</translation>
 <translation id="2792465461386711506">Turn on Chrome Sync to view recent Chrome tabs from your phone</translation>
 <translation id="2792697226874849938">Restriction image</translation>
 <translation id="2794522004398861033">Connect to Wi-Fi or Ethernet to set up eSIM</translation>
@@ -2857,7 +2851,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2964387589834028666">Excited</translation>
 <translation id="2965227184985674128">Turn on microphone access?</translation>
 <translation id="2966705348606485669">More options for <ph name="FOLDER_TITLE" /> bookmark folder</translation>
-<translation id="2966937470348689686">Manage Android preferences</translation>
 <translation id="2967926928600500959">URLs matching these rules will be forced to open in a specific browser.</translation>
 <translation id="2969411787010981955">Data has been exported into the selected location</translation>
 <translation id="2970766364519518369">Selected contacts can share with you when they're nearby. You'll be asked to approve these requests. You won't need to approve sharing from devices that are signed into <ph name="USER_EMAIL" />.</translation>
@@ -3323,7 +3316,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3317459757438853210">Two-sided</translation>
 <translation id="3317521105713541270">Create groups</translation>
 <translation id="3317678681329786349">Camera and microphone blocked</translation>
-<translation id="3319306431415395200">Translate text in image with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3319863571062685443">Your address is saved</translation>
 <translation id="3320271870899888245">Can't connect to OneDrive. Try again.</translation>
 <translation id="3320630259304269485">Safe Browsing (protection from dangerous sites) and other security settings</translation>
@@ -5595,7 +5587,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4918844574251943176">Image copied</translation>
 <translation id="4921348630401250116">Text-to-speech</translation>
 <translation id="4922104989726031751">To use Password Manager with your operating system, relaunch Chromium and allow access to your computer's password manager. Your tabs will reopen after relaunching.</translation>
-<translation id="492299503953721473">Remove Android apps</translation>
 <translation id="492363500327720082">Uninstalling <ph name="APP_NAME" />…</translation>
 <translation id="4923977675318667854">Show tab groups</translation>
 <translation id="4924002401726507608">Submit feedback</translation>
@@ -8190,7 +8181,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6827422464708099620">Select to see more options</translation>
 <translation id="6827517233063803343">Your apps and settings will sync across all Chrome OS devices where you are signed in with your Google Account. For browser sync options, go to <ph name="LINK_BEGIN" />Chrome settings<ph name="LINK_END" />.</translation>
 <translation id="6827767090350758381">Old versions of Chrome Apps won't open on Windows devices after December 2022. Contact your administrator to update to a new version or remove this app.</translation>
-<translation id="6828153365543658583">Restrict sign-in to the following users:</translation>
 <translation id="6828182567531805778">Enter your passphrase to sync your data</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Failed to set up automatic updates for all users (preflight execution error: <ph name="ERROR_NUMBER" />)</translation>
@@ -8238,7 +8228,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6855892664589459354">Crostini backup and restore</translation>
 <translation id="6856348640027512653">Not allowed to use virtual reality devices or data</translation>
 <translation id="6856623341093082836">Set up and adjust the accuracy of your touchscreen</translation>
-<translation id="6856850379840757744">When turned on, all notifications will be silenced</translation>
 <translation id="6857145580237920905">Remove eSIM profiles before Powerwash</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="6860097299815761905">Proxy settings...</translation>
@@ -8821,7 +8810,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7296503797589217366">Select folder <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Dark green</translation>
 <translation id="7298195798382681320">Recommended</translation>
-<translation id="7299337219131431707">Enable Guest browsing</translation>
 <translation id="7299515639584427954">Change default app for supported links?</translation>
 <translation id="7299588179200441056"><ph name="URL" />–<ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Animated</translation>
@@ -9818,7 +9806,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7990958035181555539">Transfer Wi-Fi automatically from your Android phone</translation>
 <translation id="7991296728590311172">Switch Access settings</translation>
 <translation id="7992203134935383159">Speech synthesis</translation>
-<translation id="7994515119120860317">Translate text in image with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">Web view</translation>
 <translation id="7997826902155442747">Process Priority</translation>
 <translation id="7998701048266085837">URLs</translation>

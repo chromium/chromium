@@ -1171,11 +1171,6 @@
 <translation id="1806335016774576568">別の開いているアプリに切り替える</translation>
 <translation id="1807246157184219062">ライト</translation>
 <translation id="1809201888580326312">このサイトやアプリのパスワードは保存しないよう設定しています</translation>
-<translation id="1809483812148634490">Google Play からダウンロードしたアプリは、この Chromebook から削除されます。
-    <ph name="LINE_BREAKS1" />
-    購入した映画、テレビ番組、音楽、書籍、その他のアプリ内購入のコンテンツも削除される可能性があります。
-    <ph name="LINE_BREAKS2" />
-    他のデバイスのアプリやコンテンツに影響はありません。</translation>
 <translation id="1809734401532861917">自分のブックマーク、履歴、パスワード、その他の設定を <ph name="USER_EMAIL_ADDRESS" /> に追加します</translation>
 <translation id="1810070166657251157">スマートフォンに保存されているパスワードを使用するには、QR コードのサイトから iOS 版 Chrome をダウンロードし、Google アカウントにログインします。</translation>
 <translation id="1810366086647840386">イメージ サーバー</translation>
@@ -2601,7 +2596,6 @@
 <translation id="2790750268015892264">独立したウェブアプリにスマートカード リーダーの操作を許可しない（アプリはスマートカードに一切アクセスできません）。</translation>
 <translation id="2791529110887957050">Linux の削除</translation>
 <translation id="2791952154587244007">エラーが発生しました。キオスク アプリケーションをこのデバイスで自動的に起動することはできません。</translation>
-<translation id="2792290659606763004">Android アプリを削除しますか？</translation>
 <translation id="2792465461386711506">スマートフォンで最近使った Chrome タブを表示するには、Chrome 同期を有効にします</translation>
 <translation id="2792697226874849938">制限の画像</translation>
 <translation id="2794522004398861033">eSIM を設定するには Wi-Fi またはイーサネットに接続してください</translation>
@@ -2838,7 +2832,6 @@
 <translation id="2964387589834028666">興奮</translation>
 <translation id="2965227184985674128">マイクへのアクセスをオンにしますか？</translation>
 <translation id="2966705348606485669"><ph name="FOLDER_TITLE" /> ブックマーク フォルダのその他のオプション</translation>
-<translation id="2966937470348689686">Android 設定を管理</translation>
 <translation id="2967926928600500959">これらのルールに一致する URL は、特定のブラウザで強制的に開かれます。</translation>
 <translation id="2969411787010981955">データを選択した場所にエクスポートしました</translation>
 <translation id="2970766364519518369">近くにいる選択した連絡先と共有できます。共有リクエストを承認するよう求められます。<ph name="USER_EMAIL" /> にログインしているデバイス間では共有リクエストを承認する必要はありません。</translation>
@@ -3302,7 +3295,6 @@
 <translation id="3317459757438853210">両面印刷</translation>
 <translation id="3317521105713541270">グループを作成</translation>
 <translation id="3317678681329786349">カメラとマイクがブロックされています</translation>
-<translation id="3319306431415395200"><ph name="VISUAL_SEARCH_PROVIDER" /> で画像内のテキストを翻訳する</translation>
 <translation id="3319863571062685443">住所を保存しました</translation>
 <translation id="3320271870899888245">OneDrive に接続できません。もう一度お試しください。</translation>
 <translation id="3320630259304269485">セーフ ブラウジング（危険なサイトからの保護機能）などのセキュリティ設定</translation>
@@ -5570,7 +5562,6 @@
 <translation id="4918844574251943176">画像をコピーしました</translation>
 <translation id="4921348630401250116">テキスト読み上げ</translation>
 <translation id="4922104989726031751">お使いのオペレーティング システムでパスワード マネージャーを使用するには、Chromium を再起動してパソコンのパスワード マネージャーへのアクセスを許可してください。再起動すると、タブが再度開きます。</translation>
-<translation id="492299503953721473">Android アプリを削除</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> をアンインストールしています...</translation>
 <translation id="4923977675318667854">タブグループを表示</translation>
 <translation id="4924002401726507608">フィードバックを送信</translation>
@@ -8159,7 +8150,6 @@
 <translation id="6827422464708099620">選択すると、その他のオプションを表示できます</translation>
 <translation id="6827517233063803343">Google アカウントでログインしているすべての Chrome OS デバイス間で、アプリと設定が同期されます。ブラウザの同期オプションについては、<ph name="LINK_BEGIN" />Chrome の設定<ph name="LINK_END" />をご覧ください。</translation>
 <translation id="6827767090350758381">古いバージョンの Chrome アプリを Windows デバイスで使用できるのは、2022 年 12 月までです。管理者にお問い合わせのうえ、新しいバージョンに更新するか、アプリを削除してください。</translation>
-<translation id="6828153365543658583">ログインを以下のユーザーに制限する:</translation>
 <translation id="6828182567531805778">データを同期するにはパスフレーズを入力してください</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">すべてのユーザーで自動更新を行うよう設定できませんでした（プリフライト実行エラー: <ph name="ERROR_NUMBER" />）</translation>
@@ -8207,7 +8197,6 @@
 <translation id="6855892664589459354">Crostini のバックアップと復元</translation>
 <translation id="6856348640027512653">バーチャル リアリティのデバイスやデータの使用を許可しないサイト</translation>
 <translation id="6856623341093082836">タッチスクリーンをを設定し、精度を調整します</translation>
-<translation id="6856850379840757744">オンにした場合は、すべての通知を静かな方法で行います</translation>
 <translation id="6857145580237920905">Powerwash を実行する前に eSIM プロファイルを削除してください</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="6860097299815761905">プロキシの設定...</translation>
@@ -8790,7 +8779,6 @@
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> フォルダを選択</translation>
 <translation id="7297726121602187087">暗い緑</translation>
 <translation id="7298195798382681320">推奨</translation>
-<translation id="7299337219131431707">ゲストのブラウジングを許可する</translation>
 <translation id="7299515639584427954">対応リンクを開くデフォルトのアプリを変更しますか？</translation>
 <translation id="7299588179200441056"><ph name="URL" />～<ph name="FOLDER" /></translation>
 <translation id="730068416968462308">アニメーション</translation>
@@ -9786,7 +9774,6 @@
 <translation id="7990958035181555539">Android スマートフォンから Wi-Fi を自動的に移行</translation>
 <translation id="7991296728590311172">スイッチ アクセスの設定</translation>
 <translation id="7992203134935383159">音声合成</translation>
-<translation id="7994515119120860317"><ph name="VISUAL_SEARCH_PROVIDER" /> で画像内のテキストを翻訳する</translation>
 <translation id="799570308305997052">ウェブ表示</translation>
 <translation id="7997826902155442747">プロセスの優先値</translation>
 <translation id="7998701048266085837">URL</translation>

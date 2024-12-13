@@ -3543,6 +3543,7 @@ Dodatne podrobnosti:
 <translation id="7388594495505979117">{0,plural, =1{Naprava se bo znova zagnala čez 1 minuto}one{Naprava se bo znova zagnala čez # minuto}two{Naprava se bo znova zagnala čez # minuti}few{Naprava se bo znova zagnala čez # minute}other{Naprava se bo znova zagnala čez # minut}}</translation>
 <translation id="7393161616326137353">Pustolovske igre</translation>
 <translation id="7393475648162498734">Ob zaključku nakupa je prikazano, katere nagrade in ugodnosti so na voljo za vaše kartice</translation>
+<translation id="7393971683644170444">Povezovanje s ponudnikom kartice …</translation>
 <translation id="739728382607845710">Ikona rutine za obravnavo plačil</translation>
 <translation id="7399616692258236448">Zahteve za lokacijo so samodejno blokirane za vsa spletna mesta, razen tiste z vašim dovoljenjem</translation>
 <translation id="7400418766976504921">URL</translation>

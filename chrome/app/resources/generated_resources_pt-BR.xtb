@@ -1182,11 +1182,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1806335016774576568">Mudar para outro app aberto</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1809201888580326312">Você escolheu não salvar senhas para estes sites e apps</translation>
-<translation id="1809483812148634490">Os apps baixados do Google Play serão excluídos deste Chromebook.
-    <ph name="LINE_BREAKS1" />
-    O conteúdo comprado, como filmes, programas de TV, músicas, livros ou outras compras em aplicativos, também poderá ser excluído.
-    <ph name="LINE_BREAKS2" />
-    Isso não afetará apps ou conteúdo em outros dispositivos.</translation>
 <translation id="1809734401532861917">Adicionar meus favoritos, histórico, senhas e outras configurações a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1810070166657251157">Para usar as senhas salvas no smartphone, baixe o Chrome para iOS usando o QR code e entre na sua Conta do Google.</translation>
 <translation id="1810366086647840386">Servidor da imagem</translation>
@@ -1422,7 +1417,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="197288927597451399">Manter</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Pontos de distribuição de lista de certificados revogados</translation>
-<translation id="1974060860693918893">Avançado</translation>
+<translation id="1974060860693918893">Avançadas</translation>
 <translation id="1974159333077206889">Mesmo áudio em todos os alto-falantes</translation>
 <translation id="1974216844776165821">O Chrome salvou sua senha neste dispositivo, mas ela pode ser salva na sua Conta do Google, se preferir. Assim, todas as senhas e chaves de acesso da sua Conta do Google também estarão disponíveis enquanto ela estiver conectada.</translation>
 <translation id="1975841812214822307">Remover...</translation>
@@ -2620,7 +2615,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2790750268015892264">Os Apps da Isolados da Web não podem controlar leitores de cartão inteligente. Os apps não vão ter acesso a nenhum cartão inteligente.</translation>
 <translation id="2791529110887957050">Remover Linux</translation>
 <translation id="2791952154587244007">Ocorreu um erro. Não será possível iniciar automaticamente o aplicativo de quiosque neste dispositivo.</translation>
-<translation id="2792290659606763004">Remover apps Android?</translation>
 <translation id="2792465461386711506">Ativar a Sincronização do Chrome para ver guias recentes do navegador no smartphone</translation>
 <translation id="2792697226874849938">Imagem de restrição</translation>
 <translation id="2794522004398861033">Conecte-se a uma rede Wi-Fi ou Ethernet para configurar o eSIM</translation>
@@ -2857,7 +2851,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2964387589834028666">Animado</translation>
 <translation id="2965227184985674128">Ativar o acesso ao microfone?</translation>
 <translation id="2966705348606485669">Mais opções para a pasta <ph name="FOLDER_TITLE" /></translation>
-<translation id="2966937470348689686">Gerenciar preferências do Android</translation>
 <translation id="2967926928600500959">Os URLs que corresponderem a essas regras vão ser forçados a abrir em um navegador específico.</translation>
 <translation id="2969411787010981955">Os dados foram exportados para o local selecionado</translation>
 <translation id="2970766364519518369">Contatos selecionados poderão compartilhar dados com você quando estiverem por perto. Será necessário aprovar essas solicitações. O compartilhamento entre dispositivos que estejam conectados à conta <ph name="USER_EMAIL" /> não exige aprovação.</translation>
@@ -3323,7 +3316,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3317459757438853210">Frente e verso</translation>
 <translation id="3317521105713541270">Criar grupos</translation>
 <translation id="3317678681329786349">Câmera e microfone bloqueados</translation>
-<translation id="3319306431415395200">Traduzir texto na imagem com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3319863571062685443">Seu endereço foi salvo</translation>
 <translation id="3320271870899888245">Não é possível se conectar ao OneDrive. Tente de novo.</translation>
 <translation id="3320630259304269485">Navegação segura (proteção contra sites perigosos) e outras configurações de segurança</translation>
@@ -5596,7 +5588,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4918844574251943176">Imagem copiada</translation>
 <translation id="4921348630401250116">Conversão de texto em voz</translation>
 <translation id="4922104989726031751">Para usar o Gerenciador de senhas com seu sistema operacional, reinicie o Chromium e permita o acesso ao gerenciador de senhas do computador. Suas guias serão reabertas após a reinicialização.</translation>
-<translation id="492299503953721473">Remover apps Android</translation>
 <translation id="492363500327720082">Desinstalando <ph name="APP_NAME" />…</translation>
 <translation id="4923977675318667854">Mostrar grupos de guias</translation>
 <translation id="4924002401726507608">Enviar feedback</translation>
@@ -7289,7 +7280,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6169967265765719844">Nas <ph name="LINK_BEGIN" />configurações do app Steam<ph name="LINK_END" />, podem ser gerenciadas as permissões de jogos e apps instalados por ele.</translation>
 <translation id="6170470584681422115">Sanduíche</translation>
 <translation id="6170498031581934115">Não foi possível ativar a depuração do adb. Acesse "Configurações" e tente novamente.</translation>
-<translation id="6170675927290506430">Acessar as configurações de notificação</translation>
+<translation id="6170675927290506430">Acessar configurações de notificação</translation>
 <translation id="6171779718418683144">Perguntar sempre</translation>
 <translation id="617213288191670920">Nenhum idioma adicionado</translation>
 <translation id="6173623053897475761">Digite seu PIN novamente</translation>
@@ -8194,7 +8185,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6827422464708099620">Selecione para conferir mais opções</translation>
 <translation id="6827517233063803343">Seus apps e suas configurações serão sincronizados em todos os dispositivos ChromeOS conectados à sua Conta do Google. Para acessar as opções de sincronização do navegador, acesse as <ph name="LINK_BEGIN" />configurações do Chrome<ph name="LINK_END" />.</translation>
 <translation id="6827767090350758381">Depois de dezembro de 2022, não vai mais ser possível abrir as versões antigas dos apps do Chrome em dispositivos Windows. Entre em contato com seu administrador para instalar uma nova versão ou remover esse app.</translation>
-<translation id="6828153365543658583">Restringir o login para os seguintes usuários:</translation>
 <translation id="6828182567531805778">Insira a senha longa para sincronizar seus dados</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Falha ao configurar atualizações automáticas para todos os usuários (erro de execução de simulação: <ph name="ERROR_NUMBER" />)</translation>
@@ -8242,7 +8232,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6855892664589459354">Backup e restauração do Crostini</translation>
 <translation id="6856348640027512653">Sem permissão para usar dispositivos ou dados de realidade virtual</translation>
 <translation id="6856623341093082836">Configurar e ajustar a precisão da touchscreen</translation>
-<translation id="6856850379840757744">Quando ativado, todas as notificações serão silenciadas</translation>
 <translation id="6857145580237920905">Remover perfis de eSIM antes do Powerwash</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> segundos</translation>
 <translation id="6860097299815761905">Configurações de proxy...</translation>
@@ -8825,7 +8814,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7296503797589217366">Selecionar pasta <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Verde-escuro</translation>
 <translation id="7298195798382681320">Recomendada</translation>
-<translation id="7299337219131431707">Ativar a navegação como visitante</translation>
 <translation id="7299515639584427954">Mudar o app padrão dos links compatíveis?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> (<ph name="FOLDER" />)</translation>
 <translation id="730068416968462308">Animação</translation>
@@ -9822,7 +9810,6 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7990958035181555539">Transferir a rede Wi-Fi automaticamente do seu smartphone Android</translation>
 <translation id="7991296728590311172">Configurações do acesso com interruptor</translation>
 <translation id="7992203134935383159">Sintetização de voz</translation>
-<translation id="7994515119120860317">Traduzir texto na imagem com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">Prioridade de processo</translation>
 <translation id="7998701048266085837">URLs</translation>

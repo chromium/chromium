@@ -1181,11 +1181,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1806335016774576568">Byt till en annan öppen app</translation>
 <translation id="1807246157184219062">Ljust</translation>
 <translation id="1809201888580326312">Du har valt att inte spara lösenord för dessa webbplatser och appar</translation>
-<translation id="1809483812148634490">Appar som du har laddat ned från Google Play raderas från Chromebook.
-    <ph name="LINE_BREAKS1" />
-    Innehåll du har köpt, t.ex. filmer, tv-program, musik, böcker eller andra köp i appar, kanske också raderas.
-    <ph name="LINE_BREAKS2" />
-    Detta påverkar inte appar eller innehåll på andra enheter.</translation>
 <translation id="1809734401532861917">Lägg till bokmärken, historik, lösenord och andra inställningar i <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1810070166657251157">Om du vill använda sparade lösenord på telefonen följer du QR-koden, laddar ned Chrome för iOS och loggar in på ditt Google-konto.</translation>
 <translation id="1810366086647840386">Server för bild</translation>
@@ -2620,7 +2615,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2790750268015892264">Isolerade webbappar kan inte styra smartkortsläsare. Appar får inte åtkomst till något smartkort.</translation>
 <translation id="2791529110887957050">Ta bort Linux</translation>
 <translation id="2791952154587244007">Ett fel har inträffat. Kioskappen kan inte startas automatiskt på den här enheten.</translation>
-<translation id="2792290659606763004">Vill du ta bort Android-appar?</translation>
 <translation id="2792465461386711506">Aktivera Chrome Sync för att se de senaste flikarna i Chrome från telefonen</translation>
 <translation id="2792697226874849938">Begränsning</translation>
 <translation id="2794522004398861033">Anslut till wifi eller Ethernet om du vill konfigurera eSIM</translation>
@@ -2857,7 +2851,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2964387589834028666">Entusiastisk</translation>
 <translation id="2965227184985674128">Vill du aktivera mikrofonåtkomst?</translation>
 <translation id="2966705348606485669">Fler alternativ för <ph name="FOLDER_TITLE" /> bokmärkesmapp</translation>
-<translation id="2966937470348689686">Hantera Android-inställningar</translation>
 <translation id="2967926928600500959">Webbadresser som matchar dessa regler tvingas att öppnas i en viss webbläsare.</translation>
 <translation id="2969411787010981955">Data har exporterats till den valda platsen</translation>
 <translation id="2970766364519518369">Utvalda kontakter kan dela filer med dig när de är i närheten. Du blir ombedd att godkänna dessa förfrågningar. Du behöver inte godkänna delning mellan enheter som är inloggade på <ph name="USER_EMAIL" />.</translation>
@@ -3323,7 +3316,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3317459757438853210">Dubbelsidig</translation>
 <translation id="3317521105713541270">Skapa grupper</translation>
 <translation id="3317678681329786349">Kamera och mikrofon är blockerade</translation>
-<translation id="3319306431415395200">Översätt text i bild med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3319863571062685443">Adressen har sparats</translation>
 <translation id="3320271870899888245">Det går inte att ansluta till OneDrive. Försök igen.</translation>
 <translation id="3320630259304269485">Säker webbsökning (skydd mot farliga webbplatser) och andra säkerhetsinställningar</translation>
@@ -5595,7 +5587,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4918844574251943176">Bilden har kopierats</translation>
 <translation id="4921348630401250116">Text till tal</translation>
 <translation id="4922104989726031751">Om du vill använda Lösenordshantering med operativsystemet ska du starta om Chromium och tillåta åtkomst till datorns lösenordshanterare. Flikarna öppnas igen när du har startat om enheten.</translation>
-<translation id="492299503953721473">Ta bort Android-appar</translation>
 <translation id="492363500327720082">Avinstallerar <ph name="APP_NAME" /> …</translation>
 <translation id="4923977675318667854">Visa flikgrupper</translation>
 <translation id="4924002401726507608">Skicka feedback</translation>
@@ -8190,7 +8181,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6827422464708099620">Välj för att visa fler alternativ</translation>
 <translation id="6827517233063803343">Appar och inställningar synkroniseras på alla ChromeOS-enheter där du är inloggad på ditt Google-konto. Alternativ för synkronisering av webbläsaren finns i <ph name="LINK_BEGIN" />Chrome-inställningarna<ph name="LINK_END" />.</translation>
 <translation id="6827767090350758381">Äldre versioner av Chrome-appar öppnas inte på Windows-enheter efter december 2022. Kontakta administratören om att uppdatera till en ny version eller ta bort appen.</translation>
-<translation id="6828153365543658583">Begränsa inloggning till följande användare:</translation>
 <translation id="6828182567531805778">Ange lösenfrasen för att synkronisera data</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Det gick inte att konfigurera automatiska uppdateringar för alla användare (preliminärt körningsfel: <ph name="ERROR_NUMBER" />)</translation>
@@ -8238,7 +8228,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6855892664589459354">Säkerhetskopiering och återställning i Crostini</translation>
 <translation id="6856348640027512653">Får inte använda VR-enheter eller VR-data</translation>
 <translation id="6856623341093082836">Konfigurera pekskärmen och ställ in hur känslig den ska vara</translation>
-<translation id="6856850379840757744">När detta är aktiverat tystas alla aviseringar</translation>
 <translation id="6857145580237920905">Ta bort eSIM-profiler före powerwash</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
 <translation id="6860097299815761905">Proxyinställningar...</translation>
@@ -8821,7 +8810,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7296503797589217366">Välj mappen <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Mörkgrön</translation>
 <translation id="7298195798382681320">Rekommenderas</translation>
-<translation id="7299337219131431707">Aktivera gästsessioner</translation>
 <translation id="7299515639584427954">Vill du ändra standardapp för länkar som stöds?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Animerat</translation>
@@ -9818,7 +9806,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7990958035181555539">Överför automatiskt wifi-användaruppgifter från Android-telefonen</translation>
 <translation id="7991296728590311172">Inställningar för brytarstyrning</translation>
 <translation id="7992203134935383159">Talsyntes</translation>
-<translation id="7994515119120860317">Översätt text i bild med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">Webbvy</translation>
 <translation id="7997826902155442747">Prioriteringsprocess</translation>
 <translation id="7998701048266085837">Webbadresser</translation>

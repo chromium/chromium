@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">ডিভাইসের ডানদিকের বাডে <ph name="BATTERY_PERCENTAGE" />% ব্যাটারি আছে।</translation>
 <translation id="3340978935015468852">সেটিংস</translation>
 <translation id="3347558044552027859">আধুনিক</translation>
+<translation id="3353477144743332882">সারসংক্ষেপ ও নাম তৈরির মডেল ডাউনলোড করুন</translation>
 <translation id="3359218928534347896">মাইক্রোফোন মিউট করার স্ট্যাটাস টগল করুন</translation>
 <translation id="3360306038446926262">{0}Windows{/0}</translation>
 <translation id="3361618936611118375">সুশি</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">শর্টকাট উপলভ্য নেই। <ph name="KEY" /> কী ছাড়া নতুন শর্টকাট প্রেস করুন।</translation>
 <translation id="5860033963881614850">বন্ধ করুন</translation>
 <translation id="5860491529813859533">চালু করুন</translation>
+<translation id="5875913454160982848">ট্রান্সক্রিপশন মডেল ডাউনলোড করুন</translation>
 <translation id="5876385649737594562">বিকল্প বেছে নেওয়ার জন্য চালু করুন</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> পজ করুন</translation>
 <translation id="588258955323874662">সম্পূর্নস্ক্রীণ</translation>
@@ -1588,6 +1590,7 @@
 <translation id="8503836310948963452">আর মাত্র কয়েক মিনিট...</translation>
 <translation id="8505011850330200833">ট্রানস্ক্রিপ্ট প্রসেস ও সারাংশ তৈরি করার জন্য Gemini মডেলের ২জিবি স্টোরেজ প্রয়োজন</translation>
 <translation id="8508640263392900755">APN সম্পর্কিত বিবরণ</translation>
+<translation id="8509574872955173831">সারসংক্ষেপ ও নাম তৈরি সম্পর্কে আরও জানুন</translation>
 <translation id="8522687886059337719">আপনি এখন নতুন <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ওয়ালপেপার<ph name="END_LINK_WALLPAPER_SUBPAGE" /> এবং <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />স্ক্রিন সেভার<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> অ্যাক্সেস করতে পারবেন</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">টি হাউস</translation>

@@ -1171,11 +1171,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1806335016774576568">Cambiar a outra aplicación aberta</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1809201888580326312">Decidiches non gardar os contrasinais destes sitios e aplicacións</translation>
-<translation id="1809483812148634490">As aplicacións que descargases desde Google Play eliminaranse deste Chromebook.
-    <ph name="LINE_BREAKS1" />
-    Tamén se pode eliminar o contido que comprases, como as películas, os programas de televisión, a música, os libros ou outras compras integradas nas aplicacións.
-    <ph name="LINE_BREAKS2" />
-    Isto non afecta ás aplicacións nin ao contido doutros dispositivos.</translation>
 <translation id="1809734401532861917">Engade os meus marcadores, o historial, os contrasinais e outras opcións de configuración a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1810070166657251157">Para poder usar no teléfono os contrasinais gardados, escanea o código QR, descarga Chrome para iOS e inicia sesión na túa Conta de Google.</translation>
 <translation id="1810366086647840386">Servidor da imaxe</translation>
@@ -2606,7 +2601,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2790750268015892264">As aplicacións web illadas non poderán controlar os lectores de tarxetas intelixentes. As aplicacións non obterán acceso a ningunha tarxeta intelixente.</translation>
 <translation id="2791529110887957050">Quitar Linux</translation>
 <translation id="2791952154587244007">Produciuse un erro. A aplicación de quiosco non poderá iniciarse automaticamente neste dispositivo.</translation>
-<translation id="2792290659606763004">Queres eliminar as aplicacións para Android?</translation>
 <translation id="2792465461386711506">Activar Sincronización de Chrome para acceder ás pestanas recentes de Chrome desde o teléfono</translation>
 <translation id="2792697226874849938">Imaxe de restrición</translation>
 <translation id="2794522004398861033">Conéctate á wifi ou á Ethernet para configurar a eSIM</translation>
@@ -2843,7 +2837,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2964387589834028666">Emocionante</translation>
 <translation id="2965227184985674128">Queres activar o acceso ao micrófono?</translation>
 <translation id="2966705348606485669">Máis opcións para o cartafol de marcadores <ph name="FOLDER_TITLE" /></translation>
-<translation id="2966937470348689686">Xestionar preferencias de Android</translation>
 <translation id="2967926928600500959">Forzarase a apertura dos URL que coincidan con estas regras nun navegador específico.</translation>
 <translation id="2969411787010981955">Exportáronse os datos na localización seleccionada</translation>
 <translation id="2970766364519518369">Os contactos seleccionados poderán compartir contido contigo cando estean preto de ti. Pediráseche que aprobes estas solicitudes. Esta acción non será necesaria no caso do uso compartido entre dispositivos que teñan a sesión iniciada en <ph name="USER_EMAIL" />.</translation>
@@ -3309,7 +3302,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3317459757438853210">Dobre cara</translation>
 <translation id="3317521105713541270">Crear grupos</translation>
 <translation id="3317678681329786349">Bloqueáronse a cámara e o micrófono</translation>
-<translation id="3319306431415395200">Traduce o texto da imaxe con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3319863571062685443">Gardouse o teu enderezo</translation>
 <translation id="3320271870899888245">Non se puido establecer a conexión con OneDrive. Téntao de novo.</translation>
 <translation id="3320630259304269485">Navegación segura (protección contra os sitios perigosos) e outras opcións de configuración de seguranza</translation>
@@ -5584,7 +5576,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4918844574251943176">Copiouse a imaxe</translation>
 <translation id="4921348630401250116">Conversión de texto a voz</translation>
 <translation id="4922104989726031751">Para poder usar o xestor de contrasinais co teu sistema operativo, reinicia Chromium e permite o acceso ao xestor de contrasinais do teu ordenador. Despois do reinicio volverán abrirse as pestanas.</translation>
-<translation id="492299503953721473">Eliminar aplicacións para Android</translation>
 <translation id="492363500327720082">Desinstalando <ph name="APP_NAME" />…</translation>
 <translation id="4923977675318667854">Mostrar grupos de pestanas</translation>
 <translation id="4924002401726507608">Enviar comentarios</translation>
@@ -8176,7 +8167,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6827422464708099620">Seleccionar para ver máis opcións</translation>
 <translation id="6827517233063803343">As túas aplicacións e opcións de configuración sincronizaranse en todos os dispositivos Chrome OS nos que teñas a sesión iniciada na túa conta de Google. Para ver as opción de sincronización do navegador, accede á <ph name="LINK_BEGIN" />configuración de Chrome<ph name="LINK_END" />.</translation>
 <translation id="6827767090350758381">As versións antigas das aplicacións de Chrome non se poderán abrir nos dispositivos Windows despois de decembro de 2022. Ponte en contacto co teu administrador para actualizar esta aplicación a unha versión nova ou quitala.</translation>
-<translation id="6828153365543658583">Restrinxir o inicio de sesión aos seguintes usuarios:</translation>
 <translation id="6828182567531805778">Introduce a túa frase de acceso para sincronizar os teus datos</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Non se puideron configurar as actualizacións automáticas para todos os usuarios (erro de execución da comprobación preliminar: <ph name="ERROR_NUMBER" />)</translation>
@@ -8224,7 +8214,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6855892664589459354">Copia de seguranza e restauración de Crostini</translation>
 <translation id="6856348640027512653">Permiso denegado para usar datos ou dispositivos de realidade virtual</translation>
 <translation id="6856623341093082836">Configurar a pantalla táctil e axustar a súa precisión</translation>
-<translation id="6856850379840757744">Se se activa esta opción, silenciaranse todas as notificacións</translation>
 <translation id="6857145580237920905">Quita os perfís de eSIM antes de executar Powerwash</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6860097299815761905">Configuración do proxy...</translation>
@@ -8806,7 +8795,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7296503797589217366">Seleccionar o cartafol <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Verde escuro</translation>
 <translation id="7298195798382681320">Recomendada</translation>
-<translation id="7299337219131431707">Activar a navegación como invitado</translation>
 <translation id="7299515639584427954">Queres cambiar a aplicación predeterminada para abrir as ligazóns compatibles?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Animación</translation>
@@ -9803,7 +9791,6 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7990958035181555539">Transferir automaticamente a wifi desde o teléfono Android</translation>
 <translation id="7991296728590311172">Acceso con interruptores</translation>
 <translation id="7992203134935383159">Síntese de voz</translation>
-<translation id="7994515119120860317">Traduce o texto da imaxe con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">Vista web</translation>
 <translation id="7997826902155442747">Prioridade do proceso</translation>
 <translation id="7998701048266085837">URL</translation>

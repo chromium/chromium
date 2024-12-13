@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">Abrir tudo</translation>
 <translation id="1408847409015257906">Toque em "Privacidade e segurança".</translation>
 <translation id="1411386976162024013">Pesquisa visual do Lens</translation>
+<translation id="1417474386970818917">Terminar sessão e eliminar</translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1436671784520050284">Continuar configuração</translation>
@@ -1009,6 +1010,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5628388627414062173">{count,plural, =1{{count} página na sua Lista de leitura}other{{count} páginas na sua Lista de leitura}}</translation>
 <translation id="5632485077360054581">Mostrar-me como</translation>
 <translation id="5633237939819267663">{count,plural, =1{Marcador guardado em "{title}"}other{{count} marcadores guardados em "{title}"}}</translation>
+<translation id="564170563478022912">Terminar sessão? Os dados da conta não guardados vão ser eliminados.</translation>
 <translation id="5642707040609478753">Marcar como não lida</translation>
 <translation id="5646284034397250191">Etiqueta criada. Data pendente</translation>
 <translation id="5647096944343801045">Ponto de entrada grande</translation>
@@ -1021,6 +1023,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5669335982068190158">Como parte da reposição do iPhone, a sua sessão foi terminada. Toque em Continuar abaixo para iniciar sessão.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Versão <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">Mudar de conta? Os dados da conta não guardados vão ser eliminados.</translation>
 <translation id="5683499062697987550">Para usar e guardar palavras-passe na sua Conta Google, valide a sua identidade.</translation>
 <translation id="5684761169742812828">Esta palavra-passe foi exposta numa violação de dados na Internet. Se não tiver tempo para a alterar neste momento, a Google recomenda que mantenha este aviso para se lembrar mais tarde.</translation>
 <translation id="5694848685995373177">Guardado no Drive de <ph name="USER_EMAIL" />.</translation>
@@ -1222,6 +1225,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="6506996418997555004">Partilhe o grupo de separadores "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">Inicie sessão para obter a sua Lista de leitura em todos os dispositivos.</translation>
 <translation id="6518133107902771759">Rever</translation>
+<translation id="6518861084553706202">Os separadores vão ser fechados e os dados eliminados podem incluir palavras-passe, histórico de navegação, cookies e muito mais.</translation>
 <translation id="6523575793810663688">Mostrar-me como</translation>
 <translation id="6524082013156754186">Guardar na conta</translation>
 <translation id="6527303717912515753">Partilhar</translation>
@@ -1678,6 +1682,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8545276357312221485">Verifique as definições do navegador predefinido</translation>
 <translation id="854938212724803178">Tem 1 palavra-passe comprometida. Corrija-a agora para manter a sua segurança.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Ignorou {count} aviso}other{Ignorou {count} avisos}}</translation>
+<translation id="8558046478684552694">Fechar grupo.</translation>
 <translation id="8560253818350321773">Mostre primeiro os itens usados frequentemente.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} opção para a palavra-passe disponível acima do teclado.}other{{count} opções para a palavra-passe disponíveis acima do teclado.}}</translation>
 <translation id="8564894539416715395">Página Novo separador</translation>
@@ -1846,6 +1851,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="9205189991633470489">Bloqueio da Navegação anónima</translation>
 <translation id="9206887540681440657">Velocidade</translation>
 <translation id="9223358826628549784">Relatório de falha enviado.</translation>
+<translation id="926455622548529175">Mudar e eliminar</translation>
 <translation id="929748059769569925">Texto realçado</translation>
 <translation id="932305336591073205">{count,plural, =1{Fechar separador}other{Fechar separadores}}</translation>
 <translation id="939472100615258482">Site atual</translation>

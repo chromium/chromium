@@ -157,6 +157,11 @@ Cả hai có tác động như nhau đối với hành vi của trình duyệt.<
 <translation id="1059069692400941670">Tắt chính sách nhập công cụ tìm kiếm mặc định trong lần chạy đầu tiên</translation>
 <translation id="1062011392452772310">Cho phép chứng thực từ xa cho thiết bị</translation>
 <translation id="1062407476771304334">Thay thế</translation>
+<translation id="1062460877136455375">Nếu bạn đặt chính sách này, thì hệ thống sẽ chỉ rõ những Ứng dụng web tách biệt (IWA) nào không thể kết nối với máy đọc thẻ thông minh (hệ thống thậm chí sẽ không nhắc người dùng cấp quyền). Chính sách này chấp nhận các ký tự đại diện – ví dụ: <ph name="ALL_ISOLATED_WEB_APPS" /> sẽ chặn quyền truy cập đối với tất cả IWA.
+
+       Chính sách này bị chính sách SmartCardConnectAllowedForUrls ghi đè; cụ thể, giá trị danh sách chặn là <ph name="ALL_ISOLATED_WEB_APPS" /> tức là tất cả IWA sẽ không kết nối được với máy đọc thẻ thông minh (hệ thống thậm chí sẽ không nhắc người dùng cấp quyền) ngoại trừ những ứng dụng có trong danh sách SmartCardConnectAllowedForUrls.
+
+       Theo mặc định, các Ứng dụng web tách biệt chỉ rõ quyền đối với Thẻ thông minh trong tệp kê khai có thể kết nối với thẻ thông minh với điều kiện là người dùng cấp quyền có tính tương tác cho mỗi máy đọc.</translation>
 <translation id="1063860513136880926">Nếu bạn đặt chính sách này thành Bật thì người dùng sẽ không thể dùng phím tắt hoặc API tiện ích để chụp ảnh màn hình. Nếu bạn đặt chính sách này thành Tắt hoặc không đặt thì người dùng có thể chụp ảnh màn hình.
 
 Xin lưu ý rằng chính sách này không ngăn người dùng chụp ảnh màn hình bằng hệ điều hành hoặc các ứng dụng của bên thứ ba trên <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> và <ph name="LINUX_OS_NAME" />.</translation>
@@ -1285,6 +1290,7 @@ Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" 
 <translation id="1905061765326052857">Không cho phép người dùng chưa liên kết sử dụng máy ảo cần thiết để hỗ trợ các ứng dụng Linux</translation>
 <translation id="1906871416501278476">Tắt dịch vụ <ph name="PRODUCT_NAME" /> và không mở không gian làm việc từ xa khi đăng nhập</translation>
 <translation id="1907696459350079081">Không bật trình bảo vệ màn hình trên màn hình đăng nhập.</translation>
+<translation id="1909567037176216409">Lựa chọn sạc thích ứng sử dụng công nghệ học máy để dự đoán thời điểm bạn rút sạc và trì hoãn quá trình sạc đến 100% để kéo dài thời lượng pin.</translation>
 <translation id="1910704279188129272">Cho phép đặt giới hạn sử dụng cho mỗi ứng dụng.
         Bạn có thể áp dụng giới hạn sử dụng cho các ứng dụng đã cài đặt trên <ph name="PRODUCT_OS_NAME" /> đối với người dùng cụ thể.
         Các giới hạn phải được chỉ định trong danh sách |app_limits|. Chỉ được phép áp dụng một giới hạn cho mỗi ứng dụng. Các ứng dụng không có trong danh sách này sẽ không bị giới hạn.
@@ -2468,6 +2474,12 @@ Nếu bạn tắt chính sách này, người dùng sẽ không thể thêm tài
 Thao tác đặt "command_line" sẽ chặn hoạt động tải tiện ích từ dòng lệnh.</translation>
 <translation id="2780840673734667062">Tắt lựa chọn đăng nhập bằng các tài khoản Google bổ sung</translation>
 <translation id="2784880732336446591">Xóa dữ liệu duyệt web khi thoát</translation>
+<translation id="2785422026482376078">Chỉ định việc có cho phép mô hình sạc thích ứng kìm lại quá trình sạc nhằm kéo dài tuổi thọ pin hay không.
+
+      Khi thiết bị đang kết nối với nguồn điện AC, mô hình sạc thích ứng sẽ đánh giá xem có cần kìm lại quá trình sạc để kéo dài tuổi thọ pin hay không. Nếu có, thì mô hình sạc thích ứng sẽ duy trì pin ở một mức cụ thể (80%) rồi sạc thiết bị lên 100% khi người dùng cần đến.
+      Nếu bạn đặt chính sách này thành Đúng, thì mô hình sạc thích ứng sẽ bật và được phép kìm lại quá trình sạc để kéo dài tuổi thọ pin. Nếu bạn đặt chính sách này thành Sai hoặc không đặt, mô hình sạc thích ứng sẽ không tác động đến quá trình sạc.
+
+      Lưu ý: Chính sách này sẽ không có hiệu lực nếu bạn đặt chính sách DevicePowerBatteryChargingOptimization.</translation>
 <translation id="2787173078141616821">Báo cáo thông tin về trạng thái của Android</translation>
 <translation id="2787774054174244402">Nếu bạn đặt chính sách này thành True, thì người dùng sẽ không ghi được vào thiết bị lưu trữ bên ngoài.
 
@@ -3434,6 +3446,7 @@ Nếu bạn đặt chính sách này, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POL
       Nếu bạn đặt thành true hoặc không định cấu hình chính sách này thì <ph name="PRODUCT_OS_NAME" /> sẽ tự động liên hệ với Máy chủ Quirks và tải các tệp cấu hình xuống (nếu có) rồi lưu trữ các tệp này trên thiết bị.  Các tệp này có thể dùng để, chẳng hạn như, cải thiện chất lượng hiển thị của màn hình gắn vào.</translation>
 <translation id="3515196503924273265">Cho phép bật tính năng NewBaseUrlInheritanceBehavior</translation>
 <translation id="351654132746710200">Sau khi <ph name="LACROS_NAME" /> tắt, quá trình di chuyển dữ liệu sẽ không được thực hiện. Thư mục <ph name="LACROS_NAME" /> bị xoá và người dùng tiếp tục sử dụng dữ liệu còn lại.</translation>
+<translation id="3518293344797498431">Sạc pin đến khoảng 80% để kéo dài thời lượng pin.</translation>
 <translation id="3518512927469906365">Vô hiệu hoá tính năng phân vùng bộ nhớ của bên thứ ba cho những nguồn gốc cấp cao nhất cụ thể.</translation>
 <translation id="3522257170445891912">Khi bạn đặt chính sách này, thì quy trình xác thực thông tin đăng nhập sẽ nằm trong một trong các cách sau đây, tuỳ thuộc vào giá trị của chế độ cài đặt:
 
@@ -5265,6 +5278,7 @@ Nếu bạn không đặt chính sách này thì <ph name="PRODUCT_NAME" /> sẽ
       Các mẫu URL không được xung đột với <ph name="FILE_SYSTEM_WRITE_BLOCKED_FOR_URLS_POLICY_NAME" />. Không chính sách nào được ưu tiên nếu một URL khớp với cả hai chính sách.
 
       Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Chúng tôi không chấp nhận giá trị <ph name="WILDCARD_VALUE" /> đối với chính sách này.</translation>
+<translation id="4891286600098289814">Tối ưu hoá quá trình sạc pin</translation>
 <translation id="4892647988357350237">Theo mặc định, Điều khoản dịch vụ sẽ hiển thị trong lần chạy đầu tiên của CCT. Nếu bạn đặt chính sách này thành <ph name="SKIP_TOS_DIALOG" />, hộp thoại Điều khoản dịch vụ sẽ không xuất hiện trong lần chạy đầu tiên hoặc những lần chạy tiếp theo. Nếu bạn đặt chính sách này thành <ph name="STANDARD_TOS_DIALOG" /> hoặc không đặt chính sách này, thì hộp thoại Điều khoản dịch vụ sẽ xuất hiện trong lần chạy đầu tiên. Các lưu ý khác:
 
       – Chính sách này chỉ có trên các thiết bị Android được quản lý hoàn toàn. Đây là những thiết bị mà nhà cung cấp dịch vụ Quản lý thống nhất thiết bị đầu cuối có thể định cấu hình.
@@ -5825,6 +5839,7 @@ Lưu ý: Tính năng này chưa được phát hành rộng rãi nên có thể 
 Nếu bạn không đặt chính sách này, thì giá trị mặc định là 0 độ và người dùng có thể thay đổi giá trị này. Trong trường hợp này, giá trị mặc định sẽ không được áp dụng lại khi khởi động lại.</translation>
 <translation id="5257395339965216304">Dữ liệu ứng dụng được lưu trữ</translation>
 <translation id="5258445772095084618">Cho phép người dùng chưa liên kết sử dụng máy ảo cần thiết để hỗ trợ ứng dụng Linux</translation>
+<translation id="5258651513421638932">Cho phép Ứng dụng tách biệt kết nối với Thẻ thông minh</translation>
 <translation id="5262320080678421295">Tắt chế độ cài đặt tin cậy trong các chứng chỉ do PKI cũ của Symantec Corporation phát hành</translation>
 <translation id="5265613843467285323">Hiện nút bật tắt trên giao diện người dùng để loại trừ một màn hình khỏi chế độ phản chiếu.</translation>
 <translation id="5272332743749468542">Cho phép người dùng lựa chọn Loại trừ màn hình khỏi chế độ phản chiếu</translation>
@@ -5922,6 +5937,7 @@ Việc lập danh sách URL trong chính sách này có tác dụng tương tự
 <translation id="5321624917465764266">Khi bạn đặt thành Enabled (Bật) hoặc không đặt chính sách này, người dùng có thể xoá nhật ký duyệt web và nhật ký tải xuống trong Chrome, đồng thời không thể thay đổi chế độ cài đặt này.
 
 Khi bạn đặt chính sách này thành Disabled (Tắt), người dùng sẽ không thể xoá nhật ký duyệt web và nhật ký tải xuống. Ngay cả khi chính sách này bị tắt, không có gì đảm bảo rằng nhật ký duyệt web và nhật ký tải xuống sẽ được giữ lại. Người dùng có thể trực tiếp chỉnh sửa hoặc xoá các tệp cơ sở dữ liệu nhật ký. Ngoài ra, trình duyệt có thể tự hết hạn hoặc lưu trữ tất cả hay một số mục bất kỳ trong nhật ký tại bất kỳ thời điểm nào.</translation>
+<translation id="5322649594584715998">Sạc đầy pin ở tốc độ chuẩn. Khi chọn chế độ này, bạn sẽ không thể chọn chế độ sạc thích ứng và sạc giới hạn.</translation>
 <translation id="5323200200131319468">Bật tính năng phản hồi bằng giọng nói trên màn hình đăng nhập</translation>
 <translation id="5323271643727095577">Không hiện hộp thoại huỷ khi có lệnh gọi event.preventDefault() cho sự kiện beforeunload. Hiện hộp thoại huỷ khi event.returnValue cho sự kiện beforeunload là chuỗi trống.</translation>
 <translation id="5324430722441910403">Cài đặt tìm kiếm trên trang web</translation>
@@ -6333,6 +6349,11 @@ Nếu bạn đặt chính sách này thành một danh sách trống hoặc khô
       Nếu bạn chưa định cấu hình chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ không cho phép hàm băm không an toàn, theo đúng quy trình triển khai mặc định. Nếu bạn bật chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ cho phép máy chủ sử dụng các hàm băm không an toàn khi thoả thuận cơ chế bắt tay TLS. Nếu bạn tắt chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ không cho phép máy chủ sử dụng các hàm băm không an toàn khi thoả thuận cơ chế bắt tay TLS.</translation>
 <translation id="5611869109049836323">Thực thi các quy tắc ràng buộc trong các neo tin cậy được thêm cục bộ</translation>
 <translation id="5612770822986069057">Cho phép người dùng bật hoặc tắt chế độ cài đặt Bảo vệ địa chỉ IP của <ph name="PRIVACY_SANDBOX_NAME" /> trên thiết bị của họ.</translation>
+<translation id="561480358503796257">Đây là URL dẫn đến một hình ảnh sẽ được dùng làm huy hiệu doanh nghiệp cho hồ sơ được quản lý. URL phải trỏ đến một hình ảnh.
+
+Bạn chỉ có thể đặt chính sách này thành chính sách người dùng.
+
+Bạn nên sử dụng biểu tượng trang web (ví dụ: https://www.google.com/favicon.ico) hoặc biểu tượng có kích thước tối thiểu là 48 x 48 px.</translation>
 <translation id="5614865701790130558">Ghi nhật ký các sự kiện về lượt cài đặt tiện ích dựa trên chính sách</translation>
 <translation id="561493980641967737">Khi bạn đặt chính sách này thành Bật, tính năng thu thập dữ liệu ẩn danh nhập dưới dạng URL sẽ luôn hoạt động. Tính năng này gửi URL của các trang mà người dùng truy cập đến Google nhằm giúp cải thiện tính năng tìm kiếm và duyệt web.
 
@@ -6796,6 +6817,7 @@ Nếu bạn đặt chính sách này thành <ph name="DISPLAY_MANAGEMENT_LABEL_T
 <translation id="5945312246863177268">Không cho phép người dùng nhấp vào thông báo trong Trung tâm điều khiển điện thoại để mở ứng dụng Eche.</translation>
 <translation id="5946082169633555022">Kênh beta</translation>
 <translation id="5946329690214660966">Đặt lịch biểu tùy chỉnh để kiểm tra bản cập nhật</translation>
+<translation id="5946401994049024050">Chế độ cài đặt Kết nối thẻ thông minh</translation>
 <translation id="5950069117106131681">Nếu bạn đặt chính sách này thành Bật, đầu trang và chân trang ở chế độ xem trước bản in sẽ được bật. Nếu bạn đặt chính sách này thành Tắt, đầu trang và chân trang ở chế độ xem trước bản in sẽ bị tắt.
 
       Nếu bạn đặt chính sách này, người dùng sẽ không thể thay đổi được. Nếu bạn không đặt chính sách này, người dùng sẽ quyết định có để đầu trang và chân trang xuất hiện hay không.</translation>
@@ -8054,6 +8076,21 @@ Cho đến Chrome 114, chính sách này yêu cầu đặt chính sách <ph name
       Nếu bạn đặt chính sách này thành Tắt, biểu tượng các tính năng thử nghiệm của trình duyệt sẽ bị xóa khỏi thanh công cụ.
 
       chrome://flags và bất kỳ cách thức nào khác để tắt và bật các tính năng của trình duyệt sẽ vẫn hoạt động như dự kiến, cho dù chính sách này được Bật hay Tắt.</translation>
+<translation id="67952585272033079">Tình trạng pin có thể chịu ảnh hưởng từ các yếu tố như thường xuyên sạc đầy và thời gian sạc kéo dài. Do đó, chính sách này cung cấp ba lựa chọn để tối ưu hoá hành vi sạc và giảm thiểu các yếu tố trên, từ đó kéo dài thời lượng pin.
+
+Nếu bạn đặt chính sách này thành Chuẩn, thì pin sẽ sạc bình thường đến 100%. Khi chọn lựa chọn này, bạn sẽ không thể chọn lựa chọn sạc thích ứng và sạc giới hạn.
+
+Nếu bạn đặt chính sách này thành Thích ứng, thì thiết bị sẽ tìm hiểu thói quen sạc của bạn và trì hoãn quá trình sạc đến 100% cho đến khi cần thiết. Lựa chọn này giúp kéo dài tình trạng pin.
+
+Nếu bạn đặt chính sách này thành Giới hạn, thì pin sẽ chỉ sạc đến khoảng 80% để tăng tối đa tuổi thọ pin.
+
+Nếu bạn không đặt chính sách này, thì lựa chọn Chuẩn sẽ được áp dụng (nếu được hỗ trợ).
+
+Chính sách DevicePowerBatteryChargingOptimization sẽ thay thế chính sách DevicePowerAdaptiveChargingEnabled.
+
+Chính sách DevicePowerAdaptiveChargingEnabled sẽ kiểm soát lựa chọn sạc thích ứng nếu bạn không đặt chính sách DevicePowerBatteryChargingOptimization.
+
+Các chính sách DevicePowerBatteryChargingOptimization và DevicePowerAdaptiveChargingEnabled sẽ luôn được ưu tiên hơn chế độ cài đặt của người dùng.</translation>
 <translation id="6795485990775913659">Chỉ cho phép in khi không có mã PIN</translation>
 <translation id="6796215185873669533">Đặt phiên bản chuỗi User-Agent thành giá trị mặc định của chế độ cài đặt trình duyệt</translation>
 <translation id="6800181452282128474">Không truy vấn máy chủ Quirks</translation>
@@ -8855,6 +8892,7 @@ Khi bạn đặt chính sách này thành False (Sai), hành vi cũ sẽ đượ
       Nếu bạn tắt hoặc không đặt chính sách này, thì các thiết bị đã đăng ký sẽ không ghi lại hoặc báo cáo trạng thái bảo mật TPM.
       Trường hợp ngoại lệ: Thông tin TPM do <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> kiểm soát trong M95 trở xuống.</translation>
 <translation id="739556497251174388">Cho phép sử dụng lại thông tin đăng nhập <ph name="PRODUCT_OS_NAME" /> để xác thực mạng</translation>
+<translation id="7395790871181951311">Không cho phép Ứng dụng tách biệt kết nối với Thẻ thông minh</translation>
 <translation id="7400208209734208176">Mở đường liên kết trong trình duyệt Chrome theo mặc định</translation>
 <translation id="7402257017733669351">Ngăn quy trình của trình duyệt tạo mã động</translation>
 <translation id="7402772023599097052">Khi bạn đặt thành Bật hoặc không đặt chính sách này, cảnh báo bảo mật sẽ hiện ra khi những cờ hiệu dòng lệnh có thể nguy hiểm được dùng để chạy Chrome.
@@ -9496,6 +9534,11 @@ Giá trị hợp lệ nằm trong khoảng từ 1 giây đến 9999 giây. Nếu
 
 Chính sách này sẽ không có hiệu lực khi bạn đặt chính sách <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> thành false (sai).</translation>
 <translation id="7912255076272890813">Định cấu hình loại ứng dụng/tiện ích được cho phép</translation>
+<translation id="7912541841840197488">Nếu bạn đặt chính sách này, thì hệ thống sẽ chỉ rõ những Ứng dụng web tách biệt (IWA) nào có thể kết nối với thẻ thông minh bằng Web Smart Card API mà không cần nhắc người dùng cấp quyền. Chính sách này không chấp nhận các ký tự đại diện.
+
+       Chính sách này ghi đè chính sách SmartCardConnectBlockedForUrls; cụ thể, giá trị danh sách chặn là <ph name="ALL_ISOLATED_WEB_APPS" /> tức là tất cả IWA sẽ không kết nối được với máy đọc thẻ thông minh (hệ thống thậm chí sẽ không nhắc người dùng cấp quyền) ngoại trừ những ứng dụng được liệt kê trong chính sách SmartCardConnectAllowedForUrls.
+
+       Theo mặc định, các Ứng dụng web tách biệt chỉ rõ quyền đối với Thẻ thông minh trong tệp kê khai có thể kết nối với thẻ thông minh với điều kiện là người dùng cấp quyền có tính tương tác cho mỗi máy đọc.</translation>
 <translation id="791267408364877739">Hiển thị cảnh báo bảo mật khi cờ hiệu dòng lệnh có thể nguy hiểm được sử dụng</translation>
 <translation id="7919665519909231619">Cho phép bật tính năng danh sách mua sắm</translation>
 <translation id="7922358664346625612">Tiếp tục mở thẻ cuối cùng trong Chrome.</translation>

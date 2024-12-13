@@ -1167,11 +1167,6 @@
 <translation id="1806335016774576568">切换到另一个已打开的应用</translation>
 <translation id="1807246157184219062">浅色调</translation>
 <translation id="1809201888580326312">您已选择不让系统保存用于登录这些网站和应用的密码</translation>
-<translation id="1809483812148634490">系统会从这台 Chromebook 中删除您从 Google Play 下载的应用。
-    <ph name="LINE_BREAKS1" />
-    可能还会删除您购买的内容，例如电影、电视节目、音乐、图书或其他应用内购商品。
-    <ph name="LINE_BREAKS2" />
-    其他设备上的应用或内容均不受影响。</translation>
 <translation id="1809734401532861917">将我的书签、历史记录、密码和其他设置添加至 <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1810070166657251157">如需在手机上使用您已保存的密码，请扫描二维码，下载 iOS 版 Chrome 并登录您的 Google 账号。</translation>
 <translation id="1810366086647840386">映像服务器</translation>
@@ -2599,7 +2594,6 @@
 <translation id="2790750268015892264">独立式 Web 应用 (IWA) 无法控制智能卡读卡器。应用将无法访问任何智能卡。</translation>
 <translation id="2791529110887957050">移除 Linux</translation>
 <translation id="2791952154587244007">出现错误。自助服务终端应用在此设备上不能自动启动。</translation>
-<translation id="2792290659606763004">要移除 Android 应用吗？</translation>
 <translation id="2792465461386711506">若要查看您手机上最近打开的 Chrome 标签页，请开启 Chrome 同步</translation>
 <translation id="2792697226874849938">限制图片</translation>
 <translation id="2794522004398861033">请连接到 Wi-Fi 或以太网以设置 eSIM 卡</translation>
@@ -2836,7 +2830,6 @@
 <translation id="2964387589834028666">兴奋</translation>
 <translation id="2965227184985674128">开启麦克风使用权限？</translation>
 <translation id="2966705348606485669">“<ph name="FOLDER_TITLE" />”书签文件夹的更多相关选项</translation>
-<translation id="2966937470348689686">管理 Android 偏好设置</translation>
 <translation id="2967926928600500959">与这些规则匹配的网址将被强制在一款特定浏览器中打开。</translation>
 <translation id="2969411787010981955">数据已导出到所选位置</translation>
 <translation id="2970766364519518369">附近的所选联系人可与您分享内容。系统会提示您批准相关请求。您无需批准已登录账号 <ph name="USER_EMAIL" /> 的设备之间的内容分享。</translation>
@@ -3300,7 +3293,6 @@
 <translation id="3317459757438853210">双面</translation>
 <translation id="3317521105713541270">创建群组</translation>
 <translation id="3317678681329786349">已禁止使用摄像头和麦克风</translation>
-<translation id="3319306431415395200">使用 <ph name="VISUAL_SEARCH_PROVIDER" /> 翻译图片中的文字</translation>
 <translation id="3319863571062685443">您的地址已保存</translation>
 <translation id="3320271870899888245">无法连接到 OneDrive。请重试。</translation>
 <translation id="3320630259304269485">安全浏览（防范危险网站）和其他安全设置</translation>
@@ -5570,7 +5562,6 @@
 <translation id="4918844574251943176">图片已复制</translation>
 <translation id="4921348630401250116">文字转语音</translation>
 <translation id="4922104989726031751">若要在您的操作系统中使用密码管理工具，请重新启动 Chromium 并允许使用计算机的密码管理工具。待 Chromium 重新启动后，您的标签页会自动重新打开。</translation>
-<translation id="492299503953721473">移除 Android 应用</translation>
 <translation id="492363500327720082">正在卸载 <ph name="APP_NAME" />…</translation>
 <translation id="4923977675318667854">显示标签页分组</translation>
 <translation id="4924002401726507608">提交反馈</translation>
@@ -8161,7 +8152,6 @@
 <translation id="6827422464708099620">选择即可查看更多选项</translation>
 <translation id="6827517233063803343">您的应用和设置会在您使用自己的 Google 账号登录的所有 Chrome 操作系统设备上保持同步。如需了解浏览器同步选项，请前往 <ph name="LINK_BEGIN" />Chrome 设置<ph name="LINK_END" />。</translation>
 <translation id="6827767090350758381">2022 年 12 月之后，旧版 Chrome 应用将无法在 Windows 设备上开启。请联系您的管理员以更新到新版本或移除此应用。</translation>
-<translation id="6828153365543658583">只允许以下用户登录：</translation>
 <translation id="6828182567531805778">输入密码以同步您的数据</translation>
 <translation id="682871081149631693">Quick Fix</translation>
 <translation id="6828860976882136098">未能按您的要求为所有用户设置自动更新（执行预定流程时出错：<ph name="ERROR_NUMBER" />）</translation>
@@ -8209,7 +8199,6 @@
 <translation id="6855892664589459354">Crostini 备份和恢复</translation>
 <translation id="6856348640027512653">不得使用虚拟现实设备或数据</translation>
 <translation id="6856623341093082836">设置和调整您的触摸屏的精确度</translation>
-<translation id="6856850379840757744">开启此设置会将所有通知静音</translation>
 <translation id="6857145580237920905">在执行 Powerwash 前先移除 eSIM 卡配置文件</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="6860097299815761905">代理设置...</translation>
@@ -8792,7 +8781,6 @@
 <translation id="7296503797589217366">选择“<ph name="FOLDER_TITLE" />”文件夹</translation>
 <translation id="7297726121602187087">深绿色</translation>
 <translation id="7298195798382681320">推荐</translation>
-<translation id="7299337219131431707">启用访客浏览</translation>
 <translation id="7299515639584427954">为默认应用更改受支持的链接？</translation>
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">动画</translation>
@@ -9789,7 +9777,6 @@
 <translation id="7990958035181555539">从您的 Android 手机自动传输 Wi-Fi 凭据</translation>
 <translation id="7991296728590311172">开关控制设置</translation>
 <translation id="7992203134935383159">语音合成</translation>
-<translation id="7994515119120860317">使用 <ph name="VISUAL_SEARCH_PROVIDER" /> 翻译图片中的文字</translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">进程优先级</translation>
 <translation id="7998701048266085837">网址</translation>

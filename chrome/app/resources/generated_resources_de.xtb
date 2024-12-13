@@ -1169,11 +1169,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1806335016774576568">Zu einer anderen geöffneten App wechseln</translation>
 <translation id="1807246157184219062">Hell</translation>
 <translation id="1809201888580326312">Du möchtest für diese Websites und Apps keine Passwörter speichern</translation>
-<translation id="1809483812148634490">Die bei Google Play heruntergeladenen Apps werden von diesem Chromebook gelöscht.
-    <ph name="LINE_BREAKS1" />
-    Von dir gekaufte Inhalte, wie Filme, TV-Sendungen, Musik, Bücher oder andere In-App-Käufe, werden eventuell ebenfalls gelöscht.
-    <ph name="LINE_BREAKS2" />
-    Apps oder Inhalte auf anderen Geräten sind davon nicht betroffen.</translation>
 <translation id="1809734401532861917">Meine Lesezeichen, den Verlauf, Passwörter und andere Einstellungen zu <ph name="USER_EMAIL_ADDRESS" /> hinzufügen</translation>
 <translation id="1810070166657251157">Wenn du deine gespeicherten Passwörter auf deinem Smartphone verwenden möchtest, folge dem QR-Code, lade Chrome für iOS herunter und melde dich in deinem Google-Konto an.</translation>
 <translation id="1810366086647840386">Image-Server</translation>
@@ -2604,7 +2599,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2790750268015892264">Isolierte Web-Apps können keine Smartcard-Lesegeräte steuern. Apps erhalten keinen Zugriff auf Smartcards.</translation>
 <translation id="2791529110887957050">Linux entfernen</translation>
 <translation id="2791952154587244007">Ein Fehler ist aufgetreten. Die Kioskanwendung kann auf diesem Gerät nicht automatisch gestartet werden.</translation>
-<translation id="2792290659606763004">Android-Apps entfernen?</translation>
 <translation id="2792465461386711506">Aktiviere die Chrome-Synchronisierung, um die zuletzt auf deinem Smartphone geöffneten Chrome-Tabs zu sehen</translation>
 <translation id="2792697226874849938">Bild für Blockierung der Anmeldung</translation>
 <translation id="2794522004398861033">Zur Einrichtung von eSIM mit WLAN oder Ethernet verbinden</translation>
@@ -2841,7 +2835,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2964387589834028666">Begeistert</translation>
 <translation id="2965227184985674128">Mikrofonzugriff aktivieren?</translation>
 <translation id="2966705348606485669">Weitere Optionen für den Lesezeichenordner „<ph name="FOLDER_TITLE" />“</translation>
-<translation id="2966937470348689686">Android-Einstellungen verwalten</translation>
 <translation id="2967926928600500959">Für URLs, die mit diesen Regeln übereinstimmen, wird beim Öffnen ein bestimmter Browser erzwungen.</translation>
 <translation id="2969411787010981955">Daten wurden in den ausgewählten Speicherort exportiert</translation>
 <translation id="2970766364519518369">Ausgewählte Kontakte können etwas mit dir teilen, wenn sie sich in der Nähe befinden. Du musst diese Anfragen bestätigen. Für Geräte, die im Konto <ph name="USER_EMAIL" /> angemeldet sind, musst du das Teilen nicht genehmigen.</translation>
@@ -3305,7 +3298,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3317459757438853210">Beidseitig</translation>
 <translation id="3317521105713541270">Gruppen erstellen</translation>
 <translation id="3317678681329786349">Kamera und Mikrofon blockiert</translation>
-<translation id="3319306431415395200">Text im Bild mit <ph name="VISUAL_SEARCH_PROVIDER" /> übersetzen</translation>
 <translation id="3319863571062685443">Deine Adresse wurde gespeichert</translation>
 <translation id="3320271870899888245">Es kann keine Verbindung zu OneDrive hergestellt werden. Versuche es noch einmal.</translation>
 <translation id="3320630259304269485">Safe Browsing (Schutz vor schädlichen Websites) und andere Sicherheitseinstellungen</translation>
@@ -5576,7 +5568,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4918844574251943176">Bild kopiert</translation>
 <translation id="4921348630401250116">Sprachausgabe</translation>
 <translation id="4922104989726031751">Wenn du den Passwortmanager mit deinem Betriebssystem verwenden möchtest, starte Chromium neu und erlaube den Zugriff auf den Passwortmanager deines Computers. Deine Tabs werden nach dem Neustart wieder geöffnet.</translation>
-<translation id="492299503953721473">Android-Apps entfernen</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> wird deinstalliert…</translation>
 <translation id="4923977675318667854">Tabgruppen anzeigen</translation>
 <translation id="4924002401726507608">Feedback geben</translation>
@@ -8167,7 +8158,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6827422464708099620">Auswählen, um weitere Optionen zu sehen</translation>
 <translation id="6827517233063803343">Deine Apps und Einstellungen werden auf allen Chrome OS-Geräten synchronisiert, auf denen du mit deinem Google-Konto angemeldet bist. Die Optionen zur Browsersynchronisation findest du in den <ph name="LINK_BEGIN" />Chrome-Einstellungen<ph name="LINK_END" />.</translation>
 <translation id="6827767090350758381">Ältere Versionen von Chrome-Apps können nach Dezember 2022 auf Windows-Geräten nicht mehr geöffnet werden. Du kannst dich an deinen Administrator wenden, um ein Update auf eine neue Version durchführen oder diese App entfernen zu lassen.</translation>
-<translation id="6828153365543658583">Anmeldung auf die folgenden Nutzer beschränken:</translation>
 <translation id="6828182567531805778">Gib die Passphrase ein, um deine Daten zu synchronisieren</translation>
 <translation id="682871081149631693">QuickFix-Build</translation>
 <translation id="6828860976882136098">Automatische Updates für alle Nutzer konnten nicht eingerichtet werden (Preflight-Ausführungsfehler: <ph name="ERROR_NUMBER" />)</translation>
@@ -8215,7 +8205,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6855892664589459354">Crostini-Sicherung und ‑Wiederherstellung</translation>
 <translation id="6856348640027512653">Dürfen keine Virtual-Reality-Geräte oder ‑Daten verwenden</translation>
 <translation id="6856623341093082836">Touchscreen einrichten und Genauigkeit anpassen</translation>
-<translation id="6856850379840757744">Bei Aktivierung der Funktion werden alle Benachrichtigungen stummgeschaltet</translation>
 <translation id="6857145580237920905">eSIM-Profile vor dem Powerwash entfernen</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> Sek.</translation>
 <translation id="6860097299815761905">Proxy-Einstellungen...</translation>
@@ -8798,7 +8787,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7296503797589217366">Ordner „<ph name="FOLDER_TITLE" />“ auswählen</translation>
 <translation id="7297726121602187087">Dunkelgrün</translation>
 <translation id="7298195798382681320">Empfohlen</translation>
-<translation id="7299337219131431707">Gastmodus aktivieren</translation>
 <translation id="7299515639584427954">Standard-App für unterstützte Links ändern?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Animation</translation>
@@ -9795,7 +9783,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7990958035181555539">WLAN automatisch von deinem Android-Smartphone übertragen</translation>
 <translation id="7991296728590311172">Einstellungen für Schalterzugriff</translation>
 <translation id="7992203134935383159">Sprachsynthese</translation>
-<translation id="7994515119120860317">Text im Bild mit <ph name="VISUAL_SEARCH_PROVIDER" /> übersetzen</translation>
 <translation id="799570308305997052">Webansicht</translation>
 <translation id="7997826902155442747">Prozesspriorität</translation>
 <translation id="7998701048266085837">URLs</translation>

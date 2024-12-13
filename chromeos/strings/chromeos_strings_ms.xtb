@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">Peranti mempunyai <ph name="BATTERY_PERCENTAGE" />% paras bateri kanan.</translation>
 <translation id="3340978935015468852">tetapan</translation>
 <translation id="3347558044552027859">moden</translation>
+<translation id="3353477144743332882">Muat turun model ringkasan dan ciptaan nama</translation>
 <translation id="3359218928534347896">togol redam mikrofon</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">susyi</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Pintasan tidak tersedia. Tekan pintasan baharu tanpa <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Dimatikan</translation>
 <translation id="5860491529813859533">Hidupkan</translation>
+<translation id="5875913454160982848">Muat turun model transkripsi</translation>
 <translation id="5876385649737594562">Hidupkan untuk membuat pilihan</translation>
 <translation id="5877503382465267833">Jeda <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Skrin penuh</translation>
@@ -1588,6 +1590,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8503836310948963452">Hanya beberapa minit lagi…</translation>
 <translation id="8505011850330200833">Model Gemini memerlukan 2GB storan untuk memproses transkrip dan membuat ringkasan</translation>
 <translation id="8508640263392900755">Butiran APN</translation>
+<translation id="8509574872955173831">Ketahui lebih lanjut tentang ringkasan dan penciptaan nama</translation>
 <translation id="8522687886059337719">Kini anda mempunyai akses kepada <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />hiasan latar<ph name="END_LINK_WALLPAPER_SUBPAGE" /> dan <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />penyelamat skrin<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> yang baharu</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">restoran teh</translation>

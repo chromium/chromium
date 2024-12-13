@@ -148,6 +148,11 @@ Ze hebben beide hetzelfde effect op het gedrag van de browser.</translation>
 <translation id="1059069692400941670">Import van standaard zoekmachine bij eerste uitvoering uitzetten</translation>
 <translation id="1062011392452772310">Externe bevestiging van apparaat aanzetten</translation>
 <translation id="1062407476771304334">Vervangen</translation>
+<translation id="1062460877136455375">Als je het beleid instelt, geef je aan welke geïsoleerde web-apps (GWA's) geen verbinding kunnen maken met smartcardlezers (gebruikers krijgen niet eens een vraag om toestemming). Dit beleid accepteert jokertekens. <ph name="ALL_ISOLATED_WEB_APPS" /> blokkeert bijvoorbeeld de toegang voor alle GWA's.
+
+       Dit beleid wordt overschreven door SmartCardConnectAllowedForUrls. Een blokkeerlijstwaarde van <ph name="ALL_ISOLATED_WEB_APPS" /> betekent bijvoorbeeld dat alle GWA's geen verbinding kunnen maken met smartcardlezers (gebruikers krijgen niet eens een vraag om toestemming), behalve de lezers die zijn vermeld in SmartCardConnectAllowedForUrls.
+
+       Geïsoleerde web-apps die smartcardrechten aangeven in het manifest, kunnen standaard verbinding maken met smartcards, mits de gebruiker de rechten interactief per lezer verleent.</translation>
 <translation id="1063860513136880926">Als je het beleid toepast, zijn screenshots die worden gemaakt met sneltoetsen of extensie-API's niet toegestaan. Als je het beleid niet toepast of niet instelt, zijn screenshots toegestaan.
 
 Op <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> en <ph name="LINUX_OS_NAME" /> voorkomt dit niet dat screenshots worden gemaakt met het besturingssysteem of apps van derden.</translation>
@@ -5680,6 +5685,7 @@ Opmerking: Deze functie is nog niet algemeen beschikbaar, dus als je deze aanzet
 Als je het beleid niet instelt, is de standaardwaarde 0 graden en kunnen gebruikers dit wijzigen. In dat geval wordt de standaardwaarde niet opnieuw toegepast bij opnieuw opstarten.</translation>
 <translation id="5257395339965216304">Gegevens van gehoste apps</translation>
 <translation id="5258445772095084618">Niet-aangesloten gebruikers toestaan virtuele machines te gebruiken die nodig zijn om Linux-apps te ondersteunen</translation>
+<translation id="5258651513421638932">Smartcardverbinding door geïsoleerde apps toestaan</translation>
 <translation id="5262320080678421295">Vertrouwen in certificaten van de verouderde PKI van Symantec Corporation uitzetten</translation>
 <translation id="5265613843467285323">Een UI-schakelaar tonen om een scherm uit te sluiten in de spiegelmodus.</translation>
 <translation id="5272332743749468542">Scherm uitsluiten in spiegelmodus beschikbaar maken voor de gebruiker</translation>
@@ -6627,6 +6633,7 @@ Als je dit beleid instelt op <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE"
 <translation id="5945312246863177268">Staat niet toe dat gebruikers op een Telefoonhub-melding klikken om de Eche-app te starten.</translation>
 <translation id="5946082169633555022">Bètakanaal</translation>
 <translation id="5946329690214660966">Custom planning instellen om te controleren op updates</translation>
+<translation id="5946401994049024050">Instellingen voor smartcardverbinding</translation>
 <translation id="5950069117106131681">Als je dit beleid toepast, zijn kop- en voetteksten zichtbaar in het afdrukvoorbeeld. Als je het beleid niet toepast, zijn ze niet zichtbaar in het afdrukvoorbeeld.
 
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, bepalen gebruikers of kop- en voetteksten zichtbaar zijn.</translation>
@@ -8625,6 +8632,7 @@ Als je dit beleid instelt op Onwaar, wordt het oude gedrag toegepast.</translati
       Als je het beleid niet toepast of niet instelt, betekent dit dat ingeschreven apparaten geen TPM-beveiligingsstatus vastleggen of rapporteren.
       Uitzondering: informatie over TPM wordt beheerd door <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> voor M95 en lager.</translation>
 <translation id="739556497251174388">Hiermee kunnen de inloggegevens voor <ph name="PRODUCT_OS_NAME" /> opnieuw worden gebruikt voor netwerkverificatie</translation>
+<translation id="7395790871181951311">Smartcardverbinding door geïsoleerde apps blokkeren</translation>
 <translation id="7400208209734208176">Links standaard openen in de Chrome-browser</translation>
 <translation id="7402257017733669351">Voorkomen dat het browserproces dynamische code maakt</translation>
 <translation id="7402772023599097052">Als je dit beleid aanzet of niet instelt, worden beveiligingswaarschuwingen getoond als Chrome wordt gestart met bepaalde mogelijk schadelijke opdrachtregelmarkeringen.
@@ -9257,6 +9265,11 @@ Geldige waarden liggen tussen 1 en 9999 seconden. Als je het beleid niet instelt
 
 Dit beleid heeft geen effect als het beleid <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> is ingesteld op False.</translation>
 <translation id="7912255076272890813">Toegestane typen apps/extensies configureren</translation>
+<translation id="7912541841840197488">Als je het beleid instelt, geef je aan welke geïsoleerde web-apps (GWA's) verbinding kunnen maken met smartcards via de Web Smart Card API zonder dat de gebruiker om toestemming wordt gevraagd. Dit beleid accepteert geen jokertekens.
+
+       Dit beleid overschrijft SmartCardConnectBlockedForUrls. Een blokkeerlijstwaarde van <ph name="ALL_ISOLATED_WEB_APPS" /> betekent bijvoorbeeld dat alle GWA's geen verbinding kunnen maken met smartcardlezers (gebruikers krijgen niet eens een vraag om toestemming), behalve de lezers die zijn vermeld in SmartCardConnectAllowedForUrls.
+
+       Geïsoleerde web-apps die smartcardrechten aangeven in het manifest, kunnen standaard verbinding maken met smartcards, mits de gebruiker de rechten interactief per lezer verleent.</translation>
 <translation id="791267408364877739">Beveiligingswaarschuwingen tonen als er mogelijk schadelijke opdrachtregelmarkeringen worden gebruikt</translation>
 <translation id="7919665519909231619">Toestaan dat de functie voor boodschappenlijstjes wordt aangezet</translation>
 <translation id="7922358664346625612">Laatste tabblad open houden in Chrome.</translation>

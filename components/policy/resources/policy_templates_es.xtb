@@ -148,6 +148,11 @@ Ambas tienen el mismo efecto en el comportamiento del navegador.</translation>
 <translation id="1059069692400941670">Inhabilitar la importación del buscador predeterminado en la primera ejecución</translation>
 <translation id="1062011392452772310">Habilitar confirmación remota para el dispositivo</translation>
 <translation id="1062407476771304334">Reemplazar</translation>
+<translation id="1062460877136455375">Si se define esta política, se especificará qué aplicaciones web aisladas (IWAs) no podrán conectarse a lectores de tarjetas inteligentes (ni siquiera se pedirá permiso a los usuarios). Esta política acepta comodines. Por ejemplo, <ph name="ALL_ISOLATED_WEB_APPS" /> bloqueará el acceso a todas las IWA.
+
+       Esta política se anula con SmartCardConnectAllowedForUrls. En concreto, si se le asigna el valor <ph name="ALL_ISOLATED_WEB_APPS" /> a la lista de bloqueados, significa que todas las IWAs no podrán conectarse a los lectores de tarjetas inteligentes (ni siquiera se pedirá permiso a los usuarios) excepto las que se indiquen en SmartCardConnectAllowedForUrls.
+
+       De forma predeterminada, las aplicaciones web aisladas que especifican permisos de tarjeta inteligente en el archivo de manifiesto pueden conectarse a tarjetas inteligentes siempre que el usuario conceda el permiso de forma interactiva por lector.</translation>
 <translation id="1063860513136880926">Si se habilita esta política, no se permitirá hacer capturas de pantalla mediante combinaciones de teclas ni APIs de extensión. Si se inhabilita esta política o no se establece, se permitirán las capturas de pantalla.
 
 Ten en cuenta que en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> y <ph name="LINUX_OS_NAME" />, esta política no impedirá que se hagan capturas de pantalla mediante aplicaciones del sistema operativo o de terceros.</translation>
@@ -5738,6 +5743,7 @@ Nota: Esta función aún no está disponible de forma general, por lo que habili
 Si no se establece, el valor predeterminado será 0 grados y los usuarios podrán cambiarlo. En este caso, no se volverá a aplicar el valor predeterminado tras reiniciar.</translation>
 <translation id="5257395339965216304">Datos de aplicaciones alojadas</translation>
 <translation id="5258445772095084618">Permitir que los usuarios no afiliados usen las máquinas virtuales necesarias para el funcionamiento de las aplicaciones de Linux</translation>
+<translation id="5258651513421638932">Permitir la conexión de tarjetas inteligentes con aplicaciones aisladas</translation>
 <translation id="5262320080678421295">Inhabilitar la confianza en los certificados emitidos por la PKI antigua de Symantec Corporation</translation>
 <translation id="5265613843467285323">Mostrar un interruptor de UI para excluir una pantalla en el modo Espejo.</translation>
 <translation id="5272332743749468542">Hacer que la opción Excluir esta pantalla en el modo Espejo esté disponible para el usuario</translation>
@@ -6699,6 +6705,7 @@ Si se le asigna el valor <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" /> 
 <translation id="5945312246863177268">No permitir que los usuarios hagan clic en una notificación de la función Mi teléfono para abrir la aplicación Eche.</translation>
 <translation id="5946082169633555022">Canal beta</translation>
 <translation id="5946329690214660966">Define la programación personalizada para buscar actualizaciones</translation>
+<translation id="5946401994049024050">Ajustes de conexión de tarjetas inteligentes</translation>
 <translation id="5950069117106131681">Si se habilita la política, activa los encabezados y pies de página en la vista previa de impresión. Si se inhabilita la política, los desactiva en la vista previa de impresión.
 
       Si se le asigna un valor a esta política, los usuarios no podrán cambiarlo. Si no se establece, los usuarios deciden si se muestran o no los encabezados y pies de página.</translation>
@@ -8718,6 +8725,7 @@ Si se le asigna el valor False, se habilitará el comportamiento anterior.</tran
       Si se inhabilita la política o no se establece, los dispositivos registrados no informarán ni registrarán el estado de seguridad del TPM.
       Excepción: <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> controla la información del TPM en M95 y versiones anteriores.</translation>
 <translation id="739556497251174388">Permitir reutilizar las credenciales de inicio de sesión de <ph name="PRODUCT_OS_NAME" /> para la autenticación de red</translation>
+<translation id="7395790871181951311">Bloquear la conexión de tarjetas inteligentes con aplicaciones aisladas</translation>
 <translation id="7400208209734208176">Abrir enlaces en el navegador Chrome de forma predeterminada</translation>
 <translation id="7402257017733669351">Impedir que el proceso del navegador cree código dinámico</translation>
 <translation id="7402772023599097052">Si la política se habilita o no se define, se mostrarán advertencias de seguridad cuando se usen marcas de línea de comandos potencialmente peligrosas para iniciar Chrome.
@@ -9356,6 +9364,11 @@ Los valores válidos están comprendidos entre 1 y 9999 segundos. Si no se defin
 
 Esta política no tendrá ningún efecto si se asigna el valor false a la política <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" />.</translation>
 <translation id="7912255076272890813">Configurar tipos de extensiones o aplicaciones permitidos</translation>
+<translation id="7912541841840197488">Si se define esta política, se especificará qué aplicaciones web aisladas (IWAs) pueden conectarse a tarjetas inteligentes mediante la API Web Smart Card sin pedir permiso al usuario. Esta política no acepta comodines.
+
+       Esta política anula SmartCardConnectBlockedForUrls. En concreto, si se le asigna el valor <ph name="ALL_ISOLATED_WEB_APPS" /> a la lista de bloqueados, significa que todas las IWAs no podrán conectarse a los lectores de tarjetas inteligentes (ni siquiera se pedirá permiso a los usuarios) excepto las que se indiquen en SmartCardConnectAllowedForUrls.
+
+       De forma predeterminada, las aplicaciones web aisladas que especifican permisos de tarjeta inteligente en el archivo de manifiesto pueden conectarse a tarjetas inteligentes siempre que el usuario conceda el permiso de forma interactiva por lector.</translation>
 <translation id="791267408364877739">Mostrar advertencias de seguridad si se utilizan instrucciones de línea de comandos potencialmente peligrosas</translation>
 <translation id="7919665519909231619">Permitir que se habilite la función de lista de la compra</translation>
 <translation id="7922358664346625612">Mantener abierta la última pestaña en Chrome.</translation>

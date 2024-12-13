@@ -1176,11 +1176,6 @@
 <translation id="1806335016774576568">التبديل إلى تطبيق آخر مفتوح</translation>
 <translation id="1807246157184219062">فاتح</translation>
 <translation id="1809201888580326312">لقد اخترت عدم حفظ كلمات المرور لهذه المواقع الإلكترونية والتطبيقات.</translation>
-<translation id="1809483812148634490">‏سيتم حذف التطبيقات التي نزّلتها من Google Play من جهاز Chromebook هذا.
-      <ph name="LINE_BREAKS1" />
-      قد يتم أيضًا حذف المحتوى الذي اشتريته، مثل الأفلام أو البرامج التلفزيونية أو الموسيقى أو الكتب أو عمليات الشراء الأخرى داخل التطبيق.
-      <ph name="LINE_BREAKS2" />
-      لن يؤثر هذا الحذف في التطبيقات أو المحتوى على الأجهزة الأخرى.</translation>
 <translation id="1809734401532861917">إضافة الإشارات المرجعية، والسّجل، وكلمات المرور، والإعدادات الأخرى إلى <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1810070166657251157">‏لاستخدام كلمات المرور المحفوظة على هاتفك، عليك مسح رمز الاستجابة السريعة ضوئيًا وتنزيل متصفِّح Chrome لنظام التشغيل iOS، ثم تسجيل الدخول إلى حسابك على Google.</translation>
 <translation id="1810366086647840386">خادم الصورة</translation>
@@ -2612,7 +2607,6 @@
 <translation id="2790750268015892264">لا يمكن لـ "تطبيقات الويب المعزولة" التحكّم في أجهزة قراءة البطاقات الذكية. ولن تتمكّن هذه التطبيقات من الوصول إلى أي بطاقة ذكية.</translation>
 <translation id="2791529110887957050">‏إزالة نظام التشغيل Linux</translation>
 <translation id="2791952154587244007">حدث خطأ. لن يمكن تشغيل تطبيق الكشك تلقائيًا على هذا الجهاز.</translation>
-<translation id="2792290659606763004">‏هل تريد إزالة تطبيقات Android؟</translation>
 <translation id="2792465461386711506">‏يمكنك تفعيل ميزة "مزامنة Chrome" لعرض علامات تبويب Chrome الأخيرة من هاتفك.</translation>
 <translation id="2792697226874849938">صورة الحظر</translation>
 <translation id="2794522004398861033">‏يجب الاتصال بشبكة Wi-Fi أو إيثرنت لإعداد eSIM.</translation>
@@ -2849,7 +2843,6 @@
 <translation id="2964387589834028666">حماسي</translation>
 <translation id="2965227184985674128">هل تريد السماح بالوصول إلى الميكروفون؟</translation>
 <translation id="2966705348606485669">مزيد من الخيارات لمجلد الإشارات المرجعية "<ph name="FOLDER_TITLE" />"</translation>
-<translation id="2966937470348689686">‏إدارة إعدادات Android المفضّلة</translation>
 <translation id="2967926928600500959">‏سيتم فرض فتح عناوين URL المتوافقة مع هذه القواعد في متصفِّح محدّد.</translation>
 <translation id="2969411787010981955">تم تصدير البيانات إلى المكان المحدد.</translation>
 <translation id="2970766364519518369">يمكن لجهات اتصال محددة المشاركة معك عندما تكون قريبة من جهازك. ستُطلَب منك الموافقة على هذه الطلبات. لن تحتاج إلى الموافقة على مشاركة المحتوى بين الأجهزة التي تم تسجيل الدخول إلى <ph name="USER_EMAIL" /> عليها.</translation>
@@ -2881,7 +2874,7 @@
 <translation id="2989177286941477290">{NUM_OF_FILES,plural, =1{يجب إخلاء بعض المساحة في <ph name="CLOUD_PROVIDER" /> لنقل هذا الملف.}zero{يجب إخلاء بعض المساحة في <ph name="CLOUD_PROVIDER" /> لنقل هذه الملفات.}two{يجب إخلاء بعض المساحة في <ph name="CLOUD_PROVIDER" /> لنقل هذين الملفين.}few{يجب إخلاء بعض المساحة في <ph name="CLOUD_PROVIDER" /> لنقل هذه الملفات.}many{يجب إخلاء بعض المساحة في <ph name="CLOUD_PROVIDER" /> لنقل هذه الملفات.}other{يجب إخلاء بعض المساحة في <ph name="CLOUD_PROVIDER" /> لنقل هذه الملفات.}}</translation>
 <translation id="2989474696604907455">غير متصل</translation>
 <translation id="2989786307324390836">‏حفظ شهادة واحدة بتشفير DER ثنائي</translation>
-<translation id="2989805286512600854">فتح في علامة تبويب جديدة</translation>
+<translation id="2989805286512600854">الفتح في علامة تبويب جديدة</translation>
 <translation id="2990313168615879645">‏إضافة حساب Google</translation>
 <translation id="2990375978470734995">عليك إعادة توصيل الملحقات الخارجية لتطبيق هذا التغيير.</translation>
 <translation id="2990583317361835189">عدم السماح للمواقع الإلكترونية باستخدام أجهزة استشعار الحركة</translation>
@@ -3315,7 +3308,6 @@
 <translation id="3317459757438853210">طباعة على الجانبين</translation>
 <translation id="3317521105713541270">إنشاء المجموعات</translation>
 <translation id="3317678681329786349">تم حظر استخدام الكاميرا والميكروفون</translation>
-<translation id="3319306431415395200">ترجمة النص في الصورة باستخدام <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="3319863571062685443">تم حفظ عنوانك</translation>
 <translation id="3320271870899888245">‏يتعذّر الربط بمساحة تخزين OneDrive. يُرجى إعادة المحاولة.</translation>
 <translation id="3320630259304269485">التصفُّح الآمن (يوفّر حماية من المواقع الإلكترونية الضارة) وإعدادات الأمان الأخرى</translation>
@@ -5585,7 +5577,6 @@
 <translation id="4918844574251943176">تم نسخ الصورة.</translation>
 <translation id="4921348630401250116">تحويل النص إلى كلام</translation>
 <translation id="4922104989726031751">‏لاستخدام "مدير كلمات المرور" مع نظام التشغيل، يُرجى إعادة تشغيل Chromium والسماح بالوصول إلى مدير كلمات المرور على جهاز الكمبيوتر. ستتم إعادة فتح علامات التبويب بعد إعادة التشغيل.</translation>
-<translation id="492299503953721473">‏إزالة تطبيقات Android</translation>
 <translation id="492363500327720082">جارٍ إلغاء تثبيت <ph name="APP_NAME" />...</translation>
 <translation id="4923977675318667854">عرض مجموعات علامات التبويب</translation>
 <translation id="4924002401726507608">إرسال التعليقات</translation>
@@ -8188,7 +8179,6 @@
 <translation id="6827422464708099620">انقر للاطّلاع على المزيد من الخيارات.</translation>
 <translation id="6827517233063803343">‏ستتم مزامنة التطبيقات والإعدادات على جميع الأجهزة التي تعمل بنظام التشغيل Chrome والتي سجّلت الدخول إليها باستخدام حسابك على Google. للوصول إلى خيارات مزامنة المتصفّح، انتقِل إلى <ph name="LINK_BEGIN" />إعدادات Chrome<ph name="LINK_END" />.</translation>
 <translation id="6827767090350758381">‏لن تُفتَح الإصدارات القديمة من تطبيقات Chrome على الأجهزة التي تعمل بنظام التشغيل Windows بعد كانون الأول (ديسمبر) 2022. يمكنك التواصل مع المشرف للتحديث إلى إصدار جديد من هذا التطبيق أو إزالته.</translation>
-<translation id="6828153365543658583">قصر تسجيل الدخول على المستخدمين التالين:</translation>
 <translation id="6828182567531805778">أدخِل عبارة المرور لمزامنة بياناتك.</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">فشل في إعداد التحديثات التلقائية لجميع المستخدمين (خطأ تنفيذ الاختبار المبدئي: <ph name="ERROR_NUMBER" />)</translation>
@@ -8236,7 +8226,6 @@
 <translation id="6855892664589459354">‏النسخ الاحتياطي واستعادة البيانات من نظام التشغيل Crostini</translation>
 <translation id="6856348640027512653">المواقع الإلكترونية التي لا يُسمح لها باستخدام أجهزة الواقع الافتراضي أو بياناته</translation>
 <translation id="6856623341093082836">إعداد دقة الشاشة التي تعمل باللمس وضبطها</translation>
-<translation id="6856850379840757744">في حال تفعيل هذه الميزة، سيتم كتم صوت جميع الإشعارات.</translation>
 <translation id="6857145580237920905">‏إزالة الملفات التعريفية لشرائح eSIM قبل إجراء عملية Powerwash</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ثانية</translation>
 <translation id="6860097299815761905">إعدادات الخادم الوكيل...</translation>
@@ -8820,7 +8809,6 @@
 <translation id="7296503797589217366">اختيار المجلد "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="7297726121602187087">أخضر داكن</translation>
 <translation id="7298195798382681320">موصى بها</translation>
-<translation id="7299337219131431707">تفعيل ميزة "تصفح الضيف"</translation>
 <translation id="7299515639584427954">هل تريد تغيير التطبيق التلقائي لفتح الروابط المتوافقة؟</translation>
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">متحرك</translation>
@@ -9816,7 +9804,6 @@
 <translation id="7990958035181555539">‏نقل بيانات شبكة Wi-Fi تلقائيًا من هاتف Android</translation>
 <translation id="7991296728590311172">إعدادات الوصول عبر مفتاح تحكّم</translation>
 <translation id="7992203134935383159">تركيب الكلام</translation>
-<translation id="7994515119120860317">ترجمة النص في الصورة باستخدام <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">أولوية المعالجة</translation>
 <translation id="7998701048266085837">‏عناوين URL</translation>

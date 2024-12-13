@@ -100,6 +100,7 @@
 <translation id="1407135791313364759">সব খুলুন</translation>
 <translation id="1408847409015257906">"গোপনীয়তা ও সুরক্ষা" বিকল্পে ট্যাপ করুন।</translation>
 <translation id="1411386976162024013">Lens-এ ভিজ্যুয়াল সার্চ</translation>
+<translation id="1417474386970818917">সাইন-আউট করুন ও মুছে দিন</translation>
 <translation id="1426410128494586442">হ্যাঁ</translation>
 <translation id="1430915738399379752">প্রিন্ট</translation>
 <translation id="1436671784520050284">সেট-আপ চালিয়ে যান</translation>
@@ -1010,6 +1011,7 @@
 <translation id="5628388627414062173">{count,plural, =1{আপনার পড়ার তালিকায় {count}টি পৃষ্ঠা রয়েছে}one{আপনার পড়ার তালিকায় {count}টি পৃষ্ঠা রয়েছে}other{আপনার পড়ার তালিকায় {count}টি পৃষ্ঠা রয়েছে}}</translation>
 <translation id="5632485077360054581">কীভাবে করতে হবে তা দেখান</translation>
 <translation id="5633237939819267663">{count,plural, =1{"{title}"-এ বুকমার্ক সেভ করা হয়েছে}one{"{title}"-এ {count}টি বুকমার্ক সেভ করা হয়েছে}other{"{title}"-এ {count}টি বুকমার্ক সেভ করা হয়েছে}}</translation>
+<translation id="564170563478022912">সাইন-আউট করবেন? সেভ করা হয়নি এমন ডেটা মুছে যাবে।</translation>
 <translation id="5642707040609478753">পড়া হয়নি হিসেবে চিহ্নিত করুন</translation>
 <translation id="5646284034397250191">লেবেল তৈরি করা হয়েছে। তারিখ দেওয়া হয়নি</translation>
 <translation id="5647096944343801045">বড় এন্ট্রি পয়েন্ট</translation>
@@ -1022,6 +1024,7 @@
 <translation id="5669335982068190158">আপনার iPhone রিসেটের অংশ হিসেবে আপনি সাইন-আউট হয়ে গেছেন। সাইন-ইন করার জন্য নিচে 'চালিয়ে যান' বোতামে ট্যাপ করুন।</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">ভার্সন <ph name="PRODUCT_VERSION" /></translation>
+<translation id="5680012489335339762">অ্যাকাউন্ট পাল্টাবেন? সেভ করা হয়নি এমন ডেটা মুছে যাবে।</translation>
 <translation id="5683499062697987550">আপনার Google অ্যাকাউন্টে পাসওয়ার্ড ব্যবহার করে সেভ করা চালিয়ে যেতে, আপনার পরিচয় যাচাই করুন।</translation>
 <translation id="5684761169742812828">এই পাসওয়ার্ড, ডেটার নিরাপত্তা লঙ্ঘনের কারণে সর্বজনীনভাবে প্রকাশ হয়ে গেছে। আপনার কাছে এখনই এটি পরিবর্তন করার সময় না থাকলে, আপনাকে পরে মনে করিয়ে দিতে, Google এই সতর্কতা রেখে দেওয়ার জন্য সাজেস্ট করে।</translation>
 <translation id="5694848685995373177"><ph name="USER_EMAIL" />-এর জন্য Drive-এ সেভ করা হয়েছে।</translation>
@@ -1223,6 +1226,7 @@
 <translation id="6506996418997555004">"<ph name="GROUP_NAME" />" ট্যাব গ্রুপ শেয়ার করুন</translation>
 <translation id="6507973708545996744">আপনার সব ডিভাইসে 'পড়ার তালিকা' পেতে সাইন-ইন করুন।</translation>
 <translation id="6518133107902771759">যাচাই করুন</translation>
+<translation id="6518861084553706202">ট্যাব মুছে দেওয়া হবে এবং মুছে দেওয়া ডেটায় পাসওয়ার্ড, ব্রাউজিং ইতিহাস, কুকি ও আরও অনেক কিছু অন্তর্ভুক্ত থাকতে পারে।</translation>
 <translation id="6523575793810663688">কীভাবে করতে হয় দেখুন</translation>
 <translation id="6524082013156754186">অ্যাকাউন্টে সেভ করুন</translation>
 <translation id="6527303717912515753">শেয়ার করুন</translation>
@@ -1679,6 +1683,7 @@
 <translation id="8545276357312221485">আপনার ডিফল্ট ব্রাউজার সেটিংস চেক করুন</translation>
 <translation id="854938212724803178">আপনার ১টি চুরি হয়ে যাওয়া পাসওয়ার্ড আছে। নিরাপদ থাকতে এই সমস্যার সমাধান করুন।</translation>
 <translation id="8556590991644167667">{count,plural, =1{আপনি {count}টি সতর্কতা বাতিল করেছেন}one{আপনি {count}টি সতর্কতা বাতিল করেছেন}other{আপনি {count}টি সতর্কতা বাতিল করেছেন}}</translation>
+<translation id="8558046478684552694">গ্রুপ বন্ধ করুন।</translation>
 <translation id="8560253818350321773">প্রায়শই ব্যবহার করা আইটেমগুলিকে আগে দেখায়।</translation>
 <translation id="8561999115126307258">{count,plural, =1{আপনার কীবোর্ডের উপরে পাসওয়ার্ডের জন্য {count}টি বিকল্প উপলভ্য আছে।}one{আপনার কীবোর্ডের উপরে পাসওয়ার্ডের জন্য {count}টি বিকল্প উপলভ্য আছে।}other{আপনার কীবোর্ডের উপরে পাসওয়ার্ডের জন্য {count}টি বিকল্প উপলভ্য আছে।}}</translation>
 <translation id="8564894539416715395">'নতুন ট্যাব' পৃষ্ঠা</translation>
@@ -1847,6 +1852,7 @@
 <translation id="9205189991633470489">ছদ্মবেশী লক</translation>
 <translation id="9206887540681440657">গতিবেগ</translation>
 <translation id="9223358826628549784">ক্র্যাশ রিপোর্ট পাঠানো হয়েছে৷</translation>
+<translation id="926455622548529175">পাল্টে নিন ও মুছুন</translation>
 <translation id="929748059769569925">হাইলাইট করা টেক্সট</translation>
 <translation id="932305336591073205">{count,plural, =1{ট্যাব বন্ধ করুন}one{ট্যাব বন্ধ করুন}other{ট্যাব বন্ধ করুন}}</translation>
 <translation id="939472100615258482">বর্তমান সাইট</translation>

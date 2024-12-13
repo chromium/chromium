@@ -1169,11 +1169,6 @@
 <translation id="1806335016774576568">Басқа ашық қолданбаға ауысу</translation>
 <translation id="1807246157184219062">Ашық</translation>
 <translation id="1809201888580326312">Бұл сайттар мен қолданбалар үшін құпия сөздерді сақтамау таңдалған.</translation>
-<translation id="1809483812148634490">Google Play дүкенінен жүктеп алынған қолданбалар бұл Chromebook құрылғысынан жойылады.
-    <ph name="LINE_BREAKS1" />
-    Фильмдер, телешоулар, музыка, кітаптар сияқты контентдар не басқа да қолданба арқылы сатып алынғандар жойылуы мүмкін.
-    <ph name="LINE_BREAKS2" />
-    Басқа құрылғылардағы қолданбалар немесе контент сол күйінде қалады.</translation>
 <translation id="1809734401532861917">Бетбелгілерді, тарихты, құпия сөздерді және басқа параметрлерді <ph name="USER_EMAIL_ADDRESS" /> профиліне енгізу</translation>
 <translation id="1810070166657251157">Телефонда сақталған құпия сөздеріңізді пайдалану үшін QR кодын қолданып, iOS-қа арналған Chrome браузерін жүктеп алып, Google аккаунтына кіріңіз.</translation>
 <translation id="1810366086647840386">Сурет сервері</translation>
@@ -2604,7 +2599,6 @@
 <translation id="2790750268015892264">Оқшау веб-қолданбалар смарт картаны оқу құралдарын басқара алмайды. Қолданбалардың смарт картаны пайдалану рұқсаты жоқ.</translation>
 <translation id="2791529110887957050">Linux жүйесін өшіру</translation>
 <translation id="2791952154587244007">Қате орын алды. Киоск қолданбасы бұл құрылғыда автоматты түрде іске қосылмайды.</translation>
-<translation id="2792290659606763004">Android қолданбалары өшірілсін бе?</translation>
 <translation id="2792465461386711506">Телефоннан соңғы Chrome қойындыларын көру үшін Chrome Sync функциясын іске қосыңыз.</translation>
 <translation id="2792697226874849938">Шектеу кескіні</translation>
 <translation id="2794522004398861033">eSIM параметрлерін реттеу үшін Wi-Fi немесе Ethernet желісіне қосылыңыз.</translation>
@@ -2841,7 +2835,6 @@
 <translation id="2964387589834028666">Қуаныш</translation>
 <translation id="2965227184985674128">Микрофонды пайдалану мүмкіндігін қосу керек пе?</translation>
 <translation id="2966705348606485669"><ph name="FOLDER_TITLE" /> бетбелгісі қалтасының қосымша опциялары</translation>
-<translation id="2966937470348689686">Android параметрлерін басқару</translation>
 <translation id="2967926928600500959">Осы ережелерге сай келетін URL мекенжайлары белгілі бір браузерде күштеп ашылады.</translation>
 <translation id="2969411787010981955">Деректер таңдалған орынға экспортталды</translation>
 <translation id="2970766364519518369">Маңайдағы таңдалған контактілер сізбен бөлісе алады. Сізден осы сұрауларды мақұлдау сұралады. <ph name="USER_EMAIL" /> аккаунтына кірген құрылғылар арасында бөлісілген контентті мақұлдау қажет болмайды.</translation>
@@ -3305,7 +3298,6 @@
 <translation id="3317459757438853210">Екі жақты</translation>
 <translation id="3317521105713541270">Топтар жасау</translation>
 <translation id="3317678681329786349">Камера мен микрофонға тыйым салынған</translation>
-<translation id="3319306431415395200"><ph name="VISUAL_SEARCH_PROVIDER" /> көмегімен суреттегі мәтінді аудару</translation>
 <translation id="3319863571062685443">Мекенжайыңыз сақталды</translation>
 <translation id="3320271870899888245">OneDrive қызметіне қосылу мүмкін емес. Қайталап көріңіз.</translation>
 <translation id="3320630259304269485">Қауіпсіз шолу (қауіпті сайттардан қорғау) және басқа қауіпсіздік параметрлері</translation>
@@ -5576,7 +5568,6 @@
 <translation id="4918844574251943176">Сурет көшірілді.</translation>
 <translation id="4921348630401250116">Мәтінді дыбыстау</translation>
 <translation id="4922104989726031751">Password Manager қызметін операциялық жүйемен бірге пайдалану үшін Chromium-ді қайта іске қосып, компьютердің Password Manager қызметін пайдалануға рұқсат беріңіз. Қайта іске қосқаннан кейін, қойындылар қайта ашылады.</translation>
-<translation id="492299503953721473">Android қолданбаларын өшіру</translation>
 <translation id="492363500327720082"><ph name="APP_NAME" /> жойылуда…</translation>
 <translation id="4923977675318667854">Қойындылар топтарын көрсету</translation>
 <translation id="4924002401726507608">Пікір жіберу</translation>
@@ -8167,7 +8158,6 @@
 <translation id="6827422464708099620">Қосымша опцияларды көру үшін таңдаңыз</translation>
 <translation id="6827517233063803343">Қолданбаларыңыз бен параметрлеріңіз осы Google аккаунтымен кірген барлық ChromeOS құрылғысында синхрондалады. Браузерді синхрондау опцияларын <ph name="LINK_BEGIN" />Chrome параметрлерінен<ph name="LINK_END" /> қараңыз.</translation>
 <translation id="6827767090350758381">Chrome қолданбаларының ескі нұсқалары 2022 жылдың желтоқсанынан кейін Windows жүйесіндегі құрылғыларда ашылмайды. Қолданбаның жаңа нұсқасын орнату немесе оны жою үшін әкімшіге хабарласыңыз.</translation>
-<translation id="6828153365543658583">Келесі пайдаланушылардың кіруіне тыйым салу:</translation>
 <translation id="6828182567531805778">Деректерді синхрондау үшін құпия фразаны енгізіңіз.</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Барлық пайдаланушылар үшін автоматты жаңартулар орнатылмады (алдын ала орындау қатесі: <ph name="ERROR_NUMBER" />)</translation>
@@ -8215,7 +8205,6 @@
 <translation id="6855892664589459354">Crostini қолданбалары мен файлдарының сақтық көшірмесін жасау және оларды қалпына келтіру</translation>
 <translation id="6856348640027512653">Виртуалдық шындық құрылғыларын немесе деректерді пайдалануға рұқсаты жоқтар</translation>
 <translation id="6856623341093082836">Сенсорлық экран дәлдігін орнату және реттеу</translation>
-<translation id="6856850379840757744">Іске қосылса, барлық хабарландыру үнсіз болады.</translation>
 <translation id="6857145580237920905">Powerwash функциясын пайдаланбас бұрын, eSIM профильдерін өшіріңіз</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="6860097299815761905">Прокси параметрлері…</translation>
@@ -8797,7 +8786,6 @@
 <translation id="7296503797589217366">"<ph name="FOLDER_TITLE" />" қалтасын таңдау</translation>
 <translation id="7297726121602187087">Қою жасыл</translation>
 <translation id="7298195798382681320">Ұсынылған</translation>
-<translation id="7299337219131431707">Қонақ шолуын қосу</translation>
 <translation id="7299515639584427954">Қолдау көрсету сілтемелеріне арналған әдепкі қолданба өзгертілсін бе?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Анимация</translation>
@@ -9793,7 +9781,6 @@
 <translation id="7990958035181555539">Android телефоныңыздан Wi-Fi-ды автоматты түрде тасымалдаңыз</translation>
 <translation id="7991296728590311172">Switch Access параметрлері</translation>
 <translation id="7992203134935383159">Сөз синтезі</translation>
-<translation id="7994515119120860317"><ph name="VISUAL_SEARCH_PROVIDER" /> көмегімен суреттегі мәтінді аудару</translation>
 <translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">Өңдеу басымдығы</translation>
 <translation id="7998701048266085837">URL мекенжайлары</translation>

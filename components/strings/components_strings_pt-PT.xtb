@@ -1401,6 +1401,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="351522771072578657">Está atualmente num menu</translation>
 <translation id="3517264445792388751">O sistema de ficheiros foi desativado pelo seu administrador</translation>
 <translation id="3518941727116570328">Processamento de vários objetos</translation>
+<translation id="3519670528214225835">Pergunte ao <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3525130752944427905">10 x 14 pol.</translation>
 <translation id="3525435918300186947">Controlar e reprogramar dispositivos MIDI?</translation>
 <translation id="3527181387426738155">Música e áudio</translation>
@@ -1956,6 +1957,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4451684391620232683">Texto apresentado ao utilizador:</translation>
 <translation id="4452328064229197696">A palavra-passe que acabou de utilizar foi encontrada numa violação de dados. Para proteger as suas contas, o Gestor de palavras-passe da Google recomenda que verifique as suas palavras-passe guardadas.</translation>
 <translation id="4456937135469235202">Viagens de aventura</translation>
+<translation id="4458013283022578512">Introduza uma pergunta</translation>
 <translation id="4464826014807964867">Websites com informações sobre a sua entidade</translation>
 <translation id="4466576951214254884">Empréstimos de estudante e financiamento universitário</translation>
 <translation id="4467821340016922962">Para sair do modo de ecrã inteiro e ver a transferência, prima |<ph name="ACCELERATOR" />|</translation>

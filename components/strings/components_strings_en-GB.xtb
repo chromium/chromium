@@ -3543,6 +3543,7 @@ Additional details:
 <translation id="7388594495505979117">{0,plural, =1{Your device will restart in 1 minute}other{Your device will restart in # minutes}}</translation>
 <translation id="7393161616326137353">Adventure games</translation>
 <translation id="7393475648162498734">Show which rewards and benefits are available for your cards at checkout</translation>
+<translation id="7393971683644170444">Connecting to your card provider…</translation>
 <translation id="739728382607845710">Payment handler icon</translation>
 <translation id="7399616692258236448">Location requests are automatically blocked for all sites except ones you allow</translation>
 <translation id="7400418766976504921">URL</translation>

@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">ডিভাইচটোৰ সোঁফালৰ বাডটোত <ph name="BATTERY_PERCENTAGE" />% বেটাৰী আছে।</translation>
 <translation id="3340978935015468852">ছেটিংসমূহ</translation>
 <translation id="3347558044552027859">আধুনিক</translation>
+<translation id="3353477144743332882">সাৰাংশ আৰু নাম সৃষ্টিৰ মডেল ডাউনল’ড কৰক</translation>
 <translation id="3359218928534347896">মাইক্ৰ’ফ’ন মিউট কৰাৰ বুটামটো ট’গল কৰক</translation>
 <translation id="3360306038446926262">ৱিণ্ড’</translation>
 <translation id="3361618936611118375">ছুশ্বি</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">শ্বৰ্টকাট উপলব্ধ নহয়। <ph name="KEY" />ৰ জৰিয়তে এটা নতুন শ্বৰ্টকাট টিপক।</translation>
 <translation id="5860033963881614850">অফ আছে</translation>
 <translation id="5860491529813859533">অন কৰক</translation>
+<translation id="5875913454160982848">ট্ৰেন্সক্ৰিপশ্বন মডেল ডাউনল’ড কৰক</translation>
 <translation id="5876385649737594562">বিকল্প বাছনি কৰিবলৈ অন কৰক</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> প’জ কৰক</translation>
 <translation id="588258955323874662">পূৰ্ণস্ক্ৰীণ</translation>
@@ -1588,6 +1590,7 @@
 <translation id="8503836310948963452">আৰু মাত্ৰ কেইমিনিটমান বাকী…</translation>
 <translation id="8505011850330200833">ট্ৰেন্সক্ৰিপ্ট প্ৰক্ৰিয়াকৰণ কৰিবলৈ আৰু সাৰাংশ সৃষ্টি কৰিবলৈ Gemini মডেলটোৰ বাবে ২ জিবি ষ্ট’ৰেজৰ আৱশ্যক</translation>
 <translation id="8508640263392900755">এপিএনৰ সবিশেষ</translation>
+<translation id="8509574872955173831">সাৰাংশ আৰু নাম সৃষ্টিৰ বিষয়ে অধিক জানক</translation>
 <translation id="8522687886059337719">আপোনাৰ এতিয়া নতুন <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ৱালপেপাৰ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> আৰু <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />স্ক্ৰীন ছেভাৰ<ph name="END_LINK_SCREENSAVER_SUBPAGE" />ৰ এক্সেছ আছে</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">চাহৰ দোকান</translation>

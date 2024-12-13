@@ -70,6 +70,7 @@
 <translation id="1896836275755235458">Chromium штеди батерију тако што ограничава активности у позадини и визуелне ефекте, као што је глатко скроловање и брзине кадрова видеа. <ph name="BEGIN_LINK" />Сазнајте више о Уштеди енергије<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Услуга ажурирања Chromium-а</translation>
 <translation id="1911763535808217981">Када то укључите, можете да се пријављујете на Google сајтове, као што је Gmail, али се не пријављујете у Chromium</translation>
+<translation id="1916451563296275579">Уклони податке ове апликације из Chromium-а</translation>
 <translation id="1929939181775079593">Chromium не реагује. Желите ли да га одмах поново покренете?</translation>
 <translation id="1933341829955786215">Ваша организација, <ph name="MANAGER" />, захтева да се пријавите у Chromium</translation>
 <translation id="193439633299369377">Треба да рестартујете Chromium ОС да бисте применили ажурирање.</translation>
@@ -407,6 +408,7 @@
 <translation id="6455857529632101747">Добро дошли у Chromium профиле</translation>
 <translation id="6466344609055215035">Уклони налог из Chromium-а</translation>
 <translation id="6475912303565314141">Контролише и страницу која се приказује када покренете Chromium.</translation>
+<translation id="648062525172759633">Ове странице су намењене програмерима Chromium-а и можда се не одржавају нити тестирају активно. Да бисте их омогућили, идите на <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, кликните на дугме да бисте омогућили странице за отклањање грешака, па поново идите на ову страницу.</translation>
 <translation id="648319183876919572">Побољшано безбедно прегледање доприноси заштити од опасних веб-сајтова и преузимања</translation>
 <translation id="6510925080656968729">Деинсталирај Chromium</translation>
 <translation id="651535675648445253">Пречице се отварају у Chromium-у</translation>

@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">ഉപകരണത്തിന്റെ വലത് ബഡിൽ <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററിയുണ്ട്.</translation>
 <translation id="3340978935015468852">ക്രമീകരണങ്ങൾ</translation>
 <translation id="3347558044552027859">മോഡേൺ</translation>
+<translation id="3353477144743332882">സംഗ്രഹവും പേര് സൃഷ്ടിക്കലും മോഡൽ ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="3359218928534347896">മൈക്രോഫോൺ മ്യൂട്ട് ചെയ്യൽ ടോഗിൾ ചെയ്യുക</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">സുഷി</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">കുറുക്കുവഴി ലഭ്യമല്ല. <ph name="KEY" /> ഇല്ലാത്ത ഒരു പുതിയ കുറുക്കുവഴി അമർത്തുക.</translation>
 <translation id="5860033963881614850">ഓഫാക്കുക</translation>
 <translation id="5860491529813859533">ഓൺ ചെയ്യുക</translation>
+<translation id="5875913454160982848">ട്രാൻസ്‌ക്രിപ്ഷൻ മോഡൽ ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="5876385649737594562">ഓപ്‌ഷനുകൾ തിരഞ്ഞെടുക്കുന്നതിന് ഓണാക്കുക</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> താൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="588258955323874662">പൂര്‍‌ണ്ണസ്‌ക്രീന്‍</translation>
@@ -1588,6 +1590,7 @@
 <translation id="8503836310948963452">കുറച്ച് മിനിറ്റുകൾ കൂടി മാത്രം…</translation>
 <translation id="8505011850330200833">ട്രാൻസ്‌ക്രിപ്റ്റുകൾ പ്രോസസ് ചെയ്യാനും സംഗ്രഹങ്ങൾ സൃഷ്‌ടിക്കാനും Gemini മോഡലിന് 2GB സ്റ്റോറേജ് ആവശ്യമാണ്</translation>
 <translation id="8508640263392900755">APN വിശദാംശങ്ങൾ</translation>
+<translation id="8509574872955173831">സംഗ്രഹവും പേര് സൃഷ്ടിക്കലും എന്നതിനെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="8522687886059337719">നിങ്ങൾക്ക് ഇപ്പോൾ പുതിയ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />വാൾപേപ്പറുകളിലേക്കും<ph name="END_LINK_WALLPAPER_SUBPAGE" /> <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />സ്ക്രീൻ സേവറിലേക്കും<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> ആക്‌സസ് ഉണ്ട്</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ടീ ഹൗസ്</translation>

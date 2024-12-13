@@ -483,6 +483,7 @@
 <translation id="3340011300870565703">May <ph name="BATTERY_PERCENTAGE" />% baterya ang kanang bud ng device.</translation>
 <translation id="3340978935015468852">mga setting</translation>
 <translation id="3347558044552027859">moderno</translation>
+<translation id="3353477144743332882">I-download ang modelo ng paggawa ng buod at pangalan</translation>
 <translation id="3359218928534347896">i-toggle ang pagkaka-mute ng mikropono</translation>
 <translation id="3360306038446926262">Mga Window</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -998,6 +999,7 @@
 <translation id="5859969039821714932">Hindi available ang shortcut. Pumindot ng bagong shortcut nang walang <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Naka-off</translation>
 <translation id="5860491529813859533">I-on</translation>
+<translation id="5875913454160982848">I-download ang modelo ng transcription</translation>
 <translation id="5876385649737594562">I-on para pumili ng mga opsyon</translation>
 <translation id="5877503382465267833">I-pause ang <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Fullscreen</translation>
@@ -1588,6 +1590,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8503836310948963452">Ilang minuto na lang...</translation>
 <translation id="8505011850330200833">Nagre-require ang modelo ng Gemini ng 2GB na storage para magproseso ng mga transcript at gumawa ng mga buod</translation>
 <translation id="8508640263392900755">Mga detalye ng APN</translation>
+<translation id="8509574872955173831">Matuto pa tungkol sa paggawa ng buod at pangalan</translation>
 <translation id="8522687886059337719">Mayroon ka na ngayong access sa mga bagong <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />wallpaper<ph name="END_LINK_WALLPAPER_SUBPAGE" /> at <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />screen saver<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tea house</translation>
