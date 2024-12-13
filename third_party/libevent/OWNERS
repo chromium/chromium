@@ -1,5 +1,0 @@
-thakis@chromium.org
-
-# The only remaining dependency on libevent is within WebRTC.
-handellm@google.com
-mbonadei@chromium.org
