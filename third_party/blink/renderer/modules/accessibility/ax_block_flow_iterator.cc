@@ -224,7 +224,22 @@ void AXBlockFlowData::ProcessBoxFragment(const PhysicalBoxFragment* fragment,
     if (it->Type() == FragmentItem::kText ||
         it->Type() == FragmentItem::kGeneratedText) {
       if (previous_on_line) {
-        properties.previous_on_line = previous_on_line;
+        if (properties.line_index ==
+            fragment_properties_[previous_on_line.value()].line_index) {
+          // TODO(crbug.com/383384904): Make AbstractInlineTextBox next /
+          // previous symmetrical.
+          // The computation of "previous" is not symmetrical to "next"
+          // because InlineCursor in the AITB algorithm restricts navigation to
+          // the same line, and ruby content can have lines nested within other
+          // lines. This means that when going forward (from the top-level line
+          // to the nested line), we point to the "next", but when inside the
+          // nested line we can't point back to the "previous" because the
+          // inline cursor can't see the top-level line. Once the TODO above is
+          // fixed for the AITB algorithm and we can compare them fairly, we can
+          // resume computing it symmetrical here.
+          properties.previous_on_line = previous_on_line;
+        }
+
         fragment_properties_[previous_on_line.value()].next_on_line =
             fragment_index;
       }
