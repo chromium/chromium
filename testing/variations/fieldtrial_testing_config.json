@@ -17332,10 +17332,9 @@
             ]
         }
     ],
-    "Prerender2EarlyDocumentLifecycleUpdate": [
+    "Prerender2EarlyDocumentLifecycleUpdateV2": [
         {
             "platforms": [
-                "android",
                 "linux",
                 "mac",
                 "windows",
