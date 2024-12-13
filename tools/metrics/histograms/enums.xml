@@ -16073,6 +16073,7 @@ from previous Chrome versions.
       label="IncrementLocalSurfaceIdForMainframeSameDocNavigation:disabled"/>
   <int value="-1724238554"
       label="AutofillEnableLogFormEventsToAllParsedFormTypes:enabled"/>
+  <int value="-1723847451" label="EnableChromeRefreshTokenBinding:enabled"/>
   <int value="-1723086446"
       label="AccessibilityMagnifyAcceleratorDialog:enabled"/>
   <int value="-1722208902" label="CCTModuleCustomRequestHeader:disabled"/>
@@ -25419,6 +25420,7 @@ from previous Chrome versions.
       label="enable-experimental-accessibility-switch-access-multistep-automation"/>
   <int value="1993258379" label="enable-icon-ntp"/>
   <int value="1994431722" label="MaterialDesignUserMenu:disabled"/>
+  <int value="1994844571" label="EnableChromeRefreshTokenBinding:disabled"/>
   <int value="1995045836"
       label="AutofillUpstreamAllowAllEmailDomains:disabled"/>
   <int value="1995322219" label="EmojiHandwritingVoiceInput:enabled"/>

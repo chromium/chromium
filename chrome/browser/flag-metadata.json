@@ -2555,6 +2555,11 @@
     "owners": [ "tbansal@chromium.org", "chrome-intelligence-core@chromium.org"],
     "expiry_milestone":120
   },
+  {
+    "name": "enable-chrome-refresh-token-binding",
+    "owners": ["alexilin@chromium.org", "chrome-signin-team@google.com"],
+    "expiry_milestone": 138
+  },
   {"name": "enable-chromeos-live-translate",
    "owners": ["robsc@chromium.org", "amoylan@chromium.org", "zufeng@google.com"],
    "expiry_milestone": 145

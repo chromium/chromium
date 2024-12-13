@@ -8172,8 +8172,13 @@ const char kEnableBoundSessionCredentialsSoftwareKeysForManualTestingName[] =
 const char
     kEnableBoundSessionCredentialsSoftwareKeysForManualTestingDescription[] =
         "Enables mock software-backed cryptographic keys for Google session "
-        "credentials binding (not secure). This is intended to be used for "
-        "manual testing only.";
+        "credentials binding and Chrome refresh tokens binding (not secure). "
+        "This is intended to be used for manual testing only.";
+
+const char kEnableChromeRefreshTokenBindingName[] =
+    "Chrome Refresh Token Binding";
+const char kEnableChromeRefreshTokenBindingDescription[] =
+    "Enables binding of Chrome refresh tokens to cryptographic keys.";
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 const char kEnableStandardBoundSessionCredentialsName[] =
