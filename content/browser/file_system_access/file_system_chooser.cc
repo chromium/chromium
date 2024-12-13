@@ -4,15 +4,15 @@
 
 #include "content/browser/file_system_access/file_system_chooser.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include <set>
-#endif
+#include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -23,6 +23,10 @@
 #include "ui/gfx/text_elider.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include <set>
+#endif
 
 namespace content {
 
@@ -188,6 +192,22 @@ ui::SelectFileDialog::Type ValidateType(ui::SelectFileDialog::Type type) {
   }
 }
 
+PathInfo FileInfoToPathInfo(const ui::SelectedFileInfo& file) {
+  if (file.virtual_path.has_value()) {
+    base::FilePath display_name = !file.display_name.empty()
+                                      ? base::FilePath(file.display_name)
+                                      : file.virtual_path->BaseName();
+    return {PathType::kExternal, *file.virtual_path,
+            display_name.AsUTF8Unsafe()};
+  }
+  base::FilePath path =
+      !file.local_path.empty() ? file.local_path : file.file_path;
+  base::FilePath display_name = !file.display_name.empty()
+                                    ? base::FilePath(file.display_name)
+                                    : path.BaseName();
+  return {PathType::kLocal, std::move(path), display_name.AsUTF8Unsafe()};
+}
+
 }  // namespace
 
 FileSystemChooser::Options::Options(
@@ -338,39 +358,27 @@ FileSystemChooser::FileSystemChooser(ui::SelectFileDialog::Type type,
 
 FileSystemChooser::~FileSystemChooser() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (dialog_)
+  if (dialog_) {
     dialog_->ListenerDestroyed();
+  }
 }
 
 void FileSystemChooser::FileSelected(const ui::SelectedFileInfo& file,
                                      int index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  MultiFilesSelected({file});
+  std::move(callback_).Run(file_system_access_error::Ok(),
+                           std::vector<PathInfo>{FileInfoToPathInfo(file)});
+  delete this;
 }
 
 void FileSystemChooser::MultiFilesSelected(
     const std::vector<ui::SelectedFileInfo>& files) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<PathInfo> result;
-
+  result.reserve(files.size());
   for (const ui::SelectedFileInfo& file : files) {
-    if (file.virtual_path.has_value()) {
-      base::FilePath display_name = !file.display_name.empty()
-                                        ? base::FilePath(file.display_name)
-                                        : file.virtual_path->BaseName();
-      result.emplace_back(PathType::kExternal, *file.virtual_path,
-                          display_name.AsUTF8Unsafe());
-    } else {
-      base::FilePath path =
-          !file.local_path.empty() ? file.local_path : file.file_path;
-      base::FilePath display_name = !file.display_name.empty()
-                                        ? base::FilePath(file.display_name)
-                                        : path.BaseName();
-      result.emplace_back(PathType::kLocal, std::move(path),
-                          display_name.AsUTF8Unsafe());
-    }
+    result.push_back(FileInfoToPathInfo(file));
   }
-
   std::move(callback_).Run(file_system_access_error::Ok(), std::move(result));
   delete this;
 }
