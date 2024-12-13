@@ -44,12 +44,12 @@ void ClientImage::SetReleaseSyncToken(SyncToken release_sync_token) {
   sync_token_ = std::move(release_sync_token);
 }
 
-const PoolId& ClientImage::GetPoolIdForTesting() const {
+const SharedImagePoolId& ClientImage::GetPoolIdForTesting() const {
   return pool_id_;
 }
 
 SharedImagePoolBase::SharedImagePoolBase(
-    const PoolId& pool_id,
+    const SharedImagePoolId& pool_id,
     const ImageInfo& image_info,
     const scoped_refptr<SharedImageInterface> sii,
     std::optional<uint8_t> max_pool_size,

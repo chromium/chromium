@@ -13,19 +13,21 @@
 namespace gpu {
 
 // A unique, unguessable identifier for a SharedImagePool.
-class GPU_EXPORT PoolId {
+class GPU_EXPORT SharedImagePoolId {
  public:
-  PoolId();
+  SharedImagePoolId();
 
-  // Creates a new PoolId with a cryptographically random value.
-  static PoolId Create();
+  // Creates a new SharedImagePoolId with a cryptographically random value.
+  static SharedImagePoolId Create();
 
-  // Generates a string representation of the PoolId.
+  // Generates a string representation of the SharedImagePoolId.
   std::string ToString() const;
 
-  bool operator==(const PoolId& other) const { return token_ == other.token_; }
+  bool operator==(const SharedImagePoolId& other) const {
+    return token_ == other.token_;
+  }
 
-  std::strong_ordering operator<=>(const PoolId& other) const {
+  std::strong_ordering operator<=>(const SharedImagePoolId& other) const {
     return token_ <=> other.token_;
   }
 
@@ -34,7 +36,7 @@ class GPU_EXPORT PoolId {
   const base::UnguessableToken& GetToken() const { return token_; }
 
  private:
-  explicit PoolId(const base::UnguessableToken& token);
+  explicit SharedImagePoolId(const base::UnguessableToken& token);
 
   // The underlying unguessable token.
   base::UnguessableToken token_;

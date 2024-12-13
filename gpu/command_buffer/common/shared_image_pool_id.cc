@@ -6,15 +6,16 @@
 
 namespace gpu {
 
-PoolId::PoolId() = default;
+SharedImagePoolId::SharedImagePoolId() = default;
 
-PoolId::PoolId(const base::UnguessableToken& token) : token_(token) {}
+SharedImagePoolId::SharedImagePoolId(const base::UnguessableToken& token)
+    : token_(token) {}
 
-PoolId PoolId::Create() {
-  return PoolId(base::UnguessableToken::Create());
+SharedImagePoolId SharedImagePoolId::Create() {
+  return SharedImagePoolId(base::UnguessableToken::Create());
 }
 
-std::string PoolId::ToString() const {
+std::string SharedImagePoolId::ToString() const {
   return token_.ToString();
 }
 

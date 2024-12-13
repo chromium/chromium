@@ -130,7 +130,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
       size_t estimated_size,
       bool is_thread_safe,
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt,
-      std::optional<PoolId> pool_id = std::nullopt);
+      std::optional<SharedImagePoolId> pool_id = std::nullopt);
 
   virtual ~SharedImageBacking();
 
@@ -144,7 +144,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   bool is_thread_safe() const { return !!lock_; }
   bool is_ref_counted() const { return is_ref_counted_; }
   gfx::BufferUsage buffer_usage() const { return buffer_usage_.value(); }
-  PoolId pool_id() const { return pool_id_.value(); }
+  SharedImagePoolId pool_id() const { return pool_id_.value(); }
   const std::string& debug_label() const { return debug_label_; }
 
   void OnContextLost();
@@ -422,10 +422,10 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   // Note that this will be eventually removed and merged into SharedImageUsage.
   const std::optional<gfx::BufferUsage> buffer_usage_;
 
-  // An optional PoolId if the backing was created via a client side
+  // An optional SharedImagePoolId if the backing was created via a client side
   // SharedImagePool. It will be null for backings which are not created via a
   // SharedImagePool.
-  const std::optional<PoolId> pool_id_;
+  const std::optional<SharedImagePoolId> pool_id_;
 
   bool is_ref_counted_ = true;
 
@@ -466,7 +466,7 @@ class GPU_GLES2_EXPORT ClearTrackingSharedImageBacking
       size_t estimated_size,
       bool is_thread_safe,
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt,
-      std::optional<PoolId> pool_id = std::nullopt);
+      std::optional<SharedImagePoolId> pool_id = std::nullopt);
 
   gfx::Rect ClearedRect() const override;
   void SetClearedRect(const gfx::Rect& cleared_rect) override;

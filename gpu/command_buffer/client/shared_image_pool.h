@@ -91,7 +91,7 @@ class GPU_EXPORT ClientImage : public base::RefCounted<ClientImage> {
   void SetReleaseSyncToken(SyncToken release_sync_token);
 
   // Only used for testing purposes.
-  const PoolId& GetPoolIdForTesting() const;
+  const SharedImagePoolId& GetPoolIdForTesting() const;
 
  protected:
   friend class base::RefCounted<ClientImage>;
@@ -116,7 +116,7 @@ class GPU_EXPORT ClientImage : public base::RefCounted<ClientImage> {
   base::TimeTicks last_used_time_ = base::TimeTicks::Now();
 
   // Unique unguessable identifier to identify the pool this image belongs to.
-  PoolId pool_id_;
+  SharedImagePoolId pool_id_;
 };
 
 // This class is designed to handle bulk of functionality of the image pool.
@@ -134,7 +134,7 @@ class GPU_EXPORT SharedImagePoolBase {
 
  protected:
   SharedImagePoolBase(
-      const PoolId& pool_id,
+      const SharedImagePoolId& pool_id,
       const ImageInfo& image_info,
       const scoped_refptr<SharedImageInterface> sii,
       std::optional<uint8_t> max_pool_size,
@@ -147,7 +147,7 @@ class GPU_EXPORT SharedImagePoolBase {
   void ReconfigureInternal(const ImageInfo& image_info);
 
   // Unique identifier to identify this pool and all images generated from it.
-  const PoolId pool_id_;
+  const SharedImagePoolId pool_id_;
 
   // Information used to create new ClientSharedImage.
   ImageInfo image_info_;
@@ -251,7 +251,7 @@ class GPU_EXPORT SharedImagePool : public SharedImagePoolBase {
       scoped_refptr<SharedImageInterface> sii,
       std::optional<uint8_t> max_pool_size,
       std::optional<base::TimeDelta> unused_resource_expiration_time)
-      : SharedImagePoolBase(PoolId::Create(),
+      : SharedImagePoolBase(SharedImagePoolId::Create(),
                             image_info,
                             std::move(sii),
                             std::move(max_pool_size),
