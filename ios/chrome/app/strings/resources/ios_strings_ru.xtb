@@ -1581,7 +1581,7 @@
 <translation id="8182037667962849780">{count,plural, =1{Для {website_1}}=2{Для {website_1} и {website_2}}=3{Для {website_1}, {website_2} и ещё 1}one{Для {website_1}, {website_2} и ещё {more_count}}few{Для {website_1}, {website_2} и ещё {more_count}}many{Для {website_1}, {website_2} и ещё {more_count}}other{Для {website_1}, {website_2} и ещё {more_count}}}</translation>
 <translation id="8189615296021678665">Нажмите "Сохранить", чтобы быстро получить доступ к этому паролю при следующем входе.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваши устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8195191503358432289">Добавление пароля</translation>
+<translation id="8195191503358432289">Добавить пароль</translation>
 <translation id="8202744799033457229">Показать историю</translation>
 <translation id="8205564605687841303">Отмена</translation>
 <translation id="820568752112382238">Часто посещаемые сайты</translation>

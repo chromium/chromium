@@ -97,9 +97,7 @@
 <translation id="1390418506739274310">É possível que o histórico de outros apps que abrem links no Chrome seja mostrado. Sua Conta do Google pode ter outras formas de histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">A página inferior de informações de preço está aberta no tamanho máximo</translation>
 <translation id="1397811292916898096">Pesquisar com o <ph name="PRODUCT_NAME" /></translation>
-<translation id="1398057416966591719">Você pode <ph name="BEGIN_LINK1" />gerenciar quais dados do Chrome são salvos<ph name="END_LINK1" /> na sua Conta do Google.
-
-Confira mais configurações que usam dados para melhorar sua experiência do Chrome, acessando os <ph name="BEGIN_LINK2" />Serviços do Google<ph name="END_LINK2" />.</translation>
+<translation id="1398057416966591719">Você pode <ph name="BEGIN_LINK1" />gerenciar quais dados do Chrome são salvos<ph name="END_LINK1" /> na sua Conta do Google. Para conferir mais configurações que usam dados para melhorar sua experiência do Chrome, acesse os <ph name="BEGIN_LINK2" />Serviços do Google<ph name="END_LINK2" />.</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1409879593029778104">O download de <ph name="FILE_NAME" /> foi impedido porque o arquivo já existe.</translation>
