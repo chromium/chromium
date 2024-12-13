@@ -221,7 +221,8 @@ std::unique_ptr<url_matcher::URLMatcher> CreateURLMatcherForOptInEvent(
   std::unique_ptr<url_matcher::URLMatcher> matcher =
       std::make_unique<url_matcher::URLMatcher>();
   base::MatcherStringPattern::ID unused_id(0);
-  url_matcher::util::AddFilters(matcher.get(), true, &unused_id, it->second);
+  url_matcher::util::AddFiltersWithLimit(matcher.get(), true, &unused_id,
+                                         it->second);
 
   return matcher;
 }

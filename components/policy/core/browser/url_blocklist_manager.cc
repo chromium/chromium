@@ -222,13 +222,13 @@ URLBlocklist::URLBlocklist() : url_matcher_(new URLMatcher) {}
 URLBlocklist::~URLBlocklist() = default;
 
 void URLBlocklist::Block(const base::Value::List& filters) {
-  url_matcher::util::AddFilters(url_matcher_.get(), /*allow=*/false, &id_,
-                                filters, &filters_);
+  url_matcher::util::AddFiltersWithLimit(url_matcher_.get(), /*allow=*/false,
+                                         &id_, filters, &filters_);
 }
 
 void URLBlocklist::Allow(const base::Value::List& filters) {
-  url_matcher::util::AddFilters(url_matcher_.get(), /*allow=*/true, &id_,
-                                filters, &filters_);
+  url_matcher::util::AddFiltersWithLimit(url_matcher_.get(), /*allow=*/true,
+                                         &id_, filters, &filters_);
 }
 
 bool URLBlocklist::IsURLBlocked(const GURL& url) const {

@@ -78,7 +78,7 @@ base::flat_map<std::string, std::string> SplitUrl(const std::string& url) {
 
 std::unique_ptr<URLMatcher> CreateEnrollmentRedirectUrlMatcher() {
   auto matcher = std::make_unique<URLMatcher>();
-  url_matcher::util::AddAllowFilters(
+  url_matcher::util::AddAllowFiltersWithLimit(
       matcher.get(), std::vector<std::string>({kEnrollmentFallbackUrl}));
   return matcher;
 }
@@ -112,7 +112,7 @@ std::unique_ptr<URLMatcher> CreateEnrollmentHeaderUrlMatcher() {
     }
   }
 
-  url_matcher::util::AddAllowFilters(matcher.get(), allowed_urls);
+  url_matcher::util::AddAllowFiltersWithLimit(matcher.get(), allowed_urls);
   return matcher;
 }
 
@@ -146,7 +146,7 @@ std::unique_ptr<URLMatcher> CreateOidcEnrollmentUrlMatcher() {
     }
   }
 
-  url_matcher::util::AddAllowFilters(matcher.get(), allowed_hosts);
+  url_matcher::util::AddAllowFiltersWithLimit(matcher.get(), allowed_hosts);
   return matcher;
 }
 

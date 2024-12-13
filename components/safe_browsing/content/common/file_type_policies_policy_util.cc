@@ -69,7 +69,8 @@ FileTypePoliciesOverrideResult ShouldOverrideFileTypePolicies(
   if (!domains_for_extension.empty()) {
     url_matcher::URLMatcher matcher;
     base::MatcherStringPattern::ID id(0);
-    url_matcher::util::AddFilters(&matcher, true, &id, domains_for_extension);
+    url_matcher::util::AddFiltersWithLimit(&matcher, true, &id,
+                                           domains_for_extension);
     GURL normalized_url =
         url.SchemeIsBlob() ? url::Origin::Create(url).GetURL() : url;
     if (!matcher.MatchURL(normalized_url).empty()) {

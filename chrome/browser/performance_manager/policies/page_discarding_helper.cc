@@ -283,7 +283,7 @@ void PageDiscardingHelper::SetNoDiscardPatternsForProfile(
   std::unique_ptr<url_matcher::URLMatcher>& entry =
       profiles_no_discard_patterns_[browser_context_id];
   entry = std::make_unique<url_matcher::URLMatcher>();
-  url_matcher::util::AddAllowFilters(entry.get(), patterns);
+  url_matcher::util::AddAllowFiltersWithLimit(entry.get(), patterns);
 }
 
 void PageDiscardingHelper::ClearNoDiscardPatternsForProfile(

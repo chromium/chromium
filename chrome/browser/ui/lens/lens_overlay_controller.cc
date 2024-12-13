@@ -3019,12 +3019,12 @@ void LensOverlayController::InitializeTutorialIPHUrlMatcher() {
 
   tutorial_iph_url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
   base::MatcherStringPattern::ID id(0);
-  url_matcher::util::AddFilters(
+  url_matcher::util::AddFiltersWithLimit(
       tutorial_iph_url_matcher_.get(), true, &id,
       JSONArrayToVector(
           feature_engagement::kIPHLensOverlayUrlAllowFilters.Get()),
       &iph_url_filters_);
-  url_matcher::util::AddFilters(
+  url_matcher::util::AddFiltersWithLimit(
       tutorial_iph_url_matcher_.get(), false, &id,
       JSONArrayToVector(
           feature_engagement::kIPHLensOverlayUrlBlockFilters.Get()),

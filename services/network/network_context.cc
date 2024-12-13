@@ -2508,9 +2508,9 @@ void NetworkContext::OnHttpAuthDynamicParamsChanged(
   }
 
   url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
-  url_matcher::util::AddAllowFilters(url_matcher_.get(),
-                                     http_auth_dynamic_network_service_params
-                                         ->patterns_allowed_to_use_all_schemes);
+  url_matcher::util::AddAllowFiltersWithLimit(
+      url_matcher_.get(), http_auth_dynamic_network_service_params
+                              ->patterns_allowed_to_use_all_schemes);
   http_auth_merged_preferences_.set_http_auth_scheme_filter(
       base::BindRepeating(&NetworkContext::IsAllowedToUseAllHttpAuthSchemes,
                           base::Unretained(this)));
