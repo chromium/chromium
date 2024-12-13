@@ -242,7 +242,7 @@ double ConvertZoomLevelToZoomFactor(double zoom_level) {
   return zoom_factor;
 }
 
-using WebViewKey = std::pair<int, int>;
+using WebViewKey = std::pair<content::ChildProcessId, int>;
 using WebViewKeyToIDMap = std::map<WebViewKey, int>;
 static base::LazyInstance<WebViewKeyToIDMap>::DestructorAtExit
     web_view_key_to_id_map = LAZY_INSTANCE_INITIALIZER;
@@ -260,7 +260,7 @@ WebViewGuest::NewWindowInfo::~NewWindowInfo() = default;
 
 // static
 void WebViewGuest::CleanUp(content::BrowserContext* browser_context,
-                           int embedder_process_id,
+                           content::ChildProcessId embedder_process_id,
                            int view_instance_id) {
   // Clean up rules registries for the WebView.
   WebViewKey key(embedder_process_id, view_instance_id);
@@ -276,16 +276,21 @@ void WebViewGuest::CleanUp(content::BrowserContext* browser_context,
 
   // Clean up web request event listeners for the WebView.
   WebRequestEventRouter::Get(browser_context)
-      ->RemoveWebViewEventListeners(browser_context, embedder_process_id,
+      // TODO(crbug.com/379869738): remove GetUnsafeValue
+      ->RemoveWebViewEventListeners(browser_context,
+                                    embedder_process_id.GetUnsafeValue(),
                                     view_instance_id);
 
   // Clean up content scripts for the WebView.
   auto* csm = WebViewContentScriptManager::Get(browser_context);
-  csm->RemoveAllContentScriptsForWebView(embedder_process_id, view_instance_id);
+  // TODO(crbug.com/379869738): remove GetUnsafeValue
+  csm->RemoveAllContentScriptsForWebView(embedder_process_id.GetUnsafeValue(),
+                                         view_instance_id);
 
   // Allow an extensions browser client to potentially perform more cleanup.
   ExtensionsBrowserClient::Get()->CleanUpWebView(
-      browser_context, embedder_process_id, view_instance_id);
+      // TODO(crbug.com/379869738): remove GetUnsafeValue
+      browser_context, embedder_process_id.GetUnsafeValue(), view_instance_id);
 }
 
 // static
@@ -318,7 +323,8 @@ int WebViewGuest::GetOrGenerateRulesRegistryID(int embedder_process_id,
   if (!is_web_view)
     return RulesRegistryService::kDefaultRulesRegistryID;
 
-  WebViewKey key = std::make_pair(embedder_process_id, webview_instance_id);
+  WebViewKey key = std::make_pair(content::ChildProcessId(embedder_process_id),
+                                  webview_instance_id);
   auto it = web_view_key_to_id_map.Get().find(key);
   if (it != web_view_key_to_id_map.Get().end())
     return it->second;

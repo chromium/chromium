@@ -18,6 +18,7 @@
 #include "components/guest_view/common/guest_view_constants.h"
 #include "components/zoom/zoom_observer.h"
 #include "content/public/browser/browser_plugin_guest_delegate.h"
+#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/guest_page_holder.h"
@@ -68,6 +69,9 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
                       public zoom::ZoomObserver,
                       public base::SupportsUserData::Data {
  public:
+  static GuestViewBase* FromInstanceID(content::ChildProcessId owner_process_id,
+                                       int instance_id);
+
   static GuestViewBase* FromInstanceID(int owner_process_id, int instance_id);
 
   // Prefer using FromRenderFrameHost. See https://crbug.com/1362569.

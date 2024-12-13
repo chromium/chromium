@@ -420,6 +420,18 @@ GuestViewBase* GuestViewBase::FromFrameTreeNodeId(
 }
 
 // static
+GuestViewBase* GuestViewBase::FromInstanceID(
+    content::ChildProcessId owner_process_id,
+    int guest_instance_id) {
+  auto* host = content::RenderProcessHost::FromID(owner_process_id);
+  if (!host) {
+    return nullptr;
+  }
+
+  return GuestViewManager::FromBrowserContext(host->GetBrowserContext())
+      ->GetGuestByInstanceIDSafely(guest_instance_id, owner_process_id);
+}
+
 GuestViewBase* GuestViewBase::FromInstanceID(int owner_process_id,
                                              int guest_instance_id) {
   auto* host = content::RenderProcessHost::FromID(owner_process_id);

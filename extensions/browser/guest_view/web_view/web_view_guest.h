@@ -52,7 +52,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // potentially be created and destroyed in JavaScript before getting a
   // GuestViewBase instance.
   static void CleanUp(content::BrowserContext* browser_context,
-                      int embedder_process_id,
+                      content::ChildProcessId embedder_process_id,
                       int view_instance_id);
 
   static const char Type[];
