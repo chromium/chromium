@@ -185,9 +185,7 @@ bool IsOriginAgentClusterEnabledForOrigin(SiteInstance* site_instance,
 }
 
 bool AreDefaultSiteInstancesEnabled() {
-  return !AreAllSitesIsolatedForTesting() &&
-         base::FeatureList::IsEnabled(
-             features::kProcessSharingWithDefaultSiteInstances);
+  return !AreAllSitesIsolatedForTesting();
 }
 
 bool AreStrictSiteInstancesEnabled() {

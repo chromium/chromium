@@ -842,14 +842,7 @@ bool SiteInstanceImpl::IsSuitableForUrlInfo(const UrlInfo& url_info) {
   // If this is a default SiteInstance and the BrowsingInstance gives us a
   // non-default SiteInfo even when we explicitly allow the default SiteInstance
   // to be considered, then |url| does not belong in the same process as this
-  // SiteInstance. This can happen when the
-  // kProcessSharingWithDefaultSiteInstances feature is not enabled and the
-  // site URL is explicitly set on a SiteInstance for a URL that would normally
-  // be directed to the default SiteInstance (e.g. a site not requiring a
-  // dedicated process). This situation typically happens when the top-level
-  // frame is a site that should be in the default SiteInstance and the
-  // SiteInstance associated with that frame is initially a SiteInstance with
-  // no site URL set.
+  // SiteInstance.
   if (IsDefaultSiteInstance() && site_info != site_info_)
     return false;
 
@@ -1361,11 +1354,6 @@ bool SiteInstanceImpl::CanBePlacedInDefaultSiteInstance(
     const SiteInfo& site_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!base::FeatureList::IsEnabled(
-          features::kProcessSharingWithDefaultSiteInstances)) {
-    return false;
-  }
-
   // Exclude "file://" URLs from the default SiteInstance to prevent the
   // default SiteInstance process from accumulating file access grants that
   // could be exploited by other non-isolated sites.
@@ -1620,8 +1608,6 @@ SiteInstanceImpl::GetCompatibleSandboxedSiteInstance(
 RenderProcessHost* SiteInstanceImpl::GetDefaultProcessForBrowsingInstance() {
   if (SiteInstanceImpl* default_instance =
           browsing_instance_->default_site_instance()) {
-    DCHECK(base::FeatureList::IsEnabled(
-        features::kProcessSharingWithDefaultSiteInstances));
     return default_instance->HasProcess() ? default_instance->GetProcess()
                                           : nullptr;
   }

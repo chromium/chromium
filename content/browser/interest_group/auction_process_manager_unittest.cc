@@ -427,9 +427,6 @@ class AuctionProcessManagerTest
             switches::kSitePerProcess);
         break;
       case ProcessMode::kInRendererSharedProcess:
-        enabled_features.emplace_back(
-            features::kProcessSharingWithDefaultSiteInstances,
-            base::FieldTrialParams());
         disabled_features.emplace_back(
             features::kProcessSharingWithStrictSiteInstances);
         disabled_features.emplace_back(

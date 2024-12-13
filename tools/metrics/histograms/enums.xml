@@ -17399,8 +17399,6 @@ from previous Chrome versions.
       label="AutofillEnableGetDetailsForEnrollParsingInUploadCardResponse:enabled"/>
   <int value="-1199159971"
       label="ContextualSuggestionsIPHReverseScroll:enabled"/>
-  <int value="-1198304634"
-      label="ProcessSharingWithDefaultSiteInstances:disabled"/>
   <int value="-1197916855" label="WindowNaming:enabled"/>
   <int value="-1197817692" label="CrostiniBullseyeUpgrade:enabled"/>
   <int value="-1197245070" label="CookieDeprecationMessages:disabled"/>
@@ -18068,8 +18066,6 @@ from previous Chrome versions.
   <int value="-932317811" label="EwalletPayments:enabled"/>
   <int value="-932261921"
       label="enable-defer-all-script-without-optimization-hints"/>
-  <int value="-932164609"
-      label="ProcessSharingWithDefaultSiteInstances:enabled"/>
   <int value="-931935394"
       label="WebAppSyncGeneratedIconBackgroundFix:disabled"/>
   <int value="-931494909" label="DefaultLinkCapturingInBrowser:disabled"/>
