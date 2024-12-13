@@ -3955,16 +3955,17 @@ enum class ToolbarKind {
   // If BrowserViewController has not presented any view controller, then
   // trigger `completion` immediately.
   if (!self.viewController.presentedViewController) {
-    completion();
+    if (completion) {
+      completion();
+    }
     [self stopQuickDelete];
     return;
   }
 
   // If BrowserViewController has presented a view controller, then dismiss
   // every VC on top of it.
-  id<ApplicationCommands> applicationCommandsHandler =
-      HandlerForProtocol(self.dispatcher, ApplicationCommands);
   __weak __typeof(self) weakSelf = self;
+  __weak __typeof(self.dispatcher) weakDispatcher = self.dispatcher;
   ProceduralBlock dismissalCompletion = ^{
     if (completion) {
       completion();
@@ -3974,7 +3975,14 @@ enum class ToolbarKind {
     // by the scene controller. This should include Quick Delete, History and
     // the Privacy Settings.
     [weakSelf clearPresentedStateWithCompletion:nil dismissOmnibox:YES];
-    [applicationCommandsHandler dismissModalDialogsWithCompletion:nil];
+    // The protocol might not have a valid target when the shutdown of Quick
+    // Delete is happening at the same time the UI is being shutdown.
+    if ([weakDispatcher
+            dispatchingForProtocol:@protocol(ApplicationCommands)]) {
+      id<ApplicationCommands> applicationCommandsHandler =
+          HandlerForProtocol(weakDispatcher, ApplicationCommands);
+      [applicationCommandsHandler dismissModalDialogsWithCompletion:nil];
+    }
   };
   [self.viewController dismissViewControllerAnimated:YES
                                           completion:dismissalCompletion];
