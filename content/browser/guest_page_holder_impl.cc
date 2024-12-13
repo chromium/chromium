@@ -45,8 +45,6 @@ GuestPageHolderImpl::GuestPageHolderImpl(
                   /*manager_delegate=*/&owner_web_contents,
                   /*page_delegate=*/&owner_web_contents,
                   FrameTree::Type::kGuest) {
-  // TODO(crbug.com/40202416): Implement support for devtools and set the
-  // `devtools_frame_token`.
   frame_tree_.Init(static_cast<SiteInstanceImpl*>(site_instance.get()),
                    /*renderer_initiated_creation=*/false,
                    /*main_frame_name=*/"", /*opener_for_origin=*/nullptr,

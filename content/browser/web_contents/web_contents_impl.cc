@@ -3149,7 +3149,9 @@ void WebContentsImpl::AttachInnerWebContents(
   // When attaching a GuestView as an inner WebContents, there should already be
   // a live RenderFrame, which has to be swapped.
   if (render_frame_host_impl->IsRenderFrameLive()) {
-    inner_render_manager->SwapOuterDelegateFrame(render_frame_host_impl, proxy);
+    inner_render_manager->SwapOuterDelegateFrame(
+        render_frame_host_impl, proxy,
+        inner_main_frame->devtools_frame_token());
 
     inner_web_contents_impl->ReattachToOuterWebContentsFrame();
   }
@@ -3248,8 +3250,9 @@ void WebContentsImpl::AttachGuestPage(
   // When attaching a GuestView as an inner frame tree, there should already be
   // a live RenderFrame, which has to be swapped.
   if (outer_render_frame_host_impl->IsRenderFrameLive()) {
-    inner_render_manager->SwapOuterDelegateFrame(outer_render_frame_host_impl,
-                                                 proxy);
+    inner_render_manager->SwapOuterDelegateFrame(
+        outer_render_frame_host_impl, proxy,
+        inner_main_frame->devtools_frame_token());
   }
 
   RenderWidgetHostViewBase* child_rwhvb =

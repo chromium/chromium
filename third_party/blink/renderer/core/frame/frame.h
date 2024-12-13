@@ -418,7 +418,8 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
             mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
                 remote_frame_host,
             mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame>
-                remote_frame_receiver);
+                remote_frame_receiver,
+            const std::optional<base::UnguessableToken>& devtools_frame_token);
 
   // Removes the given child from this frame.
   void RemoveChild(Frame* child);
@@ -520,11 +521,13 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
 
   void CancelFormSubmissionWithVersion(uint64_t version);
 
-  bool SwapImpl(WebFrame*,
-                mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
-                    remote_frame_host,
-                mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame>
-                    remote_frame_receiver);
+  bool SwapImpl(
+      WebFrame*,
+      mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+          remote_frame_host,
+      mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame>
+          remote_frame_receiver,
+      const std::optional<base::UnguessableToken>& devtools_frame_token);
 
   // Notifies a specific frame that it now has user activation. Used to prevent
   // duplicated logic in `NotifyUserActivationInFrameTree()`, which notifies

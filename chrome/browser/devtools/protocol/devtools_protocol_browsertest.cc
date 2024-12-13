@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_switches.h"
 #include "base/test/values_test_util.h"
 #include "base/threading/thread_restrictions.h"
@@ -44,10 +45,14 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
+#include "components/guest_view/browser/guest_view_base.h"
+#include "components/guest_view/browser/guest_view_manager_delegate.h"
+#include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
@@ -56,6 +61,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
+#include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_host.h"
@@ -1193,7 +1199,24 @@ class WebContentsBarrier {
   base::OnceClosure ready_callback_;
 };
 
-IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest, TabTargetWithGuestView) {
+// TODO(crbug.com/40202416): Remove this when we remove the inner WebContents
+// implementation for guests.
+class ExtensionProtocolTestWithGuestViewInnerWebContents
+    : public ExtensionProtocolTest {
+ public:
+  ExtensionProtocolTestWithGuestViewInnerWebContents() {
+    scoped_feature_list_.InitAndDisableFeature(features::kGuestViewMPArch);
+  }
+  ~ExtensionProtocolTestWithGuestViewInnerWebContents() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  guest_view::TestGuestViewManagerFactory guest_view_manager_factory_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionProtocolTestWithGuestViewInnerWebContents,
+                       TabTargetWithGuestView) {
+  ASSERT_FALSE(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
   base::FilePath extension_path =
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
           .AppendASCII("devtools")
@@ -1234,6 +1257,179 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest, TabTargetWithGuestView) {
             notification.FindStringByDottedPath("params.targetInfo.url");
         return url && base::StartsWith(*url, "data:");
       }));
+}
+
+class ExtensionProtocolTestWithGuestViewMPArch : public ExtensionProtocolTest {
+ public:
+  ExtensionProtocolTestWithGuestViewMPArch() {
+    scoped_feature_list_.InitAndEnableFeature(features::kGuestViewMPArch);
+  }
+  ~ExtensionProtocolTestWithGuestViewMPArch() override = default;
+
+  guest_view::TestGuestViewManager* GetGuestViewManager() {
+    return guest_view_manager_factory_.GetOrCreateTestGuestViewManager(
+        browser()->profile(), extensions::ExtensionsAPIClient::Get()
+                                  ->CreateGuestViewManagerDelegate());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  guest_view::TestGuestViewManagerFactory guest_view_manager_factory_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionProtocolTestWithGuestViewMPArch,
+                       TabTargetDoesNotAutoAttachGuestView) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  base::FilePath extension_path =
+      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+          .AppendASCII("devtools")
+          .AppendASCII("extensions")
+          .AppendASCII("app_with_webview");
+  auto* extension = LoadExtensionOrApp(extension_path);
+  ASSERT_THAT(extension, testing::NotNull());
+
+  WebContentsBarrier barrier({[](const GURL& url) -> bool {
+    return base::EndsWith(url.path(), "host.html");
+  }});
+  LaunchApp(extension->id());
+  std::vector<raw_ptr<content::WebContents, VectorExperimental>> wcs =
+      barrier.Await();
+  ASSERT_THAT(wcs, testing::SizeIs(1));
+
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view);
+  GetGuestViewManager()->WaitUntilAttached(guest_view);
+
+  // Assure tab-target does not auto-attach view.
+  AttachToTabTarget(wcs[0]);
+  auto command_params = base::Value::Dict()
+                            .Set("autoAttach", true)
+                            .Set("waitForDebuggerOnStart", false)
+                            .Set("flatten", true);
+  SendCommandSync("Target.setAutoAttach", std::move(command_params));
+  EXPECT_FALSE(HasExistingNotificationMatching(
+      [](const base::Value::Dict& notification) {
+        if (*notification.FindString("method") != "Target.attachedToTarget") {
+          return false;
+        }
+        const std::string* url =
+            notification.FindStringByDottedPath("params.targetInfo.url");
+        return url && base::StartsWith(*url, "data:");
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionProtocolTestWithGuestViewMPArch,
+                       PrimaryMainFrameTargetAutoAttachesGuestView) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  base::FilePath extension_path =
+      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+          .AppendASCII("devtools")
+          .AppendASCII("extensions")
+          .AppendASCII("app_with_webview");
+  auto* extension = LoadExtensionOrApp(extension_path);
+  ASSERT_THAT(extension, testing::NotNull());
+
+  WebContentsBarrier barrier({[](const GURL& url) -> bool {
+    return base::EndsWith(url.path(), "host.html");
+  }});
+  LaunchApp(extension->id());
+  std::vector<raw_ptr<content::WebContents, VectorExperimental>> wcs =
+      barrier.Await();
+  ASSERT_EQ(wcs.size(), 1u);
+
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  const std::string devtools_frame_token =
+      guest_view->GetGuestMainFrame()->GetDevToolsFrameToken().ToString();
+  ASSERT_TRUE(guest_view);
+  GetGuestViewManager()->WaitUntilAttached(guest_view);
+
+  AttachToWebContents(wcs[0]);
+  auto command_params = base::Value::Dict()
+                            .Set("autoAttach", true)
+                            .Set("waitForDebuggerOnStart", false)
+                            .Set("flatten", true);
+  SendCommand("Target.setAutoAttach", std::move(command_params));
+  base::Value::Dict params =
+      WaitForNotification("Target.attachedToTarget", /*allow_existing=*/true);
+
+  EXPECT_EQ("webview", *params.FindStringByDottedPath("targetInfo.type"));
+  EXPECT_EQ(devtools_frame_token,
+            *params.FindStringByDottedPath("targetInfo.targetId"));
+  EXPECT_EQ(wcs[0]->GetPrimaryMainFrame()->GetDevToolsFrameToken().ToString(),
+            content::DevToolsAgentHost::GetForId(devtools_frame_token)
+                ->GetParentId());
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionProtocolTestWithGuestViewMPArch,
+                       GuestViewIframeContentFrameUpdatedAfterAttach) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  base::FilePath extension_path =
+      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+          .AppendASCII("devtools")
+          .AppendASCII("extensions")
+          .AppendASCII("app_with_webview");
+  auto* extension = LoadExtensionOrApp(extension_path);
+  ASSERT_THAT(extension, testing::NotNull());
+
+  WebContentsBarrier barrier({[](const GURL& url) -> bool {
+    return base::EndsWith(url.path(), "host.html");
+  }});
+  LaunchApp(extension->id());
+  std::vector<raw_ptr<content::WebContents, VectorExperimental>> wcs =
+      barrier.Await();
+  ASSERT_EQ(wcs.size(), 1u);
+
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view);
+  GetGuestViewManager()->WaitUntilAttached(guest_view);
+
+  AttachToWebContents(wcs[0]);
+
+  // Get the document's NodeId.
+  const base::Value::Dict* result = SendCommandSync("DOM.getDocument");
+  ASSERT_TRUE(result);
+  int document_node_id = result->FindIntByDottedPath("root.nodeId").value();
+
+  // Get the <webview>'s nodeId (by searching for it using querySelector).
+  auto params = base::Value::Dict()
+                    .Set("nodeId", document_node_id)
+                    .Set("selector", "webview");
+  result = SendCommandSync("DOM.querySelector", std::move(params));
+  ASSERT_TRUE(result);
+  int web_view_node_id = result->FindInt("nodeId").value();
+
+  // Get the <webview> shadow tree (using its nodeId), and retrieve its
+  // placeholder <iframe>'s frameId. The result from "DOM.describeNode" will
+  // look something like:
+  // {"node": {
+  //    ...,
+  //    "shadowRoots": [{
+  //      ...,
+  //      "children": [{
+  //        ...,
+  //        "frameId": "...."
+  //       }]
+  //    }]
+  // }
+  params = base::Value::Dict()
+               .Set("nodeId", web_view_node_id)
+               .Set("depth", 2)
+               .Set("pierce", true);
+  result = SendCommandSync("DOM.describeNode", std::move(params));
+  ASSERT_TRUE(result);
+  auto* frame_id = result->FindListByDottedPath("node.shadowRoots")
+                       ->front()
+                       .GetDict()
+                       .FindList("children")
+                       ->front()
+                       .GetDict()
+                       .FindString("frameId");
+  ASSERT_TRUE(frame_id);
+  // The frameId (i.e. the placeholder RemoteFrame's devtools_frame_token)
+  // should match the devtools_frame_token of the guest's main frame.
+  EXPECT_EQ(
+      *frame_id,
+      guest_view->GetGuestMainFrame()->GetDevToolsFrameToken().ToString());
 }
 
 class PrerenderDataSaverProtocolTest : public DevToolsProtocolTest {

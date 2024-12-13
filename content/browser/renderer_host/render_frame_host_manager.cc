@@ -30,6 +30,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
@@ -4514,7 +4515,8 @@ void RenderFrameHostManager::EnsureRenderViewInitialized(
 
 void RenderFrameHostManager::SwapOuterDelegateFrame(
     RenderFrameHostImpl* render_frame_host,
-    RenderFrameProxyHost* proxy) {
+    RenderFrameProxyHost* proxy,
+    const base::UnguessableToken& devtools_frame_token) {
   // Swap the outer WebContents's frame with the proxy to inner WebContents.
   //
   // We are in the outer WebContents, and its FrameTree would never see
@@ -4525,7 +4527,7 @@ void RenderFrameHostManager::SwapOuterDelegateFrame(
   // investigate and fix.
   DCHECK_EQ(render_frame_host->GetSiteInstance()->group(),
             proxy->site_instance_group());
-  render_frame_host->SwapOuterDelegateFrame(proxy);
+  render_frame_host->SwapOuterDelegateFrame(proxy, devtools_frame_token);
   proxy->SetRenderFrameProxyCreated(true);
 }
 

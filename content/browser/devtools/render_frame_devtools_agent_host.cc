@@ -71,6 +71,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/common/content_features.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
@@ -220,6 +221,7 @@ void RenderFrameDevToolsAgentHost::AddAllAgentHosts(
   for (WebContentsImpl* wc : WebContentsImpl::GetAllWebContents()) {
     // Inner web contents such as guestviews are already handled by
     // ForEachRenderFrameHostImpl.
+    // TODO(crbug.com/40202416): Remove this after migration is complete.
     if (wc->GetOutermostWebContents() != wc)
       continue;
     wc->GetPrimaryMainFrame()->ForEachRenderFrameHostImpl(
@@ -737,11 +739,20 @@ std::string RenderFrameDevToolsAgentHost::GetParentId() {
   }
 
   WebContentsImpl* contents = static_cast<WebContentsImpl*>(web_contents());
-  if (!contents)
+  if (!contents) {
     return "";
-  contents = contents->GetOuterWebContents();
-  if (contents)
-    return DevToolsAgentHost::GetOrCreateFor(contents)->GetId();
+  }
+
+  if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    if (WebContents* outer_contents = contents->GetOuterWebContents()) {
+      return DevToolsAgentHost::GetOrCreateFor(outer_contents)->GetId();
+    }
+  } else {
+    if (frame_tree_node_ &&
+        frame_tree_node_->GetFrameType() == FrameType::kGuestMainFrame) {
+      return DevToolsAgentHost::GetOrCreateFor(contents)->GetId();
+    }
+  }
   return "";
 }
 
@@ -773,9 +784,16 @@ std::string RenderFrameDevToolsAgentHost::GetType() {
     return kTypeFrame;
   if (frame_tree_node_ && frame_tree_node_->IsFencedFrameRoot())
     return kTypeFrame;
-  if (web_contents() &&
-      static_cast<WebContentsImpl*>(web_contents())->GetOuterWebContents()) {
-    return kTypeGuest;
+  if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    if (web_contents() &&
+        static_cast<WebContentsImpl*>(web_contents())->GetOuterWebContents()) {
+      return kTypeGuest;
+    }
+  } else {
+    if (frame_tree_node_ &&
+        frame_tree_node_->GetFrameType() == FrameType::kGuestMainFrame) {
+      return kTypeGuest;
+    }
   }
   DevToolsManager* manager = DevToolsManager::GetInstance();
   if (manager->delegate() && web_contents()) {
@@ -829,13 +847,12 @@ GURL RenderFrameDevToolsAgentHost::GetURL() {
 }
 
 GURL RenderFrameDevToolsAgentHost::GetFaviconURL() {
-  WebContents* wc = web_contents();
-  if (!wc)
+  if (!frame_tree_node_) {
     return GURL();
-  NavigationEntry* entry = wc->GetController().GetLastCommittedEntry();
-  if (entry)
-    return entry->GetFavicon().url;
-  return GURL();
+  }
+  NavigationEntry* entry =
+      frame_tree_node_->frame_tree().controller().GetLastCommittedEntry();
+  return entry ? entry->GetFavicon().url : GURL();
 }
 
 bool RenderFrameDevToolsAgentHost::Activate() {

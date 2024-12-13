@@ -730,16 +730,19 @@ bool Frame::AllowFocusWithoutUserActivation() {
 
 bool Frame::Swap(WebLocalFrame* new_web_frame) {
   return SwapImpl(new_web_frame, mojo::NullAssociatedRemote(),
-                  mojo::NullAssociatedReceiver());
+                  mojo::NullAssociatedReceiver(),
+                  /*devtools_frame_token=*/std::nullopt);
 }
 
-bool Frame::Swap(WebRemoteFrame* new_web_frame,
-                 mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
-                     remote_frame_host,
-                 mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame>
-                     remote_frame_receiver) {
+bool Frame::Swap(
+    WebRemoteFrame* new_web_frame,
+    mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+        remote_frame_host,
+    mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame>
+        remote_frame_receiver,
+    const std::optional<base::UnguessableToken>& devtools_frame_token) {
   return SwapImpl(new_web_frame, std::move(remote_frame_host),
-                  std::move(remote_frame_receiver));
+                  std::move(remote_frame_receiver), devtools_frame_token);
 }
 
 bool Frame::SwapImpl(
@@ -747,7 +750,8 @@ bool Frame::SwapImpl(
     mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
         remote_frame_host,
     mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame>
-        remote_frame_receiver) {
+        remote_frame_receiver,
+    const std::optional<base::UnguessableToken>& devtools_frame_token) {
   TRACE_EVENT0("navigation", "Frame::SwapImpl");
   std::string_view histogram_suffix =
       (new_web_frame->IsWebLocalFrame() ? "Local" : "Remote");
@@ -810,11 +814,11 @@ bool Frame::SwapImpl(
     DCHECK(remote_frame_host && remote_frame_receiver);
     CHECK(!WebFrame::ToCoreFrame(*new_web_frame));
     To<WebRemoteFrameImpl>(new_web_frame)
-        ->InitializeCoreFrame(*page, owner, WebFrame::FromCoreFrame(parent_),
-                              nullptr, FrameInsertType::kInsertLater, name,
-                              &window_agent_factory(), devtools_frame_token_,
-                              std::move(remote_frame_host),
-                              std::move(remote_frame_receiver));
+        ->InitializeCoreFrame(
+            *page, owner, WebFrame::FromCoreFrame(parent_), nullptr,
+            FrameInsertType::kInsertLater, name, &window_agent_factory(),
+            devtools_frame_token.value_or(devtools_frame_token_),
+            std::move(remote_frame_host), std::move(remote_frame_receiver));
     // At this point, a `RemoteFrame` will have already updated
     // `Page::MainFrame()` or `FrameOwner::ContentFrame()` as appropriate, and
     // its `parent_` pointer is also populated.
