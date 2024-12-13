@@ -602,7 +602,6 @@ std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
   if (profiles.empty()) {
     return {};
   }
-  const AutofillProfile& profile = *profiles[0];
 
   // The minimum number of characters a user needs to type to maybe see a
   // suggestion.
@@ -647,52 +646,65 @@ std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
 
   std::vector<Suggestion> suggestions;
   std::set<std::u16string> suggestions_text;
-  for (FieldType type : kTypes) {
-    const size_t effective_num_characters_to_match =
-        kNumberTypes.contains(type) ? kMinNumberCharactersToMatchForNumberTypes
-                                    : kMinNumberCharactersToMatch;
-
-    const std::u16string normalized_field_contents =
-        NormalizeForComparisonForType(field_contents, type);
-    if (normalized_field_contents.size() < effective_num_characters_to_match) {
-      // Sometimes normalizing the string makes it shorter because of trimming
-      // spaces.
-      continue;
+  // The number of profiles that data will be derived from when generating
+  // suggestions.
+  static constexpr size_t kMaxNumberProfilesToUse = 3;
+  size_t profiles_used_count = 0;
+  for (const AutofillProfile* profile : profiles) {
+    if (profiles_used_count == kMaxNumberProfilesToUse) {
+      break;
     }
+    profiles_used_count++;
 
-    if (normalized_field_contents.size() > kMaxNumberCharactersToMatch) {
-      continue;
-    }
+    for (FieldType type : kTypes) {
+      const size_t effective_num_characters_to_match =
+          kNumberTypes.contains(type)
+              ? kMinNumberCharactersToMatchForNumberTypes
+              : kMinNumberCharactersToMatch;
 
-    std::u16string suggestion_text =
-        profile.GetInfo(type, address_data_manager.app_locale());
-    const std::u16string profile_data =
-        NormalizeForComparisonForType(suggestion_text, type);
+      const std::u16string normalized_field_contents =
+          NormalizeForComparisonForType(field_contents, type);
+      if (normalized_field_contents.size() <
+          effective_num_characters_to_match) {
+        // Sometimes normalizing the string makes it shorter because of trimming
+        // spaces.
+        continue;
+      }
 
-    if (profile_data.empty()) {
-      continue;
-    }
+      if (normalized_field_contents.size() > kMaxNumberCharactersToMatch) {
+        continue;
+      }
 
-    if (!IsValidAddressSuggestionForFieldContents(
-            profile_data, normalized_field_contents, type)) {
-      continue;
-    }
+      std::u16string suggestion_text =
+          profile->GetInfo(type, address_data_manager.app_locale());
+      const std::u16string profile_data =
+          NormalizeForComparisonForType(suggestion_text, type);
 
-    if (profile_data.size() - normalized_field_contents.size() <
-        kMinMissingCharactersNumber) {
-      continue;
-    }
+      if (profile_data.empty()) {
+        continue;
+      }
 
-    // Do not allow duplicated suggestions, for example if
-    // `ADDRESS_HOME_LINE1` and
-    // `ADDRESS_HOME_STREET_ADDRESS` hold the same data.
-    if (!suggestions_text.contains(suggestion_text)) {
-      suggestions.emplace_back(suggestion_text,
-                               SuggestionType::kAddressEntryOnTyping);
-      suggestions.back().field_by_field_filling_type_used = type;
-      suggestions.back().payload =
-          Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid()));
-      suggestions_text.insert(suggestion_text);
+      if (!IsValidAddressSuggestionForFieldContents(
+              profile_data, normalized_field_contents, type)) {
+        continue;
+      }
+
+      if (profile_data.size() - normalized_field_contents.size() <
+          kMinMissingCharactersNumber) {
+        continue;
+      }
+
+      // Do not allow duplicated suggestions, for example if
+      // `ADDRESS_HOME_LINE1` and
+      // `ADDRESS_HOME_STREET_ADDRESS` hold the same data.
+      if (!suggestions_text.contains(suggestion_text)) {
+        suggestions.emplace_back(suggestion_text,
+                                 SuggestionType::kAddressEntryOnTyping);
+        suggestions.back().field_by_field_filling_type_used = type;
+        suggestions.back().payload = Suggestion::AutofillProfilePayload(
+            Suggestion::Guid(profile->guid()));
+        suggestions_text.insert(suggestion_text);
+      }
     }
   }
   if (suggestions.size() > 0) {

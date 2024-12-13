@@ -37,7 +37,6 @@ struct ProfilesToSuggestOptions {
 // matching on unclassified fields. The suggestions returned will contain
 // profile data whose prefix matches what the user has typed. As for now, only
 // use the top profile to generate suggestions.
-// TODO(crbug.com/381994105): Use more than one profile to build suggestions.
 // `field_contents` is the string contained in the triggering field.
 std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
     const AddressDataManager& adress_data_manager,

@@ -128,13 +128,21 @@ TEST_F(AddressSuggestionGeneratorTest,
        GetSuggestionsOnTypingForProfile_ReturnMatchingSuggestions) {
   AutofillProfile profile_1(i18n_model_definition::kLegacyHierarchyCountryCode);
   AutofillProfile profile_2(i18n_model_definition::kLegacyHierarchyCountryCode);
-  profile_1.SetRawInfo(NAME_FULL, u"Sergey brin");
+  AutofillProfile profile_3(i18n_model_definition::kLegacyHierarchyCountryCode);
+  AutofillProfile profile_4(i18n_model_definition::kLegacyHierarchyCountryCode);
+
+  profile_1.SetRawInfo(NAME_FULL, u"Jef dean");
   profile_2.SetRawInfo(NAME_FULL, u"Larry page");
   profile_2.SetRawInfo(ADDRESS_HOME_ZIP, u"4398125");
+  profile_3.SetRawInfo(NAME_FULL, u"Sundar pichai");
+  profile_4.SetRawInfo(NAME_FULL, u"Sergey brin");
 
   address_data().AddProfile(profile_1);
   address_data().AddProfile(profile_2);
-  ASSERT_EQ(address_data().GetProfilesToSuggest().size(), 2u);
+  address_data().AddProfile(profile_3);
+  address_data().AddProfile(profile_4);
+
+  ASSERT_EQ(address_data().GetProfilesToSuggest().size(), 4u);
 
   // Expects that no suggestion is returned if the field content matches
   // `NAME_FULL` prefix from the top profile but the field content
@@ -155,11 +163,28 @@ TEST_F(AddressSuggestionGeneratorTest,
                                    u"Larry page"),
                   EqualsSuggestion(SuggestionType::kSeparator),
                   EqualsSuggestion(SuggestionType::kManageAddress)));
-  // Expects that NO suggestion is returned if the field content matches
-  // `NAME_FULL` prefix from the a profile that is not the top one (for now we
-  // only support suggestions form one profile), and the field content has at
-  // least 3 characters.
-  EXPECT_EQ(GetSuggestionsOnTypingForProfile(address_data(), u"Sergey").size(),
+  // Expects that suggestions are returned if the field content matches
+  // prefix data from the second profile when the field content
+  // has more than 3 characters.
+  EXPECT_THAT(
+      GetSuggestionsOnTypingForProfile(address_data(), u"Sergey"),
+      ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
+                                   u"Sergey brin"),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kManageAddress)));
+  // Expects that suggestions are returned if the field content matches
+  // prefix data from the third profile when the field content
+  // has more than 3 characters.
+  EXPECT_THAT(
+      GetSuggestionsOnTypingForProfile(address_data(), u"Sundar"),
+      ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
+                                   u"Sundar pichai"),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kManageAddress)));
+  // Expects NO suggestions are returned if the field content matches
+  // prefix data from the forth profile, even when the field content
+  // has more than 3 characters.
+  EXPECT_EQ(GetSuggestionsOnTypingForProfile(address_data(), u"Jef").size(),
             0u);
   // Expects that for data that are number (like `ADDRESS_HOME_ZIP`) only two
   // matching characters are enough to create suggestions.
