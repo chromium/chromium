@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -87,6 +88,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
 
   void CompleteMigrationAttempt(const std::string& iccid, bool success);
 
+  base::flat_set<std::string> extract_iccids(
+      NetworkStateHandler::NetworkStateList& network_list);
+
+  bool has_iccids_changed(base::flat_set<std::string> new_iccids,
+                          base::flat_set<std::string> old_iccids);
+
+  void ResetOldIccidsForTesting();
+
   NetworkMetadataStore* GetNetworkMetadataStore();
 
   void set_network_metadata_store_for_testing(
@@ -101,6 +110,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
   // CustomAPNList. Networks must be updated in shill with the CustomAPNList
   // property each time the revamp flag is toggled.
   base::flat_set<std::string> shill_updated_iccids_;
+
+  base::flat_set<std::string> old_iccids_;
 
   raw_ptr<ManagedCellularPrefHandler> managed_cellular_pref_handler_ = nullptr;
   raw_ptr<ManagedNetworkConfigurationHandler> network_configuration_handler_ =
