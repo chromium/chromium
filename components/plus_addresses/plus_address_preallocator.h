@@ -108,9 +108,10 @@ class PlusAddressPreallocator : public PlusAddressAllocator {
   // Replies to all currently ongoing requests with `error`.
   void ReplyToRequestsWithError(const PlusAddressRequestError& error);
 
-  // Returns the next available pre-allocated plus address or `std::nullopt` if
-  // there is none. It does not attempt to pre-allocate more.
-  std::optional<PlusAddress> GetNextPreallocatedPlusAddress();
+  // Returns the first available pre-allocated plus address or `std::nullopt`
+  // if there is none. It does not attempt to pre-allocate more. If `mode` is
+  // `kNewPlusAddress`, it refreshes the next plus address offered.
+  std::optional<PlusAddress> GetFirstAvailablePlusAddress(AllocationMode mode);
 
   // Returns the pre-allocated plus addresses from pref-storage.
   const base::Value::List& GetPreallocatedAddresses() const;
@@ -144,13 +145,16 @@ class PlusAddressPreallocator : public PlusAddressAllocator {
   // A helper class to keep track of the arguments that were passed when
   // requesting a plus address allocation.
   struct Request final {
-    Request(PlusAddressRequestCallback callback, affiliations::FacetURI facet);
+    Request(PlusAddressRequestCallback callback,
+            affiliations::FacetURI facet,
+            AllocationMode allocation_mode);
     Request(Request&&);
     Request& operator=(Request&&);
     ~Request();
 
     PlusAddressRequestCallback callback;
     affiliations::FacetURI facet;
+    AllocationMode allocation_mode;
   };
   // The pre-allocation requests that have not yet been completed because there
   // are no pre-allocated plus addresses available. Handled in FIFO order.

@@ -118,7 +118,7 @@ void PlusAddressPreallocator::AllocatePlusAddress(
         PlusAddressRequestError(PlusAddressRequestErrorType::kInvalidOrigin)));
     return;
   }
-  requests_.emplace(std::move(callback), std::move(facet));
+  requests_.emplace(std::move(callback), std::move(facet), mode);
   ProcessAllocationRequests(/*is_user_triggered=*/true);
 }
 
@@ -138,7 +138,7 @@ PlusAddressPreallocator::AllocatePlusAddressSynchronously(
     return std::nullopt;
   }
 
-  if (std::optional<PlusAddress> address = GetNextPreallocatedPlusAddress()) {
+  if (std::optional<PlusAddress> address = GetFirstAvailablePlusAddress(mode)) {
     return std::make_optional<PlusProfile>(
         /*profile_id=*/std::nullopt,
         /*facet=*/std::move(facet),
@@ -267,7 +267,8 @@ void PlusAddressPreallocator::ProcessAllocationRequests(
   }
 
   while (!requests_.empty()) {
-    std::optional<PlusAddress> next_address = GetNextPreallocatedPlusAddress();
+    std::optional<PlusAddress> next_address =
+        GetFirstAvailablePlusAddress(requests_.front().allocation_mode);
     if (!next_address) {
       break;
     }
@@ -294,17 +295,20 @@ void PlusAddressPreallocator::ReplyToRequestsWithError(
 }
 
 std::optional<PlusAddress>
-PlusAddressPreallocator::GetNextPreallocatedPlusAddress() {
+PlusAddressPreallocator::GetFirstAvailablePlusAddress(AllocationMode mode) {
   PrunePreallocatedPlusAddresses();
   const base::Value::List& preallocated_addresses = GetPreallocatedAddresses();
-  const int index = GetIndexOfNextPreallocatedAddress();
-  if (index >= static_cast<int>(preallocated_addresses.size())) {
+  const int preallocated_addresses_size =
+      static_cast<int>(preallocated_addresses.size());
+  int index = GetIndexOfNextPreallocatedAddress();
+  if (index >= preallocated_addresses_size) {
     return std::nullopt;
   }
-  // Increment the index and return the address.
-  pref_service_->SetInteger(
-      prefs::kPreallocatedAddressesNext,
-      (index + 1) % static_cast<int>(preallocated_addresses.size()));
+
+  if (mode == AllocationMode::kNewPlusAddress) {
+    index = (index + 1) % preallocated_addresses_size;
+  }
+  pref_service_->SetInteger(prefs::kPreallocatedAddressesNext, index);
   return std::make_optional<PlusAddress>(
       GetPlusAddress(preallocated_addresses[index]));
 }
@@ -319,8 +323,11 @@ int PlusAddressPreallocator::GetIndexOfNextPreallocatedAddress() const {
 }
 
 PlusAddressPreallocator::Request::Request(PlusAddressRequestCallback callback,
-                                          affiliations::FacetURI facet)
-    : callback(std::move(callback)), facet(std::move(facet)) {}
+                                          affiliations::FacetURI facet,
+                                          AllocationMode allocation_mode)
+    : callback(std::move(callback)),
+      facet(std::move(facet)),
+      allocation_mode(allocation_mode) {}
 
 PlusAddressPreallocator::Request::Request(Request&&) = default;
 

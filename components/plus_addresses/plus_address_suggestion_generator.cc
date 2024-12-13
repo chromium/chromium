@@ -229,7 +229,8 @@ PlusAddressSuggestionGenerator::GetSuggestions(
 void PlusAddressSuggestionGenerator::RefreshPlusAddressForSuggestion(
     Suggestion& suggestion) {
   CHECK(IsInlineGenerationEnabled());
-  suggestion = CreateNewPlusAddressInlineSuggestion();
+  suggestion =
+      CreateNewPlusAddressInlineSuggestion(/*refreshed_suggestion=*/true);
 }
 
 // static
@@ -297,7 +298,7 @@ void PlusAddressSuggestionGenerator::SetLoadingStateForSuggestion(
 autofill::Suggestion
 PlusAddressSuggestionGenerator::CreateNewPlusAddressSuggestion() {
   if (IsInlineGenerationEnabled()) {
-    return CreateNewPlusAddressInlineSuggestion();
+    return CreateNewPlusAddressInlineSuggestion(/*refreshed_suggestion=*/false);
   }
 
   Suggestion suggestion(
@@ -333,14 +334,18 @@ bool PlusAddressSuggestionGenerator::IsInlineGenerationEnabled() const {
 }
 
 autofill::Suggestion
-PlusAddressSuggestionGenerator::CreateNewPlusAddressInlineSuggestion() {
+PlusAddressSuggestionGenerator::CreateNewPlusAddressInlineSuggestion(
+    bool refreshed_suggestion) {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),
       SuggestionType::kCreateNewPlusAddressInline);
 
+  PlusAddressAllocator::AllocationMode mode =
+      refreshed_suggestion
+          ? PlusAddressAllocator::AllocationMode::kNewPlusAddress
+          : PlusAddressAllocator::AllocationMode::kAny;
   if (std::optional<PlusProfile> profile =
-          allocator_->AllocatePlusAddressSynchronously(
-              origin_, PlusAddressAllocator::AllocationMode::kNewPlusAddress)) {
+          allocator_->AllocatePlusAddressSynchronously(origin_, mode)) {
     SetSuggestedPlusAddressForSuggestion(profile->plus_address, suggestion);
     // Set IPH and new badge information only if allocation is synchronous.
     // Otherwise, they will be showing only during the loading stage and then be
