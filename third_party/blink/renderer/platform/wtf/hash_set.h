@@ -170,9 +170,9 @@ class HashSet {
 
   struct TypeConstraints {
     constexpr TypeConstraints() {
-      static_assert(!IsStackAllocatedType<ValueArg>);
+      static_assert(!IsStackAllocatedTypeV<ValueArg>);
       static_assert(Allocator::kIsGarbageCollected ||
-                        !IsPointerToGarbageCollectedType<ValueArg>::value,
+                        !IsPointerToGarbageCollectedType<ValueArg>,
                     "Cannot put raw pointers to garbage-collected classes into "
                     "an off-heap HashSet. Use HeapHashSet<Member<T>> instead.");
     }
