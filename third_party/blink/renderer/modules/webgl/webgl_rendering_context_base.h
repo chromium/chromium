@@ -636,6 +636,9 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   // contexts, and should be removed.
   SkColorInfo CanvasRenderingContextSkColorInfo() const override;
   SkAlphaType GetAlphaType() const override;
+  sk_sp<SkColorSpace> GetSkColorSpace() const override {
+    return CanvasRenderingContextSkColorInfo().refColorSpace();
+  }
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) override;
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) override;
 

@@ -183,9 +183,7 @@ class CORE_EXPORT CanvasRenderingContext
   SkColorType GetSkColorType() const {
     return CanvasRenderingContextSkColorInfo().colorType();
   }
-  sk_sp<SkColorSpace> GetSkColorSpace() const {
-    return CanvasRenderingContextSkColorInfo().refColorSpace();
-  }
+  virtual sk_sp<SkColorSpace> GetSkColorSpace() const = 0;
 
   virtual scoped_refptr<StaticBitmapImage> GetImage(FlushReason) = 0;
   virtual bool IsComposited() const = 0;
