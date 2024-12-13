@@ -1566,7 +1566,7 @@ void CanvasResourceProvider::NotifyWillTransfer(
 }
 
 bool CanvasResourceProvider::OverwriteImage(
-    const gpu::Mailbox& shared_image_mailbox,
+    const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     const gfx::Rect& copy_rect,
     const gpu::SyncToken& ready_sync_token,
     gpu::SyncToken& completion_sync_token) {
@@ -1580,7 +1580,7 @@ bool CanvasResourceProvider::OverwriteImage(
   }
 
   raster->WaitSyncTokenCHROMIUM(ready_sync_token.GetConstData());
-  raster->CopySharedImage(shared_image_mailbox, dst_client_si->mailbox(),
+  raster->CopySharedImage(shared_image->mailbox(), dst_client_si->mailbox(),
                           /*xoffset=*/0,
                           /*yoffset=*/0, copy_rect.x(), copy_rect.y(),
                           copy_rect.width(), copy_rect.height());
