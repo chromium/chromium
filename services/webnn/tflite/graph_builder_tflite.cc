@@ -4,8 +4,10 @@
 
 #include "services/webnn/tflite/graph_builder_tflite.h"
 
-#include <cstddef>
-#include <cstdint>
+#include <stddef.h>
+#include <stdint.h>
+
+#include <concepts>
 #include <numeric>
 #include <vector>
 
@@ -1043,8 +1045,15 @@ int32_t GraphBuilderTflite::SerializeTensorWithBuffer(
     base::span<const DataType> buffer,
     base::span<const int32_t> dimensions) {
   const auto buffer_index = base::checked_cast<uint32_t>(buffers_.size());
-  const auto buffer_data =
-      builder_.CreateVector<uint8_t>(base::as_byte_span(buffer));
+  base::span<const uint8_t> buffer_span;
+  if constexpr (std::floating_point<DataType>) {
+    // Floating point types do not have unique object representations, but
+    // this code appears to be using a byte span to type-erase, which is fine.
+    buffer_span = base::as_byte_span(base::allow_nonunique_obj, buffer);
+  } else {
+    buffer_span = base::as_byte_span(buffer);
+  }
+  const auto buffer_data = builder_.CreateVector<uint8_t>(buffer_span);
   buffers_.emplace_back(::tflite::CreateBuffer(builder_, buffer_data));
 
   // Create `tflite::Tensor` with the dimensions and the index of buffer.

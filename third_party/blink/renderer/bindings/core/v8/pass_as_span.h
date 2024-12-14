@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_PASS_AS_SPAN_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_PASS_AS_SPAN_H_
 
+#include <type_traits>
+
 #include "base/containers/span.h"
 #include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -90,7 +92,15 @@ class SpanOrVector {
   void Assign(base::span<const uint8_t> span) { span_.Assign(span); }
   void Assign(Vector<T> vec) {
     vector_ = std::move(vec);
-    span_.Assign(base::as_byte_span(vector_));
+    base::span<const uint8_t> byte_span;
+    if constexpr (std::has_unique_object_representations_v<T>) {
+      byte_span = base::as_byte_span(vector_);
+    } else {
+      // The bytes here are used for storage, but always cast back to a T to
+      // supply publicly, so this doesn't allow any additional unsafety.
+      byte_span = base::as_byte_span(base::allow_nonunique_obj, vector_);
+    }
+    span_.Assign(byte_span);
   }
   v8::MemorySpan<uint8_t> GetInlineStorage() {
     return span_.GetInlineStorage();

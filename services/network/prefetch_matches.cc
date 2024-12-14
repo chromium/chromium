@@ -569,7 +569,12 @@ void PrintAsBinary(std::ostream& os, const T& value) {
   // values.
   std::array<uint8_t, kSize> bytes;
   // memcpy is approved by the C++ standard for type-punning to bytes.
-  base::span(bytes).copy_from(base::byte_span_from_ref(value));
+  // Using spans here is challenging, because `T` may not be trivially copyable,
+  // which means the only way to create a byte span to copy from is to
+  // `reinterpret_cast` and use `UNSAFE_BUFFERS` anyway, at which point the
+  // direct `memcpy()` is clearer. Note that in this case `memcpy()` has
+  // unspecified behavior, but it is not UB.
+  memcpy(bytes.data(), &value, kSize);
   PrintSpanifiedObject(os, bytes);
 }
 

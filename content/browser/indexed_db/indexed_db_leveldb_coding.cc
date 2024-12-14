@@ -354,7 +354,8 @@ void EncodeStringWithLength(const std::u16string& value, std::string* into) {
 
 void EncodeDouble(double value, std::string* into) {
   // This always has host endianness.
-  into->append(base::as_string_view(base::byte_span_from_ref(value)));
+  into->append(base::as_string_view(
+      base::byte_span_from_ref(base::allow_nonunique_obj, value)));
 }
 
 // Return value is true iff successful.
@@ -742,8 +743,8 @@ bool DecodeDouble(std::string_view* slice, double* value) {
     return false;
   }
 
-  base::byte_span_from_ref(*value).copy_from(
-      base::as_byte_span(*slice).first<size>());
+  base::byte_span_from_ref(base::allow_nonunique_obj, *value)
+      .copy_from(base::as_byte_span(*slice).first<size>());
   slice->remove_prefix(size);
   return true;
 }

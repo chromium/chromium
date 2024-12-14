@@ -218,7 +218,8 @@ PlatformSensorProvider::GetSensorReadingSharedBufferForType(
 
   SensorReadingSharedBuffer& buffer =
       buffers[offset / sizeof(SensorReadingSharedBuffer)];
-  std::ranges::fill(base::byte_span_from_ref(buffer), 0);
+  std::ranges::fill(base::byte_span_from_ref(base::allow_nonunique_obj, buffer),
+                    0);
   return &buffer;
 }
 

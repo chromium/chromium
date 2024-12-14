@@ -131,8 +131,9 @@ TEST_F(AllocationTraceRecorderTest, VerifyBinaryCopy) {
       new (buffer->data.data()) AllocationTraceRecorder();
 
   static_assert(std::is_trivially_copyable_v<AllocationTraceRecorder>);
-  base::byte_span_from_ref(*buffered_recorder)
-      .copy_from(base::byte_span_from_ref(subject_under_test));
+  base::byte_span_from_ref(base::allow_nonunique_obj, *buffered_recorder)
+      .copy_from(base::byte_span_from_ref(base::allow_nonunique_obj,
+                                          subject_under_test));
 
   // Verify that the original recorder and the buffered recorder are equal.
   ASSERT_EQ(subject_under_test.size(), buffered_recorder->size());

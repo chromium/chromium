@@ -10,6 +10,7 @@
 #include "device/vr/openxr/android/openxr_depth_sensor_android.h"
 
 #include <array>
+#include <concepts>
 #include <memory>
 #include <set>
 
@@ -149,7 +150,15 @@ inline size_t buffer_location(size_t col, size_t row, size_t row_size) {
 
 template <typename T>
 inline void WriteToSpanStart(base::span<uint8_t> output, T val) {
-  output.first<sizeof(T)>().copy_from(base::byte_span_from_ref(val));
+  base::span<const uint8_t> val_span;
+  if constexpr (std::floating_point<T>) {
+    // Floating point types do not have unique object representations, but this
+    // code does not appear to be hashing them, so allow it.
+    val_span = base::byte_span_from_ref(base::allow_nonunique_obj, val);
+  } else {
+    val_span = base::byte_span_from_ref(val);
+  }
+  output.first<sizeof(T)>().copy_from(val_span);
 }
 
 // Helper function to copy depth data on the CPU. This expects to receive the

@@ -251,15 +251,15 @@ int64_t ReadInteger64(SerializeObject* obj) {
 }
 
 void WriteReal(double data, SerializeObject* obj) {
-  WriteData(base::byte_span_from_ref(data), obj);
+  WriteData(base::byte_span_from_ref(base::allow_nonunique_obj, data), obj);
 }
 
 double ReadReal(SerializeObject* obj) {
   std::optional<base::span<const uint8_t>> data = ReadData(obj);
   if (data && data->size() == sizeof(double)) {
     double value;
-    base::byte_span_from_ref(value).copy_from(
-        data.value().first<sizeof(double)>());
+    base::byte_span_from_ref(base::allow_nonunique_obj, value)
+        .copy_from(data.value().first<sizeof(double)>());
     return value;
   }
 

@@ -34,6 +34,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
@@ -59,6 +60,21 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "ui/gfx/geometry/rect.h"
+
+namespace blink {
+namespace {
+struct FingerprintSourceData;
+}
+}  // namespace blink
+
+// `FingerprintSourceData` contains a float, but its sign is normalized before
+// the object is hashed, so it's safe to hash; allow conversion to a byte span
+// to facilitate this.
+namespace base {
+template <>
+inline constexpr bool
+    kCanSafelyConvertToByteSpan<::blink::FingerprintSourceData> = true;
+}
 
 namespace blink {
 

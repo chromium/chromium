@@ -177,7 +177,7 @@ TransferableResource CreateTestTexture(
   auto client_shared_image = sii->CreateSharedImage(
       {SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel"},
-      base::as_byte_span(pixels));
+      base::as_byte_span(base::allow_nonunique_obj, pixels));
   gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
 
   TransferableResource gl_resource = TransferableResource::MakeGpu(
