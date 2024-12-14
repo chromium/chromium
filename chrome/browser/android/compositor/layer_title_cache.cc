@@ -62,14 +62,20 @@ void LayerTitleCache::UpdateLayer(JNIEnv* env,
                                   jint title_resource_id,
                                   jint icon_resource_id,
                                   bool is_incognito,
-                                  bool is_rtl) {
+                                  bool is_rtl,
+                                  bool show_bubble,
+                                  int bubble_inner_dimension,
+                                  int bubble_outer_dimension,
+                                  int bubble_offset,
+                                  int bubble_inner_tint,
+                                  int bubble_outer_tint) {
   DecorationTabTitle* title_layer = layer_cache_.Lookup(tab_id);
   if (title_layer) {
     if (title_resource_id != ui::Resource::kInvalidResourceId &&
         icon_resource_id != ui::Resource::kInvalidResourceId) {
       title_layer->Update(title_resource_id, icon_resource_id, fade_width_,
                           icon_start_padding_, icon_end_padding_, is_incognito,
-                          is_rtl);
+                          is_rtl, show_bubble);
     } else {
       layer_cache_.Remove(tab_id);
     }
@@ -78,7 +84,9 @@ void LayerTitleCache::UpdateLayer(JNIEnv* env,
         std::make_unique<DecorationTabTitle>(
             resource_manager_, title_resource_id, icon_resource_id,
             spinner_resource_id_, spinner_incognito_resource_id_, fade_width_,
-            icon_start_padding_, icon_end_padding_, is_incognito, is_rtl),
+            icon_start_padding_, icon_end_padding_, is_incognito, is_rtl,
+            show_bubble, bubble_inner_dimension, bubble_outer_dimension,
+            bubble_offset, bubble_inner_tint, bubble_outer_tint),
         tab_id);
   }
 }
@@ -111,10 +119,21 @@ void LayerTitleCache::UpdateGroupLayer(JNIEnv* env,
 void LayerTitleCache::UpdateIcon(JNIEnv* env,
                                  const JavaParamRef<jobject>& obj,
                                  jint tab_id,
-                                 jint icon_resource_id) {
+                                 jint icon_resource_id,
+                                 bool show_bubble) {
   DecorationTabTitle* title_layer = layer_cache_.Lookup(tab_id);
   if (title_layer && icon_resource_id != ui::Resource::kInvalidResourceId) {
     title_layer->SetIconResourceId(icon_resource_id);
+  }
+}
+
+void LayerTitleCache::UpdateTabBubble(JNIEnv* env,
+                                      const JavaParamRef<jobject>& obj,
+                                      jint tab_id,
+                                      bool show_bubble) {
+  DecorationTabTitle* title_layer = layer_cache_.Lookup(tab_id);
+  if (title_layer) {
+    title_layer->SetShowBubble(show_bubble);
   }
 }
 

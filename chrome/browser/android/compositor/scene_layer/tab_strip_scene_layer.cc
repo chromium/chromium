@@ -457,6 +457,9 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
     jfloat corner_radius,
     jfloat bottom_indicator_width,
     jfloat bottom_indicator_height,
+    jboolean show_bubble,
+    jint bubble_tint,
+    jfloat bubble_size,
     const JavaParamRef<jobject>& jlayer_title_cache) {
   LayerTitleCache* layer_title_cache =
       LayerTitleCache::FromJavaObject(jlayer_title_cache);
@@ -475,6 +478,15 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
       corner_radius, corner_radius, corner_radius, corner_radius));
   title_indicator_layer->SetBackgroundColor(SkColor4f::FromColor(tint));
 
+  // Create notification bubble if needed.
+  if (show_bubble && !group_indicator_bubble_layer_) {
+    int bubble_x = l10n_util::IsLayoutRtl()
+                       ? title_end_padding
+                       : width - title_end_padding - bubble_size;
+    int bubble_y = (height - bubble_size) / 2.0f;
+    CreateGroupTitleBubble(bubble_size, bubble_tint, bubble_x, bubble_y);
+  }
+
   // Set title.
   DecorationIconTitle* title_layer =
       layer_title_cache->GetGroupTitleLayer(id, incognito);
@@ -491,9 +503,15 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
         gfx::PointF(title_start_padding, title_y));
     if (title_indicator_layer->children().size() == 0) {
       title_indicator_layer->AddChild(title_layer->layer());
+      if (show_bubble) {
+        title_indicator_layer->AddChild(group_indicator_bubble_layer_);
+      }
     } else {
-      title_indicator_layer->ReplaceChild(
-          title_indicator_layer->children()[0].get(), title_layer->layer());
+      title_indicator_layer->RemoveAllChildren();
+      title_indicator_layer->AddChild(title_layer->layer());
+      if (show_bubble) {
+        title_indicator_layer->AddChild(group_indicator_bubble_layer_);
+      }
     }
   } else {
     title_indicator_layer->RemoveAllChildren();
@@ -510,6 +528,8 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
   // Use ceiling value to prevent height float from getting truncated, otherwise
   // it could result in bottom indicator looks thinner than intended in certain
   // screen densities.
+  // TODO:(crbug.com/383958147): Move bottom indicator and tab bubble to
+  // separate class.
   bottom_indicator_layer->SetBounds(
       gfx::Size(bottom_indicator_width, ceil(bottom_indicator_height)));
 
@@ -518,6 +538,20 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
   bottom_indicator_layer->SetPosition(
       gfx::PointF(bottom_indicator_x, floor(bottom_indicator_y)));
   bottom_indicator_layer->SetBackgroundColor(SkColor4f::FromColor(tint));
+}
+
+void TabStripSceneLayer::CreateGroupTitleBubble(int size,
+                                                int tint,
+                                                int x,
+                                                int y) {
+  group_indicator_bubble_layer_ = cc::slim::SolidColorLayer::Create();
+  group_indicator_bubble_layer_->SetBounds(gfx::Size(size, size));
+  group_indicator_bubble_layer_->SetPosition(gfx::PointF(x, y));
+  group_indicator_bubble_layer_->SetBackgroundColor(SkColor4f::FromColor(tint));
+  group_indicator_bubble_layer_->SetOpacity(1.0f);
+  group_indicator_bubble_layer_->SetIsDrawable(true);
+  group_indicator_bubble_layer_->SetRoundedCorner(
+      gfx::RoundedCornersF(size / 2.0f, size / 2.0f, size / 2.0f, size / 2.0f));
 }
 
 scoped_refptr<TabHandleLayer> TabStripSceneLayer::GetNextLayer(

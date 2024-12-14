@@ -83,6 +83,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
+import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -121,6 +122,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
+import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
@@ -139,7 +141,10 @@ import org.chromium.ui.widget.RectProvider;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 /** Tests for {@link StripLayoutHelper}. */
@@ -175,6 +180,7 @@ public class StripLayoutHelperTest {
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private DataSharingService mDataSharingService;
     @Mock private CollaborationService mCollaborationService;
+    @Mock private MessagingBackendService mMessagingBackendService;
     @Mock private ServiceStatus mServiceStatus;
     @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
     @Mock private Bitmap mAvatarBitmap;
@@ -278,6 +284,7 @@ public class StripLayoutHelperTest {
         DataSharingServiceFactory.setForTesting(mDataSharingService);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         CollaborationServiceFactory.setForTesting(mCollaborationService);
+        MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
         when(mServiceStatus.isAllowedToJoin()).thenReturn(false);
         when(mDataSharingService.getUiDelegate()).thenReturn(mDataSharingUiDelegate);
@@ -3333,6 +3340,55 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE})
+    public void testSharedGroupNotificationBubbleShowAndHide_CollapsedGroup() {
+        // Initialize shared tab group and collapse group.
+        StripLayoutGroupTitle groupTitle =
+                createCollaborationGroup(
+                        /* multipleCollaborators= */ true, /* duringStripBuild= */ false);
+        mStripLayoutHelper.collapseTabGroupForTesting(groupTitle, /* isCollapsed= */ true);
+
+        // Update the root tab.
+        Set<Integer> tabIds = new HashSet<>(Collections.singleton(groupTitle.getRootId()));
+        mStripLayoutHelper.updateTabStripNotificationBubble(tabIds, /* hasUpdate= */ true);
+
+        // Verify group title and tab bubble should show.
+        assertTrue(
+                "Notification bubble on group title should show.", groupTitle.shouldShowBubble());
+        verify(mLayerTitleCache).updateTabBubble(groupTitle.getRootId(), /* showBubble= */ true);
+
+        // Verify tab bubble should hide when update is removed.
+        mStripLayoutHelper.updateTabStripNotificationBubble(tabIds, /* hasUpdate= */ false);
+        assertFalse(
+                "Notification bubble on group title should hide.", groupTitle.shouldShowBubble());
+        verify(mLayerTitleCache).updateTabBubble(groupTitle.getRootId(), /* showBubble= */ false);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE})
+    public void testSharedGroupNotificationBubbleShowAndHide_ExpandedGroup() {
+        // Initialize shared tab group.
+        StripLayoutGroupTitle groupTitle =
+                createCollaborationGroup(
+                        /* multipleCollaborators= */ true, /* duringStripBuild= */ false);
+
+        // The root tab is updated from message backend service.
+        Set<Integer> tabIds = new HashSet<>(Collections.singleton(groupTitle.getRootId()));
+        mStripLayoutHelper.updateTabStripNotificationBubble(tabIds, /* hasUpdate= */ true);
+
+        // Verify only the tab bubble should show.
+        assertFalse(
+                "Notification bubble on group title should hide.", groupTitle.shouldShowBubble());
+        verify(mLayerTitleCache).updateTabBubble(groupTitle.getRootId(), /* showBubble= */ true);
+
+        // Verify tab bubble should hide when update is removed.
+        mStripLayoutHelper.updateTabStripNotificationBubble(tabIds, /* hasUpdate= */ false);
+        assertFalse(
+                "Notification bubble on group title should hide.", groupTitle.shouldShowBubble());
+        verify(mLayerTitleCache).updateTabBubble(groupTitle.getRootId(), /* showBubble= */ false);
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testSharedGroupStateDuringStripBuild_OnlyOneCollaborator_AvatarNotShow() {
         // Initialize shared tab group with only one collaborator during strip build.
@@ -3543,6 +3599,9 @@ public class StripLayoutHelperTest {
             assertNotNull(
                     "Avatar resource for shared group should be initialized",
                     groupTitle.getAvatarResourceForTesting());
+            assertNotNull(
+                    "Notification bubbler for shared group should be initialized",
+                    groupTitle.getTabBubbler());
         } else {
             assertFalse("Group should be unshared.", groupTitle.isGroupSharedForTesting());
             assertNull(
@@ -4280,7 +4339,7 @@ public class StripLayoutHelperTest {
         when(mTabGroupModelFilter.getRelatedTabListForRootId(eq(groupRootId)))
                 .thenReturn(relatedTabs);
 
-        mStripLayoutHelper.updateGroupTitleTextOrAvatar(groupRootId);
+        mStripLayoutHelper.updateGroupTextAndSharedState(groupRootId);
         mStripLayoutHelper.rebuildStripViews();
         if (mStripLayoutHelper.getRunningAnimatorForTesting() != null) {
             mStripLayoutHelper.getRunningAnimatorForTesting().end();

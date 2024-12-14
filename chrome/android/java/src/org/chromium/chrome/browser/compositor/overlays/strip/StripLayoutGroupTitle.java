@@ -21,6 +21,8 @@ import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImag
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.tab_management.TabBubbler;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
@@ -80,6 +82,8 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     private static final int AVATAR_START_PADDING_DP = 4;
     private static final int CORNER_RADIUS_DP = 6;
     private static final float BOTTOM_INDICATOR_HEIGHT_DP = 2.f;
+    private static final float NOTIFICATION_BUBBLE_SIZE_DP = 6.f;
+    private static final float NOTIFICATION_BUBBLE_PADDING_DP = 4.f;
 
     private static final int WIDTH_MARGINS_DP = MARGIN_START_DP + MARGIN_END_DP;
     private static final int EFFECTIVE_MIN_WIDTH = MIN_VISUAL_WIDTH_DP + WIDTH_MARGINS_DP;
@@ -104,6 +108,9 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     @Nullable private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     @Nullable private ViewResourceAdapter mAvatarResource;
     private float mAvatarWidthWithPadding;
+    @ColorInt private final int mBubbleTint;
+    private boolean mShowBubble;
+    @Nullable private TabBubbler mTabBubbler;
 
     /**
      * Create a {@link StripLayoutGroupTitle} that represents the TabGroup for the {@code rootId}.
@@ -125,6 +132,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
         mContext = context;
         mDelegate = delegate;
         mTabGroupId = tabGroupId;
+        mBubbleTint = TabUiThemeUtil.getGroupTitleBubbleColor(mContext);
     }
 
     @Override
@@ -228,6 +236,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
         // adding a title fade when unnecessary.
         float viewWidth =
                 getAvatarWidthWithPadding()
+                        + getBubbleWidthWithPadding()
                         + textWidth
                         + getTitleStartPadding()
                         + getTitleEndPadding()
@@ -394,6 +403,67 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      */
     public float getAvatarWidthWithPadding() {
         return mAvatarWidthWithPadding;
+    }
+
+    /**
+     * @param showBubble Whether the tab notification bubble should show.
+     */
+    public void setShowBubble(boolean showBubble) {
+        mShowBubble = showBubble;
+    }
+
+    /**
+     * @return Whether the notification bubble should show.
+     */
+    public boolean shouldShowBubble() {
+        return mShowBubble;
+    }
+
+    /**
+     * @param tabBubbler The {@link TabBubbler} that responsible for managing shared group
+     *     notification bubbles.
+     */
+    public void setTabBubbler(TabBubbler tabBubbler) {
+        mTabBubbler = tabBubbler;
+    }
+
+    /**
+     * @return The {@link TabBubbler} that responsible for managing shared group notification
+     *     bubbles.
+     */
+    public TabBubbler getTabBubbler() {
+        return mTabBubbler;
+    }
+
+    /**
+     * @return The total horizontal space needed for the notification bubble and its padding, or 0
+     *     if the bubble is not shown.
+     */
+    public float getBubbleWidthWithPadding() {
+        return shouldShowBubble()
+                ? NOTIFICATION_BUBBLE_PADDING_DP + NOTIFICATION_BUBBLE_SIZE_DP
+                : 0;
+    }
+
+    /**
+     * @return The tint of the notification bubble.
+     */
+    public @ColorInt int getBubbleTint() {
+        return mBubbleTint;
+    }
+
+    /**
+     * @return The padding between the title text and the notification bubble.
+     */
+    public float getBubblePadding() {
+        return NOTIFICATION_BUBBLE_PADDING_DP;
+    }
+
+    /**
+     * @return The size of the notification bubble circle.
+     */
+    public float getBubbleSize() {
+        return NOTIFICATION_BUBBLE_SIZE_DP;
     }
 
     /**

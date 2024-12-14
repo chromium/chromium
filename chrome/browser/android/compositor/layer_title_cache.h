@@ -59,7 +59,13 @@ class LayerTitleCache {
                    jint title_resource_id,
                    jint icon_resource_id,
                    bool is_incognito,
-                   bool is_rtl);
+                   bool is_rtl,
+                   bool show_bubble,
+                   int bubble_inner_dimension,
+                   int bubble_outer_dimension,
+                   int bubble_offset,
+                   int bubble_inner_tint,
+                   int bubble_outer_tint);
 
   // Called from Java, updates a native cc::slim::Layer based on the new texture
   // information.
@@ -76,7 +82,15 @@ class LayerTitleCache {
   void UpdateIcon(JNIEnv* env,
                   const base::android::JavaParamRef<jobject>& obj,
                   jint tab_id,
-                  jint icon_resource_id);
+                  jint icon_resource_id,
+                  bool show_bubble);
+
+  // Called from Java, updates tab bubble if a shared tab is updated by
+  // collaborators.
+  void UpdateTabBubble(JNIEnv* env,
+                       const base::android::JavaParamRef<jobject>& obj,
+                       jint tab_id,
+                       bool show_bubble);
 
   // Returns the layer that represents the title of tab of tab_id.
   // Returns NULL if no layer can be found.

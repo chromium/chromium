@@ -165,6 +165,9 @@ class TabStripSceneLayer : public SceneLayer {
       jfloat corner_radius,
       jfloat bottom_indicator_width,
       jfloat bottom_indicator_height,
+      jboolean show_bubble,
+      jint bubble_tint,
+      jfloat bubble_size,
       const base::android::JavaParamRef<jobject>& jlayer_title_cache);
 
   bool ShouldShowBackground() override;
@@ -188,9 +191,12 @@ class TabStripSceneLayer : public SceneLayer {
       bool should_apply_hover_highlight,
       float button_alpha);
 
+  void CreateGroupTitleBubble(int bubble_size, int bubble_tint, int x, int y);
+
   typedef std::vector<scoped_refptr<TabHandleLayer>> TabHandleLayerList;
 
   scoped_refptr<cc::slim::SolidColorLayer> tab_strip_layer_;
+  scoped_refptr<cc::slim::SolidColorLayer> group_indicator_bubble_layer_;
   scoped_refptr<cc::slim::Layer> scrollable_strip_layer_;
   scoped_refptr<cc::slim::Layer> group_indicator_layer_;
   scoped_refptr<cc::slim::UIResourceLayer> new_tab_button_;

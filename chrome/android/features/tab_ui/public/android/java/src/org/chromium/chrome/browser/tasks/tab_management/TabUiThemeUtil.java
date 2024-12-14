@@ -107,6 +107,16 @@ public class TabUiThemeUtil {
         }
     }
 
+    /**
+     * Returns the color used for the shared group notification bubble.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @return The color for the notification bubble.
+     */
+    public static @ColorInt int getGroupTitleBubbleColor(Context context) {
+        return getSurfaceColorElev0(context, /* isIncognito= */ false);
+    }
+
     /** Returns the color for the hovered tab container. */
     private static @ColorInt int getHoveredTabContainerColor(Context context, boolean isIncognito) {
         int baseColor =
