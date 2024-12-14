@@ -194,6 +194,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, PasswordChangeStateUpdated) {
 
   // Wait and verify the old password is filled correctly.
   WaitForElementValue("password", "pa$$word");
+  EXPECT_EQ(PasswordChangeDelegate::State::kChangingPassword,
+            delegate->GetCurrentState());
 
   delegate->RemoveObserver(&observer);
 }
@@ -274,6 +276,12 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
   // Verify generated password is saved.
   WaitForPasswordStore();
   CheckThatCredentialsStored("test", new_password);
+  // Verify the success state.
+  PasswordChangeDelegate* delegate =
+      password_change_service()->GetPasswordChangeDelegate(
+          browser()->tab_strip_model()->GetWebContentsAt(0));
+  ASSERT_EQ(delegate->GetCurrentState(),
+            PasswordChangeDelegate::State::kPasswordSuccessfullyChanged);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
