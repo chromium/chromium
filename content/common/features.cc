@@ -404,13 +404,6 @@ BASE_FEATURE(kReloadHiddenTabsWithCrashedSubframes,
 #endif
 );
 
-// Run StableVideoDecoderFactoryProcessService and StableVideoDecoderService on
-// the IO thread in the video decoder process. If it is disabled, they run on
-// the main thread in the process.
-BASE_FEATURE(kRunStableVideoDecoderFactoryProcessServiceOnIOThread,
-             "RunStableVideoDecoderFactoryProcessServiceOnIOThread",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kServiceWorkerAvoidMainThreadForInitialization,
              "ServiceWorkerAvoidMainThreadForInitialization",
 #if BUILDFLAG(IS_ANDROID)

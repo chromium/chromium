@@ -418,10 +418,7 @@ void RegisterIOThreadServices(mojo::ServiceFactory& services) {
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)) && \
     (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
-  if (base::FeatureList::IsEnabled(
-          features::kRunStableVideoDecoderFactoryProcessServiceOnIOThread)) {
-    services.Add(RunStableVideoDecoderFactoryProcessService);
-  }
+  services.Add(RunStableVideoDecoderFactoryProcessService);
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)) &&
         // (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
 
@@ -471,15 +468,6 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunOOPArcVideoAcceleratorFactoryService);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) && (BUILDFLAG(USE_VAAPI) ||
         // BUILDFLAG(USE_V4L2_CODEC))
-
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)) && \
-    (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
-  if (!base::FeatureList::IsEnabled(
-          features::kRunStableVideoDecoderFactoryProcessServiceOnIOThread)) {
-    services.Add(RunStableVideoDecoderFactoryProcessService);
-  }
-#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)) &&
-        // (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   services.Add(RunVideoEncodeAcceleratorProviderFactory);
