@@ -691,9 +691,8 @@ ci.builder(
         mixins = ["chromium-tester-service-account"],
     ),
     builderless = False,
-    cores = None,
+    cores = 12,
     os = os.MAC_DEFAULT,
-    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "mac asan",
         short_name = "med",
