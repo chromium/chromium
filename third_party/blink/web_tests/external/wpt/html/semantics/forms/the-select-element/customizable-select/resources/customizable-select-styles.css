@@ -1,5 +1,5 @@
 /* These are UA styles for select and customizable select. */
-/* TODO(crbug.com/1511354): These rules will probably change here:
+/* TODO(crbug.com/41483940): These rules will probably change here:
  * https://github.com/w3c/csswg-drafts/issues/10857 */
 
 .customizable-select-button, .customizable-select-popover {
@@ -59,7 +59,7 @@
   border-radius: 0.25em;
   cursor: default;
   text-align: inherit;
-  /* TODO(crbug.com/1511354): Make display match the UA stylesheet. */
+  /* TODO(crbug.com/41483940): Make display match the UA stylesheet. */
   display: inline-flex;
   gap: 0.5em;
   overflow-x: hidden;
