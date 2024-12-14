@@ -118,7 +118,7 @@ suite('<settings-cursor-and-touchpad-page>', () => {
         cursorColorDropdown.shadowRoot!.querySelector('select');
     assert(cursorColorSelectElement);
     assertEquals(
-        String(DEFAULT_BLACK_CURSOR_COLOR), cursorColorSelectElement.value);
+        'SETTINGS_DROPDOWN_NOT_FOUND_ITEM', cursorColorSelectElement.value);
 
     // Turn cursor color to red, and verify pref is also red.
     cursorColorSelectElement.value = String(RED_CURSOR_COLOR);

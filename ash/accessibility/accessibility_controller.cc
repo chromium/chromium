@@ -1266,6 +1266,8 @@ void AccessibilityController::RegisterProfilePrefs(
                                 false);
   registry->RegisterIntegerPref(prefs::kAccessibilityDisableTrackpadMode,
                                 static_cast<int>(DisableTouchpadMode::kNever));
+  registry->RegisterIntegerPref(prefs::kAccessibilityCursorColor,
+                                kDefaultCursorColor);
 
   // Not syncable because it might change depending on application locale,
   // user settings, and because different languages can cause speech recognition
@@ -1425,10 +1427,6 @@ void AccessibilityController::RegisterProfilePrefs(
         kDefaultAccessibilityBounceKeysDelay.InMilliseconds(),
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   }
-
-  registry->RegisterIntegerPref(
-      prefs::kAccessibilityCursorColor, 0,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
   registry->RegisterIntegerPref(
       prefs::kAccessibilityFloatingMenuPosition,

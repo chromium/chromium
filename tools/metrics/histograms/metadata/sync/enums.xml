@@ -382,7 +382,8 @@ chromium-metrics-reviews@google.com.
   <int value="100032" label="AccessibilityAutoclickMovementThreshold"/>
   <int value="100033" label="AccessibilityAutoclickRevertToLeftClick"/>
   <int value="100034" label="AccessibilityAutoclickStabilizePosition"/>
-  <int value="100035" label="AccessibilityCursorColor"/>
+  <int value="100035"
+      label="(obsolete, no longer synced) AccessibilityCursorColor"/>
   <int value="100036"
       label="AccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed"/>
   <int value="100037" label="AccessibilityFloatingMenuPosition"/>
