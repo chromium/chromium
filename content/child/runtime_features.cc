@@ -287,9 +287,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableWebBluetoothWatchAdvertisements,
            raw_ref(features::kWebBluetoothNewPermissionsBackend),
            kSetOnlyIfOverridden},
-#if BUILDFLAG(IS_ANDROID)
-          {wf::EnableWebNFC, raw_ref(features::kWebNfc), kSetOnlyIfOverridden},
-#endif
           {wf::EnableWebIdentityDigitalCredentials,
            raw_ref(features::kWebIdentityDigitalCredentials),
            kSetOnlyIfOverridden},

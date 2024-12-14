@@ -1074,10 +1074,8 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kWebNfc)) {
-    map->Add<device::mojom::NFC>(base::BindRepeating(
-        &RenderFrameHostImpl::BindNFCReceiver, base::Unretained(host)));
-  }
+  map->Add<device::mojom::NFC>(base::BindRepeating(
+      &RenderFrameHostImpl::BindNFCReceiver, base::Unretained(host)));
 #else
   map->Add<blink::mojom::HidService>(base::BindRepeating(
       &RenderFrameHostImpl::GetHidService, base::Unretained(host)));

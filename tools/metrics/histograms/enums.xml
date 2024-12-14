@@ -19530,7 +19530,6 @@ from previous Chrome versions.
   <int value="-340255045" label="allow-nacl-socket-api"/>
   <int value="-340183901"
       label="UpdatedSupervisedUserExtensionApprovalStrings:disabled"/>
-  <int value="-340023285" label="WebNFC:enabled"/>
   <int value="-339201954" label="WebAppEnableScopeExtensions:disabled"/>
   <int value="-339103761" label="ArcGraphicBuffersVisualizationTool:enabled"/>
   <int value="-339092189" label="CommercePriceTrackingChipExperiment:disabled"/>
@@ -21654,7 +21653,6 @@ from previous Chrome versions.
   <int value="506005649" label="WelcomeExperience:disabled"/>
   <int value="506015849" label="OmniboxFuzzyUrlSuggestions:disabled"/>
   <int value="506153966" label="WebAppSyncGeneratedIconUpdateFix:disabled"/>
-  <int value="506680761" label="WebNFC:disabled"/>
   <int value="507206806" label="OmniboxExpandedLayout:enabled"/>
   <int value="508272289" label="SharedHighlightingAmp:disabled"/>
   <int value="509197340" label="DeferRendererTasksAfterInput:enabled"/>

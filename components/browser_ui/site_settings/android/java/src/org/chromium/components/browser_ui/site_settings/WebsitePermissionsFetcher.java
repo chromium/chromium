@@ -319,12 +319,6 @@ public class WebsitePermissionsFetcher {
                 }
             }
 
-            // Remove this check after the flag is removed.
-            if (contentSettingsType == ContentSettingsType.NFC
-                    && !ContentFeatureMap.isEnabled(ContentFeatureList.WEB_NFC)) {
-                return;
-            }
-
             // The Bluetooth guard permission controls access to the Web Bluetooth
             // API, which enables sites to request access to connect to specific
             // Bluetooth devices. Users are presented with a chooser prompt in which

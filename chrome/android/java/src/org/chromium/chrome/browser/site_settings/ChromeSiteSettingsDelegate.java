@@ -169,8 +169,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
                 return PackageManagerUtils.hasSystemFeature(
                                 PackageManagerUtils.XR_IMMERSIVE_FEATURE_NAME)
                         && WebXrAndroidFeatureMap.isHandTrackingEnabled();
-            case SiteSettingsCategory.Type.NFC:
-                return ContentFeatureMap.isEnabled(ContentFeatureList.WEB_NFC);
             case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
                 // Desktop Android always requests desktop sites, so hide the category.
                 return !BuildConfig.IS_DESKTOP_ANDROID;
