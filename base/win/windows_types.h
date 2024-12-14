@@ -79,6 +79,12 @@ typedef LONG NTSTATUS;
 #define REFGUID const GUID&
 #endif
 
+// As defined in ncrypt.h.
+#ifndef __SECSTATUS_DEFINED__
+typedef LONG SECURITY_STATUS;
+#define __SECSTATUS_DEFINED__
+#endif
+
 typedef LPVOID HINTERNET;
 typedef HICON HCURSOR;
 typedef HINSTANCE HMODULE;
