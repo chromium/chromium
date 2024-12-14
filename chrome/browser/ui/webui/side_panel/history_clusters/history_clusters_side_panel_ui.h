@@ -38,6 +38,10 @@ namespace page_image_service {
 class ImageServiceHandler;
 }
 
+namespace content {
+class BrowserContext;
+}
+
 class BrowserWindowInterface;
 class HistoryClustersSidePanelUI;
 

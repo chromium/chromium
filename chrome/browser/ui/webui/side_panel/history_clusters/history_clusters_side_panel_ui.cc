@@ -14,6 +14,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -48,7 +49,14 @@ HistoryClustersSidePanelUIConfig::HistoryClustersSidePanelUIConfig()
 
 bool HistoryClustersSidePanelUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys);
+  auto* history_clusters_service =
+      HistoryClustersServiceFactory::GetForBrowserContext(browser_context);
+  // Keep in sync with history_clusters.mojom.PageHandler registration.
+  // If the WebUI is enabled without registering the PageHandler, the WebUI will
+  // crash on getting the PageHandler remote.
+  return history_clusters_service &&
+         history_clusters_service->is_journeys_feature_flag_enabled() &&
+        base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys);
 }
 
 bool HistoryClustersSidePanelUIConfig::IsPreloadable() {
