@@ -457,6 +457,8 @@ bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
       return !features::IsTilingWindowResizeEnabled();
     case kToggleMouseKeys:
       return !::features::IsAccessibilityMouseKeysEnabled();
+    case kToggleGeminiApp:
+      return !features::IsAppLaunchShortcutEnabled();
     case kToggleSnapGroupWindowsMinimizeAndRestore:
       return true;
   }

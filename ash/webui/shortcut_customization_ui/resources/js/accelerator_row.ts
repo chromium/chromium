@@ -229,8 +229,6 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
   private onMouseEnterDescriptionText_(): void {
     const descriptionText = this.$.descriptionText;
     const container = this.$.container;
-    console.log(container!.clientHeight);
-    console.log(descriptionText!.scrollHeight);
     this.isEllipsisActive_ =
         container.clientHeight < descriptionText.scrollHeight;
   }
