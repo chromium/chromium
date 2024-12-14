@@ -182,7 +182,8 @@ void ModuleWatcher::RegisterDllNotificationCallback() {
       reinterpret_cast<LdrRegisterDllNotificationFunc>(::GetProcAddress(
           ::GetModuleHandle(kNtDll), kLdrRegisterDllNotification));
   if (reg_fn)
-    reg_fn(0, &LoaderNotificationCallback, this, &dll_notification_cookie_);
+    reg_fn(0, &LoaderNotificationCallback, this,
+           &dll_notification_cookie_.AsEphemeralRawAddr());
 }
 
 void ModuleWatcher::UnregisterDllNotificationCallback() {
