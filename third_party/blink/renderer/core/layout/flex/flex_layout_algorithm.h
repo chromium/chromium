@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/flex/flex_break_token_data.h"
+#include "third_party/blink/renderer/core/layout/flex/flex_item.h"
 #include "third_party/blink/renderer/core/layout/flex/flexible_box_algorithm.h"
 #include "third_party/blink/renderer/core/layout/layout_algorithm.h"
 
@@ -24,6 +25,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
   explicit FlexLayoutAlgorithm(
       const LayoutAlgorithmParams& params,
       const HashMap<wtf_size_t, LayoutUnit>* cross_size_adjustments = nullptr);
+  ~FlexLayoutAlgorithm() { flex_items_.clear(); }
 
   void SetupRelayoutData(const FlexLayoutAlgorithm& previous, RelayoutType);
 
@@ -179,6 +181,8 @@ class CORE_EXPORT FlexLayoutAlgorithm
   // Used to determine when to allow an item to expand as a result of
   // fragmentation.
   bool MinBlockSizeShouldEncompassIntrinsicSize(const NGFlexItem& item) const;
+
+  HeapVector<FlexItem, 4> flex_items_;
 
   // Used when determining the max-content width of a column-wrap flex
   // container.

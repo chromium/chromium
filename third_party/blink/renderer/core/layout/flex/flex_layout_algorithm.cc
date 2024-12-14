@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/layout/flex/devtools_flex_info.h"
 #include "third_party/blink/renderer/core/layout/flex/flex_child_iterator.h"
 #include "third_party/blink/renderer/core/layout/flex/flex_item_iterator.h"
+#include "third_party/blink/renderer/core/layout/flex/flex_line_breaker.h"
 #include "third_party/blink/renderer/core/layout/flex/flexible_box_algorithm.h"
 #include "third_party/blink/renderer/core/layout/flex/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/flex/line_flexer.h"
@@ -171,7 +172,6 @@ FlexLayoutAlgorithm::FlexLayoutAlgorithm(
                                        Node(),
                                        ChildAvailableSize())),
       algorithm_(&Style(),
-                 MainAxisContentExtent(LayoutUnit::Max()),
                  child_percentage_size_,
                  &Node().GetDocument()),
       cross_size_adjustments_(cross_size_adjustments) {
@@ -630,6 +630,8 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
 
   wtf_size_t item_index = 0;
   FlexChildIterator iterator(Node());
+  flex_items_.ReserveInitialCapacity(iterator.size());
+
   for (BlockNode child = iterator.NextChild(); child;
        child = iterator.NextChild()) {
     if (child.IsOutOfFlowPositioned()) {
@@ -964,7 +966,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         /* is_last_baseline */ alignment == ItemPosition::kLastBaseline,
         /* is_flipped */ is_wrap_reverse_);
 
-    algorithm_.all_items_.emplace_back(
+    flex_items_.emplace_back(
         child, item_index++, flex_grow, flex_shrink, base_content_size,
         min_max_sizes_in_main_axis_direction, main_axis_border_padding,
         physical_child_margins, initial_scrollbars, main_axis_auto_margin_count,
@@ -974,7 +976,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         max_content_contribution);
     // Save the layout result so that we can maybe reuse it later.
     if (layout_result && !is_main_axis_inline_axis) {
-      algorithm_.all_items_.back().layout_result = layout_result;
+      flex_items_.back().layout_result = layout_result;
     }
   }
 }
@@ -1150,27 +1152,32 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
                                   : Phase::kLayout,
                               oof_children);
 
-  flex_line_outputs->reserve(algorithm_.NumItems());
+  const LayoutUnit line_break_size = MainAxisContentExtent(LayoutUnit::Max());
+  const FlexLineBreakerResult result =
+      BreakFlexItemsIntoLines(base::span(flex_items_), line_break_size,
+                              algorithm_.gap_between_items_, is_multi_line_);
 
-  FlexLine* line;
-  while ((line = algorithm_.ComputeNextFlexLine(is_multi_line_))) {
-    const LayoutUnit main_axis_inner_size =
-        MainAxisContentExtent(line->sum_hypothetical_main_size_);
+  // For column flexboxes we can now determine the intrinsic block-size, which
+  // we use to flex all the lines to.
+  const LayoutUnit main_axis_inner_size =
+      MainAxisContentExtent(result.max_sum_hypothetical_main_size);
 
+  flex_line_outputs->reserve(result.flex_lines.size());
+  for (auto& line : result.flex_lines) {
     // Flex the items.
-    LineFlexer(base::span(line->line_items_), line->sum_hypothetical_main_size_,
-               line->sum_flex_base_size_, main_axis_inner_size)
+    LineFlexer(base::span(line.line_items), line.sum_hypothetical_main_size,
+               line.sum_flex_base_size, main_axis_inner_size)
         .Run();
 
     if (layout_info_for_devtools_) [[unlikely]] {
       layout_info_for_devtools_->lines.push_back(DevtoolsFlexInfo::Line());
     }
 
-    flex_line_outputs->push_back(NGFlexLine(line->line_items_.size()));
+    flex_line_outputs->push_back(NGFlexLine(line.line_items.size()));
 
     LayoutUnit main_axis_free_space =
         main_axis_inner_size -
-        (line->line_items_.size() - 1) * algorithm_.gap_between_items_;
+        (line.line_items.size() - 1) * algorithm_.gap_between_items_;
     LayoutUnit line_cross_size;
     LayoutUnit max_major_ascent = LayoutUnit::Min();
     LayoutUnit max_minor_ascent = LayoutUnit::Min();
@@ -1178,8 +1185,8 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
     LayoutUnit max_minor_descent = LayoutUnit::Min();
     unsigned main_axis_auto_margin_count = 0;
 
-    for (wtf_size_t i = 0; i < line->line_items_.size(); ++i) {
-      FlexItem& flex_item = line->line_items_[i];
+    for (wtf_size_t i = 0; i < line.line_items.size(); ++i) {
+      FlexItem& flex_item = line.line_items[i];
       NGFlexItem& flex_item_output = flex_line_outputs->back().line_items[i];
 
       flex_item_output.item_index = flex_item.item_index;
@@ -1269,7 +1276,7 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
     }
     flex_line_outputs->back().main_axis_free_space = main_axis_free_space;
     flex_line_outputs->back().sum_hypothetical_main_size =
-        line->sum_hypothetical_main_size_;
+        line.sum_hypothetical_main_size;
     flex_line_outputs->back().main_axis_auto_margin_count =
         main_axis_auto_margin_count;
     flex_line_outputs->back().line_cross_size = line_cross_size;
@@ -1501,7 +1508,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
                                      is_reverse_direction);
 
     for (NGFlexItem& flex_item : line_output.line_items) {
-      const FlexItem& item = algorithm_.FlexItemAtIndex(flex_item.item_index);
+      const FlexItem& item = flex_items_[flex_item.item_index];
 
       const LayoutResult* layout_result = nullptr;
       if (DoesItemStretch(flex_item.block_node)) {
@@ -2311,7 +2318,7 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
   ConstructAndAppendFlexItems(Phase::kRowIntrinsicSize);
 
   LayoutUnit largest_outer_min_content_contribution;
-  for (const FlexItem& item : algorithm_.all_items_) {
+  for (const FlexItem& item : flex_items_) {
     const BlockNode& child = item.block_node;
 
     const ConstraintSpace space = BuildSpaceForIntrinsicInlineSize(child);
@@ -2367,9 +2374,9 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
     container_sizes += main_axis_margins;
   }
 
-  if (algorithm_.NumItems() > 0) {
+  if (!flex_items_.empty()) {
     const LayoutUnit gap_inline_size =
-        (algorithm_.NumItems() - 1) * algorithm_.gap_between_items_;
+        (flex_items_.size() - 1) * algorithm_.gap_between_items_;
     if (is_multi_line_) {
       container_sizes.min_size = largest_outer_min_content_contribution;
       container_sizes.max_size += gap_inline_size;

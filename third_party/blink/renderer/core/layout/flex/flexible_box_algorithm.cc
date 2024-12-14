@@ -160,13 +160,10 @@ LayoutUnit FlexibleBoxAlgorithm::GapBetweenLines(
 }
 
 FlexibleBoxAlgorithm::FlexibleBoxAlgorithm(const ComputedStyle* style,
-                                           LayoutUnit line_break_length,
                                            LogicalSize percent_resolution_sizes,
                                            Document* document)
     : gap_between_items_(GapBetweenItems(*style, percent_resolution_sizes)),
-      gap_between_lines_(GapBetweenLines(*style, percent_resolution_sizes)),
-      line_break_length_(line_break_length),
-      next_item_index_(0) {
+      gap_between_lines_(GapBetweenLines(*style, percent_resolution_sizes)) {
   DCHECK_GE(gap_between_items_, 0);
   DCHECK_GE(gap_between_lines_, 0);
   const auto& row_gap = style->RowGap();
@@ -182,47 +179,6 @@ FlexibleBoxAlgorithm::FlexibleBoxAlgorithm(const ComputedStyle* style,
     if (percent_resolution_sizes.block_size == LayoutUnit(-1))
       UseCounter::Count(document, WebFeature::kFlexRowGapPercentIndefinite);
   }
-}
-
-FlexLine* FlexibleBoxAlgorithm::ComputeNextFlexLine(bool is_multi_line) {
-  LayoutUnit sum_flex_base_size;
-  LayoutUnit sum_hypothetical_main_size;
-
-  bool line_has_in_flow_item = false;
-
-  wtf_size_t start_index = next_item_index_;
-
-  for (; next_item_index_ < all_items_.size(); ++next_item_index_) {
-    FlexItem& flex_item = all_items_[next_item_index_];
-    if (is_multi_line &&
-        sum_hypothetical_main_size +
-                flex_item.HypotheticalMainAxisMarginBoxSize() >
-            line_break_length_ &&
-        line_has_in_flow_item) {
-      break;
-    }
-    line_has_in_flow_item = true;
-    sum_flex_base_size +=
-        flex_item.FlexBaseMarginBoxSize() + gap_between_items_;
-    sum_hypothetical_main_size +=
-        flex_item.HypotheticalMainAxisMarginBoxSize() + gap_between_items_;
-  }
-  if (line_has_in_flow_item) {
-    // We added a gap after every item but there shouldn't be one after the last
-    // item, so subtract it here.
-    // Note: the two sums here can be negative because of negative margins.
-    sum_hypothetical_main_size -= gap_between_items_;
-    sum_flex_base_size -= gap_between_items_;
-  }
-
-  DCHECK(next_item_index_ > start_index ||
-         next_item_index_ == all_items_.size());
-  if (next_item_index_ > start_index) {
-    return &flex_lines_.emplace_back(
-        FlexItemVectorView(&all_items_, start_index, next_item_index_),
-        sum_flex_base_size, sum_hypothetical_main_size);
-  }
-  return nullptr;
 }
 
 // static
@@ -405,15 +361,6 @@ LayoutUnit FlexibleBoxAlgorithm::ContentDistributionSpaceBetweenChildren(
       return available_free_space / (number_of_items + 1);
   }
   return LayoutUnit();
-}
-
-const FlexItem& FlexibleBoxAlgorithm::FlexItemAtIndex(
-    wtf_size_t item_index) const {
-  return all_items_[item_index];
-}
-
-void FlexibleBoxAlgorithm::Trace(Visitor* visitor) const {
-  visitor->Trace(all_items_);
 }
 
 }  // namespace blink
