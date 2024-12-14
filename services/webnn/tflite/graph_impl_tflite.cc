@@ -105,6 +105,7 @@ class GraphImplTflite::ComputeResources {
   static base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
   Create(WebNNContextImpl* context,
          flatbuffers::DetachedBuffer buffer,
+         std::vector<uint8_t> buffer_data,
          const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
              constant_operands) {
     auto self = std::make_unique<ComputeResources>();
@@ -125,7 +126,15 @@ class GraphImplTflite::ComputeResources {
     }
 
     OpResolver op_resolver(context->options());
-    ::tflite::InterpreterBuilder builder(*self->model_, op_resolver);
+
+    self->model_weights_ = std::move(buffer_data);
+    self->allocation_ = std::make_unique<::tflite::MemoryAllocation>(
+        self->model_weights_.data(), self->model_weights_.size(),
+        ::tflite::DefaultErrorReporter());
+
+    ::tflite::InterpreterBuilder builder(
+        self->model_->GetModel(), op_resolver, ::tflite::DefaultErrorReporter(),
+        /*options=*/nullptr, self->allocation_.get());
     // On a lower-end system, use only one thread for 1 or 2 cores, use half
     // of the cores for less than 8 cores. On systems with more cores, the max
     // number threads is 4 to be used for inference.
@@ -250,11 +259,15 @@ class GraphImplTflite::ComputeResources {
 
  private:
   flatbuffers::DetachedBuffer model_content_;
+  std::vector<uint8_t> model_weights_;
 
   // `model_` depends on `model_content_` outliving it.
   std::unique_ptr<::tflite::FlatBufferModel> model_;
 
-  // `interpreter_` depends on `model_` outliving it.
+  // `allocation_` depends on `model_weights_` outliving it.
+  std::unique_ptr<::tflite::Allocation> allocation_;
+
+  // `interpreter_` depends on `model_` and `allocation_` outliving it.
   std::unique_ptr<::tflite::Interpreter> interpreter_;
 
 #if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
@@ -281,6 +294,7 @@ GraphImplTflite::CreateAndBuild(
 
   ASSIGN_OR_RETURN(std::unique_ptr<ComputeResources> compute_resources,
                    ComputeResources::Create(context, std::move(result.buffer),
+                                            std::move(result.buffer_data),
                                             constant_operands));
 
   auto compute_resources_state =
