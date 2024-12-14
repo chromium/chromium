@@ -45,19 +45,6 @@ bool IsAppRestoreAvailableForProfile(const Profile* profile);
 // Determines if per-app language settings are available for `profile`.
 bool IsPerAppLanguageEnabled(const Profile* profile);
 
-// Determines if multitasking section of System Preferences is allowed.
-// This function is used to show the window suggestions option in the Settings
-// app when the ash feature `kOsSettingsRevampWayfinding` and
-// `kFasterSplitScreenSetup` are both enabled.
-bool ShouldShowMultitasking();
-
-// Determines if multitasking section is allowed to show as a sub-section in
-// personalization section.
-// This function is used to show the window suggestions option in the Settings
-// app when the ash feature `kOsSettingsRevampWayfinding` is disabled and
-// `kFasterSplitScreenSetup` is enabled.
-bool ShouldShowMultitaskingInPersonalization();
-
 // Determines if the Graduation user policy is set so that the Graduation app is
 // enabled.
 bool ShouldShowGraduationAppSetting(Profile* profile);

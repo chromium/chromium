@@ -85,14 +85,6 @@ bool IsPerAppLanguageEnabled(const Profile* profile) {
           arc::IsArcPlayStoreEnabledForProfile(profile));
 }
 
-bool ShouldShowMultitasking() {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled();
-}
-
-bool ShouldShowMultitaskingInPersonalization() {
-  return !ash::features::IsOsSettingsRevampWayfindingEnabled();
-}
-
 bool ShouldShowGraduationAppSetting(Profile* profile) {
   // Graduation is available for non-consumer managed users that have the
   // Graduation policy set.

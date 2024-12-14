@@ -16,7 +16,6 @@ import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {shouldShowMultitasking} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import type {PrefsState} from '../common/types.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -34,6 +33,7 @@ export class MultitaskingSettingsCardElement extends
   static get is() {
     return 'multitasking-settings-card' as const;
   }
+
   static get template() {
     return getTemplate();
   }
@@ -51,14 +51,6 @@ export class MultitaskingSettingsCardElement extends
       supportedSettingIds: {
         type: Object,
         value: () => new Set<Setting>([Setting.kSnapWindowSuggestions]),
-      },
-
-      shouldShowMultitasking_: {
-        type: Boolean,
-        value() {
-          return shouldShowMultitasking();
-        },
-        readOnly: true,
       },
     };
   }
