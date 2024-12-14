@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.h"
 
 #include <stddef.h>
@@ -1608,40 +1603,43 @@ enum class PredefinedColorSpaceSettings : uint8_t {
 void TestPutImageDataOnCanvasWithColorSpaceSettings(
     HTMLCanvasElement& canvas_element,
     PredefinedColorSpaceSettings canvas_colorspace_setting) {
-  unsigned num_image_data_color_spaces = 3;
-  PredefinedColorSpace image_data_color_spaces[] = {
-      PredefinedColorSpace::kSRGB,
-      PredefinedColorSpace::kRec2020,
-      PredefinedColorSpace::kP3,
-  };
+  static constexpr auto image_data_color_spaces =
+      std::to_array<PredefinedColorSpace>({
+          PredefinedColorSpace::kSRGB,
+          PredefinedColorSpace::kRec2020,
+          PredefinedColorSpace::kP3,
+      });
 
-  unsigned num_image_data_storage_formats = 3;
-  ImageDataStorageFormat image_data_storage_formats[] = {
-      ImageDataStorageFormat::kUint8,
-      ImageDataStorageFormat::kUint16,
-      ImageDataStorageFormat::kFloat32,
-  };
+  static constexpr auto image_data_storage_formats =
+      std::to_array<ImageDataStorageFormat>({
+          ImageDataStorageFormat::kUint8,
+          ImageDataStorageFormat::kUint16,
+          ImageDataStorageFormat::kFloat32,
+      });
 
-  PredefinedColorSpace predefined_color_spaces[] = {
-      PredefinedColorSpace::kSRGB,
-      PredefinedColorSpace::kSRGB,
-      PredefinedColorSpace::kRec2020,
-      PredefinedColorSpace::kP3,
-  };
+  static constexpr auto predefined_color_spaces =
+      std::to_array<PredefinedColorSpace>({
+          PredefinedColorSpace::kSRGB,
+          PredefinedColorSpace::kSRGB,
+          PredefinedColorSpace::kRec2020,
+          PredefinedColorSpace::kP3,
+      });
 
-  CanvasPixelFormat canvas_pixel_formats[] = {
-      CanvasPixelFormat::kUint8,
-      CanvasPixelFormat::kF16,
-      CanvasPixelFormat::kF16,
-      CanvasPixelFormat::kF16,
-  };
+  static constexpr auto canvas_pixel_formats =
+      std::to_array<CanvasPixelFormat>({
+          CanvasPixelFormat::kUint8,
+          CanvasPixelFormat::kF16,
+          CanvasPixelFormat::kF16,
+          CanvasPixelFormat::kF16,
+      });
 
   // Source pixels in RGBA32
-  uint8_t u8_pixels[] = {255, 0,   0,   255,  // Red
-                         0,   0,   0,   0,    // Transparent
-                         255, 192, 128, 64,   // Decreasing values
-                         93,  117, 205, 41};  // Random values
-  constexpr size_t data_length = std::size(u8_pixels);
+  static constexpr auto u8_pixels =
+      std::to_array<uint8_t>({255, 0, 0, 255,      // Red
+                              0, 0, 0, 0,          // Transparent
+                              255, 192, 128, 64,   // Decreasing values
+                              93, 117, 205, 41});  // Random values
+  constexpr size_t data_length = u8_pixels.size();
 
   std::array<uint16_t, data_length> u16_pixels;
   for (size_t i = 0; i < data_length; i++)
@@ -1666,13 +1664,13 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
   size_t num_pixels = data_length / 4;
 
   // At most four bytes are needed for Float32 output per color component.
-  std::unique_ptr<uint8_t[]> pixels_converted_manually(
-      new uint8_t[data_length * 4]());
+  auto pixels_converted_manually =
+      base::HeapArray<uint8_t>::Uninit(data_length * 4);
 
   // Loop through different possible combinations of image data color space and
   // storage formats and create the respective test image data objects.
-  for (unsigned i = 0; i < num_image_data_color_spaces; i++) {
-    for (unsigned j = 0; j < num_image_data_storage_formats; j++) {
+  for (unsigned i = 0; i < image_data_color_spaces.size(); i++) {
+    for (unsigned j = 0; j < image_data_storage_formats.size(); j++) {
       NotShared<DOMArrayBufferView> data_array;
       switch (image_data_storage_formats[j]) {
         case ImageDataStorageFormat::kUint8:
@@ -1736,7 +1734,7 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
               ->GetSkPixmap()
               .addr();
       ColorCorrectionTestUtils::CompareColorCorrectedPixels(
-          pixels_from_get_image_data, pixels_converted_manually.get(),
+          pixels_from_get_image_data, pixels_converted_manually.data(),
           num_pixels,
           (canvas_pixel_formats[k] == CanvasPixelFormat::kUint8)
               ? kPixelFormat_8888

@@ -33,13 +33,9 @@
  * SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_path.h"
 
+#include <array>
 #include <cmath>
 #include <ostream>  // IWYU pragma: keep (needed by String::Number(int), https://github.com/clangd/clangd/issues/2053)
 #include <utility>
@@ -634,7 +630,7 @@ void CanvasPath::roundRect(
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
   identifiability_study_helper_.set_encountered_skipped_ops();
 
-  gfx::SizeF r[kMaxRadii];
+  std::array<gfx::SizeF, kMaxRadii> r;
   for (int i = 0; i < num_radii; ++i) {
     switch (radii[i]->GetContentType()) {
       case V8UnionDOMPointInitOrUnrestrictedDouble::ContentType::

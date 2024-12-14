@@ -54,7 +54,7 @@ class ColorCorrectionTestUtils {
       ImageDataStorageFormat src_storage_format,
       PredefinedColorSpace dst_color_space,
       CanvasPixelFormat dst_canvas_pixel_format,
-      std::unique_ptr<uint8_t[]>& converted_pixels,
+      base::span<uint8_t> converted_pixels,
       PixelFormat pixel_format_for_f16_canvas);
 
   static bool MatchColorSpace(sk_sp<SkColorSpace> src_color_space,

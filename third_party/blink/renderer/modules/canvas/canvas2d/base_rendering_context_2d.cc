@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 
 #include <algorithm>
@@ -2650,11 +2645,10 @@ Mesh2DIndexBuffer* BaseRenderingContext2D::createMesh2DIndexBuffer(
         "uints.");
     return nullptr;
   }
-
+  auto data = array->AsSpan();
   return MakeGarbageCollected<Mesh2DIndexBuffer>(
       base::MakeRefCounted<cc::RefCountedBuffer<uint16_t>>(
-          std::vector<uint16_t>(array->Data(),
-                                array->Data() + array->length())));
+          std::vector<uint16_t>(data.begin(), data.end())));
 }
 
 void BaseRenderingContext2D::drawMesh(
