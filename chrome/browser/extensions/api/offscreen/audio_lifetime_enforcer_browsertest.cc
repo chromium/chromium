@@ -128,8 +128,6 @@ class AudioLifetimeEnforcerBrowserTest : public ExtensionApiTestBase {
   TestExtensionDir test_dir_;
 };
 
-// TODO(crbug.com/378916068): Enable the test on desktop android.
-#if !BUILDFLAG(IS_ANDROID)
 // Tests that an offscreen document is considered active while playing audio and
 // notifies of inactivity when audio stops.
 IN_PROC_BROWSER_TEST_F(AudioLifetimeEnforcerBrowserTest,
@@ -199,7 +197,6 @@ IN_PROC_BROWSER_TEST_F(AudioLifetimeEnforcerBrowserTest,
   EXPECT_FALSE(audio_enforcer.IsActive());
   EXPECT_FALSE(terminate_called);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that an offscreen document is considered inactive if it never plays
 // audio.

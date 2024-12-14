@@ -105,11 +105,6 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest,
   // (since many tests are parameterized to exercise both MV2 + MV3 logic).
   virtual bool ShouldAllowMV2Extensions();
 
-  // Returns the path of the directory from which to serve resources when they
-  // are prefixed with "_test_resources/".
-  // The default is chrome/test/data/extensions/.
-  virtual base::FilePath GetTestResourcesParentDir();
-
   static const Extension* GetExtensionByPath(const ExtensionSet& extensions,
                                              const base::FilePath& path);
 
@@ -401,10 +396,6 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest,
 
   // Cache cache implementation.
   std::unique_ptr<ExtensionCacheFake> test_extension_cache_;
-
-  // An override so that chrome-extensions://<extension_id>/_test_resources/foo
-  // maps to chrome/test/data/extensions/foo.
-  ExtensionProtocolTestHandler test_protocol_handler_;
 
   // Conditionally disable content verification.
   std::unique_ptr<ScopedIgnoreContentVerifierForTest>

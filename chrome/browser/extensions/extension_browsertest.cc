@@ -99,83 +99,6 @@ namespace extensions {
 
 using extensions::service_worker_test_utils::TestServiceWorkerContextObserver;
 
-namespace {
-
-// Maps all chrome-extension://<id>/_test_resources/foo requests to
-// <test_dir_root>/foo or <test_dir_gen_root>/foo, where |test_dir_gen_root| is
-// inferred from <test_dir_root>. The latter is triggered only if the first path
-// does not correspond to an existing file. This is what allows us to share code
-// between tests without needing to duplicate files in each extension.
-// Example invocation #1, where the requested file exists in |test_dir_root|
-//   Input:
-//     test_dir_root: /abs/path/src/chrome/test/data
-//     directory_path: /abs/path/src/out/<out_dir>/resources/pdf
-//     relative_path: _test_resources/webui/test_browser_proxy.js
-//   Output:
-//     directory_path: /abs/path/src/chrome/test/data
-//     relative_path: webui/test_browser_proxy.js
-//
-// Example invocation #2, where the requested file exists in |test_dir_gen_root|
-//   Input:
-//     test_dir_root: /abs/path/src/chrome/test/data
-//     directory_path: /abs/path/src/out/<out_dir>/resources/pdf
-//     relative_path: _test_resources/webui/test_browser_proxy.js
-//   Output:
-//     directory_path: /abs/path/src/out/<out_dir>/gen/chrome/test/data
-//     relative_path: webui/test_browser_proxy.js
-void ExtensionProtocolTestResourcesHandler(const base::FilePath& test_dir_root,
-                                           base::FilePath* directory_path,
-                                           base::FilePath* relative_path) {
-  // Only map paths that begin with _test_resources.
-  if (!base::FilePath(FILE_PATH_LITERAL("_test_resources"))
-           .IsParent(*relative_path)) {
-    return;
-  }
-
-  // Strip the '_test_resources/' prefix from |relative_path|.
-  std::vector<base::FilePath::StringType> components =
-      relative_path->GetComponents();
-  DCHECK_GT(components.size(), 1u);
-  base::FilePath new_relative_path;
-  for (size_t i = 1u; i < components.size(); ++i)
-    new_relative_path = new_relative_path.Append(components[i]);
-  *relative_path = new_relative_path;
-
-  // Check if the file exists in the |test_dir_root| folder first.
-  base::FilePath src_path = test_dir_root.Append(new_relative_path);
-  // Replace _test_resources/foo with <test_dir_root>/foo.
-  *directory_path = test_dir_root;
-  {
-    base::ScopedAllowBlockingForTesting scoped_allow_blocking;
-    if (base::PathExists(src_path)) {
-      return;
-    }
-  }
-
-  // Infer |test_dir_gen_root| from |test_dir_root|.
-  // E.g., if |test_dir_root| is /abs/path/src/chrome/test/data,
-  // |test_dir_gen_root| will be /abs/path/out/<out_dir>/gen/chrome/test/data.
-  base::FilePath dir_src_test_data_root;
-  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir_src_test_data_root);
-  base::FilePath gen_test_data_root_dir;
-  base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &gen_test_data_root_dir);
-  base::FilePath relative_root_path;
-  dir_src_test_data_root.AppendRelativePath(test_dir_root, &relative_root_path);
-  base::FilePath test_dir_gen_root =
-      gen_test_data_root_dir.Append(relative_root_path);
-
-  // Then check if the file exists in the |test_dir_gen_root| folder
-  // covering cases where the test file is generated at build time.
-  base::FilePath gen_path = test_dir_gen_root.Append(new_relative_path);
-  {
-    base::ScopedAllowBlockingForTesting scoped_allow_blocking;
-    if (base::PathExists(gen_path)) {
-      *directory_path = test_dir_gen_root;
-    }
-  }
-}
-}  // namespace
-
 ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
     : ExtensionPlatformBrowserTest(context_type),
 #if BUILDFLAG(IS_CHROMEOS)
@@ -243,15 +166,6 @@ bool ExtensionBrowserTest::ShouldAllowMV2Extensions() {
   return true;
 }
 
-base::FilePath ExtensionBrowserTest::GetTestResourcesParentDir() {
-  // Don't use |test_data_dir_| here (even though it points to
-  // chrome/test/data/extensions by default) because subclasses have the ability
-  // to alter it by overriding the SetUpCommandLine() method.
-  base::FilePath test_root_path;
-  base::PathService::Get(chrome::DIR_TEST_DATA, &test_root_path);
-  return test_root_path.AppendASCII("extensions");
-}
-
 // static
 const Extension* ExtensionBrowserTest::GetExtensionByPath(
     const ExtensionSet& extensions,
@@ -312,9 +226,7 @@ void ExtensionBrowserTest::SetUpOnMainThread() {
         test_extension_cache_.get());
   }
 
-  test_protocol_handler_ = base::BindRepeating(
-      &ExtensionProtocolTestResourcesHandler, GetTestResourcesParentDir());
-  SetExtensionProtocolTestHandler(&test_protocol_handler_);
+  SetUpTestProtocolHandler();
   content::URLDataSource::Add(profile(),
                               std::make_unique<ThemeSource>(profile()));
   registry_observation_.Observe(ExtensionRegistry::Get(profile()));

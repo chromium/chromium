@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "extensions/browser/extension_protocols.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 
@@ -44,6 +45,11 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
   void TearDown() override;
   void TearDownOnMainThread() override;
 
+  // Returns the path of the directory from which to serve resources when they
+  // are prefixed with "_test_resources/".
+  // The default is chrome/test/data/extensions/.
+  virtual base::FilePath GetTestResourcesParentDir();
+
   const Extension* LoadExtension(const base::FilePath& path);
   const Extension* LoadExtension(const base::FilePath& path,
                                  const LoadOptions& options);
@@ -64,6 +70,11 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
   // `profile`, blocking until the navigation finishes.
   void PlatformOpenURLOffTheRecord(Profile* profile, const GURL& url);
 
+  // Sets up `test_protocol_handler_` so that
+  // chrome-extensions://<extension_id>/_test_resources/foo maps to
+  // chrome/test/data/extensions/foo.
+  void SetUpTestProtocolHandler();
+
   // Lower case to match the style of InProcessBrowserTest.
   Profile* profile();
 
@@ -78,6 +89,10 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
   base::FilePath test_data_dir_;
 
   const ContextType context_type_;
+
+  // An override so that chrome-extensions://<extension_id>/_test_resources/foo
+  // maps to chrome/test/data/extensions/foo.
+  ExtensionProtocolTestHandler test_protocol_handler_;
 
  private:
   // Temporary directory for testing.

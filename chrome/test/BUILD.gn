@@ -1736,6 +1736,7 @@ if (is_android) {
         "../browser/extensions/desktop_android/desktop_android_extensions_browsertest.cc",
         "../browser/extensions/system_cpu_apitest.cc",
         "../browser/extensions/system_memory_apitest.cc",
+        "../browser/extensions/test_resources_browsertest.cc",
       ]
 
       deps += [
@@ -1745,6 +1746,11 @@ if (is_android) {
         "//components/web_package",
         "//components/web_package/test_support",
         "//extensions/common/api",
+      ]
+
+      data += [
+        "//chrome/test/data/extensions/",
+        "//extensions/test/data/",
       ]
     }
   }
