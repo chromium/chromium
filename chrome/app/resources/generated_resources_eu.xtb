@@ -3538,7 +3538,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3473241910002674503">Tableta moduan, erabili botoiak orri nagusira joateko, atzera egiteko eta aplikazioz aldatzeko.</translation>
 <translation id="3473479545200714844">Lupa</translation>
 <translation id="3474218480460386727">Erabili 99 letra edo gutxiago beste hitz bat gehitzeko</translation>
-<translation id="3474624961160222204">Erabili <ph name="NAME" /></translation>
+<translation id="3474624961160222204">Egin aurrera <ph name="NAME" /> gisa</translation>
 <translation id="3477772589943384839">Lortu memoria-aurrezte ertaina. Tarte luzeago baten ondoren ezartzen dira inaktibo fitxak.</translation>
 <translation id="347785443197175480">Jarraitu <ph name="HOST" /> webguneari kamera eta mikrofonoa atzitzea baimentzen</translation>
 <translation id="3478088167345754456">Arriskua onartzeko prest nago</translation>
@@ -6135,7 +6135,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5313967007315987356">Gehitu webgunea</translation>
 <translation id="5315738755890845852">Giltza gehigarria: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Gorde</translation>
-<translation id="5319712128756744240">Parekatu beste gailu batekin</translation>
+<translation id="5319712128756744240">Parekatu beste gailu bat</translation>
 <translation id="5320135788267874712">Gailuaren izen berria</translation>
 <translation id="5320261549977878764">Ezabatu taldea</translation>
 <translation id="532247166573571973">Baliteke zerbitzarira konektatu ezin izatea. Saiatu berriro geroago.</translation>
