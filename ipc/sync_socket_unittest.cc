@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdio.h>
 
+#include <array>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -188,7 +189,7 @@ TEST_F(SyncSocketTest, SanityTest) {
   listener.set_quit_closure(loop.QuitWhenIdleClosure());
   CreateChannel(&listener);
   // Create a pair of SyncSockets.
-  base::SyncSocket pair[2];
+  std::array<base::SyncSocket, 2> pair;
   base::SyncSocket::CreatePair(&pair[0], &pair[1]);
   // Immediately after creation there should be no pending bytes.
   EXPECT_EQ(0U, pair[0].Peek());
@@ -234,7 +235,7 @@ static void BlockingRead(base::SyncSocket* socket,
 // Tests that we can safely end a blocking Receive operation on one thread
 // from another thread by disconnecting (but not closing) the socket.
 TEST_F(SyncSocketTest, DisconnectTest) {
-  base::CancelableSyncSocket pair[2];
+  std::array<base::CancelableSyncSocket, 2> pair;
   ASSERT_TRUE(base::CancelableSyncSocket::CreatePair(&pair[0], &pair[1]));
 
   base::Thread worker("BlockingThread");
@@ -265,7 +266,7 @@ TEST_F(SyncSocketTest, DisconnectTest) {
 
 // Tests that read is a blocking operation.
 TEST_F(SyncSocketTest, BlockingReceiveTest) {
-  base::CancelableSyncSocket pair[2];
+  std::array<base::CancelableSyncSocket, 2> pair;
   ASSERT_TRUE(base::CancelableSyncSocket::CreatePair(&pair[0], &pair[1]));
 
   base::Thread worker("BlockingThread");
@@ -299,7 +300,7 @@ TEST_F(SyncSocketTest, BlockingReceiveTest) {
 // Tests that the write operation is non-blocking and returns immediately
 // when there is insufficient space in the socket's buffer.
 TEST_F(SyncSocketTest, NonBlockingWriteTest) {
-  base::CancelableSyncSocket pair[2];
+  std::array<base::CancelableSyncSocket, 2> pair;
   ASSERT_TRUE(base::CancelableSyncSocket::CreatePair(&pair[0], &pair[1]));
 
   // Fill up the buffer for one of the socket, Send() should not block the

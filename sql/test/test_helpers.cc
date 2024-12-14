@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sql/test/test_helpers.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -67,7 +63,7 @@ std::optional<int> GetRootPage(sql::Database& db, std::string_view tree_name) {
   // See http://www.sqlite.org/fileformat2.html#database_header
   constexpr size_t kHeaderSize = 100;
   constexpr int64_t kHeaderOffset = 0;
-  uint8_t header[kHeaderSize];
+  std::array<uint8_t, kHeaderSize> header;
   base::File file(db_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file.IsValid())
     return false;

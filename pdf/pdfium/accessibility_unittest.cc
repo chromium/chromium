@@ -44,29 +44,34 @@ double GetExpectedCharWidth(bool using_test_fonts, size_t i, double expected) {
 // sane.
 TEST_P(AccessibilityTest, GetAccessibilityPage) {
   static constexpr size_t kExpectedTextRunCount = 2;
-  struct {
+  struct ExpectedTextRuns {
     uint32_t len;
     double font_size;
     float bounds_x;
     float bounds_y;
     float bounds_w;
     float bounds_h;
-  } static constexpr kExpectedTextRuns[] = {
-      {15, 12, 26.666666f, 189.333328f, 84.000008f, 13.333344f},
-      {15, 16, 28.000000f, 117.333334f, 152.000000f, 19.999992f},
   };
+  static constexpr auto kExpectedTextRuns =
+      std::to_array<ExpectedTextRuns>({
+          {15, 12, 26.666666f, 189.333328f, 84.000008f, 13.333344f},
+          {15, 16, 28.000000f, 117.333334f, 152.000000f, 19.999992f},
+      });
   static_assert(std::size(kExpectedTextRuns) == kExpectedTextRunCount,
                 "Bad test expectation count");
 
   static constexpr size_t kExpectedCharCount = 30;
-  static constexpr AccessibilityCharInfo kExpectedChars[] = {
-      {'H', 12}, {'e', 6.6666}, {'l', 5.3333}, {'l', 4},      {'o', 8},
-      {',', 4},  {' ', 4},      {'w', 12},     {'o', 6.6666}, {'r', 6.6666},
-      {'l', 4},  {'d', 9.3333}, {'!', 4},      {'\r', 0},     {'\n', 0},
-      {'G', 16}, {'o', 12},     {'o', 12},     {'d', 12},     {'b', 10.6666},
-      {'y', 12}, {'e', 12},     {',', 4},      {' ', 6.6666}, {'w', 16},
-      {'o', 12}, {'r', 8},      {'l', 4},      {'d', 12},     {'!', 2.6666},
-  };
+  static constexpr auto kExpectedChars =
+      std::to_array<AccessibilityCharInfo>({
+          {'H', 12},     {'e', 6.6666}, {'l', 5.3333}, {'l', 4},
+          {'o', 8},      {',', 4},      {' ', 4},      {'w', 12},
+          {'o', 6.6666}, {'r', 6.6666}, {'l', 4},      {'d', 9.3333},
+          {'!', 4},      {'\r', 0},     {'\n', 0},     {'G', 16},
+          {'o', 12},     {'o', 12},     {'d', 12},     {'b', 10.6666},
+          {'y', 12},     {'e', 12},     {',', 4},      {' ', 6.6666},
+          {'w', 16},     {'o', 12},     {'r', 8},      {'l', 4},
+          {'d', 12},     {'!', 2.6666},
+      });
   static_assert(std::size(kExpectedChars) == kExpectedCharCount,
                 "Bad test expectation count");
 
@@ -119,10 +124,11 @@ TEST_P(AccessibilityTest, GetAccessibilityPage) {
 }
 
 TEST_P(AccessibilityTest, GetAccessibilityImageInfo) {
-  static const AccessibilityImageInfo kExpectedImageInfo[] = {
+  static const auto kExpectedImageInfo = std::to_array<AccessibilityImageInfo>({
       {"Image 1", 0, {380, 78, 67, 68}, {}},
       {"Image 2", 0, {380, 385, 27, 28}, {}},
-      {"Image 3", 0, {380, 678, 1, 1}, {}}};
+      {"Image 3", 0, {380, 678, 1, 1}, {}},
+  });
 
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
@@ -435,10 +441,11 @@ TEST_P(AccessibilityTest, InternalLinkClickActionHandling) {
 }
 
 TEST_P(AccessibilityTest, GetAccessibilityLinkInfo) {
-  AccessibilityLinkInfo expected_link_info[] = {
+  auto expected_link_info = std::to_array<AccessibilityLinkInfo>({
       {"http://yahoo.com", 0, {75, 191, 110, 16}, {1, 1}},
       {"http://bing.com", 1, {131, 121, 138, 20}, {4, 1}},
-      {"http://google.com", 2, {82, 67, 161, 21}, {7, 1}}};
+      {"http://google.com", 2, {82, 67, 161, 21}, {7, 1}},
+  });
 
   if (UsingTestFonts()) {
     expected_link_info[0].bounds = {75, 192, 110, 15};
@@ -481,10 +488,12 @@ TEST_P(AccessibilityTest, GetAccessibilityHighlightInfo) {
   constexpr uint32_t kHighlightDefaultColor = MakeARGB(255, 255, 255, 0);
   constexpr uint32_t kHighlightRedColor = MakeARGB(102, 230, 0, 0);
   constexpr uint32_t kHighlightNoColor = MakeARGB(0, 0, 0, 0);
-  static const AccessibilityHighlightInfo kExpectedHighlightInfo[] = {
-      {"Text Note", 0, kHighlightDefaultColor, {5, 196, 49, 26}, {0, 1}},
-      {"", 1, kHighlightRedColor, {110, 196, 77, 26}, {2, 1}},
-      {"", 2, kHighlightNoColor, {192, 196, 13, 26}, {3, 1}}};
+  static const auto kExpectedHighlightInfo =
+      std::to_array<AccessibilityHighlightInfo>({
+          {"Text Note", 0, kHighlightDefaultColor, {5, 196, 49, 26}, {0, 1}},
+          {"", 1, kHighlightRedColor, {110, 196, 77, 26}, {2, 1}},
+          {"", 2, kHighlightNoColor, {192, 196, 13, 26}, {3, 1}},
+      });
 
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
@@ -522,7 +531,8 @@ TEST_P(AccessibilityTest, GetAccessibilityHighlightInfo) {
 }
 
 TEST_P(AccessibilityTest, GetAccessibilityTextFieldInfo) {
-  static const AccessibilityTextFieldInfo kExpectedTextFieldInfo[] = {
+  static const auto kExpectedTextFieldInfo = std::to_array<
+      AccessibilityTextFieldInfo>({
       {"Text Box", "Text", false, false, false, 0, 5, {138, 230, 135, 41}},
       {"ReadOnly", "Elephant", true, false, false, 1, 5, {138, 163, 135, 41}},
       {"Required",
@@ -533,7 +543,8 @@ TEST_P(AccessibilityTest, GetAccessibilityTextFieldInfo) {
        2,
        5,
        {138, 303, 135, 34}},
-      {"Password", "", false, false, true, 3, 5, {138, 356, 135, 35}}};
+      {"Password", "", false, false, true, 3, 5, {138, 356, 135, 35}},
+  });
 
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =

@@ -14,6 +14,7 @@
 #include <time.h>
 
 #include <algorithm>
+#include <array>
 #include <numeric>
 #include <vector>
 
@@ -315,8 +316,13 @@ TEST(Convolver, VerifySIMDEdgeCases) {
 // Verify that lage upscales/downscales produce the same result
 // with and without SIMD.
 TEST(Convolver, VerifySIMDPrecision) {
-  int source_sizes[][2] = { {1920, 1080}, {1377, 523}, {325, 241} };
-  int dest_sizes[][2] = { {1280, 1024}, {177, 123} };
+  auto source_sizes = std::to_array<std::array<int, 2>>({
+      {1920, 1080},
+      {1377, 523},
+      {325, 241},
+  });
+  auto dest_sizes =
+      std::to_array<std::array<int, 2>>({{1280, 1024}, {177, 123}});
 
   srand(static_cast<unsigned int>(time(0)));
 

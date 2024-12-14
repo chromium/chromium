@@ -387,7 +387,7 @@ TEST_P(PDFiumPageLinkTest, AnnotLinkGeneration) {
     int page;
     float y_in_pixels;
   };
-  static ExpectedLink expected_links[] = {
+  static auto expected_links = std::to_array<ExpectedLink>({
       {144, 38, {{99, 436, 236, 13}}, "https://pdfium.googlesource.com/pdfium"},
       {27, 38, {{112, 215, 617, 28}}, "", 1, 89.333336},
       {65, 27, {{93, 334, 174, 21}}, "https://www.adobe.com"},
@@ -395,7 +395,8 @@ TEST_P(PDFiumPageLinkTest, AnnotLinkGeneration) {
        18,
        {{242, 455, 1, 18}, {242, 472, 1, 15}},
        "https://cs.chromium.org"},
-      {-1, 0, {{58, 926, 28, 27}}, "https://www.google.com"}};
+      {-1, 0, {{58, 926, 28, 27}}, "https://www.google.com"},
+  });
   if (UsingTestFonts()) {
     expected_links[0].bounding_rects[0] = {99, 436, 236, 14};
   }
@@ -763,7 +764,7 @@ TEST_P(PDFiumPageTextTest, GetTextRunInfo) {
   // The links span from [7, 22], [52, 66] and [92, 108] with 16, 15 and 17
   // text run lengths respectively. There are text runs preceding and
   // succeeding them.
-  AccessibilityTextRunInfo expected_text_runs[] = {
+  auto expected_text_runs = std::to_array<AccessibilityTextRunInfo>({
       {7, gfx::RectF(26.666666f, 189.333333f, 38.666672f, 13.333344f),
        AccessibilityTextDirection::kLeftToRight, expected_style_1},
       {16, gfx::RectF(70.666664f, 189.333333f, 108.0f, 14.666672f),
@@ -779,7 +780,8 @@ TEST_P(PDFiumPageTextTest, GetTextRunInfo) {
       {5, gfx::RectF(28.0f, 65.333336f, 40.0f, 18.666664f),
        AccessibilityTextDirection::kLeftToRight, expected_style_2},
       {17, gfx::RectF(77.333336f, 64.0f, 160.0f, 20.0f),
-       AccessibilityTextDirection::kLeftToRight, expected_style_2}};
+       AccessibilityTextDirection::kLeftToRight, expected_style_2},
+  });
 
   if (UsingTestFonts()) {
     expected_text_runs[4].bounds =
@@ -824,7 +826,7 @@ TEST_P(PDFiumPageTextTest, HighlightTextRunInfo) {
       "Helvetica", 0,          AccessibilityTextRenderMode::kFill,
       16,          0xff000000, 0xff000000,
       false,       false};
-  AccessibilityTextRunInfo expected_text_runs[] = {
+  auto expected_text_runs = std::to_array<AccessibilityTextRunInfo>({
       {5, gfx::RectF(1.3333334f, 198.66667f, 46.666668f, 14.666672f),
        AccessibilityTextDirection::kLeftToRight, kExpectedStyle},
       {7, gfx::RectF(50.666668f, 198.66667f, 47.999996f, 17.333328f),
@@ -834,7 +836,8 @@ TEST_P(PDFiumPageTextTest, HighlightTextRunInfo) {
       {2, gfx::RectF(181.33333f, 202.66667f, 16.0f, 14.66667f),
        AccessibilityTextDirection::kNone, kExpectedStyle},
       {2, gfx::RectF(198.66667f, 202.66667f, 21.333328f, 10.666672f),
-       AccessibilityTextDirection::kLeftToRight, kExpectedStyle}};
+       AccessibilityTextDirection::kLeftToRight, kExpectedStyle},
+  });
 
   if (UsingTestFonts()) {
     expected_text_runs[2].bounds =
@@ -870,10 +873,11 @@ TEST_P(PDFiumPageHighlightTest, PopulateHighlights) {
   constexpr uint32_t kHighlightDefaultColor = MakeARGB(255, 255, 255, 0);
   constexpr uint32_t kHighlightRedColor = MakeARGB(102, 230, 0, 0);
   constexpr uint32_t kHighlightNoColor = MakeARGB(0, 0, 0, 0);
-  static const ExpectedHighlight kExpectedHighlights[] = {
+  static const auto kExpectedHighlights = std::to_array<ExpectedHighlight>({
       {0, 5, {5, 196, 49, 26}, kHighlightDefaultColor},
       {12, 7, {110, 196, 77, 26}, kHighlightRedColor},
-      {20, 1, {192, 196, 13, 26}, kHighlightNoColor}};
+      {20, 1, {192, 196, 13, 26}, kHighlightNoColor},
+  });
 
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
@@ -910,11 +914,12 @@ TEST_P(PDFiumPageTextFieldTest, PopulateTextFields) {
     int flags;
   };
 
-  static const ExpectedTextField kExpectedTextFields[] = {
+  static const auto kExpectedTextFields = std::to_array<ExpectedTextField>({
       {"Text Box", "Text", {138, 230, 135, 41}, 0},
       {"ReadOnly", "Elephant", {138, 163, 135, 41}, 1},
       {"Required", "Required Field", {138, 303, 135, 34}, 2},
-      {"Password", "", {138, 356, 135, 35}, 8192}};
+      {"Password", "", {138, 356, 135, 35}, 8192},
+  });
 
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
@@ -955,7 +960,7 @@ TEST_P(PDFiumPageChoiceFieldTest, PopulateChoiceFields) {
     int flags;
   };
 
-  static const ExpectedChoiceField kExpectedChoiceFields[] = {
+  static const auto kExpectedChoiceFields = std::to_array<ExpectedChoiceField>({
       {"Listbox_SingleSelect",
        {{"Foo", false}, {"Bar", false}, {"Qux", false}},
        {138, 296, 135, 41},
@@ -997,7 +1002,8 @@ TEST_P(PDFiumPageChoiceFieldTest, PopulateChoiceFields) {
            {"Echidna", false},
        },
        {138, 563, 135, 41},
-       2097152}};
+       2097152},
+  });
 
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
@@ -1045,46 +1051,48 @@ TEST_P(PDFiumPageButtonTest, PopulateButtons) {
     gfx::Rect bounding_rect;
   };
 
-  static const ExpectedButton kExpectedButtons[] = {{"readOnlyCheckbox",
-                                                     "Yes",
-                                                     FPDF_FORMFIELD_CHECKBOX,
-                                                     1,
-                                                     true,
-                                                     1,
-                                                     0,
-                                                     {185, 43, 28, 28}},
-                                                    {"checkbox",
-                                                     "Yes",
-                                                     FPDF_FORMFIELD_CHECKBOX,
-                                                     2,
-                                                     false,
-                                                     1,
-                                                     0,
-                                                     {185, 96, 28, 28}},
-                                                    {"RadioButton",
-                                                     "value1",
-                                                     FPDF_FORMFIELD_RADIOBUTTON,
-                                                     49154,
-                                                     false,
-                                                     2,
-                                                     0,
-                                                     {185, 243, 28, 28}},
-                                                    {"RadioButton",
-                                                     "value2",
-                                                     FPDF_FORMFIELD_RADIOBUTTON,
-                                                     49154,
-                                                     true,
-                                                     2,
-                                                     1,
-                                                     {252, 243, 27, 28}},
-                                                    {"PushButton",
-                                                     "",
-                                                     FPDF_FORMFIELD_PUSHBUTTON,
-                                                     65536,
-                                                     false,
-                                                     0,
-                                                     -1,
-                                                     {118, 270, 55, 67}}};
+  static const auto kExpectedButtons = std::to_array<ExpectedButton>({
+      {"readOnlyCheckbox",
+       "Yes",
+       FPDF_FORMFIELD_CHECKBOX,
+       1,
+       true,
+       1,
+       0,
+       {185, 43, 28, 28}},
+      {"checkbox",
+       "Yes",
+       FPDF_FORMFIELD_CHECKBOX,
+       2,
+       false,
+       1,
+       0,
+       {185, 96, 28, 28}},
+      {"RadioButton",
+       "value1",
+       FPDF_FORMFIELD_RADIOBUTTON,
+       49154,
+       false,
+       2,
+       0,
+       {185, 243, 28, 28}},
+      {"RadioButton",
+       "value2",
+       FPDF_FORMFIELD_RADIOBUTTON,
+       49154,
+       true,
+       2,
+       1,
+       {252, 243, 27, 28}},
+      {"PushButton",
+       "",
+       FPDF_FORMFIELD_PUSHBUTTON,
+       65536,
+       false,
+       0,
+       -1,
+       {118, 270, 55, 67}},
+  });
 
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =

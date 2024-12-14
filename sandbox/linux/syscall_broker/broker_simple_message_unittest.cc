@@ -12,6 +12,9 @@
 #include <linux/kcmp.h>
 #include <unistd.h>
 
+#include <algorithm>
+#include <array>
+
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -381,10 +384,10 @@ TEST(BrokerSimpleMessage, AddData) {
   {
     BrokerSimpleMessage message;
 
-    char foo[8192];
-    memset(foo, 'x', sizeof(foo));
+    std::array<char, 8192> foo;
+    std::fill(foo.begin(), foo.end(), 'x');
 
-    EXPECT_FALSE(message.AddDataToMessage(foo, sizeof(foo)));
+    EXPECT_FALSE(message.AddDataToMessage(foo.data(), sizeof(foo)));
   }
 }
 
@@ -758,7 +761,7 @@ void ReceiveStdoutDupFd(BrokerChannel::EndPoint* ipc_reader) {
 void ReceiveTwoDupFds(BrokerChannel::EndPoint* ipc_reader) {
   // Receive two fds from |ipc_reader|.
   BrokerSimpleMessage msg;
-  base::ScopedFD recv_fds[2];
+  std::array<base::ScopedFD, 2> recv_fds;
   ssize_t len =
       msg.RecvMsgWithFlagsMultipleFds(ipc_reader->get(), 0, {recv_fds});
   ASSERT_GE(len, 0) << "Error on RecvMsgWithFlags, errno = " << errno;
@@ -770,7 +773,7 @@ void ReceiveTwoDupFds(BrokerChannel::EndPoint* ipc_reader) {
 void ReceiveThreeFdsSendTwoBack(BrokerChannel::EndPoint* ipc_reader) {
   // Receive two fds from |ipc_reader|.
   BrokerSimpleMessage msg;
-  base::ScopedFD recv_fds[3];
+  std::array<base::ScopedFD, 3> recv_fds;
   ssize_t len =
       msg.RecvMsgWithFlagsMultipleFds(ipc_reader->get(), 0, {recv_fds});
   ASSERT_GE(len, 0) << "Error on RecvMsgWithFlags, errno = " << errno;
@@ -782,7 +785,7 @@ void ReceiveThreeFdsSendTwoBack(BrokerChannel::EndPoint* ipc_reader) {
   }
 
   BrokerSimpleMessage resp;
-  int send_fds[2];
+  std::array<int, 2> send_fds;
   send_fds[0] = recv_fds[1].get();
   send_fds[1] = recv_fds[2].get();
   resp.AddIntToMessage(0);  // Dummy int to send message
@@ -846,7 +849,7 @@ TEST_F(BrokerSimpleMessageFdTest, PassTwoFds) {
 
   BrokerSimpleMessage msg;
   msg.AddIntToMessage(0);  // Must add a dummy value to send the message.
-  int send_fds[2];
+  std::array<int, 2> send_fds;
   send_fds[0] = STDOUT_FILENO;
   send_fds[1] = STDIN_FILENO;
   ASSERT_TRUE(msg.SendMsgMultipleFds(ipc_writer.get(), {send_fds}));
@@ -869,10 +872,10 @@ TEST_F(BrokerSimpleMessageFdTest, SynchronousPassTwoFds) {
 
   BrokerSimpleMessage msg, reply;
   msg.AddIntToMessage(0);  // Must add a dummy value to send the message.
-  int send_fds[2];
+  std::array<int, 2> send_fds;
   send_fds[0] = STDOUT_FILENO;
   send_fds[1] = STDIN_FILENO;
-  base::ScopedFD result_fds[2];
+  std::array<base::ScopedFD, 2> result_fds;
   msg.SendRecvMsgWithFlagsMultipleFds(ipc_writer.get(), 0, {send_fds},
                                       {result_fds}, &reply);
 
