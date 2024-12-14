@@ -7019,6 +7019,24 @@
        null,
        {}
       ]
+     ],
+     "chrome-1312699.html": [
+      "c783b0d9cc9634654f59654945a1bdcf38539cc8",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "content-visibility-crash.html": [
+      "63111d03e3fab4673ec4d14cff6ad5737fd4f39c",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
      ]
     }
    },
@@ -166503,6 +166521,19 @@
      ]
     },
     "css-overflow": {
+     "add-scroller-then-scroll-content-into-view.html": [
+      "bbe4ec33c942d74fabf0d8665ce6a69364f256af",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "clip-001.html": [
       "dacb658db6458e67832b454ebd6887a8a04b9349",
       [
@@ -166588,6 +166619,19 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "content-change-then-scroll-into-view.html": [
+      "ec8836d5cb9558d486a86f7b4fe1ba54dc8726c1",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -246537,7 +246581,7 @@
        ]
       ],
       "chromium-paint-holding-timeout.html": [
-       "83596940fa420005492b38def7e8cd49d0252632",
+       "cb3984695fd4828613fa76f7735db451be3ccb2d",
        [
         null,
         [
@@ -277013,6 +277057,70 @@
      ]
     ]
    },
+   "fullscreen": {
+    "rendering": {
+     "backdrop-iframe.html": [
+      "dbdf9c841a4685160987ed5df0ba5e632b754669",
+      [
+       null,
+       [
+        [
+         "/fullscreen/rendering/backdrop-green-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "backdrop-inherit.html": [
+      "3a38dc4c815269bcba1fb570c1b0ee1a06ff8b2e",
+      [
+       null,
+       [
+        [
+         "/fullscreen/rendering/backdrop-green-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "backdrop-object.html": [
+      "01dc913a50dddc154f6463e7c2c2fd52f64cc0f7",
+      [
+       null,
+       [
+        [
+         "/fullscreen/rendering/backdrop-object-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "fullscreen-root-fills-page.html": [
+      "e2a6217346db1a4f7850446760f8be43532fa4d2",
+      [
+       null,
+       [
+        [
+         "/fullscreen/rendering/fullscreen-root-fills-page-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "testdriver": true
+       }
+      ]
+     ]
+    }
+   },
    "html": {
     "browsers": {
      "sandboxing": {
@@ -289922,6 +290030,35 @@
           {}
          ]
         ],
+        "border-rendering.tentative.html": [
+         "c4025a153a63d1559d83fb6978c7f797bba9b83f",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/border-rendering-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               56
+              ],
+              [
+               0,
+               9
+              ]
+             ]
+            ]
+           ]
+          }
+         ]
+        ],
         "closed-listbox-rendering.tentative.html": [
          "4d46aba2281a057405a534e747a6e736be7b5719",
          [
@@ -289935,6 +290072,792 @@
           {}
          ]
         ],
+        "native-popup-with-wrapper-div.tentative.html": [
+         "608fbb86546efb214db9b87290dac99494a74b6d",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/native-popup-with-wrapper-div-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "picker-and-slotted.tentative.html": [
+         "3e57757eb0100d182ed9e5722688ae82ee99cf03",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/picker-and-slotted-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-active.tentative.html": [
+         "3873969a2875d6f3ffcec5f788cc25477df9bed3",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-active-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               29
+              ],
+              [
+               0,
+               1
+              ]
+             ]
+            ]
+           ],
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-custom-button.tentative.html": [
+         "89683d29f6ec0d73727208a5c144d5a89248feac",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-button-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-dark-mode.tentative.html": [
+         "d2ea44a20e417df9aed559bf8671214e766ce00e",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-dark-mode-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               1
+              ],
+              [
+               0,
+               12
+              ]
+             ]
+            ]
+           ],
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-default-button.tentative.html": [
+         "f0e17ff349b2f456320dc4388ca7a89309e0bbaa",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-button-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               1
+              ],
+              [
+               0,
+               1
+              ]
+             ]
+            ]
+           ],
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-disabled-option.tentative.html": [
+         "b4cd7ba67e031b448c2fa5f6220b8ecea44d306b",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-disabled-option-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               37
+              ],
+              [
+               0,
+               1
+              ]
+             ]
+            ]
+           ],
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-fallback-bottom-left-scroller.tentative.html": [
+         "77f97efab212c0ae76ec33f39e5d508c1abd6b27",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-left-scroller-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-fallback-bottom-left.tentative.html": [
+         "c8fa2f60d24ace5286760295c1e960ad9352b909",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-left-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-fallback-bottom-right-scroller.tentative.html": [
+         "b7eefc25585e15dd8a7c0ebbda4e28e49f004757",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-right-scroller-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-fallback-bottom-right.tentative.html": [
+         "9ce12bc20e74400ebb2b1d4cfa93a4f123dd0b6e",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-right-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-fallback-top-left-scroller.tentative.html": [
+         "3f8358f65405aabb7b6a9e9ee28930a06340bbc9",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-top-left-scroller-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-fallback-top-left.tentative.html": [
+         "6e276aef8d2bc2ab63525ef3d5e20dcdd4d408ce",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-top-left-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-fallback-top-right-scroller.tentative.html": [
+         "4d04a7caa9c821f533331f8aceebc76cd5149c0d",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-top-right-scroller-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-fallback-top-right.tentative.html": [
+         "b0c4c510e7d0adde7445ca677bff2ff5a4dd862a",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-top-right-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-font-inheriting.tentative.html": [
+         "f90e7c8896f90dd9022cf2aa13ba5f80fe204674",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               50
+              ],
+              [
+               0,
+               8
+              ]
+             ]
+            ]
+           ],
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-hover.tentative.html": [
+         "b5e24d07947c8918fc505256035d14b4943d61af",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-hover-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               33
+              ],
+              [
+               0,
+               1
+              ]
+             ]
+            ]
+           ],
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-optgroup-legend-and-label.tentative.html": [
+         "666dde2f60e316bae3620141414a9be5201d932d",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-optgroup-legend-ref.html",
+            "!="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-optgroup-legend.tentative.html": [
+         "6b973bc84ec7e9c4f249c8cf3002370f9336e016",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-optgroup-legend-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               1
+              ],
+              [
+               0,
+               1
+              ]
+             ]
+            ]
+           ],
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-optgroup-rendering.tentative.html": [
+         "fd48e61731d329d34a08e2587988cbb5f201421b",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-optgroup-rendering-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               1
+              ],
+              [
+               0,
+               1
+              ]
+             ]
+            ]
+           ],
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-option-with-label.tentative.html": [
+         "c5abc14c3860e860b64e9ac652f9e1d55d3e9c4d",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-button-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               1
+              ],
+              [
+               0,
+               1
+              ]
+             ]
+            ]
+           ],
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-picker-select-border.tentative.html": [
+         "c708af4db1f7bd186e7da3ab23f1c075116e0b62",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-picker-select-border-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               41
+              ],
+              [
+               0,
+               6
+              ]
+             ]
+            ]
+           ],
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-switching-invalidation.tentative.html": [
+         "fd67d013a5641369e49745ebf6bbecaec1e36d1a",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-switching-invalidation-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               40
+              ],
+              [
+               0,
+               2
+              ]
+             ]
+            ]
+           ],
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-writing-mode-vertical-lr.tentative.html": [
+         "4932ea37f72164e76c51664e55af98b5b1605869",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-writing-mode-vertical-lr-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-writing-mode-vertical-rl.tentative.html": [
+         "4b532a6f0257aead58fe43d9f72a0b6aa9bc644b",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-writing-mode-vertical-rl-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-appearance-wrong-picker-argument.tentative.html": [
+         "a5ca3faea25dd10d7a692727c7e446cb9e38c913",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-button-ref.html",
+            "!="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-explicit-size.tentative.html": [
+         "4fefc96c2be3214935cbf1b0d7347c291cdf54c7",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-explicit-size-ref.tentative.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "select-font-size.tentative.html": [
+         "3b6b65db071cf948f015af67ce2ca6bde671912a",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-font-size-ref.tentative.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "select-icon-color.tentative.html": [
+         "59f015b86b4fa92a103d64964b21d7a50c5b174a",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-icon-color-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               41
+              ],
+              [
+               0,
+               6
+              ]
+             ]
+            ]
+           ]
+          }
+         ]
+        ],
+        "select-multiple-base-appearance.html": [
+         "5304ce8aa9a2348d2445d330085d0f996653486a",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-multiple-base-appearance-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "select-only-button-opt-in.tentative.html": [
+         "b010d15e8adab1ebfe448842e195e29b24d332fb",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-button-ref.html",
+            "!="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-only-picker-opt-in.tentative.html": [
+         "51cdabe18b4666af126f42283e74db62f41eadc1",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-only-picker-opt-in-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-open-invalidation.tentative.html": [
+         "10a441703be9ad0a49601de1159d63eea09e8b6e",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-open-invalidation-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               40
+              ],
+              [
+               0,
+               2
+              ]
+             ]
+            ]
+           ],
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-option-images.tentative.html": [
+         "b0c8f279b700d9943a680f0886d38f3383ef233a",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-option-images-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               40
+              ],
+              [
+               0,
+               2
+              ]
+             ]
+            ]
+           ],
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-popover-exit-animation.tentative.html": [
+         "f047474d9b394dac9ac62d3ddf7eb897eb871394",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-popover-exit-animation-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               41
+              ],
+              [
+               0,
+               6
+              ]
+             ]
+            ]
+           ],
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-second-child-button.tentative.html": [
+         "ae216294ee54732a7bf39c2ef9e7ea669d99b05d",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-second-child-button-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               37
+              ],
+              [
+               0,
+               1
+              ]
+             ]
+            ]
+           ],
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-selected-value-behavior.tentative.html": [
+         "a55fbce739357ecd45c67132d4daa9679dfdd0d7",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-selected-value-behavior-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
         "select-size-multiple-new-content.tentative.html": [
          "ba45cc1a148c8ea4cf9f56e737e344a382da286a",
          [
@@ -289942,6 +290865,19 @@
           [
            [
             "/html/semantics/forms/the-select-element/customizable-select/select-size-multiple-new-content-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "select-text-only.tentative.html": [
+         "a27ef3d1636ad106370a9b0b8bba850be32f44b9",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-text-only-ref.html",
             "=="
            ]
           ],
@@ -348047,6 +348983,24 @@
        []
       ]
      },
+     "scroll-initial-target": {
+      "scroll-initial-target-with-anchor-navigation-inner-frame.html": [
+       "c363961add7aaba5c3320b31589706eb8757083b",
+       []
+      ],
+      "scroll-initial-target-with-hash-fragment-navigation-inner-frame.html": [
+       "1c81212e216a81220e658fabe67c9645eab0fe09",
+       []
+      ],
+      "scroll-initial-target-with-text-fragment-navigation-target.html": [
+       "4cad10e0b3ef0ab9d609c3eba3f59b9d82ff100b",
+       []
+      ],
+      "stash.py": [
+       "1b1800d30efbd20140896bd1977a3b2e28d60e6f",
+       []
+      ]
+     },
      "scroll-start": {
       "scroll-start-with-anchor-navigation-inner-frame.html": [
        "c32bac913d2672eaa9976a8e7407566ad9b3224d",
@@ -348062,24 +349016,6 @@
       ],
       "stash.py": [
        "13bb0e91ba7d6ecf2804c50b77772c68a42f897e",
-       []
-      ]
-     },
-     "scroll-start-target": {
-      "scroll-start-target-with-anchor-navigation-inner-frame.html": [
-       "c363961add7aaba5c3320b31589706eb8757083b",
-       []
-      ],
-      "scroll-start-target-with-hash-fragment-navigation-inner-frame.html": [
-       "1c81212e216a81220e658fabe67c9645eab0fe09",
-       []
-      ],
-      "scroll-start-target-with-text-fragment-navigation-target.html": [
-       "bbedb011328036987c64a6f172d72aaa4143164c",
-       []
-      ],
-      "stash.py": [
-       "3c65e2b59b3e54f670929ba22a5a21591753dbe9",
        []
       ]
      },
@@ -376458,6 +377394,20 @@
       ]
      }
     },
+    "rendering": {
+     "backdrop-green-ref.html": [
+      "3126fe194261f7ce7f6039885e4ec73e7a997468",
+      []
+     ],
+     "backdrop-object-ref.html": [
+      "6c7071a727dd27d182ae017e9f6dbc0834361ddc",
+      []
+     ],
+     "fullscreen-root-fills-page-ref.html": [
+      "b2bf13557a2c3540645e3aa45a0850a61f8f0b28",
+      []
+     ]
+    },
     "trusted-click.js": [
      "51fbce7ee4355ec4ac2b923f24feb75a944f4390",
      []
@@ -390472,8 +391422,20 @@
          "72abb8843f6dab611347c60a5c3ab06860f3a33b",
          []
         ],
+        "border-rendering-ref.html": [
+         "2ecb3a06bfe85b43ac411ca58a08ef68919aba27",
+         []
+        ],
         "closed-listbox-rendering-ref.html": [
          "d1a1f1bb61ff377679eac4c19efe0f8c4071a4ba",
+         []
+        ],
+        "native-popup-with-wrapper-div-ref.html": [
+         "6540e324b5d935a1f335b4e1d1b1cc36bb90a5fe",
+         []
+        ],
+        "picker-and-slotted-ref.html": [
+         "8ae5c7978ddfe5bf0d29844130792c482850bb92",
          []
         ],
         "resources": {
@@ -390481,17 +391443,149 @@
           "83df0e65644224c4267215e3d24987b0bcc537f0",
           []
          ],
+         "customizable-select-styles.css": [
+          "65b3c39019aec0a18e4f7997292f4b2b27c660a7",
+          []
+         ],
+         "customizable-select-utils.js": [
+          "ed3f9642a865feae73057d95fed2d0cd93e0a94b",
+          []
+         ],
+         "fallback-helper.js": [
+          "d2b9343e8d3fc6d98168a32db4d24daf1541a04b",
+          []
+         ],
          "selectedcontent-restore-iframe.html": [
           "b38ed6275480a8feca17f96182a6a9a2e120d7e3",
           []
          ]
         },
-        "select-events.tentative-expected.txt": [
-         "8faf6b76335fd49c1076412717a98034bfc54d1d",
+        "select-appearance-active-ref.html": [
+         "9c62188a4934de12a1f0a7ecc2bdea96c0c054b3",
+         []
+        ],
+        "select-appearance-button-ref.html": [
+         "7b6a075237edd9f72df8f7fd48bca2174a98fdcd",
+         []
+        ],
+        "select-appearance-dark-mode-ref.html": [
+         "9d80e27d86de9d3e161090713be3c436dc4883df",
+         []
+        ],
+        "select-appearance-disabled-option-ref.html": [
+         "0b59f2839b5cd2983a7279827b93788c50527cae",
+         []
+        ],
+        "select-appearance-fallback-bottom-left-ref.html": [
+         "fbc1b25e72bbf6034b6fdfdf34f7cea8012c5eb8",
+         []
+        ],
+        "select-appearance-fallback-bottom-left-scroller-ref.html": [
+         "687e64da292c8ae677ff893a20bb6620a8ae2abe",
+         []
+        ],
+        "select-appearance-fallback-bottom-right-ref.html": [
+         "ba9867ddd5167c1e1a0b7b0ecf85c44979406a29",
+         []
+        ],
+        "select-appearance-fallback-bottom-right-scroller-ref.html": [
+         "97af58d6d38e57f6ee5a112c9ce8b7b5f59a6873",
+         []
+        ],
+        "select-appearance-fallback-top-left-ref.html": [
+         "e325f74ef99fe27deedd2aa44d9a3710a9a1f0d7",
+         []
+        ],
+        "select-appearance-fallback-top-left-scroller-ref.html": [
+         "3822fb30f2824f40094fd7cf4059e958b4252566",
+         []
+        ],
+        "select-appearance-fallback-top-right-ref.html": [
+         "3b1260427f7e9639c7ffc59197aec1c5a9eeba56",
+         []
+        ],
+        "select-appearance-fallback-top-right-scroller-ref.html": [
+         "548846160950a2ad575446e42da6417c0e39a995",
+         []
+        ],
+        "select-appearance-font-inheriting-ref.html": [
+         "6321281fa8f71edf9f675096f2b7bb4745c44aeb",
+         []
+        ],
+        "select-appearance-hover-ref.html": [
+         "fc658306da3d4ff96b99ea0e7398534712c3b996",
+         []
+        ],
+        "select-appearance-optgroup-legend-ref.html": [
+         "6d75f62efcd41cc624714398dde7f1b634a3f701",
+         []
+        ],
+        "select-appearance-optgroup-rendering-ref.html": [
+         "25bb73492a809588ee60f04aa661d8e7bf27ea4c",
+         []
+        ],
+        "select-appearance-picker-select-border-ref.html": [
+         "d09f9bc42166908f9161911ea8bcd9d7124284af",
+         []
+        ],
+        "select-appearance-switching-invalidation-ref.html": [
+         "293653055558e212f9c8cd242b1a571037be9b6b",
+         []
+        ],
+        "select-appearance-writing-mode-vertical-lr-ref.html": [
+         "2e36e0a6c8e53d6564f5935dc1609ef7b6234180",
+         []
+        ],
+        "select-appearance-writing-mode-vertical-rl-ref.html": [
+         "e24aec5ad2303c52d263a5c0c0d14b3210e0292a",
+         []
+        ],
+        "select-explicit-size-ref.tentative.html": [
+         "91066653a30c396c197d254f457d5c39c99bbe34",
+         []
+        ],
+        "select-font-size-ref.tentative.html": [
+         "eb7867b554ded7c674547e04a121be183575cef9",
+         []
+        ],
+        "select-icon-color-ref.html": [
+         "b351c80c273940c8422db8f66da959fb36e962cb",
+         []
+        ],
+        "select-multiple-base-appearance-ref.html": [
+         "18ad4ecc3fa1236aa85fe88a2b5ceeb1ba436041",
+         []
+        ],
+        "select-only-picker-opt-in-ref.html": [
+         "67a0abe43f2d1aad0b1d82da8b8cdfc77a25b549",
+         []
+        ],
+        "select-open-invalidation-ref.html": [
+         "e0631712ef70e7e65f92e331ca4fc69a70f90dde",
+         []
+        ],
+        "select-option-images-ref.html": [
+         "9c675e4f21018ccff221b7fdfda6e729f3ed7c75",
+         []
+        ],
+        "select-popover-exit-animation-ref.html": [
+         "994d3a5fb2163eef9ab5bcfcf313dee661e2290c",
+         []
+        ],
+        "select-second-child-button-ref.html": [
+         "636d0514c454a54e0f5500e9013a8488ba6e7552",
+         []
+        ],
+        "select-selected-value-behavior-ref.html": [
+         "7260b242743652827dda88003e970e5fa3a51540",
          []
         ],
         "select-size-multiple-new-content-ref.html": [
          "dccff7311d1c8c425ca4a199c5fb1e4ed6181a6e",
+         []
+        ],
+        "select-text-only-ref.html": [
+         "154fbad9ca3a4ace9655cfd8fb377f895fff3d81",
          []
         ],
         "switch-picker-appearance.tentative-expected.txt": [
@@ -451285,7 +452379,7 @@
      ]
     ],
     "basic.html": [
-     "79a91e127ef6846427d63ff0c21fe42dcb9611de",
+     "1b092630559641b8f09fa8889cadbe8f0d405349",
      [
       null,
       {
@@ -451357,7 +452451,7 @@
      ]
     ],
     "inside-event-listeners.html": [
-     "47f431e25036748f2e5106549660f8c9bb8cf483",
+     "93996fb5fee32861905dcca605d33f22a369cf94",
      [
       null,
       {
@@ -478092,35 +479186,35 @@
         ]
        ],
        "gap-decorations-color-invalid.html": [
-        "a1e6769a95cd5af79e7512176b4afd0282481913",
+        "36f26ceb1634e4b32a8029962db933538e383b9a",
         [
          null,
          {}
         ]
        ],
        "gap-decorations-color-valid.html": [
-        "e8fd4df36151f7713d9065978ed83b955a735906",
+        "d4cb5b1168f4b256d2a1702fbb47ddad08127310",
         [
          null,
          {}
         ]
        ],
        "gap-decorations-style-computed.html": [
-        "60600bdb8a7fdfa01c2826f578f4a51a9b713dc5",
+        "3d55aed80ba3d96d2c419843c2482657f36bc2ee",
         [
          null,
          {}
         ]
        ],
        "gap-decorations-style-invalid.html": [
-        "d2a11f6c0d3220559778c784164bcbc82cd4b0f2",
+        "1ea533111cd25158e1c553648679c850c791b455",
         [
          null,
          {}
         ]
        ],
        "gap-decorations-style-valid.html": [
-        "74d243bd6da188c761c84e0cdb4fc96969c6b8a6",
+        "d90a9f8337216d263940afa01c1003add8bd1229",
         [
          null,
          {}
@@ -483948,6 +485042,27 @@
     "css-masonry": {
      "tentative": {
       "parsing": {
+       "masonry-fill-computed.html": [
+        "44ff30b8cd973ed305422d851ec9aad12abc022a",
+        [
+         null,
+         {}
+        ]
+       ],
+       "masonry-fill-invalid.html": [
+        "10ccde781ff0c570eb1454b10f12b5167ac10e40",
+        [
+         null,
+         {}
+        ]
+       ],
+       "masonry-fill-valid.html": [
+        "23498d40215072ad31bf64a8ebebe41416c97201",
+        [
+         null,
+         {}
+        ]
+       ],
        "masonry-slack-computed.html": [
         "89854a6deceb88a3215ae780f7ce2ba45f3e34bb",
         [
@@ -488977,6 +490092,114 @@
        ]
       ]
      },
+     "scroll-initial-target": {
+      "scroll-initial-target-aligns-with-snap-align.tentative.html": [
+       "8dc76a657d7a105cd915a3ddd33ebca68487dfb1",
+       [
+        null,
+        {}
+       ]
+      ],
+      "scroll-initial-target-display-toggled.tentative.html": [
+       "2f58e2393c75db67442eedec6c40706718ee41a4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "scroll-initial-target-nested-container.tentative.html": [
+       "cd2717ed88cc975db9acb61519882a9c735db84b",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "scroll-initial-target-root.tentative.html": [
+       "5cb9e7447333e09544f04f7cd30c95a27d671fea",
+       [
+        null,
+        {}
+       ]
+      ],
+      "scroll-initial-target-rtl.tentative.html": [
+       "7cb0f93c495825123be2fe5941421202f62deea0",
+       [
+        null,
+        {}
+       ]
+      ],
+      "scroll-initial-target-span.tentative.html": [
+       "e7fe0479089cec0548194772ccc7ccf624811d12",
+       [
+        null,
+        {}
+       ]
+      ],
+      "scroll-initial-target-with-anchor-navigation.tentative.html": [
+       "8c6d02a1c7db3065b231b83186c83dd8e767c7c8",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "scroll-initial-target-with-hash-fragment-navigation.tentative.html": [
+       "80b3a0af9f1acaffc214a23403e28bbd631974cb",
+       [
+        null,
+        {}
+       ]
+      ],
+      "scroll-initial-target-with-scroll-snap.tentative.html": [
+       "dfdb8b0277249fb023a79823d6f4582579c333cd",
+       [
+        null,
+        {}
+       ]
+      ],
+      "scroll-initial-target-with-scroll-start-root.tentative.html": [
+       "2405334540faaa6b02de4a31284714b036179f80",
+       [
+        null,
+        {}
+       ]
+      ],
+      "scroll-initial-target-with-scroll-start.tentative.html": [
+       "9c0f58ddbfbfbe283fd764fd081db55b11e50c15",
+       [
+        null,
+        {}
+       ]
+      ],
+      "scroll-initial-target-with-text-fragment-navigation.tentative.html": [
+       "a83b36c26624b26340f55f8ee642e03c4b587c07",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "scroll-initial-target-with-user-programmatic-scroll.tentative.html": [
+       "20d6763034f6dad0297ec0b6d470d028485f59bb",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "scroll-initial-target.tentative.html": [
+       "13e9e20e3e2bad72aaf2f43b6b3c1227df287ced",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "scroll-start": {
       "scroll-start-display-toggled.tentative.html": [
        "088c14128e1acbb50e15664d7e5d68ee445de060",
@@ -489061,114 +490284,6 @@
       ],
       "scroll-start.tentative.html": [
        "a35c612d7f4fbcfa06965d496e5b05e1316513b4",
-       [
-        null,
-        {}
-       ]
-      ]
-     },
-     "scroll-start-target": {
-      "scroll-start-target-aligns-with-snap-align.tentative.html": [
-       "8dc76a657d7a105cd915a3ddd33ebca68487dfb1",
-       [
-        null,
-        {}
-       ]
-      ],
-      "scroll-start-target-display-toggled.tentative.html": [
-       "2f58e2393c75db67442eedec6c40706718ee41a4",
-       [
-        null,
-        {}
-       ]
-      ],
-      "scroll-start-target-nested-container.tentative.html": [
-       "cd2717ed88cc975db9acb61519882a9c735db84b",
-       [
-        null,
-        {
-         "testdriver": true
-        }
-       ]
-      ],
-      "scroll-start-target-root.tentative.html": [
-       "5cb9e7447333e09544f04f7cd30c95a27d671fea",
-       [
-        null,
-        {}
-       ]
-      ],
-      "scroll-start-target-rtl.tentative.html": [
-       "7cb0f93c495825123be2fe5941421202f62deea0",
-       [
-        null,
-        {}
-       ]
-      ],
-      "scroll-start-target-span.tentative.html": [
-       "e7fe0479089cec0548194772ccc7ccf624811d12",
-       [
-        null,
-        {}
-       ]
-      ],
-      "scroll-start-target-with-anchor-navigation.tentative.html": [
-       "bb3380e3ab65106d159a10d0deaa552cab108368",
-       [
-        null,
-        {
-         "testdriver": true
-        }
-       ]
-      ],
-      "scroll-start-target-with-hash-fragment-navigation.tentative.html": [
-       "6eb1737b39f557a5e1f9b1377b10e38777de6f2a",
-       [
-        null,
-        {}
-       ]
-      ],
-      "scroll-start-target-with-scroll-snap.tentative.html": [
-       "dfdb8b0277249fb023a79823d6f4582579c333cd",
-       [
-        null,
-        {}
-       ]
-      ],
-      "scroll-start-target-with-scroll-start-root.tentative.html": [
-       "2405334540faaa6b02de4a31284714b036179f80",
-       [
-        null,
-        {}
-       ]
-      ],
-      "scroll-start-target-with-scroll-start.tentative.html": [
-       "9c0f58ddbfbfbe283fd764fd081db55b11e50c15",
-       [
-        null,
-        {}
-       ]
-      ],
-      "scroll-start-target-with-text-fragment-navigation.tentative.html": [
-       "dc8c332270c84c7776a7278befb5d3308da31d62",
-       [
-        null,
-        {
-         "testdriver": true
-        }
-       ]
-      ],
-      "scroll-start-target-with-user-programmatic-scroll.tentative.html": [
-       "20d6763034f6dad0297ec0b6d470d028485f59bb",
-       [
-        null,
-        {
-         "testdriver": true
-        }
-       ]
-      ],
-      "scroll-start-target.tentative.html": [
-       "13e9e20e3e2bad72aaf2f43b6b3c1227df287ced",
        [
         null,
         {}
@@ -618158,7 +619273,7 @@
          ]
         ],
         "select-events.tentative.html": [
-         "fcf53233f18d7f38c41880d5939cb1c245ce759d",
+         "a1f98bc05301f69e6d5029f21fdd27e0aef18dfc",
          [
           null,
           {
@@ -619126,7 +620241,7 @@
         ]
        ],
        "dialog-popover-closedby-complex.tentative.html": [
-        "0d300595287a144d37a1862139ef4cd615a8bee8",
+        "472e0329236f8bef807a3d722fe8b3ef0a603ac0",
         [
          null,
          {
@@ -698696,8 +699811,15 @@
       {}
      ]
     ],
-    "Element-setAttribute-respects-Elements-node-documents-globals-CSP.html": [
-     "aafe3c70313cb420a1efede51891f949d7aa33b8",
+    "Element-setAttribute-respects-Elements-node-documents-globals-CSP-after-adoption-from-TT-realm.html": [
+     "0b2e6b60645c0ad5c25f0fdb4db488f0015267d8",
+     [
+      null,
+      {}
+     ]
+    ],
+    "Element-setAttribute-respects-Elements-node-documents-globals-CSP-after-adoption-from-non-TT-realm.html": [
+     "6543ddb4b8be1cd54cc14b0a0c36853e1c53fc94",
      [
       null,
       {}
@@ -699150,6 +700272,13 @@
     ],
     "eval-function-constructor-untrusted-arguments-and-applying-default-policy.html": [
      "8d1f498d05856f76989d0b2881ee3f922572c89f",
+     [
+      null,
+      {}
+     ]
+    ],
+    "eval-function-constructor-untrusted-arguments-and-default-policy-throwing.html": [
+     "a33fe2d0eb45329627f4591ad69fb3ae9c1089af",
      [
       null,
       {}
@@ -708877,8 +710006,69 @@
         }
        ]
       ],
+      "notraps.any.js": [
+       "4060885f36cb6acbf24403962d5a2192c8e278f7",
+       [
+        null,
+        {
+         "jsshell": true,
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/jspi/testharness-additions.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/jspi/notraps.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/jspi/testharness-additions.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "wasm/jsapi/jspi/notraps.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,jsshell"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/wasm-module-builder.js"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/jspi/testharness-additions.js"
+          ]
+         ]
+        }
+       ]
+      ],
       "rejects.any.js": [
-       "443153193180a31b9869ebc1d3d1f6bbeb96fec9",
+       "55c5abc9a8a6ca563269dd4b885332641ad87b49",
        [
         null,
         {

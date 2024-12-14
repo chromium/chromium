@@ -84,7 +84,13 @@
                 sourceElement.removeAttributeNode(sourceAttr);
 
                 document.body.append(sourceElement);
-                // Now `sourceElement`'s node document's global belongs to a TT-realm.
+                // Now `sourceElement`'s node document's global should belong to
+                // a TT-realm.
+                // Hence below calls to `setAttributeNode` and `setAttributeNS`
+                // should throw, because
+                // <https://github.com/whatwg/dom/pull/1268/files#diff-30f698d9b4650514daf7a04de5e44eebf8feff1a30e0505f8eeaf06703b2777dR6587>
+                // invokes <https://www.w3.org/TR/trusted-types/#validate-attribute-mutation>.
+                // The latter should throw when executing step 5.
 
                 assert_throws_js(sourceFrame.contentWindow.TypeError, () => {
                   sourceElement.setAttributeNode(sourceAttr);

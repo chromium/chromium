@@ -44,6 +44,7 @@ crbug.com/40937352 external/wpt/css/css-color/parsing/color-computed-relative-co
 external/wpt/html/links/stylesheet/quirk-origin-check-recursive-import.html [ Crash Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
 wpt_internal/css/css-images/img-view-box-contents-opaque.html [ Failure ]
 crbug.com/381945825 external/wpt/webaudio/the-audio-api/the-audiobuffersourcenode-interface/active-processing.https.html [ Crash ]
 crbug.com/381945825 external/wpt/webaudio/the-audio-api/the-audioparam-interface/k-rate-audioworklet-connections.https.html [ Crash ]

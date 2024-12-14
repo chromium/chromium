@@ -2687,6 +2687,17 @@ crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attribut
 crbug.com/343720396 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?1-2 [ Crash Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac13 ] external/wpt/css/css-layout-api/edges/padding-vrl.https.html [ Failure ]
+[ Win10.20h2 ] external/wpt/css/css-layout-api/edges/padding-vrl.https.html [ Failure ]
+[ Mac13 ] external/wpt/css/css-properties-values-api/registered-property-change-style-002.html [ Failure ]
+[ Win10.20h2 ] external/wpt/css/css-properties-values-api/registered-property-change-style-002.html [ Failure ]
+[ Mac13 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
+[ Mac15 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
+[ Mac13-arm64 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
+[ Mac12 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
+[ Mac11 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
+[ Mac14 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-font-inheriting.tentative.html [ Failure ]
+[ Mac13 ] virtual/disable-raster-inducing-scroll/external/wpt/acid/acid2/reftest.html [ Failure ]
 crbug.com/383825171 external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-abspos-001.html [ Failure ]
 crbug.com/383999267 [ Mac ] external/wpt/editing/run/forwarddelete-chars-following-collapsible-white-space.html [ Failure ]
 crbug.com/383814059 [ Win11-arm64 ] external/wpt/css/css-paint-api/geometry-background-image-tiled-003.https.html [ Failure ]
