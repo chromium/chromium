@@ -521,8 +521,8 @@ class SyncSocketSource : public AudioOutputStream::AudioSourceCallback {
           (delay_timestamp - base::TimeTicks()).InMicroseconds();
       const size_t span_size =
           static_cast<size_t>(packet_size_) / sizeof(decltype(*data_.get()));
-      uint32_t size = socket_->Receive(
-          base::as_writable_bytes(base::span(data_.get(), span_size)));
+      uint32_t size = socket_->Receive(base::as_writable_bytes(
+          base::allow_nonunique_obj, base::span(data_.get(), span_size)));
       ++current_packet_count_;
 
       DCHECK_EQ(static_cast<size_t>(size) % sizeof(*audio_bus_->channel(0)),

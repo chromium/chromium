@@ -21,6 +21,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_QUALIFIED_NAME_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_QUALIFIED_NAME_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
@@ -46,8 +47,22 @@ struct QualifiedNameData {
   bool is_static_;
 };
 
-CORE_EXPORT extern const class QualifiedName& g_any_name;
-CORE_EXPORT extern const class QualifiedName& g_null_name;
+class CORE_EXPORT QualifiedName;
+
+}  // namespace blink
+
+// `QualifiedName`'s only field is an interned pointer, so it's safe to hash;
+// allow conversion to a byte span to facilitate this.
+namespace base {
+template <>
+inline constexpr bool kCanSafelyConvertToByteSpan<::blink::QualifiedName> =
+    true;
+}
+
+namespace blink {
+
+CORE_EXPORT extern const QualifiedName& g_any_name;
+CORE_EXPORT extern const QualifiedName& g_null_name;
 
 class CORE_EXPORT QualifiedName {
   USING_FAST_MALLOC(QualifiedName);

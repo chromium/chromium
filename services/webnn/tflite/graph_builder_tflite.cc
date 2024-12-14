@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <concepts>
 #include <iterator>
 #include <numeric>
 #include <vector>
@@ -1058,7 +1059,14 @@ template <typename DataType>
 int32_t GraphBuilderTflite::SerializeTensorWithBuffer(
     base::span<const DataType> buffer,
     base::span<const int32_t> dimensions) {
-  base::span<const uint8_t> buffer_span = base::as_byte_span(buffer);
+  base::span<const uint8_t> buffer_span;
+  if constexpr (std::floating_point<DataType>) {
+    // Floating point types do not have unique object representations, but
+    // this code appears to be using a byte span to type-erase, which is fine.
+    buffer_span = base::as_byte_span(base::allow_nonunique_obj, buffer);
+  } else {
+    buffer_span = base::as_byte_span(buffer);
+  }
   const uint32_t buffer_index = SerializeBuffer(buffer_span);
 
   // Create `tflite::Tensor` with the dimensions and the index of buffer.
