@@ -14,6 +14,8 @@
 #include "cc/base/region.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
+#include "components/viz/common/quads/draw_quad.h"
+#include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -201,6 +203,33 @@ bool ReduceComplexity(const cc::Region& region,
   return true;
 }
 
+bool CanContributeToOcclusion(const SharedQuadState* shared_quad_state) {
+  // TODO(yiyix): For transforms that don't preserve axis-alignmement, find a
+  // rect interior to each transformed quad.
+  return shared_quad_state->opacity == 1 &&
+         shared_quad_state->are_contents_opaque &&
+         (shared_quad_state->blend_mode == SkBlendMode::kSrcOver ||
+          shared_quad_state->blend_mode == SkBlendMode::kSrc) &&
+         shared_quad_state->quad_to_target_transform
+             .NonDegeneratePreserves2dAxisAlignment();
+}
+
+void MaybeReduceOccluderComplexity(cc::Region& occluder,
+                                   int complexity_threshold) {
+  // If region complexity is above our threshold, remove the smallest
+  // rects from occlusion region.
+  while (occluder.GetRegionComplexity() > complexity_threshold) {
+    gfx::Rect smallest_rect = *occluder.begin();
+    for (auto occluding_rect : occluder) {
+      if (occluding_rect.size().GetCheckedArea().ValueOrDefault(INT_MAX) <
+          smallest_rect.size().GetCheckedArea().ValueOrDefault(INT_MAX)) {
+        smallest_rect = occluding_rect;
+      }
+    }
+    occluder.Subtract(smallest_rect);
+  }
+}
+
 }  // namespace
 
 OcclusionCuller::OcclusionCuller(
@@ -287,13 +316,8 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
       const gfx::Transform transform =
           quad->shared_quad_state->quad_to_target_transform;
 
-      // TODO(yiyix): Find a rect interior to each transformed quad.
       if (last_sqs != quad->shared_quad_state) {
-        if (last_sqs->opacity == 1 && last_sqs->are_contents_opaque &&
-            (last_sqs->blend_mode == SkBlendMode::kSrcOver ||
-             last_sqs->blend_mode == SkBlendMode::kSrc) &&
-            last_sqs->quad_to_target_transform
-                .NonDegeneratePreserves2dAxisAlignment()) {
+        if (CanContributeToOcclusion(last_sqs)) {
           gfx::Rect sqs_rect_in_target =
               cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
                   last_sqs->quad_to_target_transform,
@@ -312,22 +336,9 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
             sqs_rect_in_target.Intersect(*last_sqs->clip_rect);
           }
 
-          // If region complexity is above our threshold, remove the smallest
-          // rects from occlusion region.
           occlusion_in_target_space.Union(sqs_rect_in_target);
-          while (occlusion_in_target_space.GetRegionComplexity() >
-                 settings_.maximum_occluder_complexity) {
-            gfx::Rect smallest_rect = *occlusion_in_target_space.begin();
-            for (auto occluding_rect : occlusion_in_target_space) {
-              if (occluding_rect.size().GetCheckedArea().ValueOrDefault(
-                      INT_MAX) <
-                  smallest_rect.size().GetCheckedArea().ValueOrDefault(
-                      INT_MAX)) {
-                smallest_rect = occluding_rect;
-              }
-            }
-            occlusion_in_target_space.Subtract(smallest_rect);
-          }
+          MaybeReduceOccluderComplexity(occlusion_in_target_space,
+                                        settings_.maximum_occluder_complexity);
         }
 
         // If the visible_rect of the current shared quad state does not
