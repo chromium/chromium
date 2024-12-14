@@ -16,11 +16,11 @@
 #define CRASHPAD_SNAPSHOT_LINUX_SNAPSHOT_SIGNAL_CONTEXT_H_
 
 #include <signal.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <sys/types.h>
 #include <sys/ucontext.h>
 
-#include <cstddef>
 #include <type_traits>
 
 #include "build/build_config.h"
