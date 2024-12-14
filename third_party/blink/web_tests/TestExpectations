@@ -8821,3 +8821,5 @@ crbug.com/378549335 [ Mac ] wpt_internal/ai/language-model-api-context-overflow.
 crbug.com/378549335 [ Mac ] wpt_internal/ai/language-model-api-context-overflow.https.any.worker.html [ Pass Timeout ]
 
 crbug.com/383855460 inspector-protocol/css/css-get-animated-styles.js [ Failure Pass ]
+
+crbug.com/384009732 [ Mac ] fast/mediacapturefromelement/CanvasCaptureMediaStream-offscreencanvas.html [ Failure Pass ]
