@@ -1068,7 +1068,6 @@ class ScopedFakeExternalProtocolHandlerDelegate
  private:
   base::RunLoop launch_url_run_loop_;
   const std::u16string program_name_ = u"custom";
-  bool launch_url_called_ = false;
   bool external_protocol_dialog_called_ = false;
   std::string launched_url_without_security_check_;
   std::string launched_url_with_security_check_;
