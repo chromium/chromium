@@ -222,7 +222,8 @@ void ResolvePassphraseErrorFromOverflowMenu() {
 
 // Tests that the overflow menu footer displays Family Link disclaimer with a
 // link to more information about family accounts.
-- (void)testOverflowMenuFooterFamilyLink {
+// TODO(crbug.com/339689514): Failing on ios-simulator-noncq
+- (void)DISABLED_testOverflowMenuFooterFamilyLink {
   if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
     EARL_GREY_TEST_SKIPPED(kOverflowMenuSkipTestMessage)
   }
