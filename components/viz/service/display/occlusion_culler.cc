@@ -336,9 +336,13 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
             sqs_rect_in_target.Intersect(*last_sqs->clip_rect);
           }
 
-          occlusion_in_target_space.Union(sqs_rect_in_target);
-          MaybeReduceOccluderComplexity(occlusion_in_target_space,
-                                        settings_.maximum_occluder_complexity);
+          if (sqs_rect_in_target.size().GetCheckedArea().ValueOrDefault(
+                  INT_MAX) > settings_.occluder_minium_visible_quad_size) {
+            occlusion_in_target_space.Union(sqs_rect_in_target);
+            MaybeReduceOccluderComplexity(
+                occlusion_in_target_space,
+                settings_.maximum_occluder_complexity);
+          }
         }
 
         // If the visible_rect of the current shared quad state does not

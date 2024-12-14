@@ -19,7 +19,9 @@
 #include "components/viz/service/display/overlay_processor_stub.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace viz {
 namespace {
@@ -2484,7 +2486,10 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithCopyRequest) {
 }
 
 TEST_F(OcclusionCullerTest, CompositorFrameWithRenderPass) {
-  InitOcclusionCuller();
+  RendererSettings::OcclusionCullerSettings settings;
+  settings.occluder_minium_visible_quad_size = 0;
+
+  InitOcclusionCuller(settings);
 
   AggregatedFrame frame = MakeDefaultAggregatedFrame();
   gfx::Rect rect1(0, 0, 100, 100);
@@ -3647,6 +3652,180 @@ TEST_F(OcclusionCullerTest, OcclusionCullingSplitDeviceScaleFactorFractional) {
   occlusion_culler()->UpdateDeviceScaleFactor(1.5f);
   occlusion_culler()->RemoveOverdrawQuads(&frame);
   EXPECT_EQ(5u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
+}
+
+// Verifies that small quads are culled but do not contribute to the occlusion.
+TEST_F(OcclusionCullerTest, OcclusionCullingWithSmallQuads) {
+  RendererSettings::OcclusionCullerSettings settings;
+  settings.minimum_fragments_reduced = 0;
+
+  InitOcclusionCuller(settings);
+
+  AggregatedFrame frame = MakeDefaultAggregatedFrame();
+  gfx::Rect quad_1_sqs1(0, 0, 64, 64);
+  gfx::Rect quad_1_sqs2(48, 0, 16, 32);
+  gfx::Rect quad_2_sqs2(64, 0, 16, 32);
+  gfx::Rect quad_1_sqs3(64, 0, 64, 64);
+
+  gfx::Rect sqs1(0, 0, 64, 64);
+  gfx::Rect sqs2(48, 0, 32, 32);
+  gfx::Rect sqs3(64, 0, 64, 64);
+
+  bool are_contents_opaque = true;
+  float opacity = 1.0f;
+
+  SharedQuadState* shared_quad_state =
+      frame.render_pass_list.front()->CreateAndAppendSharedQuadState();
+  SharedQuadState* shared_quad_state2 =
+      frame.render_pass_list.front()->CreateAndAppendSharedQuadState();
+  SharedQuadState* shared_quad_state3 =
+      frame.render_pass_list.front()->CreateAndAppendSharedQuadState();
+
+  auto* quad = frame.render_pass_list.front()
+                   ->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+  auto* quad2 = frame.render_pass_list.front()
+                    ->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+  auto* quad3 = frame.render_pass_list.front()
+                    ->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+  auto* quad4 = frame.render_pass_list.front()
+                    ->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+
+  shared_quad_state->SetAll(
+      gfx::Transform(), sqs1, sqs1, gfx::MaskFilterInfo(), std::nullopt,
+      are_contents_opaque, opacity, SkBlendMode::kSrcOver,
+      /*sorting_context=*/0, /*layer_id=*/0u, /*fast_rounded_corner=*/false);
+  shared_quad_state2->SetAll(
+      gfx::Transform(), sqs2, sqs2, gfx::MaskFilterInfo(), std::nullopt,
+      are_contents_opaque, opacity, SkBlendMode::kSrcOver,
+      /*sorting_context=*/0, /*layer_id=*/0u, /*fast_rounded_corner=*/false);
+  shared_quad_state3->SetAll(
+      gfx::Transform(), sqs3, sqs3, gfx::MaskFilterInfo(), std::nullopt,
+      are_contents_opaque, opacity, SkBlendMode::kSrcOver,
+      /*sorting_context=*/0, /*layer_id=*/0u, /*fast_rounded_corner=*/false);
+
+  quad->SetNew(shared_quad_state, quad_1_sqs1, quad_1_sqs1, SkColors::kBlack,
+               false);
+  quad2->SetNew(shared_quad_state2, quad_1_sqs2, quad_1_sqs2, SkColors::kBlack,
+                false);
+  quad3->SetNew(shared_quad_state2, quad_2_sqs2, quad_2_sqs2, SkColors::kBlack,
+                false);
+  quad4->SetNew(shared_quad_state3, quad_1_sqs3, quad_1_sqs3, SkColors::kBlack,
+                false);
+
+  EXPECT_EQ(4u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
+  occlusion_culler()->RemoveOverdrawQuads(&frame);
+
+  EXPECT_EQ(3u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
+
+  // `quad_1_sqs1` fully occludes `quad_1_sqs2`. Also `quad_2_sqs2` partially
+  // occludes `quad_1_sqs3`. But since `quad_1_sqs3`, doesn't pass the size
+  // threshold, its occlusion is ignored whereas, though `quad_1_sqs2` also does
+  // not pass the size threshold, it is removed.
+  const QuadList& quad_list = frame.render_pass_list.front()->quad_list;
+  EXPECT_EQ(quad_1_sqs1, quad_list.ElementAt(0)->visible_rect);
+  EXPECT_EQ(quad_2_sqs2, quad_list.ElementAt(2)->visible_rect);
+  EXPECT_EQ(quad_1_sqs3, quad_list.ElementAt(3)->visible_rect);
+}
+
+// Verifies that effective visible size of quads are used to determine if to
+// consider their occlusion.
+TEST_F(OcclusionCullerTest, OcclusionCullingWithSmallQuads_HasClip) {
+  RendererSettings::OcclusionCullerSettings settings;
+  settings.minimum_fragments_reduced = 0;
+
+  InitOcclusionCuller(settings);
+
+  AggregatedFrame frame = MakeDefaultAggregatedFrame();
+  gfx::Rect rect(100, 100);
+  gfx::Rect small_rect(31, 31);
+
+  bool are_contents_opaque = true;
+  float opacity = 1.0f;
+  SharedQuadState* shared_quad_state =
+      frame.render_pass_list.front()->CreateAndAppendSharedQuadState();
+  SharedQuadState* shared_quad_state2 =
+      frame.render_pass_list.front()->CreateAndAppendSharedQuadState();
+
+  auto* quad = frame.render_pass_list.front()
+                   ->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+  auto* quad2 = frame.render_pass_list.front()
+                    ->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+
+  shared_quad_state->SetAll(
+      gfx::Transform(), rect, rect, gfx::MaskFilterInfo(), small_rect,
+      are_contents_opaque, opacity, SkBlendMode::kSrcOver,
+      /*sorting_context=*/0, /*layer_id=*/0u, /*fast_rounded_corner=*/false);
+  shared_quad_state2->SetAll(
+      gfx::Transform(), small_rect, small_rect, gfx::MaskFilterInfo(),
+      std::nullopt, are_contents_opaque, opacity, SkBlendMode::kSrcOver,
+      /*sorting_context=*/0, /*layer_id=*/0u, /*fast_rounded_corner=*/false);
+
+  quad->SetNew(shared_quad_state, rect, rect, SkColors::kBlack, false);
+  quad2->SetNew(shared_quad_state2, small_rect, small_rect, SkColors::kBlack,
+                false);
+
+  EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
+  occlusion_culler()->RemoveOverdrawQuads(&frame);
+
+  const QuadList& quad_list = frame.render_pass_list.front()->quad_list;
+  EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
+
+  // After applying the clip, the effective visible rect of `rect` is smaller
+  // than `occluder_minium_visible_quad_size` threshold, and therefore its
+  // occlusion is not taken into account.
+  EXPECT_EQ(rect, quad_list.ElementAt(0)->visible_rect);
+  EXPECT_EQ(small_rect, quad_list.ElementAt(1)->visible_rect);
+}
+
+// Verifies that small quads are culled but do not contribute to the occlusion.
+TEST_F(OcclusionCullerTest, OcclusionCullingWithSmallQuads_HasRoundedCorners) {
+  RendererSettings::OcclusionCullerSettings settings;
+  settings.minimum_fragments_reduced = 0;
+
+  InitOcclusionCuller(settings);
+
+  AggregatedFrame frame = MakeDefaultAggregatedFrame();
+  gfx::Rect rect(33, 33);
+  gfx::Rect small_rect(32, 32);
+
+  gfx::MaskFilterInfo mask_info(gfx::RectF(rect), gfx::RoundedCornersF(20), {});
+
+  bool are_contents_opaque = true;
+  float opacity = 1.0f;
+  SharedQuadState* shared_quad_state =
+      frame.render_pass_list.front()->CreateAndAppendSharedQuadState();
+  SharedQuadState* shared_quad_state2 =
+      frame.render_pass_list.front()->CreateAndAppendSharedQuadState();
+
+  auto* quad = frame.render_pass_list.front()
+                   ->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+  auto* quad2 = frame.render_pass_list.front()
+                    ->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+
+  shared_quad_state->SetAll(
+      gfx::Transform(), rect, rect, mask_info, std::nullopt,
+      are_contents_opaque, opacity, SkBlendMode::kSrcOver,
+      /*sorting_context=*/0, /*layer_id=*/0u, /*fast_rounded_corner=*/false);
+  shared_quad_state2->SetAll(
+      gfx::Transform(), small_rect, small_rect, gfx::MaskFilterInfo(),
+      std::nullopt, are_contents_opaque, opacity, SkBlendMode::kSrcOver,
+      /*sorting_context=*/0, /*layer_id=*/0u, /*fast_rounded_corner=*/false);
+
+  quad->SetNew(shared_quad_state, rect, rect, SkColors::kBlack, false);
+  quad2->SetNew(shared_quad_state2, small_rect, small_rect, SkColors::kBlack,
+                false);
+
+  EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
+  occlusion_culler()->RemoveOverdrawQuads(&frame);
+
+  EXPECT_EQ(2u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
+
+  // After applying the rounded corners, the effective visible rect of `rect` is
+  // smaller than `occluder_minium_visible_quad_size` threshold, and therefore
+  // its occlusion is not taken into account.
+  const QuadList& quad_list = frame.render_pass_list.front()->quad_list;
+  EXPECT_EQ(rect, quad_list.ElementAt(0)->visible_rect);
+  EXPECT_EQ(small_rect, quad_list.ElementAt(1)->visible_rect);
 }
 
 }  // namespace
