@@ -16757,7 +16757,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ConditionallySkipGpuChannelFlush",
-                        "DirectCompositorThreadIpc",
                         "FledgeEnableWALForInterestGroupStorage",
                         "MojoBindingsInlineSLS",
                         "PumpFastToSleepAndroid",
@@ -16777,7 +16776,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ConditionallySkipGpuChannelFlush",
-                        "DirectCompositorThreadIpc",
                         "FledgeEnableWALForInterestGroupStorage",
                         "MojoBindingsInlineSLS",
                         "PumpFastToSleepAndroid",
