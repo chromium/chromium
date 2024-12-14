@@ -164,6 +164,65 @@ class SunfishTestBase : public AshTestBase {
   TestAshWebViewFactory test_web_view_factory_;
 };
 
+class SunfishDisabledScannerDisabledTest : public SunfishTestBase {
+ public:
+  SunfishDisabledScannerDisabledTest() {
+    scoped_feature_list_.InitWithFeatures(/*enabled_features=*/{},
+                                          /*disabled_features=*/{{
+                                              features::kSunfishFeature,
+                                              features::kScannerDogfood,
+                                              features::kScannerUpdate,
+                                          }});
+  }
+  SunfishDisabledScannerDisabledTest(
+      const SunfishDisabledScannerDisabledTest&) = delete;
+  SunfishDisabledScannerDisabledTest& operator=(
+      const SunfishDisabledScannerDisabledTest&) = delete;
+  ~SunfishDisabledScannerDisabledTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that the accelerator entry point is a no-op when neither Sunfish nor
+// Scanner is enabled.
+TEST_F(SunfishDisabledScannerDisabledTest, AccelEntryPointIsNoop) {
+  PressAndReleaseKey(ui::VKEY_8,
+                     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
+
+  auto* controller = CaptureModeController::Get();
+  EXPECT_FALSE(controller->IsActive());
+}
+
+// Tests that the feedback button is not shown in default capture mode if
+// neither Sunfish nor Scanner is enabled.
+TEST_F(SunfishDisabledScannerDisabledTest,
+       FeedbackButtonNotShownInDefaultMode) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+
+  auto* controller = CaptureModeController::Get();
+  ASSERT_TRUE(controller);
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_TRUE(session);
+  CaptureModeSessionTestApi session_test_api(session);
+  views::Widget* feedback_button_widget =
+      session_test_api.GetFeedbackButtonWidget();
+  // There are various ways a widget can be hidden. Any of them should pass this
+  // test.
+  EXPECT_THAT(
+      feedback_button_widget,
+      AnyOf(IsNull(), Property("IsVisible", &views::Widget::IsVisible, false),
+            Property("GetLayer", &views::Widget::GetLayer,
+                     AnyOf(Property("GetTargetOpacity",
+                                    &ui::Layer::GetTargetOpacity, 0.f),
+                           Property("GetTargetVisibility",
+                                    &ui::Layer::GetTargetVisibility, false)))));
+}
+
 class SunfishDisabledTest : public SunfishTestBase {
  public:
   SunfishDisabledTest() {
@@ -176,16 +235,6 @@ class SunfishDisabledTest : public SunfishTestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-// Tests that the accelerator entry point is a no-op when the feature is not
-// enabled.
-TEST_F(SunfishDisabledTest, AccelEntryPointIsNoop) {
-  PressAndReleaseKey(ui::VKEY_8,
-                     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
-
-  auto* controller = CaptureModeController::Get();
-  EXPECT_FALSE(controller->IsActive());
-}
 
 // Tests that the search action button is not shown in the default capture mode
 // if the feature is disabled.
@@ -219,34 +268,6 @@ TEST_F(SunfishDisabledTest, NoTextDetectionInDefaultMode) {
   // No text detection request should have been made, so there should not be a
   // pending DLP check.
   EXPECT_FALSE(CaptureModeTestApi().IsPendingDlpCheck());
-}
-
-// Tests that the feedback button is not shown in default capture mode if the
-// feature is disabled.
-TEST_F(SunfishDisabledTest, FeedbackButtonNotShownInDefaultMode) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-
-  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
-
-  auto* controller = CaptureModeController::Get();
-  ASSERT_TRUE(controller);
-  auto* session =
-      static_cast<CaptureModeSession*>(controller->capture_mode_session());
-  ASSERT_TRUE(session);
-  CaptureModeSessionTestApi session_test_api(session);
-  views::Widget* feedback_button_widget =
-      session_test_api.GetFeedbackButtonWidget();
-  // There are various ways a widget can be hidden. Any of them should pass this
-  // test.
-  EXPECT_THAT(
-      feedback_button_widget,
-      AnyOf(IsNull(), Property("IsVisible", &views::Widget::IsVisible, false),
-            Property("GetLayer", &views::Widget::GetLayer,
-                     AnyOf(Property("GetTargetOpacity",
-                                    &ui::Layer::GetTargetOpacity, 0.f),
-                           Property("GetTargetVisibility",
-                                    &ui::Layer::GetTargetVisibility, false)))));
 }
 
 class SunfishTest : public SunfishTestBase {
