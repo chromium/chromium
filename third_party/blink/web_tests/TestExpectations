@@ -2687,9 +2687,9 @@ crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attribut
 crbug.com/343720396 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?1-2 [ Crash Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-abspos-001.html [ Failure ]
-[ Mac ] external/wpt/editing/run/forwarddelete-chars-following-collapsible-white-space.html [ Failure ]
-[ Win11-arm64 ] external/wpt/css/css-paint-api/geometry-background-image-tiled-003.https.html [ Failure ]
+crbug.com/383825171 external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-abspos-001.html [ Failure ]
+crbug.com/383999267 [ Mac ] external/wpt/editing/run/forwarddelete-chars-following-collapsible-white-space.html [ Failure ]
+crbug.com/383814059 [ Win11-arm64 ] external/wpt/css/css-paint-api/geometry-background-image-tiled-003.https.html [ Failure ]
 [ Mac13 ] external/wpt/webrtc/protocol/video-codecs.https.html [ Timeout ]
 [ Mac14 ] external/wpt/webrtc/protocol/video-codecs.https.html [ Timeout ]
 crbug.com/383609766 [ Mac15 ] external/wpt/webrtc/receiver-track-live.https.html [ Timeout ]
@@ -3294,7 +3294,7 @@ crbug.com/626703 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_t
 crbug.com/626703 [ Release Win11-arm64 ] external/wpt/png/apng/fcTL-blend-source-nearly-transparent.html [ Timeout ]
 crbug.com/626703 [ Release Win11-arm64 ] external/wpt/png/apng/fcTL-blend-source-transparent.html [ Timeout ]
 crbug.com/626703 external/wpt/png/apng/fcTL-dispose-background.html [ Timeout ]
-crbug.com/626703 external/wpt/screen-orientation/lock-unlock-check.html [ Pass Failure Timeout ]
+crbug.com/626703 external/wpt/screen-orientation/lock-unlock-check.html [ Failure Pass Timeout ]
 crbug.com/626703 external/wpt/html/rendering/widgets/input-checkbox-switch-rtl.tentative.html [ Failure ]
 crbug.com/626703 external/wpt/svg/color-inherit-link-visited.svg [ Failure ]
 crbug.com/626703 external/wpt/html/semantics/forms/the-input-element/input-type-checkbox-switch.tentative.window.html [ Failure ]
