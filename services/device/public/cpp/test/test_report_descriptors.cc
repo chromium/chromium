@@ -10,7 +10,7 @@ namespace device {
 base::span<const uint8_t> TestReportDescriptors::Digitizer() {
   // Digitizer descriptor from HID descriptor tool
   // http://www.usb.org/developers/hidpage/dt2_4.zip
-  constexpr uint8_t kDigitizer[] = {
+  static constexpr uint8_t kDigitizer[] = {
       0x05, 0x0d,        // Usage Page (Digitizer)
       0x09, 0x01,        // Usage (0x1)
       0xa1, 0x01,        // Collection (Application)
@@ -113,7 +113,7 @@ base::span<const uint8_t> TestReportDescriptors::Digitizer() {
 base::span<const uint8_t> TestReportDescriptors::Keyboard() {
   // Keyboard descriptor from HID descriptor tool
   // http://www.usb.org/developers/hidpage/dt2_4.zip
-  constexpr uint8_t kKeyboard[] = {
+  static constexpr uint8_t kKeyboard[] = {
       0x05, 0x01,  // Usage Page (Generic Desktop)
       0x09, 0x06,  // Usage (0x6)
       0xa1, 0x01,  // Collection (Application)
@@ -154,7 +154,7 @@ base::span<const uint8_t> TestReportDescriptors::Keyboard() {
 base::span<const uint8_t> TestReportDescriptors::Monitor() {
   // Monitor descriptor from HID descriptor tool
   // http://www.usb.org/developers/hidpage/dt2_4.zip
-  constexpr uint8_t kMonitor[] = {
+  static constexpr uint8_t kMonitor[] = {
       0x05, 0x80,        // Usage Page (Monitor 0)
       0x09, 0x01,        // Usage (0x1)
       0xa1, 0x01,        // Collection (Application)
@@ -210,7 +210,7 @@ base::span<const uint8_t> TestReportDescriptors::Monitor() {
 base::span<const uint8_t> TestReportDescriptors::Mouse() {
   // Mouse descriptor from HID descriptor tool
   // http://www.usb.org/developers/hidpage/dt2_4.zip
-  constexpr uint8_t kMouse[] = {
+  static constexpr uint8_t kMouse[] = {
       0x05, 0x01,  // Usage Page (Generic Desktop)
       0x09, 0x02,  // Usage (0x2)
       0xa1, 0x01,  // Collection (Application)
@@ -244,7 +244,7 @@ base::span<const uint8_t> TestReportDescriptors::Mouse() {
 // static
 base::span<const uint8_t> TestReportDescriptors::LogitechUnifyingReceiver() {
   // Logitech Unifying receiver descriptor
-  constexpr uint8_t kLogitechUnifyingReceiver[] = {
+  static constexpr uint8_t kLogitechUnifyingReceiver[] = {
       0x06, 0x00, 0xFF,  // Usage Page (Vendor)
       0x09, 0x01,        // Usage (0x1)
       0xA1, 0x01,        // Collection (Application)
@@ -299,7 +299,7 @@ base::span<const uint8_t> TestReportDescriptors::LogitechUnifyingReceiver() {
 // static
 base::span<const uint8_t> TestReportDescriptors::SonyDualshock3Usb() {
   // http://eleccelerator.com/wiki/index.php?title=DualShock_4#HID_Report_Descriptor
-  constexpr uint8_t kSonyDualshock3[] = {
+  static constexpr uint8_t kSonyDualshock3[] = {
       0x05, 0x01,        // Usage Page (Generic Desktop Ctrls)
       0x09, 0x04,        // Usage (Joystick)
       0xA1, 0x01,        // Collection (Application)
@@ -393,7 +393,7 @@ base::span<const uint8_t> TestReportDescriptors::SonyDualshock3Usb() {
 // static
 base::span<const uint8_t> TestReportDescriptors::SonyDualshock4Usb() {
   // http://eleccelerator.com/wiki/index.php?title=DualShock_4#HID_Report_Descriptor
-  constexpr uint8_t kSonyDualshock4[] = {
+  static constexpr uint8_t kSonyDualshock4[] = {
       0x05, 0x01,        // Usage Page (Generic Desktop Ctrls)
       0x09, 0x05,        // Usage (Game Pad)
       0xA1, 0x01,        // Collection (Application)
@@ -681,7 +681,7 @@ base::span<const uint8_t> TestReportDescriptors::SonyDualshock4Usb() {
 // static
 base::span<const uint8_t>
 TestReportDescriptors::MicrosoftXboxWirelessControllerBluetooth() {
-  constexpr uint8_t kMicrosoftXboxWirelessController[] = {
+  static constexpr uint8_t kMicrosoftXboxWirelessController[] = {
       0x05, 0x01,                    // Usage Page (Generic Desktop Ctrls)
       0x09, 0x05,                    // Usage (Game Pad)
       0xA1, 0x01,                    // Collection (Application)
@@ -866,7 +866,7 @@ TestReportDescriptors::MicrosoftXboxWirelessControllerBluetooth() {
 // static
 base::span<const uint8_t>
 TestReportDescriptors::NintendoSwitchProControllerUsb() {
-  constexpr uint8_t kNintendoSwitchProController[] = {
+  static constexpr uint8_t kNintendoSwitchProController[] = {
       0x05, 0x01,                    // Usage Page (Generic Desktop Ctrls)
       0x15, 0x00,                    // Logical Minimum (0)
       0x09, 0x04,                    // Usage (Joystick)
@@ -983,7 +983,7 @@ TestReportDescriptors::NintendoSwitchProControllerUsb() {
 // static
 base::span<const uint8_t>
 TestReportDescriptors::MicrosoftXboxAdaptiveControllerBluetooth() {
-  constexpr uint8_t kMicrosoftXboxAdaptiveController[] = {
+  static constexpr uint8_t kMicrosoftXboxAdaptiveController[] = {
       0x05, 0x01,                    // Usage Page (Generic Desktop Ctrls)
       0x09, 0x05,                    // Usage (Game Pad)
       0xA1, 0x01,                    // Collection (Application)
@@ -1672,7 +1672,7 @@ TestReportDescriptors::MicrosoftXboxAdaptiveControllerBluetooth() {
 
 // static
 base::span<const uint8_t> TestReportDescriptors::NexusPlayerController() {
-  constexpr uint8_t kNexusPlayerController[] = {
+  static constexpr uint8_t kNexusPlayerController[] = {
       0x05, 0x01,        // Usage Page (Generic Desktop Ctrls)
       0x09, 0x05,        // Usage (Game Pad)
       0xA1, 0x01,        // Collection (Application)
@@ -1771,7 +1771,7 @@ base::span<const uint8_t> TestReportDescriptors::NexusPlayerController() {
 
 // static
 base::span<const uint8_t> TestReportDescriptors::SteamControllerKeyboard() {
-  constexpr uint8_t kSteamControllerKeyboard[] = {
+  static constexpr uint8_t kSteamControllerKeyboard[] = {
       0x05, 0x01,  // Usage Page (Generic Desktop Ctrls)
       0x09, 0x06,  // Usage (Keyboard)
       0x95, 0x01,  // Report Count (1)
@@ -1816,7 +1816,7 @@ base::span<const uint8_t> TestReportDescriptors::SteamControllerKeyboard() {
 
 // static
 base::span<const uint8_t> TestReportDescriptors::SteamControllerMouse() {
-  constexpr uint8_t kSteamControllerMouse[] = {
+  static constexpr uint8_t kSteamControllerMouse[] = {
       0x05, 0x01,  // Usage Page (Generic Desktop Ctrls)
       0x09, 0x02,  // Usage (Mouse)
       0xA1, 0x01,  // Collection (Application)
@@ -1853,7 +1853,7 @@ base::span<const uint8_t> TestReportDescriptors::SteamControllerMouse() {
 
 // static
 base::span<const uint8_t> TestReportDescriptors::SteamControllerVendor() {
-  constexpr uint8_t kSteamControllerVendor[] = {
+  static constexpr uint8_t kSteamControllerVendor[] = {
       0x06, 0x00, 0xFF,  // Usage Page (Vendor Defined 0xFF00)
       0x09, 0x01,        // Usage (0x01)
       0xA1, 0x01,        // Collection (Application)
@@ -1879,7 +1879,7 @@ base::span<const uint8_t> TestReportDescriptors::SteamControllerVendor() {
 
 // static
 base::span<const uint8_t> TestReportDescriptors::XSkillsUsbAdapter() {
-  constexpr uint8_t kXSkillsUsbAdapter[] = {
+  static constexpr uint8_t kXSkillsUsbAdapter[] = {
       0x05, 0x01,        // Usage Page (Generic Desktop Ctrls)
       0x09, 0x04,        // Usage (Joystick)
       0xA1, 0x01,        // Collection (Application)
@@ -1931,7 +1931,7 @@ base::span<const uint8_t> TestReportDescriptors::XSkillsUsbAdapter() {
 
 // static
 base::span<const uint8_t> TestReportDescriptors::BelkinNostromoKeyboard() {
-  constexpr uint8_t kBelkinNostromoKeyboard[] = {
+  static constexpr uint8_t kBelkinNostromoKeyboard[] = {
       0x05, 0x01,  // Usage Page (Generic Desktop Ctrls)
       0x09, 0x06,  // Usage (Keyboard)
       0xA1, 0x01,  // Collection (Application)
@@ -1964,7 +1964,7 @@ base::span<const uint8_t> TestReportDescriptors::BelkinNostromoKeyboard() {
 
 // static
 base::span<const uint8_t> TestReportDescriptors::BelkinNostromoMouseAndExtra() {
-  constexpr uint8_t kBelkinNostromoMouseAndExtra[] = {
+  static constexpr uint8_t kBelkinNostromoMouseAndExtra[] = {
       0x05, 0x01,  // Usage Page (Generic Desktop Ctrls)
       0x09, 0x02,  // Usage (Mouse)
       0xA1, 0x01,  // Collection (Application)
@@ -2016,7 +2016,7 @@ base::span<const uint8_t> TestReportDescriptors::BelkinNostromoMouseAndExtra() {
 
 // static
 base::span<const uint8_t> TestReportDescriptors::JabraLink380c() {
-  constexpr uint8_t kJabraLink380c[] = {
+  static constexpr uint8_t kJabraLink380c[] = {
       0x05, 0x0B,        // Usage Page (Telephony)
       0x09, 0x05,        // Usage (Headset)
       0xA1, 0x01,        // Collection (Application)
@@ -2220,7 +2220,7 @@ base::span<const uint8_t> TestReportDescriptors::JabraLink380c() {
 
 // static
 base::span<const uint8_t> TestReportDescriptors::FidoU2fHid() {
-  constexpr uint8_t kFidoU2fHid[] = {
+  static constexpr uint8_t kFidoU2fHid[] = {
       0x06, 0xD0, 0xF1,  // Usage Page (Reserved 0xF1D0)
       0x09, 0x01,        // Usage (0x01)
       0xA1, 0x01,        // Collection (Application)
@@ -2244,7 +2244,7 @@ base::span<const uint8_t> TestReportDescriptors::FidoU2fHid() {
 }
 
 base::span<const uint8_t> TestReportDescriptors::RfideasPcproxBadgeReader() {
-  constexpr uint8_t kRfideasPcproxBadgeReader[] = {
+  static constexpr uint8_t kRfideasPcproxBadgeReader[] = {
       0x05, 0x01,  // Usage Page (Generic Desktop Ctrls)
       0x09, 0x06,  // Usage (Keyboard)
       0xA1, 0x01,  // Collection (Application)
